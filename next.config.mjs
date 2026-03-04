@@ -1,4 +1,5 @@
 import createNextIntlPlugin from "next-intl/plugin";
+import { withSentryConfig } from "@sentry/nextjs";
 const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 /** @type {import('next').NextConfig} */
@@ -215,11 +216,8 @@ const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-// Export with NextIntl + Bundle Analyzer (Sentry disabled for debugging)
-// TODO: Re-enable Sentry after fixing build issues
-// export default withSentryConfig(
-//   withAnalyzer(withNextIntl(nextConfig)),
-//   sentryWebpackPluginOptions,
-// );
-
-export default withAnalyzer(withNextIntl(nextConfig));
+// Export with NextIntl + Bundle Analyzer + Sentry
+export default withSentryConfig(
+  withAnalyzer(withNextIntl(nextConfig)),
+  sentryWebpackPluginOptions,
+);

@@ -13,7 +13,7 @@
     "check": "bash scripts/verify-production.sh",
     "check-mcp": "./scripts/mcp.sh check",
     "pre-commit": "npm run check-mcp && npm run lint && npm run type-check",
-    "verify": "bash scripts/verify-production.sh",
+    "verify": "node scripts/verify-production.mjs",
     "launch": "bash scripts/launch-week2.sh",
     "deploy": "gcloud run deploy klarpakke --source . --region us-central1 --project klarpakke-universitet --allow-unauthenticated",
     "deploy:check": "curl -sI https://www.klarpakke.no | head -3",
