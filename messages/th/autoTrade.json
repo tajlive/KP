@@ -1,0 +1,78 @@
+{
+  "title": "AI อัตโนมัติเทรดดิ้ง",
+  "subtitle": "AI อัตโนมัติเทรดดิ้ง ฟรี 100%",
+  "status": {
+    "title": "สถานะ",
+    "active": "ใช้งานอยู่",
+    "paused": "หยุดชั่วคราว",
+    "running": "กำลังทำงาน",
+    "stopped": "หยุดแล้ว",
+    "activeDescription": "AI วิเคราะห์ตลาดทุก 5 นาที",
+    "pausedDescription": "คลิกเพื่อเริ่ม AI อัตโนมัติ"
+  },
+  "stats": {
+    "totalDecisions": "การตัดสินใจทั้งหมด",
+    "buy": "ซื้อ",
+    "sell": "ขาย",
+    "hold": "รอ",
+    "avgConfidence": "ความมั่นใจเฉลี่ย",
+    "lastRun": "การวิเคราะห์ล่าสุด"
+  },
+  "config": {
+    "title": "การกำหนดค่า",
+    "riskLevel": "ระดับความเสี่ยง",
+    "safe": "ปลอดภัย",
+    "moderate": "ปานกลาง",
+    "aggressive": "ดุดัน",
+    "symbols": "สัญลักษณ์",
+    "minConfidence": "ความมั่นใจขั้นต่ำ"
+  },
+  "recentDecisions": {
+    "title": "การตัดสินใจล่าสุด",
+    "empty": "ยังไม่มีการตัดสินใจ",
+    "emptyDescription": "เริ่ม AI เพื่อดูการวิเคราะห์",
+    "target": "เป้าหมาย",
+    "stop": "หยุด",
+    "rsi": "RSI"
+  },
+  "howItWorks": {
+    "title": "ทำงานอย่างไร (ฟรี 100%)",
+    "step1": {
+      "title": "ข้อมูลตลาด",
+      "description": "CoinLore API (ฟรี)",
+      "detail": "ราคาแบบเรียลไทม์"
+    },
+    "step2": {
+      "title": "วิเคราะห์ความรู้สึก",
+      "description": "Hugging Face + Reddit (ฟรี)",
+      "detail": "วิเคราะห์ข่าวและโซเชียลมีเดีย"
+    },
+    "step3": {
+      "title": "AI พยากรณ์",
+      "description": "Cloudflare Workers AI (ฟรี)",
+      "detail": "รวมการวิเคราะห์ทางเทคนิคกับความรู้สึก"
+    },
+    "step4": {
+      "title": "ดำเนินการอัตโนมัติ",
+      "description": "Paper trading (ฟรี)",
+      "detail": "ฝึกซ้อมด้วยเงินเสมือน"
+    },
+    "warning": "สำคัญ: นี่คือ AI ฟรีสำหรับการวิเคราะห์ การเทรดทั้งหมดเริ่มจาก paper mode"
+  },
+  "actions": {
+    "runNow": "เรียกใช้เลย",
+    "start": "เริ่ม AI",
+    "stop": "หยุด AI"
+  },
+  "errors": {
+    "notAuthenticated": "คุณต้องเข้าสู่ระบบก่อนใช้ AI อัตโนมัติ"
+  },
+  "selectRisk": "เลือกระดับความเสี่ยง",
+  "closePositions": "ปิดตำแหน่งทั้งหมดทันทีและหยุดหุ่นยนต์",
+  "timeAgo": {
+    "min": "{n} นาทีที่แล้ว",
+    "mins": "{n} นาทีที่แล้ว",
+    "hour": "{n} ชั่วโมงที่แล้ว",
+    "hours": "{n} ชั่วโมงที่แล้ว"
+  }
+}

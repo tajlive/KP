@@ -1,0 +1,22 @@
+{
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "success": "Success!",
+  "back": "Back",
+  "next": "Next",
+  "close": "Close",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "confirm": "Confirm",
+  "search": "Search",
+  "noResults": "No results found",
+  "tryAgain": "Try again",
+  "learnMore": "Learn more",
+  "seeAll": "See all",
+  "comingSoon": "Coming soon",
+  "edit": "Edit",
+  "update": "Update",
+  "submit": "Submit",
+  "refresh": "Refresh"
+}

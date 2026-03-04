@@ -1,0 +1,347 @@
+{
+  "metadata": {
+    "title": "选择你的课程",
+    "subtitle": "从初学者到专家。按自己的节奏，在AI引导下学习。",
+    "stats": {
+      "completedCourses": "147",
+      "activeStudents": "89",
+      "averageRating": "4.8",
+      "totalLessons": "36"
+    },
+    "cta": {
+      "title": "不确定从哪里开始？",
+      "description": "参加我们的免费兴趣测试,找出最适合你的课程。",
+      "button": "开始测试"
+    }
+  },
+  "courses": [
+    {
+      "id": "krypto-for-smaasparere",
+      "slug": "krypto-for-smaasparere",
+      "title": "加密货币入门",
+      "subtitle": "4周内从零到自信的加密货币持有者",
+      "level": "初学者",
+      "duration": "8小时",
+      "students": 1247,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-blue-600 to-cyan-600",
+      "icon": "🚀",
+      "modules": 12,
+      "weeks": 4,
+      "tags": ["Bitcoin", "安全", "交易"],
+      "cta": "开始课程"
+    },
+    {
+      "id": "trading-masterclass",
+      "slug": "trading-masterclass",
+      "title": "交易大师班",
+      "subtitle": "面向有经验交易者的高级策略",
+      "level": "高级",
+      "duration": "12小时",
+      "students": 523,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-amber-500 to-orange-600",
+      "icon": "📈",
+      "modules": 16,
+      "weeks": 6,
+      "tags": ["技术分析", "风险管理"],
+      "cta": "开始课程"
+    },
+    {
+      "id": "defi-explorer",
+      "slug": "defi-explorer",
+      "title": "DeFi 探索者",
+      "subtitle": "理解去中心化金融",
+      "level": "中级",
+      "duration": "6小时",
+      "students": 892,
+      "rating": 4.7,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-emerald-500 to-teal-600",
+      "icon": "🌐",
+      "modules": 8,
+      "weeks": 3,
+      "tags": ["DeFi", "Yield farming", "Liquidity"],
+      "cta": "开始课程"
+    }
+  ],
+  "courseDetails": {
+    "krypto-for-smaasparere": {
+      "title": "加密货币入门",
+      "description": "4周内从0到自信的投资者。学习Bitcoin、安全和储蓄的要点。",
+      "weeks": 4,
+      "level": "beginner",
+      "levelLabel": "初学者",
+      "duration": "4周",
+      "lessons": 12,
+      "videoTitle": "加密货币入门",
+      "videoSubtitle": "AI引导课程 - 按自己的节奏学习",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "什么是加密货币？",
+          "status": "completed",
+          "progress": 100
+        },
+        { "id": 2, "title": "区块链", "status": "current", "progress": 0 },
+        { "id": 3, "title": "钱包", "status": "available", "progress": 0 },
+        { "id": 4, "title": "购买Bitcoin", "status": "locked", "progress": 0 },
+        { "id": 5, "title": "安全", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "第1课：什么是加密货币？",
+          "description": "加密货币是无需银行即可运作的数字货币。Bitcoin于2009年创建，是第一个也是最知名的加密货币。与传统货币不同，Bitcoin不受任何央行控制——它由全球计算机网络管理。可以把它想象成数字黄金：Bitcoin总量只有2100万个，永远不会再增加。这使Bitcoin成为一种通缩货币，与央行可以印更多钞票的传统货币不同。其他热门加密货币包括Ethereum（智能合约平台）、Solana（以快速交易闻名）等数千种。",
+          "buttons": {
+            "start": "开始讲解",
+            "pause": "暂停",
+            "mute": "静音",
+            "unmute": "取消静音"
+          }
+        },
+        "2": {
+          "title": "第2课：区块链——背后的技术",
+          "description": "区块链是使Bitcoin成为可能的技术。想象一本数字笔记本被同时复制到数千台电脑上。每当有人发送Bitcoin，交易就会被记录在笔记本中。所有副本同时更新，没有人能更改旧记录。这被称为'去中心化'，因为没有任何一个人控制这本账本。'区块链'这个词字面意思是'区块的链条'。每10分钟，新交易被收集成一个区块，这个区块与前一个区块相连。结果是一条不可破坏的链条，记录着所有Bitcoin交易的完整历史。",
+          "buttons": {
+            "start": "开始讲解",
+            "pause": "暂停",
+            "mute": "静音",
+            "unmute": "取消静音"
+          }
+        },
+        "3": {
+          "title": "第3课：加密钱包——你的数字保险箱",
+          "description": "要拥有加密货币，你需要一个加密钱包。有两种主要类型：'热钱包'（手机上易于使用的应用，如MetaMask或Trust Wallet）和'冷钱包'（如Ledger或Trezor的物理设备，离线存储加密货币，更加安全）。钱包包含两把钥匙：公钥（像账号一样可以分享给别人来接收加密货币）和私钥（像PIN码——必须保密！）。如果你丢失了私钥，你将永久失去对加密货币的访问权。",
+          "buttons": {
+            "start": "开始讲解",
+            "pause": "暂停",
+            "mute": "静音",
+            "unmute": "取消静音"
+          }
+        },
+        "4": {
+          "title": "第4课：如何购买Bitcoin",
+          "description": "最简单的方法是使用受监管的交易所，如Coinbase或Binance。创建账户，验证身份，通过银行转账充值。你不需要购买整个Bitcoin！你可以购买很小的一部分。交易时你需要支付少量手续费（通常0.1%-1.5%）。购买后，你可以将加密货币留在交易所（方便但有些风险）或转移到自己的钱包（更安全）。提示：从你能承受损失的小金额开始，熟悉流程后再增加。",
+          "buttons": {
+            "start": "开始讲解",
+            "pause": "暂停",
+            "mute": "静音",
+            "unmute": "取消静音"
+          }
+        },
+        "5": {
+          "title": "第5课：安全——保护你的加密货币",
+          "description": "加密世界有骗子，你必须保护自己。最重要的规则：(1) 永远不要与任何人分享你的私钥——没有正规服务会要求你提供。(2) 始终使用Google Authenticator的双重验证(2FA)，不要用短信。(3) 小心钓鱼——骗子创建看起来像Binance/Coinbase的假网站，始终检查URL。(4) 为加密账户使用强大、独特的密码。(5) 考虑使用硬件钱包存储大额资金。(6) 不要在社交媒体上分享你拥有多少加密货币。最后：没有正经人会承诺加密货币的'保证回报'。",
+          "buttons": {
+            "start": "开始讲解",
+            "pause": "暂停",
+            "mute": "静音",
+            "unmute": "取消静音"
+          }
+        }
+      },
+      "quiz": {
+        "question": "什么是Bitcoin？",
+        "options": [
+          "邮寄给你的实体硬币",
+          "存在于互联网上的数字货币",
+          "证券交易所上的股票公司",
+          "手机上的应用"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Bitcoin于2009年由一个自称Satoshi Nakamoto的人创建。至今没人知道他到底是谁！"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": ["好问题！", "想得好！", "这很重要..."],
+          "correctAnswer": "太棒了！+50 XP！🎉",
+          "wrongAnswer": "不太对，再试一次！",
+          "nextQuestion": "准备好下一个问题了吗？",
+          "voiceAnswer": "好问题！Bitcoin就像数字黄金，而Ethereum更像是数字计算机...",
+          "voiceTranscript": "Bitcoin和Ethereum有什么区别？",
+          "initial": "欢迎！我是你的AI教授。随便问我什么！"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "用语音提问",
+        "description": "点击麦克风，随便问什么",
+        "buttonListening": "正在听...",
+        "button": "按住说话"
+      },
+      "achievements": {
+        "title": "你的进度",
+        "xpLabel": "XP",
+        "streakLabel": "今日连续"
+      },
+      "badges": { "popular": "热门" },
+      "labels": { "level": "级别", "modules": "模块", "week": "周", "of": "共" }
+    },
+    "trading-masterclass": {
+      "title": "交易大师班",
+      "description": "面向有经验投资者的高级交易策略。学习技术分析、风险管理等。",
+      "weeks": 6,
+      "level": "advanced",
+      "levelLabel": "高级",
+      "duration": "6周",
+      "lessons": 16,
+      "videoTitle": "交易大师班",
+      "videoSubtitle": "面向高级交易者",
+      "lessonsList": [
+        { "id": 1, "title": "技术分析", "status": "locked", "progress": 0 },
+        { "id": 2, "title": "K线形态", "status": "locked", "progress": 0 },
+        { "id": 3, "title": "风险管理", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "第1课：技术分析",
+          "description": "学习阅读图表和识别趋势。",
+          "buttons": {
+            "start": "开始讲解",
+            "pause": "暂停",
+            "mute": "静音",
+            "unmute": "取消静音"
+          }
+        }
+      },
+      "quiz": {
+        "question": "'黄金交叉'意味着什么？",
+        "options": ["看跌趋势", "看涨趋势", "横盘市场", "高波动性"],
+        "correctAnswer": 1,
+        "funFact": "黄金交叉发生在50日移动平均线上穿200日移动平均线时。"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": ["好问题！", "想得好！", "这很重要..."],
+          "correctAnswer": "太棒了！+50 XP！🎉",
+          "wrongAnswer": "不太对，再试一次！",
+          "nextQuestion": "准备好下一个问题了吗？",
+          "voiceAnswer": "技术分析是通过研究价格历史来预测未来走势...",
+          "voiceTranscript": "什么是技术分析？",
+          "initial": "欢迎来到交易大师班！准备好学习高级策略了吗？"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "用语音提问",
+        "description": "点击麦克风，随便问什么",
+        "buttonListening": "正在听...",
+        "button": "按住说话"
+      },
+      "achievements": {
+        "title": "你的进度",
+        "xpLabel": "XP",
+        "streakLabel": "今日连续"
+      },
+      "badges": { "popular": "热门" },
+      "labels": { "level": "级别", "modules": "模块", "week": "周", "of": "共" }
+    },
+    "defi-explorer": {
+      "title": "DeFi 探索者",
+      "description": "探索去中心化金融。了解yield farming、流动性池和智能合约。",
+      "weeks": 3,
+      "level": "intermediate",
+      "levelLabel": "中级",
+      "duration": "3周",
+      "lessons": 8,
+      "videoTitle": "DeFi 探索者",
+      "videoSubtitle": "了解金融的未来",
+      "lessonsList": [
+        { "id": 1, "title": "什么是DeFi？", "status": "locked", "progress": 0 },
+        { "id": 2, "title": "智能合约", "status": "locked", "progress": 0 },
+        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "第1课：什么是DeFi？",
+          "description": "去中心化金融正在革新我们对金钱的思考方式。",
+          "buttons": {
+            "start": "开始讲解",
+            "pause": "暂停",
+            "mute": "静音",
+            "unmute": "取消静音"
+          }
+        }
+      },
+      "quiz": {
+        "question": "什么是智能合约？",
+        "options": [
+          "法律协议",
+          "区块链上的自执行代码",
+          "一种银行账户",
+          "一种加密货币"
+        ],
+        "correctAnswer": 1,
+        "funFact": "智能合约最早由Nick Szabo在1994年提出，远在Ethereum诞生之前！"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": ["好问题！", "想得好！", "这很重要..."],
+          "correctAnswer": "太棒了！+50 XP！🎉",
+          "wrongAnswer": "不太对，再试一次！",
+          "nextQuestion": "准备好下一个问题了吗？",
+          "voiceAnswer": "DeFi是去中心化金融的缩写,是一个金融应用的生态系统...",
+          "voiceTranscript": "什么是DeFi？",
+          "initial": "欢迎来到DeFi探索者！让我们一起探索金融的未来。"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "用语音提问",
+        "description": "点击麦克风，随便问什么",
+        "buttonListening": "正在听...",
+        "button": "按住说话"
+      },
+      "achievements": {
+        "title": "你的进度",
+        "xpLabel": "XP",
+        "streakLabel": "今日连续"
+      },
+      "badges": { "popular": "热门" },
+      "labels": { "level": "级别", "modules": "模块", "week": "周", "of": "共" }
+    }
+  },
+  "common": {
+    "header": { "academy": "Klarpakke 学院" },
+    "lessonStatuses": {
+      "completed": "已完成",
+      "current": "进行中",
+      "available": "可用",
+      "locked": "锁定"
+    },
+    "buttons": {
+      "back": "返回",
+      "fullscreen": "全屏",
+      "exitFullscreen": "退出全屏"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "title": "แดชบอร์ดผู้ดูแลระบบ",
+  "verifying": "กำลังตรวจสอบสิทธิ์...",
+  "noAccess": {
+    "title": "ไม่มีสิทธิ์เข้าถึง",
+    "backToHome": "กลับไปหน้าหลัก"
+  },
+  "overview": "ภาพรวม",
+  "users": "ผู้ใช้",
+  "students": "นักเรียน",
+  "tradeSync": "ซิงค์การเทรด",
+  "system": "ระบบ",
+  "settings": "การตั้งค่า",
+  "loggedInAs": "เข้าสู่ระบบเป็น",
+  "logout": "ออกจากระบบ",
+  "header": {
+    "subtitle": "{email} • ภาพรวมแคมเปญ"
+  },
+  "campaign": {
+    "title": "เป้าหมายแคมเปญ",
+    "spotsFilled": "{total} จาก 100 ที่เต็มแล้ว"
+  },
+  "stats": {
+    "totalRegistered": "ลงทะเบียนทั้งหมด",
+    "spotsLeft": "เหลืออีก {remaining} ที่",
+    "signedUpToday": "ลงทะเบียนวันนี้",
+    "last24Hours": "24 ชั่วโมงที่ผ่านมา",
+    "totalClicks": "คลิกทั้งหมด",
+    "allChannels": "จากทุกช่องทาง",
+    "conversion": "การแปลง",
+    "clickToReg": "คลิก → ลงทะเบียน",
+    "activeUsers": "ผู้ใช้ที่ใช้งาน"
+  },
+  "trafficSources": {
+    "title": "แหล่งที่มาของการเข้าชม",
+    "direct": "ตรง"
+  },
+  "funnel": {
+    "title": "การแปลง",
+    "falloff": "{count} ตกหล่น ({rate}%)",
+    "noData": "ยังไม่มีข้อมูล"
+  },
+  "footer": {
+    "lastUpdated": "อัปเดตล่าสุด: {date}",
+    "fallbackData": "⚠️ ข้อมูลสดไม่พร้อมใช้งาน แสดงแคช"
+  },
+  "search": {
+    "placeholder": "ค้นหาผู้ใช้..."
+  }
+}

@@ -1,0 +1,3 @@
+public/icons/* !text !filter !merge !diff
+public/images/* !text !filter !merge !diff
+public/logo*.png !text !filter !merge !diff

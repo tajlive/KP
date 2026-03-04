@@ -1,0 +1,18 @@
+{
+  "title": "Konkurranse",
+  "description": "Trading konkurranse",
+  "subtitle": "Konkurrer mot andre tradere og vinn premier.",
+  "status": "Aktiv",
+  "joinButton": "Bli med",
+  "leaderboard": "Ledertavle",
+  "prizes": "Premier",
+  "rules": "Regler",
+  "timeLeft": "Tid igjen",
+  "participants": "Deltakere",
+  "yourRank": "Din plassering",
+  "noActive": "Ingen aktive konkurranser akkurat nå.",
+  "weekly": "Ukentlig konkurranse",
+  "monthly": "Månedlig konkurranse",
+  "weeklyPrize": "Ukentlig premie",
+  "monthlyPrize": "Månedlig premie"
+}

@@ -1,0 +1,58 @@
+{
+  "title": "Trading Quiz",
+  "subtitle": "Test what you've learned",
+  "testKnowledge": "Test your knowledge",
+  "description": "This quiz tests basic understanding of trading concepts. You need 70% correct answers to pass. Read the explanations carefully – they help you understand why the answers are correct.",
+  "questionProgress": "Question {current} of {total}",
+  "correctCount": "{score} correct",
+  "nextQuestion": "Next question",
+  "seeResult": "See result",
+  "result": {
+    "congratulations": "Congratulations!",
+    "tryAgain": "Try again",
+    "passedMessage": "You passed the quiz! Good job.",
+    "failedMessage": "You need at least 70% to pass. Read the explanations and try again.",
+    "score": "Score",
+    "status": "Status",
+    "passed": "Passed",
+    "failed": "Failed",
+    "whatNow": "What do you want to do now?",
+    "tryPaperTrading": "Try Paper Trading",
+    "continueLearning": "Continue learning",
+    "retry": "Retake quiz",
+    "correct": "Correct!",
+    "wrong": "Wrong"
+  },
+  "questions": [
+    {
+      "question": "What is a \"stop loss\" in trading?",
+      "options": [
+        "An order that automatically sells when the price reaches a certain level",
+        "A way to make more money",
+        "A type of stock",
+        "A trading strategy"
+      ],
+      "explanation": "A stop loss is an order that automatically sells your position when the price falls to a certain level, protecting you from large losses."
+    },
+    {
+      "question": "What does \"diversification\" mean?",
+      "options": [
+        "Buying one stock",
+        "Spreading investments across different assets",
+        "Selling all stocks",
+        "Trading only with crypto"
+      ],
+      "explanation": "Diversification means spreading your investments across different assets to reduce risk."
+    },
+    {
+      "question": "What is the risk of leveraged trading?",
+      "options": [
+        "No risk",
+        "Potentially higher losses than invested amount",
+        "Guaranteed profit",
+        "No impact"
+      ],
+      "explanation": "Leveraged trading increases both potential profit and loss. You can lose more than you invested."
+    }
+  ]
+}

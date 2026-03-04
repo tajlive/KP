@@ -1,0 +1,16 @@
+{
+  "title": "Kasse",
+  "subtitle": "Fullfør kjøpet ditt for å få tilgang til kurset",
+  "total": "Total",
+  "proceedToPayment": "Fortsett til Betaling",
+  "processing": "Behandler...",
+  "securePayment": "🔒 Sikker betaling via Stripe",
+  "error": "Noe gikk galt",
+  "goBack": "Gå Tilbake",
+  "noCourseSelected": "Ingen kurs valgt",
+  "courseNotFound": "Kurs ikke funnet",
+  "courseIsFree": "Dette kurset er gratis. Ingen betaling nødvendig.",
+  "successTitle": "Betaling Vellykket! 🎉",
+  "successMessage": "Du har nå tilgang til kurset. Gå til dashboard for å begynne.",
+  "goToDashboard": "Gå til Dashboard"
+}

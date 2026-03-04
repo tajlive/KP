@@ -1,0 +1,7 @@
+2026-01-25T09:08:27Z Starter force-deploy-from-app.sh
+2026-01-25T09:08:27Z REPO_DIR=/Users/taj/klarpakke APP_DIR=/Users/taj/klarpakke/app VERCEL_ENV=development
+2026-01-25T09:08:27Z VERCEL_TOKEN ikke satt. Forsøker interaktiv login (kan kreve input).
+2026-01-25T09:08:46Z Linker prosjekt i /Users/taj/klarpakke til Vercel (non-interaktivt hvis mulig)
+2026-01-25T09:08:49Z Henter env fra Vercel til /Users/taj/klarpakke/.env.local (valgfritt)
+2026-01-25T09:08:50Z Triggerer force deploy fra /Users/taj/klarpakke/app
+2026-01-25T09:09:26Z Vercel deploy feilet. Sjekk loggene i Vercel dashboard.

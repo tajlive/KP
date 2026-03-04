@@ -1,0 +1,14 @@
+{
+  "title": "交易联赛",
+  "subtitle": "加入我们的月度交易竞赛！",
+  "description": "与其他交易者竞争并赢取奖品",
+  "joinButton": "立即加入",
+  "createButton": "创建联赛",
+  "leaderboard": "排行榜",
+  "rules": "规则",
+  "prizes": "奖品",
+  "participants": "参与者",
+  "startsIn": "开始于",
+  "endsIn": "结束于",
+  "competitionEnded": "比赛已结束"
+}

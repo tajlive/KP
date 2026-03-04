@@ -1,0 +1,19 @@
+{
+  "title": "Gamification",
+  "description": "Learn and earn points",
+  "subtitle": "Complete challenges and climb the leaderboard.",
+  "points": "Points",
+  "badges": "Badges",
+  "streaks": "Streaks",
+  "level": "Level",
+  "nextLevel": "Next level",
+  "dailyChallenge": "Daily challenge",
+  "weeklyGoal": "Weekly goal",
+  "achievements": "Achievements",
+  "progress": "Progress",
+  "stats": {
+    "completed": "Completed lessons",
+    "accuracy": "Trade accuracy",
+    "lessonsAvailable": "Lessons available"
+  }
+}

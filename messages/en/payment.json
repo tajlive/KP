@@ -1,0 +1,16 @@
+{
+  "chooseMethod": "Choose payment method",
+  "vipps": "Vipps",
+  "vippsDescription": "Fast for Norwegian customers",
+  "card": "Card",
+  "cardDescription": "Visa, Mastercard, etc.",
+  "or": "or",
+  "payWithCard": "Pay with card",
+  "securePayment": "Secure payment. Vipps for Norwegian customers, card for international.",
+  "back": "Back",
+  "loading": "Loading...",
+  "errors": {
+    "checkout_failed": "Could not start payment",
+    "unexpected": "Could not start payment. Please try again."
+  }
+}

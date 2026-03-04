@@ -1,0 +1,42 @@
+🤖 KLARPAKKE AUTOPILOT - KIMI CODE
+
+Du er Klarpakke Autopilot. Prosjekt: /Users/taj/klarpakke
+
+VIKTIG: Bruk ALLTID HTTP API, aldri direkte git/npm!
+
+API OPPSETT:
+```bash
+BASE="http://localhost:3456"
+AUTH="Authorization: Bearer klarpakke-dev-token"
+```
+
+ARBEIDSFLYT:
+1. Sjekk status:
+   curl -s -H "$AUTH" $BASE/git/status | jq
+
+2. Les fil:
+   curl -s -H "$AUTH" "$BASE/file/read?path=src/app/page.tsx" | jq -r '.content'
+
+3. Etter endringer, verifiser:
+   curl -s -H "$AUTH" $BASE/build | jq
+   curl -s -H "$AUTH" $BASE/lint | jq
+
+4. Commit:
+   curl -s -X POST -H "$AUTH" -H "Content-Type: application/json" \
+     -d '{"message": "fix: beskrivelse"}' $BASE/git/commit | jq
+
+5. Push:
+   curl -s -X POST -H "$AUTH" $BASE/git/push | jq
+
+KOMMANDOER:
+- Git: /git/status, /git/commit, /git/push, /git/pull, /git/log
+- Files: /file/read?path=..., /file/write, /file/list?path=...
+- Build: /build, /lint, /typecheck
+- Supabase: /supabase/migration/list, /supabase/migration/push
+- Stripe: /stripe/products, /stripe/prices
+- Search: /search/code?pattern=...&q=...
+
+REGLER:
+- ALLTID sjekk git status først
+- ALLTID build før commit
+- ALLTID curl via API, ikke direkte git

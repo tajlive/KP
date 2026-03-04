@@ -1,0 +1,50 @@
+{
+  "title": "Admin Dashboard",
+  "verifying": "Verifying access...",
+  "noAccess": {
+    "title": "No Access",
+    "backToHome": "Back to Home"
+  },
+  "overview": "Overview",
+  "users": "Users",
+  "students": "Students",
+  "tradeSync": "Trade Sync",
+  "system": "System",
+  "settings": "Settings",
+  "loggedInAs": "Logged in as",
+  "logout": "Log out",
+  "header": {
+    "subtitle": "{email} • Campaign Overview"
+  },
+  "campaign": {
+    "title": "Campaign Goals",
+    "spotsFilled": "{total} of 100 spots filled"
+  },
+  "stats": {
+    "totalRegistered": "Total Registered",
+    "spotsLeft": "{remaining} spots remaining",
+    "signedUpToday": "Signed Up Today",
+    "last24Hours": "Last 24 hours",
+    "totalClicks": "Total Clicks",
+    "allChannels": "From all channels",
+    "conversion": "Conversion",
+    "clickToReg": "Click → Registration",
+    "activeUsers": "Active Users"
+  },
+  "trafficSources": {
+    "title": "Traffic Sources",
+    "direct": "Direct"
+  },
+  "funnel": {
+    "title": "Conversion",
+    "falloff": "{count} falloff ({rate}%)",
+    "noData": "No data yet"
+  },
+  "footer": {
+    "lastUpdated": "Last updated: {date}",
+    "fallbackData": "⚠️ Live data unavailable, showing cache"
+  },
+  "search": {
+    "placeholder": "Search users..."
+  }
+}

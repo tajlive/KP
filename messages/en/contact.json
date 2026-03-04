@@ -1,0 +1,28 @@
+{
+  "title": "Contact us",
+  "description": "Contact us",
+  "subtitle": "Have a question? We are here to help you.",
+  "form": {
+    "title": "Send us a message",
+    "name": "Name",
+    "namePlaceholder": "Your full name",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "message": "Message",
+    "messagePlaceholder": "Write your message here...",
+    "submit": "Send message"
+  },
+  "info": {
+    "emailTitle": "Email support",
+    "emailResponse": "We usually respond within 24 hours.",
+    "chatTitle": "Live chat",
+    "chatHours": "Available Mon-Fri, 09:00-17:00",
+    "startChat": "Start chat"
+  },
+  "emailDesc": "Send us an email and we will respond as soon as possible.",
+  "linksTitle": "Useful links",
+  "aboutLink": "About us",
+  "pricingLink": "Pricing",
+  "privacyLink": "Privacy",
+  "termsLink": "Terms"
+}

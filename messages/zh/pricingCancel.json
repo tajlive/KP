@@ -1,0 +1,16 @@
+{
+  "title": "付款已取消",
+  "subtitle": "付款未完成",
+  "message": "看起来您取消了付款。别担心 - 您可以随时重试。",
+  "backButton": "返回价格页面",
+  "faqTitle": "常见问题",
+  "whyFailedQ": "为什么付款失败？",
+  "whyFailedA": "可能有多种原因：卡片被拒绝、资金不足或技术错误。",
+  "chargedQ": "我被收费了吗？",
+  "chargedA": "没有，在完成付款之前不会收取任何费用。",
+  "trialQ": "我可以免费试用吗？",
+  "trialA": "是的，我们为选定方案提供试用期。",
+  "tryAgain": "重试",
+  "backHome": "返回首页",
+  "needHelp": "需要帮助？请联系我们"
+}

@@ -1,0 +1,26 @@
+{
+  "title": "Klarpakke - Learn Trading in English | Paper Trading & AI Coach",
+  "description": "Structured trading courses in English. Paper trading simulator with 1M virtual capital. AI coach 24/7. Beta price: €29 (was €59). Only 50 spots.",
+  "ogTitle": "Klarpakke - Learn Trading",
+  "ogDescription": "Beta launch: €29 (was €59). Only 50 spots left!",
+  "courses": {
+    "title": "Courses - Learn crypto trading",
+    "description": "Explore our courses from beginner to advanced level. Master crypto trading in 4 weeks."
+  },
+  "about": {
+    "title": "About Us | Klarpakke",
+    "description": "Learn more about Klarpakke - Norway's first crypto education platform with simulated trading and auto-trading based on 3 years of testing."
+  },
+  "contact": {
+    "title": "Contact | Klarpakke",
+    "description": "Contact Klarpakke for questions about crypto trading, auto-trading or our courses."
+  },
+  "liveTrading": {
+    "title": "Live Trading | Klarpakke",
+    "description": "Execute live trades with real-time signals and automated strategies."
+  },
+  "login": {
+    "title": "Login | Klarpakke",
+    "description": "Sign in to your Klarpakke account."
+  }
+}

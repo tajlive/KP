@@ -1,0 +1,37 @@
+START run-all.sh - 20260125T085709Z
+1) Oppdaterer repo...
+From https://github.com/tombomann/klarpakke
+ - [deleted]         (none)     -> origin/auto/klarpakke-20260123-144735
+ - [deleted]         (none)     -> origin/auto/klarpakke-20260123-150037
+ - [deleted]         (none)     -> origin/auto/klarpakke-20260123-150358
+ - [deleted]         (none)     -> origin/fix/vercel-ci-and-deploy
+Already on 'main'
+M	.gitignore
+M	klarpakke
+Your branch is up to date with 'origin/main'.
+From https://github.com/tombomann/klarpakke
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+2) Installerer root dependencies (hvis package.json finnes)...
+
+up to date, audited 174 packages in 2s
+
+31 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+3) Installerer app dependencies og kjører tester...
+
+added 368 packages, and audited 369 packages in 16s
+
+142 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Kjører test-suite (app)...
+npm error Missing script: "test"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /Users/taj/.npm/_logs/2026-01-25T08_57_31_611Z-debug-0.log
+Tester feilet. Avbryter. Se /Users/taj/klarpakke/logs/run-all-20260125T085709Z.log

@@ -1,0 +1,40 @@
+{
+  "quote": {
+    "title": "From \"Hope\" to \"Structure\"",
+    "text": "In 2021, I lost money because I traded on emotions. I built Klarpakke to remove emotions from the equation. By using software to follow rules, and paper trading to prove skills first, we have removed the biggest traps for new traders.",
+    "author": "Tom Jensen",
+    "role": "Founder & Developer"
+  },
+  "title": "About Us",
+  "heroTitle": "From hard lessons to",
+  "heroTitleHighlight": "Financial Freedom",
+  "heroDescription": "My journey from losing everything to cracking the code – and how you can do the same.",
+  "story": {
+    "part1": {
+      "title": "The Expensive Lesson",
+      "content": "Six years ago, I lost 65,000 NOK on crypto. It was a brutal wake-up call. I blindly trusted \"experts\" who promised the moon but delivered nothing but fees and empty promises. Money drained away, and I was left with a costly but valuable lesson: Trust no one but yourself."
+    },
+    "part2": {
+      "title": "The Turning Point",
+      "content": "Two years ago, I took control. I immersed myself in advanced programming and AI, developing my own auto-trader. I started small, tested, failed, and adjusted. As the algorithms began delivering consistent results, I gained the confidence to scale up."
+    },
+    "part3": {
+      "title": "From Gambling to Strategy",
+      "content": "I quit betting, the lottery, and traditional savings accounts. All my focus went into the system. When the results exceeded my expectations, I started sharing the tool with friends and family. The response was overwhelming. It became clear that there was a need for an honest, transparent gateway to crypto for everyday people."
+    },
+    "part4": {
+      "title": "Klarpakke is Born",
+      "content": "I gathered a team of experts, developers, and traders with a simple goal: To make advanced technology accessible to everyone, without hidden agendas. Thus, Klarpakke University was born – a place where knowledge and integrity come first."
+    }
+  },
+  "philosophy": {
+    "title": "Our Philosophy",
+    "noPyramid": "Total Transparency",
+    "noPyramidDesc": "No pyramid schemes, no recruiting, no secrets. We believe honesty is the only sustainable policy.",
+    "educationFirst": "Knowledge First",
+    "educationFirstDesc": "We give you the tools, but you're in the driver's seat. Our auto-trader does the heavy lifting, but your understanding ensures success.",
+    "patience": "Long-term Vision",
+    "patienceDesc": "Crypto isn't a get-rich-quick scheme. We aim for steady, sustainable growth – 0.2% daily profit beats 100% risk. That's the power of compound interest.",
+    "cta": "Join the journey!"
+  }
+}

@@ -1,0 +1,255 @@
+"use client";
+
+import { createClient } from "@/lib/utils";
+import {
+  Activity,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  RefreshCw,
+  Server,
+  Shield,
+  UserCog,
+  Users,
+  X,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const t = useTranslations("admin");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Extract locale from pathname
+  const locale = pathname.split("/")[1] || "no";
+
+  useEffect(() => {
+    const checkAdmin = async (retryCount = 0) => {
+      const MAX_RETRIES = 3;
+      const RETRY_DELAY = 500; // ms
+
+      try {
+        console.info(
+          `[Admin Layout] Checking admin access (attempt ${retryCount + 1})...`,
+        );
+        const supabase = createClient();
+
+        // First try to get session (more reliable than getUser)
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error("[Admin Layout] Session error:", sessionError);
+        }
+
+        // If no session, try getUser as fallback
+        let user = session?.user;
+        if (!user) {
+          const {
+            data: { user: authUser },
+          } = await supabase.auth.getUser();
+          user = authUser;
+        }
+
+        if (!user) {
+          console.info("[Admin Layout] No user found");
+          if (retryCount < MAX_RETRIES) {
+            console.info(`[Admin Layout] Retrying in ${RETRY_DELAY}ms...`);
+            setTimeout(() => checkAdmin(retryCount + 1), RETRY_DELAY);
+            return;
+          }
+          console.info("[Admin Layout] Redirecting to login");
+          const supportedLocales = ["no", "en", "th", "zh"];
+          const safeLocale = supportedLocales.includes(locale) ? locale : "no";
+          router.push(
+            `/${safeLocale}/innlogging?error=admin_auth_required&next=${encodeURIComponent(pathname)}`,
+          );
+          return;
+        }
+
+        console.info("[Admin Layout] User found:", user.email);
+        setUserEmail(user.email || "");
+
+        // ADMIN EMAIL WHITELIST - Backup if database check fails
+        const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
+
+        // Check if user is in whitelist
+        const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
+
+        // Check role in public.profiles
+        const { data: userData, error } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("user_id", user.id)
+          .single();
+
+        if (error) {
+          console.error("[Admin Layout] Profile fetch error:", error);
+        }
+
+        console.info(
+          "[Admin Layout] User role:",
+          userData?.role,
+          "| Whitelisted:",
+          isWhitelisted,
+        );
+
+        // Allow access if either role is admin OR email is whitelisted
+        const hasAdminAccess = userData?.role === "admin" || isWhitelisted;
+
+        if (!hasAdminAccess) {
+          console.info(
+            "[Admin Layout] User is not admin, redirecting to dashboard",
+          );
+          router.push(`/${locale}/dashboard?error=not_admin`);
+          return;
+        }
+
+        // If whitelisted but role is not admin, try to update it
+        if (isWhitelisted && userData?.role !== "admin") {
+          console.info(
+            "[Admin Layout] User whitelisted but role not set, updating...",
+          );
+          await supabase
+            .from("profiles")
+            .update({ role: "admin", updated_at: new Date().toISOString() })
+            .eq("user_id", user.id);
+        }
+
+        console.info("[Admin Layout] Admin access granted");
+        setIsAdmin(true);
+        setLoading(false);
+      } catch (err) {
+        console.error("[Admin Layout] Unexpected error:", err);
+        if (retryCount < MAX_RETRIES) {
+          setTimeout(() => checkAdmin(retryCount + 1), RETRY_DELAY);
+          return;
+        }
+        router.push(`/${locale}/innlogging?error=admin_error`);
+      }
+    };
+
+    checkAdmin();
+  }, [router, pathname]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) return null;
+
+  const navItems = [
+    { href: `/${locale}/admin`, label: t("overview"), icon: LayoutDashboard },
+    { href: `/${locale}/admin/users`, label: t("users"), icon: UserCog },
+    { href: `/${locale}/admin/students`, label: t("students"), icon: Users },
+    {
+      href: `/${locale}/admin/sync-status`,
+      label: t("tradeSync"),
+      icon: RefreshCw,
+    },
+    {
+      href: `/${locale}/admin/auto-trading/sessions`,
+      label: "Trading Bots",
+      icon: Activity,
+    },
+    { href: `/${locale}/admin/system`, label: t("system"), icon: Server },
+    { href: `/${locale}/admin/settings`, label: t("settings"), icon: Shield },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-950 flex">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-slate-800 rounded-lg text-white"
+        aria-label="Toggle menu"
+      >
+        {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
+
+      {/* Sidebar - Desktop: always visible, Mobile: conditional */}
+      <aside 
+        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-200 lg:transform-none ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        <div className="p-6 border-b border-slate-800">
+          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+            <span className="bg-blue-600 rounded p-1">🛡️</span>
+            Admin
+          </h1>
+        </div>
+
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
+                  isActive
+                    ? "bg-blue-600/10 text-blue-400"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Logg ut - nederst i sidebar */}
+        <div className="p-4 border-t border-slate-800 space-y-2">
+          <div className="px-4 py-2">
+            <p className="text-xs text-slate-500">{t("loggedInAs")}</p>
+            <p className="text-sm text-slate-300 truncate">{userEmail}</p>
+          </div>
+          <button
+            onClick={async () => {
+              const supabase = createClient();
+              await supabase.auth.signOut();
+              router.push(`/${locale}/innlogging`);
+            }}
+            className="flex items-center gap-3 px-4 py-3 bg-yellow-600 text-white font-semibold rounded-full hover:bg-yellow-700 text-sm w-full transition-colors min-h-[44px]"
+          >
+            <LogOut className="w-5 h-5" />
+            {t("logout")}
+          </button>
+        </div>
+      </aside>
+
+      {/* Overlay for mobile */}
+      {mobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto min-w-0">
+        <div className="p-4 lg:p-8 pt-16 lg:pt-8">{children}</div>
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,42 @@
+{
+  "success": {
+    "loadingTitle": "Processing payment...",
+    "loadingMessage": "Please wait...",
+    "verifying": "Verifying payment...",
+    "invalidSession": "Invalid session ID",
+    "loginRequired": "You must be logged in to view this page",
+    "title": "Thank you for your purchase!",
+    "messageConfirmed": "Payment confirmed! You now have access to all features in your plan.",
+    "messagePending": "Payment received! It may take a moment for your subscription to activate.",
+    "messageFallback": "Thank you for your payment! Your subscription will be active shortly.",
+    "goToDashboard": "Go to Dashboard",
+    "backToHome": "Back to Home",
+    "description": "A welcome email and your personal trading guide are on their way to your inbox. Let's start the journey with {tier}!",
+    "cta": "Go to Dashboard",
+    "viewProgram": "View Study Program",
+    "errorTitle": "Something went wrong",
+    "backToPricing": "Back to Pricing"
+  },
+  "cancel": {
+    "title": "Payment Canceled",
+    "subtitle": "You canceled the payment. No worries - you can try again anytime!",
+    "faqTitle": "Common Questions",
+    "whyFailedQ": "Why didn't the payment work?",
+    "whyFailedA": "There might be temporary issues with your bank or card. Try again or use another card.",
+    "chargedQ": "Will I be charged?",
+    "chargedA": "No, you are only charged when payment is completed. No hidden fees.",
+    "trialQ": "Can I try for free first?",
+    "trialA": "Yes! All paid plans include a 7-day free trial. You can cancel anytime.",
+    "tryAgain": "Try Again",
+    "backHome": "Back to Home",
+    "needHelp": "Need help? Contact us at"
+  },
+  "title": "Pricing",
+  "subtitle": "Choose the plan that suits you",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+  "savePercent": "Save {percent}%",
+  "perMonth": "per month",
+  "getStarted": "Get started",
+  "mostPopular": "Most Popular"
+}

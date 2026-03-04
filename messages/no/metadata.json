@@ -1,0 +1,26 @@
+{
+  "title": "Klarpakke - Lær Trading på Norsk | Paper Trading & AI-Coach",
+  "description": "Strukturerte trading-kurs på norsk. Paper trading simulator med 1M kr virtuell kapital. AI-coach 24/7. Beta-pris: 249 kr (var 499 kr). Kun 50 plasser.",
+  "ogTitle": "Klarpakke - Lær Trading på Norsk",
+  "ogDescription": "Beta-lansering: 249 kr (var 499 kr). Kun 50 plasser igjen!",
+  "courses": {
+    "title": "Kurs - Lær krypto-trading",
+    "description": "Utforsk våre kurs fra nybegynner til avansert nivå. Master krypto-trading på 4 uker."
+  },
+  "about": {
+    "title": "Om Oss | Klarpakke",
+    "description": "Lær mer om Klarpakke - Norges første krypto-utdanningsplattform med simulert trading og auto-trading basert på 3 år med testing."
+  },
+  "contact": {
+    "title": "Kontakt | Klarpakke",
+    "description": "Kontakt Klarpakke for spørsmål om krypto-trading, auto-trading eller våre kurs."
+  },
+  "liveTrading": {
+    "title": "Live Trading | Klarpakke",
+    "description": "Utfør live trades med sanntidssignaler og automatiserte strategier."
+  },
+  "login": {
+    "title": "Innlogging | Klarpakke",
+    "description": "Logg inn på din Klarpakke-konto."
+  }
+}

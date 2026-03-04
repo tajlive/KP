@@ -1,0 +1,22 @@
+{
+  "loading": "Laster...",
+  "error": "En feil oppstod",
+  "success": "Suksess!",
+  "back": "Tilbake",
+  "next": "Neste",
+  "close": "Lukk",
+  "save": "Lagre",
+  "cancel": "Avbryt",
+  "delete": "Slett",
+  "confirm": "Bekreft",
+  "search": "Søk",
+  "noResults": "Ingen resultater funnet",
+  "tryAgain": "Prøv igjen",
+  "learnMore": "Les mer",
+  "seeAll": "Se alle",
+  "comingSoon": "Kommer snart",
+  "edit": "Rediger",
+  "update": "Oppdater",
+  "submit": "Send inn",
+  "refresh": "Oppdater side"
+}

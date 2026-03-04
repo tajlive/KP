@@ -1,0 +1,63 @@
+# Dependabot Configuration - Smart Mode
+# Kun sikkerhet + patch/minor updates, ignorerer major breaking changes
+# Oppdatert: 2026-02-20
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    
+    # Månedlig sjekk (ikke daglig støy)
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Oslo"
+    
+    # Maks 3 åpne PRs samtidig
+    open-pull-requests-limit: 3
+    
+    # Gruppert i én PR per kategori
+    groups:
+      # Produksjonsavhengigheter: kun patch/minor
+      production-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
+      
+      # Development dependencies: kun patch/minor
+      development-updates:
+        dependency-type: "development"
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
+    
+    # VIKTIG: Ignorer alle major-oppdateringer automatisk
+    # (Next.js 15→16, ESLint 8→10, etc. gjøres manuelt)
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    
+    # Commit messages som følger Conventional Commits
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    
+    # PR labels
+    labels:
+      - "dependencies"
+      - "automated"
+    
+    # Rebase strategy for å unngå merge-konflikter
+    rebase-strategy: "auto"
+    
+    # Tillat Dependabot å oppdatere lockfile
+    versioning-strategy: "lockfile-only"
+
+# Sikkerhetsvarsler håndteres alltid umiddelbart
+# (uavhengig av schedule - GitHub Security Alerts)

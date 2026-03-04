@@ -1,0 +1,218 @@
+# =============================================================================
+# DEPENDENCIES
+# =============================================================================
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# =============================================================================
+# TESTING
+# =============================================================================
+/coverage
+*.lcov
+.nyc_output
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/tests/e2e/test-results/
+
+# =============================================================================
+# NEXT.JS BUILD OUTPUT
+# =============================================================================
+/.next/
+/.next/cache/
+/.next/standalone/
+/out/
+/build
+/dist
+/.open-next/
+
+# =============================================================================
+# ENVIRONMENT VARIABLES (KRITISK - ALDRI COMMIT!)
+# =============================================================================
+.env
+.env*.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+.env.vercel
+.env.vercel.*
+.env.vercel.production
+
+# =============================================================================
+# SUPABASE
+# =============================================================================
+.supabase/
+supabase/.branches/
+supabase/.temp/
+
+# =============================================================================
+# MCP SERVER BUILD ARTIFACTS
+# =============================================================================
+klarpakke-mcp/node_modules/
+klarpakke-mcp/dist/
+mcp-server/node_modules/
+mcp-server/dist/
+
+# =============================================================================
+# VERCEL / CLOUDFLARE
+# =============================================================================
+.vercel/*
+!.vercel/project.json
+.vercel.json
+.wrangler/
+.dev.vars
+workers/.wrangler/
+workers/dist/
+
+# =============================================================================
+# TYPESCRIPT
+# =============================================================================
+*.tsbuildinfo
+next-env.d.ts
+
+# =============================================================================
+# OS GENERATED FILES
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# =============================================================================
+# IDEs AND EDITORS
+# =============================================================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# =============================================================================
+# LOGS
+# =============================================================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+logs/
+
+# =============================================================================
+# SECRETS AND KEYS (ALDRI COMMIT!)
+# =============================================================================
+*_secret_key*
+*_api_key*
+*.pem
+*.key
+*.crt
+secrets.json
+secrets.txt
+*.secrets
+.env.key
+.env.local.key
+
+# =============================================================================
+# CLOUDFLARE WORKERS
+# =============================================================================
+workers/dist/
+workers/.wrangler/
+.dev.vars
+wrangler.toml
+!wrangler.toml.example
+
+# =============================================================================
+# AI/ML MODEL FILES
+# =============================================================================
+*.pth
+*.onnx
+*.h5
+*.pkl
+*.model
+/models/
+/checkpoints/
+*.weights
+
+# =============================================================================
+# BACKUP AND ARCHIVE FILES
+# =============================================================================
+*.bak
+*.backup
+*.tar.gz
+backup-*.tar.gz
+klarpakke-backup-*.tar.gz
+delete-all-deployments.zip
+*.zip
+*.tar
+*.rar
+
+# =============================================================================
+# CACHE FILES
+# =============================================================================
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.turbo
+*.cache
+
+# =============================================================================
+# MISCELLANEOUS
+# =============================================================================
+*.local
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# LARGE MEDIA FILES (USE CDN OR LFS INSTEAD)
+# =============================================================================
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.flv
+assets/videos/
+assets/screenshots/
+
+# =============================================================================
+# PROJECT SPECIFIC
+# =============================================================================
+klarpakke-mcp-server/.env
+klarpakke-mcp-server/node_modules/
+*.mcp-server.log
+.mcp-cache/
+public/favicon.png
+
+# MCP Autentisering
+.env.mcp.local
+*.mcp.local
+.env.local
+.env*.local
+allure-report/
+allure-results/
+.env.bak
+*.bak
+.env.bak
+*.bak
+.vercel

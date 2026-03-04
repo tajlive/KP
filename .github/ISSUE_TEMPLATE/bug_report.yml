@@ -1,0 +1,88 @@
+name: 🐛 Bug Report
+description: Rapporter en bug i Klarpakke
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Takk for at du rapporterer en bug i Klarpakke! 🚀
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Komponent
+      description: Hvilken del av Klarpakke påvirkes?
+      options:
+        - Paper Trading
+        - Auto-Trading
+        - AI Auto-Trading
+        - Dashboard
+        - Kursmoduler
+        - Autentisering
+        - Admin Dashboard
+        - Annet
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Beskrivelse
+      description: Beskriv buggen kort og presist
+      placeholder: Hva skjedde?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steg for å reprodusere
+      placeholder: |
+        1. Gå til...
+        2. Klikk på...
+        3. Se feil
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Forventet oppførsel
+      placeholder: Hva skulle skje?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Firefox
+        - Safari (iOS)
+        - Safari (macOS)
+        - Edge
+        - Annet
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Enhet
+      options:
+        - iPhone
+        - Android
+        - Desktop (Mac)
+        - Desktop (Windows)
+        - Desktop (Linux)
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Legg ved screenshots hvis relevant

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Klarpakke Logo: K as rising graph -->
+  <defs>
+    <linearGradient id="graphGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0052FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0080FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Left vertical line of K -->
+  <rect x="15" y="20" width="8" height="60" fill="url(#graphGradient)" rx="2"/>
+  
+  <!-- Rising graph line (top part of K) -->
+  <path d="M 23 35 L 45 25 L 65 15 L 85 10" stroke="url(#graphGradient)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Downward line (bottom part of K) -->
+  <path d="M 35 50 L 55 65 L 75 80" stroke="url(#graphGradient)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Upward arrow at top -->
+  <path d="M 85 10 L 78 12 L 82 18 Z" fill="#0052FF"/>
+</svg>

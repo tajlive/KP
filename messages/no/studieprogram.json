@@ -1,0 +1,101 @@
+{
+  "title": "Studieprogram",
+  "description": "Strukturerte læringsløp for trading",
+  "subtitle": "Velg et studieprogram og følg en strukturert vei til kunnskap.",
+  "beginner": "Nybegynner",
+  "intermediate": "Videregående",
+  "advanced": "Avansert",
+  "duration": "Varighet",
+  "modules": "Moduler",
+  "startProgram": "Start program",
+  "sectionTitle": "Velg din studieplan",
+  "disclaimer": "Prisene er i norske kroner og inkluderer MVA. Abonnement fornyes automatisk.",
+  "tiers": {
+    "student": {
+      "name": "Student",
+      "price": "0",
+      "period": "For alltid",
+      "description": "Start din reise uten risiko",
+      "badge": "🎓",
+      "cta": "Start gratis",
+      "requirement": "Ingen forkunnskaper kreves",
+      "features": [
+        "Full krypto-introduksjon",
+        "1 000 000 kr Paper Trading",
+        "Tilgang til Community",
+        "Markedsoppdateringer",
+        "500 KLT tokens ved registrering"
+      ]
+    },
+    "bachelor": {
+      "name": "Bachelor",
+      "price": "249",
+      "period": "per måned",
+      "description": "Bygg et solid fundament for fremtiden",
+      "badge": "📈",
+      "cta": "Velg Bachelor",
+      "requirement": "Anbefalt: Student fullført",
+      "features": [
+        "Alt i Student",
+        "Teknisk Analyse Masterclass",
+        "AI-Lærer (Krypto-Professor)",
+        "Ukentlige Live-Webinarer",
+        "1 000 KLT tokens/mnd"
+      ]
+    },
+    "master": {
+      "name": "Master",
+      "price": "499",
+      "period": "per måned",
+      "description": "Akselerer din vekst med autotrading",
+      "badge": "🏆",
+      "cta": "Velg Master",
+      "requirement": "Anbefalt: Bachelor fullført",
+      "features": [
+        "Alt i Bachelor",
+        "Automatisk Trading (3 strategier)",
+        "Live Trading på Binance",
+        "Kopiering av topp-tradere",
+        "Bachelor-sertifikat ved bestått eksamen",
+        "2 500 KLT tokens/mnd"
+      ]
+    },
+    "phd": {
+      "name": "PhD",
+      "price": "999",
+      "period": "per måned",
+      "description": "For seriøse tradere med avanserte strategier",
+      "badge": "🎯",
+      "cta": "Velg PhD",
+      "requirement": "Anbefalt: Master fullført",
+      "features": [
+        "Alt i Master",
+        "Ubegrenset autotrading-strategier",
+        "Porteføljeoptimalisering",
+        "Dedikert rådgiver",
+        "Master-sertifikat ved bestått eksamen",
+        "5 000 KLT tokens/mnd",
+        "Eksklusivt PhD-innhold"
+      ]
+    },
+    "professor": {
+      "name": "Professor",
+      "price": "1999",
+      "period": "per måned",
+      "description": "Det ultimate programmet for profesjonelle tradere",
+      "badge": "👑",
+      "cta": "Bli Professor",
+      "requirement": "Anbefalt: PhD fullført",
+      "features": [
+        "Alt i PhD",
+        "1:1 coaching med Tom Jensen",
+        "VIP-tilgang til alle funksjoner",
+        "Privat handelsstrategi",
+        "Professor-sertifikat",
+        "Alpha-gruppen (tidlig tilgang)",
+        "10 000 KLT tokens/mnd",
+        "Tidlig tilgang til nye funksjoner"
+      ]
+    }
+  }
+}
