@@ -41,7 +41,7 @@ export async function generateStaticParams() {
 }
 
 // Allow dynamic rendering for auth to work properly
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,

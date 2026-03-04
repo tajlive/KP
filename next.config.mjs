@@ -3,8 +3,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Vercel optimaliseringer
-  distDir: ".next",
+  // distDir removed to let Vercel handle output correctly
   // output removed - use default for Vercel App Router
 
   // Performance optimizations
