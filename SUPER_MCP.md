@@ -29,7 +29,37 @@ cp ~/Klarpakke/SUPER_MCP.md ~/Klarpakke/.kimi/mcp_config.json
 - [ ] Sjekk API health endpoint
 - [ ] Test autentisering
 
-### 🛡️ Level 3: Sikkerhet & Overvåking
+### 🧪 Level 4: Testing & QA
+- [ ] Kjør Playwright E2E tester
+- [ ] Generer Allure rapport
+- [ ] Verifiser testdekning
+- [ ] Sjekk performance metrics
+
+### 📊 Testing Kommandoer
+
+```bash
+# Kjør produksjons-tester
+cd ~/Klarpakke
+npm run test:e2e:report
+
+# Generer Allure rapport
+npm run allure:generate
+
+# Åpne rapport i nettleser
+npm run allure:open
+
+# Debug tester (vis nettleser)
+npx playwright test --headed
+```
+
+### 🎯 Kritiske Tester
+- ✅ Hovedside laster korrekt
+- ✅ API Health endpoint fungerer  
+- ✅ Autentisering - Login knapp finnes
+- ✅ Navigasjon - Alle hovedlenker fungerer
+- ✅ Responsiv design - Mobil visning
+- ✅ CSP Headers er satt
+- ✅ Performance - Core Web Vitals
 - [ ] Sett opp Sentry error tracking
 - [ ] Konfigurer CSP headers
 - [ ] Verifiser rate limiting
