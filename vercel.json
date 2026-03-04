@@ -1,8 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "npm run build",
+  "buildCommand": "next build",
   "installCommand": "npm install",
+  "outputDirectory": ".next",
   "regions": ["iad1"],
   "headers": [
     {
@@ -21,12 +22,6 @@
           "value": "1; mode=block"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/monitoring",
-      "destination": "https://o4504234567890123.ingest.sentry.io/api/4504234567890123/security/?sentry_key=XXX"
     }
   ]
 }
