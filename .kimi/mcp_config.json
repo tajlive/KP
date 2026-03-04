@@ -30,6 +30,38 @@
         }
       }
     },
+    "klarpakke-mac": {
+      "name": "Mac M1 SSH Tilgang",
+      "description": "SSH-tilgang til din Mac M1 for lokal testing",
+      "config": {
+        "sshKey": "~/.ssh/klarpakke_mac",
+        "defaultUser": "taj",
+        "defaultPort": 2222,
+        "setupGuide": "SSH_SETUP_MAC.md"
+      },
+      "commands": {
+        "mac-test": {
+          "description": "Test SSH tilkobling til Mac",
+          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac -o ConnectTimeout=10 {USER}@{HOST} 'echo \"✅ SSH fungerer! Hostname: $(hostname)\"'"
+        },
+        "mac-run": {
+          "description": "Kjør kommando på Mac",
+          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} '{COMMAND}'"
+        },
+        "mac-test-klarpakke": {
+          "description": "Kjør Klarpakke tester på Mac",
+          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} 'cd ~/Klarpakke && ./scripts/test-klarpakke.sh'"
+        },
+        "mac-deploy": {
+          "description": "Deploy fra Mac",
+          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} 'cd ~/Klarpakke && vercel --prod'"
+        },
+        "mac-status": {
+          "description": "Sjekk Mac status",
+          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} 'uptime && df -h /'"
+        }
+      }
+    },
     "klarpakke-testing": {
       "name": "Klarpakke Playwright/Allure Testing",
       "description": "E2E testing med Playwright og Allure rapportering",
