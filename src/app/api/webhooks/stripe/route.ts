@@ -195,7 +195,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const supabase = getSupabase();
-  const subscriptionId = (invoice as any).subscription as
+  const subscriptionId = (invoice as unknown).subscription as
     | string
     | undefined;
 
@@ -239,7 +239,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const supabase = getSupabase();
-  const subscriptionId = (invoice as any).subscription as
+  const subscriptionId = (invoice as unknown).subscription as
     | string
     | undefined;
   const customerId = invoice.customer as string | undefined;
@@ -290,9 +290,15 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       .update({
         status: subscription.status as unknown,
         cancel_at_period_end: subscription.cancel_at_period_end,
+<<<<<<< Updated upstream
         current_period_end: (subscription as unknown as { current_period_end?: number }).current_period_end
           ? new Date(
               (subscription as unknown as { current_period_end: number }).current_period_end * 1000,
+=======
+        current_period_end: (subscription as unknown).current_period_end
+          ? new Date(
+              (subscription as unknown).current_period_end * 1000,
+>>>>>>> Stashed changes
             ).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),
