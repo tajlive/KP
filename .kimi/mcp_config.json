@@ -58,10 +58,22 @@
           "description": "Kjør tester med debug (headed mode)",
           "command": "cd ~/Klarpakke && npx playwright test tests/e2e/klarpakke-production.spec.ts --headed"
         },
-        "test-ci": {
-          "description": "Kjør tester for CI (med retries)",
-          "command": "cd ~/Klarpakke && npx playwright test --reporter=allure-playwright,line --retries=2"
-        }
+        "auto-test-production": {
+          "description": "Automatisk testing via GitHub Actions",
+          "command": "cd ~/Klarpakke && gh workflow run playwright-allure.yml"
+        },
+        "auto-test-local": {
+          "description": "Kjør tester lokalt på Mac",
+          "command": "cd ~/Klarpakke && ./scripts/test-klarpakke.sh production"
+        },
+        "test-status": {
+          "description": "Sjekk status på siste test-kjøring",
+          "command": "cd ~/Klarpakke && gh run list --workflow=playwright-allure.yml --limit 5"
+        },
+        "test-report": {
+          "description": "Åpne siste Allure rapport",
+          "command": "open ~/Klarpakke/allure-report/index.html"
+        },
       }
     },
     "github-klarpakke": {
