@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "title": "Auto-Trading | Klarpakke - 3 Years of Testing",
+    "description": "Automated trading based on 3 years of testing and hard data. No hype, just results. Start risk-free with paper trading."
+  },
+  "hero": {
+    "badge": "Tested for 3 years with own money",
+    "titlePart1": "Advanced technology.",
+    "titlePart2": "Simple to use.",
+    "description": "We spent 3 years fine-tuning our algorithms. No \"Quantum AI\" or magic promises – just solid math and strict risk management that works 24/7.",
+    "ctaPrimary": "Start Paper Trading",
+    "ctaSecondary": "See results",
+    "stats": {
+      "profitLabel": "Total Profit (3 years)",
+      "profitSub": "Verified data",
+      "profitValue": "+142.5%"
+    }
+  },
+  "facts": {
+    "title": "Why Klarpakke?",
+    "subtitle": "The market is full of noise. We focus on facts.",
+    "fact1": {
+      "title": "3 Years of Data",
+      "desc": "We didn't launch yesterday. The algorithms have run through both bull and bear markets since 2021 to ensure robustness."
+    },
+    "fact2": {
+      "title": "No \"Black Box\"",
+      "desc": "You see exactly what happens. No hidden fees or magic formulas. You have full insight into every single trade via the dashboard."
+    },
+    "fact3": {
+      "title": "Optimized for Mobile",
+      "desc": "75% of our users trade on mobile. We built the entire experience to be lightning fast and clear on your phone."
+    }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "step1": {
+      "step": "01",
+      "title": "Paper Trading",
+      "desc": "You get 1 million play money. Test risk-free for 30 days."
+    },
+    "step2": {
+      "step": "02",
+      "title": "Micro Account",
+      "desc": "Start with max 1,000 NOK when you feel safe."
+    },
+    "step3": {
+      "step": "03",
+      "title": "Scale Up",
+      "desc": "Increase amount gradually as you see profit."
+    },
+    "step4": {
+      "step": "04",
+      "title": "Full Auto",
+      "desc": "Let the algorithms handle your portfolio 24/7."
+    }
+  },
+  "cta": {
+    "title": "Ready to test the solution?",
+    "desc": "It costs nothing to try Paper Trading. See for yourself why our technology is better than the market.",
+    "button": "Create free account",
+    "subtext": "No credit card required. Start in 1 minute."
+  }
+}

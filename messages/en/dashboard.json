@@ -1,0 +1,217 @@
+{
+  "title": "Dashboard",
+  "welcomeBack": "Welcome back 👋",
+  "loading": "Loading dashboard...",
+  "klt": {
+    "title": "Klarpakke Token (KLT)",
+    "founderNumber": "Founder Student #{number}",
+    "yourBalance": "Your Balance",
+    "founderBenefits": {
+      "title": "Founder Benefits",
+      "desc": "Guaranteed 10,000 KLT for the first 100 students (0.1% of total supply)."
+    },
+    "learnEarn": {
+      "title": "Learn & Earn",
+      "desc": "Get rewarded for every lesson you complete and every quiz you pass."
+    },
+    "futureValue": {
+      "title": "Future Value",
+      "desc": "KLT can be used to unlock advanced trading algorithms and reduce fees."
+    },
+    "readMore": "Read more about the KLT ecosystem"
+  },
+  "overview": "Overview",
+  "portfolio": "Portfolio",
+  "trading": "Trading",
+  "activity": "Activity",
+  "settings": "Settings",
+  "logout": "Log out",
+  "totalValue": "Total Value",
+  "totalProfit": "Total Profit",
+  "dailyChange": "Daily Change",
+  "activeSignals": "Active Signals",
+  "newToday": "new today",
+  "recentActivity": "Recent Activity",
+  "portfolioComingSoon": "Portfolio functionality coming soon!",
+  "tradingComingSoon": "Trading functionality coming soon!",
+  "activityComingSoon": "Activity log coming soon!",
+  "profileSettings": "Profile Settings",
+  "welcomeBack": "Welcome back! Here is your real-time status.",
+  "positions": "Positions",
+  "marketPerformance": "Market Performance",
+  "quickLinks": "Quick Links",
+  "startTrading": "Start Trading",
+  "demoSimulator": "Demo Simulator",
+  "email": "Email",
+  "name": "Name",
+  "namePlaceholder": "Your name",
+  "winRate": "Win Rate",
+  "totalTrades": "Total Trades",
+  "price": "Price",
+  "amount": "Amount",
+  "profit": "Profit",
+  "loss": "Loss",
+  "recentTrades": "Recent Trades",
+  "noTrades": "No trades yet. Click \"Sync Binance\" to load your Binance trades.",
+  "bought": "Bought",
+  "sold": "Sold",
+  "binanceCard": {
+    "title": "Binance API",
+    "subtitle": "Connect your Binance account",
+    "description": "Connect to Binance via API for live trading and portfolio overview. We only require read-only access.",
+    "button": "Connect Binance"
+  },
+  "adminCard": {
+    "title": "Admin Panel",
+    "subtitle": "System Administration",
+    "description": "Manage users, view system status, and administer the platform.",
+    "button": "Open Admin Panel"
+  },
+  "activityPage": {
+    "title": "Activity",
+    "subtitle": "Your latest trades and transactions."
+  },
+  "portfolioPage": {
+    "title": "My Portfolio",
+    "subtitle": "Overview of your active assets.",
+    "totalAssets": "TOTAL: {count} ASSETS",
+    "mainHolding": "Main Holding",
+    "balance": "Balance",
+    "noAssets": {
+      "title": "No active coins",
+      "description": "You have no active assets in your portfolio yet. Start trading to see them here!",
+      "button": "Start your first trade"
+    }
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Manage your account and personal preferences.",
+    "personalInfo": "Personal Information",
+    "email": "Email",
+    "emailNote": "Email cannot be changed manually.",
+    "fullName": "Full Name",
+    "namePlaceholder": "Your name",
+    "profileUpdated": "Profile updated!",
+    "saveChanges": "Save changes",
+    "notifications": "Notifications",
+    "notificationsComingSoon": "Notification management coming in a later update.",
+    "security": "Security",
+    "securityDesc": "Two-factor authentication and security settings."
+  },
+  "orderHistory": {
+    "loading": "Loading order history...",
+    "noOrders": "No orders found.",
+    "date": "Date",
+    "pair": "Pair",
+    "side": "Side",
+    "price": "Price",
+    "amount": "Amount",
+    "total": "Total (NOK)",
+    "buy": "BUY",
+    "sell": "SELL"
+  },
+  "welcome": "Welcome to Klarpakke",
+  "topBar": {
+    "myOverview": "My Overview",
+    "systemOnline": "System Online",
+    "allSystemsOperational": "All systems operational",
+    "systemStatus": "System Status"
+  },
+  "statusDesc": "System status updated live",
+  "stats": {
+    "totalValue": "Total Value",
+    "totalValueDesc": "Total portfolio value",
+    "activePositions": "Active Positions",
+    "activePositionsDesc": "Number of open trades",
+    "todayPnL": "Today's P/L",
+    "todayPnLDesc": "Profit/loss today",
+    "winRate": "Win Rate",
+    "winRateDesc": "Percentage of successful trades",
+    "noActivePositions": "No active positions",
+    "waitingForData": "Waiting for data...",
+    "readyToTrade": "Ready to trade",
+    "locked": "Locked",
+    "paperTradingFirst": "Start with paper trading first"
+  },
+  "actions": {
+    "recommendedStart": "Recommended Start",
+    "recommendedStartDesc": "Best way to get started",
+    "simulatorTitle": "Paper Trading Simulator",
+    "simulatorDesc": "Practice with no risk using virtual capital",
+    "goToSimulator": "Start Simulator",
+    "goToCourses": "Go to Courses",
+    "viewPositions": "View Positions",
+    "newTrade": "New Trade",
+    "connectExchange": "Connect Exchange",
+    "manageAccount": "Manage Account"
+  },
+  "learningJourney": {
+    "title": "Your Learning Journey",
+    "subtitle": "The path to profitable trading",
+    "description": "Follow our structured learning plan to master trading",
+    "youAreHere": "You are here",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "locked": "Locked",
+    "notStarted": "Not started",
+    "paperTrading": "Paper Trading",
+    "paperDesc": "Practice with virtual capital",
+    "microAccount": "Micro Account (10–100 USD)",
+    "microDesc": "Start with real money, low risk",
+    "standardAccount": "Standard Account",
+    "standardDesc": "Scale up capital when ready",
+    "autoTrading": "Auto Trading",
+    "autoTradingDesc": "Let AI trade for you",
+    "advancedStrategies": "Advanced Strategies",
+    "advancedDesc": "Master complex techniques"
+  },
+  "coach": {
+    "title": "AI Trading Coach",
+    "subtitle": "Your personal trading assistant",
+    "description": "Get real-time advice, analysis, and answers to your questions",
+    "placeholder": "Ask me about trading, strategies, or the market...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "initialDefault": "Hi! I'm your AI trading coach. What would you like to know today?",
+    "examples": {
+      "title": "Example questions:",
+      "q1": "What's a good entry point for BTC right now?",
+      "q2": "Explain support and resistance",
+      "q3": "How do I set a stop loss?",
+      "q4": "Which strategy suits beginners?"
+    }
+  },
+  "quickStats": {
+    "title": "Quick Overview",
+    "balance": "Balance",
+    "equity": "Equity",
+    "margin": "Margin",
+    "freeMargin": "Free Margin",
+    "marginLevel": "Margin Level",
+    "drawdown": "Drawdown"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No new notifications",
+    "markAllRead": "Mark all as read",
+    "settings": "Notification settings"
+  },
+  "errors": {
+    "loadingFailed": "Failed to load data",
+    "connectionError": "Connection error",
+    "retry": "Try again",
+    "contactSupport": "Contact support if the problem persists"
+  },
+  "sidebar": {
+    "overview": "Overview",
+    "portfolio": "Portfolio",
+    "trading": "Trading",
+    "liveTrading": "Live Trading",
+    "binanceApi": "Binance API",
+    "activity": "Activity",
+    "taxReport": "Tax Report",
+    "settings": "Settings",
+    "admin": "Admin",
+    "logout": "Log out"
+  }
+}

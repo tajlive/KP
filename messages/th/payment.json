@@ -1,0 +1,16 @@
+{
+  "chooseMethod": "เลือกวิธีการชำระเงิน",
+  "vipps": "Vipps",
+  "vippsDescription": "รวดเร็วสำหรับลูกค้านอร์เวย์",
+  "card": "บัตร",
+  "cardDescription": "Visa, Mastercard, ฯลฯ",
+  "or": "หรือ",
+  "payWithCard": "ชำระด้วยบัตร",
+  "securePayment": "การชำระเงินที่ปลอดภัย Vipps สำหรับลูกค้านอร์เวย์ บัตรสำหรับต่างชาติ",
+  "back": "กลับ",
+  "loading": "กำลังโหลด...",
+  "errors": {
+    "checkout_failed": "ไม่สามารถเริ่มการชำระเงินได้",
+    "unexpected": "ไม่สามารถเริ่มการชำระเงินได้ กรุณาลองอีกครั้ง"
+  }
+}

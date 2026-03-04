@@ -1,0 +1,16 @@
+{
+  "product": "Product",
+  "company": "Company",
+  "legal": "Legal",
+  "tagline": "Norwegian crypto education. Learn without risk.",
+  "copyright": "Klarpakke. Norwegian crypto education.",
+  "disclaimer": "⚠️ Klarpakke provides education and paper trading with virtual money. We do not provide investment advice. Cryptocurrency is volatile and involves risk. Paper trading results do not reflect future returns.",
+  "links": {
+    "courses": "Courses",
+    "pricing": "Pricing",
+    "about": "About Us",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  }
+}

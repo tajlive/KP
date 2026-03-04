@@ -1,0 +1,35 @@
+{
+  "title": "Auto-Trading | Klarpakke - 3 år med testing",
+  "description": "Automatisert trading basert på 3 år med testing og harde data. Ikke hype, bare resultater. Start risikofritt med paper trading.",
+  "courses": {
+    "title": "Kurs - Lær krypto-trading",
+    "description": "Utforsk våre kurs fra nybegynner til avansert nivå. Master krypto-trading på 4 uker."
+  },
+  "about": {
+    "title": "Om Oss | Klarpakke",
+    "description": "Lær mer om Klarpakke - Norges første krypto-utdanningsplattform med simulert trading og auto-trading basert på 3 år med testing."
+  },
+  "contact": {
+    "title": "Kontakt | Klarpakke",
+    "description": "Kontakt Klarpakke for spørsmål om krypto-trading, auto-trading eller våre kurs."
+  },
+  "liveTrading": {
+    "title": "Live Trading | Klarpakke",
+    "description": "Utfør live trades med sanntidssignaler og automatiserte strategier."
+  },
+  "login": {
+    "title": "Innlogging | Klarpakke",
+    "description": "Logg inn på din Klarpakke-konto."
+  },
+  "loginDescription": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, paper trading og automatiserte signaler.",
+  "coursesDescription": "Lær trading fra grunnen av med våre strukturerte krypto-kurs på norsk.",
+  "pricingDescription": "Se våre prisplaner for Klarpakke Universitet. Start gratis med paper trading i dag.",
+  "pricing": {
+    "title": "Priser | Klarpakke",
+    "description": "Velg riktig abonnement for din krypto-reise."
+  },
+  "autoTrade": {
+    "title": "Auto-Trading | Klarpakke",
+    "description": "Automatisert trading basert på 3 år med testing og harde data."
+  }
+}

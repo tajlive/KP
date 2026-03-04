@@ -1,0 +1,17 @@
+{
+  "title": "付款成功！",
+  "subtitle": "欢迎成为会员",
+  "message": "感谢您的购买！您现在可以访问所有会员功能。",
+  "dashboardButton": "前往仪表板",
+  "verifying": "正在验证付款...",
+  "invalidSession": "无效会话。请重试。",
+  "loginRequired": "您必须登录才能查看此页面。",
+  "messageConfirmed": "您的付款已确认！您现在可以访问所有功能。",
+  "messagePending": "您的付款正在处理中。这可能需要几分钟。",
+  "messageFallback": "您的付款已收到。欢迎成为会员！",
+  "loadingTitle": "正在处理...",
+  "goToDashboard": "前往仪表板",
+  "backToHome": "返回首页",
+  "errorTitle": "出了点问题",
+  "backToPricing": "返回价格页面"
+}

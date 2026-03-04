@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Hva er Klarpakke?",
+    "slug": "hva-er-klarpakke",
+    "question": "Hva er Klarpakke?",
+    "answer": "Klarpakke er et sikkert signalhåndteringssystem som gir deg kontroll over godkjenning og avvisning av handelssignaler med komplett revisjonsspor.",
+    "category": "Generelt",
+    "order": 1
+  },
+  {
+    "name": "Hvordan starter jeg?",
+    "slug": "hvordan-starter-jeg",
+    "question": "Hvordan kommer jeg i gang?",
+    "answer": "Opprett en konto, velg din pakke, og følg vår innføringsguide. Du kan være i gang på under 5 minutter.",
+    "category": "Kom i gang",
+    "order": 2
+  },
+  {
+    "name": "Er dataene mine trygge?",
+    "slug": "er-dataene-mine-trygge",
+    "question": "Er mine data sikre?",
+    "answer": "Ja! Vi bruker bank-nivå kryptering, JWT autentisering, og row-level security i databasen. Les mer i vår sikkerhetsdokumentasjon.",
+    "category": "Sikkerhet",
+    "order": 3
+  },
+  {
+    "name": "Kan jeg endre pakke senere?",
+    "slug": "kan-jeg-endre-pakke-senere",
+    "question": "Kan jeg oppgradere eller nedgradere min pakke?",
+    "answer": "Selvfølgelig! Du kan endre pakke når som helst fra innstillinger. Endringer trer i kraft umiddelbart.",
+    "category": "Priser",
+    "order": 4
+  }
+]

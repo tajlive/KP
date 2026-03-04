@@ -1,0 +1,28 @@
+{
+  "title": "Kontakt oss",
+  "description": "Kontakt oss",
+  "subtitle": "Har du spørsmål? Vi er her for å hjelpe deg.",
+  "form": {
+    "title": "Send oss en melding",
+    "name": "Navn",
+    "namePlaceholder": "Ditt fulle navn",
+    "email": "E-post",
+    "emailPlaceholder": "din@epost.no",
+    "message": "Melding",
+    "messagePlaceholder": "Skriv din melding her...",
+    "submit": "Send melding"
+  },
+  "info": {
+    "emailTitle": "E-post support",
+    "emailResponse": "Vi svarer vanligvis innen 24 timer.",
+    "chatTitle": "Live chat",
+    "chatHours": "Tilgjengelig man-fre, 09:00-17:00",
+    "startChat": "Start chat"
+  },
+  "emailDesc": "Send oss en e-post og vi vil svare deg så fort som mulig.",
+  "linksTitle": "Nyttige lenker",
+  "aboutLink": "Om oss",
+  "pricingLink": "Priser",
+  "privacyLink": "Personvern",
+  "termsLink": "Vilkår"
+}

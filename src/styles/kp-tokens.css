@@ -1,0 +1,196 @@
+/**
+ * Klarpakke Design Tokens
+ *
+ * All CSS custom properties for the design system.
+ * Use these tokens throughout the app for consistency.
+ *
+ * IMPORTANT: These are additive - they do NOT replace Webflow styles.
+ * All classes use .kp-* prefix to avoid conflicts.
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════
+     COLORS
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* Brand Colors */
+  --kp-primary: #0ea5e9;
+  --kp-primary-hover: #0284c7;
+  --kp-primary-active: #0369a1;
+  --kp-primary-light: #e0f2fe;
+
+  /* Secondary/Neutral */
+  --kp-secondary: #64748b;
+  --kp-secondary-hover: #475569;
+  --kp-secondary-light: #f1f5f9;
+
+  /* Semantic Colors */
+  --kp-success: #22c55e;
+  --kp-success-hover: #16a34a;
+  --kp-success-light: #dcfce7;
+  --kp-success-text: #166534;
+
+  --kp-warning: #f59e0b;
+  --kp-warning-hover: #d97706;
+  --kp-warning-light: #fef3c7;
+  --kp-warning-text: #92400e;
+
+  --kp-error: #ef4444;
+  --kp-error-hover: #dc2626;
+  --kp-error-light: #fee2e2;
+  --kp-error-text: #991b1b;
+
+  --kp-info: #3b82f6;
+  --kp-info-hover: #2563eb;
+  --kp-info-light: #dbeafe;
+  --kp-info-text: #1e40af;
+
+  /* Signal Status Colors */
+  --kp-status-pending-bg: #fef3c7;
+  --kp-status-pending-text: #92400e;
+  --kp-status-pending-border: #fcd34d;
+
+  --kp-status-approved-bg: #dcfce7;
+  --kp-status-approved-text: #166534;
+  --kp-status-approved-border: #86efac;
+
+  --kp-status-rejected-bg: #fee2e2;
+  --kp-status-rejected-text: #991b1b;
+  --kp-status-rejected-border: #fca5a5;
+
+  --kp-status-active-bg: #dbeafe;
+  --kp-status-active-text: #1e40af;
+  --kp-status-active-border: #93c5fd;
+
+  /* Background Colors */
+  --kp-bg-primary: #ffffff;
+  --kp-bg-secondary: #f8fafc;
+  --kp-bg-tertiary: #f1f5f9;
+  --kp-bg-dark: #0f172a;
+
+  /* Text Colors */
+  --kp-text-primary: #1f2937;
+  --kp-text-secondary: #6b7280;
+  --kp-text-muted: #9ca3af;
+  --kp-text-inverse: #ffffff;
+
+  /* Border Colors */
+  --kp-border: #e5e7eb;
+  --kp-border-dark: #d1d5db;
+  --kp-border-light: #f3f4f6;
+  --kp-border-focus: #0ea5e9;
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* Font Family */
+  --kp-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --kp-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+
+  /* Font Sizes */
+  --kp-text-xs: 0.75rem;      /* 12px */
+  --kp-text-sm: 0.875rem;     /* 14px */
+  --kp-text-base: 1rem;       /* 16px */
+  --kp-text-lg: 1.125rem;     /* 18px */
+  --kp-text-xl: 1.25rem;      /* 20px */
+  --kp-text-2xl: 1.5rem;      /* 24px */
+  --kp-text-3xl: 1.875rem;    /* 30px */
+  --kp-text-4xl: 2.25rem;     /* 36px */
+
+  /* Line Heights */
+  --kp-leading-none: 1;
+  --kp-leading-tight: 1.25;
+  --kp-leading-snug: 1.375;
+  --kp-leading-normal: 1.5;
+  --kp-leading-relaxed: 1.625;
+
+  /* Font Weights */
+  --kp-font-normal: 400;
+  --kp-font-medium: 500;
+  --kp-font-semibold: 600;
+  --kp-font-bold: 700;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SPACING
+     ═══════════════════════════════════════════════════════════════ */
+
+  --kp-space-0: 0;
+  --kp-space-1: 0.25rem;      /* 4px */
+  --kp-space-2: 0.5rem;       /* 8px */
+  --kp-space-3: 0.75rem;      /* 12px */
+  --kp-space-4: 1rem;         /* 16px */
+  --kp-space-5: 1.25rem;      /* 20px */
+  --kp-space-6: 1.5rem;       /* 24px */
+  --kp-space-8: 2rem;         /* 32px */
+  --kp-space-10: 2.5rem;      /* 40px */
+  --kp-space-12: 3rem;        /* 48px */
+  --kp-space-16: 4rem;        /* 64px */
+  --kp-space-20: 5rem;        /* 80px */
+
+  /* ═══════════════════════════════════════════════════════════════
+     BORDERS & RADIUS
+     ═══════════════════════════════════════════════════════════════ */
+
+  --kp-radius-none: 0;
+  --kp-radius-sm: 0.25rem;    /* 4px */
+  --kp-radius-md: 0.375rem;   /* 6px */
+  --kp-radius-lg: 0.5rem;     /* 8px */
+  --kp-radius-xl: 0.75rem;    /* 12px */
+  --kp-radius-2xl: 1rem;      /* 16px */
+  --kp-radius-full: 9999px;
+
+  --kp-border-width: 1px;
+  --kp-border-width-2: 2px;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SHADOWS
+     ═══════════════════════════════════════════════════════════════ */
+
+  --kp-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --kp-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --kp-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --kp-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --kp-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --kp-shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  --kp-shadow-none: 0 0 #0000;
+
+  /* Focus Ring */
+  --kp-ring-width: 2px;
+  --kp-ring-offset: 2px;
+  --kp-ring-color: var(--kp-primary);
+
+  /* ═══════════════════════════════════════════════════════════════
+     TRANSITIONS
+     ═══════════════════════════════════════════════════════════════ */
+
+  --kp-transition-fast: 150ms ease;
+  --kp-transition-normal: 200ms ease;
+  --kp-transition-slow: 300ms ease;
+
+  /* ═══════════════════════════════════════════════════════════════
+     Z-INDEX
+     ═══════════════════════════════════════════════════════════════ */
+
+  --kp-z-dropdown: 1000;
+  --kp-z-sticky: 1100;
+  --kp-z-modal-backdrop: 1200;
+  --kp-z-modal: 1300;
+  --kp-z-toast: 1400;
+  --kp-z-tooltip: 1500;
+}
+
+/* Dark mode support (optional, for future use) */
+@media (prefers-color-scheme: dark) {
+  :root.kp-dark {
+    --kp-bg-primary: #0f172a;
+    --kp-bg-secondary: #1e293b;
+    --kp-bg-tertiary: #334155;
+    --kp-text-primary: #f8fafc;
+    --kp-text-secondary: #cbd5e1;
+    --kp-text-muted: #94a3b8;
+    --kp-border: #334155;
+    --kp-border-dark: #475569;
+    --kp-border-light: #1e293b;
+  }
+}

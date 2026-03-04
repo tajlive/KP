@@ -1,0 +1,23 @@
+# Supabase Auth Redirect URLs
+# Legg til i: https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf/auth/url-configuration
+
+# Production (Cloud Run + Custom Domain)
+https://www.klarpakke.no/auth/callback
+https://klarpakke.no/auth/callback
+https://www.klarpakke.no/**
+
+# Vercel Preview/Production
+https://klarpakke-tom-jensens-projects.vercel.app/
+https://klarpakke-tom-jensens-projects.vercel.app/**
+https://klarpakke-*-tom-jensens-projects.vercel.app
+https://klarpakke-*-tom-jensens-projects.vercel.app/**
+https://klarpakke-tombomann-tom-jensens-projects.vercel.app/
+https://klarpakke-tombomann-tom-jensens-projects.vercel.app/**
+https://klarpakke-*-tombomann-tom-jensens-projects.vercel.app
+https://klarpakke-*-tombomann-tom-jensens-projects.vercel.app/**
+
+# Internationalized Callbacks (VIKTIG!)
+https://www.klarpakke.no/no/auth/callback
+https://www.klarpakke.no/en/auth/callback
+https://www.klarpakke.no/th/auth/callback
+https://www.klarpakke.no/zh/auth/callback

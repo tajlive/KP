@@ -1,0 +1,14 @@
+{
+  "title": "比赛",
+  "description": "交易比赛",
+  "subtitle": "与其他交易者竞争并赢取奖品。",
+  "status": "进行中",
+  "joinButton": "加入",
+  "leaderboard": "排行榜",
+  "prizes": "奖品",
+  "rules": "规则",
+  "timeLeft": "剩余时间",
+  "participants": "参与者",
+  "yourRank": "您的排名",
+  "noActive": "目前没有进行中的比赛。"
+}

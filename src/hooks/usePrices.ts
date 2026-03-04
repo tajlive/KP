@@ -1,0 +1,121 @@
+"use client";
+
+import { PriceWebSocket } from "@/lib/auto-trading/binance-websocket";
+import type { Database } from "@/lib/database.types";
+import { createBrowserClient } from "@supabase/ssr";
+import { useEffect, useState } from "react";
+
+type CoinPrice = Database["public"]["Tables"]["coin_prices"]["Row"];
+
+// KLA-105: Priority symbols for real-time WebSocket updates
+const PRIORITY_SYMBOLS = [
+  "BTCUSDT",
+  "ETHUSDT",
+  "SOLUSDT",
+  "BNBUSDT",
+  "DOGEUSDT",
+];
+
+export function usePrices() {
+  const [prices, setPrices] = useState<Record<string, CoinPrice>>({});
+  const [loading, setLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const supabase = createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      setLoading(true);
+      const { data } = await supabase.from("coin_prices").select("*");
+
+      const priceMap = ((data || []) as CoinPrice[]).reduce(
+        (acc: Record<string, CoinPrice>, price: CoinPrice) => {
+          acc[price.symbol] = price;
+          return acc;
+        },
+        {} as Record<string, CoinPrice>,
+      );
+
+      setPrices(priceMap);
+      setIsConnected(true);
+      setLoading(false);
+    };
+
+    fetchPrices();
+
+    // 1. Supabase Real-time subscription (Backup/Other symbols)
+    const channel = supabase
+      .channel("prices")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "coin_prices" },
+        fetchPrices,
+      )
+      .subscribe((status) => {
+        setIsConnected((prev) => {
+          const next = status === "SUBSCRIBED";
+          return prev === next ? prev : next;
+        });
+      });
+
+    // 2. Binance WebSocket for Priority Symbols (Active UI)
+    const ws = new PriceWebSocket(PRIORITY_SYMBOLS, (updatedPrices) => {
+      setPrices((prev) => {
+        const next = { ...prev };
+        Object.entries(updatedPrices).forEach(([symbol, price]) => {
+          if (next[symbol]) {
+            next[symbol] = { ...next[symbol], price };
+          } else {
+            // Create minimal entry if missing
+            next[symbol] = {
+              symbol,
+              price,
+              created_at: new Date().toISOString(),
+              id: "", // Placeholder
+              name: symbol.replace("USDT", ""),
+              price_change_24h: 0,
+              price_change_percent_24h: 0,
+              volume_24h: 0,
+              market_cap: 0,
+              high_24h: 0,
+              low_24h: 0,
+              last_updated: new Date().toISOString(),
+            } as unknown as CoinPrice;
+          }
+        });
+        return next;
+      });
+    });
+
+    ws.connect();
+
+    return () => {
+      supabase.removeChannel(channel);
+      ws.disconnect();
+    };
+  }, [supabase]);
+
+  return { prices, loading, isConnected };
+}
+
+export function useAnimatedPrice(symbol: string) {
+  const { prices, isConnected } = usePrices();
+  const priceData = prices[symbol];
+
+  return {
+    price: priceData?.price || 0,
+    formattedPrice:
+      priceData?.price?.toLocaleString("no-NO", {
+        style: "currency",
+        currency: "USD",
+      }) || "$0.00",
+    priceDirection:
+      priceData?.price_change_24h && priceData.price_change_24h >= 0
+        ? "up"
+        : "down",
+    priceChange24h: priceData?.price_change_percent_24h || 0,
+    isConnected,
+  };
+}

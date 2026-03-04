@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "klarpakke-automation": {
+      "command": "node",
+      "args": ["mcp-server/dist/index.js"],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  },
+  "version": "1.0.0",
+  "metadata": {
+    "name": "Klarpakke MCP Configuration",
+    "description": "MCP server configuration for Klarpakke automation and CI/CD",
+    "updated": "2025-02-02"
+  }
+}

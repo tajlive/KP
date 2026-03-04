@@ -1,0 +1,18 @@
+{
+  "title": "Competition",
+  "description": "Trading competition",
+  "subtitle": "Compete against other traders and win prizes.",
+  "status": "Active",
+  "joinButton": "Join",
+  "leaderboard": "Leaderboard",
+  "prizes": "Prizes",
+  "rules": "Rules",
+  "timeLeft": "Time left",
+  "participants": "Participants",
+  "yourRank": "Your rank",
+  "noActive": "No active competitions right now.",
+  "weekly": "Weekly competition",
+  "monthly": "Monthly competition",
+  "weeklyPrize": "Weekly prize",
+  "monthlyPrize": "Monthly prize"
+}

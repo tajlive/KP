@@ -1,0 +1,19 @@
+{
+  "title": "Gamification",
+  "description": "Lær og tjen poeng",
+  "subtitle": "Fullfør utfordringer og klatr på ledertavlen.",
+  "points": "Poeng",
+  "badges": "Merker",
+  "streaks": "Rekker",
+  "level": "Nivå",
+  "nextLevel": "Neste nivå",
+  "dailyChallenge": "Dagens utfordring",
+  "weeklyGoal": "Ukentlig mål",
+  "achievements": "Prestasjoner",
+  "progress": "Fremgang",
+  "stats": {
+    "completed": "Fullførte leksjoner",
+    "accuracy": "Handlingsnøyaktighet",
+    "lessonsAvailable": "Tilgjengelige leksjoner"
+  }
+}

@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # ═══════════════════════════════════════════════════════════════
+  # Next.js App
+  # ═══════════════════════════════════════════════════════════════
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    command: npm run dev
+
+  # ═══════════════════════════════════════════════════════════════
+  # Supabase (lokal utvikling)
+  # ═══════════════════════════════════════════════════════════════
+  supabase:
+    image: supabase/supabase-local:latest
+    ports:
+      - "54321:54321"  # API
+      - "54322:54322"  # Database
+      - "54323:54323"  # Studio
+    environment:
+      POSTGRES_PASSWORD: postgres
+      JWT_SECRET: super-secret-jwt-token
+      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1eGJqbHlrZ216c2t4YmNscXVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2NzA5MTQsImV4cCI6MjA4NjI0NjkxNH0.9b45CqICVUMkq-ByRZFr5LkC2QcvFedUzsWO2kVfkC4
+      SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1eGJqbHlrZ216c2t4YmNscXVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDY3MDkxNCwiZXhwIjoyMDg2MjQ2OTE0fQ.xgqK_imYc7rkezSt6tUJvcEOm61AQ0x9de-ZDAX6fys
+    volumes:
+      - supabase-data:/var/lib/postgresql/data
+
+  # ═══════════════════════════════════════════════════════════════
+  # Redis (for caching)
+  # ═══════════════════════════════════════════════════════════════
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  # ═══════════════════════════════════════════════════════════════
+  # MinIO (S3 compatible storage for lokal utvikling)
+  # ═══════════════════════════════════════════════════════════════
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+
+  # ═══════════════════════════════════════════════════════════════
+  # MailHog (for testing email)
+  # ═══════════════════════════════════════════════════════════════
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+
+  # ═══════════════════════════════════════════════════════════════
+  # Stripe CLI (for webhook testing)
+  # ═══════════════════════════════════════════════════════════════
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    command: listen --forward-to http://app:3000/api/stripe/webhook
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+
+volumes:
+  supabase-data:
+  redis-data:
+  minio-data:

@@ -1,0 +1,35 @@
+{
+  "title": "Auto-Trading | Klarpakke - 3 Years of Testing",
+  "description": "Automated trading based on 3 years of testing and hard data. No hype, just results. Start risk-free with paper trading.",
+  "courses": {
+    "title": "Courses - Learn crypto trading",
+    "description": "Explore our courses from beginner to advanced level. Master crypto trading in 4 weeks."
+  },
+  "about": {
+    "title": "About Us | Klarpakke",
+    "description": "Learn more about Klarpakke - Norway's first crypto education platform with simulated trading and auto-trading based on 3 years of testing."
+  },
+  "contact": {
+    "title": "Contact | Klarpakke",
+    "description": "Contact Klarpakke for questions about crypto trading, auto-trading or our courses."
+  },
+  "liveTrading": {
+    "title": "Live Trading | Klarpakke",
+    "description": "Execute live trades with real-time signals and automated strategies."
+  },
+  "login": {
+    "title": "Login | Klarpakke",
+    "description": "Sign in to your Klarpakke account."
+  },
+  "loginDescription": "Sign in to your Klarpakke account to access trading courses, paper trading, and automated signals.",
+  "coursesDescription": "Learn trading from scratch with our structured crypto courses in Norwegian.",
+  "pricingDescription": "See our pricing plans for Klarpakke University. Start free with paper trading today.",
+  "pricing": {
+    "title": "Pricing | Klarpakke",
+    "description": "Choose the right plan for your crypto trading journey."
+  },
+  "autoTrade": {
+    "title": "Auto-Trading | Klarpakke",
+    "description": "Automated trading based on 3 years of testing and hard data."
+  }
+}

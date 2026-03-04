@@ -1,0 +1,78 @@
+{
+  "privacyTitle": "Personvernerklæring",
+  "termsTitle": "Vilkår for bruk",
+  "privacy": {
+    "title": "Personvernerklæring",
+    "intro": {
+      "title": "1. Innledning",
+      "content": "Klarpakke (\"vi\", \"oss\") tar ditt personvern på alvor. Denne erklæringen beskriver hvordan vi samler inn, bruker og beskytter dine personopplysninger."
+    },
+    "collection": {
+      "title": "2. Personopplysninger vi samler inn",
+      "content": "Vi kan samle inn følgende typer informasjon:",
+      "list": [
+        "Kontaktinformasjon (navn, e-post).",
+        "Bruksdata (hvordan du bruker nettstedet).",
+        "Tekniske data (IP-adresse, nettlesertype)."
+      ]
+    },
+    "usage": {
+      "title": "3. Hvordan vi bruker opplysningene",
+      "content": "Vi bruker opplysningene til å:",
+      "list": [
+        "Levere og forbedre våre tjenester.",
+        "Sende deg relevant informasjon (f.eks. om kurs eller ligaer).",
+        "Overholde lovpålagte krav."
+      ]
+    },
+    "cookies": {
+      "title": "4. Informasjonskapsler (Cookies)",
+      "content": "Vi bruker informasjonskapsler for å forbedre brukeropplevelsen. Ved å bruke nettstedet vårt samtykker du til dette."
+    },
+    "rights": {
+      "title": "5. Dine rettigheter",
+      "content": "Du har rett til innsyn i, retting av og sletting av dine personopplysninger. Kontakt oss på post@klarpakke.no for henvendelser."
+    }
+  },
+  "terms": {
+    "title": "Vilkår for bruk",
+    "lastUpdated": "Sist oppdatert: 11. februar 2026",
+    "sections": {
+      "1": {
+        "title": "1. Aksept av vilkår",
+        "content": "Ved å registrere deg og bruke Klarpakke Universitet, aksepterer du disse vilkårene. Hvis du ikke aksepterer vilkårene, kan du ikke bruke tjenesten."
+      },
+      "2": {
+        "title": "2. Beskrivelse av tjenesten",
+        "content": "Klarpakke Universitet er en utdanningsplattform for kryptovaluta-handel. Plattformen tilbyr simulert trading («paper trading») med fiktive penger.",
+        "bold": "VI BRUKER ALDRI EKTE PENGER."
+      },
+      "3": {
+        "title": "3. Brukerkonto",
+        "content": "For å bruke tjenesten må du:",
+        "list": [
+          "Være minst 18 år gammel",
+          "Opprette en konto med gyldig e-postadresse",
+          "Holde passordet ditt konfidensielt",
+          "Varsle oss umiddelbart ved uautorisert tilgang"
+        ]
+      },
+      "4": {
+        "title": "4. Immaterielle rettigheter",
+        "content": "Alt innhold på plattformen (tekst, grafikk, logoer, kursmateriale) eies av Klarpakke eller våre lisensgivere. Du kan ikke kopiere, distribuere eller selge innholdet uten skriftlig tillatelse."
+      },
+      "5": {
+        "title": "5. Ansvarsfraskrivelse",
+        "content": "Klarpakke gir ingen investeringsråd. All trading på plattformen er simulert og bruker ikke ekte penger. Resultater i paper trading garanterer ikke fremtidig suksess med ekte investeringer."
+      },
+      "6": {
+        "title": "6. Oppsigelse",
+        "content": "Vi kan suspendere eller avslutte din konto ved brudd på disse vilkårene. Du kan når som helst slette din konto ved å kontakte oss."
+      },
+      "7": {
+        "title": "7. Kontakt",
+        "content": "Spørsmål om vilkårene? Kontakt oss på:"
+      }
+    }
+  }
+}

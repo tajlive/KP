@@ -1,0 +1,68 @@
+{
+  "title": "Trading Simulator",
+  "subtitle": "Learn crypto trading with real market data – completely risk-free",
+  "stats": {
+    "completed": "Scenarios completed",
+    "accuracy": "Accuracy",
+    "lessonsAvailable": "Lessons available"
+  },
+  "howTo": {
+    "title": "How to use the simulator",
+    "hide": "Hide tips",
+    "steps": [
+      "Select a scenario below to start a practice session",
+      "Study the chart – green triangles are buy opportunities, red are sell",
+      "Click on the chart to see explanations of price movements",
+      "Practice until you feel ready – no real money involved!"
+    ]
+  },
+  "chart": {
+    "title": "Price Development with Explanations",
+    "selectScenario": "Select a scenario below to see specific learning objectives"
+  },
+  "scenarios": {
+    "title": "Choose a learning scenario",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "list": [
+      {
+        "id": "1",
+        "title": "Your first trade",
+        "description": "Learn to buy and sell Bitcoin with simple strategies",
+        "learning": "Basic buy and sell, how to read a simple chart"
+      },
+      {
+        "id": "2",
+        "title": "Stop Loss mastery",
+        "description": "Set up automatic risk management to protect capital",
+        "learning": "Risk management, stop-loss strategies"
+      },
+      {
+        "id": "3",
+        "title": "Market analysis",
+        "description": "Read charts and identify trends before they happen",
+        "learning": "Trend analysis, support and resistance levels"
+      },
+      {
+        "id": "4",
+        "title": "Portfolio balancing",
+        "description": "Diversify your investments in a smart way",
+        "learning": "Diversification, portfolio management"
+      },
+      {
+        "id": "5",
+        "title": "Volatility management",
+        "description": "Trade under extreme market conditions without panic",
+        "learning": "Emotional control, trading under pressure"
+      }
+    ]
+  },
+  "buttons": {
+    "openPaperTrading": "Open Paper Trading →",
+    "startPaperTrading": "Start Paper Trading →"
+  },
+  "ready": "Ready to practice with virtual money?"
+}

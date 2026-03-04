@@ -1,0 +1,419 @@
+{
+  "metadata": {
+    "title": "Choose Your Course",
+    "subtitle": "From beginner to expert. Learn at your own pace with AI guidance.",
+    "stats": {
+      "completedCourses": "147",
+      "activeStudents": "89",
+      "averageRating": "4.8",
+      "totalLessons": "36"
+    },
+    "cta": {
+      "title": "Not sure where to start?",
+      "description": "Take our free interest test and find out which course suits you best.",
+      "button": "Start interest test"
+    }
+  },
+  "courses": [
+    {
+      "id": "krypto-for-smaasparere",
+      "slug": "crypto-for-small-savers",
+      "title": "Crypto for Small Savers",
+      "subtitle": "From zero to confident crypto owner in 4 weeks",
+      "level": "Beginner",
+      "duration": "8 hours",
+      "students": 1247,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-blue-600 to-cyan-600",
+      "icon": "🚀",
+      "modules": 12,
+      "weeks": 4,
+      "tags": ["Bitcoin", "Security", "Trading"],
+      "cta": "Start course"
+    },
+    {
+      "id": "trading-masterclass",
+      "slug": "trading-masterclass",
+      "title": "Trading Masterclass",
+      "subtitle": "Advanced strategies for experienced traders",
+      "level": "Advanced",
+      "duration": "12 hours",
+      "students": 523,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-amber-500 to-orange-600",
+      "icon": "📈",
+      "modules": 16,
+      "weeks": 6,
+      "tags": ["Technical analysis", "Risk management"],
+      "cta": "Start course"
+    },
+    {
+      "id": "defi-explorer",
+      "slug": "defi-explorer",
+      "title": "DeFi Explorer",
+      "subtitle": "Understand decentralized finance",
+      "level": "Intermediate",
+      "duration": "6 hours",
+      "students": 892,
+      "rating": 4.7,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-emerald-500 to-teal-600",
+      "icon": "🌐",
+      "modules": 8,
+      "weeks": 3,
+      "tags": ["DeFi", "Yield farming", "Liquidity"],
+      "cta": "Start course"
+    }
+  ],
+  "courseDetails": {
+    "krypto-for-smaasparere": {
+      "title": "Crypto for Small Savers",
+      "description": "From 0 to confident investor in 4 weeks. Learn the essentials about Bitcoin, security, and saving.",
+      "weeks": 4,
+      "level": "beginner",
+      "levelLabel": "Beginner",
+      "duration": "4 weeks",
+      "lessons": 12,
+      "videoTitle": "Crypto for Small Savers",
+      "videoSubtitle": "AI-guided course - Learn at your own pace",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "What is Crypto?",
+          "status": "completed",
+          "progress": 100
+        },
+        { "id": 2, "title": "Blockchain", "status": "current", "progress": 0 },
+        { "id": 3, "title": "Wallet", "status": "available", "progress": 0 },
+        { "id": 4, "title": "Buy Bitcoin", "status": "locked", "progress": 0 },
+        { "id": 5, "title": "Security", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "Lesson 1: What is Cryptocurrency?",
+          "description": "Cryptocurrency is digital money that works without banks. Bitcoin was created in 2009 and is the first and most well-known cryptocurrency. Unlike traditional currencies, Bitcoin is not controlled by any central bank — it's governed by a network of computers worldwide. Think of it as digital gold: only 21 million Bitcoin will ever exist, and no more can be created. Other popular cryptocurrencies include Ethereum (a platform for smart contracts), Solana (known for fast transactions), and thousands of others.",
+          "audioUrl": "/audio/en/lesson1.mp3",
+          "buttons": {
+            "start": "Start Explanation",
+            "pause": "Pause",
+            "mute": "Mute",
+            "unmute": "Unmute"
+          }
+        },
+        "2": {
+          "title": "Lesson 2: Blockchain — The Technology Behind It",
+          "description": "Blockchain is the technology that makes Bitcoin possible. Imagine a digital notebook copied to thousands of computers simultaneously. Every time someone sends Bitcoin, the transaction is written in the notebook. All copies update at the same time, and no one can change old entries. This is called 'decentralized' because no single person controls the book. The word 'blockchain' literally means a 'chain of blocks'. Every 10 minutes, new transactions are collected into a block, and this block is linked to the previous one. The result is an unbreakable chain showing the entire history of all Bitcoin transactions ever made.",
+          "audioUrl": "/audio/en/lesson2.mp3",
+          "buttons": {
+            "start": "Start Explanation",
+            "pause": "Pause",
+            "mute": "Mute",
+            "unmute": "Unmute"
+          }
+        },
+        "3": {
+          "title": "Lesson 3: Crypto Wallet — Your Digital Safe",
+          "description": "To own crypto, you need a crypto wallet. There are two main types: 'hot wallets' (apps on your phone that are easy to use, e.g., Metamask or Trust Wallet) and 'cold wallets' (physical devices like Ledger or Trezor that keep your crypto offline and extra safe). The wallet contains two keys: a public key (like an account number you can share with others to receive crypto) and a private key (like your PIN — it MUST be kept secret). If you lose the private key, you lose access to your crypto permanently. Therefore, it is critical to make backups.",
+          "audioUrl": "/audio/en/lesson3.mp3",
+          "buttons": {
+            "start": "Start Explanation",
+            "pause": "Pause",
+            "mute": "Mute",
+            "unmute": "Unmute"
+          }
+        },
+        "4": {
+          "title": "Lesson 4: How to Buy Bitcoin",
+          "description": "The easiest way is to use a regulated exchange like Coinbase or Binance. Create an account, verify your identity, and transfer money via bank transfer. You do NOT need to buy a whole Bitcoin! You can buy a small fraction — for example $50 worth. When you trade, you pay a small fee (usually 0.1%-1.5%). After buying, you can leave the crypto on the exchange (convenient but some risk) or move it to your own wallet (safer). Tip: Start with a small amount you can afford to lose, and get comfortable with the process before increasing.",
+          "audioUrl": "/audio/en/lesson4.mp3",
+          "buttons": {
+            "start": "Start Explanation",
+            "pause": "Pause",
+            "mute": "Mute",
+            "unmute": "Unmute"
+          }
+        },
+        "5": {
+          "title": "Lesson 5: Security — Protect Your Crypto",
+          "description": "The crypto world has scammers, and you must protect yourself. The most important rules: (1) NEVER share your private key/seed phrase with anyone — no legitimate service will ask for it. (2) Always use 2-factor authentication (2FA) with an app like Google Authenticator, not SMS. (3) Beware of phishing — scammers create fake websites that look like Binance/Coinbase. Always check the URL. (4) Use strong, unique passwords for crypto accounts. (5) Consider a hardware wallet for larger amounts. (6) Don't share how much crypto you own on social media. Finally: no legitimate person promises 'guaranteed returns' in crypto.",
+          "audioUrl": "/audio/en/lesson5.mp3",
+          "buttons": {
+            "start": "Start Explanation",
+            "pause": "Pause",
+            "mute": "Mute",
+            "unmute": "Unmute"
+          }
+        }
+      },
+      "quiz": {
+        "question": "What is Bitcoin?",
+        "options": [
+          "A physical coin you receive in the mail",
+          "Digital currency that lives on the internet",
+          "A stock company on the exchange",
+          "An app on your phone"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Bitcoin was created in 2009 by someone calling themselves Satoshi Nakamoto. To this day, no one knows who they actually are!"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": [
+            "Good question!",
+            "Great thinking!",
+            "This is important..."
+          ],
+          "correctAnswer": "Fantastic! +50 XP! 🎉",
+          "wrongAnswer": "Not quite. Try again!",
+          "nextQuestion": "Ready for the next question?",
+          "voiceAnswer": "Good question! Bitcoin is like digital gold, while Ethereum is more like a digital computer...",
+          "voiceTranscript": "What is the difference between Bitcoin and Ethereum?",
+          "initial": "Welcome! I'm your AI professor. Ask me anything!"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "Ask questions with your voice",
+        "description": "Click the microphone and ask anything",
+        "buttonListening": "Listening...",
+        "button": "Press to speak"
+      },
+      "achievements": {
+        "title": "Your Progress",
+        "xpLabel": "XP",
+        "streakLabel": "Today's streak"
+      },
+      "badges": {
+        "popular": "POPULAR"
+      },
+      "labels": {
+        "level": "Level",
+        "modules": "modules",
+        "week": "week",
+        "of": "of"
+      }
+    },
+    "trading-masterclass": {
+      "title": "Trading Masterclass",
+      "description": "Advanced trading strategies for experienced investors. Learn technical analysis, risk management, and more.",
+      "weeks": 6,
+      "level": "advanced",
+      "levelLabel": "Advanced",
+      "duration": "6 weeks",
+      "lessons": 16,
+      "videoTitle": "Trading Masterclass",
+      "videoSubtitle": "For advanced traders",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "Technical Analysis",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 2,
+          "title": "Candlestick Patterns",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "Risk Management",
+          "status": "locked",
+          "progress": 0
+        }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "Lesson 1: Technical Analysis",
+          "description": "Technical analysis is about studying price history and charts to predict future movements. By looking at patterns, volume, and various indicators, traders try to identify 'trends' (direction) and 'support/resistance' (price levels where the market often turns). Unlike fundamental analysis, which looks at the value of a project, technical analysis focuses solely on price action. It is a powerful tool, but it's important to remember that it's not a crystal ball — it only gives you probabilities, not certainties.",
+          "audioUrl": "/audio/en/tm_lesson1.mp3",
+          "buttons": {
+            "start": "Start Explanation",
+            "pause": "Pause",
+            "mute": "Mute",
+            "unmute": "Unmute"
+          }
+        }
+      },
+      "quiz": {
+        "question": "What does a 'golden cross' indicate?",
+        "options": [
+          "Bearish trend",
+          "Bullish trend",
+          "Sideways market",
+          "Volatility"
+        ],
+        "correctAnswer": 1,
+        "funFact": "A golden cross occurs when the 50-day moving average crosses above the 200-day moving average."
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": [
+            "Good question!",
+            "Great thinking!",
+            "This is important..."
+          ],
+          "correctAnswer": "Fantastic! +50 XP! 🎉",
+          "wrongAnswer": "Not quite. Try again!",
+          "nextQuestion": "Ready for the next question?",
+          "voiceAnswer": "Technical analysis is about studying price history to predict future movements...",
+          "voiceTranscript": "What is technical analysis?",
+          "initial": "Welcome to Trading Masterclass! Ready to learn advanced strategies?"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "Ask questions with your voice",
+        "description": "Click the microphone and ask anything",
+        "buttonListening": "Listening...",
+        "button": "Press to speak"
+      },
+      "achievements": {
+        "title": "Your Progress",
+        "xpLabel": "XP",
+        "streakLabel": "Today's streak"
+      },
+      "badges": {
+        "popular": "POPULAR"
+      },
+      "labels": {
+        "level": "Level",
+        "modules": "modules",
+        "week": "week",
+        "of": "of"
+      }
+    },
+    "defi-explorer": {
+      "title": "DeFi Explorer",
+      "description": "Explore decentralized finance. Learn about yield farming, liquidity pools, and smart contracts.",
+      "weeks": 3,
+      "level": "intermediate",
+      "levelLabel": "Intermediate",
+      "duration": "3 weeks",
+      "lessons": 8,
+      "videoTitle": "DeFi Explorer",
+      "videoSubtitle": "Understand the future of finance",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "What is DeFi?",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 2,
+          "title": "Smart Contracts",
+          "status": "locked",
+          "progress": 0
+        },
+        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "Lesson 1: What is DeFi?",
+          "description": "Decentralized Finance (DeFi) is an ecosystem of financial applications built on blockchain technology (mainly Ethereum). Unlike traditional finance, DeFi works without intermediaries like banks or brokers. Instead, it uses 'smart contracts' to automate transactions. This allows you to lend, borrow, and trade assets 24/7 from anywhere in the world. It provides better transparency, lower fees, and access for everyone with an internet connection. Popular DeFi applications include Uniswap (trading), Aave (lending), and MakerDAO (decentralized stablecoins).",
+          "audioUrl": "/audio/en/defi_lesson1.mp3",
+          "buttons": {
+            "start": "Start Explanation",
+            "pause": "Pause",
+            "mute": "Mute",
+            "unmute": "Unmute"
+          }
+        }
+      },
+      "quiz": {
+        "question": "What is a smart contract?",
+        "options": [
+          "A legal agreement",
+          "Self-executing code on the blockchain",
+          "A type of bank account",
+          "A cryptocurrency"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Smart contracts were first proposed by Nick Szabo in 1994, long before Ethereum existed!"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": [
+            "Good question!",
+            "Great thinking!",
+            "This is important..."
+          ],
+          "correctAnswer": "Fantastic! +50 XP! 🎉",
+          "wrongAnswer": "Not quite. Try again!",
+          "nextQuestion": "Ready for the next question?",
+          "voiceAnswer": "DeFi stands for decentralized finance. It's an ecosystem of financial applications...",
+          "voiceTranscript": "What is DeFi?",
+          "initial": "Welcome to DeFi Explorer! Let's explore the future of finance together."
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "Ask questions with your voice",
+        "description": "Click the microphone and ask anything",
+        "buttonListening": "Listening...",
+        "button": "Press to speak"
+      },
+      "achievements": {
+        "title": "Your Progress",
+        "xpLabel": "XP",
+        "streakLabel": "Today's streak"
+      },
+      "badges": {
+        "popular": "POPULAR"
+      },
+      "labels": {
+        "level": "Level",
+        "modules": "modules",
+        "week": "week",
+        "of": "of"
+      }
+    }
+  },
+  "common": {
+    "header": {
+      "academy": "Klarpakke Academy"
+    },
+    "lessonStatuses": {
+      "completed": "Completed",
+      "current": "In progress",
+      "available": "Available",
+      "locked": "Locked"
+    },
+    "buttons": {
+      "back": "Back",
+      "fullscreen": "Fullscreen",
+      "exitFullscreen": "Exit fullscreen"
+    }
+  }
+}

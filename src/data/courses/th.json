@@ -1,0 +1,396 @@
+{
+  "metadata": {
+    "title": "เลือกคอร์สของคุณ",
+    "subtitle": "จากมือใหม่สู่ผู้เชี่ยวชาญ เรียนรู้ตามจังหวะของคุณด้วย AI",
+    "stats": {
+      "completedCourses": "147",
+      "activeStudents": "89",
+      "averageRating": "4.8",
+      "totalLessons": "36"
+    },
+    "cta": {
+      "title": "ไม่แน่ใจจะเริ่มจากไหนดี?",
+      "description": "ทำแบบทดสอบความสนใจฟรี แล้วค้นหาว่าคอร์สไหนเหมาะกับคุณ",
+      "button": "เริ่มแบบทดสอบ"
+    }
+  },
+  "courses": [
+    {
+      "id": "krypto-for-smaasparere",
+      "slug": "krypto-for-smaasparere",
+      "title": "คริปโตสำหรับนักออม",
+      "subtitle": "จากศูนย์สู่เจ้าของคริปโตมั่นใจใน 4 สัปดาห์",
+      "level": "เริ่มต้น",
+      "duration": "8 ชั่วโมง",
+      "students": 1247,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-blue-600 to-cyan-600",
+      "icon": "🚀",
+      "modules": 12,
+      "weeks": 4,
+      "tags": ["Bitcoin", "ความปลอดภัย", "การเทรด"],
+      "cta": "เริ่มเรียน"
+    },
+    {
+      "id": "trading-masterclass",
+      "slug": "trading-masterclass",
+      "title": "Trading Masterclass",
+      "subtitle": "กลยุทธ์ขั้นสูงสำหรับเทรดเดอร์มืออาชีพ",
+      "level": "ขั้นสูง",
+      "duration": "12 ชั่วโมง",
+      "students": 523,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-amber-500 to-orange-600",
+      "icon": "📈",
+      "modules": 16,
+      "weeks": 6,
+      "tags": ["วิเคราะห์เทคนิค", "จัดการความเสี่ยง"],
+      "cta": "เริ่มเรียน"
+    },
+    {
+      "id": "defi-explorer",
+      "slug": "defi-explorer",
+      "title": "DeFi Explorer",
+      "subtitle": "เข้าใจการเงินแบบกระจายศูนย์",
+      "level": "ปานกลาง",
+      "duration": "6 ชั่วโมง",
+      "students": 892,
+      "rating": 4.7,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-emerald-500 to-teal-600",
+      "icon": "🌐",
+      "modules": 8,
+      "weeks": 3,
+      "tags": ["DeFi", "Yield farming", "Liquidity"],
+      "cta": "เริ่มเรียน"
+    }
+  ],
+  "courseDetails": {
+    "krypto-for-smaasparere": {
+      "title": "คริปโตสำหรับนักออม",
+      "description": "จาก 0 สู่นักลงทุนมั่นใจใน 4 สัปดาห์ เรียนรู้สิ่งสำคัญเกี่ยวกับ Bitcoin ความปลอดภัย และการออม",
+      "weeks": 4,
+      "level": "beginner",
+      "levelLabel": "เริ่มต้น",
+      "duration": "4 สัปดาห์",
+      "lessons": 12,
+      "videoTitle": "คริปโตสำหรับนักออม",
+      "videoSubtitle": "คอร์สนำทางด้วย AI - เรียนตามจังหวะของคุณ",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "คริปโตคืออะไร?",
+          "status": "completed",
+          "progress": 100
+        },
+        { "id": 2, "title": "Blockchain", "status": "current", "progress": 0 },
+        {
+          "id": 3,
+          "title": "กระเป๋าเงิน",
+          "status": "available",
+          "progress": 0
+        },
+        { "id": 4, "title": "ซื้อ Bitcoin", "status": "locked", "progress": 0 },
+        { "id": 5, "title": "ความปลอดภัย", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "บทที่ 1: คริปโตคืออะไร?",
+          "description": "คริปโตเคอร์เรนซีคือเงินดิจิทัลที่ทำงานโดยไม่ต้องมีธนาคาร Bitcoin ถูกสร้างขึ้นในปี 2009 และเป็นคริปโตเคอร์เรนซีตัวแรกและเป็นที่รู้จักมากที่สุด ต่างจากเงินบาท Bitcoin ไม่ได้ถูกควบคุมโดยธนาคารกลาง — มันถูกบริหารจัดการโดยเครือข่ายคอมพิวเตอร์ทั่วโลก คิดว่ามันเป็นทองคำดิจิทัล: มี Bitcoin เพียง 21 ล้านเหรียญเท่านั้น และไม่สามารถสร้างเพิ่มได้อีก คริปโตเคอร์เรนซียอดนิยมอื่นๆ ได้แก่ Ethereum, Solana และอื่นๆ อีกนับพัน",
+          "audioUrl": "/audio/th/lesson1.mp3",
+          "buttons": {
+            "start": "เริ่มคำอธิบาย",
+            "pause": "หยุด",
+            "mute": "ปิดเสียง",
+            "unmute": "เปิดเสียง"
+          }
+        },
+        "2": {
+          "title": "บทที่ 2: Blockchain — เทคโนโลยีเบื้องหลัง",
+          "description": "Blockchain คือเทคโนโลยีที่ทำให้ Bitcoin เป็นไปได้ ลองนึกภาพสมุดบันทึกดิจิทัลที่ถูกคัดลอกไปยังคอมพิวเตอร์หลายพันเครื่องพร้อมกัน ทุกครั้งที่มีคนส่ง Bitcoin ธุรกรรมจะถูกบันทึกลงในสมุด สำเนาทั้งหมดจะอัปเดตพร้อมกัน และไม่มีใครสามารถเปลี่ยนรายการเก่าได้ สิ่งนี้เรียกว่า 'กระจายศูนย์' เพราะไม่มีคนใดคนหนึ่งควบคุมสมุด ทุกๆ 10 นาที ธุรกรรมใหม่จะถูกรวบรวมเป็นบล็อก และบล็อกนี้จะเชื่อมต่อกับบล็อกก่อนหน้า",
+          "buttons": {
+            "start": "เริ่มคำอธิบาย",
+            "pause": "หยุด",
+            "mute": "ปิดเสียง",
+            "unmute": "เปิดเสียง"
+          }
+        },
+        "3": {
+          "title": "บทที่ 3: กระเป๋าเงินคริปโต — ตู้เซฟดิจิทัลของคุณ",
+          "description": "ในการเป็นเจ้าของคริปโต คุณต้องมีกระเป๋าเงินคริปโต มีสองประเภทหลัก: 'hot wallets' (แอปบนมือถือที่ใช้งานง่าย เช่น Metamask หรือ Trust Wallet) และ 'cold wallets' (อุปกรณ์ทางกายภาพเช่น Ledger หรือ Trezor ที่เก็บคริปโตของคุณแบบออฟไลน์และปลอดภัยเป็นพิเศษ) กระเป๋าเงินประกอบด้วยกุญแจสองดอก: กุญแจสาธารณะ (เหมือนเลขที่บัญชีที่คุณสามารถแชร์ให้คนอื่นเพื่อรับคริปโต) และกุญแจส่วนตัว (เหมือนรหัส PIN — คุณต้องเก็บเป็นความลับ) หากคุณทำกุญแจส่วนตัวหาย คุณจะสูญเสียการเข้าถึงคริปโตของคุณอย่างถาวร ดังนั้นการสำรองข้อมูลจึงเป็นเรื่องสำคัญมาก",
+          "audioUrl": "/audio/th/lesson3.mp3",
+          "buttons": {
+            "start": "เริ่มคำอธิบาย",
+            "pause": "หยุด",
+            "mute": "ปิดเสียง",
+            "unmute": "เปิดเสียง"
+          }
+        },
+        "4": {
+          "title": "บทที่ 4: วิธีซื้อ Bitcoin",
+          "description": "วิธีที่ง่ายที่สุดคือใช้ตลาดแลกเปลี่ยนที่มีการกำกับดูแล เช่น Coinbase หรือ Binance สร้างบัญชี ยืนยันตัวตน และโอนเงินผ่านการโอนเงินธนาคาร คุณไม่จำเป็นต้องซื้อ Bitcoin ทั้งหมด! คุณสามารถซื้อเศษส่วนเล็กๆ ได้ เมื่อคุณซื้อ คุณจ่ายค่าธรรมเนียมเล็กน้อย (ปกติ 0.1%-1.5%) หลังจากซื้อ คุณสามารถเก็บคริปโตไว้ในตลาดแลกเปลี่ยน (สะดวกแต่มีความเสี่ยง) หรือย้ายไปยังกระเป๋าเงินของคุณเอง (ปลอดภัยกว่า)",
+          "buttons": {
+            "start": "เริ่มคำอธิบาย",
+            "pause": "หยุด",
+            "mute": "ปิดเสียง",
+            "unmute": "เปิดเสียง"
+          }
+        },
+        "5": {
+          "title": "บทที่ 5: ความปลอดภัย — ปกป้องคริปโตของคุณ",
+          "description": "โลกคริปโตมีนักต้มตุ๋น และคุณต้องปกป้องตัวเอง กฎสำคัญที่สุด: (1) อย่าแชร์กุญแจส่วนตัวของคุณกับใคร (2) ใช้การยืนยันตัวตนสองขั้นตอน (2FA) ด้วย Google Authenticator เสมอ ไม่ใช่ SMS (3) ระวังฟิชชิง — นักต้มตุ๋นสร้างเว็บไซต์ปลอมที่ดูเหมือน Binance/Coinbase (4) ใช้รหัสผ่านที่แข็งแกร่งและไม่ซ้ำกันสำหรับบัญชีคริปโต (5) พิจารณาใช้ hardware wallet สำหรับจำนวนเงินที่มาก",
+          "buttons": {
+            "start": "เริ่มคำอธิบาย",
+            "pause": "หยุด",
+            "mute": "ปิดเสียง",
+            "unmute": "เปิดเสียง"
+          }
+        }
+      },
+      "quiz": {
+        "question": "Bitcoin คืออะไร?",
+        "options": [
+          "เหรียญจริงที่ส่งมาทางไปรษณีย์",
+          "สกุลเงินดิจิทัลที่อยู่บนอินเทอร์เน็ต",
+          "บริษัทจดทะเบียนในตลาดหุ้น",
+          "แอปบนมือถือ"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Bitcoin ถูกสร้างขึ้นในปี 2009 โดยคนที่เรียกตัวเองว่า Satoshi Nakamoto จนถึงวันนี้ไม่มีใครรู้ว่าเขาคือใคร!"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": ["คำถามดี!", "คิดได้ดี!", "เรื่องนี้สำคัญ..."],
+          "correctAnswer": "ยอดเยี่ยม! +50 XP! 🎉",
+          "wrongAnswer": "ไม่ถูกต้อง ลองอีกครั้ง!",
+          "nextQuestion": "พร้อมสำหรับคำถามต่อไปหรือยัง?",
+          "voiceAnswer": "คำถามดี! Bitcoin เหมือนทองคำดิจิทัล ในขณะที่ Ethereum เหมือนคอมพิวเตอร์ดิจิทัล...",
+          "voiceTranscript": "อะไรคือความแตกต่างระหว่าง Bitcoin และ Ethereum?",
+          "initial": "ยินดีต้อนรับ! ฉันคือ AI ศาสตราจารย์ของคุณ ถามฉันได้ทุกเรื่อง!"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "ถามคำถามด้วยเสียง",
+        "description": "คลิกไมโครโฟนแล้วถามอะไรก็ได้",
+        "buttonListening": "กำลังฟัง...",
+        "button": "กดเพื่อพูด"
+      },
+      "achievements": {
+        "title": "ความก้าวหน้าของคุณ",
+        "xpLabel": "XP",
+        "streakLabel": "สตรีควันนี้"
+      },
+      "badges": { "popular": "ยอดนิยม" },
+      "labels": {
+        "level": "ระดับ",
+        "modules": "โมดูล",
+        "week": "สัปดาห์",
+        "of": "จาก"
+      }
+    },
+    "trading-masterclass": {
+      "title": "Trading Masterclass",
+      "description": "กลยุทธ์การเทรดขั้นสูงสำหรับนักลงทุนที่มีประสบการณ์ เรียนรู้การวิเคราะห์เทคนิค การจัดการความเสี่ยง และอื่นๆ",
+      "weeks": 6,
+      "level": "advanced",
+      "levelLabel": "ขั้นสูง",
+      "duration": "6 สัปดาห์",
+      "lessons": 16,
+      "videoTitle": "Trading Masterclass",
+      "videoSubtitle": "สำหรับเทรดเดอร์ขั้นสูง",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "วิเคราะห์เทคนิค",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 2,
+          "title": "Candlestick Patterns",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "จัดการความเสี่ยง",
+          "status": "locked",
+          "progress": 0
+        }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "บทที่ 1: วิเคราะห์เทคนิค",
+          "description": "การวิเคราะห์ทางเทคนิคคือการศึกษาประวัติราคาและกราฟเพื่อทำนายการเคลื่อนไหวในอนาคต โดยการดูรูปแบบ (patterns), ปริมาณการซื้อขาย (volume) และตัวบ่งชี้ต่างๆ เทรดเดอร์พยายามระบุ 'แนวโน้ม' (trends) และ 'แนวรับ/แนวต้าน' (support/resistance) ซึ่งเป็นระดับราคาที่ตลาดมักจะกลับตัว ต่างจากการวิเคราะห์พื้นฐานที่ดูมูลค่าของโครงการ การวิเคราะห์เทคนิคเน้นไปที่การเคลื่อนไหวของราคาเพียงอย่างเดียว มันเป็นเครื่องมือที่ทรงพลัง แต่ควรรู้ว่ามันไม่ใช่ลูกแก้ววิเศษ — มันให้เพียงความน่าจะเป็น ไม่ใช่ความแน่นอน",
+          "audioUrl": "/audio/th/tm_lesson1.mp3",
+          "buttons": {
+            "start": "เริ่มคำอธิบาย",
+            "pause": "หยุด",
+            "mute": "ปิดเสียง",
+            "unmute": "เปิดเสียง"
+          }
+        }
+      },
+      "quiz": {
+        "question": "'Golden cross' บ่งบอกอะไร?",
+        "options": ["เทรนด์ขาลง", "เทรนด์ขาขึ้น", "ตลาดทรงตัว", "ความผันผวน"],
+        "correctAnswer": 1,
+        "funFact": "Golden cross เกิดขึ้นเมื่อค่าเฉลี่ยเคลื่อนที่ 50 วันตัดขึ้นเหนือค่าเฉลี่ยเคลื่อนที่ 200 วัน"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": ["คำถามดี!", "คิดได้ดี!", "เรื่องนี้สำคัญ..."],
+          "correctAnswer": "ยอดเยี่ยม! +50 XP! 🎉",
+          "wrongAnswer": "ไม่ถูกต้อง ลองอีกครั้ง!",
+          "nextQuestion": "พร้อมสำหรับคำถามต่อไปหรือยัง?",
+          "voiceAnswer": "การวิเคราะห์เทคนิคคือการศึกษาประวัติราคาเพื่อทำนายการเคลื่อนไหวในอนาคต...",
+          "voiceTranscript": "การวิเคราะห์เทคนิคคืออะไร?",
+          "initial": "ยินดีต้อนรับสู่ Trading Masterclass! พร้อมเรียนกลยุทธ์ขั้นสูงหรือยัง?"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "ถามคำถามด้วยเสียง",
+        "description": "คลิกไมโครโฟนแล้วถามอะไรก็ได้",
+        "buttonListening": "กำลังฟัง...",
+        "button": "กดเพื่อพูด"
+      },
+      "achievements": {
+        "title": "ความก้าวหน้าของคุณ",
+        "xpLabel": "XP",
+        "streakLabel": "สตรีควันนี้"
+      },
+      "badges": { "popular": "ยอดนิยม" },
+      "labels": {
+        "level": "ระดับ",
+        "modules": "โมดูล",
+        "week": "สัปดาห์",
+        "of": "จาก"
+      }
+    },
+    "defi-explorer": {
+      "title": "DeFi Explorer",
+      "description": "สำรวจการเงินแบบกระจายศูนย์ เรียนรู้เกี่ยวกับ yield farming, liquidity pools และ smart contracts",
+      "weeks": 3,
+      "level": "intermediate",
+      "levelLabel": "ปานกลาง",
+      "duration": "3 สัปดาห์",
+      "lessons": 8,
+      "videoTitle": "DeFi Explorer",
+      "videoSubtitle": "เข้าใจอนาคตของการเงิน",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "DeFi คืออะไร?",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 2,
+          "title": "Smart Contracts",
+          "status": "locked",
+          "progress": 0
+        },
+        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "บทที่ 1: DeFi คืออะไร?",
+          "description": "การเงินแบบกระจายศูนย์ (DeFi) คือระบบนิเวศของแอปพลิเคชันทางการเงินที่สร้างขึ้นบนเทคโนโลยีบล็อกเชน (ส่วนใหญ่เป็น Ethereum) ต่างจากการเงินแบบดั้งเดิม DeFi ทำงานโดยไม่ต้องมีคนกลางอย่างธนาคารหรือโบรคเกอร์ แต่มันใช้ 'smart contracts' เพื่อทำให้ธุรกรรมเป็นไปโดยอัตโนมัติ ข้อมูลนี้ช่วยให้คุณกู้ยืม ฝากเงิน และเทรดสินทรัพย์ได้ตลอด 24 ชั่วโมงจากทุกที่ในโลก มันให้ความโปร่งใสที่ดีกว่า ค่าธรรมเนียมที่ต่ำกว่า และทุกคนที่เข้าถึงอินเทอร์เน็ตได้ก็สามารถใช้งานได้ แอปพลิเคชัน DeFi ที่ยอดนิยม ได้แก่ Uniswap (การเทรด), Aave (การกู้ยืม) และ MakerDAO (เหรียญคริปโตที่มีมูลค่าคงที่แบบกระจายศูนย์)",
+          "audioUrl": "/audio/th/defi_lesson1.mp3",
+          "buttons": {
+            "start": "เริ่มคำอธิบาย",
+            "pause": "หยุด",
+            "mute": "ปิดเสียง",
+            "unmute": "เปิดเสียง"
+          }
+        }
+      },
+      "quiz": {
+        "question": "Smart contract คืออะไร?",
+        "options": [
+          "สัญญาทางกฎหมาย",
+          "โค้ดที่ทำงานเองบนบล็อกเชน",
+          "บัญชีธนาคารประเภทหนึ่ง",
+          "สกุลเงินคริปโต"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Smart contracts ถูกเสนอครั้งแรกโดย Nick Szabo ในปี 1994 ก่อน Ethereum จะเกิดขึ้นเสียอีก!"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": ["คำถามดี!", "คิดได้ดี!", "เรื่องนี้สำคัญ..."],
+          "correctAnswer": "ยอดเยี่ยม! +50 XP! 🎉",
+          "wrongAnswer": "ไม่ถูกต้อง ลองอีกครั้ง!",
+          "nextQuestion": "พร้อมสำหรับคำถามต่อไปหรือยัง?",
+          "voiceAnswer": "DeFi ย่อมาจาก decentralized finance เป็นระบบนิเวศของแอปพลิเคชันทางการเงิน...",
+          "voiceTranscript": "DeFi คืออะไร?",
+          "initial": "ยินดีต้อนรับสู่ DeFi Explorer! มาสำรวจอนาคตของการเงินด้วยกัน"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "ถามคำถามด้วยเสียง",
+        "description": "คลิกไมโครโฟนแล้วถามอะไรก็ได้",
+        "buttonListening": "กำลังฟัง...",
+        "button": "กดเพื่อพูด"
+      },
+      "achievements": {
+        "title": "ความก้าวหน้าของคุณ",
+        "xpLabel": "XP",
+        "streakLabel": "สตรีควันนี้"
+      },
+      "badges": { "popular": "ยอดนิยม" },
+      "labels": {
+        "level": "ระดับ",
+        "modules": "โมดูล",
+        "week": "สัปดาห์",
+        "of": "จาก"
+      }
+    }
+  },
+  "common": {
+    "header": { "academy": "Klarpakke Academy" },
+    "lessonStatuses": {
+      "completed": "สำเร็จ",
+      "current": "กำลังดำเนินการ",
+      "available": "พร้อมใช้งาน",
+      "locked": "ล็อค"
+    },
+    "buttons": {
+      "back": "กลับ",
+      "fullscreen": "เต็มจอ",
+      "exitFullscreen": "ออกจากเต็มจอ"
+    }
+  }
+}

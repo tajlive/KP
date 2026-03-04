@@ -1,0 +1,606 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "2.0.0",
+  "description": "Webflow automation contract v2 - Complete 14-page Klarpakke site with all required DOM elements, data attributes, and scripts",
+  "pages": [
+    {
+      "path": "/",
+      "webflowSlug": "",
+      "title": "Klarpakke - Trygg Krypto-Trading",
+      "description": "Landing page with hero, features, pricing preview, and CTA",
+      "roots": [
+        {
+          "elementId": "klarpakke-landing-root",
+          "purpose": "Main landing page app root for dynamic content",
+          "required": false
+        },
+        {
+          "elementId": "hero-section",
+          "purpose": "Hero section for main value proposition",
+          "required": false
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/signup",
+      "webflowSlug": "signup",
+      "title": "Registrer deg - Klarpakke",
+      "description": "User registration page with signup form",
+      "roots": [
+        {
+          "elementId": "klarpakke-signup-root",
+          "purpose": "Signup form container",
+          "required": true
+        },
+        {
+          "elementId": "signup-form",
+          "purpose": "Signup form element",
+          "required": true
+        },
+        {
+          "elementId": "signup-email-input",
+          "purpose": "Email input field",
+          "required": true
+        },
+        {
+          "elementId": "signup-password-input",
+          "purpose": "Password input field",
+          "required": true
+        },
+        {
+          "elementId": "signup-confirm-password-input",
+          "purpose": "Confirm password input field",
+          "required": true
+        },
+        {
+          "elementId": "signup-button",
+          "purpose": "Signup submit button",
+          "required": true
+        },
+        {
+          "elementId": "signup-error",
+          "purpose": "Error message container (hidden by default)",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/signup.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/login",
+      "webflowSlug": "login",
+      "title": "Logg inn - Klarpakke",
+      "description": "Authentication login page",
+      "roots": [
+        {
+          "elementId": "klarpakke-login-root",
+          "purpose": "Login form container",
+          "required": true
+        },
+        {
+          "elementId": "login-form",
+          "purpose": "Login form element",
+          "required": true
+        },
+        {
+          "elementId": "login-email-input",
+          "purpose": "Email input field",
+          "required": true
+        },
+        {
+          "elementId": "login-password-input",
+          "purpose": "Password input field",
+          "required": true
+        },
+        {
+          "elementId": "login-button",
+          "purpose": "Login submit button",
+          "required": true
+        },
+        {
+          "elementId": "login-error",
+          "purpose": "Error message container (hidden by default)",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/login.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/reset-password",
+      "webflowSlug": "reset-password",
+      "title": "Tilbakestill Passord - Klarpakke",
+      "description": "Password reset request and update page",
+      "roots": [
+        {
+          "elementId": "reset-container",
+          "purpose": "Main container for password reset",
+          "required": true
+        },
+        {
+          "elementId": "reset-request-form",
+          "dataAttribute": "data-reset-request-form",
+          "purpose": "Request password reset form",
+          "required": true
+        },
+        {
+          "elementId": "reset-email",
+          "dataAttribute": "data-reset-email",
+          "purpose": "Email input for reset request",
+          "required": true
+        },
+        {
+          "elementId": "reset-submit",
+          "dataAttribute": "data-reset-submit",
+          "purpose": "Submit button for reset request",
+          "required": true
+        },
+        {
+          "elementId": "reset-error",
+          "dataAttribute": "data-reset-error",
+          "purpose": "Error message (hidden by default)",
+          "required": true
+        },
+        {
+          "elementId": "reset-success",
+          "dataAttribute": "data-reset-success",
+          "purpose": "Success message (hidden by default)",
+          "required": true
+        },
+        {
+          "elementId": "password-update-form",
+          "dataAttribute": "data-password-update-form",
+          "purpose": "Update password form (hidden initially)",
+          "required": true
+        },
+        {
+          "elementId": "new-password",
+          "dataAttribute": "data-new-password",
+          "purpose": "New password input",
+          "required": true
+        },
+        {
+          "elementId": "confirm-password",
+          "dataAttribute": "data-confirm-password",
+          "purpose": "Confirm password input",
+          "required": true
+        },
+        {
+          "elementId": "password-update-submit",
+          "dataAttribute": "data-password-update-submit",
+          "purpose": "Submit button for password update",
+          "required": true
+        },
+        {
+          "elementId": "password-update-error",
+          "dataAttribute": "data-password-update-error",
+          "purpose": "Error message for update (hidden by default)",
+          "required": true
+        },
+        {
+          "elementId": "password-update-success",
+          "dataAttribute": "data-password-update-success",
+          "purpose": "Success message for update (hidden by default)",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/password-reset.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/verify-email",
+      "webflowSlug": "verify-email",
+      "title": "Bekreft E-post - Klarpakke",
+      "description": "Email verification page",
+      "roots": [
+        {
+          "elementId": "verify-container",
+          "purpose": "Main verification container",
+          "required": true
+        },
+        {
+          "elementId": "verify-email-display",
+          "purpose": "Display user's email address",
+          "required": true
+        },
+        {
+          "elementId": "verify-status",
+          "purpose": "Verification status message",
+          "required": true
+        },
+        {
+          "elementId": "resend-verification",
+          "purpose": "Resend verification email button",
+          "required": true
+        },
+        {
+          "elementId": "continue-to-dashboard",
+          "purpose": "Continue button after verification (hidden initially)",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/verify-email.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/pricing",
+      "webflowSlug": "pricing",
+      "title": "Priser - Klarpakke",
+      "description": "Pricing tiers with monthly/annual toggle and feature comparison",
+      "roots": [
+        {
+          "elementId": "klarpakke-pricing-root",
+          "purpose": "Pricing page app root for dynamic pricing cards",
+          "required": false
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/app/dashboard",
+      "webflowSlug": "app-dashboard",
+      "title": "Dashboard - Klarpakke",
+      "description": "Main authenticated dashboard for signal management",
+      "roots": [
+        {
+          "elementId": "klarpakke-dashboard-root",
+          "purpose": "Critical: Main dashboard app container - renders signal table, filters, and actions",
+          "required": true
+        },
+        {
+          "elementId": "signals-container",
+          "dataAttribute": "data-signals-container",
+          "purpose": "Container for signal cards/list",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ],
+      "authRequired": true
+    },
+    {
+      "path": "/app/settings",
+      "webflowSlug": "app-settings",
+      "title": "Innstillinger - Klarpakke",
+      "description": "User settings and preferences",
+      "roots": [
+        {
+          "elementId": "klarpakke-settings-root",
+          "purpose": "Critical: Settings page container for user preferences and account management",
+          "required": true
+        },
+        {
+          "elementId": "safe-mode-toggle",
+          "dataAttribute": "data-safe-mode-toggle",
+          "purpose": "Safe mode toggle checkbox",
+          "required": true
+        },
+        {
+          "elementId": "safe-mode-status",
+          "dataAttribute": "data-safe-mode-status",
+          "purpose": "Safe mode status display",
+          "required": true
+        },
+        {
+          "elementId": "logout-button",
+          "purpose": "Logout button",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ],
+      "authRequired": true
+    },
+    {
+      "path": "/app/history",
+      "webflowSlug": "app-history",
+      "title": "Trading-historikk - Klarpakke",
+      "description": "Trading history and past signals",
+      "roots": [
+        {
+          "elementId": "klarpakke-history-root",
+          "purpose": "History page container",
+          "required": true
+        },
+        {
+          "elementId": "history-container",
+          "dataAttribute": "data-history-container",
+          "purpose": "Container for history list",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/history.js",
+          "placement": "footer",
+          "async": true
+        }
+      ],
+      "authRequired": true
+    },
+    {
+      "path": "/app/profile",
+      "webflowSlug": "app-profile",
+      "title": "Profil - Klarpakke",
+      "description": "User profile and statistics",
+      "roots": [
+        {
+          "elementId": "klarpakke-profile-root",
+          "purpose": "Profile page container",
+          "required": true
+        },
+        {
+          "elementId": "profile-container",
+          "dataAttribute": "data-profile-container",
+          "purpose": "Container for profile content",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/profile.js",
+          "placement": "footer",
+          "async": true
+        }
+      ],
+      "authRequired": true
+    },
+    {
+      "path": "/kalkulator",
+      "webflowSlug": "kalkulator",
+      "title": "Kalkulator - Klarpakke",
+      "description": "Interactive calculator for signal analysis",
+      "roots": [
+        {
+          "elementId": "klarpakke-calculator-root",
+          "purpose": "Critical: Calculator app container for interactive calculations",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "placement": "footer",
+          "async": false
+        },
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/calculator.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/404",
+      "webflowSlug": "404",
+      "title": "404 - Side ikke funnet",
+      "description": "Page not found error page",
+      "roots": [
+        {
+          "elementId": "error-404",
+          "purpose": "404 error container",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/403",
+      "webflowSlug": "403",
+      "title": "403 - Ingen tilgang",
+      "description": "Forbidden error page",
+      "roots": [
+        {
+          "elementId": "error-403",
+          "purpose": "403 error container",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/500",
+      "webflowSlug": "500",
+      "title": "500 - Serverfeil",
+      "description": "Server error page",
+      "roots": [
+        {
+          "elementId": "error-500",
+          "purpose": "500 error container",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/terms",
+      "webflowSlug": "terms",
+      "title": "Vilkår for bruk - Klarpakke",
+      "description": "Terms of service page",
+      "roots": [
+        {
+          "elementId": "terms-container",
+          "purpose": "Terms content container",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/privacy",
+      "webflowSlug": "privacy",
+      "title": "Personvernerklæring - Klarpakke",
+      "description": "Privacy policy page",
+      "roots": [
+        {
+          "elementId": "privacy-container",
+          "purpose": "Privacy content container",
+          "required": true
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    },
+    {
+      "path": "/help",
+      "webflowSlug": "help",
+      "title": "Hjelp og Support - Klarpakke",
+      "description": "Help and FAQ page",
+      "roots": [
+        {
+          "elementId": "klarpakke-help-root",
+          "purpose": "Help page container",
+          "required": true
+        },
+        {
+          "elementId": "faq-section",
+          "purpose": "FAQ accordion section",
+          "required": false
+        }
+      ],
+      "scripts": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "placement": "footer",
+          "async": true
+        }
+      ]
+    }
+  ],
+  "globalScripts": [
+    {
+      "src": "https://unpkg.com/@supabase/supabase-js@2",
+      "placement": "head",
+      "note": "Supabase client library - required for all authenticated pages"
+    },
+    {
+      "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/styles/coinbase.css",
+      "placement": "head",
+      "note": "Coinbase Design System CSS"
+    }
+  ],
+  "validation": {
+    "noDuplicateIds": true,
+    "allRequiredRootsPresent": true,
+    "scriptsInCorrectPlacement": true
+  },
+  "summary": {
+    "totalPages": 18,
+    "authRequired": 5,
+    "publicPages": 13,
+    "errorPages": 3,
+    "legalPages": 2
+  }
+}

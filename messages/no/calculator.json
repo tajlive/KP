@@ -1,0 +1,34 @@
+{
+  "title": "Kalkulator",
+  "description": "Trading kalkulator",
+  "subtitle": "Se hvordan dine investeringer kan vokse med daglig sammensatt avkastning",
+  "intro": {
+    "title": "Hva er sammensatt avkastning?",
+    "p1": "Sammensatt avkastning betyr at du tjener renter på renter. Når du trader med en daglig avkastning, vil profitten fra hver dag legges til kapitalen din og generere ny profitt neste dag.",
+    "p2": "Denne kalkulatoren viser hvor mye du kan tjene på ett år med konsekvent trading, basert på din startkapital og forventet daglig avkastning."
+  },
+  "inputs": {
+    "startAmount": "Startbeløp",
+    "dailyReturn": "Daglig avkastning (%)"
+  },
+  "results": {
+    "afterYear": "Etter 1 år",
+    "totalReturn": "Total avkastning",
+    "growthChart": "Vekst over tid",
+    "monthly": "Månedlig oversikt"
+  },
+  "table": {
+    "month": "Måned",
+    "balance": "Saldo",
+    "monthProfit": "Månedsprofitt",
+    "totalProfit": "Total profitt"
+  },
+  "disclaimer": {
+    "title": "Viktig informasjon",
+    "text": "Dette er en teoretisk beregning. Faktiske tradingresultater kan variere betydelig. Daglig avkastning på 1-4% er svært ambisiøst og krever betydelig kompetanse. Historisk avkastning er ingen garanti for fremtidig avkastning."
+  },
+  "cta": {
+    "text": "Klar til å teste strategiene dine uten risiko?",
+    "button": "Prøv Paper Trading"
+  }
+}

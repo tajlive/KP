@@ -1,0 +1,19 @@
+# _redirects for Cloudflare Pages - FULL SPA + API
+
+# Client-side SPA routing (login, dashboard, signup, etc)
+/* /index.html 200
+
+# API proxy fallback
+/api/* /index.html 200
+
+# Static assets
+/assets/* /index.html 200
+
+# Tutorials
+/tutorials/* /index.html 200
+
+# Pricing
+/pricing /index.html 200
+
+# Fallback
+/* /index.html 200

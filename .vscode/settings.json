@@ -1,0 +1,73 @@
+{
+  // Editor settings
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.rulers": [80, 100],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  
+  // TypeScript
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  
+  // Files
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/out": true,
+    "**/dist": true,
+    "**/.git": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.next/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/package-lock.json": true
+  },
+  
+  // Eslint
+  "eslint.workingDirectories": ["."],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  
+  // Tailwind CSS
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[^'\"]`([^'\"]+)[^'\"]"],
+    ["cx\\(([^)]*)\\)", "[^'\"]`([^'\"]+)[^'\"]"]
+  ],
+  
+  // i18n
+  "i18n-ally.localesPaths": ["messages"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.sourceLanguage": "no",
+  "i18n-ally.displayLanguage": "no",
+  "i18n-ally.enabledFrameworks": ["next-intl"],
+  
+  // Git
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  
+  // Terminal
+  "terminal.integrated.defaultProfile.osx": "bash",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  
+  // Extension recommendations
+  "extensions.ignoreRecommendations": true
+}

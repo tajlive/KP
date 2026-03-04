@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discord Community
+    url: https://discord.gg/klarpakke
+    about: Spør spørsmål og diskuter med community
+  - name: 📚 Documentation
+    url: https://klarpakke.no/docs
+    about: Les dokumentasjonen
+  - name: 🔐 Security Issue
+    url: https://github.com/klarpakke/klarpakke/security/advisories/new
+    about: Rapporter sikkerhetsproblemer privat

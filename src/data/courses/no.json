@@ -1,0 +1,408 @@
+{
+  "metadata": {
+    "title": "Velg ditt kurs",
+    "subtitle": "Fra nybegynner til ekspert. Lær i ditt eget tempo med AI-veiledning.",
+    "stats": {
+      "completedCourses": "147",
+      "activeStudents": "89",
+      "averageRating": "4.8",
+      "totalLessons": "36"
+    },
+    "cta": {
+      "title": "Usikker på hvor du skal starte?",
+      "description": "Ta vår gratis interessetest og finn ut hvilket kurs som passer deg best.",
+      "button": "Start interessetest"
+    }
+  },
+  "courses": [
+    {
+      "id": "krypto-for-smaasparere",
+      "slug": "krypto-for-smaasparere",
+      "title": "Krypto for Småsparere",
+      "subtitle": "Fra null til trygg krypto-eier på 4 uker",
+      "level": "Nybegynner",
+      "duration": "8 timer",
+      "students": 1247,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-blue-600 to-cyan-600",
+      "icon": "🚀",
+      "modules": 12,
+      "weeks": 4,
+      "tags": ["Bitcoin", "Sikkerhet", "Handel"],
+      "cta": "Start kurset"
+    },
+    {
+      "id": "trading-masterclass",
+      "slug": "trading-masterclass",
+      "title": "Trading Masterclass",
+      "subtitle": "Avanserte strategier for erfarne tradere",
+      "level": "Avansert",
+      "duration": "12 timer",
+      "students": 523,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-amber-500 to-orange-600",
+      "icon": "📈",
+      "modules": 16,
+      "weeks": 6,
+      "tags": ["Teknisk analyse", "Risk management"],
+      "cta": "Start kurset"
+    },
+    {
+      "id": "defi-explorer",
+      "slug": "defi-explorer",
+      "title": "DeFi Explorer",
+      "subtitle": "Forstå desentralisert finans",
+      "level": "Middels",
+      "duration": "6 timer",
+      "students": 892,
+      "rating": 4.7,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-emerald-500 to-teal-600",
+      "icon": "🌐",
+      "modules": 8,
+      "weeks": 3,
+      "tags": ["DeFi", "Yield farming", "Liquidity"],
+      "cta": "Start kurset"
+    }
+  ],
+  "courseDetails": {
+    "krypto-for-smaasparere": {
+      "title": "Krypto for Småsparere",
+      "description": "Fra 0 til trygg investor på 4 uker. Lær det viktigste om Bitcoin, sikkerhet og sparing.",
+      "weeks": 4,
+      "level": "beginner",
+      "levelLabel": "Nybegynner",
+      "duration": "4 uker",
+      "lessons": 12,
+      "videoTitle": "Krypto for Småsparere",
+      "videoSubtitle": "AI-guidet kurs - Lær i ditt eget tempo",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "Hva er Krypto?",
+          "status": "completed",
+          "progress": 100
+        },
+        { "id": 2, "title": "Blockchain", "status": "current", "progress": 0 },
+        { "id": 3, "title": "Lommebok", "status": "available", "progress": 0 },
+        { "id": 4, "title": "Kjøp Bitcoin", "status": "locked", "progress": 0 },
+        { "id": 5, "title": "Sikkerhet", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "Leksjon 1: Hva er Kryptovaluta?",
+          "description": "Kryptovaluta er digitale penger som fungerer uten banker. Bitcoin ble skapt i 2009 og er den første og mest kjente kryptovalutaen. I motsetning til norske kroner kontrolleres ikke Bitcoin av noen sentralbank — den styres av et nettverk av datamaskiner over hele verden. Tenk på det som digitalt gull: det finnes kun 21 millioner Bitcoin totalt, og det kan aldri lages flere. Dette gjør Bitcoin til en deflasjonsvaluta, i motsetning til tradisjonelle valutaer der sentralbanker kan trykke mer penger. Andre populære kryptovalutaer inkluderer Ethereum (en plattform for smarte kontrakter), Solana (kjent for raske transaksjoner), og tusenvis av andre.",
+          "audioUrl": "/audio/no/lesson1.mp3",
+          "buttons": {
+            "start": "Start Forklaring",
+            "pause": "Pause",
+            "mute": "Lyd av",
+            "unmute": "Lyd på"
+          }
+        },
+        "2": {
+          "title": "Leksjon 2: Blockchain — Teknologien bak",
+          "description": "Blockchain er teknologien som gjør Bitcoin mulig. Se for deg en digital notatbok som kopieres til tusenvis av datamaskiner samtidig. Hver gang কেউ sender Bitcoin, skrives transaksjonen ned i notatboken. Alle kopiene oppdateres samtidig, og ingen kan endre gamle oppføringer. Dette kalles 'desentralisert' fordi ingen enkelt person kontrollerer boken. Ordet 'blockchain' betyr bokstavelig talt en 'kjede av blokker'. Hvert 10. minutt samles nye transaksjoner i en blokk, og denne blokken lenkes til den forrige. Resultatet er en ubrytelig kjede som viser hele historien til alle Bitcoin-transaksjoner noensinne.",
+          "buttons": {
+            "start": "Start Forklaring",
+            "pause": "Pause",
+            "mute": "Lyd av",
+            "unmute": "Lyd på"
+          }
+        },
+        "3": {
+          "title": "Leksjon 3: Kryptolommebok — Din digitale safe",
+          "description": "For å eie krypto trenger du en kryptolommebok. Det finnes to hovedtyper: 'hot wallets' (apper på mobilen din som er enkle å bruke, f.eks. Metamask eller Trust Wallet) og 'cold wallets' (fysiske enheter som Ledger eller Trezor som holder kryptoen din offline og ekstra trygg). Lommeboken inneholder to nøkler: en offentlig nøkkel (som et kontonummer du kan dele med andre for å motta krypto) og en privat nøkkel (som PIN-koden din — den MÅ holdes hemmelig). Mister du den private nøkkelen, mister du tilgangen til kryptoen din permanent. Derfor er det kritisk å lage sikkerhetskopier.",
+          "buttons": {
+            "start": "Start Forklaring",
+            "pause": "Pause",
+            "mute": "Lyd av",
+            "unmute": "Lyd på"
+          }
+        },
+        "4": {
+          "title": "Leksjon 4: Hvordan kjøpe Bitcoin",
+          "description": "Det enkleste er å bruke en regulert børs som Firi (norsk), Coinbase eller Binance. Opprett en konto, verifiser identiteten din (BankID), og overfør penger med Vipps eller bankoverføring. Du trenger IKKE kjøpe en hel Bitcoin! Du kan kjøpe en liten del — for eksempel 500 kr i Bitcoin. Når du handler, betaler du et lite gebyr (vanligvis 0,1%–1,5%). Etter kjøpet kan du la kryptoen stå på børsen (enkelt, men noe risiko) eller flytte den til din egen lommebok (tryggere). Tips: Start med et lite beløp du kan tåle å tape, og bli kjent med prosessen før du øker.",
+          "buttons": {
+            "start": "Start Forklaring",
+            "pause": "Pause",
+            "mute": "Lyd av",
+            "unmute": "Lyd på"
+          }
+        },
+        "5": {
+          "title": "Leksjon 5: Sikkerhet — Beskytt kryptoen din",
+          "description": "Kryptoverdenen har svindlere, og du må beskytte deg. De viktigste reglene: (1) Del ALDRI din private nøkkel med noen — ingen seriøs tjeneste vil be deg om den. (2) Bruk alltid 2-faktor autentisering (2FA) med Google Authenticator, ikke SMS. (3) Pass deg for phishing — svindlere lager falske nettsider som ser ut som Binance/Coinbase. Sjekk alltid URL-en. (4) Bruk sterke, unike passord for kryptokontoer. (5) Vurder en hardware-lommebok for større beløp. (6) Ikke del hvor mye krypto du eier på sosiale medier. Til slutt: ingen seriøs person lover 'garantert avkastning' i krypto.",
+          "buttons": {
+            "start": "Start Forklaring",
+            "pause": "Pause",
+            "mute": "Lyd av",
+            "unmute": "Lyd på"
+          }
+        }
+      },
+      "quiz": {
+        "question": "Hva er Bitcoin?",
+        "options": [
+          "En fysisk mynt du får i posten",
+          "Digital valuta som lever på internett",
+          "Et aksjeselskap på børsen",
+          "Et program på mobilen din"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Bitcoin ble skapt i 2009 av noen som kalte seg Satoshi Nakamoto. Til denne dagen vet ingen hvem det faktisk er!"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": [
+            "Godt spørsmål!",
+            "Bra tenkt!",
+            "Dette er viktig..."
+          ],
+          "correctAnswer": "Fantastisk! +50 XP! 🎉",
+          "wrongAnswer": "Ikke helt. Prøv igjen!",
+          "nextQuestion": "Klar til neste spørsmål?",
+          "voiceAnswer": "Godt spørsmål! Bitcoin er som digitalt gull, mens Ethereum er mer som en digital datamaskin...",
+          "voiceTranscript": "Hva er forskjellen på Bitcoin og Ethereum?",
+          "initial": "Velkommen! Jeg er din AI-professor. Spør meg om hva som helst!"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "Still spørsmål med stemmen",
+        "description": "Klikk på mikrofonen og spør om hva som helst",
+        "buttonListening": "Lytter...",
+        "button": "Trykk for å snakke"
+      },
+      "achievements": {
+        "title": "Din fremgang",
+        "xpLabel": "XP",
+        "streakLabel": "Dagens streak"
+      },
+      "badges": {
+        "popular": "POPULÆR"
+      },
+      "labels": {
+        "level": "Nivå",
+        "modules": "moduler",
+        "week": "uke",
+        "of": "av"
+      }
+    },
+    "trading-masterclass": {
+      "title": "Trading Masterclass",
+      "description": "Avanserte trading-strategier for erfarne investorer. Lær teknisk analyse, risk management og mer.",
+      "weeks": 6,
+      "level": "advanced",
+      "levelLabel": "Avansert",
+      "duration": "6 uker",
+      "lessons": 16,
+      "videoTitle": "Trading Masterclass",
+      "videoSubtitle": "For avanserte tradere",
+      "lessonsList": [
+        {
+          "id": 1,
+          "title": "Teknisk Analyse",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 2,
+          "title": "Candlestick Patterns",
+          "status": "locked",
+          "progress": 0
+        },
+        {
+          "id": 3,
+          "title": "Risk Management",
+          "status": "locked",
+          "progress": 0
+        }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "Leksjon 1: Teknisk Analyse",
+          "description": "Lær å lese grafer og identifisere trender.",
+          "buttons": {
+            "start": "Start Forklaring",
+            "pause": "Pause",
+            "mute": "Lyd av",
+            "unmute": "Lyd på"
+          }
+        }
+      },
+      "quiz": {
+        "question": "Hva indikerer en 'golden cross'?",
+        "options": [
+          "Bearish trend",
+          "Bullish trend",
+          "Sideways market",
+          "Volatilitet"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Golden cross skjer når 50-dagers glidende gjennomsnitt krysser over 200-dagers glidende gjennomsnitt."
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": [
+            "Godt spørsmål!",
+            "Bra tenkt!",
+            "Dette er viktig..."
+          ],
+          "correctAnswer": "Fantastisk! +50 XP! 🎉",
+          "wrongAnswer": "Ikke helt. Prøv igjen!",
+          "nextQuestion": "Klar til neste spørsmål?",
+          "voiceAnswer": "Teknisk analyse handler om å studere prishistorikk for å forutsi fremtidige bevegelser...",
+          "voiceTranscript": "Hva er teknisk analyse?",
+          "initial": "Velkommen til Trading Masterclass! Klar til å lære avanserte strategier?"
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "Still spørsmål med stemmen",
+        "description": "Klikk på mikrofonen og spør om hva som helst",
+        "buttonListening": "Lytter...",
+        "button": "Trykk for å snakke"
+      },
+      "achievements": {
+        "title": "Din fremgang",
+        "xpLabel": "XP",
+        "streakLabel": "Dagens streak"
+      },
+      "badges": {
+        "popular": "POPULÆR"
+      },
+      "labels": {
+        "level": "Nivå",
+        "modules": "moduler",
+        "week": "uke",
+        "of": "av"
+      }
+    },
+    "defi-explorer": {
+      "title": "DeFi Explorer",
+      "description": "Utfork desentralisert finans. Lær om yield farming, liquidity pools og smart contracts.",
+      "weeks": 3,
+      "level": "intermediate",
+      "levelLabel": "Middels",
+      "duration": "3 uker",
+      "lessons": 8,
+      "videoTitle": "DeFi Explorer",
+      "videoSubtitle": "Forstå fremtidens finans",
+      "lessonsList": [
+        { "id": 1, "title": "Hva er DeFi?", "status": "locked", "progress": 0 },
+        {
+          "id": 2,
+          "title": "Smart Contracts",
+          "status": "locked",
+          "progress": 0
+        },
+        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
+      ],
+      "lessonContent": {
+        "1": {
+          "title": "Leksjon 1: Hva er DeFi?",
+          "description": "Desentralisert finans revolusjonerer måten vi tenker penger på.",
+          "buttons": {
+            "start": "Start Forklaring",
+            "pause": "Pause",
+            "mute": "Lyd av",
+            "unmute": "Lyd på"
+          }
+        }
+      },
+      "quiz": {
+        "question": "Hva er en smart contract?",
+        "options": [
+          "En juridisk avtale",
+          "Selvutførende kode på blokkjeden",
+          "En type bankkonto",
+          "En kryptovaluta"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Smart contracts ble først foreslått av Nick Szabo i 1994, lenge før Ethereum eksisterte!"
+      },
+      "aiProfessor": {
+        "messages": {
+          "encouragement": [
+            "Godt spørsmål!",
+            "Bra tenkt!",
+            "Dette er viktig..."
+          ],
+          "correctAnswer": "Fantastisk! +50 XP! 🎉",
+          "wrongAnswer": "Ikke helt. Prøv igjen!",
+          "nextQuestion": "Klar til neste spørsmål?",
+          "voiceAnswer": "DeFi står for desentralisert finans. Det er et økosystem av finansielle applikasjoner...",
+          "voiceTranscript": "Hva er DeFi?",
+          "initial": "Velkommen til DeFi Explorer! La oss utforske fremtidens finans sammen."
+        },
+        "emotions": {
+          "neutral": "🤖",
+          "happy": "😊",
+          "excited": "🤩",
+          "thinking": "🤔",
+          "concerned": "😟",
+          "celebrating": "🎉"
+        }
+      },
+      "voiceInteraction": {
+        "title": "Still spørsmål med stemmen",
+        "description": "Klikk på mikrofonen og spør om hva som helst",
+        "buttonListening": "Lytter...",
+        "button": "Trykk for å snakke"
+      },
+      "achievements": {
+        "title": "Din fremgang",
+        "xpLabel": "XP",
+        "streakLabel": "Dagens streak"
+      },
+      "badges": {
+        "popular": "POPULÆR"
+      },
+      "labels": {
+        "level": "Nivå",
+        "modules": "moduler",
+        "week": "uke",
+        "of": "av"
+      }
+    }
+  },
+  "common": {
+    "header": {
+      "academy": "Klarpakke Akademi"
+    },
+    "lessonStatuses": {
+      "completed": "Fullført",
+      "current": "Pågår",
+      "available": "Tilgjengelig",
+      "locked": "Låst"
+    },
+    "buttons": {
+      "back": "Tilbake",
+      "fullscreen": "Fullskjerm",
+      "exitFullscreen": "Avslutt fullskjerm"
+    }
+  }
+}

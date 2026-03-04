@@ -1,0 +1,2042 @@
+{
+  "metadata": {
+    "title": "Klarpakke Universitet - Norges første krypto-universitet",
+    "description": "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital.",
+    "ogTitle": "Klarpakke Universitet - Norges første krypto-universitet",
+    "ogDescription": "Lær krypto-trading fra A til Å. Paper trading med 1M kr virtuell kapital.",
+    "signup": {
+      "title": "Meld deg på - Bli en del av de første 100",
+      "description": "Sikre din plass blant de første 100 studentene ved Klarpakke Universitet. Få 10,000 KLT tokens gratis.",
+      "ogTitle": "Bli student #{{number}}/100",
+      "ogDescription": "Jeg har sikret min plass ved Klarpakke Universitet! Bli med å lær krypto-trading fra A til Å."
+    },
+    "login": {
+      "title": "Logg inn - Student Portal",
+      "description": "Logg inn på din studentportal for å få tilgang til kurs, paper trading og din profil."
+    },
+    "about": {
+      "title": "Om Oss - Vår historie",
+      "description": "Lær om historien bak Klarpakke Universitet. Fra dyrekjøpt lærdom til et komplett krypto-universitet."
+    },
+    "courses": {
+      "title": "Kurs - Lær krypto-trading",
+      "description": "Utforsk våre kurs fra nybegynner til avansert nivå. Master krypto-trading på 4 uker."
+    },
+    "contact": {
+      "title": "Kontakt oss",
+      "description": "Har du spørsmål? Ta kontakt med oss. Vi er her for å hjelpe deg med din krypto-reise."
+    }
+  },
+  "meta": {
+    "pricing": "Priser",
+    "pricingDescription": "Enkel prising for krypto-utdanning",
+    "login": "Innlogging",
+    "loginDescription": "Logg inn på din studentportal",
+    "coursesDescription": "Lær krypto-trading fra A til Å"
+  },
+  "base": {
+    "language": "Språk",
+    "loading": "Laster...",
+    "error": "En feil oppstod",
+    "retry": "Prøv igjen",
+    "close": "Lukk",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "confirm": "Bekreft",
+    "submit": "Send inn",
+    "back": "Tilbake",
+    "next": "Neste",
+    "continue": "Fortsett",
+    "done": "Ferdig",
+    "yes": "Ja",
+    "no": "Nei"
+  },
+  "common": {
+    "loading": "Laster...",
+    "error": "Noe gikk galt",
+    "success": "Suksess!",
+    "comingSoon": "Kommer snart",
+    "underDevelopment": "Under utvikling",
+    "notAvailable": "Ikke tilgjengelig",
+    "readMore": "Les mer",
+    "learnMore": "Lær mer",
+    "getStarted": "Kom i gang",
+    "startFree": "Start gratis",
+    "signUp": "Registrer deg",
+    "logIn": "Logg inn",
+    "logOut": "Logg ut",
+    "myAccount": "Min konto",
+    "settings": "Innstillinger",
+    "help": "Hjelp",
+    "support": "Support"
+  },
+  "payment": {
+    "chooseMethod": "Velg betalingsmetode",
+    "vipps": "Vipps",
+    "vippsDescription": "Raskt for norske kunder",
+    "card": "Kort",
+    "cardDescription": "Visa, Mastercard, etc.",
+    "or": "eller",
+    "payWithCard": "Betal med kort",
+    "securePayment": "Sikker betaling. Vipps for norske kunder, kort for internasjonale.",
+    "back": "Tilbake"
+  },
+  "checkout": {
+    "loading": "Laster...",
+    "backToPricing": "Tilbake til priser",
+    "yourOrder": "Din bestilling",
+    "trialPeriod": "14 dagers gratis prøveperiode",
+    "trialDescription": "Du vil ikke bli belastet før prøveperioden er over.",
+    "totalToday": "Totalt i dag",
+    "free": "0 kr",
+    "paymentMethod": "Betalingsmetode",
+    "paymentDescription": "Velg din foretrukne måte å betale på",
+    "vippsForNorwegians": "Vipps for nordmenn",
+    "cardForInternational": "Kort for internasjonale",
+    "secureNote": "Sikker betaling. Ingen kortinfo lagres hos oss.",
+    "subscription": "abonnement"
+  },
+  "navigation": {
+    "home": "Hjem",
+    "studyProgram": "Studieprogram",
+    "school": "Skole",
+    "paperTrading": "Paper Trading",
+    "courses": "Kurs",
+    "about": "Om Oss",
+    "pricing": "Priser",
+    "calculator": "Kalkulator",
+    "login": "Logg inn",
+    "signup": "Start gratis",
+    "welcomeOffer": "🎁 Første 100 studenter får 10,000 KLT tokens gratis!",
+    "help": "Hjelp",
+    "tools": "Verktøy",
+    "myPage": "Min Side",
+    "upgrade": "Oppgrader",
+    "upgradeNow": "Oppgrader nå",
+    "language": "Språk",
+    "liveTrading": "Live Trading",
+    "simulator": "Simulator",
+    "quiz": "Quiz",
+    "leagues": "Konkurranser",
+    "loading": "Laster...",
+    "closeMenu": "Lukk meny",
+    "openMenu": "Åpne meny"
+  },
+  "admin": {
+    "login": "Logg inn",
+    "loggingIn": "Logger inn...",
+    "resetPassword": "Tilbakestill passord",
+    "choosePassword": "Velg et sterkt passord for din admin-konto.",
+    "search": "Søk etter navn, e-post eller ID...",
+    "searchUsers": "Søk etter navn, e-post, brukernummer...",
+    "selectTier": "Velg nytt abonnement for",
+    "deleteConfirm": "ADVARSEL: Dette vil permanent slette brukeren og all deres data. Denne handlingen kan ikke angres.",
+    "deletePermanent": "Slett permanent",
+    "allServicesNormal": "Alle tjenester fungerer normalt",
+    "serviceStatus": "Tjenestestatus",
+    "students": "Studenter",
+    "users": "Brukere",
+    "system": "System",
+    "overview": "Oversikt",
+    "tradeSync": "Trade-synkronisering",
+    "settings": "Innstillinger",
+    "loggedInAs": "Logget inn som admin",
+    "logout": "Logg ut",
+    "adminPanel": "Admin-panel",
+    "totalUsers": "Totalt antall brukere",
+    "activeLeagues": "Aktive ligaer",
+    "totalTrades": "Totalt antall handler",
+    "aiMessages": "AI-meldinger",
+    "sendEmail": "Send e-post",
+    "emailTo": "Til",
+    "emailSubject": "Emne",
+    "emailBody": "Melding",
+    "sending": "Sender...",
+    "send": "Send",
+    "broadcast": "Send til alle brukere"
+  },
+  "landing": {
+    "badge": "Klarpakke Universitet",
+    "heroTitle": "Start i dag. <span>Bli ekspert på 4 uker.</span>",
+    "heroDescription": "Kom i gang på 2 minutter. Koble til automatisk handel med lav risiko mens du lærer faget fra grunnen av.",
+    "heroButton": "Start nå",
+    "heroButtonSubtext": "Tar kun 2 minutter å komme i gang",
+    "marketsTitle": "Handl med dine favoritter direkte via Binance på våre systemer",
+    "realityCheck": {
+      "title": "Hva gjør du med 100-lappen?",
+      "subtitle": "Odds, bankkonto eller investering? Se forskjellen.",
+      "betting": {
+        "title": "Oddsen / Lotto",
+        "desc": "Setter du 100 kr på en kamp, er de borte om du taper. \"Huset\" vinner alltid i lengden. Dette er underholdning, ikke sparing."
+      },
+      "bank": {
+        "title": "Banken",
+        "desc": "I banken får du renter, men inflasjonen spiser ofte opp gevinsten. Det er trygt, men pengene dine vokser nesten ikke i kjøpekraft."
+      },
+      "crypto": {
+        "title": "Klarpakke (Binance)",
+        "gain": "Ubegrenset",
+        "desc": "Invester 100 kr i fremtiden. Med vår kunnskap lærer du å bygge verdier over tid. Start smått, drøm stort. Lottery betting er vel best."
+      }
+    },
+    "whyUs": {
+      "safe": {
+        "title": "Norsk trygghet",
+        "desc": "Alt innhold er på norsk, med personlig support fra ekte mennesker. Ingen forvirrende faguttrykk."
+      },
+      "simple": {
+        "title": "Enkel som nettbanken",
+        "desc": "Vi bruker ord du forstår og verktøy som minner om det du er vant til fra før."
+      },
+      "tech": {
+        "title": "Teknologisk overlegen",
+        "desc": "Vi bruker maskinlæring og sanntidsdata for å gi deg bedre innsikt i markedstrender."
+      }
+    },
+    "isForYou": {
+      "title": "Er dette for deg?",
+      "desc": "Du trenger ikke være et IT-geni. Dette er laget for deg som vil ha kontroll på pengene dine, men som er skeptisk til kompliserte grafer og engelske uttrykk.",
+      "points": [
+        "Du har lyst til å lære, men vet ikke hvor du skal start",
+        "Du vil unngå svindel og dyre nybegynnerfeil",
+        "Du verdsetter sikkerhet og 100% transparens (Ingen MLM eller pyramidespill)"
+      ]
+    },
+    "journey": {
+      "title": "Din reise – steg for steg",
+      "week1": {
+        "title": "Uke 1: Forståelsen",
+        "desc": "Lær det grunnleggende gjennom korte, enkle videoer. Vi starter helt fra scratch."
+      },
+      "week2": {
+        "title": "Uke 2: Tryggheten",
+        "desc": "Vi setter opp sikre kontoer og viser deg hvordan du beskytter verdiene dine mot hacking og svindel."
+      },
+      "week3": {
+        "title": "Uke 3: Verktøyene",
+        "desc": "Vi aktiverer hjelpemidler som automatiserer de vanskelige oppgavene for deg."
+      },
+      "week4": {
+        "title": "Uke 4: Mestring",
+        "desc": "Du gjør dine første små investeringer med oss i ryggen. Du er nå en trygg investor."
+      }
+    },
+    "support": {
+      "title": "Spørsmål? Vi er her.",
+      "desc": "Vi vet at krypto kan føles skummelt. Derfor er vi aldri mer enn en melding unna.",
+      "button": "Chat med norsk support"
+    }
+  },
+  "hero": {
+    "badge": "Norges første krypto-universitet",
+    "title": "🎓 KLARPAKKE UNIVERSITET",
+    "tagline": "Fra Student til Master Trader",
+    "description": "Dette universitetet vil vokse med deg 📚",
+    "ctaPrimary": "Søk opptak - Første 100 får tokens →",
+    "ctaSecondary": "Se studieprogram →",
+    "stats": {
+      "weeks": "Uker til Master",
+      "students": "Studenter",
+      "accuracy": "Nøyaktighet"
+    },
+    "title_part1": "Lær krypto.",
+    "title_part2": "Null risiko.",
+    "subtitle_part1": "1M kr virtuell kapital.",
+    "subtitle_part2": "Ekte priser.",
+    "ready": "Klar?",
+    "getStarted": "Kom i gang",
+    "features": {
+      "prices": "Live priser",
+      "risk": "Null risiko",
+      "fast": "Lynrask",
+      "courses": "Norske kurs"
+    }
+  },
+  "foundersOffer": {
+    "badge": "Kun {spotsLeft} plasser igjen!",
+    "title": "🎁 FØRSTE 100 STUDENTER",
+    "subtitle": "Grunnlegger-Student Pakken",
+    "benefits": {
+      "tokens": {
+        "title": "10,000 KLT tokens",
+        "description": "Av totalt 10,000,000 (0.1% av forsyningen)"
+      },
+      "badge": {
+        "title": "\"Grunnlegger\" badge",
+        "description": "Permanent"
+      }
+    },
+    "progress": {
+      "enrolled": "påmeldt",
+      "spotsLeft": "ledige"
+    },
+    "cta": "Søk opptak nå - {spotsLeft}/{spotsTotal} ledige →",
+    "disclaimer": "⚠️ KLT har ingen pengeverdi i dag. Men tenk deg dette: De første 100 ansatte i Apple fikk aksjeopsjoner som \"akkurat lå der\". I dag er de verdt millioner. Hvis Klarpakke blir Norges største krypto-universitet, vil du ha 1% av nettverket. Kanskje er det bare en kul badge. Kanskje er det noe mer. Tidviseren vil vise det. 🚀",
+    "importantInfo": {
+      "title": "⚠️ VIKTIG INFORMASJON",
+      "p1": "Klarpakke er et læringsverktøy (edtech). Vi er IKKE finansrådgiver eller regulert av Finanstilsynet.",
+      "p2": "Krypto-trading kan innebære høy risiko. Du kan tape hele investeringen din. Vi håndterer IKKE dine penger. Du kobler din egen exchange via API på egen risiko.",
+      "p3": "AI-signaler er educational verktøy, ikke investeringsråd. Du er selv ansvarlig for alle trading-beslutninger.",
+      "p4": "🔒 INTEGRITET: Vi er ikke en pyramide, MLM eller referalmaskin. Vi selger kunnskap og verktøy. Eneste belønning for verving er: Inviter 3 betalende venner, få 1 måned gratis selv."
+    }
+  },
+  "studieprogram": {
+    "sectionTitle": "Velg din grad",
+    "title": "🎓 Studieprogram",
+    "description": "Fra nybegynner til ekspert. Velg studienivået som passer deg.",
+    "disclaimer": "Alle priser er i NOK. Ingen bindingstid - avbryt når som helst. 💡 TIPS: Inviter 3 betalende venner og få en måned gratis!",
+    "tiers": {
+      "student": {
+        "name": "Student",
+        "price": "0 kr",
+        "period": "Gratis",
+        "badge": "-",
+        "description": "Kom inn gratis - ingen søknad nødvendig",
+        "features": [
+          "7-dagers introduksjonskurs",
+          "Tilgang til bibliotek (artikler/videoer)",
+          "Campus community (read-only)",
+          "Quiz & eksamener",
+          "\"Student ID\" badge",
+          "Ingen trading. Kun teori."
+        ],
+        "cta": "Start som Student →"
+      },
+      "bachelor": {
+        "name": "Bachelor",
+        "price": "249 kr",
+        "period": "per måned",
+        "badge": "POPULÆR",
+        "description": "Bachelor i Krypto-trading",
+        "features": [
+          "Alt i Student",
+          "Paper trading lab (simulering)",
+          "AI-lærer på norsk",
+          "Ukentlige workshops",
+          "Læringslogg & progresjon",
+          "Student-leaderboard",
+          "\"Bachelor Student\" badge",
+          "3-måneders studieplan"
+        ],
+        "cta": "Start Bachelor →",
+        "highlight": true
+      },
+      "master": {
+        "name": "Master",
+        "price": "499 kr",
+        "period": "per måned",
+        "badge": "-",
+        "description": "Master i Krypto-trading",
+        "features": [
+          "Alt i Bachelor",
+          "Live trading (koble Binance API)",
+          "Advanced AI-signaler",
+          "Trading journal & analyse",
+          "Månedlige 1-on-1 veiledninger",
+          "\"Master Student\" badge",
+          "Trader lounge (eksklusiv)"
+        ],
+        "cta": "Start Master →",
+        "requirement": "Krav: Fullført Bachelor-eksamen"
+      },
+      "phd": {
+        "name": "PhD",
+        "price": "799 kr",
+        "period": "per måned",
+        "badge": "-",
+        "description": "PhD i Automated Trading",
+        "features": [
+          "Alt i Master",
+          "Auto-trading (egne regler)",
+          "Advanced AI-modeller",
+          "Custom bot programming",
+          "Priority support (< 2t)",
+          "\"PhD Candidate\" badge",
+          "Teach-back program"
+        ],
+        "cta": "Start PhD →",
+        "requirement": "Krav: 3+ måneder som Master"
+      },
+      "professor": {
+        "name": "Professor",
+        "price": "1249 kr",
+        "period": "per måned",
+        "badge": "ELITE",
+        "description": "Professor / Researcher",
+        "features": [
+          "Alt i PhD",
+          "⚡ Avansert AI tilgang",
+          "Dedicated research advisor",
+          "Early access nye features",
+          "\"Professor\" badge",
+          "Faculty lounge",
+          "Co-create kurs med oss"
+        ],
+        "cta": "Søk om Professor →",
+        "requirement": "Krav: 6+ måneder PhD, dokumentert resultater"
+      }
+    }
+  },
+  "opptak": {
+    "title": "🎓 Søk opptak til Klarpakke Universitet",
+    "subtitle": "Første 100 studenter får 10,000 tokens gratis",
+    "spotsLeft": "Kun {count}/100 plasser igjen",
+    "form": {
+      "erfaring": {
+        "label": "1. Hva er din erfaring med krypto?",
+        "options": {
+          "nybegynner": "Nybegynner (aldri tradet, vil lære fra scratch)",
+          "noe": "Noe erfaring (har kjøpt/solgt litt, men usikker)",
+          "mellom": "Mellom (trader noen ganger, kjenner basics)",
+          "avansert": "Avansert (kjenner teknisk analyse, vil automatisere)"
+        }
+      },
+      "laeringsmaal": {
+        "label": "2. Hva vil du lære mest om?",
+        "sublabel": "Velg inntil 3 ({count}/3 valgt)",
+        "options": [
+          "Krypto-grunnleggende (Hva er Bitcoin? Blockchain?)",
+          "Hvordan lese charts & mønstre",
+          "Risikostyring (Stop-loss, position sizing)",
+          "Teknisk analyse (Indikatorer, signaler)",
+          "AI-assistert trading",
+          "Automated trading (bots)",
+          "Paper trading (øve uten risiko)",
+          "Live trading-strategier"
+        ],
+        "maxError": "Max 3 valg"
+      },
+      "kontakt": {
+        "label": "3. Kontaktinfo",
+        "email": {
+          "label": "Email *",
+          "placeholder": "din@email.no"
+        },
+        "handle": {
+          "label": "Twitter/Discord handle (valgfritt)",
+          "placeholder": "@brukernavn"
+        },
+        "password": {
+          "label": "Passord",
+          "placeholder": "Minst 8 tegn",
+          "sublabel": "Du trenger dette for å logge inn senere"
+        }
+      },
+      "validation": {
+        "required": "Vennligst fyll ut alle påkrevde felt.",
+        "email": "Ugyldig e-postadresse.",
+        "emailExists": "Denne e-posten er allerede registrert. Logg inn i stedet.",
+        "createError": "Kunne ikke opprette konto: {message}",
+        "genericError": "Kunne ikke sende inn. Sjekk internettforbindelsen din."
+      }
+    },
+    "rewards": {
+      "title": "🎁 Ved å sende inn får du:",
+      "items": [
+        "10,000 KLT tokens (gratis - av 10M totalt)",
+        "Beta-tilgang (lansering 15. februar)",
+        "\"Grunnlegger-Student\" badge",
+        "Nevnt på Hall of Fame",
+        "Prioritert support på Discord"
+      ]
+    },
+    "submit": "Søk opptak →",
+    "submitLoading": "Sender inn...",
+    "disclaimer": "⚠️ Krypto kan innebære høy risiko. Vi er et læringsverktøy, ikke finansrådgiver.",
+    "backToHome": "← Tilbake til forsiden"
+  },
+  "takk": {
+    "title": "VELKOMMEN TIL KLARPAKKE UNIVERSITET!",
+    "studentBadge": "Du er student #{number}/100",
+    "nextSteps": {
+      "title": "NESTE STEG:",
+      "steps": [
+        {
+          "number": "1️⃣",
+          "title": "Sjekk innboks (innen 5 min)",
+          "description": "Velkomst-e-post med din 40k tap-historie"
+        },
+        {
+          "number": "2️⃣",
+          "title": "Join Discord (link i email)",
+          "description": "Møt andre grunnlegger-studenter i #grunnlegger-kanalen"
+        },
+        {
+          "number": "3️⃣",
+          "title": "Dag 1 starter 15. februar kl 09:00",
+          "description": "\"Hva er krypto?\" (5 min video)"
+        }
+      ]
+    },
+    "rewards": {
+      "title": "🎁 DINE BELØNNINGER:",
+      "items": [
+        "10,000 KLT tokens → Kreditert ved første innlogging (0.1% av totalt 10M),",
+        "\"Grunnlegger-Student\" badge → Vises på profil",
+        "Lifetime prioritert support → Discord #grunnlegger-kanalen"
+      ]
+    },
+    "vision": {
+      "title": "🔮 HVA HVIS...?",
+      "content": "De første 100 ansatte i Apple fikk aksjeopsjoner som \"akkurat lå der\". De fleste solgte dem for noen tusen dollar. De som holdt på dem? De er verdt millioner i dag.",
+      "point1": "Du er nå en av de første 100 studentene i Norges første krypto-universitet",
+      "point2": "Du eier 0.1% av KLT-nettverket (10,000 av 10,000,000 tokens)",
+      "point3": "Hvis Klarpakke blir \"Apple for krypto-læring i Norge\"...",
+      "closing": "Kanskje er dette bare en kul badge. Kanskje er det begynnelsen på noe stort. Én ting er sikkert: Du vil alltid kunne si \"Jeg var der fra starten.\" 🚀"
+    },
+    "competition": {
+      "title": "🏆 VÅRSEMESTER 2026 KONKURRANSE",
+      "dates": {
+        "start": "Start: 15. februar",
+        "end": "Slutt: 15. juni"
+      },
+      "prizes": [
+        "🥇 1. plass: 1,000,000 KLT + \"Student of the Semester\"",
+        "🥈 2. plass: 500,000 KLT",
+        "🥉 3. plass: 250,000 KLT"
+      ],
+      "note": "Basert på GPA (læring, ikke profit)."
+    },
+    "questions": "Spørsmål? Svar på velkomst-e-posten (vi leser alle!)",
+    "backToHome": "← Tilbake til forsiden"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "klt": {
+      "title": "Klarpakke Token (KLT)",
+      "founderNumber": "Grunnlegger-student #{number}",
+      "yourBalance": "Din Beholdning",
+      "founderBenefits": {
+        "title": "Founder-fordeler",
+        "desc": "Garantert 10 000 KLT til de 100 første studentene (0.1% av total tilgang)."
+      },
+      "learnEarn": {
+        "title": "Lær & Tjen",
+        "desc": "Få belønning for hver leksjon du fullfører og hver quiz du består."
+      },
+      "futureValue": {
+        "title": "Fremtidig Verdi",
+        "desc": "KLT vil kunne brukes til å låse opp avanserte trading-algoritmer og redusere gebyrer."
+      },
+      "readMore": "Les mer om KLT-økosystemet"
+    },
+    "loading": "Laster dashboard...",
+    "overview": "Oversikt",
+    "portfolio": "Portefølje",
+    "trading": "Trading",
+    "activity": "Aktivitet",
+    "settings": "Innstillinger",
+    "logout": "Logg ut",
+    "totalValue": "Total Verdi",
+    "totalProfit": "Total Profit",
+    "dailyChange": "Dagens Endring",
+    "activeSignals": "Aktive Signaler",
+    "newToday": "nye i dag",
+    "recentActivity": "Nylig Aktivitet",
+    "portfolioComingSoon": "Portefølje-funksjonalitet kommer snart!",
+    "tradingComingSoon": "Trading-funksjonalitet kommer snart!",
+    "activityComingSoon": "Aktivitetslogg kommer snart!",
+    "profileSettings": "Profil Innstillinger",
+    "welcomeBack": "Velkommen tilbake 👋",
+    "statusDesc": "Her er status på din portefølje og læringsreise.",
+    "coach": {
+      "title": "Klarpakke AI Coach",
+      "subtitle": "Drevet av Moonshot & DeepSeek",
+      "description": "Usikker på markedet i dag? Jeg kan analysere porteføljen din eller forklare komplekse konsepter.",
+      "initialWithTrade": "Jeg ser du har en ny trade! Skal vi se på tallene sammen?",
+      "initialDefault": "Hei! Hva kan jeg hjelpe deg med i dag? Vi kan se på Bitcoin-kursen eller din strategi."
+    },
+    "topBar": {
+      "myOverview": "Min Oversikt",
+      "systemOnline": "System Online"
+    },
+    "stats": {
+      "noActivePositions": "Ingen aktive posisjoner",
+      "waitingForData": "Venter på data",
+      "readyToTrade": "Klar til handel",
+      "locked": "Låst",
+      "paperTradingFirst": "Paper Trading først"
+    },
+    "actions": {
+      "recommendedStart": "Anbefalt Start",
+      "simulatorTitle": "Paper Trading Simulator",
+      "simulatorDesc": "Du har {amount} kroner tilgjengelig på din demokonto. Bruk disse til å lære markedsbevegelser uten risiko før du setter inn egne penger.",
+      "goToCourses": "Gå til Kurs"
+    },
+    "learningJourney": {
+      "title": "Din Læringsreise",
+      "youAreHere": "Du er her nå",
+      "microAccount": "Micro Konto",
+      "microDesc": "1.000 kr ekte kapital",
+      "autoTradingDesc": "Opplåsing av algoritmer"
+    },
+    "positions": "Posisjoner",
+    "marketPerformance": "Markedsutvikling",
+    "quickLinks": "Hurtigkoblinger",
+    "startTrading": "Start Trading",
+    "demoSimulator": "Demo Simulator",
+    "email": "E-post",
+    "name": "Navn",
+    "namePlaceholder": "Ditt navn",
+    "winRate": "Vinnerrate",
+    "totalTrades": "Totalt handler",
+    "price": "Pris",
+    "amount": "Beløp",
+    "profit": "Profitt",
+    "loss": "Tap",
+    "recentTrades": "Nylige handler",
+    "noTrades": "Ingen handler ennå. Trykk «Sync Binance» for å laste dine Binance-handler.",
+    "bought": "Kjøpte",
+    "sold": "Solgte",
+    "binanceCard": {
+      "title": "Binance API",
+      "subtitle": "Koble til din Binance-konto",
+      "description": "Koble til Binance via API for live trading og porteføljeoversikt. Vi krever kun read-only tilgang.",
+      "button": "Koble til Binance"
+    },
+    "adminCard": {
+      "title": "Admin Panel",
+      "subtitle": "Systemadministrasjon",
+      "description": "Administrer brukere, se systemstatus, og administrer plattformen.",
+      "button": "Åpne Admin Panel"
+    },
+    "activityPage": {
+      "title": "Aktivitet",
+      "subtitle": "Dine siste handler og transaksjoner."
+    },
+    "portfolioPage": {
+      "title": "Min Portefølje",
+      "subtitle": "Oversikt over dine aktive eiendeler.",
+      "totalAssets": "TOTALT: {count} EIENDELER",
+      "mainHolding": "Hovedbeholdning",
+      "balance": "Balanse",
+      "noAssets": {
+        "title": "Ingen aktive coins",
+        "description": "Du har ingen aktive eiendeler i din portefølje ennå. Begynn å handle for å se de her!",
+        "button": "Start din første handel"
+      }
+    },
+    "settingsPage": {
+      "title": "Innstillinger",
+      "subtitle": "Administrer din konto og personlige preferanser.",
+      "personalInfo": "Personlig Informasjon",
+      "email": "E-post",
+      "emailNote": "E-post kan ikke endres manuelt.",
+      "fullName": "Fullt navn",
+      "namePlaceholder": "Ditt navn",
+      "profileUpdated": "Profil oppdatert!",
+      "saveChanges": "Lagre endringer",
+      "notifications": "Varslinger",
+      "notificationsComingSoon": "Administrasjon av varsler kommer i en senere oppdatering.",
+      "security": "Sikkerhet",
+      "securityDesc": "To-faktor autentisering og sikkerhetsinnstillinger."
+    },
+    "orderHistory": {
+      "loading": "Laster ordrehistorikk...",
+      "noOrders": "Ingen ordre funnet.",
+      "date": "Dato",
+      "pair": "Par",
+      "side": "Side",
+      "price": "Pris",
+      "amount": "Mengde",
+      "total": "Total (NOK)",
+      "buy": "KJØP",
+      "sell": "SALG"
+    },
+    "sidebar": {
+      "overview": "Oversikt",
+      "portfolio": "Portefølje",
+      "liveTrading": "Live Trading",
+      "binanceApi": "Binance API",
+      "activity": "Aktivitet",
+      "taxReport": "Skatterapport",
+      "settings": "Innstillinger",
+      "admin": "Admin"
+    }
+  },
+  "auth": {
+    "title": "Student Portal",
+    "signupTitle": "Opprett konto",
+    "signupDescription": "Start din reise med Klarpakke i dag",
+    "subtitle": "Klarpakke Universitet",
+    "checkStatus": "Sjekk din status",
+    "checkStatusDesc": "Logg inn med Google/Microsoft, eller sjekk om du er registrert",
+    "emailLabel": "E-postadresse",
+    "emailPlaceholder": "din@email.no",
+    "passwordLabel": "Passord",
+    "passwordPlaceholder": "Ditt passord",
+    "loginBtn": "Logg inn",
+    "loggingIn": "Logger inn...",
+    "loginCardTitle": "Logg inn",
+    "loginCardDescription": "Velg din foretrukne metode under",
+    "orWithEmail": "eller med e-post",
+    "loginError": "Feil e-post eller passord. Prøv igjen.",
+    "genericError": "En feil oppstod. Prøv igjen senere.",
+    "dontHaveAccount": "Har du ikke konto ennå?",
+    "signupHere": "Registrer deg her",
+    "createAccount": "Opprett konto her →",
+    "backToHome": "← Tilbake til forsiden",
+    "forgotPassword": "Glemt passord?",
+    "resetPassword": {
+      "title": "Lag nytt passord",
+      "desc": "Skriv inn ditt nye passord under.",
+      "label": "Nytt passord",
+      "placeholder": "Minimum 8 tegn",
+      "submit": "Oppdater passord",
+      "success": "Passordet er oppdatert!",
+      "error": "Kunne ikke oppdatere passord. Prøv igjen."
+    },
+    "forgotPasswordPage": {
+      "title": "Glemt passord?",
+      "desc": "Skriv inn e-posten din, så sender vi en lenke for å lage nytt passord.",
+      "emailLabel": "E-post",
+      "emailPlaceholder": "din@email.no",
+      "submit": "Send lenke",
+      "sending": "Sender...",
+      "success": "E-post sendt! Sjekk innboksen din.",
+      "error": "Kunne ikke sende e-post. Prøv igjen."
+    },
+    "success": {
+      "title": "Du er inne! 🎉",
+      "startDate": "Oppstart: {date}",
+      "studentNumber": "Ditt studentnummer",
+      "registered": "Registrert",
+      "checklistTitle": "Din oppstartssjekkliste",
+      "checklistDesc": "Fullfør disse stegene før 15. februar",
+      "checklist": {
+        "discord": {
+          "title": "Bli med i Discord",
+          "desc": "Møt de andre studentene og få live updates",
+          "btn": "Bli med her"
+        },
+        "calendar": {
+          "title": "Marker 15. februar",
+          "desc": "Første leksjon slippes kl 09:00",
+          "btn": "Legg til i kalender"
+        },
+        "guide": {
+          "title": "Les beta-guiden",
+          "desc": "Forstå hva du kan forvente av beta-perioden",
+          "btn": "Les guiden"
+        },
+        "email": {
+          "title": "Følg med på e-post",
+          "desc": "Du får guide til paper trading før 15. februar",
+          "btn": "Gå til e-post"
+        }
+      },
+      "progress": "Fremdrift",
+      "completed": "{count} / {total} fullført",
+      "whatNext": "Hva skjer nå?",
+      "whatNextDesc": "Du vil motta en e-post med paper trading-guide i løpet av de neste dagene. Sjekk også søppelpost-mappen din!",
+      "checkAnother": "Sjekk annen e-post"
+    }
+  },
+  "autoTrade": {
+    "title": "Auto Trade",
+    "subtitle": "Automatisk paper trading med Klarpakke AI Robot",
+    "selectRisk": "Velg risikoprofil",
+    "closePositions": "Lukk alle åpne posisjoner umiddelbart ved kraftige markedsfall.",
+    "timeAgo": {
+      "min": "{n} min siden",
+      "mins": "{n} min siden",
+      "hour": "{n} time siden",
+      "hours": "{n} timer siden"
+    },
+    "status": {
+      "running": "Aktiv",
+      "paused": "Pauset",
+      "stopped": "Stoppet"
+    }
+  },
+  "autoTradingPage": {
+    "metadata": {
+      "title": "Auto-Trading | Klarpakke - 3 år med testing",
+      "description": "Automatisk trading basert på 3 år med testing og harde data. Ingen hype, bare resultater. Start risikofritt med paper trading."
+    },
+    "hero": {
+      "badge": "Testet i 3 år med egne penger",
+      "titlePart1": "Avansert teknologi.",
+      "titlePart2": "Enkelt å bruke.",
+      "description": "Vi brukte 3 år på å finjustere algoritmene våre. Ingen \"Quantum AI\" eller magiske løfter – bare solid matte og streng risikostyring som fungerer 24/7.",
+      "ctaPrimary": "Start Paper Trading",
+      "ctaSecondary": "Se resultater",
+      "stats": {
+        "profitLabel": "Total avkastning (3 år)",
+        "profitSub": "Verifisert data",
+        "profitValue": "+142.5%"
+      }
+    },
+    "facts": {
+      "title": "Hvorfor Klarpakke?",
+      "subtitle": "Markeden er full av støy. Vi fokuserer på fakta.",
+      "fact1": {
+        "title": "3 år med data",
+        "desc": "Vi lanserte ikke i går. Algoritmene har kjørt gjennom både bull- og bear-markeder siden 2021 for å sikre robusthet."
+      },
+      "fact2": {
+        "title": "Ingen \"Black Box\"",
+        "desc": "Du ser nøyaktig hva som skjer. Ingen skjulte gebyrer eller magiske formler. Du har full innsikt i hver eneste handel via dashboardet."
+      },
+      "fact3": {
+        "title": "Optimalisert for mobil",
+        "desc": "75% av brukerne våre trader på mobil. Vi bygde hele opplevelsen for å være lynrask og klar på telefonen din."
+      }
+    },
+    "howItWorks": {
+      "title": "Slik fungerer det",
+      "step1": {
+        "step": "01",
+        "title": "Paper Trading",
+        "desc": "Du får 1 million lekepenger. Test risikofritt i 30 dager."
+      },
+      "step2": {
+        "step": "02",
+        "title": "Micro-konto",
+        "desc": "Start med maks 1 000 NOK når du føler deg trygg."
+      },
+      "step3": {
+        "step": "03",
+        "title": "Skaler opp",
+        "desc": "Øk beløpet gradvis etter hvert som du ser profitt."
+      },
+      "step4": {
+        "step": "04",
+        "title": "Full Auto",
+        "desc": "La algoritmene håndtere porteføljen din 24/7."
+      }
+    },
+    "cta": {
+      "title": "Klar til å teste løsningen?",
+      "desc": "Det koster ingenting å prøve Paper Trading. Se selv hvorfor teknologien vår er bedre enn markedet.",
+      "button": "Opprett gratis konto",
+      "subtext": "Ingen kredittkort kreves. Start på 1 minutt."
+    }
+  },
+  "binanceGuide": {
+    "title": "Binance-guide",
+    "subtitle": "Komplett guide for å opprette konto via Klarpakke",
+    "startSmall": "Start med et lite beløp du har råd til å tape. Du kan sette inn via bankoverføring eller kjøpe direkte med kort.",
+    "timeEstimate": "Tar ca. 5-10 minutter • Gratis å opprette • KYC kreves",
+    "lowerFees": "Få lavere trading-avgifter",
+    "kickback": "Du kan få rabatt på dine trading-avgifter (kickback).",
+    "connectAccount": "Koble kontoen din her for å se alt på ett sted.",
+    "step1": "Opprett konto",
+    "step2": "Verifiser identitet",
+    "step3": "Sett inn penger",
+    "step4": "Start trading"
+  },
+  "competition": {
+    "weekly": "Ukentlig",
+    "monthly": "Månedlig",
+    "weeklyWinner": "Ukentlig vinner",
+    "monthlyWinner": "Månedlig vinner",
+    "weeklyPrize": "Ukentlig vinner får 1 måned gratis abonnement",
+    "monthlyPrize": "Månedlig vinner får 1000 kr gavekort",
+    "thisWeek": "Denne uken",
+    "thisMonth": "Denne måneden",
+    "joinCompetition": "Bli med i konkurransen",
+    "monthlyCompetition": "Månedlig konkurranse",
+    "prize": "Premie"
+  },
+  "gamification": {
+    "xp": "XP",
+    "streak": "Dagens streak",
+    "streakDays": "dager",
+    "level": "Nivå",
+    "achievements": "Prestasjoner",
+    "rank": "Rang",
+    "badges": {
+      "founder": "Grunnlegger",
+      "student": "Student",
+      "bachelor": "Bachelor",
+      "master": "Master",
+      "phd": "PhD",
+      "professor": "Professor"
+    }
+  },
+  "beta": {
+    "loading": "Laster...",
+    "success": "Søknad sendt!",
+    "redirecting": "Viderekobler...",
+    "applicationPending": "Søknad mottatt",
+    "applicationPendingDesc": "Vi har mottatt din søknad og behandler den.",
+    "backToDashboard": "Tilbake til dashboard",
+    "applyForBeta": "Søk om beta-tilgang",
+    "applyForBetaDesc": "Bli blant de første som tester plattformen vår.",
+    "tradingExperience": "Trading-erfaring",
+    "tradingExperiencePlaceholder": "Beskriv din erfaring med trading...",
+    "motivation": "Motivasjon",
+    "motivationPlaceholder": "Hvorfor vil du bli med?",
+    "riskTolerance": "Risikotoleranse",
+    "riskConservative": "Forsiktig",
+    "riskModerate": "Moderat",
+    "riskAggressive": "Aggressiv",
+    "betaWarning": "Viktig",
+    "betaWarningText": "Beta-testing innebærer reell risiko. Invester kun det du har råd til å tape.",
+    "submitting": "Sender...",
+    "submitApplication": "Send søknad",
+    "applicationError": "Det oppstod en feil. Vennligst prøv igjen."
+  },
+  "leagues": {
+    "title": "Trading-ligaer",
+    "subtitle": "Bli med i vår månedlige trading-konkurranse!",
+    "forBeginners": "For deg som nettopp har startet. Ingen risiko.",
+    "winBitcoin": "Vinn 5000 kr i Bitcoin!",
+    "paperTrading": "Trading med lekepenger.",
+    "joinLeague": "Bli med i liga",
+    "prize": "Premie",
+    "participants": "deltakere"
+  },
+  "learning": {
+    "completed": "fullført!",
+    "continueLearning": "Fortsett å lære",
+    "partOf": "Del av",
+    "lesson": "Leksjon",
+    "task": "Oppgave",
+    "markComplete": "Marker som fullført",
+    "seeFullPath": "Se hele læringsveien"
+  },
+  "liveTrading": {
+    "title": "Live Trading",
+    "warning": "Advarsel",
+    "warningText": "Dette er ekte trading med ekte penger. Du må ha koblet til Binance-kontoen din for å trade.",
+    "loading": "Laster markedsdata...",
+    "retry": "Prøv igjen",
+    "marketOverview": "Markedsoversikt",
+    "balance": "Saldo:",
+    "amountPlaceholder": "Beløp i NOK",
+    "buy": "Kjøp",
+    "sell": "Salg",
+    "recentOrders": "Dine nylige ordrer",
+    "security": {
+      "title": "Din sikkerhet er vår prioritet",
+      "noWithdrawal": "Ingen uttaks-tilgang",
+      "noWithdrawalDesc": "Dine API-nøkler kan kun se saldo og utføre handler. Uttak er deaktivert.",
+      "fullControl": "Full kontroll",
+      "fullControlDesc": "Du beholder alle midler i din egen Binance-konto. Roboten har aldri kontroll over pengene dine.",
+      "transparency": "Transparens",
+      "transparencyDesc": "Hver eneste transaksjon loggføres og er synlig i din historie umiddelbart."
+    },
+    "info": {
+      "title": "Viktig om trading",
+      "usdtRequirement": "USDT-krav",
+      "usdtRequirementDesc": "Roboten handler mot USDT (Tether). Du må ha tilgjengelig USDT-saldo på Binance for å utføre kjøp.",
+      "realtimeData": "Sanntidsdata",
+      "realtimeDataDesc": "Priser oppdateres hvert 10. sekund direkte fra Binance.",
+      "minimumAmount": "Minimumsbeløp",
+      "minimumAmountDesc": "Binance krever minimum 100 kr (ca. $10) per trade."
+    },
+    "confirm": {
+      "title": "Bekreft handel",
+      "action": "Handling",
+      "symbol": "Symbol",
+      "amount": "Beløp",
+      "price": "Pris",
+      "quantity": "Mengde",
+      "cancel": "Avbryt",
+      "confirm": "Bekreft",
+      "bought": "Kjøpte",
+      "sold": "Solgte"
+    },
+    "errors": {
+      "enterAmount": "Vennligst skriv inn et beløp",
+      "priceData": "Kunne ikke hente prisdata",
+      "loginRequired": "Du må være logget inn for å handle",
+      "tradeFailed": "Handelen feilet",
+      "checkBinance": "Sjekk Binance-kontoen din"
+    },
+    "masterOnly": "Master-plan kreves",
+    "masterOnlyDesc": "Live trading med ekte penger krever Master eller PhD-plan. Oppgrader for å låse opp denne funksjonen.",
+    "upgradeBtn": "Oppgrader til Master →"
+  },
+  "trading": {
+    "connectExchange": "Koble til børs",
+    "connectExchangeDesc": "Koble Klarpakke trygt til Binance, Firi eller andre børser. Du beholder alltid kontrollen over pengene.",
+    "analyzingTrade": "AI analyserer trade...",
+    "analysisError": "Kunne ikke analysere trade. Prøv igjen.",
+    "riskAnalysis": "AI Risikoanalyse",
+    "riskLevel": "Risiko",
+    "risk": {
+      "low": "Lav",
+      "medium": "Medium",
+      "high": "Høy",
+      "extreme": "Ekstrem"
+    },
+    "type": "Type",
+    "buy": "Kjøp",
+    "sell": "Selg",
+    "coin": "Coin",
+    "amount": "Beløp",
+    "amountInNok": "Beløp i NOK",
+    "enterAmount": "Vennligst oppgi beløp",
+    "aiAssessment": "AI Vurdering",
+    "learningPoints": "Læringspunkter",
+    "understandRisk": "Jeg forstår risikoen og handler på eget ansvar",
+    "cancel": "Avbryt",
+    "tradeBlocked": "Trade Blokkert",
+    "proceedAnyway": "Fortsett likevel",
+    "executeTrade": "Utfør Trade",
+    "tradeSuccess": "Trade utført!",
+    "tradeError": "Trade feilet",
+    "liveTrading": "Live Trading",
+    "warning": "Advarsel",
+    "liveTradingWarning": "Du trader med ekte penger. Invester kun det du har råd til å tape.",
+    "apiKeyLabel": "API Key",
+    "apiSecretLabel": "API Secret",
+    "permissionsWarning": "Kun READ og TRADE tillatelser. ALDRI aktiver WITHDRAW!",
+    "securityNote": "Dine API-nøkler er kryptert med AES-256. Vi har aldri tilgang til dine penger.",
+    "security": "Sikkerhet",
+    "important": "Viktig",
+    "howToGetApiKeys": "Slik får du API-nøkler fra Binance",
+    "connecting": "Kobler til...",
+    "connectNow": "Koble til nå",
+    "connectionError": "Kunne ikke koble til exchange",
+    "exchangeConnected": "Børs koblet!",
+    "masterOnly": "Ekte trading krever Master-nivå",
+    "masterOnlyDesc": "Du kan se markedsdata og analyser, men for å utføre ekte handler må du oppgradere til Master eller PhD.",
+    "upgradeBtn": "Oppgrader til Master →"
+  },
+  "notifications": {
+    "title": "Varsler",
+    "subtitle": "Dine varselinnstillinger",
+    "settingsTitle": "Dine varselinnstillinger",
+    "pushNotifications": "Push-varsler",
+    "pushDescription": "Aktiver push-varsler i nettleseren for å få påminnelser om webinarer og viktige oppdateringer.",
+    "monthlyWebinars": "Månedlige webinarer",
+    "webinarsDesc": "Få påminnelser før våre månedlige live-webinarer",
+    "courseReminders": "Kurs-påminnelser",
+    "courseRemindersDesc": "Få påminnelser om å fullføre quizer i kursene dine",
+    "forCompleteMembers": "For Komplett-medlemmer",
+    "completeMembersDesc": "Oppgrader til Komplett for å låse opp alle varselfunksjoner",
+    "tip": "Tips: Du kan endre varselinnstillingene dine når som helst.",
+    "save": "Lagre innstillinger",
+    "saved": "Innstillinger lagret!"
+  },
+  "interestTest": {
+    "title": "Hva er din interesse?",
+    "subtitle": "Fortell oss om dine mål",
+    "question1": "Hvor mye erfaring har du med trading?",
+    "question2": "Hva er ditt hovedmål?",
+    "beginner": "Nybegynner",
+    "intermediate": "Middels",
+    "advanced": "Avansert",
+    "goalLearn": "Lære trading",
+    "goalProfit": "Tjene penger",
+    "goalBoth": "Begge deler",
+    "submit": "Send svar",
+    "results": "Dine resultater",
+    "recommendedPath": "Anbefalt vei"
+  },
+  "orderHistory": {
+    "title": "Ordrehistorikk",
+    "noOrders": "Ingen ordrer funnet",
+    "orderId": "Ordre ID",
+    "date": "Dato",
+    "type": "Type",
+    "amount": "Beløp",
+    "status": "Status",
+    "completed": "Fullført",
+    "pending": "Venter",
+    "failed": "Feilet",
+    "refunded": "Refundert"
+  },
+  "onboarding": {
+    "welcome": "Velkommen til Klarpakke",
+    "subtitle": "La oss komme i gang med krypto-trading",
+    "bankIdInfo": "Ingen lagring: Vi lagrer ALDRI ditt BankID-passord",
+    "startFree": "Start gratis →",
+    "step1": {
+      "title": "Opprett konto",
+      "description": "Registrer deg gratis og få tilgang til paper trading"
+    },
+    "step2": {
+      "title": "Velg din vei",
+      "description": "Følg våre strukturerte kurs fra Student til Master"
+    },
+    "step3": {
+      "title": "Start å lære",
+      "description": "Få AI-signaler og gjør dine første simulerte trades"
+    },
+    "email": "E-post",
+    "bankid": "BankID",
+    "video": "Video",
+    "done": "Ferdig!",
+    "bankidTitle": "Sikker innlogging med BankID",
+    "bankidSubtitle": "For din sikkerhet bruker vi BankID (som i nettbanken)",
+    "secureVerification": "Sikker verifisering:",
+    "secureVerificationDesc": "Bekreft at du er norsk statsborger",
+    "noStorage": "Ingen lagring:",
+    "noStorageDesc": "Vi lagrer ALDRI ditt BankID-passord",
+    "oneTime": "Én gang:",
+    "oneTimeDesc": "BankID brukes kun ved registrering",
+    "connecting": "Kobler til BankID...",
+    "loginWithBankid": "Logg inn med BankID",
+    "questions": "Har du spørsmål?",
+    "welcomeTitle": "Velkommen til Klarpakke! 🎉",
+    "welcomeVideo": "Velkomstvideo fra Tom (20 sek)",
+    "clickToPlay": "Klikk for å spille av",
+    "transcript": "📝 Det Tom sier:",
+    "transcriptText": "\"Hei! Jeg er Tom, og jeg tapte 40 000 kr på krypto i 2021. Jeg bygde Klarpakke slik at du ikke gjør samme feil.\n\nHer er hva som skjer nå:\n\n1. Du får 1M kr virtuell kapital (ikke ekte penger)\n2. Om 2 minutter sender vi ditt første AI-signal\n3. Om 5 minutter kan du gjøre din første simulerte trade\n\nSpørsmål? Svar på velkomst-e-posten. Jeg leser alle.\"",
+    "founderName": "Tom Arne",
+    "founderTitle": "Grunnlegger, Klarpakke",
+    "continueToDashboard": "Fortsett til dashboard →",
+    "accountCreated": "Konto opprettet (BankID verifisert)",
+    "identityConfirmed": "Din identitet er bekreftet",
+    "firstSignal": "Første signal sendes",
+    "firstSignalDesc": "Om 2 minutter til e-posten din",
+    "connectBinance": "Koble til Binance",
+    "connectBinanceDesc": "Gjør dette når du er klar for ekte trading",
+    "setRiskProfile": "Sett din risikoprofil",
+    "setRiskProfileDesc": "Tilpass til din komfortsone",
+    "goToDashboard": "Gå til dashboard",
+    "fastRegistration": "Rask registrering!",
+    "totalTime": "Total tid: Under 60 sekunder ✅",
+    "noCreditCard": "Ikke kredittkort",
+    "virtualCapital": "1M kr virtuell kapital",
+    "completelyFree": "100% gratis",
+    "agreeTerms": "Ved å fortsette godtar du våre",
+    "terms": "vilkår",
+    "and": "og",
+    "privacyPolicy": "personvernerklæring",
+    "skip": "Hopp over",
+    "next": "Neste",
+    "finish": "Kom i gang!"
+  },
+  "pricing": {
+    "title": "Priser",
+    "subtitle": "Velg planen som passer deg. Start gratis, oppgrader når du er klar.",
+    "trial": "7 dager gratis prøveperiode på alle betalte planer",
+    "startFree": "Start gratis",
+    "chooseStarter": "Velg Basis",
+    "choosePro": "Velg Komplett",
+    "chooseExpert": "Velg Pro",
+    "mostPopular": "Mest populær",
+    "forever": "For alltid",
+    "perMonth": "per mnd",
+    "faqTitle": "Vanlige spørsmål",
+    "stillUnsure": "Usikker på hva du skal velge?",
+    "stillUnsureDesc": "Start med gratisplanen. Du kan alltid oppgradere senere.",
+    "startFreeNow": "Start gratis nå",
+    "readMore": "Les mer om universitetet",
+    "important": "Viktig:",
+    "disclaimer": "Vi er ikke finansrådgivere. All trading innebærer risiko.",
+    "plans": {
+      "free": {
+        "name": "Student",
+        "desc": "For deg som vil snuse på krypto",
+        "features": [
+          "Krypto 101 - Introduksjon",
+          "1 quiz",
+          "5 simulator-trades",
+          "Basis kalkulator"
+        ],
+        "notIncluded": [
+          "Avanserte kurs",
+          "Sertifikat",
+          "Webinarer",
+          "Prioritert support"
+        ]
+      },
+      "starter": {
+        "name": "Bachelor",
+        "desc": "For deg som vil lære det grunnleggende",
+        "features": [
+          "Alt i Gratis",
+          "Alle grunnkurs",
+          "Ubegrenset simulator",
+          "Alle quizer",
+          "E-postsupport"
+        ],
+        "notIncluded": ["Sertifikat", "Webinarer", "Prioritert support"]
+      },
+      "pro": {
+        "name": "Master",
+        "desc": "Vår mest populære plan for seriøse lærlinger",
+        "features": [
+          "Alt i Basis",
+          "Alle avanserte kurs",
+          "Komplett sertifikat",
+          "Webinarer (2/mnd)",
+          "Prioritert support",
+          "Discord-tilgang"
+        ],
+        "notIncluded": []
+      },
+      "expert": {
+        "name": "PhD",
+        "desc": "For deg som vil bli en ekspert",
+        "features": [
+          "Alt i Komplett",
+          "Ekstra ressurser",
+          "1-til-1 sesjon (1/mnd)",
+          "Prioritert support (12t)",
+          "Gratis effekter"
+        ],
+        "notIncluded": []
+      }
+    },
+    "success": {
+      "loadingTitle": "Behandler betaling...",
+      "loadingMessage": "Vennligst vent...",
+      "verifying": "Bekrefter betaling...",
+      "invalidSession": "Ugyldig sessions-ID",
+      "loginRequired": "Du må være logget inn for å se denne siden",
+      "title": "Takk for ditt kjøp!",
+      "messageConfirmed": "Betalingen er bekreftet! Du har nå tilgang til alle funksjonene i din plan.",
+      "messagePending": "Betalingen er mottatt! Det kan ta et øyeblikk før abonnementet aktiveres.",
+      "messageFallback": "Takk for din betaling! Abonnementet ditt vil være aktivt straks.",
+      "goToDashboard": "Gå til dashboard",
+      "backToHome": "Tilbake til forsiden",
+      "description": "En velkomst-e-post og din personlige trading-guide er på vei til innboksen din. Vi starter reisen med {tier}!",
+      "cta": "Gå til Dashboard",
+      "viewProgram": "Se Studieprogram",
+      "errorTitle": "Noe gikk galt",
+      "backToPricing": "Tilbake til priser"
+    },
+    "cancel": {
+      "title": "Betaling avbrutt",
+      "subtitle": "Du avbrøt betalingen. Ingen bekymringer - du kan prøve igjen når som helst!",
+      "faqTitle": "Vanlige spørsmål",
+      "whyFailedQ": "Hvorfor fungerte ikke betalingen?",
+      "whyFailedA": "Det kan være midlertidige problemer med banken eller kortet. Prøv igjen eller bruk et annet kort.",
+      "chargedQ": "Blir jeg belastet?",
+      "chargedA": "Nei, du blir kun belastet når betalingen er fullført. Ingen skjulte gebyrer.",
+      "trialQ": "Kan jeg prøve gratis først?",
+      "trialA": "Ja! Alle betalte planer har 7 dagers gratis prøveperiode. Du kan kansellere når som helst.",
+      "tryAgain": "Prøv igjen",
+      "backHome": "Tilbake til forsiden",
+      "needHelp": "Trenger du hjelp? Kontakt oss på"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "Vilkår for bruk",
+      "lastUpdated": "Sist oppdatert: 11. februar 2026",
+      "sections": {
+        "1": {
+          "title": "1. Aksept av vilkår",
+          "content": "Ved å registrere deg og bruke Klarpakke Universitet, aksepterer du disse vilkårene. Hvis du ikke aksepterer vilkårene, kan du ikke bruke tjenesten."
+        },
+        "2": {
+          "title": "2. Beskrivelse av tjenesten",
+          "content": "Klarpakke Universitet er en utdanningsplattform for kryptovaluta-handel. Plattformen tilbyr simulert trading («paper trading») med fiktive penger.",
+          "bold": "VI BRUKER ALDRI EKTE PENGER."
+        },
+        "3": {
+          "title": "3. Brukerkonto",
+          "content": "For å bruke tjenesten må du:",
+          "list": [
+            "Være minst 18 år gammel",
+            "Opprette en konto med gyldig e-postadresse",
+            "Holde passordet ditt konfidensielt",
+            "Varsle oss umiddelbart ved uautorisert tilgang"
+          ]
+        },
+        "4": {
+          "title": "4. Immaterielle rettigheter",
+          "content": "Alt innhold på plattformen (tekst, grafikk, logoer, kursmateriale) eies av Klarpakke eller våre lisensgivere. Du kan ikke kopiere, distribuere eller selle innholdet uten skriftlig tillatelse."
+        },
+        "5": {
+          "title": "5. Ansvarsfraskrivelse",
+          "content": "Klarpakke gir ingen investeringsråd. All trading på plattformen er simulert og bruker ikke ekte penger. Resultater i paper trading garanterer ikke fremtidig suksess med ekte investeringer."
+        },
+        "6": {
+          "title": "6. Oppsigelse",
+          "content": "Vi kan suspendere eller avslutte din konto ved brudd på disse vilkårene. Du kan når som helst slette din konto ved å kontakte oss."
+        },
+        "7": {
+          "title": "7. Kontakt",
+          "content": "Spørsmål om vilkårene? Kontakt oss på:"
+        }
+      }
+    },
+    "privacy": {
+      "title": "Personvernerklæring",
+      "intro": {
+        "title": "1. Innledning",
+        "content": "Klarpakke (\"vi\", \"oss\") tar ditt personvern på alvor. Denne erklæringen beskriver hvordan vi samler inn, bruker og beskytter dine personopplysninger."
+      },
+      "collection": {
+        "title": "2. Personopplysninger vi samler inn",
+        "content": "Vi kan samle inn følgende typer informasjon:",
+        "list": [
+          "Kontaktinformasjon (navn, e-post).",
+          "Bruksdata (hvordan du bruker nettstedet).",
+          "Tekniske data (IP-adresse, nettlesertype)."
+        ]
+      },
+      "usage": {
+        "title": "3. Hvordan vi bruker opplysningene",
+        "content": "Vi bruker opplysningene til å:",
+        "list": [
+          "Levere og forbedre våre tjenester.",
+          "Sende deg relevant informasjon (f.eks. om kurs eller ligaer).",
+          "Overholde lovpålagte krav."
+        ]
+      },
+      "cookies": {
+        "title": "4. Informasjonskapsler (Cookies)",
+        "content": "Vi bruker informasjonskapsler for å forbedre brukeropplevelsen. Ved å bruke nettstedet vårt samtykker du til dette."
+      },
+      "rights": {
+        "title": "5. Dine rettigheter",
+        "content": "Du har rett til innsyn i, retting av og sletting av dine personopplysninger. Kontakt oss på post@klarpakke.no for henvendelser."
+      }
+    }
+  },
+  "contact": {
+    "title": "Kontakt oss",
+    "subtitle": "Vi hjelper deg gjerne. Send oss en melding!",
+    "form": {
+      "title": "Send oss en melding",
+      "name": "Navn",
+      "namePlaceholder": "Ditt navn",
+      "email": "E-post",
+      "emailPlaceholder": "din@email.com",
+      "message": "Melding",
+      "messagePlaceholder": "Hvordan kan vi hjelpe deg?",
+      "submit": "Send melding"
+    },
+    "info": {
+      "emailTitle": "E-post",
+      "emailResponse": "Vi svarer vanligvis innen 24 timer",
+      "chatTitle": "Live chat",
+      "chatHours": "Tilgjengelig mandag-fredag 09:00-17:00",
+      "startChat": "Start chat"
+    }
+  },
+  "calculator": {
+    "title": "Avkastningskalkulator",
+    "subtitle": "Se hvordan rente-på-rente fungerer. Et læringsverktøy for å forstå potensiell vekst – ikke en garanti.",
+    "intro": {
+      "title": "Hva viser denne kalkulatoren?",
+      "p1": "Kalkulatoren viser hvor mye penger du teoretisk kan ha etter ett år, gitt en fast daglig avkastning. Dette kalles \"rentes rente\" – avkastning på avkastning.",
+      "p2": "Husk: I virkeligheten er avkastning aldri jevn. Noen dager går det opp, andre dager ned. Bruk denne som et læringsverktøy, ikke som forventet resultat."
+    },
+    "inputs": {
+      "startAmount": "Startbeløp (kr)",
+      "dailyReturn": "Daglig avkastning"
+    },
+    "results": {
+      "afterYear": "Etter 1 år",
+      "totalReturn": "Total avkastning",
+      "growthChart": "Vekst over 12 måneder",
+      "monthly": "Månedlig oversikt"
+    },
+    "table": {
+      "month": "Mnd",
+      "balance": "Balanse",
+      "monthProfit": "Mnd. profitt",
+      "totalProfit": "Total profitt"
+    },
+    "disclaimer": {
+      "title": "Viktig å huske",
+      "text": "Dette er en teoretisk beregning. I virkeligheten svinger markedet, og avkastning er aldri garantert. Du kan tape penger på trading. Bruk kalkulatoren som et læringsverktøy, ikke som forventet resultat."
+    },
+    "cta": {
+      "text": "Vil du øve på trading med virtuelle penger?",
+      "button": "Prøv Paper Trading"
+    }
+  },
+  "school": {
+    "title": "Klarpakke Akademiet",
+    "subtitle": "Lær krypto steg-for-steg. Enkle leksjoner, ingen fancy ord.",
+    "levels": {
+      "1": {
+        "title": "Nivå 1: Nybegynner",
+        "desc": "Det aller mest grunnleggende.",
+        "questions": {
+          "1": {
+            "q": "Er Bitcoin en fysisk mynt?",
+            "a": "Nei, det er digitale penger.",
+            "correct": false
+          },
+          "2": {
+            "q": "Kan du tape penger på krypto?",
+            "a": "Ja, risikoen er høy.",
+            "correct": true
+          },
+          "3": {
+            "q": "Er 'Blockchain' en type ost?",
+            "a": "Nei, det er teknologien bak krypto.",
+            "correct": false
+          },
+          "4": {
+            "q": "Må du kjøpe 1 hel Bitcoin?",
+            "a": "Nei, du kan kjøpe små deler.",
+            "correct": false
+          },
+          "5": {
+            "q": "Er passordet ditt viktig?",
+            "a": "Ja, mister du det, mister du alt.",
+            "correct": true
+          }
+        }
+      },
+      "2": {
+        "title": "Nivå 2: Student",
+        "desc": "Forstå markedet og begrepene.",
+        "questions": {
+          "1": {
+            "q": "Betyr 'HODL' at man selger?",
+            "a": "Nei, det betyr å holde på myntene.",
+            "correct": false
+          },
+          "2": {
+            "q": "Er en 'Wallet' det samme som en bankkonto?",
+            "a": "Nei, du er din egen bank.",
+            "correct": false
+          },
+          "3": {
+            "q": "Kan prisen gå opp og ned 10% på en dag?",
+            "a": "Ja, krypto er veldig volatilt.",
+            "correct": true
+          },
+          "4": {
+            "q": "Er 'Altcoins' alle andre mynter enn Bitcoin?",
+            "a": "Ja, stort sett.",
+            "correct": true
+          },
+          "5": {
+            "q": "Bør du investere penger du trenger til leie?",
+            "a": "NEI! Aldri invester mer enn du kan tape.",
+            "correct": false
+          }
+        }
+      },
+      "3": {
+        "title": "Nivå 3: Trader",
+        "desc": "Avanserte strategier og sikkerhet.",
+        "questions": {
+          "1": {
+            "q": "Er 'Stop-Loss' en feiring?",
+            "a": "Nei, det er en automatisk salgsordre for å begrense tap.",
+            "correct": false
+          },
+          "2": {
+            "q": "Betyr 'Bear Market' at prisene stiger?",
+            "a": "Nei, Bear betyr nedgang (Bull betyr oppgang).",
+            "correct": false
+          },
+          "3": {
+            "q": "Er '2FA' (To-faktor) nødvendig?",
+            "a": "Ja, absolutt kritisk for sikkerhet.",
+            "correct": true
+          },
+          "4": {
+            "q": "Kan du shorte (vedde på nedgang) i krypto?",
+            "a": "Ja, men det er høy risiko.",
+            "correct": true
+          },
+          "5": {
+            "q": "Er teknisk analyse en garanti for gevinst?",
+            "a": "Nei, ingen kan spå fremtiden.",
+            "correct": false
+          }
+        }
+      }
+    },
+    "ui": {
+      "correct": "Riktig!",
+      "wrong": "Feil...",
+      "next": "Neste spørsmål",
+      "completed": "Nivå Fullført!",
+      "score": "Din score:",
+      "restart": "Prøv igjen",
+      "back": "Tilbake til oversikt",
+      "start": "Start Nivå",
+      "locked": "Låst",
+      "nextLevel": "Neste Nivå",
+      "tryAgain": "Prøv igjen"
+    }
+  },
+  "courses": {
+    "stats": {
+      "completedCourses": "Fullførte kurs",
+      "activeStudents": "Aktive studenter",
+      "averageRating": "Gjennomsnittlig vurdering",
+      "totalLessons": "Totalt antall leksjoner"
+    },
+    "cryptoForSmallSavers": {
+      "title": "Krypto for Småsparere",
+      "subtitle": "4-ukers kurs for nybegynnere. Fra null til trygg krypto-eier.",
+      "week1": {
+        "title": "Uke 1: Trygg Start",
+        "description": "Forstå hva krypto er, sett opp lommebok, kjøp første Bitcoin"
+      },
+      "week2": {
+        "title": "Uke 2: Beskyttelse",
+        "description": "Unngå svindel, sikre kryptoen, forstå skatt"
+      },
+      "week3": {
+        "title": "Uke 3: Handel",
+        "description": "Når å kjøpe/selge, lær teknisk analyse basics"
+      },
+      "week4": {
+        "title": "Uke 4: Mestring",
+        "description": "Bygge egen strategi, unngå følelser, planlegge exit"
+      },
+      "lessons": {
+        "whatIsCrypto": {
+          "title": "Hva er Krypto?",
+          "description": "Bitcoin = Digitalt gull. Blockchain = Digital regnskapsbok.",
+          "q1": {
+            "question": "Hva er Bitcoin?",
+            "options": [
+              "En fysisk mynt du får i posten",
+              "Digital valuta som lever på internett",
+              "Et aksjeselskap på børsen",
+              "Et program på mobilen din"
+            ],
+            "correct": 1
+          },
+          "q2": {
+            "question": "Hvem kontrollerer Bitcoin?",
+            "options": [
+              "Den norske staten",
+              "En stor bank i USA",
+              "Ingen - det er desentralisert",
+              "Elon Musk"
+            ],
+            "correct": 2
+          }
+        },
+        "firstWallet": {
+          "title": "Din Første Lommebok",
+          "description": "Børs vs. egen lommebok. Registrering og 2FA.",
+          "warning": "ALDRI del din seed phrase med noen!"
+        },
+        "firstPurchase": {
+          "title": "Kjøp Din Første Bitcoin",
+          "description": "Du trenger ikke kjøpe 1 hel Bitcoin. Start med 100 kr.",
+          "tip": "Max 5% av sparepengene i krypto"
+        },
+        "commonScams": {
+          "title": "De 5 Vanligste Svindlene",
+          "scam1": "Falske eposter",
+          "scam2": "'Send penger, få tilbake'",
+          "scam3": "Falsk support",
+          "scam4": "Romantikk-svindel",
+          "scam5": "Pump & Dump grupper"
+        }
+      },
+      "quiz": {
+        "multipleChoice": "Velg riktig svar:",
+        "dragDrop": "Dra til riktig kategori:",
+        "scale": "Velg på skala:",
+        "hotspot": "Trykk på det farlige:",
+        "correct": "Riktig! 🎉",
+        "wrong": "Ikke helt. Forklaring: ",
+        "next": "Neste spørsmål",
+        "previous": "Forrige"
+      },
+      "achievements": {
+        "firstLesson": {
+          "title": "Første Leksjon",
+          "description": "Fullført din første leksjon 📚"
+        },
+        "firstPurchase": {
+          "title": "Første Kjøp",
+          "description": "Kjøpt din første krypto 🆕"
+        },
+        "safetyFirst": {
+          "title": "Safety First",
+          "description": "Aktivert 2FA 🔒"
+        },
+        "scamHunter": {
+          "title": "Svindel-jeger",
+          "description": "Identifisert 5 svindelforsøk 🧐"
+        },
+        "hodler": {
+          "title": "Hodler",
+          "description": "Holdt krypto i 1 år 💎🙌"
+        },
+        "dcaMaster": {
+          "title": "DCA Mester",
+          "description": "Kjøpt 12 måneder på rad 📅"
+        }
+      },
+      "exam": {
+        "title": "Eksamen - Simulert Handel",
+        "description": "Du får 100 000 kr virtuelle penger. 30 dager realistiske priser.",
+        "start": "Start Eksamen",
+        "results": {
+          "master": "🏆 Master Trader - Enestående risikostyring!",
+          "bachelor": "🎓 Bachelor Trader - God innsats!",
+          "student": "📚 Student - Øv litt mer og prøv igjen"
+        }
+      }
+    }
+  },
+  "about": {
+    "title": "Bygg din fremtid med Klarpakke Universitet",
+    "subtitle": "Vi skaper en ny generasjon tradere gjennom trygg, strukturert og risikofri læring.",
+    "mission": {
+      "title": "Vårt Oppdrag",
+      "p1": "Kryptomarkedet er fullt av muligheter, men også risiko. Altfor mange taper penger fordi de mangler kunnskap eller faller for svindel.",
+      "p2": "Klarpakke Universitet ble skapt for å løse dette. Vi gir deg et trygt miljø for å lære, øve og mestre trading før du risikerer en eneste krone."
+    },
+    "values": {
+      "title": "Våre Verdier",
+      "subtitle": "Sikkerhet, åpenhet og kunnskap er kjernen i alt vi gjør.",
+      "v1": {
+        "title": "Sikkerhet Først",
+        "desc": "Vi lærer deg risikostyring før trading-strategier."
+      },
+      "v2": {
+        "title": "Fellesskap",
+        "desc": "Læring er bedre sammen. Vårt campus er åpent for alle."
+      },
+      "v3": {
+        "title": "Åpenhet",
+        "desc": "Ingen skjulte agendaer. Vi tjener penger på abonnementer, ikke dine tap."
+      },
+      "v4": {
+        "title": "Innovasjon",
+        "desc": "Vi bruker nyeste teknologi for å gi deg et fortrinn."
+      }
+    },
+    "features": {
+      "video": {
+        "label": "Videoleksjoner",
+        "desc": "Korte, lettfattelige videoer."
+      },
+      "quiz": {
+        "label": "Quizzer",
+        "desc": "Test kunnskapen din etter hver modul."
+      },
+      "paper": {
+        "label": "Paper Trading",
+        "desc": "Øv deg med virtuelle penger."
+      }
+    },
+    "howItWorks": {
+      "title": "Slik fungerer det",
+      "s1": {
+        "title": "1. Opprett Konto",
+        "desc": "Registrer deg gratis og få tilgang til Student-portalen."
+      },
+      "s2": {
+        "title": "2. Lær Grunnleggende",
+        "desc": "Fullfør introduksjonskurset og bestå quizzen."
+      },
+      "s3": {
+        "title": "3. Øv Deg",
+        "desc": "Handle med 1M kr i virtuell kapital i simulatoren vår."
+      },
+      "s4": {
+        "title": "4. Mestre",
+        "desc": "Når du er konsistent, er du klar for det ekte markedet."
+      }
+    },
+    "quizTitle": "Test kunnskapen din",
+    "quizSubtitle": "Før du starter – vet du egentlig hva den største risikoen er?",
+    "readyToStart": "Klar til å ta kontroll?",
+    "readyToStartDesc": "Start reisen din i dag. Det er helt gratis å prøve.",
+    "important": "Viktig:",
+    "disclaimer": "Risiko disclaimer gjelder.",
+    "startFree": "Start gratis nå",
+    "seePricing": "Se priser"
+  },
+  "footer": {
+    "product": "Produkt",
+    "company": "Selskap",
+    "legal": "Juridisk",
+    "tagline": "Norsk krypto-utdanning. Lær uten risiko.",
+    "copyright": "Klarpakke. Norsk krypto-utdanning.",
+    "disclaimer": "⚠️ Klarpakke tilbyr utdanning og paper trading med virtuelle penger. Vi gir ikke investeringsråd. Kryptovaluta er volatile og innebærer risiko. Paper trading-resultater reflekterer ikke fremtidig avkastning.",
+    "links": {
+      "courses": "Kurs",
+      "pricing": "Priser",
+      "about": "Om oss",
+      "contact": "Kontakt",
+      "privacy": "Personvern",
+      "terms": "Vilkår"
+    }
+  },
+  "paperTrading": {
+    "title": "Paper Trading",
+    "subtitle": "Øv deg på trading med {amount} virtuelle penger",
+    "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
+    "help": {
+      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "close": "Lukk"
+    },
+    "stats": {
+      "availableBalance": "Tilgjengelig saldo",
+      "positionValue": "Verdi i posisjoner",
+      "totalValue": "Total verdi",
+      "return": "Avkastning"
+    },
+    "newTrade": {
+      "title": "Ny handel",
+      "selectCrypto": "Velg kryptovaluta",
+      "amountLabel": "Beløp (NOK)",
+      "amountPlaceholder": "F.eks. 10000",
+      "buy": "Kjøp",
+      "sell": "Selg",
+      "reset": "Nullstill simulering",
+      "confirmReset": "Dette vil nullstille all din paper trading-historikk. Er du sikker?",
+      "invalidAmount": "Vennligst angi et gyldig beløp",
+      "fetchError": "Kunne ikke hente prisdata. Prøv igjen.",
+      "insufficientBalance": "Ikke nok saldo!",
+      "insufficientHoldings": "Du har ikke nok av denne kryptovalutaen!",
+      "refresh": "Oppdater"
+    },
+    "chart": {
+      "title": "{symbol} Pris"
+    },
+    "positions": {
+      "title": "Dine posisjoner",
+      "empty": "Du har ingen åpne posisjoner ennå.",
+      "start": "Start med å kjøpe noe kryptovaluta!"
+    },
+    "history": {
+      "title": "Handelshistorikk",
+      "empty": "Ingen handler ennå.",
+      "bought": "Kjøpte",
+      "sold": "Solgte"
+    },
+    "disclaimer": {
+      "important": "Viktig:",
+      "text": "Dette er en simulering med lekepenger. Prisene er hentet live fra Binance API. Ingen ekte penger er involvert. Trading med ekte penger innebærer risiko."
+    },
+    "leaderboard": {
+      "title": "Toppliste",
+      "rank": "Rang",
+      "trader": "Trader",
+      "return": "Avkastning",
+      "trades": "Handler",
+      "winRate": "Vinnrate",
+      "risk": "Risiko",
+      "periods": {
+        "daily": "I dag",
+        "weekly": "Denne uken",
+        "monthly": "Denne måneden",
+        "all_time": "Totalt"
+      }
+    },
+    "loginBanner": {
+      "title": "Logg inn for å se din toppliste-posisjon",
+      "text": "Opprett en gratis konto for å delta i konkurransen",
+      "button": "Logg inn / Registrer deg"
+    },
+    "saving": "Lagrer..."
+  },
+  "quizPage": {
+    "title": "Trading Quiz",
+    "subtitle": "Test hva du har lært",
+    "testKnowledge": "Test kunnskapen din",
+    "description": "Denne quizen tester grunnleggende forståelse av trading-konsepter. Du trenger 70% riktige svar for å bestå. Les forklaringene nøye – de hjelper deg å forstå hvorfor svarene er riktige.",
+    "questionProgress": "Spørsmål {current} av {total}",
+    "correctCount": "{score} riktige",
+    "nextQuestion": "Neste spørsmål",
+    "seeResult": "Se resultat",
+    "result": {
+      "congratulations": "Gratulerer!",
+      "tryAgain": "Prøv igjen",
+      "passedMessage": "Du besto quizen! Godt jobbet.",
+      "failedMessage": "Du trenger minst 70% for å bestå. Les forklaringene og prøv igjen.",
+      "score": "Poeng",
+      "status": "Status",
+      "passed": "Bestått",
+      "failed": "Ikke bestått",
+      "whatNow": "Hva vil du gjøre nå?",
+      "tryPaperTrading": "Prøv Paper Trading",
+      "continueLearning": "Fortsett å lære",
+      "retry": "Ta quizen på nytt",
+      "correct": "Riktig!",
+      "wrong": "Feil"
+    },
+    "questions": [
+      {
+        "question": "Hva er en \"stop loss\" i trading?",
+        "options": [
+          "En ordre som automatisk selger når prisen når et bestemt nivå",
+          "En måte å tjene mer penger på",
+          "En type aksje",
+          "En trading strategi"
+        ],
+        "explanation": "En stop loss er en ordre som automatisk selger din posisjon når prisen faller til et bestemt nivå, og beskytter deg mot store tap."
+      },
+      {
+        "question": "Hva betyr \"diversifisering\"?",
+        "options": [
+          "Å kjøpe én aksje",
+          "Å spre investeringer på ulike aktiva",
+          "Å selge alle aksjer",
+          "Å handle kun med krypto"
+        ],
+        "explanation": "Diversifisering betyr å spre investeringene dine på ulike aktiva for å redusere risiko."
+      },
+      {
+        "question": "Hva er risikoen ved leveraged trading?",
+        "options": [
+          "Ingen risiko",
+          "Potensielt høyere tap enn investert beløp",
+          "Garantert profitt",
+          "Ingen påvirkning"
+        ],
+        "explanation": "Leveraged trading øker både potensiell profitt og tap. Du kan tape mer enn du investerte."
+      }
+    ]
+  },
+  "helpPage": {
+    "title": "Hjelp & Support",
+    "subtitle": "Finn svar på de vanligste spørsmålene om Klarpakke Universitet",
+    "searchPlaceholder": "Spør vår chatbot...",
+    "noResults": "Ingen resultater funnet for \"{query}\"",
+    "tryAnother": "Prøv et annet søkeord eller kontakt oss direkte",
+    "contact": {
+      "emailTitle": "Send oss en e-post",
+      "emailDesc": "Fant du ikke svaret? Vi svarer vanligvis innen 24 timer på hverdager.",
+      "linksTitle": "Nyttige lenker",
+      "aboutLink": "Om Klarpakke Universitet →",
+      "pricingLink": "Se priser og planer →",
+      "privacyLink": "Personvernerklæring →",
+      "termsLink": "Vilkår for bruk →"
+    },
+    "faqs": [
+      {
+        "q": "Hva er Klarpakke Universitet?",
+        "a": "Klarpakke Universitet er en norsk plattform for krypto-utdanning. Vi tilbyr kurs, simulator, paper trading og quizer – alt for å lære deg trading på en trygg måte. Alt er 100% simulert, så du kan øve uten å risikere ekte penger."
+      },
+      {
+        "q": "Hvilke planer finnes og hva koster de?",
+        "a": "Vi har fire planer: Gratis (0 kr) gir deg en smakebit. Basis (199 kr/mnd) inkluderer alle grunnkurs. Komplett (399 kr/mnd) er vår mest populære plan med alt i Basis pluss avanserte kurs, sertifikat og webinarer. Pro (999 kr/mnd) gir ekstra ressurser og prioritert support."
+      },
+      {
+        "q": "Kan jeg tape penger?",
+        "a": "Nei! Alt på Klarpakke Universitet er simulert. Når du bruker paper trading eller simulatoren, handler du med virtuelle penger. Du kan ikke tape ekte penger her. Dette er et trygt sted å lære før du eventuelt bruker ekte penger hos en ekstern megler."
+      },
+      {
+        "q": "Hvordan sier jeg opp?",
+        "a": "Du kan kansellere når som helst fra kontoinnstillingene dine. Du beholder tilgangen til slutten av den betalte perioden. Det er ingen bindingstid – du bestemmer selv hvor lenge du vil være med."
+      },
+      {
+        "q": "Hvordan starter jeg med paper trading?",
+        "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+      },
+      {
+        "q": "Hva lærer jeg i kursene?",
+        "a": "Grunnkursene dekker hva krypto er, hvordan trading fungerer, og grunnleggende risikostyring. Avanserte kurs går dypere inn i teknisk analyse, strategier og trading-psykologi. Alt er på norsk og tilpasset norske småsparere."
+      }
+    ]
+  },
+  "simulator": {
+    "title": "Trading-simulator",
+    "subtitle": "Lær krypto-trading med ekte markedsdata – helt risikofritt",
+    "stats": {
+      "completed": "Scenarioer fullført",
+      "accuracy": "Nøyaktighet",
+      "lessonsAvailable": "Leksjoner tilgjengelig"
+    },
+    "howTo": {
+      "title": "Slik bruker du simulatoren",
+      "hide": "Skjul tips",
+      "steps": [
+        "Velg et scenario under for å starte en øvelsesøkt",
+        "Studer diagrammet – grønne trekanter er kjøpsmuligheter, røde er salg",
+        "Klikk på diagrammet for å se forklaringer av prisbevegelser",
+        "Øv deg til du føler deg klar – ingen ekte penger involvert!"
+      ]
+    },
+    "chart": {
+      "title": "Prisutvikling med forklaringer",
+      "selectScenario": "Velg et scenario under for å se spesifikke læringsmål"
+    },
+    "scenarios": {
+      "title": "Velg et læringsscenario",
+      "difficulty": {
+        "easy": "Lett",
+        "medium": "Medium",
+        "hard": "Vanskelig"
+      },
+      "list": [
+        {
+          "id": "1",
+          "title": "Din første trade",
+          "description": "Lær å kjøpe og selge Bitcoin med enkle strategier",
+          "learning": "Grunnleggende kjøp og salg, hvordan lese et enkelt diagram"
+        },
+        {
+          "id": "2",
+          "title": "Stop Loss-mestring",
+          "description": "Sett opp automatisk risikostyring for å beskytte kapital",
+          "learning": "Risikostyring, stop-loss-strategier"
+        },
+        {
+          "id": "3",
+          "title": "Markedsanalyse",
+          "description": "Les diagrammer og identifiser trender før de skjer",
+          "learning": "Trendanalyse, støtte- og motstandsnivåer"
+        },
+        {
+          "id": "4",
+          "title": "Porteføljebalansering",
+          "description": "Diversifiser investeringene dine på en smart måte",
+          "learning": "Diversifisering, porteføljeforvaltning"
+        },
+        {
+          "id": "5",
+          "title": "Volatilitetshåndtering",
+          "description": "Trade under ekstreme markedsforhold uten panikk",
+          "learning": "Emosjonell kontroll, trading under press"
+        }
+      ]
+    },
+    "buttons": {
+      "openPaperTrading": "Åpne Paper Trading →",
+      "startPaperTrading": "Start Paper Trading →"
+    },
+    "ready": "Klar til å øve med virtuelle penger?"
+  },
+  "taxReport": {
+    "title": "Skatterapport",
+    "description": "Generer skatterapport for krypto-handel. Kompatibel med Skatteetaten RF-1189.",
+    "selectYear": "Velg skatteår",
+    "downloadCSV": "Last ned CSV",
+    "downloadSuccess": "Skatterapport lastet ned!",
+    "downloadError": "Kunne ikke laste ned rapport",
+    "errorFetching": "Kunne ikke hente skattedata",
+    "totalTrades": "Totalt antall handler",
+    "realizedProfitLoss": "Realisert gevinst/tap",
+    "totalFees": "Totale gebyrer",
+    "taxObligation": "Skatteplikt",
+    "taxable": "Skattepliktig",
+    "deductible": "Fradragsberettiget",
+    "skatteetatenTitle": "Skatteetaten RF-1189",
+    "skatteetatenDescription": "Ferdig utfylte tall for skattemeldingen. Kopier disse verdiene inn i RF-1189 skjemaet.",
+    "post3_1_1": "Post 3.1.1 - Gevinst",
+    "post3_1_2": "Post 3.1.2 - Tap",
+    "post3_1_10": "Post 3.1.10 - Netto",
+    "gains": "Gevinst",
+    "losses": "Tap",
+    "net": "Netto gevinst/tap",
+    "skatteetatenInfo": "Disse tallene skal rapporteres i skattemeldingen din. Ved gevinst betaler du 22% skatt. Ved tap kan du få fradrag.",
+    "quarterlyBreakdown": "Kvartalsvis oppdeling",
+    "q1": "1. kvartal",
+    "q2": "2. kvartal",
+    "q3": "3. kvartal",
+    "q4": "4. kvartal",
+    "trades": "handler",
+    "bySymbol": "Etter valuta",
+    "symbol": "Valuta",
+    "buys": "Kjøp",
+    "sells": "Salg",
+    "profitLoss": "Gevinst/Tap",
+    "noData": "Ingen handelsdata funnet for dette året.",
+    "pdfHelpText": "PDF åpnes i nytt vindu. Bruk Ctrl+P (eller Cmd+P på Mac) for å lagre som PDF.",
+    "pdfOpenInNewWindow": "PDF åpnet i nytt vindu. Bruk utskriftsfunksjonen for å lagre."
+  },
+  "tradeHistory": {
+    "title": "Handelshistorikk",
+    "subtitle": "Din komplette trading-historikk"
+  },
+  "wallet": {
+    "title": "Lommebok",
+    "subtitle": "Din personlige lommebok for krypto-trading",
+    "connected": "Tilkoblet",
+    "notConnected": "Ikke tilkoblet",
+    "updatedNow": "Oppdatert nå",
+    "selectExchange": "Velg børs",
+    "addExchange": "Legg til børs",
+    "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Binance. Du kan senere koble kontoen din hit for å se alt på ett sted.",
+    "security": {
+      "title": "Sikkerhet først",
+      "readOnly": "Vi ber kun om <strong>read-only</strong> API-nøkler. Dette betyr at vi kan lese saldo og transaksjoner, men <strong>ALDRI</strong> gjøre kjøp/salg eller uttak.",
+      "warning": "Aldri del API-nøkler med skrivetilgang (write/trade/withdraw).",
+      "commission": "Vi mottar en liten provisjon fra Binance uten ekstra kostnad for deg. Dette hjelper oss å holde tjenesten gratis."
+    },
+    "balances": {
+      "title": "Dine saldoer",
+      "total": "Total verdi",
+      "currency": "Valuta",
+      "amount": "Antall",
+      "value": "Verdi"
+    }
+  },
+  "adminDashboard": {
+    "title": "Admin Dashboard",
+    "verifying": "Verifiserer tilgang...",
+    "noAccess": {
+      "title": "Ingen tilgang",
+      "backToHome": "Tilbake til forsiden"
+    },
+    "header": {
+      "subtitle": "{email} • Kampanje-oversikt"
+    },
+    "campaign": {
+      "title": "Kampanje Mål",
+      "spotsFilled": "{total} av 100 plasser fylt"
+    },
+    "stats": {
+      "totalRegistered": "Totalt registrert",
+      "spotsLeft": "{remaining} plasser igjen",
+      "signedUpToday": "Påmeldt i dag",
+      "last24Hours": "Siste 24 timer",
+      "totalClicks": "Total klikk",
+      "allChannels": "Fra alle kanaler",
+      "conversion": "Konvertering",
+      "clickToReg": "Klikk → Registrering",
+      "activeUsers": "Aktive brukere"
+    },
+    "trafficSources": {
+      "title": "Trafikk Kilder",
+      "direct": "Direkte"
+    },
+    "funnel": {
+      "title": "Konvertering",
+      "falloff": "{count} falloff ({rate}%)",
+      "noData": "Ingen data ennå"
+    },
+    "footer": {
+      "lastUpdated": "Sist oppdatert: {date}",
+      "fallbackData": "⚠️ Live-data utilgjengelig, viser cache"
+    },
+    "search": {
+      "placeholder": "Søk brukere..."
+    }
+  },
+  "aboutUs": {
+    "quote": {
+      "title": "Fra \"Håp\" til \"Struktur\"",
+      "text": "I 2021 tapte jeg penger fordi jeg handlet på følelser. Jeg bygget Klarpakke for å fjerne følelsene fra ligningen. Ved å bruke programvare til å følge regler, og paper trading til å bevise ferdigheter først, har vi fjernet de største fellene for nye tradere.",
+      "author": "Tom Jensen",
+      "role": "Grunnlegger & Utvikler"
+    },
+    "title": "Om Oss",
+    "heroTitle": "Fra dyrekjøpt lærdom til",
+    "heroTitleHighlight": "Klarpakke Universitet",
+    "heroDescription": "Min reise fra å tape alt til å knekke koden – og hvordan du kan gjøre det samme.",
+    "story": {
+      "part1": {
+        "title": "Den dyre lærepengen",
+        "content": "For seks år siden tapte jeg 65 000 kroner på krypto. Det var en brutal start. Jeg stolte blindt på \"eksperter\" som lovet gull og grønne skoger, men som endte opp med å ta både honorarer og prosenter av et overskudd som aldri kom. Pengene rant ut, og jeg satt igjen med en verdifull, men dyr lekse."
+      },
+      "part2": {
+        "title": "Vendepunktet",
+        "content": "For to år siden tok jeg kontrollen selv. Jeg fordypet meg i avansert programmering og kunstig intelligens, og utviklet min egen auto-trader. Jeg startet i det små, testet, feilet og justerte. Etter hvert som algoritmene begynte å levere stabile resultater, fikk jeg selvtilliten til å investere mer."
+      },
+      "part3": {
+        "title": "Fra gambling til strategi",
+        "content": "Jeg kuttet ut tipping, lotto og tradisjonell banksparing. Alt fokus ble rettet mot systemet. Da resultatene overgikk forventningene, begynte jeg å dele verktøyet med venner og familie. Responsen var overveldende. Det ble tydelig at det fantes et behov for en ærlig og transparent vei inn i kryptomarkedet for folk flest."
+      },
+      "part4": {
+        "title": "Klarpakke blir til",
+        "content": "Jeg samlet et team av eksperter, utviklere og tradere. Målet var enkelt: Å gjøre avansert teknologi tilgjengelig for alle, helt uten skjulte agendaer. Slik ble Klarpakke Universitetet født – et sted hvor kunnskap og ærlighet står i sentrum."
+      }
+    },
+    "philosophy": {
+      "title": "Vår filosofi",
+      "noPyramid": "Full åpenhet",
+      "noPyramidDesc": "Ingen pyramidespill, ingen verving, ingen hemmeligheter. Vi tror på at ærlighet varer lengst.",
+      "educationFirst": "Kunnskap først",
+      "educationFirstDesc": "Vi gir deg verktøyene, men du sitter i førersetet. Vår auto-trader gjør grojobben, men din forståelse sikrer suksessen.",
+      "patience": "Langsiktighet",
+      "patienceDesc": "Krypto er ikke et get-rich-quick skjema. Vi sikter mot jevn, bærekraftig vekst – 0,2% daglig profitt er bedre enn 100% risiko. Det er kraften i rentes rente.",
+      "cta": "Bli med på reisen!"
+    }
+  }
+}

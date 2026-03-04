@@ -1,0 +1,78 @@
+{
+  "title": "AI 自动交易",
+  "subtitle": "100% 免费 AI 驱动自动交易",
+  "status": {
+    "title": "状态",
+    "active": "活跃",
+    "paused": "已暂停",
+    "running": "运行中",
+    "stopped": "已停止",
+    "activeDescription": "AI 每 5 分钟分析市场",
+    "pausedDescription": "点击启动 AI 自动交易"
+  },
+  "stats": {
+    "totalDecisions": "总决策",
+    "buy": "买入",
+    "sell": "卖出",
+    "hold": "持有",
+    "avgConfidence": "平均置信度",
+    "lastRun": "最近分析"
+  },
+  "config": {
+    "title": "配置",
+    "riskLevel": "风险级别",
+    "safe": "安全",
+    "moderate": "适度",
+    "aggressive": "激进",
+    "symbols": "交易对",
+    "minConfidence": "最低置信度"
+  },
+  "recentDecisions": {
+    "title": "最近决策",
+    "empty": "暂无决策",
+    "emptyDescription": "启动 AI 查看分析",
+    "target": "目标",
+    "stop": "止损",
+    "rsi": "RSI"
+  },
+  "howItWorks": {
+    "title": "工作原理（100% 免费）",
+    "step1": {
+      "title": "市场数据",
+      "description": "CoinLore API（免费）",
+      "detail": "实时价格和市场信息"
+    },
+    "step2": {
+      "title": "情绪分析",
+      "description": "Hugging Face + Reddit（免费）",
+      "detail": "分析新闻和社交媒体"
+    },
+    "step3": {
+      "title": "AI 预测",
+      "description": "Cloudflare Workers AI（免费）",
+      "detail": "结合技术分析和情绪"
+    },
+    "step4": {
+      "title": "自动执行",
+      "description": "模拟交易（免费）",
+      "detail": "使用虚拟资金练习"
+    },
+    "warning": "重要：这是用于分析的免费 AI。所有交易首先在模拟模式下进行。"
+  },
+  "actions": {
+    "runNow": "立即运行",
+    "start": "启动 AI",
+    "stop": "停止 AI"
+  },
+  "errors": {
+    "notAuthenticated": "您需要登录才能使用 AI 自动交易"
+  },
+  "selectRisk": "选择风险级别",
+  "closePositions": "立即关闭所有仓位并停止机器人。",
+  "timeAgo": {
+    "min": "{n} 分钟前",
+    "mins": "{n} 分钟前",
+    "hour": "{n} 小时前",
+    "hours": "{n} 小时前"
+  }
+}

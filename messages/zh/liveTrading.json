@@ -1,0 +1,10 @@
+{
+  "title": "实盘交易",
+  "description": "实时交易",
+  "subtitle": "关注市场并进行实时交易。",
+  "connectExchange": "连接交易所",
+  "marketOverview": "市场概览",
+  "openPositions": "持仓",
+  "placeOrder": "下单",
+  "orderBook": "订单簿"
+}

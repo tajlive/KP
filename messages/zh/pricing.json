@@ -1,0 +1,42 @@
+{
+  "success": {
+    "loadingTitle": "正在处理付款...",
+    "loadingMessage": "请稍候...",
+    "verifying": "正在验证付款...",
+    "invalidSession": "会话无效",
+    "loginRequired": "您必须登录后才能查看此页面",
+    "title": "感谢您的购买！",
+    "messageConfirmed": "付款已确认！您现在可以使用该方案的所有功能。",
+    "messagePending": "付款已收到！您的订阅可能需要一些时间才能生效。",
+    "messageFallback": "感谢您的付款！您的订阅将很快生效。",
+    "goToDashboard": "前往仪表板",
+    "backToHome": "返回主页",
+    "description": "一封欢迎邮件和您的个人交易指南正在发送到您的收件箱。让我们开始 {tier} 的旅程吧！",
+    "cta": "前往仪表板",
+    "viewProgram": "查看学习计划",
+    "errorTitle": "出错了",
+    "backToPricing": "返回价格方案"
+  },
+  "cancel": {
+    "title": "付款取消",
+    "subtitle": "您取消了付款。不用担心 - 您可以随时重试！",
+    "faqTitle": "常见问题",
+    "whyFailedQ": "为什么付款失败？",
+    "whyFailedA": "您的银行或卡可能存在临时问题。请重试或使用其他卡。",
+    "chargedQ": "我会支付任何费用吗？",
+    "chargedA": "不，您只有在付款完成后才会被扣款。没有任何隐藏费用。",
+    "trialQ": "我可以先免费试用吗？",
+    "trialA": "是的！所有付费方案都包含 7 天免费试用期。您可以随时取消。",
+    "tryAgain": "重试",
+    "backHome": "返回主页",
+    "needHelp": "需要帮助？请联系我们："
+  },
+  "title": "价格",
+  "subtitle": "选择适合您的方案",
+  "monthly": "月付",
+  "yearly": "年付",
+  "savePercent": "节省 {percent}%",
+  "perMonth": "每月",
+  "getStarted": "开始使用",
+  "mostPopular": "最受欢迎"
+}

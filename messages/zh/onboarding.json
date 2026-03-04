@@ -1,0 +1,22 @@
+{
+  "welcome": "Welcome, {{name}}!",
+  "skip": "Skip",
+  "next": "Next",
+  "finish": "Get Started!",
+  "getStarted": "Get Started",
+  
+  "step1": {
+    "title": "Welcome to Klarpakke! 🎉",
+    "description": "We're glad to have you here! Let us show you how to get the most out of our platform."
+  },
+  
+  "step2": {
+    "title": "Explore Our Courses",
+    "description": "Start with our free introductory courses, or explore advanced topics when you're ready. All courses include practical examples."
+  },
+  
+  "step3": {
+    "title": "Practice With Paper Trading",
+    "description": "Use our paper trading simulator to practice without risk. Build confidence before using real money."
+  }
+}

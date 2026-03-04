@@ -1,0 +1,42 @@
+{
+  "success": {
+    "loadingTitle": "Behandler betaling...",
+    "loadingMessage": "Vennligst vent...",
+    "verifying": "Bekrefter betaling...",
+    "invalidSession": "Ugyldig sessions-ID",
+    "loginRequired": "Du må være logget inn for å se denne siden",
+    "title": "Takk for ditt kjøp!",
+    "messageConfirmed": "Betalingen er bekreftet! Du har nå tilgang til alle funksjonene i din plan.",
+    "messagePending": "Betalingen er mottatt! Det kan ta et øyeblikk før abonnementet aktiveres.",
+    "messageFallback": "Takk for din betaling! Abonnementet ditt vil være aktivt straks.",
+    "goToDashboard": "Gå til dashboard",
+    "backToHome": "Tilbake til forsiden",
+    "description": "En velkomst-e-post og din personlige trading-guide er på vei til innboksen din. Vi starter reisen med {tier}!",
+    "cta": "Gå til Dashboard",
+    "viewProgram": "Se Studieprogram",
+    "errorTitle": "Noe gikk galt",
+    "backToPricing": "Tilbake til priser"
+  },
+  "cancel": {
+    "title": "Betaling avbrutt",
+    "subtitle": "Du avbrøt betalingen. Ingen bekymringer - du kan prøve igjen når som helst!",
+    "faqTitle": "Vanlige spørsmål",
+    "whyFailedQ": "Hvorfor fungerte ikke betalingen?",
+    "whyFailedA": "Det kan være midlertidige problemer med banken eller kortet. Prøv igjen eller bruk et annet kort.",
+    "chargedQ": "Blir jeg belastet?",
+    "chargedA": "Nei, du blir kun belastet når betalingen er fullført. Ingen skjulte gebyrer.",
+    "trialQ": "Kan jeg prøve gratis først?",
+    "trialA": "Ja! Alle betalte planer har 7 dagers gratis prøveperiode. Du kan kansellere når som helst.",
+    "tryAgain": "Prøv igjen",
+    "backHome": "Tilbake til forsiden",
+    "needHelp": "Trenger du hjelp? Kontakt oss på"
+  },
+  "title": "Priser",
+  "subtitle": "Velg planen som passer deg",
+  "monthly": "Månedlig",
+  "yearly": "Årlig",
+  "savePercent": "Spar {percent}%",
+  "perMonth": "per måned",
+  "getStarted": "Kom i gang",
+  "mostPopular": "MEST POPULÆR"
+}

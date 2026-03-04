@@ -1,0 +1,64 @@
+{
+  "mcpServers": {
+
+    // ✅ ALLEREDE AKTIV — GitHub
+    // Ingen endringer nødvendig
+
+    // ✅ ALLEREDE AKTIV — Linear
+    // Ingen endringer nødvendig
+
+    // 🔧 LEGG TIL: Supabase
+    // Token: https://supabase.com/dashboard/account/tokens
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token", "<SUPABASE_ACCESS_TOKEN>",
+        "--project-ref", "vuxbjlykgmzskxbclquf"
+      ]
+    },
+
+    // 🔧 LEGG TIL: Vercel
+    // Token: https://vercel.com/account/tokens
+    "vercel": {
+      "command": "npx",
+      "args": ["-y", "@vercel/mcp-adapter@latest"],
+      "env": {
+        "VERCEL_TOKEN": "<VERCEL_TOKEN>"
+      }
+    },
+
+    // 🔧 LEGG TIL: Stripe (restricted key — ikke full sk_live!)
+    // Lag restricted key: https://dashboard.stripe.com/apikeys
+    // Gi tilgang til: products, prices, webhooks, customers (read/write)
+    // IKKE gi tilgang til: charges, payouts, balance
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/agent-toolkit@latest"],
+      "env": {
+        "STRIPE_SECRET_KEY": "<STRIPE_RESTRICTED_KEY_rk_live_...>"
+      }
+    },
+
+    // 🔧 LEGG TIL: Sentry
+    // Token: https://sentry.io/settings/account/api/auth-tokens/
+    // Scope: project:read, project:write, org:read, event:read
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@sentry/mcp-server@latest"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "<SENTRY_AUTH_TOKEN>",
+        "SENTRY_ORG": "klarpakke"
+      }
+    },
+
+    // 🔧 VALGFRITT: Playwright (E2E test-automatisering)
+    // Lar meg kjøre Playwright-tester og ta skjermbilder
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+
+  }
+}

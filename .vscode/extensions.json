@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "yoavbls.pretty-ts-errors",
+    "supabase.supabase-vscode",
+    "wallabyjs.console-ninja",
+    "ms-playwright.playwright"
+  ]
+}

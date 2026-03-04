@@ -1,0 +1,37 @@
+╔══════════════════════════════════════════════════════════════════╗
+║  GOOGLE LOGIN - STEG-FOR-STEG (kopier dette)                     ║
+╚══════════════════════════════════════════════════════════════════╝
+
+1. Gå til: https://console.cloud.google.com/apis/library
+   → Søk "Google+ API"
+   → Klikk "Enable"
+
+2. OAuth Consent Screen:
+   → https://console.cloud.google.com/apis/credentials/consent
+   → Select "External"
+   → App name: Klarpakke Universitet
+   → User support email: post@klarpakke.no
+   → Developer contact: post@klarpakke.no
+   → Scopes: Add "email", "profile"
+   → Test users: Add din epost
+   → Save
+
+3. Lag credentials:
+   → Credentials → Create → OAuth client ID
+   → Application type: Web application
+   → Name: Klarpakke Web
+   → Authorized redirect URIs:
+     https://www.klarpakke.no/auth/callback
+   → Create
+   → Kopier CLIENT ID og CLIENT SECRET
+
+4. Gå til Supabase:
+   → https://app.supabase.com/project/_/auth/providers
+   → Finn "Google" → Toggle ON
+   → Lim inn CLIENT ID og CLIENT SECRET
+   → SAVE
+
+✅ FERDIG!
+
+KLIKKBAR LENKE:
+https://console.cloud.google.com/apis/library

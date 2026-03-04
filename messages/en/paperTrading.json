@@ -1,0 +1,69 @@
+{
+  "title": "Paper Trading",
+  "subtitle": "Practice trading with {amount} virtual currency",
+  "contextBanner": "Practice trading with 1,000,000 NOK in play money",
+  "help": {
+    "text": "Paper trading lets you practice trading without risking real money. You start with 1,000,000 NOK and can buy and sell cryptocurrency with real market prices from Binance.",
+    "close": "Close"
+  },
+  "stats": {
+    "availableBalance": "Available Balance",
+    "positionValue": "Position Value",
+    "totalValue": "Total Value",
+    "return": "Return"
+  },
+  "newTrade": {
+    "title": "New Trade",
+    "selectCrypto": "Select Cryptocurrency",
+    "amountLabel": "Amount (NOK)",
+    "amountPlaceholder": "E.g. 10000",
+    "buy": "Buy",
+    "sell": "Sell",
+    "reset": "Reset Simulation",
+    "confirmReset": "This will reset all your paper trading history. Are you sure?",
+    "invalidAmount": "Please enter a valid amount",
+    "fetchError": "Could not fetch price data. Try again.",
+    "insufficientBalance": "Insufficient balance!",
+    "insufficientHoldings": "You don't have enough of this cryptocurrency!",
+    "refresh": "Refresh"
+  },
+  "chart": {
+    "title": "{symbol} Price"
+  },
+  "positions": {
+    "title": "Your Positions",
+    "empty": "You have no open positions yet.",
+    "start": "Start by buying some cryptocurrency!"
+  },
+  "history": {
+    "title": "Trade History",
+    "empty": "No trades yet.",
+    "bought": "Bought",
+    "sold": "Sold"
+  },
+  "disclaimer": {
+    "important": "Important:",
+    "text": "This is a simulation with play money. Prices are fetched live from Binance API. No real money is involved. Trading with real money involves risk."
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "rank": "Rank",
+    "trader": "Trader",
+    "return": "Return",
+    "trades": "Trades",
+    "winRate": "Win Rate",
+    "risk": "Risk",
+    "periods": {
+      "daily": "Today",
+      "weekly": "This Week",
+      "monthly": "This Month",
+      "all_time": "All Time"
+    }
+  },
+  "loginBanner": {
+    "title": "Log in to see your leaderboard position",
+    "text": "Create a free account to join the competition",
+    "button": "Log in / Sign up"
+  },
+  "saving": "Saving..."
+}

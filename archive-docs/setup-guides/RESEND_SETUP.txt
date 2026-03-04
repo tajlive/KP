@@ -1,0 +1,40 @@
+╔══════════════════════════════════════════════════════════════════╗
+║  RESEND SMTP - STEG-FOR-STEG (kopier dette)                      ║
+╚══════════════════════════════════════════════════════════════════╝
+
+1. Gå til: https://resend.com/domains
+   → Klikk "Add domain"
+   → Skriv: klarpakke.no
+   → Kopier DNS records
+
+2. Gå til din DNS-leverandør (der du kjøpte domene):
+   → Legg til TXT record:
+     Name: resend._domainkey
+     Value: (fra Resend)
+   → Legg til TXT record:
+     Name: @
+     Value: v=spf1 include:resend.com ~all
+   → Vent 5-60 minutter
+
+3. Hent API key:
+   → Resend → API Keys
+   → Create API Key
+   → Name: Klarpakke Production
+   → Permission: Sending access
+   → Kopier key (starter med re_)
+
+4. Gå til Supabase:
+   → https://app.supabase.com/project/_/auth/providers
+   → Finn "Email" → Enable Custom SMTP
+   → Host: smtp.resend.com
+   → Port: 587
+   → Username: resend
+   → Password: re_din_api_key_her
+   → Sender name: Klarpakke Universitet
+   → Sender email: noreply@klarpakke.no
+   → SAVE
+
+✅ FERDIG! Eposter vil nå fungere!
+
+KLIKKBAR LENKE:
+https://resend.com/domains

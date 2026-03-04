@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    // Relaxed TypeScript checking (per CLAUDE.md)
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
+    // Tillat ubrukte variabler i utvikling (fjernes ved produksjon)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": false
+  },
+  "include": [
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    "out/types/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".vercel/output/static/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "archive",
+    "supabase/functions",
+    "tests",
+    "playwright.config.ts",
+    "sentry.*.config.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
+}

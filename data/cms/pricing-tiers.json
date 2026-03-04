@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Starter",
+    "slug": "starter",
+    "price-monthly": 99,
+    "price-annual": 990,
+    "features": "Opptil 100 signaler/måned\nGrunnleggende dashboard\nEmail support\n30 dagers historikk",
+    "cta-text": "Start gratis prøveperiode",
+    "highlight": false,
+    "order": 1
+  },
+  {
+    "name": "Professional",
+    "slug": "professional",
+    "price-monthly": 299,
+    "price-annual": 2990,
+    "features": "Ubegrenset signaler\nAvansert analytics\nPriority support\nUbegrenset historikk\nAPI tilgang\nTeam samarbeid (3 brukere)",
+    "cta-text": "Kom i gang",
+    "highlight": true,
+    "order": 2
+  },
+  {
+    "name": "Enterprise",
+    "slug": "enterprise",
+    "price-monthly": 999,
+    "price-annual": 9990,
+    "features": "Alt i Professional\nDedikert account manager\n24/7 support\nCustom integrationer\nOn-premise deployment\nUbegrenset team-brukere\nSLA garantier",
+    "cta-text": "Kontakt salg",
+    "highlight": false,
+    "order": 3
+  }
+]
