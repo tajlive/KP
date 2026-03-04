@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Ugyldig signatur" }, { status: 400 });
     }
 
-    console.log(`[Stripe Webhook] Mottatt: ${event.type}`);
+    console.info(`[Stripe Webhook] Mottatt: ${event.type}`);
 
     // Håndter ulike event-typer
     switch (event.type) {
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       }
 
       default:
-        console.log(`[Stripe Webhook] Ubehandlet event-type: ${event.type}`);
+        console.info(`[Stripe Webhook] Ubehandlet event-type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
@@ -184,7 +184,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       return;
     }
 
-    console.log(`[Stripe Webhook] Bruker ${userId} abonnerte på ${planType}`);
+    console.info(`[Stripe Webhook] Bruker ${userId} abonnerte på ${planType}`);
 
     // Send velkomst-email
     await sendWelcomeEmail(userId, planType);
@@ -228,7 +228,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
       })
       .eq("stripe_subscription_id", subscriptionId);
 
-    console.log(
+    console.info(
       `[Stripe Webhook] Betaling vellykket for subscription ${subscriptionId}`,
     );
   } catch (error) {
@@ -271,7 +271,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     // Send påminnelse om betaling
     await sendPaymentFailedEmail(customerId, subscriptionId);
 
-    console.log(
+    console.info(
       `[Stripe Webhook] Betaling feilet for subscription ${subscriptionId}`,
     );
   } catch (error) {
@@ -321,7 +321,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         .eq("stripe_subscription_id", subscription.id);
     }
 
-    console.log(`[Stripe Webhook] Subscription ${subscription.id} oppdatert`);
+    console.info(`[Stripe Webhook] Subscription ${subscription.id} oppdatert`);
   } catch (error) {
     console.error("[Stripe Webhook] Feil i handleSubscriptionUpdated:", error);
   }
@@ -359,7 +359,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       })
       .eq("id", sub.user_id);
 
-    console.log(
+    console.info(
       `[Stripe Webhook] Bruker ${sub.user_id} kansellerte abonnementet`,
     );
   } catch (error) {
@@ -433,7 +433,7 @@ async function sendWelcomeEmail(userId: string, planType: string) {
       `,
     });
 
-    console.log(`[Stripe Webhook] Velkomst-email sendt til ${profile.email}`);
+    console.info(`[Stripe Webhook] Velkomst-email sendt til ${profile.email}`);
   } catch (error) {
     console.error(
       "[Stripe Webhook] Feil ved sending av velkomst-email:",
@@ -488,7 +488,7 @@ async function sendPaymentFailedEmail(
       `,
     });
 
-    console.log(`[Stripe Webhook] Påminnelse sendt til ${profile.email}`);
+    console.info(`[Stripe Webhook] Påminnelse sendt til ${profile.email}`);
   } catch (error) {
     console.error(
       "[Stripe Webhook] Feil ved sending av payment failed email:",

@@ -21,9 +21,9 @@ import { useState } from "react";
 interface AddStrategyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (strategy: unknown) => Promise<void>;
-  tier: unknown;
-  trialStatus: unknown;
+  onCreate: (strategy: any) => Promise<void>;
+  tier: any;
+  trialStatus: any;
 }
 
 const STRATEGY_TYPES = [
@@ -132,13 +132,13 @@ export function AddStrategyDialog({
                 <SelectItem
                   value="live"
                   disabled={
-                    !(tier as unknown).liveTrading &&
-                    !(trialStatus as unknown)?.canUseLiveTrading
+                    !(tier as any).liveTrading &&
+                    !(trialStatus as any)?.canUseLiveTrading
                   }
                 >
                   🟢 Live Trading{" "}
-                  {!(tier as unknown).liveTrading &&
-                  !(trialStatus as unknown)?.canUseLiveTrading
+                  {!(tier as any).liveTrading &&
+                  !(trialStatus as any)?.canUseLiveTrading
                     ? "(Låst)"
                     : ""}
                 </SelectItem>

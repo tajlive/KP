@@ -65,7 +65,7 @@ export function useRealtimePrices(
         .split(",")
         .map((symbol) => {
           const priceData = prices.find(
-            (p: unknown) => p.symbol === symbol.toUpperCase(),
+            (p: any) => p.symbol === symbol.toUpperCase(),
           ) || { price: 0, change24h: 0 };
           return {
             symbol,
