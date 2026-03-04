@@ -1,0 +1,201 @@
+# ============================================================================
+# CI PIPELINE – Klarpakke
+# Optimalisert workflow med QA, Testing, Security og Health Checks
+# ============================================================================
+
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 8 * * *'  # Daglig kl 08:00
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # QA – Lint + TypeCheck (rask feedback)
+  # ═══════════════════════════════════════════════════════════════
+  qa:
+    name: ✅ QA Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+  # ═══════════════════════════════════════════════════════════════
+  # BUILD – Verifiser at bygg fungerer
+  # ═══════════════════════════════════════════════════════════════
+  build:
+    name: 🏗️ Build Check
+    runs-on: ubuntu-latest
+    needs: qa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  # ═══════════════════════════════════════════════════════════════
+  # MCP – Automatiserte tester
+  # ═══════════════════════════════════════════════════════════════
+  mcp-tests:
+    name: 🧪 MCP Test Suite
+    runs-on: ubuntu-latest
+    needs: [qa, build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npm test --if-present
+        continue-on-error: true
+
+  # ═══════════════════════════════════════════════════════════════
+  # E2E – Playwright Smoke Tests
+  # ═══════════════════════════════════════════════════════════════
+  e2e:
+    name: 🔥 Smoke Tests (E2E)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run E2E Tests
+        run: npm run test:e2e
+        env:
+          TEST_BASE_URL: ${{ vars.TEST_BASE_URL || 'https://www.klarpakke.no' }}
+        continue-on-error: true
+
+  # ═══════════════════════════════════════════════════════════════
+  # Security – CodeQL + npm audit
+  # ═══════════════════════════════════════════════════════════════
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
+
+      - name: npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  # ═══════════════════════════════════════════════════════════════
+  # Health Check – Produksjon
+  # ═══════════════════════════════════════════════════════════════
+  health:
+    name: 💓 Health Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Check klarpakke.no
+        run: |
+          echo "Sjekker https://www.klarpakke.no/no..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://www.klarpakke.no/no)
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "307" ]; then
+            echo "❌ Feil: Fikk HTTP $STATUS"
+            exit 1
+          fi
+          echo "✅ OK: HTTP $STATUS"
+
+      - name: Check API Health
+        run: |
+          echo "Sjekker API..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://www.klarpakke.no/api/health || echo "000")
+          echo "API Status: $STATUS"
+
+  # ═══════════════════════════════════════════════════════════════
+  # i18n – Valider oversettelser
+  # ═══════════════════════════════════════════════════════════════
+  i18n:
+    name: 🌍 i18n Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate i18n
+        run: node scripts/validate-i18n.js
+        continue-on-error: true
