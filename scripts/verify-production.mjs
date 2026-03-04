@@ -30,8 +30,8 @@ const CRITICAL_PATHS = [
     description: "Root redirect to locale",
   },
   { path: "/no", status: 200, description: "Norwegian homepage" },
-  { path: "/no/innlogging", status: 200, description: "Login page" },
-  { path: "/no/registrer", status: 200, description: "Signup page" },
+  { path: "/no/login", status: 200, description: "Login page" },
+  { path: "/no/signup", status: 200, description: "Signup page" },
   { path: "/no/pricing", status: 200, description: "Pricing page" },
   {
     path: "/no/paper-trading",
