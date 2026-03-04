@@ -50,7 +50,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: 🚀 Deploy
-        run: npx vercel@latest deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --yes
+        run: npx vercel@latest deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --yes --archive=tgz
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
