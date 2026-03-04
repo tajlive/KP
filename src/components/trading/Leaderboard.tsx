@@ -272,21 +272,21 @@ export default function Leaderboard() {
         const json = await res.json();
         if (json.success) {
           // Map API data back to LeaderboardEntry expected keys
-          const mapped: LeaderboardEntry[] = (json.leaderboard as any[]).map(
-            (e: any) => ({
-              id: e.user_id,
-              rank: e.rank || 0,
-              name: e.display_name || "Unknown",
-              pnl: e.total_pnl || 0,
-              pnlPercent: e.roi_percent || 0,
-              trades: e.total_trades || 0,
-              winRate: e.win_rate || 0,
-              sharpeRatio: e.sharpe_ratio || 0,
-              maxDrawdown: e.max_drawdown || 0,
-              volatility: e.volatility || 0,
-              strategy: e.strategy_id || "Unknown",
-              sparklineData: e.sparkline_data || [50, 50, 50, 50, 50, 50, 50],
-              isOwnSession: e.is_own_session || false,
+          const mapped: LeaderboardEntry[] = (json.leaderboard as unknown[]).map(
+            (e: unknown) => ({
+              id: (e as { user_id?: string }).user_id || "",
+              rank: (e as { rank?: number }).rank || 0,
+              name: (e as { display_name?: string }).display_name || "Unknown",
+              pnl: (e as { total_pnl?: number }).total_pnl || 0,
+              pnlPercent: (e as { roi_percent?: number }).roi_percent || 0,
+              trades: (e as { total_trades?: number }).total_trades || 0,
+              winRate: (e as { win_rate?: number }).win_rate || 0,
+              sharpeRatio: (e as { sharpe_ratio?: number }).sharpe_ratio || 0,
+              maxDrawdown: (e as { max_drawdown?: number }).max_drawdown || 0,
+              volatility: (e as { volatility?: number }).volatility || 0,
+              strategy: (e as { strategy_id?: string }).strategy_id || "Unknown",
+              sparklineData: (e as { sparkline_data?: number[] }).sparkline_data || [50, 50, 50, 50, 50, 50, 50],
+              isOwnSession: (e as { is_own_session?: boolean }).is_own_session || false,
             }),
           );
           setLeaderboardData(mapped);

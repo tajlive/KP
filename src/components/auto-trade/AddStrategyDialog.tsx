@@ -132,13 +132,13 @@ export function AddStrategyDialog({
                 <SelectItem
                   value="live"
                   disabled={
-                    !(tier as any).liveTrading &&
-                    !(trialStatus as any)?.canUseLiveTrading
+                    !(tier as { liveTrading?: boolean }).liveTrading &&
+                    !(trialStatus as { canUseLiveTrading?: boolean })?.canUseLiveTrading
                   }
                 >
                   🟢 Live Trading{" "}
-                  {!(tier as any).liveTrading &&
-                  !(trialStatus as any)?.canUseLiveTrading
+                  {!(tier as { liveTrading?: boolean }).liveTrading &&
+                  !(trialStatus as { canUseLiveTrading?: boolean })?.canUseLiveTrading
                     ? "(Låst)"
                     : ""}
                 </SelectItem>

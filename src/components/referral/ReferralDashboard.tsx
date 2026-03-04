@@ -50,7 +50,7 @@ export function ReferralDashboard() {
       setTickets([data.ticket, ...tickets]);
       toast.success("Golden Ticket generert! 🎉");
     } catch (error: unknown) {
-      toast.error((error as Error).message);
+      toast.error(error instanceof Error ? error.message : String(error));
     } finally {
       setGenerating(false);
     }
