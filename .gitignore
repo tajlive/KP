@@ -216,3 +216,4 @@ allure-results/
 .env.bak
 *.bak
 .vercel
+.env.local
