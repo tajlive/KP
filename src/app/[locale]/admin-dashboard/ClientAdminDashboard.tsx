@@ -72,11 +72,11 @@ export default function ClientAdminDashboard() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        const locale = pathname.split("/")[1] || "no";
+        const locale = (pathname ?? "/no").split("/")[1] || "no";
         const supportedLocales = ["no", "en", "th", "zh"];
         const safeLocale = supportedLocales.includes(locale) ? locale : "no";
         router.push(
-          `/${safeLocale}/innlogging?next=${encodeURIComponent(pathname)}`,
+          `/${safeLocale}/innlogging?next=${encodeURIComponent(pathname ?? "/")}`,
         );
         return;
       }

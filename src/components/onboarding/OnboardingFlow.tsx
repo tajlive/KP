@@ -3,8 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { createClient } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { cn, createClient } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -25,7 +24,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import ReactConfetti from "react-confetti";
+
 import { TradeExampleCard } from "./TradeExampleCard";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -301,10 +300,10 @@ export default function OnboardingFlow() {
     if (stepId === 5 && selectedStrategy) {
       setPaperBotCreating(true);
       try {
-        const { data: botData, error: botError } = await supabase.functions.invoke(
-          "create-paper-bot",
-          { body: { strategy_id: selectedStrategy, user_id: user.id } },
-        );
+        const { data: botData, error: botError } =
+          await supabase.functions.invoke("create-paper-bot", {
+            body: { strategy_id: selectedStrategy, user_id: user.id },
+          });
         if (!botError && botData?.bot_id) {
           await supabase
             .from("onboarding_progress")
@@ -323,6 +322,7 @@ export default function OnboardingFlow() {
       setCurrentStep(stepId + 1);
     } else {
       setIsCompleted(true);
+      fireConfetti();
     }
   };
 
@@ -340,10 +340,6 @@ export default function OnboardingFlow() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 p-4 backdrop-blur-sm">
-      {isCompleted && (
-        <ReactConfetti numberOfPieces={200} gravity={0.1} recycle={false} />
-      )}
-
       <div className="relative w-full max-w-lg">
         {/* Hopp over – setter IKKE is_completed for å bevare soft reminder */}
         <button
@@ -428,11 +424,15 @@ export default function OnboardingFlow() {
                   {STEPS.find((s) => s.id === currentStep)?.title}
                 </h2>
                 <p className="mb-6 text-slate-400">
-                  {currentStep === 1 && "Velg en auto-trading strategi som passer dine mål"}
-                  {currentStep === 2 && "Strategien din kjører nå automatisk i paper mode"}
+                  {currentStep === 1 &&
+                    "Velg en auto-trading strategi som passer dine mål"}
+                  {currentStep === 2 &&
+                    "Strategien din kjører nå automatisk i paper mode"}
                   {currentStep === 3 && "Se hvordan en vellykket handel ser ut"}
-                  {currentStep === 4 && "Forstå hvorfor tap er en del av trading"}
-                  {currentStep === 5 && "Sammenlign dine resultater med andre tradere"}
+                  {currentStep === 4 &&
+                    "Forstå hvorfor tap er en del av trading"}
+                  {currentStep === 5 &&
+                    "Sammenlign dine resultater med andre tradere"}
                 </p>
 
                 <div className="mb-6 w-full">
@@ -469,8 +469,12 @@ export default function OnboardingFlow() {
                                   <Icon className="h-6 w-6 text-white" />
                                 </div>
                                 <div className="flex-1 text-left">
-                                  <h3 className="font-semibold text-white">{strategy.name}</h3>
-                                  <p className="text-sm text-slate-400">{strategy.description}</p>
+                                  <h3 className="font-semibold text-white">
+                                    {strategy.name}
+                                  </h3>
+                                  <p className="text-sm text-slate-400">
+                                    {strategy.description}
+                                  </p>
                                 </div>
                                 <Badge variant="secondary" className="text-xs">
                                   {strategy.risk} risiko
@@ -509,7 +513,9 @@ export default function OnboardingFlow() {
                             <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-slate-800 text-2xl font-bold text-emerald-400">
                               {String(item.value).padStart(2, "0")}
                             </div>
-                            <p className="mt-1 text-xs text-slate-500">{item.label}</p>
+                            <p className="mt-1 text-xs text-slate-500">
+                              {item.label}
+                            </p>
                           </div>
                         ))}
                       </div>
@@ -551,7 +557,8 @@ export default function OnboardingFlow() {
                             transition={{ delay: i * 0.1 }}
                             className={cn(
                               "flex items-center justify-between p-3",
-                              user.isUser && "border-l-4 border-emerald-500 bg-emerald-500/5",
+                              user.isUser &&
+                                "border-l-4 border-emerald-500 bg-emerald-500/5",
                             )}
                           >
                             <div className="flex items-center gap-3">
@@ -561,19 +568,25 @@ export default function OnboardingFlow() {
                               <span
                                 className={cn(
                                   "text-sm",
-                                  user.isUser ? "font-bold text-emerald-400" : "text-slate-300",
+                                  user.isUser
+                                    ? "font-bold text-emerald-400"
+                                    : "text-slate-300",
                                 )}
                               >
                                 {user.name}
                               </span>
                               {user.isUser && (
-                                <Badge className="bg-emerald-500 text-xs">Du</Badge>
+                                <Badge className="bg-emerald-500 text-xs">
+                                  Du
+                                </Badge>
                               )}
                             </div>
                             <span
                               className={cn(
                                 "text-sm font-bold",
-                                user.pnl.startsWith("+") ? "text-emerald-400" : "text-red-400",
+                                user.pnl.startsWith("+")
+                                  ? "text-emerald-400"
+                                  : "text-red-400",
                               )}
                             >
                               {user.pnl}
@@ -593,7 +606,8 @@ export default function OnboardingFlow() {
                     onClick={() => handleStepComplete(1)}
                   >
                     Start med{" "}
-                    {STRATEGIES.find((s) => s.id === selectedStrategy)?.name || "strategi"}
+                    {STRATEGIES.find((s) => s.id === selectedStrategy)?.name ||
+                      "strategi"}
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 ) : currentStep !== 2 ? (
@@ -607,7 +621,9 @@ export default function OnboardingFlow() {
                       : currentStep === 5
                         ? "Fullfør onboarding 🎉"
                         : "Neste steg"}
-                    {!paperBotCreating && <ChevronRight className="ml-2 h-4 w-4" />}
+                    {!paperBotCreating && (
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    )}
                   </Button>
                 ) : (
                   <p className="text-sm italic text-slate-500">
@@ -621,19 +637,30 @@ export default function OnboardingFlow() {
               key="completion"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring" as const, stiffness: 300, damping: 25 }}
+              transition={{
+                type: "spring" as const,
+                stiffness: 300,
+                damping: 25,
+              }}
               className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-slate-800 p-10 text-center shadow-[0_0_50px_rgba(16,185,129,0.2)]"
             >
               <div className="pointer-events-none absolute inset-0 bg-emerald-500/5" />
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring" as const, stiffness: 500, damping: 15, delay: 0.3 }}
+                transition={{
+                  type: "spring" as const,
+                  stiffness: 500,
+                  damping: 15,
+                  delay: 0.3,
+                }}
                 className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 shadow-xl"
               >
                 <Check className="h-12 w-12 text-white stroke-[3px]" />
               </motion.div>
-              <h2 className="mb-2 text-3xl font-bold text-white">Gratulerer! 🎉</h2>
+              <h2 className="mb-2 text-3xl font-bold text-white">
+                Gratulerer! 🎉
+              </h2>
               <p className="mb-6 text-slate-400">
                 Du har fullført onboarding og er klar for live trading.
               </p>

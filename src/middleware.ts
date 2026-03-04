@@ -264,7 +264,7 @@ export async function middleware(request: NextRequest) {
         if (onboardingCompleted) {
           response.cookies.set("kp_onboarding_status", "completed", {
             path: "/",
-            maxAge: 3600 * 2,
+            maxAge: 3600 * 24 * 30, // 30 days — DB only queried once after login
             sameSite: "lax",
           });
         }

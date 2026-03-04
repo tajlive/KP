@@ -1,22 +1,18 @@
+"use client";
 
-
-'use client'
-
-
-
-import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/utils'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { DollarSign, TrendingUp, Users, MousePointer } from 'lucide-react'
-import { Profile } from '@/types/database'
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/lib/utils";
+import { Profile } from "@/types/database";
+import { DollarSign, MousePointer, TrendingUp, Users } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 interface MonetizationStats {
-  totalStudents: number
-  binanceClicked: number
-  exchangeConnected: number
-  clickRate: number
-  conversionRate: number
+  totalStudents: number;
+  binanceClicked: number;
+  exchangeConnected: number;
+  clickRate: number;
+  conversionRate: number;
 }
 
 export default function MonetizationPage() {
@@ -26,50 +22,58 @@ export default function MonetizationPage() {
     exchangeConnected: 0,
     clickRate: 0,
     conversionRate: 0,
-  })
-  const [students, setStudents] = useState<Profile[]>([])
-  const [loading, setLoading] = useState(true)
+  });
+  const [students, setStudents] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const supabase = createClient()
+  const supabase = createClient();
 
   const fetchData = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('beta_signups')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .from("beta_signups")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      if (error) throw error
+      if (error) throw error;
 
-      const totalStudents = data?.length || 0
-      const binanceClicked = data?.filter((s: Profile) => s.binance_clicked).length || 0
-      const exchangeConnected = data?.filter((s: Profile) => s.exchange_connected).length || 0
+      const totalStudents = data?.length || 0;
+      const binanceClicked =
+        data?.filter((s: Profile) => s.binance_clicked).length || 0;
+      const exchangeConnected =
+        data?.filter((s: Profile) => s.exchange_connected).length || 0;
 
       setStats({
         totalStudents,
         binanceClicked,
         exchangeConnected,
-        clickRate: totalStudents > 0 ? Math.round((binanceClicked / totalStudents) * 100) : 0,
-        conversionRate: totalStudents > 0 ? Math.round((exchangeConnected / totalStudents) * 100) : 0,
-      })
-      setStudents(data || [])
+        clickRate:
+          totalStudents > 0
+            ? Math.round((binanceClicked / totalStudents) * 100)
+            : 0,
+        conversionRate:
+          totalStudents > 0
+            ? Math.round((exchangeConnected / totalStudents) * 100)
+            : 0,
+      });
+      setStudents(data || []);
     } catch (error) {
-      console.error('Failed to fetch data:', error)
+      console.error("Failed to fetch data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [supabase])
+  }, [supabase]);
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full" />
       </div>
-    )
+    );
   }
 
   return (
@@ -77,7 +81,9 @@ export default function MonetizationPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-white mb-2">Monetization</h1>
-        <p className="text-slate-400">Inntektsanalyse og affiliate-statistikk</p>
+        <p className="text-slate-400">
+          Inntektsanalyse og affiliate-statistikk
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -87,7 +93,9 @@ export default function MonetizationPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Totale studenter</p>
-                <p className="text-3xl font-bold text-white mt-2">{stats.totalStudents}</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {stats.totalStudents}
+                </p>
               </div>
               <div className="p-3 bg-blue-500/10 rounded-xl">
                 <Users className="w-6 h-6 text-blue-400" />
@@ -101,8 +109,12 @@ export default function MonetizationPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Binance-lenke klikket</p>
-                <p className="text-3xl font-bold text-white mt-2">{stats.binanceClicked}</p>
-                <p className="text-yellow-400 text-sm mt-1">{stats.clickRate}% av totalen</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {stats.binanceClicked}
+                </p>
+                <p className="text-yellow-400 text-sm mt-1">
+                  {stats.clickRate}% av totalen
+                </p>
               </div>
               <div className="p-3 bg-yellow-500/10 rounded-xl">
                 <MousePointer className="w-6 h-6 text-yellow-400" />
@@ -116,8 +128,12 @@ export default function MonetizationPage() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-slate-400 text-sm">Børs koblet</p>
-                <p className="text-3xl font-bold text-white mt-2">{stats.exchangeConnected}</p>
-                <p className="text-green-400 text-sm mt-1">{stats.conversionRate}% konvertering</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {stats.exchangeConnected}
+                </p>
+                <p className="text-green-400 text-sm mt-1">
+                  {stats.conversionRate}% konvertering
+                </p>
               </div>
               <div className="p-3 bg-green-500/10 rounded-xl">
                 <DollarSign className="w-6 h-6 text-green-400" />
@@ -132,7 +148,9 @@ export default function MonetizationPage() {
               <div>
                 <p className="text-slate-400 text-sm">Estimert inntekt</p>
                 <p className="text-3xl font-bold text-white mt-2">-</p>
-                <p className="text-slate-500 text-sm mt-1">Krever Binance API</p>
+                <p className="text-slate-500 text-sm mt-1">
+                  Krever Binance API
+                </p>
               </div>
               <div className="p-3 bg-emerald-500/10 rounded-xl">
                 <TrendingUp className="w-6 h-6 text-emerald-400" />
@@ -149,13 +167,16 @@ export default function MonetizationPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-slate-300">
-            Klarpakke bruker <strong>Binance Referral Pro</strong> for å generere inntekter. 
-            Når studenter registrerer seg via vår lenke og handler på Binance, 
-            mottar vi en liten prosentandel av trading-gebyrene.
+            Klarpakke bruker <strong>Binance Referral Pro</strong> for å
+            generere inntekter. Når studenter registrerer seg via vår lenke og
+            handler på Binance, mottar vi en liten prosentandel av
+            trading-gebyrene.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="bg-slate-900/50 rounded-lg p-4">
-              <p className="text-white font-medium mb-2">Hvordan det fungerer:</p>
+              <p className="text-white font-medium mb-2">
+                Hvordan det fungerer:
+              </p>
               <ul className="text-slate-400 text-sm space-y-1">
                 <li>• Student klikker Binance-lenken</li>
                 <li>• Oppretter konto på Binance</li>
@@ -179,18 +200,30 @@ export default function MonetizationPage() {
       {/* Student List with Monetization Signals */}
       <Card className="border-slate-700 bg-slate-800/50">
         <CardHeader>
-          <CardTitle className="text-white">Studenter med monetization-signal</CardTitle>
+          <CardTitle className="text-white">
+            Studenter med monetization-signal
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-slate-900/50 border-b border-slate-700">
                 <tr>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">#</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">E-post</th>
-                  <th className="text-center py-3 px-4 text-slate-400 font-medium">Binance klikket</th>
-                  <th className="text-center py-3 px-4 text-slate-400 font-medium">Børs koblet</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Status</th>
+                  <th className="text-left py-3 px-4 text-slate-400 font-medium">
+                    #
+                  </th>
+                  <th className="text-left py-3 px-4 text-slate-400 font-medium">
+                    E-post
+                  </th>
+                  <th className="text-center py-3 px-4 text-slate-400 font-medium">
+                    Binance klikket
+                  </th>
+                  <th className="text-center py-3 px-4 text-slate-400 font-medium">
+                    Børs koblet
+                  </th>
+                  <th className="text-left py-3 px-4 text-slate-400 font-medium">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
@@ -204,9 +237,16 @@ export default function MonetizationPage() {
                     </td>
                     <td className="py-3 px-4 text-center">
                       {student.binance_clicked ? (
-                        <Badge className="bg-green-500/10 text-green-400">Ja</Badge>
+                        <Badge className="bg-green-500/10 text-green-400">
+                          Ja
+                        </Badge>
                       ) : (
-                        <Badge variant="outline" className="border-slate-600 text-slate-400">Nei</Badge>
+                        <Badge
+                          variant="outline"
+                          className="border-slate-600 text-slate-400"
+                        >
+                          Nei
+                        </Badge>
                       )}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -215,12 +255,20 @@ export default function MonetizationPage() {
                           {student.exchange_connected}
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="border-slate-600 text-slate-400">-</Badge>
+                        <Badge
+                          variant="outline"
+                          className="border-slate-600 text-slate-400"
+                        >
+                          -
+                        </Badge>
                       )}
                     </td>
                     <td className="py-3 px-4">
                       <span className="text-slate-400 capitalize">
-                        {student.onboarding_step.replace('_', ' ')}
+                        {(student.onboarding_step ?? "unknown").replace(
+                          "_",
+                          " ",
+                        )}
                       </span>
                     </td>
                   </tr>
@@ -231,5 +279,5 @@ export default function MonetizationPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
