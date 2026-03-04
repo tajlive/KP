@@ -1,0 +1,57 @@
+# Git files
+.git
+.gitignore
+
+# Node
+node_modules/
+
+# Build artifacts (vil bli bygget i Cloud Build)
+.next/
+out/
+build/
+dist/
+
+# Testing
+coverage/
+test-results/
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Docs
+docs/
+*.md
+!README.md
+
+# Archive
+archive/
+archive-docs/
+archive-pages/
+
+# Temporary
+*.tmp
+.cache/
+.temp/
+
+# CI/CD (ikke nødvendig i Cloud Build)
+.github/
+
+# VIKTIG: INKLUDER DISSE
+!package-lock.json
+!src/data/courses/
+!Dockerfile
+!cloudbuild.yaml

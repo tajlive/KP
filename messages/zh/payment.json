@@ -1,0 +1,11 @@
+{
+  "back": "返回",
+  "card": "银行卡",
+  "cardDescription": "使用信用卡或借记卡支付",
+  "chooseMethod": "选择支付方式",
+  "or": "或",
+  "payWithCard": "使用银行卡支付",
+  "securePayment": "安全加密支付",
+  "vipps": "银行卡/Apple Pay",
+  "vippsDescription": "使用银行卡或Apple Pay快速便捷支付"
+}

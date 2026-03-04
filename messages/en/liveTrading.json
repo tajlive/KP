@@ -1,0 +1,59 @@
+{
+  "title": "Live Trading",
+  "description": "Trade in real time",
+  "subtitle": "Follow the market and make trades in real time.",
+  "connectExchange": "Connect exchange",
+  "marketOverview": "Market overview",
+  "openPositions": "Open positions",
+  "placeOrder": "Place order",
+  "orderBook": "Order book",
+  "loading": "Loading trading data...",
+  "retry": "Retry",
+  "warning": "Warning",
+  "warningText": "Live trading involves risk. Only trade with funds you can afford to lose.",
+  "masterOnly": "Master students only",
+  "masterOnlyDesc": "Live trading is available for Master plan and above.",
+  "upgradeBtn": "Upgrade plan",
+  "balance": "Balance",
+  "amountPlaceholder": "Enter amount in USDT",
+  "buy": "Buy",
+  "sell": "Sell",
+  "recentOrders": "Recent orders",
+  "errors": {
+    "enterAmount": "Please enter an amount",
+    "priceData": "Could not fetch price data",
+    "loginRequired": "You must be logged in to trade",
+    "tradeFailed": "Trade failed. Please try again.",
+    "checkBinance": "Check your Binance connection"
+  },
+  "security": {
+    "title": "Your security is our priority",
+    "noWithdrawal": "No withdrawal access",
+    "noWithdrawalDesc": "We never have access to withdraw your funds.",
+    "fullControl": "You have full control",
+    "fullControlDesc": "Your API key is encrypted and stored securely.",
+    "transparency": "Full transparency",
+    "transparencyDesc": "All trades are traceable directly in your Binance account."
+  },
+  "info": {
+    "title": "Important information",
+    "usdtRequirement": "USDT required",
+    "usdtRequirementDesc": "You need USDT in your Binance account to trade.",
+    "realtimeData": "Real-time data",
+    "realtimeDataDesc": "Prices update in real time via WebSocket.",
+    "minimumAmount": "Minimum amount",
+    "minimumAmountDesc": "Minimum trade amount is 10 USDT."
+  },
+  "confirm": {
+    "title": "Confirm trade",
+    "action": "Action",
+    "symbol": "Symbol",
+    "amount": "Amount",
+    "price": "Price",
+    "quantity": "Quantity",
+    "cancel": "Cancel",
+    "confirm": "Confirm trade",
+    "bought": "Bought",
+    "sold": "Sold"
+  }
+}

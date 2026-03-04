@@ -1,0 +1,14 @@
+{
+  "title": "游戏化",
+  "description": "学习并赚取积分",
+  "subtitle": "完成挑战并登上排行榜。",
+  "points": "积分",
+  "badges": "徽章",
+  "streaks": "连续记录",
+  "level": "等级",
+  "nextLevel": "下一级",
+  "dailyChallenge": "每日挑战",
+  "weeklyGoal": "每周目标",
+  "achievements": "成就",
+  "progress": "进度"
+}

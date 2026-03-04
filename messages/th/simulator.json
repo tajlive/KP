@@ -1,0 +1,68 @@
+{
+  "title": "Trading-simulator",
+  "subtitle": "Lær krypto-trading med ekte markedsdata – helt risikofritt",
+  "stats": {
+    "completed": "Scenarioer fullført",
+    "accuracy": "Nøyaktighet",
+    "lessonsAvailable": "Leksjoner tilgjengelig"
+  },
+  "howTo": {
+    "title": "Slik bruker du simulatoren",
+    "hide": "Skjul tips",
+    "steps": [
+      "Velg et scenario under for å starte en øvelsesøkt",
+      "Studer diagrammet – grønne trekanter er kjøpsmuligheter, røde er salg",
+      "Klikk på diagrammet for å se forklaringer av prisbevegelser",
+      "Øv deg til du føler deg klar – ingen ekte penger involvert!"
+    ]
+  },
+  "chart": {
+    "title": "Prisutvikling med forklaringer",
+    "selectScenario": "Velg et scenario under for å se spesifikke læringsmål"
+  },
+  "scenarios": {
+    "title": "Velg et læringsscenario",
+    "difficulty": {
+      "easy": "Lett",
+      "medium": "Medium",
+      "hard": "Vanskelig"
+    },
+    "list": [
+      {
+        "id": "1",
+        "title": "Din første trade",
+        "description": "Lær å kjøpe og selge Bitcoin med enkle strategier",
+        "learning": "Grunnleggende kjøp og salg, hvordan lese et enkelt diagram"
+      },
+      {
+        "id": "2",
+        "title": "Stop Loss-mestring",
+        "description": "Sett opp automatisk risikostyring for å beskytte kapital",
+        "learning": "Risikostyring, stop-loss-strategier"
+      },
+      {
+        "id": "3",
+        "title": "Markedsanalyse",
+        "description": "Les diagrammer og identifiser trender før de skjer",
+        "learning": "Trendanalyse, støtte- og motstandsnivåer"
+      },
+      {
+        "id": "4",
+        "title": "Porteføljebalansering",
+        "description": "Diversifiser investeringene dine på en smart måte",
+        "learning": "Diversifisering, porteføljeforvaltning"
+      },
+      {
+        "id": "5",
+        "title": "Volatilitetshåndtering",
+        "description": "Trade under ekstreme markedsforhold uten panikk",
+        "learning": "Emosjonell kontroll, trading under press"
+      }
+    ]
+  },
+  "buttons": {
+    "openPaperTrading": "Åpne Paper Trading →",
+    "startPaperTrading": "Start Paper Trading →"
+  },
+  "ready": "Klar til å øve med virtuelle penger?"
+}

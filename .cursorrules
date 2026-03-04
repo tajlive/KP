@@ -1,0 +1,35 @@
+# Klarpakke Cursor Rules
+
+Dette prosjektet er en Next.js 15 (App Router) applikasjon for kryptovaluta-handel og læring, integrert med Supabase og Binance.
+
+## Teknologistack
+- **Framework**: Next.js 15 (App Router)
+- **Språk**: TypeScript
+- **Styling**: Tailwind CSS + Framer Motion
+- **Database/Auth**: Supabase (PostgreSQL + Auth SSR)
+- **State Management**: Zustand
+- **API**: Binance API (Spot/Futures), Stripe (Betaling)
+- **i18n**: next-intl (støtter no, en, th, zh)
+
+## Kodestil og Konvensjoner
+- **Modulær Struktur**: Følg eksisterende struktur i `src/components`, `src/app`, og `src/lib`.
+- **Client/Server Components**: Bruk 'use client' kun når det er nødvendig for interaktivitet (hooks, event listeners).
+- **Zod Validering**: Bruk Zod for all input-validering og API-responser.
+- **Sikkerhet**: 
+  - Følg Row Level Security (RLS) prinsipper i Supabase.
+  - Aldri eksponer hemmelige nøkler på klientsiden.
+- **Naming**: Bruk deskriptive navn på norsk der det er naturlig for domenet, men engelsk for teknisk kode og variabler (se `src/app/[locale]` for eksempler).
+
+## i18n Regler
+- Alle bruker-facing tekster skal gå gjennom `next-intl`.
+- Bruk `useTranslations` hook i Client Components og `getTranslations` i Server Components.
+- Oversettelser finnes i `messages/[locale].json`.
+
+## Trading Logikk
+- Strategier kjøres i Supabase Edge Functions eller via Vercel Cron.
+- Se `src/components/trading` for UI-komponenter og `src/components/auto-trade` for strategi-oppsett.
+
+## Spesifikke Cursor Instruksjoner
+- Ved feilretting, sjekk alltid `ARCHITECTURE.md` for å forstå dataflyten.
+- Foretrekk funksjonelle komponenter med TypeScript-typer.
+- Ved endring av UI, oppretthold den eksisterende estetiske profilen (mørkt tema, moderne UI).

@@ -1,0 +1,34 @@
+{
+  "title": "Calculator",
+  "description": "Trading calculator",
+  "subtitle": "See how your investments can grow with daily compound returns",
+  "intro": {
+    "title": "What is compound interest?",
+    "p1": "Compound interest means you earn interest on interest. When you trade with a daily return, the profit from each day is added to your capital and generates new profit the next day.",
+    "p2": "This calculator shows how much you can earn in one year of consistent trading, based on your starting capital and expected daily return."
+  },
+  "inputs": {
+    "startAmount": "Starting amount",
+    "dailyReturn": "Daily return (%)"
+  },
+  "results": {
+    "afterYear": "After 1 year",
+    "totalReturn": "Total return",
+    "growthChart": "Growth over time",
+    "monthly": "Monthly breakdown"
+  },
+  "table": {
+    "month": "Month",
+    "balance": "Balance",
+    "monthProfit": "Monthly profit",
+    "totalProfit": "Total profit"
+  },
+  "disclaimer": {
+    "title": "Important information",
+    "text": "This is a theoretical calculation. Actual trading results may vary significantly. Daily returns of 1-4% are very ambitious and require substantial expertise. Past performance is no guarantee of future results."
+  },
+  "cta": {
+    "text": "Ready to test your strategies without risk?",
+    "button": "Try Paper Trading"
+  }
+}

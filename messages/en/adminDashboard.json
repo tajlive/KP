@@ -1,0 +1,42 @@
+{
+  "title": "Admin Dashboard",
+  "verifying": "Verifying access...",
+  "noAccess": {
+    "title": "Access Denied",
+    "backToHome": "Back to homepage"
+  },
+  "header": {
+    "subtitle": "{email} • Campaign Overview"
+  },
+  "campaign": {
+    "title": "Campaign Goal",
+    "spotsFilled": "{total} of 100 spots filled"
+  },
+  "stats": {
+    "totalRegistered": "Total Registered",
+    "spotsLeft": "{remaining} spots left",
+    "signedUpToday": "Signed up today",
+    "last24Hours": "Last 24 hours",
+    "totalClicks": "Total Clicks",
+    "allChannels": "From all channels",
+    "conversion": "Conversion",
+    "clickToReg": "Click → Registration",
+    "activeUsers": "Active users"
+  },
+  "trafficSources": {
+    "title": "Traffic Sources",
+    "direct": "Direct"
+  },
+  "funnel": {
+    "title": "Conversion Funnel",
+    "falloff": "{count} falloff ({rate}%)",
+    "noData": "No data yet"
+  },
+  "footer": {
+    "lastUpdated": "Last updated: {date}",
+    "fallbackData": "⚠️ Live data unavailable, showing cache"
+  },
+  "search": {
+    "placeholder": "Search users..."
+  }
+}

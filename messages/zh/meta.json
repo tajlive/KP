@@ -1,0 +1,35 @@
+{
+  "title": "自动交易 | Klarpakke - 3年测试",
+  "description": "基于3年测试和真实数据的自动交易。从模拟交易开始，零风险。",
+  "courses": {
+    "title": "课程 - 学习加密货币交易",
+    "description": "探索从初级到高级的课程"
+  },
+  "about": {
+    "title": "关于我们 | Klarpakke",
+    "description": "了解更多关于 Klarpakke"
+  },
+  "contact": {
+    "title": "联系 | Klarpakke",
+    "description": "联系 Klarpakke 询问加密交易相关问题"
+  },
+  "liveTrading": {
+    "title": "实盘交易 | Klarpakke",
+    "description": "使用实时信号进行实盘交易"
+  },
+  "login": {
+    "title": "登录 | Klarpakke",
+    "description": "登录您的 Klarpakke 账户"
+  },
+  "loginDescription": "登录您的学生门户以访问课程、模拟交易和您的个人资料",
+  "coursesDescription": "通过我们结构化的中文加密货币课程，从零开始学习交易",
+  "pricingDescription": "简单的加密货币教育定价方案",
+  "pricing": {
+    "title": "价格 | Klarpakke",
+    "description": "选择适合您加密交易之旅的计划"
+  },
+  "autoTrade": {
+    "title": "Auto-Trading | Klarpakke",
+    "description": "基于3年测试和硬数据的自动交易"
+  }
+}

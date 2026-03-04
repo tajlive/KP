@@ -1,0 +1,17 @@
+{
+  "title": "Order History",
+  "description": "View your previous orders",
+  "subtitle": "Overview of all your trades.",
+  "noOrders": "No orders found.",
+  "date": "Date",
+  "pair": "Pair",
+  "type": "Type",
+  "side": "Side",
+  "price": "Price",
+  "amount": "Amount",
+  "total": "Total",
+  "status": "Status",
+  "loading": "Loading orders...",
+  "buy": "Buy",
+  "sell": "Sell"
+}

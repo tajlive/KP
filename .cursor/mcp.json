@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "klarpakke-local": {
+      "command": "bash",
+      "args": ["/Users/taj/klarpakke/mcp-server/mcp-wrapper.sh"]
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=vuxbjlykgmzskxbclquf"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com/tom-jensens-projects/klarpakke"
+    },
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "@linear/mcp-server"],
+      "env": {
+        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
+      }
+    },
+    "linear-cli": {
+      "command": "bash",
+      "args": ["/Users/taj/klarpakke/scripts/mcp-linear-tools.sh"]
+    },
+    "sentry": {
+      "type": "http",
+      "url": "https://mcp.sentry.io"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Wallet",
+  "subtitle": "Your personal wallet for crypto trading",
+  "connected": "Connected",
+  "notConnected": "Not connected",
+  "updatedNow": "Updated now",
+  "selectExchange": "Select exchange",
+  "addExchange": "Add exchange",
+  "exchangeHelp": "If you don't have an exchange account yet, we recommend Binance. You can later connect your account here to see everything in one place.",
+  "security": {
+    "title": "Security first",
+    "readOnly": "We only request <strong>read-only</strong> API keys. This means we can read balances and transactions, but <strong>NEVER</strong> execute trades or withdrawals.",
+    "warning": "Never share API keys with write access (write/trade/withdraw).",
+    "commission": "We receive a small commission from Binance at no extra cost to you. This helps us keep the service free."
+  },
+  "balances": {
+    "title": "Your balances",
+    "total": "Total value",
+    "currency": "Currency",
+    "amount": "Amount",
+    "value": "Value"
+  }
+}

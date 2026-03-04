@@ -1,0 +1,16 @@
+{
+  "title": "Payment Cancelled",
+  "subtitle": "Payment was not completed",
+  "message": "It looks like you cancelled the payment. No worries - you can try again anytime.",
+  "backButton": "Back to pricing",
+  "faqTitle": "Frequently Asked Questions",
+  "whyFailedQ": "Why did the payment fail?",
+  "whyFailedA": "There can be several reasons: declined card, funds not available, or technical error.",
+  "chargedQ": "Was I charged?",
+  "chargedA": "No, no charge occurs before payment is completed.",
+  "trialQ": "Can I try for free?",
+  "trialA": "Yes, we offer trial periods on selected plans.",
+  "tryAgain": "Try again",
+  "backHome": "Back to home",
+  "needHelp": "Need help? Contact us at"
+}

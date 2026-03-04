@@ -1,0 +1,125 @@
+{
+  "badge": "Klarpakke Universitet",
+  "heroTitle": "Start i dag. <span>Bli ekspert på 4 uker.</span>",
+  "heroDescription": "Kom i gang på 2 minutter. Øv lavrisiko trading mens du lærer faget fra grunnen av.",
+  "heroButton": "Start nå",
+  "heroButtonSubtext": "Tar kun 2 minutter å komme i gang",
+  "marketsTitle": "Handl med dine favoritter direkte via Binance på våre systemer",
+  "realityCheck": {
+    "title": "Hva gjør du med 100-lappen?",
+    "subtitle": "Odds, bankkonto eller investering? Se forskjellen.",
+    "betting": {
+      "title": "Oddsen / Lotto",
+      "desc": "Hvis du better 100 kr på en kamp, er de borte hvis du taper. 'Huset' vinner alltid på lang sikt. Dette er underholdning, ikke sparing."
+    },
+    "bank": {
+      "title": "Banken",
+      "desc": "I banken får du renter, men inflasjonen spiser ofte opp gevinsten. Det er trygt, men pengene dine vokser knapt i kjøpekraft."
+    },
+    "crypto": {
+      "title": "Klarpakke (Binance)",
+      "gain": "Muligheter",
+      "desc": "Invester 100 kr i fremtiden. Med vår kunnskap lærer du å bygge verdi over tid. Start smått, drøm stort."
+    }
+  },
+  "whyUs": {
+    "title": "Hvorfor velge oss?",
+    "safe": {
+      "title": "Bygget for tillit",
+      "desc": "Klart språk, ekte menneskelig støtte, og ingen forvirrende fagspråk."
+    },
+    "simple": {
+      "title": "Enkelt som bankappen din",
+      "desc": "Kjente verktøy og klart språk — ingen læringskurve."
+    },
+    "tech": {
+      "title": "Smart teknologi",
+      "desc": "Vi bruker maskinlæring og sanntidsdata for å gi deg bedre innsikt i markedstrender."
+    }
+  },
+  "isForYou": {
+    "title": "Er dette for deg?",
+    "desc": "Du trenger ikke å være IT-geni. Dette er laget for deg som vil ha kontroll over pengene dine, men blir skremt av kompliserte grafer og faguttrykk.",
+    "points": [
+      "Du vil lære, men vet ikke hvor du skal starte",
+      "Du vil unngå svindel og dyre nybegynnerfeil",
+      "Du verdsetter sikkerhet og åpenhet"
+    ]
+  },
+  "journey": {
+    "title": "Din reise – steg for steg",
+    "week1": {
+      "title": "Uke 1: Forståelse",
+      "desc": "Lær det grunnleggende om krypto og trading. Sett opp din paper trading-konto."
+    },
+    "week2": {
+      "title": "Uke 2: Strategi",
+      "desc": "Oppdag ulike trading-strategier. Øv med virtuelle penger."
+    },
+    "week3": {
+      "title": "Uke 3: Analyse",
+      "desc": "Teknisk og fundamental analyse. Lær å lese grafer og indikatorer."
+    },
+    "week4": {
+      "title": "Uke 4: Live Trading",
+      "desc": "Koble til din Binance-konto og start trading med ekte penger trygt."
+    }
+  },
+  "support": {
+    "title": "Trenger du hjelp? Vi er her!",
+    "desc": "Få svar på spørsmålene dine fra vårt team eller fellesskap.",
+    "button": "Chat med oss"
+  },
+  "features": {
+    "title": "Alt du trenger for å mestre trading",
+    "subtitle": "Vi har samlet de beste verktøyene for å lære trading på en trygg, strukturert og engasjerende måte.",
+    "paperTrading": {
+      "title": "Paper Trading",
+      "desc": "Start med kr 100 000 i lekepenger. Øv deg uten å risikere ekte sparepenger."
+    },
+    "aiTeacher": {
+      "title": "AI-lærer",
+      "desc": "Få personlige tips og forklaringer, tilpasset ditt nivå og dine mål."
+    },
+    "structured": {
+      "title": "Strukturert læring",
+      "desc": "Kombiner teori, praksis og quiz. Fra nybegynner til avansert på din egen takt."
+    },
+    "safe": {
+      "title": "Trygt miljø",
+      "desc": "Ingen skjulte gebyrer, ingen press. Lær i ditt eget tempo uten stress."
+    },
+    "anywhere": {
+      "title": "Øv deg hvor som helst",
+      "desc": "Øv deg når som helst, hvor som helst. På mobil, nettbrett eller PC."
+    },
+    "ctaTitle": "Prøv Paper Trading nå",
+    "ctaSubtitle": "Ingen registrering nødvendig"
+  },
+  "foundersOffer": {
+    "badge": "TIDSAVGRENSET",
+    "title": "Bli en av de første 100 grunnlegger-studentene",
+    "subtitle": "Sikre din plass blant de første studentene",
+    "benefits": {
+      "tokens": "10 000 KLT Tokens",
+      "tokensDesc": "Gratis tokens ved første innlogging",
+      "badge": "Grunnlegger Badge",
+      "badgeDesc": "Permanent badge på profilen din",
+      "price": "Livstidspris",
+      "priceDesc": "Beholde prisen din for alltid"
+    },
+    "cta": "Sikre min plass nå →",
+    "spotsLeft": "plasser igjen. Først til mølle!"
+  },
+  "hero": {
+    "beta_badge": "BETA-LANSERING - KUN 23/50 PLASSER IGJEN",
+    "title_emotional": "Lær Trading På Norsk",
+    "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
+    "question_emotional": "Hvilken versjon av deg selv vil du møte?",
+    "description_emotional": "Strukturerte kurs, paper trading med 1M kr virtuell kapital, og AI-coach som svarer på norsk. Alt på én plattform.",
+    "cta_start": "START GRATIS",
+    "cta_demo": "SE DEMO",
+    "social_proof_rating": "4.9/5 fra 127 studenter",
+    "social_proof_active": "aktive traders"
+  }
+}

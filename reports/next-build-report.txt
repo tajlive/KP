@@ -1,0 +1,66 @@
+
+> klarpakke@1.0.0 build
+> npm run validate && next build
+
+
+> klarpakke@1.0.0 validate
+> bash scripts/validate-config.sh
+
+🔍 Validerer next.config.js...
+✅ next.config.js er tilstede.
+🔧 Sikrer at ESLint ikke stopper build på unescaped entities...
+ℹ️  react/no-unescaped-entities er allerede konfigurert.
+🔧 Auto-fixer Zod + react-hook-form resolver mismatches...
+✅ Resolver-mismatches ryddet.
+🔧 Sjekker og auto-installerer kritiske dependencies...
+✅ Alle kritiske dependencies er allerede installert.
+✅ validate-config.sh fullført.
+   ▲ Next.js 15.5.7
+
+   Creating an optimized production build ...
+ ⚠ Found lockfile missing swc dependencies, patching...
+ ⚠ Found lockfile missing swc dependencies, patching...
+ ⚠ Found lockfile missing swc dependencies, patching...
+ ⚠ Lockfile was successfully patched, please run "npm install" to ensure @next/swc dependencies are downloaded
+ ✓ Compiled successfully in 2.5s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/21) ...
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+overview
+   Generating static pages (5/21) 
+   Generating static pages (10/21) 
+   Generating static pages (15/21) 
+ ✓ Generating static pages (21/21)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                     2.5 kB         152 kB
+├ ○ /_not-found                            995 B         103 kB
+├ ○ /dashboard                           3.35 kB         153 kB
+├ ○ /feil/ikke-funnet                      756 B         150 kB
+├ ○ /feil/ingen-tilgang                    750 B         150 kB
+├ ○ /feil/serverfeil                       758 B         150 kB
+├ ○ /handelshistorikk                     2.3 kB         108 kB
+├ ○ /hjelp                               2.74 kB         109 kB
+├ ○ /innlogging                          2.58 kB         152 kB
+├ ○ /innstillinger                       2.46 kB         108 kB
+├ ○ /kalkulator                          12.7 kB         162 kB
+├ ○ /personvern                          2.13 kB         108 kB
+├ ○ /priser                              2.05 kB         151 kB
+├ ○ /profil                               2.3 kB         108 kB
+├ ○ /quiz                                3.81 kB         153 kB
+├ ○ /registrering                         2.7 kB         152 kB
+├ ○ /tilbakestill-passord                2.29 kB         146 kB
+├ ○ /verify                                123 B         102 kB
+└ ○ /vilkar                              2.13 kB         108 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-47484af636b98715.js       45.8 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          1.92 kB
+
+
+○  (Static)  prerendered as static content
+

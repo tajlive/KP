@@ -1,0 +1,14 @@
+{
+  "title": "订单历史",
+  "description": "查看您的历史订单",
+  "subtitle": "所有交易概览。",
+  "noOrders": "未找到订单。",
+  "date": "日期",
+  "pair": "交易对",
+  "type": "类型",
+  "side": "方向",
+  "price": "价格",
+  "amount": "数量",
+  "total": "总计",
+  "status": "状态"
+}

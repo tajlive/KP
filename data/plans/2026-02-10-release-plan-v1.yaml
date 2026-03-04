@@ -1,0 +1,27 @@
+title: "Release plan v1"
+date: "2026-02-10"
+status: "planned"
+owners:
+  - "alice"
+  - "tom"
+tags:
+  - "release"
+  - "backend"
+  - "cloudflare"
+related_issues:
+  - 123
+  - 124
+milestones:
+  - date: "2026-02-10"
+    name: "Feature freeze"
+  - date: "2026-02-12"
+    name: "QA"
+tasks:
+  - id: 123
+    title: "Implement API mock"
+    assignee: "alice"
+    status: "todo"
+  - id: 124
+    title: "Fix Cloudflare firewall rule"
+    assignee: "tom"
+    status: "todo"

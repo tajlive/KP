@@ -1,0 +1,69 @@
+{
+  "title": "Paper Trading",
+  "subtitle": "Øv deg på trading med {amount} virtuelle penger",
+  "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
+  "help": {
+    "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+    "close": "Lukk"
+  },
+  "stats": {
+    "availableBalance": "Tilgjengelig saldo",
+    "positionValue": "Verdi i posisjoner",
+    "totalValue": "Total verdi",
+    "return": "Avkastning"
+  },
+  "newTrade": {
+    "title": "Ny handel",
+    "selectCrypto": "Velg kryptovaluta",
+    "amountLabel": "Beløp (NOK)",
+    "amountPlaceholder": "F.eks. 10000",
+    "buy": "Kjøp",
+    "sell": "Selg",
+    "reset": "Nullstill simulering",
+    "confirmReset": "Dette vil nullstille all din paper trading-historikk. Er du sikker?",
+    "invalidAmount": "Vennligst angi et gyldig beløp",
+    "fetchError": "Kunne ikke hente prisdata. Prøv igjen.",
+    "insufficientBalance": "Ikke nok saldo!",
+    "insufficientHoldings": "Du har ikke nok av denne kryptovalutaen!",
+    "refresh": "Oppdater"
+  },
+  "chart": {
+    "title": "{symbol} Pris"
+  },
+  "positions": {
+    "title": "Dine posisjoner",
+    "empty": "Du har ingen åpne posisjoner ennå.",
+    "start": "Start med å kjøpe noe kryptovaluta!"
+  },
+  "history": {
+    "title": "Handelshistorikk",
+    "empty": "Ingen handler ennå.",
+    "bought": "Kjøpte",
+    "sold": "Solgte"
+  },
+  "disclaimer": {
+    "important": "Viktig:",
+    "text": "Dette er en simulering med lekepenger. Prisene er hentet live fra Binance API. Ingen ekte penger er involvert. Trading med ekte penger innebærer risiko."
+  },
+  "leaderboard": {
+    "title": "Toppliste",
+    "rank": "Rang",
+    "trader": "Trader",
+    "return": "Avkastning",
+    "trades": "Handler",
+    "winRate": "Vinnrate",
+    "risk": "Risiko",
+    "periods": {
+      "daily": "I dag",
+      "weekly": "Denne uken",
+      "monthly": "Denne måneden",
+      "all_time": "Totalt"
+    }
+  },
+  "loginBanner": {
+    "title": "Logg inn for å se din toppliste-posisjon",
+    "text": "Opprett en gratis konto for å delta i konkurransen",
+    "button": "Logg inn / Registrer deg"
+  },
+  "saving": "Lagrer..."
+}

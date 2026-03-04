@@ -1,0 +1,27 @@
+{
+  "name": "klarpakke-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Klarpakke Universitet admin operations",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "deno run --allow-all src/index.ts",
+    "dev": "deno run --allow-all --watch src/index.ts",
+    "check": "deno check src/index.ts",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "klarpakke",
+    "admin",
+    "supabase",
+    "vercel"
+  ],
+  "author": "Klarpakke AS",
+  "license": "MIT",
+  "engines": {
+    "deno": ">=1.40.0"
+  }
+}

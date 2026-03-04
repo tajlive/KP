@@ -1,0 +1,18 @@
+{
+  "title": "Interessetest",
+  "description": "Finn din tradingstil",
+  "subtitle": "Svar på 5 spørsmål og finn kurset som passer deg best.",
+  "loading": "Laster interessetest...",
+  "start": "Start testen",
+  "next": "Neste",
+  "back": "Forrige",
+  "submit": "Se resultater",
+  "question": "Spørsmål",
+  "of": "av",
+  "result": "Ditt resultat",
+  "recommended": "Anbefalt kurs",
+  "tryAgain": "Ta testen på nytt",
+  "beginner": "Nybegynner",
+  "intermediate": "Videregående",
+  "advanced": "Avansert"
+}

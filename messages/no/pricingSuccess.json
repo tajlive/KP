@@ -1,0 +1,17 @@
+{
+  "title": "Betaling vellykket!",
+  "subtitle": "Velkommen som medlem",
+  "message": "Takk for kjøpet! Du har nå tilgang til alle medlemsfunksjoner.",
+  "dashboardButton": "Gå til dashboardet",
+  "verifying": "Verifiserer betaling...",
+  "invalidSession": "Ugyldig sesjon. Vennligst prøv igjen.",
+  "loginRequired": "Du må være logget inn for å se denne siden.",
+  "messageConfirmed": "Din betaling er bekreftet! Du har nå tilgang til alle funksjoner.",
+  "messagePending": "Din betaling behandles. Dette kan ta noen minutter.",
+  "messageFallback": "Din betaling er mottatt. Velkommen som medlem!",
+  "loadingTitle": "Behandler...",
+  "goToDashboard": "Gå til dashboard",
+  "backToHome": "Tilbake til forsiden",
+  "errorTitle": "Noe gikk galt",
+  "backToPricing": "Tilbake til priser"
+}

@@ -1,0 +1,28 @@
+{
+  "title": "联系我们",
+  "description": "联系我们",
+  "subtitle": "有问题吗？我们随时为您提供帮助。",
+  "form": {
+    "title": "给我们发消息",
+    "name": "姓名",
+    "namePlaceholder": "您的全名",
+    "email": "邮箱",
+    "emailPlaceholder": "your@email.com",
+    "message": "消息",
+    "messagePlaceholder": "在这里输入您的消息...",
+    "submit": "发送消息"
+  },
+  "info": {
+    "emailTitle": "邮件支持",
+    "emailResponse": "我们通常在24小时内回复。",
+    "chatTitle": "在线聊天",
+    "chatHours": "周一至周五 09:00-17:00",
+    "startChat": "开始聊天"
+  },
+  "emailDesc": "给我们发送电子邮件，我们会尽快回复。",
+  "linksTitle": "有用链接",
+  "aboutLink": "关于我们",
+  "pricingLink": "价格",
+  "privacyLink": "隐私政策",
+  "termsLink": "条款"
+}
