@@ -1,118 +1,123 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
-import { useRouter, usePathname } from 'next/navigation'
-import { createClient } from '@/lib/utils'
-import { toast } from 'sonner'
-import { Loader2, CheckCircle } from 'lucide-react'
+import { createClient } from "@/lib/utils";
+import { CheckCircle, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export default function BetaApplyClient({ 
-  params 
-}: { 
-  params: { locale: string } 
+export default function BetaApplyClient({
+  params,
+}: {
+  params: { locale: string };
 }) {
-  const t = useTranslations('beta')
-  const router = useRouter()
-  const pathname = usePathname()
-  const supabase = createClient()
-  const [loading, setLoading] = useState(true)
-  const [hasApplied, setHasApplied] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+  const t = useTranslations("beta");
+  const router = useRouter();
+  const pathname = usePathname();
+  const supabase = createClient();
+  const [loading, setLoading] = useState(true);
+  const [hasApplied, setHasApplied] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    tradingExperience: '',
-    motivation: '',
-    riskTolerance: 'moderate' as 'conservative' | 'moderate' | 'aggressive'
-  })
+    tradingExperience: "",
+    motivation: "",
+    riskTolerance: "moderate" as "conservative" | "moderate" | "aggressive",
+  });
 
   useEffect(() => {
-    checkExistingApplication()
-  }, [])
+    checkExistingApplication();
+  }, []);
 
   async function checkExistingApplication() {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
-      const locale = pathname.split('/')[1] || 'no';
-      const supportedLocales = ['no', 'en', 'th', 'zh'];
-      const safeLocale = supportedLocales.includes(locale) ? locale : 'no';
-      router.push(`/${safeLocale}/innlogging?next=${encodeURIComponent(pathname)}`);
-      return
+      const locale = (pathname ?? "/no").split("/")[1] || "no";
+      const supportedLocales = ["no", "en", "th", "zh"];
+      const safeLocale = supportedLocales.includes(locale) ? locale : "no";
+      router.push(
+        `/${safeLocale}/innlogging?next=${encodeURIComponent(pathname ?? "/")}`,
+      );
+      return;
     }
 
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('beta_access')
-      .eq('id', user.id)
-      .single()
+      .from("profiles")
+      .select("beta_access")
+      .eq("id", user.id)
+      .single();
 
     if (profile?.beta_access) {
-      router.push(`/${params.locale}/dashboard`, { scroll: false })
-      return
+      router.push(`/${params.locale}/dashboard`, { scroll: false });
+      return;
     }
 
     const { data: application } = await supabase
-      .from('beta_applications')
-      .select('*')
-      .eq('user_id', user.id)
-      .single()
+      .from("beta_applications")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
 
     if (application) {
-      setHasApplied(true)
+      setHasApplied(true);
     }
 
-    setLoading(false)
+    setLoading(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from('beta_applications')
-        .insert({
-          user_id: user.id,
-          trading_experience: formData.tradingExperience,
-          motivation: formData.motivation,
-          risk_tolerance: formData.riskTolerance,
-          application_status: 'pending'
-        })
+      const { error } = await supabase.from("beta_applications").insert({
+        user_id: user.id,
+        trading_experience: formData.tradingExperience,
+        motivation: formData.motivation,
+        risk_tolerance: formData.riskTolerance,
+        application_status: "pending",
+      });
 
-      if (error) throw error
+      if (error) throw error;
 
       // AUTO-APPROVE for beta testing phase
       await supabase
-        .from('profiles')
+        .from("profiles")
         .update({
           beta_access: true,
           beta_approved_at: new Date().toISOString(),
-          subscription_tier: 'beta',
-          subscription_status: 'active'
+          subscription_tier: "beta",
+          subscription_status: "active",
         })
-        .eq('id', user.id)
+        .eq("id", user.id);
 
       await supabase
-        .from('beta_applications')
+        .from("beta_applications")
         .update({
-          application_status: 'approved',
-          reviewed_at: new Date().toISOString()
+          application_status: "approved",
+          reviewed_at: new Date().toISOString(),
         })
-        .eq('user_id', user.id)
+        .eq("user_id", user.id);
 
-      setSubmitted(true)
-      
+      setSubmitted(true);
+
       // Redirect etter 2 sekunder
       setTimeout(() => {
-        router.push(`/${params.locale}/beta/apply/takk?status=approved&email=${encodeURIComponent(user.email || '')}`)
-      }, 2000)
-
+        router.push(
+          `/${params.locale}/beta/apply/takk?status=approved&email=${encodeURIComponent(user.email || "")}`,
+        );
+      }, 2000);
     } catch (error: unknown) {
-      console.error('Application error:', error)
-      toast.error(t('applicationError'))
-      setLoading(false)
+      console.error("Application error:", error);
+      toast.error(t("applicationError"));
+      setLoading(false);
     }
   }
 
@@ -121,10 +126,10 @@ export default function BetaApplyClient({
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="flex items-center gap-3 text-slate-400">
           <Loader2 className="w-6 h-6 animate-spin" />
-          <span>{t('loading')}</span>
+          <span>{t("loading")}</span>
         </div>
       </div>
-    )
+    );
   }
 
   if (submitted) {
@@ -134,11 +139,11 @@ export default function BetaApplyClient({
           <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">{t('success')}</h2>
-          <p className="text-slate-400">{t('redirecting')}</p>
+          <h2 className="text-2xl font-bold text-white mb-2">{t("success")}</h2>
+          <p className="text-slate-400">{t("redirecting")}</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (hasApplied) {
@@ -148,21 +153,21 @@ export default function BetaApplyClient({
           <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8 text-center">
             <div className="text-6xl mb-4">⏳</div>
             <h1 className="text-3xl font-bold text-white mb-4">
-              {t('applicationPending')}
+              {t("applicationPending")}
             </h1>
-            <p className="text-slate-400 mb-8">
-              {t('applicationPendingDesc')}
-            </p>
+            <p className="text-slate-400 mb-8">{t("applicationPendingDesc")}</p>
             <button
-              onClick={() => router.push(`/${params.locale}/dashboard`, { scroll: false })}
+              onClick={() =>
+                router.push(`/${params.locale}/dashboard`, { scroll: false })
+              }
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
             >
-              {t('backToDashboard')}
+              {t("backToDashboard")}
             </button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -174,58 +179,73 @@ export default function BetaApplyClient({
               <span>BETA</span>
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              {t('applyForBeta')}
+              {t("applyForBeta")}
             </h1>
-            <p className="text-slate-400">{t('applyForBetaDesc')}</p>
+            <p className="text-slate-400">{t("applyForBetaDesc")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                {t('tradingExperience')}
+                {t("tradingExperience")}
               </label>
               <textarea
                 value={formData.tradingExperience}
-                onChange={(e) => setFormData({ ...formData, tradingExperience: e.target.value })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tradingExperience: e.target.value,
+                  })
+                }
                 required
                 rows={4}
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                placeholder={t('tradingExperiencePlaceholder')}
+                placeholder={t("tradingExperiencePlaceholder")}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                {t('motivation')}
+                {t("motivation")}
               </label>
               <textarea
                 value={formData.motivation}
-                onChange={(e) => setFormData({ ...formData, motivation: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, motivation: e.target.value })
+                }
                 required
                 rows={4}
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                placeholder={t('motivationPlaceholder')}
+                placeholder={t("motivationPlaceholder")}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                {t('riskTolerance')}
+                {t("riskTolerance")}
               </label>
               <select
                 value={formData.riskTolerance}
-                onChange={(e) => setFormData({ ...formData, riskTolerance: e.target.value as 'conservative' | 'moderate' | 'aggressive' })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    riskTolerance: e.target.value as
+                      | "conservative"
+                      | "moderate"
+                      | "aggressive",
+                  })
+                }
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 transition-colors"
               >
-                <option value="conservative">{t('riskConservative')}</option>
-                <option value="moderate">{t('riskModerate')}</option>
-                <option value="aggressive">{t('riskAggressive')}</option>
+                <option value="conservative">{t("riskConservative")}</option>
+                <option value="moderate">{t("riskModerate")}</option>
+                <option value="aggressive">{t("riskAggressive")}</option>
               </select>
             </div>
 
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
               <p className="text-sm text-yellow-200">
-                <strong>{t('betaWarning')}:</strong> {t('betaWarningText')}
+                <strong>{t("betaWarning")}:</strong> {t("betaWarningText")}
               </p>
             </div>
 
@@ -237,15 +257,15 @@ export default function BetaApplyClient({
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  {t('submitting')}
+                  {t("submitting")}
                 </span>
               ) : (
-                t('submitApplication')
+                t("submitApplication")
               )}
             </button>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }

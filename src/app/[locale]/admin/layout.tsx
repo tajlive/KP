@@ -32,7 +32,7 @@ export default function AdminLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Extract locale from pathname
-  const locale = pathname.split("/")[1] || "no";
+  const locale = (pathname ?? "/no").split("/")[1] || "no";
 
   useEffect(() => {
     const checkAdmin = async (retryCount = 0) => {
@@ -61,7 +61,7 @@ export default function AdminLayout({
           const {
             data: { user: authUser },
           } = await supabase.auth.getUser();
-          user = authUser;
+          user = authUser ?? undefined;
         }
 
         if (!user) {
@@ -75,7 +75,7 @@ export default function AdminLayout({
           const supportedLocales = ["no", "en", "th", "zh"];
           const safeLocale = supportedLocales.includes(locale) ? locale : "no";
           router.push(
-            `/${safeLocale}/innlogging?error=admin_auth_required&next=${encodeURIComponent(pathname)}`,
+            `/${safeLocale}/innlogging?error=admin_auth_required&next=${encodeURIComponent(pathname ?? "/")}`,
           );
           return;
         }
@@ -181,13 +181,19 @@ export default function AdminLayout({
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-slate-800 rounded-lg text-white"
         aria-label="Toggle menu"
       >
-        {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        {mobileMenuOpen ? (
+          <X className="w-6 h-6" />
+        ) : (
+          <Menu className="w-6 h-6" />
+        )}
       </button>
 
       {/* Sidebar - Desktop: always visible, Mobile: conditional */}
-      <aside 
+      <aside
         className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-200 lg:transform-none ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          mobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="p-6 border-b border-slate-800">
@@ -240,7 +246,7 @@ export default function AdminLayout({
 
       {/* Overlay for mobile */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-30"
           onClick={() => setMobileMenuOpen(false)}
         />

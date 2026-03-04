@@ -1,5 +1,5 @@
-import createNextIntlPlugin from "next-intl/plugin";
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 /** @type {import('next').NextConfig} */
@@ -19,11 +19,13 @@ const nextConfig = {
   // Use Node.js runtime (Cloudflare Pages supports this via next-on-pages)
   // Individual API routes can opt into edge runtime if needed
 
-  // Build optimizations
+  // Build: enforce lint, gradual TS strict migration
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
+    // strict: true in tsconfig catches errors during dev
+    // Re-enabled until ~40 legacy strict-null errors are resolved
     ignoreBuildErrors: true,
   },
 
@@ -66,7 +68,19 @@ const nextConfig = {
 
   // Experimental optimizations - DISABLED for Vercel compatibility
   experimental: {
-    // optimizePackageImports disabled due to Next.js 15 compatibility issues
+    optimizePackageImports: [
+      "lucide-react",
+      "framer-motion",
+      "date-fns",
+      "recharts",
+      "@radix-ui/react-accordion",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-select",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-tooltip",
+    ],
   },
 
   // URL handling - REMOVED skipTrailingSlashRedirect as it may cause 404s
@@ -90,32 +104,7 @@ const nextConfig = {
       };
     }
 
-    // Production optimizations
-    if (!dev && !isServer) {
-      // Split chunks more aggressively
-      config.optimization.splitChunks = {
-        chunks: "all",
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          // Vendor chunk for node_modules
-          vendor: {
-            name: "vendor",
-            chunks: "all",
-            test: /node_modules/,
-            priority: 20,
-          },
-          // Common chunk for shared code
-          common: {
-            name: "common",
-            minChunks: 2,
-            chunks: "all",
-            priority: 10,
-            reuseExistingChunk: true,
-          },
-        },
-      };
-    }
+    // Note: splitChunks removed — Next.js 15 handles this optimally
 
     return config;
   },
