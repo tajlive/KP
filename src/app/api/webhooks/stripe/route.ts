@@ -64,12 +64,12 @@ export async function POST(req: NextRequest) {
     } catch (err: unknown) {
       console.error(
         "[Stripe Webhook] Signatur-verifisering feilet:",
-        (err as Error).message,
+        err instanceof Error ? err.message : String(err),
       );
       return NextResponse.json({ error: "Ugyldig signatur" }, { status: 400 });
     }
 
-    console.info(`[Stripe Webhook] Mottatt: ${event.type}`);
+    console.log(`[Stripe Webhook] Mottatt: ${event.type}`);
 
     // Håndter ulike event-typer
     switch (event.type) {
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       }
 
       default:
-        console.info(`[Stripe Webhook] Ubehandlet event-type: ${event.type}`);
+        console.log(`[Stripe Webhook] Ubehandlet event-type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
@@ -184,7 +184,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       return;
     }
 
-    console.info(`[Stripe Webhook] Bruker ${userId} abonnerte på ${planType}`);
+    console.log(`[Stripe Webhook] Bruker ${userId} abonnerte på ${planType}`);
 
     // Send velkomst-email
     await sendWelcomeEmail(userId, planType);
@@ -195,8 +195,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const supabase = getSupabase();
-  const subscriptionId = (invoice as unknown as Record<string, unknown>)
-    .subscription as string | undefined;
+  const subscriptionId = (invoice as { subscription?: string }).subscription;
 
   if (!subscriptionId) return;
 
@@ -228,7 +227,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
       })
       .eq("stripe_subscription_id", subscriptionId);
 
-    console.info(
+    console.log(
       `[Stripe Webhook] Betaling vellykket for subscription ${subscriptionId}`,
     );
   } catch (error) {
@@ -238,8 +237,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const supabase = getSupabase();
-  const subscriptionId = (invoice as unknown as Record<string, unknown>)
-    .subscription as string | undefined;
+  const subscriptionId = (invoice as { subscription?: string }).subscription;
   const customerId = invoice.customer as string | undefined;
 
   if (!subscriptionId || !customerId) return;
@@ -271,7 +269,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     // Send påminnelse om betaling
     await sendPaymentFailedEmail(customerId, subscriptionId);
 
-    console.info(
+    console.log(
       `[Stripe Webhook] Betaling feilet for subscription ${subscriptionId}`,
     );
   } catch (error) {
@@ -288,12 +286,9 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       .update({
         status: subscription.status as unknown,
         cancel_at_period_end: subscription.cancel_at_period_end,
-        current_period_end: (
-          subscription as unknown as { current_period_end?: number }
-        ).current_period_end
+        current_period_end: (subscription as { current_period_end?: number }).current_period_end
           ? new Date(
-              (subscription as unknown as { current_period_end: number })
-                .current_period_end * 1000,
+              (subscription as { current_period_end?: number }).current_period_end * 1000,
             ).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),
@@ -321,7 +316,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         .eq("stripe_subscription_id", subscription.id);
     }
 
-    console.info(`[Stripe Webhook] Subscription ${subscription.id} oppdatert`);
+    console.log(`[Stripe Webhook] Subscription ${subscription.id} oppdatert`);
   } catch (error) {
     console.error("[Stripe Webhook] Feil i handleSubscriptionUpdated:", error);
   }
@@ -359,7 +354,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       })
       .eq("id", sub.user_id);
 
-    console.info(
+    console.log(
       `[Stripe Webhook] Bruker ${sub.user_id} kansellerte abonnementet`,
     );
   } catch (error) {
@@ -433,7 +428,7 @@ async function sendWelcomeEmail(userId: string, planType: string) {
       `,
     });
 
-    console.info(`[Stripe Webhook] Velkomst-email sendt til ${profile.email}`);
+    console.log(`[Stripe Webhook] Velkomst-email sendt til ${profile.email}`);
   } catch (error) {
     console.error(
       "[Stripe Webhook] Feil ved sending av velkomst-email:",
@@ -488,7 +483,7 @@ async function sendPaymentFailedEmail(
       `,
     });
 
-    console.info(`[Stripe Webhook] Påminnelse sendt til ${profile.email}`);
+    console.log(`[Stripe Webhook] Påminnelse sendt til ${profile.email}`);
   } catch (error) {
     console.error(
       "[Stripe Webhook] Feil ved sending av payment failed email:",
