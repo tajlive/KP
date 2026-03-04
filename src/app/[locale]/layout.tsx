@@ -97,6 +97,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       </head>
       <body
         className={`${dmSans.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
+        suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ClientSideProviders>
