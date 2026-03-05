@@ -23,12 +23,12 @@ export default function CompetitionClient({
 }: {
     params: { locale: string }
 }) {
-    const t = useTranslations('beta')
+    const _t = useTranslations('beta')
     const tComp = useTranslations('competition')
-    const locale = useLocale()
+    const _locale = useLocale()
     const router = useRouter()
     const supabase = createClient()
-    const { startAutoTrade, loading: tradeLoading } = usePaperTrading()
+    const { startAutoTrade, loading: _tradeLoading } = usePaperTrading()
 
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
     const [userRank, setUserRank] = useState<LeaderboardEntry | null>(null)

@@ -19,7 +19,7 @@ interface Question {
 }
 
 export default function ClientInteressetest() {
-  const t = useTranslations('interestTest');
+  const _t = useTranslations('interestTest');
   const locale = useLocale();
   const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);

@@ -12,7 +12,7 @@ export default async function CheckoutSuccessPage({
   searchParams: Promise<{ tier?: string; provider?: string }>;
 }) {
   const { locale }         = await params;
-  const { tier, provider } = await searchParams;
+  const { tier, provider: _provider } = await searchParams;
   const t                  = await getTranslations({ locale, namespace: 'studieprogram' });
   const tPricing           = await getTranslations({ locale, namespace: 'pricing' });
   const tierSlug           = (tier as TierSlug) ?? 'student';
