@@ -5,16 +5,15 @@ import {
     Facebook,
     Linkedin,
     Instagram,
-    Share2,
     Twitter
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+
 import { useEffect, useState } from 'react'
 import { getAppUrl } from '@/lib/auth/config'
 
 export function SocialShare() {
     const locale = useLocale()
-    const t = useTranslations('common')
+    const _t = useTranslations('common')
     const [shareUrl, setShareUrl] = useState('')
 
     useEffect(() => {

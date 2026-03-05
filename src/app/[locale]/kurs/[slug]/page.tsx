@@ -5,7 +5,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import ImmersiveCourse from './ImmersiveCourse'
-import { getCoursesData, getCourseBySlug, getCourseDetails } from '@/lib/courses'
+import { getCourseBySlug, getCourseDetails } from '@/lib/courses'
 
 interface CoursePageProps {
   params: Promise<{
