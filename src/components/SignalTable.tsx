@@ -35,7 +35,9 @@ const statusLabels: Record<string, string> = {
   rejected: "Avslått",
 };
 
-export default function SignalTable({ onRefresh }: SignalTableProps) {
+export default function SignalTable({
+  onRefresh: _onRefresh,
+}: SignalTableProps) {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -98,11 +100,7 @@ export default function SignalTable({ onRefresh }: SignalTableProps) {
   return (
     <div id="signals-list" className="kp-flex kp-flex-col kp-gap-4">
       {/* Filters */}
-      <div
-        id="signals-filter"
-        className="kp-flex kp-gap-2"
-        style={{ flexWrap: "wrap" }}
-      >
+      <div id="signals-filter" className="kp-flex kp-gap-2 flex-wrap">
         {(["all", "pending", "approved", "rejected"] as const).map((f) => (
           <button
             key={f}
@@ -140,23 +138,16 @@ export default function SignalTable({ onRefresh }: SignalTableProps) {
       {isLoading && (
         <div
           id="signals-loading"
-          className="kp-flex kp-flex-col kp-items-center kp-justify-center"
-          style={{ padding: "var(--kp-space-12)" }}
+          className="kp-flex kp-flex-col kp-items-center kp-justify-center p-12"
         >
-          <span
-            className="kp-spinner kp-spinner-lg"
-            style={{ color: "var(--kp-primary)" }}
-          />
+          <span className="kp-spinner kp-spinner-lg text-primary" />
           <p className="kp-text-secondary kp-mt-4">Laster signaler...</p>
         </div>
       )}
 
       {/* Empty state */}
       {!isLoading && signals.length === 0 && (
-        <div
-          className="kp-card"
-          style={{ textAlign: "center", padding: "var(--kp-space-12)" }}
-        >
+        <div className="kp-card text-center p-12">
           <p className="kp-text-secondary kp-mb-2">Ingen signaler funnet</p>
           <p className="kp-text-sm kp-text-muted">
             Signaler vises her når de er opprettet
@@ -192,20 +183,11 @@ export default function SignalTable({ onRefresh }: SignalTableProps) {
                   </td>
                   <td>
                     <div className="kp-flex kp-items-center kp-gap-2">
-                      <div
-                        style={{
-                          width: "3rem",
-                          height: "0.5rem",
-                          backgroundColor: "var(--kp-bg-tertiary)",
-                          borderRadius: "var(--kp-radius-full)",
-                          overflow: "hidden",
-                        }}
-                      >
+                      <div className="w-12 h-2 bg-slate-800 rounded-full overflow-hidden">
                         <div
-                          style={{
-                            height: "100%",
-                            width: `${signal.confidence}%`,
-                            backgroundColor: "var(--kp-primary)",
+                          className="h-full bg-primary"
+                          ref={(el) => {
+                            if (el) el.style.width = `${signal.confidence}%`;
                           }}
                         />
                       </div>

@@ -121,5 +121,17 @@
     "cta_demo": "SE DEMO",
     "social_proof_rating": "4.9/5 fra 127 studenter",
     "social_proof_active": "aktive traders"
+  },
+  "modernHero": {
+    "badge": "Beta — Bli en av de første norske traderne",
+    "titlePart1": "Lær Trading",
+    "titlePart2": "På Norsk",
+    "subtitle": "Fra nybegynner til selvstendig trader med strukturert læring og risikofri praksis",
+    "bullets": "Kurs på norsk • 1M kr paper trading • AI-coach 24/7 • Ingen kredittkort påkrevd",
+    "ctaPrimary": "Prøv Paper Trading Gratis",
+    "ctaSecondary": "Se Kurs",
+    "trust1": "100% norsk",
+    "trust2": "Ingen binding",
+    "trust3": "Risikofi praksis"
   }
 }

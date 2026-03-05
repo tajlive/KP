@@ -21,7 +21,9 @@
     "allChannels": "From all channels",
     "conversion": "Conversion",
     "clickToReg": "Click → Registration",
-    "activeUsers": "Active users"
+    "activeUsers": "Active users",
+    "paperTrading": "Paper Trading",
+    "autoTrading": "Auto Trading"
   },
   "trafficSources": {
     "title": "Traffic Sources",

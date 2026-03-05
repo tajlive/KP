@@ -121,5 +121,17 @@
     "cta_demo": "SEE DEMO",
     "social_proof_rating": "4.9/5 from 127 students",
     "social_proof_active": "active traders"
+  },
+  "modernHero": {
+    "badge": "Beta — Become one of the first traders",
+    "titlePart1": "Learn Trading",
+    "titlePart2": "Step by Step",
+    "subtitle": "From beginner to independent trader with structured learning and risk-free practice",
+    "bullets": "Interactive courses • $100k paper trading • 24/7 AI coach • No credit card required",
+    "ctaPrimary": "Try Paper Trading Free",
+    "ctaSecondary": "View Courses",
+    "trust1": "100% transparent",
+    "trust2": "No lock-in",
+    "trust3": "Risk-free practice"
   }
 }

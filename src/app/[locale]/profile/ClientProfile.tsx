@@ -61,22 +61,38 @@ export default function ClientProfile() {
             Ingen profil funnet. Lag en profil ved å fylle ut feltene under.
           </p>
           <div className="mt-4">
-            <label className="text-sm text-slate-300">Navn</label>
+            <label htmlFor="fullName" className="text-sm text-slate-300">
+              Navn
+            </label>
             <input
+              id="fullName"
+              title="Fullt navn"
+              placeholder="Skriv inn ditt fulle navn"
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setFullName(e.target.value)}
             />
-            <label className="text-sm mt-3 block text-slate-300">
+            <label
+              htmlFor="avatarUrl"
+              className="text-sm mt-3 block text-slate-300"
+            >
               Avatar URL
             </label>
             <input
+              id="avatarUrl"
+              title="Avatar URL"
+              placeholder="https://eksempel.com/bilde.jpg"
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setAvatarUrl(e.target.value)}
             />
-            <label className="text-sm mt-3 block text-slate-300">
+            <label
+              htmlFor="riskLevel"
+              className="text-sm mt-3 block text-slate-300"
+            >
               Risikonivå
             </label>
             <select
+              id="riskLevel"
+              title="Velg risikonivå"
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setRisk(e.target.value)}
             >
@@ -109,8 +125,13 @@ export default function ClientProfile() {
         <h1 className="text-2xl font-semibold text-white">Profil</h1>
 
         <div>
-          <label className="text-sm text-slate-300">Navn</label>
+          <label htmlFor="profileName" className="text-sm text-slate-300">
+            Navn
+          </label>
           <input
+            id="profileName"
+            title="Ditt navn"
+            placeholder="Navn"
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.full_name ?? ""}
             onBlur={(e) => patch({ full_name: e.target.value })}
@@ -118,8 +139,13 @@ export default function ClientProfile() {
         </div>
 
         <div>
-          <label className="text-sm text-slate-300">Avatar URL</label>
+          <label htmlFor="profileAvatar" className="text-sm text-slate-300">
+            Avatar URL
+          </label>
           <input
+            id="profileAvatar"
+            title="Profilbilde URL"
+            placeholder="URL til profilbilde"
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.avatar_url ?? ""}
             onBlur={(e) => patch({ avatar_url: e.target.value })}
@@ -127,8 +153,12 @@ export default function ClientProfile() {
         </div>
 
         <div>
-          <label className="text-sm text-slate-300">Risikonivå</label>
+          <label htmlFor="profileRisk" className="text-sm text-slate-300">
+            Risikonivå
+          </label>
           <select
+            id="profileRisk"
+            title="Risikopreferanse"
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.risk_preference ?? "normal"}
             onChange={(e) => patch({ risk_preference: e.target.value })}
