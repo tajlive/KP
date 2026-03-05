@@ -27,7 +27,7 @@ export async function sendEmail({
       return { success: false, error }
     }
     
-    console.log('[Email] Sendt:', data?.id)
+    console.info('[Email] Sendt:', data?.id)
     return { success: true, id: data?.id }
   } catch (error) {
     console.error('[Email] Exception:', error)

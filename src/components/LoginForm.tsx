@@ -30,7 +30,7 @@ export default function LoginForm() {
     setLoading(true);
     try {
       // kall API / autentisering her
-      console.log("Login data:", data);
+      console.info("Login data:", data);
     } finally {
       setLoading(false);
     }

@@ -243,7 +243,7 @@ export function getInitialParameters(strategyId: string): StrategyParameters {
  * TODO: Implementere faktisk logging til Supabase
  */
 export async function logAIDecision(decision: AIDecision): Promise<void> {
-  console.log("[AI Decision]", decision);
+  console.info("[AI Decision]", decision);
   // TODO: Insert into ai_decision_log table
 }
 

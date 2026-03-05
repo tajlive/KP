@@ -26,7 +26,7 @@ class MarketDataService {
       this.ws = new WebSocket('wss://stream.binance.com:9443/ws');
 
       this.ws.onopen = () => {
-        console.log('[MarketData] WebSocket connected');
+        console.info('[MarketData] WebSocket connected');
         this.isConnecting = false;
         
         // Re-subscribe to all symbols
@@ -49,7 +49,7 @@ class MarketDataService {
       };
 
       this.ws.onclose = () => {
-        console.log('[MarketData] WebSocket closed');
+        console.info('[MarketData] WebSocket closed');
         this.isConnecting = false;
         this.reconnect();
       };
@@ -65,7 +65,7 @@ class MarketDataService {
     if (this.reconnectTimer) return;
 
     this.reconnectTimer = setInterval(() => {
-      console.log('[MarketData] Attempting reconnect...');
+      console.info('[MarketData] Attempting reconnect...');
       this.connect();
       
       if (this.ws?.readyState === WebSocket.OPEN) {
@@ -95,7 +95,7 @@ class MarketDataService {
     };
 
     this.ws.send(JSON.stringify(subscription));
-    console.log(`[MarketData] Subscribed to ${upperSymbol}`);
+    console.info(`[MarketData] Subscribed to ${upperSymbol}`);
   }
 
   unsubscribeFromSymbol(symbol: string) {
@@ -114,7 +114,7 @@ class MarketDataService {
     };
 
     this.ws.send(JSON.stringify(unsubscription));
-    console.log(`[MarketData] Unsubscribed from ${upperSymbol}`);
+    console.info(`[MarketData] Unsubscribed from ${upperSymbol}`);
   }
 
   private handleMessage(data: WebSocketMessage) {

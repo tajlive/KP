@@ -24,9 +24,9 @@ export function PWAInstallPrompt() {
     }
 
     // Show prompt automatically if installable
-    console.log('PWA Status Check:', { isInstallable, isInstalled, isDismissed, isVisible });
+    console.info('PWA Status Check:', { isInstallable, isInstalled, isDismissed, isVisible });
     if (isInstallable && !isInstalled && !isDismissed && !isVisible) {
-      console.log('Triggering PWA prompt visibility');
+      console.info('Triggering PWA prompt visibility');
       setIsVisible(true)
     }
   }, [isInstallable, isInstalled, isDismissed, isVisible])
