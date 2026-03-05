@@ -11,19 +11,19 @@ export async function GET(
   const { locale } = await params;
   const url = new URL(request.url);
 
-const host = request.headers.get("host") || "localhost:3000";
-const canonicalUrl = getAppUrl();
+  const host = request.headers.get("host") || "localhost:3000";
+  const canonicalUrl = getAppUrl();
 
-const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
-const protocol = isLocalhost ? "http" : "https";
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
+  const protocol = isLocalhost ? "http" : "https";
 
-// Use localhost detection FIRST, then check forwardedHost
-const forwardedHost = request.headers.get("x-forwarded-host");
-const origin = isLocalhost
-  ? `${protocol}://${host}`
-  : forwardedHost 
-  ? `https://${forwardedHost}` 
-  : canonicalUrl;
+  // Use localhost detection FIRST, then check forwardedHost
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const origin = isLocalhost
+    ? `${protocol}://${host}`
+    : forwardedHost
+      ? `https://${forwardedHost}`
+      : canonicalUrl;
 
   const code = url.searchParams.get("code");
   const error = url.searchParams.get("error");
@@ -69,7 +69,7 @@ const origin = isLocalhost
   }
 
   const nextParam =
-    url.searchParams.get("next") || url.searchParams.get("redirectTo") || "/";
+    url.searchParams.get("next") || url.searchParams.get("redirectTo") || null;
   const next = sanitizeRedirectPath(nextParam);
 
   const successResponse = NextResponse.redirect(new URL(next, origin), {
@@ -122,4 +122,3 @@ const origin = isLocalhost
     );
   }
 }
-
