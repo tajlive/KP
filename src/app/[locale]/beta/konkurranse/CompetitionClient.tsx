@@ -12,9 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
     Trophy,
     Users,
-    TrendingUp,
     Copy,
-    ArrowRight,
     Medal,
     Target
 } from 'lucide-react'

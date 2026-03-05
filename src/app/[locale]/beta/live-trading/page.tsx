@@ -2,7 +2,6 @@
 
 
 
-import { locales } from '@/i18n/config';
 import LiveTradingClient from './LiveTradingClient';
 
 
