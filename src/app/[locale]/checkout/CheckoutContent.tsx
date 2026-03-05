@@ -48,7 +48,7 @@ export default function CheckoutContent() {
     features: (tStudie.raw(`${planId}.features` as const) as string[]) || [],
   };
 
-  const [user, setUser] = useState<User | null>(null);
+  const [_user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
