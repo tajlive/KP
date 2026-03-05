@@ -72,22 +72,23 @@ export async function getPortfolio(
   const user = await getUser();
   const { data } = await supabase
     .from("trading_sessions")
-    .select("id, current_capital, initial_capital, total_pnl, total_trades, winning_trades")
+    .select(
+      "id, current_capital, initial_capital, total_pnl, total_trades, winning_trades",
+    )
     .eq("user_id", user.id)
     .eq("mode", mode)
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (!data) return null;
 
   // Calculate derived values
   const investedValue = data.initial_capital - data.current_capital;
   const totalValue = data.current_capital;
-  const winRate = data.total_trades > 0 
-    ? (data.winning_trades / data.total_trades) * 100 
-    : 0;
+  const winRate =
+    data.total_trades > 0 ? (data.winning_trades / data.total_trades) * 100 : 0;
 
   return {
     session_id: data.id,
@@ -125,11 +126,11 @@ export async function getActiveStrategies(
     .eq("user_id", user.id)
     .eq("mode", mode)
     .eq("status", "active");
-  
+
   if (!data) return [];
 
   // Map trading_sessions to UserStrategy format
-  return data.map(session => ({
+  return data.map((session) => ({
     id: session.id,
     strategy_id: session.strategy_id as StrategyType,
     strategy_config: session.strategy_config || {},
@@ -156,10 +157,10 @@ export async function getAllStrategies(
     .eq("user_id", user.id)
     .eq("mode", mode)
     .order("created_at", { ascending: false });
-  
+
   if (!data) return [];
 
-  return data.map(session => ({
+  return data.map((session) => ({
     id: session.id,
     strategy_id: session.strategy_id as StrategyType,
     strategy_config: session.strategy_config || {},
@@ -182,7 +183,7 @@ export async function startStrategy(
   config: Record<string, unknown>,
 ): Promise<UserStrategy> {
   const user = await getUser();
-  
+
   // First, deactivate any existing active session for this mode
   await supabase
     .from("trading_sessions")
@@ -201,8 +202,8 @@ export async function startStrategy(
       strategy_id: strategyType,
       strategy_config: config,
       trading_pair: "BTC/USDT",
-      current_capital: 100000.00,
-      initial_capital: 100000.00,
+      current_capital: 100000.0,
+      initial_capital: 100000.0,
       total_trades: 0,
       winning_trades: 0,
       losing_trades: 0,
@@ -211,9 +212,9 @@ export async function startStrategy(
     })
     .select()
     .single();
-    
+
   if (error) throw error;
-  
+
   return {
     id: data.id,
     strategy_id: data.strategy_id as StrategyType,
@@ -238,8 +239,8 @@ export async function stopStrategy(
   const user = await getUser();
   await supabase
     .from("trading_sessions")
-    .update({ 
-      status: "stopped", 
+    .update({
+      status: "stopped",
       stopped_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
@@ -278,12 +279,15 @@ export function subscribeToTrades(
 // Helper to create a paper trade (for testing/demo)
 export async function createPaperTrade(
   sessionId: string,
-  trade: Omit<Trade, "id" | "session_id" | "user_id" | "created_at" | "idempotency_key">
+  trade: Omit<
+    Trade,
+    "id" | "session_id" | "user_id" | "created_at" | "idempotency_key"
+  >,
 ): Promise<Trade> {
   const user = await getUser();
-  
+
   const idempotencyKey = `${sessionId}-${trade.side}-${Date.now()}`;
-  
+
   const { data, error } = await supabase
     .from("trades")
     .insert({
@@ -306,7 +310,7 @@ export async function createPaperTrade(
     })
     .select()
     .single();
-    
+
   if (error) throw error;
   return data;
 }

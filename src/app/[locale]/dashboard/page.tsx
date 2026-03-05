@@ -1,6 +1,6 @@
+import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
 import { requireAuth } from "@/lib/auth-guard";
 import { Suspense } from "react";
-import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,7 @@ export default async function DashboardPage({
       .from("user_strategies")
       .select("*")
       .eq("user_id", user.id)
-      .eq("status", "active"),
+      .eq("is_active", true),
   ]);
 
   return (
