@@ -10,7 +10,6 @@ import {
   TrendingDown,
   Wallet,
   ArrowRight,
-  AlertTriangle,
   GraduationCap
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
