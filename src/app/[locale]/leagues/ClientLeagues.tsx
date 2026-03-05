@@ -21,7 +21,7 @@ export default function ClientLeagues() {
     const tLeaderboard = useTranslations('paperTrading.leaderboard');
     const locale = useLocale();
     const [activeLeagues, setActiveLeagues] = useState<League[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
 
     useEffect(() => {
         setActiveLeagues([

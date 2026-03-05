@@ -111,7 +111,7 @@ export default function CalculatorPage() {
   // Månedlig breakdown
   const monthlyBreakdown = useMemo(() => {
     const months = []
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"]
+    const _monthNames = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"]
     // Note: Ideally month names should also be localized, but for now we keep hardcoded or use dates.
     // Let's use numeric or standard short names.
     // Or key them? t('months.jan')?

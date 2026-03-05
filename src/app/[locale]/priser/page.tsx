@@ -53,8 +53,8 @@ export default async function PricingPage({
   const t = await getTranslations({ locale, namespace: "studieprogram" });
   const tPricing = await getTranslations({ locale, namespace: "pricing" });
 
-  const spotsLeft = 47;
-  const spotsTotal = 100;
+  const _spotsLeft = 47;
+  const _spotsTotal = 100;
 
   // Bygg plans-array fra TIERS SSK
   const plans = Object.entries(TIERS).map(([slug, tier]) => ({
