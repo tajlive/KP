@@ -150,7 +150,7 @@ export function PerformanceChart({
                   ((value: number) => [
                     `${value.toFixed(2)}%`,
                     "Avkastning",
-                  ]) as any
+                  ]) as unknown
                 }
               />
               <ReferenceLine

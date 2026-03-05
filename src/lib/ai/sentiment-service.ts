@@ -80,22 +80,44 @@ export function classifySentiment(value: number): MarketSentiment {
 
 /**
  * Analyserer sentiment og gir anbefalinger
+ * Bruker intern API for å unngå CORS-issues
  */
 export async function analyzeMarketSentiment(): Promise<SentimentAnalysis> {
-  const data = await fetchFearGreedIndex();
-  const current = data[0];
-  const currentValue = parseInt(current.value.toString(), 10);
-  const classification = classifySentiment(currentValue);
-
-  // Beregn trend
-  const lastWeek = data.slice(0, 7);
-  const lastMonth = data;
-  const weekAvg = lastWeek.reduce((sum, d) => sum + parseInt(d.value.toString(), 10), 0) / lastWeek.length;
-  const monthAvg = lastMonth.reduce((sum, d) => sum + parseInt(d.value.toString(), 10), 0) / lastMonth.length;
-
+  // Bruk intern API i stedet for direkte kall
+  let currentValue: number;
+  let classification: MarketSentiment;
   let trend: "improving" | "worsening" | "stable" = "stable";
-  if (currentValue > weekAvg + 5) trend = "improving";
-  else if (currentValue < weekAvg - 5) trend = "worsening";
+  let weekAvg = 50;
+  let monthAvg = 50;
+
+  try {
+    const response = await fetch("/api/ai/sentiment");
+    if (!response.ok) throw new Error("API error");
+    
+    const data = await response.json();
+    currentValue = data.value;
+    classification = classifySentiment(currentValue);
+    
+    // Map trend fra API
+    if (data.trend === "up") trend = "improving";
+    else if (data.trend === "down") trend = "worsening";
+    
+  } catch {
+    // Fallback til direkte kall hvis intern API feiler
+    const data = await fetchFearGreedIndex();
+    const current = data[0];
+    currentValue = parseInt(current.value.toString(), 10);
+    classification = classifySentiment(currentValue);
+    
+    // Beregn trend
+    const lastWeek = data.slice(0, 7);
+    const lastMonth = data;
+    weekAvg = lastWeek.reduce((sum, d) => sum + parseInt(d.value.toString(), 10), 0) / lastWeek.length;
+    monthAvg = lastMonth.reduce((sum, d) => sum + parseInt(d.value.toString(), 10), 0) / lastMonth.length;
+    
+    if (currentValue > weekAvg + 5) trend = "improving";
+    else if (currentValue < weekAvg - 5) trend = "worsening";
+  }
 
   // Bestem anbefaling
   let recommendation: SentimentAnalysis["recommendation"];

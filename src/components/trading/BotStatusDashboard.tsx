@@ -39,6 +39,7 @@ import {
   BotStatusMessage,
 } from "@/lib/bot-status-helpers";
 import AdvancedStatsModal from "./AdvancedStatsModal";
+import AIDecisionPanel from "@/components/ai/AIDecisionPanel";
 
 interface BotStatusDashboardProps {
   portfolio: Portfolio | null;
@@ -63,8 +64,8 @@ interface RealtimeUpdate {
   lastStatusMessage: string | null;
 }
 
-// TESTPLAN KLA-100: Tab-fane for å bytte mellom narrativ og avansert visning
-type DashboardView = "narrative" | "advanced";
+// TESTPLAN KLA-100: Tab-fane for å bytte mellom narrativ, avansert og AI visning
+type DashboardView = "narrative" | "advanced" | "ai";
 
 export default function BotStatusDashboard({
   portfolio,
@@ -74,7 +75,7 @@ export default function BotStatusDashboard({
   formatNOK,
   userId,
 }: BotStatusDashboardProps) {
-  const { locale } = useParams<any>();
+  const { locale } = useParams<unknown>();
   const lang = (locale as string) || "no";
   const isBotActive = activeStrategies.length > 0;
   const mainStrategy = activeStrategies[0];
@@ -239,11 +240,22 @@ export default function BotStatusDashboard({
           <ShoppingBag className="w-4 h-4" /> {lang === "en" ? "Market" : "Marked"}
         </Link>
         <div className="w-[1px] h-6 bg-slate-800 mx-1" />
-        {/* KLA-100: Bytt mellom narrativ og avansert visning */}
+        {/* KLA-100: Tab-basert navigasjon: Narrativ, Avansert, AI */}
         <button
-          onClick={() => setCurrentView(currentView === "narrative" ? "advanced" : "narrative")}
+          onClick={() => setCurrentView("narrative")}
           className={cn(
-            "p-3 px-6 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
+            "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
+            currentView === "narrative"
+              ? "bg-blue-600 text-white"
+              : "text-slate-400 hover:text-white"
+          )}
+        >
+          <LayoutDashboard className="w-4 h-4" /> {lang === "en" ? "Overview" : "Oversikt"}
+        </button>
+        <button
+          onClick={() => setCurrentView("advanced")}
+          className={cn(
+            "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
             currentView === "advanced"
               ? "bg-emerald-600 text-white"
               : "text-slate-400 hover:text-white"
@@ -251,12 +263,23 @@ export default function BotStatusDashboard({
         >
           <Settings2 className="w-4 h-4" /> {lang === "en" ? "Advanced" : "Avansert"}
         </button>
+        <button
+          onClick={() => setCurrentView("ai")}
+          className={cn(
+            "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
+            currentView === "ai"
+              ? "bg-purple-600 text-white"
+              : "text-slate-400 hover:text-white"
+          )}
+        >
+          <Brain className="w-4 h-4" /> AI
+        </button>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 space-y-6">
         <AnimatePresence mode="wait">
-          {currentView === "narrative" ? (
+          {currentView === "narrative" && (
             <NarrativeView
               key="narrative"
               isBotActive={isBotActive}
@@ -270,7 +293,8 @@ export default function BotStatusDashboard({
               formatNOK={formatNOK}
               lang={lang}
             />
-          ) : (
+          )}
+          {currentView === "advanced" && (
             <AdvancedView
               key="advanced"
               portfolio={portfolio}
@@ -283,6 +307,14 @@ export default function BotStatusDashboard({
               maxDrawdown={maxDrawdown}
               winRate={winRate}
               formatNOK={formatNOK}
+              lang={lang}
+            />
+          )}
+          {currentView === "ai" && userId && mainStrategy && (
+            <AIView
+              key="ai"
+              userId={userId}
+              strategyId={mainStrategy.strategy_id}
               lang={lang}
             />
           )}
@@ -901,6 +933,50 @@ function AdvancedView({
           </div>
         </div>
       </div>
+    </motion.div>
+  );
+}
+
+// AI Professor View - KLA-119
+interface AIViewProps {
+  userId: string;
+  strategyId: string;
+  lang: string;
+}
+
+function AIView({ userId, strategyId, lang }: AIViewProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      {/* AI Professor Header */}
+      <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+            <Brain className="w-6 h-6 text-purple-400" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">
+              {lang === "en" ? "AI Professor" : "AI Professor"}
+            </h2>
+            <p className="text-slate-400 text-sm">
+              {lang === "en" 
+                ? "AI-powered trading insights and market analysis" 
+                : "AI-drevne tradinginnsikter og markedsanalyse"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* AI Decision Panel */}
+      <AIDecisionPanel 
+        userId={userId} 
+        strategyId={strategyId} 
+        locale={lang} 
+      />
     </motion.div>
   );
 }

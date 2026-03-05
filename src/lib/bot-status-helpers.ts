@@ -188,8 +188,8 @@ export function generateNextActionText(
 
   // Beregn neste sjekk basert på strategi-type
   let checkIntervalMinutes = 15; // default
-  let actionText = "";
-  let explanation = "";
+  const actionText = "";
+  const explanation = "";
 
   const strategyId = strategy.strategy_id;
   const lang = locale === "en" ? "en" : "no";

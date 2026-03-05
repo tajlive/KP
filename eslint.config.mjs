@@ -137,6 +137,8 @@ const eslintConfig = [
       "**/archive/**",
       "**/archive-*/**",
       "**/supabase/functions/**",
+      "**/supabase/*.cjs",
+      "**/supabase/*.js",
       "**/coverage/**",
       "**/playwright-report/**",
       "klarpakke-app/**",

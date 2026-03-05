@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 export default function ClientLeagueDetails() {
-  const params = useParams<any>() as { id?: string; locale?: string } | null;
+  const params = useParams<unknown>() as { id?: string; locale?: string } | null;
   const id = (params as Record<string, string>)?.id;
   const t = useTranslations("leagues");
   const locale = useLocale();

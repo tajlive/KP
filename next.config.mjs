@@ -85,6 +85,58 @@ const nextConfig = {
 
   // URL handling - REMOVED skipTrailingSlashRedirect as it may cause 404s
 
+  // SEO: Canonical redirects (Norwegian wins) - WITH locale prefix to prevent loops
+  async redirects() {
+    return [
+      // English URLs → Norwegian canonical URLs (301 permanent)
+      { source: "/en/login", destination: "/no/innlogging", permanent: true },
+      { source: "/en/signup", destination: "/no/registrer", permanent: true },
+      { source: "/en/pricing", destination: "/no/priser", permanent: true },
+      { source: "/en/courses", destination: "/no/kurs", permanent: true },
+      { source: "/en/course/:path*", destination: "/no/kurs/:path*", permanent: true },
+      { source: "/en/about", destination: "/no/om-oss", permanent: true },
+      { source: "/en/contact", destination: "/no/kontakt", permanent: true },
+      { source: "/en/privacy", destination: "/no/personvern", permanent: true },
+      { source: "/en/terms", destination: "/no/vilkar", permanent: true },
+      { source: "/en/blog", destination: "/no/blogg", permanent: true },
+      { source: "/en/blog/:path*", destination: "/no/blogg/:path*", permanent: true },
+      { source: "/en/dashboard", destination: "/no/dashboard", permanent: true },
+      { source: "/en/marketplace", destination: "/no/markedsplass", permanent: true },
+      { source: "/en/settings", destination: "/no/innstillinger", permanent: true },
+      { source: "/en/trading", destination: "/no/trading", permanent: true },
+      { source: "/en/portfolio", destination: "/no/portefolje", permanent: true },
+      { source: "/en/withdrawals", destination: "/no/uttak", permanent: true },
+      { source: "/en/deposits", destination: "/no/innskudd", permanent: true },
+      
+      // Root English URLs (no locale prefix) → Norwegian
+      { source: "/login", destination: "/no/innlogging", permanent: true },
+      { source: "/signup", destination: "/no/registrer", permanent: true },
+      { source: "/pricing", destination: "/no/priser", permanent: true },
+      { source: "/courses", destination: "/no/kurs", permanent: true },
+      { source: "/courses/:path*", destination: "/no/kurs/:path*", permanent: true },
+      { source: "/course/:path*", destination: "/no/kurs/:path*", permanent: true },
+      { source: "/about", destination: "/no/om-oss", permanent: true },
+      { source: "/contact", destination: "/no/kontakt", permanent: true },
+      { source: "/privacy", destination: "/no/personvern", permanent: true },
+      { source: "/terms", destination: "/no/vilkar", permanent: true },
+      { source: "/blog", destination: "/no/blogg", permanent: true },
+      { source: "/blog/:path*", destination: "/no/blogg/:path*", permanent: true },
+      { source: "/marketplace", destination: "/no/markedsplass", permanent: true },
+      { source: "/settings", destination: "/no/innstillinger", permanent: true },
+      { source: "/portfolio", destination: "/no/portefolje", permanent: true },
+      { source: "/withdrawals", destination: "/no/uttak", permanent: true },
+      { source: "/deposits", destination: "/no/innskudd", permanent: true },
+      
+      // Legacy auto-trade paths → dashboard (avoid double redirect)
+      { source: "/auto-trade", destination: "/no/dashboard/trading", permanent: true },
+      { source: "/auto-trade/:path*", destination: "/no/dashboard/trading", permanent: true },
+      { source: "/en/auto-trade", destination: "/no/dashboard/trading", permanent: true },
+      { source: "/en/auto-trade/:path*", destination: "/no/dashboard/trading", permanent: true },
+      { source: "/auto-trading", destination: "/no/dashboard/trading", permanent: true },
+      { source: "/auto-trading-ai", destination: "/no/dashboard/trading", permanent: true },
+    ];
+  },
+
   // Webpack optimizations
   webpack: (config, { isServer, dev }) => {
     // Ensure path aliases work correctly

@@ -342,8 +342,8 @@ export default function ImmersiveCourse({
   const currentLesson =
     courseData.lessonsList[activeLesson] || courseData.lessonsList[0];
   const lessonContent =
-    ((courseData.lessonContent as any)[String(currentLesson?.id)] as Lesson) ||
-    ((courseData.lessonContent as any)["1"] as Lesson);
+    ((courseData.lessonContent as unknown)[String(currentLesson?.id)] as Lesson) ||
+    ((courseData.lessonContent as unknown)["1"] as Lesson);
 
   // Audio state
   const audioRef = useRef<HTMLAudioElement | null>(null);
