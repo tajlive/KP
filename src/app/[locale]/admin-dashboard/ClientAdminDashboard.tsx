@@ -19,7 +19,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface AdminStats {
   totalUsers: number;
@@ -51,7 +51,6 @@ interface AdminStats {
 
 export default function ClientAdminDashboard() {
   const t = useTranslations("adminDashboard");
-  const td = useTranslations("dashboard");
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
@@ -60,11 +59,21 @@ export default function ClientAdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    checkAdminAccess();
-  }, []);
+  const fetchStats = useCallback(async () => {
+    try {
+      const response = await fetch("/api/admin/stats");
+      if (!response.ok) throw new Error("Kunne ikke hente statistikk");
 
-  const checkAdminAccess = async () => {
+      const data = await response.json();
+      setStats(data);
+    } catch (_err) {
+      setError(t("noAccess.title"));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  const checkAdminAccess = useCallback(async () => {
     try {
       const supabase = createClient();
       const {
@@ -100,25 +109,15 @@ export default function ClientAdminDashboard() {
       setIsAdmin(true);
       setAdminEmail(profile.email);
       fetchStats();
-    } catch (err) {
+    } catch (_err) {
       setError(t("noAccess.title"));
       setLoading(false);
     }
-  };
+  }, [fetchStats, pathname, router, t]);
 
-  const fetchStats = async () => {
-    try {
-      const response = await fetch("/api/admin/stats");
-      if (!response.ok) throw new Error("Kunne ikke hente statistikk");
-
-      const data = await response.json();
-      setStats(data);
-    } catch (err) {
-      setError(t("noAccess.title"));
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    checkAdminAccess();
+  }, [checkAdminAccess]);
 
   if (loading) {
     return (
@@ -189,7 +188,7 @@ export default function ClientAdminDashboard() {
       subtitle: t("stats.clickToReg"),
     },
     {
-      label: td("paperTrading"),
+      label: t("stats.paperTrading"),
       value: stats.paperTradingUsers,
       icon: Gamepad2,
       color: "text-cyan-600",
@@ -197,7 +196,7 @@ export default function ClientAdminDashboard() {
       subtitle: t("stats.activeUsers"),
     },
     {
-      label: td("trading"),
+      label: t("stats.autoTrading"),
       value: stats.autoTradingUsers,
       icon: Bot,
       color: "text-pink-600",
@@ -257,7 +256,9 @@ export default function ClientAdminDashboard() {
           <div className="h-5 bg-slate-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-[#FF5B24] to-[#FF8C61] transition-all duration-1000 ease-out shadow-lg shadow-orange-500/20"
-              style={{ width: `${stats.percentage}%` }}
+              ref={(el) => {
+                if (el) el.style.width = `${stats.percentage}%`;
+              }}
             />
           </div>
         </div>
@@ -341,7 +342,9 @@ export default function ClientAdminDashboard() {
                     <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full ${channel.color}`}
-                        style={{ width: `${percentage}%` }}
+                        ref={(el) => {
+                          if (el) el.style.width = `${percentage}%`;
+                        }}
                       />
                     </div>
                   </div>

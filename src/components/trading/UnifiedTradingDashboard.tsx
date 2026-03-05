@@ -89,9 +89,9 @@ const hasLocalSetup = (userId: string): boolean => {
 };
 
 interface DashboardProps {
-  initialPortfolio?: any;
-  initialTrades?: any[];
-  initialStrategies?: any[];
+  initialPortfolio?: unknown;
+  initialTrades?: unknown[];
+  initialStrategies?: unknown[];
   userId?: string;
 }
 
@@ -401,6 +401,8 @@ function TradingModeToggle({
   );
 }
 
+import ProfessionalChart from "./ProfessionalChart";
+
 function PortfolioSection({
   portfolio,
   formatNOK,
@@ -421,48 +423,54 @@ function PortfolioSection({
   const isProfit = portfolio.total_pnl >= 0;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <div className="bg-slate-800 rounded-xl p-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-          <Wallet className="w-4 h-4" />
-          <span>Total verdi</span>
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-slate-800 rounded-xl p-4">
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
+            <Wallet className="w-4 h-4" />
+            <span>Total verdi</span>
+          </div>
+          <p className="text-xl sm:text-2xl font-bold text-white">
+            {formatNOK(portfolio.total_value)}
+          </p>
         </div>
-        <p className="text-xl sm:text-2xl font-bold text-white">
-          {formatNOK(portfolio.total_value)}
-        </p>
+
+        <div className="bg-slate-800 rounded-xl p-4">
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
+            <DollarSign className="w-4 h-4" />
+            <span>Cash</span>
+          </div>
+          <p className="text-xl sm:text-2xl font-bold text-white">
+            {formatNOK(portfolio.cash_balance)}
+          </p>
+        </div>
+
+        <div className="bg-slate-800 rounded-xl p-4">
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
+            <BarChart3 className="w-4 h-4" />
+            <span>P&L</span>
+          </div>
+          <p
+            className={`text-xl sm:text-2xl font-bold ${isProfit ? "text-green-400" : "text-red-400"}`}
+          >
+            {isProfit ? "+" : ""}
+            {formatNOK(portfolio.total_pnl)}
+          </p>
+        </div>
+
+        <div className="bg-slate-800 rounded-xl p-4">
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
+            <TrendingUp className="w-4 h-4" />
+            <span>Win Rate</span>
+          </div>
+          <p className="text-xl sm:text-2xl font-bold text-white">
+            {portfolio.win_rate.toFixed(1)}%
+          </p>
+        </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-          <DollarSign className="w-4 h-4" />
-          <span>Cash</span>
-        </div>
-        <p className="text-xl sm:text-2xl font-bold text-white">
-          {formatNOK(portfolio.cash_balance)}
-        </p>
-      </div>
-
-      <div className="bg-slate-800 rounded-xl p-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-          <BarChart3 className="w-4 h-4" />
-          <span>P&L</span>
-        </div>
-        <p
-          className={`text-xl sm:text-2xl font-bold ${isProfit ? "text-green-400" : "text-red-400"}`}
-        >
-          {isProfit ? "+" : ""}
-          {formatNOK(portfolio.total_pnl)}
-        </p>
-      </div>
-
-      <div className="bg-slate-800 rounded-xl p-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-          <TrendingUp className="w-4 h-4" />
-          <span>Win Rate</span>
-        </div>
-        <p className="text-xl sm:text-2xl font-bold text-white">
-          {portfolio.win_rate.toFixed(1)}%
-        </p>
+      <div className="w-full">
+        <ProfessionalChart />
       </div>
     </div>
   );
@@ -780,6 +788,7 @@ function StrategyConfig({
               max="5000"
               step="100"
               value={dcaConfig.weeklyAmount}
+              title="Ukentlig beløp"
               onChange={(e) =>
                 onChange({ ...config, weeklyAmount: Number(e.target.value) })
               }
@@ -795,6 +804,7 @@ function StrategyConfig({
               min="0"
               max="100"
               value={dcaConfig.btcAllocation}
+              title="BTC-fordeling"
               onChange={(e) =>
                 onChange({ ...config, btcAllocation: Number(e.target.value) })
               }
@@ -817,6 +827,7 @@ function StrategyConfig({
               min="1"
               max="5"
               value={trendConfig.riskPerTrade}
+              title="Risiko per trade"
               onChange={(e) =>
                 onChange({ ...config, riskPerTrade: Number(e.target.value) })
               }
@@ -832,6 +843,7 @@ function StrategyConfig({
               min="5"
               max="15"
               value={trendConfig.stopLoss}
+              title="Stop-loss"
               onChange={(e) =>
                 onChange({ ...config, stopLoss: Number(e.target.value) })
               }
@@ -849,6 +861,7 @@ function StrategyConfig({
             <label className="text-slate-400 text-sm">Aggressivitet</label>
             <select
               value={multiConfig.aggressiveness}
+              title="Aggressivitet"
               onChange={(e) =>
                 onChange({ ...config, aggressiveness: e.target.value })
               }
@@ -877,6 +890,7 @@ function StrategyConfig({
               <input
                 type="number"
                 value={gridConfig.upperPrice}
+                title="Øvre pris"
                 onChange={(e) =>
                   onChange({ ...config, upperPrice: Number(e.target.value) })
                 }
@@ -888,6 +902,7 @@ function StrategyConfig({
               <input
                 type="number"
                 value={gridConfig.lowerPrice}
+                title="Nedre pris"
                 onChange={(e) =>
                   onChange({ ...config, lowerPrice: Number(e.target.value) })
                 }
@@ -904,6 +919,7 @@ function StrategyConfig({
               min="5"
               max="50"
               value={gridConfig.levels}
+              title="Grid-nivåer"
               onChange={(e) =>
                 onChange({ ...config, levels: Number(e.target.value) })
               }
@@ -920,6 +936,7 @@ function StrategyConfig({
               max="50000"
               step="1000"
               value={gridConfig.capital}
+              title="Kapital"
               onChange={(e) =>
                 onChange({ ...config, capital: Number(e.target.value) })
               }
@@ -943,6 +960,7 @@ function StrategyConfig({
               max="5000"
               step="100"
               value={aiConfig.maxPerTrade}
+              title="Maks per trade"
               onChange={(e) =>
                 onChange({ ...config, maxPerTrade: Number(e.target.value) })
               }
@@ -959,6 +977,7 @@ function StrategyConfig({
               max="2000"
               step="100"
               value={aiConfig.maxLoss}
+              title="Maks tap"
               onChange={(e) =>
                 onChange({ ...config, maxLoss: Number(e.target.value) })
               }

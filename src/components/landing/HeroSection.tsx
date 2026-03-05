@@ -2,24 +2,19 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Sparkles } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 export default function HeroSection() {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("landing.modernHero");
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-emerald-700">
       {/* Modern grid pattern overlay */}
       <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
+        <div className="absolute inset-0 bg-grid-pattern" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -34,37 +29,35 @@ export default function HeroSection() {
             {/* Modern badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 backdrop-blur-sm text-white border border-blue-400/30 rounded-full text-sm font-semibold mb-6">
               <Sparkles className="w-4 h-4" aria-hidden="true" />
-              Beta — Bli en av de første norske traderne
+              {t("badge")}
             </div>
 
             {/* H1 - More compelling */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
-              Lær Trading
+              {t("titlePart1")}
               <br />
               <span className="bg-gradient-to-r from-blue-200 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
-                På Norsk
+                {t("titlePart2")}
               </span>
             </h1>
 
             {/* H2 - Clearer value prop */}
             <p className="text-xl sm:text-2xl text-blue-50 mb-6 leading-relaxed">
-              Fra nybegynner til selvstendig trader med strukturert læring og
-              risikofri praksis
+              {t("subtitle")}
             </p>
 
             <p className="text-lg text-blue-100/90 mb-10 max-w-2xl">
-              Kurs på norsk • 1M kr paper trading • AI-coach 24/7 • Ingen
-              kredittkort påkrevd
+              {t("bullets")}
             </p>
 
             {/* Modern CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <button
                 onClick={() => router.push(`/${locale}/paper-trading`)}
-                aria-label="Start gratis paper trading med virtuell kapital"
+                aria-label={t("ctaPrimary")}
                 className="group px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-2"
               >
-                Prøv Paper Trading Gratis
+                {t("ctaPrimary")}
                 <ArrowRight
                   className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                   aria-hidden="true"
@@ -73,10 +66,10 @@ export default function HeroSection() {
 
               <button
                 onClick={() => router.push(`/${locale}/kurs`)}
-                aria-label="Utforsk våre norske tradingkurs"
+                aria-label={t("ctaSecondary")}
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-semibold text-lg border-2 border-white/20 hover:bg-white/20 transition-all flex items-center justify-center gap-2"
               >
-                Se Kurs
+                {t("ctaSecondary")}
               </button>
             </div>
 
@@ -84,15 +77,15 @@ export default function HeroSection() {
             <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-white/90 text-sm">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-300" />
-                <span>100% norsk</span>
+                <span>{t("trust1")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-300" />
-                <span>Ingen binding</span>
+                <span>{t("trust2")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-300" />
-                <span>Risikofi praksis</span>
+                <span>{t("trust3")}</span>
               </div>
             </div>
           </motion.div>

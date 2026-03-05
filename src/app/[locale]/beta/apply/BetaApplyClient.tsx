@@ -4,7 +4,7 @@ import { createClient } from "@/lib/utils";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function BetaApplyClient({
@@ -25,11 +25,7 @@ export default function BetaApplyClient({
     riskTolerance: "moderate" as "conservative" | "moderate" | "aggressive",
   });
 
-  useEffect(() => {
-    checkExistingApplication();
-  }, []);
-
-  async function checkExistingApplication() {
+  const checkExistingApplication = useCallback(async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -65,7 +61,11 @@ export default function BetaApplyClient({
     }
 
     setLoading(false);
-  }
+  }, [supabase, pathname, router, params.locale]);
+
+  useEffect(() => {
+    checkExistingApplication();
+  }, [checkExistingApplication]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -221,10 +221,15 @@ export default function BetaApplyClient({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label
+                htmlFor="riskTolerance"
+                className="block text-sm font-medium text-slate-300 mb-2"
+              >
                 {t("riskTolerance")}
               </label>
               <select
+                id="riskTolerance"
+                title={t("riskTolerance")}
                 value={formData.riskTolerance}
                 onChange={(e) =>
                   setFormData({

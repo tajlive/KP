@@ -296,10 +296,15 @@ export default function StrategyBuilder({
 
           <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="strategySelect"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Velg Strategi
               </label>
               <select
+                id="strategySelect"
+                title="Velg strategi"
                 value={selectedStrategyId}
                 onChange={(e) => setSelectedStrategyId(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
@@ -599,6 +604,7 @@ function ConditionRow({
 
       <select
         value={condition.indicator}
+        title="Indikator"
         onChange={(e) => onUpdate({ indicator: e.target.value })}
         className="px-3 py-2 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm"
       >
@@ -611,6 +617,7 @@ function ConditionRow({
 
       <select
         value={condition.operator}
+        title="Operator"
         onChange={(e) =>
           onUpdate({
             operator: e.target.value as StrategyCondition["operator"],
@@ -634,6 +641,8 @@ function ConditionRow({
 
       <button
         onClick={onRemove}
+        title="Fjern betingelse"
+        aria-label="Fjern betingelse"
         className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
       >
         <Trash2 className="w-4 h-4" />

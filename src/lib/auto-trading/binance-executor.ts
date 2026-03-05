@@ -6,6 +6,10 @@
 
 import { createClient } from "@/lib/utils";
 import { getKlines } from "../binance";
+import {
+  OPTIMIZED_PROFILES,
+  type RiskLevel,
+} from "../config/optimized-risk-profiles";
 import { analyzeCurrentMarket } from "./market-regime";
 import { assessTradeRisk, calculateTradeFeatures } from "./ml-risk-assessment";
 import { checkNewTradeCorrelation } from "./portfolio-optimizer";
@@ -63,7 +67,13 @@ interface TradeExecutionResult {
 export async function executeTrade(
   params: ExecuteTradeParams,
 ): Promise<TradeExecutionResult> {
-  const { userId, sessionId, signal, config, credentials } = params;
+  const {
+    userId,
+    sessionId,
+    signal,
+    config,
+    credentials: _credentials,
+  } = params;
   const warnings: string[] = [];
 
   try {
@@ -272,11 +282,8 @@ export async function executeTrade(
       marketRegime: marketAnalysis.regime,
       portfolioValue: session.current_capital_nok,
       riskTolerance:
-        config.risk_level === "conservative"
-          ? 0.25
-          : config.risk_level === "aggressive"
-            ? 0.75
-            : 0.5,
+        OPTIMIZED_PROFILES[(config.risk_level as RiskLevel) || "moderate"]
+          ?.kellyFraction || 0.5,
     });
 
     // Apply position size limit from config

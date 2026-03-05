@@ -6,65 +6,96 @@
  * To add a 5th level: add a new block → done.
  */
 
+import {
+  OPTIMIZED_PROFILES,
+  RiskLevel as OptRiskLevel,
+} from "./../config/optimized-risk-profiles";
+
 export const RISK_LEVELS = {
   safe: {
     label: "Trygg",
     emoji: "🟢",
-    daily_loss_limit_pct: 1,
-    max_position_size_pct: 2,
-    stop_loss_pct: 5,
-    max_trades_per_day: 3,
-    trailing_stop_pct: 3,
-    max_drawdown_pct: 10,
+    daily_loss_limit_pct: OPTIMIZED_PROFILES.conservative.maxDailyLossPercent,
+    max_position_size_pct:
+      OPTIMIZED_PROFILES.conservative.maxPositionSizePercent,
+    stop_loss_pct: OPTIMIZED_PROFILES.conservative.stopLossPercent,
+    max_trades_per_day: OPTIMIZED_PROFILES.conservative.maxTradesPerDay,
+    trailing_stop_pct: OPTIMIZED_PROFILES.conservative.trailingStopPercent,
+    max_drawdown_pct: OPTIMIZED_PROFILES.conservative.maxTotalDrawdownPercent,
     partial_tp_levels: [
-      { target_pct: 3, sell_pct: 50 },
-      { target_pct: 5, sell_pct: 50 },
+      {
+        target_pct: OPTIMIZED_PROFILES.conservative.takeProfitPercent * 0.5,
+        sell_pct: 50,
+      },
+      {
+        target_pct: OPTIMIZED_PROFILES.conservative.takeProfitPercent,
+        sell_pct: 50,
+      },
     ],
+    optimizedProfile: "conservative" as OptRiskLevel,
   },
   balanced: {
     label: "Balansert",
     emoji: "🔵",
-    daily_loss_limit_pct: 3,
-    max_position_size_pct: 5,
-    stop_loss_pct: 8,
-    max_trades_per_day: 5,
-    trailing_stop_pct: 5,
-    max_drawdown_pct: 15,
+    daily_loss_limit_pct: OPTIMIZED_PROFILES.moderate.maxDailyLossPercent,
+    max_position_size_pct: OPTIMIZED_PROFILES.moderate.maxPositionSizePercent,
+    stop_loss_pct: OPTIMIZED_PROFILES.moderate.stopLossPercent,
+    max_trades_per_day: OPTIMIZED_PROFILES.moderate.maxTradesPerDay,
+    trailing_stop_pct: OPTIMIZED_PROFILES.moderate.trailingStopPercent,
+    max_drawdown_pct: OPTIMIZED_PROFILES.moderate.maxTotalDrawdownPercent,
     partial_tp_levels: [
-      { target_pct: 5, sell_pct: 30 },
-      { target_pct: 10, sell_pct: 30 },
-      { target_pct: 15, sell_pct: 40 },
+      {
+        target_pct: OPTIMIZED_PROFILES.moderate.takeProfitPercent * 0.5,
+        sell_pct: 30,
+      },
+      {
+        target_pct: OPTIMIZED_PROFILES.moderate.takeProfitPercent,
+        sell_pct: 70,
+      },
     ],
+    optimizedProfile: "moderate" as OptRiskLevel,
   },
   offensive: {
     label: "Offensiv",
     emoji: "🟠",
-    daily_loss_limit_pct: 5,
-    max_position_size_pct: 10,
-    stop_loss_pct: 12,
-    max_trades_per_day: 10,
-    trailing_stop_pct: 8,
-    max_drawdown_pct: 20,
+    daily_loss_limit_pct: OPTIMIZED_PROFILES.aggressive.maxDailyLossPercent,
+    max_position_size_pct: OPTIMIZED_PROFILES.aggressive.maxPositionSizePercent,
+    stop_loss_pct: OPTIMIZED_PROFILES.aggressive.stopLossPercent,
+    max_trades_per_day: OPTIMIZED_PROFILES.aggressive.maxTradesPerDay,
+    trailing_stop_pct: OPTIMIZED_PROFILES.aggressive.trailingStopPercent,
+    max_drawdown_pct: OPTIMIZED_PROFILES.aggressive.maxTotalDrawdownPercent,
     partial_tp_levels: [
-      { target_pct: 8, sell_pct: 25 },
-      { target_pct: 15, sell_pct: 35 },
-      { target_pct: 25, sell_pct: 40 },
+      {
+        target_pct: OPTIMIZED_PROFILES.aggressive.takeProfitPercent * 0.5,
+        sell_pct: 30,
+      },
+      {
+        target_pct: OPTIMIZED_PROFILES.aggressive.takeProfitPercent,
+        sell_pct: 70,
+      },
     ],
+    optimizedProfile: "aggressive" as OptRiskLevel,
   },
   aggressive: {
     label: "Aggressiv",
     emoji: "🔴",
-    daily_loss_limit_pct: 10,
-    max_position_size_pct: 20,
-    stop_loss_pct: 15,
-    max_trades_per_day: 20,
-    trailing_stop_pct: 10,
-    max_drawdown_pct: 25,
+    daily_loss_limit_pct: OPTIMIZED_PROFILES.dynamic.maxDailyLossPercent,
+    max_position_size_pct: OPTIMIZED_PROFILES.dynamic.maxPositionSizePercent,
+    stop_loss_pct: OPTIMIZED_PROFILES.dynamic.stopLossPercent,
+    max_trades_per_day: OPTIMIZED_PROFILES.dynamic.maxTradesPerDay,
+    trailing_stop_pct: OPTIMIZED_PROFILES.dynamic.trailingStopPercent,
+    max_drawdown_pct: OPTIMIZED_PROFILES.dynamic.maxTotalDrawdownPercent,
     partial_tp_levels: [
-      { target_pct: 10, sell_pct: 20 },
-      { target_pct: 20, sell_pct: 30 },
-      { target_pct: 30, sell_pct: 50 },
+      {
+        target_pct: OPTIMIZED_PROFILES.dynamic.takeProfitPercent * 0.5,
+        sell_pct: 20,
+      },
+      {
+        target_pct: OPTIMIZED_PROFILES.dynamic.takeProfitPercent,
+        sell_pct: 80,
+      },
     ],
+    optimizedProfile: "dynamic" as OptRiskLevel,
   },
 } as const;
 

@@ -1980,7 +1980,9 @@
       "allChannels": "Fra alle kanaler",
       "conversion": "Konvertering",
       "clickToReg": "Klikk → Registrering",
-      "activeUsers": "Aktive brukere"
+      "activeUsers": "Aktive brukere",
+      "paperTrading": "Paper Trading",
+      "autoTrading": "Auto Trading"
     },
     "trafficSources": {
       "title": "Trafikk Kilder",

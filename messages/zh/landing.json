@@ -111,5 +111,17 @@
     },
     "cta": "立即确保我的位置 →",
     "spotsLeft": "剩余名额。先到先得！"
+  },
+  "modernHero": {
+    "badge": "Beta — Become one of the first traders",
+    "titlePart1": "Learn Trading",
+    "titlePart2": "Step by Step",
+    "subtitle": "From beginner to independent trader with structured learning and risk-free practice",
+    "bullets": "Interactive courses • $100k paper trading • 24/7 AI coach • No credit card required",
+    "ctaPrimary": "Try Paper Trading Free",
+    "ctaSecondary": "View Courses",
+    "trust1": "100% transparent",
+    "trust2": "No lock-in",
+    "trust3": "Risk-free practice"
   }
 }

@@ -3,6 +3,7 @@ import type { PlaywrightTestConfig } from "@playwright/test";
 const config: PlaywrightTestConfig = {
   testDir: "./tests/e2e",
   testMatch: "*.spec.ts",
+  testIgnore: "**/_archive/**",
   timeout: 60000,
   expect: {
     timeout: 10000,
@@ -13,11 +14,14 @@ const config: PlaywrightTestConfig = {
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ["line"],
-    ["allure-playwright", {
-      detail: true,
-      outputFolder: "allure-results",
-      suiteTitle: false,
-    }],
+    [
+      "allure-playwright",
+      {
+        detail: true,
+        outputFolder: "allure-results",
+        suiteTitle: false,
+      },
+    ],
   ],
   use: {
     actionTimeout: 10000,

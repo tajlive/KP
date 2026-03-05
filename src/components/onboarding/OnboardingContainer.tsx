@@ -115,9 +115,13 @@ export default function OnboardingContainer() {
       <div
         className="relative z-10 h-0.5 bg-gray-200/50 dark:bg-gray-800/50"
         role="progressbar"
-        aria-valuenow={progress}
-        aria-valuemin={0}
-        aria-valuemax={100}
+        ref={(el) => {
+          if (el) {
+            el.setAttribute("aria-valuenow", String(progress || 0));
+            el.setAttribute("aria-valuemin", "0");
+            el.setAttribute("aria-valuemax", "100");
+          }
+        }}
         aria-label="Onboarding-fremgang"
       >
         <motion.div

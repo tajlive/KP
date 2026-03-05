@@ -3,7 +3,7 @@
  * Uses trading_sessions and trades tables only
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from "@/lib/supabase/server";
 
 export interface RiskConfig {
   maxPositionSizePercent: number;
@@ -13,6 +13,8 @@ export interface RiskConfig {
   maxDailyTrades: number;
   maxDrawdownPercent: number;
   maxLeverage: number;
+  kellyFraction?: number;
+  volatilityAdjustment?: boolean;
 }
 
 export interface RiskCheckResult {
@@ -34,7 +36,7 @@ export class RiskManager {
     sessionId: string;
     tradeAmount: number;
     currentCapital: number;
-    direction: 'LONG' | 'SHORT';
+    direction: "LONG" | "SHORT";
     symbol?: string;
   }): Promise<RiskCheckResult> {
     const { sessionId, tradeAmount, currentCapital, symbol } = params;
@@ -42,7 +44,8 @@ export class RiskManager {
     // 1. Check position size limit
     const positionSizePercent = (tradeAmount / currentCapital) * 100;
     if (positionSizePercent > this.config.maxPositionSizePercent) {
-      const suggestedAmount = (currentCapital * this.config.maxPositionSizePercent) / 100;
+      const suggestedAmount =
+        (currentCapital * this.config.maxPositionSizePercent) / 100;
       return {
         allowed: false,
         reason: `Posisjonsstørrelse (${positionSizePercent.toFixed(2)}%) overstiger maksimum (${this.config.maxPositionSizePercent}%)`,
@@ -53,7 +56,8 @@ export class RiskManager {
 
     // 2. Check daily loss limit
     const todayPnL = await this.getTodayPnL(sessionId);
-    const todayLossPercent = (Math.abs(Math.min(todayPnL, 0)) / currentCapital) * 100;
+    const todayLossPercent =
+      (Math.abs(Math.min(todayPnL, 0)) / currentCapital) * 100;
     if (todayLossPercent >= this.config.maxDailyLossPercent) {
       return {
         allowed: false,
@@ -95,68 +99,86 @@ export class RiskManager {
       }
     }
 
-    return { allowed: true, currentExposure: await this.getCurrentExposure(sessionId) };
+    return {
+      allowed: true,
+      currentExposure: await this.getCurrentExposure(sessionId),
+    };
   }
 
-  calculateStopLoss(params: { entryPrice: number; direction: 'LONG' | 'SHORT'; useTrailing?: boolean; atr?: number }): number {
+  calculateStopLoss(params: {
+    entryPrice: number;
+    direction: "LONG" | "SHORT";
+    useTrailing?: boolean;
+    atr?: number;
+  }): number {
     const { entryPrice, direction } = params;
-    if (direction === 'LONG') {
+    if (direction === "LONG") {
       return entryPrice * (1 - this.config.stopLossPercent / 100);
     } else {
       return entryPrice * (1 + this.config.stopLossPercent / 100);
     }
   }
 
-  calculateTakeProfit(params: { entryPrice: number; stopLossPrice: number; direction: 'LONG' | 'SHORT'; riskRewardRatio?: number }): number {
-    const { entryPrice, stopLossPrice, direction, riskRewardRatio = 2 } = params;
+  calculateTakeProfit(params: {
+    entryPrice: number;
+    stopLossPrice: number;
+    direction: "LONG" | "SHORT";
+    riskRewardRatio?: number;
+  }): number {
+    const {
+      entryPrice,
+      stopLossPrice,
+      direction,
+      riskRewardRatio = 2,
+    } = params;
     const risk = Math.abs(entryPrice - stopLossPrice);
     const reward = risk * riskRewardRatio;
-    return direction === 'LONG' ? entryPrice + reward : entryPrice - reward;
+    return direction === "LONG" ? entryPrice + reward : entryPrice - reward;
   }
 
   // Private helpers - all using unified trades table
   private async getTodayPnL(sessionId: string): Promise<number> {
     const supabase = await createClient();
-    const today = new Date().toISOString().split('T')[0];
-    
+    const today = new Date().toISOString().split("T")[0];
+
     const { data } = await supabase
-      .from('trades')
-      .select('realized_pnl')
-      .eq('session_id', sessionId)
-      .gte('executed_at', today)
-      .not('realized_pnl', 'is', null);
+      .from("trades")
+      .select("realized_pnl")
+      .eq("session_id", sessionId)
+      .gte("executed_at", today)
+      .not("realized_pnl", "is", null);
 
     return data?.reduce((sum, t) => sum + (t.realized_pnl || 0), 0) || 0;
   }
 
   private async getTodayTradeCount(sessionId: string): Promise<number> {
     const supabase = await createClient();
-    const today = new Date().toISOString().split('T')[0];
-    
+    const today = new Date().toISOString().split("T")[0];
+
     const { count } = await supabase
-      .from('trades')
-      .select('*', { count: 'exact', head: true })
-      .eq('session_id', sessionId)
-      .gte('executed_at', today);
+      .from("trades")
+      .select("*", { count: "exact", head: true })
+      .eq("session_id", sessionId)
+      .gte("executed_at", today);
 
     return count || 0;
   }
 
   private async getCurrentDrawdown(sessionId: string): Promise<number> {
     const supabase = await createClient();
-    
+
     const { data: trades } = await supabase
-      .from('trades')
-      .select('realized_pnl, executed_at')
-      .eq('session_id', sessionId)
-      .order('executed_at', { ascending: true });
+      .from("trades")
+      .select("realized_pnl, executed_at")
+      .eq("session_id", sessionId)
+      .order("executed_at", { ascending: true });
 
     if (!trades || trades.length === 0) return 0;
 
     const { data: session } = await supabase
-      .from('trading_sessions')
-      .select('initial_capital')
-      .eq('id', sessionId)
+      .from("trading_sessions")
+      .select("initial_capital")
+      .eq("id", sessionId)
       .single();
 
     const startingCapital = session?.initial_capital || 10000;
@@ -176,39 +198,48 @@ export class RiskManager {
 
   private async getCurrentExposure(sessionId: string): Promise<number> {
     const supabase = await createClient();
-    
+
     const { data: session } = await supabase
-      .from('trading_sessions')
-      .select('open_position')
-      .eq('id', sessionId)
+      .from("trading_sessions")
+      .select("open_position")
+      .eq("id", sessionId)
       .single();
 
     if (!session?.open_position) return 0;
-    
+
     // Calculate exposure from open position
-    const position = session.open_position as { quantity: number; entry_price: number };
+    const position = session.open_position as {
+      quantity: number;
+      entry_price: number;
+    };
     return (position.quantity || 0) * (position.entry_price || 0);
   }
 
-  private async getSymbolExposure(sessionId: string, symbol: string): Promise<number> {
+  private async getSymbolExposure(
+    sessionId: string,
+    symbol: string,
+  ): Promise<number> {
     const supabase = await createClient();
-    
+
     const { data: session } = await supabase
-      .from('trading_sessions')
-      .select('open_position, trading_pair')
-      .eq('id', sessionId)
+      .from("trading_sessions")
+      .select("open_position, trading_pair")
+      .eq("id", sessionId)
       .single();
 
     // If there's an open position in the same symbol
     if (session?.open_position && session.trading_pair === symbol) {
-      const position = session.open_position as { quantity: number; entry_price: number };
+      const position = session.open_position as {
+        quantity: number;
+        entry_price: number;
+      };
       const exposure = (position.quantity || 0) * (position.entry_price || 0);
       const { data: sessionData } = await supabase
-        .from('trading_sessions')
-        .select('current_capital')
-        .eq('id', sessionId)
+        .from("trading_sessions")
+        .select("current_capital")
+        .eq("id", sessionId)
         .single();
-      
+
       if (sessionData?.current_capital) {
         return (exposure / sessionData.current_capital) * 100;
       }
@@ -218,13 +249,70 @@ export class RiskManager {
   }
 }
 
-export const DEFAULT_RISK_CONFIGS: Record<string, RiskConfig> = {
-  conservative: { maxPositionSizePercent: 2, stopLossPercent: 1, trailingStopLossPercent: 0.8, maxDailyLossPercent: 5, maxDailyTrades: 5, maxDrawdownPercent: 10, maxLeverage: 1 },
-  balanced: { maxPositionSizePercent: 5, stopLossPercent: 2, trailingStopLossPercent: 1.5, maxDailyLossPercent: 10, maxDailyTrades: 10, maxDrawdownPercent: 15, maxLeverage: 1 },
-  aggressive: { maxPositionSizePercent: 10, stopLossPercent: 3, trailingStopLossPercent: 2, maxDailyLossPercent: 20, maxDailyTrades: 20, maxDrawdownPercent: 25, maxLeverage: 2 },
+import {
+  OPTIMIZED_PROFILES,
+  RiskLevel as OptRiskLevel,
+} from "../config/optimized-risk-profiles";
+
+export const DEFAULT_RISK_CONFIGS: Record<OptRiskLevel, RiskConfig> = {
+  conservative: {
+    maxPositionSizePercent:
+      OPTIMIZED_PROFILES.conservative.maxPositionSizePercent,
+    stopLossPercent: OPTIMIZED_PROFILES.conservative.stopLossPercent,
+    trailingStopLossPercent:
+      OPTIMIZED_PROFILES.conservative.trailingStopPercent,
+    maxDailyLossPercent: OPTIMIZED_PROFILES.conservative.maxDailyLossPercent,
+    maxDailyTrades: OPTIMIZED_PROFILES.conservative.maxTradesPerDay,
+    maxDrawdownPercent: OPTIMIZED_PROFILES.conservative.maxTotalDrawdownPercent,
+    maxLeverage: OPTIMIZED_PROFILES.conservative.maxLeverage,
+    kellyFraction: OPTIMIZED_PROFILES.conservative.kellyFraction,
+    volatilityAdjustment: OPTIMIZED_PROFILES.conservative.volatilityAdjustment,
+  },
+  moderate: {
+    maxPositionSizePercent: OPTIMIZED_PROFILES.moderate.maxPositionSizePercent,
+    stopLossPercent: OPTIMIZED_PROFILES.moderate.stopLossPercent,
+    trailingStopLossPercent: OPTIMIZED_PROFILES.moderate.trailingStopPercent,
+    maxDailyLossPercent: OPTIMIZED_PROFILES.moderate.maxDailyLossPercent,
+    maxDailyTrades: OPTIMIZED_PROFILES.moderate.maxTradesPerDay,
+    maxDrawdownPercent: OPTIMIZED_PROFILES.moderate.maxTotalDrawdownPercent,
+    maxLeverage: OPTIMIZED_PROFILES.moderate.maxLeverage,
+    kellyFraction: OPTIMIZED_PROFILES.moderate.kellyFraction,
+    volatilityAdjustment: OPTIMIZED_PROFILES.moderate.volatilityAdjustment,
+  },
+  aggressive: {
+    maxPositionSizePercent:
+      OPTIMIZED_PROFILES.aggressive.maxPositionSizePercent,
+    stopLossPercent: OPTIMIZED_PROFILES.aggressive.stopLossPercent,
+    trailingStopLossPercent: OPTIMIZED_PROFILES.aggressive.trailingStopPercent,
+    maxDailyLossPercent: OPTIMIZED_PROFILES.aggressive.maxDailyLossPercent,
+    maxDailyTrades: OPTIMIZED_PROFILES.aggressive.maxTradesPerDay,
+    maxDrawdownPercent: OPTIMIZED_PROFILES.aggressive.maxTotalDrawdownPercent,
+    maxLeverage: OPTIMIZED_PROFILES.aggressive.maxLeverage,
+    kellyFraction: OPTIMIZED_PROFILES.aggressive.kellyFraction,
+    volatilityAdjustment: OPTIMIZED_PROFILES.aggressive.volatilityAdjustment,
+  },
+  dynamic: {
+    maxPositionSizePercent: OPTIMIZED_PROFILES.dynamic.maxPositionSizePercent,
+    stopLossPercent: OPTIMIZED_PROFILES.dynamic.stopLossPercent,
+    trailingStopLossPercent: OPTIMIZED_PROFILES.dynamic.trailingStopPercent,
+    maxDailyLossPercent: OPTIMIZED_PROFILES.dynamic.maxDailyLossPercent,
+    maxDailyTrades: OPTIMIZED_PROFILES.dynamic.maxTradesPerDay,
+    maxDrawdownPercent: OPTIMIZED_PROFILES.dynamic.maxTotalDrawdownPercent,
+    maxLeverage: OPTIMIZED_PROFILES.dynamic.maxLeverage,
+    kellyFraction: OPTIMIZED_PROFILES.dynamic.kellyFraction,
+    volatilityAdjustment: OPTIMIZED_PROFILES.dynamic.volatilityAdjustment,
+  },
 };
 
 export function createRiskManager(riskLevel: string): RiskManager {
-  const config = DEFAULT_RISK_CONFIGS[riskLevel] || DEFAULT_RISK_CONFIGS.balanced;
+  // Map our UI risk strings to the OptimizedProfile keys
+  let optLevel: OptRiskLevel = "moderate";
+  if (riskLevel === "safe" || riskLevel === "conservative")
+    optLevel = "conservative";
+  if (riskLevel === "offensive" || riskLevel === "aggressive")
+    optLevel = "aggressive";
+
+  const config =
+    DEFAULT_RISK_CONFIGS[optLevel] || DEFAULT_RISK_CONFIGS.moderate;
   return new RiskManager(config);
 }

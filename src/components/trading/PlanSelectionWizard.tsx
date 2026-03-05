@@ -221,6 +221,8 @@ export function PlanSelectionWizard({
               max="1000000"
               step="1000"
               value={capital}
+              title="Velg startkapital"
+              aria-label="Skive med startkapital"
               onChange={(e) => setCapital(Number(e.target.value))}
               className="w-full mt-4"
             />
