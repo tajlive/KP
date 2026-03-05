@@ -27,7 +27,6 @@ const PROTECTED_PATHS = [
   "/beta-testing",
   "/copy-trading",
   "/marketplace",
-  "/onboarding",
   "/profile",
   "/quiz",
   "/signals",
@@ -92,7 +91,8 @@ export async function middleware(request: NextRequest) {
     pathname.includes("/innlogging") ||
     pathname.includes("/registrer") ||
     pathname.includes("/signup") ||
-    pathname.includes("/login");
+    pathname.includes("/login") ||
+    pathname.includes("/onboarding"); // ✅ FIX: Allow onboarding without auth check
 
   if (isDefinitelyAuthPath) {
     return NextResponse.next();
@@ -273,7 +273,8 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    if (!onboardingCompleted) {
+    // ✅ FIX: Only redirect to onboarding if NOT already on onboarding page
+    if (!onboardingCompleted && !pathWithoutLocale.startsWith("/onboarding")) {
       const onboardingUrl = new URL(`/${locale}/onboarding`, request.url);
       return NextResponse.redirect(onboardingUrl);
     }
