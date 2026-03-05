@@ -23,7 +23,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const BATCH_SIZE = 20; // Process 20 at a time to stay within rate limits
 const MAX_RETRIES = 3;
 
-serve(async (req) => {
+serve(async (_req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,

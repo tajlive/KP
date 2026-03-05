@@ -17,7 +17,7 @@ const CRON_SECRET = process.env.CRON_SECRET || 'test-cron-secret';
 
 describe('Paper Trading Full Flow', () => {
   let supabase: ReturnType<typeof createClient>;
-  let sessionId: string;
+  let _sessionId: string;
 
   beforeAll(async () => {
     supabase = await createClient();
@@ -50,7 +50,7 @@ describe('Paper Trading Full Flow', () => {
       const data = await response.json();
       expect(data.success).toBe(true);
       expect(data.session).toBeDefined();
-      sessionId = data.session.id;
+      _sessionId = data.session.id;
     });
 
     it('should prevent duplicate active sessions', async () => {
