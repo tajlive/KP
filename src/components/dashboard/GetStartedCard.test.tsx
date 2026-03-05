@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GetStartedCard, { shouldShowGetStartedCard } from "./GetStartedCard";
 
 // Mock Next.js navigation
@@ -11,13 +11,13 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({ locale: "no" }),
 }));
 
-// Mock Supabase
+// Mock Supabase - return dismissed: false by default
 vi.mock("@/lib/utils", () => ({
   createClient: () => ({
     from: () => ({
       select: () => ({
         eq: () => ({
-          single: () => Promise.resolve({ data: null }),
+          single: () => Promise.resolve({ data: { dismissed_get_started_card: false } }),
         }),
       }),
       update: () => ({
@@ -58,43 +58,58 @@ describe("GetStartedCard", () => {
       onDismiss: vi.fn(),
     };
 
-    it("renders all three get started items", () => {
+    it("renders all three get started items", async () => {
       render(<GetStartedCard {...defaultProps} />);
       
-      expect(screen.getByText("Kom i gang")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Kom i gang")).toBeInTheDocument();
+      });
+      
       expect(screen.getByText("Hva er automatisk trading?")).toBeInTheDocument();
       expect(screen.getByText("Forstå DCA-strategien")).toBeInTheDocument();
       expect(screen.getByText("Slik leser du dashboard-tallene")).toBeInTheDocument();
     });
 
-    it("shows completed items with strikethrough", () => {
+    it("shows completed items with strikethrough", async () => {
       render(<GetStartedCard {...defaultProps} completedLessons={["auto-trading-intro"]} />);
       
-      const completedItem = screen.getByText("Hva er automatisk trading?");
-      expect(completedItem).toHaveClass("line-through");
+      await waitFor(() => {
+        const completedItem = screen.getByText("Hva er automatisk trading?");
+        expect(completedItem).toHaveClass("line-through");
+      });
     });
 
-    it("shows progress indicator", () => {
+    it("shows progress indicator", async () => {
       render(<GetStartedCard {...defaultProps} completedLessons={["auto-trading-intro"]} />);
       
-      expect(screen.getByText("1/3 fullført")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("1/3 fullført")).toBeInTheDocument();
+      });
     });
 
-    it("calls onDismiss when dismiss button is clicked", () => {
+    it("calls onDismiss when dismiss button is clicked", async () => {
       const onDismiss = vi.fn();
       render(<GetStartedCard {...defaultProps} onDismiss={onDismiss} />);
+      
+      await waitFor(() => {
+        expect(screen.getByLabelText("Lukk")).toBeInTheDocument();
+      });
       
       const dismissButton = screen.getByLabelText("Lukk");
       fireEvent.click(dismissButton);
       
-      expect(onDismiss).toHaveBeenCalled();
+      // Vent på at async dismiss handler fullføres
+      await waitFor(() => {
+        expect(onDismiss).toHaveBeenCalled();
+      });
     });
 
-    it("shows correct duration for each item", () => {
+    it("renders CTA buttons", async () => {
       render(<GetStartedCard {...defaultProps} />);
       
-      expect(screen.getByText("5 min")).toBeInTheDocument();
-      expect(screen.getByText("7 min")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Jeg tar det senere")).toBeInTheDocument();
+      });
     });
   });
 });

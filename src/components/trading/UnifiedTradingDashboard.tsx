@@ -103,7 +103,7 @@ export default function UnifiedTradingDashboard({
 }: DashboardProps = {}) {
   const [mode, setMode] = useState<TradingMode>("paper");
   const [portfolio, setPortfolio] = useState<Portfolio | null>(
-    initialPortfolio ?? null,
+    (initialPortfolio as Portfolio | null) ?? null,
   );
   const [trades, setTrades] = useState<Trade[]>(
     (initialTrades as Trade[]) ?? [],
@@ -296,17 +296,13 @@ export default function UnifiedTradingDashboard({
             await Promise.all(
               activeStrategies.map((s) => stopStrategy(s.strategy_id, mode)),
             );
-            toast.success("Alle strategier er stoppet/pauset");
+            showSuccess("strategy.stopped");
             loadData();
           } else if (action === "start_new" || action === "new_strategy") {
-            // Option to show the full strategy selector or just onboarding again
             setExpandedStrategy(null);
-            // We can just scroll to strategy selector or change a view state
-            // For now, let's just toast
-            toast("Vennligst velg en ny strategi i den avanserte oversikten");
+            showSuccess("general.comingSoon");
           } else if (action === "view_stats") {
-            // For now, just a toast
-            toast("Avansert statistikk kommer snart!");
+            showSuccess("general.comingSoon");
           }
         }}
       />

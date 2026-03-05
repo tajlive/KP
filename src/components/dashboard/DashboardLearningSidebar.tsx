@@ -305,7 +305,7 @@ export default function DashboardLearningSidebar({
 }
 
 // Hjelpefunksjoner
-function getCurrentLevel(completed: number, total: number): string {
+export function getCurrentLevel(completed: number, total: number): string {
   const percentage = total > 0 ? completed / total : 0;
   if (percentage >= 0.66) return "advanced";
   if (percentage >= 0.33) return "intermediate";
