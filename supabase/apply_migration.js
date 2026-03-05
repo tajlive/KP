@@ -1,4 +1,4 @@
-/* global require, process, console */
+/* eslint-env node */
 const { Client } = require("pg");
 const fs = require("fs");
 require("dotenv").config({ path: ".env.production" });

@@ -92,7 +92,7 @@ export default function GetStartedCard({
   completedLessons,
   onDismiss,
 }: GetStartedCardProps) {
-  const { locale } = useParams<any>();
+  const { locale } = useParams<unknown>();
   const lang = (locale as string) || "no";
   const [isVisible, setIsVisible] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);

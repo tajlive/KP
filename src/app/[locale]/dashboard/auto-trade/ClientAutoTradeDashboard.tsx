@@ -44,9 +44,9 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 // New components
-import { TrialBanner } from '@/components/auto-trade/TrialBanner';
-import { StrategyCard } from '@/components/auto-trade/StrategyCard';
-import { LiveStrategyView } from '@/components/auto-trade/LiveStrategyView';
+import { TrialBanner } from '@/components/auto-trading/TrialBanner';
+import { StrategyCard } from '@/components/auto-trading/StrategyCard';
+import { LiveStrategyView } from '@/components/auto-trading/LiveStrategyView';
 
 // Typer
 interface TrialStatus {

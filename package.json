@@ -61,6 +61,7 @@
     "@headlessui/react": "^2.2.9",
     "@hookform/resolvers": "^5.2.2",
     "@huggingface/inference": "^4.13.12",
+    "@linear/sdk": "^76.0.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-aspect-ratio": "^1.1.8",

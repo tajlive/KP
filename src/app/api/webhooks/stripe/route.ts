@@ -286,9 +286,9 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       .update({
         status: subscription.status as unknown,
         cancel_at_period_end: subscription?.cancel_at_period_end,
-        current_period_end: (subscription as any)?.current_period_end
+        current_period_end: (subscription as unknown)?.current_period_end
           ? new Date(
-              (subscription as any).current_period_end * 1000,
+              (subscription as unknown).current_period_end * 1000,
             ).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),

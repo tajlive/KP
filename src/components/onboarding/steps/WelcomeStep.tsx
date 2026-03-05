@@ -113,7 +113,7 @@ export function WelcomeStep() {
           return (
             <motion.div
               key={feature.title}
-              variants={item as any}
+              variants={item as unknown}
               className="flex items-center gap-4 p-4
                          bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl
                          rounded-2xl border border-gray-200/50 dark:border-gray-800/50

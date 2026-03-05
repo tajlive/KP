@@ -57,7 +57,7 @@ interface CreatorProfileClientProps {
 export default function CreatorProfileClient({
   traderId,
 }: CreatorProfileClientProps) {
-  const { locale } = useParams<any>();
+  const { locale } = useParams<unknown>();
   const [profile, setProfile] = useState<TraderProfile | null>(null);
   const [publicStrategies, setPublicStrategies] = useState<PublicStrategy[]>(
     [],

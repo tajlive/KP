@@ -26,11 +26,11 @@ export function createClient() {
  * - Route Handler usage (synchronous):  createServerClient(request, response)
  * - Server Component usage (async):     await createServerClient()
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function createServerClient(
   request?: NextRequest,
   response?: NextResponse,
-): any {
+): unknown {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 

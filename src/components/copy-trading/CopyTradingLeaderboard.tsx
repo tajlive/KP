@@ -42,7 +42,7 @@ interface LeaderboardEntry {
 type Period = "30d" | "90d" | "all";
 
 export default function CopyTradingLeaderboard() {
-  const { locale } = useParams<any>();
+  const { locale } = useParams<unknown>();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<Period>("30d");
