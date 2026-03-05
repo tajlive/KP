@@ -23,7 +23,7 @@ export function getStripe(): Stripe {
 // Backward-compatible export — lazy via Proxy to avoid build-time errors
 export const stripe = new Proxy({} as Stripe, {
   get(_target, prop) {
-    return (getStripe() as unknown)[prop];
+    return (getStripe() as any)[prop];
   },
 });
 

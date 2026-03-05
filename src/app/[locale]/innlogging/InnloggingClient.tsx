@@ -89,8 +89,8 @@ export function InnloggingClient() {
 
   // Leser både ?next= og ?redirectTo= for bakoverkompatibilitet
   // Saniterer alltid til relativ sti for å forhindre URL-dobling
-  const rawRedirect =
-    searchParams?.get("next") || searchParams?.get("redirectTo");
+  const next = searchParams?.get("next") as string | null;
+  const rawRedirect = next || searchParams?.get("redirectTo") || null;
   const safeRedirectTo = sanitizeClientRedirect(rawRedirect, "no");
 
   if (!mounted) {

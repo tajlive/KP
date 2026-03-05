@@ -45,16 +45,6 @@ const PUBLIC_PATHS = [
   "/reset-password",
 ];
 
-const SKIP_ONBOARDING_PATHS = [
-  "/api/",
-  "/auth/",
-  "/onboarding",
-  "/innlogging",
-  "/registrer",
-  "/login",
-  "/signup",
-];
-
 const SUPPORTED_LOCALES = ["no", "en", "th", "zh"];
 const DEFAULT_LOCALE = "no";
 
@@ -84,19 +74,6 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // CSP is handled by vercel.json headers — no nonce needed
-
-  // 🚨 Unblock auth pages always to stop redirect loops
-  const isDefinitelyAuthPath =
-    pathname.includes("/auth/callback") ||
-    pathname.includes("/innlogging") ||
-    pathname.includes("/registrer") ||
-    pathname.includes("/signup") ||
-    pathname.includes("/login") ||
-    pathname.includes("/onboarding"); // ✅ FIX: Allow onboarding without auth check
-
-  if (isDefinitelyAuthPath) {
-    return NextResponse.next();
-  }
 
   // 🌍 Auto-redirect based on browser language
   const pathnameHasLocale = SUPPORTED_LOCALES.some(
@@ -182,6 +159,7 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
+  // Create supabase client
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -192,6 +170,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
+            // Apply to the response that will be returned
             response.cookies.set(name, value, {
               ...options,
               sameSite: "none" as const,
@@ -206,77 +185,114 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const locale = pathname.split("/")[1] || "no";
 
+  const locale = pathname.split("/")[1] || "no";
   const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
-  const isProtected = PROTECTED_PATHS.some(
+
+  // Check path types
+  const isProtectedPath = PROTECTED_PATHS.some(
     (p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`),
   );
+  // Also protect /onboarding
+  const isProtected =
+    isProtectedPath || pathWithoutLocale.startsWith("/onboarding");
+
   const isAuthPage = PUBLIC_PATHS.some(
     (p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`),
   );
 
+  // Helper to create a redirect response that preserves cookies set by Supabase
+  const redirectWithCookies = (url: URL) => {
+    const redirectResponse = NextResponse.redirect(url);
+    // Copy cookies from the next() response to the redirect response
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, {
+        ...cookie,
+        // Exclude properties that shouldn't be copied blindly or let Next handle them
+      });
+    });
+    return redirectResponse;
+  };
+
+  // 1. Unauthenticated users trying to access protected paths
   if (isProtected && !user) {
     const loginUrl = new URL(`/${locale}/innlogging`, request.url);
     loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
+    return redirectWithCookies(loginUrl);
   }
 
+  // 2. Authenticated users trying to access auth pages (login/signup)
   if (isAuthPage && user) {
-    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+    return redirectWithCookies(new URL(`/${locale}/dashboard`, request.url));
   }
 
-  // Onboarding guard
-  const shouldSkipOnboardingCheck = SKIP_ONBOARDING_PATHS.some(
-    (p) => pathname.startsWith(p) || pathWithoutLocale.startsWith(p),
-  );
+  // 3. Onboarding flow for authenticated users
+  if (user) {
+    // Only check onboarding if they are navigating to a protected path (or root dashboard)
+    // We don't want to enforce onboarding on purely public marketing pages unless specified
+    if (isProtected) {
+      let onboardingCompleted =
+        request.cookies.get("kp_onboarding_status")?.value === "completed";
 
-  if (user && isProtected && !shouldSkipOnboardingCheck) {
-    const onboardingCookie = request.cookies.get("kp_onboarding_status")?.value;
-    let onboardingCompleted = onboardingCookie === "completed";
-
-    if (!onboardingCompleted) {
-      try {
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("onboarding_completed, setup_completed_at")
-          .eq("id", user.id)
-          .single();
-
-        if (profile) {
-          onboardingCompleted =
-            profile.onboarding_completed === true ||
-            profile.setup_completed_at !== null;
-        } else {
-          const { data: fallbackProfile } = await supabase
-            .from("profiles")
+      // If cookie doesn't say completed, check DB
+      if (!onboardingCompleted) {
+        try {
+          const { data: profile } = await supabase
+            .from("user_profiles")
             .select("onboarding_completed, setup_completed_at")
             .eq("id", user.id)
             .single();
 
-          if (fallbackProfile) {
-            onboardingCompleted =
-              fallbackProfile.onboarding_completed === true ||
-              fallbackProfile.setup_completed_at !== null;
+          if (
+            profile &&
+            (profile.onboarding_completed === true ||
+              profile.setup_completed_at !== null)
+          ) {
+            onboardingCompleted = true;
+          } else {
+            // Fallback to older profiles table just in case
+            const { data: fallbackProfile } = await supabase
+              .from("profiles")
+              .select("onboarding_completed, setup_completed_at")
+              .eq("id", user.id)
+              .maybeSingle();
+
+            if (
+              fallbackProfile &&
+              (fallbackProfile.onboarding_completed === true ||
+                fallbackProfile.setup_completed_at !== null)
+            ) {
+              onboardingCompleted = true;
+            }
           }
-        }
 
-        if (onboardingCompleted) {
-          response.cookies.set("kp_onboarding_status", "completed", {
-            path: "/",
-            maxAge: 3600 * 24 * 30, // 30 days — DB only queried once after login
-            sameSite: "lax",
-          });
+          if (onboardingCompleted) {
+            response.cookies.set("kp_onboarding_status", "completed", {
+              path: "/",
+              maxAge: 3600 * 24 * 30, // 30 days — DB only queried once after login
+              sameSite: "lax",
+            });
+          }
+        } catch (err) {
+          console.error("Error checking onboarding status:", err);
         }
-      } catch (err) {
-        console.error("Error checking onboarding status:", err);
       }
-    }
 
-    // ✅ FIX: Only redirect to onboarding if NOT already on onboarding page
-    if (!onboardingCompleted && !pathWithoutLocale.startsWith("/onboarding")) {
-      const onboardingUrl = new URL(`/${locale}/onboarding`, request.url);
-      return NextResponse.redirect(onboardingUrl);
+      const isOnboardingPage = pathWithoutLocale.startsWith("/onboarding");
+
+      // Redirect to onboarding if not completed and not already there
+      if (!onboardingCompleted && !isOnboardingPage) {
+        return redirectWithCookies(
+          new URL(`/${locale}/onboarding`, request.url),
+        );
+      }
+
+      // If onboarding IS completed, prevent them from going back to onboarding wizard
+      if (onboardingCompleted && isOnboardingPage) {
+        return redirectWithCookies(
+          new URL(`/${locale}/dashboard`, request.url),
+        );
+      }
     }
   }
 

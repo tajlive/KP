@@ -146,10 +146,12 @@ export function PerformanceChart({
                 labelFormatter={(label) =>
                   format(new Date(label), "d. MMM HH:mm", { locale: nb })
                 }
-                formatter={(value: number) => [
-                  `${value.toLocaleString()} kr`,
-                  "Saldo",
-                ]}
+                formatter={
+                  ((value: number) => [
+                    `${value.toFixed(2)}%`,
+                    "Avkastning",
+                  ]) as any
+                }
               />
               <ReferenceLine
                 y={startingBalance}

@@ -203,7 +203,7 @@ export async function GET(
             month: Math.round(pnlMonth * 100) / 100,
           },
           lastTrades:
-            lastTradesData?.map((trade) => ({
+            lastTradesData?.map((trade: any) => ({
               id: trade.id,
               side: trade.side as "buy" | "sell",
               symbol: trade.trading_pair || trade.symbol || "BTC/USDT",

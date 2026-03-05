@@ -69,7 +69,7 @@ export function useCopyTrading() {
         const subscriptionTier = profile?.tier || "free";
 
         const { canCopyTrade, reason } = checkCopyTradingEligibility(
-          paperTradesCount,
+          paperTradesCount ?? 0,
           currentMode,
           subscriptionTier,
         );
@@ -92,7 +92,7 @@ export function useCopyTrading() {
         setStatus({
           canCopyTrade,
           reason,
-          paperTradesCount,
+          paperTradesCount: paperTradesCount ?? 0,
           currentMode,
           subscriptionTier,
           activeSessions,

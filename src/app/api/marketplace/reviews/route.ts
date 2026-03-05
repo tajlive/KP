@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const ratings = (data || []).map(
+  const ratings = ((data as any[]) || []).map(
     (r: Record<string, unknown>) => r.rating as number,
   );
   const avgRating =
