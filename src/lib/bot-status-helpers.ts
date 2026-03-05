@@ -11,6 +11,7 @@ export interface BotStatusMessage {
   nextActionText: string;
   nextActionTime: Date | null;
   statusExplanation: string;
+  explanation?: string;  // Optional explanation for AI decisions
 }
 
 /**
