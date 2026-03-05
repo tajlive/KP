@@ -2,9 +2,7 @@ import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Database = any;
+import type { Database } from "@/types/supabase-generated";
 
 /**
  * Creates a Supabase service-role client (elevated privileges, bypasses RLS).
@@ -29,7 +27,6 @@ export function createClient() {
  * - Route Handler usage (synchronous):  createServerClient(request, response)
  * - Server Component usage (async):     await createServerClient()
  */
- 
 export function createServerClient(
   request?: NextRequest,
   response?: NextResponse,
