@@ -1,4 +1,5 @@
 import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
+import GetStartedCard from "@/components/dashboard/GetStartedCard";
 import { requireAuth } from "@/lib/auth-guard";
 import { Suspense } from "react";
 
@@ -12,7 +13,7 @@ export default async function DashboardPage({
   const { locale } = await params;
   const { supabase, user } = await requireAuth(locale);
 
-  const [portfolioRes, tradesRes, strategiesRes] = await Promise.all([
+  const [portfolioRes, tradesRes, strategiesRes, progressRes] = await Promise.all([
     supabase
       .from("user_profiles")
       .select("id, user_id, paper_balance, real_balance, tier")
@@ -29,11 +30,26 @@ export default async function DashboardPage({
       .select("*")
       .eq("user_id", user.id)
       .eq("is_active", true),
+    supabase
+      .from("onboarding_progress")
+      .select("completed_lessons")
+      .eq("user_id", user.id)
+      .single(),
   ]);
 
+  // Parse completed lessons from JSON
+  const completedLessons = progressRes.data?.completed_lessons ?? [];
+
   return (
-    <Suspense
-      fallback={
+    <>
+      {/* Kom i gang for nye brukere – KLA-73 */}
+      <GetStartedCard
+        userId={user.id}
+        completedLessons={completedLessons}
+      />
+      
+      <Suspense
+        fallback={
         <div className="min-h-screen bg-gray-950 p-6 space-y-6 animate-pulse">
           <div className="h-12 bg-gray-800 rounded-lg w-1/3" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -51,5 +67,6 @@ export default async function DashboardPage({
         userId={user.id}
       />
     </Suspense>
+    </>
   );
 }

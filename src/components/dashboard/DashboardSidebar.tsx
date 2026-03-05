@@ -18,6 +18,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import DashboardLearningSidebar from "./DashboardLearningSidebar";
 
 export function DashboardSidebar() {
   const t = useTranslations("dashboard.sidebar");
@@ -121,6 +122,15 @@ export function DashboardSidebar() {
                 Klarpakke
               </span>
             </Link>
+          </div>
+
+          {/* Learning Sidebar – KLA-75 */}
+          <div className="px-6 py-4">
+            <DashboardLearningSidebar
+              userId={""} // Hent fra auth
+              completedLessonIds={[]}
+              earnedBadges={[]}
+            />
           </div>
 
           {/* Nav */}
