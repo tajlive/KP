@@ -1,3 +1,4 @@
+/*
 -- Phase 2: Bot alert configurations table
 CREATE TABLE IF NOT EXISTS bot_alert_configs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -28,3 +29,4 @@ CREATE POLICY "Users can insert own alert configs"
 CREATE POLICY "Users can update own alert configs"
   ON bot_alert_configs FOR UPDATE
   USING (auth.uid() = user_id);
+*/

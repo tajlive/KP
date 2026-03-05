@@ -1,3 +1,4 @@
+/*
 -- Phase 3: Onboarding progress persistence
 CREATE TABLE IF NOT EXISTS onboarding_progress (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -25,3 +26,4 @@ CREATE POLICY "Users can insert own onboarding progress"
 CREATE POLICY "Users can update own onboarding progress"
   ON onboarding_progress FOR UPDATE
   USING (auth.uid() = user_id);
+*/
