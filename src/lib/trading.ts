@@ -61,7 +61,7 @@ export const executeBuy = async (
     const { data: trade, error: fetchError } = await supabase
       .from('trades')
       .select('*')
-      .eq('id', tradeResult.trade_id)
+      .eq('id', tradeResult.trade_id as string)
       .single();
 
     if (fetchError || !trade) {
@@ -126,7 +126,7 @@ export const executeSell = async (
     const { data: trade, error: fetchError } = await supabase
       .from('trades')
       .select('*')
-      .eq('id', tradeResult.trade_id)
+      .eq('id', tradeResult.trade_id as string)
       .single();
 
     if (fetchError || !trade) {

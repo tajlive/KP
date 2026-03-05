@@ -65,7 +65,7 @@ export function CompletionStep() {
         {Array.from({ length: 12 }).map((_, i) => (
           <motion.div
             key={i}
-            variants={particle}
+            variants={particle as any}
             className="absolute top-0 left-1/2"
             style={{
               fontSize: ["🎉", "✨", "🎊", "💎", "⭐", "🚀"][i % 6] ? 16 : 12,

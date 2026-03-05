@@ -58,7 +58,7 @@ export default function BotStatusDashboard({
   formatNOK,
   userId,
 }: BotStatusDashboardProps) {
-  const { locale } = useParams();
+  const { locale } = useParams<any>();
   const isBotActive = activeStrategies.length > 0;
   const mainStrategy = activeStrategies[0];
   const lastTrade = recentTrades[0];

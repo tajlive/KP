@@ -81,10 +81,12 @@ export default function StrategyCharts({
                   borderRadius: 8,
                 }}
                 labelStyle={{ color: "#94a3b8" }}
-                formatter={(v: number) => [
-                  `${Math.round(v).toLocaleString("no")} kr`,
-                  "Pris",
-                ]}
+                formatter={
+                  ((v: unknown) => [
+                    `${Number(v).toFixed(2)} USDT`,
+                    "Equity",
+                  ]) as any
+                }
               />
               <Area
                 type="monotone"
@@ -159,7 +161,9 @@ export default function StrategyCharts({
                   border: "1px solid #475569",
                   borderRadius: 8,
                 }}
-                formatter={(v: number) => [`${v.toFixed(2)} USDT`, "Equity"] as any}
+                formatter={
+                  ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as any
+                }
               />
               <ReferenceLine
                 y={startingEquity}

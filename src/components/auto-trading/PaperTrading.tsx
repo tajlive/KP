@@ -1,83 +1,64 @@
-import type React from "react"
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Play, 
-  Square,
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign,
-  Activity,
-  Target,
-  AlertCircle,
-  CheckCircle,
-  Loader2,
-  Plus,
-  History,
-  Bot,
-  BarChart3,
-  PlayCircle
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { createClient } from '@/lib/utils';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Bot, History, Loader2, PlayCircle, Square } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Hardkodede strategier - erstatter legacy auto_trading_strategies tabell
 const DEFAULT_STRATEGIES = [
   {
-    id: 'dca_trygg',
-    name: 'DCA Trygg',
-    symbol: 'BTC/USDT',
+    id: "dca_trygg",
+    name: "DCA Trygg",
+    symbol: "BTC/USDT",
     risk_level: 1,
     is_active: true,
-    description: 'Kjøper BTC/ETH automatisk hver uke. Dobler ved store dip.',
-    indicators: ['DCA', 'Auto-buy'],
+    description: "Kjøper BTC/ETH automatisk hver uke. Dobler ved store dip.",
+    indicators: ["DCA", "Auto-buy"],
     stopLoss: 5,
     takeProfit: 20,
   },
   {
-    id: 'trend_balansert',
-    name: 'Trend Balansert',
-    symbol: 'BTC/USDT',
+    id: "trend_balansert",
+    name: "Trend Balansert",
+    symbol: "BTC/USDT",
     risk_level: 3,
     is_active: true,
-    description: 'Følger MA50/MA200 crossover med RSI-filter.',
-    indicators: ['MA50', 'MA200', 'RSI'],
+    description: "Følger MA50/MA200 crossover med RSI-filter.",
+    indicators: ["MA50", "MA200", "RSI"],
     stopLoss: 10,
     takeProfit: 30,
   },
   {
-    id: 'multisignal_aktiv',
-    name: 'Multi-Signal Aktiv',
-    symbol: 'BTC/USDT',
+    id: "multisignal_aktiv",
+    name: "Multi-Signal Aktiv",
+    symbol: "BTC/USDT",
     risk_level: 4,
     is_active: true,
-    description: 'RSI + MACD + Bollinger gir hyppigere handler.',
-    indicators: ['RSI', 'MACD', 'Bollinger'],
+    description: "RSI + MACD + Bollinger gir hyppigere handler.",
+    indicators: ["RSI", "MACD", "Bollinger"],
     stopLoss: 8,
     takeProfit: 25,
   },
   {
-    id: 'grid_bot',
-    name: 'Grid Bot',
-    symbol: 'BTC/USDT',
+    id: "grid_bot",
+    name: "Grid Bot",
+    symbol: "BTC/USDT",
     risk_level: 3,
     is_active: true,
-    description: 'Kjøper lavt, selger høyt i prisgitter.',
-    indicators: ['Grid', 'Range'],
+    description: "Kjøper lavt, selger høyt i prisgitter.",
+    indicators: ["Grid", "Range"],
     stopLoss: 15,
     takeProfit: 40,
   },
   {
-    id: 'ai_copy',
-    name: 'AI Copy',
-    symbol: 'BTC/USDT',
+    id: "ai_copy",
+    name: "AI Copy",
+    symbol: "BTC/USDT",
     risk_level: 5,
     is_active: true,
-    description: 'Kopierer topp-tradere filtrert av AI.',
-    indicators: ['AI', 'Copy-trading'],
+    description: "Kopierer topp-tradere filtrert av AI.",
+    indicators: ["AI", "Copy-trading"],
     stopLoss: 10,
     takeProfit: 50,
   },
@@ -110,10 +91,10 @@ interface PaperTradingProps {
 interface Trade {
   id: string;
   symbol: string;
-  side: 'LONG' | 'SHORT';
+  side: "LONG" | "SHORT";
   entry_price: number;
   quantity: number;
-  status: 'OPEN' | 'CLOSED';
+  status: "OPEN" | "CLOSED";
   pnl?: number;
 }
 
@@ -123,17 +104,19 @@ interface Session {
   starting_capital_nok: number;
   total_pnl_nok: number;
   total_trades: number;
-  status: 'ACTIVE' | 'PAUSED';
+  status: "ACTIVE" | "PAUSED";
 }
 
-export default function PaperTrading({ 
-  strategy: _strategy, 
+export default function PaperTrading({
+  strategy: _strategy,
   backtestResult: _backtestResult,
   onStart: _onStart,
-  onStop: _onStop
-}: PaperTradingProps): JSX.Element {
+  onStop: _onStop,
+}: PaperTradingProps): React.ReactElement {
   const [isRunning, setIsRunning] = useState(false);
-  const [selectedStrategyId, setSelectedStrategyId] = useState<string>(DEFAULT_STRATEGIES[0].id);
+  const [selectedStrategyId, setSelectedStrategyId] = useState<string>(
+    DEFAULT_STRATEGIES[0].id,
+  );
   const [capital, setCapital] = useState(100000);
   const [session, setSession] = useState<Session | null>(null);
   const [openTrades, setOpenTrades] = useState<Trade[]>([]);
@@ -142,16 +125,16 @@ export default function PaperTrading({
 
   useEffect(() => {
     fetchSessionData();
-    
+
     const interval = setInterval(fetchSessionData, 10000);
     return () => clearInterval(interval);
   }, []);
 
   async function fetchSessionData(): Promise<void> {
     try {
-      const response = await fetch('/api/trading/sessions?mode=paper');
+      const response = await fetch("/api/trading/sessions?mode=paper");
       const data = await response.json();
-      
+
       if (data.sessions && data.sessions.length > 0) {
         const activeSession = data.sessions[0];
         setSession({
@@ -160,39 +143,41 @@ export default function PaperTrading({
           starting_capital_nok: activeSession.initial_capital,
           total_pnl_nok: activeSession.total_pnl,
           total_trades: activeSession.total_trades,
-          status: activeSession.status === 'active' ? 'ACTIVE' : 'PAUSED',
+          status: activeSession.status === "active" ? "ACTIVE" : "PAUSED",
         });
-        setIsRunning(activeSession.status === 'active');
+        setIsRunning(activeSession.status === "active");
       } else {
         setSession(null);
         setIsRunning(false);
       }
     } catch (err) {
-      console.error('Error fetching session data:', err);
+      console.error("Error fetching session data:", err);
     }
   }
 
-  const selectedStrategy = DEFAULT_STRATEGIES.find(s => s.id === selectedStrategyId) || DEFAULT_STRATEGIES[0];
+  const selectedStrategy =
+    DEFAULT_STRATEGIES.find((s) => s.id === selectedStrategyId) ||
+    DEFAULT_STRATEGIES[0];
 
   const handleStart = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/trading/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/trading/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mode: 'paper',
+          mode: "paper",
           strategy_id: selectedStrategyId,
           initial_capital: capital,
         }),
       });
-      
+
       if (response.ok) {
         setIsRunning(true);
         await fetchSessionData();
       }
     } catch (err) {
-      console.error('Error starting session:', err);
+      console.error("Error starting session:", err);
     } finally {
       setIsLoading(false);
     }
@@ -200,32 +185,35 @@ export default function PaperTrading({
 
   const handleStop = async (): Promise<void> => {
     if (!session) return;
-    
+
     setIsLoading(true);
     try {
-      const response = await fetch('/api/trading/sessions', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/trading/sessions", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           session_id: session.id,
-          action: 'stop',
+          action: "stop",
         }),
       });
-      
+
       if (response.ok) {
         setIsRunning(false);
         await fetchSessionData();
       }
     } catch (err) {
-      console.error('Error stopping session:', err);
+      console.error("Error stopping session:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const winRate = recentTrades.length > 0
-    ? (recentTrades.filter(t => (t.pnl || 0) > 0).length / recentTrades.length) * 100
-    : 0;
+  const winRate =
+    recentTrades.length > 0
+      ? (recentTrades.filter((t) => (t.pnl || 0) > 0).length /
+          recentTrades.length) *
+        100
+      : 0;
 
   return (
     <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
@@ -237,7 +225,9 @@ export default function PaperTrading({
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">Paper Trading</h2>
-              <p className="text-slate-400 text-sm">Øv uten risiko med virtuelle midler</p>
+              <p className="text-slate-400 text-sm">
+                Øv uten risiko med virtuelle midler
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -245,7 +235,7 @@ export default function PaperTrading({
               <div className="text-right">
                 <p className="text-sm text-slate-400">Kapital</p>
                 <p className="text-xl font-bold text-white">
-                  {session.current_capital_nok.toLocaleString('no-NO')} kr
+                  {session.current_capital_nok.toLocaleString("no-NO")} kr
                 </p>
               </div>
             )}
@@ -266,17 +256,23 @@ export default function PaperTrading({
                 disabled={isRunning}
                 className={`p-4 rounded-xl border text-left transition-all ${
                   selectedStrategyId === strategy.id
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-slate-700 hover:border-slate-600'
-                } ${isRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    ? "border-blue-500 bg-blue-500/10"
+                    : "border-slate-700 hover:border-slate-600"
+                } ${isRunning ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-white">{strategy.name}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${
-                    strategy.risk_level <= 2 ? 'bg-green-500/20 text-green-400' :
-                    strategy.risk_level <= 3 ? 'bg-yellow-500/20 text-yellow-400' :
-                    'bg-red-500/20 text-red-400'
-                  }`}>
+                  <span className="font-medium text-white">
+                    {strategy.name}
+                  </span>
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded ${
+                      strategy.risk_level <= 2
+                        ? "bg-green-500/20 text-green-400"
+                        : strategy.risk_level <= 3
+                          ? "bg-yellow-500/20 text-yellow-400"
+                          : "bg-red-500/20 text-red-400"
+                    }`}
+                  >
                     Risk {strategy.risk_level}
                   </span>
                 </div>
@@ -308,22 +304,30 @@ export default function PaperTrading({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-slate-800 rounded-lg p-4">
               <p className="text-xs text-slate-400 mb-1">Total P&L</p>
-              <p className={`text-lg font-bold ${session.total_pnl_nok >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {session.total_pnl_nok >= 0 ? '+' : ''}
-                {session.total_pnl_nok.toLocaleString('no-NO')} kr
+              <p
+                className={`text-lg font-bold ${session.total_pnl_nok >= 0 ? "text-green-400" : "text-red-400"}`}
+              >
+                {session.total_pnl_nok >= 0 ? "+" : ""}
+                {session.total_pnl_nok.toLocaleString("no-NO")} kr
               </p>
             </div>
             <div className="bg-slate-800 rounded-lg p-4">
               <p className="text-xs text-slate-400 mb-1">Win Rate</p>
-              <p className="text-lg font-bold text-white">{winRate.toFixed(1)}%</p>
+              <p className="text-lg font-bold text-white">
+                {winRate.toFixed(1)}%
+              </p>
             </div>
             <div className="bg-slate-800 rounded-lg p-4">
               <p className="text-xs text-slate-400 mb-1">Handler</p>
-              <p className="text-lg font-bold text-white">{session.total_trades}</p>
+              <p className="text-lg font-bold text-white">
+                {session.total_trades}
+              </p>
             </div>
             <div className="bg-slate-800 rounded-lg p-4">
               <p className="text-xs text-slate-400 mb-1">Åpne posisjoner</p>
-              <p className="text-lg font-bold text-white">{openTrades.length}</p>
+              <p className="text-lg font-bold text-white">
+                {openTrades.length}
+              </p>
             </div>
           </div>
         )}
@@ -372,17 +376,23 @@ export default function PaperTrading({
                   className="flex items-center justify-between p-3 bg-slate-800 rounded-lg"
                 >
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      trade.side === 'LONG' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                    }`}>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded ${
+                        trade.side === "LONG"
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-red-500/20 text-red-400"
+                      }`}
+                    >
                       {trade.side}
                     </span>
                     <span className="text-white text-sm">{trade.symbol}</span>
                   </div>
                   <div className="text-right">
-                    <p className={`text-sm font-medium ${(trade.pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {(trade.pnl || 0) >= 0 ? '+' : ''}
-                      {(trade.pnl || 0).toLocaleString('no-NO')} kr
+                    <p
+                      className={`text-sm font-medium ${(trade.pnl || 0) >= 0 ? "text-green-400" : "text-red-400"}`}
+                    >
+                      {(trade.pnl || 0) >= 0 ? "+" : ""}
+                      {(trade.pnl || 0).toLocaleString("no-NO")} kr
                     </p>
                   </div>
                 </div>

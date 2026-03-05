@@ -3,12 +3,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { StrategyType, createPaperTrade } from "@/lib/trading-api";
 import { createClient } from "@/lib/utils";
-import {
-  StrategyType,
-  createPaperTrade,
-  startStrategy,
-} from "@/lib/trading-api";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -120,7 +116,8 @@ export default function InteractiveOnboardingWizard({
   };
 
   const triggerConfetti = () => {
-    if (!confetti) return;
+    const fireConfetti = confetti;
+    if (!fireConfetti) return;
 
     const duration = 3000;
     const animationEnd = Date.now() + duration;
@@ -137,20 +134,22 @@ export default function InteractiveOnboardingWizard({
         return;
       }
 
-      const particleCount = 50 * (timeLeft / duration);
+      const particleCount = Math.floor(50 * (timeLeft / duration));
 
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-        colors: ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-        colors: ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
-      });
+      if (fireConfetti) {
+        fireConfetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          colors: ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+        });
+        fireConfetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+          colors: ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+        });
+      }
     }, 250);
   };
 
@@ -274,9 +273,9 @@ export default function InteractiveOnboardingWizard({
                 </span>
               </h1>
               <p className="text-slate-400 text-lg max-w-md mx-auto">
-                For å se live bevegelser i dashboardet må du først velge en 
-                strategi. Vi setter opp din første paper trade på under 60 sekunder. 
-                Ingen ekte penger, kun ren læring.
+                For å se live bevegelser i dashboardet må du først velge en
+                strategi. Vi setter opp din første paper trade på under 60
+                sekunder. Ingen ekte penger, kun ren læring.
               </p>
               <div className="bg-slate-800/50 rounded-xl p-4 text-sm text-slate-400 max-w-md mx-auto">
                 <strong className="text-blue-400">💡 Slik fungerer det:</strong>
@@ -391,13 +390,13 @@ export default function InteractiveOnboardingWizard({
                     {TEMPLATES.find((t) => t.id === selectedTemplate)?.title}
                   </span>
                 </div>
-                
+
                 {/* Kapital-velger */}
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Virtuell Kapital:</span>
                     <span className="text-green-400 font-bold text-lg">
-                      {new Intl.NumberFormat('no-NO').format(capital)} kr
+                      {new Intl.NumberFormat("no-NO").format(capital)} kr
                     </span>
                   </div>
                   <Slider
@@ -413,7 +412,8 @@ export default function InteractiveOnboardingWizard({
                     <span>100 000 kr</span>
                   </div>
                   <p className="text-xs text-slate-400">
-                    💡 Dette er lekepenger for testing. Velg beløp du ville vurdert i ekte trading.
+                    💡 Dette er lekepenger for testing. Velg beløp du ville
+                    vurdert i ekte trading.
                   </p>
                 </div>
 
