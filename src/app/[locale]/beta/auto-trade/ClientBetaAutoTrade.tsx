@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { usePaperTrading } from '@/hooks/usePaperTrading';
 import { RiskLevel } from '@/types/paper-trading';
 
-interface RobotStatus {
+interface _RobotStatus {
     isRunning: boolean;
     lastTrade: {
         symbol: string;
