@@ -24,7 +24,6 @@ import {
   SYSTEM_PROMPTS,
   type AIProvider,
   type AIMessage,
-  KIMI_MODELS,
   NVIDIA_MODELS,
 } from '@/lib/ai/providers';
 

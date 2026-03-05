@@ -31,7 +31,7 @@ const SUPER_ADMIN_EMAIL = "tomarnejensen@gmail.com";
 export default function ClientSuperAdmin() {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeAutoTrading: 0,
@@ -42,7 +42,7 @@ export default function ClientSuperAdmin() {
   const [trades, setTrades] = useState<
     Array<Trade & { user?: { email?: string } }>
   >([]);
-  type TradeWithUser = Trade & { user?: { email?: string } };
+
   const [sessions, setSessions] = useState<
     Array<{
       id: string;
