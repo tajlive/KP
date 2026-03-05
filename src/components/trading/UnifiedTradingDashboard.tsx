@@ -133,6 +133,8 @@ export default function UnifiedTradingDashboard({
   });
 
   const { error: showError } = useI18nToast();
+  const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
+  const { success: showSuccess, error: showToastError } = useI18nToast();
 
   const loadData = useCallback(async () => {
     try {
@@ -178,6 +180,7 @@ export default function UnifiedTradingDashboard({
     loadData();
   }, [loadData]);
 
+  // Fixed: useI18nToast må kalles før useEffect som bruker showSuccess
   useEffect(() => {
     if (!userId) {
       const getUser = async () => {
@@ -195,7 +198,6 @@ export default function UnifiedTradingDashboard({
       return;
     }
 
-    const { t } = useI18nToast();
     const unsubscribe = subscribeToTrades(mode, userId, (newTrade) => {
       setTrades((prev) => [newTrade, ...prev]);
       showSuccess("trading.tradeExecuted", { 
@@ -205,10 +207,7 @@ export default function UnifiedTradingDashboard({
     });
 
     return () => unsubscribe();
-  }, [mode, userId]);
-
-  const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
-  const { success: showSuccess, error: showToastError } = useI18nToast();
+  }, [mode, userId, showSuccess]);
 
   const handleStartStrategy = async (strategyType: StrategyType) => {
     try {
