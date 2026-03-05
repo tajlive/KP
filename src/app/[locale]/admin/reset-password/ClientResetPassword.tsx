@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { Lock, AlertCircle, Loader2, CheckCircle, ArrowLeft } from 'lucide-react
 import { createClient } from '@/lib/utils';
 
 export default function ClientResetPassword() {
-  const router = useRouter();
+
   const locale = useLocale();
   const t = useTranslations('admin');
 
@@ -74,7 +74,7 @@ export default function ClientResetPassword() {
       }
 
       setSuccess(true);
-    } catch (err) {
+    } catch (_err) {
       setError('En feil oppstod. Prøv igjen.');
     } finally {
       setLoading(false);
