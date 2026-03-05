@@ -476,7 +476,7 @@ function calculatePeriodLoss(trades: AutoTradingTrade[]): number {
     (sum, t) => sum + (t.realized_pnl || 0),
     0,
   );
-  const totalInvested = closedTrades.reduce((sum, t) => sum + t.amount, 0);
+  const totalInvested = closedTrades.reduce((sum, t) => sum + t.amount!, 0);
 
   return totalInvested > 0
     ? Math.abs(Math.min(0, totalPnl / totalInvested))
@@ -493,7 +493,7 @@ function calculatePeriodProfit(trades: AutoTradingTrade[]): number {
     (sum, t) => sum + (t.realized_pnl || 0),
     0,
   );
-  const totalInvested = closedTrades.reduce((sum, t) => sum + t.amount, 0);
+  const totalInvested = closedTrades.reduce((sum, t) => sum + t.amount!, 0);
 
   return totalInvested > 0 ? Math.max(0, totalPnl / totalInvested) : 0;
 }
@@ -620,8 +620,8 @@ export function calculateRiskStatus(
 
   // Calculate open risk
   const openRisk = openTrades.reduce((sum, t) => {
-    const stopDistance = Math.abs(t.entry_price - t.stop_loss) / t.entry_price;
-    return sum + t.amount * stopDistance;
+    const stopDistance = Math.abs(t.entry_price - t.stop_loss!) / t.entry_price;
+    return sum + t.amount! * stopDistance;
   }, 0);
 
   // Available risk budget
@@ -639,7 +639,7 @@ export function calculateRiskStatus(
 
   let consecutiveLosses = 0;
   for (const trade of sortedTrades) {
-    if ((trade.realized_pnl || 0) < 0) consecutiveLosses++;
+    if ((trade.realized_pnl! || 0) < 0) consecutiveLosses++;
     else break;
   }
 
@@ -745,8 +745,8 @@ export function calculatePortfolioHeat(
   maxNewPositionSize: number;
 } {
   const totalHeat = openTrades.reduce((sum, t) => {
-    const stopDistance = Math.abs(t.entry_price - t.stop_loss) / t.entry_price;
-    return sum + t.amount * stopDistance;
+    const stopDistance = Math.abs(t.entry_price - t.stop_loss!) / t.entry_price;
+    return sum + t.amount! * stopDistance;
   }, 0);
 
   const heatPercent = portfolioValue > 0 ? totalHeat / portfolioValue : 0;

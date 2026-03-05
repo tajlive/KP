@@ -366,8 +366,8 @@ function TradesTable({ trades }: { trades: Array<Trade & { user?: { email?: stri
                     </Badge>
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <span className={trade.realized_pnl > 0 ? 'text-green-400' : 'text-red-400'}>
-                      {trade.realized_pnl > 0 ? '+' : ''}${trade.realized_pnl?.toFixed(2) || '0.00'}
+                    <span className={trade.realized_pnl! > 0 ? 'text-green-400' : 'text-red-400'}>
+                      {trade.realized_pnl! > 0 ? '+' : ''}${trade.realized_pnl!?.toFixed(2) || '0.00'}
                     </span>
                   </td>
                   <td className="py-3 px-4">

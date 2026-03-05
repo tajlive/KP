@@ -11,7 +11,6 @@ import {
   Menu,
   Settings,
   Shield,
-
   Wallet,
   X,
 } from "lucide-react";
@@ -41,7 +40,9 @@ export function DashboardSidebar() {
             .select("tier")
             .eq("user_id", user.id)
             .maybeSingle();
-          setIsAdmin(profile?.tier === "admin" || profile?.tier === "professor");
+          setIsAdmin(
+            profile?.tier === "admin" || profile?.tier === "professor",
+          );
         }
       } catch {
         // Silently fail - user is not admin
@@ -50,7 +51,7 @@ export function DashboardSidebar() {
     checkAdmin();
   }, []);
 
-  const isActive = (path: string) => pathname.endsWith(path);
+  const isActive = (path: string) => (pathname ?? "/").endsWith(path);
 
   const links = [
     {
@@ -64,7 +65,11 @@ export function DashboardSidebar() {
     { href: "/konto", label: t("binanceApi"), icon: Wallet },
     { href: "/dashboard/activity", label: t("activity"), icon: Activity },
     { href: "/dashboard/tax-report", label: t("taxReport"), icon: FileText },
-    { href: "/dashboard/guide", label: locale === 'no' ? 'Kom i gang' : 'Get started', icon: BookOpen },
+    {
+      href: "/dashboard/guide",
+      label: locale === "no" ? "Kom i gang" : "Get started",
+      icon: BookOpen,
+    },
     { href: "/dashboard/settings", label: t("settings"), icon: Settings },
     ...(isAdmin
       ? [
@@ -121,7 +126,7 @@ export function DashboardSidebar() {
           {/* Nav */}
           <nav className="flex-1 p-6 space-y-1 overflow-y-auto">
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 px-4">
-              {locale === 'no' ? 'Hovedmeny' : 'Main menu'}
+              {locale === "no" ? "Hovedmeny" : "Main menu"}
             </div>
             {links.map((link) => {
               const fullPath =
@@ -132,7 +137,7 @@ export function DashboardSidebar() {
               // Check exact match for dashboard, prefix match for others
               const active = link.exact
                 ? pathname === fullPath
-                : pathname.startsWith(fullPath);
+                : (pathname ?? "/").startsWith(fullPath);
 
               return (
                 <Link
@@ -165,7 +170,7 @@ export function DashboardSidebar() {
               className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl w-full transition-colors font-medium border border-transparent hover:border-red-100"
             >
               <LogOut className="w-5 h-5" />
-              <span>{locale === 'no' ? 'Logg ut' : 'Log out'}</span>
+              <span>{locale === "no" ? "Logg ut" : "Log out"}</span>
             </button>
           </div>
         </div>

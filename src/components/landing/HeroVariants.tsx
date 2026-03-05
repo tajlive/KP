@@ -10,7 +10,7 @@ export default function HeroSection() {
   const t = useTranslations("landing.hero");
   const params = useParams();
   const router = useRouter();
-  const locale = params.locale as string;
+  const locale = params?.locale as string;
 
   // A/B test: hero_copy_2026
   const variant = useABTest("hero_copy_2026");

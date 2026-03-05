@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/utils";
+import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bitcoin,
@@ -14,9 +15,8 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 import { useLocale } from "next-intl";
-import ReactConfetti from "react-confetti";
+import { useCallback, useEffect, useState } from "react";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types & Data
@@ -200,6 +200,7 @@ export default function SpeedOnboarding({
 
     setStep(3);
     setShowConfetti(true);
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
     setTimeout(() => {
       setShowConfetti(false);
       onComplete?.();
@@ -209,8 +210,6 @@ export default function SpeedOnboarding({
 
   return (
     <div className="max-w-lg mx-auto">
-      {showConfetti && <ReactConfetti recycle={false} numberOfPieces={200} />}
-
       {/* Timer Bar */}
       {step < 3 && (
         <div className="flex items-center justify-center gap-2 mb-6">
@@ -467,7 +466,9 @@ export default function SpeedOnboarding({
               </Button>
               <Button
                 variant="ghost"
-                onClick={() => (window.location.href = `/${locale}/beta/auto-trade`)}
+                onClick={() =>
+                  (window.location.href = `/${locale}/beta/auto-trade`)
+                }
                 className="text-slate-500 text-sm"
               >
                 Se trading-aktivitet

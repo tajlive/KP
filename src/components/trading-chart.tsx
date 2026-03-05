@@ -218,7 +218,7 @@ export function TradingChart({ symbol }: { symbol: string }) {
         callbacks: {
           label: (ctx: TooltipItem<'line'>): string | undefined => {
             if (ctx.dataset.label?.includes('Pris')) {
-              return `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('nb-NO')} kr`
+              return `${ctx.dataset.label}: ${ctx.parsed.y!.toLocaleString('nb-NO')} kr`
             }
             return undefined
           },

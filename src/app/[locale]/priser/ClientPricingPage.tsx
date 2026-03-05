@@ -45,7 +45,7 @@ const DEFAULT_PRICES: Record<string, number> = {
 export function ClientPricingPage() {
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = params?.locale as string;
   const t = useTranslations("studieprogram");
   const tPricing = useTranslations("pricing");
   const [loadingTier, setLoadingTier] = useState<string | null>(null);

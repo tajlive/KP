@@ -21,8 +21,8 @@ function CheckoutContent() {
   const [course, setCourse] = useState<{ id: string; title: string; description: string; price_nok: number; is_free: boolean } | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const courseId = searchParams.get('course');
-  const sessionId = searchParams.get('session_id');
+  const courseId = searchParams?.get('course');
+  const sessionId = searchParams?.get('session_id');
 
   useEffect(() => {
     // If returning from Stripe with session_id, show success
@@ -167,7 +167,7 @@ function CheckoutContent() {
           {/* Course Summary */}
           <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 mb-8">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              {course.title}
+              {course!.title}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {course.description}
@@ -177,7 +177,7 @@ function CheckoutContent() {
                 {t('total')}
               </span>
               <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                {course.price_nok} kr
+                {course!.price_nok} kr
               </span>
             </div>
           </div>

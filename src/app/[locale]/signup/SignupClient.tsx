@@ -45,8 +45,8 @@ function SignupContent() {
   const [mounted, setMounted] = useState(false);
 
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo");
-  const plan = searchParams.get("plan");
+  const redirectTo = searchParams?.get("redirectTo");
+  const plan = searchParams?.get("plan");
   const locale = useLocale();
   const t = useTranslations("auth");
 

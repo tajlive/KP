@@ -164,8 +164,8 @@ export function createTradeExecutedAlert(
 }
 
 export function createTradeClosedAlert(trade: AutoTradingTrade): TradingAlert {
-  const pnl = trade.realized_pnl || 0
-  const pnlPercent = (pnl / trade.amount) * 100
+  const pnl = trade.realized_pnl! || 0
+  const pnlPercent = (pnl / trade.amount!) * 100
   const isWin = pnl > 0
   
   const priority: AlertPriority = isWin 
@@ -238,7 +238,7 @@ export function createStopLossWarningAlert(
     title: `Stop-Loss Nærmer Seg: ${trade.symbol}`,
     message: `${trade.symbol} handler nå på $${currentPrice.toFixed(2)}, bare ${percentToStop.toFixed(1)}% fra stop-loss.`,
     explanation: {
-      what: `Prisen nærmer seg din stop-loss på $${trade.stop_loss.toFixed(2)}.`,
+      what: `Prisen nærmer seg din stop-loss på $${trade.stop_loss!.toFixed(2)}.`,
       why: 'Markedet beveger seg mot din forhåndsdefinerte exit.',
       impact: percentToStop < 1
         ? 'Stop-loss vil sannsynligvis trigges snart. Forbered deg på det planlagte tapet.'
@@ -248,7 +248,7 @@ export function createStopLossWarningAlert(
       symbol: trade.symbol,
       currentPrice,
       entryPrice: trade.entry_price,
-      stopLoss: trade.stop_loss
+      stopLoss: trade.stop_loss!
     },
     actions: [
       {

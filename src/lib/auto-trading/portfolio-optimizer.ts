@@ -442,7 +442,7 @@ function generateRebalancingTrades(
 function calculateTotalValue(trades: AutoTradingTrade[], cash: number): number {
   const positionsValue = trades.reduce((sum, t) => {
     if (t.status === 'OPEN') {
-      return sum + t.amount + (t.unrealized_pnl || 0)
+      return sum + t.amount! + (t.unrealized_pnl || 0)
     }
     return sum
   }, 0)
@@ -458,7 +458,7 @@ function calculateCurrentWeights(
   for (const trade of trades) {
     if (trade.status !== 'OPEN') continue
     
-    const value = trade.amount + (trade.unrealized_pnl || 0)
+    const value = trade.amount! + (trade.unrealized_pnl || 0)
     const current = weights.get(trade.symbol) || 0
     weights.set(trade.symbol, current + value / totalValue)
   }

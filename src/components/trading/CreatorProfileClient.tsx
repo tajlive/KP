@@ -271,10 +271,10 @@ export default function CreatorProfileClient({
                         ROI
                       </div>
                       <div className="text-2xl font-black text-green-400">
-                        {s.initial_capital > 0 ? (
+                        {s.initial_capital! > 0 ? (
                           <>
                             +
-                            {((s.total_pnl / s.initial_capital) * 100).toFixed(
+                            {((s.total_pnl! / s.initial_capital!) * 100).toFixed(
                               1,
                             )}
                             %
