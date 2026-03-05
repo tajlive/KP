@@ -27,7 +27,7 @@ const colors = {
 export default function ClientSimulator() {
   const locale = useLocale();
   const t = useTranslations('simulator');
-  const tg = useTranslations('gamification');
+  const _tg = useTranslations('gamification');
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [showExplanation, setShowExplanation] = useState(true);
 
