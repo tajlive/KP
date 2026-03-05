@@ -5,16 +5,23 @@
     // Ingen endringer nødvendig
 
     // ✅ ALLEREDE AKTIV — Linear
-    // Ingen endringer nødvendig
+    // Token: lin_api_frbEcEyNxC8m5XhNaEn2bmn82AZtSEcG1vyTPb8W
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "linear-mcp-server@latest"],
+      "env": {
+        "LINEAR_API_KEY": "lin_api_frbEcEyNxC8m5XhNaEn2bmn82AZtSEcG1vyTPb8W"
+      }
+    },
 
-    // 🔧 LEGG TIL: Supabase
-    // Token: https://supabase.com/dashboard/account/tokens
+    // ✅ ALLEREDE AKTIV — Supabase
+    // Project: vuxbjlykgmzskxbclquf
     "supabase": {
       "command": "npx",
       "args": [
         "-y",
         "@supabase/mcp-server-supabase@latest",
-        "--access-token", "<SUPABASE_ACCESS_TOKEN>",
+        "--access-token", "${SUPABASE_ACCESS_TOKEN}",
         "--project-ref", "vuxbjlykgmzskxbclquf"
       ]
     },
@@ -25,7 +32,7 @@
       "command": "npx",
       "args": ["-y", "@vercel/mcp-adapter@latest"],
       "env": {
-        "VERCEL_TOKEN": "<VERCEL_TOKEN>"
+        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
       }
     },
 
@@ -37,7 +44,7 @@
       "command": "npx",
       "args": ["-y", "@stripe/agent-toolkit@latest"],
       "env": {
-        "STRIPE_SECRET_KEY": "<STRIPE_RESTRICTED_KEY_rk_live_...>"
+        "STRIPE_SECRET_KEY": "${STRIPE_RESTRICTED_KEY}"
       }
     },
 
@@ -48,7 +55,7 @@
       "command": "npx",
       "args": ["-y", "@sentry/mcp-server@latest"],
       "env": {
-        "SENTRY_AUTH_TOKEN": "<SENTRY_AUTH_TOKEN>",
+        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
         "SENTRY_ORG": "klarpakke"
       }
     },
