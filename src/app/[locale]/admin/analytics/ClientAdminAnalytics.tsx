@@ -7,7 +7,6 @@ import {
   Users,
   Eye,
   Clock,
-  TrendingUp,
   TrendingDown,
   Globe,
   MousePointer,

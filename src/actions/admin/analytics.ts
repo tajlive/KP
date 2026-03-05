@@ -17,7 +17,7 @@ export interface DashboardMetrics {
  * Replaces MCP `getDashboardMetrics`
  */
 export async function getDashboardMetrics(
-  timeRange: string = "7d",
+  _timeRange: string = "7d",
 ): Promise<{ success: boolean; data?: DashboardMetrics; error?: string }> {
   try {
     const supabase = await createClient();

@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
       }
 
       setSubmitted(true)
-    } catch (err) {
+    } catch (_err) {
       setError('En feil oppstod. Prøv igjen.')
     } finally {
       setLoading(false)

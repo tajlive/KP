@@ -46,7 +46,7 @@ export default function ClientCampaign() {
           .single();
 
         setIsAdmin(profile?.role === 'admin');
-      } catch (e) {
+      } catch (_e) {
         setIsAdmin(false);
       }
       setChecking(false);
@@ -63,7 +63,7 @@ export default function ClientCampaign() {
         const data = await res.json();
         setStats(data);
       }
-    } catch (e) {
+    } catch (_e) {
       console.error("Stats error:", e);
     }
     setLoading(false);
