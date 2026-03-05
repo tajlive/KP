@@ -64,7 +64,7 @@ export default function ClientCampaign() {
         setStats(data);
       }
     } catch (_e) {
-      console.error("Stats error:", e);
+      console.error("Stats error:", _e);
     }
     setLoading(false);
   };
