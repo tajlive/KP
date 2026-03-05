@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/utils';
+
 import { Trophy, Users, TrendingUp, Calendar, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+
 import { useTranslations, useLocale } from 'next-intl';
 
 interface League {

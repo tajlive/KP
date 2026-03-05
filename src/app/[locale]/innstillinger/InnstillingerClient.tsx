@@ -7,7 +7,6 @@ import {
   Loader2,
   Lock,
   Mail,
-  ShieldCheck,
   Trophy,
   Zap,
 } from "lucide-react";
