@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import BinanceAPISettings from '@/components/dashboard/BinanceAPISettings';
 import { createClient } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 interface UserData {
   id: string;
@@ -13,7 +13,7 @@ interface UserData {
 }
 
 export default function ClientDashboardSettings() {
-  const router = useRouter();
+
   const params = useParams();
   const locale = params?.locale as string;
   const supabase = createClient();

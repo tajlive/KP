@@ -13,13 +13,9 @@ import {
   Lock,
   CheckCircle,
   XCircle,
-  RefreshCw,
   Settings,
-  ChevronRight,
   DollarSign,
   Activity,
-  Zap,
-  BarChart3,
   ArrowRight
 } from 'lucide-react';
 import { createClient } from '@/lib/utils';
@@ -28,10 +24,10 @@ import { useSubscription } from '@/lib/hooks/useSubscription';
 import { TIERS } from '@/lib/pricing/tiers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -100,10 +96,10 @@ const STRATEGY_TYPES = [
 const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT', 'ADAUSDT'];
 
 export default function ClientAutoTradeDashboard() {
-  const t = useTranslations('autoTrade');
+  const _t = useTranslations('autoTrade');
   const locale = useLocale();
   const router = useRouter();
-  const { subscription, loading: subLoading, currentTier } = useSubscription();
+  const { subscription: _subscription, loading: subLoading, currentTier } = useSubscription();
   
   const [trialStatus, setTrialStatus] = useState<TrialStatus | null>(null);
   const [strategies, setStrategies] = useState<Strategy[]>([]);
