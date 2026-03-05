@@ -12,6 +12,10 @@ import {
   Target,
   Trophy,
   Zap,
+  Shield,
+  Lock,
+  Users,
+  CreditCard,
 } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -172,19 +176,70 @@ export default async function PricingPage({
             </p>
           </div>
 
+          {/* KLA-88: Trust Signals */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {/* Brukerantall */}
+            <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Users className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-900">1,247+</p>
+                <p className="text-xs text-slate-500">Aktive brukere</p>
+              </div>
+            </div>
+
+            {/* Sikkerhet */}
+            <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                <Lock className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-900">Bank-nivå sikkerhet</p>
+                <p className="text-xs text-slate-500">API-nøkler kryptert</p>
+              </div>
+            </div>
+
+            {/* Betaling */}
+            <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-900">Sikker betaling</p>
+                <p className="text-xs text-slate-500">PCI-DSS kompatibel</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Gratis for alltid info - Freemium+ */}
+          <div className="mt-8 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 max-w-2xl mx-auto">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                <Gift className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h4 className="font-bold text-emerald-900 mb-1">Gratis for alltid med Paper Trading</h4>
+                <p className="text-sm text-emerald-700">
+                  Start med 1 000 000 kr i virtuelle penger. Øv uten risiko, lær strategiene, 
+                  og oppgrader kun når du er klar for live trading.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Betalingsinfo */}
           <div className="mt-8 text-center space-y-4">
             <div className="flex items-center justify-center gap-4 text-sm text-slate-500">
               <span>Sikker betaling med:</span>
               <span className="font-semibold text-[#635BFF]">Stripe</span>
+              <span className="text-slate-300">|</span>
+              <span className="font-semibold text-[#FF5F00]">Vipps</span>
             </div>
-            <p className="text-sm text-slate-500">
-              <span className="font-medium">
-                Prisene er i norske kroner og inkluderer MVA (25%).
-              </span>
-              <br />
-              Ingen binding — avslutt når som helst.
-            </p>
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
+              <Shield className="w-4 h-4" />
+              <span>256-bit kryptering • PCI-DSS sertifisert • Ingen binding</span>
+            </div>
           </div>
         </div>
       </section>

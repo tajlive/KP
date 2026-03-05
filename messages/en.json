@@ -1685,6 +1685,80 @@
     "pdfHelpText": "PDF opens in new window. Use Ctrl+P (or Cmd+P on Mac) to save as PDF.",
     "pdfOpenInNewWindow": "PDF opened in new window. Use print function to save."
   },
+  "toasts": {
+    "auth": {
+      "loginSuccess": "Welcome back! 👋",
+      "loginFailed": "Login failed. Check email and password.",
+      "logoutSuccess": "You are now logged out",
+      "signupSuccess": "Welcome! Your account has been created 🎉",
+      "signupFailed": "Could not create account. Please try again.",
+      "passwordResetSent": "Reset email sent 📧",
+      "passwordResetFailed": "Could not send reset email",
+      "sessionExpired": "Your session has expired. Please log in again."
+    },
+    "strategy": {
+      "saved": "Strategy saved! 💾",
+      "saveFailed": "Could not save strategy",
+      "started": "Strategy started! 🚀",
+      "startFailed": "Could not start strategy",
+      "stopped": "Strategy stopped",
+      "stopFailed": "Could not stop strategy",
+      "deleted": "Strategy deleted",
+      "deleteFailed": "Could not delete strategy"
+    },
+    "api": {
+      "keysSaved": "API keys saved! 🔑",
+      "keysSaveFailed": "Could not save API keys",
+      "keysInvalid": "Invalid API keys",
+      "connectionSuccess": "Connection successful! ✅",
+      "connectionFailed": "Connection failed"
+    },
+    "trading": {
+      "tradeExecuted": "Trade executed! 💰",
+      "tradeFailed": "Trade failed",
+      "modeSwitched": "Trading mode switched",
+      "modeSwitchFailed": "Could not switch mode",
+      "insufficientFunds": "Insufficient funds",
+      "positionOpened": "Position opened",
+      "positionClosed": "Position closed"
+    },
+    "copyTrading": {
+      "traderFollowed": "You are now following {name}! 📈",
+      "traderUnfollowed": "You no longer follow {name}",
+      "followFailed": "Could not follow trader",
+      "allocationUpdated": "Allocation updated",
+      "maxTradersReached": "Maximum number of traders reached"
+    },
+    "billing": {
+      "paymentSuccess": "Payment successful! 🎉",
+      "paymentFailed": "Payment failed. Please try again.",
+      "subscriptionUpdated": "Subscription updated",
+      "subscriptionCancelled": "Subscription cancelled",
+      "invoiceGenerated": "Invoice generated",
+      "cardAdded": "Card added 💳",
+      "cardRemoved": "Card removed"
+    },
+    "courses": {
+      "lessonCompleted": "Lesson completed! 🎓",
+      "quizPassed": "Quiz passed! 🌟",
+      "quizFailed": "Quiz not passed. Try again!",
+      "badgeEarned": "Badge earned! 🏆",
+      "trackCompleted": "Course completed! 🎉"
+    },
+    "general": {
+      "copied": "Copied to clipboard! 📋",
+      "saved": "Saved! ✓",
+      "saveFailed": "Could not save",
+      "deleted": "Deleted! 🗑️",
+      "deleteFailed": "Could not delete",
+      "updated": "Updated! ✓",
+      "updateFailed": "Could not update",
+      "error": "Something went wrong. Please try again.",
+      "comingSoon": "Coming soon! 🚀",
+      "featureDisabled": "This feature is disabled",
+      "networkError": "Network error. Check your internet connection."
+    }
+  },
   "aboutUs": {
     "quote": {
       "title": "From \"Hope\" to \"Structure\"",

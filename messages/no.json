@@ -2001,6 +2001,80 @@
       "placeholder": "Søk brukere..."
     }
   },
+  "toasts": {
+    "auth": {
+      "loginSuccess": "Velkommen tilbake! 👋",
+      "loginFailed": "Innlogging mislyktes. Sjekk e-post og passord.",
+      "logoutSuccess": "Du er nå logget ut",
+      "signupSuccess": "Velkommen! Din konto er opprettet 🎉",
+      "signupFailed": "Kunne ikke opprette konto. Prøv igjen.",
+      "passwordResetSent": "E-post for tilbakestilling sendt 📧",
+      "passwordResetFailed": "Kunne ikke sende tilbakestilling",
+      "sessionExpired": "Økten din har utløpt. Vennligst logg inn igjen."
+    },
+    "strategy": {
+      "saved": "Strategi lagret! 💾",
+      "saveFailed": "Kunne ikke lagre strategi",
+      "started": "Strategi startet! 🚀",
+      "startFailed": "Kunne ikke starte strategi",
+      "stopped": "Strategi stoppet",
+      "stopFailed": "Kunne ikke stoppe strategi",
+      "deleted": "Strategi slettet",
+      "deleteFailed": "Kunne ikke slette strategi"
+    },
+    "api": {
+      "keysSaved": "API-nøkler lagret! 🔑",
+      "keysSaveFailed": "Kunne ikke lagre API-nøkler",
+      "keysInvalid": "Ugyldige API-nøkler",
+      "connectionSuccess": "Tilkobling vellykket! ✅",
+      "connectionFailed": "Tilkobling mislyktes"
+    },
+    "trading": {
+      "tradeExecuted": "Handel utført! 💰",
+      "tradeFailed": "Handel mislyktes",
+      "modeSwitched": "Trading-modus byttet",
+      "modeSwitchFailed": "Kunne ikke bytte modus",
+      "insufficientFunds": "Ikke nok midler",
+      "positionOpened": "Posisjon åpnet",
+      "positionClosed": "Posisjon lukket"
+    },
+    "copyTrading": {
+      "traderFollowed": "Du følger nå {name}! 📈",
+      "traderUnfollowed": "Du følger ikke lenger {name}",
+      "followFailed": "Kunne ikke følge trader",
+      "allocationUpdated": "Allokering oppdatert",
+      "maxTradersReached": "Maks antall tradere nådd"
+    },
+    "billing": {
+      "paymentSuccess": "Betaling vellykket! 🎉",
+      "paymentFailed": "Betaling mislyktes. Prøv igjen.",
+      "subscriptionUpdated": "Abonnement oppdatert",
+      "subscriptionCancelled": "Abonnement kansellert",
+      "invoiceGenerated": "Faktura generert",
+      "cardAdded": "Kort lagt til 💳",
+      "cardRemoved": "Kort fjernet"
+    },
+    "courses": {
+      "lessonCompleted": "Leksjon fullført! 🎓",
+      "quizPassed": "Quiz bestått! 🌟",
+      "quizFailed": "Quiz ikke bestått. Prøv igjen!",
+      "badgeEarned": "Badge oppnådd! 🏆",
+      "trackCompleted": "Kurs fullført! 🎉"
+    },
+    "general": {
+      "copied": "Kopiert til utklippstavle! 📋",
+      "saved": "Lagret! ✓",
+      "saveFailed": "Kunne ikke lagre",
+      "deleted": "Slettet! 🗑️",
+      "deleteFailed": "Kunne ikke slette",
+      "updated": "Oppdatert! ✓",
+      "updateFailed": "Kunne ikke oppdatere",
+      "error": "Noe gikk galt. Prøv igjen.",
+      "comingSoon": "Kommer snart! 🚀",
+      "featureDisabled": "Denne funksjonen er deaktivert",
+      "networkError": "Nettverksfeil. Sjekk internettforbindelsen."
+    }
+  },
   "aboutUs": {
     "quote": {
       "title": "Fra \"Håp\" til \"Struktur\"",
