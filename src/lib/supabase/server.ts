@@ -3,6 +3,9 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Database = any;
+
 /**
  * Creates a Supabase service-role client (elevated privileges, bypasses RLS).
  * Use in API routes and Server Actions that need full DB access.
@@ -15,7 +18,7 @@ export function createClient() {
     throw new Error("Missing Supabase environment variables");
   }
 
-  return createSupabaseClient(url, key, {
+  return createSupabaseClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
@@ -30,13 +33,13 @@ export function createClient() {
 export function createServerClient(
   request?: NextRequest,
   response?: NextResponse,
-): unknown {
+) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {
-    return createSSRServerClient(url, key, {
+    return createSSRServerClient<Database>(url, key, {
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookiesToSet) => {
@@ -52,7 +55,7 @@ export function createServerClient(
   // Server Component / Server Action path — async, reads from next/headers
   return (async () => {
     const cookieStore = await cookies();
-    return createSSRServerClient(url, key, {
+    return createSSRServerClient<Database>(url, key, {
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll: (cookiesToSet) => {
