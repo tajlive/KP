@@ -102,9 +102,15 @@ export default function UnifiedTradingDashboard({
   userId: initialUserId,
 }: DashboardProps = {}) {
   const [mode, setMode] = useState<TradingMode>("paper");
-  const [portfolio, setPortfolio] = useState<Portfolio | null>(initialPortfolio ?? null);
-  const [trades, setTrades] = useState<Trade[]>((initialTrades as Trade[]) ?? []);
-  const [activeStrategies, setActiveStrategies] = useState<UserStrategy[]>((initialStrategies as UserStrategy[]) ?? []);
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(
+    initialPortfolio ?? null,
+  );
+  const [trades, setTrades] = useState<Trade[]>(
+    (initialTrades as Trade[]) ?? [],
+  );
+  const [activeStrategies, setActiveStrategies] = useState<UserStrategy[]>(
+    (initialStrategies as UserStrategy[]) ?? [],
+  );
   const [loading, setLoading] = useState(!initialPortfolio);
   const [userId, setUserId] = useState<string | null>(initialUserId ?? null);
   const [showWizard, setShowWizard] = useState(false);
@@ -140,18 +146,18 @@ export default function UnifiedTradingDashboard({
 
       // KLA-55 + KLA-70: Show wizard if no active strategies and user hasn't completed setup
       if (userId && active.length === 0 && !hasLocalSetup(userId)) {
-        // Also check Supabase for server-side persistence
+        // Check onboarding_progress for server-side persistence
         const { createBrowserClient } = await import("@supabase/ssr");
         const sb = createBrowserClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         );
-        const { data: profile } = await sb
-          .from("user_profiles")
-          .select("setup_completed_at")
-          .eq("id", userId)
-          .single();
-        if (!profile?.setup_completed_at) {
+        const { data: progress } = await sb
+          .from("onboarding_progress")
+          .select("is_completed")
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (!progress?.is_completed) {
           setShowWizard(true);
         } else {
           // Sync localStorage from Supabase
