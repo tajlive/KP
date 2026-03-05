@@ -99,7 +99,7 @@ export function PerformanceChart({
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full min-h-[300px]">
-          <ResponsiveContainer width="99%" height={300}>
+          <ResponsiveContainer width="99%" height={300} minHeight={300}>
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">

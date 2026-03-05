@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { BarChart3, Play, ShieldCheck, TrendingUp, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
 import {
   Line,
   LineChart,
@@ -172,6 +172,8 @@ export default function BacktestDemoWidget() {
               </div>
               <input
                 type="range"
+                aria-label="Investeringsbeløp i NOK"
+                title="Investeringsbeløp i NOK"
                 min="10000"
                 max="500000"
                 step="10000"
@@ -259,8 +261,8 @@ export default function BacktestDemoWidget() {
                 </div>
               </div>
 
-              <div className="w-full h-full pt-16" style={{ minHeight: 280 }}>
-                <ResponsiveContainer width="100%" height="100%">
+              <div className="w-full h-full pt-16 min-h-[280px]">
+                <ResponsiveContainer width="100%" height="100%" minHeight={280}>
                   <LineChart data={currentData}>
                     <XAxis dataKey="date" hide />
                     <YAxis domain={["dataMin - 1000", "dataMax + 1000"]} hide />
@@ -287,7 +289,11 @@ export default function BacktestDemoWidget() {
               <div className="absolute bottom-6 left-6 right-6 h-1 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-slate-300 transition-all duration-75"
-                  style={{ width: `${(progress / (days - 1)) * 100}%` }}
+                  style={
+                    {
+                      width: `${(progress / (days - 1)) * 100}%`,
+                    } as React.CSSProperties
+                  }
                 />
               </div>
             </div>
@@ -308,7 +314,9 @@ export default function BacktestDemoWidget() {
               <div className="flex items-center justify-center p-4">
                 <Button
                   className="w-full h-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-600/20"
-                  onClick={() => (window.location.href = `/${locale}/onboarding`)}
+                  onClick={() =>
+                    (window.location.href = `/${locale}/onboarding`)
+                  }
                 >
                   Start din bot →
                 </Button>
