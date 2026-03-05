@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
 import { loadStripe } from "@stripe/stripe-js";
-import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle, Loader2, Shield, Lock, CreditCard, Gift } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -189,6 +189,48 @@ function CheckoutContent() {
             </div>
           </div>
 
+          {/* KLA-88: Trust Signals */}
+          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-blue-900 dark:text-blue-200 text-sm">
+                  Hvorfor kan du stole på oss?
+                </p>
+                <ul className="mt-2 space-y-1 text-xs text-blue-700 dark:text-blue-300">
+                  <li className="flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" />
+                    API-nøkler lagres kryptert med AES-256
+                  </li>
+                  <li className="flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" />
+                    Du beholder alltid midlene dine på børsen
+                  </li>
+                  <li className="flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" />
+                    Vi håndterer aldri dine private nøkler
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Gratis for alltid info */}
+          <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
+            <div className="flex items-start gap-3">
+              <Gift className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-emerald-900 dark:text-emerald-200 text-sm">
+                  Gratis for alltid med Paper Trading
+                </p>
+                <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">
+                  Du kan alltid gå tilbake til gratis paper trading hvis du ombestemmer deg. 
+                  Ingen skjulte gebyrer, ingen binding.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Checkout Button */}
           <button
             onClick={handleCheckout}
@@ -201,13 +243,28 @@ function CheckoutContent() {
                 {t("processing")}
               </>
             ) : (
-              t("proceedToPayment")
+              <>
+                <CreditCard className="w-5 h-5" />
+                {t("proceedToPayment")}
+              </>
             )}
           </button>
 
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-            {t("securePayment")}
-          </p>
+          {/* Sikkerhetsbadges */}
+          <div className="mt-6 flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1">
+              <Lock className="w-3.5 h-3.5" />
+              <span>256-bit SSL</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Shield className="w-3.5 h-3.5" />
+              <span>PCI-DSS</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Stripe</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

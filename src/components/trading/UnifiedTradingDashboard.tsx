@@ -26,7 +26,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useI18nToast } from "@/hooks/useI18nToast";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
 
@@ -132,6 +132,8 @@ export default function UnifiedTradingDashboard({
     ai_copy: { maxPerTrade: 1000, maxLoss: 500 },
   });
 
+  const { error: showError } = useI18nToast();
+
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
@@ -166,11 +168,11 @@ export default function UnifiedTradingDashboard({
       }
     } catch (err) {
       console.error("Failed to load trading data:", err);
-      toast.error("Kunne ikke laste trading-data");
+      showError("general.error");
     } finally {
       setLoading(false);
     }
-  }, [mode, userId]);
+  }, [mode, userId, showError]);
 
   useEffect(() => {
     loadData();
@@ -193,17 +195,20 @@ export default function UnifiedTradingDashboard({
       return;
     }
 
+    const { t } = useI18nToast();
     const unsubscribe = subscribeToTrades(mode, userId, (newTrade) => {
       setTrades((prev) => [newTrade, ...prev]);
-      toast.success(
-        `Ny handel: ${newTrade.symbol} ${newTrade.side.toUpperCase()}`,
-      );
+      showSuccess("trading.tradeExecuted", { 
+        symbol: newTrade.symbol, 
+        side: newTrade.side.toUpperCase() 
+      });
     });
 
     return () => unsubscribe();
   }, [mode, userId]);
 
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
+  const { success: showSuccess, error: showToastError } = useI18nToast();
 
   const handleStartStrategy = async (strategyType: StrategyType) => {
     try {
@@ -217,12 +222,10 @@ export default function UnifiedTradingDashboard({
         console.warn("Manual trigger failed:", await response.text());
       }
 
-      toast.success(
-        `${STRATEGIES.find((s) => s.type === strategyType)?.name} er startet! 🚀`,
-      );
+      showSuccess("strategy.started");
       loadData();
     } catch (_) {
-      toast.error("Kunne ikke starte strategi");
+      showToastError("strategy.startFailed");
     } finally {
       setIsStarting(null);
     }
@@ -231,10 +234,10 @@ export default function UnifiedTradingDashboard({
   const handleStopStrategy = async (strategyType: StrategyType) => {
     try {
       await stopStrategy(strategyType, mode);
-      toast.success("Strategi stoppet");
+      showSuccess("strategy.stopped");
       loadData();
     } catch (_) {
-      toast.error("Kunne ikke stoppe strategi");
+      showToastError("strategy.stopFailed");
     }
   };
 
