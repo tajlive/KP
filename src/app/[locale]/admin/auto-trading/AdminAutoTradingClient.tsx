@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   ArrowRight,
   Loader2,
-  Play,
   RefreshCw,
   TrendingUp,
   Users,
