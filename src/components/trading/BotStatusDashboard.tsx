@@ -708,11 +708,11 @@ function NarrativeView({
               <p className="text-white font-medium text-lg">
                 {botStatus?.lastActionText || (lang === "en" ? "No trades yet" : "Ingen handler ennå")}
               </p>
-              {botStatus?.explanation && (
+              {botStatus?.statusExplanation && (
                 <p className="text-sm text-slate-400">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-700/50 rounded text-xs">
                     <Brain className="w-3 h-3" />
-                    {botStatus.explanation}
+                    {botStatus.statusExplanation}
                   </span>
                 </p>
               )}

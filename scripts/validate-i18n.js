@@ -12,7 +12,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const MESSAGES_DIR = path.join(__dirname, '../messages');
-const LANGUAGES = ['no', 'en', 'th']; // Kinesisk (zh) er på vent
+const LANGUAGES = ['no', 'en', 'th']; 
+// NOTE: Thai (th) og Kinesisk (zh) er deaktivert per produktkrav
+// De skal ikke feile bygget - bare advare
 
 function loadJSON(filename) {
   const filepath = path.join(MESSAGES_DIR, filename);
@@ -150,10 +152,31 @@ function main() {
   // Summary
   console.log('═══════════════════════════════════════════════════════════════');
   
+  // Per produktkrav: TH er deaktivert - ikke feil på manglende TH-oversettelser
+  const thOnlyMissing = totalMissing > 0 && 
+    Object.keys(translations).every(lang => 
+      lang === 'th' || lang === 'no' || translations[lang].keys.size === reference.keys.size
+    );
+  
+  // EN må være komplett (kritisk språk)
+  const enComplete = translations['en'] && 
+    translations['en'].keys.size === reference.keys.size;
+  
+  if (!enComplete) {
+    console.log('❌  EN translation is incomplete - this is required');
+    console.log('═══════════════════════════════════════════════════════════════');
+    process.exit(1);
+  }
+  
   if (totalMissing === 0 && totalExtra === 0) {
-    console.log('✅  All languages are synchronized!');
+    console.log('✅  All active languages (NO, EN) are synchronized!');
     console.log('═══════════════════════════════════════════════════════════════');
     process.exit(0);
+  } else if (thOnlyMissing) {
+    console.log(`⚠️   TH has ${totalMissing} missing keys (OK - Thai er deaktivert)`);
+    console.log('✅  Active languages (NO, EN) are synchronized!');
+    console.log('═══════════════════════════════════════════════════════════════');
+    process.exit(0); // Ikke feil på TH
   } else {
     console.log(`❌  Found ${totalMissing} missing and ${totalExtra} extra keys`);
     console.log('═══════════════════════════════════════════════════════════════');

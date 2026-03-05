@@ -195,7 +195,7 @@ const sentryWebpackPluginOptions = {
   telemetry: false,
 
   // Route browser requests to Sentry through a Next.js rewrite
-  tunnelRoute: "/monitoring",
+  tunnelRoute: "/api/sentry",
   hideSourceMaps: true,
   widenClientFileUpload: true,
 };
