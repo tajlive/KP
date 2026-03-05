@@ -512,7 +512,7 @@ export async function sendTemplatedEmail(options: SendEmailOptions): Promise<{ s
     if (!skipPreferences) {
       const shouldSend = await shouldSendEmail(userId, type);
       if (!shouldSend) {
-        console.log(`[Email] Skipped ${type} for user ${userId} (preferences)`);
+        console.info(`[Email] Skipped ${type} for user ${userId} (preferences)`);
         return { success: true };
       }
     }
@@ -603,7 +603,7 @@ export async function sendTemplatedEmail(options: SendEmailOptions): Promise<{ s
       return { success: false, error: error.message };
     }
     
-    console.log(`[Email] Sent ${type} to ${user.email} (${result?.id})`);
+    console.info(`[Email] Sent ${type} to ${user.email} (${result?.id})`);
     return { success: true };
     
   } catch (error) {
@@ -633,7 +633,7 @@ export async function queueEmail(options: SendEmailOptions): Promise<{ success: 
       return { success: false, error: error.message };
     }
     
-    console.log(`[Email] Queued ${options.type} for user ${options.userId}`);
+    console.info(`[Email] Queued ${options.type} for user ${options.userId}`);
     return { success: true };
     
   } catch (error) {

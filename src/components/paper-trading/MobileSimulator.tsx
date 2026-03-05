@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 // Simple toast function
 const toast = ({ title, description, variant }: { title: string; description?: string; variant?: string }) => {
-  console.log(`[${variant || 'info'}] ${title}: ${description}`);
+  console.info(`[${variant || 'info'}] ${title}: ${description}`);
 };
 
 const INITIAL_BALANCE = 1_000_000;

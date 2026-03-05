@@ -541,7 +541,7 @@ async function processSession(
   }
 
   // Log successful trade
-  console.log("Trade executed:", {
+  console.info("Trade executed:", {
     session_id: session.id,
     trade_id: trade?.id,
     side: signal.action,
@@ -720,7 +720,7 @@ export async function GET(req: NextRequest) {
 
     // Log summary to Sentry if there are issues
     if (summary.errors > 0 || summary.risk_blocked > 0) {
-      console.log("Cron tick summary:", summary);
+      console.info("Cron tick summary:", summary);
     }
 
     return NextResponse.json(summary);

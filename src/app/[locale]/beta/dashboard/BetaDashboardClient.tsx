@@ -55,7 +55,7 @@ export default function BetaDashboardClient({
         if (!user) {
           retries++;
           if (retries < maxRetries) {
-            console.log(
+            console.info(
               `[BetaDashboard] No user, retrying... (${retries}/${maxRetries})`,
             );
             await new Promise((r) => setTimeout(r, 500)); // Wait 500ms
@@ -64,7 +64,7 @@ export default function BetaDashboardClient({
       }
 
       if (!user) {
-        console.log(
+        console.info(
           "[BetaDashboard] No user after retries, redirecting to login",
         );
         const locale = (pathname ?? "/no").split("/")[1] || "no";
@@ -76,7 +76,7 @@ export default function BetaDashboardClient({
         return;
       }
 
-      console.log("[BetaDashboard] User found:", user.email);
+      console.info("[BetaDashboard] User found:", user.email);
 
       const { data: profileData } = await supabase
         .from("profiles")
