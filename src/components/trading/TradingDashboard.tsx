@@ -12,14 +12,14 @@
  */
 
 import { useUnifiedTrading } from "@/lib/hooks/useUnifiedTrading";
-import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 import { toast } from "sonner";
 
 type StrategyType = "dca" | "trend" | "grid" | "multi_signal";
 
 export default function TradingDashboard() {
-  const router = useRouter();
+
 
   // Use the new unified trading hook
   const {

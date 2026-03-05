@@ -98,7 +98,7 @@ const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT', 'ADAUSDT
 export default function ClientAutoTradeDashboard() {
   const _t = useTranslations('autoTrade');
   const locale = useLocale();
-  const router = useRouter();
+  const _router = useRouter();
   const { subscription: _subscription, loading: subLoading, currentTier } = useSubscription();
   
   const [trialStatus, setTrialStatus] = useState<TrialStatus | null>(null);
