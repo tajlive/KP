@@ -159,7 +159,7 @@ export default function StrategyCharts({
                   border: "1px solid #475569",
                   borderRadius: 8,
                 }}
-                formatter={(v: number) => [`${v.toFixed(2)} USDT`, "Equity"]}
+                formatter={(v: number) => [`${v.toFixed(2)} USDT`, "Equity"] as any}
               />
               <ReferenceLine
                 y={startingEquity}

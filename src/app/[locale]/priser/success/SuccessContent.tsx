@@ -10,7 +10,7 @@ import { createClient } from '@/lib/utils';
 
 export default function SuccessContent() {
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams?.get('session_id');
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const t = useTranslations('pricing.success');
   const locale = useLocale();

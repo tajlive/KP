@@ -32,7 +32,7 @@ export default function CheckoutContent() {
 
   const tStudie = useTranslations("studieprogram.tiers");
 
-  const planId = (searchParams.get("plan") || "basis") as TierName; // Default to basis (bachelor)
+  const planId = (searchParams?.get("plan") || "basis") as TierName; // Default to basis (bachelor)
 
   // Use centralized config
   const price = getPrice(planId, "monthly", "NOK");

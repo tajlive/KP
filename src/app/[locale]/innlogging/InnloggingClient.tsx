@@ -77,7 +77,7 @@ export function InnloggingClient() {
     setMounted(true);
   }, []);
 
-  const errorParam = searchParams.get("error");
+  const errorParam = searchParams?.get("error");
 
   useEffect(() => {
     if (errorParam) {
@@ -90,7 +90,7 @@ export function InnloggingClient() {
   // Leser både ?next= og ?redirectTo= for bakoverkompatibilitet
   // Saniterer alltid til relativ sti for å forhindre URL-dobling
   const rawRedirect =
-    searchParams.get("next") || searchParams.get("redirectTo");
+    searchParams?.get("next") || searchParams?.get("redirectTo");
   const safeRedirectTo = sanitizeClientRedirect(rawRedirect, "no");
 
   if (!mounted) {

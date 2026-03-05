@@ -205,7 +205,7 @@ function calculateMetrics(
     return getEmptyMetrics(startDate, endDate)
   }
   
-  const returns = closedTrades.map(t => t.realized_pnl! / t.amount)
+  const returns = closedTrades.map(t => t.realized_pnl! / t.amount!)
   const totalReturn = returns.reduce((a, b) => a + b, 0)
   
   const days = Math.max(1, (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
@@ -332,11 +332,11 @@ function aggregateDailyReturns(trades: AutoTradingTrade[]): number[] {
   const dailyMap = new Map<string, number>()
   
   for (const trade of trades) {
-    if (trade.status !== 'CLOSED' || trade.realized_pnl === null) continue
+    if (trade.status !== 'CLOSED' || trade.realized_pnl! === null) continue
     
     const date = new Date(trade.closed_at!).toISOString().split('T')[0]
     const current = dailyMap.get(date) || 0
-    dailyMap.set(date, current + trade.realized_pnl)
+    dailyMap.set(date, current + trade.realized_pnl!)
   }
   
   return Array.from(dailyMap.values())
@@ -695,7 +695,7 @@ function identifyWhatWorked(trades: AutoTradingTrade[]): string[] {
   const symbolPnL = new Map<string, number>()
   for (const trade of winners) {
     const current = symbolPnL.get(trade.symbol) || 0
-    symbolPnL.set(trade.symbol, current + (trade.realized_pnl || 0))
+    symbolPnL.set(trade.symbol, current + (trade.realized_pnl! || 0))
   }
   const bestSymbol = Array.from(symbolPnL.entries()).sort((a, b) => b[1] - a[1])[0]
   if (bestSymbol) {

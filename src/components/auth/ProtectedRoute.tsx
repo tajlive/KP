@@ -34,10 +34,13 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
 
   // Redirect ETTER vi vet auth status
   useEffect(() => {
-    if (isAuthenticated === false && !pathname.includes("/auth/callback")) {
-      const locale = pathname.startsWith("/en") ? "en" : "no";
+    if (
+      isAuthenticated === false &&
+      !(pathname ?? "/").includes("/auth/callback")
+    ) {
+      const locale = (pathname ?? "/").startsWith("/en") ? "en" : "no";
       router.push(
-        `/${locale}/innlogging?redirectTo=${encodeURIComponent(pathname)}`,
+        `/${locale}/innlogging?redirectTo=${encodeURIComponent(pathname ?? "/")}`,
       );
     }
   }, [isAuthenticated, pathname, router]);

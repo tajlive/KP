@@ -15,7 +15,7 @@ interface UserData {
 export default function ClientDashboardSettings() {
   const router = useRouter();
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = params?.locale as string;
   const supabase = createClient();
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);

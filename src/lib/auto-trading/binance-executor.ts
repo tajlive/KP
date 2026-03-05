@@ -5,7 +5,6 @@
  */
 
 import { createClient } from "@/lib/utils";
-import type { AutoTradingStrategy } from "./types";
 import { getKlines } from "../binance";
 import { analyzeCurrentMarket } from "./market-regime";
 import { assessTradeRisk, calculateTradeFeatures } from "./ml-risk-assessment";
@@ -18,6 +17,7 @@ import {
 import { copyTrade } from "./social-trading";
 import { createStrategy } from "./strategies";
 import type {
+  AutoTradingStrategy,
   AutoTradingTrade,
   TradingSignal,
   UserAutoTradingConfig,
@@ -119,19 +119,21 @@ export async function executeTrade(
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
       );
 
-    const circuitBreakerConfig = CIRCUIT_BREAKER_DEFAULTS[config.risk_level || 'balanced'];
+    const circuitBreakerConfig =
+      CIRCUIT_BREAKER_DEFAULTS[config.risk_level || "balanced"];
 
     // Calculate consecutive losses
     const recentClosedTrades = (todaysTrades || [])
       .filter((t) => t.status === "CLOSED")
       .sort(
         (a, b) =>
-          new Date(b.closed_at || 0).getTime() - new Date(a.closed_at || 0).getTime(),
+          new Date(b.closed_at || 0).getTime() -
+          new Date(a.closed_at || 0).getTime(),
       );
 
     let consecutiveLosses = 0;
     for (const trade of recentClosedTrades) {
-      if ((trade.realized_pnl || 0) < 0) consecutiveLosses++;
+      if ((trade.realized_pnl! || 0) < 0) consecutiveLosses++;
       else break;
     }
 
@@ -142,7 +144,7 @@ export async function executeTrade(
 
     // Create minimal strategy object for circuit breaker
     const strategyForCircuitBreaker: Partial<AutoTradingStrategy> = {
-      risk_level: config.risk_level || 'balanced',
+      risk_level: config.risk_level || "balanced",
     };
 
     const circuitCheck = checkCircuitBreakers({
@@ -215,7 +217,7 @@ export async function executeTrade(
     const correlationCheck = checkNewTradeCorrelation(
       signal.symbol,
       openPositions || [],
-      config.risk_level || 'balanced',
+      config.risk_level || "balanced",
     );
 
     if (!correlationCheck.allowed) {
@@ -246,7 +248,7 @@ export async function executeTrade(
     const avgWin =
       winningTrades.length > 0
         ? winningTrades.reduce(
-            (sum, t) => sum + (t.realized_pnl || 0) / (t.amount || 1),
+            (sum, t) => sum + (t.realized_pnl || 0) / (t.amount! || 1),
             0,
           ) / winningTrades.length
         : 0.05;
@@ -255,7 +257,8 @@ export async function executeTrade(
         ? closedTrades
             .filter((t) => (t.realized_pnl || 0) <= 0)
             .reduce(
-              (sum, t) => sum + Math.abs((t.realized_pnl || 0) / (t.amount || 1)),
+              (sum, t) =>
+                sum + Math.abs((t.realized_pnl || 0) / (t.amount! || 1)),
               0,
             ) /
           (closedTrades.length - winningTrades.length)
@@ -471,14 +474,16 @@ export async function closeTrade(
 
     // Calculate PnL
     const exitPrice = parseFloat(
-      orderResult.order.fills?.[0]?.price || trade.current_price?.toString() || '0',
+      orderResult.order.fills?.[0]?.price ||
+        trade.current_price?.toString() ||
+        "0",
     );
     const pnl =
       trade.side === "LONG"
         ? (exitPrice - trade.entry_price) * trade.quantity
         : (trade.entry_price - exitPrice) * trade.quantity;
 
-    const pnlPercent = (pnl / trade.amount) * 100;
+    const pnlPercent = (pnl / trade.amount!) * 100;
 
     // Update trade record
     await supabase
@@ -657,10 +662,16 @@ async function getSymbolInfo(symbol: string): Promise<{
     }
 
     const lotSizeFilter = symbolInfo.filters?.find(
-      (f: { filterType: string; stepSize?: string; minQty?: string; maxQty?: string }) => f.filterType === "LOT_SIZE",
+      (f: {
+        filterType: string;
+        stepSize?: string;
+        minQty?: string;
+        maxQty?: string;
+      }) => f.filterType === "LOT_SIZE",
     );
     const minNotionalFilter = symbolInfo.filters?.find(
-      (f: { filterType: string; minNotional?: string }) => f.filterType === "MIN_NOTIONAL",
+      (f: { filterType: string; minNotional?: string }) =>
+        f.filterType === "MIN_NOTIONAL",
     );
 
     return {
@@ -723,13 +734,13 @@ function calculateTrailingStop(
       const newStop = highestPrice * (1 - distancePct / 100);
 
       // Only update if new stop is higher than current stop
-      if (newStop > (trade.stop_loss || 0)) {
+      if (newStop > (trade.stop_loss! || 0)) {
         return { newStopLoss: newStop, triggered: false };
       }
     }
 
     // Check if trailing stop is hit
-    if (currentPrice <= (trade.stop_loss || 0)) {
+    if (currentPrice <= (trade.stop_loss! || 0)) {
       return { newStopLoss: null, triggered: true };
     }
   } else {
@@ -742,12 +753,12 @@ function calculateTrailingStop(
 
     if (profitPct >= activationPct) {
       const newStop = lowestPrice * (1 + distancePct / 100);
-      if (newStop < (trade.stop_loss || Infinity)) {
+      if (newStop < (trade.stop_loss! || Infinity)) {
         return { newStopLoss: newStop, triggered: false };
       }
     }
 
-    if (currentPrice >= (trade.stop_loss || Infinity)) {
+    if (currentPrice >= (trade.stop_loss! || Infinity)) {
       return { newStopLoss: null, triggered: true };
     }
   }
@@ -761,11 +772,17 @@ function calculateTrailingStop(
 function checkPartialProfitLevels(
   trade: AutoTradingTrade,
   currentPrice: number,
-): Array<{ level: { target_pct: number; sell_pct: number; executed: boolean }; closeQuantity: number }> {
+): Array<{
+  level: { target_pct: number; sell_pct: number; executed: boolean };
+  closeQuantity: number;
+}> {
   if (!trade.partial_tp_enabled || !trade.partial_tp_levels) return [];
 
   const entryPrice = trade.entry_price;
-  const levelsToExecute: Array<{ level: { target_pct: number; sell_pct: number; executed: boolean }; closeQuantity: number }> = [];
+  const levelsToExecute: Array<{
+    level: { target_pct: number; sell_pct: number; executed: boolean };
+    closeQuantity: number;
+  }> = [];
 
   for (const level of trade.partial_tp_levels) {
     if (level.executed) continue;
@@ -835,7 +852,7 @@ async function executePartialClose(
         quantity: newQuantity,
         partial_tp_levels: updatedLevels,
         // Move stop loss to breakeven after first partial TP
-        stop_loss: Math.max(trade.stop_loss || 0, trade.entry_price),
+        stop_loss: Math.max(trade.stop_loss! || 0, trade.entry_price),
         updated_at: new Date().toISOString(),
       })
       .eq("id", trade.id);
@@ -974,18 +991,21 @@ export async function syncOpenTrades(userId: string): Promise<void> {
         ? currentPrice <=
           (trailingStopResult.newStopLoss ||
             trade.stop_loss_price ||
-            trade.stop_loss || 0)
+            trade.stop_loss! ||
+            0)
         : currentPrice >=
           (trailingStopResult.newStopLoss ||
             trade.stop_loss_price ||
-            trade.stop_loss || Infinity);
+            trade.stop_loss! ||
+            Infinity);
 
     // Check take profit
     const tpHit =
       (trade.take_profit_price || trade.take_profit) &&
       (trade.side === "LONG"
         ? currentPrice >= (trade.take_profit_price || trade.take_profit || 0)
-        : currentPrice <= (trade.take_profit_price || trade.take_profit || Infinity));
+        : currentPrice <=
+          (trade.take_profit_price || trade.take_profit || Infinity));
 
     if (stopHit) {
       console.info(`🔴 Stop loss triggered for trade ${trade.id}`);
@@ -1007,7 +1027,9 @@ export async function syncOpenTrades(userId: string): Promise<void> {
  * Run a single iteration of the auto-trading loop
  * Fetches active sessions and checks for signals
  */
-export async function runAutoTradingIteration(supabaseClient?: ReturnType<typeof createClient>) {
+export async function runAutoTradingIteration(
+  supabaseClient?: ReturnType<typeof createClient>,
+) {
   const supabase = supabaseClient || createClient();
 
   // 1. Fetch active sessions
@@ -1094,8 +1116,13 @@ export async function runAutoTradingIteration(supabaseClient?: ReturnType<typeof
               .eq("user_id", session.user_id)
               .single();
 
-            if (!userConfig?.binance_api_key || !userConfig?.binance_api_secret) {
-              console.warn(`No Binance credentials for user ${session.user_id}`);
+            if (
+              !userConfig?.binance_api_key ||
+              !userConfig?.binance_api_secret
+            ) {
+              console.warn(
+                `No Binance credentials for user ${session.user_id}`,
+              );
               continue;
             }
 

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslations, useLocale } from 'next-intl';
 
 export default function ClientLeagueDetails() {
-    const params = useParams();
+    const params = useParams() as { id?: string; locale?: string } | null;
     const { id } = params;
     const t = useTranslations('leagues');
     const locale = useLocale();

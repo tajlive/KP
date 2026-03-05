@@ -17,7 +17,7 @@ function SuccessContent() {
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState('');
 
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams?.get('session_id');
 
   useEffect(() => {
     if (!sessionId) {

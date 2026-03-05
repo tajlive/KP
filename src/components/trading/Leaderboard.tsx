@@ -304,7 +304,7 @@ export default function Leaderboard() {
   }, [timeframe]);
 
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = params?.locale as string;
 
   // Sort leaderboard based on selected mode
   const sortedLeaderboard = useMemo(() => {

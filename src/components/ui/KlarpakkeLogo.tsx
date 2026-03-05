@@ -18,7 +18,7 @@ export default function KlarpakkeLogo({
   variant = "light",
 }: KlarpakkeLogoProps) {
   const params = useParams();
-  const locale = (params.locale as string) || "no";
+  const locale = (params?.locale as string) || "no";
 
   const sizeClasses = {
     sm: "w-6 h-6",
@@ -65,7 +65,7 @@ export function KlarpakkeLogoImage({
   variant?: "light" | "dark";
 }) {
   const params = useParams();
-  const locale = (params.locale as string) || "no";
+  const locale = (params?.locale as string) || "no";
 
   return (
     <Link href={`/${locale}`} className={`flex items-center ${className}`}>
