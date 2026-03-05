@@ -26,7 +26,7 @@ async function linearQuery(query: string, variables?: Record<string, unknown>) {
 }
 
 // GET /api/linear/me - Get current user
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     if (!LINEAR_API_KEY) {
       return NextResponse.json(
