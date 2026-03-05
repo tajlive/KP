@@ -181,7 +181,7 @@ export default function ClientAdminUsers() {
     });
   };
 
-  const getRoleBadge = (role: string) => {
+  const _getRoleBadge = (role: string) => {
     const roleConfig = roles.find((r) => r.id === role) || roles[0];
     const Icon = roleConfig.icon;
     return (
