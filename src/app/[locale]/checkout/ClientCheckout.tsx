@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
-import { loadStripe } from "@stripe/stripe-js";
+
 import { AlertCircle, CheckCircle, Loader2, Shield, Lock, CreditCard, Gift } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";

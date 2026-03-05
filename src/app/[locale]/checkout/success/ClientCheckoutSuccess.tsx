@@ -11,10 +11,10 @@ function SuccessContent() {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) || 'no';
-  const supabase = createClient();
+  const _supabase = createClient();
 
   const [loading, setLoading] = useState(true);
-  const [verified, setVerified] = useState(false);
+  const [_verified, setVerified] = useState(false);
   const [error, setError] = useState('');
 
   const sessionId = searchParams?.get('session_id');
