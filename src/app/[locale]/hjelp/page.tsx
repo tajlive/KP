@@ -2,7 +2,6 @@
 
 
 
-import { locales } from '@/i18n/config';
 import { HelpClient } from './HelpClient';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';

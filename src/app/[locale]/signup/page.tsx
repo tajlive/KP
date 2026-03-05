@@ -2,7 +2,6 @@
 
 
 
-import { locales } from "@/i18n/config";
 import { getTranslations } from "next-intl/server";
 import { SignupClient } from "./SignupClient";
 

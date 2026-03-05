@@ -2,7 +2,6 @@
 
 
 
-import { locales } from '@/i18n/config';
 import { QuizClient } from './QuizClient';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';

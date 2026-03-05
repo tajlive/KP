@@ -8,7 +8,7 @@ interface PageProps {
 }
 
 export default async function ActivityPage({ params }: PageProps) {
-    const { locale } = await params;
+    const { locale: _locale } = await params;
     const t = await getTranslations('dashboard.activityPage');
 
     return (

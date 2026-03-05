@@ -2,7 +2,6 @@
 
 
 
-import { useTranslations } from 'next-intl';
 import GlemtPassordClient from './GlemtPassordClient';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
