@@ -1,3 +1,4 @@
+/*
 -- Phase 4 & 5: Marketplace reviews, strategy versions, and copy trading tables
 
 -- ============================================================
@@ -110,3 +111,4 @@ CREATE INDEX IF NOT EXISTS idx_copy_trade_log_status ON copy_trade_log(status);
 CREATE INDEX IF NOT EXISTS idx_copy_trading_configs_leader ON copy_trading_configs(leader_id);
 CREATE INDEX IF NOT EXISTS idx_copy_trading_configs_follower ON copy_trading_configs(follower_id);
 CREATE INDEX IF NOT EXISTS idx_strategy_reviews_listing ON strategy_reviews(listing_id);
+*/
