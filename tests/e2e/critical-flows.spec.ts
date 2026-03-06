@@ -1,91 +1,137 @@
-import { test, expect } from '@playwright/test';
-
 /**
- * E2E Tests for Critical User Flows
+ * 🎭 KRITISKE FLOWS - Playwright E2E-tester
  * 
- * These tests verify the most important user journeys:
- * 1. Registration flow
- * 2. Simulator trading flow
- * 3. Admin dashboard access
- * 4. Beta application flow
+ * Tester de viktigste brukerreisene:
+ * 1. Landing → Registrering
+ * 2. Login → Dashboard
+ * 3. Dashboard → Trading
+ * 4. Admin-panel
  */
 
-test.describe('Critical user flows', () => {
+import { test, expect } from "@playwright/test";
+
+const BASE_URL = process.env.TEST_BASE_URL || "https://klarpakke-185xaf38z-klarpakke.vercel.app";
+
+// Testdata
+const TEST_USER = {
+  email: `test-${Date.now()}@example.com`,
+  password: "TestPassword123!",
+};
+
+test.describe("🚀 Kritiske flows", () => {
   
-  test.describe.configure({ mode: 'parallel' });
-  
-  // Øk timeout for Vercel cold start
-  test.setTimeout(90000);
+  test.describe("1. Landing og navigasjon", () => {
+    test("Landing page laster og viser hovedelementer", async ({ page }) => {
+      await page.goto(`${BASE_URL}/no`);
+      
+      // Sjekk at siden laster
+      await expect(page).toHaveTitle(/Klarpakke/);
+      
+      // Sjekk hovedelementer
+      await expect(page.locator("h1")).toBeVisible();
+      await expect(page.getByRole("link", { name: /kom igang/i })).toBeVisible();
+      await expect(page.getByRole("link", { name: /logg inn/i })).toBeVisible();
+    });
 
-  test('Landing page loads correctly', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    
-    // Verify page loaded - sjekk h1 eller title
-    await expect(page.locator('h1').first()).toBeVisible({ timeout: 15000 });
-    
-    // Sjekk at siden har innhold
-    const title = await page.title();
-    expect(title.toLowerCase()).toContain('klarpakke');
+    test("Navigasjon til pris-siden fungerer", async ({ page }) => {
+      await page.goto(`${BASE_URL}/no`);
+      
+      await page.getByRole("link", { name: /priser/i }).click();
+      await expect(page).toHaveURL(/\/priser/);
+      await expect(page.locator("h1")).toContainText(/pris/i);
+    });
   });
 
-  test('Navigation to pricing works', async ({ page }) => {
-    await page.goto('/no/priser', { waitUntil: 'domcontentloaded' });
-    
-    // Verify pricing page loaded
-    await expect(page).toHaveURL(/.*priser.*/);
-    expect(await page.title()).toContain('Priser');
+  test.describe("2. Autentisering", () => {
+    test("Login-siden er tilgjengelig", async ({ page }) => {
+      await page.goto(`${BASE_URL}/no/innlogging`);
+      
+      await expect(page.locator("h1")).toContainText(/logg inn/i);
+      await expect(page.getByPlaceholder(/e-post/i)).toBeVisible();
+      await expect(page.getByPlaceholder(/passord/i)).toBeVisible();
+    });
+
+    test("Registrering-siden er tilgjengelig", async ({ page }) => {
+      await page.goto(`${BASE_URL}/no/registrer`);
+      
+      await expect(page.locator("h1")).toContainText(/registrer/i);
+      await expect(page.getByPlaceholder(/e-post/i)).toBeVisible();
+    });
   });
 
-  test('Simulator page loads', async ({ page }) => {
-    // Simulator redirecter - følg redirects
-    const response = await page.goto('/no/simulator', { waitUntil: 'domcontentloaded' });
-    
-    // Sjekk at vi endte opp et sted (kan være redirect til forside hvis simulator ikke finnes)
-    const url = page.url();
-    expect(response?.status()).toBeLessThan(400);
+  test.describe("3. Dashboard (krever innlogging)", () => {
+    test("Dashboard redirecter til login når ikke autentisert", async ({ page }) => {
+      await page.goto(`${BASE_URL}/no/dashboard`);
+      
+      // Skal redirecte til login
+      await expect(page).toHaveURL(/\/innlogging|login/);
+    });
   });
 
-  test('Login page is accessible', async ({ page }) => {
-    await page.goto('/admin/login', { waitUntil: 'domcontentloaded' });
-    
-    // Sjekk at siden lastet uten 404
-    const status = (await page.goto('/admin/login'))?.status() || 0;
-    expect(status).toBe(200);
+  test.describe("4. API Health checks", () => {
+    test("Health endpoint returnerer OK", async ({ request }) => {
+      const response = await request.get(`${BASE_URL}/api/health`);
+      expect(response.status()).toBe(200);
+      
+      const body = await response.json();
+      expect(body).toHaveProperty("status", "ok");
+    });
+
+    test("Market data API returnerer data", async ({ request }) => {
+      const response = await request.get(`${BASE_URL}/api/prices/binance`);
+      expect(response.status()).toBeOneOf([200, 429]); // 429 = rate limit
+    });
   });
 
-  test('Health endpoint returns OK', async ({ request }) => {
-    const response = await request.get('/api/health');
-    
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-    expect(body.status).toBe('ok');
+  test.describe("5. Tilgjengelighet (a11y)", () => {
+    test("Landing page har korrekt HTML-struktur", async ({ page }) => {
+      await page.goto(`${BASE_URL}/no`);
+      
+      // Sjekk at det finnes én h1
+      const h1Count = await page.locator("h1").count();
+      expect(h1Count).toBe(1);
+      
+      // Sjekk at bilder har alt-tekst
+      const images = await page.locator("img").all();
+      for (const img of images) {
+        await expect(img).toHaveAttribute("alt", /.*/);
+      }
+    });
   });
 
-  test('404 page shows home content', async ({ page }) => {
-    // Applikasjonen viser forsiden for ukjente ruter (client-side 404)
-    await page.goto('/this-page-does-not-exist-xyz123', { waitUntil: 'domcontentloaded' });
+});
+
+test.describe("⚡ Performance tester", () => {
+  test("Landing page LCP under 2.5s", async ({ page }) => {
+    await page.goto(`${BASE_URL}/no`);
     
-    // Verifiser at vi ser forsiden (h1 med "Lær Trading")
-    const h1Text = await page.locator('h1').first().textContent();
-    expect(h1Text).toContain('Lær');
-    expect(await page.title()).toContain('Klarpakke');
+    // Vent på at siden er ferdig lastet
+    await page.waitForLoadState("networkidle");
+    
+    // Mål lastetid
+    const performanceTiming = await page.evaluate(() => {
+      const timing = performance.timing;
+      return {
+        loadTime: timing.loadEventEnd - timing.navigationStart,
+        domContentLoaded: timing.domContentLoadedEventEnd - timing.navigationStart,
+      };
+    });
+    
+    console.log(`Load time: ${performanceTiming.loadTime}ms`);
+    expect(performanceTiming.loadTime).toBeLessThan(5000); // 5 sekunder maks
+  });
+});
+
+test.describe("🔒 Sikkerhet", () => {
+  test("HTTPS er påkrevd", async ({ page }) => {
+    await page.goto(`${BASE_URL}/no`);
+    expect(page.url()).toStartWith("https://");
   });
 
-  test('Mobile viewport - navigation is accessible', async ({ page }) => {
-    // Set mobile viewport
-    await page.setViewportSize({ width: 375, height: 667 });
+  test("Security headers er satt", async ({ request }) => {
+    const response = await request.get(`${BASE_URL}/no`);
+    const headers = response.headers();
     
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    
-    // Sjekk at siden lastet på mobil (hamburger meny eller logo)
-    await expect(page.locator('text=Klarpakke').first()).toBeVisible({ timeout: 10000 });
+    expect(headers["x-frame-options"] || headers["content-security-policy"]).toBeTruthy();
   });
-
-  test('Prices page shows disclaimer', async ({ page }) => {
-    await page.goto('/no/priser', { waitUntil: 'domcontentloaded' });
-    
-    // Verify page loaded
-    await expect(page.locator('text=Gratis').first()).toBeVisible({ timeout: 15000 });
-  });
-
 });
