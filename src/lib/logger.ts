@@ -8,6 +8,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 export const logger = {
   debug: (...args: unknown[]) => {
     if (isDevelopment) {
+      // eslint-disable-next-line no-console
       console.debug('[Klarpakke DEBUG]', ...args);
     }
   },
@@ -31,24 +32,28 @@ export const logger = {
 
   group: (label: string) => {
     if (isDevelopment) {
+      // eslint-disable-next-line no-console
       console.group(label);
     }
   },
 
   groupEnd: () => {
     if (isDevelopment) {
+      // eslint-disable-next-line no-console
       console.groupEnd();
     }
   },
 
   time: (label: string) => {
     if (isDevelopment) {
+      // eslint-disable-next-line no-console
       console.time(label);
     }
   },
 
   timeEnd: (label: string) => {
     if (isDevelopment) {
+      // eslint-disable-next-line no-console
       console.timeEnd(label);
     }
   },

@@ -72,7 +72,7 @@ async function trackPageView(data: PageViewData) {
     });
   } catch (error) {
     // Silently fail - analytics should not break the app
-    console.debug('Analytics track error:', error);
+    console.info('Analytics track error:', error);
   }
 }
 
@@ -94,7 +94,7 @@ async function trackEvent(eventType: string, eventData: Record<string, unknown> 
       }),
     });
   } catch (error) {
-    console.debug('Analytics event error:', error);
+    console.info('Analytics event error:', error);
   }
 }
 

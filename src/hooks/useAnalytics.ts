@@ -57,7 +57,7 @@ export function useAnalytics() {
         });
       } catch (error) {
         // Silent fail for analytics
-        console.debug('Analytics error:', error);
+        console.info('Analytics error:', error);
       }
     };
 
@@ -84,7 +84,7 @@ export function useAnalytics() {
         }),
       });
     } catch (error) {
-      console.debug('Analytics error:', error);
+      console.info('Analytics error:', error);
     }
   }, [pathname]);
 
