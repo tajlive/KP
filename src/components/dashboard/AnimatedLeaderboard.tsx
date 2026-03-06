@@ -170,10 +170,10 @@ export function AnimatedLeaderboard() {
         <div className="col-span-2"></div>
       </div>
 
-      <ul className="flex-1 overflow-x-hidden flex flex-col p-2 gap-2 relative">
+      <div className="flex-1 overflow-x-hidden flex flex-col p-2 gap-2 relative">
         <AnimatePresence initial={false}>
           {traders.map((trader) => (
-            <motion.li
+            <motion.div
               key={trader.id}
               layout="position"
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -255,15 +255,15 @@ export function AnimatedLeaderboard() {
                 <span className="text-slate-500 md:hidden text-xs font-bold uppercase">
                   Trend
                 </span>
-                <Sparkline
-                  data={trader.sparkline_data}
-                  color={getSparklineColor(
-                    trader.pnl_percent,
-                    trader.risk_score,
-                  )}
-                  width={80}
-                  height={36}
-                />
+                <div className="w-[80px] h-[36px]">
+                  <Sparkline
+                    data={trader.sparkline_data}
+                    color={getSparklineColor(
+                      trader.pnl_percent,
+                      trader.risk_score,
+                    )}
+                  />
+                </div>
               </div>
 
               {/* ACTIONS */}
@@ -277,10 +277,10 @@ export function AnimatedLeaderboard() {
                   <Copy className="w-3.5 h-3.5 mr-1.5" /> Kopier
                 </Button>
               </div>
-            </motion.li>
+            </motion.div>
           ))}
         </AnimatePresence>
-      </ul>
+      </div>
       <div className="p-4 border-t border-slate-800/60 bg-slate-900/30">
         <Button
           variant="ghost"
