@@ -17,7 +17,7 @@ export async function POST(_: NextRequest) {
 
     // Get user's active strategies
     const { data: strategies, error: stratError } = await supabase
-      .from("user_strategies")
+      .from("strategies" as any)
       .select("*")
       .eq("user_id", user.id)
       .eq("is_active", true);

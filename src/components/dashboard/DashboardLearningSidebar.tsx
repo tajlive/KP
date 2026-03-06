@@ -83,7 +83,7 @@ export default function DashboardLearningSidebar({
   earnedBadges,
   currentTrackId = "grunnkurs-krypto",
 }: DashboardLearningSidebarProps) {
-  const { locale } = useParams<unknown>();
+  const { locale } = useParams();
   const lang = (locale as string) || "no";
 
   // Beregn total progresjon på tvers av alle tracks

@@ -28,7 +28,7 @@ export function SystemStatus() {
 
       // Check Supabase
       const { count, error: dbError } = await supabase
-        .from('profiles')
+        .from('user_profiles' as any)
         .select('*', { count: 'exact', head: true })
 
       statusChecks.push({

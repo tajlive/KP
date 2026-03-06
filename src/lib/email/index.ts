@@ -109,7 +109,7 @@ async function getUserInfo(userId: string): Promise<{ email: string; name: strin
   try {
     const supabase = await createClient();
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('user_profiles' as any)
       .select('email, full_name')
       .eq('id', userId)
       .single();

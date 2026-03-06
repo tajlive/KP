@@ -68,7 +68,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
     try {
       const supabase = createClient();
       const { data, error } = await supabase
-        .from("copy_trading_configs")
+        .from("copy_trading_configs" as any)
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -101,7 +101,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
 
   follow: async (leaderId, config) => {
     const supabase = createClient();
-    const { error } = await supabase.from("copy_trading_configs").insert({
+    const { error } = await supabase.from("copy_trading_configs" as any).insert({
       leader_id: leaderId,
       max_allocation_nok: config.maxAllocationNok,
       sizing_mode: config.sizingMode,
@@ -118,7 +118,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
   unfollow: async (leaderId) => {
     const supabase = createClient();
     const { error } = await supabase
-      .from("copy_trading_configs")
+      .from("copy_trading_configs" as any)
       .update({ is_active: false })
       .eq("leader_id", leaderId);
 
@@ -145,7 +145,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
     updates.updated_at = new Date().toISOString();
 
     await supabase
-      .from("copy_trading_configs")
+      .from("copy_trading_configs" as any)
       .update(updates)
       .eq("leader_id", leaderId);
 
@@ -155,7 +155,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
   fetchActiveCopies: async () => {
     const supabase = createClient();
     const { data } = await supabase
-      .from("copy_trade_log")
+      .from("copy_trade_log" as any)
       .select("*")
       .eq("status", "executed")
       .order("created_at", { ascending: false })

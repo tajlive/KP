@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     
     // Check if user is admin or service role
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('user_profiles' as any)
       .select('role')
       .eq('id', user.id)
       .single();

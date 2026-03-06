@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 
     // Get user email
     const { data: userData } = await supabase
-      .from('profiles')
+      .from('user_profiles' as any)
       .select('email')
       .eq('id', user.id)
       .single();
