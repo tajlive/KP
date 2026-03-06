@@ -3,7 +3,7 @@
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS conditional_orders (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   session_id UUID REFERENCES trading_sessions(id) ON DELETE CASCADE NOT NULL,
   symbol TEXT NOT NULL,
@@ -32,21 +32,25 @@ CREATE INDEX IF NOT EXISTS idx_conditional_orders_symbol ON conditional_orders(s
 ALTER TABLE conditional_orders ENABLE ROW LEVEL SECURITY;
 
 -- Users can view own orders
+DROP POLICY IF EXISTS "Users can view own conditional orders" ON conditional_orders;
 CREATE POLICY "Users can view own conditional orders"
 ON conditional_orders FOR SELECT
 USING (auth.uid() = user_id);
 
 -- Users can create own orders
+DROP POLICY IF EXISTS "Users can create own conditional orders" ON conditional_orders;
 CREATE POLICY "Users can create own conditional orders"
 ON conditional_orders FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
 -- Users can update own orders
+DROP POLICY IF EXISTS "Users can update own conditional orders" ON conditional_orders;
 CREATE POLICY "Users can update own conditional orders"
 ON conditional_orders FOR UPDATE
 USING (auth.uid() = user_id);
 
 -- Users can delete own orders
+DROP POLICY IF EXISTS "Users can delete own conditional orders" ON conditional_orders;
 CREATE POLICY "Users can delete own conditional orders"
 ON conditional_orders FOR DELETE
 USING (auth.uid() = user_id);
