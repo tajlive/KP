@@ -237,8 +237,8 @@ const nextConfig = {
 // Sentry configuration
 const sentryWebpackPluginOptions = {
   silent: true,
-  org: "klarpakke",
-  project: "klarpakke-web",
+  org: "elbatt-chatbot",
+  project: "klarpakke-production",
 
   // Enable sourcemaps for production debugging
   sourcemaps: { disable: false },
