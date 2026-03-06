@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -26,11 +26,19 @@ export async function POST() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Get domain for cookie (handle www vs non-www)
+  const host = request.headers.get("host") || "";
+  const isWWW = host.startsWith("www.");
+  const rootDomain = isWWW ? host.replace("www.", "") : host;
+  const cookieDomain = rootDomain.includes(":") ? undefined : `.${rootDomain}`;
+
   // Set cookie to skip DB checks in middleware
   (await cookies()).set("kp_onboarding_status", "completed", {
     path: "/",
     maxAge: 3600 * 24 * 30, // 30 days
     sameSite: "lax",
+    secure: true,
+    domain: cookieDomain,
   });
 
   return NextResponse.json({ success: true, redirectTo: "/dashboard" });

@@ -159,6 +159,12 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
+  // Get the domain for cookies (handle www vs non-www)
+  const host = request.headers.get("host") || "";
+  const isWWW = host.startsWith("www.");
+  const rootDomain = isWWW ? host.replace("www.", "") : host;
+  const cookieDomain = rootDomain.includes(":") ? undefined : `.${rootDomain}`;
+
   // Create supabase client
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -171,10 +177,12 @@ export async function middleware(request: NextRequest) {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
             // Apply to the response that will be returned
+            // Set domain to allow cookies to work on both www and non-www
             response.cookies.set(name, value, {
               ...options,
-              sameSite: "none" as const,
+              sameSite: "lax" as const,
               secure: true,
+              domain: cookieDomain,
             });
           });
         },
@@ -208,7 +216,9 @@ export async function middleware(request: NextRequest) {
     response.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, {
         ...cookie,
-        // Exclude properties that shouldn't be copied blindly or let Next handle them
+        domain: cookieDomain,
+        sameSite: "lax" as const,
+        secure: true,
       });
     });
     return redirectResponse;
@@ -271,6 +281,8 @@ export async function middleware(request: NextRequest) {
               path: "/",
               maxAge: 3600 * 24 * 30, // 30 days — DB only queried once after login
               sameSite: "lax",
+              secure: true,
+              domain: cookieDomain,
             });
           }
         } catch (err) {
