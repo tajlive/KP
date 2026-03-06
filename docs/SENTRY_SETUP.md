@@ -1,199 +1,161 @@
-# 🔍 Sentry Error Tracking Setup
+# 🐛 Sentry Error Tracking Setup
 
-## Overview
+## Hva er Sentry?
 
-Sentry er nå konfigurert for full error tracking i Klarpakke!
+Sentry er en error tracking-tjeneste som gir deg:
+- 🔴 Real-time error monitoring
+- 📊 Performance insights
+- 🔍 Stack traces med source maps
+- 👤 User context og breadcrumbs
+- 📈 Error trends og analytics
 
-**Features aktivert:**
-- ✅ Client-side error tracking
-- ✅ Server-side error tracking
-- ✅ Edge runtime error tracking
-- ✅ Session replay (10% sample rate)
-- ✅ Performance monitoring
-- ✅ Error filtering (kun production)
+## Oppsett (Allerede konfigurert!)
 
-## Quick Setup (5 min)
+Sentry er allerede satt opp i prosjektet med følgende filer:
 
-### 1. Opprett Sentry Prosjekt
+- `sentry.client.config.ts` - Client-side error tracking
+- `sentry.server.config.ts` - Server-side error tracking  
+- `sentry.edge.config.ts` - Edge runtime error tracking
+- `src/lib/sentry.ts` - Utility funksjoner
+- `src/app/api/sentry-test/route.ts` - Test endpoint
 
-1. Gå til [https://sentry.io/signup/](https://sentry.io/signup/)
-2. Opprett konto (gratis tier er nok til å starte)
-3. Opprett nytt prosjekt:
-   - Platform: **Next.js**
-   - Project name: **klarpakke**
-   - Team: **klarpakke** (eller default)
-4. Kopier DSN (Data Source Name)
+## Miljøvariabler (Vercel)
 
-### 2. Legg til Environment Variables
+Sjekk at disse er satt i Vercel Dashboard:
 
-#### Lokalt (.env.local)
-
-```bash
-# Sentry Configuration
-SENTRY_DSN=https://your-sentry-dsn@sentry.io/your-project-id
-NEXT_PUBLIC_SENTRY_DSN=https://your-sentry-dsn@sentry.io/your-project-id
+```env
+NEXT_PUBLIC_SENTRY_DSN=https://e32d54d01cf6b772939b62144762ea8b@o4509555622608896.ingest.de.sentry.io/4509555628638288
+SENTRY_AUTH_TOKEN=your-auth-token
+SENTRY_ORG=elbatt-chatbot
+SENTRY_PROJECT=klarpakke-production
 ```
 
-#### GitHub Secrets
+**Viktig:** `SENTRY_AUTH_TOKEN` må legges til for at source maps skal fungere.
 
-Gå til: [https://github.com/klarpakke/klarpakke/settings/secrets/actions](https://github.com/klarpakke/klarpakke/settings/secrets/actions)
+## Hvordan få Sentry Auth Token
 
-Legg til:
-- `SENTRY_DSN` (samme verdi som over)
-- `NEXT_PUBLIC_SENTRY_DSN` (samme verdi som over)
+1. Gå til https://sentry.io/settings/account/api/auth-tokens/
+2. Klikk "Create New Token"
+3. Velg scopes: `org:read`, `project:releases`, `project:write`
+4. Kopier token og legg til i Vercel: Settings → Environment Variables
 
-#### Cloudflare Pages
+## Testing
 
-Gå til: [https://dash.cloudflare.com](https://dash.cloudflare.com)
-
-→ Workers & Pages → klarpakke → Settings → Environment variables
-
-Legg til (Production):
-- `SENTRY_DSN`
-- `NEXT_PUBLIC_SENTRY_DSN`
-
-### 3. Test at det fungerer
+### 1. Sjekk at Sentry er konfigurert
 
 ```bash
-# Installer dependencies
-npm install
-
-# Bygg prosjektet
-npm run build
-
-# Test lokalt
-npm run dev
+curl https://www.klarpakke.no/api/sentry-test
 ```
 
-Åpne [http://localhost:3000](http://localhost:3000) og trigger en test-error.
+Forventet respons:
+```json
+{
+  "message": "Sentry Test Endpoint",
+  "sentryConfigured": true,
+  "environment": "production"
+}
+```
 
-### 4. Deploy
+### 2. Trigger test event
 
 ```bash
-# Deploy til Cloudflare Pages
-npm run deploy
-
-# Eller via GitHub Actions (automatisk på push til main)
-git push origin main
+curl -X POST https://www.klarpakke.no/api/sentry-test
 ```
 
-## Features
+Dette sender en test error til Sentry.
 
-### Error Filtering
+### 3. Verifiser i Sentry Dashboard
 
-- ❌ Development errors **filtreres bort** automatisk
-- ✅ Kun production/staging errors sendes til Sentry
+1. Gå til: https://elbatt-chatbot.sentry.io/projects/klarpakke-production/
+2. Sjekk at test event vises
+3. Det kan ta 1-2 minutter før eventet vises
 
-### Session Replay
+## Bruk i koden
 
-- **Sample rate:** 10% av normale sessions
-- **Error sample rate:** 100% av error sessions
-- **Privacy:** All tekst og media er maskert
-
-### Performance Monitoring
-
-- **Trace sample rate:** 100% (juster ned i production hvis høy trafikk)
-- Automatisk tracking av:
-  - Page loads
-  - API calls
-  - Database queries
-  - External API calls (Supabase, Stripe)
-
-### Environment Tags
-
-Sentry vil automatisk tagge errors med:
-- `environment`: development/staging/production
-- `release`: git commit SHA
-- `user`: user ID (når innlogget)
-
-## Viewing Errors
-
-1. Gå til [https://sentry.io](https://sentry.io)
-2. Velg **klarpakke** prosjekt
-3. Se errors i real-time!
-
-### Nyttige views:
-
-- **Issues:** Grupperte errors
-- **Performance:** Slow transactions
-- **Replays:** Video av user sessions med errors
-- **Releases:** Errors per deployment
-
-## Custom Error Tracking
-
-I koden din, kan du manuelt tracke errors:
+### Logge errors
 
 ```typescript
-import * as Sentry from '@sentry/nextjs';
+import { logError } from "@/lib/sentry";
 
 try {
-  // Your code
+  // Din kode
 } catch (error) {
-  Sentry.captureException(error, {
-    tags: {
-      section: 'trading',
-      action: 'place_order'
-    },
-    extra: {
-      orderId: order.id,
-      symbol: order.symbol
-    }
+  logError(error, { 
+    userId: user.id,
+    action: "place_trade",
+    symbol: "BTCUSDT"
   });
 }
 ```
 
-## Alerts
+### Logge messages
 
-Sett opp alerts i Sentry for kritiske errors:
+```typescript
+import { logMessage } from "@/lib/sentry";
 
-1. Sentry → Alerts → Create Alert
-2. Velg trigger (f.eks. "Error frequency")
-3. Sett threshold (f.eks. "10 errors in 5 minutes")
-4. Velg notification method:
-   - Email
-   - Slack
-   - PagerDuty
-   - Webhook
+logMessage("User completed onboarding", "info", {
+  userId: user.id,
+  step: "final",
+});
+```
 
-## Cost Optimization
+### Sette user context
 
-Gratis tier gir:
-- 5,000 errors/month
-- 10,000 performance transactions/month
-- 50 replays/month
-- 1 GB attachments
+```typescript
+import { setUser } from "@/lib/sentry";
 
-**Tips for å holde seg innenfor gratis tier:**
+// Når bruker logger inn
+setUser({
+  id: user.id,
+  email: user.email,
+  username: user.name,
+});
 
-1. Reduser `tracesSampleRate` til 0.1 (10%)
-2. Reduser `replaysSessionSampleRate` til 0.01 (1%)
-3. Filtrer ut kjente/ignorable errors
-4. Sett opp rate limiting
+// Når bruker logger ut
+setUser(null);
+```
+
+## Konfigurasjonsdetaljer
+
+### Client Config
+
+- **Sample Rate:** 10% av transaksjoner
+- **Replay:** 5% av sessions, 25% ved errors
+- **Filtering:** Ignorerer JWT expired, hydration errors
+
+### Server Config
+
+- **Sample Rate:** 10% av transaksjoner
+- **Filtering:** Ignorerer JWT expired, connection errors
+
+### Edge Config
+
+- **Sample Rate:** 5% av transaksjoner (lavere pga cost)
+- **Filtering:** Ignorerer NEXT_REDIRECT (forventet)
 
 ## Troubleshooting
 
-### Errors vises ikke i Sentry
+### Ingen errors vises i Sentry
 
-1. Sjekk at `SENTRY_DSN` er satt korrekt
-2. Sjekk at environment er `production` eller `staging` (ikke `development`)
-3. Sjekk Sentry console for debug info:
-   ```typescript
-   debug: true  // i sentry.*.config.ts
-   ```
+1. Sjekk at `NEXT_PUBLIC_SENTRY_DSN` er satt i Vercel
+2. Sjekk at `NODE_ENV=production`
+3. Vent 1-2 minutter (det kan ta litt tid)
+4. Sjekk browser console for Sentry init errors
 
-### "Sentry is not initialized"
+### Source maps fungerer ikke
 
-- Sørg for at config-filene er i root directory
-- Kjør `npm install` på nytt
-- Restart dev server
+1. Sjekk at `SENTRY_AUTH_TOKEN` er satt
+2. Verifiser at token har riktige scopes
+3. Sjekk at `SENTRY_ORG` og `SENTRY_PROJECT` er riktige
 
-## Resources
+### For mange errors
 
-- [Sentry Next.js Docs](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
-- [Sentry Dashboard](https://sentry.io)
-- [Performance Monitoring Guide](https://docs.sentry.io/product/performance/)
-- [Session Replay Guide](https://docs.sentry.io/product/session-replay/)
+Justere `tracesSampleRate` i config-filene:
+- 1.0 = 100% (alle transaksjoner)
+- 0.1 = 10% (default)
+- 0.01 = 1% (høy trafikk)
 
----
+## Support
 
-**Auto-generert av Klarpakke Autonomous AI Agent v2.0**
+- Sentry Docs: https://docs.sentry.io/platforms/javascript/guides/nextjs/
+- Next.js SDK: https://docs.sentry.io/platforms/javascript/guides/nextjs/
