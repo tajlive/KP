@@ -1,0 +1,37 @@
+name: Verify Sentry Setup
+
+on:
+  push:
+    branches: [main, feature/sentry-testing]
+  workflow_dispatch:
+
+jobs:
+  verify-sentry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check Sentry files exist
+        run: |
+          echo "Checking Sentry configuration files..."
+          test -f sentry.client.config.ts && echo "✅ sentry.client.config.ts exists"
+          test -f sentry.server.config.ts && echo "✅ sentry.server.config.ts exists"
+          test -f sentry.edge.config.ts && echo "✅ sentry.edge.config.ts exists"
+
+      - name: Verify Sentry in package.json
+        run: |
+          echo "Checking @sentry/nextjs in dependencies..."
+          grep -q "@sentry/nextjs" package.json && echo "✅ @sentry/nextjs found"
+
+      - name: Check Vercel env vars (if available)
+        run: |
+          echo "ℹ️ Verify these env vars in Vercel dashboard:"
+          echo "  - NEXT_PUBLIC_SENTRY_DSN"
+          echo "  - SENTRY_AUTH_TOKEN"
+          echo "  - SENTRY_ORG"
+          echo "  - SENTRY_PROJECT"
