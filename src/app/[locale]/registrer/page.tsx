@@ -1,10 +1,6 @@
 import { redirect } from 'next/navigation';
 
-export default async function RegistrerPage({
-  params
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params;
+export default function RegistrerPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = params;
   redirect(`/${locale}/signup`);
 }

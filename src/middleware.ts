@@ -159,6 +159,12 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
+  // Get the domain for cookies (handle www vs non-www)
+  const host = request.headers.get("host") || "";
+  const isWWW = host.startsWith("www.");
+  const rootDomain = isWWW ? host.replace("www.", "") : host;
+  const cookieDomain = rootDomain.includes(":") ? undefined : `.${rootDomain}`;
+
   // Create supabase client
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -171,10 +177,12 @@ export async function middleware(request: NextRequest) {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
             // Apply to the response that will be returned
+            // Set domain to allow cookies to work on both www and non-www
             response.cookies.set(name, value, {
               ...options,
-              sameSite: "none" as const,
+              sameSite: "lax" as const,
               secure: true,
+              domain: cookieDomain,
             });
           });
         },
@@ -208,7 +216,9 @@ export async function middleware(request: NextRequest) {
     response.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, {
         ...cookie,
-        // Exclude properties that shouldn't be copied blindly or let Next handle them
+        domain: cookieDomain,
+        sameSite: "lax" as const,
+        secure: true,
       });
     });
     return redirectResponse;
@@ -228,8 +238,16 @@ export async function middleware(request: NextRequest) {
 
   // 3. Onboarding flow for authenticated users
   if (user) {
+    // EMERGENCY BYPASS: Skip onboarding checks entirely for now
+    // TODO: Re-enable after fixing cookie/session issues
+    const isOnboardingPage = pathWithoutLocale.startsWith("/onboarding");
+    
+    // Always allow access to all pages for authenticated users
+    // The onboarding wizard can still be accessed manually if needed
+    return response;
+    
+    /* DISABLED - Causing redirect loops
     // Only check onboarding if they are navigating to a protected path (or root dashboard)
-    // We don't want to enforce onboarding on purely public marketing pages unless specified
     if (isProtected) {
       let onboardingCompleted =
         request.cookies.get("kp_onboarding_status")?.value === "completed";
@@ -252,7 +270,7 @@ export async function middleware(request: NextRequest) {
           } else {
             // Fallback to older profiles table just in case
             const { data: fallbackProfile } = await supabase
-              .from("profiles")
+              .from("user_profiles")
               .select("onboarding_completed, setup_completed_at")
               .eq("id", user.id)
               .maybeSingle();
@@ -269,16 +287,16 @@ export async function middleware(request: NextRequest) {
           if (onboardingCompleted) {
             response.cookies.set("kp_onboarding_status", "completed", {
               path: "/",
-              maxAge: 3600 * 24 * 30, // 30 days — DB only queried once after login
+              maxAge: 3600 * 24 * 30,
               sameSite: "lax",
+              secure: true,
+              domain: cookieDomain,
             });
           }
         } catch (err) {
           console.error("Error checking onboarding status:", err);
         }
       }
-
-      const isOnboardingPage = pathWithoutLocale.startsWith("/onboarding");
 
       // Redirect to onboarding if not completed and not already there
       if (!onboardingCompleted && !isOnboardingPage) {
@@ -294,6 +312,7 @@ export async function middleware(request: NextRequest) {
         );
       }
     }
+    */
   }
 
   return response;

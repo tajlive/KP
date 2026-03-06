@@ -40,7 +40,7 @@ export default function BetaApplyClient({
     }
 
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("beta_access")
       .eq("id", user.id)
       .single();
@@ -89,7 +89,7 @@ export default function BetaApplyClient({
 
       // AUTO-APPROVE for beta testing phase
       await supabase
-        .from("profiles")
+        .from("user_profiles")
         .update({
           beta_access: true,
           beta_approved_at: new Date().toISOString(),

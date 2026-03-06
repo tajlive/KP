@@ -166,7 +166,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
     // Oppdater profil
     const { error: profileError } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .update({
         subscription_tier: planType,
         subscription_status: "active",
@@ -220,7 +220,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 
     // Oppdater også profil
     await supabase
-      .from("profiles")
+      .from("user_profiles")
       .update({
         subscription_status: "active",
         updated_at: new Date().toISOString(),
@@ -259,7 +259,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
     // Oppdater profil
     await supabase
-      .from("profiles")
+      .from("user_profiles")
       .update({
         subscription_status: "past_due",
         updated_at: new Date().toISOString(),
@@ -306,7 +306,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       subscription.cancel_at_period_end
     ) {
       await supabase
-        .from("profiles")
+        .from("user_profiles")
         .update({
           subscription_status: subscription.cancel_at_period_end
             ? "active"
@@ -346,7 +346,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
 
     // Nedgrader bruker til free
     await supabase
-      .from("profiles")
+      .from("user_profiles")
       .update({
         subscription_tier: "free",
         subscription_status: "canceled",
@@ -389,7 +389,7 @@ async function sendWelcomeEmail(userId: string, planType: string) {
 
     // Hent bruker-info
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("email, full_name")
       .eq("id", userId)
       .single();
@@ -456,7 +456,7 @@ async function sendPaymentFailedEmail(
     if (!sub?.user_id) return;
 
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("email, full_name")
       .eq("id", sub.user_id)
       .single();

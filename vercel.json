@@ -1,16 +1,55 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "regions": ["iad1"],
+  "rewrites": [
+    {
+      "source": "/:locale/manifest.json",
+      "destination": "/manifest.json"
+    }
+  ],
   "redirects": [
     {
-      "source": "/:path((?!_next|api|static).*)",
-      "has": [{ "type": "host", "value": "klarpakke.no" }],
-      "destination": "https://www.klarpakke.no/:path*",
+      "source": "/:path((?!_next|api|auth|favicon|manifest|robots|sitemap).+)",
+      "has": [
+        {
+          "type": "host",
+          "value": "klarpakke.no"
+        }
+      ],
+      "destination": "https://www.klarpakke.no/$1",
       "permanent": true
     }
   ],
-  "rewrites": [
+  "headers": [
     {
-      "source": "/:locale(en|no)/manifest.json",
-      "destination": "/manifest.json"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ]
 }

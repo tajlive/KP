@@ -46,7 +46,7 @@ export async function GET() {
   const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
 
   const { data: profile } = await authClient
-    .from("profiles")
+    .from("user_profiles")
     .select("role")
     .eq("id", user.id)
     .single();
@@ -84,7 +84,7 @@ export async function GET() {
   try {
     // Get total users from profiles
     const { count: totalUsers, error: userError } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*", { count: "exact", head: true });
 
     if (userError) {

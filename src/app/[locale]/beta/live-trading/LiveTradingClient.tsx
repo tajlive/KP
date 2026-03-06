@@ -232,7 +232,7 @@ export default function LiveTradingClient({
         }
 
         const { data, error: _ } = await supabase
-          .from("profiles")
+          .from("user_profiles")
           .select("*")
           .eq("id", user.id)
           .single();
