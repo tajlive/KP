@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { 
   Play, RotateCcw, Trophy, TrendingUp, TrendingDown,
-  Clock, Target, AlertCircle, Loader2, ChevronRight,
+  Target, AlertCircle, Loader2, ChevronRight,
   BarChart3, History, Settings2
 } from 'lucide-react';
 import { RiskLevel, BacktestResult, BacktestParams } from '@/types/paper-trading';
@@ -21,7 +21,6 @@ interface PaperTradingSimulatorProps {
 }
 
 export function PaperTradingSimulator({ 
-  userId, 
   onSimulationComplete 
 }: PaperTradingSimulatorProps) {
   const [selectedRisk, setSelectedRisk] = useState<RiskLevel>('standard');

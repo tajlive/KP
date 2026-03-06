@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, Label } from './ui';
+import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui';
 
 interface CalculatorResults {
   positionSize: number;

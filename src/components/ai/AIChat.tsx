@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Bot, User, Sparkles, Loader2, RefreshCw } from "lucide-react";
+import { Send, Bot, User, Loader2, RefreshCw } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";

@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTypingEffect, cleanCitations } from "@/hooks/useTypingEffect";
 import { Bot } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 
 interface TypingMessageProps {
   content: string;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  Trophy, TrendingUp, TrendingDown, Medal, 
+  Trophy, Medal, 
   Clock, Filter, ChevronUp, ChevronDown
 } from 'lucide-react';
 import { LeaderboardEntry } from '@/types/paper-trading';

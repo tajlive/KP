@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { 
   TrendingDown, 
-  Calendar, 
   DollarSign, 
   Percent, 
   Activity,

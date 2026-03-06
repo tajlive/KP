@@ -8,7 +8,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, TrendingUp, AlertTriangle, Info, CheckCircle2, Clock } from "lucide-react";
+import { Brain, TrendingUp, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
@@ -20,7 +20,6 @@ import {
   calculateAdaptiveAdjustments,
   getInitialParameters,
   type AdaptiveAdjustment,
-  type StrategyParameters,
 } from "@/lib/ai/adaptive-parameters";
 
 interface AIDecisionPanelProps {

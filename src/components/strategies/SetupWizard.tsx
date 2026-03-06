@@ -141,7 +141,6 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           {WIZARD_STEPS.map((step, index) => {
-            const Icon = step.icon;
             const isCompleted = index < currentStep;
             const isCurrent = index === currentStep;
 

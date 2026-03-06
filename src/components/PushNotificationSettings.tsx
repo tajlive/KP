@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, BellOff, Loader2 } from 'lucide-react'
+import { Bell, BellOff } from 'lucide-react'
 import { usePushNotifications } from '@/lib/pwa'
 
 interface PushNotificationSettingsProps {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AlertTriangle, CheckCircle, XCircle, RefreshCw, Filter } from 'lucide-react';
+import { AlertTriangle, CheckCircle, RefreshCw, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ClientError {

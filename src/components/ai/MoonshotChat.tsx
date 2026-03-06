@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useMoonshot } from "@/hooks/useMoonshot";
-import { cn } from "@/lib/utils";
+
 import { TypingMessage, StaticMessage } from "./TypingMessage";
 import { AlertTriangle, Bot, Send, Sparkles, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
