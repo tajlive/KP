@@ -66,6 +66,33 @@ export async function POST(request: NextRequest) {
     }
 
     const riskConfig = session.risk_config as Record<string, number> | null;
+    // 🔒 Pre-flight balance check for buy orders
+    if (side === "buy") {
+      const currentPrice = await fetchQuickPrice(symbol);
+      const orderValue = quantity * currentPrice;
+      const estimatedFee = orderValue * 0.001; // 0.1% fee estimate
+      const totalCost = orderValue + estimatedFee;
+      
+      // Check if user has sufficient balance (minimum $10 equivalent)
+      const MINIMUM_ORDER_VALUE = 10; // $10 minimum
+      if (orderValue < MINIMUM_ORDER_VALUE) {
+        return NextResponse.json(
+          { error: `Order value must be at least $${MINIMUM_ORDER_VALUE}. Current: $${orderValue.toFixed(2)}` },
+          { status: 400 },
+        );
+      }
+      
+      if (session.current_capital_nok < totalCost) {
+        return NextResponse.json(
+          { 
+            error: `Insufficient balance. Required: $${totalCost.toFixed(2)}, Available: $${session.current_capital_nok.toFixed(2)}`,
+            code: "INSUFFICIENT_BALANCE"
+          },
+          { status: 400 },
+        );
+      }
+    }
+
     if (riskConfig) {
       const maxPositionPct = riskConfig.maxPositionSizePercent || 100;
       const maxValue = session.current_capital_nok * (maxPositionPct / 100);
