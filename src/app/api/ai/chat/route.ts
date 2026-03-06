@@ -24,7 +24,6 @@ import {
   SYSTEM_PROMPTS,
   type AIProvider,
   type AIMessage,
-  NVIDIA_MODELS,
 } from '@/lib/ai/providers';
 
 export const runtime = 'nodejs';

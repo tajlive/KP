@@ -2,12 +2,12 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { 
-  Play, RotateCcw, Trophy, TrendingUp, TrendingDown,
-  Clock, Target, AlertCircle, Loader2, ChevronRight,
-  BarChart3, History, Settings2, Save, Star, ChevronDown,
-  Coins, Brain, Sparkles, X, Check, Info, Zap, Shield
+  Play, RotateCcw, Trophy,
+  Loader2,
+  BarChart3, Save, ChevronDown,
+  Brain, Sparkles, Zap
 } from 'lucide-react';
-import { RiskLevel, BacktestResult, BacktestParams, StrategyType } from '@/types/paper-trading';
+import { RiskLevel, BacktestResult } from '@/types/paper-trading';
 import { RISK_PRESETS, formatUSD, formatPct } from '@/lib/paper-trading/presets';
 import { STRATEGIES, StrategyType as StratType } from '@/lib/paper-trading/strategies';
 import { getAvailableCoins } from '@/lib/paper-trading/data';
@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 // Simple toast function
@@ -29,11 +29,7 @@ const INITIAL_BALANCE = 1_000_000;
 // Mobile-optimized touch targets and layout
 // Designed for iPhone 12+ (390x844) and Android 2022+ (360x800+)
 
-interface MobileSimulatorProps {
-  userId?: string;
-}
-
-export function MobileSimulator({ userId }: MobileSimulatorProps) {
+export function MobileSimulator() {
 
   
   // State
@@ -43,7 +39,7 @@ export function MobileSimulator({ userId }: MobileSimulatorProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<BacktestResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [strategyName, setStrategyName] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);

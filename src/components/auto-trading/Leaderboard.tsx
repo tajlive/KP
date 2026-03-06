@@ -23,7 +23,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Trophy, 
-  TrendingUp, 
   Copy, 
   Users, 
   Calendar,

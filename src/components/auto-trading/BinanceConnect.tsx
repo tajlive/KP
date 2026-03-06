@@ -10,7 +10,6 @@ import { toast } from 'sonner'
 import { 
   ExternalLink, 
   CheckCircle, 
-  AlertCircle, 
   Copy,
   Shield,
   Lock,

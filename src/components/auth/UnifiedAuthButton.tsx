@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+
 import { Loader2, Linkedin, Mail } from 'lucide-react';
 import { SUPPORTED_PROVIDERS, PROVIDER_NAMES } from '@/lib/auth/config';
 import { signInWithOAuth, sendMagicLink, isValidEmail } from '@/lib/auth/utils';

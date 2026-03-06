@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  Trophy, TrendingUp, TrendingDown, Medal, 
+  Trophy,
   Clock, ChevronUp, ChevronDown, Crown, Sparkles
 } from 'lucide-react';
 import { LeaderboardEntry } from '@/types/paper-trading';
-import { formatPct, getRiskColorClass, RISK_PRESETS } from '@/lib/paper-trading/presets';
+import { formatPct } from '@/lib/paper-trading/presets';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTranslations } from 'next-intl';
@@ -43,19 +43,6 @@ const mockLeaderboard: Record<Period, LeaderboardEntry[]> = {
     { id: '16', period: 'all_time', user_id: 'u1', user_display_name: 'CryptoViking 🇳🇴', avatar_url: null, simulation_id: 's1', return_pct: 128.9, sharpe_ratio: 2.2, win_rate: 68, total_trades: 135, rank: 3, previous_rank: 3, created_at: MOCK_TIMESTAMP, updated_at: MOCK_TIMESTAMP, risk_level: 'high', is_public: true }
   ]
 };
-
-function getRankIcon(rank: number) {
-  switch (rank) {
-    case 1:
-      return <Crown className="w-5 h-5 text-yellow-500" />;
-    case 2:
-      return <span className="text-lg">🥈</span>;
-    case 3:
-      return <span className="text-lg">🥉</span>;
-    default:
-      return <span className="text-sm font-medium text-slate-500">#{rank}</span>;
-  }
-}
 
 function getRankChange(current: number, previous: number) {
   const change = previous - current;
