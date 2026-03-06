@@ -661,6 +661,8 @@
     "subtitle": "Klarpakke Universitet",
     "checkStatus": "Sjekk din status",
     "checkStatusDesc": "Logg inn med Google/Microsoft, eller sjekk om du er registrert",
+    "email": "E-postadresse",
+    "password": "Passord",
     "emailLabel": "E-postadresse",
     "emailPlaceholder": "din@email.no",
     "passwordLabel": "Passord",
