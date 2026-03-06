@@ -67,34 +67,20 @@ export async function GET(request: NextRequest) {
         startDate = null;
     }
     
-    // Fetch paper trading sessions with user info
-    // Only include users who have opted in to leaderboard
-    let query = supabase
+    // Fetch paper trading sessions
+    let sessionsQuery = supabase
       .from('trading_sessions')
-      .select(`
-        id,
-        user_id,
-        starting_capital_nok,
-        current_capital_nok,
-        total_pnl,
-        total_trades,
-        started_at,
-        user_profiles!inner(
-          full_name,
-          avatar_url,
-          show_on_leaderboard
-        )
-      `)
+      .select('id, user_id, starting_capital_nok, current_capital_nok, total_pnl, total_trades, started_at')
       .eq('mode', 'paper')
       .eq('status', 'active')
       .order('current_capital_nok', { ascending: false })
-      .limit(limit * 2); // Fetch more to account for filtering
+      .limit(limit * 3); // Fetch more to account for filtering
     
     if (startDate) {
-      query = query.gte('started_at', startDate.toISOString());
+      sessionsQuery = sessionsQuery.gte('started_at', startDate.toISOString());
     }
     
-    const { data: sessions, error: sessionsError } = await query;
+    const { data: sessions, error: sessionsError } = await sessionsQuery;
     
     if (sessionsError) {
       console.error('Failed to fetch leaderboard sessions:', sessionsError);
@@ -104,10 +90,29 @@ export async function GET(request: NextRequest) {
       );
     }
     
+    // Get user IDs from sessions
+    const sessionUserIds = sessions?.map(s => s.user_id) || [];
+    
+    // Fetch user profiles with leaderboard preference
+    const { data: profiles, error: profilesError } = await supabase
+      .from('user_profiles')
+      .select('user_id, full_name, avatar_url, show_on_leaderboard')
+      .in('user_id', sessionUserIds)
+      .eq('show_on_leaderboard', true);
+    
+    if (profilesError) {
+      console.error('Failed to fetch user profiles:', profilesError);
+    }
+    
+    // Create a map of user profiles
+    const profileMap = new Map<string, UserProfile>();
+    profiles?.forEach(profile => {
+      profileMap.set(profile.user_id, profile);
+    });
+    
     // Filter sessions where user has opted in to leaderboard
     const filteredSessions = sessions?.filter(session => {
-      const profile = session.user_profiles as UserProfile;
-      return profile?.show_on_leaderboard === true;
+      return profileMap.has(session.user_id);
     }) || [];
     
     // Limit to requested amount
@@ -122,7 +127,7 @@ export async function GET(request: NextRequest) {
       });
     }
     
-    // Fetch trade stats for each user to calculate win rate
+    // Get user IDs for trade stats lookup
     const userIds = limitedSessions.map(s => s.user_id);
     
     const { data: tradeStats, error: tradeError } = await supabase
@@ -156,7 +161,7 @@ export async function GET(request: NextRequest) {
     
     // Build leaderboard entries
     const entries: LeaderboardEntry[] = limitedSessions.map((session, index) => {
-      const profile = session.user_profiles as UserProfile;
+      const profile = profileMap.get(session.user_id);
       const stats = userTradeStats.get(session.user_id);
       
       const startingCapital = session.starting_capital_nok || 1000000; // Default 1M NOK
