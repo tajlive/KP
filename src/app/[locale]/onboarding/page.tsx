@@ -1,57 +1,43 @@
-import { requireAuth } from "@/lib/auth-guard";
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import OnboardingClient from "@/components/onboarding/OnboardingClient";
+import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Kom i gang | Klarpakke",
-  description: "Sett opp din første trading strategi",
-};
-
-export default async function OnboardingPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const { user } = await requireAuth(locale);
-
+export default async function OnboardingRoot() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Check if user has already completed onboarding
-  // Try user_profiles first
+  if (!user) {
+    redirect("/innlogging");
+  }
+
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("onboarding_completed, setup_completed_at")
+    .select("onboarding_step, onboarding_completed")
     .eq("id", user.id)
     .single();
 
-  const onboardingCompleted =
-    profile?.onboarding_completed === true ||
-    profile?.setup_completed_at !== null;
-
-  if (onboardingCompleted) {
-    // Also check profiles table as fallback
-    const { data: fallbackProfile } = await supabase
-      .from("profiles")
-      .select("onboarding_completed, setup_completed_at")
-      .eq("id", user.id)
-      .single();
-
-    const fallbackCompleted =
-      fallbackProfile?.onboarding_completed === true ||
-      fallbackProfile?.setup_completed_at !== null;
-
-    if (fallbackCompleted) {
-      // User has completed onboarding, redirect to dashboard
-      redirect(`/${locale}/dashboard`);
-    }
+  if (profile?.onboarding_completed) {
+    redirect("/dashboard");
   }
 
-  return (
-    <div className="min-h-screen bg-slate-950">
-      <OnboardingClient userId={user.id} />
-    </div>
-  );
+  const step = profile?.onboarding_step || 0;
+
+  // Redirect to correct step
+  if (step === 0 || step === 1) {
+    redirect("/onboarding/step1-welcome");
+  }
+  if (step === 2) {
+    redirect("/onboarding/step2-experience");
+  }
+  if (step === 3) {
+    redirect("/onboarding/step3-trading-mode");
+  }
+  if (step === 4) {
+    redirect("/onboarding/step4-binance");
+  }
+  if (step === 5) {
+    redirect("/onboarding/step5-complete");
+  }
+
+  // Fallback
+  redirect("/onboarding/step1-welcome");
 }
