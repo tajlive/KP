@@ -33,6 +33,41 @@ export class PaperExecutor implements OrderExecutor {
    */
   async executeOrder(params: OrderParams): Promise<OrderResult> {
     try {
+      // 0. Balance check for buy orders
+      if (params.side === 'buy' || params.side === 'BUY') {
+        const balance = await this.getBalance();
+        const currentPrice = await fetchBinancePrice(params.symbol);
+        const orderValue = params.quantity * currentPrice;
+        const fee = calculateFee(params.quantity, currentPrice);
+        const totalCost = orderValue + fee;
+        
+        // Minimum $10 order value
+        const MIN_ORDER_VALUE = 10;
+        if (orderValue < MIN_ORDER_VALUE) {
+          return {
+            success: false,
+            orderId: "",
+            executedPrice: 0,
+            executedQuantity: 0,
+            fee: 0,
+            timestamp: new Date(),
+            error: `Order value must be at least $${MIN_ORDER_VALUE}. Current: $${orderValue.toFixed(2)}`,
+          };
+        }
+        
+        if (balance.available < totalCost) {
+          return {
+            success: false,
+            orderId: "",
+            executedPrice: 0,
+            executedQuantity: 0,
+            fee: 0,
+            timestamp: new Date(),
+            error: `Insufficient paper balance. Required: $${totalCost.toFixed(2)}, Available: $${balance.available.toFixed(2)}`,
+          };
+        }
+      }
+
       // 1. Fetch current market price
       const currentPrice = await fetchBinancePrice(params.symbol);
 

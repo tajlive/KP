@@ -53,19 +53,38 @@ export default function AIDecisionPanel({
 
   useEffect(() => {
     const fetchAIDecisions = async () => {
+      // ⏱️ Timeout wrapper to prevent infinite loading
+      const TIMEOUT_MS = 10000; // 10 seconds timeout
+      
+      const fetchWithTimeout = async () => {
+        return Promise.race([
+          (async () => {
+            // Hent sentiment-analyse
+            const sentiment = await analyzeMarketSentiment();
+
+            // Hent adaptive justeringer
+            const initialParams = getInitialParameters(strategyId);
+            const { adjustments, explanation } = await calculateAdaptiveAdjustments(
+              userId,
+              strategyId,
+              initialParams
+            );
+
+            return { sentiment, adjustments };
+          })(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), TIMEOUT_MS)
+          )
+        ]);
+      };
+
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
 
-        // Hent sentiment-analyse
-        const sentiment = await analyzeMarketSentiment();
-
-        // Hent adaptive justeringer
-        const initialParams = getInitialParameters(strategyId);
-        const { adjustments, explanation } = await calculateAdaptiveAdjustments(
-          userId,
-          strategyId,
-          initialParams
-        );
+        const { sentiment, adjustments } = await fetchWithTimeout() as {
+          sentiment: SentimentAnalysis;
+          adjustments: AdaptiveAdjustment[];
+        };
 
         setState({
           sentiment,
@@ -79,7 +98,9 @@ export default function AIDecisionPanel({
         setState((prev) => ({
           ...prev,
           loading: false,
-          error: lang === "en" ? "Failed to load AI analysis" : "Kunne ikke laste AI-analyse",
+          error: lang === "en" 
+            ? "Failed to load AI analysis (timeout)" 
+            : "Kunne ikke laste AI-analyse (tidsavbrudd)",
         }));
       }
     };
