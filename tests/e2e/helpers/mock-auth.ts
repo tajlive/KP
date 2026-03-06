@@ -1,11 +1,11 @@
-import { Page, BrowserContext } from '@playwright/test';
+import { BrowserContext, Page } from "@playwright/test";
 
 /**
  * Mock Authentication Helper
- * 
+ *
  * Bruker session-cookies for å simulere innlogging uten å
  * faktisk gå gjennom login-flow.
- * 
+ *
  * Dette er raskere og mer pålitelig for E2E-tester.
  */
 
@@ -17,25 +17,25 @@ export interface MockUser {
 
 // Standard test-bruker
 export const MOCK_USER: MockUser = {
-  id: '00000000-0000-0000-0000-000000000001',
-  email: 'test@klarpakke.no',
-  full_name: 'Test User',
+  id: "00000000-0000-0000-0000-000000000001",
+  email: "test@klarpakke.no",
+  full_name: "Test User",
 };
 
 /**
  * Simulerer innlogging ved å sette Supabase session-cookies
- * 
+ *
  * Bruk: await mockLogin(page, context);
  */
 export async function mockLogin(
-  page: Page, 
-  context: BrowserContext, 
-  user: MockUser = MOCK_USER
+  page: Page,
+  context: BrowserContext,
+  user: MockUser = MOCK_USER,
 ) {
   // Lag en mock-session
   const mockSession = {
-    access_token: 'mock-access-token-' + Date.now(),
-    refresh_token: 'mock-refresh-token-' + Date.now(),
+    access_token: "mock-access-token-" + Date.now(),
+    refresh_token: "mock-refresh-token-" + Date.now(),
     expires_in: 3600,
     expires_at: Math.floor(Date.now() / 1000) + 3600,
     user: {
@@ -44,26 +44,26 @@ export async function mockLogin(
       user_metadata: {
         full_name: user.full_name,
       },
-      aud: 'authenticated',
-      role: 'authenticated',
+      aud: "authenticated",
+      role: "authenticated",
     },
   };
 
   // Sett cookies for Supabase auth
   await context.addCookies([
     {
-      name: 'sb-access-token',
+      name: "sb-access-token",
       value: mockSession.access_token,
       domain: new URL(page.url()).hostname,
-      path: '/',
+      path: "/",
       httpOnly: false,
       secure: false,
     },
     {
-      name: 'sb-refresh-token',
+      name: "sb-refresh-token",
       value: mockSession.refresh_token,
       domain: new URL(page.url()).hostname,
-      path: '/',
+      path: "/",
       httpOnly: false,
       secure: false,
     },
@@ -71,15 +71,17 @@ export async function mockLogin(
 
   // Inject session i localStorage (Supabase bruker dette)
   await page.evaluate((session) => {
-    localStorage.setItem('sb-auth-token', JSON.stringify(session));
+    localStorage.setItem("sb-auth-token", JSON.stringify(session));
     // Trigg auth state change event
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'sb-auth-token',
-      newValue: JSON.stringify(session),
-    }));
+    window.dispatchEvent(
+      new window.StorageEvent("storage", {
+        key: "sb-auth-token",
+        newValue: JSON.stringify(session),
+      }),
+    );
   }, mockSession);
 
-  console.log('✅ Mock login completed for:', user.email);
+  console.info("✅ Mock login completed for:", user.email);
 }
 
 /**
@@ -87,7 +89,7 @@ export async function mockLogin(
  */
 export async function isMockLoggedIn(page: Page): Promise<boolean> {
   const token = await page.evaluate(() => {
-    return localStorage.getItem('sb-auth-token');
+    return localStorage.getItem("sb-auth-token");
   });
   return !!token;
 }
@@ -97,10 +99,10 @@ export async function isMockLoggedIn(page: Page): Promise<boolean> {
  */
 export async function mockLogout(page: Page, context: BrowserContext) {
   await page.evaluate(() => {
-    localStorage.removeItem('sb-auth-token');
+    localStorage.removeItem("sb-auth-token");
   });
-  
+
   await context.clearCookies();
-  
-  console.log('✅ Mock logout completed');
+
+  console.info("✅ Mock logout completed");
 }
