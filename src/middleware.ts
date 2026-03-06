@@ -238,8 +238,16 @@ export async function middleware(request: NextRequest) {
 
   // 3. Onboarding flow for authenticated users
   if (user) {
+    // EMERGENCY BYPASS: Skip onboarding checks entirely for now
+    // TODO: Re-enable after fixing cookie/session issues
+    const isOnboardingPage = pathWithoutLocale.startsWith("/onboarding");
+    
+    // Always allow access to all pages for authenticated users
+    // The onboarding wizard can still be accessed manually if needed
+    return response;
+    
+    /* DISABLED - Causing redirect loops
     // Only check onboarding if they are navigating to a protected path (or root dashboard)
-    // We don't want to enforce onboarding on purely public marketing pages unless specified
     if (isProtected) {
       let onboardingCompleted =
         request.cookies.get("kp_onboarding_status")?.value === "completed";
@@ -279,7 +287,7 @@ export async function middleware(request: NextRequest) {
           if (onboardingCompleted) {
             response.cookies.set("kp_onboarding_status", "completed", {
               path: "/",
-              maxAge: 3600 * 24 * 30, // 30 days — DB only queried once after login
+              maxAge: 3600 * 24 * 30,
               sameSite: "lax",
               secure: true,
               domain: cookieDomain,
@@ -289,8 +297,6 @@ export async function middleware(request: NextRequest) {
           console.error("Error checking onboarding status:", err);
         }
       }
-
-      const isOnboardingPage = pathWithoutLocale.startsWith("/onboarding");
 
       // Redirect to onboarding if not completed and not already there
       if (!onboardingCompleted && !isOnboardingPage) {
@@ -306,6 +312,7 @@ export async function middleware(request: NextRequest) {
         );
       }
     }
+    */
   }
 
   return response;
