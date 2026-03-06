@@ -1,0 +1,53 @@
+# ============================================================================
+# MANUELL DEPLOY - Kun trigges manuelt (sparer GitHub Actions minutter)
+# ============================================================================
+
+name: 🚀 Manual Deploy
+
+on:
+  workflow_dispatch:  # Kun manuell trigger
+    inputs:
+      environment:
+        description: 'Deploy til'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # Timeout for å spare minutter
+    
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔍 Lint
+        run: npm run lint -- --max-warnings=1000
+
+      - name: 🏗️ Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: 🚀 Deploy to Vercel
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+          else
+            npx vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+          fi

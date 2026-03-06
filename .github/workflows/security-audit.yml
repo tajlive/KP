@@ -1,0 +1,48 @@
+# ============================================================================
+# SIKKERHETSAUDIT - Kun 1 gang per uke + manuell trigger
+# ============================================================================
+
+name: 🔒 Security Audit
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"  # Hver mandag kl 09:00 (1 gang per uke)
+  workflow_dispatch:  # + manuell trigger
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Install (kun for audit)
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🛡️ npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: 🔍 Check for secrets
+        run: |
+          if grep -r "sk-\|pk_live\|ghp_\|AKIA" src/ --include="*.ts" --include="*.tsx" 2>/dev/null; then
+            echo "⚠️ Potensielle hemmeligheter funnet!"
+            exit 1
+          else
+            echo "✅ Ingen hemmeligheter funnet"
+          fi
+        continue-on-error: true
+
+      - name: 📊 Snyk test (hvis token finnes)
+        run: npx snyk test || echo "Snyk token ikke konfigurert"
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true

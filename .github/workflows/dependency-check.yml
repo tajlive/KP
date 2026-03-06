@@ -1,0 +1,41 @@
+# ============================================================================
+# DEPENDENCY CHECK - Månedlig sjekk + manuell trigger
+# ============================================================================
+
+name: 📦 Dependency Check
+
+on:
+  schedule:
+    - cron: "0 10 1 * *"  # 1. i hver måned kl 10:00
+  workflow_dispatch:
+
+jobs:
+  deps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Install
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔍 depcheck
+        run: npx depcheck --json > unused-deps.json || true
+
+      - name: 📊 knip
+        run: npx knip --no-exit-code
+
+      - name: 📁 Upload resultater
+        uses: actions/upload-artifact@v4
+        with:
+          name: unused-dependencies
+          path: unused-deps.json
+        if: always()
