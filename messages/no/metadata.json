@@ -20,7 +20,11 @@
     "description": "Utfør live trades med sanntidssignaler og automatiserte strategier."
   },
   "login": {
-    "title": "Innlogging | Klarpakke",
-    "description": "Logg inn på din Klarpakke-konto."
+    "title": "Logg inn - Student Portal | Klarpakke",
+    "description": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, paper trading og automatiserte signaler."
+  },
+  "dashboard": {
+    "title": "Dashboard - Din Trading Oversikt | Klarpakke",
+    "description": "Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse i sanntid."
   }
 }
