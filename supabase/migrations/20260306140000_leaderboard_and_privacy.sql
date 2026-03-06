@@ -30,7 +30,7 @@ WHERE mode = 'paper' AND status = 'active';
 
 -- Index for trades statistics
 CREATE INDEX IF NOT EXISTS idx_trades_user_pnl 
-ON trades(user_id, mode, side, pnl) 
+ON trades(user_id, mode, side, realized_pnl) 
 WHERE mode = 'paper';
 
 -- ============================================================================

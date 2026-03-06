@@ -15,11 +15,13 @@ CREATE TABLE IF NOT EXISTS public.positions (
 
 ALTER TABLE public.positions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own positions" ON public.positions;
 CREATE POLICY "Users can view own positions"
   ON public.positions FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can manage own positions" ON public.positions;
 CREATE POLICY "Users can manage own positions"
   ON public.positions FOR ALL USING (auth.uid() = user_id);
 
-CREATE INDEX positions_portfolio_id_idx ON public.positions(portfolio_id);
-CREATE INDEX positions_symbol_idx ON public.positions(symbol);
+CREATE INDEX IF NOT EXISTS positions_portfolio_id_idx ON public.positions(portfolio_id);
+CREATE INDEX IF NOT EXISTS positions_symbol_idx ON public.positions(symbol);

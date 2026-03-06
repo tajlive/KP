@@ -31,6 +31,12 @@ interface LeaderboardEntry {
   riskScore: number;
 }
 
+interface UserProfile {
+  full_name: string | null;
+  avatar_url: string | null;
+  show_on_leaderboard: boolean;
+}
+
 type Period = 'daily' | 'weekly' | 'monthly' | 'all-time';
 
 export async function GET(request: NextRequest) {
@@ -61,45 +67,58 @@ export async function GET(request: NextRequest) {
         startDate = null;
     }
     
-    // Fetch paper trading sessions with user info
-    // Only include users who have opted in to leaderboard
-    let query = supabase
+    // Fetch paper trading sessions
+    let sessionsQuery = supabase
       .from('trading_sessions')
-      .select(`
-        id,
-        user_id,
-        starting_capital_nok,
-        current_capital_nok,
-        total_pnl,
-        total_trades,
-        started_at,
-        user_profiles!inner(
-          full_name,
-          avatar_url,
-          show_on_leaderboard
-        )
-      `)
+      .select('id, user_id, starting_capital_nok, current_capital_nok, total_pnl, total_trades, started_at')
       .eq('mode', 'paper')
       .eq('status', 'active')
-      .eq('user_profiles.show_on_leaderboard', true)
       .order('current_capital_nok', { ascending: false })
-      .limit(limit);
+      .limit(limit * 3); // Fetch more to account for filtering
     
     if (startDate) {
-      query = query.gte('started_at', startDate.toISOString());
+      sessionsQuery = sessionsQuery.gte('started_at', startDate.toISOString());
     }
     
-    const { data: sessions, error: sessionsError } = await query;
+    const { data: sessions, error: sessionsError } = await sessionsQuery;
     
     if (sessionsError) {
       console.error('Failed to fetch leaderboard sessions:', sessionsError);
       return NextResponse.json(
-        { error: 'Failed to fetch leaderboard' },
+        { error: 'Failed to fetch leaderboard', details: sessionsError.message },
         { status: 500 }
       );
     }
     
-    if (!sessions || sessions.length === 0) {
+    // Get user IDs from sessions
+    const sessionUserIds = sessions?.map(s => s.user_id) || [];
+    
+    // Fetch user profiles with leaderboard preference
+    const { data: profiles, error: profilesError } = await supabase
+      .from('user_profiles')
+      .select('user_id, full_name, avatar_url, show_on_leaderboard')
+      .in('user_id', sessionUserIds)
+      .eq('show_on_leaderboard', true);
+    
+    if (profilesError) {
+      console.error('Failed to fetch user profiles:', profilesError);
+    }
+    
+    // Create a map of user profiles
+    const profileMap = new Map<string, UserProfile>();
+    profiles?.forEach(profile => {
+      profileMap.set(profile.user_id, profile);
+    });
+    
+    // Filter sessions where user has opted in to leaderboard
+    const filteredSessions = sessions?.filter(session => {
+      return profileMap.has(session.user_id);
+    }) || [];
+    
+    // Limit to requested amount
+    const limitedSessions = filteredSessions.slice(0, limit);
+    
+    if (limitedSessions.length === 0) {
       return NextResponse.json({
         period,
         entries: [],
@@ -108,12 +127,12 @@ export async function GET(request: NextRequest) {
       });
     }
     
-    // Fetch trade stats for each user to calculate win rate
-    const userIds = sessions.map(s => s.user_id);
+    // Get user IDs for trade stats lookup
+    const userIds = limitedSessions.map(s => s.user_id);
     
     const { data: tradeStats, error: tradeError } = await supabase
       .from('trades')
-      .select('user_id, side, pnl')
+      .select('user_id, side, realized_pnl')
       .in('user_id', userIds)
       .eq('mode', 'paper');
     
@@ -129,20 +148,20 @@ export async function GET(request: NextRequest) {
       stats.total++;
       
       // For sell trades, positive PnL = win
-      if (trade.side === 'sell' && trade.pnl && trade.pnl > 0) {
+      if (trade.side === 'sell' && trade.realized_pnl && trade.realized_pnl > 0) {
         stats.wins++;
       }
       
-      if (trade.pnl) {
-        stats.pnls.push(trade.pnl);
+      if (trade.realized_pnl) {
+        stats.pnls.push(trade.realized_pnl);
       }
       
       userTradeStats.set(trade.user_id, stats);
     });
     
     // Build leaderboard entries
-    const entries: LeaderboardEntry[] = sessions.map((session, index) => {
-      const profile = session.user_profiles as any;
+    const entries: LeaderboardEntry[] = limitedSessions.map((session, index) => {
+      const profile = profileMap.get(session.user_id);
       const stats = userTradeStats.get(session.user_id);
       
       const startingCapital = session.starting_capital_nok || 1000000; // Default 1M NOK
