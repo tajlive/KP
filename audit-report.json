@@ -1,0 +1,290 @@
+[
+  {
+    "path": "/dashboard",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 2117
+  },
+  {
+    "path": "/dashboard/activity",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 800
+  },
+  {
+    "path": "/dashboard/auto-trade",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 918
+  },
+  {
+    "path": "/dashboard/guide",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 5858
+  },
+  {
+    "path": "/dashboard/portfolio",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 4018
+  },
+  {
+    "path": "/dashboard/referral",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 558
+  },
+  {
+    "path": "/dashboard/settings",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 180
+  },
+  {
+    "path": "/dashboard/tax-report",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 339
+  },
+  {
+    "path": "/dashboard/trading",
+    "category": "Dashboard",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 295
+  },
+  {
+    "path": "/paper-trading",
+    "category": "Trading",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 696
+  },
+  {
+    "path": "/auto-trading",
+    "category": "Trading",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 246
+  },
+  {
+    "path": "/auto-trading-ai",
+    "category": "Trading",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 248
+  },
+  {
+    "path": "/live-trading",
+    "category": "Trading",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 694
+  },
+  {
+    "path": "/copy-trading",
+    "category": "Trading",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 588
+  },
+  {
+    "path": "/handelshistorikk",
+    "category": "Analyse",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 137
+  },
+  {
+    "path": "/leaderboard",
+    "category": "Analyse",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 678
+  },
+  {
+    "path": "/varsler",
+    "category": "Analyse",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 110
+  },
+  {
+    "path": "/signals",
+    "category": "Analyse",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 610
+  },
+  {
+    "path": "/akademi",
+    "category": "Læring",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 110
+  },
+  {
+    "path": "/kurs",
+    "category": "Læring",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 105
+  },
+  {
+    "path": "/quiz",
+    "category": "Læring",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 567
+  },
+  {
+    "path": "/simulator",
+    "category": "Læring",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 116
+  },
+  {
+    "path": "/interessetest",
+    "category": "Læring",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 128
+  },
+  {
+    "path": "/leagues",
+    "category": "Konkurranser",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 110
+  },
+  {
+    "path": "/beta",
+    "category": "Konkurranser",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 222
+  },
+  {
+    "path": "/beta-testing",
+    "category": "Konkurranser",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 437
+  },
+  {
+    "path": "/profile",
+    "category": "Profil",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 158
+  },
+  {
+    "path": "/innstillinger",
+    "category": "Profil",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 181
+  },
+  {
+    "path": "/konto",
+    "category": "Profil",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 826
+  },
+  {
+    "path": "/settings",
+    "category": "Profil",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 651
+  },
+  {
+    "path": "/onboarding",
+    "category": "Onboarding",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": true,
+    "fileSize": 1026
+  },
+  {
+    "path": "/onboarding/step1-welcome",
+    "category": "Onboarding",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 2928
+  },
+  {
+    "path": "/onboarding/step2-experience",
+    "category": "Onboarding",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 3598
+  },
+  {
+    "path": "/onboarding/step3-trading-mode",
+    "category": "Onboarding",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 5113
+  },
+  {
+    "path": "/onboarding/step4-binance",
+    "category": "Onboarding",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 3473
+  },
+  {
+    "path": "/onboarding/step5-complete",
+    "category": "Onboarding",
+    "exists": true,
+    "hasPageTsx": true,
+    "hasClientComponent": false,
+    "fileSize": 3525
+  }
+]
