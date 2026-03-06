@@ -23,5 +23,17 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "klarpakke.no"
+        }
+      ],
+      "destination": "https://www.klarpakke.no/:path*"
+    }
   ]
 }
