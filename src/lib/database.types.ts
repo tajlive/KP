@@ -435,8 +435,11 @@ export interface Database {
           bio: string | null
           role: 'user' | 'admin' | 'super_admin' | 'founder'
           is_founder: boolean
+          status: string | null
           subscription_tier: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
           show_on_leaderboard: boolean
+          banned_at: string | null
+          ban_reason: string | null
           created_at: string
           updated_at: string
         }
@@ -449,8 +452,11 @@ export interface Database {
           bio?: string | null
           role?: 'user' | 'admin' | 'super_admin' | 'founder'
           is_founder?: boolean
+          status?: string | null
           subscription_tier?: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
           show_on_leaderboard?: boolean
+          banned_at?: string | null
+          ban_reason?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -463,8 +469,11 @@ export interface Database {
           bio?: string | null
           role?: 'user' | 'admin' | 'super_admin' | 'founder'
           is_founder?: boolean
+          status?: string | null
           subscription_tier?: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
           show_on_leaderboard?: boolean
+          banned_at?: string | null
+          ban_reason?: string | null
           created_at?: string
           updated_at?: string
         }
