@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
   try {
     const { data: recentUsers, error } = await supabase
-      .from('profiles')
+      .from('user_profiles' as any)
       .select('id, email, first_name, last_name, created_at, source')
       .order('created_at', { ascending: false })
       .limit(limit);

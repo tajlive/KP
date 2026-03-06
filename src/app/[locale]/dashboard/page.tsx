@@ -42,7 +42,7 @@ export default async function DashboardPage({
       .order("created_at", { ascending: false })
       .limit(20),
     supabase
-      .from("user_strategies")
+      .from("strategies" as any)
       .select("*")
       .eq("user_id", user.id)
       .eq("is_active", true),

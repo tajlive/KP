@@ -40,7 +40,7 @@ export default function ClientCampaign() {
         }
 
         const { data: profile } = await supabase
-          .from('profiles')
+          .from('user_profiles' as any)
           .select('role')
           .eq('user_id', user.id)
           .single();

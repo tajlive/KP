@@ -57,7 +57,7 @@ interface CreatorProfileClientProps {
 export default function CreatorProfileClient({
   traderId,
 }: CreatorProfileClientProps) {
-  const { locale } = useParams<unknown>();
+  const { locale } = useParams();
   const [profile, setProfile] = useState<TraderProfile | null>(null);
   const [publicStrategies, setPublicStrategies] = useState<PublicStrategy[]>(
     [],
@@ -156,7 +156,7 @@ export default function CreatorProfileClient({
 
       // Fetch public strategies from user_strategies
       const { data: strategies } = await supabase
-        .from("user_strategies")
+        .from("strategies" as any)
         .select("*")
         .eq("user_id", traderId)
         .eq("is_public", true)
