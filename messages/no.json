@@ -12,7 +12,11 @@
     },
     "login": {
       "title": "Logg inn - Student Portal",
-      "description": "Logg inn på din studentportal for å få tilgang til kurs, paper trading og din profil."
+      "description": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, paper trading og automatiserte signaler."
+    },
+    "dashboard": {
+      "title": "Dashboard - Din Trading Oversikt",
+      "description": "Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse i sanntid."
     },
     "about": {
       "title": "Om Oss - Vår historie",
@@ -31,7 +35,7 @@
     "pricing": "Priser",
     "pricingDescription": "Enkel prising for krypto-utdanning",
     "login": "Innlogging",
-    "loginDescription": "Logg inn på din studentportal",
+    "loginDescription": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, paper trading og automatiserte signaler.",
     "coursesDescription": "Lær krypto-trading fra A til Å"
   },
   "base": {

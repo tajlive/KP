@@ -12,7 +12,11 @@
     },
     "login": {
       "title": "Login - Student Portal",
-      "description": "Sign in to your student portal to access courses, paper trading, and your profile."
+      "description": "Sign in to your Klarpakke account to access trading courses, paper trading, and automated signals."
+    },
+    "dashboard": {
+      "title": "Dashboard - Your Trading Overview",
+      "description": "Your personal crypto trading dashboard with paper trading, live trading and real-time portfolio analysis."
     },
     "about": {
       "title": "About Us - Our Story",
@@ -31,7 +35,7 @@
     "login": "Login",
     "pricing": "Pricing",
     "pricingDescription": "Simple pricing for crypto education",
-    "loginDescription": "Log in to your student portal",
+    "loginDescription": "Sign in to your Klarpakke account to access trading courses, paper trading, and automated signals.",
     "coursesDescription": "Learn crypto trading from A to Z"
   },
   "base": {

@@ -1,9 +1,25 @@
 import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
 import GetStartedCard from "@/components/dashboard/GetStartedCard";
 import { requireAuth } from "@/lib/auth-guard";
+import { getTranslations } from "next-intl/server";
+import { Metadata } from "next";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ locale: string }> 
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+  
+  return {
+    title: t('dashboard.title', { defaultValue: 'Dashboard - Klarpakke' }),
+    description: t('dashboard.description', { defaultValue: 'Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse.' }),
+  };
+}
 
 export default async function DashboardPage({
   params,

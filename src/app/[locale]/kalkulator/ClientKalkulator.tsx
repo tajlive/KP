@@ -185,10 +185,11 @@ export default function CalculatorPage() {
           <div className="p-6 sm:p-8 space-y-6">
             {/* Startbeløp */}
             <div>
-              <label className="block text-sm font-medium text-[#0A0B0D] mb-2">
+              <label htmlFor="startAmount" className="block text-sm font-medium text-[#0A0B0D] mb-2">
                 {t('inputs.startAmount')}
               </label>
               <input
+                id="startAmount"
                 type="text"
                 inputMode="numeric"
                 value={startSumInput}
@@ -215,7 +216,7 @@ export default function CalculatorPage() {
             {/* Daglig % — slider */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium text-[#0A0B0D]">
+                <label htmlFor="dailyReturn" className="text-sm font-medium text-[#0A0B0D]">
                   {t('inputs.dailyReturn')}
                 </label>
                 <span className="text-lg font-bold text-[#0052FF] tabular-nums">
@@ -223,6 +224,7 @@ export default function CalculatorPage() {
                 </span>
               </div>
               <input
+                id="dailyReturn"
                 type="range"
                 min="0.1"
                 max="4"
