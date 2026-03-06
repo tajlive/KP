@@ -23,7 +23,7 @@ test.describe('Deploy Panel', () => {
 
         expect(isVisible || true).toBeTruthy();
       }
-    } catch (err) {
+    } catch {
       // Deploy feature might not be directly accessible
       expect(true).toBeTruthy();
     }
@@ -46,7 +46,7 @@ test.describe('Deploy Panel', () => {
 
       // Should have some deployment options or it's not yet implemented
       expect(foundOptions.length >= 0).toBeTruthy();
-    } catch (err) {
+    } catch {
       // Feature might not be accessible
       expect(true).toBeTruthy();
     }

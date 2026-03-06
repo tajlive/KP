@@ -125,7 +125,7 @@ export default function ClientSuperAdmin() {
         .order("created_at", { ascending: false });
 
       setSessions(sessionsData || []);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Kunne ikke laste data");
     } finally {
       setLoading(false);

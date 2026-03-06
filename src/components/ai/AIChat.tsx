@@ -108,7 +108,7 @@ export function AIChat({
       if (data.provider) {
         setActiveProvider(data.provider);
       }
-    } catch (error) {
+    } catch (_error) {
       setMessages((prev) => [
         ...prev,
         {

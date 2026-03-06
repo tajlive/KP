@@ -19,7 +19,7 @@ test.describe('Page Manager', () => {
       const isVisible = await pageManager.isVisible({ timeout: 5000 }).catch(() => false);
 
       expect(isVisible || true).toBeTruthy();
-    } catch (err) {
+    } catch {
       expect(true).toBeTruthy();
     }
   });
@@ -35,7 +35,7 @@ test.describe('Page Manager', () => {
 
       // Should have loaded pages or show empty state
       expect(count >= 0).toBeTruthy();
-    } catch (err) {
+    } catch {
       expect(true).toBeTruthy();
     }
   });
@@ -50,7 +50,7 @@ test.describe('Page Manager', () => {
       const hasInfo = await pageInfo.isVisible({ timeout: 5000 }).catch(() => false);
 
       expect(hasInfo || true).toBeTruthy();
-    } catch (err) {
+    } catch {
       expect(true).toBeTruthy();
     }
   });
@@ -70,7 +70,7 @@ test.describe('Page Manager', () => {
         // Should highlight or show page details
         expect(true).toBeTruthy();
       }
-    } catch (err) {
+    } catch {
       expect(true).toBeTruthy();
     }
   });
@@ -89,7 +89,7 @@ test.describe('Page Manager', () => {
 
         expect(true).toBeTruthy();
       }
-    } catch (err) {
+    } catch {
       expect(true).toBeTruthy();
     }
   });
@@ -104,7 +104,7 @@ test.describe('Page Manager', () => {
       const hasCount = await count.isVisible({ timeout: 3000 }).catch(() => false);
 
       expect(hasCount || true).toBeTruthy();
-    } catch (err) {
+    } catch {
       expect(true).toBeTruthy();
     }
   });

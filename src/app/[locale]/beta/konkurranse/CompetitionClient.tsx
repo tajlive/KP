@@ -122,7 +122,7 @@ export default function CompetitionClient({
             try {
                 await startAutoTrade(entry.risk_level)
                 router.push(`/${params.locale}/beta/auto-trade`)
-            } catch (error) {
+            } catch (_error) {
                 toast.error('Kunne ikke kopiere strategi. Prøv igjen senere.')
             }
         }

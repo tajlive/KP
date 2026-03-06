@@ -60,7 +60,7 @@ export default function ClientAdminSystem() {
         message: error ? error.message : `${latency}ms latency`,
         lastChecked: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch (_error) {
       results.push({
         name: 'Supabase Database',
         status: 'down',
@@ -79,7 +79,7 @@ export default function ClientAdminSystem() {
         message: error ? error.message : 'Auth valid',
         lastChecked: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch (_error) {
       results.push({
         name: 'Supabase Auth',
         status: 'down',
@@ -120,7 +120,7 @@ export default function ClientAdminSystem() {
         message: `${count || 0} of 100 students (${percentage}% full)`,
         lastChecked: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch (_error) {
       results.push({
         name: 'Beta Capacity',
         status: 'down',

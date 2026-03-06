@@ -66,7 +66,7 @@ export default function ResetPasswordClient() {
       setTimeout(() => {
         router.push(`/${locale}/innlogging`);
       }, 3000);
-    } catch (err) {
+    } catch (_err) {
       setError(t("resetPassword.error"));
     } finally {
       setLoading(false);

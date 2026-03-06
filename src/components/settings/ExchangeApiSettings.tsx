@@ -131,7 +131,7 @@ export function ExchangeApiSettings() {
 
       setSuccess("✅ Tilkobling vellykket!");
       return data.accountInfo;
-    } catch (error) {
+    } catch (_error) {
       setErrors({ test: "Nettverksfeil ved testing" });
       return null;
     } finally {
@@ -190,7 +190,7 @@ export function ExchangeApiSettings() {
       if (error) throw error;
       await loadApiKeys();
       toast.success("API-nøkkel slettet");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Feil ved sletting");
     }
   };

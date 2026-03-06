@@ -22,7 +22,7 @@ test.describe('Settings and Navigation', () => {
 
         expect(isVisible || true).toBeTruthy();
       }
-    } catch (err) {
+    } catch {
       expect(true).toBeTruthy();
     }
   });
