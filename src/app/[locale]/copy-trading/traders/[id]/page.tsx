@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
 
     return {
       title: profile?.display_name
-        ? `${profile.display_name} | Kopier Trading`
+        ? `${profile.full_name || 'Unknown'} | Kopier Trading`
         : "Trader Profil | Klarpakke",
     };
   }

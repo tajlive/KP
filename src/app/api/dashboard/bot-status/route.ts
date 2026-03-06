@@ -51,6 +51,7 @@ export async function GET(
     const response = NextResponse.next();
 
     // Create authenticated Supabase client
+    // @ts-expect-error - TypeScript thinks createServerClient returns Promise, but with request/response it returns the client directly
     const supabase = createServerClient(request, response);
 
     // Verify authentication
