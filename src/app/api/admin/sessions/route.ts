@@ -17,7 +17,7 @@ export async function GET() {
 
     // 2. Verify admin role
     const { data: profile } = await authClient
-      .from("profiles")
+      .from("user_profiles")
       .select("role")
       .eq("id", user.id)
       .single();
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { data: profile } = await authClient
-      .from("profiles")
+      .from("user_profiles")
       .select("role")
       .eq("id", user.id)
       .single();

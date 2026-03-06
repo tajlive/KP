@@ -78,7 +78,7 @@ export function SubscriptionGate({
         if (!response.ok) {
           // Fallback: sjekk profiles-tabellen direkte
           const { data: profile } = await supabase
-            .from("profiles")
+            .from("user_profiles")
             .select("subscription_tier, subscription_status")
             .eq("id", user.id)
             .single();
@@ -183,7 +183,7 @@ export function useSubscription() {
         }
 
         const { data: profile } = await supabase
-          .from("profiles")
+          .from("user_profiles")
           .select("subscription_tier")
           .eq("id", user.id)
           .single();

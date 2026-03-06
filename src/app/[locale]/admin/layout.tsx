@@ -91,7 +91,7 @@ export default function AdminLayout({
 
         // Check role in public.profiles
         const { data: userData, error } = await supabase
-          .from("profiles")
+          .from("user_profiles")
           .select("role")
           .eq("user_id", user.id)
           .single();
@@ -124,7 +124,7 @@ export default function AdminLayout({
             "[Admin Layout] User whitelisted but role not set, updating...",
           );
           await supabase
-            .from("profiles")
+            .from("user_profiles")
             .update({ role: "admin", updated_at: new Date().toISOString() })
             .eq("user_id", user.id);
         }

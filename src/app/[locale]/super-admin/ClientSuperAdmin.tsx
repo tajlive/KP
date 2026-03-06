@@ -79,11 +79,11 @@ export default function ClientSuperAdmin() {
 
     try {
       const { count: userCount } = await supabase
-        .from("profiles")
+        .from("user_profiles")
         .select("*", { count: "exact", head: true });
 
       const { count: adminCount } = await supabase
-        .from("profiles")
+        .from("user_profiles")
         .select("*", { count: "exact", head: true })
         .eq("role", "admin");
 
@@ -104,7 +104,7 @@ export default function ClientSuperAdmin() {
       });
 
       const { data: usersData } = await supabase
-        .from("profiles")
+        .from("user_profiles")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(50);
@@ -135,7 +135,7 @@ export default function ClientSuperAdmin() {
   const handleMakeAdmin = async (userId: string) => {
     const supabase = createClient();
     const { error } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .update({ role: "admin" })
       .eq("id", userId);
 
@@ -163,7 +163,7 @@ export default function ClientSuperAdmin() {
     const supabase = createClient();
     await supabase.from("trades").delete().eq("user_id", userId);
     await supabase.from("trading_sessions").delete().eq("user_id", userId);
-    await supabase.from("profiles").delete().eq("id", userId);
+    await supabase.from("user_profiles").delete().eq("id", userId);
 
     toast.success("Bruker slettet");
     loadAllData();

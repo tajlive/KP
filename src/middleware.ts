@@ -270,7 +270,7 @@ export async function middleware(request: NextRequest) {
           } else {
             // Fallback to older profiles table just in case
             const { data: fallbackProfile } = await supabase
-              .from("profiles")
+              .from("user_profiles")
               .select("onboarding_completed, setup_completed_at")
               .eq("id", user.id)
               .maybeSingle();

@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
   if (!trader) {
     // Fallback to profiles
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("display_name")
       .eq("id", id)
       .single();
@@ -56,7 +56,7 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
   if (!trader) {
     // Try profiles as fallback
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("id")
       .eq("id", id)
       .single();
