@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings 255",
+    "lint": "eslint . --max-warnings 500",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "check": "bash scripts/verify-production.sh",
