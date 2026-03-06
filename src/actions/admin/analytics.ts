@@ -31,7 +31,7 @@ export async function getDashboardMetrics(
     const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
 
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("role")
       .eq("id", user.id)
       .single();
@@ -41,33 +41,33 @@ export async function getDashboardMetrics(
 
     // 1. Get User Counts
     const { count: totalUsers } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*", { count: "exact", head: true });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const { count: signupsToday } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*", { count: "exact", head: true })
       .gte("created_at", today.toISOString());
 
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     const { count: signupsWeek } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*", { count: "exact", head: true })
       .gte("created_at", weekAgo.toISOString());
 
     const monthAgo = new Date();
     monthAgo.setDate(monthAgo.getDate() - 30);
     const { count: signupsMonth } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*", { count: "exact", head: true })
       .gte("created_at", monthAgo.toISOString());
 
     // 2. Active Users (Last 7 days)
     const { count: activeUsers } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*", { count: "exact", head: true })
       .gte("last_sign_in_at", weekAgo.toISOString()); // Using last_sign_in_at as proxy for active
 
@@ -131,7 +131,7 @@ export async function getSignupTrend(days: number = 30) {
     const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
 
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("role")
       .eq("id", user.id)
       .single();
@@ -143,7 +143,7 @@ export async function getSignupTrend(days: number = 30) {
     startDate.setDate(startDate.getDate() - days);
 
     const { data, error } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("created_at")
       .gte("created_at", startDate.toISOString())
       .order("created_at", { ascending: true });

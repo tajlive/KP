@@ -91,7 +91,7 @@ export default function ClientAdminDashboard() {
       }
 
       const { data: profile, error } = await supabase
-        .from("profiles")
+        .from("user_profiles")
         .select("role, email, subscription_tier")
         .eq("id", user.id)
         .single();
