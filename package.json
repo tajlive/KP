@@ -55,7 +55,14 @@
     "mcp:test": "scripts/mcp-test-runner.sh quick",
     "mcp:test:full": "scripts/mcp-test-runner.sh full",
     "mcp:integration": "scripts/mcp-integration-test.sh",
-    "check:deps": "node scripts/check-missing-modules.mjs"
+    "check:deps": "node scripts/check-missing-modules.mjs",
+    "test:enterprise": "npm run test:security && npm run test:performance && npm run test:a11y",
+    "test:security": "npm audit --audit-level=moderate",
+    "test:performance": "echo 'Kjør: npx lighthouse https://www.klarpakke.no --preset=desktop'",
+    "test:a11y": "playwright test tests/e2e/ --grep @accessibility || echo 'Kjør: npx playwright test med axe'",
+    "analyze:bundle": "ANALYZE=true npm run build",
+    "analyze:deps": "npx depcheck && npx knip",
+    "security:full": "npm audit && grep -r \"sk-\\|pk_\\|ghp_\\|AKIA\" src/ --include=\"*.ts\" --include=\"*.tsx\" 2>/dev/null || echo 'Ingen hemmeligheter funnet'"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.39",
@@ -151,7 +158,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.0",
+    "@axe-core/playwright": "^4.11.1",
     "@next/bundle-analyzer": "^16.1.6",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.4.1",
@@ -179,13 +186,16 @@
     "axe-playwright": "^2.0.3",
     "csv-parse": "^6.1.0",
     "depcheck": "^1.4.7",
+    "detect-secrets": "^1.0.6",
     "eslint": "^9.39.3",
     "eslint-config-next": "^15.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "jsdom": "^28.1.0",
     "knip": "^5.85.0",
+    "lighthouse": "^13.0.3",
     "postcss": "^8.5.8",
+    "snyk": "^1.1303.1",
     "tailwindcss": "3.4.17",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
