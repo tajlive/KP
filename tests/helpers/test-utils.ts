@@ -142,8 +142,8 @@ export async function checkConsoleErrors(page: Page): Promise<string[]> {
  */
 export const testData = {
   user: {
-    email: "test@klarpakke.com",
-    password: "TestPassword123!",
+    email: "tom@klarpakke.no",
+    password: process.env.TEST_USER_PASSWORD || "TestPassword123!",
   },
   site: {
     name: "Test Klarpakke Site",
