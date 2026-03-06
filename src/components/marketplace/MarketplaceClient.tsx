@@ -58,7 +58,7 @@ type SortBy = "performance" | "newest" | "rating" | "price";
 type RiskLevel = "all" | "low" | "medium" | "high";
 
 export default function MarketplaceClient() {
-  const { locale } = useParams<unknown>();
+  const { locale } = useParams();
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortBy>("performance");

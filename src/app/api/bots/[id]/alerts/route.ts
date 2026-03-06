@@ -63,7 +63,7 @@ export const POST = withRateLimit(
 
     // Verify ownership: user must own this strategy
     const { data: strategy } = await db
-      .from("user_strategies")
+      .from("strategies" as any)
       .select("id")
       .eq("id", id)
       .eq("user_id", user.id)

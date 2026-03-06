@@ -44,7 +44,7 @@ export const POST = withRateLimit(
 
     // Ownership check: only allow actions on own bots
     const { data: strategy, error: stratError } = await db
-      .from("user_strategies")
+      .from("strategies" as any)
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", user.id)

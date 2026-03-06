@@ -65,7 +65,7 @@ export default function SyncStatusPage() {
 
       // Get user profiles for email lookup
       const { data: profiles } = await supabase
-        .from('profiles')
+        .from('user_profiles' as any)
         .select('id, email');
 
       const emailMap = new Map(profiles?.map(p => [p.id, p.email]) || []);

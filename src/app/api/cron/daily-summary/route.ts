@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     
     // Hent alle brukere med aktive sessions
     const { data: users } = await supabase
-      .from('profiles')
+      .from('user_profiles' as any)
       .select('id, email, full_name')
       .not('email', 'is', null)
     

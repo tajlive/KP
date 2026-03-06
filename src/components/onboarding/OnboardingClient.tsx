@@ -10,7 +10,7 @@ interface OnboardingClientProps {
 
 export default function OnboardingClient({ userId }: OnboardingClientProps) {
   const router = useRouter();
-  const { locale } = useParams<unknown>();
+  const { locale } = useParams();
   const [isComplete, setIsComplete] = useState(false);
 
   const handleComplete = useCallback(() => {
