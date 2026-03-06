@@ -427,7 +427,8 @@ export interface Database {
           display_name: string | null
           avatar_url: string | null
           bio: string | null
-          role: 'user' | 'admin' | 'super_admin'
+          role: 'user' | 'admin' | 'super_admin' | 'founder'
+          is_founder: boolean
           subscription_tier: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
           show_on_leaderboard: boolean
           created_at: string
@@ -440,7 +441,8 @@ export interface Database {
           display_name?: string | null
           avatar_url?: string | null
           bio?: string | null
-          role?: 'user' | 'admin' | 'super_admin'
+          role?: 'user' | 'admin' | 'super_admin' | 'founder'
+          is_founder?: boolean
           subscription_tier?: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
           show_on_leaderboard?: boolean
           created_at?: string
@@ -453,7 +455,8 @@ export interface Database {
           display_name?: string | null
           avatar_url?: string | null
           bio?: string | null
-          role?: 'user' | 'admin' | 'super_admin'
+          role?: 'user' | 'admin' | 'super_admin' | 'founder'
+          is_founder?: boolean
           subscription_tier?: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
           show_on_leaderboard?: boolean
           created_at?: string
@@ -600,6 +603,52 @@ export interface Database {
           positions_closed: number
           total_value: number
           message: string
+        }
+      }
+      klt_balances: {
+        Row: {
+          id: string
+          user_id: string
+          balance: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          balance?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          balance?: number
+          updated_at?: string
+        }
+      }
+      klt_transactions: {
+        Row: {
+          id: string
+          user_id: string
+          amount: number
+          type: string
+          reason: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          amount: number
+          type: string
+          reason?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          amount?: number
+          type?: string
+          reason?: string
+          created_at?: string
         }
       }
     }
