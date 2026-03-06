@@ -1,0 +1,148 @@
+name: MCP Integration Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.cursor/mcp.json'
+      - '.mcp/**'
+      - 'scripts/mcp*.sh'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.cursor/mcp.json'
+      - '.mcp/**'
+      - 'scripts/mcp*.sh'
+
+jobs:
+  mcp-config-validation:
+    name: Validate MCP Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Validate MCP JSON files
+      run: |
+        echo "🔍 Validating MCP configuration files..."
+        
+        # Check if .cursor/mcp.json exists and is valid JSON
+        if [ -f ".cursor/mcp.json" ]; then
+          echo "✅ .cursor/mcp.json exists"
+          node -e "JSON.parse(require('fs').readFileSync('.cursor/mcp.json', 'utf8'))" && echo "✅ Valid JSON"
+        else
+          echo "❌ .cursor/mcp.json missing"
+          exit 1
+        fi
+        
+        # Check if .mcp/mcp_config.json exists and is valid JSON
+        if [ -f ".mcp/mcp_config.json" ]; then
+          echo "✅ .mcp/mcp_config.json exists"
+          node -e "JSON.parse(require('fs').readFileSync('.mcp/mcp_config.json', 'utf8'))" && echo "✅ Valid JSON"
+        else
+          echo "❌ .mcp/mcp_config.json missing"
+          exit 1
+        fi
+        
+        echo ""
+        echo "📋 MCP Servers configured:"
+        node -e "
+          const config = JSON.parse(require('fs').readFileSync('.cursor/mcp.json', 'utf8'));
+          Object.keys(config.mcpServers || {}).forEach(server => {
+            console.log('  ✅', server);
+          });
+        "
+
+  mcp-security-check:
+    name: MCP Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for exposed secrets
+      run: |
+        echo "🔒 Checking for exposed secrets in MCP config..."
+        
+        # Check for hardcoded tokens (basic check)
+        if grep -E "(sk_live|sk_test|lin_api_|sbp_|vcp_|sntryu_)" .cursor/mcp.json .mcp/mcp_config.json 2>/dev/null | grep -v "^\s*//"; then
+          echo "⚠️  Warning: Potential hardcoded secrets found in MCP config"
+          echo "   Consider using environment variables instead"
+        else
+          echo "✅ No obvious hardcoded secrets found"
+        fi
+        
+        # Check for proper environment variable usage
+        echo ""
+        echo "📋 Environment variable usage:"
+        grep -o '\${[A-Z_]*}' .cursor/mcp.json .mcp/mcp_config.json 2>/dev/null | sort -u || echo "  No env vars found"
+
+  mcp-readme:
+    name: Update MCP Documentation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Generate MCP documentation
+      run: |
+        cat > MCP-GUIDE.md << 'EOF'
+        # 🤖 MCP (Model Context Protocol) Guide
+        
+        ## Overview
+        
+        Klarpakke uses MCP to integrate with various services through AI assistants like Cursor and Claude.
+        
+        ## Configured MCP Servers
+        
+        | Server | Purpose | Status |
+        |--------|---------|--------|
+        | **GitHub** | Repository management | ✅ Active |
+        | **Linear** | Issue tracking | ✅ Active |
+        | **Supabase** | Database operations | ✅ Active |
+        | **Vercel** | Deployment | ✅ Active |
+        | **Stripe** | Payment handling | ✅ Active |
+        | **Sentry** | Error monitoring | ✅ Active |
+        | **Playwright** | E2E testing | ✅ Active |
+        
+        ## Configuration Files
+        
+        - `.cursor/mcp.json` - Cursor IDE configuration
+        - `.mcp/mcp_config.json` - General MCP configuration
+        
+        ## Usage
+        
+        ### In Cursor
+        
+        1. Open Command Palette (Cmd+Shift+P)
+        2. Type "MCP"
+        3. Select available tools
+        
+        ### Available Tools
+        
+        - Create Linear issues from code comments
+        - Query Supabase database
+        - Deploy to Vercel
+        - Check Stripe payments
+        - Monitor Sentry errors
+        - Run Playwright tests
+        
+        ## Security
+        
+        All sensitive tokens are stored as environment variables. Never commit tokens directly to the repository.
+        
+        EOF
+        
+    - name: Commit documentation
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add MCP-GUIDE.md
+        git diff --staged --quiet || git commit -m "docs: Auto-update MCP guide"
+        git push
