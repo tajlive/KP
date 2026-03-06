@@ -118,6 +118,7 @@ export interface Database {
         Row: {
           id: string
           user_id: string
+          session_id?: string | null
           symbol: string
           type: 'buy' | 'sell'
           side: 'market' | 'limit'
@@ -126,6 +127,7 @@ export interface Database {
           total_amount: number
           fee: number
           fee_percent: number
+          realized_pnl: number | null
           pnl: number | null
           pnl_percent: number | null
           status: 'pending' | 'completed' | 'failed'
@@ -135,6 +137,7 @@ export interface Database {
         Insert: {
           id?: string
           user_id: string
+          session_id?: string | null
           symbol: string
           type: 'buy' | 'sell'
           side?: 'market' | 'limit'
@@ -143,6 +146,7 @@ export interface Database {
           total_amount: number
           fee: number
           fee_percent?: number
+          realized_pnl?: number | null
           pnl?: number | null
           pnl_percent?: number | null
           status?: 'pending' | 'completed' | 'failed'
@@ -152,6 +156,7 @@ export interface Database {
         Update: {
           id?: string
           user_id?: string
+          session_id?: string | null
           symbol?: string
           type?: 'buy' | 'sell'
           side?: 'market' | 'limit'
@@ -160,6 +165,7 @@ export interface Database {
           total_amount?: number
           fee?: number
           fee_percent?: number
+          realized_pnl?: number | null
           pnl?: number | null
           pnl_percent?: number | null
           status?: 'pending' | 'completed' | 'failed'
@@ -411,6 +417,152 @@ export interface Database {
           positions_closed?: number
           total_value_closed?: number
           reason?: string | null
+        }
+      }
+      user_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          full_name: string | null
+          display_name: string | null
+          avatar_url: string | null
+          bio: string | null
+          role: 'user' | 'admin' | 'super_admin'
+          subscription_tier: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
+          show_on_leaderboard: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          full_name?: string | null
+          display_name?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          role?: 'user' | 'admin' | 'super_admin'
+          subscription_tier?: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
+          show_on_leaderboard?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          full_name?: string | null
+          display_name?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          role?: 'user' | 'admin' | 'super_admin'
+          subscription_tier?: 'free' | 'standard' | 'proff' | 'extrem' | 'family'
+          show_on_leaderboard?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      trading_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          mode: 'paper' | 'live'
+          status: 'active' | 'paused' | 'completed'
+          starting_capital: number
+          starting_capital_nok: number | null
+          current_capital: number
+          current_capital_nok: number | null
+          total_pnl: number
+          realized_pnl: number
+          unrealized_pnl: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          mode: 'paper' | 'live'
+          status?: 'active' | 'paused' | 'completed'
+          starting_capital: number
+          starting_capital_nok?: number | null
+          current_capital?: number
+          current_capital_nok?: number | null
+          total_pnl?: number
+          realized_pnl?: number
+          unrealized_pnl?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          mode?: 'paper' | 'live'
+          status?: 'active' | 'paused' | 'completed'
+          starting_capital?: number
+          starting_capital_nok?: number | null
+          current_capital?: number
+          current_capital_nok?: number | null
+          total_pnl?: number
+          realized_pnl?: number
+          unrealized_pnl?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      conditional_orders: {
+        Row: {
+          id: string
+          user_id: string
+          symbol: string
+          type: 'stop_loss' | 'take_profit'
+          trigger_price: number
+          quantity: number
+          status: 'active' | 'triggered' | 'cancelled'
+          created_at: string
+          triggered_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          symbol: string
+          type: 'stop_loss' | 'take_profit'
+          trigger_price: number
+          quantity: number
+          status?: 'active' | 'triggered' | 'cancelled'
+          created_at?: string
+          triggered_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          symbol?: string
+          type?: 'stop_loss' | 'take_profit'
+          trigger_price?: number
+          quantity?: number
+          status?: 'active' | 'triggered' | 'cancelled'
+          created_at?: string
+          triggered_at?: string | null
+        }
+      }
+      ai_cache: {
+        Row: {
+          id: string
+          cache_key: string
+          value: Record<string, unknown>
+          expires_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          cache_key: string
+          value: Record<string, unknown>
+          expires_at: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          cache_key?: string
+          value?: Record<string, unknown>
+          expires_at?: string
+          created_at?: string
         }
       }
     }
