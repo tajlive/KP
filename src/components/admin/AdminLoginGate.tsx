@@ -39,7 +39,7 @@ export function AdminLoginGate({ children }: AdminLoginGateProps) {
         .single()
 
       setIsAuthenticated(profile?.role === 'admin')
-    } catch (err) {
+    } catch (_err) {
       setError('Kunne ikke verifisere tilgang')
       setIsAuthenticated(false)
     } finally {

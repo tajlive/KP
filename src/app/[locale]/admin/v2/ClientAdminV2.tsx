@@ -59,7 +59,7 @@ export default function ClientAdminV2() {
 
       setError('Du har ikke admin-tilgang');
       setLoading(false);
-    } catch (err) {
+    } catch (_err) {
       setError('Kunne ikke verifisere admin-tilgang');
       setLoading(false);
     }

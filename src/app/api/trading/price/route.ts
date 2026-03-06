@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     priceCache.set(symbol, { price, timestamp: Date.now() });
 
     return NextResponse.json({ symbol, price, cached: false });
-  } catch (error) {
+  } catch (_error) {
     const cached = priceCache.get(symbol);
     if (cached) {
       return NextResponse.json({

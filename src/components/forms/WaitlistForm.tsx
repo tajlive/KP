@@ -30,7 +30,7 @@ export function WaitlistForm({ language = "no" }: WaitlistFormProps) {
       } else {
         setStatus('error');
       }
-    } catch (error) {
+    } catch (_error) {
       setStatus('error');
     }
   };

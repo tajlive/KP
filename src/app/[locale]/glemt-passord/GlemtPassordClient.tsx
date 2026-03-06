@@ -38,7 +38,7 @@ export default function GlemtPassordClient() {
             }
 
             setSubmitted(true)
-        } catch (err) {
+        } catch (_err) {
             setError(t('forgotPasswordPage.error'))
         } finally {
             setLoading(false)

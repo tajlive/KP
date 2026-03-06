@@ -220,7 +220,7 @@ export default function StrategyBuilder({
       };
 
       setBacktestResult(mockResult);
-    } catch (err) {
+    } catch (_err) {
       setError("Backtest feilet. Vennligst prøv igjen.");
     } finally {
       setIsTesting(false);
@@ -280,7 +280,7 @@ export default function StrategyBuilder({
       }
 
       setSuccess("Strategi opprettet!");
-    } catch (err) {
+    } catch (_err) {
       setError("Kunne ikke lagre strategi. Prøv igjen.");
     }
   };

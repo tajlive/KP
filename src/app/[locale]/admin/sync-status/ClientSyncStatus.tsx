@@ -103,7 +103,7 @@ export default function SyncStatusPage() {
         recentSyncs: enrichedLogs.slice(0, 20),
       });
 
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to fetch sync stats');
     } finally {
       setLoading(false);
@@ -136,7 +136,7 @@ export default function SyncStatusPage() {
       } else {
         toast.error(result.error || 'Sync failed');
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to trigger sync');
     } finally {
       setTriggering(false);

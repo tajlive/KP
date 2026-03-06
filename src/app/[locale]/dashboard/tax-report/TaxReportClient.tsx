@@ -64,7 +64,7 @@ export default function TaxReportClient() {
       if (!response.ok) throw new Error('Failed to fetch report');
       const data = await response.json();
       setReport(data);
-    } catch (error) {
+    } catch (_error) {
       toast.error(t('errorFetching'));
     } finally {
       setLoading(false);
@@ -102,7 +102,7 @@ export default function TaxReportClient() {
         document.body.removeChild(a);
         toast.success(t('downloadSuccess'));
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(t('downloadError'));
     } finally {
       setDownloading(null);

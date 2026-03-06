@@ -97,7 +97,7 @@ test.describe('AI Features', () => {
       // Check if feature panel is visible
       const featurePanel = page.locator('[class*="panel"], main').first();
       await expect(featurePanel).toBeVisible({ timeout: 5000 });
-    } catch (err) {
+    } catch {
       // Feature might not be accessible yet
       expect(true).toBeTruthy();
     }

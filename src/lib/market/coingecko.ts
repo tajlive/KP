@@ -21,8 +21,8 @@ export async function getCryptoPrices(coins: string[] = ['bitcoin', 'ethereum', 
     
     if (!response.ok) throw new Error('CoinGecko API feil');
     return await response.json();
-  } catch (error) {
-    console.error('CoinGecko feil:', error);
+  } catch (_error) {
+    console.error('CoinGecko feil:', _error);
     return [];
   }
 }
@@ -35,7 +35,7 @@ export async function getSimplePrices(coins: string[] = ['bitcoin', 'ethereum', 
       { next: { revalidate: 30 } }
     );
     return await response.json();
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
