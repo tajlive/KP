@@ -1,11 +1,12 @@
 {
   "mcpServers": {
-
-    // ✅ ALLEREDE AKTIV — GitHub
-    // Ingen endringer nødvendig
-
-    // ✅ ALLEREDE AKTIV — Linear
-    // Token: lin_api_frbEcEyNxC8m5XhNaEn2bmn82AZtSEcG1vyTPb8W
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
     "linear": {
       "command": "npx",
       "args": ["-y", "linear-mcp-server@latest"],
@@ -13,59 +14,40 @@
         "LINEAR_API_KEY": "lin_api_frbEcEyNxC8m5XhNaEn2bmn82AZtSEcG1vyTPb8W"
       }
     },
-
-    // ✅ ALLEREDE AKTIV — Supabase
-    // Project: vuxbjlykgmzskxbclquf
     "supabase": {
       "command": "npx",
       "args": [
         "-y",
         "@supabase/mcp-server-supabase@latest",
-        "--access-token", "${SUPABASE_ACCESS_TOKEN}",
+        "--access-token", "SCRUBBED_SUPABASE_PAT",
         "--project-ref", "vuxbjlykgmzskxbclquf"
       ]
     },
-
-    // 🔧 LEGG TIL: Vercel
-    // Token: https://vercel.com/account/tokens
     "vercel": {
       "command": "npx",
       "args": ["-y", "@vercel/mcp-adapter@latest"],
       "env": {
-        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
+        "VERCEL_TOKEN": "vcp_5hGxzlCLy0BzFiTc83WHQBNB8LfDSccyvjz0qQp92xC1hISesj2imsDN"
       }
     },
-
-    // 🔧 LEGG TIL: Stripe (restricted key — ikke full sk_live!)
-    // Lag restricted key: https://dashboard.stripe.com/apikeys
-    // Gi tilgang til: products, prices, webhooks, customers (read/write)
-    // IKKE gi tilgang til: charges, payouts, balance
     "stripe": {
       "command": "npx",
       "args": ["-y", "@stripe/agent-toolkit@latest"],
       "env": {
-        "STRIPE_SECRET_KEY": "${STRIPE_RESTRICTED_KEY}"
+        "STRIPE_SECRET_KEY": "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"
       }
     },
-
-    // 🔧 LEGG TIL: Sentry
-    // Token: https://sentry.io/settings/account/api/auth-tokens/
-    // Scope: project:read, project:write, org:read, event:read
     "sentry": {
       "command": "npx",
       "args": ["-y", "@sentry/mcp-server@latest"],
       "env": {
-        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
+        "SENTRY_AUTH_TOKEN": "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",
         "SENTRY_ORG": "klarpakke"
       }
     },
-
-    // 🔧 VALGFRITT: Playwright (E2E test-automatisering)
-    // Lar meg kjøre Playwright-tester og ta skjermbilder
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
     }
-
   }
 }
