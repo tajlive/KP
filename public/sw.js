@@ -1,9 +1,10 @@
-// Klarpakke Service Worker v4
+// Klarpakke Service Worker v5
 // Cache-first for static assets, network-first for API, offline fallback
+// FIXED: Never cache redirect responses, skip SW for Next.js assets
 
-const CACHE_NAME = 'klarpakke-v4';
-const STATIC_CACHE = 'klarpakke-static-v4';
-const API_CACHE = 'klarpakke-api-v4';
+const CACHE_NAME = 'klarpakke-v5';
+const STATIC_CACHE = 'klarpakke-static-v5';
+const API_CACHE = 'klarpakke-api-v5';
 
 const STATIC_ASSETS = [
   '/favicon.png',
@@ -49,6 +50,13 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension, ws, etc.
   if (!url.protocol.startsWith('http')) return;
 
+  // FIXED: Skip service worker entirely for Next.js assets
+  // Next.js handles caching via filename hashing, and we must not intercept redirects
+  if (url.pathname.startsWith('/_next/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   // API routes: network-first with 3s timeout, cache fallback
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(networkFirstWithTimeout(request, API_CACHE, 3000));
@@ -66,9 +74,9 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Static assets (fonts, images, CSS, JS): cache-first
+  // NOTE: /_next/ is already handled above
   if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf)$/) ||
-    url.pathname.startsWith('/_next/static/')
+    url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf)$/)
   ) {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
@@ -118,26 +126,30 @@ self.addEventListener('notificationclick', (event) => {
 
 // --- Strategies ---
 
+// FIXED: Only cache 200 OK responses, never cache redirects
 async function cacheFirst(request, cacheName) {
   const cached = await caches.match(request);
-  if (cached) return cached;
+  if (cached && cached.status === 200) return cached;
 
   try {
-    const response = await fetch(request);
-    if (response.ok) {
+    const response = await fetch(request, { redirect: 'follow' });
+    // Only cache final 200 responses, never cache redirects
+    if (response.ok && response.status === 200 && !response.redirected) {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
     }
     return response;
   } catch {
-    return new Response('Offline', { status: 503 });
+    const stale = await caches.match(request);
+    return stale || new Response('Offline', { status: 503 });
   }
 }
 
 async function networkFirstWithTimeout(request, cacheName, timeoutMs) {
   try {
     const response = await promiseWithTimeout(fetch(request), timeoutMs);
-    if (response.ok) {
+    // Only cache successful non-redirect responses
+    if (response.ok && response.status === 200 && !response.redirected) {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
     }
@@ -151,7 +163,8 @@ async function networkFirstWithTimeout(request, cacheName, timeoutMs) {
 async function networkFirstWithOfflineFallback(request) {
   try {
     const response = await promiseWithTimeout(fetch(request), 4000);
-    if (response.ok) {
+    // Only cache successful non-redirect responses
+    if (response.ok && response.status === 200 && !response.redirected) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, response.clone());
     }
