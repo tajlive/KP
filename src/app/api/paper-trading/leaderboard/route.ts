@@ -87,9 +87,8 @@ export async function GET(request: NextRequest) {
       `)
       .eq('mode', 'paper')
       .eq('status', 'active')
-      .eq('user_profiles.show_on_leaderboard', true)
       .order('current_capital_nok', { ascending: false })
-      .limit(limit);
+      .limit(limit * 2); // Fetch more to account for filtering
     
     if (startDate) {
       query = query.gte('started_at', startDate.toISOString());
@@ -100,12 +99,21 @@ export async function GET(request: NextRequest) {
     if (sessionsError) {
       console.error('Failed to fetch leaderboard sessions:', sessionsError);
       return NextResponse.json(
-        { error: 'Failed to fetch leaderboard' },
+        { error: 'Failed to fetch leaderboard', details: sessionsError.message },
         { status: 500 }
       );
     }
     
-    if (!sessions || sessions.length === 0) {
+    // Filter sessions where user has opted in to leaderboard
+    const filteredSessions = sessions?.filter(session => {
+      const profile = session.user_profiles as UserProfile;
+      return profile?.show_on_leaderboard === true;
+    }) || [];
+    
+    // Limit to requested amount
+    const limitedSessions = filteredSessions.slice(0, limit);
+    
+    if (limitedSessions.length === 0) {
       return NextResponse.json({
         period,
         entries: [],
@@ -115,7 +123,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Fetch trade stats for each user to calculate win rate
-    const userIds = sessions.map(s => s.user_id);
+    const userIds = limitedSessions.map(s => s.user_id);
     
     const { data: tradeStats, error: tradeError } = await supabase
       .from('trades')
@@ -147,7 +155,7 @@ export async function GET(request: NextRequest) {
     });
     
     // Build leaderboard entries
-    const entries: LeaderboardEntry[] = sessions.map((session, index) => {
+    const entries: LeaderboardEntry[] = limitedSessions.map((session, index) => {
       const profile = session.user_profiles as UserProfile;
       const stats = userTradeStats.get(session.user_id);
       
