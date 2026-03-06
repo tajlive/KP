@@ -13,14 +13,14 @@
   ],
   "redirects": [
     {
-      "source": "/((?!_next|api|auth|favicon|manifest|robots|sitemap).+)",
+      "source": "/:path((?!_next|api|auth|favicon|manifest|robots|sitemap).+)",
       "has": [
         {
           "type": "host",
           "value": "klarpakke.no"
         }
       ],
-      "destination": "https://www.klarpakke.no/:path*",
+      "destination": "https://www.klarpakke.no/$1",
       "permanent": true
     }
   ],
