@@ -5534,11 +5534,19 @@ export type Database = {
           id: string
           locale: string | null
           microsoft_id: string | null
+          onboarding_completed: boolean
+          onboarding_completed_at: string | null
+          onboarding_started_at: string | null
+          onboarding_step: number
           paper_balance: number
+          preferred_trading_mode: string | null
           provider: string | null
           real_balance: number | null
+          risk_tolerance: string | null
           role: string | null
+          setup_completed_at: string | null
           tier: Database["public"]["Enums"]["subscription_tier"]
+          trading_experience: string | null
           updated_at: string
           user_id: string
         }
@@ -5552,11 +5560,19 @@ export type Database = {
           id?: string
           locale?: string | null
           microsoft_id?: string | null
+          onboarding_completed?: boolean
+          onboarding_completed_at?: string | null
+          onboarding_started_at?: string | null
+          onboarding_step?: number
           paper_balance?: number
+          preferred_trading_mode?: string | null
           provider?: string | null
           real_balance?: number | null
+          risk_tolerance?: string | null
           role?: string | null
+          setup_completed_at?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
+          trading_experience?: string | null
           updated_at?: string
           user_id: string
         }
@@ -5570,11 +5586,19 @@ export type Database = {
           id?: string
           locale?: string | null
           microsoft_id?: string | null
+          onboarding_completed?: boolean
+          onboarding_completed_at?: string | null
+          onboarding_started_at?: string | null
+          onboarding_step?: number
           paper_balance?: number
+          preferred_trading_mode?: string | null
           provider?: string | null
           real_balance?: number | null
+          risk_tolerance?: string | null
           role?: string | null
+          setup_completed_at?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
+          trading_experience?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -287,13 +287,12 @@ export default function BacktestDemoWidget() {
 
               {/* Progress Line */}
               <div className="absolute bottom-6 left-6 right-6 h-1 bg-slate-100 rounded-full overflow-hidden">
+                {/* noinspection CssInlineStyle */}
                 <div
                   className="h-full bg-slate-300 transition-all duration-75"
-                  style={
-                    {
-                      width: `${(progress / (days - 1)) * 100}%`,
-                    } as React.CSSProperties
-                  }
+                  style={{
+                    ["width" as keyof React.CSSProperties]: `${(progress / (days - 1)) * 100}%`,
+                  }}
                 />
               </div>
             </div>

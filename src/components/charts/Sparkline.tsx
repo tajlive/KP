@@ -6,16 +6,9 @@ import { Area, AreaChart, ResponsiveContainer, YAxis } from "recharts";
 interface SparklineProps {
   data: number[];
   color: "green" | "red" | "yellow";
-  width?: number;
-  height?: number;
 }
 
-export function Sparkline({
-  data,
-  color,
-  width = 100,
-  height = 30,
-}: SparklineProps) {
+export function Sparkline({ data, color }: SparklineProps) {
   const chartData = useMemo(() => {
     return data.map((value, index) => ({ index, value }));
   }, [data]);
@@ -37,15 +30,10 @@ export function Sparkline({
 
   const selectedColor = colorMap[color] || colorMap.green;
 
-  const containerStyle = { width, height };
-
   // If there's no data or only 1 point, it's hard to draw a sparkline
   if (!chartData || chartData.length < 2) {
     return (
-      <div
-        style={containerStyle}
-        className="flex items-center justify-center text-xs text-slate-500"
-      >
+      <div className="w-full h-full flex items-center justify-center text-xs text-slate-500">
         —
       </div>
     );
@@ -58,12 +46,8 @@ export function Sparkline({
   const padding = (max - min) * 0.1 || 1; // 10% padding or at least 1
 
   return (
-    <div style={containerStyle} className="opacity-80 mix-blend-screen">
-      <ResponsiveContainer
-        width="100%"
-        height={height || 30}
-        minHeight={height || 30}
-      >
+    <div className="w-full h-full opacity-80 mix-blend-screen">
+      <ResponsiveContainer width="100%" height="100%" minHeight={30}>
         <AreaChart
           data={chartData}
           margin={{ top: 2, right: 0, bottom: 2, left: 0 }}

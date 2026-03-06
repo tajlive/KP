@@ -15,7 +15,10 @@ export async function POST(req: NextRequest) {
 
     const dsn = new URL(header.dsn);
     const projectId = dsn.pathname.replace("/", "");
-    const url = `https://sentry.io/api/${projectId}/envelope/`;
+
+    // Use the host from the DSN (e.g., o4509555622608896.ingest.de.sentry.io)
+    // instead of hardcoding sentry.io
+    const url = `https://${dsn.host}/api/${projectId}/envelope/`;
 
     const res = await fetch(url, {
       method: "POST",
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ status: res.status });
+    return new Response(null, { status: res.status });
   } catch (err) {
     console.error("[Sentry Tunnel Request Error]:", err);
     return NextResponse.json(
