@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
 
     const { data: profile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("role")
       .eq("id", user.id)
       .single();

@@ -79,7 +79,7 @@ export default function BetaDashboardClient({
       console.info("[BetaDashboard] User found:", user.email);
 
       const { data: profileData } = await supabase
-        .from("profiles")
+        .from("user_profiles")
         .select("*")
         .eq("id", user.id)
         .single();

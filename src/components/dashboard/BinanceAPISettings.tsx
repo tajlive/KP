@@ -173,7 +173,10 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
       </div>
 
       {/* Add New API Key Form */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+      <form 
+        onSubmit={(e) => { e.preventDefault(); saveApiKey(); }}
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700"
+      >
         <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
           Legg til ny API-nøkkel
         </h2>
@@ -274,6 +277,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
             <button
+              type="button"
               onClick={testCredentials}
               disabled={testing || loading}
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -286,7 +290,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
             </button>
 
             <button
-              onClick={saveApiKey}
+              type="submit"
               disabled={testing || loading || !form.apiKey || !form.apiSecret}
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
             >
@@ -298,7 +302,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
             </button>
           </div>
         </div>
-      </div>
+      </form>
 
       {/* Existing API Keys */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">

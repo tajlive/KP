@@ -23,7 +23,7 @@ export async function grantFounderStatus(userId: string) {
     const isWhitelisted = ADMIN_EMAILS.includes(adminUser.email || "");
 
     const { data: adminProfile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("role")
       .eq("id", adminUser.id)
       .single();
@@ -33,7 +33,7 @@ export async function grantFounderStatus(userId: string) {
 
     // 2. Get target user info
     const { data: user, error: userError } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*")
       .eq("id", userId)
       .single();
@@ -44,7 +44,7 @@ export async function grantFounderStatus(userId: string) {
 
     // 3. Update role
     const { error: updateError } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .update({ role: "founder", is_founder: true })
       .eq("id", userId);
 
@@ -112,7 +112,7 @@ export async function banUser(userId: string, reason: string) {
     const isWhitelisted = ADMIN_EMAILS.includes(adminUser.email || "");
 
     const { data: adminProfile } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("role")
       .eq("id", adminUser.id)
       .single();
@@ -122,7 +122,7 @@ export async function banUser(userId: string, reason: string) {
 
     // 2. Update status
     const { error } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .update({
         status: "banned",
         banned_at: new Date().toISOString(),
@@ -152,7 +152,7 @@ export async function getUserDetails(userId: string) {
 
   try {
     const { data, error } = await supabase
-      .from("profiles")
+      .from("user_profiles")
       .select("*, klt_balances(balance), beta_signups(*)")
       .eq("id", userId)
       .single();

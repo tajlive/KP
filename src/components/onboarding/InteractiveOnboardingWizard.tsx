@@ -206,7 +206,7 @@ export default function InteractiveOnboardingWizard({
       // Mark profile as setup complete
       const supabase = createClient();
       await supabase
-        .from("profiles")
+        .from("user_profiles")
         .update({
           setup_completed_at: new Date().toISOString(),
           onboarding_step: "complete",
