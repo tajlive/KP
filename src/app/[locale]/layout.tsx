@@ -94,6 +94,28 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     >
       <head>
         <OrganizationJsonLd />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    registrations.forEach(function(registration) {
+                      registration.unregister();
+                    });
+                  });
+                  if (window.caches) {
+                    caches.keys().then(function(cacheNames) {
+                      cacheNames.forEach(function(cacheName) {
+                        caches.delete(cacheName);
+                      });
+                    });
+                  }
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body
         className={`${dmSans.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
