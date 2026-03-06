@@ -123,6 +123,7 @@ test.describe('🤖 AI-Powered Full Site Audit', () => {
       // Run A11y checks
       const violations = await page.evaluate(async () => {
         // @ts-ignore
+        // eslint-disable-next-line no-undef
         const results = await axe.run();
         return results.violations.map((v: any) => ({
           id: v.id,
