@@ -20,6 +20,8 @@ export interface Database {
           subscription_expires_at: string | null
           trial_used: boolean
           trial_expires_at: string | null
+          amount: number | null
+          status: string | null
         }
         Insert: {
           id?: string
@@ -31,6 +33,8 @@ export interface Database {
           subscription_expires_at?: string | null
           trial_used?: boolean
           trial_expires_at?: string | null
+          amount?: number | null
+          status?: string | null
         }
         Update: {
           id?: string
@@ -42,6 +46,8 @@ export interface Database {
           subscription_expires_at?: string | null
           trial_used?: boolean
           trial_expires_at?: string | null
+          amount?: number | null
+          status?: string | null
         }
       }
       wallets: {
@@ -649,6 +655,264 @@ export interface Database {
           type?: string
           reason?: string
           created_at?: string
+        }
+      }
+      analytics_events: {
+        Row: {
+          id: string
+          user_id: string | null
+          session_id: string | null
+          event_name: string
+          event_type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          session_id?: string | null
+          event_name: string
+          event_type: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          session_id?: string | null
+          event_name?: string
+          event_type?: string
+          created_at?: string
+        }
+      }
+      onboarding_progress: {
+        Row: {
+          id: string
+          user_id: string
+          completed_lessons: string[]
+          current_step: string
+          is_completed: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          completed_lessons?: string[]
+          current_step?: string
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          completed_lessons?: string[]
+          current_step?: string
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      learning_progress: {
+        Row: {
+          id: string
+          user_id: string
+          course_id: string
+          completed_lesson_ids: string[]
+          progress_percent: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          course_id: string
+          completed_lesson_ids?: string[]
+          progress_percent?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          course_id?: string
+          completed_lesson_ids?: string[]
+          progress_percent?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      auto_trading_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          bot_config_id: string
+          status: 'running' | 'paused' | 'stopped'
+          started_at: string
+          stopped_at: string | null
+          total_pnl: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          bot_config_id: string
+          status?: 'running' | 'paused' | 'stopped'
+          started_at?: string
+          stopped_at?: string | null
+          total_pnl?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          bot_config_id?: string
+          status?: 'running' | 'paused' | 'stopped'
+          started_at?: string
+          stopped_at?: string | null
+          total_pnl?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      strategy_logs: {
+        Row: {
+          id: string
+          session_id: string
+          strategy_id: string
+          action: string
+          details: Record<string, unknown>
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          strategy_id: string
+          action: string
+          details?: Record<string, unknown>
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          strategy_id?: string
+          action?: string
+          details?: Record<string, unknown>
+          created_at?: string
+        }
+      }
+      trading_logs: {
+        Row: {
+          id: string
+          session_id: string
+          level: 'info' | 'warn' | 'error'
+          message: string
+          metadata: Record<string, unknown>
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          level: 'info' | 'warn' | 'error'
+          message: string
+          metadata?: Record<string, unknown>
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          level?: 'info' | 'warn' | 'error'
+          message?: string
+          metadata?: Record<string, unknown>
+          created_at?: string
+        }
+      }
+      ai_cache: {
+        Row: {
+          id: string
+          cache_key: string
+          value: Record<string, unknown>
+          expires_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          cache_key: string
+          value: Record<string, unknown>
+          expires_at: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          cache_key?: string
+          value?: Record<string, unknown>
+          expires_at?: string
+          created_at?: string
+        }
+      }
+      conditional_orders: {
+        Row: {
+          id: string
+          user_id: string
+          symbol: string
+          type: 'stop_loss' | 'take_profit'
+          trigger_price: number
+          quantity: number
+          status: 'active' | 'triggered' | 'cancelled'
+          created_at: string
+          triggered_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          symbol: string
+          type: 'stop_loss' | 'take_profit'
+          trigger_price: number
+          quantity: number
+          status?: 'active' | 'triggered' | 'cancelled'
+          created_at?: string
+          triggered_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          symbol?: string
+          type?: 'stop_loss' | 'take_profit'
+          trigger_price?: number
+          quantity?: number
+          status?: 'active' | 'triggered' | 'cancelled'
+          created_at?: string
+          triggered_at?: string | null
+        }
+      }
+      strategy_reviews: {
+        Row: {
+          id: string
+          strategy_id: string
+          user_id: string
+          rating: number
+          review: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          strategy_id: string
+          user_id: string
+          rating: number
+          review?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          strategy_id?: string
+          user_id?: string
+          rating?: number
+          review?: string
+          created_at?: string
+          updated_at?: string
         }
       }
     }
