@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     
     const { data: tradeStats, error: tradeError } = await supabase
       .from('trades')
-      .select('user_id, side, pnl')
+      .select('user_id, side, realized_pnl')
       .in('user_id', userIds)
       .eq('mode', 'paper');
     
@@ -135,12 +135,12 @@ export async function GET(request: NextRequest) {
       stats.total++;
       
       // For sell trades, positive PnL = win
-      if (trade.side === 'sell' && trade.pnl && trade.pnl > 0) {
+      if (trade.side === 'sell' && trade.realized_pnl && trade.realized_pnl > 0) {
         stats.wins++;
       }
       
-      if (trade.pnl) {
-        stats.pnls.push(trade.pnl);
+      if (trade.realized_pnl) {
+        stats.pnls.push(trade.realized_pnl);
       }
       
       userTradeStats.set(trade.user_id, stats);
