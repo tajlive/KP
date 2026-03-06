@@ -31,6 +31,12 @@ interface LeaderboardEntry {
   riskScore: number;
 }
 
+interface UserProfile {
+  full_name: string | null;
+  avatar_url: string | null;
+  show_on_leaderboard: boolean;
+}
+
 type Period = 'daily' | 'weekly' | 'monthly' | 'all-time';
 
 export async function GET(request: NextRequest) {
@@ -142,7 +148,7 @@ export async function GET(request: NextRequest) {
     
     // Build leaderboard entries
     const entries: LeaderboardEntry[] = sessions.map((session, index) => {
-      const profile = session.user_profiles as any;
+      const profile = session.user_profiles as UserProfile;
       const stats = userTradeStats.get(session.user_id);
       
       const startingCapital = session.starting_capital_nok || 1000000; // Default 1M NOK
