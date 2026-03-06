@@ -2,7 +2,7 @@ import UnifiedTradingDashboard from '@/components/trading/UnifiedTradingDashboar
 
 export const metadata = {
   title: 'Trading Dashboard - Klarpakke',
-  description: 'Paper trading og live trading dashboard',
+  description: 'Ditt personlige trading dashboard med paper trading, live trading og avanserte verktøy for krypto-handel',
 };
 
 export default function TradingPage() {
