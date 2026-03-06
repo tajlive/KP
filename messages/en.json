@@ -860,6 +860,8 @@
     "subtitle": "Klarpakke University",
     "checkStatus": "Check your status",
     "checkStatusDesc": "Log in with Google/Microsoft, or check if you are registered",
+    "email": "Email address",
+    "password": "Password",
     "emailLabel": "Email address",
     "emailPlaceholder": "your@email.com",
     "passwordLabel": "Password",

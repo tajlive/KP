@@ -9,6 +9,10 @@
     {
       "source": "/:locale/manifest.json",
       "destination": "/manifest.json"
+    },
+    {
+      "source": "/sw.js",
+      "destination": "/sw.js"
     }
   ],
   "redirects": [
