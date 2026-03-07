@@ -6,27 +6,8 @@ interface PageProps {
   params: Promise<{ locale: string; lessonId: string }>;
 }
 
-// Generer statiske sider for vanlige leksjoner
-export async function generateStaticParams() {
-  const locales = ["no", "en"];
-  const lessons = [
-    "introduksjon-til-krypto",
-    "hva-er-stop-loss",
-    "forsta-risiko",
-    "posisjonsstorrelse",
-    "lese-grafer",
-    "trender-og-kanaler",
-    "support-og-resistance",
-  ];
-  
-  const params = [];
-  for (const locale of locales) {
-    for (const lessonId of lessons) {
-      params.push({ locale, lessonId });
-    }
-  }
-  return params;
-}
+// Dynamisk rendering for å unngå problemer med next-intl + generateStaticParams
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, lessonId } = await params;
