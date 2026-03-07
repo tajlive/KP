@@ -33,6 +33,8 @@ import { KLTWallet } from "@/components/gamification/KLTWallet";
 import { GamificationCard } from "@/components/gamification/GamificationCard";
 import { PulseChart } from "./PulseChart";
 import { RiskProfilePulse } from "./RiskProfilePulse";
+import { AutoTradingConfigCard } from "@/components/dashboard/AutoTradingConfigCard";
+import { PaperTradingCard } from "@/components/dashboard/PaperTradingCard";
 
 const STRATEGIES: {
   type: StrategyType;
@@ -355,6 +357,12 @@ export default function UnifiedTradingDashboard({
           <KLTWallet />
           <GamificationCard />
           <PulseChart />
+        </div>
+
+        {/* Auto Trading Configuration */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AutoTradingConfigCard />
+          <PaperTradingCard />
         </div>
 
         {/* Active Strategies */}

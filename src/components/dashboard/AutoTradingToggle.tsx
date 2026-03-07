@@ -5,11 +5,14 @@ import { Switch } from "@/components/ui/switch";
 import { createClient } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export function AutoTradingToggle() {
   const [isEnabled, setIsEnabled] = useState(false);
+  const [mode, setMode] = useState<'paper' | 'live'>('paper');
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+  const t = useTranslations('autoTrading');
 
   useEffect(() => {
     fetchConfig();
@@ -17,15 +20,12 @@ export function AutoTradingToggle() {
 
   const fetchConfig = async () => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
-        .from("user_auto_trading_configs")
-        .select("is_enabled")
+        .from("auto_trading_configs")
+        .select("enabled, mode")
         .eq("user_id", user.id)
         .single();
 
@@ -35,7 +35,8 @@ export function AutoTradingToggle() {
       }
 
       if (data) {
-        setIsEnabled(data.is_enabled);
+        setIsEnabled(data.enabled);
+        setMode(data.mode);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -47,9 +48,7 @@ export function AutoTradingToggle() {
   const handleToggle = async (checked: boolean) => {
     setIsEnabled(checked);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
         toast.error("Du må være logget inn");
@@ -58,38 +57,41 @@ export function AutoTradingToggle() {
 
       // Check if config exists first
       const { data: existingConfig } = await supabase
-        .from("user_auto_trading_configs")
+        .from("auto_trading_configs")
         .select("id")
         .eq("user_id", user.id)
         .single();
 
       if (existingConfig) {
         const { error } = await supabase
-          .from("user_auto_trading_configs")
-          .update({ is_enabled: checked, updated_at: new Date().toISOString() })
+          .from("auto_trading_configs")
+          .update({ enabled: checked, updated_at: new Date().toISOString() })
           .eq("user_id", user.id);
 
         if (error) throw error;
       } else {
         // Create default config if not exists
         const { error } = await supabase
-          .from("user_auto_trading_configs")
+          .from("auto_trading_configs")
           .insert({
             user_id: user.id,
-            is_enabled: checked,
-            risk_level: "conservative", // Default
-            is_paper_trading: true,
+            enabled: checked,
+            risk_level: 'medium',
+            mode: 'paper',
+            max_trade_size_nok: 10000,
           });
         if (error) throw error;
       }
 
       toast.success(
-        checked ? "Auto-trading er aktivert! 🚀" : "Auto-trading er pauset ⏸️",
+        checked 
+          ? `Auto-trading aktivert (${mode === 'paper' ? 'paper' : 'live'})! 🚀` 
+          : "Auto-trading pauset ⏸️",
       );
     } catch (error) {
       console.error("Error updating config:", error);
       toast.error("Kunne ikke oppdatere status");
-      setIsEnabled(!checked); // Revert UI
+      setIsEnabled(!checked);
     }
   };
 
@@ -105,7 +107,9 @@ export function AutoTradingToggle() {
         onCheckedChange={handleToggle}
       />
       <Label htmlFor="auto-trading-mode" className="text-sm font-medium">
-        {isEnabled ? "Auto-Trading PÅ" : "Auto-Trading AV"}
+        {isEnabled 
+          ? `Auto-Trading PÅ (${mode === 'paper' ? 'Paper' : 'Live'})` 
+          : "Auto-Trading AV"}
       </Label>
     </div>
   );
