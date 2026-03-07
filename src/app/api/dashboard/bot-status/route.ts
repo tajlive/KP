@@ -51,8 +51,7 @@ export async function GET(
     const response = NextResponse.next();
 
     // Create authenticated Supabase client
-    // @ts-expect-error - TypeScript thinks createServerClient returns Promise, but with request/response it returns the client directly
-    const supabase = createServerClient(request, response);
+    const supabase = createServerClient(request, response) as ReturnType<typeof import("@supabase/ssr").createServerClient>;
 
     // Verify authentication
     const {
@@ -204,7 +203,7 @@ export async function GET(
             month: Math.round(pnlMonth * 100) / 100,
           },
           lastTrades:
-            lastTradesData?.map((trade: unknown) => ({
+            (lastTradesData as Trade[] | null)?.map((trade) => ({
               id: trade.id,
               side: trade.side as "buy" | "sell",
               symbol: trade.trading_pair || trade.symbol || "BTC/USDT",
