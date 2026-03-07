@@ -3,6 +3,7 @@
 import AIMarketBrief from "@/components/dashboard/AIMarketBrief";
 import { CopyTradingCard } from "@/components/dashboard/CopyTradingCard";
 import { LiveTradingBanner } from "@/components/dashboard/LiveTradingBanner";
+import { PaperTradingCard } from "@/components/dashboard/PaperTradingCard";
 import ReferralDashboard from "@/components/dashboard/ReferralDashboard";
 import { TradingModeToggle } from "@/components/dashboard/TradingModeToggle";
 import { UpgradeBanner } from "@/components/dashboard/UpgradeBanner";
@@ -133,6 +134,11 @@ export default function ClientDashboard() {
 
           <div className="mb-6">
             <AIMarketBrief />
+          </div>
+
+          {/* PAPER TRADING CARD */}
+          <div className="mb-6">
+            <PaperTradingCard />
           </div>
 
           <div className="mb-6">
