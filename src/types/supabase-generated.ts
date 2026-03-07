@@ -755,6 +755,50 @@ export type Database = {
         }
         Relationships: []
       }
+      auto_trading_configs: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          id: string
+          is_enabled: boolean | null
+          last_executed_at: string | null
+          risk_profile_id: string | null
+          strategy: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          last_executed_at?: string | null
+          risk_profile_id?: string | null
+          strategy: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          last_executed_at?: string | null
+          risk_profile_id?: string | null
+          strategy?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auto_trading_configs_risk_profile_id_fkey"
+            columns: ["risk_profile_id"]
+            isOneToOne: false
+            referencedRelation: "risk_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       auto_trading_daily_metrics: {
         Row: {
           circuit_breaker_triggered: boolean | null
@@ -1587,6 +1631,51 @@ export type Database = {
           id?: string
           is_resolved?: boolean | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      coin_prices: {
+        Row: {
+          created_at: string
+          high_24h: number | null
+          id: string
+          last_updated: string | null
+          low_24h: number | null
+          market_cap: number | null
+          name: string
+          price: number
+          price_change_24h: number | null
+          price_change_percent_24h: number | null
+          symbol: string
+          volume_24h: number | null
+        }
+        Insert: {
+          created_at?: string
+          high_24h?: number | null
+          id?: string
+          last_updated?: string | null
+          low_24h?: number | null
+          market_cap?: number | null
+          name: string
+          price?: number
+          price_change_24h?: number | null
+          price_change_percent_24h?: number | null
+          symbol: string
+          volume_24h?: number | null
+        }
+        Update: {
+          created_at?: string
+          high_24h?: number | null
+          id?: string
+          last_updated?: string | null
+          low_24h?: number | null
+          market_cap?: number | null
+          name?: string
+          price?: number
+          price_change_24h?: number | null
+          price_change_percent_24h?: number | null
+          symbol?: string
+          volume_24h?: number | null
         }
         Relationships: []
       }
@@ -3133,6 +3222,45 @@ export type Database = {
           },
         ]
       }
+      paper_trading_sessions: {
+        Row: {
+          created_at: string | null
+          current_balance: number | null
+          id: string
+          starting_balance: number | null
+          status: string | null
+          total_pnl: number | null
+          total_trades: number | null
+          updated_at: string | null
+          user_id: string
+          winning_trades: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_balance?: number | null
+          id?: string
+          starting_balance?: number | null
+          status?: string | null
+          total_pnl?: number | null
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id: string
+          winning_trades?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          current_balance?: number | null
+          id?: string
+          starting_balance?: number | null
+          status?: string | null
+          total_pnl?: number | null
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id?: string
+          winning_trades?: number | null
+        }
+        Relationships: []
+      }
       payment_history: {
         Row: {
           amount_ore: number
@@ -3881,6 +4009,42 @@ export type Database = {
           take_profit_pct?: number
           trailing_stop?: boolean | null
           volatility_scale?: number
+        }
+        Relationships: []
+      }
+      risk_profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          max_position_size_pct: number
+          max_total_exposure_pct: number
+          name: string
+          stop_loss_pct: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_position_size_pct: number
+          max_total_exposure_pct: number
+          name: string
+          stop_loss_pct: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_position_size_pct?: number
+          max_total_exposure_pct?: number
+          name?: string
+          stop_loss_pct?: number
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
