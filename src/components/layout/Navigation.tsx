@@ -116,13 +116,13 @@ export function Navigation() {
           <div className="md:hidden flex items-center gap-2">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 hover:bg-[#F7F8FA] rounded-lg"
+              className="p-2 bg-white hover:bg-[#F7F8FA] rounded-lg border border-[#E2E5EC] shadow-sm"
               aria-label={isOpen ? "Lukk meny" : "Åpne meny"}
             >
               {isOpen ? (
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-[#1A1D26]" />
               ) : (
-                <Menu className="w-5 h-5" />
+                <Menu className="w-5 h-5 text-[#1A1D26]" />
               )}
             </button>
           </div>
@@ -160,7 +160,11 @@ export function Navigation() {
               ) : (
                 <div className="space-y-2">
                   <Link href={l("/innlogging")} className="block">
-                    <Button size="sm" variant="ghost" className="w-full gap-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="w-full gap-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF] hover:text-white"
+                    >
                       <LogIn className="w-4 h-4" />
                       Logg inn
                     </Button>
