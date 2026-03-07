@@ -74,6 +74,8 @@ export async function grantFounderStatus(userId: string) {
         user_id: userId,
         amount: 10000,
         type: "award",
+        category: "founder",
+        description: "Founder status granted",
         reason: "Founder status granted",
         created_at: new Date().toISOString(),
       },
