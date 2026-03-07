@@ -1,63 +1,66 @@
+import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
+import KursModulClient from "./KursModulClient";
 
+// 8 Course modules for metadata generation
+const modules = [
+  { slug: "hva-er-krypto", title: "Hva er kryptovaluta?" },
+  { slug: "lommeboker", title: "Lommebøker og sikkerhet" },
+  { slug: "kjop-din-forste", title: "Kjøp din første krypto" },
+  { slug: "autotrading", title: "Hva er autotrading?" },
+  { slug: "risiko-psykologi", title: "Risiko og psykologi" },
+  { slug: "lese-en-graf", title: "Lese en graf" },
+  { slug: "din-forste-bot", title: "Din første bot" },
+  { slug: "fra-papir-til-ekte", title: "Fra papir til ekte" },
+];
 
-
-
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import ImmersiveCourse from './ImmersiveCourse'
-import { getCourseBySlug, getCourseDetails } from '@/lib/courses'
-
-interface CoursePageProps {
-  params: Promise<{
-    locale: string
-    slug: string
-  }>
-}
-
-export async function generateMetadata({ params }: CoursePageProps): Promise<Metadata> {
-  const { locale, slug } = await params
-  const course = getCourseBySlug(locale, slug)
-  const details = course ? getCourseDetails(locale, course.id) : null
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const module = modules.find(m => m.slug === slug);
   
-  if (!course || !details) {
+  if (!module) {
     return {
-      title: locale === 'no' ? 'Kurs ikke funnet | Klarpakke' : 'Course not found | Klarpakke'
-    }
+      title: "Kurs ikke funnet - Klarpakke",
+    };
   }
+
+  const t = await getTranslations({ locale, namespace: "metadata" });
 
   return {
-    title: `${details.title} | Klarpakke ${locale === 'no' ? 'Universitet' : 'University'}`,
-    description: details.description,
-    openGraph: {
-      title: details.title,
-      description: details.description,
-      type: 'article'
+    title: `${module.title} - ${t("courses.title")}`,
+    description: t("courses.description"),
+  };
+}
+
+export async function generateStaticParams() {
+  const locales = ["no", "en", "th", "zh"];
+  const params = [];
+  
+  for (const locale of locales) {
+    for (const module of modules) {
+      params.push({ locale, slug: module.slug });
     }
   }
+  
+  return params;
 }
 
-export default async function CoursePage({ params }: CoursePageProps) {
-  const { locale, slug } = await params
-  const course = getCourseBySlug(locale, slug)
+export default async function KursModulPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}) {
+  const { slug } = await params;
   
-  if (!course) {
-    notFound()
+  const moduleExists = modules.some(m => m.slug === slug);
+  if (!moduleExists) {
+    notFound();
   }
 
-  const details = getCourseDetails(locale, course.id)
-  
-  if (!details) {
-    notFound()
-  }
-
-  return (
-    <main className="min-h-screen bg-slate-950">
-      <ImmersiveCourse 
-        courseId={course.id}
-        courseData={details}
-      />
-    </main>
-  )
+  return <KursModulClient slug={slug} />;
 }
-
-// Static params for kjente kurs

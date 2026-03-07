@@ -32,6 +32,7 @@ import BotStatusDashboard from "./BotStatusDashboard";
 import { KLTWallet } from "@/components/gamification/KLTWallet";
 import { GamificationCard } from "@/components/gamification/GamificationCard";
 import { PulseChart } from "./PulseChart";
+import { RiskProfilePulse } from "./RiskProfilePulse";
 
 const STRATEGIES: {
   type: StrategyType;
@@ -341,6 +342,13 @@ export default function UnifiedTradingDashboard({
 
         {/* Portfolio Summary */}
         <PortfolioSection portfolio={portfolio} formatNOK={formatNOK} />
+
+        {/* Risk Profile Pulse Charts - 3 modes */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <RiskProfilePulse profile="forsiktig" />
+          <RiskProfilePulse profile="moderat" />
+          <RiskProfilePulse profile="aggressiv" />
+        </div>
 
         {/* Gamification & KLT Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
