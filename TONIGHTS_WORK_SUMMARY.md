@@ -211,18 +211,14 @@ supabase gen types typescript --project-id vuxbjlykgmzskxbclquf > src/types/supa
 
 **Activates:** Paper Trading + Auto Trading systems
 
-### 2. Set CRON_SECRET (2 min)
+### 2. Deploy Supabase Edge Functions (2 min)
 ```bash
-# Generate
-openssl rand -base64 32
-
-# Add to Vercel Dashboard:
-# Settings → Environment Variables
-# Name: CRON_SECRET
-# Value: [generated value]
+# Deploy the auto-trade function
+supabase functions deploy auto-trade
+supabase functions deploy sync-prices
 ```
 
-**Activates:** Automated trading every 15 minutes
+**Activates:** Automated trading every 5 minutes via Supabase Cron
 
 ### 3. Test Paper Trading (3 min)
 1. Go to `klarpakke.no/dashboard`
@@ -276,13 +272,13 @@ openssl rand -base64 32
 
 ## ⚠️ Known Limitations
 
-1. **Vercel Cron Limits:** Hobby plan = 1 cron/day max
-   - **Solution:** Upgrade to Pro or use external scheduler
-   - **Current:** 15-min cron configured (will run once/day on Hobby)
-
-2. **Signal Source:** Uses `ai_decision_log` table
+1. **Signal Source:** Uses `ai_decision_log` table
    - If empty, no auto trades will execute
    - Test signals available via simulator
+
+2. **Supabase Cron:** Requires pg_cron extension enabled
+   - Enabled automatically by migration
+   - Can monitor via `cron.job` table
 
 ---
 

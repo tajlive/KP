@@ -153,24 +153,53 @@ npm test src/lib/trading/__tests__/auto-trader.test.ts
 - Paper trading mode is default for new users
 - Live trading requires explicit opt-in
 
-## Cron Configuration
+## Cron Configuration (Supabase)
 
-Vercel.json:
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/auto-trade",
-      "schedule": "*/15 * * * *"
-    }
-  ]
-}
+We use **Supabase Cron** (pg_cron) instead of Vercel Cron for better reliability and no rate limits.
+
+### Setup
+
+Run the migration to enable cron jobs:
+```bash
+supabase db push
 ```
 
-Note: Vercel Hobby plan limits to 1 cron/day. For production, use:
-1. Vercel Pro plan
-2. External scheduler (GitHub Actions, etc.)
-3. Event-driven architecture
+This creates:
+- Cron job running every 5 minutes
+- Calls Supabase Edge Function `auto-trade`
+- Logs all executions to `cron_execution_logs`
+
+### Cron Jobs
+
+| Job | Schedule | Description |
+|-----|----------|-------------|
+| `auto-trading-every-5-min` | `*/5 * * * *` | Executes auto trades |
+| `sync-prices-hourly` | `0 * * * *` | Syncs price data |
+
+### Manual Trigger
+
+You can manually trigger via Supabase Dashboard:
+1. Go to Database → Cron Jobs
+2. Click "Run" on the job
+
+Or via SQL:
+```sql
+SELECT cron.run_job('auto-trading-every-5-min');
+```
+
+### Monitoring
+
+Check execution logs:
+```sql
+SELECT * FROM cron_execution_logs 
+ORDER BY executed_at DESC 
+LIMIT 10;
+```
+
+View cron job status:
+```sql
+SELECT * FROM cron.job;
+```
 
 ## Future Enhancements
 
