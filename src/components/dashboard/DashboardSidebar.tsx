@@ -164,9 +164,11 @@ export function DashboardSidebar() {
                         : "text-slate-600 hover:text-blue-600 hover:bg-blue-50"
                   }`}
                 >
-                  <link.icon
-                    className={`w-5 h-5 ${active ? (link.admin ? "text-red-600" : "text-blue-600") : "text-slate-400 group-hover:text-current"}`}
-                  />
+                  {link.icon && (
+                    <link.icon
+                      className={`w-5 h-5 ${active ? (link.admin ? "text-red-600" : "text-blue-600") : "text-slate-400 group-hover:text-current"}`}
+                    />
+                  )}
                   <span>{link.label}</span>
                 </Link>
               );
