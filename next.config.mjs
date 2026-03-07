@@ -94,9 +94,10 @@ const nextConfig = {
   // Norwegian (default) = no prefix, English = /en/ prefix
   async redirects() {
     return [
-      // Redirect old /no/* URLs to new canonical URLs without prefix
-      { source: "/no/:path*", destination: "/:path*", permanent: true },
-      { source: "/no", destination: "/", permanent: true },
+      // NOTE: /no/ redirect removed to fix lesson routes (KLA-156)
+      // Lesson routes require /no/kurs/leksjon/ structure to work with next-intl
+      // { source: "/no/:path*", destination: "/:path*", permanent: true },
+      // { source: "/no", destination: "/", permanent: true },
       
       // Legacy English root URLs → /en/ prefix
       { source: "/login", destination: "/en/login", permanent: true },
