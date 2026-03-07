@@ -59,7 +59,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
       .eq('is_active', true);
 
     if ((currentFollows ?? 0) >= limit) {
-      const nextTier = profile.tier === 'bachelor' ? 'master' : 'phd';
+      const nextTier = profile.tier === 'student' ? 'master' : 'phd';
       return NextResponse.json(
         {
           error: `You can follow max ${limit} leader(s) on ${profile.tier} tier. Upgrade to ${nextTier} for more.`,

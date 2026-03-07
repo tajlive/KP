@@ -32,7 +32,9 @@ export async function getLatestTrade(): Promise<TradeContext | null> {
       quantity: data.quantity,
       pnl: data.realized_pnl ?? undefined,
       created_at: data.executed_at,
-      reason: data.strategy_signal?.reason as string || "Automatisk strategi-handel",
+      reason: (data.strategy_signal && typeof data.strategy_signal === 'object' && 'reason' in data.strategy_signal 
+        ? (data.strategy_signal as { reason?: string }).reason 
+        : undefined) || "Automatisk strategi-handel",
     };
   } catch (_) {
     return null;
