@@ -11,7 +11,7 @@ interface TraderProfilePageProps {
 
 export async function generateMetadata({ params }: TraderProfilePageProps) {
   const { id, locale: _locale } = await params;
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Try to get trader info from leaderboard_bots first
   const { data: trader } = await supabase
@@ -25,12 +25,12 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("display_name")
-      .eq("id", id)
+      .eq("user_id", id)
       .single();
 
     return {
       title: profile?.display_name
-        ? `${profile.full_name || 'Unknown'} | Kopier Trading`
+        ? `${profile.display_name} | Kopier Trading`
         : "Trader Profil | Klarpakke",
     };
   }
@@ -44,7 +44,7 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
   const { id, locale: _locale } = await params;
   await requireAuth(_locale);
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Verify trader exists
   const { data: trader } = await supabase
@@ -57,8 +57,8 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
     // Try profiles as fallback
     const { data: profile } = await supabase
       .from("user_profiles")
-      .select("id")
-      .eq("id", id)
+      .select("user_id")
+      .eq("user_id", id)
       .single();
 
     if (!profile) {

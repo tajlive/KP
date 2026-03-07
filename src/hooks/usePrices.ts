@@ -5,7 +5,21 @@ import type { Database } from "@/lib/database.types";
 import { createBrowserClient } from "@supabase/ssr";
 import { useEffect, useState } from "react";
 
-type CoinPrice = Database["public"]["Tables"]["coin_prices"]["Row"];
+// Local type definition since coin_prices may not be in generated schema
+interface CoinPrice {
+  id: string;
+  symbol: string;
+  name: string;
+  price: number;
+  price_change_24h: number | null;
+  price_change_percent_24h: number | null;
+  volume_24h: number | null;
+  market_cap: number | null;
+  high_24h: number | null;
+  low_24h: number | null;
+  last_updated: string | null;
+  created_at: string;
+}
 
 // KLA-105: Priority symbols for real-time WebSocket updates
 const PRIORITY_SYMBOLS = [
@@ -28,7 +42,8 @@ export function usePrices() {
   useEffect(() => {
     const fetchPrices = async () => {
       setLoading(true);
-      const { data } = await supabase.from("coin_prices").select("*");
+      // Using type assertion since coin_prices table may vary by environment
+      const { data } = await (supabase.from as (t: string) => ReturnType<typeof supabase.from>)("coin_prices").select("*");
 
       const priceMap = ((data || []) as CoinPrice[]).reduce(
         (acc: Record<string, CoinPrice>, price: CoinPrice) => {

@@ -6,15 +6,31 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Mapped trade type from auto_trades table
 interface Trade {
   id: string;
   symbol: string;
-  side: 'buy' | 'sell';
-  quantity: number;
-  price: number;
-  total: number;
-  executed_at: string;
-  fees: number;
+  side: string;
+  quantity: number | null;
+  entry_price: number | null;
+  exit_price: number | null;
+  executed_at: string | null;
+  commission: number | null;
+  realized_pnl: number | null;
+}
+
+// Helper to get price/total/fees from database trade
+function getTradePrice(trade: Trade): number {
+  return trade.entry_price ?? trade.exit_price ?? 0;
+}
+
+function getTradeTotal(trade: Trade): number {
+  const price = getTradePrice(trade);
+  return (trade.quantity ?? 0) * price;
+}
+
+function getTradeFees(trade: Trade): number {
+  return trade.commission ?? 0;
 }
 
 interface TaxReportData {
@@ -63,9 +79,9 @@ export async function GET(request: NextRequest) {
 
     // Get user email
     const { data: userData } = await supabase
-      .from('user_profiles' as any)
+      .from('user_profiles')
       .select('email')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
 
     // Fetch trades for the year
@@ -130,7 +146,7 @@ export async function GET(request: NextRequest) {
 function calculateTaxReport(trades: Trade[], year: number, userId: string, userEmail?: string): TaxReportData {
   // Group trades by symbol for FIFO calculation
   const symbolTrades: Record<string, Trade[]> = {};
-  
+
   trades.forEach(trade => {
     if (!symbolTrades[trade.symbol]) {
       symbolTrades[trade.symbol] = [];
@@ -150,25 +166,28 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
     let sellCount = 0;
 
     symbolTradeList.forEach(trade => {
-      totalFees += trade.fees || 0;
+      const fees = getTradeFees(trade);
+      const price = getTradePrice(trade);
+      const quantity = trade.quantity ?? 0;
+      totalFees += fees;
 
       if (trade.side === 'buy') {
         buyQueue.push({
-          quantity: trade.quantity,
-          price: trade.price,
-          fees: trade.fees || 0,
+          quantity,
+          price,
+          fees,
         });
         buyCount++;
       } else {
         sellCount++;
-        let remainingQty = trade.quantity;
+        let remainingQty = quantity;
         let costBasis = 0;
 
         // FIFO calculation
         while (remainingQty > 0 && buyQueue.length > 0) {
           const buy = buyQueue[0];
           const qtyToUse = Math.min(remainingQty, buy.quantity);
-          
+
           costBasis += qtyToUse * buy.price + (buy.fees * (qtyToUse / buy.quantity));
           buy.quantity -= qtyToUse;
           remainingQty -= qtyToUse;
@@ -178,7 +197,7 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
           }
         }
 
-        const proceeds = trade.quantity * trade.price - (trade.fees || 0);
+        const proceeds = quantity * price - fees;
         const realizedPnL = proceeds - costBasis;
         symbolRealizedPnL += realizedPnL;
       }
@@ -203,25 +222,26 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
   };
 
   trades.forEach(trade => {
+    if (!trade.executed_at) return;
     const month = new Date(trade.executed_at).getMonth();
     const quarter = Math.floor(month / 3) + 1;
     const qKey = `q${quarter}` as keyof typeof quarterlyBreakdown;
-    
+
     quarterlyBreakdown[qKey].trades++;
-    
+
     if (trade.side === 'sell') {
-      quarterlyBreakdown[qKey].profitLoss += trade.total;
+      quarterlyBreakdown[qKey].profitLoss += getTradeTotal(trade);
     }
   });
 
   // Calculate total volumes
   const totalBuyVolume = trades
     .filter(t => t.side === 'buy')
-    .reduce((sum, t) => sum + t.total, 0);
-  
+    .reduce((sum, t) => sum + getTradeTotal(t), 0);
+
   const totalSellVolume = trades
     .filter(t => t.side === 'sell')
-    .reduce((sum, t) => sum + t.total, 0);
+    .reduce((sum, t) => sum + getTradeTotal(t), 0);
 
   return {
     year,
@@ -260,20 +280,20 @@ function generateCSV(report: TaxReportData, trades: Trade[]): string {
   ].join(';');
 
   const rows = trades.map(trade => {
-    const date = new Date(trade.executed_at);
+    const date = trade.executed_at ? new Date(trade.executed_at) : new Date();
     const dateStr = date.toLocaleDateString('no-NO');
     const timeStr = date.toLocaleTimeString('no-NO');
-    
+
     return [
       dateStr,
       timeStr,
       trade.symbol,
       trade.side === 'buy' ? 'Kjøp' : 'Salg',
-      trade.quantity,
-      trade.price,
-      trade.total,
-      trade.fees || 0,
-      '',
+      trade.quantity ?? 0,
+      getTradePrice(trade),
+      getTradeTotal(trade),
+      getTradeFees(trade),
+      trade.realized_pnl ?? '',
       'Klarpakke Trading',
     ].join(';');
   });
@@ -355,12 +375,12 @@ function generateHTML(report: TaxReportData, trades: Trade[]): string {
         <tbody>
             ${trades.map(t => `
                 <tr>
-                    <td>${new Date(t.executed_at).toLocaleDateString('no-NO')}</td>
+                    <td>${t.executed_at ? new Date(t.executed_at).toLocaleDateString('no-NO') : '-'}</td>
                     <td>${t.symbol}</td>
                     <td>${t.side === 'buy' ? 'Kjøp' : 'Salg'}</td>
-                    <td>${t.quantity}</td>
-                    <td>${formatCurrency(t.price)}</td>
-                    <td>${formatCurrency(t.total)}</td>
+                    <td>${t.quantity ?? 0}</td>
+                    <td>${formatCurrency(getTradePrice(t))}</td>
+                    <td>${formatCurrency(getTradeTotal(t))}</td>
                 </tr>
             `).join('')}
         </tbody>

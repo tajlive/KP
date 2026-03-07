@@ -4,7 +4,7 @@
 
 export { PaperTradingSimulator } from './PaperTradingSimulator';
 export { RiskPanel } from './RiskPanel';
-export { Leaderboard } from './Leaderboard';
+export { PaperTradingLeaderboard as Leaderboard } from './Leaderboard';
 
 // Mobile-optimized versions
 export { MobileSimulator } from './MobileSimulator';

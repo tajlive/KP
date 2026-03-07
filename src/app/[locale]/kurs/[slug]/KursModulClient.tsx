@@ -633,7 +633,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
                 <h2 className="text-xl font-semibold mb-6">Visuell forklaring</h2>
                 {courseModule.content.visual.type === "comparison" && (
                   <div className="grid md:grid-cols-2 gap-4">
-                    {courseModule.content.visual.items?.map((item: any, i: number) => (
+                    {courseModule.content.visual.items?.map((item: unknown, i: number) => (
                       <div key={i} className="p-4 bg-slate-50 rounded-xl">
                         <h3 className="font-semibold text-slate-900 mb-2">{item.label}</h3>
                         <p className="text-slate-600 text-sm">{item.desc}</p>
@@ -643,7 +643,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
                 )}
                 {courseModule.content.visual.type === "steps" && (
                   <div className="space-y-4">
-                    {courseModule.content.visual.items?.map((item: any, i: number) => (
+                    {courseModule.content.visual.items?.map((item: unknown, i: number) => (
                       <div key={i} className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
                         <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold flex-shrink-0">
                           {item.step}
@@ -658,7 +658,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
                 )}
                 {courseModule.content.visual.type === "wallet-types" && (
                   <div className="grid md:grid-cols-2 gap-4">
-                    {courseModule.content.visual.items?.map((item: any, i: number) => (
+                    {courseModule.content.visual.items?.map((item: unknown, i: number) => (
                       <div key={i} className={`p-4 rounded-xl ${i === 0 ? "bg-orange-50 border border-orange-200" : "bg-green-50 border border-green-200"}`}>
                         <h3 className="font-semibold text-slate-900 mb-2">{item.label}</h3>
                         <p className="text-slate-600 text-sm mb-2">{item.desc}</p>
@@ -674,7 +674,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
                     <p className="text-slate-600">{courseModule.content.visual.description}</p>
                     {courseModule.content.visual.items && (
                       <div className="mt-4 space-y-3">
-                        {courseModule.content.visual.items.map((item: any, i: number) => (
+                        {courseModule.content.visual.items.map((item: unknown, i: number) => (
                           <div key={i} className="flex items-start gap-3">
                             <div className="w-2 h-2 bg-blue-600 rounded-full mt-2" />
                             <div>

@@ -33,8 +33,8 @@ interface LeaderboardEntry {
 
 interface UserProfile {
   full_name: string | null;
-  avatar_url: string | null;
-  show_on_leaderboard: boolean;
+  display_name: string | null;
+  show_on_leaderboard: boolean | null;
 }
 
 type Period = 'daily' | 'weekly' | 'monthly' | 'all-time';
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     // Fetch user profiles with leaderboard preference
     const { data: profiles, error: profilesError } = await supabase
       .from('user_profiles')
-      .select('user_id, full_name, avatar_url, show_on_leaderboard')
+      .select('user_id, full_name, display_name, show_on_leaderboard')
       .in('user_id', sessionUserIds)
       .eq('show_on_leaderboard', true);
     
@@ -185,8 +185,8 @@ export async function GET(request: NextRequest) {
       
       return {
         userId: session.user_id,
-        username: profile?.full_name || 'Anonymous Trader',
-        avatarUrl: profile?.avatar_url,
+        username: profile?.full_name || profile?.display_name || 'Anonymous Trader',
+        avatarUrl: null, // avatar_url not available in user_profiles
         rank: index + 1,
         startingCapital,
         currentCapital,

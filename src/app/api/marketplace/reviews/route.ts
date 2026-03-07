@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await db
     .from("strategy_reviews")
-    .select("*, user:auth.users(raw_user_meta_data)")
-    .eq("listing_id", listingId)
+    .select("*")
+    .eq("strategy_id", listingId)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -74,7 +74,7 @@ export const POST = withRateLimit(
     const { data: existing } = await db
       .from("strategy_reviews")
       .select("id")
-      .eq("listing_id", listingId)
+      .eq("strategy_id", listingId)
       .eq("user_id", user.id)
       .single();
 
@@ -85,10 +85,10 @@ export const POST = withRateLimit(
     const { data, error } = await db
       .from("strategy_reviews")
       .insert({
-        listing_id: listingId,
+        strategy_id: listingId,
         user_id: user.id,
         rating,
-        review_text: reviewText || null,
+        review: reviewText || null,
       })
       .select()
       .single();
@@ -101,7 +101,7 @@ export const POST = withRateLimit(
     const { data: allReviews } = await db
       .from("strategy_reviews")
       .select("rating")
-      .eq("listing_id", listingId);
+      .eq("strategy_id", listingId);
 
     if (allReviews && allReviews.length > 0) {
       const avg =

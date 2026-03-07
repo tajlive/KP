@@ -147,6 +147,7 @@ export const FollowLeaderSchema = z.object({
   leader_id: z.string().uuid(),
   scale_factor: z.number().min(0.01).max(10).default(1),
   max_trade_size: z.number().positive().optional(),
+  allocation_percent: z.number().min(1).max(100).default(10),
 });
 
 export const UnfollowSchema = z.object({
