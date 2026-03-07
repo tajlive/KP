@@ -4,48 +4,50 @@
     <loc>https://www.klarpakke.no/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-02-16</lastmod>
   </url>
   <url>
-    <loc>https://www.klarpakke.no/no</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-    <lastmod>2026-02-16</lastmod>
-  </url>
-  <url>
-    <loc>https://www.klarpakke.no/no/priser</loc>
+    <loc>https://www.klarpakke.no/kurs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-02-16</lastmod>
   </url>
   <url>
-    <loc>https://www.klarpakke.no/no/om-oss</loc>
+    <loc>https://www.klarpakke.no/priser</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.klarpakke.no/om-oss</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2026-02-16</lastmod>
   </url>
   <url>
-    <loc>https://www.klarpakke.no/no/innlogging</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-    <lastmod>2026-02-16</lastmod>
-  </url>
-  <url>
-    <loc>https://www.klarpakke.no/no/registrer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-    <lastmod>2026-02-16</lastmod>
-  </url>
-  <url>
-    <loc>https://www.klarpakke.no/personvern</loc>
+    <loc>https://www.klarpakke.no/kontakt</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-02-16</lastmod>
   </url>
   <url>
-    <loc>https://www.klarpakke.no/vilkar</loc>
+    <loc>https://www.klarpakke.no/innlogging</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.klarpakke.no/en</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.klarpakke.no/en/courses</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.klarpakke.no/en/pricing</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.klarpakke.no/en/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2026-02-16</lastmod>
   </url>
 </urlset>

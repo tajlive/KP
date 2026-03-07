@@ -115,10 +115,11 @@ function SignupContent() {
         // Grant 500 KLT welcome bonus for new users
         try {
           const { error: kltError } = await supabase
-            .from("klt_balances")
+            .from("user_klt_balances")
             .upsert({
               user_id: data.user.id,
               balance: 500,
+              total_earned: 500,
               updated_at: new Date().toISOString(),
             });
           

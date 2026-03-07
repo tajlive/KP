@@ -7,34 +7,35 @@ import {
   CheckCircle,
   GraduationCap,
   Heart,
+  Mail,
+  MapPin,
   Shield,
   Target,
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import Link from "next/link";
 
 const values = [
-  {
-    icon: Shield,
-    titleKey: "values.safety.title",
-    descKey: "values.safety.desc",
-  },
   {
     icon: GraduationCap,
     titleKey: "values.education.title",
     descKey: "values.education.desc",
   },
   {
-    icon: Heart,
-    titleKey: "values.community.title",
-    descKey: "values.community.desc",
-  },
-  {
     icon: Target,
     titleKey: "values.transparency.title",
     descKey: "values.transparency.desc",
+  },
+  {
+    icon: Shield,
+    titleKey: "values.safety.title",
+    descKey: "values.safety.desc",
+  },
+  {
+    icon: Heart,
+    titleKey: "values.community.title",
+    descKey: "values.community.desc",
   },
 ];
 
@@ -43,15 +44,6 @@ const stats = [
   { value: "50M+", labelKey: "stats.volume" },
   { value: "4.8/5", labelKey: "stats.rating" },
   { value: "24/7", labelKey: "stats.support" },
-];
-
-const differentiators = [
-  "differentiators.paperTrading",
-  "differentiators.norwegian",
-  "differentiators.ai",
-  "differentiators.gamification",
-  "differentiators.realTime",
-  "differentiators.community",
 ];
 
 export default function OmOssClient() {
@@ -73,36 +65,42 @@ export default function OmOssClient() {
         </p>
       </div>
 
-      {/* Mission */}
+      {/* Tom's Story - The Foundation */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl font-bold text-slate-900 mb-6">
-              {t("mission.title")}
+              {t("story.title")}
             </h2>
-            <p className="text-lg text-slate-600 mb-6">{t("mission.p1")}</p>
-            <p className="text-lg text-slate-600 mb-6">{t("mission.p2")}</p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/kurs">
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  {t("mission.ctaCourses")}
-                </Button>
-              </Link>
-              <Link href="/kontakt">
-                <Button variant="outline">{t("mission.ctaContact")}</Button>
-              </Link>
+            <div className="space-y-4 text-lg text-slate-600">
+              <p>{t("story.p1")}</p>
+              <p>{t("story.p2")}</p>
+              <p>{t("story.p3")}</p>
+            </div>
+            <div className="mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-100">
+              <p className="text-blue-900 font-medium italic">
+                &ldquo;{t("story.quote")}&rdquo;
+              </p>
+              <p className="text-blue-600 mt-2">— {t("story.quoteAuthor")}</p>
             </div>
           </div>
-          <div className="bg-blue-600 p-8 rounded-3xl text-white shadow-xl shadow-blue-600/20 relative overflow-hidden">
+          <div className="bg-slate-900 p-8 rounded-3xl text-white shadow-xl relative overflow-hidden">
             <div className="relative z-10">
-              <Users className="w-12 h-12 mb-6 text-blue-200" />
-              <blockquote className="text-2xl font-medium italic mb-6">
-                &ldquo;{t("mission.quote")}&rdquo;
-              </blockquote>
-              <p className="text-blue-100">{t("mission.quoteAuthor")}</p>
+              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                <Heart className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4">{t("mission.title")}</h3>
+              <p className="text-slate-300">{t("mission.text")}</p>
+              <div className="mt-6 flex gap-3">
+                <Link href="/kurs">
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    {t("mission.ctaCourses")}
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/20 rounded-full blur-3xl" />
           </div>
         </div>
       </div>
@@ -149,7 +147,7 @@ export default function OmOssClient() {
         </div>
       </div>
 
-      {/* What Makes Us Different */}
+      {/* What Makes Us Different - No Hype, Just Facts */}
       <div className="bg-slate-900 text-white py-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -159,7 +157,13 @@ export default function OmOssClient() {
                 {t("different.subtitle")}
               </p>
               <ul className="space-y-4">
-                {differentiators.map((item, i) => (
+                {[
+                  "different.paperTrading",
+                  "different.norwegian",
+                  "different.education",
+                  "different.transparency",
+                  "different.community",
+                ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                     <span className="text-slate-200">{t(item)}</span>
@@ -167,31 +171,12 @@ export default function OmOssClient() {
                 ))}
               </ul>
             </div>
-            <div className="relative">
-              <div className="bg-slate-800 p-8 rounded-3xl border border-slate-700">
-                <div className="text-center mb-6">
-                  <div className="w-20 h-20 bg-blue-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                    <Image
-                      src="/logo.svg"
-                      alt="Klarpakke"
-                      width={48}
-                      height={48}
-                      className="invert"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-bold">{t("cta.title")}</h3>
-                </div>
-                <p className="text-slate-300 text-center mb-6">{t("cta.subtitle")}</p>
-                <Link href="/innlogging">
-                  <Button
-                    size="lg"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                  >
-                    {t("cta.button")}
-                  </Button>
-                </Link>
-                <p className="text-slate-500 text-sm text-center mt-4">
-                  {t("cta.noCard")}
+            <div className="bg-slate-800 p-8 rounded-3xl border border-slate-700">
+              <h3 className="text-xl font-bold mb-4 text-center">{t("risk.title")}</h3>
+              <p className="text-slate-300 text-center mb-6">{t("risk.text")}</p>
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                <p className="text-red-300 text-sm text-center font-medium">
+                  ⚠️ {t("risk.warning")}
                 </p>
               </div>
             </div>
@@ -199,36 +184,57 @@ export default function OmOssClient() {
         </div>
       </div>
 
-      {/* Team */}
+      {/* Contact Info */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">
-            {t("team.title")}
+            {t("contact.title")}
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            {t("team.subtitle")}
+            {t("contact.subtitle")}
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
-          {["founder", "cto", "headOfEducation"].map((role) => (
-            <div
-              key={role}
-              className="bg-white p-6 rounded-2xl border border-slate-100 text-center"
-            >
-              <div className="w-24 h-24 bg-slate-200 rounded-full mx-auto mb-4 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600" />
-              </div>
-              <h3 className="font-bold text-slate-900 text-lg">
-                {t(`team.${role}.name`)}
-              </h3>
-              <p className="text-blue-600 text-sm mb-2">
-                {t(`team.${role}.role`)}
-              </p>
-              <p className="text-slate-600 text-sm">
-                {t(`team.${role}.bio`)}
-              </p>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 text-center">
+            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mx-auto mb-4">
+              <Mail className="w-6 h-6" />
             </div>
-          ))}
+            <h3 className="font-bold text-slate-900 mb-2">{t("contact.email")}</h3>
+            <a href="mailto:support@klarpakke.no" className="text-blue-600 hover:underline">
+              support@klarpakke.no
+            </a>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 text-center">
+            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mx-auto mb-4">
+              <MapPin className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-slate-900 mb-2">{t("contact.org")}</h3>
+            <p className="text-slate-600">929 003 292</p>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 text-center">
+            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mx-auto mb-4">
+              <Users className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold text-slate-900 mb-2">{t("contact.community")}</h3>
+            <p className="text-slate-600">Discord & Forum</p>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="bg-blue-600 py-16">
+        <div className="max-w-4xl mx-auto px-4 text-center text-white">
+          <h2 className="text-3xl font-bold mb-4">{t("cta.title")}</h2>
+          <p className="text-xl text-blue-100 mb-8">{t("cta.subtitle")}</p>
+          <Link href="/innlogging">
+            <Button
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
+            >
+              {t("cta.button")}
+            </Button>
+          </Link>
+          <p className="text-blue-200 text-sm mt-4">{t("cta.noCard")}</p>
         </div>
       </div>
     </div>

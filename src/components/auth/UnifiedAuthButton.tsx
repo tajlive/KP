@@ -287,7 +287,7 @@ function MagicLinkForm({
 
 export function AuthButtons({
   locale = 'no',
-  providers = ['GOOGLE', 'LINKEDIN'],
+  providers = ['GOOGLE', 'MICROSOFT', 'VIPPS'],
   showMagicLink = true,
   redirectPath,
 }: {

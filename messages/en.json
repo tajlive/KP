@@ -973,109 +973,52 @@
     "applicationError": "An error occurred. Please try again."
   },
   "pricing": {
-    "title": "Pricing",
-    "subtitle": "Choose the plan that fits you. Start free, upgrade when you're ready.",
-    "trial": "7-day free trial on all paid plans",
-    "startFree": "Start Free",
-    "chooseStarter": "Choose Starter",
-    "choosePro": "Choose Complete",
-    "chooseExpert": "Choose Pro",
-    "mostPopular": "Most Popular",
-    "forever": "Forever",
-    "perMonth": "/mo",
-    "faqTitle": "Frequently Asked Questions",
-    "stillUnsure": "Still unsure?",
-    "stillUnsureDesc": "Start with the free plan. You can always upgrade later.",
-    "startFreeNow": "Start Free Now",
-    "readMore": "Read more about the university",
-    "important": "Important:",
-    "disclaimer": "We are not financial advisors. All trading involves risk.",
+    "metadata": {
+      "title": "Pricing - Klarpakke University",
+      "description": "Choose your plan: Student (free), Bachelor, Master, or PhD. Start with paper trading, upgrade when you're ready."
+    },
+    "hero": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Start free as a Student. Upgrade through Bachelor → Master → PhD as you learn.",
+      "trial": "14-day free trial on all paid plans"
+    },
+    "free": "Free",
+    "popular": "Most Popular",
+    "startFree": "Start Free as Student",
+    "startTrial": "Start 14-day Trial",
     "plans": {
-      "free": {
+      "student": {
         "name": "Student",
-        "desc": "For those curious about crypto",
-        "features": [
-          "Crypto 101 - Introduction",
-          "1 quiz",
-          "5 simulator trades",
-          "Basic calculator"
-        ],
-        "notIncluded": [
-          "Advanced courses",
-          "Certificate",
-          "Webinars",
-          "Priority support"
-        ]
+        "description": "Start here - completely free"
       },
-      "starter": {
+      "bachelor": {
         "name": "Bachelor",
-        "desc": "For learning the basics",
-        "features": [
-          "Everything in Student",
-          "All basic courses",
-          "Unlimited simulator",
-          "All quizzes",
-          "Email support"
-        ],
-        "notIncluded": ["Certificate", "Webinars", "Priority support"]
+        "description": "For those who want to learn more"
       },
-      "pro": {
+      "master": {
         "name": "Master",
-        "desc": "Our most popular plan for serious learners",
-        "features": [
-          "Everything in Bachelor",
-          "All advanced courses",
-          "Global certificate",
-          "Webinars (2/mo)",
-          "Priority support",
-          "Discord access"
-        ],
-        "notIncluded": []
+        "description": "For serious traders"
       },
-      "expert": {
+      "phd": {
         "name": "PhD",
-        "desc": "For aspiring experts",
-        "features": [
-          "Everything in Master",
-          "Extra resources",
-          "1-on-1 session (1/mo)",
-          "Priority support (12h)",
-          "Free swag"
-        ],
-        "notIncluded": []
+        "description": "Full mastery"
       }
     },
-    "success": {
-      "loadingTitle": "Processing payment...",
-      "loadingMessage": "Please wait...",
-      "verifying": "Verifying payment...",
-      "invalidSession": "Invalid session ID",
-      "loginRequired": "You must be logged in to view this page",
-      "title": "Thank you for your purchase!",
-      "messageConfirmed": "Payment confirmed! You now have access to all features in your plan.",
-      "messagePending": "Payment received! It may take a moment for your subscription to activate.",
-      "messageFallback": "Thank you for your payment! Your subscription will be active shortly.",
-      "goToDashboard": "Go to Dashboard",
-      "backToHome": "Back to Home",
-      "description": "A welcome email and your personal trading guide are on their way to your inbox. Let's start the journey with {tier}!",
-      "cta": "Go to Dashboard",
-      "viewProgram": "View Study Program",
-      "errorTitle": "Something went wrong",
-      "backToPricing": "Back to Pricing"
+    "comparison": {
+      "title": "Compare All Plans",
+      "feature": "Feature"
     },
-    "cancel": {
-      "title": "Payment Canceled",
-      "subtitle": "You canceled the payment. No worries - you can try again anytime!",
-      "faqTitle": "Common Questions",
-      "whyFailedQ": "Why didn't the payment work?",
-      "whyFailedA": "There might be temporary issues with your bank or card. Try again or use another card.",
-      "chargedQ": "Will I be charged?",
-      "chargedA": "No, you are only charged when payment is completed. No hidden fees.",
-      "trialQ": "Can I try for free first?",
-      "trialA": "Yes! All paid plans include a 7-day free trial. You can cancel anytime.",
-      "tryAgain": "Try Again",
-      "backHome": "Back to Home",
-      "needHelp": "Need help? Contact us at"
+    "faq": {
+      "title": "Frequently Asked Questions"
+    },
+    "trust": {
+      "title": "Secure payment with:"
+    },
+    "cta": {
+      "title": "Ready to start your crypto journey?",
+      "subtitle": "Join thousands of Norwegians learning safely with Klarpakke.",
+      "button": "Start as Student - Free",
+      "guarantee": "30-day money-back guarantee • No commitment • Org.no 929 003 292"
     }
   },
   "legal": {
@@ -1256,48 +1199,6 @@
         "role": "Learning & Development",
         "bio": "Educator with passion for crypto"
       }
-    }
-  },
-  "pricing": {
-    "metadata": {
-      "title": "Pricing - Klarpakke University",
-      "description": "Choose your plan. Start free with paper trading, or upgrade for advanced courses and AI tools."
-    },
-    "hero": {
-      "title": "Simple, Transparent Pricing",
-      "subtitle": "Start free. Upgrade when ready. No hidden fees.",
-      "trial": "14-day free trial on all paid plans"
-    },
-    "free": "Free",
-    "popular": "Most Popular",
-    "startFree": "Start Free",
-    "startTrial": "Start Free Trial",
-    "plans": {
-      "starter": {
-        "name": "Starter",
-        "description": "Perfect for getting started"
-      },
-      "pro": {
-        "name": "Pro",
-        "description": "For serious traders"
-      },
-      "premium": {
-        "name": "Premium",
-        "description": "Full access to everything"
-      }
-    },
-    "comparison": {
-      "title": "Compare Plans",
-      "feature": "Feature"
-    },
-    "faq": {
-      "title": "Frequently Asked Questions"
-    },
-    "cta": {
-      "title": "Ready to take your trading to the next level?",
-      "subtitle": "Join thousands of Norwegians already learning with Klarpakke.",
-      "button": "Start your 14-day trial",
-      "guarantee": "30-day money-back guarantee • No commitment"
     }
   },
   "calculator": {

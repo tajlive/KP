@@ -1,14 +1,10 @@
-# www.klarpakke.no robots.txt
 User-agent: *
 Allow: /
 
 # Sitemap
 Sitemap: https://www.klarpakke.no/sitemap.xml
 
-# Disallow admin pages
-User-agent: *
+# Disallow admin routes
 Disallow: /admin/
 Disallow: /api/
-
-# Crawl-delay for politeness
-Crawl-delay: 1
+Disallow: /_next/
