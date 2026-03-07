@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Mail, MapPin, MessageSquare, Send } from "lucide-react";
+import { ArrowRight, CheckCircle, Mail, MapPin, MessageSquare, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -12,6 +12,47 @@ export default function ClientKontakt() {
     email: "",
     message: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = "Navn er påkrevd";
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = "E-post er påkrevd";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Ugyldig e-postadresse";
+    }
+    
+    if (!formData.message.trim()) {
+      newErrors.message = "Melding er påkrevd";
+    } else if (formData.message.length < 10) {
+      newErrors.message = "Meldingen må være minst 10 tegn";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setIsSubmitting(true);
+    
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+    setFormData({ name: "", email: "", message: "" });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -33,56 +74,100 @@ export default function ClientKontakt() {
               <Send className="text-blue-600 h-6 w-6" />
               {t("form.title")}
             </h2>
-            <form className="space-y-6">
+            {isSubmitted ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                  Takk for din melding!
+                </h3>
+                <p className="text-slate-600 mb-6">
+                  Vi har mottatt din henvendelse og vil svare deg så snart som mulig.
+                </p>
+                <Button
+                  onClick={() => setIsSubmitted(false)}
+                  variant="outline"
+                  className="rounded-full"
+                >
+                  Send ny melding
+                </Button>
+              </div>
+            ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-2">
                   {t("form.name")}
                 </label>
                 <input
+                  id="name"
                   type="text"
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium"
+                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium ${
+                    errors.name ? 'border-red-500' : 'border-slate-200'
+                  }`}
                   placeholder={t("form.namePlaceholder")}
+                  aria-invalid={!!errors.name}
                 />
+                {errors.name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
                   {t("form.email")}
                 </label>
                 <input
+                  id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium"
+                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium ${
+                    errors.email ? 'border-red-500' : 'border-slate-200'
+                  }`}
                   placeholder={t("form.emailPlaceholder")}
+                  aria-invalid={!!errors.email}
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label htmlFor="message" className="block text-sm font-semibold text-slate-700 mb-2">
                   {t("form.message")}
                 </label>
                 <textarea
+                  id="message"
                   value={formData.message}
                   onChange={(e) =>
                     setFormData({ ...formData, message: e.target.value })
                   }
                   rows={5}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium resize-none"
+                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium resize-none ${
+                    errors.message ? 'border-red-500' : 'border-slate-200'
+                  }`}
                   placeholder={t("form.messagePlaceholder")}
+                  aria-invalid={!!errors.message}
                 />
+                {errors.message && (
+                  <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+                )}
               </div>
               <Button
+                type="submit"
                 size="lg"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-blue-600/20"
+                disabled={isSubmitting}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t("form.submit")}
+                {isSubmitting ? "Sender..." : t("form.submit")}
               </Button>
             </form>
+            )}
           </div>
 
           {/* Contact Info Side */}
@@ -117,7 +202,11 @@ export default function ClientKontakt() {
                     {t("info.chatTitle")}
                   </h3>
                   <p className="text-slate-600 mb-4">{t("info.chatHours")}</p>
-                  <Button variant="outline" className="rounded-full">
+                  <Button 
+                    variant="outline" 
+                    className="rounded-full"
+                    onClick={() => window.open('mailto:support@klarpakke.no', '_blank')}
+                  >
                     {t("info.startChat")}
                   </Button>
                 </div>
