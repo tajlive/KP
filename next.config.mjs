@@ -92,10 +92,16 @@ const nextConfig = {
 
   // SEO: Canonical redirects with localePrefix: 'as-needed'
   // Norwegian (default) = no prefix, English = /en/ prefix
+  async rewrites() {
+    return [
+      // Lesson routes - map to lesson page
+      { source: '/leksjon/:lessonId', destination: '/leksjon/[lessonId]' },
+    ];
+  },
+
   async redirects() {
     return [
       // NOTE: /no/ redirect removed to fix lesson routes (KLA-156)
-      // Lesson routes require /no/kurs/leksjon/ structure to work with next-intl
       // { source: "/no/:path*", destination: "/:path*", permanent: true },
       // { source: "/no", destination: "/", permanent: true },
       
