@@ -28,8 +28,7 @@ export async function POST(
 ): Promise<NextResponse<MarketplaceSubscribeResponse | { error: string }>> {
   try {
     const response = NextResponse.next();
-    // @ts-expect-error - TypeScript thinks createServerClient returns Promise, but with request/response it returns the client directly
-    const supabase = createServerClient(request, response);
+    const supabase = createServerClient(request, response) as ReturnType<typeof import("@supabase/ssr").createServerClient>;
 
     // Verify authentication
     const {

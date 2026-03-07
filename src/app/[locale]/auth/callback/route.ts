@@ -80,7 +80,7 @@ export async function GET(
   const response = successResponse;
 
   try {
-    const supabase = createServerClient(request, response);
+    const supabase = createServerClient(request, response) as ReturnType<typeof createSSRServerClient>;
 
     const { data, error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
