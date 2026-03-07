@@ -1,4 +1,5 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { LocaleRedirect } from "@/components/i18n/LocaleRedirect";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { AuthProvider } from "@/components/auth/AuthContext";
 import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
@@ -121,6 +122,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                   <ToastProvider>
                     <TradingModeProvider>
                       <div className="relative min-h-screen flex flex-col">
+                        <LocaleRedirect />
                         <Navigation />
                         <main className="flex-1">{children}</main>
                         <ConditionalFooter />
