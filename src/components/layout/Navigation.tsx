@@ -1,5 +1,6 @@
 "use client";
 import TradingModeToggle from "@/components/TradingModeToggle";
+import { MiniPulseWidget } from "@/components/trading/RiskProfilePulse";
 import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
@@ -79,12 +80,15 @@ export function Navigation() {
 
             {!loading &&
               (user ? (
-                <Link href={l("/dashboard")}>
-                  <Button size="sm" className="gap-2">
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
-                  </Button>
-                </Link>
+                <>
+                  <MiniPulseWidget />
+                  <Link href={l("/dashboard")}>
+                    <Button size="sm" className="gap-2">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link href={l("/innlogging")}>
