@@ -8,7 +8,11 @@
   "crons": [
     {
       "path": "/api/cron/sync-prices",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/auto-trade",
+      "schedule": "*/15 * * * *"
     }
   ],
   "rewrites": [
