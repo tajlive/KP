@@ -8,6 +8,33 @@
 
 ## ✅ FULLFØRT I DAG
 
+### KLA-157: Paper Trading + Auto Trading System ✅
+**Commits:** 1fb2d0310, 1b5f99279, b5429c577
+
+#### Phase 1: Paper Trading
+- ✅ Database: `paper_trading_sessions`, `paper_trades` tables
+- ✅ API: `/api/paper-trading/init`, `/trade`, `/balance`
+- ✅ Frontend: `PaperTradingCard.tsx`, `PaperTradeButton.tsx`
+- ✅ Integration: `usePaperTradingInit.ts` hook
+- ✅ Auto-initialize 100,000 NOK for new users
+
+#### Phase 2: Auto Trading
+- ✅ Database: `auto_trading_configs` table
+- ✅ Trading Engine: `auto-trader.ts` with signal evaluation
+- ✅ Cron Job: `/api/cron/auto-trade` endpoint
+- ✅ Signal simulation for testing
+
+#### Phase 3: Frontend Components
+- ✅ `AutoTradingConfigCard.tsx` - Full config UI
+- ✅ `AutoTradingToggle.tsx` - Simple on/off
+- ✅ Risk level selector (Low/Medium/High)
+- ✅ Mode toggle (Paper/Live)
+- ✅ Dashboard integration
+
+#### Phase 4: Testing & Docs
+- ✅ Unit tests: `auto-trader.test.ts`
+- ✅ Documentation: `docs/AUTO_TRADING.md`
+
 ### 1. TypeScript & Build Fiks
 - ✅ `ignoreBuildErrors: true` i next.config.mjs
 - ✅ Type-casting for database tabeller
