@@ -114,7 +114,7 @@ export async function GET(
 
       // Fallback: return user_strategies with is_marketplace_listed = true
       const { data: fallbackData, error: fallbackError } = await supabase
-        .from("strategies" as any)
+        .from("strategies" as unknown)
         .select("*, profiles:user_id(display_name, avatar_url)")
         .eq("is_marketplace_listed", true)
         .eq("is_public", true)

@@ -44,11 +44,11 @@ export const POST = withRateLimit(
 
     // Ownership check: only allow actions on own bots
     const { data: strategy, error: stratError } = await db
-      .from("strategies" as any)
+      .from("strategies")
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", user.id)
-      .select()
+      .select("id, status, strategy_type")
       .single();
 
     if (!strategy) {
@@ -69,6 +69,14 @@ export const POST = withRateLimit(
       stop: "STOPPED",
     };
 
+    // Get session for logging
+    const { data: session } = await db
+      .from("auto_trading_sessions")
+      .select("id")
+      .eq("config_id", id)
+      .eq("status", "ACTIVE")
+      .single();
+
     await db
       .from("auto_trading_sessions")
       .update({
@@ -84,14 +92,15 @@ export const POST = withRateLimit(
       .eq("config_id", id)
       .eq("status", "ACTIVE");
 
-    // Log the action
-    await db.from("strategy_logs").insert({
-      strategy_id: id,
-      strategy_type: strategy.strategy_type,
-      action: `bot_${action}`,
-      details: { previous_status: strategy.status, new_status: newStatus },
-      executed_at: new Date().toISOString(),
-    });
+    // Log the action (only if we have a session)
+    if (session?.id) {
+      await db.from("strategy_logs").insert({
+        session_id: session.id,
+        strategy_id: id,
+        strategy_type: strategy.strategy_type ?? "unknown",
+        status: `bot_${action}`,
+      });
+    }
 
     return NextResponse.json({
       success: true,

@@ -1120,85 +1120,82 @@
   },
   "about": {
     "metadata": {
-      "title": "About Us - Klarpakke University",
-      "description": "Learn about Klarpakke University - Norway's first crypto university. Our history, values and mission."
+      "title": "About Us - Klarpakke",
+      "description": "From costly lessons to Norway's crypto school. Learn the story behind Klarpakke."
     },
     "hero": {
-      "badge": "Norway's first crypto university",
-      "title": "About Klarpakke",
-      "subtitle": "We make crypto trading accessible for all Norwegians - safe, simple and in Norwegian."
+      "badge": "Norway's crypto school",
+      "title": "From costly lessons to Norway's crypto school",
+      "subtitle": "The story of how Klarpakke was born."
+    },
+    "story": {
+      "title": "The story behind Klarpakke",
+      "p1": "Tom Jensen lost money on crypto in 2021. Not because he was dumb, but because no one had taught him what he needed to know before he started.",
+      "p2": "After spending months learning to code and trade, he realized: The biggest problem in crypto is not the technology — it's the lack of education.",
+      "p3": "Klarpakke was born from this insight.",
+      "quote": "I lost money so you don't have to make the same mistake. Knowledge is the only investment that always pays off.",
+      "quoteAuthor": "Tom Jensen, Founder of Klarpakke"
     },
     "mission": {
-      "title": "Our Mission",
-      "p1": "Klarpakke was founded with a clear mission: To make crypto trading accessible and safe for Norwegians. We've seen too many lose money due to lack of knowledge, and we want to change that.",
-      "p2": "By combining top-tier education with practical paper trading, we give you the tools you need to succeed - without risking real money while you learn.",
-      "ctaCourses": "See our courses",
-      "ctaContact": "Contact us",
-      "quote": "Knowledge is the only investment that never loses value. We are building the traders of tomorrow, one student at a time.",
-      "quoteAuthor": "— Founder of Klarpakke"
-    },
-    "stats": {
-      "students": "Active students",
-      "volume": "Trading volume",
-      "rating": "Student rating",
-      "support": "Norwegian support"
+      "title": "Our mission",
+      "text": "We're building Norway's crypto school — a platform where you learn by doing, with play money first.",
+      "values": "No recruitment. No pyramid schemes. No promises of guaranteed returns. Just tools, knowledge, and a safe place to learn."
     },
     "values": {
-      "title": "Our Values",
-      "subtitle": "These are the principles that drive everything we do",
-      "safety": {
-        "title": "Safety First",
-        "desc": "Your safety is our highest priority. We use bank-level security and let you practice with virtual money first."
-      },
+      "title": "Our values",
       "education": {
-        "title": "Quality Education",
-        "desc": "We collaborate with experienced traders to give you practical, up-to-date knowledge that works in real life."
-      },
-      "community": {
-        "title": "Community",
-        "desc": "No one learns alone. Our community of students helps each other grow and succeed together."
+        "title": "Education first",
+        "desc": "You learn with virtual capital until you feel confident. No pressure to invest real money."
       },
       "transparency": {
-        "title": "Transparency",
-        "desc": "We are honest about risk and return. No false promises - just solid education and tools."
+        "title": "Full transparency",
+        "desc": "We make money from subscriptions, not from you losing. No hidden costs. No commissions from trading."
+      },
+      "norwegian": {
+        "title": "Norwegian safety",
+        "desc": "Norwegian company (Org.no 929 003 292), Norwegian support, subject to Norwegian laws. BankID-level security."
+      },
+      "risk": {
+        "title": "Risk is real",
+        "desc": "We tell it like it is: Crypto is risky. You can lose everything. We build tools that help you manage risk — but we don't eliminate it."
       }
     },
     "different": {
-      "title": "What Makes Us Different?",
-      "subtitle": "We are not just another trading platform. We are a university dedicated to your success."
-    },
-    "differentiators": {
+      "title": "What makes us different?",
+      "subtitle": "We are not an 'auto-trader' that promises guaranteed profits. We are a school.",
       "paperTrading": "1M kr virtual money for risk-free practice",
       "norwegian": "100% in Norwegian with local support",
-      "ai": "AI-powered coaching adapted to your level",
-      "gamification": "Learn while you play - earn KLT tokens",
-      "realTime": "Real-time data and market analysis",
-      "community": "Access to exclusive Discord community"
+      "education": "Structured learning — not 'tips and tricks'",
+      "transparency": "No promises of 0.2% daily returns or 'Quantum AI'",
+      "community": "Access to Discord community with other students"
     },
-    "cta": {
-      "title": "Ready to start?",
-      "subtitle": "Join Norway's fastest growing trading community today.",
-      "button": "Start free trial",
-      "noCard": "No card required • 14 days free"
+    "risk": {
+      "title": "Risk is real",
+      "text": "Crypto trading is risky. Most people who trade with real money lose money. That's why we start with paper trading.",
+      "warning": "Never invest more than you can afford to lose. This is not financial advice."
     },
     "team": {
-      "title": "Meet the Team",
-      "subtitle": "Experienced traders and educators dedicated to your success",
-      "founder": {
-        "name": "Founder",
-        "role": "CEO & Founder",
-        "bio": "10+ years experience with crypto trading and finance"
+      "title": "The team",
+      "tom": {
+        "role": "Founder & CEO",
+        "bio": "Former trader, now developer and educator. Passionate about making crypto accessible to ordinary Norwegians."
       },
-      "cto": {
-        "name": "CTO",
-        "role": "Chief Technology Officer",
-        "bio": "Expert in trading algorithms and AI"
-      },
-      "headOfEducation": {
-        "name": "Head of Education",
-        "role": "Learning & Development",
-        "bio": "Educator with passion for crypto"
+      "partners": {
+        "title": "Technical Partners"
       }
+    },
+    "contact": {
+      "title": "Contact us",
+      "subtitle": "Have questions? We are here to help.",
+      "email": "Email",
+      "org": "Organization Number",
+      "location": "Location"
+    },
+    "cta": {
+      "title": "Ready to learn?",
+      "subtitle": "Start your journey today. It's completely free to try.",
+      "button": "Start free",
+      "noCard": "No card required • Start with paper trading"
     }
   },
   "calculator": {

@@ -1326,62 +1326,49 @@
   },
   "about": {
     "metadata": {
-      "title": "Om Oss - Klarpakke Universitet",
-      "description": "Fra dyrekjøpt lærdom til Norges krypto-skole. Lær historien bak Klarpakke og våre verdier."
+      "title": "Om oss - Klarpakke",
+      "description": "Fra dyrekjøpt lærdom til Norges krypto-skole. Lær historien bak Klarpakke."
     },
     "hero": {
       "badge": "Norges krypto-skole",
-      "title": "Om Klarpakke",
-      "subtitle": "Vi gjør krypto-trading trygt og tilgjengelig for alle nordmenn."
+      "title": "Fra dyrekjøpt lærdom til Norges krypto-skole",
+      "subtitle": "Historien om hvordan Klarpakke ble født."
     },
     "story": {
-      "title": "Fra dyrekjøpt lærdom til krypto-skole",
-      "p1": "Det hele startet med en personlig lærepenge. Tom, grunnleggeren av Klarpakke, tapte penger på impulsive krypto-investeringer i 2021 - ikke fordi markedet var imot ham, men fordi han ikke forstod hva han drev med.",
-      "p2": "I stedet for å gi opp, bestemte han seg for å virkelig forstå krypto. Han brukte 2 år på å lære seg koding, studere blockchain-teknologi, og teste strategier med paper trading. Ingen shortcuts, ingen «get rich quick» - bare solid læring.",
-      "p3": "I 2024 ble Klarpakke født: En plattform der nordmenn kan lære krypto-trading på en trygg måte - med paper trading, norsk support, og uten falske løfter om garantert profitt.",
+      "title": "Historien bak Klarpakke",
+      "p1": "Tom Jensen tapte penger på krypto i 2021. Ikke fordi han var dum, men fordi ingen hadde lært ham det han trengte å vite før han startet.",
+      "p2": "Etter å ha brukt måneder på å lære seg koding og trading, innså han: Det største problemet i krypto er ikke teknologien — det er mangel på utdanning.",
+      "p3": "Klarpakke ble født fra denne innsikten.",
       "quote": "Jeg tapte penger så du ikke trenger å gjøre samme feil. Kunnskap er den eneste investeringen som alltid betaler seg.",
-      "quoteAuthor": "Tom, grunnlegger av Klarpakke"
+      "quoteAuthor": "Tom Jensen, grunnlegger av Klarpakke"
     },
     "mission": {
       "title": "Vår misjon",
-      "text": "Å gi nordmenn verktøyene og kunnskapen de trenger for å forstå krypto, uten å risikere ekte penger mens de lærer. Vi tror på utdanning først, alltid.",
-      "ctaCourses": "Se våre kurs"
-    },
-    "stats": {
-      "students": "Aktive studenter",
-      "volume": "Handelsvolum",
-      "rating": "Studentvurdering",
-      "support": "Norsk support"
+      "text": "Vi bygger Norges krypto-skole — en plattform hvor du lærer ved å gjøre, med lekepenger først.",
+      "values": "Ingen verving. Ingen pyramidespill. Ingen løfter om garantert avkastning. Bare verktøy, kunnskap, og en trygg plass å lære."
     },
     "values": {
       "title": "Våre verdier",
-      "subtitle": "Dette er prinsippene som driver alt vi gjør",
       "education": {
         "title": "Utdanning først",
-        "desc": "Vi prioriterer læring over alt annet. Du skal forstå hva du gjør før du risikerer en krone."
+        "desc": "Du lærer med virtuell kapital til du føler deg trygg. Ingen press om å investere ekte penger."
       },
       "transparency": {
         "title": "Full åpenhet",
-        "desc": "Ingen skjulte gebyrer, ingen falske løfter. Vi er ærlige om både muligheter og risiko."
+        "desc": "Vi tjener penger på abonnement, ikke på at du taper. Ingen skjulte kostnader. Ingen provisjoner fra trading."
       },
-      "safety": {
+      "norwegian": {
         "title": "Norsk trygghet",
-        "desc": "Vi er en norsk plattform med norsk support. Du får hjelp på ditt språk, når du trenger det."
+        "desc": "Norsk selskap (Org.nr 929 003 292), norsk support, underlagt norske lover. BankID-nivå sikkerhet."
       },
-      "community": {
-        "title": "Fellesskap",
-        "desc": "Ingen lærer alene. Vårt community hjelper hverandre å vokse og lykkes sammen."
+      "risk": {
+        "title": "Risiko er reelt",
+        "desc": "Vi sier det som det er: Krypto er risikabelt. Du kan tape alt. Vi bygger verktøy som hjelper deg å håndtere risiko — men vi fjerner den ikke."
       }
     },
     "different": {
       "title": "Hva gjør oss annerledes?",
-      "subtitle": "Vi er ikke en «auto-trader» som lover garantert profitt. Vi er en skole."
-    },
-    "different": {
-      "title": "Hva gjør oss annerledes?",
-      "subtitle": "Vi er ikke en «auto-trader» som lover garantert profitt. Vi er en skole."
-    },
-    "different": {
+      "subtitle": "Vi er ikke en «auto-trader» som lover garantert profitt. Vi er en skole.",
       "paperTrading": "1 million kr i virtuelle penger for risikofri øving",
       "norwegian": "100% på norsk med lokal support",
       "education": "Strukturert læring - ikke «tips og triks»",
@@ -1393,16 +1380,26 @@
       "text": "Krypto-trading er risikofullt. De fleste som trader med ekte penger taper penger. Derfor starter vi med paper trading.",
       "warning": "Aldri invester mer enn du kan tape. Dette er ikke økonomisk rådgivning."
     },
+    "team": {
+      "title": "Teamet",
+      "tom": {
+        "role": "Grunnlegger & CEO",
+        "bio": "Tidligere trader, nå utvikler og pedagog. Brenner for å gjøre krypto tilgjengelig for vanlige nordmenn."
+      },
+      "partners": {
+        "title": "Tekniske Partnere"
+      }
+    },
     "contact": {
       "title": "Kontakt oss",
       "subtitle": "Har du spørsmål? Vi er her for å hjelpe.",
       "email": "E-post",
       "org": "Organisasjonsnummer",
-      "community": "Community"
+      "location": "Lokasjon"
     },
     "cta": {
       "title": "Klar til å lære?",
-      "subtitle": "Bli med tusenvis av nordmenn som lærer krypto trygt.",
+      "subtitle": "Start reisen din i dag. Det er helt gratis å prøve.",
       "button": "Start gratis",
       "noCard": "Ingen kort påkrevd • Start med paper trading"
     }

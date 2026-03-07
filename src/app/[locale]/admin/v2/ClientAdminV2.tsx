@@ -46,7 +46,7 @@ export default function ClientAdminV2() {
 
       // Sjekk profiles
       const { data: profile } = await supabase
-        .from('user_profiles' as any)
+        .from('user_profiles' as unknown)
         .select('role')
         .eq('user_id', user.id)
         .single();

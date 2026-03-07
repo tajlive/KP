@@ -126,7 +126,7 @@ export async function awardXP(
     let level = currentLevel?.level || 1;
     let xp = (currentLevel?.xp || 0) + amount;
     let xpToNext = currentLevel?.xp_to_next || 100;
-    let totalXP = (currentLevel?.total_xp || 0) + amount;
+    const totalXP = (currentLevel?.total_xp || 0) + amount;
     
     // Check for level up
     let newLevel = false;

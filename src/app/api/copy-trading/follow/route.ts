@@ -19,14 +19,14 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
       return NextResponse.json({ error: 'Invalid input', details: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { leader_id, scale_factor, max_trade_size } = parsed.data;
+    const { leader_id, scale_factor, max_trade_size, allocation_percent } = parsed.data;
     const db = await createClient();
 
     // Check subscription tier limits
     const { data: profile } = await db
       .from('user_profiles')
       .select('tier')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
 
     if (!profile) {
@@ -74,8 +74,8 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
     // Verify leader exists and has trades
     const { data: leader } = await db
       .from('user_profiles')
-      .select('id, display_name')
-      .eq('id', leader_id)
+      .select('user_id, display_name')
+      .eq('user_id', leader_id)
       .single();
 
     if (!leader) {
@@ -94,10 +94,10 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
         {
           follower_id: user.id,
           leader_id,
-          scale_factor,
-          max_trade_size: max_trade_size ?? null,
+          scale_factor: scale_factor ?? 1.0,
+          allocation_percent: allocation_percent ?? 10,
+          max_trade_amount: max_trade_size ?? null,
           is_active: true,
-          updated_at: new Date().toISOString(),
         },
         { onConflict: 'follower_id,leader_id' }
       )

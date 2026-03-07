@@ -24,12 +24,13 @@ export async function POST(req: NextRequest) {
     
     // Check if user is admin or service role
     const { data: profile } = await supabase
-      .from('user_profiles' as any)
+      .from('user_profiles')
       .select('role')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
-    
-    if (profile?.role !== 'admin' && profile?.role !== 'superadmin') {
+
+    const role = profile?.role as string | null;
+    if (role !== 'admin' && role !== 'superadmin') {
       return NextResponse.json(
         { error: 'Forbidden - Admin access required' },
         { status: 403 }

@@ -6,8 +6,27 @@ import type { Wallet, PortfolioItem, TradingStats } from '@/types';
 
 type Trade = Database['public']['Tables']['trades']['Row'];
 type Portfolio = Database['public']['Tables']['portfolios']['Row'];
-type WalletDB = Database['public']['Tables']['wallets']['Row'];
-type TradingStatsDB = Database['public']['Tables']['trading_stats']['Row'];
+
+// Local types for tables that may not be in generated schema
+interface WalletDB {
+  id: string;
+  user_id: string;
+  balance_usdt: number;
+  balance_nok: number | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+interface TradingStatsDB {
+  id: string;
+  user_id: string;
+  total_trades: number;
+  winning_trades: number;
+  total_pnl: number;
+  win_rate: number | null;
+  created_at: string;
+  updated_at: string | null;
+}
 
 export function useTrading(userId?: string) {
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -25,11 +44,13 @@ export function useTrading(userId?: string) {
   const fetchData = useCallback(async () => {
     if (!userId) { setLoading(false); return; }
     setLoading(true);
+     
+    const fromAny = supabase.from as (t: string) => ReturnType<typeof supabase.from>;
     const t = await supabase.from('trades').select('*').eq('user_id', userId).order('created_at', { ascending: false });
     const p = await supabase.from('portfolios').select('*').eq('user_id', userId);
-    const w = await supabase.from('wallets').select('*').eq('user_id', userId).single();
-    const s = await supabase.from('trading_stats').select('*').eq('user_id', userId).single();
-    setTrades(t.data || []); setPortfolio(p.data || []); setWallet(w.data); setStats(s.data); setLoading(false);
+    const w = await fromAny('wallets').select('*').eq('user_id', userId).single();
+    const s = await fromAny('trading_stats').select('*').eq('user_id', userId).single();
+    setTrades(t.data || []); setPortfolio(p.data || []); setWallet(w.data as WalletDB | null); setStats(s.data as TradingStatsDB | null); setLoading(false);
   }, [userId, supabase]);
   
   const refreshTrades = useCallback(async () => {

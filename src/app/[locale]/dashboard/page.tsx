@@ -42,7 +42,7 @@ export default async function DashboardPage({
       .order("created_at", { ascending: false })
       .limit(20),
     supabase
-      .from("strategies" as any)
+      .from("strategies" as unknown)
       .select("*")
       .eq("user_id", user.id)
       .eq("is_active", true),
@@ -53,8 +53,14 @@ export default async function DashboardPage({
       .single(),
   ]);
 
-  // Parse completed lessons from JSON
-  const completedLessons = progressRes.data?.completed_lessons ?? [];
+  // Parse completed lessons - database stores count as number, but component expects string[]
+  // Generate array of lesson IDs based on count for backwards compatibility
+  const lessonCount = progressRes.data?.completed_lessons ?? 0;
+  const completedLessons: string[] = Array.isArray(lessonCount)
+    ? lessonCount
+    : typeof lessonCount === 'number' && lessonCount > 0
+      ? Array.from({ length: lessonCount }, (_, i) => `lesson-${i + 1}`)
+      : [];
 
   return (
     <>
