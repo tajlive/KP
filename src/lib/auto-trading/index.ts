@@ -92,3 +92,6 @@ export const AUTO_TRADING_LAST_UPDATED = '2026-02-13'
 
 // Strategi-type exports for UI
 export { getStrategyTypes, type StrategyCreationParams } from './strategies'
+
+// KLA-137: Preset profiles + Realtime hook
+export * from './preset-profiles'

@@ -202,3 +202,56 @@ test.describe("🔒 Sikkerhet", () => {
     expect(hasSecurityHeader).toBe(true);
   });
 });
+
+test.describe("📄 SEO og Crawling (KLA-138)", () => {
+  const PLAYWRIGHT_BASE_URL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
+
+  test("robots.txt serveres fra /robots.txt", async ({ request }) => {
+    const response = await request.get(`${PLAYWRIGHT_BASE_URL}/robots.txt`);
+    expect(response.status()).toBe(200);
+    
+    const body = await response.text();
+    expect(body).toContain("User-agent");
+  });
+
+  test("sitemap.xml serveres fra /sitemap.xml", async ({ request }) => {
+    const response = await request.get(`${PLAYWRIGHT_BASE_URL}/sitemap.xml`);
+    expect(response.status()).toBe(200);
+    
+    const body = await response.text();
+    expect(body).toContain("<urlset");
+  });
+
+  test("alle public sider returnerer 200 OK", async ({ request }) => {
+    const publicRoutes = [
+      "/",
+      "/kurs",
+      "/priser",
+      "/kalkulator",
+      "/om-oss",
+      "/en",
+      "/en/courses",
+      "/en/pricing",
+    ];
+
+    const results = await Promise.all(
+      publicRoutes.map(async (route) => {
+        const response = await request.get(`${PLAYWRIGHT_BASE_URL}${route}`);
+        return { route, status: response.status() };
+      }),
+    );
+
+    const failed = results.filter((r) => r.status !== 200);
+    
+    // Rapporter feil men fail ikke testen for redirects (307/308)
+    if (failed.length > 0) {
+      console.log("⚠️ Routes med ikke-200 status:", failed);
+    }
+
+    // Forvent at alle ruter returnerer 200, 307 eller 308 (redirects tillatt)
+    const unexpectedFailures = results.filter(
+      (r) => r.status !== 200 && r.status !== 307 && r.status !== 308,
+    );
+    expect(unexpectedFailures).toHaveLength(0);
+  });
+});

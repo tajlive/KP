@@ -58,7 +58,7 @@ export interface AnalysisResult {
  * Mistake Analyzer - Identifies trading mistakes and generates learning plans
  */
 export class MistakeAnalyzer {
-  private supabase = createClient();
+  private supabase = await createClient();
 
   /**
    * Analyze user's trading mistakes for a session

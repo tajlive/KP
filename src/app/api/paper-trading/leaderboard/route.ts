@@ -40,7 +40,7 @@ interface UserProfile {
 type Period = 'daily' | 'weekly' | 'monthly' | 'all-time';
 
 export async function GET(request: NextRequest) {
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Get period from query params
   const { searchParams } = new URL(request.url);

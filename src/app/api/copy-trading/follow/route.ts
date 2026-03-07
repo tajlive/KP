@@ -20,7 +20,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
     }
 
     const { leader_id, scale_factor, max_trade_size } = parsed.data;
-    const db = createClient();
+    const db = await createClient();
 
     // Check subscription tier limits
     const { data: profile } = await db
