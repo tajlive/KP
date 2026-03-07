@@ -80,7 +80,10 @@ export default function AIMarketBrief() {
   if (!brief) return null;
 
   const config = sentimentConfig[brief.sentiment];
+  if (!config) return null;
+  
   const SentimentIcon = config.icon;
+  if (!SentimentIcon) return null;
 
   return (
     <motion.div
