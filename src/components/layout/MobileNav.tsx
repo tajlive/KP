@@ -49,7 +49,7 @@ export function MobileNav() {
     { path: '/', label: t('home'), icon: Home },
     { path: '/kurs', label: t('courses'), icon: BookOpen },
     { path: '/leagues', label: t('leagues') || 'Konkurranser', icon: Trophy },
-    { path: '/om-oss', label: t('about'), icon: HelpCircle },
+    // REMOVED: { path: '/om-oss', label: t('about'), icon: HelpCircle },
     { path: '/priser', label: t('pricing'), icon: Tag },
     { path: '/hjelp', label: t('help'), icon: HelpCircle },
   ];

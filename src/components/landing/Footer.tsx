@@ -21,7 +21,7 @@ export function Footer() {
       { href: `/${locale}/priser`, label: t("links.pricing") },
     ],
     company: [
-      { href: `/${locale}/om-oss`, label: t("links.about") },
+      // REMOVED: { href: `/${locale}/om-oss`, label: t("links.about") },
       { href: `/${locale}/kontakt`, label: t("links.contact") },
     ],
     legal: [

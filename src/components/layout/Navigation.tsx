@@ -25,7 +25,7 @@ export function Navigation() {
     { path: "/kurs", label: "Kurs" },
     { path: "/paper-trading", label: "Paper Trading" },
     { path: "/auto-trading", label: "Auto-Trading" },
-    { path: "/om-oss", label: "Om oss" },
+    // REMOVED: { path: "/om-oss", label: "Om oss" },
     { path: "/priser", label: "Priser" },
   ];
 
@@ -92,7 +92,11 @@ export function Navigation() {
               ) : (
                 <>
                   <Link href={l("/innlogging")}>
-                    <Button size="sm" variant="ghost" className="gap-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="gap-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF] hover:text-white"
+                    >
                       <LogIn className="w-4 h-4" />
                       Logg inn
                     </Button>

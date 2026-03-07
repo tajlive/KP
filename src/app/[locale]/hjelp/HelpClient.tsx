@@ -123,11 +123,13 @@ export function HelpClient() {
           <div className="bg-gray-50 rounded-2xl p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4">{t('contact.linksTitle')}</h2>
             <ul className="space-y-3">
+              {/* REMOVED: Om oss link
               <li>
                 <Link href={`/${locale}/om-oss`} className="text-blue-600 hover:underline">
                   {t('contact.aboutLink')}
                 </Link>
               </li>
+              */}
               <li>
                 <Link href={`/${locale}/priser`} className="text-blue-600 hover:underline">
                   {t('contact.pricingLink')}

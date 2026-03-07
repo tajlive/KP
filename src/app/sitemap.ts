@@ -10,7 +10,7 @@ const noRoutes = [
   '/kalkulator',
   '/leaderboard',
   '/leagues',
-  '/om-oss',
+  // REMOVED: '/om-oss',
   '/kontakt',
   '/personvern',
   '/vilkar',
