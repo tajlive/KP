@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import KursModulClient from "./KursModulClient";
 
 // 8 Course modules for metadata generation
-const modules = [
+const courseModules = [
   { slug: "hva-er-krypto", title: "Hva er kryptovaluta?" },
   { slug: "lommeboker", title: "Lommebøker og sikkerhet" },
   { slug: "kjop-din-forste", title: "Kjøp din første krypto" },
@@ -21,9 +21,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const module = modules.find(m => m.slug === slug);
+  const foundModule = courseModules.find(m => m.slug === slug);
   
-  if (!module) {
+  if (!foundModule) {
     return {
       title: "Kurs ikke funnet - Klarpakke",
     };
@@ -32,7 +32,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "metadata" });
 
   return {
-    title: `${module.title} - ${t("courses.title")}`,
+    title: `${foundModule.title} - ${t("courses.title")}`,
     description: t("courses.description"),
   };
 }
@@ -42,8 +42,8 @@ export async function generateStaticParams() {
   const params = [];
   
   for (const locale of locales) {
-    for (const module of modules) {
-      params.push({ locale, slug: module.slug });
+    for (const courseModule of courseModules) {
+      params.push({ locale, slug: courseModule.slug });
     }
   }
   
@@ -57,7 +57,7 @@ export default async function KursModulPage({
 }) {
   const { slug } = await params;
   
-  const moduleExists = modules.some(m => m.slug === slug);
+  const moduleExists = courseModules.some(m => m.slug === slug);
   if (!moduleExists) {
     notFound();
   }

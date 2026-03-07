@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createChart, IChartApi, ISeriesApi, AreaData, CandlestickData } from "lightweight-charts";
 import { createClient } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthContext";
-import { motion } from "framer-motion";
-import { Shield, Target, Zap, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Shield, Target, Zap, TrendingUp, TrendingDown } from "lucide-react";
 
 type RiskProfile = "forsiktig" | "moderat" | "aggressiv";
 
@@ -26,7 +25,6 @@ export function RiskProfilePulse({ profile = "moderat", compact = false }: RiskP
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Area"> | ISeriesApi<"Candlestick"> | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioData>({ value: 1000000, change: 0, changePercent: 0 });
-  const [loading, setLoading] = useState(true);
 
   // Fetch portfolio data
   useEffect(() => {
@@ -50,7 +48,6 @@ export function RiskProfilePulse({ profile = "moderat", compact = false }: RiskP
           changePercent,
         });
       }
-      setLoading(false);
     };
     
     fetchPortfolio();
