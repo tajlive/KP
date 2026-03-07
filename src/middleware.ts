@@ -40,3 +40,4 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api/|_vercel).*)",
   ],
 };
+// Deploy timestamp: lør.  7 mar. 2026 16.23.14 CET
