@@ -87,7 +87,7 @@ describe('Auth Configuration', () => {
     it('should have all required providers', () => {
       expect(SUPPORTED_PROVIDERS.GOOGLE).toBe('google');
       expect(SUPPORTED_PROVIDERS.MICROSOFT).toBe('azure');
-      expect(SUPPORTED_PROVIDERS.LINKEDIN).toBe('linkedin_oidc');
+      expect(SUPPORTED_PROVIDERS.VIPPS).toBe('vipps');
     });
   });
 });

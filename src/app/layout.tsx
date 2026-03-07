@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
     languages: {
-      no: "/no/",
-      en: "/en/",
+      "no": "/",
+      "en": "/en/",
     },
   },
   manifest: "/manifest.json",

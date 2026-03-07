@@ -1,14 +1,11 @@
 import { MetadataRoute } from 'next';
 
 const baseUrl = 'https://www.klarpakke.no';
-const locales = ['no', 'en'];
 
-// Main routes for all locales
-const mainRoutes = [
+// Norwegian routes (default - no prefix)
+const noRoutes = [
   '',
   '/paper-trading',
-  '/auto-trading-ai',
-  '/auto-trading',
   '/kurs',
   '/kalkulator',
   '/leaderboard',
@@ -17,57 +14,63 @@ const mainRoutes = [
   '/kontakt',
   '/personvern',
   '/vilkar',
+  '/priser',
+];
+
+// English routes (/en/ prefix)
+const enRoutes = [
+  '/en',
+  '/en/paper-trading',
+  '/en/courses',
+  '/en/calculator',
+  '/en/leaderboard',
+  '/en/leagues',
+  '/en/about',
+  '/en/contact',
+  '/en/privacy',
+  '/en/terms',
+  '/en/pricing',
+];
+
+// Static pages (lower priority)
+const staticRoutes = [
   '/hjelp',
-];
-
-// Auth routes (lower priority)
-const authRoutes = [
-  '/login',
-  '/signup',
-  '/glemt-passord',
-  '/reset-password',
-];
-
-// Dashboard routes (private, but good for SEO discovery)
-const dashboardRoutes = [
-  '/dashboard',
-  '/dashboard/settings',
+  '/en/help',
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const sitemap: MetadataRoute.Sitemap = [];
   const now = new Date();
 
-  // Add main routes for each locale
-  locales.forEach((locale) => {
-    mainRoutes.forEach((route) => {
-      const isHome = route === '';
-      sitemap.push({
-        url: `${baseUrl}/${locale}${route}`,
-        lastModified: now,
-        changeFrequency: isHome ? 'daily' : 'weekly',
-        priority: isHome ? 1.0 : 0.8,
-      });
+  // Norwegian routes (default locale, no prefix)
+  noRoutes.forEach((route) => {
+    const isHome = route === '';
+    sitemap.push({
+      url: `${baseUrl}${route}`,
+      lastModified: now,
+      changeFrequency: isHome ? 'daily' : 'weekly',
+      priority: isHome ? 1.0 : 0.8,
     });
+  });
 
-    // Auth routes
-    authRoutes.forEach((route) => {
-      sitemap.push({
-        url: `${baseUrl}/${locale}${route}`,
-        lastModified: now,
-        changeFrequency: 'monthly',
-        priority: 0.5,
-      });
+  // English routes
+  enRoutes.forEach((route) => {
+    const isHome = route === '/en';
+    sitemap.push({
+      url: `${baseUrl}${route}`,
+      lastModified: now,
+      changeFrequency: isHome ? 'daily' : 'weekly',
+      priority: isHome ? 0.9 : 0.7,
     });
+  });
 
-    // Dashboard routes
-    dashboardRoutes.forEach((route) => {
-      sitemap.push({
-        url: `${baseUrl}/${locale}${route}`,
-        lastModified: now,
-        changeFrequency: 'weekly',
-        priority: 0.6,
-      });
+  // Static routes
+  staticRoutes.forEach((route) => {
+    sitemap.push({
+      url: `${baseUrl}${route}`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.5,
     });
   });
 

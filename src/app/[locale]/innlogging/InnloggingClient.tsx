@@ -182,7 +182,7 @@ export function InnloggingClient() {
               <>
                 <AuthButtons
                   locale={locale}
-                  providers={["GOOGLE", "MICROSOFT", "LINKEDIN"]}
+                  providers={["GOOGLE", "MICROSOFT", "VIPPS"]}
                   showMagicLink={true}
                   redirectPath={rawRedirect ? safeRedirectTo : undefined}
                 />

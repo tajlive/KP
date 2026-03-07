@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/no/", "/en/", "/th/", "/zh/", "/sitemap.xml"],
+        allow: ["/", "/en/", "/th/", "/zh/", "/sitemap.xml"],
         disallow: [
           "/api/",
           "/_next/",
@@ -16,35 +16,39 @@ export default function robots(): MetadataRoute.Robots {
           "/*.json$",
           "/*.rsc$",
           "/admin-login",
+          "/dashboard/",
+          "/innlogging",
+          "/signup",
+          "/registrer",
         ],
       },
       {
         // AI crawlers - allow crawling public content for GEO (Generative Engine Optimization)
         userAgent: "GPTBot",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/innlogging"],
       },
       {
         userAgent: "ChatGPT-User",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/innlogging"],
       },
       {
         userAgent: "CCBot",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/innlogging"],
       },
       {
         // Googlebot - full access to public pages
         userAgent: "Googlebot",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/"],
       },
       {
         // Bing - similar to Google
         userAgent: "Bingbot",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/"],
       },
     ],
     sitemap: "https://www.klarpakke.no/sitemap.xml",

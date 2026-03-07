@@ -76,14 +76,14 @@ export function getCallbackUrl(locale: string = "no"): string {
 export const SUPPORTED_PROVIDERS = {
   GOOGLE: "google",
   MICROSOFT: "azure", // Supabase uses 'azure' for Microsoft
-  LINKEDIN: "linkedin_oidc",
+  VIPPS: "vipps",
 } as const;
 
 // Provider display names (Norwegian)
 export const PROVIDER_NAMES: Record<string, string> = {
   google: "Google",
   azure: "Microsoft",
-  linkedin_oidc: "LinkedIn",
+  vipps: "Vipps",
   email: "E-post",
 };
 
@@ -104,9 +104,10 @@ export const OAUTH_CONFIG: Record<
   azure: {
     scopes: "email profile openid",
   },
-  linkedin_oidc: {
+  // Vipps uses custom OAuth flow via Supabase Auth
+  vipps: {
     queryParams: {
-      scope: "openid profile email",
+      scope: "openid email phoneNumber",
     },
   },
 };
