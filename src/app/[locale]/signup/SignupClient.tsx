@@ -112,6 +112,31 @@ function SignupContent() {
       }
 
       if (data.user) {
+        // Grant 500 KLT welcome bonus for new users
+        try {
+          const { error: kltError } = await supabase
+            .from("klt_balances")
+            .upsert({
+              user_id: data.user.id,
+              balance: 500,
+              updated_at: new Date().toISOString(),
+            });
+          
+          if (!kltError) {
+            // Record the transaction
+            await supabase.from("klt_transactions").insert({
+              user_id: data.user.id,
+              amount: 500,
+              type: "welcome_bonus",
+              reason: "Registreringsbonus - Velkommen til Klarpakke!",
+              created_at: new Date().toISOString(),
+            });
+          }
+        } catch (kltErr) {
+          console.error("[Signup] Failed to grant KLT bonus:", kltErr);
+          // Don't block signup if KLT bonus fails
+        }
+
         if (data.session) {
           setStatus("success");
           // Redirect logic
@@ -120,7 +145,7 @@ function SignupContent() {
           } else if (plan) {
             router.push(`/${locale}/checkout?plan=${plan}`);
           } else {
-            router.push(`/${locale}/dashboard`, { scroll: false });
+            router.push(`/${locale}/velkommen?bonus=klt`, { scroll: false });
           }
         } else {
           setStatus("success");

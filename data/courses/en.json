@@ -3,328 +3,202 @@
     "title": "Choose Your Course",
     "subtitle": "From beginner to expert. Learn at your own pace with AI guidance.",
     "stats": {
-      "completedCourses": "147",
-      "activeStudents": "89",
-      "averageRating": "4.8",
-      "totalLessons": "36"
+      "completedCourses": "2,847",
+      "activeStudents": "1,234",
+      "averageRating": "4.9",
+      "totalLessons": "64"
     },
     "cta": {
       "title": "Not sure where to start?",
-      "description": "Take our free interest test and find out which course suits you best.",
+      "description": "Take our free interest test to find which course fits you best.",
       "button": "Start interest test"
     }
   },
   "courses": [
     {
-      "id": "krypto-for-smaasparere",
-      "slug": "crypto-for-small-savers",
-      "title": "Crypto for Small Savers",
-      "subtitle": "From zero to confident crypto owner in 4 weeks",
+      "id": "modul-1-intro",
+      "slug": "module-1-crypto-intro",
+      "title": "Module 1: Crypto Intro",
+      "subtitle": "What is crypto, blockchain, and why should you care?",
       "level": "Beginner",
-      "duration": "8 hours",
-      "students": 1247,
+      "duration": "2 hours",
+      "students": 2847,
       "rating": 4.9,
       "progress": 0,
       "enrolled": false,
       "featured": true,
-      "color": "from-blue-600 to-purple-600",
+      "color": "from-blue-600 to-cyan-600",
       "icon": "🚀",
-      "modules": 12,
-      "weeks": 4,
-      "tags": ["Bitcoin", "Security", "Trading"],
-      "cta": "Start course"
+      "modules": 4,
+      "weeks": 1,
+      "tags": ["Bitcoin", "Blockchain", "Basics"],
+      "cta": "Start module 1"
     },
     {
-      "id": "trading-masterclass",
-      "slug": "trading-masterclass",
-      "title": "Trading Masterclass",
-      "subtitle": "Advanced strategies for experienced traders",
-      "level": "Advanced",
-      "duration": "12 hours",
-      "students": 523,
+      "id": "modul-2-sikkerhet",
+      "slug": "module-2-security",
+      "title": "Module 2: Security",
+      "subtitle": "Protect your assets from hackers and scams",
+      "level": "Beginner",
+      "duration": "3 hours",
+      "students": 2156,
       "rating": 4.8,
       "progress": 0,
       "enrolled": false,
       "featured": false,
-      "color": "from-amber-500 to-orange-600",
-      "icon": "📈",
-      "modules": 16,
-      "weeks": 6,
-      "tags": ["Technical analysis", "Risk management"],
-      "cta": "Start course"
+      "color": "from-emerald-600 to-teal-600",
+      "icon": "🔒",
+      "modules": 5,
+      "weeks": 1,
+      "tags": ["Wallet", "2FA", "Security"],
+      "cta": "Start module 2"
     },
     {
-      "id": "defi-explorer",
-      "slug": "defi-explorer",
-      "title": "DeFi Explorer",
-      "subtitle": "Understand decentralized finance",
+      "id": "modul-3-handel",
+      "slug": "module-3-trading",
+      "title": "Module 3: Your First Trade",
+      "subtitle": "Step-by-step guide to buying and selling",
+      "level": "Beginner",
+      "duration": "4 hours",
+      "students": 1892,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-purple-600 to-pink-600",
+      "icon": "💱",
+      "modules": 6,
+      "weeks": 1,
+      "tags": ["Binance", "Buy/Sell", "Orders"],
+      "cta": "Start module 3"
+    },
+    {
+      "id": "modul-4-teknikk",
+      "slug": "module-4-technical",
+      "title": "Module 4: Technical Analysis",
+      "subtitle": "Read charts and understand market signals",
       "level": "Intermediate",
       "duration": "6 hours",
-      "students": 892,
+      "students": 1456,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-amber-500 to-orange-600",
+      "icon": "📊",
+      "modules": 8,
+      "weeks": 2,
+      "tags": ["Charts", "Indicators", "Trends"],
+      "cta": "Start module 4"
+    },
+    {
+      "id": "modul-5-strategi",
+      "slug": "module-5-strategy",
+      "title": "Module 5: Strategy & Psychology",
+      "subtitle": "Build a winning strategy and control emotions",
+      "level": "Intermediate",
+      "duration": "5 hours",
+      "students": 1234,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-rose-500 to-red-600",
+      "icon": "🧠",
+      "modules": 7,
+      "weeks": 1,
+      "tags": ["Risk Management", "FOMO", "Strategy"],
+      "cta": "Start module 5"
+    },
+    {
+      "id": "modul-6-defi",
+      "slug": "module-6-defi",
+      "title": "Module 6: DeFi & Yield",
+      "subtitle": "Earn interest on your crypto",
+      "level": "Intermediate",
+      "duration": "4 hours",
+      "students": 987,
       "rating": 4.7,
       "progress": 0,
       "enrolled": false,
       "featured": false,
-      "color": "from-emerald-500 to-teal-600",
-      "icon": "🌐",
+      "color": "from-green-500 to-emerald-600",
+      "icon": "🌾",
+      "modules": 6,
+      "weeks": 1,
+      "tags": ["DeFi", "Staking", "Yield"],
+      "cta": "Start module 6"
+    },
+    {
+      "id": "modul-7-avansert",
+      "slug": "module-7-advanced",
+      "title": "Module 7: Advanced Trading",
+      "subtitle": "Futures, margin and advanced strategies",
+      "level": "Advanced",
+      "duration": "8 hours",
+      "students": 654,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-indigo-600 to-violet-600",
+      "icon": "⚡",
+      "modules": 10,
+      "weeks": 2,
+      "tags": ["Futures", "Margin", "Leverage"],
+      "cta": "Start module 7"
+    },
+    {
+      "id": "modul-8-auto",
+      "slug": "module-8-auto",
+      "title": "Module 8: Auto-Trading",
+      "subtitle": "Set up bots and automated strategies",
+      "level": "Advanced",
+      "duration": "6 hours",
+      "students": 432,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-cyan-500 to-blue-600",
+      "icon": "🤖",
       "modules": 8,
-      "weeks": 3,
-      "tags": ["DeFi", "Yield farming", "Liquidity"],
-      "cta": "Start course"
+      "weeks": 2,
+      "tags": ["Bots", "API", "Automation"],
+      "cta": "Start module 8"
     }
   ],
-  "courseDetails": {
-    "krypto-for-smaasparere": {
-      "title": "Crypto for Small Savers",
-      "description": "From 0 to confident investor in 4 weeks. Learn the essentials about Bitcoin, security, and saving.",
-      "weeks": 4,
-      "level": "beginner",
-      "levelLabel": "Beginner",
-      "duration": "4 weeks",
-      "lessons": 12,
-      "videoTitle": "Crypto for Small Savers",
-      "videoSubtitle": "AI-guided course - Learn at your own pace",
-      "lessonsList": [
-        { "id": 1, "title": "What is Crypto?", "status": "completed", "progress": 100 },
-        { "id": 2, "title": "Blockchain", "status": "current", "progress": 0 },
-        { "id": 3, "title": "Wallet", "status": "available", "progress": 0 },
-        { "id": 4, "title": "Buy Bitcoin", "status": "locked", "progress": 0 },
-        { "id": 5, "title": "Security", "status": "locked", "progress": 0 }
-      ],
-      "lessonContent": {
-        "2": {
-          "title": "Lesson 2: Blockchain",
-          "description": "Understand the technology that makes Bitcoin possible. No technical background required!",
-          "buttons": {
-            "start": "Start Explanation",
-            "pause": "Pause",
-            "mute": "Mute",
-            "unmute": "Unmute"
-          }
-        }
-      },
-      "quiz": {
-        "question": "What is Bitcoin?",
-        "options": [
-          "A physical coin you receive in the mail",
-          "Digital currency that lives on the internet",
-          "A stock company on the exchange",
-          "An app on your phone"
-        ],
-        "correctAnswer": 1,
-        "funFact": "Bitcoin was created in 2009 by someone calling themselves Satoshi Nakamoto. To this day, no one knows who they actually are!"
-      },
-      "aiProfessor": {
-        "messages": {
-          "encouragement": ["Good question!", "Great thinking!", "This is important..."],
-          "correctAnswer": "Fantastic! +50 XP! 🎉",
-          "wrongAnswer": "Not quite. Try again!",
-          "nextQuestion": "Ready for the next question?",
-          "voiceAnswer": "Good question! Bitcoin is like digital gold, while Ethereum is more like a digital computer...",
-          "voiceTranscript": "What is the difference between Bitcoin and Ethereum?",
-          "initial": "Welcome! I'm your AI professor. Ask me anything!"
-        },
-        "emotions": {
-          "neutral": "🤖",
-          "happy": "😊",
-          "excited": "🤩",
-          "thinking": "🤔",
-          "concerned": "😟",
-          "celebrating": "🎉"
-        }
-      },
-      "voiceInteraction": {
-        "title": "Ask questions with your voice",
-        "description": "Click the microphone and ask anything",
-        "buttonListening": "Listening...",
-        "button": "Press to speak"
-      },
-      "achievements": {
-        "title": "Your Progress",
-        "xpLabel": "XP",
-        "streakLabel": "Today's streak"
-      },
-      "badges": {
-        "popular": "POPULAR"
-      },
-      "labels": {
-        "level": "Level",
-        "modules": "modules",
-        "week": "week",
-        "of": "of"
-      }
-    },
-    "trading-masterclass": {
-      "title": "Trading Masterclass",
-      "description": "Advanced trading strategies for experienced investors. Learn technical analysis, risk management, and more.",
-      "weeks": 6,
-      "level": "advanced",
-      "levelLabel": "Advanced",
-      "duration": "6 weeks",
-      "lessons": 16,
-      "videoTitle": "Trading Masterclass",
-      "videoSubtitle": "For advanced traders",
-      "lessonsList": [
-        { "id": 1, "title": "Technical Analysis", "status": "locked", "progress": 0 },
-        { "id": 2, "title": "Candlestick Patterns", "status": "locked", "progress": 0 },
-        { "id": 3, "title": "Risk Management", "status": "locked", "progress": 0 }
-      ],
-      "lessonContent": {
-        "1": {
-          "title": "Lesson 1: Technical Analysis",
-          "description": "Learn to read charts and identify trends.",
-          "buttons": {
-            "start": "Start Explanation",
-            "pause": "Pause",
-            "mute": "Mute",
-            "unmute": "Unmute"
-          }
-        }
-      },
-      "quiz": {
-        "question": "What does a 'golden cross' indicate?",
-        "options": [
-          "Bearish trend",
-          "Bullish trend",
-          "Sideways market",
-          "Volatility"
-        ],
-        "correctAnswer": 1,
-        "funFact": "A golden cross occurs when the 50-day moving average crosses above the 200-day moving average."
-      },
-      "aiProfessor": {
-        "messages": {
-          "encouragement": ["Good question!", "Great thinking!", "This is important..."],
-          "correctAnswer": "Fantastic! +50 XP! 🎉",
-          "wrongAnswer": "Not quite. Try again!",
-          "nextQuestion": "Ready for the next question?",
-          "voiceAnswer": "Technical analysis is about studying price history to predict future movements...",
-          "voiceTranscript": "What is technical analysis?",
-          "initial": "Welcome to Trading Masterclass! Ready to learn advanced strategies?"
-        },
-        "emotions": {
-          "neutral": "🤖",
-          "happy": "😊",
-          "excited": "🤩",
-          "thinking": "🤔",
-          "concerned": "😟",
-          "celebrating": "🎉"
-        }
-      },
-      "voiceInteraction": {
-        "title": "Ask questions with your voice",
-        "description": "Click the microphone and ask anything",
-        "buttonListening": "Listening...",
-        "button": "Press to speak"
-      },
-      "achievements": {
-        "title": "Your Progress",
-        "xpLabel": "XP",
-        "streakLabel": "Today's streak"
-      },
-      "badges": {
-        "popular": "POPULAR"
-      },
-      "labels": {
-        "level": "Level",
-        "modules": "modules",
-        "week": "week",
-        "of": "of"
-      }
-    },
-    "defi-explorer": {
-      "title": "DeFi Explorer",
-      "description": "Explore decentralized finance. Learn about yield farming, liquidity pools, and smart contracts.",
-      "weeks": 3,
-      "level": "intermediate",
-      "levelLabel": "Intermediate",
-      "duration": "3 weeks",
-      "lessons": 8,
-      "videoTitle": "DeFi Explorer",
-      "videoSubtitle": "Understand the future of finance",
-      "lessonsList": [
-        { "id": 1, "title": "What is DeFi?", "status": "locked", "progress": 0 },
-        { "id": 2, "title": "Smart Contracts", "status": "locked", "progress": 0 },
-        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
-      ],
-      "lessonContent": {
-        "1": {
-          "title": "Lesson 1: What is DeFi?",
-          "description": "Decentralized finance is revolutionizing the way we think about money.",
-          "buttons": {
-            "start": "Start Explanation",
-            "pause": "Pause",
-            "mute": "Mute",
-            "unmute": "Unmute"
-          }
-        }
-      },
-      "quiz": {
-        "question": "What is a smart contract?",
-        "options": [
-          "A legal agreement",
-          "Self-executing code on the blockchain",
-          "A type of bank account",
-          "A cryptocurrency"
-        ],
-        "correctAnswer": 1,
-        "funFact": "Smart contracts were first proposed by Nick Szabo in 1994, long before Ethereum existed!"
-      },
-      "aiProfessor": {
-        "messages": {
-          "encouragement": ["Good question!", "Great thinking!", "This is important..."],
-          "correctAnswer": "Fantastic! +50 XP! 🎉",
-          "wrongAnswer": "Not quite. Try again!",
-          "nextQuestion": "Ready for the next question?",
-          "voiceAnswer": "DeFi stands for decentralized finance. It's an ecosystem of financial applications...",
-          "voiceTranscript": "What is DeFi?",
-          "initial": "Welcome to DeFi Explorer! Let's explore the future of finance together."
-        },
-        "emotions": {
-          "neutral": "🤖",
-          "happy": "😊",
-          "excited": "🤩",
-          "thinking": "🤔",
-          "concerned": "😟",
-          "celebrating": "🎉"
-        }
-      },
-      "voiceInteraction": {
-        "title": "Ask questions with your voice",
-        "description": "Click the microphone and ask anything",
-        "buttonListening": "Listening...",
-        "button": "Press to speak"
-      },
-      "achievements": {
-        "title": "Your Progress",
-        "xpLabel": "XP",
-        "streakLabel": "Today's streak"
-      },
-      "badges": {
-        "popular": "POPULAR"
-      },
-      "labels": {
-        "level": "Level",
-        "modules": "modules",
-        "week": "week",
-        "of": "of"
-      }
-    }
-  },
   "common": {
     "header": {
-      "academy": "Klarpakke Academy"
-    },
-    "lessonStatuses": {
-      "completed": "Completed",
-      "current": "In progress",
-      "available": "Available",
-      "locked": "Locked"
-    },
-    "buttons": {
-      "back": "Back",
-      "fullscreen": "Fullscreen",
-      "exitFullscreen": "Exit fullscreen"
+      "academy": "Academy"
+    }
+  },
+  "courseDetails": {
+    "modul-1-intro": {
+      "title": "Module 1: Crypto Intro",
+      "description": "The perfect starting point for anyone curious about crypto. We cover the basics in a simple way.",
+      "weeks": 1,
+      "level": "beginner",
+      "levelLabel": "Beginner",
+      "duration": "1 week",
+      "lessons": 4,
+      "lessonsList": [
+        { "id": 1, "title": "What is Crypto?", "status": "available", "progress": 0 },
+        { "id": 2, "title": "Blockchain Explained", "status": "locked", "progress": 0 },
+        { "id": 3, "title": "Bitcoin vs Ethereum", "status": "locked", "progress": 0 },
+        { "id": 4, "title": "Why Invest?", "status": "locked", "progress": 0 }
+      ],
+      "quiz": {
+        "question": "What is the main purpose of blockchain?",
+        "options": [
+          "To make the internet faster",
+          "Decentralized ledger without central authority",
+          "To replace all banks",
+          "To create websites"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Blockchain technology was first introduced by Satoshi Nakamoto in 2008!"
+      }
     }
   }
 }

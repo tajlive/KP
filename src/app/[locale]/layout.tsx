@@ -32,8 +32,9 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export async function generateStaticParams() {
+  // With localePrefix: 'as-needed', default locale (no) has no prefix
+  // Only generate params for non-default locales
   return [
-    { locale: "no" },
     { locale: "en" },
     { locale: "th" },
     { locale: "zh" },

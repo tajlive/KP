@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 
-import { Loader2, Linkedin, Mail } from 'lucide-react';
+import { Loader2, Mail } from 'lucide-react';
 import { SUPPORTED_PROVIDERS, PROVIDER_NAMES } from '@/lib/auth/config';
 import { signInWithOAuth, sendMagicLink, isValidEmail } from '@/lib/auth/utils';
 import { toast } from 'sonner';
@@ -46,9 +46,14 @@ const PROVIDER_STYLES: Record<Provider, {
     className: 'bg-white hover:bg-gray-50 border border-gray-300',
     textClass: 'text-gray-900',
   },
-  LINKEDIN: {
-    icon: <Linkedin className="w-5 h-5" />,
-    className: 'bg-[#0A66C2] hover:bg-[#004182]',
+  VIPPS: {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#FF5B24"/>
+        <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm3.5 8.5c-.28.28-.73.28-1.01 0L12 12l-2.49 2.5c-.28.28-.73.28-1.01 0-.28-.28-.28-.73 0-1.01l3-3c.28-.28.73-.28 1.01 0l3 3c.28.28.28.73 0 1.01z" fill="white"/>
+      </svg>
+    ),
+    className: 'bg-[#FF5B24] hover:bg-[#E54E1B]',
     textClass: 'text-white',
   },
 };

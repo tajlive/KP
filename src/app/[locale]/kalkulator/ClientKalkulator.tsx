@@ -94,7 +94,7 @@ export default function CalculatorPage() {
   const t = useTranslations('calculator')
   const locale = useLocale()
   const [startSum, setStartSum] = useState(10000)
-  const [dailyPercent, setDailyPercent] = useState(2.0)
+  const [dailyPercent, setDailyPercent] = useState(0.1)
   const [startSumInput, setStartSumInput] = useState("10 000")
 
   const days = 365

@@ -3,10 +3,10 @@
     "title": "Velg ditt kurs",
     "subtitle": "Fra nybegynner til ekspert. Lær i ditt eget tempo med AI-veiledning.",
     "stats": {
-      "completedCourses": "147",
-      "activeStudents": "89",
-      "averageRating": "4.8",
-      "totalLessons": "36"
+      "completedCourses": "2,847",
+      "activeStudents": "1,234",
+      "averageRating": "4.9",
+      "totalLessons": "64"
     },
     "cta": {
       "title": "Usikker på hvor du skal starte?",
@@ -16,315 +16,189 @@
   },
   "courses": [
     {
-      "id": "krypto-for-smaasparere",
-      "slug": "krypto-for-smaasparere",
-      "title": "Krypto for Småsparere",
-      "subtitle": "Fra null til trygg krypto-eier på 4 uker",
+      "id": "modul-1-intro",
+      "slug": "modul-1-krypto-intro",
+      "title": "Modul 1: Krypto-intro",
+      "subtitle": "Hva er krypto, blockchain, og hvorfor bry seg?",
       "level": "Nybegynner",
-      "duration": "8 timer",
-      "students": 1247,
+      "duration": "2 timer",
+      "students": 2847,
       "rating": 4.9,
       "progress": 0,
       "enrolled": false,
       "featured": true,
-      "color": "from-blue-600 to-purple-600",
+      "color": "from-blue-600 to-cyan-600",
       "icon": "🚀",
-      "modules": 12,
-      "weeks": 4,
-      "tags": ["Bitcoin", "Sikkerhet", "Handel"],
-      "cta": "Start kurset"
+      "modules": 4,
+      "weeks": 1,
+      "tags": ["Bitcoin", "Blockchain", "Grunnleggende"],
+      "cta": "Start modul 1"
     },
     {
-      "id": "trading-masterclass",
-      "slug": "trading-masterclass",
-      "title": "Trading Masterclass",
-      "subtitle": "Avanserte strategier for erfarne tradere",
-      "level": "Avansert",
-      "duration": "12 timer",
-      "students": 523,
+      "id": "modul-2-sikkerhet",
+      "slug": "modul-2-sikkerhet",
+      "title": "Modul 2: Sikkerhet",
+      "subtitle": "Beskytt verdiene dine mot hackere og svindel",
+      "level": "Nybegynner",
+      "duration": "3 timer",
+      "students": 2156,
       "rating": 4.8,
       "progress": 0,
       "enrolled": false,
       "featured": false,
-      "color": "from-amber-500 to-orange-600",
-      "icon": "📈",
-      "modules": 16,
-      "weeks": 6,
-      "tags": ["Teknisk analyse", "Risk management"],
-      "cta": "Start kurset"
+      "color": "from-emerald-600 to-teal-600",
+      "icon": "🔒",
+      "modules": 5,
+      "weeks": 1,
+      "tags": ["Lommebok", "2FA", "Sikkerhet"],
+      "cta": "Start modul 2"
     },
     {
-      "id": "defi-explorer",
-      "slug": "defi-explorer",
-      "title": "DeFi Explorer",
-      "subtitle": "Forstå desentralisert finans",
+      "id": "modul-3-handel",
+      "slug": "modul-3-handel",
+      "title": "Modul 3: Din første handel",
+      "subtitle": "Steg-for-steg guide til å kjøpe og selge",
+      "level": "Nybegynner",
+      "duration": "4 timer",
+      "students": 1892,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-purple-600 to-pink-600",
+      "icon": "💱",
+      "modules": 6,
+      "weeks": 1,
+      "tags": ["Binance", "Kjøp/Salg", "Order"],
+      "cta": "Start modul 3"
+    },
+    {
+      "id": "modul-4-teknikk",
+      "slug": "modul-4-teknikk",
+      "title": "Modul 4: Teknisk analyse",
+      "subtitle": "Les grafer og forstå markedssignaler",
       "level": "Middels",
       "duration": "6 timer",
-      "students": 892,
+      "students": 1456,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-amber-500 to-orange-600",
+      "icon": "📊",
+      "modules": 8,
+      "weeks": 2,
+      "tags": ["Charts", "Indikatorer", "Trends"],
+      "cta": "Start modul 4"
+    },
+    {
+      "id": "modul-5-strategi",
+      "slug": "modul-5-strategi",
+      "title": "Modul 5: Strategi & Psykologi",
+      "subtitle": "Bygg en vinnerstrategi og kontroller følelsene",
+      "level": "Middels",
+      "duration": "5 timer",
+      "students": 1234,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-rose-500 to-red-600",
+      "icon": "🧠",
+      "modules": 7,
+      "weeks": 1,
+      "tags": ["Risk Management", "FOMO", "Strategi"],
+      "cta": "Start modul 5"
+    },
+    {
+      "id": "modul-6-defi",
+      "slug": "modul-6-defi",
+      "title": "Modul 6: DeFi & Yield",
+      "subtitle": "Tjen renter på kryptoen din",
+      "level": "Middels",
+      "duration": "4 timer",
+      "students": 987,
       "rating": 4.7,
       "progress": 0,
       "enrolled": false,
       "featured": false,
-      "color": "from-emerald-500 to-teal-600",
-      "icon": "🌐",
+      "color": "from-green-500 to-emerald-600",
+      "icon": "🌾",
+      "modules": 6,
+      "weeks": 1,
+      "tags": ["DeFi", "Staking", "Yield"],
+      "cta": "Start modul 6"
+    },
+    {
+      "id": "modul-7-avansert",
+      "slug": "modul-7-avansert",
+      "title": "Modul 7: Avansert Trading",
+      "subtitle": "Futures, margin og avanserte strategier",
+      "level": "Avansert",
+      "duration": "8 timer",
+      "students": 654,
+      "rating": 4.8,
+      "progress": 0,
+      "enrolled": false,
+      "featured": false,
+      "color": "from-indigo-600 to-violet-600",
+      "icon": "⚡",
+      "modules": 10,
+      "weeks": 2,
+      "tags": ["Futures", "Margin", "Leverage"],
+      "cta": "Start modul 7"
+    },
+    {
+      "id": "modul-8-auto",
+      "slug": "modul-8-auto",
+      "title": "Modul 8: Auto-Trading",
+      "subtitle": "Sett opp bots og automatiserte strategier",
+      "level": "Avansert",
+      "duration": "6 timer",
+      "students": 432,
+      "rating": 4.9,
+      "progress": 0,
+      "enrolled": false,
+      "featured": true,
+      "color": "from-cyan-500 to-blue-600",
+      "icon": "🤖",
       "modules": 8,
-      "weeks": 3,
-      "tags": ["DeFi", "Yield farming", "Liquidity"],
-      "cta": "Start kurset"
+      "weeks": 2,
+      "tags": ["Bots", "API", "Automatisering"],
+      "cta": "Start modul 8"
     }
   ],
-  "courseDetails": {
-    "krypto-for-smaasparere": {
-      "title": "Krypto for Småsparere",
-      "description": "Fra 0 til trygg investor på 4 uker. Lær det viktigste om Bitcoin, sikkerhet og sparing.",
-      "weeks": 4,
-      "level": "beginner",
-      "levelLabel": "Nybegynner",
-      "duration": "4 uker",
-      "lessons": 12,
-      "videoTitle": "Krypto for Småsparere",
-      "videoSubtitle": "AI-guidet kurs - Lær i ditt eget tempo",
-      "lessonsList": [
-        { "id": 1, "title": "Hva er Krypto?", "status": "completed", "progress": 100 },
-        { "id": 2, "title": "Blockchain", "status": "current", "progress": 0 },
-        { "id": 3, "title": "Lommebok", "status": "available", "progress": 0 },
-        { "id": 4, "title": "Kjøp Bitcoin", "status": "locked", "progress": 0 },
-        { "id": 5, "title": "Sikkerhet", "status": "locked", "progress": 0 }
-      ],
-      "lessonContent": {
-        "2": {
-          "title": "Leksjon 2: Blockchain",
-          "description": "Forstå teknologien som gjør Bitcoin mulig. Ingen teknisk bakgrunn nødvendig!",
-          "buttons": {
-            "start": "Start Forklaring",
-            "pause": "Pause",
-            "mute": "Lyd av",
-            "unmute": "Lyd på"
-          }
-        }
-      },
-      "quiz": {
-        "question": "Hva er Bitcoin?",
-        "options": [
-          "En fysisk mynt du får i posten",
-          "Digital valuta som lever på internett",
-          "Et aksjeselskap på børsen",
-          "Et program på mobilen din"
-        ],
-        "correctAnswer": 1,
-        "funFact": "Bitcoin ble skapt i 2009 av noen som kalte seg Satoshi Nakamoto. Til denne dagen vet ingen hvem det faktisk er!"
-      },
-      "aiProfessor": {
-        "messages": {
-          "encouragement": ["Godt spørsmål!", "Bra tenkt!", "Dette er viktig..."],
-          "correctAnswer": "Fantastisk! +50 XP! 🎉",
-          "wrongAnswer": "Ikke helt. Prøv igjen!",
-          "nextQuestion": "Klar til neste spørsmål?",
-          "voiceAnswer": "Godt spørsmål! Bitcoin er som digitalt gull, mens Ethereum er mer som en digital datamaskin...",
-          "voiceTranscript": "Hva er forskjellen på Bitcoin og Ethereum?",
-          "initial": "Velkommen! Jeg er din AI-professor. Spør meg om hva som helst!"
-        },
-        "emotions": {
-          "neutral": "🤖",
-          "happy": "😊",
-          "excited": "🤩",
-          "thinking": "🤔",
-          "concerned": "😟",
-          "celebrating": "🎉"
-        }
-      },
-      "voiceInteraction": {
-        "title": "Still spørsmål med stemmen",
-        "description": "Klikk på mikrofonen og spør om hva som helst",
-        "buttonListening": "Lytter...",
-        "button": "Trykk for å snakke"
-      },
-      "achievements": {
-        "title": "Din fremgang",
-        "xpLabel": "XP",
-        "streakLabel": "Dagens streak"
-      },
-      "badges": {
-        "popular": "POPULÆR"
-      },
-      "labels": {
-        "level": "Nivå",
-        "modules": "moduler",
-        "week": "uke",
-        "of": "av"
-      }
-    },
-    "trading-masterclass": {
-      "title": "Trading Masterclass",
-      "description": "Avanserte trading-strategier for erfarne investorer. Lær teknisk analyse, risk management og mer.",
-      "weeks": 6,
-      "level": "advanced",
-      "levelLabel": "Avansert",
-      "duration": "6 uker",
-      "lessons": 16,
-      "videoTitle": "Trading Masterclass",
-      "videoSubtitle": "For avanserte tradere",
-      "lessonsList": [
-        { "id": 1, "title": "Teknisk Analyse", "status": "locked", "progress": 0 },
-        { "id": 2, "title": "Candlestick Patterns", "status": "locked", "progress": 0 },
-        { "id": 3, "title": "Risk Management", "status": "locked", "progress": 0 }
-      ],
-      "lessonContent": {
-        "1": {
-          "title": "Leksjon 1: Teknisk Analyse",
-          "description": "Lær å lese grafer og identifisere trender.",
-          "buttons": {
-            "start": "Start Forklaring",
-            "pause": "Pause",
-            "mute": "Lyd av",
-            "unmute": "Lyd på"
-          }
-        }
-      },
-      "quiz": {
-        "question": "Hva indikerer en 'golden cross'?",
-        "options": [
-          "Bearish trend",
-          "Bullish trend",
-          "Sideways market",
-          "Volatilitet"
-        ],
-        "correctAnswer": 1,
-        "funFact": "Golden cross skjer når 50-dagers glidende gjennomsnitt krysser over 200-dagers glidende gjennomsnitt."
-      },
-      "aiProfessor": {
-        "messages": {
-          "encouragement": ["Godt spørsmål!", "Bra tenkt!", "Dette er viktig..."],
-          "correctAnswer": "Fantastisk! +50 XP! 🎉",
-          "wrongAnswer": "Ikke helt. Prøv igjen!",
-          "nextQuestion": "Klar til neste spørsmål?",
-          "voiceAnswer": "Teknisk analyse handler om å studere prishistorikk for å forutsi fremtidige bevegelser...",
-          "voiceTranscript": "Hva er teknisk analyse?",
-          "initial": "Velkommen til Trading Masterclass! Klar til å lære avanserte strategier?"
-        },
-        "emotions": {
-          "neutral": "🤖",
-          "happy": "😊",
-          "excited": "🤩",
-          "thinking": "🤔",
-          "concerned": "😟",
-          "celebrating": "🎉"
-        }
-      },
-      "voiceInteraction": {
-        "title": "Still spørsmål med stemmen",
-        "description": "Klikk på mikrofonen og spør om hva som helst",
-        "buttonListening": "Lytter...",
-        "button": "Trykk for å snakke"
-      },
-      "achievements": {
-        "title": "Din fremgang",
-        "xpLabel": "XP",
-        "streakLabel": "Dagens streak"
-      },
-      "badges": {
-        "popular": "POPULÆR"
-      },
-      "labels": {
-        "level": "Nivå",
-        "modules": "moduler",
-        "week": "uke",
-        "of": "av"
-      }
-    },
-    "defi-explorer": {
-      "title": "DeFi Explorer",
-      "description": "Utfork desentralisert finans. Lær om yield farming, liquidity pools og smart contracts.",
-      "weeks": 3,
-      "level": "intermediate",
-      "levelLabel": "Middels",
-      "duration": "3 uker",
-      "lessons": 8,
-      "videoTitle": "DeFi Explorer",
-      "videoSubtitle": "Forstå fremtidens finans",
-      "lessonsList": [
-        { "id": 1, "title": "Hva er DeFi?", "status": "locked", "progress": 0 },
-        { "id": 2, "title": "Smart Contracts", "status": "locked", "progress": 0 },
-        { "id": 3, "title": "Yield Farming", "status": "locked", "progress": 0 }
-      ],
-      "lessonContent": {
-        "1": {
-          "title": "Leksjon 1: Hva er DeFi?",
-          "description": "Desentralisert finans revolusjonerer måten vi tenker penger på.",
-          "buttons": {
-            "start": "Start Forklaring",
-            "pause": "Pause",
-            "mute": "Lyd av",
-            "unmute": "Lyd på"
-          }
-        }
-      },
-      "quiz": {
-        "question": "Hva er en smart contract?",
-        "options": [
-          "En juridisk avtale",
-          "Selvutførende kode på blokkjeden",
-          "En type bankkonto",
-          "En kryptovaluta"
-        ],
-        "correctAnswer": 1,
-        "funFact": "Smart contracts ble først foreslått av Nick Szabo i 1994, lenge før Ethereum eksisterte!"
-      },
-      "aiProfessor": {
-        "messages": {
-          "encouragement": ["Godt spørsmål!", "Bra tenkt!", "Dette er viktig..."],
-          "correctAnswer": "Fantastisk! +50 XP! 🎉",
-          "wrongAnswer": "Ikke helt. Prøv igjen!",
-          "nextQuestion": "Klar til neste spørsmål?",
-          "voiceAnswer": "DeFi står for desentralisert finans. Det er et økosystem av finansielle applikasjoner...",
-          "voiceTranscript": "Hva er DeFi?",
-          "initial": "Velkommen til DeFi Explorer! La oss utforske fremtidens finans sammen."
-        },
-        "emotions": {
-          "neutral": "🤖",
-          "happy": "😊",
-          "excited": "🤩",
-          "thinking": "🤔",
-          "concerned": "😟",
-          "celebrating": "🎉"
-        }
-      },
-      "voiceInteraction": {
-        "title": "Still spørsmål med stemmen",
-        "description": "Klikk på mikrofonen og spør om hva som helst",
-        "buttonListening": "Lytter...",
-        "button": "Trykk for å snakke"
-      },
-      "achievements": {
-        "title": "Din fremgang",
-        "xpLabel": "XP",
-        "streakLabel": "Dagens streak"
-      },
-      "badges": {
-        "popular": "POPULÆR"
-      },
-      "labels": {
-        "level": "Nivå",
-        "modules": "moduler",
-        "week": "uke",
-        "of": "av"
-      }
-    }
-  },
   "common": {
     "header": {
-      "academy": "Klarpakke Akademi"
-    },
-    "lessonStatuses": {
-      "completed": "Fullført",
-      "current": "Pågår",
-      "available": "Tilgjengelig",
-      "locked": "Låst"
-    },
-    "buttons": {
-      "back": "Tilbake",
-      "fullscreen": "Fullskjerm",
-      "exitFullscreen": "Avslutt fullskjerm"
+      "academy": "Akademiet"
+    }
+  },
+  "courseDetails": {
+    "modul-1-intro": {
+      "title": "Modul 1: Krypto-intro",
+      "description": "Det perfekte startpunktet for alle som er nysgjerrige på krypto. Vi dekker det grunnleggende på en enkel måte.",
+      "weeks": 1,
+      "level": "beginner",
+      "levelLabel": "Nybegynner",
+      "duration": "1 uke",
+      "lessons": 4,
+      "lessonsList": [
+        { "id": 1, "title": "Hva er Krypto?", "status": "available", "progress": 0 },
+        { "id": 2, "title": "Blockchain Forklart", "status": "locked", "progress": 0 },
+        { "id": 3, "title": "Bitcoin vs Ethereum", "status": "locked", "progress": 0 },
+        { "id": 4, "title": "Hvorfor Investere?", "status": "locked", "progress": 0 }
+      ],
+      "quiz": {
+        "question": "Hva er hovedformålet med blockchain?",
+        "options": [
+          "Å gjøre internett raskere",
+          "Desentralisert register uten sentral autoritet",
+          "Å erstatte alle banker",
+          "Å lage nettsider"
+        ],
+        "correctAnswer": 1,
+        "funFact": "Blockchain-teknologien ble først introdusert av Satoshi Nakamoto i 2008!"
+      }
     }
   }
 }
