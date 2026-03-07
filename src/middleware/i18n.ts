@@ -103,8 +103,23 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
     return null;
   }
 
-  // No locale prefix detected - this is default locale (Norwegian)
-  // Don't redirect, let the request continue to the root path
+  // No locale prefix detected - auto-detect browser language
+  const acceptLanguage = request.headers.get("accept-language");
+  const preferredLocale = getPreferredLocale(acceptLanguage);
+
+  // If preferred locale is NOT Norwegian, redirect to appropriate locale path
+  if (preferredLocale !== DEFAULT_LOCALE) {
+    // Map unsupported locales to English (th/zh have limited translations)
+    const targetLocale = ["th", "zh"].includes(preferredLocale) ? "en" : preferredLocale;
+
+    const redirectUrl = new URL(`/${targetLocale}${pathname}`, request.url);
+    redirectUrl.search = request.nextUrl.search;
+
+    // Use 302 (temporary) to allow future locale preference override
+    return NextResponse.redirect(redirectUrl, { status: 302 });
+  }
+
+  // Norwegian users (or unknown locale) -> stay on root path (no prefix)
   return null;
 }
 
