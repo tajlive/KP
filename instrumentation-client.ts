@@ -1,5 +1,9 @@
 import * as Sentry from "@sentry/nextjs";
 
+// Prevent multiple initializations
+if (!(globalThis as any).__SENTRY_INITIALIZED__) {
+  (globalThis as any).__SENTRY_INITIALIZED__ = true;
+  
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN ||
     "https://e32d54d01cf6b772939b62144762ea8b@o4509555622608896.ingest.de.sentry.io/4509555628638288",
@@ -65,6 +69,8 @@ Sentry.init({
     "Multiple Sentry Session Replay instances are not supported",
   ],
 });
+
+} // End of duplicate check
 
 // Required by Sentry to instrument client-side navigations
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
