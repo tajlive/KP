@@ -24,7 +24,7 @@ export async function GET() {
   };
 
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Check connection by fetching a public table (or users if RLS allows)
     // We try to fetch 1 row from 'users'

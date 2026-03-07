@@ -23,7 +23,7 @@ export interface TrialStatus {
  * Auto-starter trial hvis ikke startet
  */
 export async function getTrialStatus(userId: string): Promise<TrialStatus> {
-  const supabase = await createClient();
+  const supabase = createClient();
   
   // 1. Hent user profile
   const { data: profile, error } = await supabase
@@ -116,7 +116,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
  * Kalles automatisk ved første besøk til auto-trade
  */
 async function startTrial(userId: string): Promise<TrialStatus> {
-  const supabase = await createClient();
+  const supabase = createClient();
   
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // +14 dager

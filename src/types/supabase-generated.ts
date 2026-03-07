@@ -140,6 +140,30 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_cache: {
+        Row: {
+          cache_key: string
+          created_at: string | null
+          expires_at: string
+          updated_at: string | null
+          value: Json
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string | null
+          expires_at: string
+          updated_at?: string | null
+          value: Json
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string | null
+          expires_at?: string
+          updated_at?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       ai_decision_log: {
         Row: {
           analysis_data: Json | null
@@ -182,6 +206,7 @@ export type Database = {
           event_name: string
           event_type: string
           id: string
+          session_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -189,6 +214,7 @@ export type Database = {
           event_name: string
           event_type: string
           id?: string
+          session_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -196,6 +222,7 @@ export type Database = {
           event_name?: string
           event_type?: string
           id?: string
+          session_id?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -965,6 +992,44 @@ export type Database = {
         }
         Relationships: []
       }
+      auto_trading_sessions: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          status: string | null
+          strategy_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          status?: string | null
+          strategy_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          status?: string | null
+          strategy_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auto_trading_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       auto_trading_strategies: {
         Row: {
           allow_long: boolean | null
@@ -1525,6 +1590,74 @@ export type Database = {
         }
         Relationships: []
       }
+      conditional_orders: {
+        Row: {
+          created_at: string | null
+          current_price_at_creation: number | null
+          executed_at: string | null
+          id: string
+          limit_price: number
+          mode: string
+          quantity: number
+          session_id: string
+          side: string
+          status: string
+          symbol: string
+          trailing_percent: number | null
+          trigger_price: number
+          triggered_at: string | null
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_price_at_creation?: number | null
+          executed_at?: string | null
+          id?: string
+          limit_price: number
+          mode: string
+          quantity: number
+          session_id: string
+          side: string
+          status?: string
+          symbol: string
+          trailing_percent?: number | null
+          trigger_price: number
+          triggered_at?: string | null
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_price_at_creation?: number | null
+          executed_at?: string | null
+          id?: string
+          limit_price?: number
+          mode?: string
+          quantity?: number
+          session_id?: string
+          side?: string
+          status?: string
+          symbol?: string
+          trailing_percent?: number | null
+          trigger_price?: number
+          triggered_at?: string | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conditional_orders_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "trading_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       copy_trade_queue: {
         Row: {
           allocation_percent: number
@@ -1582,24 +1715,30 @@ export type Database = {
           created_at: string
           follower_id: string
           id: string
+          is_active: boolean | null
           leader_id: string
           max_trade_amount: number | null
+          scale_factor: number | null
         }
         Insert: {
           allocation_percent: number
           created_at?: string
           follower_id: string
           id?: string
+          is_active?: boolean | null
           leader_id: string
           max_trade_amount?: number | null
+          scale_factor?: number | null
         }
         Update: {
           allocation_percent?: number
           created_at?: string
           follower_id?: string
           id?: string
+          is_active?: boolean | null
           leader_id?: string
           max_trade_amount?: number | null
+          scale_factor?: number | null
         }
         Relationships: [
           {
@@ -2200,6 +2339,7 @@ export type Database = {
           description: string
           id: string
           metadata: Json | null
+          reason: string | null
           type: string
           user_id: string
         }
@@ -2210,6 +2350,7 @@ export type Database = {
           description: string
           id?: string
           metadata?: Json | null
+          reason?: string | null
           type: string
           user_id: string
         }
@@ -2220,10 +2361,55 @@ export type Database = {
           description?: string
           id?: string
           metadata?: Json | null
+          reason?: string | null
           type?: string
           user_id?: string
         }
         Relationships: []
+      }
+      leaderboard: {
+        Row: {
+          created_at: string | null
+          id: string
+          rank: number
+          roi: number | null
+          total_pnl: number | null
+          total_trades: number | null
+          updated_at: string | null
+          user_id: string
+          win_rate: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          rank: number
+          roi?: number | null
+          total_pnl?: number | null
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id: string
+          win_rate?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          rank?: number
+          roi?: number | null
+          total_pnl?: number | null
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id?: string
+          win_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       leaderboard_bots: {
         Row: {
@@ -2762,6 +2948,7 @@ export type Database = {
       onboarding_progress: {
         Row: {
           completed_at: string | null
+          completed_lessons: number | null
           created_at: string | null
           id: string
           is_completed: boolean | null
@@ -2776,6 +2963,7 @@ export type Database = {
         }
         Insert: {
           completed_at?: string | null
+          completed_lessons?: number | null
           created_at?: string | null
           id?: string
           is_completed?: boolean | null
@@ -2790,6 +2978,7 @@ export type Database = {
         }
         Update: {
           completed_at?: string | null
+          completed_lessons?: number | null
           created_at?: string | null
           id?: string
           is_completed?: boolean | null
@@ -3889,6 +4078,68 @@ export type Database = {
           },
         ]
       }
+      strategy_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          session_id: string
+          status: string
+          strategy_id: string | null
+          strategy_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          session_id: string
+          status: string
+          strategy_id?: string | null
+          strategy_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          session_id?: string
+          status?: string
+          strategy_id?: string | null
+          strategy_type?: string
+        }
+        Relationships: []
+      }
+      strategy_reviews: {
+        Row: {
+          created_at: string | null
+          id: string
+          rating: number
+          review: string | null
+          strategy_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          rating: number
+          review?: string | null
+          strategy_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          rating?: number
+          review?: string | null
+          strategy_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategy_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       strategy_templates: {
         Row: {
           color: string | null
@@ -4020,6 +4271,7 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          amount: number | null
           cancel_at_period_end: boolean | null
           created_at: string | null
           current_period_end: string | null
@@ -4038,6 +4290,7 @@ export type Database = {
           vipps_order_id: string | null
         }
         Insert: {
+          amount?: number | null
           cancel_at_period_end?: boolean | null
           created_at?: string | null
           current_period_end?: string | null
@@ -4056,6 +4309,7 @@ export type Database = {
           vipps_order_id?: string | null
         }
         Update: {
+          amount?: number | null
           cancel_at_period_end?: boolean | null
           created_at?: string | null
           current_period_end?: string | null
@@ -4421,6 +4675,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      trading_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          session_id: string
+          trade_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          session_id: string
+          trade_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          session_id?: string
+          trade_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trading_notifications: {
         Row: {
@@ -5525,19 +5817,24 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          binance_api_key_id: string | null
+          binance_api_secret_id: string | null
           binance_connected: boolean
           created_at: string
+          display_name: string | null
+          email: string | null
           email_daily_digest: boolean
           email_on_crash: boolean
           email_on_trade: boolean
+          full_name: string | null
           google_id: string | null
           id: string
           locale: string | null
           microsoft_id: string | null
-          onboarding_completed: boolean
+          onboarding_completed: boolean | null
           onboarding_completed_at: string | null
           onboarding_started_at: string | null
-          onboarding_step: number
+          onboarding_step: number | null
           paper_balance: number
           preferred_trading_mode: string | null
           provider: string | null
@@ -5545,25 +5842,32 @@ export type Database = {
           risk_tolerance: string | null
           role: string | null
           setup_completed_at: string | null
+          show_on_leaderboard: boolean | null
+          status: string | null
           tier: Database["public"]["Enums"]["subscription_tier"]
           trading_experience: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          binance_api_key_id?: string | null
+          binance_api_secret_id?: string | null
           binance_connected?: boolean
           created_at?: string
+          display_name?: string | null
+          email?: string | null
           email_daily_digest?: boolean
           email_on_crash?: boolean
           email_on_trade?: boolean
+          full_name?: string | null
           google_id?: string | null
           id?: string
           locale?: string | null
           microsoft_id?: string | null
-          onboarding_completed?: boolean
+          onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           onboarding_started_at?: string | null
-          onboarding_step?: number
+          onboarding_step?: number | null
           paper_balance?: number
           preferred_trading_mode?: string | null
           provider?: string | null
@@ -5571,25 +5875,32 @@ export type Database = {
           risk_tolerance?: string | null
           role?: string | null
           setup_completed_at?: string | null
+          show_on_leaderboard?: boolean | null
+          status?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
           trading_experience?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          binance_api_key_id?: string | null
+          binance_api_secret_id?: string | null
           binance_connected?: boolean
           created_at?: string
+          display_name?: string | null
+          email?: string | null
           email_daily_digest?: boolean
           email_on_crash?: boolean
           email_on_trade?: boolean
+          full_name?: string | null
           google_id?: string | null
           id?: string
           locale?: string | null
           microsoft_id?: string | null
-          onboarding_completed?: boolean
+          onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           onboarding_started_at?: string | null
-          onboarding_step?: number
+          onboarding_step?: number | null
           paper_balance?: number
           preferred_trading_mode?: string | null
           provider?: string | null
@@ -5597,6 +5908,8 @@ export type Database = {
           risk_tolerance?: string | null
           role?: string | null
           setup_completed_at?: string | null
+          show_on_leaderboard?: boolean | null
+          status?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
           trading_experience?: string | null
           updated_at?: string
@@ -6308,6 +6621,15 @@ export type Database = {
           win_rate: number
         }[]
       }
+      get_leaderboard_stats: {
+        Args: never
+        Returns: {
+          avg_roi: number
+          top_performer: string
+          top_roi: number
+          total_participants: number
+        }[]
+      }
       get_next_founder_number: { Args: never; Returns: number }
       get_or_create_email_preferences: {
         Args: { p_user_id: string }
@@ -6388,6 +6710,10 @@ export type Database = {
           trial_days_remaining: number
         }[]
       }
+      get_user_paper_trading_rank: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       get_user_role: { Args: { user_uuid: string }; Returns: string }
       get_user_signal_stats: {
         Args: { user_uuid: string }
@@ -6451,6 +6777,7 @@ export type Database = {
           trade_id: string
         }[]
       }
+      process_conditional_orders: { Args: never; Returns: number }
       record_app_event: {
         Args: {
           p_event_name: string

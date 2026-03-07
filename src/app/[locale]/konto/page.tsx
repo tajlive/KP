@@ -23,7 +23,7 @@ export default async function LommebokPage({ params }: PageProps) {
   const { locale } = await params;
   
   // Hent autentisert bruker
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {

@@ -641,7 +641,7 @@ export async function GET(req: NextRequest) {
   }
 
   const startTime = Date.now();
-  const db = await createClient();
+  const db = createClient();
 
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)

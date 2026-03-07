@@ -29,6 +29,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useI18nToast } from "@/hooks/useI18nToast";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
+import { KLTWallet } from "@/components/gamification/KLTWallet";
+import { GamificationCard } from "@/components/gamification/GamificationCard";
+import { PulseChart } from "./PulseChart";
 
 const STRATEGIES: {
   type: StrategyType;
@@ -338,6 +341,13 @@ export default function UnifiedTradingDashboard({
 
         {/* Portfolio Summary */}
         <PortfolioSection portfolio={portfolio} formatNOK={formatNOK} />
+
+        {/* Gamification & KLT Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <KLTWallet />
+          <GamificationCard />
+          <PulseChart />
+        </div>
 
         {/* Active Strategies */}
         <ActiveStrategiesSection

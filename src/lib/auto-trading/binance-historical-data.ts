@@ -249,7 +249,7 @@ export class BinanceHistoricalDataFetcher {
     interval: TimeInterval,
     candles: BinanceCandle[]
   ): Promise<void> {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Batch insert (Supabase can handle ~1000 rows efficiently)
     const BATCH_SIZE = 1000;
@@ -296,7 +296,7 @@ export class BinanceHistoricalDataFetcher {
     startTime: Date,
     endTime: Date
   ): Promise<BinanceCandle[] | null> {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const { data, error } = await supabase
       .from('binance_historical_candles')

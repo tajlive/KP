@@ -138,7 +138,7 @@ export class RiskManager {
 
   // Private helpers - all using unified trades table
   private async getTodayPnL(sessionId: string): Promise<number> {
-    const supabase = await createClient();
+    const supabase = createClient();
     const today = new Date().toISOString().split("T")[0];
 
     const { data } = await supabase
@@ -152,7 +152,7 @@ export class RiskManager {
   }
 
   private async getTodayTradeCount(sessionId: string): Promise<number> {
-    const supabase = await createClient();
+    const supabase = createClient();
     const today = new Date().toISOString().split("T")[0];
 
     const { count } = await supabase
@@ -165,7 +165,7 @@ export class RiskManager {
   }
 
   private async getCurrentDrawdown(sessionId: string): Promise<number> {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const { data: trades } = await supabase
       .from("trades")
@@ -197,7 +197,7 @@ export class RiskManager {
   }
 
   private async getCurrentExposure(sessionId: string): Promise<number> {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const { data: session } = await supabase
       .from("trading_sessions")
@@ -219,7 +219,7 @@ export class RiskManager {
     sessionId: string,
     symbol: string,
   ): Promise<number> {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const { data: session } = await supabase
       .from("trading_sessions")

@@ -42,7 +42,7 @@ interface ConditionalOrderRequest {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const supabase = createClient();
   
   // Auth check
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
 
 // GET - List user's conditional orders
 export async function GET(request: NextRequest) {
-  const supabase = await createClient();
+  const supabase = createClient();
   
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
@@ -256,7 +256,7 @@ export async function GET(request: NextRequest) {
 
 // DELETE - Cancel a conditional order
 export async function DELETE(request: NextRequest) {
-  const supabase = await createClient();
+  const supabase = createClient();
   
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {

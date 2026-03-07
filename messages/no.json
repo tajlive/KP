@@ -161,6 +161,18 @@
   },
   "landing": {
     "badge": "Klarpakke Universitet",
+    "modernHero": {
+      "badge": "Norges første krypto-universitet",
+      "titlePart1": "Lær krypto-trading",
+      "titlePart2": "fra A til Å",
+      "subtitle": "Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital.",
+      "bullets": "✓ Gratis å starte ✓ 1M kr virtuell kapital ✓ AI-coaching ✓ Auto-trading",
+      "ctaPrimary": "Start nå",
+      "ctaSecondary": "Se kurs",
+      "trust1": "Ingen kredittkort nødvendig",
+      "trust2": "100+ studenter",
+      "trust3": "Norsk support"
+    },
     "heroTitle": "Start i dag. <span>Bli ekspert på 4 uker.</span>",
     "heroDescription": "Kom i gang på 2 minutter. Koble til automatisk handel med lav risiko mens du lærer faget fra grunnen av.",
     "heroButton": "Start nå",
@@ -1310,6 +1322,131 @@
       "chatTitle": "Live chat",
       "chatHours": "Tilgjengelig mandag-fredag 09:00-17:00",
       "startChat": "Start chat"
+    }
+  },
+  "about": {
+    "metadata": {
+      "title": "Om Oss - Klarpakke Universitet",
+      "description": "Lær om Klarpakke Universitet - Norges første krypto-universitet. Vår historie, verdier og misjon."
+    },
+    "hero": {
+      "badge": "Norges første krypto-universitet",
+      "title": "Om Klarpakke",
+      "subtitle": "Vi gjør krypto-trading tilgjengelig for alle nordmenn - trygt, enkelt og på norsk."
+    },
+    "mission": {
+      "title": "Vår misjon",
+      "p1": "Klarpakke ble grunnlagt med en klar misjon: Å gjøre krypto-trading tilgjengelig og trygt for nordmenn. Vi har sett for mange tape penger på grunn av manglende kunnskap, og vi vil endre det.",
+      "p2": "Ved å kombinere førsteklasses utdanning med praktisk paper trading, gir vi deg verktøyene du trenger for å lykkes - uten å risikere ekte penger mens du lærer.",
+      "ctaCourses": "Se våre kurs",
+      "ctaContact": "Kontakt oss",
+      "quote": "Kunnskap er den eneste investeringen som aldji taper verdi. Vi bygger fremtidens tradere, en student om gangen.",
+      "quoteAuthor": "— Grunnlaget av Klarpakke"
+    },
+    "stats": {
+      "students": "Aktive studenter",
+      "volume": "Handelsvolum",
+      "rating": "Studentvurdering",
+      "support": "Norsk support"
+    },
+    "values": {
+      "title": "Våre verdier",
+      "subtitle": "Dette er prinsippene som driver alt vi gjør",
+      "safety": {
+        "title": "Sikkerhet først",
+        "desc": "Din sikkerhet er vår høyeste prioritet. Vi bruker bank-nivå sikkerhet og lar deg øve med virtuelle penger først."
+      },
+      "education": {
+        "title": "Kvalitetsutdanning",
+        "desc": "Vi samarbeider med erfarne tradere for å gi deg praktisk, oppdatert kunnskap som fungerer i det virkelige liv."
+      },
+      "community": {
+        "title": "Fellesskap",
+        "desc": "Ingen lærer alene. Vårt community av studenter hjelper hverandre å vokse og lykkes sammen."
+      },
+      "transparency": {
+        "title": "Åpenhet",
+        "desc": "Vi er ærlige om risiko og avkastning. Ingen falske løfter - bare solid utdanning og verktøy."
+      }
+    },
+    "different": {
+      "title": "Hva gjør oss annerledes?",
+      "subtitle": "Vi er ikke bare enda en trading-plattform. Vi er et universitet dedikert til din suksess."
+    },
+    "differentiators": {
+      "paperTrading": "1M kr virtuelle penger for risikofri øving",
+      "norwegian": "100% på norsk med lokal support",
+      "ai": "AI-drevet coaching tilpasset ditt nivå",
+      "gamification": "Lær mens du spiller - tjen KLT tokens",
+      "realTime": "Sanntids data og markedsanalyse",
+      "community": "Tilgang til eksklusivt Discord-community"
+    },
+    "cta": {
+      "title": "Klar til å starte?",
+      "subtitle": "Bli en del av Norges raskest voksende trading-community i dag.",
+      "button": "Start gratis prøveperiode",
+      "noCard": "Ingen kort påkrevd • 14 dager gratis"
+    },
+    "team": {
+      "title": "Møt teamet",
+      "subtitle": "Erfarne tradere og pedagoger dedikert til din suksess",
+      "founder": {
+        "name": "Grunnlegger",
+        "role": "CEO & Grunnlegger",
+        "bio": "10+ års erfaring med krypto-trading og finans"
+      },
+      "cto": {
+        "name": "CTO",
+        "role": "Teknologisjef",
+        "bio": "Ekspert på trading-algoritmer og AI"
+      },
+      "headOfEducation": {
+        "name": "Utdanningssjef",
+        "role": "Læring & Utvikling",
+        "bio": "Pedagog med passion for krypto"
+      }
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Priser - Klarpakke Universitet",
+      "description": "Velg din plan. Start gratis med paper trading, eller oppgrader for avanserte kurs og AI-verktøy."
+    },
+    "hero": {
+      "title": "Enkel, transparent prising",
+      "subtitle": "Start gratis. Oppgrader når du er klar. Ingen skjulte gebyrer.",
+      "trial": "14 dager gratis prøveperiode på alle betalte planer"
+    },
+    "free": "Gratis",
+    "popular": "Mest populær",
+    "startFree": "Start gratis",
+    "startTrial": "Start gratis prøveperiode",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "description": "Perfekt for å komme i gang"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For seriøse tradere"
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Full tilgang til alt"
+      }
+    },
+    "comparison": {
+      "title": "Sammenlign planer",
+      "feature": "Funksjon"
+    },
+    "faq": {
+      "title": "Ofte stilte spørsmål"
+    },
+    "cta": {
+      "title": "Klar til å ta tradingen din til neste nivå?",
+      "subtitle": "Bli med tusenvis av nordmenn som allerede lærer med Klarpakke.",
+      "button": "Start din 14-dagers prøveperiode",
+      "guarantee": "30-dagers pengene-tilbake-garanti • Ingen bindingstid"
     }
   },
   "calculator": {

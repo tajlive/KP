@@ -220,6 +220,18 @@
   },
   "landing": {
     "badge": "Klarpakke University",
+    "modernHero": {
+      "badge": "Norway's first crypto university",
+      "titlePart1": "Learn crypto trading",
+      "titlePart2": "from A to Z",
+      "subtitle": "From Student to Master Trader in 4 weeks. Paper trading with 1M NOK virtual capital.",
+      "bullets": "✓ Free to start ✓ 1M NOK virtual capital ✓ AI-coaching ✓ Auto-trading",
+      "ctaPrimary": "Start now",
+      "ctaSecondary": "View courses",
+      "trust1": "No credit card required",
+      "trust2": "100+ students",
+      "trust3": "Norwegian support"
+    },
     "heroTitle": "Start today. <span>Become an expert in 4 weeks.</span>",
     "heroDescription": "Get started in 2 minutes. Practice low-risk trading while you learn the fundamentals from scratch.",
     "heroButton": "Start now",
@@ -1161,6 +1173,131 @@
       "chatTitle": "Live chat",
       "chatHours": "Available Monday-Friday 09:00-17:00",
       "startChat": "Start chat"
+    }
+  },
+  "about": {
+    "metadata": {
+      "title": "About Us - Klarpakke University",
+      "description": "Learn about Klarpakke University - Norway's first crypto university. Our history, values and mission."
+    },
+    "hero": {
+      "badge": "Norway's first crypto university",
+      "title": "About Klarpakke",
+      "subtitle": "We make crypto trading accessible for all Norwegians - safe, simple and in Norwegian."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "p1": "Klarpakke was founded with a clear mission: To make crypto trading accessible and safe for Norwegians. We've seen too many lose money due to lack of knowledge, and we want to change that.",
+      "p2": "By combining top-tier education with practical paper trading, we give you the tools you need to succeed - without risking real money while you learn.",
+      "ctaCourses": "See our courses",
+      "ctaContact": "Contact us",
+      "quote": "Knowledge is the only investment that never loses value. We are building the traders of tomorrow, one student at a time.",
+      "quoteAuthor": "— Founder of Klarpakke"
+    },
+    "stats": {
+      "students": "Active students",
+      "volume": "Trading volume",
+      "rating": "Student rating",
+      "support": "Norwegian support"
+    },
+    "values": {
+      "title": "Our Values",
+      "subtitle": "These are the principles that drive everything we do",
+      "safety": {
+        "title": "Safety First",
+        "desc": "Your safety is our highest priority. We use bank-level security and let you practice with virtual money first."
+      },
+      "education": {
+        "title": "Quality Education",
+        "desc": "We collaborate with experienced traders to give you practical, up-to-date knowledge that works in real life."
+      },
+      "community": {
+        "title": "Community",
+        "desc": "No one learns alone. Our community of students helps each other grow and succeed together."
+      },
+      "transparency": {
+        "title": "Transparency",
+        "desc": "We are honest about risk and return. No false promises - just solid education and tools."
+      }
+    },
+    "different": {
+      "title": "What Makes Us Different?",
+      "subtitle": "We are not just another trading platform. We are a university dedicated to your success."
+    },
+    "differentiators": {
+      "paperTrading": "1M kr virtual money for risk-free practice",
+      "norwegian": "100% in Norwegian with local support",
+      "ai": "AI-powered coaching adapted to your level",
+      "gamification": "Learn while you play - earn KLT tokens",
+      "realTime": "Real-time data and market analysis",
+      "community": "Access to exclusive Discord community"
+    },
+    "cta": {
+      "title": "Ready to start?",
+      "subtitle": "Join Norway's fastest growing trading community today.",
+      "button": "Start free trial",
+      "noCard": "No card required • 14 days free"
+    },
+    "team": {
+      "title": "Meet the Team",
+      "subtitle": "Experienced traders and educators dedicated to your success",
+      "founder": {
+        "name": "Founder",
+        "role": "CEO & Founder",
+        "bio": "10+ years experience with crypto trading and finance"
+      },
+      "cto": {
+        "name": "CTO",
+        "role": "Chief Technology Officer",
+        "bio": "Expert in trading algorithms and AI"
+      },
+      "headOfEducation": {
+        "name": "Head of Education",
+        "role": "Learning & Development",
+        "bio": "Educator with passion for crypto"
+      }
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Pricing - Klarpakke University",
+      "description": "Choose your plan. Start free with paper trading, or upgrade for advanced courses and AI tools."
+    },
+    "hero": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Start free. Upgrade when ready. No hidden fees.",
+      "trial": "14-day free trial on all paid plans"
+    },
+    "free": "Free",
+    "popular": "Most Popular",
+    "startFree": "Start Free",
+    "startTrial": "Start Free Trial",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "description": "Perfect for getting started"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For serious traders"
+      },
+      "premium": {
+        "name": "Premium",
+        "description": "Full access to everything"
+      }
+    },
+    "comparison": {
+      "title": "Compare Plans",
+      "feature": "Feature"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions"
+    },
+    "cta": {
+      "title": "Ready to take your trading to the next level?",
+      "subtitle": "Join thousands of Norwegians already learning with Klarpakke.",
+      "button": "Start your 14-day trial",
+      "guarantee": "30-day money-back guarantee • No commitment"
     }
   },
   "calculator": {
