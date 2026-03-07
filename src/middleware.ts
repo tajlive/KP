@@ -76,8 +76,9 @@ export function middleware(request: NextRequest) {
   const acceptLanguage = request.headers.get("accept-language");
   const preferredLocale = getPreferredLocale(acceptLanguage);
 
-  // If preferred locale is NOT Norwegian, redirect to appropriate locale path
+  // Debug: Add header to see what locale was detected
   if (preferredLocale !== DEFAULT_LOCALE) {
+    // If preferred locale is NOT Norwegian, redirect to appropriate locale path
     // Map unsupported locales to English (th/zh have limited translations)
     const targetLocale = ["th", "zh"].includes(preferredLocale) ? "en" : preferredLocale;
 
@@ -85,11 +86,17 @@ export function middleware(request: NextRequest) {
     redirectUrl.search = request.nextUrl.search;
 
     // Use 302 (temporary) to allow future locale preference override
-    return NextResponse.redirect(redirectUrl, { status: 302 });
+    const response = NextResponse.redirect(redirectUrl, { status: 302 });
+    response.headers.set("x-locale-detected", preferredLocale);
+    response.headers.set("x-accept-lang-header", acceptLanguage || "none");
+    return response;
   }
 
   // Norwegian users (or unknown locale) -> stay on root path (no prefix)
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set("x-locale-detected", preferredLocale);
+  response.headers.set("x-accept-lang-header", acceptLanguage || "none");
+  return response;
 }
 
 // Match everything - do filtering inside middleware
