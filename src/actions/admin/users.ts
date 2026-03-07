@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
  * - Logs the transaction
  */
 export async function grantFounderStatus(userId: string) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     // 1. Verify Admin Access
@@ -52,7 +52,7 @@ export async function grantFounderStatus(userId: string) {
 
     // 4. Award KLT tokens
     const { data: balance } = await supabase
-      .from("klt_balances")
+      .from("user_klt_balances")
       .select("balance")
       .eq("user_id", userId)
       .single();
@@ -60,7 +60,7 @@ export async function grantFounderStatus(userId: string) {
     const currentBalance = balance?.balance || 0;
     const newBalance = currentBalance + 10000;
 
-    const { error: tokenError } = await supabase.from("klt_balances").upsert({
+    const { error: tokenError } = await supabase.from("user_klt_balances").upsert({
       user_id: userId,
       balance: newBalance,
       updated_at: new Date().toISOString(),
@@ -99,7 +99,7 @@ export async function grantFounderStatus(userId: string) {
  * - Sets banned_at and ban_reason
  */
 export async function banUser(userId: string, reason: string) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     // 1. Verify Admin Access
@@ -148,12 +148,12 @@ export async function banUser(userId: string, reason: string) {
  * - Fetches profile, balance, and signup data
  */
 export async function getUserDetails(userId: string) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     const { data, error } = await supabase
       .from("user_profiles")
-      .select("*, klt_balances(balance), beta_signups(*)")
+      .select("*, user_klt_balances(balance), beta_signups(*)")
       .eq("id", userId)
       .single();
 

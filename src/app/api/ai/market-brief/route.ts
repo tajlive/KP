@@ -16,19 +16,20 @@ interface MarketBrief {
 
 export async function GET() {
   try {
-    const db = await createClient();
+    const db = createClient();
 
+    // TODO: Create ai_cache table in database
     // Check cache first (refresh every hour)
-    const { data: cached } = await db
-      .from("ai_cache")
-      .select("*")
-      .eq("cache_key", "market_brief")
-      .gte("expires_at", new Date().toISOString())
-      .maybeSingle();
+    // const { data: cached } = await db
+    //   .from("ai_cache")
+    //   .select("*")
+    //   .eq("cache_key", "market_brief")
+    //   .gte("expires_at", new Date().toISOString())
+    //   .maybeSingle();
 
-    if (cached?.value) {
-      return NextResponse.json(cached.value as MarketBrief);
-    }
+    // if (cached?.value) {
+    //   return NextResponse.json(cached.value as MarketBrief);
+    // }
 
     // No OPENAI key = return a static brief
     if (!OPENAI_API_KEY) {
@@ -95,18 +96,19 @@ export async function GET() {
       generated_at: new Date().toISOString(),
     };
 
+    // TODO: Create ai_cache table in database
     // Cache in Supabase for 1 hour
-    await db
-      .from("ai_cache")
-      .upsert(
-        {
-          cache_key: "market_brief",
-          value: brief,
-          expires_at: new Date(Date.now() + 3600_000).toISOString(),
-        },
-        { onConflict: "cache_key" },
-      )
-      .select();
+    // await db
+    //   .from("ai_cache")
+    //   .upsert(
+    //     {
+    //       cache_key: "market_brief",
+    //       value: brief,
+    //       expires_at: new Date(Date.now() + 3600_000).toISOString(),
+    //     },
+    //     { onConflict: "cache_key" },
+    //   )
+    //   .select();
 
     return NextResponse.json(brief);
   } catch (err) {

@@ -113,7 +113,7 @@ export class PaperExecutor implements OrderExecutor {
    * Get current paper trading balance
    */
   async getBalance(): Promise<BalanceInfo> {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Find active paper session
     let sessionId = this.sessionId;
@@ -161,7 +161,7 @@ export class PaperExecutor implements OrderExecutor {
    * Get current open position
    */
   async getPosition(symbol: string): Promise<Position | null> {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Find active paper session
     let sessionId = this.sessionId;

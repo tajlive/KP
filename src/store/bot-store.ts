@@ -99,7 +99,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
       // Fetch strategies with their latest session data
       const { data: strategies, error: stratError } = await supabase
-        .from("strategies" as any)
+        .from("bot_configs")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -107,7 +107,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
       // Fetch sessions for P&L data
       const { data: sessions } = await supabase
-        .from("auto_trading_sessions" as any)
+        .from("auto_trading_sessions")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -167,7 +167,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
   pauseBot: async (id) => {
     const supabase = createClient();
     const { error } = await supabase
-      .from("strategies" as any)
+      .from("bot_configs")
       .update({ status: "paused" })
       .eq("id", id);
 
@@ -183,7 +183,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
   resumeBot: async (id) => {
     const supabase = createClient();
     const { error } = await supabase
-      .from("strategies" as any)
+      .from("bot_configs")
       .update({ status: "active" })
       .eq("id", id);
 
@@ -199,7 +199,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
   stopBot: async (id) => {
     const supabase = createClient();
     const { error } = await supabase
-      .from("strategies" as any)
+      .from("bot_configs")
       .update({ status: "stopped" })
       .eq("id", id);
 

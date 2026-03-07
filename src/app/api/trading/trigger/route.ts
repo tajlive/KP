@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Manually triggers the strategy runner (for immediate feedback when user starts a strategy)
 export async function POST(_: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Check auth
     const {

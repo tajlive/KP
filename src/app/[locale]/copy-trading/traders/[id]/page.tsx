@@ -11,7 +11,7 @@ interface TraderProfilePageProps {
 
 export async function generateMetadata({ params }: TraderProfilePageProps) {
   const { id, locale: _locale } = await params;
-  const supabase = await createClient();
+  const supabase = createClient();
 
   // Try to get trader info from leaderboard_bots first
   const { data: trader } = await supabase
@@ -44,7 +44,7 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
   const { id, locale: _locale } = await params;
   await requireAuth(_locale);
 
-  const supabase = await createClient();
+  const supabase = createClient();
 
   // Verify trader exists
   const { data: trader } = await supabase

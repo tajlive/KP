@@ -67,7 +67,7 @@ async function shouldSendEmail(userId: string, type: EmailType): Promise<boolean
   }
   
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
     const { data: prefs } = await supabase
       .from('email_preferences')
       .select('*')
@@ -107,7 +107,7 @@ async function shouldSendEmail(userId: string, type: EmailType): Promise<boolean
  */
 async function getUserInfo(userId: string): Promise<{ email: string; name: string } | null> {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
     const { data: profile } = await supabase
       .from('user_profiles' as any)
       .select('email, full_name')
@@ -617,7 +617,7 @@ export async function sendTemplatedEmail(options: SendEmailOptions): Promise<{ s
  */
 export async function queueEmail(options: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
     
     const { error } = await supabase
       .from('notification_queue')

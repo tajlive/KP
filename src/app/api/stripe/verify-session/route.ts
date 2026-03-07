@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ verified: false, error: 'Payment not completed' }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

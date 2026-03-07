@@ -20,7 +20,7 @@ export async function getDashboardMetrics(
   _timeRange: string = "7d",
 ): Promise<{ success: boolean; data?: DashboardMetrics; error?: string }> {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const {
       data: { user },
@@ -120,7 +120,7 @@ export async function getDashboardMetrics(
  */
 export async function getSignupTrend(days: number = 30) {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const {
       data: { user },

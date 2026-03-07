@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server';
 // GET - Fetch current user's preferences
 export async function GET() {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -49,7 +49,7 @@ export async function GET() {
 // POST - Update current user's preferences
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {

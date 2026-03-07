@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export async function requireAuth(locale: string = "no") {
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
 
   if (error || !user) {
@@ -13,7 +13,7 @@ export async function requireAuth(locale: string = "no") {
 }
 
 export async function requireGuest(locale: string = "no") {
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (user) {

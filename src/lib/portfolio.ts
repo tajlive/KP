@@ -81,7 +81,7 @@ function calculatePercentChange(current: number, previous: number): number {
  */
 export async function getPortfolioOverview(userId: string): Promise<PortfolioSummary | null> {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Sjekk om bruker har Binance API keys
     const { data: apiKeys } = await supabase
@@ -230,7 +230,7 @@ export async function getPortfolioOverview(userId: string): Promise<PortfolioSum
  */
 export async function syncBinancePortfolio(userId: string): Promise<{ success: boolean; message: string; synced?: number }> {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Sjekk om bruker har API keys
     const { data: apiKeys } = await supabase
@@ -272,7 +272,7 @@ export async function syncBinancePortfolio(userId: string): Promise<{ success: b
  * Hent sync-logg for bruker
  */
 export async function getBinanceSyncLog(userId: string, limit = 10) {
-  const supabase = await createClient();
+  const supabase = createClient();
   
   const { data, error } = await supabase
     .from('binance_sync_log')

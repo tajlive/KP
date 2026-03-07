@@ -33,7 +33,7 @@ export const POST = withRateLimit(
     }
 
     const { action } = parsed.data;
-    const db = await createClient();
+    const db = createClient();
 
     const statusMap: Record<string, string> = {
       pause: "paused",

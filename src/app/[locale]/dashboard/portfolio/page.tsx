@@ -12,7 +12,7 @@ export default async function PortfolioPage({ params }: PageProps) {
     const { locale } = await params;
     const t = await getTranslations('dashboard.portfolioPage');
 
-    const supabase = await createClient()
+    const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     // Note: Auth is handled by middleware - user should always exist here
