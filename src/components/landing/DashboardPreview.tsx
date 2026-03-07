@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Wallet, TrendingUp, PieChart, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function DashboardPreview() {
+  const router = useRouter();
   const [mode, setMode] = useState<'paper' | 'live'>('paper');
 
   const paperData = {
@@ -132,7 +134,10 @@ export function DashboardPreview() {
 
       {/* CTA */}
       <div className="px-6 pb-6">
-        <button className="w-full py-3 bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium rounded-lg transition-colors">
+        <button 
+          onClick={() => router.push('/innlogging')}
+          className="w-full py-3 bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium rounded-lg transition-colors min-h-[44px]"
+        >
           {mode === 'paper' ? 'Fortsett øving' : 'Start med paper trading'}
         </button>
       </div>
