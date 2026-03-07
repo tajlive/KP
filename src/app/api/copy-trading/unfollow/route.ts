@@ -19,7 +19,7 @@ export const DELETE = withAuth(async (req: NextRequest, { user }) => {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
-    const db = createClient();
+    const db = await createClient();
 
     const { data, error } = await db
       .from('copy_trading_follows')

@@ -13,7 +13,7 @@ export interface TradeContext {
 }
 
 export async function getLatestTrade(): Promise<TradeContext | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     const { data, error } = await supabase

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "listingId required" }, { status: 400 });
   }
 
-  const db = createClient();
+  const db = await createClient();
 
   const { data, error } = await db
     .from("strategy_reviews")
@@ -68,7 +68,7 @@ export const POST = withRateLimit(
     }
 
     const { listingId, rating, reviewText } = parsed.data;
-    const db = createClient();
+    const db = await createClient();
 
     // Check if user already reviewed
     const { data: existing } = await db

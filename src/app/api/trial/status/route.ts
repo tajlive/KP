@@ -4,7 +4,7 @@ import { getTrialStatus } from '@/lib/trial/trial-manager';
 
 export async function GET(_request: NextRequest) {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

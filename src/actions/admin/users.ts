@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
  * - Logs the transaction
  */
 export async function grantFounderStatus(userId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     // 1. Verify Admin Access
@@ -99,7 +99,7 @@ export async function grantFounderStatus(userId: string) {
  * - Sets banned_at and ban_reason
  */
 export async function banUser(userId: string, reason: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     // 1. Verify Admin Access
@@ -148,7 +148,7 @@ export async function banUser(userId: string, reason: string) {
  * - Fetches profile, balance, and signup data
  */
 export async function getUserDetails(userId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     const { data, error } = await supabase

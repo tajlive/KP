@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { session_id, user_id, page_path, referrer, user_agent } = body;
 
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Call the track_page_view function
     await supabase.rpc('track_page_view', {
