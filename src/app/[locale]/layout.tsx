@@ -13,27 +13,22 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { DM_Sans, Instrument_Serif } from "next/font/google";
+import { Fraunces, Lexend } from "next/font/google";
 import "../globals.css";
 
-// Konfigurer fonter med next/font/google (module scope påkrevd)
-const dmSans = DM_Sans({
+const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-dm-sans",
+  variable: "--font-fraunces",
 });
 
-const instrumentSerif = Instrument_Serif({
+const lexend = Lexend({
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-instrument-serif",
+  variable: "--font-lexend",
 });
 
 export async function generateStaticParams() {
-  // With localePrefix: 'as-needed', default locale (no) has no prefix
-  // Only generate params for non-default locales
   return [
     { locale: "en" },
     { locale: "th" },
@@ -41,7 +36,6 @@ export async function generateStaticParams() {
   ];
 }
 
-// Allow dynamic rendering for auth to work properly
 export const dynamicParams = true;
 
 export async function generateMetadata({
@@ -54,22 +48,18 @@ export async function generateMetadata({
 
   return {
     title: {
-      template: isNo ? "%s | Klarpakke" : "%s | Klarpakke",
+      template: "%s | Klarpakke",
       default: isNo
-        ? "Klarpakke Universitet - Norges første crypto-universitet"
-        : "Klarpakke University - Norway's first crypto university",
+        ? "Klarpakke — Lær krypto. Øv med lekepenger. Tjen når du er klar."
+        : "Klarpakke — Learn crypto. Practice with play money. Earn when you're ready.",
     },
     description: isNo
-      ? "Lær crypto trading fra A til Å med paper trading, AI-coaching og auto-trading bot. Gratis å starte, 1M kr virtuell kapital."
-      : "Learn crypto trading from A to Z with paper trading, AI coaching, and auto-trading bot. Free to start, 1M NOK virtual capital.",
-    keywords: [
-      "crypto trading",
-      "bitcoin",
-      "kryptovaluta",
-      "paper trading",
-      "trading bot",
-      "Norge",
-    ],
+      ? "Norges eneste plattform som kombinerer kurs, autotrading og papirhandel — alt på norsk. Start gratis, ingen kort nødvendig."
+      : "Norway's only platform combining courses, autotrading and paper trading — in Norwegian. Free to start, no card needed.",
+    keywords: ["crypto trading", "bitcoin", "kryptovaluta", "paper trading", "trading bot", "Norge"],
+    openGraph: {
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
+    },
   };
 }
 
@@ -91,7 +81,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   return (
     <html
       lang={locale}
-      className={`${dmSans.variable} ${instrumentSerif.variable}`}
+      className={`${fraunces.variable} ${lexend.variable}`}
     >
       <head>
         <OrganizationJsonLd />
@@ -119,7 +109,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         />
       </head>
       <body
-        className={`${dmSans.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
+        className={`${lexend.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
         suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale} messages={messages}>

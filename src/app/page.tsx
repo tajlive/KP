@@ -23,26 +23,24 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { DM_Sans, Instrument_Serif } from "next/font/google";
+import { Fraunces, Lexend } from "next/font/google";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-dm-sans",
+  variable: "--font-fraunces",
 });
 
-const instrumentSerif = Instrument_Serif({
+const lexend = Lexend({
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-instrument-serif",
+  variable: "--font-lexend",
 });
 
 export const metadata: Metadata = {
-  title: "Klarpakke Universitet - Norges første krypto-universitet",
-  description: "Lær crypto trading fra A til Å med paper trading, AI-coaching og auto-trading bot. Gratis å starte, 1M kr virtuell kapital.",
+  title: "Klarpakke — Lær krypto. Øv med lekepenger. Tjen når du er klar.",
+  description: "Norges eneste plattform som kombinerer kurs, autotrading og papirhandel — alt på norsk. Start gratis, ingen kort nødvendig.",
   keywords: ["krypto", "trading", "kurs", "norge", "bitcoin", "læring", "paper trading", "simulator"],
   authors: [{ name: "Klarpakke AS" }],
   creator: "Klarpakke AS",
@@ -51,8 +49,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
     languages: {
-      "no": "/",
-      "en": "/en/",
+      no: "/",
+      en: "/en/",
     },
   },
   manifest: "/manifest.json",
@@ -60,16 +58,16 @@ export const metadata: Metadata = {
     type: "website",
     locale: "no_NO",
     url: "https://klarpakke.no",
-    siteName: "Klarpakke Universitet",
-    title: "Klarpakke Universitet - Norges første krypto-universitet",
-    description: "Lær crypto trading fra A til Å. Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital.",
-    images: [{ url: "/logo.svg", width: 1200, height: 682, alt: "Klarpakke Universitet Logo" }],
+    siteName: "Klarpakke",
+    title: "Klarpakke — Lær krypto. Øv med lekepenger. Tjen når du er klar.",
+    description: "Norges eneste plattform som kombinerer kurs, autotrading og papirhandel — alt på norsk.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke — Norges krypto-utdanningsplattform" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Klarpakke Universitet - Norges første krypto-universitet",
-    description: "Lær crypto trading fra A til Å. Fra Student til Master Trader på 4 uker.",
-    images: ["/logo.svg"],
+    title: "Klarpakke — Lær krypto. Øv med lekepenger. Tjen når du er klar.",
+    description: "Norges eneste plattform som kombinerer kurs, autotrading og papirhandel — alt på norsk.",
+    images: ["/og-image.png"],
     creator: "@klarpakke",
   },
   robots: { index: true, follow: true },
@@ -82,15 +80,22 @@ export default async function RootPage() {
   try {
     messages = await getMessages();
   } catch {
-    messages = await import("../../messages/en.json").then((m) => m.default);
+    try {
+      messages = await import("../../messages/no.json").then((m) => m.default);
+    } catch {
+      messages = await import("../../messages/en.json").then((m) => m.default);
+    }
   }
 
   return (
-    <html lang={locale} className={`${dmSans.variable} ${instrumentSerif.variable}`}>
+    <html lang={locale} className={`${fraunces.variable} ${lexend.variable}`}>
       <head>
         <OrganizationJsonLd />
       </head>
-      <body className={`${dmSans.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`} suppressHydrationWarning>
+      <body
+        className={`${lexend.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
+        suppressHydrationWarning
+      >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ClientSideProviders>
             <ErrorBoundary>
