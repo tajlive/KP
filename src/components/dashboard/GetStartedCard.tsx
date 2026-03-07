@@ -45,7 +45,7 @@ const getStartedItems: Omit<GetStartedItem, "completed">[] = [
     },
     duration: "5 min",
     icon: <BookOpen className="w-5 h-5 text-blue-400" />,
-    href: "/kurs/leksjon/introduksjon-til-krypto",
+    href: "/leksjon/introduksjon-til-krypto",
   },
   {
     id: "dca-strategy",
@@ -59,7 +59,7 @@ const getStartedItems: Omit<GetStartedItem, "completed">[] = [
     },
     duration: "7 min",
     icon: <TrendingUp className="w-5 h-5 text-green-400" />,
-    href: "/kurs/leksjon/hva-er-stop-loss",
+    href: "/leksjon/hva-er-stop-loss",
   },
   {
     id: "dashboard-numbers",
