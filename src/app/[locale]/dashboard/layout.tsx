@@ -1,9 +1,18 @@
 "use client";
 
+import { useAuth } from "@/components/auth/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { ScrollToTop } from "@/components/dashboard/ScrollToTop";
 import { NotificationTray } from "@/components/layout/NotificationTray";
+import { usePaperTradingInit } from "@/hooks/usePaperTradingInit";
+
+function DashboardContent({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  usePaperTradingInit(user?.id);
+  
+  return <>{children}</>;
+}
 
 export default function DashboardLayout({
   children,
@@ -22,7 +31,9 @@ export default function DashboardLayout({
             </div>
           </header>
           <main className="flex-1 overflow-y-auto p-4 lg:p-8 pt-20 lg:pt-24">
-            <div className="max-w-6xl mx-auto">{children}</div>
+            <div className="max-w-6xl mx-auto">
+              <DashboardContent>{children}</DashboardContent>
+            </div>
           </main>
         </div>
       </div>
