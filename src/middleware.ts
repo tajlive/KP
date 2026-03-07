@@ -97,11 +97,8 @@ function handleI18nRedirect(request: NextRequest): NextResponse | null {
 
     console.log(`[middleware] redirecting to: ${redirectUrl.toString()}`);
     
-    // Use 302 (temporary) to allow future locale preference override
-    const response = NextResponse.redirect(redirectUrl, { status: 302 });
-    response.headers.set("x-i18n-redirect", "true");
-    response.headers.set("x-preferred-locale", preferredLocale);
-    return response;
+    // Use 307 (temporary redirect) to preserve method and body
+    return NextResponse.redirect(redirectUrl, 307);
   }
 
   // Norwegian users (or unknown locale) -> stay on root path (no prefix)
@@ -138,7 +135,9 @@ export async function middleware(request: NextRequest) {
     return onboardingResponse;
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set("x-middleware-ran", "true");
+  return response;
 }
 
 export const config = {
