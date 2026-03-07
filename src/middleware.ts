@@ -49,6 +49,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Handle /leksjon/* routes - redirect to /kurs/leksjon/*
+  if (pathname.startsWith("/leksjon/")) {
+    const lessonId = pathname.replace("/leksjon/", "");
+    const redirectUrl = new URL(`/kurs/leksjon/${lessonId}`, request.url);
+    redirectUrl.search = request.nextUrl.search;
+    return NextResponse.redirect(redirectUrl, { status: 307 });
+  }
+
   // Check if user is accessing old /no/* URLs -> redirect to /*
   if (pathname.startsWith("/no/")) {
     const newPath = pathname.slice(3);
@@ -99,7 +107,7 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
-// Match everything - do filtering inside middleware
+// Match all paths
 export const config = {
-  matcher: ["/"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };
