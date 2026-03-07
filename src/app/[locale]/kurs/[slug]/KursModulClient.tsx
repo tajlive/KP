@@ -9,8 +9,6 @@ import {
   ArrowLeft, 
   BookOpen, 
   Award,
-  Lock,
-  PlayCircle,
   RotateCcw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +18,7 @@ import Link from "next/link";
 import { useLocale } from "next-intl";
 
 // 8 Interactive Course Modules
-const modules = [
+const courseModules = [
   {
     id: 1,
     slug: "hva-er-krypto",
@@ -479,7 +477,7 @@ const modules = [
 export default function KursModulClient({ slug }: { slug: string }) {
   const { user } = useAuth();
   const locale = useLocale();
-  const module = modules.find(m => m.slug === slug);
+  const courseModule = courseModules.find(m => m.slug === slug);
   
   const [currentStep, setCurrentStep] = useState<"intro" | "content" | "quiz" | "result">("intro");
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -490,10 +488,10 @@ export default function KursModulClient({ slug }: { slug: string }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (user && module) {
+    if (user && courseModule) {
       loadProgress();
     }
-  }, [user, module]);
+  }, [user, courseModule]);
 
   const loadProgress = async () => {
     const supabase = createClient();
@@ -501,7 +499,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
       .from("module_progress")
       .select("completed, score")
       .eq("user_id", user?.id)
-      .eq("module_id", module?.id)
+      .eq("module_id", courseModule?.id)
       .single();
     
     if (data) {
@@ -510,13 +508,13 @@ export default function KursModulClient({ slug }: { slug: string }) {
     }
   };
 
-  if (!module) {
+  if (!courseModule) {
     return <div>Modul ikke funnet</div>;
   }
 
-  const totalQuestions = module.quiz.questions.length;
+  const totalQuestions = courseModule.quiz.questions.length;
   const correctAnswers = answers.filter((ans, idx) => 
-    ans === module.quiz.questions[idx].correct
+    ans === courseModule.quiz.questions[idx].correct
   ).length;
   const score = Math.round((correctAnswers / totalQuestions) * 100);
   const passed = score >= 80;
@@ -538,7 +536,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
       // Quiz complete
       const finalScore = Math.round(
         (newAnswers.filter((ans, idx) => 
-          ans === module.quiz.questions[idx].correct
+          ans === courseModule.quiz.questions[idx].correct
         ).length / totalQuestions) * 100
       );
       
@@ -547,7 +545,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
         const supabase = createClient();
         await supabase.from("module_progress").upsert({
           user_id: user.id,
-          module_id: module.id,
+          module_id: courseModule.id,
           completed: finalScore >= 80,
           score: finalScore,
           completed_at: finalScore >= 80 ? new Date().toISOString() : null,
@@ -573,16 +571,16 @@ export default function KursModulClient({ slug }: { slug: string }) {
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 mb-6">
           <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
             <BookOpen className="w-4 h-4" />
-            <span>Modul {module.id} av 8</span>
+            <span>Modul {courseModule.id} av 8</span>
             <span className="mx-2">•</span>
-            <span>{module.duration}</span>
+            <span>{courseModule.duration}</span>
             <span className="mx-2">•</span>
             <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
-              {module.level}
+              {courseModule.level}
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">{module.title}</h1>
-          <p className="text-slate-600">{module.subtitle}</p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">{courseModule.title}</h1>
+          <p className="text-slate-600">{courseModule.subtitle}</p>
           
           {completed && (
             <div className="mt-4 flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-lg w-fit">
@@ -602,12 +600,12 @@ export default function KursModulClient({ slug }: { slug: string }) {
               className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200"
             >
               <h2 className="text-xl font-semibold mb-4">Om denne modulen</h2>
-              <p className="text-slate-600 mb-6">{module.content.intro}</p>
+              <p className="text-slate-600 mb-6">{courseModule.content.intro}</p>
               
               <div className="bg-slate-50 rounded-xl p-6 mb-6">
                 <h3 className="font-semibold mb-3">Du vil lære:</h3>
                 <ul className="space-y-2">
-                  {module.content.keyPoints.map((point, i) => (
+                  {courseModule.content.keyPoints.map((point, i) => (
                     <li key={i} className="flex items-start gap-2 text-slate-600">
                       <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                       <span>{point}</span>
@@ -633,9 +631,9 @@ export default function KursModulClient({ slug }: { slug: string }) {
               {/* Visual Content */}
               <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
                 <h2 className="text-xl font-semibold mb-6">Visuell forklaring</h2>
-                {module.content.visual.type === "comparison" && (
+                {courseModule.content.visual.type === "comparison" && (
                   <div className="grid md:grid-cols-2 gap-4">
-                    {module.content.visual.items?.map((item: any, i: number) => (
+                    {courseModule.content.visual.items?.map((item: any, i: number) => (
                       <div key={i} className="p-4 bg-slate-50 rounded-xl">
                         <h3 className="font-semibold text-slate-900 mb-2">{item.label}</h3>
                         <p className="text-slate-600 text-sm">{item.desc}</p>
@@ -643,9 +641,9 @@ export default function KursModulClient({ slug }: { slug: string }) {
                     ))}
                   </div>
                 )}
-                {module.content.visual.type === "steps" && (
+                {courseModule.content.visual.type === "steps" && (
                   <div className="space-y-4">
-                    {module.content.visual.items?.map((item: any, i: number) => (
+                    {courseModule.content.visual.items?.map((item: any, i: number) => (
                       <div key={i} className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
                         <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold flex-shrink-0">
                           {item.step}
@@ -658,9 +656,9 @@ export default function KursModulClient({ slug }: { slug: string }) {
                     ))}
                   </div>
                 )}
-                {module.content.visual.type === "wallet-types" && (
+                {courseModule.content.visual.type === "wallet-types" && (
                   <div className="grid md:grid-cols-2 gap-4">
-                    {module.content.visual.items?.map((item: any, i: number) => (
+                    {courseModule.content.visual.items?.map((item: any, i: number) => (
                       <div key={i} className={`p-4 rounded-xl ${i === 0 ? "bg-orange-50 border border-orange-200" : "bg-green-50 border border-green-200"}`}>
                         <h3 className="font-semibold text-slate-900 mb-2">{item.label}</h3>
                         <p className="text-slate-600 text-sm mb-2">{item.desc}</p>
@@ -669,14 +667,14 @@ export default function KursModulClient({ slug }: { slug: string }) {
                     ))}
                   </div>
                 )}
-                {(module.content.visual.type === "dca-chart" || 
-                  module.content.visual.type === "candlestick" ||
-                  module.content.visual.type === "emotions") && (
+                {(courseModule.content.visual.type === "dca-chart" || 
+                  courseModule.content.visual.type === "candlestick" ||
+                  courseModule.content.visual.type === "emotions") && (
                   <div className="p-6 bg-slate-50 rounded-xl">
-                    <p className="text-slate-600">{module.content.visual.description}</p>
-                    {module.content.visual.items && (
+                    <p className="text-slate-600">{courseModule.content.visual.description}</p>
+                    {courseModule.content.visual.items && (
                       <div className="mt-4 space-y-3">
-                        {module.content.visual.items.map((item: any, i: number) => (
+                        {courseModule.content.visual.items.map((item: any, i: number) => (
                           <div key={i} className="flex items-start gap-3">
                             <div className="w-2 h-2 bg-blue-600 rounded-full mt-2" />
                             <div>
@@ -687,16 +685,16 @@ export default function KursModulClient({ slug }: { slug: string }) {
                         ))}
                       </div>
                     )}
-                    {module.content.visual.steps && (
+                    {courseModule.content.visual.steps && (
                       <ol className="mt-4 space-y-2 list-decimal list-inside">
-                        {module.content.visual.steps.map((step: string, i: number) => (
+                        {courseModule.content.visual.steps.map((step: string, i: number) => (
                           <li key={i} className="text-slate-600">{step}</li>
                         ))}
                       </ol>
                     )}
-                    {module.content.visual.checklist && (
+                    {courseModule.content.visual.checklist && (
                       <ul className="mt-4 space-y-2">
-                        {module.content.visual.checklist.map((item: string, i: number) => (
+                        {courseModule.content.visual.checklist.map((item: string, i: number) => (
                           <li key={i} className="flex items-center gap-2 text-slate-600">
                             <CheckCircle className="w-4 h-4 text-green-500" />
                             {item}
@@ -712,7 +710,7 @@ export default function KursModulClient({ slug }: { slug: string }) {
               <div className="bg-blue-50 rounded-2xl p-8 border border-blue-100">
                 <h2 className="text-xl font-semibold mb-4 text-blue-900">Nøkkelpunkter</h2>
                 <ul className="space-y-3">
-                  {module.content.keyPoints.map((point, i) => (
+                  {courseModule.content.keyPoints.map((point, i) => (
                     <li key={i} className="flex items-start gap-3 text-blue-800">
                       <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0">
                         {i + 1}
@@ -761,11 +759,11 @@ export default function KursModulClient({ slug }: { slug: string }) {
               {/* Question */}
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-slate-900 mb-4">
-                  {module.quiz.questions[currentQuestion].question}
+                  {courseModule.quiz.questions[currentQuestion].question}
                 </h2>
                 <div className="space-y-3">
-                  {module.quiz.questions[currentQuestion].options.map((option, i) => {
-                    const isCorrect = i === module.quiz.questions[currentQuestion].correct;
+                  {courseModule.quiz.questions[currentQuestion].options.map((option, i) => {
+                    const isCorrect = i === courseModule.quiz.questions[currentQuestion].correct;
                     const isSelected = selectedAnswer === i;
                     const showResult = showExplanation && (isSelected || isCorrect);
                     
@@ -807,17 +805,17 @@ export default function KursModulClient({ slug }: { slug: string }) {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   className={`p-4 rounded-xl mb-6 ${
-                    selectedAnswer === module.quiz.questions[currentQuestion].correct
+                    selectedAnswer === courseModule.quiz.questions[currentQuestion].correct
                       ? "bg-green-50 border border-green-200"
                       : "bg-red-50 border border-red-200"
                   }`}
                 >
                   <p className={`font-medium ${
-                    selectedAnswer === module.quiz.questions[currentQuestion].correct
+                    selectedAnswer === courseModule.quiz.questions[currentQuestion].correct
                       ? "text-green-800"
                       : "text-red-800"
                   }`}>
-                    {selectedAnswer === module.quiz.questions[currentQuestion].correct
+                    {selectedAnswer === courseModule.quiz.questions[currentQuestion].correct
                       ? "✓ Riktig!"
                       : "✗ Feil. Riktig svar er markert."}
                   </p>
