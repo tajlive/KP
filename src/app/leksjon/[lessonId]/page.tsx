@@ -65,3 +65,4 @@ export default async function LessonPage({ params }: PageProps) {
     </div>
   );
 }
+// Force redeploy - lør.  7 mar. 2026 21.01.10 CET
