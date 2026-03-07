@@ -1,6 +1,7 @@
 'use client';
 
 import { UserPlus, Gamepad2, Rocket } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const steps = [
   {
@@ -27,6 +28,8 @@ const steps = [
 ];
 
 export function ThreeSteps() {
+  const router = useRouter();
+  
   return (
     <div className="py-16 md:py-24">
       <div className="text-center mb-12">
@@ -72,7 +75,10 @@ export function ThreeSteps() {
 
       {/* CTA */}
       <div className="text-center mt-12">
-        <button className="bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2">
+        <button 
+          onClick={() => router.push('/innlogging')}
+          className="bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
+        >
           <UserPlus className="w-5 h-5" />
           Start gratis i dag
         </button>
