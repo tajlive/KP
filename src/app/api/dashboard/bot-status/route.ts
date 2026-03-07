@@ -7,6 +7,18 @@ import { CACHE_TTL, withCache } from "@/lib/cache";
 import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+// Temporary trade type until supabase-generated types are fixed
+interface Trade {
+  id: string;
+  side: string;
+  trading_pair?: string;
+  symbol?: string;
+  price: number;
+  quantity: number;
+  executed_at: string;
+  strategy_signal?: { explanation?: string };
+}
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
