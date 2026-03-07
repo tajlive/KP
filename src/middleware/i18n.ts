@@ -78,6 +78,11 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
     return null;
   }
 
+  // Debug logging for production troubleshooting
+  const acceptLanguage = request.headers.get("accept-language");
+  const preferredLocale = getPreferredLocale(acceptLanguage);
+  console.log(`[i18n middleware] path: ${pathname}, accept-lang: ${acceptLanguage}, preferred: ${preferredLocale}`);
+
   // Check if user is accessing old /no/* URLs -> redirect to /*
   if (pathname.startsWith("/no/")) {
     const newPath = pathname.slice(3); // Remove '/no'
@@ -102,10 +107,6 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
   if (hasNonDefaultLocale) {
     return null;
   }
-
-  // No locale prefix detected - auto-detect browser language
-  const acceptLanguage = request.headers.get("accept-language");
-  const preferredLocale = getPreferredLocale(acceptLanguage);
 
   // If preferred locale is NOT Norwegian, redirect to appropriate locale path
   if (preferredLocale !== DEFAULT_LOCALE) {
