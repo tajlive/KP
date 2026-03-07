@@ -41,7 +41,8 @@ function handleI18nRedirect(request: NextRequest): NextResponse | null {
   const { pathname } = request.nextUrl;
   
   // Debug: Always log for troubleshooting
-  console.log(`[middleware] pathname: ${pathname}, accept-lang: ${request.headers.get("accept-language")}`);
+  const acceptLang = request.headers.get("accept-language");
+  console.log(`[middleware] pathname: ${pathname}, accept-lang: ${acceptLang}`);
 
   // Skip API routes, auth callbacks, and static files
   if (
@@ -83,6 +84,9 @@ function handleI18nRedirect(request: NextRequest): NextResponse | null {
   const acceptLanguage = request.headers.get("accept-language");
   const preferredLocale = getPreferredLocale(acceptLanguage);
 
+  // Debug header
+  console.log(`[middleware] preferred: ${preferredLocale}, default: ${DEFAULT_LOCALE}`);
+
   // If preferred locale is NOT Norwegian, redirect to appropriate locale path
   if (preferredLocale !== DEFAULT_LOCALE) {
     // Map unsupported locales to English (th/zh have limited translations)
@@ -91,18 +95,28 @@ function handleI18nRedirect(request: NextRequest): NextResponse | null {
     const redirectUrl = new URL(`/${targetLocale}${pathname}`, request.url);
     redirectUrl.search = request.nextUrl.search;
 
+    console.log(`[middleware] redirecting to: ${redirectUrl.toString()}`);
+    
     // Use 302 (temporary) to allow future locale preference override
-    return NextResponse.redirect(redirectUrl, { status: 302 });
+    const response = NextResponse.redirect(redirectUrl, { status: 302 });
+    response.headers.set("x-i18n-redirect", "true");
+    response.headers.set("x-preferred-locale", preferredLocale);
+    return response;
   }
 
   // Norwegian users (or unknown locale) -> stay on root path (no prefix)
+  console.log(`[middleware] no redirect, staying on /`);
   return null;
 }
 
 export async function middleware(request: NextRequest) {
   // 1. 🌍 i18n redirect (auto-detect browser language)
   const i18nResponse = handleI18nRedirect(request);
-  if (i18nResponse) return i18nResponse;
+  if (i18nResponse) {
+    console.log(`[middleware] returning redirect response`);
+    return i18nResponse;
+  }
+  console.log(`[middleware] no i18n redirect, continuing...`);
 
   // 2. 🔥 API rate limiting
   const rateLimitResponse = await handleRateLimit(request);
