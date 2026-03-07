@@ -39,6 +39,9 @@ function getPreferredLocale(acceptLanguage: string | null): string {
 
 function handleI18nRedirect(request: NextRequest): NextResponse | null {
   const { pathname } = request.nextUrl;
+  
+  // Debug: Always log for troubleshooting
+  console.log(`[middleware] pathname: ${pathname}, accept-lang: ${request.headers.get("accept-language")}`);
 
   // Skip API routes, auth callbacks, and static files
   if (
@@ -125,7 +128,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$|api/|_vercel).*)",
-  ],
+  matcher: ["/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };
