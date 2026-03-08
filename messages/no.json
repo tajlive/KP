@@ -18,17 +18,9 @@
       "title": "Dashboard - Din Trading Oversikt",
       "description": "Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse i sanntid."
     },
-    "about": {
-      "title": "Om Oss - Vår historie",
-      "description": "Lær om historien bak Klarpakke Universitet. Fra dyrekjøpt lærdom til et komplett krypto-universitet."
-    },
     "courses": {
       "title": "Kurs - Lær krypto-trading",
       "description": "Utforsk våre kurs fra nybegynner til avansert nivå. Master krypto-trading på 4 uker."
-    },
-    "contact": {
-      "title": "Kontakt oss",
-      "description": "Har du spørsmål? Ta kontakt med oss. Vi er her for å hjelpe deg med din krypto-reise."
     }
   },
   "meta": {
@@ -103,28 +95,7 @@
   "navigation": {
     "home": "Hjem",
     "studyProgram": "Studieprogram",
-    "school": "Skole",
-    "paperTrading": "Paper Trading",
-    "courses": "Kurs",
-    "about": "Om Oss",
-    "pricing": "Priser",
-    "calculator": "Kalkulator",
-    "login": "Logg inn",
-    "signup": "Start gratis",
-    "welcomeOffer": "🎁 Første 100 studenter får 10,000 KLT tokens gratis!",
-    "help": "Hjelp",
-    "tools": "Verktøy",
-    "myPage": "Min Side",
-    "upgrade": "Oppgrader",
-    "upgradeNow": "Oppgrader nå",
-    "language": "Språk",
-    "liveTrading": "Live Trading",
-    "simulator": "Simulator",
-    "quiz": "Quiz",
-    "leagues": "Konkurranser",
-    "loading": "Laster...",
-    "closeMenu": "Lukk meny",
-    "openMenu": "Åpne meny"
+    "school": "Skole"
   },
   "admin": {
     "login": "Logg inn",
@@ -533,6 +504,22 @@
         "maxExposure": "Maks Eksponering",
         "stopLoss": "Sikkerhetsstopp",
         "positionSize": "Posisjonsstørrelse"
+      },
+      "timeframe": {
+        "1h": "1 Hour",
+        "4h": "4 Hours",
+        "1d": "1 Day",
+        "1w": "1 Week"
+      },
+      "riskLevel": {
+        "low": "Low Risk",
+        "medium": "Medium Risk",
+        "high": "High Risk",
+        "extreme": "Extreme Risk"
+      },
+      "events": {
+        "title": "Recent Events",
+        "noEvents": "No recent events"
       }
     },
     "klt": {
@@ -1139,109 +1126,52 @@
     "finish": "Kom i gang!"
   },
   "pricing": {
-    "title": "Priser",
-    "subtitle": "Velg planen som passer deg. Start gratis, oppgrader når du er klar.",
-    "trial": "7 dager gratis prøveperiode på alle betalte planer",
-    "startFree": "Start gratis",
-    "chooseStarter": "Velg Basis",
-    "choosePro": "Velg Komplett",
-    "chooseExpert": "Velg Pro",
-    "mostPopular": "Mest populær",
-    "forever": "For alltid",
-    "perMonth": "per mnd",
-    "faqTitle": "Vanlige spørsmål",
-    "stillUnsure": "Usikker på hva du skal velge?",
-    "stillUnsureDesc": "Start med gratisplanen. Du kan alltid oppgradere senere.",
-    "startFreeNow": "Start gratis nå",
-    "readMore": "Les mer om universitetet",
-    "important": "Viktig:",
-    "disclaimer": "Vi er ikke finansrådgivere. All trading innebærer risiko.",
+    "metadata": {
+      "title": "Priser - Klarpakke Universitet",
+      "description": "Velg din plan: Student (gratis), Bachelor, Master, eller PhD. Start med paper trading, oppgrader når du er klar."
+    },
+    "hero": {
+      "title": "Enkel, transparent prising",
+      "subtitle": "Start gratis som Student. Oppgrader gjennom Bachelor → Master → PhD etter hvert som du lærer.",
+      "trial": "14 dager gratis prøveperiode på alle betalte planer"
+    },
+    "free": "Gratis",
+    "popular": "Mest populær",
+    "startFree": "Start gratis som Student",
+    "startTrial": "Start 14-dagers prøveperiode",
     "plans": {
-      "free": {
+      "student": {
         "name": "Student",
-        "desc": "For deg som vil snuse på krypto",
-        "features": [
-          "Krypto 101 - Introduksjon",
-          "1 quiz",
-          "5 simulator-trades",
-          "Basis kalkulator"
-        ],
-        "notIncluded": [
-          "Avanserte kurs",
-          "Sertifikat",
-          "Webinarer",
-          "Prioritert support"
-        ]
+        "description": "Start her - helt gratis"
       },
-      "starter": {
+      "bachelor": {
         "name": "Bachelor",
-        "desc": "For deg som vil lære det grunnleggende",
-        "features": [
-          "Alt i Gratis",
-          "Alle grunnkurs",
-          "Ubegrenset simulator",
-          "Alle quizer",
-          "E-postsupport"
-        ],
-        "notIncluded": ["Sertifikat", "Webinarer", "Prioritert support"]
+        "description": "For deg som vil lære mer"
       },
-      "pro": {
+      "master": {
         "name": "Master",
-        "desc": "Vår mest populære plan for seriøse lærlinger",
-        "features": [
-          "Alt i Basis",
-          "Alle avanserte kurs",
-          "Komplett sertifikat",
-          "Webinarer (2/mnd)",
-          "Prioritert support",
-          "Discord-tilgang"
-        ],
-        "notIncluded": []
+        "description": "For seriøse tradere"
       },
-      "expert": {
+      "phd": {
         "name": "PhD",
-        "desc": "For deg som vil bli en ekspert",
-        "features": [
-          "Alt i Komplett",
-          "Ekstra ressurser",
-          "1-til-1 sesjon (1/mnd)",
-          "Prioritert support (12t)",
-          "Gratis effekter"
-        ],
-        "notIncluded": []
+        "description": "Full mastery"
       }
     },
-    "success": {
-      "loadingTitle": "Behandler betaling...",
-      "loadingMessage": "Vennligst vent...",
-      "verifying": "Bekrefter betaling...",
-      "invalidSession": "Ugyldig sessions-ID",
-      "loginRequired": "Du må være logget inn for å se denne siden",
-      "title": "Takk for ditt kjøp!",
-      "messageConfirmed": "Betalingen er bekreftet! Du har nå tilgang til alle funksjonene i din plan.",
-      "messagePending": "Betalingen er mottatt! Det kan ta et øyeblikk før abonnementet aktiveres.",
-      "messageFallback": "Takk for din betaling! Abonnementet ditt vil være aktivt straks.",
-      "goToDashboard": "Gå til dashboard",
-      "backToHome": "Tilbake til forsiden",
-      "description": "En velkomst-e-post og din personlige trading-guide er på vei til innboksen din. Vi starter reisen med {tier}!",
-      "cta": "Gå til Dashboard",
-      "viewProgram": "Se Studieprogram",
-      "errorTitle": "Noe gikk galt",
-      "backToPricing": "Tilbake til priser"
+    "comparison": {
+      "title": "Sammenlign alle planer",
+      "feature": "Funksjon"
     },
-    "cancel": {
-      "title": "Betaling avbrutt",
-      "subtitle": "Du avbrøt betalingen. Ingen bekymringer - du kan prøve igjen når som helst!",
-      "faqTitle": "Vanlige spørsmål",
-      "whyFailedQ": "Hvorfor fungerte ikke betalingen?",
-      "whyFailedA": "Det kan være midlertidige problemer med banken eller kortet. Prøv igjen eller bruk et annet kort.",
-      "chargedQ": "Blir jeg belastet?",
-      "chargedA": "Nei, du blir kun belastet når betalingen er fullført. Ingen skjulte gebyrer.",
-      "trialQ": "Kan jeg prøve gratis først?",
-      "trialA": "Ja! Alle betalte planer har 7 dagers gratis prøveperiode. Du kan kansellere når som helst.",
-      "tryAgain": "Prøv igjen",
-      "backHome": "Tilbake til forsiden",
-      "needHelp": "Trenger du hjelp? Kontakt oss på"
+    "faq": {
+      "title": "Ofte stilte spørsmål"
+    },
+    "trust": {
+      "title": "Sikker betaling med:"
+    },
+    "cta": {
+      "title": "Klar til å starte din krypto-reise?",
+      "subtitle": "Bli med tusenvis av nordmenn som lærer trygt med Klarpakke.",
+      "button": "Start som Student - Gratis",
+      "guarantee": "30-dagers pengene-tilbake-garanti • Ingen bindingstid • Org.nr 929 003 292"
     }
   },
   "legal": {
@@ -1342,133 +1272,74 @@
     }
   },
   "about": {
-    "metadata": {
-      "title": "Om oss - Klarpakke",
-      "description": "Fra dyrekjøpt lærdom til Norges krypto-skole. Lær historien bak Klarpakke."
-    },
-    "hero": {
-      "badge": "Norges krypto-skole",
-      "title": "Fra dyrekjøpt lærdom til Norges krypto-skole",
-      "subtitle": "Historien om hvordan Klarpakke ble født."
-    },
-    "story": {
-      "title": "Historien bak Klarpakke",
-      "p1": "Tom Jensen tapte penger på krypto i 2021. Ikke fordi han var dum, men fordi ingen hadde lært ham det han trengte å vite før han startet.",
-      "p2": "Etter å ha brukt måneder på å lære seg koding og trading, innså han: Det største problemet i krypto er ikke teknologien — det er mangel på utdanning.",
-      "p3": "Klarpakke ble født fra denne innsikten.",
-      "quote": "Jeg tapte penger så du ikke trenger å gjøre samme feil. Kunnskap er den eneste investeringen som alltid betaler seg.",
-      "quoteAuthor": "Tom Jensen, grunnlegger av Klarpakke"
-    },
+    "title": "Bygg din fremtid med Klarpakke Universitet",
+    "subtitle": "Vi skaper en ny generasjon tradere gjennom trygg, strukturert og risikofri læring.",
     "mission": {
-      "title": "Vår misjon",
-      "text": "Vi bygger Norges krypto-skole — en plattform hvor du lærer ved å gjøre, med lekepenger først.",
-      "values": "Ingen verving. Ingen pyramidespill. Ingen løfter om garantert avkastning. Bare verktøy, kunnskap, og en trygg plass å lære."
+      "title": "Vårt Oppdrag",
+      "p1": "Kryptomarkedet er fullt av muligheter, men også risiko. Altfor mange taper penger fordi de mangler kunnskap eller faller for svindel.",
+      "p2": "Klarpakke Universitet ble skapt for å løse dette. Vi gir deg et trygt miljø for å lære, øve og mestre trading før du risikerer en eneste krone."
     },
     "values": {
-      "title": "Våre verdier",
-      "education": {
-        "title": "Utdanning først",
-        "desc": "Du lærer med virtuell kapital til du føler deg trygg. Ingen press om å investere ekte penger."
+      "title": "Våre Verdier",
+      "subtitle": "Sikkerhet, åpenhet og kunnskap er kjernen i alt vi gjør.",
+      "v1": {
+        "title": "Sikkerhet Først",
+        "desc": "Vi lærer deg risikostyring før trading-strategier."
       },
-      "transparency": {
-        "title": "Full åpenhet",
-        "desc": "Vi tjener penger på abonnement, ikke på at du taper. Ingen skjulte kostnader. Ingen provisjoner fra trading."
+      "v2": {
+        "title": "Fellesskap",
+        "desc": "Læring er bedre sammen. Vårt campus er åpent for alle."
       },
-      "norwegian": {
-        "title": "Norsk trygghet",
-        "desc": "Norsk selskap (Org.nr 929 003 292), norsk support, underlagt norske lover. BankID-nivå sikkerhet."
+      "v3": {
+        "title": "Åpenhet",
+        "desc": "Ingen skjulte agendaer. Vi tjener penger på abonnementer, ikke dine tap."
       },
-      "risk": {
-        "title": "Risiko er reelt",
-        "desc": "Vi sier det som det er: Krypto er risikabelt. Du kan tape alt. Vi bygger verktøy som hjelper deg å håndtere risiko — men vi fjerner den ikke."
+      "v4": {
+        "title": "Innovasjon",
+        "desc": "Vi bruker nyeste teknologi for å gi deg et fortrinn."
       }
     },
-    "different": {
-      "title": "Hva gjør oss annerledes?",
-      "subtitle": "Vi er ikke en «auto-trader» som lover garantert profitt. Vi er en skole.",
-      "paperTrading": "1 million kr i virtuelle penger for risikofri øving",
-      "norwegian": "100% på norsk med lokal support",
-      "education": "Strukturert læring - ikke «tips og triks»",
-      "transparency": "Ingen løfter om 0.2% daglig avkastning eller «Quantum AI»",
-      "community": "Tilgang til Discord-community med andre studenter"
-    },
-    "risk": {
-      "title": "Risiko er reell",
-      "text": "Krypto-trading er risikofullt. De fleste som trader med ekte penger taper penger. Derfor starter vi med paper trading.",
-      "warning": "Aldri invester mer enn du kan tape. Dette er ikke økonomisk rådgivning."
-    },
-    "team": {
-      "title": "Teamet",
-      "tom": {
-        "role": "Grunnlegger & CEO",
-        "bio": "Tidligere trader, nå utvikler og pedagog. Brenner for å gjøre krypto tilgjengelig for vanlige nordmenn."
+    "features": {
+      "video": {
+        "label": "Videoleksjoner",
+        "desc": "Korte, lettfattelige videoer."
       },
-      "partners": {
-        "title": "Tekniske Partnere"
+      "quiz": {
+        "label": "Quizzer",
+        "desc": "Test kunnskapen din etter hver modul."
+      },
+      "paper": {
+        "label": "Paper Trading",
+        "desc": "Øv deg med virtuelle penger."
       }
     },
-    "contact": {
-      "title": "Kontakt oss",
-      "subtitle": "Har du spørsmål? Vi er her for å hjelpe.",
-      "email": "E-post",
-      "org": "Organisasjonsnummer",
-      "location": "Lokasjon"
-    },
-    "cta": {
-      "title": "Klar til å lære?",
-      "subtitle": "Start reisen din i dag. Det er helt gratis å prøve.",
-      "button": "Start gratis",
-      "noCard": "Ingen kort påkrevd • Start med paper trading"
-    }
-  },
-  "pricing": {
-    "metadata": {
-      "title": "Priser - Klarpakke Universitet",
-      "description": "Velg din plan: Student (gratis), Bachelor, Master, eller PhD. Start med paper trading, oppgrader når du er klar."
-    },
-    "hero": {
-      "title": "Enkel, transparent prising",
-      "subtitle": "Start gratis som Student. Oppgrader gjennom Bachelor → Master → PhD etter hvert som du lærer.",
-      "trial": "14 dager gratis prøveperiode på alle betalte planer"
-    },
-    "free": "Gratis",
-    "popular": "Mest populær",
-    "startFree": "Start gratis som Student",
-    "startTrial": "Start 14-dagers prøveperiode",
-    "plans": {
-      "student": {
-        "name": "Student",
-        "description": "Start her - helt gratis"
+    "howItWorks": {
+      "title": "Slik fungerer det",
+      "s1": {
+        "title": "1. Opprett Konto",
+        "desc": "Registrer deg gratis og få tilgang til Student-portalen."
       },
-      "bachelor": {
-        "name": "Bachelor",
-        "description": "For deg som vil lære mer"
+      "s2": {
+        "title": "2. Lær Grunnleggende",
+        "desc": "Fullfør introduksjonskurset og bestå quizzen."
       },
-      "master": {
-        "name": "Master",
-        "description": "For seriøse tradere"
+      "s3": {
+        "title": "3. Øv Deg",
+        "desc": "Handle med 1M kr i virtuell kapital i simulatoren vår."
       },
-      "phd": {
-        "name": "PhD",
-        "description": "Full mastery"
+      "s4": {
+        "title": "4. Mestre",
+        "desc": "Når du er konsistent, er du klar for det ekte markedet."
       }
     },
-    "comparison": {
-      "title": "Sammenlign alle planer",
-      "feature": "Funksjon"
-    },
-    "faq": {
-      "title": "Ofte stilte spørsmål"
-    },
-    "trust": {
-      "title": "Sikker betaling med:"
-    },
-    "cta": {
-      "title": "Klar til å starte din krypto-reise?",
-      "subtitle": "Bli med tusenvis av nordmenn som lærer trygt med Klarpakke.",
-      "button": "Start som Student - Gratis",
-      "guarantee": "30-dagers pengene-tilbake-garanti • Ingen bindingstid • Org.nr 929 003 292"
-    }
+    "quizTitle": "Test kunnskapen din",
+    "quizSubtitle": "Før du starter – vet du egentlig hva den største risikoen er?",
+    "readyToStart": "Klar til å ta kontroll?",
+    "readyToStartDesc": "Start reisen din i dag. Det er helt gratis å prøve.",
+    "important": "Viktig:",
+    "disclaimer": "Risiko disclaimer gjelder.",
+    "startFree": "Start gratis nå",
+    "seePricing": "Se priser"
   },
   "calculator": {
     "title": "Avkastningskalkulator",
@@ -1616,6 +1487,9 @@
     }
   },
   "courses": {
+    "comingSoon": "Kurs kommer snart",
+    "description": "Vi bygger et komplett utdanningssystem",
+    "backToDashboard": "Tilbake til Dashboard",
     "stats": {
       "completedCourses": "Fullførte kurs",
       "activeStudents": "Aktive studenter",
@@ -1732,76 +1606,6 @@
         }
       }
     }
-  },
-  "about": {
-    "title": "Bygg din fremtid med Klarpakke Universitet",
-    "subtitle": "Vi skaper en ny generasjon tradere gjennom trygg, strukturert og risikofri læring.",
-    "mission": {
-      "title": "Vårt Oppdrag",
-      "p1": "Kryptomarkedet er fullt av muligheter, men også risiko. Altfor mange taper penger fordi de mangler kunnskap eller faller for svindel.",
-      "p2": "Klarpakke Universitet ble skapt for å løse dette. Vi gir deg et trygt miljø for å lære, øve og mestre trading før du risikerer en eneste krone."
-    },
-    "values": {
-      "title": "Våre Verdier",
-      "subtitle": "Sikkerhet, åpenhet og kunnskap er kjernen i alt vi gjør.",
-      "v1": {
-        "title": "Sikkerhet Først",
-        "desc": "Vi lærer deg risikostyring før trading-strategier."
-      },
-      "v2": {
-        "title": "Fellesskap",
-        "desc": "Læring er bedre sammen. Vårt campus er åpent for alle."
-      },
-      "v3": {
-        "title": "Åpenhet",
-        "desc": "Ingen skjulte agendaer. Vi tjener penger på abonnementer, ikke dine tap."
-      },
-      "v4": {
-        "title": "Innovasjon",
-        "desc": "Vi bruker nyeste teknologi for å gi deg et fortrinn."
-      }
-    },
-    "features": {
-      "video": {
-        "label": "Videoleksjoner",
-        "desc": "Korte, lettfattelige videoer."
-      },
-      "quiz": {
-        "label": "Quizzer",
-        "desc": "Test kunnskapen din etter hver modul."
-      },
-      "paper": {
-        "label": "Paper Trading",
-        "desc": "Øv deg med virtuelle penger."
-      }
-    },
-    "howItWorks": {
-      "title": "Slik fungerer det",
-      "s1": {
-        "title": "1. Opprett Konto",
-        "desc": "Registrer deg gratis og få tilgang til Student-portalen."
-      },
-      "s2": {
-        "title": "2. Lær Grunnleggende",
-        "desc": "Fullfør introduksjonskurset og bestå quizzen."
-      },
-      "s3": {
-        "title": "3. Øv Deg",
-        "desc": "Handle med 1M kr i virtuell kapital i simulatoren vår."
-      },
-      "s4": {
-        "title": "4. Mestre",
-        "desc": "Når du er konsistent, er du klar for det ekte markedet."
-      }
-    },
-    "quizTitle": "Test kunnskapen din",
-    "quizSubtitle": "Før du starter – vet du egentlig hva den største risikoen er?",
-    "readyToStart": "Klar til å ta kontroll?",
-    "readyToStartDesc": "Start reisen din i dag. Det er helt gratis å prøve.",
-    "important": "Viktig:",
-    "disclaimer": "Risiko disclaimer gjelder.",
-    "startFree": "Start gratis nå",
-    "seePricing": "Se priser"
   },
   "footer": {
     "product": "Produkt",
