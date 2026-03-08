@@ -46,6 +46,16 @@ const PROVIDER_STYLES: Record<Provider, {
     className: 'bg-white hover:bg-gray-50 border border-gray-300',
     textClass: 'text-gray-900',
   },
+  LINKEDIN: {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="4" fill="#0A66C2"/>
+        <path d="M5.372 9.671h2.717v8.257H5.372V9.671zm1.36-4.325c.87 0 1.575.707 1.575 1.576 0 .87-.706 1.575-1.575 1.575-.87 0-1.576-.705-1.576-1.575 0-.87.706-1.576 1.576-1.576zm3.78 4.325h2.602v1.129h.037c.362-.687 1.247-1.412 2.567-1.412 2.745 0 3.25 1.808 3.25 4.162v4.378h-2.714v-3.882c0-1.01-.018-2.308-1.405-2.308-1.407 0-1.622 1.1-1.622 2.233v3.957H10.51V9.671z" fill="white"/>
+      </svg>
+    ),
+    className: 'bg-[#0A66C2] hover:bg-[#004182]',
+    textClass: 'text-white',
+  },
 
 };
 
