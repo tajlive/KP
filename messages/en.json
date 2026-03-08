@@ -18,205 +18,10 @@
       "title": "Dashboard - Your Trading Overview",
       "description": "Your personal crypto trading dashboard with paper trading, live trading and real-time portfolio analysis."
     },
-    "about": {
-      "title": "About Us - Our Story",
-      "description": "Learn about the story behind Klarpakke University. From expensive lessons to a complete crypto university."
-    },
     "courses": {
       "title": "Courses - Learn crypto trading",
       "description": "Explore our courses from beginner to advanced level. Master crypto trading in 4 weeks."
-    },
-    "contact": {
-      "title": "Contact Us",
-      "description": "Have questions? Contact us. We're here to help you on your crypto journey."
     }
-  },
-  "meta": {
-    "login": "Login",
-    "pricing": "Pricing",
-    "pricingDescription": "Simple pricing for crypto education",
-    "loginDescription": "Sign in to your Klarpakke account to access trading courses, paper trading, and automated signals.",
-    "coursesDescription": "Learn crypto trading from A to Z"
-  },
-  "base": {
-    "language": "Language",
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "retry": "Try again",
-    "close": "Close",
-    "save": "Save",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "submit": "Submit",
-    "back": "Back",
-    "next": "Next",
-    "continue": "Continue",
-    "done": "Done",
-    "yes": "Yes",
-    "no": "No"
-  },
-  "common": {
-    "loading": "Loading...",
-    "error": "Something went wrong",
-    "success": "Success!",
-    "comingSoon": "Coming soon",
-    "underDevelopment": "Under development",
-    "notAvailable": "Not available",
-    "readMore": "Read more",
-    "learnMore": "Learn more",
-    "getStarted": "Get started",
-    "startFree": "Start free",
-    "signUp": "Sign up",
-    "logIn": "Log in",
-    "logOut": "Log out",
-    "myAccount": "My account",
-    "settings": "Settings",
-    "help": "Help",
-    "support": "Support"
-  },
-  "courses": {
-    "stats": {
-      "completedCourses": "Completed courses",
-      "activeStudents": "Active students",
-      "averageRating": "Average rating",
-      "totalLessons": "Total lessons"
-    },
-    "cryptoForSmallSavers": {
-      "title": "Crypto for Small Savers",
-      "subtitle": "4-week course for beginners. From zero to confident crypto owner.",
-      "week1": {
-        "title": "Week 1: Safe Start",
-        "description": "Understand what crypto is, set up wallet, buy first Bitcoin"
-      },
-      "week2": {
-        "title": "Week 2: Protection",
-        "description": "Avoid scams, secure your crypto, understand taxes"
-      },
-      "week3": {
-        "title": "Week 3: Trading",
-        "description": "When to buy/sell, learn technical analysis basics"
-      },
-      "week4": {
-        "title": "Week 4: Mastery",
-        "description": "Build your own strategy, avoid emotions, plan exit"
-      },
-      "lessons": {
-        "whatIsCrypto": {
-          "title": "What is Crypto?",
-          "description": "Bitcoin = Digital gold. Blockchain = Digital ledger.",
-          "q1": {
-            "question": "What is Bitcoin?",
-            "options": [
-              "A physical coin you get in the mail",
-              "Digital currency that lives on the internet",
-              "A stock on the stock exchange",
-              "An app on your phone"
-            ],
-            "correct": 1
-          },
-          "q2": {
-            "question": "Who controls Bitcoin?",
-            "options": [
-              "The Norwegian government",
-              "A big bank in the USA",
-              "No one - it's decentralized",
-              "Elon Musk"
-            ],
-            "correct": 2
-          }
-        },
-        "firstWallet": {
-          "title": "Your First Wallet",
-          "description": "Exchange vs. own wallet. Registration and 2FA.",
-          "warning": "NEVER share your seed phrase with anyone!"
-        },
-        "firstPurchase": {
-          "title": "Buy Your First Bitcoin",
-          "description": "You don't need to buy 1 whole Bitcoin. Start with $10.",
-          "tip": "Max 5% of savings in crypto"
-        },
-        "commonScams": {
-          "title": "The 5 Most Common Scams",
-          "scam1": "Fake emails",
-          "scam2": "'Send money, get back more'",
-          "scam3": "Fake support",
-          "scam4": "Romance scams",
-          "scam5": "Pump & Dump groups"
-        }
-      },
-      "quiz": {
-        "multipleChoice": "Select the correct answer:",
-        "dragDrop": "Drag to correct category:",
-        "scale": "Select on scale:",
-        "hotspot": "Tap the dangerous element:",
-        "correct": "Correct! 🎉",
-        "wrong": "Not quite. Explanation: ",
-        "next": "Next question",
-        "previous": "Previous"
-      },
-      "achievements": {
-        "firstLesson": {
-          "title": "First Lesson",
-          "description": "Completed your first lesson 📚"
-        },
-        "firstPurchase": {
-          "title": "First Purchase",
-          "description": "Bought your first crypto 🆕"
-        },
-        "safetyFirst": {
-          "title": "Safety First",
-          "description": "Enabled 2FA 🔒"
-        },
-        "scamHunter": {
-          "title": "Scam Hunter",
-          "description": "Identified 5 scam attempts 🧐"
-        },
-        "hodler": {
-          "title": "Hodler",
-          "description": "Held crypto for 1 year 💎🙌"
-        },
-        "dcaMaster": {
-          "title": "DCA Master",
-          "description": "Bought 12 months in a row 📅"
-        }
-      },
-      "exam": {
-        "title": "Exam - Simulated Trading",
-        "description": "You get $10,000 virtual money. 30 days of realistic prices.",
-        "start": "Start Exam",
-        "results": {
-          "master": "🏆 Master Trader - Outstanding risk management!",
-          "bachelor": "🎓 Bachelor Trader - Good effort!",
-          "student": "📚 Student - Practice more and try again"
-        }
-      }
-    }
-  },
-  "navigation": {
-    "home": "Home",
-    "paperTrading": "Paper Trading",
-    "courses": "Courses",
-    "about": "About Us",
-    "pricing": "Pricing",
-    "calculator": "Calculator",
-    "login": "Log in",
-    "signup": "Start free",
-    "welcomeOffer": "🎁 First 100 students get 10,000 KLT tokens free!",
-    "help": "Help",
-    "tools": "Tools",
-    "myPage": "Dashboard",
-    "upgrade": "Upgrade",
-    "upgradeNow": "Upgrade now",
-    "language": "Language",
-    "liveTrading": "Live Trading",
-    "simulator": "Simulator",
-    "quiz": "Quiz",
-    "leagues": "Competitions",
-    "loading": "Loading...",
-    "closeMenu": "Close menu",
-    "openMenu": "Open menu",
-    "studyProgram": "Study Program",
-    "school": "School"
   },
   "landing": {
     "badge": "Klarpakke University",
@@ -867,6 +672,39 @@
       "taxReport": "Tax Report",
       "settings": "Settings",
       "admin": "Admin"
+    },
+    "pulse": {
+      "title": "Market Pulse",
+      "totalValue": "Total Value",
+      "dailyChange": "24h Change",
+      "paperMode": "Paper Trading",
+      "liveMode": "Live Trading",
+      "timeframe": {
+        "1h": "1 Hour",
+        "4h": "4 Hours",
+        "1d": "1 Day",
+        "1w": "1 Week"
+      },
+      "riskLevel": {
+        "low": "Low Risk",
+        "medium": "Medium Risk",
+        "high": "High Risk",
+        "extreme": "Extreme Risk"
+      },
+      "events": {
+        "title": "Recent Events",
+        "noEvents": "No recent events"
+      },
+      "systemOnline": "Systemet er aktivt",
+      "connecting": "Kobler til...",
+      "botStrategy": "Bot Strategi & Logikk",
+      "noEvents": "Ingen handelshendelser enda.",
+      "eventFeedTitle": "Puls-hendelser",
+      "riskMetrics": {
+        "maxExposure": "Maks Eksponering",
+        "stopLoss": "Sikkerhetsstopp",
+        "positionSize": "Posisjonsstørrelse"
+      }
     }
   },
   "auth": {
@@ -1119,84 +957,74 @@
     }
   },
   "about": {
-    "metadata": {
-      "title": "About Us - Klarpakke",
-      "description": "From costly lessons to Norway's crypto school. Learn the story behind Klarpakke."
-    },
-    "hero": {
-      "badge": "Norway's crypto school",
-      "title": "From costly lessons to Norway's crypto school",
-      "subtitle": "The story of how Klarpakke was born."
-    },
-    "story": {
-      "title": "The story behind Klarpakke",
-      "p1": "Tom Jensen lost money on crypto in 2021. Not because he was dumb, but because no one had taught him what he needed to know before he started.",
-      "p2": "After spending months learning to code and trade, he realized: The biggest problem in crypto is not the technology — it's the lack of education.",
-      "p3": "Klarpakke was born from this insight.",
-      "quote": "I lost money so you don't have to make the same mistake. Knowledge is the only investment that always pays off.",
-      "quoteAuthor": "Tom Jensen, Founder of Klarpakke"
-    },
+    "title": "Build Your Future with Klarpakke University",
+    "subtitle": "We create a new generation of traders through safe, structured and risk-free learning.",
     "mission": {
-      "title": "Our mission",
-      "text": "We're building Norway's crypto school — a platform where you learn by doing, with play money first.",
-      "values": "No recruitment. No pyramid schemes. No promises of guaranteed returns. Just tools, knowledge, and a safe place to learn."
+      "title": "Our Mission",
+      "p1": "The crypto market is full of opportunities, but also risks. Too many lose money because they lack knowledge or fall for scams.",
+      "p2": "Klarpakke University was created to solve this. We give you a safe environment to learn, practice and master trading before you risk a single penny."
     },
     "values": {
-      "title": "Our values",
-      "education": {
-        "title": "Education first",
-        "desc": "You learn with virtual capital until you feel confident. No pressure to invest real money."
+      "title": "Our Values",
+      "subtitle": "Security, transparency and knowledge are at the core of everything we do.",
+      "v1": {
+        "title": "Safety First",
+        "desc": "We teach you risk management before trading strategies."
       },
-      "transparency": {
-        "title": "Full transparency",
-        "desc": "We make money from subscriptions, not from you losing. No hidden costs. No commissions from trading."
+      "v2": {
+        "title": "Community",
+        "desc": "Learning is better together. Our campus is open to everyone."
       },
-      "norwegian": {
-        "title": "Norwegian safety",
-        "desc": "Norwegian company (Org.no 929 003 292), Norwegian support, subject to Norwegian laws. BankID-level security."
+      "v3": {
+        "title": "Transparency",
+        "desc": "No hidden agendas. We make money on subscriptions, not your losses."
       },
-      "risk": {
-        "title": "Risk is real",
-        "desc": "We tell it like it is: Crypto is risky. You can lose everything. We build tools that help you manage risk — but we don't eliminate it."
+      "v4": {
+        "title": "Innovation",
+        "desc": "We use the latest technology to give you an edge."
       }
     },
-    "different": {
-      "title": "What makes us different?",
-      "subtitle": "We are not an 'auto-trader' that promises guaranteed profits. We are a school.",
-      "paperTrading": "1M kr virtual money for risk-free practice",
-      "norwegian": "100% in Norwegian with local support",
-      "education": "Structured learning — not 'tips and tricks'",
-      "transparency": "No promises of 0.2% daily returns or 'Quantum AI'",
-      "community": "Access to Discord community with other students"
-    },
-    "risk": {
-      "title": "Risk is real",
-      "text": "Crypto trading is risky. Most people who trade with real money lose money. That's why we start with paper trading.",
-      "warning": "Never invest more than you can afford to lose. This is not financial advice."
-    },
-    "team": {
-      "title": "The team",
-      "tom": {
-        "role": "Founder & CEO",
-        "bio": "Former trader, now developer and educator. Passionate about making crypto accessible to ordinary Norwegians."
+    "features": {
+      "video": {
+        "label": "Video Lessons",
+        "desc": "Short, easy-to-understand videos."
       },
-      "partners": {
-        "title": "Technical Partners"
+      "quiz": {
+        "label": "Quizzes",
+        "desc": "Test your knowledge after each module."
+      },
+      "paper": {
+        "label": "Paper Trading",
+        "desc": "Practice with virtual money."
       }
     },
-    "contact": {
-      "title": "Contact us",
-      "subtitle": "Have questions? We are here to help.",
-      "email": "Email",
-      "org": "Organization Number",
-      "location": "Location"
+    "howItWorks": {
+      "title": "How It Works",
+      "s1": {
+        "title": "1. Create Account",
+        "desc": "Sign up for free and get access to the Student Portal."
+      },
+      "s2": {
+        "title": "2. Learn the Basics",
+        "desc": "Complete the introductory course and pass the quiz."
+      },
+      "s3": {
+        "title": "3. Practice",
+        "desc": "Trade with 1M NOK in virtual capital in our simulator."
+      },
+      "s4": {
+        "title": "4. Master",
+        "desc": "When you are consistent, you are ready for the real market."
+      }
     },
-    "cta": {
-      "title": "Ready to learn?",
-      "subtitle": "Start your journey today. It's completely free to try.",
-      "button": "Start free",
-      "noCard": "No card required • Start with paper trading"
-    }
+    "quizTitle": "Test Your Knowledge",
+    "quizSubtitle": "Before you start – do you really know what the biggest risk is?",
+    "readyToStart": "Ready to Take Control?",
+    "readyToStartDesc": "Start your journey today. It's completely free to try.",
+    "important": "Important:",
+    "disclaimer": "Risk disclaimer applies.",
+    "startFree": "Start Free Now",
+    "seePricing": "See Pricing"
   },
   "calculator": {
     "title": "Compound Interest Calculator",
@@ -2082,78 +1910,177 @@
       "back": "Tilbake til oversikt",
       "start": "Start Nivå",
       "locked": "Låst",
-      "nextLevel": "Neste Nivå",
-      "tryAgain": "Prøv igjen"
+      "nextLevel": "Next Level",
+      "tryAgain": "Try again"
     }
   },
-  "about": {
-    "title": "Build Your Future with Klarpakke University",
-    "subtitle": "We create a new generation of traders through safe, structured and risk-free learning.",
-    "mission": {
-      "title": "Our Mission",
-      "p1": "The crypto market is full of opportunities, but also risks. Too many lose money because they lack knowledge or fall for scams.",
-      "p2": "Klarpakke University was created to solve this. We give you a safe environment to learn, practice and master trading before you risk a single penny."
+  "meta": {
+    "login": "Login",
+    "pricing": "Pricing",
+    "pricingDescription": "Simple pricing for crypto education",
+    "loginDescription": "Sign in to your Klarpakke account to access trading courses, paper trading, and automated signals.",
+    "coursesDescription": "Learn crypto trading from A to Z"
+  },
+  "base": {
+    "language": "Language",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "done": "Done",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Success!",
+    "comingSoon": "Coming soon",
+    "underDevelopment": "Under development",
+    "notAvailable": "Not available",
+    "readMore": "Read more",
+    "learnMore": "Learn more",
+    "getStarted": "Get started",
+    "startFree": "Start free",
+    "signUp": "Sign up",
+    "logIn": "Log in",
+    "logOut": "Log out",
+    "myAccount": "My account",
+    "settings": "Settings",
+    "help": "Help",
+    "support": "Support"
+  },
+  "courses": {
+    "comingSoon": "Courses Coming Soon",
+    "description": "We are building a complete education system",
+    "backToDashboard": "Back to Dashboard",
+    "stats": {
+      "completedCourses": "Completed courses",
+      "activeStudents": "Active students",
+      "averageRating": "Average rating",
+      "totalLessons": "Total lessons"
     },
-    "values": {
-      "title": "Our Values",
-      "subtitle": "Security, transparency and knowledge are at the core of everything we do.",
-      "v1": {
-        "title": "Safety First",
-        "desc": "We teach you risk management before trading strategies."
+    "cryptoForSmallSavers": {
+      "title": "Crypto for Small Savers",
+      "subtitle": "4-week course for beginners. From zero to confident crypto owner.",
+      "week1": {
+        "title": "Week 1: Safe Start",
+        "description": "Understand what crypto is, set up wallet, buy first Bitcoin"
       },
-      "v2": {
-        "title": "Community",
-        "desc": "Learning is better together. Our campus is open to everyone."
+      "week2": {
+        "title": "Week 2: Protection",
+        "description": "Avoid scams, secure your crypto, understand taxes"
       },
-      "v3": {
-        "title": "Transparency",
-        "desc": "No hidden agendas. We make money on subscriptions, not your losses."
+      "week3": {
+        "title": "Week 3: Trading",
+        "description": "When to buy/sell, learn technical analysis basics"
       },
-      "v4": {
-        "title": "Innovation",
-        "desc": "We use the latest technology to give you an edge."
-      }
-    },
-    "features": {
-      "video": {
-        "label": "Video Lessons",
-        "desc": "Short, easy-to-understand videos."
+      "week4": {
+        "title": "Week 4: Mastery",
+        "description": "Build your own strategy, avoid emotions, plan exit"
+      },
+      "lessons": {
+        "whatIsCrypto": {
+          "title": "What is Crypto?",
+          "description": "Bitcoin = Digital gold. Blockchain = Digital ledger.",
+          "q1": {
+            "question": "What is Bitcoin?",
+            "options": [
+              "A physical coin you get in the mail",
+              "Digital currency that lives on the internet",
+              "A stock on the stock exchange",
+              "An app on your phone"
+            ],
+            "correct": 1
+          },
+          "q2": {
+            "question": "Who controls Bitcoin?",
+            "options": [
+              "The Norwegian government",
+              "A big bank in the USA",
+              "No one - it's decentralized",
+              "Elon Musk"
+            ],
+            "correct": 2
+          }
+        },
+        "firstWallet": {
+          "title": "Your First Wallet",
+          "description": "Exchange vs. own wallet. Registration and 2FA.",
+          "warning": "NEVER share your seed phrase with anyone!"
+        },
+        "firstPurchase": {
+          "title": "Buy Your First Bitcoin",
+          "description": "You don't need to buy 1 whole Bitcoin. Start with $10.",
+          "tip": "Max 5% of savings in crypto"
+        },
+        "commonScams": {
+          "title": "The 5 Most Common Scams",
+          "scam1": "Fake emails",
+          "scam2": "'Send money, get back more'",
+          "scam3": "Fake support",
+          "scam4": "Romance scams",
+          "scam5": "Pump & Dump groups"
+        }
       },
       "quiz": {
-        "label": "Quizzes",
-        "desc": "Test your knowledge after each module."
+        "multipleChoice": "Select the correct answer:",
+        "dragDrop": "Drag to correct category:",
+        "scale": "Select on scale:",
+        "hotspot": "Tap the dangerous element:",
+        "correct": "Correct! 🎉",
+        "wrong": "Not quite. Explanation: ",
+        "next": "Next question",
+        "previous": "Previous"
       },
-      "paper": {
-        "label": "Paper Trading",
-        "desc": "Practice with virtual money."
+      "achievements": {
+        "firstLesson": {
+          "title": "First Lesson",
+          "description": "Completed your first lesson 📚"
+        },
+        "firstPurchase": {
+          "title": "First Purchase",
+          "description": "Bought your first crypto 🆕"
+        },
+        "safetyFirst": {
+          "title": "Safety First",
+          "description": "Enabled 2FA 🔒"
+        },
+        "scamHunter": {
+          "title": "Scam Hunter",
+          "description": "Identified 5 scam attempts 🧐"
+        },
+        "hodler": {
+          "title": "Hodler",
+          "description": "Held crypto for 1 year 💎🙌"
+        },
+        "dcaMaster": {
+          "title": "DCA Master",
+          "description": "Bought 12 months in a row 📅"
+        }
+      },
+      "exam": {
+        "title": "Exam - Simulated Trading",
+        "description": "You get $10,000 virtual money. 30 days of realistic prices.",
+        "start": "Start Exam",
+        "results": {
+          "master": "🏆 Master Trader - Outstanding risk management!",
+          "bachelor": "🎓 Bachelor Trader - Good effort!",
+          "student": "📚 Student - Practice more and try again"
+        }
       }
-    },
-    "howItWorks": {
-      "title": "How It Works",
-      "s1": {
-        "title": "1. Create Account",
-        "desc": "Sign up for free and get access to the Student Portal."
-      },
-      "s2": {
-        "title": "2. Learn the Basics",
-        "desc": "Complete the introductory course and pass the quiz."
-      },
-      "s3": {
-        "title": "3. Practice",
-        "desc": "Trade with 1M NOK in virtual capital in our simulator."
-      },
-      "s4": {
-        "title": "4. Master",
-        "desc": "When you are consistent, you are ready for the real market."
-      }
-    },
-    "quizTitle": "Test Your Knowledge",
-    "quizSubtitle": "Before you start – do you really know what the biggest risk is?",
-    "readyToStart": "Ready to Take Control?",
-    "readyToStartDesc": "Start your journey today. It's completely free to try.",
-    "important": "Important:",
-    "disclaimer": "Risk disclaimer applies.",
-    "startFree": "Start Free Now",
-    "seePricing": "See Pricing"
+    }
+  },
+  "navigation": {
+    "home": "Hjem",
+    "studyProgram": "Studieprogram",
+    "school": "Skole"
   }
 }
