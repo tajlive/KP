@@ -518,6 +518,23 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "pulse": {
+      "title": "Porteføljepuls",
+      "totalValue": "Total Verdi",
+      "dailyChange": "Dagens Endring",
+      "paperMode": "Paper Trading",
+      "liveMode": "Live Trading",
+      "systemOnline": "Systemet er aktivt",
+      "connecting": "Kobler til...",
+      "botStrategy": "Bot Strategi & Logikk",
+      "noEvents": "Ingen handelshendelser enda.",
+      "eventFeedTitle": "Puls-hendelser",
+      "riskMetrics": {
+        "maxExposure": "Maks Eksponering",
+        "stopLoss": "Sikkerhetsstopp",
+        "positionSize": "Posisjonsstørrelse"
+      }
+    },
     "klt": {
       "title": "Klarpakke Token (KLT)",
       "founderNumber": "Grunnlegger-student #{number}",

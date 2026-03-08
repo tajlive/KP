@@ -7,13 +7,13 @@ name: ✅ PR Check
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize]  # Kun ved ny PR eller endringer
+    types: [opened, synchronize] # Kun ved ny PR eller endringer
 
 jobs:
   quick-check:
     runs-on: ubuntu-latest
     timeout-minutes: 8
-    
+
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
@@ -21,18 +21,24 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: 📦 Install
         run: npm ci --prefer-offline
 
-      - name: 🔍 Lint (kun errors, ikke warnings)
-        run: npm run lint -- --max-warnings=9999 --quiet
+      - name: 🔍 Lint
+        run: npm run lint -- --quiet
 
-      - name: 🏗️ Build (skip type-check)
+      - name: ⌨️ Type Check
+        run: npm run type-check
+
+      - name: 🧪 Unit Tests & Coverage
+        run: npm run test:coverage
+
+      - name: 🏗️ Build
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        timeout-minutes: 6
+        timeout-minutes: 10
