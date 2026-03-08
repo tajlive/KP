@@ -67,7 +67,7 @@ export function useProfile(userId?: string) {
       if (!userId) throw new Error('User ID required');
 
       const { data, error } = await supabase
-        .from('user_profiles' as unknown)
+        .from('user_profiles' as any)
         .select('*')
         .eq('id', userId)
         .single();
@@ -300,7 +300,7 @@ export function useUpdateProfile(userId: string) {
   return useMutation({
     mutationFn: async (updates: Record<string, unknown>) => {
       const { data, error } = await supabase
-        .from('user_profiles' as unknown)
+        .from('user_profiles' as any)
         .update(updates)
         .eq('id', userId)
         .select()

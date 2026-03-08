@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
  * Auth: JWT required
  */
 export const GET = withAuth(async (_req: NextRequest, { user }) => {
-  const db = await createClient();
+  const db = (await createClient()) as any;
 
   const { data, error } = await db
     .from("onboarding_progress")
@@ -30,7 +30,7 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
  */
 export const PUT = withAuth(async (req: NextRequest, { user }) => {
   const body = await req.json();
-  const db = await createClient();
+  const db = (await createClient()) as any;
 
   const { data, error } = await db
     .from("onboarding_progress")

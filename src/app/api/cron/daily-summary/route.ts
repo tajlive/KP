@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   if (authError) return authError
 
   try {
-    const supabase = await createClient()
+    const supabase = (await createClient()) as any
     const yesterday = new Date(Date.now() - 86400000).toISOString()
 
     // Hent alle brukere med aktive sessions

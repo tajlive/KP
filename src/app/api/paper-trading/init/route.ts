@@ -5,7 +5,7 @@ import { getOrCreatePaperTradingSession } from '@/lib/supabase/paper-trading';
 export async function POST(request: Request) {
   try {
     // Get authenticated user
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     // Get authenticated user
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {

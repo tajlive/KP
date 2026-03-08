@@ -27,7 +27,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
   
   // 1. Hent user profile
   const { data: profile, error } = await supabase
-    .from('user_profiles' as unknown)
+    .from('user_profiles' as any)
     .select('created_at, subscription_tier, trial_started_at, trial_expires_at')
     .eq('id', userId)
     .single();
@@ -123,7 +123,7 @@ async function startTrial(userId: string): Promise<TrialStatus> {
   
   // Oppdater profile
   const { error } = await supabase
-    .from('user_profiles' as unknown)
+    .from('user_profiles' as any)
     .update({
       trial_started_at: now.toISOString(),
       trial_expires_at: expiresAt.toISOString(),

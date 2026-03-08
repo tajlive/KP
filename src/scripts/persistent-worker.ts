@@ -35,7 +35,7 @@ async function main() {
         `[${new Date().toISOString()}] Running auto-trading iteration...`,
       );
       // @ts-ignore - Temporary cast to handle complex Supabase client types in script context
-      await runAutoTradingIteration(supabase as unknown);
+      await runAutoTradingIteration(supabase as any);
     } catch (error) {
       console.error("❌ Iteration error:", error);
     }

@@ -119,7 +119,7 @@ export async function getPrice(symbol: string): Promise<string | undefined> {
   
   await rateLimiter.checkLimit(2); // Price has weight 2
   const client = getBinanceClient();
-  const prices = await client.prices() as unknown as Record<string, string>;
+  const prices = await client.prices() as any as Record<string, string>;
   const price = prices[cacheKey];
   priceCache.set(cacheKey, { price, timestamp: Date.now() });
   return price;

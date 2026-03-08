@@ -20,7 +20,7 @@ export default function ProgressiveDashboard() {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const { data } = await supabase
-            .from('user_profiles' as unknown)
+            .from('user_profiles' as any)
             .select('tier, view_mode_preference')
             .eq('id', user.id)
             .single();
@@ -51,7 +51,7 @@ export default function ProgressiveDashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase
-          .from('user_profiles' as unknown)
+          .from('user_profiles' as any)
           .update({ view_mode_preference: mode })
           .eq('id', user.id);
       }

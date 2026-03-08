@@ -3,7 +3,7 @@ import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const supabase = (await createClient()) as any;
   const {
     data: { user },
     error: authError,
@@ -45,14 +45,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { data: session, error: sessionError } = await supabase
+    const { data: session, error: sessionError } = (await supabase
       .from("trading_sessions")
       .select(
         "id, user_id, mode, status, strategy_id, trading_pair, current_capital_nok, starting_capital_nok, risk_config, total_trades, total_pnl",
       )
       .eq("id", session_id)
       .eq("user_id", user.id)
-      .single();
+      .single()) as any;
 
     if (sessionError || !session) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
@@ -72,21 +72,23 @@ export async function POST(request: NextRequest) {
       const orderValue = quantity * currentPrice;
       const estimatedFee = orderValue * 0.001; // 0.1% fee estimate
       const totalCost = orderValue + estimatedFee;
-      
+
       // Check if user has sufficient balance (minimum $10 equivalent)
       const MINIMUM_ORDER_VALUE = 10; // $10 minimum
       if (orderValue < MINIMUM_ORDER_VALUE) {
         return NextResponse.json(
-          { error: `Order value must be at least $${MINIMUM_ORDER_VALUE}. Current: $${orderValue.toFixed(2)}` },
+          {
+            error: `Order value must be at least $${MINIMUM_ORDER_VALUE}. Current: $${orderValue.toFixed(2)}`,
+          },
           { status: 400 },
         );
       }
-      
+
       if (session.current_capital_nok < totalCost) {
         return NextResponse.json(
-          { 
+          {
             error: `Insufficient balance. Required: $${totalCost.toFixed(2)}, Available: $${session.current_capital_nok.toFixed(2)}`,
-            code: "INSUFFICIENT_BALANCE"
+            code: "INSUFFICIENT_BALANCE",
           },
           { status: 400 },
         );
@@ -179,12 +181,12 @@ export async function POST(request: NextRequest) {
       }
 
       // 2. Upsert position with incremental logic
-      const { data: existingPos } = await supabase
+      const { data: existingPos } = (await supabase
         .from("positions")
         .select("*")
         .eq("session_id", session_id)
         .eq("symbol", symbol)
-        .single();
+        .single()) as any;
 
       if (existingPos) {
         const newQty = Number(existingPos.quantity) + result.executedQuantity;
@@ -219,12 +221,12 @@ export async function POST(request: NextRequest) {
     } else {
       // side === 'sell'
       // 1. Validate position existence/quantity
-      const { data: position } = await supabase
+      const { data: position } = (await supabase
         .from("positions")
         .select("quantity, avg_entry_price")
         .eq("session_id", session_id)
         .eq("symbol", symbol)
-        .single();
+        .single()) as any;
 
       if (!position || position.quantity < result.executedQuantity) {
         return NextResponse.json(

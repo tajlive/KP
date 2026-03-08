@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "listingId required" }, { status: 400 });
   }
 
-  const db = await createClient();
+  const db = (await createClient()) as any;
 
   const { data, error } = await db
     .from("strategy_reviews")
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const ratings = ((data as unknown[]) || []).map(
+  const ratings = ((data as any[]) || []).map(
     (r: Record<string, unknown>) => r.rating as number,
   );
   const avgRating =
@@ -68,7 +68,7 @@ export const POST = withRateLimit(
     }
 
     const { listingId, rating, reviewText } = parsed.data;
-    const db = await createClient();
+    const db = (await createClient()) as any;
 
     // Check if user already reviewed
     const { data: existing } = await db

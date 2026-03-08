@@ -210,7 +210,7 @@ function initPerformanceObserver(): void {
     let clsValue = 0;
     const clsObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        const layoutShiftEntry = entry as unknown as { hadRecentInput?: boolean; value: number };
+        const layoutShiftEntry = entry as any as { hadRecentInput?: boolean; value: number };
         if (!layoutShiftEntry.hadRecentInput) {
           clsValue += layoutShiftEntry.value;
         }

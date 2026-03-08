@@ -4,9 +4,9 @@
 // Public endpoint with optional authentication for personalized results
 // ============================================================================
 
-import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -51,7 +51,10 @@ export async function GET(
     // Parse query parameters
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
-    const limit = Math.min(parseInt(searchParams.get("limit") || "20", 10), 100);
+    const limit = Math.min(
+      parseInt(searchParams.get("limit") || "20", 10),
+      100,
+    );
     const offset = (page - 1) * limit;
     const riskLevel = searchParams.get("risk") as
       | "low"
@@ -64,10 +67,7 @@ export async function GET(
     // Try to get authenticated user (optional)
     let userId: string | null = null;
     try {
-      const authClient = createServerClient(
-        request,
-        NextResponse.next(),
-      );
+      const authClient = await createServerClient();
       const { data } = await authClient.auth.getUser();
       if (data.user) {
         userId = data.user.id;
@@ -113,8 +113,10 @@ export async function GET(
       console.error("Error fetching marketplace listings:", error);
 
       // Fallback: return user_strategies with is_marketplace_listed = true
-      const { data: fallbackData, error: fallbackError } = await supabase
-        .from("strategies" as unknown)
+      const { data: fallbackData, error: fallbackError } = await (
+        supabase as any
+      )
+        .from("strategies")
         .select("*, profiles:user_id(display_name, avatar_url)")
         .eq("is_marketplace_listed", true)
         .eq("is_public", true)
@@ -221,9 +223,17 @@ function getRiskLevel(strategyType: string | null): "low" | "medium" | "high" {
   if (!strategyType) return "medium";
   const type = strategyType.toLowerCase();
   if (type.includes("dca") || type.includes("trygg")) return "low";
-  if (type.includes("trend") || type.includes("balansert") || type.includes("grid"))
+  if (
+    type.includes("trend") ||
+    type.includes("balansert") ||
+    type.includes("grid")
+  )
     return "medium";
-  if (type.includes("multi") || type.includes("aktiv") || type.includes("aggressiv"))
+  if (
+    type.includes("multi") ||
+    type.includes("aktiv") ||
+    type.includes("aggressiv")
+  )
     return "high";
   return "medium";
 }

@@ -90,7 +90,7 @@ export class ApiClient {
           return await response.json();
         }
 
-        return (await response.text()) as unknown as T;
+        return (await response.text()) as any as T;
       } catch (error) {
         lastError = error instanceof AppError ? error : new AppError(
           'API_ERROR',

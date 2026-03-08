@@ -5,7 +5,7 @@ import { getPaperTradingSession, calculatePnL, getPaperTradeHistory } from '@/li
 export async function GET(request: Request) {
   try {
     // Get authenticated user
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {

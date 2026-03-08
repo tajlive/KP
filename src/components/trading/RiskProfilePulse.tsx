@@ -94,12 +94,12 @@ export function RiskProfilePulse({
       },
     });
 
-    chartRef.current = chart as unknown;
+    chartRef.current = chart as any;
 
     // Different chart types based on risk profile
     if (profile === "forsiktig") {
       // Area chart - smooth, simple
-      const areaSeries = (chart as unknown).addAreaSeries({
+      const areaSeries = (chart as any).addAreaSeries({
         lineColor: "#22c55e",
         topColor: "rgba(34, 197, 94, 0.3)",
         bottomColor: "rgba(34, 197, 94, 0.05)",
@@ -118,10 +118,10 @@ export function RiskProfilePulse({
           value: Math.round(value),
         } as AreaData);
       }
-      areaSeries.setData(data as unknown);
+      areaSeries.setData(data as any);
     } else if (profile === "moderat") {
       // Line chart with markers
-      const lineSeries = (chart as unknown).addLineSeries({
+      const lineSeries = (chart as any).addLineSeries({
         color: "#3b82f6",
         lineWidth: 2,
       });
@@ -137,10 +137,10 @@ export function RiskProfilePulse({
           value: Math.round(value),
         });
       }
-      lineSeries.setData(data as unknown);
+      lineSeries.setData(data as any);
     } else {
       // Candlestick for aggressive
-      const candleSeries = (chart as unknown).addCandlestickSeries({
+      const candleSeries = (chart as any).addCandlestickSeries({
         upColor: "#22c55e",
         downColor: "#ef4444",
         borderUpColor: "#22c55e",
@@ -167,7 +167,7 @@ export function RiskProfilePulse({
         } as CandlestickData);
         value = close;
       }
-      candleSeries.setData(data as unknown);
+      candleSeries.setData(data as any);
     }
 
     chart.timeScale().fitContent();
