@@ -26,6 +26,17 @@ import type {
   TradingSignal,
   UserAutoTradingConfig,
 } from "./types";
+// Production Observability Logger
+const logger = {
+  info: (msg: string, meta?: Record<string, unknown>) =>
+    console.info(`[BOT:INFO] ${msg}`, JSON.stringify(meta)),
+  warn: (msg: string, meta?: Record<string, unknown>) =>
+    console.warn(`[BOT:WARN] ${msg}`, JSON.stringify(meta)),
+  error: (msg: string, meta?: Record<string, unknown>) =>
+    console.error(`[BOT:ERROR] ${msg}`, JSON.stringify(meta)),
+  metric: (name: string, value: number, tags?: Record<string, string>) =>
+    console.info(`[METRIC] ${name}:${value}`, JSON.stringify(tags || {})),
+};
 
 // Binance Referral Configuration
 export const BINANCE_REFERRAL = {
@@ -75,6 +86,7 @@ export async function executeTrade(
     credentials: _credentials,
   } = params;
   const warnings: string[] = [];
+  const startTime = Date.now();
 
   try {
     const supabase = createClient();
@@ -107,6 +119,10 @@ export async function executeTrade(
         warnings,
       };
     }
+    logger.metric("market_regime_check_passed", 1, {
+      symbol: signal.symbol,
+      regime: marketAnalysis.regime,
+    });
 
     // =========================================================================
     // LAYER 3: Circuit Breaker Check
@@ -190,6 +206,10 @@ export async function executeTrade(
         warnings,
       };
     }
+    logger.metric("circuit_breaker_passed", 1, {
+      userId,
+      level: circuitCheck.level || "none",
+    });
 
     // =========================================================================
     // LAYER 4: ML Risk Assessment
@@ -319,6 +339,7 @@ export async function executeTrade(
       };
     }
 
+    const executionStart = Date.now();
     // Place order via Edge Function
     const { data: orderResult, error: orderError } =
       await supabase.functions.invoke("place-binance-order", {
@@ -331,6 +352,11 @@ export async function executeTrade(
           referral_code: BINANCE_REFERRAL.code,
         },
       });
+
+    const executionEnd = Date.now();
+    logger.metric("binance_api_latency_ms", executionEnd - executionStart, {
+      symbol: signal.symbol,
+    });
 
     if (orderError || !orderResult?.success) {
       throw new Error(
@@ -437,6 +463,9 @@ export async function executeTrade(
       warnings,
     };
   } catch (error: unknown) {
+    const totalTime = Date.now() - startTime;
+    logger.error("Trade execution failed", { userId, error, totalTime });
+    logger.metric("trade_execution_failed", 1, { symbol: signal.symbol });
     console.error("Trade execution error:", error);
     return {
       success: false,
@@ -457,7 +486,7 @@ export async function closeTrade(
     | "TRAILING_STOP"
     | "MANUAL"
     | "STRATEGY_EXIT",
-  credentials: BinanceCredentials,
+  _credentials: BinanceCredentials,
 ): Promise<{ success: boolean; error?: string; pnl?: number }> {
   try {
     const supabase = createClient();

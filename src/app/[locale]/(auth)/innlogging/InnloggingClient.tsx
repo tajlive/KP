@@ -76,8 +76,8 @@ export function InnloggingClient() {
   useEffect(() => {
     setMounted(true);
     // Lagre referral-kode i cookie (overlever OAuth-redirect)
-    const ref = searchParams?.get('ref');
-    if (ref && typeof window !== 'undefined') {
+    const ref = searchParams?.get("ref");
+    if (ref && typeof window !== "undefined") {
       // SameSite=Lax overlever same-site OAuth-redirect
       document.cookie = `kp_ref=${encodeURIComponent(ref)};path=/;max-age=3600;SameSite=Lax`;
     }
@@ -97,7 +97,7 @@ export function InnloggingClient() {
   // Saniterer alltid til relativ sti for å forhindre URL-dobling
   const next = searchParams?.get("next") as string | null;
   const rawRedirect = next || searchParams?.get("redirectTo") || null;
-  const safeRedirectTo = sanitizeClientRedirect(rawRedirect, "no");
+  const safeRedirectTo = sanitizeClientRedirect(rawRedirect, locale);
 
   if (!mounted) {
     return (
@@ -177,12 +177,10 @@ export function InnloggingClient() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {status === "login_error" && (
-              <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                <span>{loginError}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              <span>{loginError}</span>
+            </div>
 
             {!showEmailForm && (
               <>

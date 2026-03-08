@@ -1,0 +1,36 @@
+/* Pulse Chart Custom Tooltip & Overlays */
+
+.pulse-tooltip {
+  @apply fixed pointer-events-none z-50 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-2xl;
+  min-width: 140px;
+}
+
+.pulse-tooltip::before {
+  content: "";
+  @apply absolute inset-0 rounded-xl opacity-20 pointer-events-none;
+  background: radial-gradient(
+    circle at top left,
+    var(--tooltip-glow),
+    transparent 70%
+  );
+}
+
+.pulse-event-marker {
+  @apply relative cursor-pointer transition-transform duration-200 hover:scale-125;
+}
+
+.pulse-price-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(34, 197, 94, 0.1) 0%,
+    transparent 100%
+  );
+}
+
+.pulse-price-gradient-bear {
+  background: linear-gradient(
+    180deg,
+    rgba(239, 68, 68, 0.1) 0%,
+    transparent 100%
+  );
+}

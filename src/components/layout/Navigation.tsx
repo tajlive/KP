@@ -1,7 +1,7 @@
 "use client";
 import TradingModeToggle from "@/components/TradingModeToggle";
-import { MiniPulseWidget } from "@/components/trading/RiskProfilePulse";
 import { useAuth } from "@/components/auth/AuthContext";
+import { MiniPulseWidget } from "@/components/layout/header/MiniPulseWidget";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -14,7 +14,7 @@ export function Navigation() {
   const [mounted, setMounted] = useState(false);
   const { user, loading } = useAuth();
   const locale = useLocale();
-  const t = useTranslations('navigation');
+  const t = useTranslations("navigation");
 
   useEffect(() => {
     setMounted(true);
@@ -86,15 +86,15 @@ export function Navigation() {
                   <Link href={l("/dashboard")}>
                     <Button size="sm" className="gap-2">
                       <LayoutDashboard className="w-4 h-4" />
-                      {t('myPage')}
+                      {t("myPage")}
                     </Button>
                   </Link>
                 </>
               ) : (
                 <>
                   <Link href={l("/innlogging")}>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       className="gap-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF] hover:text-white"
                     >
@@ -161,8 +161,8 @@ export function Navigation() {
               ) : (
                 <div className="space-y-2">
                   <Link href={l("/innlogging")} className="block">
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       className="w-full gap-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF] hover:text-white"
                     >

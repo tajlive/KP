@@ -1,5 +1,11 @@
 "use client";
 
+import { AutoTradingConfigCard } from "@/components/dashboard/AutoTradingConfigCard";
+import { PaperTradingCard } from "@/components/dashboard/PaperTradingCard";
+import { PulseChartContainer } from "@/components/dashboard/pulse/PulseChartContainer";
+import { GamificationCard } from "@/components/gamification/GamificationCard";
+import { KLTWallet } from "@/components/gamification/KLTWallet";
+import { useI18nToast } from "@/hooks/useI18nToast";
 import {
   getActiveStrategies,
   getPortfolio,
@@ -26,15 +32,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useI18nToast } from "@/hooks/useI18nToast";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
-import { KLTWallet } from "@/components/gamification/KLTWallet";
-import { GamificationCard } from "@/components/gamification/GamificationCard";
-import { PulseChart } from "./PulseChart";
-import { RiskProfilePulse } from "./RiskProfilePulse";
-import { AutoTradingConfigCard } from "@/components/dashboard/AutoTradingConfigCard";
-import { PaperTradingCard } from "@/components/dashboard/PaperTradingCard";
 
 const STRATEGIES: {
   type: StrategyType;
@@ -206,9 +205,9 @@ export default function UnifiedTradingDashboard({
 
     const unsubscribe = subscribeToTrades(mode, userId, (newTrade) => {
       setTrades((prev) => [newTrade, ...prev]);
-      showSuccess("trading.tradeExecuted", { 
-        symbol: newTrade.symbol, 
-        side: newTrade.side.toUpperCase() 
+      showSuccess("trading.tradeExecuted", {
+        symbol: newTrade.symbol,
+        side: newTrade.side.toUpperCase(),
       });
     });
 
@@ -345,18 +344,15 @@ export default function UnifiedTradingDashboard({
         {/* Portfolio Summary */}
         <PortfolioSection portfolio={portfolio} formatNOK={formatNOK} />
 
-        {/* Risk Profile Pulse Charts - 3 modes */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <RiskProfilePulse profile="forsiktig" />
-          <RiskProfilePulse profile="moderat" />
-          <RiskProfilePulse profile="aggressiv" />
-        </div>
+        {/* Pulse Section - KLA-134 */}
+        <section className="space-y-4">
+          <PulseChartContainer />
+        </section>
 
         {/* Gamification & KLT Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <KLTWallet />
           <GamificationCard />
-          <PulseChart />
         </div>
 
         {/* Auto Trading Configuration */}
@@ -406,7 +402,7 @@ function TradingModeToggle({
       onClick={() => setMode(mode === "paper" ? "live" : "paper")}
     >
       <motion.div
-        className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-gradient-to-r from-blue-500 to-blue-600"
+        className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-linear-to-r from-blue-500 to-blue-600"
         animate={{ x: mode === "live" ? "100%" : "0%" }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
         style={{ left: 4 }}
@@ -748,7 +744,7 @@ function StrategySelectorSection({
                         {active ? (
                           <button
                             onClick={() => onStop(strategy.type)}
-                            className="flex-1 py-3 min-h-[44px] bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition flex items-center justify-center gap-2"
+                            className="h-full bg-linear-to-r from-blue-500 to-indigo-600 rounded-full flex-1 py-3 min-h-[44px] hover:bg-red-500/30 transition flex items-center justify-center gap-2"
                           >
                             <Square className="w-4 h-4" />
                             Stopp strategi
