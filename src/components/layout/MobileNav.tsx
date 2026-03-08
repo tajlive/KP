@@ -128,7 +128,7 @@ export function MobileNav() {
                 className="flex items-center gap-3 px-4 py-3 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-600/20 rounded-xl transition-all"
               >
                 <LayoutDashboard className="w-5 h-5 text-blue-400" />
-                <span className="font-medium text-blue-400">Dashboard</span>
+                <span className="font-medium text-blue-400">{t('myPage')}</span>
               </Link>
             ) : (
               <Link

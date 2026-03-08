@@ -4,7 +4,7 @@ import { MiniPulseWidget } from "@/components/trading/RiskProfilePulse";
 import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -14,6 +14,7 @@ export function Navigation() {
   const [mounted, setMounted] = useState(false);
   const { user, loading } = useAuth();
   const locale = useLocale();
+  const t = useTranslations('navigation');
 
   useEffect(() => {
     setMounted(true);
@@ -85,7 +86,7 @@ export function Navigation() {
                   <Link href={l("/dashboard")}>
                     <Button size="sm" className="gap-2">
                       <LayoutDashboard className="w-4 h-4" />
-                      Dashboard
+                      {t('myPage')}
                     </Button>
                   </Link>
                 </>

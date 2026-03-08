@@ -211,6 +211,7 @@ function RankBadge({ rank }: { rank: number }) {
 
 function TierBadge({ tier }: { tier: TraderEntry["tier"] }) {
   const config = TIER_CONFIG[tier];
+  if (!config) return null;
   const Icon = config.icon;
   return (
     <div

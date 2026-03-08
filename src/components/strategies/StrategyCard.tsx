@@ -54,6 +54,7 @@ const riskConfig = {
 
 export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardProps) {
   const config = riskConfig[strategy.riskLevel];
+  if (!config) return null;
   const RiskIcon = config.icon;
 
   return (

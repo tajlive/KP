@@ -87,7 +87,7 @@ export function LanguageSwitcher({
                   ? "bg-blue-600 text-white"
                   : "text-slate-400 hover:text-white hover:bg-slate-700",
               )}
-              title={needReview ? "Translation needs review" : undefined}
+              title={needReview ? (locale === 'no' ? 'Oversettelse trenger gjennomgang' : 'Translation needs review') : undefined}
             >
               <span>{label.flag}</span>
               <span className="uppercase">{l}</span>
