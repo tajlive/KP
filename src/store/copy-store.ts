@@ -155,7 +155,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
   fetchActiveCopies: async () => {
     const supabase = createClient();
     const { data } = await supabase
-      .from("copy_trade_log" as unknown)
+      .from("copy_trade_queue")
       .select("*")
       .eq("status", "executed")
       .order("created_at", { ascending: false })

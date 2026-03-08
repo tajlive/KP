@@ -25,7 +25,9 @@ export function GoldenTicket({ ticket }: GoldenTicketProps) {
   const isUsed = ticket.status !== "pending";
 
   const handleCopy = () => {
-    const inviteLink = `${window.location.origin}/login?ref=${ticket.ticket_code}`;
+    // Peker på registreringssiden — nye brukere trenger ikke logg inn, de registrerer seg
+    const locale = document.documentElement.lang || 'no';
+    const inviteLink = `${window.location.origin}/${locale}/innlogging?ref=${ticket.ticket_code}`;
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
     toast.success("Golden Ticket URL kopiert til utklippstavlen! ✨");

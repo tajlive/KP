@@ -46,16 +46,7 @@ const PROVIDER_STYLES: Record<Provider, {
     className: 'bg-white hover:bg-gray-50 border border-gray-300',
     textClass: 'text-gray-900',
   },
-  VIPPS: {
-    icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-        <rect width="24" height="24" rx="4" fill="#FF5B24"/>
-        <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm3.5 8.5c-.28.28-.73.28-1.01 0L12 12l-2.49 2.5c-.28.28-.73.28-1.01 0-.28-.28-.28-.73 0-1.01l3-3c.28-.28.73-.28 1.01 0l3 3c.28.28.28.73 0 1.01z" fill="white"/>
-      </svg>
-    ),
-    className: 'bg-[#FF5B24] hover:bg-[#E54E1B]',
-    textClass: 'text-white',
-  },
+
 };
 
 export function UnifiedAuthButton({
@@ -287,7 +278,7 @@ function MagicLinkForm({
 
 export function AuthButtons({
   locale = 'no',
-  providers = ['GOOGLE', 'MICROSOFT', 'VIPPS'],
+  providers = ['GOOGLE', 'MICROSOFT'],
   showMagicLink = true,
   redirectPath,
 }: {

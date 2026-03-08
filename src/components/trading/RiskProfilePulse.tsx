@@ -192,6 +192,7 @@ export function RiskProfilePulse({ profile = "moderat", compact = false }: RiskP
   };
 
   const config = profileConfig[profile];
+  if (!config) return null;
   const Icon = config.icon;
 
   if (compact) {

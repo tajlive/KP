@@ -75,7 +75,5 @@ export async function simulateTradingCycle(): Promise<void> {
   }
 }
 
-// Run if called directly
-if (require.main === module) {
-  simulateTradingCycle();
-}
+// Run if called directly (Node.js only)
+// simulateTradingCycle();

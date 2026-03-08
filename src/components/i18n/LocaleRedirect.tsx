@@ -31,8 +31,12 @@ export function LocaleRedirect() {
   useEffect(() => {
     const pathname = window.location.pathname;
     
-    // Skip if already has locale prefix
-    if (pathname.startsWith("/en/") || pathname.startsWith("/th/") || pathname.startsWith("/zh/")) {
+    // Skip if already has locale prefix (with or without trailing slash)
+    if (
+      pathname.startsWith("/en/") || pathname === "/en" ||
+      pathname.startsWith("/th/") || pathname === "/th" ||
+      pathname.startsWith("/zh/") || pathname === "/zh"
+    ) {
       return;
     }
 

@@ -75,7 +75,13 @@ export function InnloggingClient() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Lagre referral-kode i cookie (overlever OAuth-redirect)
+    const ref = searchParams?.get('ref');
+    if (ref && typeof window !== 'undefined') {
+      // SameSite=Lax overlever same-site OAuth-redirect
+      document.cookie = `kp_ref=${encodeURIComponent(ref)};path=/;max-age=3600;SameSite=Lax`;
+    }
+  }, [searchParams]);
 
   const errorParam = searchParams?.get("error");
 
@@ -182,7 +188,7 @@ export function InnloggingClient() {
               <>
                 <AuthButtons
                   locale={locale}
-                  providers={["GOOGLE", "MICROSOFT", "VIPPS"]}
+                  providers={["GOOGLE", "MICROSOFT"]}
                   showMagicLink={true}
                   redirectPath={rawRedirect ? safeRedirectTo : undefined}
                 />

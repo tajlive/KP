@@ -55,7 +55,7 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        <span className="ml-3 text-gray-600">Laster kurs...</span>
+        <span className="ml-3 text-gray-600">{locale === 'en' ? 'Loading courses...' : 'Laster kurs...'}</span>
       </div>
     );
   }
@@ -68,7 +68,7 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
           onClick={() => window.location.reload()}
           className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
         >
-          Prøv igjen
+          {locale === 'en' ? 'Try again' : 'Prøv igjen'}
         </button>
       </div>
     );
@@ -78,17 +78,21 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
         <GraduationCap className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-700 mb-2">Ingen kurs tilgjengelig</h3>
-        <p className="text-gray-500">Kom tilbake senere for nye kurs!</p>
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+          {locale === 'en' ? 'No courses available' : 'Ingen kurs tilgjengelig'}
+        </h3>
+        <p className="text-gray-500">
+          {locale === 'en' ? 'Check back later for new courses!' : 'Kom tilbake senere for nye kurs!'}
+        </p>
       </div>
     );
   }
 
-  const levelLabels: Record<string, string> = {
-    beginner: 'Nybegynner',
-    intermediate: 'Viderekommen',
-    advanced: 'Avansert',
+  const levelLabels: Record<string, Record<string, string>> = {
+    no: { beginner: 'Nybegynner', intermediate: 'Viderekommen', advanced: 'Avansert' },
+    en: { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' },
   };
+  const labels = levelLabels[locale] ?? levelLabels['no'];
 
   const levelColors: Record<string, string> = {
     beginner: 'bg-green-100 text-green-700',
@@ -111,7 +115,7 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
                 <BookOpen className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors" />
               </div>
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${levelColors[course.level]}`}>
-                {levelLabels[course.level]}
+                {labels[course.level]}
               </span>
             </div>
 
@@ -131,7 +135,7 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
               </div>
               <div className="flex items-center gap-1">
                 <GraduationCap className="w-4 h-4" />
-                <span>{course.price_nok === 0 ? 'Gratis' : `${course.price_nok} kr`}</span>
+                <span>{course.price_nok === 0 ? (locale === 'en' ? 'Free' : 'Gratis') : `${course.price_nok} kr`}</span>
               </div>
             </div>
           </div>
@@ -139,7 +143,7 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
           {/* Footer */}
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
             <span className="text-blue-600 font-medium text-sm group-hover:underline">
-              Se kurset →
+              {locale === 'en' ? 'View course →' : 'Se kurset →'}
             </span>
           </div>
         </Link>

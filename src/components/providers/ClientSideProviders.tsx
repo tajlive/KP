@@ -4,16 +4,6 @@ import { useEffect, useState } from 'react';
 import { initGlobalErrorHandling } from '@/lib/error-reporting';
 import { initMonitoring } from '@/lib/monitoring';
 
-// Register service worker for PWA offline support
-function ServiceWorkerInit() {
-  useEffect(() => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-  }, []);
-  return null;
-}
-
 // Initialize global error handling and monitoring
 function ErrorHandlerInit() {
   useEffect(() => {
@@ -74,7 +64,6 @@ export function ClientSideProviders({ children }: { children: React.ReactNode })
   return (
     <>
       <ErrorHandlerInit />
-      <ServiceWorkerInit />
       {children}
       {/* ChatWidget disabled for debugging - may cause crash */}
       {/* <ChatWidgetLoader /> */}

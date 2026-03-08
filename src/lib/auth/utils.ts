@@ -144,6 +144,7 @@ export interface SignInCredentials {
 
 export interface SignUpCredentials extends SignInCredentials {
   confirmPassword?: string;
+  referralCode?: string;
 }
 
 export async function signInWithEmail(
@@ -174,6 +175,9 @@ export async function signUpWithEmail(
   const { data, error } = await supabase.auth.signUp({
     email: credentials.email.toLowerCase().trim(),
     password: credentials.password,
+    options: credentials.referralCode
+      ? { data: { referral_code: credentials.referralCode } }
+      : undefined,
   });
 
   if (error) return { user: null, error, session: null };

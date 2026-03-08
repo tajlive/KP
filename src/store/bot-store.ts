@@ -107,7 +107,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
       // Fetch sessions for P&L data
       const { data: sessions } = await supabase
-        .from("auto_trading_sessions")
+        .from("unified_trading_sessions")
         .select("*")
         .order("created_at", { ascending: false });
 
