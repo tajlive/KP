@@ -65,10 +65,8 @@ export function ClientSideProviders({ children }: { children: React.ReactNode })
     <>
       <ErrorHandlerInit />
       {children}
-      {/* ChatWidget disabled for debugging - may cause crash */}
-      {/* <ChatWidgetLoader /> */}
-      {/* PWAInstallPrompt disabled for debugging */}
-      {/* <PWALoader /> */}
+      <ChatWidgetLoader />
+      <PWALoader />
     </>
   );
 }

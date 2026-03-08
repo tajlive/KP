@@ -177,16 +177,18 @@ export function InnloggingClient() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <span>{loginError}</span>
-            </div>
+            {loginError && (
+              <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
 
             {!showEmailForm && (
               <>
                 <AuthButtons
                   locale={locale}
-                  providers={["GOOGLE", "MICROSOFT"]}
+                  providers={["GOOGLE", "MICROSOFT", "LINKEDIN"]}
                   showMagicLink={true}
                   redirectPath={rawRedirect ? safeRedirectTo : undefined}
                 />
