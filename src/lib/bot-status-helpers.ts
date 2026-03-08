@@ -142,7 +142,7 @@ export function generateLastActionText(
     };
   }
 
-  const symbol = (lastTrade as unknown as { trading_pair?: string }).trading_pair || lastTrade.symbol;
+  const symbol = (lastTrade as any as { trading_pair?: string }).trading_pair || lastTrade.symbol;
   const side = lastTrade.side === "buy" 
     ? (locale === "en" ? "Bought" : "Kjøpte") 
     : (locale === "en" ? "Sold" : "Solgte");

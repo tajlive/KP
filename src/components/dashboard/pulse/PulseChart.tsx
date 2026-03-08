@@ -93,13 +93,13 @@ export function PulseChart({
 
     // Remove old series if it exists
     if (seriesRef.current) {
-      (chartRef.current as unknown).removeSeries(seriesRef.current);
+      (chartRef.current as any).removeSeries(seriesRef.current);
     }
 
     // Adaptive visualization based on profile
     let series: unknown;
 
-    const chart = chartRef.current as unknown;
+    const chart = chartRef.current as any;
     if (!chart) return;
 
     if (profileId === "forsiktig") {
@@ -132,7 +132,7 @@ export function PulseChart({
     seriesRef.current = series;
 
     // Set Data
-    series.setData(data as unknown);
+    (series as any).setData(data as any);
 
     // Add Event Markers
     const markers: SeriesMarker<Time>[] = (events || []).map((event) => ({
@@ -144,11 +144,11 @@ export function PulseChart({
       size: 1,
     }));
 
-    if (series && (series as unknown).setMarkers) {
-      (series as unknown).setMarkers(markers);
+    if (series && (series as any).setMarkers) {
+      (series as any).setMarkers(markers);
     }
 
-    (chartRef.current as unknown).timeScale().fitContent();
+    (chartRef.current as any).timeScale().fitContent();
   }, [data, events, profileId, isLoading]);
 
   return (

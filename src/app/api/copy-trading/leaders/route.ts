@@ -23,7 +23,7 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
     }
 
-    const db = await createClient();
+    const db = (await createClient()) as any;
 
     // Use materialized view (refreshed every 60 seconds by pg_cron)
     const { data: leaders, error } = await db

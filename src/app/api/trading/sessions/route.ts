@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const {
       data: { user },
       error: authError,
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const supabase = (await createClient()) as any;
   const {
     data: { user },
     error: authError,
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const supabase = await createClient();
+  const supabase = (await createClient()) as any;
   const {
     data: { user },
     error: authError,

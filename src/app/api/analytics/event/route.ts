@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { session_id, user_id, event_type, event_name, page_path } = body;
 
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
 
     // Insert event - event_name derived from event_type or page_path if not provided
     await supabase.from('analytics_events').insert({

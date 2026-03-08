@@ -100,7 +100,7 @@ export async function GET(
         const [strategyResult, lastTradesResult, pnlResult] = await Promise.all(
           [
             supabase
-              .from("strategies" as unknown)
+              .from("strategies" as any)
               .select("*")
               .eq("user_id", userId)
               .eq("status", "active")

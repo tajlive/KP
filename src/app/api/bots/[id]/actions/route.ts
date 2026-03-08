@@ -33,7 +33,7 @@ export const POST = withRateLimit(
     }
 
     const { action } = parsed.data;
-    const db = await createClient();
+    const db = (await createClient()) as any;
 
     const statusMap: Record<string, string> = {
       pause: "paused",
@@ -43,13 +43,13 @@ export const POST = withRateLimit(
     const newStatus = statusMap[action];
 
     // Ownership check: only allow actions on own bots
-    const { data: strategy, error: stratError } = await db
+    const { data: strategy, error: stratError } = (await db
       .from("strategies")
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", user.id)
       .select("id, status, strategy_type")
-      .single();
+      .single()) as any;
 
     if (!strategy) {
       return NextResponse.json(

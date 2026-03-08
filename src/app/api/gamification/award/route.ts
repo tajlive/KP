@@ -21,7 +21,7 @@ const XP_AWARDS: Record<string, number> = {
  */
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const {
       data: { user },
       error: authError,
@@ -134,7 +134,7 @@ export async function POST(req: Request) {
  */
 export async function GET() {
   try {
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     const {
       data: { user },
       error: authError,

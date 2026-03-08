@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = (await createClient()) as any;
     
     // Prøv å logge inn med ekte credentials
     const { data, error } = await supabase.auth.signInWithPassword({

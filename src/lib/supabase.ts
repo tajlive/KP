@@ -20,7 +20,7 @@ function getSupabaseInstance(): SupabaseClient<Database> {
 export const supabase = new Proxy({} as SupabaseClient<Database>, {
   get(target, prop) {
     const instance = getSupabaseInstance()
-    return (instance as unknown as Record<string | symbol, unknown>)[prop]
+    return (instance as any as Record<string | symbol, unknown>)[prop]
   },
 })
 

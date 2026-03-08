@@ -1122,7 +1122,7 @@ export async function runAutoTradingIteration(
           const indicators = await strategy.calculateIndicators(symbol, prices);
 
           // Get market data from analysis
-          const analysisData = marketAnalysis as unknown as {
+          const analysisData = marketAnalysis as any as {
             volume24h?: number;
             priceChange24h?: number;
             high24h?: number;

@@ -97,7 +97,7 @@ export function usePrices() {
               high_24h: 0,
               low_24h: 0,
               last_updated: new Date().toISOString(),
-            } as unknown as CoinPrice;
+            } as any as CoinPrice;
           }
         });
         return next;

@@ -37,7 +37,7 @@ export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChan
     try {
       const supabase = getSupabase()
       const { error } = await supabase
-        .from('user_profiles' as unknown)
+        .from('user_profiles' as any)
         .update({
           subscription_tier: 'beta',
           subscription_status: 'active',
@@ -69,7 +69,7 @@ export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChan
     try {
       const supabase = getSupabase()
       const { error } = await supabase
-        .from('user_profiles' as unknown)
+        .from('user_profiles' as any)
         .delete()
         .eq('id', userId)
 
