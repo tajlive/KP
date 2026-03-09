@@ -229,33 +229,20 @@ const nextConfig = {
   },
 };
 
-// Sentry configuration - OPTIMIZED to exclude marketing routes
 const sentryWebpackPluginOptions = {
   silent: true,
   org: "elbatt-chatbot",
   project: "klarpakke-production",
-
-  // Enable sourcemaps for production debugging
   sourcemaps: { disable: false },
   release: { create: true, finalize: true },
   deploy: { env: true },
   telemetry: false,
-
-  // Route browser requests to Sentry through a Next.js rewrite
   tunnelRoute: "/api/sentry",
   hideSourceMaps: true,
   widenClientFileUpload: true,
-
-  // PERFORMANCE OPTIMIZATIONS (Task 2):
-  // Disable automatic instrumentation to prevent Sentry from being 
-  // injected into marketing routes
-  disableClientWebpackPlugin: false,  // Keep plugin but use bundle optimizations
   automaticVercelMonitors: false,
-  autoInstrumentServerFunctions: false,
-  autoInstrumentMiddleware: false,
-  autoInstrumentAppDirectory: false,   // KEY: disable auto-wrapping of app/
-  
-  // Bundle optimizations to reduce Sentry overhead
+  // NOTE: Do NOT add disableClientWebpackPlugin — it does not work in v8
+  // NOTE: Do NOT add autoInstrumentAppDirectory — causes build failures
   bundleSizeOptimizations: {
     excludeDebugStatements: true,
     excludeReplayShadowDom: true,
