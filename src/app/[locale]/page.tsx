@@ -3,8 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
-// Eager load kritisk komponent
-import { LiveTicker } from "@/components/landing/LiveTicker";
+// Deferred load for LiveTicker - not critical for LCP
+import { DeferredLiveTicker } from "@/components/landing/DeferredLiveTicker";
 
 // Lazy load ikke-kritiske komponenter for bedre LCP
 const DashboardPreview = dynamic(
@@ -140,11 +140,11 @@ export default async function HomePage({
 
   return (
     <main className="min-h-screen bg-slate-950">
-      {/* Live Price Ticker - Critical */}
-      <LiveTicker />
-      
       {/* Hero Section - Critical for LCP */}
       <HeroSection locale={locale} />
+      
+      {/* Live Price Ticker - Deferred, loads after hero */}
+      <DeferredLiveTicker />
       
       {/* Lotto Comparison Calculator - Lazy loaded */}
       <section id="lottocalc" className="py-16 md:py-24">

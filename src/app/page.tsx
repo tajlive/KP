@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import HeroSection from "@/components/landing/HeroSection";
-import { LivePriceTicker } from "@/components/landing/LivePriceTicker";
+import { DeferredLivePriceTicker } from "@/components/landing/DeferredLivePriceTicker";
 import { LottoCalculator } from "@/components/landing/LottoCalculator";
 import SocialProofSection from "@/components/landing/SocialProofSection";
 import GamifiedLeaderboard from "@/components/landing/GamifiedLeaderboard";
@@ -137,8 +137,8 @@ export default async function RootPage() {
               <div className="relative min-h-screen flex flex-col">
                 <MarketingNavigation />
                 <main className="flex-1">
-                  <LivePriceTicker />
                   <HeroSection />
+                  <DeferredLivePriceTicker />
                   <LottoCalculator />
                   <SocialProofSection />
                   <GamifiedLeaderboard />
