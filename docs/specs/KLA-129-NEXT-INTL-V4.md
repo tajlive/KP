@@ -1,20 +1,24 @@
-# KLA-129: next-intl v4 Upgrade — Technical Specification
+# KLA-129: i18n Cleanup — Technical Specification
 
 ## Epic Overview
 
 **Priority:** P0 (blocks international expansion)
 **Epic:** KLA-129
-**Goal:** Full i18n support with English version at /en/
-**Estimated Effort:** 5-7 days
-**Risk Level:** Medium
+**Goal:** Complete i18n cleanup - remove remaining hardcoded text
+**Estimated Effort:** 1-2 days (scope reduced from original estimate)
+**Risk Level:** Low
 
 ## Current State
 
-### Existing Setup
-- next-intl version: Check package.json
-- Default locale: Norwegian (no prefix)
-- English locale: /en/ prefix
-- Messages: messages/no.json (primary), messages/en.json (may be incomplete)
+### Existing Setup (ALREADY IN PLACE)
+- **next-intl version:** 4.8.3 ✅ (already on v4!)
+- **Default locale:** Norwegian (no prefix) ✅
+- **English locale:** /en/ prefix ✅
+- **Messages:** Complete translations exist:
+  - messages/no.json (2086 lines) ✅
+  - messages/en.json (2086 lines) ✅
+  - messages/th.json (2079 lines) ✅ BONUS
+  - messages/zh.json (2079 lines) ✅ BONUS
 
 ### Known Issues
 - Some hardcoded Norwegian text in components
