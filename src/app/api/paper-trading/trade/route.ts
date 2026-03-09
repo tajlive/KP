@@ -1,4 +1,11 @@
-import { executePaperTrade } from "@/lib/supabase/paper-trading";
+/**
+ * KLA-137: Paper Trading Trade API
+ * 
+ * PHYSICALLY SEPARATED from live trading.
+ * Uses executePaperTrade from safety layer.
+ */
+
+import { executePaperTrade } from "@/lib/trading/safety";
 import { createServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
@@ -9,6 +16,7 @@ const tradeSchema = z.object({
   side: z.enum(["buy", "sell"]),
   quantity: z.number().positive(),
   price: z.number().positive(),
+  botId: z.string().uuid().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -38,16 +46,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { symbol, side, quantity, price } = validation.data;
+    const { symbol, side, quantity, price, botId } = validation.data;
 
-    // Execute trade
-    const result = await executePaperTrade(user.id, {
+    // Execute paper trade via SAFETY LAYER
+    const result = await executePaperTrade({
+      userId: user.id,
       symbol: symbol.toUpperCase(),
-      side: side as "buy" | "sell",
+      side,
       quantity,
       price,
-      total_value: quantity * price,
+      orderType: "market",
+      botId,
     });
+
+    if (!result.success) {
+      // Return 200 with rejection info (trade was blocked by safety)
+      return NextResponse.json({
+        success: false,
+        error: result.error,
+        rejectionReason: result.rejectionReason,
+        type: "TRADE_REJECTED",
+      }, { status: 200 }); // 200 because the request was valid, trade was just blocked
+    }
 
     return NextResponse.json({
       success: true,
@@ -58,25 +78,14 @@ export async function POST(request: NextRequest) {
         price,
         total_value: quantity * price,
       },
-      new_balance: result.new_balance,
-      trade_id: result.trade_id,
+      new_balance: result.newBalance,
+      trade_id: result.tradeId,
     });
   } catch (error: unknown) {
-    console.error("Paper trading execute error:", error);
-
-    if (error.message === "Insufficient balance for this trade") {
-      return NextResponse.json(
-        { error: "Insufficient balance" },
-        { status: 400 },
-      );
-    }
-
-    if (error.message === "No active paper trading session found") {
-      return NextResponse.json({ error: "No active session" }, { status: 400 });
-    }
+    console.error("[PaperTradeAPI] Unexpected error:", error);
 
     return NextResponse.json(
-      { error: "Failed to execute trade" },
+      { error: "Failed to execute paper trade" },
       { status: 500 },
     );
   }
