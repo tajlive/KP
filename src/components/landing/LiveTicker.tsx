@@ -19,41 +19,67 @@ export function LiveTicker() {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Binance WebSocket for 24hr ticker
-    const ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker/ethusdt@ticker/solusdt@ticker');
-    wsRef.current = ws;
+    let ws: WebSocket | null = null;
+    let isCleaningUp = false;
+    
+    try {
+      // Binance WebSocket for 24hr ticker
+      ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker/ethusdt@ticker/solusdt@ticker');
+      wsRef.current = ws;
 
-    ws.onopen = () => {
-      setIsConnected(true);
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const symbol = data.s.replace('USDT', '');
-      const price = parseFloat(data.c);
-      const change24h = parseFloat(data.P);
-
-      setPrices((prev) => {
-        const existing = prev.find((p) => p.symbol === symbol);
-        if (existing) {
-          return prev.map((p) =>
-            p.symbol === symbol ? { ...p, price, change24h } : p
-          );
+      ws.onopen = () => {
+        if (!isCleaningUp) {
+          setIsConnected(true);
         }
-        return [...prev, { symbol, price, change24h }];
-      });
-    };
+      };
 
-    ws.onerror = () => {
-      setIsConnected(false);
-    };
+      ws.onmessage = (event) => {
+        if (isCleaningUp) return;
+        
+        try {
+          const data = JSON.parse(event.data);
+          const symbol = data.s.replace('USDT', '');
+          const price = parseFloat(data.c);
+          const change24h = parseFloat(data.P);
 
-    ws.onclose = () => {
-      setIsConnected(false);
-    };
+          setPrices((prev) => {
+            const existing = prev.find((p) => p.symbol === symbol);
+            if (existing) {
+              return prev.map((p) =>
+                p.symbol === symbol ? { ...p, price, change24h } : p
+              );
+            }
+            return [...prev, { symbol, price, change24h }];
+          });
+        } catch (error) {
+          console.error('LiveTicker parse error:', error);
+        }
+      };
+
+      ws.onerror = () => {
+        if (!isCleaningUp) {
+          setIsConnected(false);
+        }
+      };
+
+      ws.onclose = () => {
+        if (!isCleaningUp) {
+          setIsConnected(false);
+        }
+      };
+    } catch (error) {
+      console.error('LiveTicker WebSocket creation error:', error);
+    }
 
     return () => {
-      ws.close();
+      isCleaningUp = true;
+      if (ws) {
+        // Only close if not already closed
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+          ws.close();
+        }
+        ws = null;
+      }
     };
   }, []);
 

@@ -37,13 +37,13 @@ export class ExecutorFactory {
     const supabase = createClient();
 
     // Get user's tier (validate live trading access)
-    const { data: profile, error: profileError } = await supabase
-      .from("user_profiles")
+    const { data: profile, error: profileError } = (await supabase
+      .from("user_profiles" as any)
       .select(
         "tier, binance_connected, binance_api_key_id, binance_api_secret_id",
       )
       .eq("id", userId)
-      .single();
+      .single()) as any;
 
     if (profileError || !profile) {
       throw new Error("User profile not found");
@@ -51,7 +51,7 @@ export class ExecutorFactory {
 
     // Check tier requirements (matching canAccessLiveAutoTrading in subscription.ts)
     const allowedTiers = ["bachelor", "master", "phd", "professor"] as const;
-    if (!allowedTiers.includes(profile.tier as typeof allowedTiers[number])) {
+    if (!allowedTiers.includes(profile.tier as (typeof allowedTiers)[number])) {
       throw new Error("Live trading requires Bachelor tier or higher");
     }
 
@@ -63,22 +63,31 @@ export class ExecutorFactory {
     }
 
     // Decrypt API keys using RPC function
-    const { data: decryptedKeys, error } = await supabase.rpc(
+    const { data: decryptedKeys, error } = (await (supabase as any).rpc(
       "decrypt_binance_keys",
       {
         key_id: profile.binance_api_key_id,
         secret_id: profile.binance_api_secret_id,
       },
-    );
+    )) as any;
 
-    if (error || !decryptedKeys || !Array.isArray(decryptedKeys) || decryptedKeys.length === 0) {
+    if (
+      error ||
+      !decryptedKeys ||
+      !Array.isArray(decryptedKeys) ||
+      decryptedKeys.length === 0
+    ) {
       console.error("Failed to decrypt Binance keys:", error);
       throw new Error(
         "Failed to retrieve API keys. Please reconnect your exchange.",
       );
     }
 
-    const keys = decryptedKeys[0] as { api_key: string; api_secret: string; is_testnet?: boolean };
+    const keys = decryptedKeys[0] as {
+      api_key: string;
+      api_secret: string;
+      is_testnet?: boolean;
+    };
 
     // Create BinanceExecutor
     return new BinanceExecutor({
@@ -98,11 +107,11 @@ export class ExecutorFactory {
   static async createFromSession(sessionId: string): Promise<OrderExecutor> {
     const supabase = createClient();
 
-    const { data: session, error } = await supabase
-      .from("trading_sessions")
+    const { data: session, error } = (await supabase
+      .from("trading_sessions" as any)
       .select("user_id, mode")
       .eq("id", sessionId)
-      .single();
+      .single()) as any;
 
     if (error || !session) {
       throw new Error("Trading session not found");
@@ -121,11 +130,11 @@ export class ExecutorFactory {
   static async canTradeLive(userId: string): Promise<boolean> {
     const supabase = createClient();
 
-    const { data: profile } = await supabase
-      .from("user_profiles")
+    const { data: profile } = (await supabase
+      .from("user_profiles" as any)
       .select("tier, binance_connected")
       .eq("id", userId)
-      .single();
+      .single()) as any;
 
     if (!profile) {
       return false;

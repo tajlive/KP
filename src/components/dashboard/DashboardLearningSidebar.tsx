@@ -60,6 +60,16 @@ const LEVEL_NAMES: Record<string, Record<string, string>> = {
     intermediate: "Bachelor",
     advanced: "Master",
   },
+  th: {
+    beginner: "นักเรียน",
+    intermediate: "ปริญญาตรี",
+    advanced: "ปริญญาโท",
+  },
+  zh: {
+    beginner: "学生",
+    intermediate: "学士",
+    advanced: "硕士",
+  },
 };
 
 // Ikon-mapping for badges
@@ -100,7 +110,9 @@ export default function DashboardLearningSidebar({
 
   // Beregn nivå basert på fullførte leksjoner
   const currentLevel = getCurrentLevel(totalCompleted, totalLessons);
-  const levelName = LEVEL_NAMES[lang][currentLevel] || LEVEL_NAMES[lang].beginner;
+  // Defensive coding: fallback to 'no' if locale not found
+  const localeNames = LEVEL_NAMES[lang] || LEVEL_NAMES['no'];
+  const levelName = localeNames[currentLevel] || localeNames['beginner'] || "Student";
 
   // Sorter tracks etter nivå
   const sortedTracks = [...LEARNING_TRACKS].sort((a, b) => {

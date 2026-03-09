@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Database } from "@/types/supabase-generated";
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 import {
@@ -43,8 +44,9 @@ export function createServerClient(
     return createSSRServerClient<Database>(url, key, {
       cookies: {
         getAll: () => request.cookies.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => {
+        setAll: (cookiesToSet: any) => {
+          cookiesToSet.forEach((cookie: any) => {
+            const { name, value, options } = cookie;
             request.cookies.set(name, value);
             response.cookies.set(name, value, options);
           });
@@ -60,8 +62,9 @@ export function createServerClient(
     return createSSRServerClient<Database>(url, key, {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => {
+        setAll: (cookiesToSet: any) => {
+          cookiesToSet.forEach((cookie: any) => {
+            const { name, value, options } = cookie;
             cookieStore.set(name, value, options);
           });
         },

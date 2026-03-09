@@ -94,7 +94,7 @@ export function PaperTradingCard() {
   }
 
   return (
-    <Card className="bg-slate-900 border-slate-800">
+    <Card className="bg-slate-900 border-slate-800" data-testid="paper-trading-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg text-white flex items-center gap-2">
           <Wallet className="w-5 h-5 text-blue-500" />
@@ -103,9 +103,9 @@ export function PaperTradingCard() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Current Balance */}
-        <div>
+        <div data-testid="paper-balance-container">
           <p className="text-slate-400 text-sm">Nåværende saldo</p>
-          <p className="text-3xl font-bold text-white">
+          <p className="text-3xl font-bold text-white" data-testid="paper-balance">
             kr {balance.current.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
           </p>
         </div>
@@ -118,9 +118,9 @@ export function PaperTradingCard() {
               kr {balance.starting.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="text-right">
+          <div className="text-right" data-testid="paper-pnl-container">
             <p className="text-slate-400 text-sm">P&L</p>
-            <div className={`flex items-center gap-1 ${balance.isPositive ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`flex items-center gap-1 ${balance.isPositive ? 'text-green-400' : 'text-red-400'}`} data-testid="paper-pnl">
               {balance.isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
               <span className="font-semibold">
                 {balance.isPositive ? '+' : ''}{balance.pnl.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}

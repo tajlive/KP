@@ -168,7 +168,7 @@ export default function PaperTradingDashboard({
         <div className="rounded-lg border border-gray-200 p-4">
           <p className="text-xs font-medium text-gray-500 uppercase">Win Rate</p>
           <p className="mt-2 text-2xl font-bold text-gray-900">
-            {stats.total_trades > 0 ? `${stats.win_rate.toFixed(1)}%` : '—'}
+            {stats.total_trades > 0 ? `${(stats.win_rate ?? 0).toFixed(1)}%` : '—'}
           </p>
         </div>
 

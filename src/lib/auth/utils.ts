@@ -2,14 +2,14 @@
  * Auth Utilities - Helper functions for authentication
  */
 
-import { createClient } from '@/lib/utils';
-import { getCallbackUrl, OAUTH_CONFIG, SUPPORTED_PROVIDERS } from './config';
+import { createClient } from "@/lib/utils";
+import { getCallbackUrl, OAUTH_CONFIG, SUPPORTED_PROVIDERS } from "./config";
 
 // OAuth sign in with proper error handling
 export async function signInWithOAuth(
   provider: keyof typeof SUPPORTED_PROVIDERS,
-  locale: string = 'no',
-  redirectPath?: string
+  locale: string = "no",
+  redirectPath?: string,
 ) {
   const supabase = createClient();
   const providerKey = SUPPORTED_PROVIDERS[provider];
@@ -39,7 +39,9 @@ export async function signInWithOAuth(
 // Check if user is authenticated
 export async function isAuthenticated(): Promise<boolean> {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return !!user;
 }
 
@@ -47,21 +49,24 @@ export async function isAuthenticated(): Promise<boolean> {
 export async function getCurrentUser() {
   const supabase = createClient();
 
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
   if (userError || !user) {
     return null;
   }
 
   // Get user profile
-  const { data: profile, error: profileError } = await supabase
-    .from('user_profiles' as any)
-    .select('*')
-    .eq('id', user.id)
-    .single();
+  const { data: profile, error: profileError } = (await supabase
+    .from("user_profiles" as any)
+    .select("*")
+    .eq("id", user.id)
+    .single()) as any;
 
   if (profileError) {
-    console.warn('Error fetching profile:', profileError);
+    console.warn("Error fetching profile:", profileError);
   }
 
   return {
@@ -74,23 +79,31 @@ export async function getCurrentUser() {
 export async function validateSession() {
   const supabase = createClient();
 
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
   if (error || !user) {
     return { valid: false, session: null };
   }
 
   // getUser() validates with the server, so if we got here the session is valid
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   return { valid: true, session };
 }
 
 // Parse OAuth error from URL
-export function parseOAuthError(url: string): { error: string | null; description: string | null } {
+export function parseOAuthError(url: string): {
+  error: string | null;
+  description: string | null;
+} {
   const urlObj = new URL(url);
   return {
-    error: urlObj.searchParams.get('error'),
-    description: urlObj.searchParams.get('error_description'),
+    error: urlObj.searchParams.get("error"),
+    description: urlObj.searchParams.get("error_description"),
   };
 }
 
@@ -104,12 +117,14 @@ export async function testAuthConfig(): Promise<{
   const checks: Record<string, boolean | string> = {};
 
   checks.supabaseUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!checks.supabaseUrl) errors.push('NEXT_PUBLIC_SUPABASE_URL is not configured');
+  if (!checks.supabaseUrl)
+    errors.push("NEXT_PUBLIC_SUPABASE_URL is not configured");
 
   checks.supabaseKey = !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!checks.supabaseKey) errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY is not configured');
+  if (!checks.supabaseKey)
+    errors.push("NEXT_PUBLIC_SUPABASE_ANON_KEY is not configured");
 
-  checks.appUrl = getCallbackUrl('no');
+  checks.appUrl = getCallbackUrl("no");
 
   try {
     const supabase = createClient();
@@ -128,8 +143,8 @@ export async function testAuthConfig(): Promise<{
 
 // Log auth event for debugging
 export function logAuthEvent(event: string, details?: Record<string, unknown>) {
-  if (process.env.NODE_ENV === 'development') {
-    console.info(`[Auth] ${event}`, details || '');
+  if (process.env.NODE_ENV === "development") {
+    console.info(`[Auth] ${event}`, details || "");
   }
 }
 
@@ -148,7 +163,7 @@ export interface SignUpCredentials extends SignInCredentials {
 }
 
 export async function signInWithEmail(
-  credentials: SignInCredentials
+  credentials: SignInCredentials,
 ): Promise<{ user: unknown | null; error: Error | null }> {
   const supabase = createClient();
 
@@ -162,13 +177,28 @@ export async function signInWithEmail(
 }
 
 export async function signUpWithEmail(
-  credentials: SignUpCredentials
-): Promise<{ user: unknown | null; error: Error | null; session: unknown | null }> {
-  if (credentials.confirmPassword && credentials.password !== credentials.confirmPassword) {
-    return { user: null, error: new Error('Passordene stemmer ikke overens'), session: null };
+  credentials: SignUpCredentials,
+): Promise<{
+  user: unknown | null;
+  error: Error | null;
+  session: unknown | null;
+}> {
+  if (
+    credentials.confirmPassword &&
+    credentials.password !== credentials.confirmPassword
+  ) {
+    return {
+      user: null,
+      error: new Error("Passordene stemmer ikke overens"),
+      session: null,
+    };
   }
   if (credentials.password.length < 8) {
-    return { user: null, error: new Error('Passordet må være minst 8 tegn'), session: null };
+    return {
+      user: null,
+      error: new Error("Passordet må være minst 8 tegn"),
+      session: null,
+    };
   }
 
   const supabase = createClient();
@@ -190,16 +220,21 @@ export async function signOut(): Promise<{ error: Error | null }> {
   return { error };
 }
 
-export async function resetPassword(email: string, locale: string = 'no'): Promise<{ error: Error | null }> {
+export async function resetPassword(
+  email: string,
+  locale: string = "no",
+): Promise<{ error: Error | null }> {
   const supabase = createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
     email.toLowerCase().trim(),
-    { redirectTo: getCallbackUrl(locale) }
+    { redirectTo: getCallbackUrl(locale) },
   );
   return { error };
 }
 
-export async function updatePassword(newPassword: string): Promise<{ error: Error | null }> {
+export async function updatePassword(
+  newPassword: string,
+): Promise<{ error: Error | null }> {
   const supabase = createClient();
   const { error } = await supabase.auth.updateUser({ password: newPassword });
   return { error };
@@ -211,7 +246,7 @@ export async function updatePassword(newPassword: string): Promise<{ error: Erro
 
 export async function sendMagicLink(
   email: string,
-  locale: string = 'no'
+  locale: string = "no",
 ): Promise<{ error: Error | null }> {
   const supabase = createClient();
 
@@ -237,28 +272,43 @@ export function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export function validatePassword(password: string): { valid: boolean; errors: string[] } {
+export function validatePassword(password: string): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
-  if (password.length < 8) errors.push('Passordet må være minst 8 tegn');
-  if (!/[A-Z]/.test(password)) errors.push('Passordet må inneholde minst én stor bokstav');
-  if (!/[a-z]/.test(password)) errors.push('Passordet må inneholde minst én liten bokstav');
-  if (!/[0-9]/.test(password)) errors.push('Passordet må inneholde minst ett tall');
+  if (password.length < 8) errors.push("Passordet må være minst 8 tegn");
+  if (!/[A-Z]/.test(password))
+    errors.push("Passordet må inneholde minst én stor bokstav");
+  if (!/[a-z]/.test(password))
+    errors.push("Passordet må inneholde minst én liten bokstav");
+  if (!/[0-9]/.test(password))
+    errors.push("Passordet må inneholde minst ett tall");
   return { valid: errors.length === 0, errors };
 }
 
-export function getErrorMessage(error: Error | null, locale: string = 'no'): string {
-  if (!error) return '';
+export function getErrorMessage(
+  error: Error | null,
+  locale: string = "no",
+): string {
+  if (!error) return "";
 
   const norwegianMessages: Record<string, string> = {
-    'Invalid login credentials': 'Feil e-post eller passord. Prøv igjen.',
-    'Email not confirmed': 'E-posten er ikke bekreftet. Sjekk innboksen din.',
-    'User already registered': 'Denne e-posten er allerede registrert. Logg inn i stedet.',
-    'Password should be at least 6 characters': 'Passordet må være minst 6 tegn',
-    'Unable to validate email address: invalid format': 'Ugyldig e-postadresse',
+    "Invalid login credentials": "Feil e-post eller passord. Prøv igjen.",
+    "Email not confirmed": "E-posten er ikke bekreftet. Sjekk innboksen din.",
+    "User already registered":
+      "Denne e-posten er allerede registrert. Logg inn i stedet.",
+    "Password should be at least 6 characters":
+      "Passordet må være minst 6 tegn",
+    "Unable to validate email address: invalid format": "Ugyldig e-postadresse",
   };
 
-  if (locale === 'no') {
-    return norwegianMessages[error.message] || error.message || 'En feil oppstod. Prøv igjen.';
+  if (locale === "no") {
+    return (
+      norwegianMessages[error.message] ||
+      error.message ||
+      "En feil oppstod. Prøv igjen."
+    );
   }
-  return error.message || 'An error occurred. Please try again.';
+  return error.message || "An error occurred. Please try again.";
 }

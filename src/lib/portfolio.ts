@@ -1,12 +1,11 @@
 /**
  * Portfolio Library - Server-side portfolio queries
- * 
+ *
  * Denne modulen håndterer alle porteføljerelaterte database-spørringer.
  * Støtter både paper trading og Binance (real trading) data.
  */
 
-import { createClient } from '@/lib/supabase/server';
-import type { Database } from '@/lib/database.types';
+import { createClient } from "@/lib/supabase/server";
 
 // =============================================================================
 // Types
@@ -42,7 +41,7 @@ export interface PortfolioSummary {
   overview: PortfolioOverview;
   positions: PortfolioPosition[];
   hasData: boolean;
-  dataSource: 'binance' | 'paper' | 'none';
+  dataSource: "binance" | "paper" | "none";
 }
 
 export interface PortfolioError {
@@ -55,7 +54,7 @@ export interface PortfolioError {
 // =============================================================================
 
 function isValidNumber(value: unknown): value is number {
-  return typeof value === 'number' && !isNaN(value) && isFinite(value);
+  return typeof value === "number" && !isNaN(value) && isFinite(value);
 }
 
 function safeNumber(value: unknown, defaultValue = 0): number {
@@ -79,46 +78,53 @@ function calculatePercentChange(current: number, previous: number): number {
  * Hent porteføljeoversikt for innlogget bruker
  * Prøver først Binance-data, deretter paper trading
  */
-export async function getPortfolioOverview(userId: string): Promise<PortfolioSummary | null> {
+export async function getPortfolioOverview(
+  userId: string,
+): Promise<PortfolioSummary | null> {
   try {
     const supabase = await createClient();
 
     // Sjekk om bruker har Binance API keys
-    const { data: apiKeys } = await supabase
-      .from('exchange_api_keys')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('exchange', 'binance')
-      .eq('is_active', true)
-      .single();
+    const { data: apiKeys } = (await supabase
+      .from("exchange_api_keys" as unknown)
+      .select("*")
+      .eq("user_id", userId)
+      .eq("exchange", "binance")
+      .eq("is_active", true)
+      .single()) as unknown;
 
     // Hvis Binance-konto, prøv å hente Binance-balanser
     if (apiKeys) {
-      const { data: binanceBalances } = await supabase
-        .from('binance_balances')
-        .select('*')
-        .eq('user_id', userId)
-        .gt('total', 0)
-        .order('usd_value', { ascending: false });
+      const { data: binanceBalances } = (await supabase
+        .from("binance_balances" as unknown)
+        .select("*")
+        .eq("user_id", userId)
+        .gt("total", 0)
+        .order("usd_value", { ascending: false })) as unknown;
 
       if (binanceBalances && binanceBalances.length > 0) {
         // Bruker har Binance-data
-        const totalValue = binanceBalances.reduce((sum, b) => sum + safeNumber(b.usd_value), 0);
+        const totalValue = binanceBalances.reduce(
+          (sum: number, b: unknown) => sum + safeNumber(b.usd_value),
+          0,
+        );
         const lastSynced = binanceBalances[0]?.updated_at || null;
 
-        const mappedPositions: PortfolioPosition[] = binanceBalances.map((bal) => ({
-          id: bal.id,
-          symbol: bal.asset,
-          quantity: safeNumber(bal.total),
-          avgBuyPrice: 0, // Vi har ikke denne fra Binance spot
-          currentPrice: safeNumber(bal.last_price),
-          currentValue: safeNumber(bal.usd_value),
-          unrealizedPnl: 0,
-          unrealizedPnlPercent: 0,
-          totalInvested: 0,
-          lastUpdated: bal.updated_at,
-          isReal: true,
-        }));
+        const mappedPositions: PortfolioPosition[] = binanceBalances.map(
+          (bal: unknown) => ({
+            id: bal.id,
+            symbol: bal.asset,
+            quantity: safeNumber(bal.total),
+            avgBuyPrice: 0, // Vi har ikke denne fra Binance spot
+            currentPrice: safeNumber(bal.last_price),
+            currentValue: safeNumber(bal.usd_value),
+            unrealizedPnl: 0,
+            unrealizedPnlPercent: 0,
+            totalInvested: 0,
+            lastUpdated: bal.updated_at,
+            isReal: true,
+          }),
+        );
 
         return {
           overview: {
@@ -134,19 +140,19 @@ export async function getPortfolioOverview(userId: string): Promise<PortfolioSum
           },
           positions: mappedPositions,
           hasData: true,
-          dataSource: 'binance',
+          dataSource: "binance",
         };
       }
     }
 
     // Fallback til paper trading data
-    const { data: positions, error } = await supabase
-      .from('portfolios')
-      .select('*')
-      .eq('user_id', userId);
+    const { data: positions, error } = (await supabase
+      .from("portfolios" as unknown)
+      .select("*")
+      .eq("user_id", userId)) as unknown;
 
     if (error) {
-      console.error('Error fetching portfolio:', error);
+      console.error("Error fetching portfolio:", error);
       return null;
     }
 
@@ -165,7 +171,7 @@ export async function getPortfolioOverview(userId: string): Promise<PortfolioSum
         },
         positions: [],
         hasData: false,
-        dataSource: 'none',
+        dataSource: "none",
       };
     }
 
@@ -174,7 +180,7 @@ export async function getPortfolioOverview(userId: string): Promise<PortfolioSum
     let totalInvested = 0;
     let totalUnrealizedPnl = 0;
 
-    const mappedPositions: PortfolioPosition[] = positions.map((pos) => {
+    const mappedPositions: PortfolioPosition[] = positions.map((pos: any) => {
       const positionValue = safeNumber(pos.current_value);
       const positionInvested = safeNumber(pos.total_invested);
       const positionPnl = safeNumber(pos.unrealized_pnl);
@@ -213,13 +219,15 @@ export async function getPortfolioOverview(userId: string): Promise<PortfolioSum
         hasRealAccount: !!apiKeys,
         lastSynced: null,
       },
-      positions: mappedPositions.sort((a, b) => b.currentValue - a.currentValue),
+      positions: mappedPositions.sort(
+        (a, b) => b.currentValue - a.currentValue,
+      ),
       hasData: true,
-      dataSource: 'paper',
+      dataSource: "paper",
     };
   } catch (err) {
-    const error = err instanceof Error ? err : new Error('Unknown error');
-    console.error('Unexpected error in getPortfolioOverview:', error);
+    const error = err instanceof Error ? err : new Error("Unknown error");
+    console.error("Unexpected error in getPortfolioOverview:", error);
     return null;
   }
 }
@@ -228,43 +236,43 @@ export async function getPortfolioOverview(userId: string): Promise<PortfolioSum
  * Synkroniser Binance data for bruker
  * Kalles fra API eller Edge Function
  */
-export async function syncBinancePortfolio(userId: string): Promise<{ success: boolean; message: string; synced?: number }> {
+export async function syncBinancePortfolio(
+  userId: string,
+): Promise<{ success: boolean; message: string; synced?: number }> {
   try {
     const supabase = await createClient();
 
     // Sjekk om bruker har API keys
-    const { data: apiKeys } = await supabase
-      .from('exchange_api_keys')
-      .select('api_key_encrypted, api_secret_encrypted, is_testnet')
-      .eq('user_id', userId)
-      .eq('exchange', 'binance')
-      .eq('is_active', true)
-      .single();
+    const { data: apiKeys } = (await supabase
+      .from("exchange_api_keys" as unknown)
+      .select("api_key_encrypted, api_secret_encrypted, is_testnet")
+      .eq("user_id", userId)
+      .eq("exchange", "binance")
+      .eq("is_active", true)
+      .single()) as unknown;
 
     if (!apiKeys) {
-      return { success: false, message: 'No Binance API keys found' };
+      return { success: false, message: "No Binance API keys found" };
     }
 
     // Logg sync-forsøk
-    await supabase
-      .from('binance_sync_log')
-      .insert({
-        user_id: userId,
-        status: 'in_progress',
-        message: 'Starting sync',
-      });
+    await supabase.from("binance_sync_log" as unknown).insert({
+      user_id: userId,
+      status: "in_progress",
+      message: "Starting sync",
+    });
 
     // Her ville vi kalle Binance API - dette må gjøres fra en Edge Function
     // for å ikke eksponere API secrets på client-side
-    
-    return { 
-      success: true, 
-      message: 'Sync initiated. Data will be updated shortly.',
-      synced: 0
+
+    return {
+      success: true,
+      message: "Sync initiated. Data will be updated shortly.",
+      synced: 0,
     };
   } catch (err) {
-    console.error('Error syncing Binance portfolio:', err);
-    return { success: false, message: 'Sync failed' };
+    console.error("Error syncing Binance portfolio:", err);
+    return { success: false, message: "Sync failed" };
   }
 }
 
@@ -273,16 +281,16 @@ export async function syncBinancePortfolio(userId: string): Promise<{ success: b
  */
 export async function getBinanceSyncLog(userId: string, limit = 10) {
   const supabase = await createClient();
-  
-  const { data, error } = await supabase
-    .from('binance_sync_log')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(limit);
+
+  const { data, error } = (await supabase
+    .from("binance_sync_log" as unknown)
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit)) as unknown;
 
   if (error) {
-    console.error('Error fetching sync log:', error);
+    console.error("Error fetching sync log:", error);
     return [];
   }
 

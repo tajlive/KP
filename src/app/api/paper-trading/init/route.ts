@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { getOrCreatePaperTradingSession } from '@/lib/supabase/paper-trading';
+import type { NextRequest } from 'next/server';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user
-    const supabase = (await createClient()) as any;
+    // Create response for cookie handling
+    const response = NextResponse.next();
+    
+    // Get authenticated user using SSR client with cookies
+    const supabase = createServerClient(request, response);
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -22,10 +26,10 @@ export async function POST(request: Request) {
       success: true,
       session: {
         id: session.id,
-        starting_balance: session.starting_balance,
-        current_balance: session.current_balance,
-        is_active: session.is_active,
-        created_at: session.created_at,
+        starting_balance: session.starting_capital_nok,
+        current_balance: session.current_capital_nok,
+        is_active: session.status === 'active',
+        created_at: session.started_at,
       },
     });
   } catch (error) {
@@ -37,10 +41,13 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user
-    const supabase = (await createClient()) as any;
+    // Create response for cookie handling
+    const response = NextResponse.next();
+    
+    // Get authenticated user using SSR client with cookies
+    const supabase = createServerClient(request, response);
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -53,16 +60,16 @@ export async function GET(request: Request) {
     // Get or create session
     const session = await getOrCreatePaperTradingSession(user.id);
     
-    const pnl = session.current_balance - session.starting_balance;
-    const pnlPercentage = (pnl / session.starting_balance) * 100;
+    const pnl = session.current_capital_nok - session.starting_capital_nok;
+    const pnlPercentage = (pnl / session.starting_capital_nok) * 100;
     
     return NextResponse.json({
       session: {
         id: session.id,
-        starting_balance: session.starting_balance,
-        current_balance: session.current_balance,
-        is_active: session.is_active,
-        created_at: session.created_at,
+        starting_balance: session.starting_capital_nok,
+        current_balance: session.current_capital_nok,
+        is_active: session.status === 'active',
+        created_at: session.started_at,
         pnl,
         pnlPercentage,
       },

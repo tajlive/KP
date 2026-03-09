@@ -273,7 +273,7 @@ export default function RealTradingDashboard() {
             }`}
           >
             {stats.totalPnlPercent >= 0 ? "+" : ""}
-            {stats.totalPnlPercent.toFixed(2)}%
+            {(stats.totalPnlPercent ?? 0).toFixed(2)}%
           </p>
         </div>
 

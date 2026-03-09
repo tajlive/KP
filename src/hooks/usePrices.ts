@@ -43,11 +43,11 @@ export function usePrices() {
     const fetchPrices = async () => {
       setLoading(true);
       // Using type assertion since coin_prices table may vary by environment
-      const { data } = await (supabase.from as (t: string) => ReturnType<typeof supabase.from>)("coin_prices").select("*");
+      const { data } = await (supabase as any).from("coin_prices").select("*");
 
       const priceMap = ((data || []) as CoinPrice[]).reduce(
-        (acc: Record<string, CoinPrice>, price: CoinPrice) => {
-          acc[price.symbol] = price;
+        (acc: Record<string, CoinPrice>, price: any) => {
+          acc[price.symbol] = price as CoinPrice;
           return acc;
         },
         {} as Record<string, CoinPrice>,

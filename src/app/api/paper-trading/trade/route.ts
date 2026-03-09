@@ -1,6 +1,7 @@
 import { executePaperTrade } from "@/lib/supabase/paper-trading";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 const tradeSchema = z.object({
@@ -10,10 +11,13 @@ const tradeSchema = z.object({
   price: z.number().positive(),
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user
-    const supabase = (await createClient()) as any;
+    // Create response for cookie handling
+    const response = NextResponse.next();
+    
+    // Get authenticated user using SSR client with cookies
+    const supabase = createServerClient(request, response);
     const {
       data: { user },
       error: authError,

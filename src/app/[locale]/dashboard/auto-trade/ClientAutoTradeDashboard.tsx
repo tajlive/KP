@@ -392,7 +392,7 @@ export default function ClientAutoTradeDashboard() {
                 "text-2xl font-bold",
                 stats.total_pnl >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
               )}>
-                {stats.total_pnl >= 0 ? '+' : ''}{stats.total_pnl.toFixed(2)} USDT
+                {(stats.total_pnl ?? 0) >= 0 ? '+' : ''}{(stats.total_pnl ?? 0).toFixed(2)} USDT
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 {stats.total_pnl >= 0 ? 'Profitt' : 'Tap'} fra alle strategier
@@ -426,7 +426,7 @@ export default function ClientAutoTradeDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                {stats.win_rate.toFixed(1)}%
+                {(stats.win_rate ?? 0).toFixed(1)}%
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 Vinnende trades

@@ -1,4 +1,4 @@
-import { TradingSignal } from '@/lib/supabase/auto-trading';
+import { TradingSignal } from "@/lib/supabase/auto-trading";
 
 interface SignalConfig {
   symbols: string[];
@@ -6,7 +6,7 @@ interface SignalConfig {
   maxConfidence: number;
 }
 
-const DEFAULT_SYMBOLS = ['BTC', 'ETH', 'SOL', 'AVAX', 'LINK'];
+const DEFAULT_SYMBOLS = ["BTC", "ETH", "SOL", "AVAX", "LINK"];
 
 /**
  * Simulate trading signals for testing
@@ -16,15 +16,16 @@ export function generateTradingSignal(
     symbols: DEFAULT_SYMBOLS,
     minConfidence: 60,
     maxConfidence: 95,
-  }
+  },
 ): TradingSignal {
   const symbols = config.symbols;
   const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-  const action = Math.random() > 0.5 ? 'buy' : 'sell';
+  const action = Math.random() > 0.5 ? "buy" : "sell";
   const confidence = Math.floor(
-    Math.random() * (config.maxConfidence - config.minConfidence) + config.minConfidence
+    Math.random() * (config.maxConfidence - config.minConfidence) +
+      config.minConfidence,
   );
-  
+
   // Simulate current prices (NOK)
   const basePrices: Record<string, number> = {
     BTC: 900000,
@@ -33,7 +34,7 @@ export function generateTradingSignal(
     AVAX: 350,
     LINK: 180,
   };
-  
+
   const basePrice = basePrices[symbol] || 1000;
   const volatility = 0.02; // 2% volatility
   const price = basePrice * (1 + (Math.random() - 0.5) * volatility);
@@ -44,6 +45,7 @@ export function generateTradingSignal(
     action,
     confidence,
     price,
+    reasoning: "Simulated signal",
     created_at: new Date().toISOString(),
   };
 }
@@ -53,7 +55,7 @@ export function generateTradingSignal(
  */
 export function generateTradingSignals(
   count: number,
-  config?: SignalConfig
+  config?: SignalConfig,
 ): TradingSignal[] {
   return Array.from({ length: count }, () => generateTradingSignal(config));
 }
@@ -62,10 +64,10 @@ export function generateTradingSignals(
  * Test function - simulate a trading cycle
  */
 export async function simulateTradingCycle(): Promise<void> {
-  console.log('=== Trading Signal Simulation ===\n');
-  
+  console.log("=== Trading Signal Simulation ===\n");
+
   const signals = generateTradingSignals(5);
-  
+
   for (const signal of signals) {
     console.log(`Symbol: ${signal.symbol}`);
     console.log(`Action: ${signal.action.toUpperCase()}`);
