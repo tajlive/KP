@@ -170,8 +170,7 @@ const nextConfig = {
       base-uri 'self';
       form-action 'self';
       frame-ancestors 'none';
-      connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live;
-      // Note: CoinGecko API kallas kun server-side via /api/market/* routes
+      connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://o4509555622608896.ingest.de.sentry.io;
       frame-src https://vercel.live;
       upgrade-insecure-requests;
     `;
@@ -230,7 +229,7 @@ const nextConfig = {
   },
 };
 
-// Sentry configuration
+// Sentry configuration - OPTIMIZED to exclude marketing routes
 const sentryWebpackPluginOptions = {
   silent: true,
   org: "elbatt-chatbot",
@@ -246,6 +245,23 @@ const sentryWebpackPluginOptions = {
   tunnelRoute: "/api/sentry",
   hideSourceMaps: true,
   widenClientFileUpload: true,
+
+  // PERFORMANCE OPTIMIZATIONS (Task 2):
+  // Disable automatic instrumentation to prevent Sentry from being 
+  // injected into marketing routes
+  disableClientWebpackPlugin: false,  // Keep plugin but use bundle optimizations
+  automaticVercelMonitors: false,
+  autoInstrumentServerFunctions: false,
+  autoInstrumentMiddleware: false,
+  autoInstrumentAppDirectory: false,   // KEY: disable auto-wrapping of app/
+  
+  // Bundle optimizations to reduce Sentry overhead
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+    excludeReplayShadowDom: true,
+    excludeReplayIframe: true,
+    excludeReplayWorker: true,
+  },
 };
 
 // Bundle Analyzer configuration
@@ -255,6 +271,8 @@ const withAnalyzer = withBundleAnalyzer({
 });
 
 // Export with NextIntl + Bundle Analyzer + Sentry
+// Note: Sentry client-side init is now controlled by sentry.client.config.ts
+// which skips initialization on marketing routes
 export default withSentryConfig(
   withAnalyzer(withNextIntl(nextConfig)),
   sentryWebpackPluginOptions,
