@@ -1,6 +1,16 @@
 /**
  * Paper Trading Supabase Service
  * Handles persistent storage of simulations, trades, and strategies
+ * 
+ * MIGRATION NOTE: This file now uses trading_sessions table (unified schema)
+ * instead of the deprecated paper_simulations table.
+ * 
+ * Column Mapping:
+ * - trading_sessions.initial_capital → PaperSimulation.initial_balance
+ * - trading_sessions.current_capital → PaperSimulation.current_balance
+ * - trading_sessions.status === 'active' → PaperSimulation.is_active = true
+ * - trading_sessions.strategy_id → PaperSimulation.preset
+ * - trading_sessions.strategy_config → PaperSimulation.settings
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -16,6 +26,38 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
+ * Map trading_sessions row to PaperSimulation type
+ */
+function mapToPaperSimulation(data: Record<string, unknown>): PaperSimulation {
+  return {
+    id: data.id as string,
+    user_id: data.user_id as string,
+    created_at: data.created_at as string,
+    updated_at: (data.updated_at as string) || (data.created_at as string),
+    preset: (data.strategy_id as RiskLevel) || 'standard',
+    initial_balance: (data.initial_capital as number) || (data.starting_capital_nok as number) || 100000,
+    current_balance: (data.current_capital as number) || (data.current_capital_nok as number) || 100000,
+    total_pnl: (data.total_pnl as number) || 0,
+    total_pnl_pct: data.total_pnl 
+      ? (((data.total_pnl as number) / ((data.initial_capital as number) || 100000)) * 100)
+      : 0,
+    max_drawdown: (data.max_drawdown as number) || 0,
+    sharpe_ratio: (data.sharpe_ratio as number) || null,
+    win_rate: data.winning_trades && data.total_trades
+      ? ((data.winning_trades as number) / (data.total_trades as number)) * 100
+      : null,
+    total_trades: (data.total_trades as number) || 0,
+    winning_trades: (data.winning_trades as number) || 0,
+    losing_trades: (data.losing_trades as number) || 0,
+    avg_trade_return: (data.avg_trade_return as number) || 0,
+    is_active: (data.status as string) === 'active',
+    started_at: (data.started_at as string) || (data.created_at as string),
+    ended_at: (data.stopped_at as string) || null,
+    settings: (data.strategy_config as Record<string, unknown>) || RISK_PRESETS[(data.strategy_id as RiskLevel) || 'standard'],
+  };
+}
+
+/**
  * Create a new paper trading simulation
  */
 export async function createSimulation(
@@ -26,15 +68,17 @@ export async function createSimulation(
   const preset = RISK_PRESETS[riskLevel];
 
   const { data, error } = await supabase
-    .from('paper_simulations')
+    .from('trading_sessions')
     .insert({
       user_id: userId,
-      preset_id: riskLevel,
-      initial_balance: initialBalance,
-      current_balance: initialBalance,
-      settings: preset,
-      is_active: true,
-      started_at: new Date().toISOString()
+      strategy_id: riskLevel,
+      initial_capital: initialBalance,
+      current_capital: initialBalance,
+      strategy_config: preset,
+      mode: 'paper',
+      status: 'active',
+      started_at: new Date().toISOString(),
+      trading_pair: 'BTC/USDT',
     })
     .select()
     .single();
@@ -44,7 +88,7 @@ export async function createSimulation(
     return null;
   }
 
-  return data;
+  return mapToPaperSimulation(data);
 }
 
 /**
@@ -52,16 +96,17 @@ export async function createSimulation(
  */
 export async function getActiveSimulation(userId: string): Promise<PaperSimulation | null> {
   const { data, error } = await supabase
-    .from('paper_simulations')
+    .from('trading_sessions')
     .select('*')
     .eq('user_id', userId)
-    .eq('is_active', true)
+    .eq('mode', 'paper')
+    .eq('status', 'active')
     .order('created_at', { ascending: false })
     .limit(1)
     .single();
 
   if (error || !data) return null;
-  return data;
+  return mapToPaperSimulation(data);
 }
 
 /**
@@ -69,9 +114,10 @@ export async function getActiveSimulation(userId: string): Promise<PaperSimulati
  */
 export async function getUserSimulations(userId: string): Promise<PaperSimulation[]> {
   const { data, error } = await supabase
-    .from('paper_simulations')
+    .from('trading_sessions')
     .select('*')
     .eq('user_id', userId)
+    .eq('mode', 'paper')
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -79,7 +125,7 @@ export async function getUserSimulations(userId: string): Promise<PaperSimulatio
     return [];
   }
 
-  return data || [];
+  return (data || []).map(mapToPaperSimulation);
 }
 
 /**
@@ -89,9 +135,19 @@ export async function updateSimulation(
   simulationId: string,
   updates: Partial<PaperSimulation>
 ): Promise<boolean> {
+  // Map PaperSimulation fields to trading_sessions fields
+  const dbUpdates: Record<string, unknown> = {};
+  
+  if (updates.current_balance !== undefined) dbUpdates.current_capital = updates.current_balance;
+  if (updates.total_pnl !== undefined) dbUpdates.total_pnl = updates.total_pnl;
+  if (updates.total_trades !== undefined) dbUpdates.total_trades = updates.total_trades;
+  if (updates.winning_trades !== undefined) dbUpdates.winning_trades = updates.winning_trades;
+  if (updates.losing_trades !== undefined) dbUpdates.losing_trades = updates.losing_trades;
+  if (updates.is_active !== undefined) dbUpdates.status = updates.is_active ? 'active' : 'stopped';
+  
   const { error } = await supabase
-    .from('paper_simulations')
-    .update({ ...updates, updated_at: new Date().toISOString() })
+    .from('trading_sessions')
+    .update({ ...dbUpdates, updated_at: new Date().toISOString() })
     .eq('id', simulationId);
 
   if (error) {
@@ -106,10 +162,21 @@ export async function updateSimulation(
  * End simulation (close it)
  */
 export async function endSimulation(simulationId: string): Promise<boolean> {
-  return updateSimulation(simulationId, {
-    is_active: false,
-    ended_at: new Date().toISOString()
-  });
+  const { error } = await supabase
+    .from('trading_sessions')
+    .update({
+      status: 'stopped',
+      stopped_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', simulationId);
+
+  if (error) {
+    console.error('Error ending simulation:', error);
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -122,23 +189,16 @@ export async function createTrade(
   const { data, error } = await supabase
     .from('trades')
     .insert({
-      simulation_id: simulationId,
-      symbol: trade.symbol,
-      side: trade.side,
-      entry_price: trade.entry_price,
-      exit_price: trade.exit_price,
-      quantity: trade.quantity,
-      position_value: trade.position_value,
-      leverage: trade.leverage,
-      stop_loss: trade.stop_loss,
-      take_profit: trade.take_profit,
-      pnl: trade.pnl,
-      pnl_pct: trade.pnl_pct,
-      status: trade.status,
-      opened_at: trade.opened_at,
-      closed_at: trade.closed_at,
-      close_reason: trade.close_reason,
-      metadata: trade.metadata
+      session_id: simulationId,
+      user_id: trade.metadata?.user_id,
+      trading_pair: trade.symbol,
+      side: trade.side === 'LONG' ? 'buy' : 'sell',
+      amount: trade.quantity,
+      price: trade.entry_price,
+      fee: 0,
+      status: trade.status === 'OPEN' ? 'pending' : 'executed',
+      idempotency_key: `${Date.now()}-${Math.random()}`,
+      executed_at: trade.opened_at,
     })
     .select()
     .single();
@@ -148,7 +208,7 @@ export async function createTrade(
     return null;
   }
 
-  return data;
+  return data as PaperTrade;
 }
 
 /**
@@ -165,11 +225,9 @@ export async function closeTrade(
     .update({
       exit_price: exitPrice,
       pnl: pnl,
-      pnl_pct: (pnl / (exitPrice * 1)) * 100, // Approximate
-      status: 'CLOSED',
+      status: 'executed',
       closed_at: new Date().toISOString(),
-      close_reason: reason,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('id', tradeId);
 
@@ -188,7 +246,7 @@ export async function getSimulationTrades(simulationId: string): Promise<PaperTr
   const { data, error } = await supabase
     .from('trades')
     .select('*')
-    .eq('simulation_id', simulationId)
+    .eq('session_id', simulationId)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -196,7 +254,7 @@ export async function getSimulationTrades(simulationId: string): Promise<PaperTr
     return [];
   }
 
-  return data || [];
+  return data as PaperTrade[] || [];
 }
 
 /**
@@ -214,25 +272,22 @@ export async function saveBacktestResult(
   const losingTrades = backtestResult.trades.filter(t => t.pnl <= 0).length;
 
   const { data, error } = await supabase
-    .from('paper_simulations')
+    .from('trading_sessions')
     .insert({
       user_id: userId,
-      preset_id: riskLevel,
-      initial_balance: backtestResult.initial_balance,
-      current_balance: backtestResult.final_balance,
+      strategy_id: riskLevel,
+      mode: 'paper',
+      initial_capital: backtestResult.initial_balance,
+      current_capital: backtestResult.final_balance,
       total_pnl: backtestResult.final_balance - backtestResult.initial_balance,
-      total_pnl_pct: backtestResult.total_return_pct,
-      max_drawdown: backtestResult.max_drawdown_pct,
-      sharpe_ratio: backtestResult.sharpe_ratio,
-      win_rate: backtestResult.win_rate,
-      total_trades: backtestResult.total_trades,
       winning_trades: winningTrades,
       losing_trades: losingTrades,
-      avg_trade_return: backtestResult.avg_trade_return,
-      is_active: false,
-      settings: { ...preset, strategy: strategyId },
+      total_trades: backtestResult.total_trades,
+      status: 'stopped',
+      strategy_config: { ...preset, strategy: strategyId },
       started_at: backtestResult.start_date,
-      ended_at: backtestResult.end_date
+      stopped_at: backtestResult.end_date,
+      trading_pair: backtestResult.symbol,
     })
     .select()
     .single();
@@ -245,26 +300,22 @@ export async function saveBacktestResult(
   // Insert trades
   if (data) {
     const trades = backtestResult.trades.map(trade => ({
-      simulation_id: data.id,
-      symbol: backtestResult.symbol,
-      side: trade.side,
-      entry_price: trade.entry_price,
-      exit_price: trade.exit_price,
-      quantity: trade.quantity,
-      position_value: trade.entry_price * trade.quantity,
+      session_id: data.id,
+      trading_pair: backtestResult.symbol,
+      side: trade.side === 'LONG' ? 'buy' : 'sell',
+      price: trade.entry_price,
+      amount: trade.quantity,
+      fee: 0,
       pnl: trade.pnl,
-      pnl_pct: trade.pnl_pct,
-      status: 'CLOSED',
-      opened_at: trade.entry_time,
-      closed_at: trade.exit_time,
-      close_reason: trade.exit_reason,
-      metadata: { strategy: strategyId }
+      status: 'executed',
+      executed_at: trade.entry_time,
+      idempotency_key: `${Date.now()}-${Math.random()}`,
     }));
 
     await supabase.from('trades').insert(trades);
   }
 
-  return data;
+  return mapToPaperSimulation(data);
 }
 
 /**
@@ -383,7 +434,7 @@ export function subscribeToSimulation(
         event: '*',
         schema: 'public',
         table: 'trades',
-        filter: `simulation_id=eq.${simulationId}`
+        filter: `session_id=eq.${simulationId}`
       },
       callback
     )
@@ -397,16 +448,16 @@ export async function getSimulationStats(simulationId: string) {
   const { data: trades, error } = await supabase
     .from('trades')
     .select('*')
-    .eq('simulation_id', simulationId)
-    .eq('status', 'CLOSED');
+    .eq('session_id', simulationId)
+    .eq('status', 'executed');
 
   if (error || !trades) return null;
 
-  const winningTrades = trades.filter(t => (t.pnl || 0) > 0);
-  const losingTrades = trades.filter(t => (t.pnl || 0) <= 0);
+  const winningTrades = trades.filter((t: Record<string, unknown>) => ((t.pnl as number) || 0) > 0);
+  const losingTrades = trades.filter((t: Record<string, unknown>) => ((t.pnl as number) || 0) <= 0);
 
-  const totalProfit = winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-  const totalLoss = Math.abs(losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0));
+  const totalProfit = winningTrades.reduce((sum: number, t: Record<string, unknown>) => sum + ((t.pnl as number) || 0), 0);
+  const totalLoss = Math.abs(losingTrades.reduce((sum: number, t: Record<string, unknown>) => sum + ((t.pnl as number) || 0), 0));
 
   return {
     totalTrades: trades.length,

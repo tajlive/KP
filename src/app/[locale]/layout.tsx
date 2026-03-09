@@ -89,6 +89,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       className={`${fraunces.variable} ${lexend.variable}`}
     >
       <head>
+        {/* Preconnect for critical domains - improves LCP */}
+        <link rel="preconnect" href="https://vuxbjlykgmzskxbclquf.supabase.co" />
+        <link rel="dns-prefetch" href="https://vuxbjlykgmzskxbclquf.supabase.co" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <OrganizationJsonLd />
         <script
           dangerouslySetInnerHTML={{
