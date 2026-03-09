@@ -33,6 +33,11 @@ export function createClient() {
  * - Server Component (async): await createServerClient()
  */
 export function createServerClient(
+  request: NextRequest,
+  response: NextResponse,
+): SupabaseClient<Database>;
+export function createServerClient(): Promise<SupabaseClient<Database>>;
+export function createServerClient(
   request?: NextRequest,
   response?: NextResponse,
 ): SupabaseClient<Database> | Promise<SupabaseClient<Database>> {
