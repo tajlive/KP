@@ -3,8 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
-// Eager load kritisk komponent
-import { LiveTicker } from "@/components/landing/LiveTicker";
+// LiveTicker temporarily removed for LCP testing
+// import { LiveTicker } from "@/components/landing/LiveTicker";
 
 // Lazy load ikke-kritiske komponenter for bedre LCP
 const DashboardPreview = dynamic(
@@ -139,8 +139,8 @@ export default async function HomePage({
 
   return (
     <main className="min-h-screen bg-slate-950">
-      {/* Live Price Ticker - Critical */}
-      <LiveTicker />
+      {/* Live Price Ticker - REMOVED for LCP testing */}
+      {/* <LiveTicker /> */}
       
       {/* Hero Section - Critical for LCP */}
       <HeroSection locale={locale} />
