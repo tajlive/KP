@@ -128,19 +128,26 @@ CREATE POLICY "System insert trade decisions"
   ON trade_decisions FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- 6. SEED standard risk profiler (hvis de ikke finnes)
+-- Bruker VALUES i stedet for unnest for å unngå CASE/unnest-konflikten
 INSERT INTO risk_profiles (user_id, name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, leverage_allowed, is_active)
-SELECT 
-  id as user_id,
-  unnest(ARRAY['forsiktig', 'moderat', 'aggressiv']) as name,
-  unnest(ARRAY[2.0, 5.0, 10.0]) as max_position_pct,
-  unnest(ARRAY[5.0, 15.0, 30.0]) as max_exposure_pct,
-  unnest(ARRAY[1.0, 3.0, 5.0]) as max_daily_loss_pct,
-  unnest(ARRAY['{BTCUSDT,ETHUSDT}'::text[], '{BTCUSDT,ETHUSDT,SOLUSDT}'::text[], '{BTCUSDT,ETHUSDT,SOLUSDT,ADAUSDT,DOTUSDT}'::text[]]) as allowed_pairs,
+SELECT
+  u.id as user_id,
+  p.name,
+  p.max_position_pct,
+  p.max_exposure_pct,
+  p.max_daily_loss_pct,
+  p.allowed_pairs,
   false as leverage_allowed,
-  CASE WHEN unnest(ARRAY['forsiktig', 'moderat', 'aggressiv']) = 'forsiktig' THEN true ELSE false END as is_active
-FROM auth.users
+  p.is_active
+FROM auth.users u
+CROSS JOIN (
+  VALUES
+    ('forsiktig'::text, 2.0::decimal, 5.0::decimal, 1.0::decimal, '{BTCUSDT,ETHUSDT}'::text[], true),
+    ('moderat'::text, 5.0::decimal, 15.0::decimal, 3.0::decimal, '{BTCUSDT,ETHUSDT,SOLUSDT}'::text[], false),
+    ('aggressiv'::text, 10.0::decimal, 30.0::decimal, 5.0::decimal, '{BTCUSDT,ETHUSDT,SOLUSDT,ADAUSDT,DOTUSDT}'::text[], false)
+) AS p(name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, is_active)
 WHERE NOT EXISTS (
-  SELECT 1 FROM risk_profiles rp WHERE rp.user_id = auth.users.id
+  SELECT 1 FROM risk_profiles rp WHERE rp.user_id = u.id
 )
 ON CONFLICT DO NOTHING;
 
