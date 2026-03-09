@@ -14,19 +14,26 @@ export function Footer() {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
+  // Helper for canonical paths - norsk default skal ikke ha /no/ prefix
+  const canonicalPath = (path: string) => {
+    if (locale === "no") {
+      return path;
+    }
+    return `/${locale}${path}`;
+  };
+
   const links = {
     product: [
-      { href: `/${locale}/kurs`, label: t("links.courses") },
-      { href: `/${locale}/paper-trading`, label: t("links.paperTrading") },
-      { href: `/${locale}/priser`, label: t("links.pricing") },
+      { href: canonicalPath("/kurs"), label: t("links.courses") },
+      { href: canonicalPath("/paper-trading"), label: t("links.paperTrading") },
+      { href: canonicalPath("/priser"), label: t("links.pricing") },
     ],
     company: [
-      // REMOVED: { href: `/${locale}/om-oss`, label: t("links.about") },
-      { href: `/${locale}/kontakt`, label: t("links.contact") },
+      { href: canonicalPath("/kontakt"), label: t("links.contact") },
     ],
     legal: [
-      { href: `/${locale}/personvern`, label: t("links.privacy") },
-      { href: `/${locale}/vilkar`, label: t("links.terms") },
+      { href: canonicalPath("/personvern"), label: t("links.privacy") },
+      { href: canonicalPath("/vilkar"), label: t("links.terms") },
     ],
   };
 
@@ -107,7 +114,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href={`/${locale}`} className="flex items-center mb-4">
+            <Link href={canonicalPath("/")} className="flex items-center mb-4">
               <Image
                 src="/logo.svg"
                 alt="Klarpakke"
@@ -198,7 +205,7 @@ export function Footer() {
         {/* Payment Methods */}
         <div className="mt-8 py-6 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <span className="text-white/40 text-xs">Sikker betaling med:</span>
+            <span className="text-white/40 text-xs">{t("paymentLabel")}</span>
             <div className="flex items-center gap-4">
               {/* Card icons */}
               <div className="flex items-center gap-1 text-white/50">
@@ -241,11 +248,7 @@ export function Footer() {
         {/* Disclaimer */}
         <div className="mt-12 pt-8 border-t border-white/10">
           <p className="text-white/40 text-sm leading-relaxed max-w-3xl">
-            Trading med kryptovaluta innebærer risiko. Klarpakke er en
-            læringsplattform og gir ikke finansiell rådgivning. Alle
-            investeringsbeslutninger er ditt eget ansvar. Tidligere resultater
-            er ingen garanti for fremtidige avkastninger. Invester aldri mer enn
-            du har råd til å tape.
+            {t("disclaimer")}
           </p>
         </div>
 
@@ -253,24 +256,23 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-white/40 text-sm">
-              © {currentYear} Klarpakke AS. Org.nr: 934 123 456. Alle
-              rettigheter reservert.
+              {t("copyright", { year: currentYear })}
             </p>
             <div className="flex gap-6">
               <Link
-                href={`/${locale}/personvern`}
+                href={canonicalPath("/personvern")}
                 className="text-white/40 text-sm hover:text-white/70 transition-colors duration-200"
               >
                 {t("links.privacy")}
               </Link>
               <Link
-                href={`/${locale}/vilkar`}
+                href={canonicalPath("/vilkar")}
                 className="text-white/40 text-sm hover:text-white/70 transition-colors duration-200"
               >
                 {t("links.terms")}
               </Link>
               <Link
-                href={`/${locale}/kontakt`}
+                href={canonicalPath("/kontakt")}
                 className="text-white/40 text-sm hover:text-white/70 transition-colors duration-200"
               >
                 {t("links.contact")}
