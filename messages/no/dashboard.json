@@ -53,19 +53,19 @@
     "allSystemsOperational": "Alle systemer operative",
     "systemStatus": "Systemstatus"
   },
-  "statusDesc": "Systemstatus oppdatert live",
+  "statusDesc": "Systemstatus oppdatert i sanntid",
   "stats": {
     "totalValue": "Total Verdi",
     "totalValueDesc": "Total porteføljeverdi",
     "activePositions": "Aktive Posisjoner",
     "activePositionsDesc": "Antall åpne handler",
-    "todayPnL": "Dagens P/L",
+    "todayPnL": "Dagens resultat",
     "todayPnLDesc": "Profitt/tap i dag",
     "winRate": "Vinnerrate",
     "winRateDesc": "Prosent vellykkede handler",
     "noActivePositions": "Ingen aktive posisjoner",
     "waitingForData": "Venter på data...",
-    "readyToTrade": "Klar til å trade",
+    "readyToTrade": "Klar til å handle",
     "locked": "Låst",
     "paperTradingFirst": "Start med øvingshandel først"
   },
@@ -83,8 +83,8 @@
   },
   "learningJourney": {
     "title": "Din Læringsreise",
-    "subtitle": "Veien til profitabel trading",
-    "description": "Følg vår strukturerte læringsplan for å mestre trading",
+    "subtitle": "Veien til lønnsom handel",
+    "description": "Følg vår strukturerte læringsplan for å mestre handel",
     "youAreHere": "Du er her",
     "completed": "Fullført",
     "inProgress": "Pågående",
@@ -103,7 +103,7 @@
   },
   "coach": {
     "title": "AI-handelscoach",
-    "subtitle": "Din personlige trading-assistent",
+    "subtitle": "Din personlige handelsassistent",
     "description": "Få sanntidsråd, analyser og svar på spørsmål",
     "placeholder": "Spør meg om handel, strategier, eller markedet...",
     "send": "Send",
@@ -112,8 +112,8 @@
     "examples": {
       "title": "Eksempel-spørsmål:",
       "q1": "Hva er et godt inngangspunkt for BTC nå?",
-      "q2": "Forklar support og resistance",
-      "q3": "Hvordan setter jeg stop loss?",
+      "q2": "Forklar støtte og motstand",
+      "q3": "Hvordan setter jeg stopp-tap?",
       "q4": "Hvilken strategi passer for nybegynnere?"
     }
   },
@@ -127,8 +127,8 @@
     "entryPrice": "Inngangskurs",
     "currentPrice": "Nåværende kurs",
     "exitPrice": "Utgangskurs",
-    "pnl": "P/L",
-    "pnlPercentage": "P/L %",
+    "pnl": "Res",
+    "pnlPercentage": "Res %",
     "status": "Status",
     "actions": "Handlinger",
     "close": "Lukk",
@@ -146,16 +146,16 @@
     "closed": "Lukket",
     "cancelled": "Kansellert",
     "paper": "Øving",
-    "live": "Live",
+    "live": "Ekte",
     "confirmClose": "Er du sikker på at du vil lukke denne posisjonen?"
   },
   "quickStats": {
     "title": "Rask Oversikt",
     "balance": "Saldo",
     "equity": "Egenkapital",
-    "margin": "Margin",
-    "freeMargin": "Fri Margin",
-    "marginLevel": "Margin Nivå",
+    "margin": "Sikkerhetsmargin",
+    "freeMargin": "Fri sikkerhetsmargin",
+    "marginLevel": "Margin-nivå",
     "drawdown": "Nedgang"
   },
   "portfolio": {
@@ -178,7 +178,7 @@
     "contactSupport": "Kontakt support hvis problemet vedvarer"
   },
   "bots": {
-    "modeLive": "Live",
+    "modeLive": "Ekte",
     "modePaper": "Øving"
   }
 }

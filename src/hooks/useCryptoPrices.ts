@@ -1,14 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
 interface CryptoPrice {
-  symbol: string
-  name: string
-  price: number
-  change24h: number
-  image?: string
+  symbol: string;
+  name: string;
+  price: number;
+  change24h: number;
+  image?: string;
 }
+
+interface PricesResponse {
+  ok: boolean;
+  data: CryptoPrice[];
+  fallback?: boolean;
+  timestamp: string;
+}
+
+const DEFAULT_PRICES: CryptoPrice[] = [
+  { symbol: 'BTC', name: 'Bitcoin', price: 98432, change24h: 2.4 },
+  { symbol: 'ETH', name: 'Ethereum', price: 3456, change24h: 1.8 },
+  { symbol: 'SOL', name: 'Solana', price: 178, change24h: -0.5 },
+];
 
 const CRYPTO_IDS = {
   BTC: 'bitcoin',
@@ -16,72 +29,65 @@ const CRYPTO_IDS = {
   SOL: 'solana',
   ADA: 'cardano',
   XRP: 'ripple',
-}
+};
 
+/**
+ * Hook for fetching crypto prices from our API proxy
+ * Falls back to cached values on error
+ */
 export function useCryptoPrices() {
-  const [prices, setPrices] = useState<CryptoPrice[]>([
-    { symbol: 'BTC', name: 'Bitcoin', price: 98432, change24h: 2.4 },
-    { symbol: 'ETH', name: 'Ethereum', price: 3456, change24h: 1.8 },
-    { symbol: 'SOL', name: 'Solana', price: 178, change24h: -0.5 },
-  ])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [prices, setPrices] = useState<CryptoPrice[]>(DEFAULT_PRICES);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
 
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const ids = Object.values(CRYPTO_IDS).join(',')
-        const response = await fetch(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
-          { cache: 'no-store' }
-        )
+        setLoading(true);
+        setError(null);
+        
+        const ids = Object.keys(CRYPTO_IDS).join(',');
+        const response = await fetch(`/api/market/prices?coins=${ids}&currency=usd`, {
+          cache: 'no-store',
+        });
         
         if (!response.ok) {
-          throw new Error('Failed to fetch prices')
+          throw new Error(`API error: ${response.status}`);
         }
 
-        const data = await response.json()
+        const result: PricesResponse = await response.json();
         
-        const formatted: CryptoPrice[] = [
-          {
-            symbol: 'BTC',
-            name: 'Bitcoin',
-            price: data.bitcoin?.usd || 98432,
-            change24h: data.bitcoin?.usd_24h_change || 0,
-          },
-          {
-            symbol: 'ETH',
-            name: 'Ethereum',
-            price: data.ethereum?.usd || 3456,
-            change24h: data.ethereum?.usd_24h_change || 0,
-          },
-          {
-            symbol: 'SOL',
-            name: 'Solana',
-            price: data.solana?.usd || 178,
-            change24h: data.solana?.usd_24h_change || 0,
-          },
-        ]
-
-        setPrices(formatted)
-        setLoading(false)
+        if (!result.ok || !result.data) {
+          throw new Error('Invalid response format');
+        }
+        
+        setPrices(result.data);
+        setIsFallback(result.fallback || false);
+        setLoading(false);
       } catch (err) {
-        console.error('Error fetching crypto prices:', err)
-        setError('Kunne ikke hente live priser')
-        setLoading(false)
-        // Keep fallback prices
+        console.error('Error fetching crypto prices:', err);
+        setError('Kunne ikke hente live priser');
+        setLoading(false);
+        // Keep existing prices (fallback)
+        setIsFallback(true);
       }
-    }
+    };
 
-    fetchPrices()
+    fetchPrices();
     
     // Update every 30 seconds
-    const interval = setInterval(fetchPrices, 30000)
+    const interval = setInterval(fetchPrices, 30000);
     
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
-  return { prices, loading, error }
+  return { 
+    prices, 
+    loading, 
+    error, 
+    isFallback,
+  };
 }
 
 export function formatPrice(price: number): string {
@@ -89,19 +95,19 @@ export function formatPrice(price: number): string {
     return price.toLocaleString('en-US', { 
       minimumFractionDigits: 2, 
       maximumFractionDigits: 2 
-    })
+    });
   }
   return price.toLocaleString('en-US', { 
     minimumFractionDigits: 2, 
     maximumFractionDigits: 4 
-  })
+  });
 }
 
 export function formatChange(change: number): { text: string; isPositive: boolean } {
-  const isPositive = change >= 0
-  const sign = isPositive ? '+' : ''
+  const isPositive = change >= 0;
+  const sign = isPositive ? '+' : '';
   return {
     text: `${sign}${change.toFixed(2)}%`,
     isPositive,
-  }
+  };
 }

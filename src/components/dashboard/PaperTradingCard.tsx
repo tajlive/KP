@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, TrendingUp, TrendingDown, Wallet, RotateCcw } from 'lucide-react';
+import { RefreshCw, TrendingUp, TrendingDown, Wallet, RotateCcw, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BalanceData {
@@ -14,22 +14,47 @@ interface BalanceData {
   isPositive: boolean;
 }
 
+type LoadingState = 'loading' | 'error' | 'empty' | 'ready';
+
 export function PaperTradingCard() {
   const [balance, setBalance] = useState<BalanceData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<LoadingState>('loading');
   const [resetting, setResetting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const fetchBalance = async () => {
     try {
+      setState('loading');
+      setErrorMessage('');
+      
       const response = await fetch('/api/paper-trading/balance');
-      if (!response.ok) throw new Error('Failed to fetch balance');
+      
+      if (response.status === 401) {
+        setState('empty');
+        setErrorMessage('Du må være logget inn for å se paper trading-saldo');
+        return;
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Serverfeil: ${response.status}`);
+      }
+      
       const data = await response.json();
+      
+      if (!data.balance) {
+        setState('empty');
+        setErrorMessage('Ingen paper trading-session funnet');
+        return;
+      }
+      
       setBalance(data.balance);
+      setState('ready');
     } catch (error) {
       console.error('Failed to fetch balance:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Kunne ikke hente saldo');
+      setState('error');
       toast.error('Kunne ikke hente saldo');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -58,7 +83,8 @@ export function PaperTradingCard() {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) {
+  // Loading state
+  if (state === 'loading') {
     return (
       <Card className="bg-slate-900 border-slate-800">
         <CardHeader className="pb-2">
@@ -77,7 +103,8 @@ export function PaperTradingCard() {
     );
   }
 
-  if (!balance) {
+  // Error state
+  if (state === 'error') {
     return (
       <Card className="bg-slate-900 border-slate-800">
         <CardHeader className="pb-2">
@@ -86,13 +113,63 @@ export function PaperTradingCard() {
             Paper Trading
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-slate-400 text-sm">Kunne ikke laste paper trading data.</p>
+        <CardContent className="space-y-4">
+          <div className="flex items-start gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-red-400 text-sm font-medium">Kunne ikke laste data</p>
+              <p className="text-slate-400 text-xs mt-1">{errorMessage}</p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchBalance}
+            className="w-full border-slate-700 text-slate-300 hover:bg-slate-800"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Prøv igjen
+          </Button>
         </CardContent>
       </Card>
     );
   }
 
+  // Empty state (no session or not logged in)
+  if (state === 'empty') {
+    return (
+      <Card className="bg-slate-900 border-slate-800">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg text-white flex items-center gap-2">
+            <Wallet className="w-5 h-5 text-blue-500" />
+            Paper Trading
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-start gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+            <Loader2 className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-slate-300 text-sm">{errorMessage || 'Ingen paper trading-data tilgjengelig'}</p>
+              <p className="text-slate-500 text-xs mt-1">
+                Start en øvingshandel-session for å se din virtuelle saldo.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchBalance}
+            className="w-full border-slate-700 text-slate-300 hover:bg-slate-800"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Sjekk på nytt
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Ready state
   return (
     <Card className="bg-slate-900 border-slate-800" data-testid="paper-trading-card">
       <CardHeader className="pb-2">
@@ -106,7 +183,7 @@ export function PaperTradingCard() {
         <div data-testid="paper-balance-container">
           <p className="text-slate-400 text-sm">Nåværende saldo</p>
           <p className="text-3xl font-bold text-white" data-testid="paper-balance">
-            kr {balance.current.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+            kr {balance?.current.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
           </p>
         </div>
 
@@ -115,18 +192,18 @@ export function PaperTradingCard() {
           <div>
             <p className="text-slate-400 text-sm">Start saldo</p>
             <p className="text-slate-300">
-              kr {balance.starting.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+              kr {balance?.starting.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
             </p>
           </div>
           <div className="text-right" data-testid="paper-pnl-container">
-            <p className="text-slate-400 text-sm">P&L</p>
-            <div className={`flex items-center gap-1 ${balance.isPositive ? 'text-green-400' : 'text-red-400'}`} data-testid="paper-pnl">
-              {balance.isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+            <p className="text-slate-400 text-sm">Resultat</p>
+            <div className={`flex items-center gap-1 ${balance && balance.isPositive ? 'text-green-400' : 'text-red-400'}`} data-testid="paper-pnl">
+              {balance && balance.isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
               <span className="font-semibold">
-                {balance.isPositive ? '+' : ''}{balance.pnl.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+                {balance && balance.isPositive ? '+' : ''}{balance?.pnl.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
               </span>
               <span className="text-sm">
-                ({balance.isPositive ? '+' : ''}{balance.pnlPercentage.toFixed(2)}%)
+                ({balance && balance.isPositive ? '+' : ''}{balance?.pnlPercentage.toFixed(2)}%)
               </span>
             </div>
           </div>
@@ -138,10 +215,10 @@ export function PaperTradingCard() {
             variant="outline"
             size="sm"
             onClick={fetchBalance}
-            disabled={loading}
-            className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-800"
+            disabled={state === 'loading'}
+            className="flex-1 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 mr-2 ${state === 'loading' ? 'animate-spin' : ''}`} />
             Oppdater
           </Button>
           <Button
@@ -149,7 +226,7 @@ export function PaperTradingCard() {
             size="sm"
             onClick={handleReset}
             disabled={resetting}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-red-400"
+            className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-red-400"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset

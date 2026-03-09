@@ -54,11 +54,15 @@ export function GamificationCard() {
       const supabase = createClient();
       
       // Fetch user level
-      const { data: levelData } = await supabase
+      const { data: levelData, error: levelError } = await supabase
         .from("user_levels")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
+      
+      if (levelError && levelError.code !== 'PGRST116') {
+        console.error('[GamificationCard] Error fetching user level:', levelError);
+      }
       
       if (levelData) {
         setLevel(levelData);

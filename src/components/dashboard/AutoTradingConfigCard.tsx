@@ -51,7 +51,7 @@ export function AutoTradingConfigCard() {
         .from("auto_trading_configs")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== "PGRST116") {
         console.error("Error fetching config:", error);
@@ -86,7 +86,7 @@ export function AutoTradingConfigCard() {
         .from("auto_trading_configs")
         .select("id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (existingConfig) {
         await supabase
@@ -118,27 +118,27 @@ export function AutoTradingConfigCard() {
 
   if (loading) {
     return (
-      <Card>
+      <Card className="bg-slate-900 border-slate-800">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-white">
             <Bot className="h-5 w-5" />
             Auto-Trading
           </CardTitle>
-          <CardDescription>Laster...</CardDescription>
+          <CardDescription className="text-slate-400">Laster...</CardDescription>
         </CardHeader>
-        <CardContent className="h-40 animate-pulse bg-gray-100 rounded" />
+        <CardContent className="h-40 animate-pulse bg-slate-800 rounded" />
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card className="bg-slate-900 border-slate-800">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-white">
           <Bot className="h-5 w-5" />
           Auto-Trading
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-slate-400">
           La AI handle på dine vegne basert på markedsanalyse
         </CardDescription>
       </CardHeader>
@@ -146,10 +146,10 @@ export function AutoTradingConfigCard() {
         {/* Enable/Disable Toggle */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="auto-trading" className="text-base font-medium">
+            <Label htmlFor="auto-trading" className="text-base font-medium text-white">
               Auto-Trading
             </Label>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-slate-400">
               {config.enabled ? 'Aktivert - AI handler automatisk' : 'Deaktivert - Manuell handel'}
             </p>
           </div>
@@ -162,14 +162,17 @@ export function AutoTradingConfigCard() {
 
         {/* Mode Toggle */}
         <div className="space-y-3">
-          <Label className="text-sm font-medium">Handelsmodus</Label>
+          <Label className="text-sm font-medium text-white">Handelsmodus</Label>
           <div className="flex gap-2">
             <Button
               type="button"
               variant={config.mode === 'paper' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setConfig({ ...config, mode: 'paper' })}
-              className="flex-1"
+              className={config.mode === 'paper' 
+                ? "flex-1 bg-blue-600 hover:bg-blue-700 text-white" 
+                : "flex-1 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
+              }
             >
               <Shield className="h-4 w-4 mr-2" />
               Paper Trading
@@ -179,19 +182,22 @@ export function AutoTradingConfigCard() {
               variant={config.mode === 'live' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setConfig({ ...config, mode: 'live' })}
-              className="flex-1"
+              className={config.mode === 'live' 
+                ? "flex-1 bg-blue-600 hover:bg-blue-700 text-white" 
+                : "flex-1 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
+              }
             >
               <TrendingUp className="h-4 w-4 mr-2" />
               Live Trading
             </Button>
           </div>
           {config.mode === 'paper' ? (
-            <p className="text-xs text-muted-foreground flex items-start gap-1">
+            <p className="text-xs text-slate-400 flex items-start gap-1">
               <Shield className="h-3 w-3 mt-0.5" />
               Paper trading bruker simulerte penger. Ingen ekte tap.
             </p>
           ) : (
-            <p className="text-xs text-amber-600 flex items-start gap-1">
+            <p className="text-xs text-amber-500 flex items-start gap-1">
               <AlertCircle className="h-3 w-3 mt-0.5" />
               Live trading bruker ekte penger. Start med paper trading først!
             </p>
@@ -201,7 +207,7 @@ export function AutoTradingConfigCard() {
         {/* Risk Level */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium">Risikonivå</Label>
+            <Label className="text-sm font-medium text-white">Risikonivå</Label>
             <span className={cn("text-xs font-medium", currentRiskLevel?.color)}>
               {currentRiskLevel?.label}
             </span>
@@ -219,13 +225,13 @@ export function AutoTradingConfigCard() {
                       : risk.value === 'medium'
                       ? 'bg-yellow-500'
                       : 'bg-red-500'
-                    : 'bg-gray-200 hover:bg-gray-300'
+                    : 'bg-slate-700 hover:bg-slate-600'
                 )}
                 title={risk.description}
               />
             ))}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-slate-400">
             {currentRiskLevel?.description}
           </p>
         </div>
@@ -233,8 +239,8 @@ export function AutoTradingConfigCard() {
         {/* Max Trade Size */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium">Maks handelsstørrelse</Label>
-            <span className="text-sm font-medium">
+            <Label className="text-sm font-medium text-white">Maks handelsstørrelse</Label>
+            <span className="text-sm font-medium text-slate-200">
               {config.max_trade_size_nok.toLocaleString('nb-NO')} NOK
             </span>
           </div>
@@ -255,7 +261,7 @@ export function AutoTradingConfigCard() {
         <Button 
           onClick={saveConfig} 
           disabled={saving}
-          className="w-full"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? 'Lagrer...' : 'Lagre innstillinger'}
         </Button>
