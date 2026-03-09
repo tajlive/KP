@@ -240,535 +240,298 @@
   },
   "suites": [
     {
-      "title": "auth.teardown.ts",
-      "file": "auth.teardown.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "cleanup auth state",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 60000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "cleanup",
-              "projectName": "cleanup",
-              "results": [
-                {
-                  "workerIndex": 2,
-                  "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 1,
-                  "error": {
-                    "message": "ReferenceError: path is not defined",
-                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22",
-                    "location": {
-                      "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
-                      "column": 22,
-                      "line": 22
-                    },
-                    "snippet": "\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
-                        "column": 22,
-                        "line": 22
-                      },
-                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22\u001b[22m"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-08T23:15:36.962Z",
-                  "annotations": [],
-                  "attachments": [],
-                  "errorLocation": {
-                    "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
-                    "column": 22,
-                    "line": 22
-                  }
-                },
-                {
-                  "workerIndex": 3,
-                  "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 1,
-                  "error": {
-                    "message": "ReferenceError: path is not defined",
-                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22",
-                    "location": {
-                      "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
-                      "column": 22,
-                      "line": 22
-                    },
-                    "snippet": "\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
-                        "column": 22,
-                        "line": 22
-                      },
-                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22\u001b[22m"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 1,
-                  "startTime": "2026-03-08T23:15:37.520Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "/Users/taj/klarpakke/test-results/auth.teardown.ts-cleanup-auth-state-cleanup-retry1/trace.zip"
-                    }
-                  ],
-                  "errorLocation": {
-                    "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
-                    "column": 22,
-                    "line": 22
-                  }
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "5228e77054e433ae56aa-24ec22baaf422e6ba8fd",
-          "file": "auth.teardown.ts",
-          "line": 13,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "auth.setup.ts",
-      "file": "auth.setup.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "authenticate via API or mock",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 60000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "setup",
-              "projectName": "setup",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 411,
-                  "error": {
-                    "message": "ReferenceError: path is not defined",
-                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19",
-                    "location": {
-                      "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
-                      "column": 19,
-                      "line": 17
-                    },
-                    "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
-                        "column": 19,
-                        "line": 17
-                      },
-                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19\u001b[22m"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-08T23:15:34.089Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "screenshot",
-                      "contentType": "image/png",
-                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup/test-failed-1.png"
-                    },
-                    {
-                      "name": "video",
-                      "contentType": "video/webm",
-                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup/video.webm"
-                    }
-                  ],
-                  "errorLocation": {
-                    "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
-                    "column": 19,
-                    "line": 17
-                  }
-                },
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 177,
-                  "error": {
-                    "message": "ReferenceError: path is not defined",
-                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19",
-                    "location": {
-                      "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
-                      "column": 19,
-                      "line": 17
-                    },
-                    "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
-                        "column": 19,
-                        "line": 17
-                      },
-                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19\u001b[22m"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 1,
-                  "startTime": "2026-03-08T23:15:35.855Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "screenshot",
-                      "contentType": "image/png",
-                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup-retry1/test-failed-1.png"
-                    },
-                    {
-                      "name": "video",
-                      "contentType": "video/webm",
-                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup-retry1/video.webm"
-                    },
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup-retry1/trace.zip"
-                    }
-                  ],
-                  "errorLocation": {
-                    "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
-                    "column": 19,
-                    "line": 17
-                  }
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "17e3fe6f4d9d8bd79c6b-5c0a346ddcdce76a074e",
-          "file": "auth.setup.ts",
-          "line": 15,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "critical/auth.spec.ts",
-      "file": "critical/auth.spec.ts",
+      "title": "smoke/health.spec.ts",
+      "file": "smoke/health.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Critical: Authentication @critical @auth",
-          "file": "critical/auth.spec.ts",
+          "title": "Smoke: Health Checks @smoke",
+          "file": "smoke/health.spec.ts",
           "line": 9,
           "column": 6,
           "specs": [
             {
-              "title": "protected routes redirect to login when unauthenticated",
+              "title": "health endpoint returns 200",
               "ok": true,
               "tags": [
-                "critical",
-                "auth"
+                "smoke"
               ],
               "tests": [
                 {
                   "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "critical-chromium",
-                  "projectName": "critical-chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "projectId": "smoke-chromium",
+                  "projectName": "smoke-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 744,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-09T00:28:16.578Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "781736a2f7be71c5786b-d45d7c2ae6b1afd28cc8",
-              "file": "critical/auth.spec.ts",
+              "id": "4f244b27f1efae6c9c3d-a4b373d4d269a2601d22",
+              "file": "smoke/health.spec.ts",
               "line": 11,
               "column": 3
             },
             {
-              "title": "dashboard loads for authenticated user",
-              "ok": true,
+              "title": "homepage loads without errors",
+              "ok": false,
               "tags": [
-                "critical",
-                "auth"
+                "smoke"
               ],
               "tests": [
                 {
                   "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "critical-chromium",
-                  "projectName": "critical-chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "projectId": "smoke-chromium",
+                  "projectName": "smoke-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 3205,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28",
+                        "location": {
+                          "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
+                          "column": 28,
+                          "line": 40
+                        },
+                        "snippet": "  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
+                            "column": 28,
+                            "line": 40
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n\n  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-09T00:28:16.579Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
+                        "column": 28,
+                        "line": 40
+                      }
+                    },
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 2671,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28",
+                        "location": {
+                          "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
+                          "column": 28,
+                          "line": 40
+                        },
+                        "snippet": "  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
+                            "column": 28,
+                            "line": 40
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n\n  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-03-09T00:28:21.414Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
+                        "column": 28,
+                        "line": 40
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
                 }
               ],
-              "id": "781736a2f7be71c5786b-9ce11f2d5c43088baaca",
-              "file": "critical/auth.spec.ts",
-              "line": 24,
+              "id": "4f244b27f1efae6c9c3d-c7fa86a19827f79b0f9f",
+              "file": "smoke/health.spec.ts",
+              "line": 21,
               "column": 3
             },
             {
-              "title": "API returns 401 for unauthenticated requests",
+              "title": "login page is accessible",
               "ok": true,
               "tags": [
-                "critical",
-                "auth"
+                "smoke"
               ],
               "tests": [
                 {
                   "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "critical-chromium",
-                  "projectName": "critical-chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "projectId": "smoke-chromium",
+                  "projectName": "smoke-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 2311,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-09T00:28:16.578Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "781736a2f7be71c5786b-394c873a5ba252e84603",
-              "file": "critical/auth.spec.ts",
-              "line": 38,
+              "id": "4f244b27f1efae6c9c3d-8570e6e60b4a5c46837b",
+              "file": "smoke/health.spec.ts",
+              "line": 43,
               "column": 3
             },
             {
-              "title": "API works for authenticated requests",
+              "title": "leaderboard page loads",
               "ok": true,
               "tags": [
-                "critical",
-                "auth"
+                "smoke"
               ],
               "tests": [
                 {
                   "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "critical-chromium",
-                  "projectName": "critical-chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "projectId": "smoke-chromium",
+                  "projectName": "smoke-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3514,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "⚠️ Leaderboard redirected to: https://www.klarpakke.no/en/innlogging\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-09T00:28:16.588Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "781736a2f7be71c5786b-04f3dec744f82a455e8b",
-              "file": "critical/auth.spec.ts",
-              "line": 48,
+              "id": "4f244b27f1efae6c9c3d-d13594eba0e2257fbd2d",
+              "file": "smoke/health.spec.ts",
+              "line": 58,
               "column": 3
             },
             {
-              "title": "protected routes redirect to login when unauthenticated",
+              "title": "static assets are served",
               "ok": true,
               "tags": [
-                "critical",
-                "auth"
+                "smoke"
               ],
               "tests": [
                 {
                   "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "critical-firefox",
-                  "projectName": "critical-firefox",
-                  "results": [],
-                  "status": "skipped"
+                  "projectId": "smoke-chromium",
+                  "projectName": "smoke-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 360,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-09T00:28:17.342Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "781736a2f7be71c5786b-a41ee8e0b25fa1031364",
-              "file": "critical/auth.spec.ts",
-              "line": 11,
-              "column": 3
-            },
-            {
-              "title": "dashboard loads for authenticated user",
-              "ok": true,
-              "tags": [
-                "critical",
-                "auth"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "critical-firefox",
-                  "projectName": "critical-firefox",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "781736a2f7be71c5786b-b0b749e3d817b15ae1be",
-              "file": "critical/auth.spec.ts",
-              "line": 24,
-              "column": 3
-            },
-            {
-              "title": "API returns 401 for unauthenticated requests",
-              "ok": true,
-              "tags": [
-                "critical",
-                "auth"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "critical-firefox",
-                  "projectName": "critical-firefox",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "781736a2f7be71c5786b-12ea6f158af09f2758fc",
-              "file": "critical/auth.spec.ts",
-              "line": 38,
-              "column": 3
-            },
-            {
-              "title": "API works for authenticated requests",
-              "ok": true,
-              "tags": [
-                "critical",
-                "auth"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "critical-firefox",
-                  "projectName": "critical-firefox",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "781736a2f7be71c5786b-a360144fda9356fbae2d",
-              "file": "critical/auth.spec.ts",
-              "line": 48,
-              "column": 3
-            }
-          ]
-        },
-        {
-          "title": "Critical: Core Navigation @critical",
-          "file": "critical/auth.spec.ts",
-          "line": 69,
-          "column": 6,
-          "specs": [
-            {
-              "title": "user can navigate between main sections",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "critical-chromium",
-                  "projectName": "critical-chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "781736a2f7be71c5786b-cf378800e0a2ce067baf",
-              "file": "critical/auth.spec.ts",
-              "line": 71,
-              "column": 3
-            },
-            {
-              "title": "no console errors on critical paths",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "critical-chromium",
-                  "projectName": "critical-chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "781736a2f7be71c5786b-1f67a94b8fa8e012c547",
-              "file": "critical/auth.spec.ts",
-              "line": 84,
-              "column": 3
-            },
-            {
-              "title": "user can navigate between main sections",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "critical-firefox",
-                  "projectName": "critical-firefox",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "781736a2f7be71c5786b-b7aba1c65569938ee9e1",
-              "file": "critical/auth.spec.ts",
-              "line": 71,
-              "column": 3
-            },
-            {
-              "title": "no console errors on critical paths",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "critical-firefox",
-                  "projectName": "critical-firefox",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "781736a2f7be71c5786b-cee5307312623a8fbd65",
-              "file": "critical/auth.spec.ts",
-              "line": 84,
+              "id": "4f244b27f1efae6c9c3d-9ed2e2e5e6a3fe4bbae5",
+              "file": "smoke/health.spec.ts",
+              "line": 79,
               "column": 3
             }
           ]
@@ -778,11 +541,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-03-08T23:15:24.622Z",
-    "duration": 12969.758,
-    "expected": 0,
-    "skipped": 12,
-    "unexpected": 2,
+    "startTime": "2026-03-09T00:28:04.827Z",
+    "duration": 19774.9,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }
