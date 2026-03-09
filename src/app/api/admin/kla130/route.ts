@@ -77,13 +77,13 @@ export async function POST(req: NextRequest) {
         } else {
           results.push({ success: true, data });
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         results.push({ success: false, error: e.message, sql: sql.substring(0, 50) });
       }
     }
 
     return NextResponse.json({ success: true, results });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

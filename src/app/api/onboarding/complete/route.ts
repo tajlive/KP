@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClient()) as unknown;
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

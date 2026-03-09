@@ -60,10 +60,10 @@ export async function getCurrentUser() {
 
   // Get user profile
   const { data: profile, error: profileError } = (await supabase
-    .from("user_profiles" as any)
+    .from("user_profiles" as unknown)
     .select("*")
     .eq("id", user.id)
-    .single()) as any;
+    .single()) as unknown;
 
   if (profileError) {
     console.warn("Error fetching profile:", profileError);

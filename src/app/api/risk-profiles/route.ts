@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 // GET /api/risk-profiles - List user's profiles
 export async function GET() {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClient()) as unknown;
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -27,7 +27,7 @@ export async function GET() {
 
 // POST /api/risk-profiles - Create new profile
 export async function POST(request: Request) {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClient()) as unknown;
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {

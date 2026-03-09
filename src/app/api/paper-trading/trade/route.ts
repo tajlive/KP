@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       new_balance: result.new_balance,
       trade_id: result.trade_id,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Paper trading execute error:", error);
 
     if (error.message === "Insufficient balance for this trade") {

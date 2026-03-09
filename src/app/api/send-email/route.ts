@@ -5,7 +5,7 @@ import { Resend } from "resend";
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = (await createClient()) as any;
+    const supabase = (await createClient()) as unknown;
     const {
       data: { user },
     } = await supabase.auth.getUser();

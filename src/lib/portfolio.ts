@@ -180,7 +180,7 @@ export async function getPortfolioOverview(
     let totalInvested = 0;
     let totalUnrealizedPnl = 0;
 
-    const mappedPositions: PortfolioPosition[] = positions.map((pos: any) => {
+    const mappedPositions: PortfolioPosition[] = positions.map((pos: unknown) => {
       const positionValue = safeNumber(pos.current_value);
       const positionInvested = safeNumber(pos.total_invested);
       const positionPnl = safeNumber(pos.unrealized_pnl);

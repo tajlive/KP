@@ -24,7 +24,7 @@ export default function SystemStatus() {
       try {
         // Check Supabase connectivity with a lightweight query
         const supabase = createClient();
-        const { error } = await supabase.from('user_profiles' as any).select('id', { count: 'exact', head: true });
+        const { error } = await supabase.from('user_profiles' as unknown).select('id', { count: 'exact', head: true });
         setHealth({
           supabase: error ? 'degraded' : 'operational',
           binance: 'operational',

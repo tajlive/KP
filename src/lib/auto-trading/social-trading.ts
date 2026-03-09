@@ -19,7 +19,7 @@ export async function followStrategy(
 
   // 1. Opprett en ny auto-trading config for brukeren
   const { data: config, error: configError } = (await supabase
-    .from("user_auto_trading_configs" as any)
+    .from("user_auto_trading_configs" as unknown)
     .insert({
       user_id: userId,
       strategy_id: strategyId,
@@ -28,13 +28,13 @@ export async function followStrategy(
       phase: "paper", // Start alltid i paper trading for nye følgere
     })
     .select()
-    .single()) as any;
+    .single()) as unknown;
 
   if (configError) throw configError;
 
   // 2. Start en sesjon
   const { data: session, error: sessionError } = (await supabase
-    .from("auto_trading_sessions" as any)
+    .from("auto_trading_sessions" as unknown)
     .insert({
       user_id: userId,
       config_id: config.id,
@@ -42,7 +42,7 @@ export async function followStrategy(
       starting_capital_nok: capitalNok,
       current_capital_nok: capitalNok,
       status: "ACTIVE",
-    })) as any;
+    })) as unknown;
 
   if (sessionError) throw sessionError;
 
@@ -58,10 +58,10 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
   // 1. Finn alle aktive sesjoner som følger denne strategien
   // (Dette krever en join eller at vi vet hvilken strategi trade-en tilhører)
   const { data: followers, error: followersError } = (await supabase
-    .from("auto_trading_sessions" as any)
+    .from("auto_trading_sessions" as unknown)
     .select("*, user_auto_trading_configs!inner(*)")
     .eq("user_auto_trading_configs.strategy_id", originalTrade.strategy_used)
-    .eq("status", "ACTIVE")) as any;
+    .eq("status", "ACTIVE")) as unknown;
 
   if (followersError || !followers) return;
 

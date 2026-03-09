@@ -284,11 +284,11 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     const { error } = await supabase
       .from("subscriptions")
       .update({
-        status: (subscription as any).status as any,
-        cancel_at_period_end: (subscription as any)?.cancel_at_period_end,
-        current_period_end: (subscription as any)?.current_period_end
+        status: (subscription as unknown).status as unknown,
+        cancel_at_period_end: (subscription as unknown)?.cancel_at_period_end,
+        current_period_end: (subscription as unknown)?.current_period_end
           ? new Date(
-              (subscription as any).current_period_end * 1000,
+              (subscription as unknown).current_period_end * 1000,
             ).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),

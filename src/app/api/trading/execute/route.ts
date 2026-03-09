@@ -3,7 +3,7 @@ import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClient()) as unknown;
   const {
     data: { user },
     error: authError,
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       )
       .eq("id", session_id)
       .eq("user_id", user.id)
-      .single()) as any;
+      .single()) as unknown;
 
     if (sessionError || !session) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
         .select("*")
         .eq("session_id", session_id)
         .eq("symbol", symbol)
-        .single()) as any;
+        .single()) as unknown;
 
       if (existingPos) {
         const newQty = Number(existingPos.quantity) + result.executedQuantity;
@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
         .select("quantity, avg_entry_price")
         .eq("session_id", session_id)
         .eq("symbol", symbol)
-        .single()) as any;
+        .single()) as unknown;
 
       if (!position || position.quantity < result.executedQuantity) {
         return NextResponse.json(

@@ -43,10 +43,10 @@ export function usePrices() {
     const fetchPrices = async () => {
       setLoading(true);
       // Using type assertion since coin_prices table may vary by environment
-      const { data } = await (supabase as any).from("coin_prices").select("*");
+      const { data } = await (supabase as unknown).from("coin_prices").select("*");
 
       const priceMap = ((data || []) as CoinPrice[]).reduce(
-        (acc: Record<string, CoinPrice>, price: any) => {
+        (acc: Record<string, CoinPrice>, price: unknown) => {
           acc[price.symbol] = price as CoinPrice;
           return acc;
         },
@@ -97,7 +97,7 @@ export function usePrices() {
               high_24h: 0,
               low_24h: 0,
               last_updated: new Date().toISOString(),
-            } as any as CoinPrice;
+            } as unknown as CoinPrice;
           }
         });
         return next;

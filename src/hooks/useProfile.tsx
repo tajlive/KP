@@ -23,10 +23,10 @@ export function useProfile() {
         return;
       }
       const { data, error: fetchError } = (await supabase
-        .from("user_profiles" as any)
+        .from("user_profiles" as unknown)
         .select("*")
         .eq("id", user.id)
-        .single()) as any;
+        .single()) as unknown;
       if (fetchError) {
         setProfile(null);
       } else {
@@ -51,14 +51,14 @@ export function useProfile() {
         return;
       }
       const { data, error: upsertError } = (await supabase
-        .from("user_profiles" as any)
+        .from("user_profiles" as unknown)
         .upsert({
           id: user.id,
           ...updates,
           updated_at: new Date().toISOString(),
         })
         .select()
-        .single()) as any;
+        .single()) as unknown;
       if (upsertError) {
         setError(upsertError.message);
       } else {
@@ -83,11 +83,11 @@ export function useProfile() {
         return;
       }
       const { data, error: updateError } = (await supabase
-        .from("user_profiles" as any)
+        .from("user_profiles" as unknown)
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", user.id)
         .select()
-        .single()) as any;
+        .single()) as unknown;
       if (updateError) {
         setError(updateError.message);
       } else {
@@ -108,7 +108,7 @@ export function useProfile() {
       } = await supabase.auth.getUser();
       if (!user) return;
       await supabase
-        .from("user_profiles" as any)
+        .from("user_profiles" as unknown)
         .delete()
         .eq("id", user.id);
     } catch (e: unknown) {

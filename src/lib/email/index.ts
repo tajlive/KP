@@ -72,10 +72,10 @@ async function shouldSendEmail(
   try {
     const supabase = createClient();
     const { data: prefs } = (await supabase
-      .from("email_preferences" as any)
+      .from("email_preferences" as unknown)
       .select("*")
       .eq("user_id", userId)
-      .single()) as any;
+      .single()) as unknown;
 
     if (!prefs) {
       // Default to sending if no preferences set
@@ -116,10 +116,10 @@ async function getUserInfo(
   try {
     const supabase = createClient();
     const { data: profile } = (await supabase
-      .from("user_profiles" as any)
+      .from("user_profiles" as unknown)
       .select("email, full_name")
       .eq("id", userId)
-      .single()) as any;
+      .single()) as unknown;
 
     if (!profile?.email) {
       // Fallback: get email from auth
@@ -717,12 +717,12 @@ export async function queueEmail(
   try {
     const supabase = createClient();
 
-    const { error } = (await supabase.from("notification_queue" as any).insert({
+    const { error } = (await supabase.from("notification_queue" as unknown).insert({
       user_id: options.userId,
       type: options.type,
       payload: options.data,
       status: "pending",
-    })) as any;
+    })) as unknown;
 
     if (error) {
       console.error("[Email] Queue error:", error);

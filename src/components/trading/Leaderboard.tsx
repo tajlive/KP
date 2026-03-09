@@ -272,7 +272,7 @@ export default function Leaderboard() {
         const json = await res.json();
         if (json.success) {
           // Map API data back to LeaderboardEntry expected keys
-          const mapped: LeaderboardEntry[] = (json.leaderboard as any[]).map(
+          const mapped: LeaderboardEntry[] = (json.leaderboard as unknown[]).map(
             (e: unknown) => ({
               id: (e as { user_id?: string }).user_id || "",
               rank: (e as { rank?: number }).rank || 0,

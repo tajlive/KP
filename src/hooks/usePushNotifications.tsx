@@ -71,7 +71,7 @@ export function usePushNotifications({ userId }: PushNotificationManagerProps) {
             // Subscribe to push notifications
             const sub = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as any as BufferSource,
+                applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as unknown as BufferSource,
             })
 
             // Save subscription to database

@@ -42,7 +42,7 @@ interface ConditionalOrderRequest {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClient()) as unknown;
 
   // Auth check
   const {
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: (validation as any).error.errors },
+        { error: "Invalid request", details: (validation as unknown).error.errors },
         { status: 400 },
       );
     }
@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
 
 // GET - List user's conditional orders
 export async function GET(request: NextRequest) {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClient()) as unknown;
 
   const {
     data: { user },
@@ -274,7 +274,7 @@ export async function GET(request: NextRequest) {
 
 // DELETE - Cancel a conditional order
 export async function DELETE(request: NextRequest) {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClient()) as unknown;
 
   const {
     data: { user },

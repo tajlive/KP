@@ -33,7 +33,7 @@ export const POST = withRateLimit(
     }
 
     const { action } = parsed.data;
-    const db = (await createClient()) as any;
+    const db = (await createClient()) as unknown;
 
     const statusMap: Record<string, string> = {
       pause: "paused",
@@ -49,7 +49,7 @@ export const POST = withRateLimit(
       .eq("id", id)
       .eq("user_id", user.id)
       .select("id, status, strategy_type")
-      .single()) as any;
+      .single()) as unknown;
 
     if (!strategy) {
       return NextResponse.json(
