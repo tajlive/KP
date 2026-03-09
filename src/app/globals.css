@@ -1,592 +1,87 @@
-@import "tailwindcss";
+@import "tailwindcss" layer(base);
 
-/* =====================================================
-   TAILWIND v4 - CSS FIRST CONFIGURATION
-   ===================================================== */
-
-/* Custom colors as CSS variables */
-:root {
-  /* Brand Colors */
-  --color-coinbase: #0052ff;
-  --color-coinbase-hover: #0047e0;
-  --color-coinbase-dark: #003bb5;
-  --color-dark: #0f1118;
-  --color-dark-surface: #171923;
-  --color-dark-border: #2a2d3a;
-  --color-success: #0b9e5a;
-  --color-danger: #d63b3b;
+@theme {
+  /* Reset alle farger først */
+  --color-*: initial;
   
-  /* Klarpakke Design System */
-  --kp-primary: #0052ff;
-  --kp-primary-hover: #0047e0;
-  --kp-primary-active: #003bb5;
-  --kp-primary-light: #e8f0fe;
+  /* KUN nødvendige farger */
+  --color-white: #ffffff;
+  --color-black: #000000;
   
-  --kp-secondary: #64748b;
-  --kp-secondary-hover: #475569;
-  --kp-secondary-light: #f1f5f9;
+  /* Brand */
+  --color-blue-500: #0052ff;
+  --color-teal-400: #2dd4bf;
   
-  --kp-success: #0b9e5a;
-  --kp-success-hover: #16a34a;
-  --kp-success-light: #e6f7ef;
-  --kp-success-text: #166534;
+  /* Grays */
+  --color-gray-100: #f3f4f6;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
   
-  --kp-warning: #e5850a;
-  --kp-warning-hover: #d97706;
-  --kp-warning-light: #fff4e5;
-  --kp-warning-text: #92400e;
+  /* Slate (dark theme) */
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
   
-  --kp-error: #d63b3b;
-  --kp-error-hover: #dc2626;
-  --kp-error-light: #fde8e8;
-  --kp-error-text: #991b1b;
-  
-  --kp-info: #3b82f6;
-  --kp-info-hover: #2563eb;
-  --kp-info-light: #dbeafe;
-  --kp-info-text: #1e40af;
-  
-  /* Background Colors */
-  --kp-bg-primary: #ffffff;
-  --kp-bg-secondary: #f7f8fa;
-  --kp-bg-tertiary: #eef1f6;
-  --kp-bg-dark: #0f1118;
-  
-  /* Text Colors */
-  --kp-text-primary: #1a1d26;
-  --kp-text-secondary: #5e6478;
-  --kp-text-muted: #8e94a7;
-  --kp-text-inverse: #ffffff;
-  
-  /* Border Colors */
-  --kp-border: #e2e5ec;
-  --kp-border-dark: #d1d5db;
-  --kp-border-light: #f3f4f6;
-  --kp-border-focus: #0052ff;
-  
-  /* Typography */
-  --kp-font-sans: "Lexend", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --kp-font-display: "Fraunces", Georgia, serif;
-  --kp-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  /* Status */
+  --color-green-500: #10b981;
+  --color-amber-500: #f59e0b;
+  --color-red-500: #ef4444;
   
   /* Spacing */
-  --kp-space-1: 0.25rem;
-  --kp-space-2: 0.5rem;
-  --kp-space-3: 0.75rem;
-  --kp-space-4: 1rem;
-  --kp-space-5: 1.25rem;
-  --kp-space-6: 1.5rem;
-  --kp-space-8: 2rem;
-  --kp-space-10: 2.5rem;
-  --kp-space-12: 3rem;
-  --kp-space-16: 4rem;
-  --kp-space-20: 5rem;
+  --spacing-0: 0px;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
   
-  /* Border Radius */
-  --kp-radius-sm: 0.25rem;
-  --kp-radius-md: 0.375rem;
-  --kp-radius-lg: 0.5rem;
-  --kp-radius-xl: 0.75rem;
-  --kp-radius-2xl: 1rem;
-  --kp-radius-full: 9999px;
-  
-  /* Shadows */
-  --kp-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --kp-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --kp-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --kp-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --kp-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  
-  /* Transitions */
-  --kp-transition-fast: 150ms ease;
-  --kp-transition-normal: 200ms ease;
-  --kp-transition-slow: 300ms ease;
-  
-  /* Z-Index */
-  --kp-z-dropdown: 1000;
-  --kp-z-sticky: 1100;
-  --kp-z-modal-backdrop: 1200;
-  --kp-z-modal: 1300;
-  --kp-z-toast: 1400;
-  --kp-z-tooltip: 1500;
+  /* Font sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --kp-bg-primary: #0f1118;
-    --kp-bg-secondary: #171923;
-    --kp-bg-tertiary: #1e293b;
-    --kp-text-primary: #f8fafc;
-    --kp-text-secondary: #cbd5e1;
-    --kp-text-muted: #94a3b8;
-    --kp-border: #2a2d3a;
-    --kp-border-dark: #475569;
-    --kp-border-light: #1e293b;
-  }
-}
-
-/* Base styles */
 @layer base {
   body {
-    background-color: var(--kp-bg-primary);
-    color: var(--kp-text-primary);
-    font-family: var(--kp-font-sans);
+    @apply antialiased;
   }
 }
 
-/* =====================================================
-   ACCESSIBILITY: High Contrast Mode
-   ===================================================== */
-
-html.high-contrast {
-  filter: contrast(1.2);
-}
-
-html.high-contrast body {
-  background-color: #000 !important;
-  color: #fff !important;
-}
-
-html.high-contrast .bg-gray-900,
-html.high-contrast .bg-gray-800,
-html.high-contrast .bg-gray-700 {
-  background-color: #000 !important;
-  border: 2px solid #fff !important;
-}
-
-html.high-contrast * {
-  color: #fff !important;
-  border-color: #fff !important;
-}
-
-html.high-contrast button {
-  background-color: #000 !important;
-  color: #fff !important;
-  border: 3px solid #fff !important;
-  font-weight: bold !important;
-}
-
-html.high-contrast button:hover {
-  background-color: #fff !important;
-  color: #000 !important;
-}
-
-html.high-contrast input,
-html.high-contrast textarea {
-  background-color: #000 !important;
-  color: #fff !important;
-  border: 3px solid #fff !important;
-}
-
-html.high-contrast a {
-  color: #ffff00 !important;
-  text-decoration: underline !important;
-}
-
-html.high-contrast .text-green-400,
-html.high-contrast .text-green-500 {
-  color: #00ff00 !important;
-}
-
-html.high-contrast .text-red-400,
-html.high-contrast .text-red-500 {
-  color: #ff0000 !important;
-}
-
-html.high-contrast .text-blue-400,
-html.high-contrast .text-blue-500 {
-  color: #00ffff !important;
-}
-
-/* =====================================================
-   ACCESSIBILITY: Large Text Mode (Bestemor-test)
-   ===================================================== */
-
-html.text-lg {
-  font-size: 22px !important;
-}
-
-html.text-lg body {
-  font-size: 22px !important;
-  line-height: 1.7 !important;
-}
-
-html.text-lg h1 {
-  font-size: 2.5rem !important;
-}
-
-html.text-lg h2 {
-  font-size: 2rem !important;
-}
-
-html.text-lg h3 {
-  font-size: 1.75rem !important;
-}
-
-html.text-lg p,
-html.text-lg span,
-html.text-lg div {
-  font-size: 22px !important;
-  line-height: 1.7 !important;
-}
-
-html.text-lg button,
-html.text-lg input,
-html.text-lg select,
-html.text-lg textarea {
-  font-size: 22px !important;
-  padding: 16px 24px !important;
-  min-height: 56px !important;
-}
-
-html.text-lg .text-sm {
-  font-size: 18px !important;
-}
-
-html.text-lg .text-xs {
-  font-size: 16px !important;
-}
-
-/* =====================================================
-   TOUCH TARGETS: Minimum 44x44px (Apple HIG)
-   ===================================================== */
-
-button,
-a,
-input,
-select,
-textarea,
-[role="button"] {
-  min-height: 44px;
-  min-width: 44px;
-}
-
-/* Små knapper må fortsatt ha touch target */
-button.small,
-.btn-small {
-  position: relative;
-}
-
-button.small::after,
-.btn-small::after {
-  content: "";
-  position: absolute;
-  inset: -10px;
-}
-
-/* =====================================================
-   FOCUS STATES: Synlig fokus for tastatur-navigasjon
-   ===================================================== */
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 3px solid #0052ff;
-  outline-offset: 2px;
-}
-
-html.high-contrast button:focus-visible,
-html.high-contrast a:focus-visible,
-html.high-contrast input:focus-visible {
-  outline: 4px solid #ffff00;
-  outline-offset: 4px;
-}
-
-/* =====================================================
-   REDUCED MOTION: Respekterer brukerens preferanser
-   ===================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* =====================================================
-   ANIMATIONS
-   ===================================================== */
-
-/* Live Ticker Animation */
 @keyframes ticker-scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .animate-ticker-scroll {
   animation: ticker-scroll 30s linear infinite;
 }
 
-.animate-ticker-scroll:hover {
-  animation-play-state: paused;
-}
-
-/* Slide Up Animation */
-@keyframes slide-up {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out forwards;
-}
-
-/* Gradient Animations */
-@keyframes gradient-fast {
-  0%,
-  100% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes gradient-slow {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.animate-gradient-fast {
-  animation: gradient-fast 3s ease-in-out infinite;
-}
-
-.animate-gradient-slow {
-  animation: gradient-slow 15s ease infinite;
-  background-size: 200% 200%;
-}
-
-/* Blob Animation */
-@keyframes blob {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-/* =====================================================
-   PRINT STYLES
-   ===================================================== */
-
-@media print {
-  body {
-    background: white !important;
-    color: black !important;
-  }
-
-  .no-print {
-    display: none !important;
-  }
-}
-
-/* =====================================================
-   BUTTON STYLES
-   ===================================================== */
-
-.kp-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  border-radius: var(--kp-radius-lg);
-  transition: all var(--kp-transition-normal);
-  cursor: pointer;
-  border: none;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.kp-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.kp-button-primary {
-  background-color: var(--kp-primary);
-  color: white;
-}
-
-.kp-button-primary:hover:not(:disabled) {
-  background-color: var(--kp-primary-hover);
-}
-
-.kp-button-secondary {
-  background-color: var(--kp-secondary);
-  color: white;
-}
-
-.kp-button-secondary:hover:not(:disabled) {
-  background-color: var(--kp-secondary-hover);
-}
-
-.kp-button-outline {
-  background-color: transparent;
-  color: var(--kp-text-primary);
-  border: 1px solid var(--kp-border-dark);
-}
-
-.kp-button-outline:hover:not(:disabled) {
-  background-color: var(--kp-bg-secondary);
-  border-color: var(--kp-text-secondary);
-}
-
-.kp-button-ghost {
-  background-color: transparent;
-  color: var(--kp-text-secondary);
-}
-
-.kp-button-ghost:hover:not(:disabled) {
-  background-color: var(--kp-bg-secondary);
-  color: var(--kp-text-primary);
-}
-
-.kp-button-danger {
-  background-color: var(--kp-error);
-  color: white;
-}
-
-.kp-button-danger:hover:not(:disabled) {
-  background-color: var(--kp-error-hover);
-}
-
-.kp-button-success {
-  background-color: var(--kp-success);
-  color: white;
-}
-
-.kp-button-success:hover:not(:disabled) {
-  background-color: var(--kp-success-hover);
-}
-
-/* Button sizes */
-.kp-button-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-}
-
-.kp-button-lg {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-}
-
-.kp-button-icon {
-  padding: 0.5rem;
-  aspect-ratio: 1;
-}
-
-/* Spinner */
-.kp-spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-}
-
-.kp-spinner-sm {
-  width: 0.875rem;
-  height: 0.875rem;
-  border-width: 1.5px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* =====================================================
-   UTILITY CLASSES
-   ===================================================== */
-
-@layer utilities {
-  .transition-trading {
-    transition: all 300ms ease-in-out;
-  }
-
-  .card-hover {
-    transition: all 300ms ease-in-out;
-  }
-  
-  .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  }
-  
-  .bg-grid-pattern {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 50px 50px;
-  }
-}
-
-/* Dark mode glassmorphism */
-.dark .glass-card {
-  background: rgba(15, 23, 42, 0.7);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-}
-
-/* Live Ticker Animation */
-@keyframes scroll-x {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-scroll-x {
-  animation: scroll-x 30s linear infinite;
-}
-
-.animate-scroll-x:hover {
-  animation-play-state: paused;
 }
