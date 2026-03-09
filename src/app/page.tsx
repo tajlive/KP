@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import HeroSection from "@/components/landing/HeroSection";
 import { LivePriceTicker } from "@/components/landing/LivePriceTicker";
@@ -38,6 +38,9 @@ const lexend = Lexend({
   variable: "--font-lexend",
 });
 
+// ISR: Regenerate every hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Klarpakke — Lær krypto. Øv med lekepenger. Tjen når du er klar.",
   description: "Norges eneste plattform som kombinerer kurs, autotrading og papirhandel — alt på norsk. Start gratis, ingen kort nødvendig.",
@@ -75,6 +78,10 @@ export const metadata: Metadata = {
 
 export default async function RootPage() {
   const locale = "no";
+  
+  // Enable static rendering for default locale
+  setRequestLocale(locale);
+  
   let messages;
 
   try {
