@@ -5,17 +5,21 @@ import { NextResponse } from "next/server";
 const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
 const DEFAULT_LOCALE = "no" as const;
 
-// Paths that should NOT be auto-redirected based on Accept-Language
-// Auth flows and explicit paths where URL = source of truth
+// ==========================================
+// AUTH PATH WHITELIST (P0 CRITICAL)
+// ==========================================
+// Auth paths should NEVER be auto-redirected based on Accept-Language.
+// These are canonical URLs where the path itself is the source of truth.
+// Norwegian users get /innlogging, English users who want English use /en/innlogging
 const AUTH_PATHS = [
   "/innlogging",
-  "/glemt-passord", 
+  "/glemt-passord",
   "/signup",
   "/registrer",
   "/reset-password",
   "/verify",
   "/auth/",
-];
+] as const;
 
 type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -23,9 +27,22 @@ function isSupportedLocale(locale: string): locale is SupportedLocale {
   return SUPPORTED_LOCALES.includes(locale as SupportedLocale);
 }
 
+/**
+ * Check if pathname is an auth route that should NOT be auto-redirected
+ * based on Accept-Language. Auth routes respect explicit locale or default to Norwegian.
+ * 
+ * Handles locale-prefixed paths: /en/innlogging, /th/innlogging, etc.
+ * 
+ * @param pathname - The request pathname
+ * @returns true if this is a protected auth path
+ */
 function isAuthPath(pathname: string): boolean {
+  // Strip locale prefix if present (e.g., /en/innlogging -> /innlogging)
+  const pathWithoutLocale = pathname.replace(/^\/(en|th|zh)(?=\/|$)/, "");
+  const normalizedPath = pathWithoutLocale || pathname; // Fallback if no match
+  
   return AUTH_PATHS.some(path => 
-    pathname === path || pathname.startsWith(path)
+    normalizedPath === path || normalizedPath.startsWith(`${path}/`)
   );
 }
 
@@ -67,26 +84,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Handle /leksjon/* routes - redirect to /kurs/leksjon/*
-  if (pathname.startsWith("/leksjon/")) {
-    const lessonId = pathname.replace("/leksjon/", "");
-    const redirectUrl = new URL(`/kurs/leksjon/${lessonId}`, request.url);
-    redirectUrl.search = request.nextUrl.search;
-    return NextResponse.redirect(redirectUrl, { status: 307 });
-  }
-
-  // Check if user is accessing old /no/* URLs -> redirect to /*
-  // CRITICAL: Set a header to prevent Accept-Language redirect chain
-  // When /no/path redirects to /path, we don't want /path to then redirect to /en/path
+  // ==========================================
+  // 1. LEGACY /no/* CLEANUP (301 permanent)
+  // ==========================================
   if (pathname.startsWith("/no/")) {
-    const newPath = pathname.slice(3);
-    const redirectUrl = new URL(newPath || "/", request.url);
+    const newPath = pathname.slice(3) || "/";
+    const redirectUrl = new URL(newPath, request.url);
     redirectUrl.search = request.nextUrl.search;
-    const response = NextResponse.redirect(redirectUrl, { status: 301 });
-    // Set header to indicate this redirect came from /no/ legacy URL
-    // This will be used to skip Accept-Language redirect on the target
-    response.headers.set("x-legacy-no-redirect", "true");
-    return response;
+    return NextResponse.redirect(redirectUrl, { status: 301 });
   }
 
   if (pathname === "/no") {
@@ -95,47 +100,62 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl, { status: 301 });
   }
 
-  // Check for explicit non-default locale prefix (/en/, /th/, /zh/)
+  // Handle /leksjon/* routes - redirect to /kurs/leksjon/*
+  if (pathname.startsWith("/leksjon/")) {
+    const lessonId = pathname.replace("/leksjon/", "");
+    const redirectUrl = new URL(`/kurs/leksjon/${lessonId}`, request.url);
+    redirectUrl.search = request.nextUrl.search;
+    return NextResponse.redirect(redirectUrl, { status: 307 });
+  }
+
+  // ==========================================
+  // 2. EXPLICIT LOCALE CHECK (non-default)
+  // ==========================================
+  // If user is already on /en/, /th/, /zh/ path, respect it
   const hasNonDefaultLocale = SUPPORTED_LOCALES.some(
     (locale) => locale !== DEFAULT_LOCALE && (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`)
   );
 
   if (hasNonDefaultLocale) {
-    return NextResponse.next();
-  }
-
-  // CRITICAL: Never auto-redirect auth paths based on browser language
-  // URL is the source of truth for auth flows to prevent redirect chains
-  if (isAuthPath(pathname)) {
     const response = NextResponse.next();
-    response.headers.set("x-auth-path", "true");
+    response.headers.set("x-locale-explicit", "true");
     return response;
   }
 
-  // Auto-detect browser language for non-auth paths
-  // CRITICAL FIX: Only redirect based on Accept-Language if user is NOT on root URL
-  // Root URL (/) should always show Norwegian default without redirect
+  // ==========================================
+  // 3. AUTH PATH PROTECTION (P0 CRITICAL)
+  // ==========================================
+  // CRITICAL: Auth paths must NEVER auto-redirect based on browser language.
+  // URL is the source of truth for auth flows.
+  // 
+  // This check MUST happen BEFORE Accept-Language redirect.
+  // Examples:
+  //   /innlogging -> NO redirect (canonical Norwegian)
+  //   /en/innlogging -> NO redirect (explicit English)
+  //   /glemt-passord -> NO redirect (canonical Norwegian)
+  if (isAuthPath(pathname)) {
+    const response = NextResponse.next();
+    response.headers.set("x-auth-path", "true");
+    response.headers.set("x-locale-redirect", "skipped-auth-path");
+    return response;
+  }
+
+  // ==========================================
+  // 4. ACCEPT-LANGUAGE REDIRECT (non-auth only)
+  // ==========================================
+  // Only for non-auth pages: landing, om-oss, priser, etc.
+  // Auth paths never reach this point.
+  
   const acceptLanguage = request.headers.get("accept-language");
   const preferredLocale = getPreferredLocale(acceptLanguage);
-
-  // Check for saved locale preference (from cookie)
   const savedLocale = request.cookies.get("NEXT_LOCALE")?.value;
-
-  // CRITICAL FIX: Check if user came from /no/ legacy redirect
-  // When /no/path redirects to /path, we should NOT then redirect to /en/path
-  // This prevents the redirect chain: /no/innlogging -> /innlogging -> /en/innlogging
-  const referer = request.headers.get("referer") || "";
-  const isFromLegacyNoRedirect = referer.includes("/no/") || referer.endsWith("/no");
 
   // Only redirect if:
   // 1. Not on root URL (/), AND
-  // 2. Preferred locale is NOT Norwegian, AND
-  // 3. No explicit saved locale preference (or it differs from detected), AND
-  // 4. NOT coming from /no/ legacy redirect (prevent redirect chain)
-  if (pathname !== "/" && preferredLocale !== DEFAULT_LOCALE && !isFromLegacyNoRedirect) {
+  // 2. Preferred locale is NOT Norwegian
+  if (pathname !== "/" && preferredLocale !== DEFAULT_LOCALE) {
     // If saved locale exists and is different from detected, respect saved
     if (savedLocale && savedLocale !== preferredLocale) {
-      // User has explicit preference, don't redirect
       const response = NextResponse.next();
       response.headers.set("x-locale-detected", preferredLocale);
       response.headers.set("x-locale-saved", savedLocale);
@@ -143,28 +163,26 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
-    // If preferred locale is NOT Norwegian, redirect to appropriate locale path
     // Map unsupported locales to English (th/zh have limited translations)
     const targetLocale = ["th", "zh"].includes(preferredLocale) ? "en" : preferredLocale;
 
     const redirectUrl = new URL(`/${targetLocale}${pathname}`, request.url);
     redirectUrl.search = request.nextUrl.search;
 
-    // Use 302 (temporary) to allow future locale preference override
     const response = NextResponse.redirect(redirectUrl, { status: 302 });
     response.headers.set("x-locale-detected", preferredLocale);
-    response.headers.set("x-accept-lang-header", acceptLanguage || "none");
+    response.headers.set("x-locale-redirect", "accept-language");
     return response;
   }
 
   // Norwegian users (or unknown locale) -> stay on root path (no prefix)
   const response = NextResponse.next();
   response.headers.set("x-locale-detected", preferredLocale);
-  response.headers.set("x-accept-lang-header", acceptLanguage || "none");
+  response.headers.set("x-locale-redirect", "none");
   return response;
 }
 
 // Match all paths
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

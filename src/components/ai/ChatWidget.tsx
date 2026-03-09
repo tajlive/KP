@@ -22,44 +22,7 @@ const TYPING_CONFIG = {
     pauseDelay: 150,   // Ekstra pause etter punktum/komma
 }
 
-// Global flag to prevent duplicate ChatWidget instances
-// This should never happen since ClientSideProviders is only in root layout,
-// but this is a safety net against future refactoring errors
-declare global {
-    interface Window {
-        __CHAT_WIDGET_MOUNTED__?: boolean;
-    }
-}
-
-// Wrapper component that checks for duplicates before rendering
 export function ChatWidget() {
-    // Use state to track if we should render
-    const [shouldRender, setShouldRender] = useState(false);
-    
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (window.__CHAT_WIDGET_MOUNTED__) {
-                console.warn('[ChatWidget] Duplicate instance detected, not rendering');
-                setShouldRender(false);
-            } else {
-                window.__CHAT_WIDGET_MOUNTED__ = true;
-                setShouldRender(true);
-            }
-        }
-        return () => {
-            if (typeof window !== 'undefined') {
-                window.__CHAT_WIDGET_MOUNTED__ = false;
-            }
-        };
-    }, []);
-    
-    if (!shouldRender) return null;
-    
-    return <ChatWidgetInner />;
-}
-
-// Inner component with all the actual logic
-function ChatWidgetInner() {
     const [isOpen, setIsOpen] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
     const [messages, setMessages] = useState<Message[]>([])
