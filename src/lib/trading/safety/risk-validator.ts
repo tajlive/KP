@@ -14,6 +14,7 @@ export type RejectionReason =
   | "POSITION_LIMIT_EXCEEDED"
   | "EXPOSURE_LIMIT_EXCEEDED"
   | "DAILY_LOSS_LIMIT_EXCEEDED"
+  | "DAILY_LOSS_CHECK_FAILED"
   | "PAIR_NOT_ALLOWED"
   | "LEVERAGE_NOT_ALLOWED"
   | "INSUFFICIENT_BALANCE"
@@ -272,12 +273,39 @@ export async function validateTradeAgainstRiskProfile(
     }
 
     // 9. Sjekk daily loss limit
-    const { data: dailyLossResult } = await supabase.rpc("calculate_daily_loss", {
+    const { data: dailyLossResult, error: dailyLossError } = await supabase.rpc("calculate_daily_loss", {
       p_user_id: trade.userId,
       p_session_id: trade.sessionId,
     });
 
-    const dailyLoss = Number(dailyLossResult) || 0;
+    // FAIL CLOSED: Hvis daily loss check feiler, blokker trade
+    if (dailyLossError) {
+      console.error("[RiskValidator] calculate_daily_loss RPC failed:", dailyLossError);
+      return {
+        allowed: false,
+        rejectionReason: "DAILY_LOSS_CHECK_FAILED",
+        rejectionDetails: {
+          error: dailyLossError.message,
+          message: "Could not verify daily loss limit - trade blocked for safety",
+        },
+        riskProfileId: profile.id,
+      };
+    }
+
+    // FAIL CLOSED: Hvis resultat er null/undefined (f.eks. funksjonen finnes ikke), blokker trade
+    if (dailyLossResult === null || dailyLossResult === undefined) {
+      console.error("[RiskValidator] calculate_daily_loss returned null/undefined");
+      return {
+        allowed: false,
+        rejectionReason: "DAILY_LOSS_CHECK_FAILED",
+        rejectionDetails: {
+          message: "Daily loss calculation unavailable - trade blocked for safety",
+        },
+        riskProfileId: profile.id,
+      };
+    }
+
+    const dailyLoss = Number(dailyLossResult);
     const dailyLossPct = (dailyLoss / currentCapital) * 100;
 
     // Estimer tap på denne trade (conservative estimate)
