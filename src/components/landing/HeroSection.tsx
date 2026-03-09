@@ -1,14 +1,23 @@
-"use client";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, Sparkles } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+/**
+ * HeroSection - Server Component (no "use client")
+ * 
+ * KEY OPTIMIZATIONS from previous version:
+ * - No "use client" directive - renders on server
+ * - No framer-motion - uses CSS transitions only
+ * - No useRouter - uses native Link component
+ * - No lucide-react icons - uses inline SVG
+ * - No animated scroll indicator
+ * 
+ * This eliminates ~30KB+ JS from the critical path
+ * and removes hydration blocking for LCP.
+ */
 
-export default function HeroSection() {
-  const router = useRouter();
-  const locale = useLocale();
-  const t = useTranslations("landing.modernHero");
+export default async function HeroSection() {
+  // Server-side translation
+  const t = await getTranslations("landing.modernHero");
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-emerald-700">
@@ -20,15 +29,22 @@ export default function HeroSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Copy */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center lg:text-left"
-          >
+          <div className="text-center lg:text-left animate-fade-in">
             {/* Modern badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 backdrop-blur-sm text-white border border-blue-400/30 rounded-full text-sm font-semibold mb-6">
-              <Sparkles className="w-4 h-4" aria-hidden="true" />
+              {/* Inline SVG instead of lucide-react */}
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+              </svg>
               {t("badge")}
             </div>
 
@@ -50,53 +66,92 @@ export default function HeroSection() {
               {t("bullets")}
             </p>
 
-            {/* Modern CTAs */}
+            {/* Modern CTAs - Using Link instead of button + router */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button
-                onClick={() => router.push(`/${locale}/paper-trading`)}
+              <Link
+                href="/paper-trading"
                 aria-label={t("ctaPrimary")}
                 className="group px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-2"
               >
                 {t("ctaPrimary")}
-                <ArrowRight
+                {/* Inline SVG ArrowRight */}
+                <svg
                   className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   aria-hidden="true"
-                />
-              </button>
+                >
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </Link>
 
-              <button
-                onClick={() => router.push(`/${locale}/kurs`)}
+              <Link
+                href="/kurs"
                 aria-label={t("ctaSecondary")}
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-semibold text-lg border-2 border-white/20 hover:bg-white/20 transition-all flex items-center justify-center gap-2"
               >
                 {t("ctaSecondary")}
-              </button>
+              </Link>
             </div>
 
             {/* Trust indicators - modernized */}
             <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-white/90 text-sm">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-300" />
+                {/* Inline SVG CheckCircle */}
+                <svg
+                  className="w-5 h-5 text-green-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
+                  <path d="m9 11 3 3L22 4" />
+                </svg>
                 <span>{t("trust1")}</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-300" />
+                <svg
+                  className="w-5 h-5 text-green-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
+                  <path d="m9 11 3 3L22 4" />
+                </svg>
                 <span>{t("trust2")}</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-300" />
+                <svg
+                  className="w-5 h-5 text-green-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
+                  <path d="m9 11 3 3L22 4" />
+                </svg>
                 <span>{t("trust3")}</span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Right: Modern, honest mockup */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
-          >
+          <div className="relative animate-fade-in-delayed">
             {/* Modern browser mockup */}
             <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
               {/* Browser chrome */}
@@ -225,24 +280,9 @@ export default function HeroSection() {
                 1M kr virtuelt 🎯
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
-
-      {/* Modern scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="w-6 h-10 border-2 border-white/40 rounded-full flex items-start justify-center p-2">
-          <motion.div
-            className="w-1.5 h-1.5 bg-white rounded-full"
-            animate={{ y: [0, 16, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-      </motion.div>
     </section>
   );
 }

@@ -85,3 +85,38 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 
+ * Hero Section Animations - CSS only, no JS
+ * Used by server-rendered HeroSection
+ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-fade-in-delayed {
+  animation: fade-in-scale 0.6s ease-out 0.2s forwards;
+  opacity: 0;
+}
