@@ -1,17 +1,12 @@
 import { Metadata } from "next";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// Critical path - eager load
 import HeroSection from "@/components/landing/HeroSection";
 import { DeferredLivePriceTicker } from "@/components/landing/DeferredLivePriceTicker";
-import { LottoCalculator } from "@/components/landing/LottoCalculator";
-import SocialProofSection from "@/components/landing/SocialProofSection";
-import GamifiedLeaderboard from "@/components/landing/GamifiedLeaderboard";
-import SafeBacktestWidget from "@/components/landing/SafeBacktestWidget";
-import ComparisonSection from "@/components/landing/ComparisonSection";
-import PricingSection from "@/components/landing/PricingSection";
-import FAQSection from "@/components/landing/FAQSection";
-import FinalCTASection from "@/components/landing/FinalCTASection";
-import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
 import { MarketingNavigation } from "@/components/layout/MarketingNavigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
@@ -24,35 +19,70 @@ import "./globals.css";
 /**
  * MARKETING LANDING PAGE - Optimized for Performance
  * 
- * KEY OPTIMIZATIONS from previous version:
+ * PHASE 3 OPTIMIZATIONS:
  * 
- * 1. REMOVED AuthProvider - No Supabase init on landing
- *    (moved to /dashboard, /paper-trading layouts)
+ * Below-fold components lazy-loaded with dynamic imports:
+ * - LottoCalculator
+ * - SocialProofSection
+ * - GamifiedLeaderboard
+ * - SafeBacktestWidget
+ * - ComparisonSection
+ * - PricingSection
+ * - FAQSection
+ * - FinalCTASection
+ * - ConditionalFooter
  * 
- * 2. REMOVED OnboardingProvider + OnboardingFlow - Only for logged-in users
- *    (moved to dashboard layout)
- * 
- * 3. REMOVED TradingModeProvider - Only for trading features
- *    (moved to /paper-trading, /auto-trading layouts)
- * 
- * 4. REMOVED ToastProvider - Not critical for landing
- *    (available in app areas where needed)
- * 
- * 5. REPLACED Navigation with MarketingNavigation
- *    - No auth dependency
- *    - No TradingModeToggle
- *    - Smaller bundle
- * 
- * 6. REPLACED ClientSideProviders with MarketingProviders
- *    - No ChatWidget (deferred to dashboard)
- *    - No PWA loader (deferred)
- *    - Only error handling
- * 
- * EXPECTED IMPACT:
- * - Initial JS: ~1.2MB → ~600KB (-50%)
- * - Hydration time: ~3s → ~1s (-67%)
- * - LCP: 6.2s → <3.0s (target)
+ * Critical path (eager loaded):
+ * - HeroSection (LCP element)
+ * - DeferredLivePriceTicker (loads after hero)
+ * - Navigation (required for UX)
  */
+
+// Lazy load below-fold components
+const LottoCalculator = dynamic(
+  () => import("@/components/landing/LottoCalculator").then((m) => m.LottoCalculator),
+  { loading: () => <div className="h-96 animate-pulse bg-slate-900/30" /> }
+);
+
+const SocialProofSection = dynamic(
+  () => import("@/components/landing/SocialProofSection").then((m) => m.default),
+  { loading: () => <div className="h-64 animate-pulse bg-slate-900/30" /> }
+);
+
+const GamifiedLeaderboard = dynamic(
+  () => import("@/components/landing/GamifiedLeaderboard").then((m) => m.default),
+  { loading: () => <div className="h-96 animate-pulse bg-slate-900/30" /> }
+);
+
+const SafeBacktestWidget = dynamic(
+  () => import("@/components/landing/SafeBacktestWidget").then((m) => m.default),
+  { loading: () => <div className="h-80 animate-pulse bg-slate-900/30" /> }
+);
+
+const ComparisonSection = dynamic(
+  () => import("@/components/landing/ComparisonSection").then((m) => m.default),
+  { loading: () => <div className="h-96 animate-pulse bg-slate-900/30" /> }
+);
+
+const PricingSection = dynamic(
+  () => import("@/components/landing/PricingSection").then((m) => m.default),
+  { loading: () => <div className="h-[600px] animate-pulse bg-slate-900/30" /> }
+);
+
+const FAQSection = dynamic(
+  () => import("@/components/landing/FAQSection").then((m) => m.default),
+  { loading: () => <div className="h-96 animate-pulse bg-slate-900/30" /> }
+);
+
+const FinalCTASection = dynamic(
+  () => import("@/components/landing/FinalCTASection").then((m) => m.default),
+  { loading: () => <div className="h-64 animate-pulse bg-slate-900/30" /> }
+);
+
+const ConditionalFooter = dynamic(
+  () => import("@/components/landing/ConditionalFooter").then((m) => m.ConditionalFooter),
+  { loading: () => <div className="h-48 animate-pulse bg-slate-950" /> }
+);
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -137,18 +167,49 @@ export default async function RootPage() {
               <div className="relative min-h-screen flex flex-col">
                 <MarketingNavigation />
                 <main className="flex-1">
+                  {/* Critical: Hero renders first */}
                   <HeroSection />
+                  
+                  {/* Deferred: Loads after hero */}
                   <DeferredLivePriceTicker />
-                  <LottoCalculator />
-                  <SocialProofSection />
-                  <GamifiedLeaderboard />
-                  <SafeBacktestWidget />
-                  <ComparisonSection />
-                  <PricingSection />
-                  <FAQSection />
-                  <FinalCTASection />
+                  
+                  {/* Below-fold: Lazy loaded */}
+                  <Suspense fallback={<div className="h-96 animate-pulse bg-slate-900/30" />}>
+                    <LottoCalculator />
+                  </Suspense>
+                  
+                  <Suspense fallback={<div className="h-64 animate-pulse bg-slate-900/30" />}>
+                    <SocialProofSection />
+                  </Suspense>
+                  
+                  <Suspense fallback={<div className="h-96 animate-pulse bg-slate-900/30" />}>
+                    <GamifiedLeaderboard />
+                  </Suspense>
+                  
+                  <Suspense fallback={<div className="h-80 animate-pulse bg-slate-900/30" />}>
+                    <SafeBacktestWidget />
+                  </Suspense>
+                  
+                  <Suspense fallback={<div className="h-96 animate-pulse bg-slate-900/30" />}>
+                    <ComparisonSection />
+                  </Suspense>
+                  
+                  <Suspense fallback={<div className="h-[600px] animate-pulse bg-slate-900/30" />}>
+                    <PricingSection />
+                  </Suspense>
+                  
+                  <Suspense fallback={<div className="h-96 animate-pulse bg-slate-900/30" />}>
+                    <FAQSection />
+                  </Suspense>
+                  
+                  <Suspense fallback={<div className="h-64 animate-pulse bg-slate-900/30" />}>
+                    <FinalCTASection />
+                  </Suspense>
                 </main>
-                <ConditionalFooter />
+                
+                <Suspense fallback={<div className="h-48 animate-pulse bg-slate-950" />}>
+                  <ConditionalFooter />
+                </Suspense>
               </div>
             </ErrorBoundary>
           </MarketingProviders>
