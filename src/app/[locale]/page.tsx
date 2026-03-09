@@ -1,10 +1,41 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// Eager load kritisk komponent
 import { LiveTicker } from "@/components/landing/LiveTicker";
-import { DashboardPreview } from "@/components/landing/DashboardPreview";
-import { LottoComparison } from "@/components/landing/LottoComparison";
-import { ThreeSteps } from "@/components/landing/ThreeSteps";
-import { MinimalFooter } from "@/components/landing/MinimalFooter";
+
+// Lazy load ikke-kritiske komponenter for bedre LCP
+const DashboardPreview = dynamic(
+  () => import("@/components/landing/DashboardPreview").then((mod) => ({ default: mod.DashboardPreview })),
+  {
+    loading: () => (
+      <div className="bg-slate-900 rounded-2xl border border-slate-700 h-64 animate-pulse" />
+    ),
+  }
+);
+
+const LottoComparison = dynamic(
+  () => import("@/components/landing/LottoComparison").then((mod) => ({ default: mod.LottoComparison })),
+  {
+    loading: () => <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />,
+  }
+);
+
+const ThreeSteps = dynamic(
+  () => import("@/components/landing/ThreeSteps").then((mod) => ({ default: mod.ThreeSteps })),
+  {
+    loading: () => <div className="h-64 animate-pulse bg-slate-900/50 rounded-xl" />,
+  }
+);
+
+const MinimalFooter = dynamic(
+  () => import("@/components/landing/MinimalFooter").then((mod) => ({ default: mod.MinimalFooter })),
+  {
+    loading: () => <div className="h-32 bg-slate-950" />,
+  }
+);
 
 export const revalidate = 3600;
 
@@ -45,6 +76,7 @@ export async function generateMetadata({
   };
 }
 
+// HeroSection - Critical for LCP, keep inline
 function HeroSection({ locale }: { locale: string }) {
   const isNorwegian = locale === 'no';
   
@@ -52,7 +84,7 @@ function HeroSection({ locale }: { locale: string }) {
     <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Text */}
+          {/* Left: Text - CRITICAL LCP CONTENT */}
           <div className="text-center lg:text-left">
             <h1 className="font-fraunces text-4xl md:text-5xl lg:text-6xl font-bold text-slate-100 leading-tight mb-6">
               {isNorwegian ? (
@@ -83,10 +115,14 @@ function HeroSection({ locale }: { locale: string }) {
             </div>
           </div>
 
-          {/* Right: Dashboard Preview */}
+          {/* Right: Dashboard Preview - LAZY LOADED */}
           <div className="relative">
             <div className="absolute inset-0 bg-teal-500/20 blur-3xl rounded-full" />
-            <DashboardPreview />
+            <Suspense fallback={
+              <div className="bg-slate-900 rounded-2xl border border-slate-700 h-64 animate-pulse" />
+            }>
+              <DashboardPreview />
+            </Suspense>
           </div>
         </div>
       </div>
@@ -103,26 +139,32 @@ export default async function HomePage({
 
   return (
     <main className="min-h-screen bg-slate-950">
-      {/* Live Price Ticker */}
+      {/* Live Price Ticker - Critical */}
       <LiveTicker />
       
-      {/* Hero Section */}
+      {/* Hero Section - Critical for LCP */}
       <HeroSection locale={locale} />
       
-      {/* Lotto Comparison Calculator */}
+      {/* Lotto Comparison Calculator - Lazy loaded */}
       <section id="lottocalc" className="py-16 md:py-24">
         <div className="max-w-4xl mx-auto px-4">
-          <LottoComparison />
+          <Suspense fallback={<div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />}>
+            <LottoComparison />
+          </Suspense>
         </div>
       </section>
       
-      {/* Three Steps */}
+      {/* Three Steps - Lazy loaded */}
       <section className="max-w-6xl mx-auto px-4">
-        <ThreeSteps />
+        <Suspense fallback={<div className="h-64 animate-pulse bg-slate-900/50 rounded-xl" />}>
+          <ThreeSteps />
+        </Suspense>
       </section>
       
-      {/* Minimal Footer */}
-      <MinimalFooter />
+      {/* Minimal Footer - Lazy loaded */}
+      <Suspense fallback={<div className="h-32 bg-slate-950" />}>
+        <MinimalFooter />
+      </Suspense>
     </main>
   );
 }
