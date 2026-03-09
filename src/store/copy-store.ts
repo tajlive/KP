@@ -57,7 +57,7 @@ interface CopyStore {
 }
 
 export const useCopyStore = create<CopyStore>()(
-  (set: unknown, get: any) => ({
+  (set: unknown, get: unknown) => ({
     following: [],
     activeCopies: [],
     totalCopyPnl: 0,
@@ -100,7 +100,7 @@ export const useCopyStore = create<CopyStore>()(
       }
     },
 
-    follow: async (leaderId: string, config: any) => {
+    follow: async (leaderId: string, config: unknown) => {
       const supabase = createClient();
       const { error } = (await supabase
         .from("copy_trading_follows" as unknown)
@@ -126,8 +126,8 @@ export const useCopyStore = create<CopyStore>()(
         .eq("leader_id", leaderId);
 
       if (!error) {
-        set((state: any) => ({
-          following: state.following.map((f: any) =>
+        set((state: unknown) => ({
+          following: state.following.map((f: unknown) =>
             f.leaderId === leaderId ? { ...f, isActive: false } : f,
           ),
         }));

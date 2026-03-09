@@ -57,13 +57,13 @@ export function usePWA(): PWAState {
 
     window.addEventListener(
       "beforeinstallprompt",
-      handleBeforeInstallPrompt as any as Parameters<
+      handleBeforeInstallPrompt as unknown as Parameters<
         typeof window.addEventListener
       >[1],
     );
     window.addEventListener(
       "appinstalled",
-      handleAppInstalled as any as Parameters<
+      handleAppInstalled as unknown as Parameters<
         typeof window.addEventListener
       >[1],
     );
@@ -73,7 +73,7 @@ export function usePWA(): PWAState {
     return () => {
       window.removeEventListener(
         "beforeinstallprompt",
-        handleBeforeInstallPrompt as any as Parameters<
+        handleBeforeInstallPrompt as unknown as Parameters<
           typeof window.addEventListener
         >[1],
       );

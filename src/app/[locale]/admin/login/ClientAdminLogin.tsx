@@ -38,7 +38,7 @@ export default function ClientAdminLogin() {
 
       // Sjekk om bruker har admin-rolle via profiles view
       const { data: profile, error: profileError } = await supabase
-        .from('user_profiles' as any)
+        .from('user_profiles' as unknown)
         .select('role')
         .eq('user_id', data.user?.id)
         .single()

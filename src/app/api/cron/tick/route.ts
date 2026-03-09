@@ -612,8 +612,8 @@ async function mirrorTradeToFollowers(
           followerSession.mode === "live" ? mul(followerTradeAmount, 0.001) : 0,
         status: "filled",
         strategy_signal: {
-          ...((trade as any).strategy_signal as Record<string, any>),
-          copied_from: (trade as any).id,
+          ...((trade as unknown).strategy_signal as Record<string, unknown>),
+          copied_from: (trade as unknown).id,
         },
         stop_loss_price: trade.stop_loss_price,
         opened_at: new Date().toISOString(),
@@ -649,7 +649,7 @@ export async function GET(req: NextRequest) {
   }
 
   const startTime = Date.now();
-  const db = (await createClient()) as any;
+  const db = (await createClient()) as unknown;
 
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)

@@ -146,7 +146,7 @@ export default function ClientAutoTradeDashboard() {
   const fetchStrategies = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('strategies' as any)
+        .from('strategies' as unknown)
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -235,7 +235,7 @@ export default function ClientAutoTradeDashboard() {
         return;
       }
 
-      const { error } = await supabase.from('strategies' as any).insert({
+      const { error } = await supabase.from('strategies' as unknown).insert({
         user_id: user.id,
         ...newStrategy,
       });
@@ -251,7 +251,7 @@ export default function ClientAutoTradeDashboard() {
       setShowAddStrategy(false);
       // Open the newly created strategy in live view
       const { data: newStrategies } = await supabase
-        .from('strategies' as any)
+        .from('strategies' as unknown)
         .select('*')
         .order('created_at', { ascending: false })
         .limit(1);
@@ -293,7 +293,7 @@ export default function ClientAutoTradeDashboard() {
   const toggleStrategy = async (id: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
-        .from('strategies' as any)
+        .from('strategies' as unknown)
         .update({ is_active: !currentStatus })
         .eq('id', id);
 
@@ -311,7 +311,7 @@ export default function ClientAutoTradeDashboard() {
 
     try {
       const { error } = await supabase
-        .from('strategies' as any)
+        .from('strategies' as unknown)
         .delete()
         .eq('id', id);
 

@@ -97,7 +97,7 @@ export function RiskProfilePulse({
       },
     });
 
-    chartRef.current = chart as any;
+    chartRef.current = chart as unknown;
 
     // Different chart types based on risk profile
     if (profile === "forsiktig") {
@@ -121,7 +121,7 @@ export function RiskProfilePulse({
           value: Math.round(value),
         } as AreaData);
       }
-      areaSeries.setData(data as any);
+      areaSeries.setData(data as unknown);
     } else if (profile === "moderat") {
       // Line chart with markers
       const lineSeries = chart.addSeries(LineSeries, {
@@ -140,7 +140,7 @@ export function RiskProfilePulse({
           value: Math.round(value),
         });
       }
-      lineSeries.setData(data as any);
+      lineSeries.setData(data as unknown);
     } else {
       // Candlestick for aggressive
       const candleSeries = chart.addSeries(CandlestickSeries, {
@@ -170,7 +170,7 @@ export function RiskProfilePulse({
         } as CandlestickData);
         value = close;
       }
-      candleSeries.setData(data as any);
+      candleSeries.setData(data as unknown);
     }
 
     chart.timeScale().fitContent();

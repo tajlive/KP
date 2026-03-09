@@ -96,7 +96,7 @@ export async function POST(
 
     if (listing.strategy_id) {
       const { data: originalStrategy } = await supabase
-        .from("strategies" as any)
+        .from("strategies" as unknown)
         .select("strategy_config, strategy_type, trading_pair, strategy_id")
         .eq("id", listing.strategy_id)
         .single();
@@ -113,7 +113,7 @@ export async function POST(
 
     // Create user_strategies row cloned from the listing
     const { data: userStrategy, error: strategyError } = await supabase
-      .from("strategies" as any)
+      .from("strategies" as unknown)
       .insert({
         user_id: userId,
         mode,

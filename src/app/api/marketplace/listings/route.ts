@@ -114,7 +114,7 @@ export async function GET(
 
       // Fallback: return user_strategies with is_marketplace_listed = true
       const { data: fallbackData, error: fallbackError } = await (
-        supabase as any
+        supabase as unknown
       )
         .from("strategies")
         .select("*, profiles:user_id(display_name, avatar_url)")

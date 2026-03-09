@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server';
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const supabase = (await createClient()) as any;
+    const supabase = (await createClient()) as unknown;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {

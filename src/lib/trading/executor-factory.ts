@@ -38,12 +38,12 @@ export class ExecutorFactory {
 
     // Get user's tier (validate live trading access)
     const { data: profile, error: profileError } = (await supabase
-      .from("user_profiles" as any)
+      .from("user_profiles" as unknown)
       .select(
         "tier, binance_connected, binance_api_key_id, binance_api_secret_id",
       )
       .eq("id", userId)
-      .single()) as any;
+      .single()) as unknown;
 
     if (profileError || !profile) {
       throw new Error("User profile not found");
@@ -63,13 +63,13 @@ export class ExecutorFactory {
     }
 
     // Decrypt API keys using RPC function
-    const { data: decryptedKeys, error } = (await (supabase as any).rpc(
+    const { data: decryptedKeys, error } = (await (supabase as unknown).rpc(
       "decrypt_binance_keys",
       {
         key_id: profile.binance_api_key_id,
         secret_id: profile.binance_api_secret_id,
       },
-    )) as any;
+    )) as unknown;
 
     if (
       error ||
@@ -108,10 +108,10 @@ export class ExecutorFactory {
     const supabase = createClient();
 
     const { data: session, error } = (await supabase
-      .from("trading_sessions" as any)
+      .from("trading_sessions" as unknown)
       .select("user_id, mode")
       .eq("id", sessionId)
-      .single()) as any;
+      .single()) as unknown;
 
     if (error || !session) {
       throw new Error("Trading session not found");
@@ -131,10 +131,10 @@ export class ExecutorFactory {
     const supabase = createClient();
 
     const { data: profile } = (await supabase
-      .from("user_profiles" as any)
+      .from("user_profiles" as unknown)
       .select("tier, binance_connected")
       .eq("id", userId)
-      .single()) as any;
+      .single()) as unknown;
 
     if (!profile) {
       return false;

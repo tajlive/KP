@@ -89,7 +89,7 @@ export class AutoTrader {
   /**
    * Send notification to user
    */
-  async notifyUser(trade: any): Promise<void> {
+  async notifyUser(trade: unknown): Promise<void> {
     // In a real implementation, this would send:
     // - Push notification
     // - Email

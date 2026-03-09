@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server';
  */
 export async function GET(_request: NextRequest) {
   try {
-    const supabase = (await createClient()) as any;
+    const supabase = (await createClient()) as unknown;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -59,7 +59,7 @@ export async function GET(_request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = (await createClient()) as any;
+    const supabase = (await createClient()) as unknown;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {

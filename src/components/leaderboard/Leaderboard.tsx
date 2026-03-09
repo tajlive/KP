@@ -359,7 +359,7 @@ function LeaderboardRow({
       layoutId={item.id}
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={spring as any}
+      transition={spring as unknown}
       className={`relative group p-4 rounded-2xl border transition-all duration-300 ${
         item.isUser || highlight
           ? "border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-slate-800/60"

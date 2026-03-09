@@ -80,7 +80,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
       
       setOpen(false);
       setQuantity('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error(error.message || 'Kunne ikke utføre handel');
     } finally {
       setLoading(false);

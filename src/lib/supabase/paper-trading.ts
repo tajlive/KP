@@ -59,7 +59,7 @@ export async function createPaperTradingSession(
       started_at: new Date().toISOString(),
     })
     .select()
-    .single()) as any;
+    .single()) as unknown;
 
   if (error) {
     console.error("Failed to create paper trading session:", error);
@@ -83,7 +83,7 @@ export async function getPaperTradingSession(
     .eq("user_id", userId)
     .eq("mode", 'paper')
     .eq("status", 'active')
-    .single()) as any;
+    .single()) as unknown;
 
   if (error) {
     if (error.code === "PGRST116") {
@@ -141,7 +141,7 @@ export async function executePaperTrade(
       executed_at: new Date().toISOString(),
     })
     .select()
-    .single()) as any;
+    .single()) as unknown;
 
   if (tradeError) {
     console.error("Failed to execute trade:", tradeError);
@@ -182,7 +182,7 @@ export async function getPaperTradeHistory(
     .select("*")
     .eq("session_id", sessionId)
     .order("created_at", { ascending: false })
-    .limit(limit)) as any;
+    .limit(limit)) as unknown;
 
   if (error) {
     console.error("Failed to get trade history:", error);

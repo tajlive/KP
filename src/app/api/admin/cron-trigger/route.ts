@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const authClient = (await createClient()) as any;
+  const authClient = (await createClient()) as unknown;
   const { data: { user } } = await authClient.auth.getUser();
 
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

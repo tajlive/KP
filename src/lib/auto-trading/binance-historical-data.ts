@@ -307,9 +307,9 @@ export class BinanceHistoricalDataFetcher {
       const batch = candles.slice(i, i + BATCH_SIZE);
 
       const { error } = (await supabase
-        .from("binance_historical_candles" as any)
+        .from("binance_historical_candles" as unknown)
         .upsert(
-          batch.map((c: any) => ({
+          batch.map((c: unknown) => ({
             symbol: symbol.toUpperCase(),
             interval,
             open_time: new Date(c.openTime).toISOString(),
@@ -323,7 +323,7 @@ export class BinanceHistoricalDataFetcher {
             quote_volume: c.quoteAssetVolume,
           })),
           { onConflict: "symbol,interval,open_time" },
-        )) as any;
+        )) as unknown;
 
       if (error) {
         console.error("Error caching candles:", error);
@@ -347,13 +347,13 @@ export class BinanceHistoricalDataFetcher {
     const supabase = await createClient();
 
     const { data, error } = (await supabase
-      .from("binance_historical_candles" as any)
+      .from("binance_historical_candles" as unknown)
       .select("*")
       .eq("symbol", symbol.toUpperCase())
       .eq("interval", interval)
       .gte("open_time", startTime.toISOString())
       .lte("open_time", endTime.toISOString())
-      .order("open_time", { ascending: true })) as any;
+      .order("open_time", { ascending: true })) as unknown;
 
     if (error) {
       console.error("Error fetching cached candles:", error);
@@ -362,7 +362,7 @@ export class BinanceHistoricalDataFetcher {
 
     if (!data || data.length === 0) return null;
 
-    return (data || []).map((row: any) => ({
+    return (data || []).map((row: unknown) => ({
       openTime: new Date(row.open_time).getTime(),
       open: row.open,
       high: row.high,

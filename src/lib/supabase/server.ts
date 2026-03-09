@@ -32,11 +32,14 @@ export function createClient() {
  * - Route Handler (sync): createServerClient(request, response)
  * - Server Component (async): await createServerClient()
  */
+// eslint-disable-next-line no-redeclare
 export function createServerClient(
   request: NextRequest,
   response: NextResponse,
 ): SupabaseClient<Database>;
+// eslint-disable-next-line no-redeclare
 export function createServerClient(): Promise<SupabaseClient<Database>>;
+// eslint-disable-next-line no-redeclare
 export function createServerClient(
   request?: NextRequest,
   response?: NextResponse,

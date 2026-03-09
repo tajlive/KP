@@ -85,7 +85,7 @@ export default function StrategyCharts({
                   ((v: unknown) => [
                     `${Number(v).toFixed(2)} USDT`,
                     "Equity",
-                  ]) as any
+                  ]) as unknown
                 }
               />
               <Area
@@ -162,7 +162,7 @@ export default function StrategyCharts({
                   borderRadius: 8,
                 }}
                 formatter={
-                  ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as any
+                  ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as unknown
                 }
               />
               <ReferenceLine

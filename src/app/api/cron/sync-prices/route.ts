@@ -66,9 +66,9 @@ export async function GET(request: NextRequest) {
       }));
 
     // Upsert to Supabase
-    const supabase = (await createClient()) as any;
+    const supabase = (await createClient()) as unknown;
 
-    const { error } = await (supabase as any)
+    const { error } = await (supabase as unknown)
       .from("coin_prices")
       .upsert(updates, { onConflict: "symbol" });
 

@@ -13,7 +13,7 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
   const segments = url.pathname.split("/");
   const id = segments[segments.indexOf("bots") + 1];
 
-  const db = (await createClient()) as any;
+  const db = (await createClient()) as unknown;
 
   const { data, error } = await db
     .from("bot_alert_configs")
@@ -59,11 +59,11 @@ export const POST = withRateLimit(
       );
     }
 
-    const db = (await createClient()) as any;
+    const db = (await createClient()) as unknown;
 
     // Verify ownership: user must own this strategy
     const { data: strategy } = await db
-      .from("strategies" as any)
+      .from("strategies" as unknown)
       .select("id")
       .eq("id", id)
       .eq("user_id", user.id)
