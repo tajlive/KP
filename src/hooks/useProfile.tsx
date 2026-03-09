@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { createClient } from "@/lib/utils";
-import { Profile } from "@/types/database";
 import { getErrorMessage } from "@/lib/utils/error";
+import { Profile } from "@/types/database";
+import { useEffect, useState } from "react";
 
 export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -15,16 +15,18 @@ export function useProfile() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setProfile(null);
         return;
       }
-      const { data, error: fetchError } = await supabase
-        .from('user_profiles' as any)
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      const { data, error: fetchError } = (await supabase
+        .from("user_profiles" as any)
+        .select("*")
+        .eq("id", user.id)
+        .single()) as any;
       if (fetchError) {
         setProfile(null);
       } else {
@@ -41,16 +43,22 @@ export function useProfile() {
     setSaving(true);
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setError("Ikke innlogget");
         return;
       }
-      const { data, error: upsertError } = await supabase
-        .from('user_profiles' as any)
-        .upsert({ id: user.id, ...updates, updated_at: new Date().toISOString() })
+      const { data, error: upsertError } = (await supabase
+        .from("user_profiles" as any)
+        .upsert({
+          id: user.id,
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
         .select()
-        .single();
+        .single()) as any;
       if (upsertError) {
         setError(upsertError.message);
       } else {
@@ -67,17 +75,19 @@ export function useProfile() {
     setSaving(true);
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setError("Ikke innlogget");
         return;
       }
-      const { data, error: updateError } = await supabase
-        .from('user_profiles' as any)
+      const { data, error: updateError } = (await supabase
+        .from("user_profiles" as any)
         .update({ ...updates, updated_at: new Date().toISOString() })
-        .eq('id', user.id)
+        .eq("id", user.id)
         .select()
-        .single();
+        .single()) as any;
       if (updateError) {
         setError(updateError.message);
       } else {
@@ -93,12 +103,14 @@ export function useProfile() {
   async function deleteProfile() {
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
       await supabase
-        .from('user_profiles' as any)
+        .from("user_profiles" as any)
         .delete()
-        .eq('id', user.id);
+        .eq("id", user.id);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     }

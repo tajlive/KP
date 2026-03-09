@@ -3,8 +3,10 @@
 import { PresetProfileId } from "@/lib/auto-trading/preset-profiles";
 import { PulseChartData, PulseEvent } from "@/types/pulse";
 import {
+  AreaSeries,
   ColorType,
   IChartApi,
+  LineSeries,
   LineStyle,
   SeriesMarker,
   Time,
@@ -104,7 +106,7 @@ export function PulseChart({
 
     if (profileId === "forsiktig") {
       // Area Chart - Smooth and safe
-      series = chart.addAreaSeries({
+      series = chart.addSeries(AreaSeries, {
         lineColor: "#22c55e",
         topColor: "rgba(34, 197, 94, 0.2)",
         bottomColor: "rgba(34, 197, 94, 0.0)",
@@ -113,14 +115,14 @@ export function PulseChart({
       });
     } else if (profileId === "moderat") {
       // Line Chart - Balanced
-      series = chart.addLineSeries({
+      series = chart.addSeries(LineSeries, {
         color: "#3b82f6",
         lineWidth: 3,
         priceFormat: { type: "price", precision: 2, minMove: 0.01 },
       });
     } else {
       // Candlestick - Aggressive/Professional
-      series = chart.addAreaSeries({
+      series = chart.addSeries(AreaSeries, {
         lineColor: "#f59e0b",
         topColor: "rgba(245, 158, 11, 0.3)",
         bottomColor: "rgba(245, 158, 11, 0.05)",

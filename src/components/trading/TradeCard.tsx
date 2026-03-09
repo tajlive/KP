@@ -187,7 +187,7 @@ export function TradeCard({ trade, onDismiss, index }: TradeCardProps) {
                 ) : null}
                 <span>
                   {isProfit ? '+' : ''}
-                  {trade.pnlPercent.toFixed(2)}%
+                  {(trade.pnlPercent ?? 0).toFixed(2)}%
                 </span>
               </motion.div>
             </div>

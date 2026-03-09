@@ -96,7 +96,7 @@ export default function ClientLeaderboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-900 p-4 md:p-8" data-testid="leaderboard-page">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -200,7 +200,7 @@ export default function ClientLeaderboard() {
         </div>
 
         {/* Leaderboard table */}
-        <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
+        <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700" data-testid="leaderboard-table">
           <table className="w-full">
             <thead className="bg-gray-700">
               <tr>
@@ -238,7 +238,7 @@ export default function ClientLeaderboard() {
                 </tr>
               )}
               {leaderboard.map((entry) => (
-                <tr key={entry.user_id} className="hover:bg-gray-750">
+                <tr key={entry.user_id} className="hover:bg-gray-750" data-testid="leaderboard-entry">
                   <td className="px-4 md:px-6 py-4">
                     <div className="flex items-center gap-2">
                       <span className="text-xl md:text-2xl font-bold text-white">
@@ -281,12 +281,12 @@ export default function ClientLeaderboard() {
                       }`}
                     >
                       {entry.total_profit_loss_percent >= 0 ? "+" : ""}
-                      {entry.total_profit_loss_percent.toFixed(2)}%
+                      {(entry.total_profit_loss_percent ?? 0).toFixed(2)}%
                     </span>
                   </td>
                   <td className="px-4 md:px-6 py-4 text-right hidden md:table-cell">
                     <span className="text-gray-300">
-                      {entry.win_rate.toFixed(1)}%
+                      {(entry.win_rate ?? 0).toFixed(1)}%
                     </span>
                   </td>
                   <td className="px-4 md:px-6 py-4 text-right hidden md:table-cell">

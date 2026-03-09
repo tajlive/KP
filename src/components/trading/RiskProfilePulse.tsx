@@ -4,9 +4,12 @@ import { useAuth } from "@/components/auth/AuthContext";
 import { createClient } from "@/lib/utils";
 import {
   AreaData,
+  AreaSeries,
   CandlestickData,
+  CandlestickSeries,
   IChartApi,
   ISeriesApi,
+  LineSeries,
   createChart,
 } from "lightweight-charts";
 import { Shield, Target, TrendingDown, TrendingUp, Zap } from "lucide-react";
@@ -99,7 +102,7 @@ export function RiskProfilePulse({
     // Different chart types based on risk profile
     if (profile === "forsiktig") {
       // Area chart - smooth, simple
-      const areaSeries = (chart as any).addAreaSeries({
+      const areaSeries = chart.addSeries(AreaSeries, {
         lineColor: "#22c55e",
         topColor: "rgba(34, 197, 94, 0.3)",
         bottomColor: "rgba(34, 197, 94, 0.05)",
@@ -121,7 +124,7 @@ export function RiskProfilePulse({
       areaSeries.setData(data as any);
     } else if (profile === "moderat") {
       // Line chart with markers
-      const lineSeries = (chart as any).addLineSeries({
+      const lineSeries = chart.addSeries(LineSeries, {
         color: "#3b82f6",
         lineWidth: 2,
       });
@@ -140,7 +143,7 @@ export function RiskProfilePulse({
       lineSeries.setData(data as any);
     } else {
       // Candlestick for aggressive
-      const candleSeries = (chart as any).addCandlestickSeries({
+      const candleSeries = chart.addSeries(CandlestickSeries, {
         upColor: "#22c55e",
         downColor: "#ef4444",
         borderUpColor: "#22c55e",
@@ -222,7 +225,7 @@ export function RiskProfilePulse({
           className={`text-xs ${portfolio.change >= 0 ? "text-green-400" : "text-red-400"}`}
         >
           {portfolio.change >= 0 ? "+" : ""}
-          {portfolio.changePercent.toFixed(2)}%
+          {(portfolio.changePercent ?? 0).toFixed(2)}%
         </span>
       </div>
     );
@@ -258,7 +261,7 @@ export function RiskProfilePulse({
             <span>
               {portfolio.change >= 0 ? "+" : ""}
               {portfolio.change.toLocaleString("nb-NO")} kr (
-              {portfolio.changePercent.toFixed(2)}%)
+              {(portfolio.changePercent ?? 0).toFixed(2)}%)
             </span>
           </div>
         </div>
@@ -353,13 +356,13 @@ export function MiniPulseWidget() {
       />
       <div className="flex flex-col items-end">
         <span className="text-sm font-medium text-white">
-          {(portfolio.value / 1000).toFixed(0)}k kr
+          {((portfolio.value ?? 0) / 1000).toFixed(0)}k kr
         </span>
         <span
           className={`text-xs ${portfolio.change >= 0 ? "text-green-400" : "text-red-400"}`}
         >
           {portfolio.change >= 0 ? "+" : ""}
-          {portfolio.changePercent.toFixed(1)}%
+          {(portfolio.changePercent ?? 0).toFixed(1)}%
         </span>
       </div>
       {/* Sparkline */}

@@ -20,6 +20,15 @@ yarn.lock
 /playwright/.cache/
 /tests/e2e/test-results/
 
+# Allure reports
+/allure-results/
+/allure-report/
+/.auth/
+
+# Lighthouse CI
+/.lighthouseci/
+/lighthouse-*.report.json
+
 # =============================================================================
 # NEXT.JS BUILD OUTPUT
 # =============================================================================

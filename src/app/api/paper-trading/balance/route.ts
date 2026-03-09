@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { getPaperTradingSession, calculatePnL, getPaperTradeHistory } from '@/lib/supabase/paper-trading';
+import type { NextRequest } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user
-    const supabase = (await createClient()) as any;
+    // Create response for cookie handling
+    const response = NextResponse.next();
+    
+    // Get authenticated user using SSR client with cookies
+    const supabase = createServerClient(request, response);
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -33,8 +37,8 @@ export async function GET(request: Request) {
     
     return NextResponse.json({
       balance: {
-        starting: session.starting_balance,
-        current: session.current_balance,
+        starting: session.starting_capital_nok,
+        current: session.current_capital_nok,
         pnl: pnl.absolute,
         pnlPercentage: pnl.percentage,
         isPositive: pnl.isPositive,

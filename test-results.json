@@ -1,0 +1,788 @@
+{
+  "config": {
+    "configFile": "/Users/taj/klarpakke/playwright.config.ts",
+    "rootDir": "/Users/taj/klarpakke/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.setup\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "cleanup",
+        "name": "cleanup",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.teardown\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "smoke-chromium",
+        "name": "smoke-chromium",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/smoke\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "critical-chromium",
+        "name": "critical-chromium",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/critical\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "critical-firefox",
+        "name": "critical-firefox",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/critical\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "regression-chromium",
+        "name": "regression-chromium",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/regression\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "mobile-safari",
+        "name": "mobile-safari",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/mobile\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/taj/klarpakke/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "mobile-chrome",
+        "name": "mobile-chrome",
+        "testDir": "/Users/taj/klarpakke/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/mobile\\/.*\\.spec\\.ts/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "/Users/taj/klarpakke/node_modules/allure-playwright/dist/cjs/index.js",
+        {
+          "outputFolder": "allure-results",
+          "detail": true,
+          "suiteTitle": true,
+          "categories": [
+            {
+              "name": "Product Bugs",
+              "matchedStatuses": [
+                "failed"
+              ],
+              "messageRegex": ".*product.*|.*bug.*|.*regression.*"
+            },
+            {
+              "name": "Auth Failures",
+              "matchedStatuses": [
+                "failed"
+              ],
+              "messageRegex": ".*401.*|.*403.*|.*Unauthorized.*|.*auth.*"
+            },
+            {
+              "name": "API Failures",
+              "matchedStatuses": [
+                "failed"
+              ],
+              "messageRegex": ".*500.*|.*502.*|.*503.*|.*API.*"
+            },
+            {
+              "name": "Network/Timeout",
+              "matchedStatuses": [
+                "failed"
+              ],
+              "messageRegex": ".*timeout.*|.*network.*|.*ETIMEDOUT.*"
+            },
+            {
+              "name": "Flaky Tests",
+              "matchedStatuses": [
+                "failed"
+              ],
+              "messageRegex": ".*flaky.*|.*retry.*|.*intermittent.*"
+            },
+            {
+              "name": "Environment Issues",
+              "matchedStatuses": [
+                "failed"
+              ],
+              "messageRegex": ".*env.*|.*setup.*|.*fixture.*"
+            }
+          ]
+        }
+      ],
+      [
+        "line",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "auth.teardown.ts",
+      "file": "auth.teardown.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "cleanup auth state",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "cleanup",
+              "projectName": "cleanup",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1,
+                  "error": {
+                    "message": "ReferenceError: path is not defined",
+                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22",
+                    "location": {
+                      "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
+                      "column": 22,
+                      "line": 22
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
+                        "column": 22,
+                        "line": 22
+                      },
+                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22\u001b[22m"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-08T23:15:36.962Z",
+                  "annotations": [],
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
+                    "column": 22,
+                    "line": 22
+                  }
+                },
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 1,
+                  "error": {
+                    "message": "ReferenceError: path is not defined",
+                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22",
+                    "location": {
+                      "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
+                      "column": 22,
+                      "line": 22
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
+                        "column": 22,
+                        "line": 22
+                      },
+                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 20 |\u001b[39m   \n \u001b[90m 21 |\u001b[39m   \u001b[90m// Cleanup test results older than 7 days\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 22 |\u001b[39m   \u001b[36mconst\u001b[39m resultsDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mjoin(__dirname\u001b[33m,\u001b[39m \u001b[32m'../test-results'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mif\u001b[39m (fs\u001b[33m.\u001b[39mexistsSync(resultsDir)) {\n \u001b[90m 24 |\u001b[39m     \u001b[36mconst\u001b[39m files \u001b[33m=\u001b[39m fs\u001b[33m.\u001b[39mreaddirSync(resultsDir)\u001b[33m;\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m now \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.teardown.ts:22:22\u001b[22m"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2026-03-08T23:15:37.520Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/taj/klarpakke/test-results/auth.teardown.ts-cleanup-auth-state-cleanup-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/taj/klarpakke/e2e/auth.teardown.ts",
+                    "column": 22,
+                    "line": 22
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "5228e77054e433ae56aa-24ec22baaf422e6ba8fd",
+          "file": "auth.teardown.ts",
+          "line": 13,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "auth.setup.ts",
+      "file": "auth.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate via API or mock",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 411,
+                  "error": {
+                    "message": "ReferenceError: path is not defined",
+                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19",
+                    "location": {
+                      "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
+                      "column": 19,
+                      "line": 17
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
+                        "column": 19,
+                        "line": 17
+                      },
+                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19\u001b[22m"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-08T23:15:34.089Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup/video.webm"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
+                    "column": 19,
+                    "line": 17
+                  }
+                },
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 177,
+                  "error": {
+                    "message": "ReferenceError: path is not defined",
+                    "stack": "ReferenceError: path is not defined\n    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19",
+                    "location": {
+                      "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
+                      "column": 19,
+                      "line": 17
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
+                        "column": 19,
+                        "line": 17
+                      },
+                      "message": "ReferenceError: path is not defined\n\n\u001b[0m \u001b[90m 15 |\u001b[39m setup(\u001b[32m'authenticate via API or mock'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page\u001b[33m,\u001b[39m context }) \u001b[33m=>\u001b[39m {\n \u001b[90m 16 |\u001b[39m   \u001b[90m// Ensure .auth directory exists\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 17 |\u001b[39m   \u001b[36mconst\u001b[39m authDir \u001b[33m=\u001b[39m path\u001b[33m.\u001b[39mdirname(authFile)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 18 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mfs\u001b[33m.\u001b[39mexistsSync(authDir)) {\n \u001b[90m 19 |\u001b[39m     fs\u001b[33m.\u001b[39mmkdirSync(authDir\u001b[33m,\u001b[39m { recursive\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m   }\u001b[0m\n\u001b[2m    at /Users/taj/klarpakke/e2e/auth.setup.ts:17:19\u001b[22m"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2026-03-08T23:15:35.855Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup-retry1/video.webm"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/taj/klarpakke/test-results/auth.setup.ts-authenticate-via-API-or-mock-setup-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/taj/klarpakke/e2e/auth.setup.ts",
+                    "column": 19,
+                    "line": 17
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "17e3fe6f4d9d8bd79c6b-5c0a346ddcdce76a074e",
+          "file": "auth.setup.ts",
+          "line": 15,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "critical/auth.spec.ts",
+      "file": "critical/auth.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Critical: Authentication @critical @auth",
+          "file": "critical/auth.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "protected routes redirect to login when unauthenticated",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-chromium",
+                  "projectName": "critical-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-d45d7c2ae6b1afd28cc8",
+              "file": "critical/auth.spec.ts",
+              "line": 11,
+              "column": 3
+            },
+            {
+              "title": "dashboard loads for authenticated user",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-chromium",
+                  "projectName": "critical-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-9ce11f2d5c43088baaca",
+              "file": "critical/auth.spec.ts",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "API returns 401 for unauthenticated requests",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-chromium",
+                  "projectName": "critical-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-394c873a5ba252e84603",
+              "file": "critical/auth.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "API works for authenticated requests",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-chromium",
+                  "projectName": "critical-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-04f3dec744f82a455e8b",
+              "file": "critical/auth.spec.ts",
+              "line": 48,
+              "column": 3
+            },
+            {
+              "title": "protected routes redirect to login when unauthenticated",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-firefox",
+                  "projectName": "critical-firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-a41ee8e0b25fa1031364",
+              "file": "critical/auth.spec.ts",
+              "line": 11,
+              "column": 3
+            },
+            {
+              "title": "dashboard loads for authenticated user",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-firefox",
+                  "projectName": "critical-firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-b0b749e3d817b15ae1be",
+              "file": "critical/auth.spec.ts",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "API returns 401 for unauthenticated requests",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-firefox",
+                  "projectName": "critical-firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-12ea6f158af09f2758fc",
+              "file": "critical/auth.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "API works for authenticated requests",
+              "ok": true,
+              "tags": [
+                "critical",
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-firefox",
+                  "projectName": "critical-firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-a360144fda9356fbae2d",
+              "file": "critical/auth.spec.ts",
+              "line": 48,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Critical: Core Navigation @critical",
+          "file": "critical/auth.spec.ts",
+          "line": 69,
+          "column": 6,
+          "specs": [
+            {
+              "title": "user can navigate between main sections",
+              "ok": true,
+              "tags": [
+                "critical"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-chromium",
+                  "projectName": "critical-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-cf378800e0a2ce067baf",
+              "file": "critical/auth.spec.ts",
+              "line": 71,
+              "column": 3
+            },
+            {
+              "title": "no console errors on critical paths",
+              "ok": true,
+              "tags": [
+                "critical"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-chromium",
+                  "projectName": "critical-chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-1f67a94b8fa8e012c547",
+              "file": "critical/auth.spec.ts",
+              "line": 84,
+              "column": 3
+            },
+            {
+              "title": "user can navigate between main sections",
+              "ok": true,
+              "tags": [
+                "critical"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-firefox",
+                  "projectName": "critical-firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-b7aba1c65569938ee9e1",
+              "file": "critical/auth.spec.ts",
+              "line": 71,
+              "column": 3
+            },
+            {
+              "title": "no console errors on critical paths",
+              "ok": true,
+              "tags": [
+                "critical"
+              ],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "critical-firefox",
+                  "projectName": "critical-firefox",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "781736a2f7be71c5786b-cee5307312623a8fbd65",
+              "file": "critical/auth.spec.ts",
+              "line": 84,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-08T23:15:24.622Z",
+    "duration": 12969.758,
+    "expected": 0,
+    "skipped": 12,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

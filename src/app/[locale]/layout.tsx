@@ -30,6 +30,10 @@ const lexend = Lexend({
 });
 
 export async function generateStaticParams() {
+  // NOTE: Norwegian (no) is the default locale with localePrefix: 'as-needed'
+  // It does NOT have a prefix in the URL, so we don't generate /no/* paths.
+  // Middleware handles /no/* -> /* redirects for legacy URLs.
+  // Only generate explicit locale paths for non-default locales.
   return [
     { locale: "en" },
     { locale: "th" },

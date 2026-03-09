@@ -3,7 +3,7 @@
  * Fetches and caches historical candle data from Binance
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from "@/lib/supabase/server";
 
 export interface BinanceCandle {
   openTime: number;
@@ -19,13 +19,21 @@ export interface BinanceCandle {
   takerBuyQuoteAssetVolume: number;
 }
 
-export type TimeInterval = '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w';
+export type TimeInterval =
+  | "1m"
+  | "5m"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "4h"
+  | "1d"
+  | "1w";
 
 /**
  * Fetch historical candles from Binance
  */
 export class BinanceHistoricalDataFetcher {
-  private readonly BASE_URL = 'https://api.binance.com/api/v3';
+  private readonly BASE_URL = "https://api.binance.com/api/v3";
   private readonly MAX_CANDLES_PER_REQUEST = 1000;
   private readonly RATE_LIMIT_DELAY_MS = 100;
 
@@ -40,28 +48,47 @@ export class BinanceHistoricalDataFetcher {
     options?: {
       useCache?: boolean;
       validateData?: boolean;
-    }
+    },
   ): Promise<BinanceCandle[]> {
     const { useCache = true, validateData = true } = options || {};
 
     // Normalize symbol (remove USDT if present, then add it back)
-    const normalizedSymbol = symbol.replace(/USDT$/i, '') + 'USDT';
+    const normalizedSymbol = symbol.replace(/USDT$/i, "") + "USDT";
 
     // 1. Check cache first
     if (useCache) {
-      const cached = await this.getCachedCandles(normalizedSymbol, interval, startTime, endTime);
+      const cached = await this.getCachedCandles(
+        normalizedSymbol,
+        interval,
+        startTime,
+        endTime,
+      );
       if (cached && cached.length > 0) {
-        const coverage = this.calculateCoverage(cached, startTime, endTime, interval);
+        const coverage = this.calculateCoverage(
+          cached,
+          startTime,
+          endTime,
+          interval,
+        );
         if (coverage >= 0.95) {
-          console.info(`[Cache HIT] ${normalizedSymbol} ${interval} - ${cached.length} candles (${(coverage * 100).toFixed(1)}% coverage)`);
+          console.info(
+            `[Cache HIT] ${normalizedSymbol} ${interval} - ${cached.length} candles (${(coverage * 100).toFixed(1)}% coverage)`,
+          );
           return cached;
         }
       }
     }
 
     // 2. Fetch from Binance API
-    console.info(`[Cache MISS] Fetching from Binance: ${normalizedSymbol} ${interval}`);
-    const candles = await this.fetchFromBinance(normalizedSymbol, interval, startTime, endTime);
+    console.info(
+      `[Cache MISS] Fetching from Binance: ${normalizedSymbol} ${interval}`,
+    );
+    const candles = await this.fetchFromBinance(
+      normalizedSymbol,
+      interval,
+      startTime,
+      endTime,
+    );
 
     // 3. Validate data quality
     if (validateData) {
@@ -81,7 +108,7 @@ export class BinanceHistoricalDataFetcher {
     symbol: string,
     interval: TimeInterval,
     startTime: Date,
-    endTime: Date
+    endTime: Date,
   ): Promise<BinanceCandle[]> {
     const allCandles: BinanceCandle[] = [];
     let currentStart = startTime.getTime();
@@ -92,24 +119,26 @@ export class BinanceHistoricalDataFetcher {
     while (currentStart < endTimeMs && retries < maxRetries) {
       try {
         const url = `${this.BASE_URL}/klines?symbol=${symbol.toUpperCase()}&interval=${interval}&startTime=${currentStart}&limit=${this.MAX_CANDLES_PER_REQUEST}`;
-        
+
         const response = await fetch(url);
-        
+
         if (!response.ok) {
           if (response.status === 429) {
-            console.warn('Rate limit hit, waiting 5s...');
+            console.warn("Rate limit hit, waiting 5s...");
             await this.sleep(5000);
             retries++;
             continue;
           }
           if (response.status === 418) {
-            throw new Error('IP banned by Binance - too many requests');
+            throw new Error("IP banned by Binance - too many requests");
           }
-          throw new Error(`Binance API error: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `Binance API error: ${response.status} ${response.statusText}`,
+          );
         }
 
         const data = await response.json();
-        
+
         if (!Array.isArray(data) || data.length === 0) {
           break;
         }
@@ -130,12 +159,17 @@ export class BinanceHistoricalDataFetcher {
 
         // Progress logging for long fetches
         if (allCandles.length % 5000 === 0) {
-          const progress = ((currentStart - startTime.getTime()) / (endTimeMs - startTime.getTime()) * 100).toFixed(1);
-          console.info(`  Progress: ${progress}% (${allCandles.length} candles)`);
+          const progress = (
+            ((currentStart - startTime.getTime()) /
+              (endTimeMs - startTime.getTime())) *
+            100
+          ).toFixed(1);
+          console.info(
+            `  Progress: ${progress}% (${allCandles.length} candles)`,
+          );
         }
-
       } catch (error) {
-        console.error('Error fetching from Binance:', error);
+        console.error("Error fetching from Binance:", error);
         retries++;
         if (retries >= maxRetries) {
           throw error;
@@ -170,9 +204,12 @@ export class BinanceHistoricalDataFetcher {
   /**
    * Validate data quality
    */
-  private validateCandles(candles: BinanceCandle[], interval: TimeInterval): void {
+  private validateCandles(
+    candles: BinanceCandle[],
+    interval: TimeInterval,
+  ): void {
     if (candles.length === 0) {
-      throw new Error('No candles returned from Binance');
+      throw new Error("No candles returned from Binance");
     }
 
     const intervalMs = this.intervalToMilliseconds(interval);
@@ -188,7 +225,9 @@ export class BinanceHistoricalDataFetcher {
       if (diff > intervalMs * 2) {
         gapsFound++;
         if (gapsFound <= 3) {
-          console.warn(`Data gap at index ${i}: ${(diff / intervalMs).toFixed(1)} intervals missing`);
+          console.warn(
+            `Data gap at index ${i}: ${(diff / intervalMs).toFixed(1)} intervals missing`,
+          );
         }
       }
     }
@@ -196,9 +235,14 @@ export class BinanceHistoricalDataFetcher {
     // Check for price anomalies
     for (const candle of candles) {
       if (candle.high < candle.low) {
-        throw new Error(`Invalid candle: high (${candle.high}) < low (${candle.low})`);
+        throw new Error(
+          `Invalid candle: high (${candle.high}) < low (${candle.low})`,
+        );
       }
-      if (candle.close > candle.high * 1.01 || candle.close < candle.low * 0.99) {
+      if (
+        candle.close > candle.high * 1.01 ||
+        candle.close < candle.low * 0.99
+      ) {
         anomaliesFound++;
       }
       if (candle.open > candle.high * 1.01 || candle.open < candle.low * 0.99) {
@@ -207,10 +251,14 @@ export class BinanceHistoricalDataFetcher {
     }
 
     if (gapsFound > 0) {
-      console.warn(`⚠️ Data quality: ${gapsFound} gaps found in ${candles.length} candles`);
+      console.warn(
+        `⚠️ Data quality: ${gapsFound} gaps found in ${candles.length} candles`,
+      );
     }
     if (anomaliesFound > 0) {
-      console.warn(`⚠️ Data quality: ${anomaliesFound} price anomalies detected`);
+      console.warn(
+        `⚠️ Data quality: ${anomaliesFound} price anomalies detected`,
+      );
     }
 
     console.info(`✅ Data validation passed: ${candles.length} candles`);
@@ -223,7 +271,7 @@ export class BinanceHistoricalDataFetcher {
     candles: BinanceCandle[],
     startTime: Date,
     endTime: Date,
-    interval: TimeInterval
+    interval: TimeInterval,
   ): number {
     if (candles.length === 0) return 0;
 
@@ -247,7 +295,7 @@ export class BinanceHistoricalDataFetcher {
   private async cacheCandles(
     symbol: string,
     interval: TimeInterval,
-    candles: BinanceCandle[]
+    candles: BinanceCandle[],
   ): Promise<void> {
     const supabase = await createClient();
 
@@ -257,11 +305,11 @@ export class BinanceHistoricalDataFetcher {
 
     for (let i = 0; i < candles.length; i += BATCH_SIZE) {
       const batch = candles.slice(i, i + BATCH_SIZE);
-      
-      const { error } = await supabase
-        .from('binance_historical_candles')
+
+      const { error } = (await supabase
+        .from("binance_historical_candles" as any)
         .upsert(
-          batch.map(c => ({
+          batch.map((c: any) => ({
             symbol: symbol.toUpperCase(),
             interval,
             open_time: new Date(c.openTime).toISOString(),
@@ -274,11 +322,11 @@ export class BinanceHistoricalDataFetcher {
             number_of_trades: c.numberOfTrades,
             quote_volume: c.quoteAssetVolume,
           })),
-          { onConflict: 'symbol,interval,open_time' }
-        );
+          { onConflict: "symbol,interval,open_time" },
+        )) as any;
 
       if (error) {
-        console.error('Error caching candles:', error);
+        console.error("Error caching candles:", error);
       } else {
         inserted += batch.length;
       }
@@ -294,27 +342,27 @@ export class BinanceHistoricalDataFetcher {
     symbol: string,
     interval: TimeInterval,
     startTime: Date,
-    endTime: Date
+    endTime: Date,
   ): Promise<BinanceCandle[] | null> {
     const supabase = await createClient();
 
-    const { data, error } = await supabase
-      .from('binance_historical_candles')
-      .select('*')
-      .eq('symbol', symbol.toUpperCase())
-      .eq('interval', interval)
-      .gte('open_time', startTime.toISOString())
-      .lte('open_time', endTime.toISOString())
-      .order('open_time', { ascending: true });
+    const { data, error } = (await supabase
+      .from("binance_historical_candles" as any)
+      .select("*")
+      .eq("symbol", symbol.toUpperCase())
+      .eq("interval", interval)
+      .gte("open_time", startTime.toISOString())
+      .lte("open_time", endTime.toISOString())
+      .order("open_time", { ascending: true })) as any;
 
     if (error) {
-      console.error('Error fetching cached candles:', error);
+      console.error("Error fetching cached candles:", error);
       return null;
     }
 
     if (!data || data.length === 0) return null;
 
-    return data.map(row => ({
+    return (data || []).map((row: any) => ({
       openTime: new Date(row.open_time).getTime(),
       open: row.open,
       high: row.high,
@@ -331,20 +379,20 @@ export class BinanceHistoricalDataFetcher {
 
   private intervalToMilliseconds(interval: TimeInterval): number {
     const map: Record<TimeInterval, number> = {
-      '1m': 60 * 1000,
-      '5m': 5 * 60 * 1000,
-      '15m': 15 * 60 * 1000,
-      '30m': 30 * 60 * 1000,
-      '1h': 60 * 60 * 1000,
-      '4h': 4 * 60 * 60 * 1000,
-      '1d': 24 * 60 * 60 * 1000,
-      '1w': 7 * 24 * 60 * 60 * 1000,
+      "1m": 60 * 1000,
+      "5m": 5 * 60 * 1000,
+      "15m": 15 * 60 * 1000,
+      "30m": 30 * 60 * 1000,
+      "1h": 60 * 60 * 1000,
+      "4h": 4 * 60 * 60 * 1000,
+      "1d": 24 * 60 * 60 * 1000,
+      "1w": 7 * 24 * 60 * 60 * 1000,
     };
     return map[interval];
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
@@ -353,25 +401,25 @@ export class BinanceHistoricalDataFetcher {
  */
 export async function prefetchCommonData(): Promise<void> {
   const fetcher = new BinanceHistoricalDataFetcher();
-  const symbols = ['BTC', 'ETH', 'SOL', 'BNB'];
-  const intervals: TimeInterval[] = ['1h', '4h', '1d'];
-  
+  const symbols = ["BTC", "ETH", "SOL", "BNB"];
+  const intervals: TimeInterval[] = ["1h", "4h", "1d"];
+
   const endTime = new Date();
   const startTime = new Date(endTime.getTime() - 365 * 24 * 60 * 60 * 1000); // 1 year
 
-  console.info('🚀 Pre-fetching common historical data...');
+  console.info("🚀 Pre-fetching common historical data...");
 
   for (const symbol of symbols) {
     for (const interval of intervals) {
       try {
         await fetcher.fetchCandles(symbol, interval, startTime, endTime);
         // Small delay between requests
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 500));
       } catch (error) {
         console.error(`Failed to prefetch ${symbol} ${interval}:`, error);
       }
     }
   }
 
-  console.info('✅ Pre-fetch complete');
+  console.info("✅ Pre-fetch complete");
 }

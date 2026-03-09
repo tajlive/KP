@@ -250,14 +250,14 @@ export default function CopyTradingLeaderboard() {
 
                         <div className="text-right">
                           <div className="font-bold text-white">
-                            {entry.winRate.toFixed(1)}%
+                            {(entry.winRate ?? 0).toFixed(1)}%
                           </div>
                           <div className="text-xs text-slate-500">Win Rate</div>
                         </div>
 
                         <div className="text-right">
                           <div className="font-bold text-blue-400">
-                            {entry.sharpeRatio.toFixed(2)}
+                            {(entry.sharpeRatio ?? 0).toFixed(2)}
                           </div>
                           <div className="text-xs text-slate-500">Sharpe</div>
                         </div>

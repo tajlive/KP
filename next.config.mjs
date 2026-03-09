@@ -164,7 +164,7 @@ const nextConfig = {
       script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.vercel-scripts.com https://vercel.live;
       style-src 'self' 'unsafe-inline';
       img-src 'self' blob: data: https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.coingecko.com https://vercel.com https://klarpakke.no https://www.klarpakke.no;
-      font-src 'self' data: https://vercel.live;
+      font-src 'self' data: https://vercel.live https://r2cdn.perplexity.ai;
       worker-src 'self' blob:;
       object-src 'none';
       base-uri 'self';

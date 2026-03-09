@@ -180,9 +180,15 @@ export class AutoTradingWebSocket {
    * Start ping interval to keep connection alive
    */
   private startPingInterval(): void {
+    // Clear any existing interval first (prevent duplicates)
+    this.stopPingInterval()
+    
     // Ping every 30 minutes to keep listen key alive
     this.pingInterval = setInterval(() => {
-      this.keepAliveListenKey()
+      // Only ping if WebSocket is still open
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.keepAliveListenKey()
+      }
     }, 30 * 60 * 1000)
   }
 
@@ -460,6 +466,10 @@ export class PriceWebSocket {
       }
     }
 
+    this.ws.onerror = (error) => {
+      console.error('Price WebSocket error:', error)
+    }
+
     this.ws.onclose = () => {
       this.attemptReconnect()
     }
@@ -473,8 +483,14 @@ export class PriceWebSocket {
   }
 
   disconnect(): void {
+    // Prevent reconnection on intentional disconnect
+    this.reconnectAttempts = 999
+    
     if (this.ws) {
-      this.ws.close()
+      // Only close if still open or connecting
+      if (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING) {
+        this.ws.close()
+      }
       this.ws = null
     }
   }

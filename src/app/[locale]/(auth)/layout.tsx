@@ -1,5 +1,4 @@
 import { AuthProvider } from "@/components/auth/AuthContext";
-import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
 import { DM_Sans, Instrument_Serif } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -49,11 +48,12 @@ export default async function AuthLayout({
         suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ClientSideProviders>
-            <AuthProvider>
-              <div className="min-h-screen flex flex-col">{children}</div>
-            </AuthProvider>
-          </ClientSideProviders>
+          {/* NOTE: ClientSideProviders intentionally NOT used here.
+              It contains ChatWidget which should only mount once in root layout.
+              Auth pages don't need the global widgets (chat, PWA prompt). */}
+          <AuthProvider>
+            <div className="min-h-screen flex flex-col">{children}</div>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

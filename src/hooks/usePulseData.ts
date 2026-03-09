@@ -11,7 +11,6 @@ import {
   PulseEvent,
   PulseMode,
 } from "@/types/pulse";
-import { Time } from "lightweight-charts";
 import { useCallback, useEffect, useState } from "react";
 
 interface UsePulseDataProps {
@@ -47,35 +46,35 @@ export function usePulseData({
       setIsLoading(true);
 
       // 1. Fetch historical data from daily metrics
-      const { data: metrics, error: metricsError } = await supabase
+      const { data: metrics, error: metricsError } = (await supabase
         .from("auto_trading_daily_metrics")
         .select("date, ending_capital_nok")
         .eq("user_id", userId)
-        .order("date", { ascending: true });
+        .order("date", { ascending: true })) as unknown;
 
       if (metricsError) throw metricsError;
 
       // Transform metrics to chart data
-      const chartData: PulseChartData[] = (metrics || []).map((m) => ({
-        time: (new Date(m.date).getTime() / 1000) as Time,
+      const chartData: PulseChartData[] = (metrics || []).map((m: unknown) => ({
+        time: (new Date(m.date).getTime() / 1000) as unknown,
         value: Number(m.ending_capital_nok),
       }));
 
       // 2. Fetch recent trades for events
-      const { data: trades, error: tradesError } = await supabase
-        .from("trades")
+      const { data: trades, error: tradesError } = (await supabase
+        .from("trades" as unknown)
         .select("*")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(50)) as unknown;
 
       if (tradesError) throw tradesError;
 
       // Transform trades to events
       const profile = PRESET_PROFILES[profileId];
-      const pulseEvents: PulseEvent[] = (trades || []).map((t) => ({
+      const pulseEvents: PulseEvent[] = (trades || []).map((t: unknown) => ({
         id: t.id,
-        time: (new Date(t.created_at).getTime() / 1000) as Time,
+        time: (new Date(t.created_at).getTime() / 1000) as unknown,
         type: t.side === "buy" ? "buy" : "sell",
         symbol: t.symbol,
         price: Number(t.price),
@@ -88,12 +87,12 @@ export function usePulseData({
       setEvents(pulseEvents);
 
       // 3. Get current session for real-time stats
-      const { data: session, error: sessionError } = await supabase
+      const { data: session, error: sessionError } = (await supabase
         .from("trading_sessions")
         .select("*")
         .eq("user_id", userId)
         .eq("status", "active")
-        .maybeSingle();
+        .maybeSingle()) as unknown;
 
       if (session && !sessionError) {
         setStats({
@@ -134,7 +133,7 @@ export function usePulseData({
 
           const newEvent: PulseEvent = {
             id: newTrade.id,
-            time: (new Date(newTrade.created_at).getTime() / 1000) as Time,
+            time: (new Date(newTrade.created_at).getTime() / 1000) as unknown,
             type: newTrade.side === "buy" ? "buy" : "sell",
             symbol: newTrade.symbol,
             price: Number(newTrade.price),

@@ -420,6 +420,126 @@ html.high-contrast input:focus-visible {
 }
 
 /* =====================================================
+   BUTTON STYLES
+   ===================================================== */
+
+.kp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border-radius: var(--kp-radius-lg);
+  transition: all var(--kp-transition-normal);
+  cursor: pointer;
+  border: none;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.kp-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kp-button-primary {
+  background-color: var(--kp-primary);
+  color: white;
+}
+
+.kp-button-primary:hover:not(:disabled) {
+  background-color: var(--kp-primary-hover);
+}
+
+.kp-button-secondary {
+  background-color: var(--kp-secondary);
+  color: white;
+}
+
+.kp-button-secondary:hover:not(:disabled) {
+  background-color: var(--kp-secondary-hover);
+}
+
+.kp-button-outline {
+  background-color: transparent;
+  color: var(--kp-text-primary);
+  border: 1px solid var(--kp-border-dark);
+}
+
+.kp-button-outline:hover:not(:disabled) {
+  background-color: var(--kp-bg-secondary);
+  border-color: var(--kp-text-secondary);
+}
+
+.kp-button-ghost {
+  background-color: transparent;
+  color: var(--kp-text-secondary);
+}
+
+.kp-button-ghost:hover:not(:disabled) {
+  background-color: var(--kp-bg-secondary);
+  color: var(--kp-text-primary);
+}
+
+.kp-button-danger {
+  background-color: var(--kp-error);
+  color: white;
+}
+
+.kp-button-danger:hover:not(:disabled) {
+  background-color: var(--kp-error-hover);
+}
+
+.kp-button-success {
+  background-color: var(--kp-success);
+  color: white;
+}
+
+.kp-button-success:hover:not(:disabled) {
+  background-color: var(--kp-success-hover);
+}
+
+/* Button sizes */
+.kp-button-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.kp-button-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.kp-button-icon {
+  padding: 0.5rem;
+  aspect-ratio: 1;
+}
+
+/* Spinner */
+.kp-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.kp-spinner-sm {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-width: 1.5px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =====================================================
    UTILITY CLASSES
    ===================================================== */
 

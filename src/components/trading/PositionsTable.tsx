@@ -96,7 +96,7 @@ export default function PositionsTable() {
                 </td>
                 <td className="px-4 py-4 text-right">
                   <span className="font-mono text-gray-900 dark:text-white">
-                    {position.quantity.toFixed(4)}
+                    {(position.quantity ?? 0).toFixed(4)}
                   </span>
                 </td>
                 <td className="px-4 py-4 text-right">
@@ -121,10 +121,10 @@ export default function PositionsTable() {
                     }`}
                   >
                     {position.pnl >= 0 ? '+' : ''}
-                    ${position.pnl.toFixed(2)}
+                    ${(position.pnl ?? 0).toFixed(2)}
                     <span className="text-xs ml-1">
                       ({position.pnlPercent >= 0 ? '+' : ''}
-                      {position.pnlPercent.toFixed(2)}%)
+                      {(position.pnlPercent ?? 0).toFixed(2)}%)
                     </span>
                   </div>
                 </td>

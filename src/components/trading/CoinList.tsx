@@ -204,8 +204,8 @@ export const CoinList: React.FC<CoinListProps> = ({
                       : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
                   )}
                 >
-                  {coin.priceChange24h >= 0 ? '+' : ''}
-                  {coin.priceChange24h.toFixed(2)}%
+                  {(coin.priceChange24h ?? 0) >= 0 ? '+' : ''}
+                  {(coin.priceChange24h ?? 0).toFixed(2)}%
                 </Badge>
               </div>
 

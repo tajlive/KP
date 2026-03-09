@@ -1,6 +1,6 @@
 /**
  * 🐛 Sentry Error Tracking Utilities
- * 
+ *
  * Hjelpefunksjoner for å logge feil til Sentry
  */
 
@@ -12,7 +12,7 @@ import * as Sentry from "@sentry/nextjs";
 export function logError(
   error: Error | string,
   context?: Record<string, unknown>,
-  level: Sentry.SeverityLevel = "error"
+  level: Sentry.SeverityLevel = "error",
 ) {
   if (process.env.NODE_ENV !== "production") {
     console.error("[Sentry]", error, context);
@@ -26,7 +26,7 @@ export function logError(
       });
     }
     scope.setLevel(level);
-    
+
     if (typeof error === "string") {
       Sentry.captureMessage(error, level);
     } else {
@@ -41,7 +41,7 @@ export function logError(
 export function logMessage(
   message: string,
   level: Sentry.SeverityLevel = "info",
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
 ) {
   if (process.env.NODE_ENV !== "production") {
     console.log(`[Sentry ${level}]`, message, context);
@@ -62,9 +62,11 @@ export function logMessage(
 /**
  * Set user context for Sentry
  */
-export function setUser(user: { id: string; email?: string; username?: string } | null) {
+export function setUser(
+  user: { id: string; email?: string; username?: string } | null,
+) {
   if (process.env.NODE_ENV !== "production") return;
-  
+
   Sentry.setUser(user);
 }
 
@@ -73,8 +75,8 @@ export function setUser(user: { id: string; email?: string; username?: string } 
  */
 export function startTransaction(name: string, op: string) {
   if (process.env.NODE_ENV !== "production") return null;
-  
-  return Sentry.startTransaction({ name, op });
+
+  return (Sentry as any).startTransaction({ name, op });
 }
 
 /**

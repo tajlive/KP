@@ -152,7 +152,7 @@ export function InnloggingClient() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-white py-12 px-4 sm:px-6" data-testid="login-page">
       <div className="max-w-md mx-auto">
         <div className="flex justify-center mb-8">
           <Link href={`/${locale}`}>
@@ -207,7 +207,7 @@ export function InnloggingClient() {
                 <Button
                   onClick={() => setShowEmailForm(true)}
                   variant="outline"
-                  className="w-full"
+                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   {locale === "no"

@@ -13,7 +13,9 @@ function ErrorHandlerInit() {
   return null;
 }
 
-// Chat widget with delayed loading - FIXED: hooks always called in same order
+// Chat widget with delayed loading
+// NOTE: This component is ONLY rendered in the root layout (src/app/[locale]/layout.tsx)
+// NEVER add ClientSideProviders to other layouts, as that would create duplicate widgets
 function ChatWidgetLoader() {
   const [shouldLoad, setShouldLoad] = useState(false);
   const [ChatWidget, setChatWidget] = useState<React.ComponentType | null>(null);
@@ -24,7 +26,7 @@ function ChatWidgetLoader() {
     return () => clearTimeout(timer);
   }, []);
   
-  // Load component when shouldLoad becomes true - useEffect ensures consistent hook order
+  // Load component when shouldLoad becomes true
   useEffect(() => {
     if (!shouldLoad) return;
     

@@ -221,10 +221,10 @@ export default function ProfessionalChart() {
               </div>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-3xl font-black text-gray-900 dark:text-white">
-                  ${currentMarket?.price?.toLocaleString('en-US', { 
+                  ${(currentMarket?.price ?? 0).toLocaleString('en-US', { 
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  }) || '0.00'}
+                  })}
                 </span>
                 {currentMarket && (
                   <span className={`flex items-center gap-1 text-sm font-bold ${
@@ -290,7 +290,7 @@ export default function ProfessionalChart() {
             <div>
               <div className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">24h Volume</div>
               <div className="text-sm font-bold text-gray-900 dark:text-white">
-                ${(currentMarket.volume24h / 1000000).toFixed(2)}M
+                ${((currentMarket?.volume24h ?? 0) / 1000000).toFixed(2)}M
               </div>
             </div>
             <div>

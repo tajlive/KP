@@ -314,7 +314,7 @@ export default function UnifiedTradingDashboard({
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6">
+    <div className="min-h-screen bg-slate-900 p-6" data-testid="dashboard-root">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -484,7 +484,7 @@ function PortfolioSection({
             <span>Win Rate</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-white">
-            {portfolio.win_rate.toFixed(1)}%
+            {(portfolio.win_rate ?? 0).toFixed(1)}%
           </p>
         </div>
       </div>

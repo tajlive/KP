@@ -34,13 +34,13 @@ export class PaperExecutor implements OrderExecutor {
   async executeOrder(params: OrderParams): Promise<OrderResult> {
     try {
       // 0. Balance check for buy orders
-      if (params.side === 'buy' || params.side === 'BUY') {
+      if (params.side.toLowerCase() === "buy") {
         const balance = await this.getBalance();
         const currentPrice = await fetchBinancePrice(params.symbol);
         const orderValue = params.quantity * currentPrice;
         const fee = calculateFee(params.quantity, currentPrice);
         const totalCost = orderValue + fee;
-        
+
         // Minimum $10 order value
         const MIN_ORDER_VALUE = 10;
         if (orderValue < MIN_ORDER_VALUE) {
@@ -54,7 +54,7 @@ export class PaperExecutor implements OrderExecutor {
             error: `Order value must be at least $${MIN_ORDER_VALUE}. Current: $${orderValue.toFixed(2)}`,
           };
         }
-        
+
         if (balance.available < totalCost) {
           return {
             success: false,
@@ -118,15 +118,15 @@ export class PaperExecutor implements OrderExecutor {
     // Find active paper session
     let sessionId = this.sessionId;
     if (!sessionId) {
-      const { data: session } = await supabase
-        .from("trading_sessions")
+      const { data: session } = (await supabase
+        .from("trading_sessions" as unknown)
         .select("id, current_capital_nok")
         .eq("user_id", this.userId)
         .eq("mode", "paper")
         .eq("status", "active")
         .order("started_at", { ascending: false })
         .limit(1)
-        .single();
+        .single()) as unknown;
 
       if (!session) {
         return { available: 0, locked: 0, total: 0 };
@@ -136,11 +136,11 @@ export class PaperExecutor implements OrderExecutor {
     }
 
     // Fetch session capital
-    const { data: session } = await supabase
-      .from("trading_sessions")
+    const { data: session } = (await supabase
+      .from("trading_sessions" as unknown)
       .select("current_capital_nok, open_position")
       .eq("id", sessionId)
-      .single();
+      .single()) as unknown;
 
     if (!session) {
       return { available: 0, locked: 0, total: 0 };
@@ -166,24 +166,24 @@ export class PaperExecutor implements OrderExecutor {
     // Find active paper session
     let sessionId = this.sessionId;
     if (!sessionId) {
-      const { data: session } = await supabase
-        .from("trading_sessions")
+      const { data: session } = (await supabase
+        .from("trading_sessions" as unknown)
         .select("id")
         .eq("user_id", this.userId)
         .eq("mode", "paper")
         .eq("status", "active")
-        .single();
+        .single()) as unknown;
 
       if (!session) return null;
       sessionId = session.id;
     }
 
     // Fetch open position
-    const { data: session } = await supabase
-      .from("trading_sessions")
+    const { data: session } = (await supabase
+      .from("trading_sessions" as unknown)
       .select("open_position, trading_pair")
       .eq("id", sessionId)
-      .single();
+      .single()) as unknown;
 
     if (!session || !session.open_position || session.trading_pair !== symbol) {
       return null;

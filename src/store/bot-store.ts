@@ -98,18 +98,18 @@ export const useBotStore = create<BotStore>()((set, get) => ({
       const supabase = createClient();
 
       // Fetch strategies with their latest session data
-      const { data: strategies, error: stratError } = await supabase
-        .from("bot_configs")
+      const { data: strategies, error: stratError } = (await supabase
+        .from("bot_configs" as unknown)
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })) as unknown;
 
       if (stratError) throw stratError;
 
       // Fetch sessions for P&L data
-      const { data: sessions } = await supabase
-        .from("unified_trading_sessions")
+      const { data: sessions } = (await supabase
+        .from("unified_trading_sessions" as unknown)
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })) as unknown;
 
       const sessionMap = new Map(
         (sessions ?? []).map((s: Record<string, unknown>) => [
@@ -166,14 +166,14 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
   pauseBot: async (id) => {
     const supabase = createClient();
-    const { error } = await supabase
-      .from("bot_configs")
+    const { error } = (await supabase
+      .from("bot_configs" as unknown)
       .update({ status: "paused" })
-      .eq("id", id);
+      .eq("id", id)) as unknown;
 
     if (!error) {
-      set((state) => ({
-        bots: state.bots.map((b) =>
+      set((state: any) => ({
+        bots: state.bots.map((b: any) =>
           b.id === id ? { ...b, status: "paused" as BotStatus } : b,
         ),
       }));
@@ -182,14 +182,14 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
   resumeBot: async (id) => {
     const supabase = createClient();
-    const { error } = await supabase
-      .from("bot_configs")
+    const { error } = (await supabase
+      .from("bot_configs" as unknown)
       .update({ status: "active" })
-      .eq("id", id);
+      .eq("id", id)) as unknown;
 
     if (!error) {
-      set((state) => ({
-        bots: state.bots.map((b) =>
+      set((state: any) => ({
+        bots: state.bots.map((b: any) =>
           b.id === id ? { ...b, status: "active" as BotStatus } : b,
         ),
       }));
@@ -198,14 +198,14 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
   stopBot: async (id) => {
     const supabase = createClient();
-    const { error } = await supabase
-      .from("bot_configs")
+    const { error } = (await supabase
+      .from("bot_configs" as unknown)
       .update({ status: "stopped" })
-      .eq("id", id);
+      .eq("id", id)) as unknown;
 
     if (!error) {
-      set((state) => ({
-        bots: state.bots.map((b) =>
+      set((state: any) => ({
+        bots: state.bots.map((b: any) =>
           b.id === id ? { ...b, status: "stopped" as BotStatus } : b,
         ),
       }));
@@ -213,8 +213,8 @@ export const useBotStore = create<BotStore>()((set, get) => ({
   },
 
   updateBotFromRealtime: (strategyId, updates) => {
-    set((state) => {
-      const updatedBots = state.bots.map((b) =>
+    set((state: any) => {
+      const updatedBots = state.bots.map((b: any) =>
         b.id === strategyId ? { ...b, ...updates } : b,
       );
       return {
@@ -227,15 +227,16 @@ export const useBotStore = create<BotStore>()((set, get) => ({
   filteredBots: () => {
     const { bots, filter } = get();
     if (filter === "all") return bots;
-    return bots.filter((b) => b.status === filter);
+    return bots.filter((b: any) => b.status === filter);
   },
 
   selectedBot: () => {
     const { bots, selectedBotId } = get();
-    return bots.find((b) => b.id === selectedBotId) ?? null;
+    return bots.find((b: any) => b.id === selectedBotId) ?? null;
   },
 
-  activeBotCount: () => get().bots.filter((b) => b.status === "active").length,
+  activeBotCount: () =>
+    get().bots.filter((b: any) => b.status === "active").length,
 }));
 
 export type {
