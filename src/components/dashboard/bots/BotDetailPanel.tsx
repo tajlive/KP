@@ -1,6 +1,7 @@
 "use client";
 
 import type { Bot } from "@/store/bot-store";
+import { useTranslations } from "next-intl";
 import {
   Activity,
   ArrowDownRight,
@@ -26,6 +27,7 @@ interface BotDetailPanelProps {
 }
 
 export default function BotDetailPanel({ bot, onClose }: BotDetailPanelProps) {
+  const t = useTranslations("dashboard.bots");
   const winRate =
     bot.totalTrades > 0
       ? ((bot.winningTrades / bot.totalTrades) * 100).toFixed(1)
@@ -46,7 +48,7 @@ export default function BotDetailPanel({ bot, onClose }: BotDetailPanelProps) {
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {bot.strategyType.toUpperCase()} · {bot.symbol} ·{" "}
-              {bot.mode === "live" ? "Live" : "Paper"}
+              {bot.mode === "live" ? t("modeLive") : t("modePaper")}
             </p>
           </div>
         </div>

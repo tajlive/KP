@@ -1,6 +1,38 @@
 {
   "title": "Dashboard",
-  "pulse": "Pulse",
+  "pulse": {
+    "title": "市场脉搏",
+    "totalValue": "总价值",
+    "dailyChange": "每日变化",
+    "paperMode": "模拟交易",
+    "liveMode": "实时交易",
+    "systemOnline": "系统在线",
+    "connecting": "连接中...",
+    "botStrategy": "机器人策略",
+    "noEvents": "暂无交易事件",
+    "eventFeedTitle": "最新事件",
+    "riskMetrics": {
+      "maxExposure": "最大风险敞口",
+      "stopLoss": "止损",
+      "positionSize": "仓位大小"
+    },
+    "timeframe": {
+      "1h": "1小时",
+      "4h": "4小时",
+      "1d": "1天",
+      "1w": "1周"
+    },
+    "riskLevel": {
+      "low": "低风险",
+      "medium": "中风险",
+      "high": "高风险",
+      "extreme": "极高风险"
+    },
+    "events": {
+      "title": "最新事件",
+      "noEvents": "暂无最新事件"
+    }
+  },
   "welcome": "Velkommen til Klarpakke",
   "welcomeBack": "Velkommen tilbake 👋",
   "sidebar": {
@@ -140,9 +172,13 @@
     "settings": "Varselinnstillinger"
   },
   "errors": {
-    "loadingFailed": "Kunne ikke laste data",
-    "connectionError": "Tilkoblingsfeil",
-    "retry": "Prøv igjen",
-    "contactSupport": "Kontakt support hvis problemet vedvarer"
+    "loadingFailed": "无法加载数据",
+    "connectionError": "连接错误",
+    "retry": "重试",
+    "contactSupport": "如果问题持续存在，请联系支持"
+  },
+  "bots": {
+    "modeLive": "实盘",
+    "modePaper": "模拟"
   }
 }

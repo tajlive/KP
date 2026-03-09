@@ -23,11 +23,10 @@ export function Navigation() {
   const l = (path: string) => `/${locale}${path === "/" ? "" : path}`;
 
   const mainLinks = [
-    { path: "/kurs", label: "Kurs" },
-    { path: "/paper-trading", label: "Paper Trading" },
-    { path: "/auto-trading", label: "Auto-Trading" },
-    // REMOVED: { path: "/om-oss", label: "Om oss" },
-    { path: "/priser", label: "Priser" },
+    { path: "/kurs", label: t("courses") },
+    { path: "/paper-trading", label: t("paperTrading") },
+    { path: "/auto-trading", label: t("autoTrading") },
+    { path: "/priser", label: t("pricing") },
   ];
 
   const LogoComponent = () => (
