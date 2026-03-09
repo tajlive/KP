@@ -13,7 +13,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import { Fraunces, Lexend } from "next/font/google";
 import "../globals.css";
 
@@ -76,6 +76,11 @@ interface LayoutProps {
 
 export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
+  
+  // Enable static rendering for locale - required by next-intl v4
+  // https://next-intl.dev/docs/routing/setup#static-rendering
+  setRequestLocale(locale);
+  
   let messages;
 
   try {
