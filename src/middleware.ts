@@ -109,6 +109,62 @@ export function middleware(request: NextRequest) {
   }
 
   // ==========================================
+  // 1b. UNKNOWN PATH / INVALID LOCALE CHECK
+  // ==========================================
+  // Detect paths that would match /[locale] but aren't valid
+  // This prevents /denne-siden-finnes-ikke from rendering the homepage
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const firstSegment = pathSegments[0];
+  
+  // If first segment is not a supported locale and not a known special path,
+  // it should 404. Known special paths: auth paths, api, _next, static files
+  if (firstSegment && 
+      !SUPPORTED_LOCALES.includes(firstSegment as SupportedLocale) &&
+      !isAuthPath(pathname) &&
+      !pathname.startsWith('/api/') &&
+      !pathname.startsWith('/_next/') &&
+      !pathname.startsWith('/leksjon/') &&
+      !pathname.startsWith('/sitemap') &&
+      !pathname.startsWith('/robots') &&
+      !pathname.startsWith('/manifest') &&
+      !pathname.match(/\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|json|txt|xml)$/) &&
+      pathname !== '/') {
+    
+    // Check if this is a known valid path
+    // These are all the valid routes in src/app/[locale]/
+    const validRoutes = [
+      '(auth)', 'admin', 'admin-dashboard', 'akademi', 'auth', 'auto-trading', 
+      'auto-trading-ai', 'beta', 'beta-testing', 'binance-guide', 'checkout', 
+      'copy-trading', 'dashboard', 'feil', 'handelshistorikk', 'hjelp', 
+      'innstillinger', 'interessetest', 'kalkulator', 'kontakt', 'konto', 
+      'kurs', 'leaderboard', 'leaderboard-preview', 'leagues', 'live-trading', 
+      'login', 'marketplace', 'om-oss', 'onboarding', 'paper-trading', 
+      'personvern', 'priser', 'profile', 'quiz', 'registrer', 'reset-password', 
+      'settings', 'signals', 'simulator', 'super-admin', 'varsler', 
+      'velg-strategi', 'velkommen', 'verify', 'vilkar',
+      // Auth paths (also in root)
+      'innlogging', 'glemt-passord', 'signup', 'verify', 'reset-password'
+    ];
+    
+    const isValidRoute = validRoutes.some(route => firstSegment === route || pathname.startsWith(`/${route}/`));
+    
+    // If it's not a valid route and looks like a locale code, return 404
+    if (!isValidRoute) {
+      const looksLikeLocale = firstSegment.length >= 2 && firstSegment.length <= 4 && /^[a-z]{2,4}$/i.test(firstSegment);
+      
+      // Either it's an invalid locale code, or it's an unknown long path
+      // Both should 404
+      const response = NextResponse.rewrite(new URL('/_not-found', request.url));
+      response.headers.set("x-not-found", "true");
+      if (looksLikeLocale) {
+        response.headers.set("x-invalid-locale", firstSegment);
+      }
+      return response;
+    }
+    // If it's a valid route, continue to normal processing
+  }
+
+  // ==========================================
   // 2. EXPLICIT LOCALE CHECK (non-default)
   // ==========================================
   // If user is already on /en/, /th/, /zh/ path, respect it

@@ -24,11 +24,16 @@ test.describe('Smoke: Health Checks @smoke', () => {
       if (msg.type() === 'error') consoleErrors.push(msg.text());
     });
     
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    // Set Norwegian locale to avoid redirect (or use explicit /en)
+    // This ensures consistent test behavior regardless of browser locale
+    await page.goto('/no', { waitUntil: 'networkidle' }).catch(async () => {
+      // Fallback: go to root and accept any locale redirect
+      await page.goto('/', { waitUntil: 'networkidle' });
+    });
     
-    // Page should load
-    expect(page.url()).toMatch(/klarpakke\.no|localhost/);
+    // Page should load on klarpakke domain with or without locale prefix
+    const url = page.url();
+    expect(url).toMatch(/klarpakke\.no(\/(no|en|th|zh)?)?|localhost/);
     
     // No critical console errors
     const criticalErrors = consoleErrors.filter(e => 
