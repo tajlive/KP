@@ -25,6 +25,10 @@
     "contact": {
       "title": "Contact Us",
       "description": "Have questions? Contact us. We're here to help you on your crypto journey."
+    },
+    "dashboard": {
+      "title": "Dashboard - Din Trading Oversikt",
+      "description": "Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse i sanntid."
     }
   },
   "meta": {
@@ -120,7 +124,9 @@
     "leagues": "การแข่งขัน",
     "loading": "กำลังโหลด...",
     "closeMenu": "ปิดเมนู",
-    "openMenu": "เปิดเมนู"
+    "openMenu": "เปิดเมนู",
+    "autoTrading": "Auto Trading",
+    "register": "Registrer"
   },
   "admin": {
     "login": "Log in",
@@ -225,6 +231,18 @@
       "title": "ต้องการความช่วยเหลือ? เราอยู่ที่นี่!",
       "desc": "รับคำตอบสำหรับคำถามของคุณจากทีมหรือชุมชนของเรา",
       "button": "แชทกับเรา"
+    },
+    "modernHero": {
+      "badge": "Norges første krypto-universitet",
+      "titlePart1": "Lær krypto-trading",
+      "titlePart2": "fra A til Å",
+      "subtitle": "Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital.",
+      "bullets": "✓ Gratis å starte ✓ 1M kr virtuell kapital ✓ AI-coaching ✓ Auto-trading",
+      "ctaPrimary": "Start nå",
+      "ctaSecondary": "Se kurs",
+      "trust1": "Ingen kredittkort nødvendig",
+      "trust2": "100+ studenter",
+      "trust3": "Norsk support"
     }
   },
   "hero": {
@@ -763,7 +781,9 @@
       "whatNext": "What happens now?",
       "whatNextDesc": "You will receive an email with a paper trading guide within the next few days. Check your spam folder too!",
       "checkAnother": "Check another email"
-    }
+    },
+    "email": "E-postadresse",
+    "password": "Passord"
   },
   "autoTrade": {
     "title": "Auto Trade",
@@ -1137,113 +1157,52 @@
     "finish": "Get Started!"
   },
   "pricing": {
-    "title": "Pricing",
-    "subtitle": "Choose the plan that fits you. Start free, upgrade when you're ready.",
-    "trial": "7-day free trial on all paid plans",
-    "startFree": "Start Free",
-    "chooseStarter": "Choose Starter",
-    "choosePro": "Choose Complete",
-    "chooseExpert": "Choose Pro",
-    "mostPopular": "Most Popular",
-    "forever": "Forever",
-    "perMonth": "/mo",
-    "faqTitle": "Frequently Asked Questions",
-    "stillUnsure": "Still unsure?",
-    "stillUnsureDesc": "Start with the free plan. You can always upgrade later.",
-    "startFreeNow": "Start Free Now",
-    "readMore": "Read more about the university",
-    "important": "Important:",
-    "disclaimer": "We are not financial advisors. All trading involves risk.",
+    "metadata": {
+      "title": "ราคา - Klarpakke University",
+      "description": "เลือกแผนของคุณ: Student (ฟรี), Bachelor, Master หรือ PhD เริ่มต้นด้วย paper trading อัปเกรดเมื่อคุณพร้อม"
+    },
+    "hero": {
+      "title": "ราคาเรียบง่าย โปร่งใส",
+      "subtitle": "เริ่มต้นฟรีในระดับ Student อัปเกรดจาก Bachelor → Master → PhD ตามความก้าวหน้าของคุณ",
+      "trial": "ทดลองใช้ฟรี 14 วันสำหรับแผนเสียทั้งหมด"
+    },
+    "free": "ฟรี",
+    "popular": "ยอดนิยม",
+    "startFree": "เริ่มต้นฟรีในระดับ Student",
+    "startTrial": "เริ่มทดลองใช้ 14 วัน",
     "plans": {
-      "free": {
+      "student": {
         "name": "Student",
-        "desc": "For those curious about crypto",
-        "features": [
-          "Crypto 101 - Introduction",
-          "1 quiz",
-          "5 simulator trades",
-          "Basic calculator"
-        ],
-        "notIncluded": [
-          "Advanced courses",
-          "Certificate",
-          "Webinars",
-          "Priority support"
-        ]
+        "description": "เริ่มต้นที่นี่ - ฟรี totally"
       },
-      "starter": {
+      "bachelor": {
         "name": "Bachelor",
-        "desc": "For learning the basics",
-        "features": [
-          "Everything in Student",
-          "All basic courses",
-          "Unlimited simulator",
-          "All quizzes",
-          "Email support"
-        ],
-        "notIncluded": [
-          "Certificate",
-          "Webinars",
-          "Priority support"
-        ]
+        "description": "สำหรับผู้ที่ต้องการเรียนรู้เพิ่มเติม"
       },
-      "pro": {
+      "master": {
         "name": "Master",
-        "desc": "Our most popular plan for serious learners",
-        "features": [
-          "Everything in Bachelor",
-          "All advanced courses",
-          "Global certificate",
-          "Webinars (2/mo)",
-          "Priority support",
-          "Discord access"
-        ],
-        "notIncluded": []
+        "description": "สำหรับเทรดเดอร์จริงจัง"
       },
-      "expert": {
+      "phd": {
         "name": "PhD",
-        "desc": "For aspiring experts",
-        "features": [
-          "Everything in Master",
-          "Extra resources",
-          "1-on-1 session (1/mo)",
-          "Priority support (12h)",
-          "Free swag"
-        ],
-        "notIncluded": []
+        "description": "เชี่ยวชาญสมบูรณ์"
       }
     },
-    "success": {
-      "loadingTitle": "Processing payment...",
-      "loadingMessage": "Please wait...",
-      "verifying": "Verifying payment...",
-      "invalidSession": "Invalid session ID",
-      "loginRequired": "You must be logged in to view this page",
-      "title": "Thank you for your purchase!",
-      "messageConfirmed": "Payment confirmed! You now have access to all features in your plan.",
-      "messagePending": "Payment received! It may take a moment for your subscription to activate.",
-      "messageFallback": "Thank you for your payment! Your subscription will be active shortly.",
-      "goToDashboard": "Go to Dashboard",
-      "backToHome": "Back to Home",
-      "description": "อีเมลต้อนรับและคู่มือการเทรดส่วนตัวของคุณกำลังถูกส่งไปยังกล่องขาเข้าของคุณ มาเริ่มการเดินทางกับ {tier} กันเถอะ!",
-      "cta": "ไปที่แดชบอร์ด",
-      "viewProgram": "ดูหลักสูตรการศึกษา",
-      "errorTitle": "Something went wrong",
-      "backToPricing": "Back to Pricing"
+    "comparison": {
+      "title": "เปรียบเทียบแผนทั้งหมด",
+      "feature": "ฟังก์ชัน"
     },
-    "cancel": {
-      "title": "Payment Canceled",
-      "subtitle": "You canceled the payment. No worries - you can try again anytime!",
-      "faqTitle": "Common Questions",
-      "whyFailedQ": "Why didn't the payment work?",
-      "whyFailedA": "There might be temporary issues with your bank or card. Try again or use another card.",
-      "chargedQ": "Will I be charged?",
-      "chargedA": "No, you are only charged when payment is completed. No hidden fees.",
-      "trialQ": "Can I try for free first?",
-      "trialA": "Yes! All paid plans include a 7-day free trial. You can cancel anytime.",
-      "tryAgain": "Try Again",
-      "backHome": "Back to Home",
-      "needHelp": "Need help? Contact us at"
+    "faq": {
+      "title": "คำถามที่พบบ่อย"
+    },
+    "trust": {
+      "title": "ชำระเงินอย่างปลอดภัยด้วย:"
+    },
+    "cta": {
+      "title": "พร้อมที่จะเริ่มต้นการเดินทาง crypto ของคุณ?",
+      "subtitle": "ร่วมกับชาวนอร์เวย์หลายพันคนที่เรียนรู้อย่างปลอดภัยกับ Klarpakke",
+      "button": "เริ่มต้นเป็น Student - ฟรี",
+      "guarantee": "รับประกันคืนเงิน 30 วัน • ไม่มีสัญญาผูกมัด • Org.nr 929 003 292"
     }
   },
   "legal": {
@@ -1604,7 +1563,10 @@
           "student": "📚 Student - Practice more and try again"
         }
       }
-    }
+    },
+    "comingSoon": "Kurs kommer snart",
+    "description": "Vi bygger et komplett utdanningssystem",
+    "backToDashboard": "Tilbake til Dashboard"
   },
   "about": {
     "title": "Build Your Future with Klarpakke University",
@@ -1674,7 +1636,11 @@
     "important": "Important:",
     "disclaimer": "Risk disclaimer applies.",
     "startFree": "Start Free Now",
-    "seePricing": "See Pricing"
+    "seePricing": "See Pricing",
+    "metadata": {
+      "title": "เกี่ยวกับเรา - Klarpakke University",
+      "description": "เรียนรู้เกี่ยวกับภารกิจของเราในการทำให้การเทรด crypto เข้าถึงได้ผ่านการศึกษาและการฝึกฝนแบบไม่มีความเสี่ยง"
+    }
   },
   "footer": {
     "product": "ผลิตภัณฑ์",
@@ -2017,7 +1983,9 @@
       "allChannels": "From all channels",
       "conversion": "Conversion",
       "clickToReg": "Click → Registration",
-      "activeUsers": "Active users"
+      "activeUsers": "Active users",
+      "paperTrading": "Paper Trading",
+      "autoTrading": "Auto Trading"
     },
     "trafficSources": {
       "title": "Traffic Sources",
@@ -2074,6 +2042,80 @@
       "patience": "Long-term Vision",
       "patienceDesc": "Crypto isn't a get-rich-quick scheme. We aim for steady, sustainable growth – 0.2% daily profit beats 100% risk. That's the power of compound interest.",
       "cta": "Join the journey!"
+    }
+  },
+  "toasts": {
+    "auth": {
+      "loginSuccess": "Velkommen tilbake! 👋",
+      "loginFailed": "Innlogging mislyktes. Sjekk e-post og passord.",
+      "logoutSuccess": "Du er nå logget ut",
+      "signupSuccess": "Velkommen! Din konto er opprettet 🎉",
+      "signupFailed": "Kunne ikke opprette konto. Prøv igjen.",
+      "passwordResetSent": "E-post for tilbakestilling sendt 📧",
+      "passwordResetFailed": "Kunne ikke sende tilbakestilling",
+      "sessionExpired": "Økten din har utløpt. Vennligst logg inn igjen."
+    },
+    "strategy": {
+      "saved": "Strategi lagret! 💾",
+      "saveFailed": "Kunne ikke lagre strategi",
+      "started": "Strategi startet! 🚀",
+      "startFailed": "Kunne ikke starte strategi",
+      "stopped": "Strategi stoppet",
+      "stopFailed": "Kunne ikke stoppe strategi",
+      "deleted": "Strategi slettet",
+      "deleteFailed": "Kunne ikke slette strategi"
+    },
+    "api": {
+      "keysSaved": "API-nøkler lagret! 🔑",
+      "keysSaveFailed": "Kunne ikke lagre API-nøkler",
+      "keysInvalid": "Ugyldige API-nøkler",
+      "connectionSuccess": "Tilkobling vellykket! ✅",
+      "connectionFailed": "Tilkobling mislyktes"
+    },
+    "trading": {
+      "tradeExecuted": "Handel utført! 💰",
+      "tradeFailed": "Handel mislyktes",
+      "modeSwitched": "Trading-modus byttet",
+      "modeSwitchFailed": "Kunne ikke bytte modus",
+      "insufficientFunds": "Ikke nok midler",
+      "positionOpened": "Posisjon åpnet",
+      "positionClosed": "Posisjon lukket"
+    },
+    "copyTrading": {
+      "traderFollowed": "Du følger nå {name}! 📈",
+      "traderUnfollowed": "Du følger ikke lenger {name}",
+      "followFailed": "Kunne ikke følge trader",
+      "allocationUpdated": "Allokering oppdatert",
+      "maxTradersReached": "Maks antall tradere nådd"
+    },
+    "billing": {
+      "paymentSuccess": "Betaling vellykket! 🎉",
+      "paymentFailed": "Betaling mislyktes. Prøv igjen.",
+      "subscriptionUpdated": "Abonnement oppdatert",
+      "subscriptionCancelled": "Abonnement kansellert",
+      "invoiceGenerated": "Faktura generert",
+      "cardAdded": "Kort lagt til 💳",
+      "cardRemoved": "Kort fjernet"
+    },
+    "courses": {
+      "lessonCompleted": "Leksjon fullført! 🎓",
+      "quizPassed": "Quiz bestått! 🌟",
+      "quizFailed": "Quiz ikke bestått. Prøv igjen!",
+      "badgeEarned": "Badge oppnådd! 🏆",
+      "trackCompleted": "Kurs fullført! 🎉"
+    },
+    "general": {
+      "copied": "Kopiert til utklippstavle! 📋",
+      "saved": "Lagret! ✓",
+      "saveFailed": "Kunne ikke lagre",
+      "deleted": "Slettet! 🗑️",
+      "deleteFailed": "Kunne ikke slette",
+      "updated": "Oppdatert! ✓",
+      "updateFailed": "Kunne ikke oppdatere",
+      "error": "Noe gikk galt. Prøv igjen.",
+      "comingSoon": "Kommer snart! 🚀",
+      "featureDisabled": "Denne funksjonen er deaktivert",
+      "networkError": "Nettverksfeil. Sjekk internettforbindelsen."
     }
   }
 }

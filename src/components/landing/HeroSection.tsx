@@ -6,10 +6,16 @@ import { getTranslations } from "next-intl/server";
  * 
  * KEY OPTIMIZATIONS from previous version:
  * - No "use client" directive - renders on server
- * - No framer-motion - uses CSS transitions only
+ * - No framer-motion - pure CSS only
  * - No useRouter - uses native Link component
  * - No lucide-react icons - uses inline SVG
  * - No animated scroll indicator
+ * - NO CSS animations on LCP element (removed animate-fade-in)
+ * 
+ * LCP OPTIMIZATION (Task 3):
+ * - Removed animate-fade-in from LCP container to prevent animation delay
+ * - Kept animation on mockup (below-fold on mobile, acceptable delay)
+ * - h1 renders immediately without transition/animation blocking
  * 
  * This eliminates ~30KB+ JS from the critical path
  * and removes hydration blocking for LCP.
@@ -28,8 +34,9 @@ export default async function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Copy */}
-          <div className="text-center lg:text-left animate-fade-in">
+          {/* Left: Copy - LCP CRITICAL PATH */}
+          {/* Removed animate-fade-in to eliminate LCP delay */}
+          <div className="text-center lg:text-left">
             {/* Modern badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 backdrop-blur-sm text-white border border-blue-400/30 rounded-full text-sm font-semibold mb-6">
               {/* Inline SVG instead of lucide-react */}
@@ -48,7 +55,7 @@ export default async function HeroSection() {
               {t("badge")}
             </div>
 
-            {/* H1 - More compelling */}
+            {/* H1 - LCP ELEMENT: No animations, server-rendered, immediate paint */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
               {t("titlePart1")}
               <br />
@@ -151,6 +158,7 @@ export default async function HeroSection() {
           </div>
 
           {/* Right: Modern, honest mockup */}
+          {/* Animation acceptable here - below fold on mobile, not LCP */}
           <div className="relative animate-fade-in-delayed">
             {/* Modern browser mockup */}
             <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">

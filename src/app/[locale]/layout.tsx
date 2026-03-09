@@ -38,6 +38,15 @@ import "../globals.css";
  *    - No PWA loader (deferred)
  *    - Only essential error handling
  * 
+ * 7. FONT OPTIMIZATIONS (Task 2):
+ *    - Fraunces: display="optional", preload=false (display font, not critical)
+ *    - Lexend: display="swap", preload=true (body text, needs swap)
+ *    - adjustFontFallback: true for both (metric optimization)
+ * 
+ * 8. RESOURCE HINTS (Task 5):
+ *    - DNS prefetch + preconnect for Binance API
+ *    - DNS prefetch + preconnect for Supabase (conditional)
+ * 
  * APP ROUTES with full providers:
  * - /[locale]/dashboard/* - has AuthProvider, OnboardingProvider
  * - /[locale]/paper-trading/* - has AuthProvider, TradingModeProvider
@@ -51,20 +60,30 @@ import "../globals.css";
  * - Initial JS: ~1.2MB → ~600KB (-50%)
  * - Hydration time: ~3s → ~1s (-67%)
  * - LCP: 6.2s → <3.0s (target)
+ * - Font loading: No FOUT for Fraunces (optional), minimal FOUT for Lexend
  */
 
+// Fraunces: Display/heading font - NOT in critical path
+// display="optional": If not loaded in ~100ms, use fallback for this page visit
+// preload=false: Don't compete with LCP image/text for bandwidth
+// adjustFontFallback: Automatic metric adjustment for reduced CLS
 const fraunces = Fraunces({
   subsets: ["latin"],
-  display: "swap",
+  display: "optional",
   variable: "--font-fraunces",
-  preload: true,
+  preload: false,
+  adjustFontFallback: true,
+  fallback: ["Georgia", "Times New Roman", "serif"],
 });
 
+// Lexend: Body text font - in critical path, needs swap for readability
 const lexend = Lexend({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-lexend",
   preload: true,
+  adjustFontFallback: true,
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
 });
 
 export async function generateStaticParams() {
@@ -125,15 +144,30 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     messages = await import(`../../../messages/en.json`).then((m) => m.default);
   }
 
+  // Resource hints for external APIs (Task 5)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
+
   return (
     <html
       lang={locale}
       className={`${fraunces.variable} ${lexend.variable}`}
     >
       <head>
+        {/* Resource Hints for External APIs - Task 5 */}
+        {/* Binance API - used by LivePriceTicker */}
+        <link rel="dns-prefetch" href="https://api.binance.com" />
+        <link rel="preconnect" href="https://api.binance.com" crossOrigin="anonymous" />
+        
+        {/* Supabase - conditional on env var */}
+        {supabaseHost && (
+          <>
+            <link rel="dns-prefetch" href={supabaseHost} />
+            <link rel="preconnect" href={supabaseHost} crossOrigin="anonymous" />
+          </>
+        )}
+        
         {/* Preconnect for critical domains - improves LCP */}
-        <link rel="preconnect" href="https://vuxbjlykgmzskxbclquf.supabase.co" />
-        <link rel="dns-prefetch" href="https://vuxbjlykgmzskxbclquf.supabase.co" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <OrganizationJsonLd />

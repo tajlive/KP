@@ -36,6 +36,14 @@ import "./globals.css";
  * - HeroSection (LCP element)
  * - DeferredLivePriceTicker (loads after hero)
  * - Navigation (required for UX)
+ * 
+ * FONT OPTIMIZATIONS (Task 2):
+ * - Fraunces: display="optional", preload=false (display font, not critical)
+ * - Lexend: display="swap", preload=true (body text, needs swap)
+ * 
+ * RESOURCE HINTS (Task 5):
+ * - DNS prefetch + preconnect for Binance API (used by LivePriceTicker)
+ * - DNS prefetch + preconnect for Supabase (conditional on env var)
  */
 
 // Lazy load below-fold components
@@ -84,16 +92,26 @@ const ConditionalFooter = dynamic(
   { loading: () => <div className="h-48 animate-pulse bg-slate-950" /> }
 );
 
+// Fraunces: Display/heading font - NOT in critical path
+// display="optional": If not loaded in ~100ms, use fallback for this page visit
+// preload=false: Don't compete with LCP image/text for bandwidth
 const fraunces = Fraunces({
   subsets: ["latin"],
-  display: "swap",
+  display: "optional",
   variable: "--font-fraunces",
+  preload: false,
+  adjustFontFallback: true,
+  fallback: ["Georgia", "Times New Roman", "serif"],
 });
 
+// Lexend: Body text font - in critical path, needs swap for readability
 const lexend = Lexend({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-lexend",
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
 });
 
 // ISR: Regenerate every hour
@@ -146,15 +164,32 @@ export default async function RootPage() {
     messages = await getMessages();
   } catch {
     try {
-      messages = await import("../../messages/no.json").then((m) => m.default);
+      messages = await import("../messages/no.json").then((m) => m.default);
     } catch {
-      messages = await import("../../messages/en.json").then((m) => m.default);
+      messages = await import("../messages/en.json").then((m) => m.default);
     }
   }
+
+  // Resource hints for external APIs (Task 5)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
 
   return (
     <html lang={locale} className={`${fraunces.variable} ${lexend.variable}`}>
       <head>
+        {/* Resource Hints for External APIs - Task 5 */}
+        {/* Binance API - used by LivePriceTicker */}
+        <link rel="dns-prefetch" href="https://api.binance.com" />
+        <link rel="preconnect" href="https://api.binance.com" crossOrigin="anonymous" />
+        
+        {/* Supabase - conditional on env var */}
+        {supabaseHost && (
+          <>
+            <link rel="dns-prefetch" href={supabaseHost} />
+            <link rel="preconnect" href={supabaseHost} crossOrigin="anonymous" />
+          </>
+        )}
+        
         <OrganizationJsonLd />
       </head>
       <body
