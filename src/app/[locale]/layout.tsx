@@ -21,12 +21,14 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-fraunces",
+  preload: true,
 });
 
 const lexend = Lexend({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-lexend",
+  preload: true,
 });
 
 export async function generateStaticParams() {
