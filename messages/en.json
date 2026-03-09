@@ -95,7 +95,14 @@
   "navigation": {
     "home": "Home",
     "studyProgram": "Study Program",
-    "school": "School"
+    "school": "School",
+    "courses": "Courses",
+    "paperTrading": "Paper Trading",
+    "autoTrading": "Auto Trading",
+    "pricing": "Pricing",
+    "login": "Log in",
+    "register": "Register",
+    "myPage": "My Page"
   },
   "admin": {
     "login": "Log in",

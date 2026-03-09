@@ -11,20 +11,48 @@ import ComparisonSection from "@/components/landing/ComparisonSection";
 import PricingSection from "@/components/landing/PricingSection";
 import FAQSection from "@/components/landing/FAQSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
-import { AuthProvider } from "@/components/auth/AuthContext";
-import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
-import { ToastProvider } from "@/providers/ToastProvider";
-import { TradingModeProvider } from "@/context/TradingModeContext";
-import { OnboardingProvider } from "@/components/providers/OnboardingProvider";
-import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
-import { Navigation } from "@/components/layout/Navigation";
+import { MarketingNavigation } from "@/components/layout/MarketingNavigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
+import { MarketingProviders } from "@/components/providers/MarketingProviders";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Fraunces, Lexend } from "next/font/google";
 import "./globals.css";
+
+/**
+ * MARKETING LANDING PAGE - Optimized for Performance
+ * 
+ * KEY OPTIMIZATIONS from previous version:
+ * 
+ * 1. REMOVED AuthProvider - No Supabase init on landing
+ *    (moved to /dashboard, /paper-trading layouts)
+ * 
+ * 2. REMOVED OnboardingProvider + OnboardingFlow - Only for logged-in users
+ *    (moved to dashboard layout)
+ * 
+ * 3. REMOVED TradingModeProvider - Only for trading features
+ *    (moved to /paper-trading, /auto-trading layouts)
+ * 
+ * 4. REMOVED ToastProvider - Not critical for landing
+ *    (available in app areas where needed)
+ * 
+ * 5. REPLACED Navigation with MarketingNavigation
+ *    - No auth dependency
+ *    - No TradingModeToggle
+ *    - Smaller bundle
+ * 
+ * 6. REPLACED ClientSideProviders with MarketingProviders
+ *    - No ChatWidget (deferred to dashboard)
+ *    - No PWA loader (deferred)
+ *    - Only error handling
+ * 
+ * EXPECTED IMPACT:
+ * - Initial JS: ~1.2MB → ~600KB (-50%)
+ * - Hydration time: ~3s → ~1s (-67%)
+ * - LCP: 6.2s → <3.0s (target)
+ */
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -104,42 +132,33 @@ export default async function RootPage() {
         suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ClientSideProviders>
+          <MarketingProviders>
             <ErrorBoundary>
-              <AuthProvider>
-                <OnboardingProvider>
-                  <OnboardingFlow />
-                  <ToastProvider>
-                    <TradingModeProvider>
-                      <div className="relative min-h-screen flex flex-col">
-                        <Navigation />
-                        <main className="flex-1">
-                          <LivePriceTicker />
-                          <HeroSection />
-                          <LottoCalculator />
-                          <SocialProofSection />
-                          <GamifiedLeaderboard />
-                          <SafeBacktestWidget />
-                          <ComparisonSection />
-                          <PricingSection />
-                          <FAQSection />
-                          <FinalCTASection />
-                        </main>
-                        <ConditionalFooter />
-                      </div>
-                    </TradingModeProvider>
-                  </ToastProvider>
-                  {process.env.VERCEL && (
-                    <>
-                      <Analytics />
-                      <SpeedInsights />
-                    </>
-                  )}
-                </OnboardingProvider>
-              </AuthProvider>
+              <div className="relative min-h-screen flex flex-col">
+                <MarketingNavigation />
+                <main className="flex-1">
+                  <LivePriceTicker />
+                  <HeroSection />
+                  <LottoCalculator />
+                  <SocialProofSection />
+                  <GamifiedLeaderboard />
+                  <SafeBacktestWidget />
+                  <ComparisonSection />
+                  <PricingSection />
+                  <FAQSection />
+                  <FinalCTASection />
+                </main>
+                <ConditionalFooter />
+              </div>
             </ErrorBoundary>
-          </ClientSideProviders>
+          </MarketingProviders>
         </NextIntlClientProvider>
+        {process.env.VERCEL && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );
