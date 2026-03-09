@@ -1,6 +1,38 @@
 {
   "title": "Dashboard",
-  "pulse": "Pulse",
+  "pulse": {
+    "title": "Market Pulse",
+    "totalValue": "Total Value",
+    "dailyChange": "24h Change",
+    "paperMode": "Paper Trading",
+    "liveMode": "Live Trading",
+    "systemOnline": "System Online",
+    "connecting": "Connecting...",
+    "botStrategy": "Bot Strategy & Logic",
+    "noEvents": "No trading events yet.",
+    "eventFeedTitle": "Pulse Events",
+    "riskMetrics": {
+      "maxExposure": "Max Exposure",
+      "stopLoss": "Stop Loss",
+      "positionSize": "Position Size"
+    },
+    "timeframe": {
+      "1h": "1 Hour",
+      "4h": "4 Hours",
+      "1d": "1 Day",
+      "1w": "1 Week"
+    },
+    "riskLevel": {
+      "low": "Low Risk",
+      "medium": "Medium Risk",
+      "high": "High Risk",
+      "extreme": "Extreme Risk"
+    },
+    "events": {
+      "title": "Recent Events",
+      "noEvents": "No new events"
+    }
+  },
   "welcomeBack": "Welcome back 👋",
   "loading": "Loading dashboard...",
   "klt": {
@@ -214,5 +246,9 @@
     "settings": "Settings",
     "admin": "Admin",
     "logout": "Log out"
+  },
+  "bots": {
+    "modeLive": "Live",
+    "modePaper": "Paper"
   }
 }

@@ -17,7 +17,7 @@ export function Footer() {
   const links = {
     product: [
       { href: `/${locale}/kurs`, label: t("links.courses") },
-      { href: `/${locale}/paper-trading`, label: "Paper Trading" },
+      { href: `/${locale}/paper-trading`, label: t("links.paperTrading") },
       { href: `/${locale}/priser`, label: t("links.pricing") },
     ],
     company: [

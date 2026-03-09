@@ -1,6 +1,38 @@
 {
   "title": "Dashboard",
-  "pulse": "Pulse",
+  "pulse": {
+    "title": "Porteføljepuls",
+    "totalValue": "Total Verdi",
+    "dailyChange": "Dagens Endring",
+    "paperMode": "Paper Trading",
+    "liveMode": "Live Trading",
+    "systemOnline": "Systemet er aktivt",
+    "connecting": "Kobler til...",
+    "botStrategy": "Bot Strategi & Logikk",
+    "noEvents": "Ingen handelshendelser enda.",
+    "eventFeedTitle": "Puls-hendelser",
+    "riskMetrics": {
+      "maxExposure": "Maks Eksponering",
+      "stopLoss": "Sikkerhetsstopp",
+      "positionSize": "Posisjonsstørrelse"
+    },
+    "timeframe": {
+      "1h": "1 Time",
+      "4h": "4 Timer",
+      "1d": "1 Dag",
+      "1w": "1 Uke"
+    },
+    "riskLevel": {
+      "low": "Lav Risiko",
+      "medium": "Medium Risiko",
+      "high": "Høy Risiko",
+      "extreme": "Ekstrem Risiko"
+    },
+    "events": {
+      "title": "Siste Hendelser",
+      "noEvents": "Ingen nye hendelser"
+    }
+  },
   "welcome": "Velkommen til Klarpakke",
   "welcomeBack": "Velkommen tilbake 👋",
   "sidebar": {
@@ -144,5 +176,9 @@
     "connectionError": "Tilkoblingsfeil",
     "retry": "Prøv igjen",
     "contactSupport": "Kontakt support hvis problemet vedvarer"
+  },
+  "bots": {
+    "modeLive": "Live",
+    "modePaper": "Paper"
   }
 }
