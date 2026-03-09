@@ -652,6 +652,39 @@
       "taxReport": "รายงานภาษี",
       "settings": "การตั้งค่า",
       "admin": "แอดมิน"
+    },
+    "pulse": {
+      "title": "ชีพจรตลาด",
+      "totalValue": "มูลค่ารวม",
+      "dailyChange": "การเปลี่ยนแปลงรายวัน",
+      "paperMode": "การซื้อขายจำลอง",
+      "liveMode": "การซื้อขายสด",
+      "systemOnline": "ระบบออนไลน์",
+      "connecting": "กำลังเชื่อมต่อ...",
+      "botStrategy": "กลยุทธ์บอท",
+      "noEvents": "ยังไม่มีเหตุการณ์การซื้อขาย",
+      "eventFeedTitle": "เหตุการณ์ล่าสุด",
+      "riskMetrics": {
+        "maxExposure": "ความเสี่ยงสูงสุด",
+        "stopLoss": "จุดตัดขาดทุน",
+        "positionSize": "ขนาดสถานะ"
+      },
+      "timeframe": {
+        "1h": "1 ชั่วโมง",
+        "4h": "4 ชั่วโมง",
+        "1d": "1 วัน",
+        "1w": "1 สัปดาห์"
+      },
+      "riskLevel": {
+        "low": "ความเสี่ยงต่ำ",
+        "medium": "ความเสี่ยงปานกลาง",
+        "high": "ความเสี่ยงสูง",
+        "extreme": "ความเสี่ยงสูงมาก"
+      },
+      "events": {
+        "title": "เหตุการณ์ล่าสุด",
+        "noEvents": "ไม่มีเหตุการณ์ล่าสุด"
+      }
     }
   },
   "auth": {
@@ -1148,7 +1181,11 @@
           "All quizzes",
           "Email support"
         ],
-        "notIncluded": ["Certificate", "Webinars", "Priority support"]
+        "notIncluded": [
+          "Certificate",
+          "Webinars",
+          "Priority support"
+        ]
       },
       "pro": {
         "name": "Master",
