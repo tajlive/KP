@@ -3,8 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
-// LiveTicker temporarily removed for LCP testing
-// import { LiveTicker } from "@/components/landing/LiveTicker";
+// Eager load kritisk komponent
+import { LiveTicker } from "@/components/landing/LiveTicker";
 
 // Lazy load ikke-kritiske komponenter for bedre LCP
 const DashboardPreview = dynamic(
@@ -37,6 +37,7 @@ const MinimalFooter = dynamic(
   }
 );
 
+// ISR: Regenerate page every hour
 export const revalidate = 3600;
 
 export async function generateMetadata({
@@ -139,8 +140,8 @@ export default async function HomePage({
 
   return (
     <main className="min-h-screen bg-slate-950">
-      {/* Live Price Ticker - REMOVED for LCP testing */}
-      {/* <LiveTicker /> */}
+      {/* Live Price Ticker - Critical */}
+      <LiveTicker />
       
       {/* Hero Section - Critical for LCP */}
       <HeroSection locale={locale} />
