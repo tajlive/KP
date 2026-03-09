@@ -12,6 +12,7 @@ import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
 import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { SentryInit } from "@/components/providers/SentryInit";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -39,6 +40,12 @@ export default function DashboardLayout({
             <ToastProvider>
               <TradingModeProvider>
                 <ProtectedRoute>
+                  {/* 
+                    SentryInit: Lazy-load Sentry only on app routes
+                    This saves ~418KB on marketing pages by deferring Sentry
+                    initialization until user navigates to dashboard
+                  */}
+                  <SentryInit />
                   <div className="min-h-screen bg-slate-950 flex">
                     <ScrollToTop />
                     <DashboardSidebar />
