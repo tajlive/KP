@@ -1346,7 +1346,11 @@
     "important": "Important:",
     "disclaimer": "Risk disclaimer applies.",
     "startFree": "Start Free Now",
-    "seePricing": "See Pricing"
+    "seePricing": "See Pricing",
+    "metadata": {
+      "title": "About Us - Klarpakke University",
+      "description": "Learn about our mission to make crypto trading accessible through education and risk-free practice."
+    }
   },
   "calculator": {
     "title": "Compound Interest Calculator",

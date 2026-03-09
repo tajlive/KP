@@ -1346,7 +1346,11 @@
     "important": "Viktig:",
     "disclaimer": "Risiko disclaimer gjelder.",
     "startFree": "Start gratis nå",
-    "seePricing": "Se priser"
+    "seePricing": "Se priser",
+    "metadata": {
+      "title": "Om Oss - Vår Historie",
+      "description": "Lær om historien bak Klarpakke Universitet. Fra dyre lærepenger til et komplett krypto-universitet."
+    }
   },
   "calculator": {
     "title": "Avkastningskalkulator",
