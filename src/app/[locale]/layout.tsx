@@ -1,21 +1,57 @@
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { LocaleRedirect } from "@/components/i18n/LocaleRedirect";
-import { OrganizationJsonLd } from "@/components/JsonLd";
-import { AuthProvider } from "@/components/auth/AuthContext";
+import { Metadata } from "next";
+import { getMessages, setRequestLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { MarketingNavigation } from "@/components/layout/MarketingNavigation";
 import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
-import { Navigation } from "@/components/layout/Navigation";
-import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
-import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
-import { OnboardingProvider } from "@/components/providers/OnboardingProvider";
-import { TradingModeProvider } from "@/context/TradingModeContext";
-import { ToastProvider } from "@/providers/ToastProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { OrganizationJsonLd } from "@/components/JsonLd";
+import { MarketingProviders } from "@/components/providers/MarketingProviders";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
 import { Fraunces, Lexend } from "next/font/google";
 import "../globals.css";
+
+/**
+ * MARKETING LAYOUT - Optimized for Performance
+ * 
+ * KEY OPTIMIZATIONS:
+ * 
+ * 1. REMOVED AuthProvider - No Supabase init on marketing pages
+ *    (available in /dashboard, /paper-trading, /auto-trading layouts)
+ * 
+ * 2. REMOVED OnboardingProvider + OnboardingFlow - Only for logged-in users
+ *    (available in /dashboard layout)
+ * 
+ * 3. REMOVED TradingModeProvider - Only for trading features
+ *    (available in /paper-trading, /auto-trading layouts)
+ * 
+ * 4. REMOVED ToastProvider - Not critical for marketing
+ *    (available in app areas)
+ * 
+ * 5. REPLACED Navigation with MarketingNavigation
+ *    - No auth dependency
+ *    - No TradingModeToggle
+ *    - Smaller bundle, faster hydration
+ * 
+ * 6. REPLACED ClientSideProviders with MarketingProviders
+ *    - No ChatWidget (deferred to dashboard)
+ *    - No PWA loader (deferred)
+ *    - Only essential error handling
+ * 
+ * APP ROUTES with full providers:
+ * - /[locale]/dashboard/* - has AuthProvider, OnboardingProvider
+ * - /[locale]/paper-trading/* - has AuthProvider, TradingModeProvider
+ * - /[locale]/auto-trading/* - has AuthProvider, TradingModeProvider
+ * - /[locale]/copy-trading/* - has AuthProvider, TradingModeProvider
+ * - /[locale]/marketplace/* - has AuthProvider
+ * - /[locale]/checkout/* - has AuthProvider
+ * - /[locale]/onboarding/* - has OnboardingProvider
+ * 
+ * EXPECTED IMPACT:
+ * - Initial JS: ~1.2MB → ~600KB (-50%)
+ * - Hydration time: ~3s → ~1s (-67%)
+ * - LCP: 6.2s → <3.0s (target)
+ */
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -101,60 +137,28 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <OrganizationJsonLd />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
-                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    registrations.forEach(function(registration) {
-                      registration.unregister();
-                    });
-                  });
-                  if (window.caches) {
-                    caches.keys().then(function(cacheNames) {
-                      cacheNames.forEach(function(cacheName) {
-                        caches.delete(cacheName);
-                      });
-                    });
-                  }
-                }
-              })();
-            `,
-          }}
-        />
       </head>
       <body
         className={`${lexend.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
         suppressHydrationWarning
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ClientSideProviders>
+          <MarketingProviders>
             <ErrorBoundary>
-              <AuthProvider>
-                <OnboardingProvider>
-                  <OnboardingFlow />
-                  <ToastProvider>
-                    <TradingModeProvider>
-                      <div className="relative min-h-screen flex flex-col">
-                        <LocaleRedirect />
-                        <Navigation />
-                        <main className="flex-1">{children}</main>
-                        <ConditionalFooter />
-                      </div>
-                    </TradingModeProvider>
-                  </ToastProvider>
-                  {process.env.VERCEL && (
-                    <>
-                      <Analytics />
-                      <SpeedInsights />
-                    </>
-                  )}
-                </OnboardingProvider>
-              </AuthProvider>
+              <div className="relative min-h-screen flex flex-col">
+                <MarketingNavigation />
+                <main className="flex-1">{children}</main>
+                <ConditionalFooter />
+              </div>
             </ErrorBoundary>
-          </ClientSideProviders>
+          </MarketingProviders>
         </NextIntlClientProvider>
+        {process.env.VERCEL && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );
