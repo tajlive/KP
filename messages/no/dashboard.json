@@ -1,11 +1,11 @@
 {
-  "title": "Dashboard",
+  "title": "Oversikt",
   "pulse": {
     "title": "Porteføljepuls",
     "totalValue": "Total Verdi",
     "dailyChange": "Dagens Endring",
-    "paperMode": "Paper Trading",
-    "liveMode": "Live Trading",
+    "paperMode": "Øvingshandel",
+    "liveMode": "Live-handel",
     "systemOnline": "Systemet er aktivt",
     "connecting": "Kobler til...",
     "botStrategy": "Bot Strategi & Logikk",
@@ -17,16 +17,16 @@
       "positionSize": "Posisjonsstørrelse"
     },
     "timeframe": {
-      "1h": "1 Time",
-      "4h": "4 Timer",
-      "1d": "1 Dag",
-      "1w": "1 Uke"
+      "1h": "1 time",
+      "4h": "4 timer",
+      "1d": "1 dag",
+      "1w": "1 uke"
     },
     "riskLevel": {
-      "low": "Lav Risiko",
-      "medium": "Medium Risiko",
-      "high": "Høy Risiko",
-      "extreme": "Ekstrem Risiko"
+      "low": "Lav risiko",
+      "medium": "Medium risiko",
+      "high": "Høy risiko",
+      "extreme": "Ekstrem risiko"
     },
     "events": {
       "title": "Siste Hendelser",
@@ -49,7 +49,7 @@
   },
   "topBar": {
     "myOverview": "Min Oversikt",
-    "systemOnline": "System Online",
+    "systemOnline": "System online",
     "allSystemsOperational": "Alle systemer operative",
     "systemStatus": "Systemstatus"
   },
@@ -72,7 +72,7 @@
   "actions": {
     "recommendedStart": "Anbefalt Start",
     "recommendedStartDesc": "Beste måte å komme i gang",
-    "simulatorTitle": "Paper Trading Simulator",
+    "simulatorTitle": "Øvingshandel-simulator",
     "simulatorDesc": "Øv uten risiko med virtuell kapital",
     "goToSimulator": "Start Simulator",
     "goToCourses": "Gå til Kurs",
@@ -90,7 +90,7 @@
     "inProgress": "Pågående",
     "locked": "Låst",
     "notStarted": "Ikke startet",
-    "paperTrading": "Paper Trading",
+    "paperTrading": "Øvingshandel",
     "paperDesc": "Øv med virtuell kapital",
     "microAccount": "Mikrokonto (10-100 USD)",
     "microDesc": "Start med ekte penger, lav risiko",
@@ -145,7 +145,7 @@
     "open": "Åpen",
     "closed": "Lukket",
     "cancelled": "Kansellert",
-    "paper": "Paper",
+    "paper": "Øving",
     "live": "Live",
     "confirmClose": "Er du sikker på at du vil lukke denne posisjonen?"
   },
@@ -179,6 +179,6 @@
   },
   "bots": {
     "modeLive": "Live",
-    "modePaper": "Paper"
+    "modePaper": "Øving"
   }
 }
