@@ -39,7 +39,7 @@
     "test:lighthouse:prod": "cross-env TEST_AGAINST_PROD=1 lhci autorun --collect.url=https://www.klarpakke.no",
     "test:ci:blocking": "npm run test:e2e:smoke && npm run test:e2e:critical",
     "test:ci:full": "npm run test:ci:blocking && npm run test:e2e:regression",
-    "test:ci": "npm run test:ci:blocking",
+    "test:ci": "jest --coverage && playwright test",
     "test:ultimate": "playwright test --config=playwright.config.ultimate.ts",
     "test:ultimate:headed": "playwright test --config=playwright.config.ultimate.ts --headed",
     "test:ultimate:report": "playwright test --config=playwright.config.ultimate.ts && playwright show-report test-results/html",
@@ -52,7 +52,6 @@
     "test:auth": "playwright test tests/e2e/auth.spec.ts",
     "test:auth:dev": "playwright test tests/e2e/auth.spec.ts --config=playwright.config.dev.ts",
     "test:auth:prod": "playwright test tests/e2e/auth.spec.ts --config=playwright.config.prod.ts",
-    "test:ci": "jest --coverage && playwright test",
     "test:full": "npm run test:coverage && npm run test:e2e",
     "preview": "wrangler pages dev .open-next/worker",
     "vercel-build": "npm run build",
@@ -75,7 +74,8 @@
     "test:a11y": "playwright test tests/e2e/ --grep @accessibility || echo 'Kjør: npx playwright test med axe'",
     "analyze:bundle": "ANALYZE=true npm run build",
     "analyze:deps": "npx depcheck && npx knip",
-    "security:full": "npm audit && grep -r \"sk-\\|pk_\\|ghp_\\|AKIA\" src/ --include=\"*.ts\" --include=\"*.tsx\" 2>/dev/null || echo 'Ingen hemmeligheter funnet'"
+    "security:full": "npm audit && grep -r \"sk-\\|pk_\\|ghp_\\|AKIA\" src/ --include=\"*.ts\" --include=\"*.tsx\" 2>/dev/null || echo 'Ingen hemmeligheter funnet'",
+    "verify:prod": "bash scripts/smoke-prod.sh"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.39",
