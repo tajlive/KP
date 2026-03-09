@@ -38,13 +38,13 @@
   "sidebar": {
     "overview": "Oversikt",
     "portfolio": "Portefølje",
-    "trading": "Trading",
-    "liveTrading": "Live Trading",
+    "trading": "Handel",
+    "liveTrading": "Live-handel",
     "binanceApi": "Binance API",
     "activity": "Aktivitet",
     "taxReport": "Skatterapport",
     "settings": "Innstillinger",
-    "admin": "Admin",
+    "admin": "Administrator",
     "logout": "Logg ut"
   },
   "topBar": {
@@ -67,19 +67,19 @@
     "waitingForData": "Venter på data...",
     "readyToTrade": "Klar til å trade",
     "locked": "Låst",
-    "paperTradingFirst": "Start med paper trading først"
+    "paperTradingFirst": "Start med øvingshandel først"
   },
   "actions": {
     "recommendedStart": "Anbefalt Start",
     "recommendedStartDesc": "Beste måte å komme i gang",
     "simulatorTitle": "Øvingshandel-simulator",
     "simulatorDesc": "Øv uten risiko med virtuell kapital",
-    "goToSimulator": "Start Simulator",
+    "goToSimulator": "Start simulator",
     "goToCourses": "Gå til Kurs",
     "viewPositions": "Se Posisjoner",
-    "newTrade": "Ny Trade",
-    "connectExchange": "Koble til Exchange",
-    "manageAccount": "Administrer Konto"
+    "newTrade": "Ny handel",
+    "connectExchange": "Koble til børs",
+    "manageAccount": "Administrer konto"
   },
   "learningJourney": {
     "title": "Din Læringsreise",
@@ -96,22 +96,22 @@
     "microDesc": "Start med ekte penger, lav risiko",
     "standardAccount": "Standard Konto",
     "standardDesc": "Øk kapitalen når du er klar",
-    "autoTrading": "Automatisk Trading",
+    "autoTrading": "Automatisk handel",
     "autoTradingDesc": "La AI handle for deg",
     "advancedStrategies": "Avanserte Strategier",
     "advancedDesc": "Mestre komplekse teknikker"
   },
   "coach": {
-    "title": "AI Trading Coach",
+    "title": "AI-handelscoach",
     "subtitle": "Din personlige trading-assistent",
     "description": "Få sanntidsråd, analyser og svar på spørsmål",
-    "placeholder": "Spør meg om trading, strategier, eller markedet...",
+    "placeholder": "Spør meg om handel, strategier, eller markedet...",
     "send": "Send",
     "thinking": "Tenker...",
-    "initialDefault": "Hei! Jeg er din AI trading coach. Hva lurer du på i dag?",
+    "initialDefault": "Hei! Jeg er din AI-handelscoach. Hva lurer du på i dag?",
     "examples": {
       "title": "Eksempel-spørsmål:",
-      "q1": "Hva er en god entry for BTC nå?",
+      "q1": "Hva er et godt inngangspunkt for BTC nå?",
       "q2": "Forklar support og resistance",
       "q3": "Hvordan setter jeg stop loss?",
       "q4": "Hvilken strategi passer for nybegynnere?"
@@ -124,9 +124,9 @@
     "side": "Side",
     "type": "Type",
     "quantity": "Mengde",
-    "entryPrice": "Entry",
-    "currentPrice": "Nåværende",
-    "exitPrice": "Exit",
+    "entryPrice": "Inngangskurs",
+    "currentPrice": "Nåværende kurs",
+    "exitPrice": "Utgangskurs",
     "pnl": "P/L",
     "pnlPercentage": "P/L %",
     "status": "Status",
@@ -140,8 +140,8 @@
     "closedPositions": "Lukkede Posisjoner",
     "buy": "Kjøp",
     "sell": "Salg",
-    "long": "Long",
-    "short": "Short",
+    "long": "Lang",
+    "short": "Kort",
     "open": "Åpen",
     "closed": "Lukket",
     "cancelled": "Kansellert",
@@ -156,7 +156,7 @@
     "margin": "Margin",
     "freeMargin": "Fri Margin",
     "marginLevel": "Margin Nivå",
-    "drawdown": "Drawdown"
+    "drawdown": "Nedgang"
   },
   "portfolio": {
     "title": "Portefølje",
