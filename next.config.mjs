@@ -171,6 +171,7 @@ const nextConfig = {
       form-action 'self';
       frame-ancestors 'none';
       connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live;
+      // Note: CoinGecko API kallas kun server-side via /api/market/* routes
       frame-src https://vercel.live;
       upgrade-insecure-requests;
     `;

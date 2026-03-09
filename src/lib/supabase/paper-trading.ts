@@ -247,7 +247,7 @@ export function calculatePnL(session: PaperTradingSession): {
   isPositive: boolean;
 } {
   const absolute = session.current_capital_nok - session.starting_capital_nok;
-  const percentage = (absolute / session.starting_balance) * 100;
+  const percentage = (absolute / session.starting_capital_nok) * 100;
 
   return {
     absolute,

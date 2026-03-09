@@ -95,7 +95,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
         <Button 
           size="sm" 
           onClick={handleOpen}
-          className="bg-teal-600 hover:bg-teal-700 text-white"
+          className="bg-teal-600 hover:bg-teal-700 text-white font-medium"
         >
           Paper Trade
         </Button>
@@ -157,7 +157,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
             <Button
               onClick={() => executeTrade('buy')}
               disabled={loading || !quantity || totalValue <= 0}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowUp className="w-4 h-4 mr-2" />
               {loading ? 'Kjøper...' : 'Kjøp'}
@@ -165,7 +165,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
             <Button
               onClick={() => executeTrade('sell')}
               disabled={loading || !quantity || totalValue <= 0}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowDown className="w-4 h-4 mr-2" />
               {loading ? 'Selger...' : 'Selg'}

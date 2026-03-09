@@ -36,6 +36,10 @@ const dataCache = new Map<string, MarketData[]>();
 
 /**
  * Fetch historical OHLC data from CoinGecko
+ * 
+ * TODO: Denne funksjonen gjør direkte CoinGecko-kall og er ikke i bruk av noen
+ * klient-komponenter. Enten slett denne funksjonen, eller flytt til server-side
+ * route (f.eks. /api/market/historical) for å unngå CSP-blokkering i browser.
  */
 export async function fetchHistoricalData(
   symbol: string,

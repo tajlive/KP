@@ -229,14 +229,25 @@ function emptyResult(investment: number): StrategyResult {
 // ─── Fetch historiske priser ──────────────────────────────────────────────────
 
 async function fetchHistoricalPrices(coin: Coin, days: Period): Promise<PricePoint[]> {
-  const url = `https://api.coingecko.com/api/v3/coins/${coin}/market_chart?vs_currency=nok&days=${days}&interval=daily`;
-  const res = await fetch(url, { next: { revalidate: 3600 } });
-  if (!res.ok) throw new Error(`CoinGecko ${res.status}`);
-  const data = await res.json();
-  return (data.prices as [number, number][]).map(([ts, price]) => ({
-    timestamp: ts,
-    price,
-    date: new Date(ts).toLocaleDateString("no-NO", { day: "2-digit", month: "short" }),
+  // Use our API proxy instead of calling CoinGecko directly
+  const response = await fetch(`/api/market/chart?coin=${coin}&days=${days}&currency=nok`, {
+    cache: 'no-store',
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+  
+  const result = await response.json();
+  
+  if (!result.ok || !result.data?.prices) {
+    throw new Error('Invalid response format');
+  }
+  
+  return result.data.prices.map((p: { timestamp: number; price: number; date: string }) => ({
+    timestamp: p.timestamp,
+    price: p.price,
+    date: p.date,
   }));
 }
 
