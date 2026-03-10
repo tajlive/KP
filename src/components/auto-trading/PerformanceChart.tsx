@@ -10,11 +10,11 @@ import {
   AreaChart,
   CartesianGrid,
   ReferenceLine,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ChartWrapper } from "@/components/ui/chart-wrapper";
 
 interface PerformanceChartProps {
   trades: AutoTradingTrade[];
@@ -98,9 +98,8 @@ export function PerformanceChart({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full min-h-[300px]">
-          <ResponsiveContainer width="99%" height={300} minHeight={300}>
-            <AreaChart data={chartData}>
+        <ChartWrapper height={300} minHeight={300}>
+          <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
                   <stop
@@ -165,9 +164,8 @@ export function PerformanceChart({
                 strokeWidth={2}
                 fill="url(#colorBalance)"
               />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+          </AreaChart>
+        </ChartWrapper>
       </CardContent>
     </Card>
   );

@@ -8,11 +8,11 @@ import {
   CartesianGrid,
   ReferenceDot,
   ReferenceLine,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ChartWrapper } from "@/components/ui/chart-wrapper";
 
 interface ChartPoint {
   time: string;
@@ -55,7 +55,7 @@ export default function StrategyCharts({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={250} minHeight={250}>
+          <ChartWrapper height={250} minHeight={250}>
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
@@ -116,7 +116,7 @@ export default function StrategyCharts({
                 />
               ))}
             </AreaChart>
-          </ResponsiveContainer>
+          </ChartWrapper>
         </CardContent>
       </Card>
 
@@ -129,7 +129,7 @@ export default function StrategyCharts({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={180} minHeight={180}>
+          <ChartWrapper height={180} minHeight={180}>
             <AreaChart data={equityData}>
               <defs>
                 <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
@@ -178,7 +178,7 @@ export default function StrategyCharts({
                 strokeWidth={2}
               />
             </AreaChart>
-          </ResponsiveContainer>
+          </ChartWrapper>
         </CardContent>
       </Card>
     </div>

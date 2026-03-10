@@ -3,7 +3,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, Copy, Shield, Star, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
+import { Line, LineChart, YAxis } from "recharts";
+import { ChartWrapper } from "@/components/ui/chart-wrapper";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -55,7 +56,7 @@ const RiskStars = ({ level }: { level: number }) => {
 const Sparkline = ({ data }: { data: { value: number }[] }) => {
   return (
     <div className="h-10 w-24 min-h-[40px] min-w-[96px]">
-      <ResponsiveContainer width={96} height={40}>
+      <ChartWrapper height={40} minHeight={40}>
         <LineChart data={data}>
           <YAxis hide domain={["auto", "auto"]} />
           <Line
@@ -67,7 +68,7 @@ const Sparkline = ({ data }: { data: { value: number }[] }) => {
             isAnimationActive={false}
           />
         </LineChart>
-      </ResponsiveContainer>
+      </ChartWrapper>
     </div>
   );
 };
