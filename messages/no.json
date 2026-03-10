@@ -1866,7 +1866,50 @@
     "total": "Total",
     "buy": "Kjøp",
     "sell": "Salg",
-    "resume": "Fortsett"
+    "resume": "Fortsett",
+    "contextBanner": "📄 Paper Trading — Øv med virtuell kapital risikofritt"
+  },
+  "tradingGuide": {
+    "title": "Kom i gang med trading",
+    "subtitle": "Fire enkle steg for å starte din første trading-sesjon.",
+    "steps": {
+      "1": {
+        "title": "Velg modus: Paper eller Live",
+        "description": "Start alltid med Paper Trading (øvemodus). Her bruker du virtuell kapital og kan øve uten risiko. Når du er komfortabel, bytt til Live Trading."
+      },
+      "2": {
+        "title": "Velg en strategi",
+        "description": "Vi tilbyr 4 strategier: DCA (månedlig sparing, lav risiko), Trendhandel (moderat risiko), Grid Trading (høyere risiko), og Kombinert (ekspert). Start med DCA om du er nybegynner."
+      },
+      "3": {
+        "title": "Følg med på resultater",
+        "description": "Dashboardet viser porteføljeverdi, antall handler, vinnerprosent og P&L i sanntid. Alle handler logges i handelshistorikken."
+      },
+      "4": {
+        "title": "Oppgrader til Live Trading",
+        "description": "Når du er klar: koble til Binance-kontoen din, velg et abonnement, og start ekte handel. Systemet bruker samme strategier som paper trading."
+      }
+    },
+    "cta": {
+      "title": "Klar til å starte?",
+      "description": "Gå til trading-dashboardet og velg din første strategi.",
+      "button": "Åpne Trading Dashboard"
+    },
+    "faq": {
+      "title": "Ofte stilte spørsmål",
+      "q1": {
+        "question": "Kan jeg tape ekte penger i paper trading?",
+        "answer": "Nei. Paper trading bruker kun virtuell kapital. Du kan øve så mye du vil uten risiko."
+      },
+      "q2": {
+        "question": "Hvilken strategi bør jeg starte med?",
+        "answer": "DCA (Månedlig Sparing) er best for nybegynnere. Den kjøper automatisk med jevne mellomrom og reduserer risiko over tid."
+      },
+      "q3": {
+        "question": "Hva trenger jeg for live trading?",
+        "answer": "En Binance-konto med API-nøkler, og et aktivt abonnement på Klarpakke."
+      }
+    }
   },
   "quizPage": {
     "title": "Trading Quiz",

@@ -1866,7 +1866,50 @@
     "total": "Total",
     "buy": "Buy",
     "sell": "Sell",
-    "resume": "Resume"
+    "resume": "Resume",
+    "contextBanner": "📄 Paper Trading — Practice with virtual capital risk-free"
+  },
+  "tradingGuide": {
+    "title": "Getting started with trading",
+    "subtitle": "Four simple steps to start your first trading session.",
+    "steps": {
+      "1": {
+        "title": "Choose mode: Paper or Live",
+        "description": "Always start with Paper Trading (practice mode). You use virtual capital and can practice risk-free. When comfortable, switch to Live Trading."
+      },
+      "2": {
+        "title": "Choose a strategy",
+        "description": "We offer 4 strategies: DCA (monthly savings, low risk), Trend Trading (moderate risk), Grid Trading (higher risk), and Combined (expert). Start with DCA if you are a beginner."
+      },
+      "3": {
+        "title": "Track your results",
+        "description": "The dashboard shows portfolio value, trade count, win rate and P&L in real-time. All trades are logged in the trade history."
+      },
+      "4": {
+        "title": "Upgrade to Live Trading",
+        "description": "When ready: connect your Binance account, choose a subscription, and start real trading. The system uses the same strategies as paper trading."
+      }
+    },
+    "cta": {
+      "title": "Ready to start?",
+      "description": "Go to the trading dashboard and choose your first strategy.",
+      "button": "Open Trading Dashboard"
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": {
+        "question": "Can I lose real money in paper trading?",
+        "answer": "No. Paper trading uses only virtual capital. You can practice as much as you want without risk."
+      },
+      "q2": {
+        "question": "Which strategy should I start with?",
+        "answer": "DCA (Monthly Savings) is best for beginners. It buys automatically at regular intervals, reducing risk over time."
+      },
+      "q3": {
+        "question": "What do I need for live trading?",
+        "answer": "A Binance account with API keys, and an active Klarpakke subscription."
+      }
+    }
   },
   "quizPage": {
     "title": "Trading Quiz",

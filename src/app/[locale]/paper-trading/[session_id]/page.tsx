@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { createClient } from "@/lib/supabase/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { PaperTradingSessionDetail } from "@/components/paper-trading/PaperTradingSessionDetail";
 
 export const dynamic = "force-dynamic";
@@ -61,7 +61,7 @@ export default async function PaperTradingSessionPage({
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="bg-blue-500/10 border-b border-blue-500/20 px-4 py-3">
         <p className="text-blue-600 dark:text-blue-400 text-sm text-center">
-          📄 Paper Trading — Øv med virtuell kapital risikofritt
+          {t("contextBanner")}
         </p>
       </div>
       <main className="container mx-auto px-4 py-8 max-w-4xl">
