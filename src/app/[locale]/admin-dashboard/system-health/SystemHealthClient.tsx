@@ -74,6 +74,7 @@ export function SystemHealthClient({
     { name: "stripe", status: "loading", message: "", latencyMs: 0 },
     { name: "supabase", status: "loading", message: "", latencyMs: 0 },
     { name: "resend", status: "loading", message: "", latencyMs: 0 },
+    { name: "keepalive", status: "loading", message: "", latencyMs: 0 },
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -102,6 +103,26 @@ export function SystemHealthClient({
           latencyMs: Math.round(performance.now() - start),
         });
       }
+    }
+
+    // Sjekk keepalive separat (annen endpoint)
+    const keepaliveStart = performance.now();
+    try {
+      const response = await fetch("/api/cron/keepalive");
+      const data = await response.json();
+      results.push({
+        name: "keepalive",
+        status: data.ok ? "ok" : "error",
+        message: data.ok ? "Active" : data.error,
+        latencyMs: Math.round(performance.now() - keepaliveStart),
+      });
+    } catch {
+      results.push({
+        name: "keepalive",
+        status: "error",
+        message: t("errors.connectionFailed"),
+        latencyMs: Math.round(performance.now() - keepaliveStart),
+      });
     }
 
     setSystemChecks(results);

@@ -170,7 +170,8 @@
         "github": "GitHub Actions",
         "stripe": "Stripe API",
         "supabase": "Supabase",
-        "resend": "Resend API"
+        "resend": "Resend API",
+        "keepalive": "Supabase Keepalive"
       },
       "active": "Active",
       "inactive": "Inactive",
