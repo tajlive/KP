@@ -1,6 +1,15 @@
 "use client";
 
 import { AuthProvider } from "@/components/auth/AuthContext";
+
+// KRITISK: Inline script som kjører FØR AuthProvider for å rense korrupte tokens
+const CorruptTokenCleanup = () => (
+  <script
+    dangerouslySetInnerHTML={{
+      __html: `(function(){try{var k=Object.keys(localStorage);for(var i=0;i<k.length;i++){if(k[i].indexOf('sb-')===0){var v=localStorage.getItem(k[i]);if(v!==null){try{new TextDecoder('utf-8',{fatal:true}).decode(new TextEncoder().encode(v))}catch(e){console.warn('[Klarpakke] Korrupt token slettet:',k[i]);localStorage.removeItem(k[i])}}}}}catch(e){}})();`,
+    }}
+  />
+);
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { ScrollToTop } from "@/components/dashboard/ScrollToTop";
@@ -32,9 +41,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClientSideProviders>
-      <ErrorBoundary>
-        <AuthProvider>
+    <>
+      <CorruptTokenCleanup />
+      <ClientSideProviders>
+        <ErrorBoundary>
+          <AuthProvider>
           <OnboardingProvider>
             <OnboardingFlow />
             <ToastProvider>
@@ -75,5 +86,6 @@ export default function DashboardLayout({
         </AuthProvider>
       </ErrorBoundary>
     </ClientSideProviders>
+    </>
   );
 }
