@@ -75,7 +75,8 @@
     "analyze:bundle": "ANALYZE=true npm run build",
     "analyze:deps": "npx depcheck && npx knip",
     "security:full": "npm audit && grep -r \"sk-\\|pk_\\|ghp_\\|AKIA\" src/ --include=\"*.ts\" --include=\"*.tsx\" 2>/dev/null || echo 'Ingen hemmeligheter funnet'",
-    "verify:prod": "bash scripts/smoke-prod.sh"
+    "verify:prod": "bash scripts/smoke-prod.sh",
+    "test:mcp": "bash scripts/test-mcp-connections.sh"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.39",
