@@ -117,6 +117,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Pass-through: [locale]/layout.tsx håndterer <html> og <body>
-  return children;
+  return (
+    <>
+      <head suppressHydrationWarning>
+        {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjøres.
+            Inline synkront script — kjøres før React, før Supabase, garantert. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k=Object.keys(localStorage);for(var i=0;i<k.length;i++){if(k[i].indexOf('sb-')===0){var v=localStorage.getItem(k[i]);if(v!==null){try{new TextDecoder('utf-8',{fatal:true}).decode(new TextEncoder().encode(v))}catch(e){console.warn('[Klarpakke] Korrupt token slettet:',k[i]);localStorage.removeItem(k[i])}}}}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      {children}
+    </>
+  );
 }
