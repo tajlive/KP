@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, TrendingUp, TrendingDown, Wallet, RotateCcw, AlertCircle, Loader2 } from 'lucide-react';
@@ -21,8 +21,15 @@ export function PaperTradingCard() {
   const [state, setState] = useState<LoadingState>('loading');
   const [resetting, setResetting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  
+  // Use ref to track polling state without causing re-renders
+  const hasSessionRef = useRef<boolean | null>(null);
+  const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
 
-  const fetchBalance = async () => {
+  const fetchBalance = useCallback(async () => {
+    if (!isMountedRef.current) return;
+    
     try {
       setState('loading');
       setErrorMessage('');
@@ -32,13 +39,16 @@ export function PaperTradingCard() {
       if (response.status === 401) {
         setState('empty');
         setErrorMessage('Du må være logget inn for å se paper trading-saldo');
+        hasSessionRef.current = false;
         return;
       }
       
       // 404 = no session exists yet (valid state, not error)
+      // Stop polling to prevent repeated 404s
       if (response.status === 404) {
         setState('empty');
         setErrorMessage('Ingen paper trading-session funnet');
+        hasSessionRef.current = false;
         return;
       }
       
@@ -52,18 +62,58 @@ export function PaperTradingCard() {
       if (!data.balance) {
         setState('empty');
         setErrorMessage('Ingen paper trading-session funnet');
+        hasSessionRef.current = false;
         return;
       }
       
       setBalance(data.balance);
       setState('ready');
+      hasSessionRef.current = true;
     } catch (error) {
       console.error('Failed to fetch balance:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Kunne ikke hente saldo');
       setState('error');
       toast.error('Kunne ikke hente saldo');
+      hasSessionRef.current = null; // Unknown state, will retry
     }
-  };
+  }, []);
+  
+  // Polling with recursive setTimeout - allows us to stop after 404
+  const scheduleNextPoll = useCallback(() => {
+    if (!isMountedRef.current) return;
+    
+    // Only poll if we have a session or don't know yet
+    // Stop polling if we know there's no session (404)
+    if (hasSessionRef.current === false) {
+      return;
+    }
+    
+    pollingTimeoutRef.current = setTimeout(() => {
+      fetchBalance().then(() => {
+        // Schedule next poll only after current one completes
+        if (isMountedRef.current) {
+          scheduleNextPoll();
+        }
+      });
+    }, 30000); // 30 seconds
+  }, [fetchBalance]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    
+    // Initial fetch
+    fetchBalance().then(() => {
+      // Start polling after initial fetch
+      scheduleNextPoll();
+    });
+    
+    return () => {
+      isMountedRef.current = false;
+      if (pollingTimeoutRef.current) {
+        clearTimeout(pollingTimeoutRef.current);
+      }
+    };
+  }, [fetchBalance, scheduleNextPoll]);
 
   const handleReset = async () => {
     if (!confirm('Er du sikker på at du vil tilbakestille paper trading? All historikk vil slettes.')) {
@@ -74,7 +124,12 @@ export function PaperTradingCard() {
     try {
       const response = await fetch('/api/paper-trading/init', { method: 'POST' });
       if (!response.ok) throw new Error('Failed to reset');
+      
+      // Reset session state and restart polling
+      hasSessionRef.current = null;
       await fetchBalance();
+      scheduleNextPoll();
+      
       toast.success('Paper trading tilbakestilt!');
     } catch (error) {
       toast.error('Kunne ikke tilbakestille');
@@ -82,13 +137,6 @@ export function PaperTradingCard() {
       setResetting(false);
     }
   };
-
-  useEffect(() => {
-    fetchBalance();
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchBalance, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Loading state
   if (state === 'loading') {

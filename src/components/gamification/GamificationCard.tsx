@@ -48,35 +48,26 @@ export function GamificationCard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     
     const fetchGamification = async () => {
       const supabase = createClient();
       
-      // Fetch user level
-      const { data: levelData, error: levelError } = await supabase
-        .from("user_levels")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      // NOTE: user_levels table does not exist in database (verified 2024-03-10)
+      // Using default level values until table is created
+      // TODO: Create user_levels migration when gamification feature is ready
+      setLevel({
+        level: 1,
+        xp: 0,
+        xp_to_next: 100,
+        total_xp: 0,
+        rank: "Student",
+      });
       
-      // Silently ignore errors - table may not exist or user has no level data
-      // Component falls back to default level values below
-      
-      if (levelData) {
-        setLevel(levelData);
-      } else {
-        // Default level
-        setLevel({
-          level: 1,
-          xp: 0,
-          xp_to_next: 100,
-          total_xp: 0,
-          rank: "Student",
-        });
-      }
-      
-      // Fetch achievements
+      // Fetch achievements (table exists)
       const { data: achievementsData } = await supabase
         .from("user_achievements")
         .select("*")
