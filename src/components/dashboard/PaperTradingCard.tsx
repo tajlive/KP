@@ -35,6 +35,13 @@ export function PaperTradingCard() {
         return;
       }
       
+      // 404 = no session exists yet (valid state, not error)
+      if (response.status === 404) {
+        setState('empty');
+        setErrorMessage('Ingen paper trading-session funnet');
+        return;
+      }
+      
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || `Serverfeil: ${response.status}`);

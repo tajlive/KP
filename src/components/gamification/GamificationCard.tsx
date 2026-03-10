@@ -60,9 +60,8 @@ export function GamificationCard() {
         .eq("user_id", user.id)
         .maybeSingle();
       
-      if (levelError && levelError.code !== 'PGRST116') {
-        console.error('[GamificationCard] Error fetching user level:', levelError);
-      }
+      // Silently ignore errors - table may not exist or user has no level data
+      // Component falls back to default level values below
       
       if (levelData) {
         setLevel(levelData);
