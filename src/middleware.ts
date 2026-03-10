@@ -184,16 +184,35 @@ export function middleware(request: NextRequest) {
   // ==========================================
   // CRITICAL: Auth paths must NEVER auto-redirect based on browser language.
   // URL is the source of truth for auth flows.
-  // 
-  // This check MUST happen BEFORE Accept-Language redirect.
+  //
+  // For paths without locale prefix (e.g., /innlogging), we REWRITE to include
+  // the default locale (/no/innlogging) so Next.js can route to the page at
+  // /[locale]/(auth)/innlogging/page.tsx. The URL shown to user stays unchanged.
+  //
   // Examples:
-  //   /innlogging -> NO redirect (canonical Norwegian)
-  //   /en/innlogging -> NO redirect (explicit English)
-  //   /glemt-passord -> NO redirect (canonical Norwegian)
+  //   /innlogging -> REWRITE to /no/innlogging (canonical Norwegian)
+  //   /en/innlogging -> pass through (explicit English)
+  //   /glemt-passord -> REWRITE to /no/glemt-passord (canonical Norwegian)
   if (isAuthPath(pathname)) {
+    // Check if pathname already has a locale prefix
+    const hasLocalePrefix = SUPPORTED_LOCALES.some(
+      (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+    );
+
+    if (!hasLocalePrefix) {
+      // Rewrite to include default locale (internal routing only, URL stays same)
+      const rewriteUrl = new URL(`/${DEFAULT_LOCALE}${pathname}`, request.url);
+      rewriteUrl.search = request.nextUrl.search;
+      const response = NextResponse.rewrite(rewriteUrl);
+      response.headers.set("x-auth-path", "true");
+      response.headers.set("x-locale-rewrite", DEFAULT_LOCALE);
+      return response;
+    }
+
+    // Already has locale prefix, pass through
     const response = NextResponse.next();
     response.headers.set("x-auth-path", "true");
-    response.headers.set("x-locale-redirect", "skipped-auth-path");
+    response.headers.set("x-locale-explicit", "true");
     return response;
   }
 
@@ -232,7 +251,18 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // Norwegian users (or unknown locale) -> stay on root path (no prefix)
+  // Norwegian users (or unknown locale) -> rewrite to include locale for routing
+  // URL shown to user stays unchanged (no prefix), but internally routes to /no/*
+  if (pathname !== "/" && pathname !== "") {
+    const rewriteUrl = new URL(`/${DEFAULT_LOCALE}${pathname}`, request.url);
+    rewriteUrl.search = request.nextUrl.search;
+    const response = NextResponse.rewrite(rewriteUrl);
+    response.headers.set("x-locale-detected", preferredLocale);
+    response.headers.set("x-locale-rewrite", DEFAULT_LOCALE);
+    return response;
+  }
+
+  // Root path (/) - pass through to Next.js (it handles /[locale] → / mapping)
   const response = NextResponse.next();
   response.headers.set("x-locale-detected", preferredLocale);
   response.headers.set("x-locale-redirect", "none");
