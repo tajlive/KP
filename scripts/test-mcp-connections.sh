@@ -51,9 +51,28 @@ check() {
   fi
 }
 
-# Les .env.local hvis finnes
-if [ -f .env.local ]; then
-  export $(grep -E '^(GITHUB|SUPABASE|DATABASE|LINEAR|VERCEL|STRIPE|SENTRY|RESEND)' .env.local | xargs) 2>/dev/null || true
+# Les env-filer (sjekk flere kilder) - på en trygg måte
+load_env() {
+  local file=$1
+  if [ -f "$file" ]; then
+    while IFS='=' read -r key value; do
+      # Skip comments and empty lines
+      [[ "$key" =~ ^[[:space:]]*# ]] && continue
+      [[ -z "$key" ]] && continue
+      # Remove surrounding quotes from value
+      value=$(echo "$value" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+      export "$key=$value"
+    done < <(grep -E '^(GITHUB|SUPABASE|DATABASE|LINEAR|VERCEL|STRIPE|SENTRY|RESEND|POSTGRES)=' "$file" 2>/dev/null)
+  fi
+}
+
+for env_file in .env.vercel .env.local .env.production; do
+  load_env "$env_file"
+done
+
+# Fallback: bruk POSTGRES_URL som DATABASE_URL hvis den mangler
+if [ -z "${DATABASE_URL:-}" ] && [ -n "${POSTGRES_URL:-}" ]; then
+  export DATABASE_URL="$POSTGRES_URL"
 fi
 
 # ── 1. GITHUB ─────────────────────────────
@@ -146,7 +165,19 @@ echo "Full rapport lagret: $REPORT"
 
 if [ $FAIL -gt 0 ]; then
   echo -e "${RED}⚠️  $FAIL MCP-tilkobling(er) feilet!${NC}"
-  echo "Sjekk .env.local for manglende nøkler."
+  echo "Sjekk .env.local/.env.vercel for manglende nøkler."
+  exit 1
+elif [ $PASS -eq 0 ]; then
+  echo -e "${YELLOW}⚠️  Ingen MCP-tilkoblinger testet — alle mangler konfigurasjon!${NC}"
+  echo "Legg til nøkler i .env.local:"
+  echo "  - GITHUB_TOKEN"
+  echo "  - SUPABASE_SERVICE_ROLE_KEY"
+  echo "  - DATABASE_URL (eller POSTGRES_URL)"
+  echo "  - LINEAR_API_KEY"
+  echo "  - VERCEL_TOKEN"
+  echo "  - STRIPE_SECRET_KEY"
+  echo "  - SENTRY_AUTH_TOKEN"
+  echo "  - RESEND_API_KEY"
   exit 1
 else
   echo -e "${GREEN}✅ Alle MCP-tilkoblinger OK — klar for produksjon!${NC}"
