@@ -6,9 +6,16 @@ import {
   logAutoTrade 
 } from '@/lib/supabase/auto-trading';
 import { executePaperTrade } from '@/lib/supabase/paper-trading';
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/supabase-generated'
+
+type Supa = SupabaseClient<Database>
 
 export class AutoTrader {
-  constructor(private config: AutoTradingConfig) {}
+  constructor(
+    private config: AutoTradingConfig,
+    private supabase: Supa
+  ) {}
 
   /**
    * Evaluate if a signal should be executed based on risk settings
@@ -65,8 +72,8 @@ export class AutoTrader {
       }
 
       if (this.config.mode === 'paper') {
-        // Execute paper trade
-        await executePaperTrade(this.config.user_id, {
+        // Execute paper trade — send supabase-klienten inn
+        await executePaperTrade(this.supabase, this.config.user_id, {
           symbol: signal.symbol,
           side: signal.action,
           quantity,
@@ -100,8 +107,9 @@ export class AutoTrader {
 
 /**
  * Run auto trading cycle for all active traders
+ * MERK: Denne funksjonen krever en service-role klient for admin-operasjoner
  */
-export async function runAutoTradingCycle(): Promise<{
+export async function runAutoTradingCycle(supabase?: Supa): Promise<{
   totalUsers: number;
   tradesExecuted: number;
   errors: number;
@@ -132,7 +140,14 @@ export async function runAutoTradingCycle(): Promise<{
     // Process each trader
     for (const config of activeTraders) {
       try {
-        const trader = new AutoTrader(config);
+        // AutoTrader trenger en supabase-klient — i cron-context bruker vi service-role
+        // Hvis supabase ikke er gitt, kan vi ikke kjøre paper-trades (de trenger auth)
+        if (!supabase) {
+          console.warn(`[AutoTrader] Skipping user ${config.user_id}: no supabase client provided`);
+          continue;
+        }
+
+        const trader = new AutoTrader(config, supabase);
 
         // Check each signal
         for (const signal of signals) {

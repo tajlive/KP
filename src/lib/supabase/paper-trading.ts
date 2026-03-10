@@ -1,4 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/supabase-generated'
+
+type Supa = SupabaseClient<Database>
 
 export interface PaperTradingSession {
   id: string;
@@ -42,10 +45,9 @@ export interface TradeHistoryItem {
  * Create a new paper trading session for a user
  */
 export async function createPaperTradingSession(
+  supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession> {
-  const supabase = await createClient();
-
   const { data, error } = (await supabase
     .from("trading_sessions")
     .insert({
@@ -73,10 +75,9 @@ export async function createPaperTradingSession(
  * Get user's active paper trading session
  */
 export async function getPaperTradingSession(
+  supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession | null> {
-  const supabase = await createClient();
-
   const { data, error } = (await supabase
     .from("trading_sessions")
     .select("*")
@@ -101,13 +102,12 @@ export async function getPaperTradingSession(
  * Execute a paper trade
  */
 export async function executePaperTrade(
+  supabase: Supa,
   userId: string,
   trade: Omit<PaperTrade, "session_id">,
 ): Promise<{ success: boolean; new_balance: number; trade_id: string }> {
-  const supabase = await createClient();
-
   // Get current session
-  const session = await getPaperTradingSession(userId);
+  const session = await getPaperTradingSession(supabase, userId);
   if (!session) {
     throw new Error("No active paper trading session found");
   }
@@ -172,11 +172,10 @@ export async function executePaperTrade(
  * Get trade history for a session
  */
 export async function getPaperTradeHistory(
+  supabase: Supa,
   sessionId: string,
   limit: number = 50,
 ): Promise<TradeHistoryItem[]> {
-  const supabase = await createClient();
-
   const { data, error } = (await supabase
     .from("trades")
     .select("*")
@@ -196,10 +195,9 @@ export async function getPaperTradeHistory(
  * Reset paper trading session
  */
 export async function resetPaperTradingSession(
+  supabase: Supa,
   sessionId: string,
 ): Promise<void> {
-  const supabase = await createClient();
-
   // Delete all trades for this session
   const { error: deleteError } = await supabase
     .from("trades")
@@ -229,13 +227,14 @@ export async function resetPaperTradingSession(
  * Get or create paper trading session (auto-initialization)
  */
 export async function getOrCreatePaperTradingSession(
+  supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession> {
-  const existing = await getPaperTradingSession(userId);
+  const existing = await getPaperTradingSession(supabase, userId);
   if (existing) {
     return existing;
   }
-  return createPaperTradingSession(userId);
+  return createPaperTradingSession(supabase, userId);
 }
 
 /**
