@@ -1,4 +1,6 @@
 import GetStartedCard from "@/components/dashboard/GetStartedCard";
+import { BotStatusCard } from "@/components/dashboard/BotStatusCard";
+import { EmptyBotState } from "@/components/dashboard/EmptyBotState";
 import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
 import { requireAuth } from "@/lib/auth-guard";
 import { Metadata } from "next";
@@ -32,7 +34,7 @@ export default async function DashboardPage({
   const { locale } = await params;
   const { supabase, user } = await requireAuth(locale);
 
-  const [portfolioRes, tradesRes, strategiesRes, progressRes] =
+  const [portfolioRes, tradesRes, strategiesRes, progressRes, sessionRes] =
     await Promise.all([
       supabase
         .from("user_profiles")
@@ -55,6 +57,16 @@ export default async function DashboardPage({
         .select("completed_lessons")
         .eq("user_id", user.id)
         .single(),
+      supabase
+        .from("trading_sessions")
+        .select(
+          "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, last_heartbeat, created_at"
+        )
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
   // Parse completed lessons - database stores count as number, but component expects string[]
@@ -68,6 +80,16 @@ export default async function DashboardPage({
 
   return (
     <>
+      {/* Bot status card - shows active trading sessions */}
+      {sessionRes.data ? (
+        <BotStatusCard
+          initialSession={sessionRes.data}
+          userId={user.id}
+        />
+      ) : (
+        <EmptyBotState />
+      )}
+
       {/* Kom i gang for nye brukere – KLA-73 */}
       <GetStartedCard userId={user.id} completedLessons={completedLessons} />
 

@@ -726,6 +726,30 @@
       "taxReport": "Skatterapport",
       "settings": "Innstillinger",
       "admin": "Admin"
+    },
+    "botStatus": {
+      "title": "Bot status",
+      "active": "Aktiv",
+      "paused": "Pauset",
+      "stopped": "Stoppet",
+      "paperTrading": "Paper trading",
+      "liveTrading": "Live trading",
+      "pause": "Pause",
+      "resume": "Fortsett",
+      "viewDetails": "Se detaljer",
+      "notResponding": "Bot ikke svarer",
+      "noBot": "Ingen aktiv bot",
+      "noBotDescription": "Boten jobber for deg — start din første paper trade og se resultatene",
+      "startPaperTrading": "Start paper trading",
+      "started": "Startet",
+      "justNow": "Nå",
+      "minutesAgo": "{count} min siden",
+      "hoursAgo": "{count}t siden",
+      "daysAgo": "{count}d siden",
+      "whatToExpect": "Hva du får:",
+      "feature1": "Virtuell kapital",
+      "feature2": "Automatiske handler",
+      "feature3": "Realtids-analyse"
     }
   },
   "auth": {
