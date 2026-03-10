@@ -45,7 +45,7 @@ const getStartedItems: Omit<GetStartedItem, "completed">[] = [
     },
     duration: "5 min",
     icon: <BookOpen className="w-5 h-5 text-blue-400" />,
-    href: "/leksjon/introduksjon-til-krypto",
+    href: "/kurs/grunnleggende/leksjon/introduksjon-til-krypto",
   },
   {
     id: "dca-strategy",
@@ -59,7 +59,7 @@ const getStartedItems: Omit<GetStartedItem, "completed">[] = [
     },
     duration: "7 min",
     icon: <TrendingUp className="w-5 h-5 text-green-400" />,
-    href: "/leksjon/hva-er-stop-loss",
+    href: "/kurs/strategi/leksjon/dollar-cost-averaging",
   },
   {
     id: "dashboard-numbers",
@@ -73,7 +73,7 @@ const getStartedItems: Omit<GetStartedItem, "completed">[] = [
     },
     duration: "5 min",
     icon: <BarChart3 className="w-5 h-5 text-purple-400" />,
-    href: "/dashboard/guide",
+    href: "/akademi/dashboard-guide",
   },
 ];
 
@@ -97,31 +97,48 @@ export default function GetStartedCard({
   const [isVisible, setIsVisible] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // KRITISK: isMounted guard for å unngå React #418 hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Sjekk om bruker tidligere har dismissed kortet
   useEffect(() => {
     const checkDismissed = async () => {
       try {
         const supabase = createClient();
-        const { data } = await supabase
+        // DEFENSIV: Håndter case hvor kolonne mangler eller er null
+        const { data, error } = await supabase
           .from("user_profiles")
           .select("dismissed_get_started_card")
           .eq("user_id", userId)
-          .single();
+          .maybeSingle();
+
+        // Hvis feil eller ingen data, ikke kast — behandle som ikke-avvist
+        if (error) {
+          console.warn("[GetStarted] Kunne ikke hente dismissed-status:", error.message);
+          setIsLoading(false);
+          return;
+        }
 
         if (data?.dismissed_get_started_card) {
           setIsDismissed(true);
           setIsVisible(false);
         }
       } catch (error) {
-        console.error("Failed to check dismissed status:", error);
+        // Defensiv: ikke kast feil, bare logg
+        console.warn("[GetStarted] Feil ved sjekk av dismissed status:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkDismissed();
-  }, [userId]);
+    if (mounted) {
+      checkDismissed();
+    }
+  }, [userId, mounted]);
 
   // Sjekk om kortet skal vises
   const shouldShow = shouldShowGetStartedCard(completedLessons, isDismissed);
@@ -136,15 +153,19 @@ export default function GetStartedCard({
     setIsVisible(false);
     setIsDismissed(true);
 
-    // Lagre i databasen
+    // Lagre i databasen (defensivt)
     try {
       const supabase = createClient();
-      await supabase
+      const { error } = await supabase
         .from("user_profiles")
         .update({ dismissed_get_started_card: true })
         .eq("user_id", userId);
+      
+      if (error) {
+        console.warn("[GetStarted] Kunne ikke lagre dismissed-status:", error.message);
+      }
     } catch (error) {
-      console.error("Failed to save dismissed status:", error);
+      console.warn("[GetStarted] Feil ved lagring av dismissed status:", error);
     }
 
     onDismiss?.();
@@ -156,7 +177,8 @@ export default function GetStartedCard({
   ).length;
   const progress = Math.round((completedCount / getStartedItems.length) * 100);
 
-  if (!isVisible || isLoading) return null;
+  // KRITISK: Unngå React #418 — vis ingenting før mounted
+  if (!mounted || !isVisible || isLoading) return null;
 
   return (
     <AnimatePresence>
