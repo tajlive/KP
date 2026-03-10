@@ -11,6 +11,7 @@
  */
 import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/supabase-generated'
+import { safeStorage } from '@/lib/supabase/safe-storage'
 
 type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>
 
@@ -33,8 +34,9 @@ export function getSupabaseClient(): SupabaseClient {
         persistSession: true,
         detectSessionInUrl: true,
         flowType: 'pkce',
-        // Use consistent storage key
-        storageKey: `sb-${new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.split('.')[0]}-auth-token`,
+        // Use consistent storage key with SafeStorage adapter
+        storageKey: 'sb-vuxbjlykgmzskxbclquf-auth-token',
+        storage: safeStorage,
         debug: process.env.NODE_ENV === 'development',
       },
       global: {
