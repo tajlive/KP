@@ -1,6 +1,10 @@
+import { redirect } from "next/navigation";
 
-import ClientSuperAdmin from "./ClientSuperAdmin";
-
-export default function Page() {
-  return <ClientSuperAdmin />;
+export default function SuperAdminRedirectPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  // KLA-101: Super-admin funksjonalitet er nå i /admin-dashboard
+  redirect(`/${locale}/admin-dashboard`);
 }

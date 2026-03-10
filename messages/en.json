@@ -51,7 +51,10 @@
     "loading": "Loading...",
     "error": "Something went wrong",
     "success": "Success!",
-    "comingSoon": "Coming soon",
+    "comingSoon": {
+      "title": "Coming Soon",
+      "description": "This page is under development. We're working hard to get it ready as soon as possible."
+    },
     "underDevelopment": "Under development",
     "notAvailable": "Not available",
     "readMore": "Read more",

@@ -51,7 +51,10 @@
     "loading": "Laster...",
     "error": "Noe gikk galt",
     "success": "Suksess!",
-    "comingSoon": "Kommer snart",
+    "comingSoon": {
+      "title": "Kommer snart",
+      "description": "Denne siden er under utvikling. Vi jobber hardt for å få den klar så snart som mulig."
+    },
     "underDevelopment": "Under utvikling",
     "notAvailable": "Ikke tilgjengelig",
     "readMore": "Les mer",
