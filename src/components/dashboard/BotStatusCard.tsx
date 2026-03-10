@@ -26,11 +26,10 @@ interface TradingSession {
 
 interface BotStatusCardProps {
   initialSession: TradingSession | null;
-  userId: string;
 }
 
-export function BotStatusCard({ initialSession, userId }: BotStatusCardProps) {
-  const t = useTranslations("dashboard.botStatus");
+export function BotStatusCard({ initialSession }: BotStatusCardProps) {
+  const t = useTranslations();
   const router = useRouter();
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -93,10 +92,10 @@ export function BotStatusCard({ initialSession, userId }: BotStatusCardProps) {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return t("justNow");
-    if (diffMins < 60) return t("minutesAgo", { count: diffMins });
-    if (diffHours < 24) return t("hoursAgo", { count: diffHours });
-    return t("daysAgo", { count: diffDays });
+    if (diffMins < 1) return t("dashboard.botStatus.justNow");
+    if (diffMins < 60) return t("dashboard.botStatus.minutesAgo", { count: diffMins });
+    if (diffHours < 24) return t("dashboard.botStatus.hoursAgo", { count: diffHours });
+    return t("dashboard.botStatus.daysAgo", { count: diffDays });
   };
 
   // Håndter pause/resume
@@ -153,33 +152,33 @@ export function BotStatusCard({ initialSession, userId }: BotStatusCardProps) {
               {/* Header */}
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-semibold text-slate-900 dark:text-white">
-                  {t("title")}
+                  {t("dashboard.botStatus.title")}
                 </h3>
                 <Badge 
                   variant={session.status === "active" && !notResponding ? "default" : "secondary"}
                   className={notResponding ? "bg-amber-500" : ""}
                 >
                   {notResponding 
-                    ? t("notResponding") 
-                    : t(session.status)}
+                    ? t("dashboard.botStatus.notResponding") 
+                    : t(`dashboard.botStatus.${session.status}`)}
                 </Badge>
               </div>
 
               {/* Trading info */}
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                {session.mode === "paper" ? t("paperTrading") : t("liveTrading")} · {session.trading_pair}
+                {session.mode === "paper" ? t("dashboard.botStatus.paperTrading") : t("dashboard.botStatus.liveTrading")} · {session.trading_pair}
               </p>
 
               {/* Started time */}
               <p className="text-xs text-slate-500 mt-0.5">
-                {t("started")}: {getRelativeTime(session.created_at)}
+                {t("dashboard.botStatus.started")}: {getRelativeTime(session.created_at)}
               </p>
 
               {/* Not responding warning */}
               {notResponding && (
                 <div className="flex items-center gap-1.5 mt-2 text-amber-600">
                   <AlertTriangle className="w-4 h-4" />
-                  <span className="text-xs font-medium">{t("notResponding")}</span>
+                  <span className="text-xs font-medium">{t("dashboard.botStatus.notResponding")}</span>
                 </div>
               )}
             </div>
@@ -209,12 +208,12 @@ export function BotStatusCard({ initialSession, userId }: BotStatusCardProps) {
                 {session.status === "active" ? (
                   <>
                     <Pause className="w-4 h-4" />
-                    {t("pause")}
+                    {t("dashboard.botStatus.pause")}
                   </>
                 ) : (
                   <>
                     <Play className="w-4 h-4" />
-                    {t("resume")}
+                    {t("dashboard.botStatus.resume")}
                   </>
                 )}
               </Button>
@@ -224,7 +223,7 @@ export function BotStatusCard({ initialSession, userId }: BotStatusCardProps) {
                 onClick={handleViewDetails}
                 className="gap-1.5"
               >
-                {t("viewDetails")}
+                {t("dashboard.botStatus.viewDetails")}
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </div>

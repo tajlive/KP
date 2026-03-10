@@ -84,7 +84,6 @@ export default async function DashboardPage({
       {sessionRes.data ? (
         <BotStatusCard
           initialSession={sessionRes.data}
-          userId={user.id}
         />
       ) : (
         <EmptyBotState />

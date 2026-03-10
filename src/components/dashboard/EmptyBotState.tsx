@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Bot, Rocket, Sparkles } from "lucide-react";
 
 export function EmptyBotState() {
-  const t = useTranslations("dashboard.botStatus");
+  const t = useTranslations();
   const router = useRouter();
 
   const handleStartPaperTrading = () => {
@@ -27,35 +27,35 @@ export function EmptyBotState() {
           <div className="flex-1 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
               <h3 className="font-semibold text-slate-900 dark:text-white">
-                {t("noBot")}
+                {t("dashboard.botStatus.noBot")}
               </h3>
               <Sparkles className="w-4 h-4 text-amber-500" />
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-              {t("noBotDescription")}
+              {t("dashboard.botStatus.noBotDescription")}
             </p>
             <Button 
               onClick={handleStartPaperTrading}
               className="gap-2"
             >
               <Rocket className="w-4 h-4" />
-              {t("startPaperTrading")}
+              {t("dashboard.botStatus.startPaperTrading")}
             </Button>
           </div>
 
           {/* Decorative stats - placeholder */}
           <div className="hidden sm:flex gap-6 text-center">
             <div>
-              <p className="text-xs text-slate-500">{t("whatToExpect")}</p>
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("feature1")}</p>
+              <p className="text-xs text-slate-500">{t("dashboard.botStatus.whatToExpect")}</p>
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("dashboard.botStatus.feature1")}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500"> </p>
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("feature2")}</p>
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("dashboard.botStatus.feature2")}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500"> </p>
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("feature3")}</p>
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("dashboard.botStatus.feature3")}</p>
             </div>
           </div>
         </div>
