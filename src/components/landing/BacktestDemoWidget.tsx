@@ -11,9 +11,9 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
+import { ChartWrapper } from "@/components/ui/chart-wrapper";
 import { TrendingUp, TrendingDown, BarChart3, Play, Loader2, Info, ChevronDown } from "lucide-react";
 import { useLocale } from "next-intl";
 
@@ -559,9 +559,8 @@ export default function BacktestDemoWidget() {
                   </div>
                 </div>
               )}
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+              <ChartWrapper height={300} minHeight={300}>
+                <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
                     <XAxis dataKey="date" tick={{ fill: "#64748b", fontSize: 11 }}
                       tickLine={false} axisLine={false}
@@ -585,8 +584,7 @@ export default function BacktestDemoWidget() {
                     )}
                     <Legend formatter={(v) => <span style={{ color: "#94a3b8", fontSize: 12 }}>{v}</span>} />
                   </LineChart>
-                </ResponsiveContainer>
-              </div>
+                </ChartWrapper>
             </div>
 
             {/* Metrics grid */}

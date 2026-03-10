@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { Area, AreaChart, ResponsiveContainer, YAxis } from "recharts";
+import { Area, AreaChart, YAxis } from "recharts";
+import { ChartWrapper } from "@/components/ui/chart-wrapper";
 
 interface SparklineProps {
   data: number[];
@@ -47,7 +48,7 @@ export function Sparkline({ data, color }: SparklineProps) {
 
   return (
     <div className="w-full h-full opacity-80 mix-blend-screen">
-      <ResponsiveContainer width="100%" height="100%" minHeight={30}>
+      <ChartWrapper height={60} minHeight={30}>
         <AreaChart
           data={chartData}
           margin={{ top: 2, right: 0, bottom: 2, left: 0 }}
@@ -76,7 +77,7 @@ export function Sparkline({ data, color }: SparklineProps) {
             isAnimationActive={false} // Disable animation for performance if there are many sparklines, or re-enable if desired
           />
         </AreaChart>
-      </ResponsiveContainer>
+      </ChartWrapper>
     </div>
   );
 }

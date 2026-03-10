@@ -8,13 +8,20 @@ import {
   Line,
   LineChart,
   ReferenceLine,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { useEffect, useState } from "react";
+import { ChartWrapper } from "@/components/ui/chart-wrapper";
 
 export function BacktestChart({ data }: { data: unknown[] }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const chartData = (data || []).map((point: unknown) => ({
     date: format(new Date(point.timestamp), "dd MMM", { locale: nb }),
     portfolio: (point.portfolioValue || 0) / 1000, // Convert to thousands
@@ -24,9 +31,14 @@ export function BacktestChart({ data }: { data: unknown[] }) {
 
   const initialValue = chartData[0]?.portfolio || 0;
 
+  if (!mounted) {
+    return (
+      <div className="w-full h-[400px] animate-pulse rounded-lg bg-slate-800" />
+    );
+  }
+
   return (
-    <div className="w-full h-[400px]">
-      <ResponsiveContainer width="100%" height="100%">
+    <ChartWrapper height={400} minHeight={400}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
           <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#666" />
@@ -102,7 +114,6 @@ export function BacktestChart({ data }: { data: unknown[] }) {
             opacity={0.3}
           />
         </LineChart>
-      </ResponsiveContainer>
-    </div>
+      </ChartWrapper>
   );
 }
