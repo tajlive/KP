@@ -135,7 +135,51 @@
     "emailBody": "Message",
     "sending": "Sending...",
     "send": "Send",
-    "broadcast": "Broadcast to all users"
+    "broadcast": "Broadcast to all users",
+    "systemHealth": {
+      "title": "System Health",
+      "description": "Monitor system status, cron jobs, notification queue and database state in real-time.",
+      "cronJobs": {
+        "title": "Cron Jobs",
+        "name": "Name",
+        "schedule": "Schedule",
+        "status": "Status",
+        "lastRun": "Last run",
+        "lastStatus": "Last status"
+      },
+      "notifications": {
+        "title": "Notification Queue",
+        "pending": "Pending",
+        "sent": "Sent",
+        "failed": "Failed",
+        "processButton": "Process Queue"
+      },
+      "rls": {
+        "title": "RLS Status",
+        "tablesWithRls": "tables have RLS enabled"
+      },
+      "db": {
+        "title": "Database Overview",
+        "rows": "rows"
+      },
+      "systemChecks": {
+        "title": "System Checklist",
+        "github": "GitHub Actions",
+        "stripe": "Stripe API",
+        "supabase": "Supabase",
+        "resend": "Resend API"
+      },
+      "active": "Active",
+      "inactive": "Inactive",
+      "never": "Never",
+      "loading": "Loading...",
+      "lastRefresh": "Last updated",
+      "errors": {
+        "connectionFailed": "Connection failed",
+        "refreshFailed": "Failed to refresh data",
+        "processFailed": "Failed to process queue"
+      }
+    }
   },
   "landing": {
     "badge": "Klarpakke University",
