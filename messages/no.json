@@ -135,7 +135,51 @@
     "emailBody": "Melding",
     "sending": "Sender...",
     "send": "Send",
-    "broadcast": "Send til alle brukere"
+    "broadcast": "Send til alle brukere",
+    "systemHealth": {
+      "title": "System Helse",
+      "description": "Overvåk systemstatus, cron-jobber, notification-kø og database-tilstand i sanntid.",
+      "cronJobs": {
+        "title": "Cron-jobber",
+        "name": "Navn",
+        "schedule": "Schedule",
+        "status": "Status",
+        "lastRun": "Siste kjøring",
+        "lastStatus": "Siste status"
+      },
+      "notifications": {
+        "title": "Notification-kø",
+        "pending": "Venter",
+        "sent": "Sendt",
+        "failed": "Feilet",
+        "processButton": "Prosesser kø"
+      },
+      "rls": {
+        "title": "RLS-status",
+        "tablesWithRls": "tabeller har RLS aktivert"
+      },
+      "db": {
+        "title": "Database-oversikt",
+        "rows": "rader"
+      },
+      "systemChecks": {
+        "title": "System-sjekkliste",
+        "github": "GitHub Actions",
+        "stripe": "Stripe API",
+        "supabase": "Supabase",
+        "resend": "Resend API"
+      },
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "never": "Aldri",
+      "loading": "Laster...",
+      "lastRefresh": "Sist oppdatert",
+      "errors": {
+        "connectionFailed": "Tilkobling feilet",
+        "refreshFailed": "Kunne ikke oppdatere data",
+        "processFailed": "Kunne ikke prosessere kø"
+      }
+    }
   },
   "landing": {
     "badge": "Klarpakke Universitet",
