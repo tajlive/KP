@@ -159,21 +159,23 @@ const nextConfig = {
   // Headers (optimized for security and performance)
   async headers() {
     const isDev = process.env.NODE_ENV === "development";
-    const cspHeader = `
-      default-src 'self';
-      script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.vercel-scripts.com https://vercel.live;
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' blob: data: https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.coingecko.com https://vercel.com https://klarpakke.no https://www.klarpakke.no;
-      font-src 'self' data: https://vercel.live https://r2cdn.perplexity.ai;
-      worker-src 'self' blob:;
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      frame-ancestors 'none';
-      connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://o4509555622608896.ingest.de.sentry.io;
-      frame-src https://vercel.live;
-      upgrade-insecure-requests;
-    `;
+    
+    /* CSP constructed as single-line string - NO comments inside */
+    const cspHeader = [
+      "default-src 'self';",
+      "script-src 'self' 'unsafe-inline'" + (isDev ? " 'unsafe-eval'" : "") + " https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.vercel-scripts.com https://vercel.live;",
+      "style-src 'self' 'unsafe-inline';",
+      "img-src 'self' blob: data: https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.coingecko.com https://vercel.com https://klarpakke.no https://www.klarpakke.no;",
+      "font-src 'self' data: https://vercel.live https://r2cdn.perplexity.ai;",
+      "worker-src 'self' blob:;",
+      "object-src 'none';",
+      "base-uri 'self';",
+      "form-action 'self';",
+      "frame-ancestors 'none';",
+      "connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://o4509555622608896.ingest.de.sentry.io;",
+      "frame-src https://vercel.live;",
+      "upgrade-insecure-requests;",
+    ].join(" ");
 
     return [
       {
@@ -181,10 +183,7 @@ const nextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: cspHeader
-              .replace(/\n/g, "")
-              .replace(/\s{2,}/g, " ")
-              .trim(),
+            value: cspHeader,
           },
           {
             key: "X-Frame-Options",
@@ -204,8 +203,6 @@ const nextConfig = {
           },
         ],
       },
-
-      // Cache static assets forever (they have hash in filename)
       {
         source: "/_next/static/:path*",
         headers: [
@@ -215,7 +212,6 @@ const nextConfig = {
           },
         ],
       },
-      // Cache images for 1 month
       {
         source: "/images/:path*",
         headers: [

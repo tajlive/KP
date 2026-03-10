@@ -31,14 +31,15 @@ function isSupportedLocale(locale: string): locale is SupportedLocale {
  * Check if pathname is an auth route that should NOT be auto-redirected
  * based on Accept-Language. Auth routes respect explicit locale or default to Norwegian.
  * 
- * Handles locale-prefixed paths: /en/innlogging, /th/innlogging, etc.
+ * Handles locale-prefixed paths: /en/innlogging, /th/innlogging, /no/innlogging, etc.
  * 
  * @param pathname - The request pathname
  * @returns true if this is a protected auth path
  */
 function isAuthPath(pathname: string): boolean {
   // Strip locale prefix if present (e.g., /en/innlogging -> /innlogging)
-  const pathWithoutLocale = pathname.replace(/^\/(en|th|zh)(?=\/|$)/, "");
+  // Also handle /no/ prefix (legacy default locale)
+  const pathWithoutLocale = pathname.replace(/^\/(en|th|zh|no)(?=\/|$)/, "");
   const normalizedPath = pathWithoutLocale || pathname; // Fallback if no match
   
   return AUTH_PATHS.some(path => 
