@@ -1,33 +1,78 @@
-import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
-export default function OnboardingLayout({
-  children,
-}: {
+interface OnboardingLayoutProps {
   children: React.ReactNode;
-}) {
+  params: { locale: string };
+}
+
+export default async function OnboardingLayout({
+  children,
+  params: { locale },
+}: OnboardingLayoutProps) {
+  const t = await getTranslations("onboarding");
+  const supabase = await createClient();
+
+  // Sjekk autentisering
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect(`/${locale}/login?next=/onboarding`);
+  }
+
+  // Hent onboarding-status
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("onboarding_step, onboarding_completed")
+    .eq("user_id", user.id)
+    .single();
+
+  // Hvis onboarding allerede er fullført → dashboard
+  if (profile?.onboarding_completed) {
+    redirect(`/${locale}/dashboard`);
+  }
+
+  // Beregn nåværende steg fra URL
+  // (Dette er Server Component, så vi bruker enkel logikk)
+  const currentStep = profile?.onboarding_step || 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <Link href="/" className="inline-block">
-            <h1 className="text-2xl font-bold text-blue-600">Klarpakke</h1>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Header */}
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href={`/${locale}`}>
+            <Logo className="h-8" />
           </Link>
+          <div className="text-sm text-slate-500">
+            {t("stepIndicator", { current: currentStep + 1, total: 5 })}
+          </div>
         </div>
-        
-        {/* Progress indicator could go here */}
-        
+      </header>
+
+      {/* Progress bar */}
+      <div className="bg-white dark:bg-slate-900">
         <div className="max-w-2xl mx-auto">
-          <Suspense fallback={
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          }>
-            {children}
-          </Suspense>
+          <div className="h-1 bg-slate-100 dark:bg-slate-800">
+            <div
+              className="h-full bg-blue-600 transition-all duration-500"
+              style={{ width: `${((currentStep + 1) / 5) * 100}%` }}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Main content */}
+      <main className="max-w-2xl mx-auto px-4 py-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
