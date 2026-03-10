@@ -25,29 +25,29 @@ check() {
   local name=$1
   local cmd=$2
   local expected=${3:-}
-  local timeout_sec=${4:-10}
   
   echo -n "Testing $name... "
   
-  if output=$(timeout "$timeout_sec" bash -c "$cmd" 2>&1); then
-    if [ -n "$expected" ] && echo "$output" | grep -q "$expected" 2>/dev/null; then
-      echo -e "${GREEN}✅ OK${NC}"
-      echo "✅ $name: OK" >> "$REPORT"
-      ((PASS++))
-    elif [ -z "$expected" ]; then
-      # Ingen expected = bare sjekk at kommandoen kjørte
-      echo -e "${GREEN}✅ OK${NC}"
-      echo "✅ $name: OK" >> "$REPORT"
-      ((PASS++))
-    else
-      echo -e "${RED}❌ FEIL (uventet output)${NC}"
-      echo "❌ $name: FEIL - fikk: $output" >> "$REPORT"
-      ((FAIL++))
-    fi
+  # Bruk timeout hvis tilgjengelig (Linux), ellers kjør direkte (macOS)
+  if command -v timeout &> /dev/null; then
+    output=$(timeout 10 bash -c "$cmd" 2>&1) || { echo -e "${RED}❌ FEIL (timeout)${NC}"; echo "❌ $name: TIMEOUT" >> "$REPORT"; FAIL=$((FAIL + 1)); return; }
   else
-    echo -e "${RED}❌ FEIL (kommando feilet)${NC}"
-    echo "❌ $name: KOMMANDO FEILET" >> "$REPORT"
-    ((FAIL++))
+    output=$(bash -c "$cmd" 2>&1) || { echo -e "${RED}❌ FEIL (kommando feilet)${NC}"; echo "❌ $name: KOMMANDO FEILET" >> "$REPORT"; FAIL=$((FAIL + 1)); return; }
+  fi
+  
+  if [ -n "$expected" ] && echo "$output" | grep -q "$expected" 2>/dev/null; then
+    echo -e "${GREEN}✅ OK${NC}"
+    echo "✅ $name: OK" >> "$REPORT"
+    PASS=$((PASS + 1))
+  elif [ -z "$expected" ]; then
+    # Ingen expected = bare sjekk at kommandoen kjørte
+    echo -e "${GREEN}✅ OK${NC}"
+    echo "✅ $name: OK" >> "$REPORT"
+    PASS=$((PASS + 1))
+  else
+    echo -e "${RED}❌ FEIL (uventet output)${NC}"
+    echo "❌ $name: FEIL - fikk: $output (forventet: $expected)" >> "$REPORT"
+    FAIL=$((FAIL + 1))
   fi
 }
 
@@ -55,20 +55,31 @@ check() {
 load_env() {
   local file=$1
   if [ -f "$file" ]; then
-    while IFS='=' read -r key value; do
+    while IFS= read -r line; do
       # Skip comments and empty lines
-      [[ "$key" =~ ^[[:space:]]*# ]] && continue
-      [[ -z "$key" ]] && continue
-      # Remove surrounding quotes from value
-      value=$(echo "$value" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
-      export "$key=$value"
-    done < <(grep -E '^(GITHUB|SUPABASE|DATABASE|LINEAR|VERCEL|STRIPE|SENTRY|RESEND|POSTGRES)=' "$file" 2>/dev/null)
+      [[ "$line" =~ ^[[:space:]]*# ]] && continue
+      [[ -z "$line" ]] && continue
+      # Parse KEY=value
+      if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+        local key="${BASH_REMATCH[1]}"
+        local value="${BASH_REMATCH[2]}"
+        # Remove surrounding quotes from value
+        value="${value%\"}"
+        value="${value#\"}"
+        value="${value%\'}"
+        value="${value#\'}"
+        export "$key=$value"
+      fi
+    done < "$file"
   fi
 }
 
-for env_file in .env.vercel .env.local .env.production; do
-  load_env "$env_file"
-done
+# Last kun .env.local (ikke .env.production som kan ha andre verdier)
+if [ -f .env.local ]; then
+  load_env .env.local
+elif [ -f .env.vercel ]; then
+  load_env .env.vercel
+fi
 
 # Fallback: bruk POSTGRES_URL som DATABASE_URL hvis den mangler
 if [ -z "${DATABASE_URL:-}" ] && [ -n "${POSTGRES_URL:-}" ]; then
@@ -87,9 +98,16 @@ fi
 
 # ── 2. SUPABASE REST ──────────────────────
 if [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ] && [ -n "${SUPABASE_URL:-}" ]; then
-  check "Supabase REST" \
-    "curl -sf -H \"apikey: \$SUPABASE_SERVICE_ROLE_KEY\" -H \"Authorization: Bearer \$SUPABASE_SERVICE_ROLE_KEY\" '\$SUPABASE_URL/rest/v1/user_profiles?limit=1' | jq '. | length'" \
-    ""
+  echo -n "Testing Supabase REST... "
+  if curl -sf "${SUPABASE_URL}/rest/v1/" -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" 2>&1 | grep -q "swagger"; then
+    echo -e "${GREEN}✅ OK${NC}"
+    echo "✅ Supabase REST: OK" >> "$REPORT"
+    PASS=$((PASS + 1))
+  else
+    echo -e "${RED}❌ FEIL${NC}"
+    echo "❌ Supabase REST: FEIL" >> "$REPORT"
+    FAIL=$((FAIL + 1))
+  fi
 else
   echo -e "${YELLOW}⚠️  Supabase REST: Ingen nøkkel (SUPABASE_SERVICE_ROLE_KEY eller SUPABASE_URL mangler)${NC}"
   echo "⏭️  Supabase REST: SKIPPET" >> "$REPORT"
@@ -97,9 +115,16 @@ fi
 
 # ── 3. SUPABASE PSQL ──────────────────────
 if command -v psql &> /dev/null && [ -n "${DATABASE_URL:-}" ]; then
-  check "Supabase psql" \
-    "psql '\$DATABASE_URL' -c 'SELECT 1 as ping' -t 2>&1 | grep -o '1' | head -1" \
-    "1"
+  echo -n "Testing Supabase psql... "
+  if psql "${DATABASE_URL}" -c 'SELECT 1 as ping' -t 2>&1 | grep -q "1"; then
+    echo -e "${GREEN}✅ OK${NC}"
+    echo "✅ Supabase psql: OK" >> "$REPORT"
+    PASS=$((PASS + 1))
+  else
+    echo -e "${RED}❌ FEIL${NC}"
+    echo "❌ Supabase psql: FEIL" >> "$REPORT"
+    FAIL=$((FAIL + 1))
+  fi
 else
   echo -e "${YELLOW}⚠️  Supabase psql: psql ikke installert eller DATABASE_URL mangler${NC}"
   echo "⏭️  Supabase psql: SKIPPET" >> "$REPORT"
