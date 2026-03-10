@@ -86,6 +86,21 @@ export function middleware(request: NextRequest) {
   }
 
   // ==========================================
+  // SESSION EXPIRED HANDLING
+  // ==========================================
+  // Detect session=expired query param and set cookie for client-side toast
+  if (request.nextUrl.searchParams.has('session', 'expired')) {
+    const response = NextResponse.redirect(
+      new URL(request.nextUrl.pathname, request.url)
+    );
+    response.cookies.set('session_expired', 'true', {
+      maxAge: 60, // 1 minute
+      path: '/',
+    });
+    return response;
+  }
+
+  // ==========================================
   // 1. LEGACY /no/* CLEANUP (301 permanent)
   // ==========================================
   if (pathname.startsWith("/no/")) {

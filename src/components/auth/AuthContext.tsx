@@ -1,8 +1,8 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/utils';
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User, AuthError } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
@@ -26,15 +26,100 @@ function getSupabaseClient() {
   return supabaseClient;
 }
 
+// Exponential backoff configuration
+const MAX_REFRESH_ATTEMPTS = 3;
+const BACKOFF_DELAYS = [5000, 15000, 60000]; // 5s, 15s, 60s
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
+  
+  // Refs for managing refresh state without triggering re-renders
+  const refreshAttempts = useRef(0);
+  const isRefreshing = useRef(false);
+  const lastRefreshError = useRef<AuthError | null>(null);
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clear any pending refresh timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Handle session refresh with exponential backoff
+  const handleRefreshToken = useCallback(async () => {
+    if (isRefreshing.current) return;
+    
+    isRefreshing.current = true;
+    const supabase = getSupabaseClient();
+    
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      
+      if (error) {
+        // Check for rate limit (429) or other auth errors
+        const isRateLimit = error.status === 429 || 
+                           error.message?.includes('rate limit') ||
+                           error.message?.includes('too many requests');
+        
+        if (isRateLimit || error.status === 401 || error.status === 403) {
+          lastRefreshError.current = error;
+          refreshAttempts.current++;
+          
+          if (refreshAttempts.current >= MAX_REFRESH_ATTEMPTS) {
+            // Max attempts reached - sign out and redirect
+            console.error('[AuthContext] Max refresh attempts reached, signing out');
+            await supabase.auth.signOut();
+            setSession(null);
+            setUser(null);
+            
+            // Redirect to login with expired session param
+            if (typeof window !== 'undefined') {
+              window.location.href = '/innlogging?session=expired';
+            }
+            return;
+          }
+          
+          // Schedule retry with exponential backoff
+          const delay = BACKOFF_DELAYS[refreshAttempts.current - 1] || BACKOFF_DELAYS[BACKOFF_DELAYS.length - 1];
+          console.log(`[AuthContext] Refresh failed, retrying in ${delay}ms (attempt ${refreshAttempts.current}/${MAX_REFRESH_ATTEMPTS})`);
+          
+          if (refreshTimeoutRef.current) {
+            clearTimeout(refreshTimeoutRef.current);
+          }
+          
+          refreshTimeoutRef.current = setTimeout(() => {
+            isRefreshing.current = false;
+            handleRefreshToken();
+          }, delay);
+          return;
+        }
+        
+        // Other errors - just log and reset
+        console.error('[AuthContext] Refresh error:', error);
+        setSession(null);
+        setUser(null);
+      } else {
+        // Success - reset attempts and update state
+        refreshAttempts.current = 0;
+        lastRefreshError.current = null;
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+      }
+    } catch (err) {
+      console.error('[AuthContext] Unexpected refresh error:', err);
+      setSession(null);
+      setUser(null);
+    } finally {
+      isRefreshing.current = false;
+    }
+  }, []);
 
   useEffect(() => {
-    setIsMounted(true);
-    
     const supabase = getSupabaseClient();
     
     // Check existing session on mount
@@ -65,7 +150,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (event, session) => {
+        if (event === 'TOKEN_REFRESHED') {
+          // Reset attempts on successful refresh
+          refreshAttempts.current = 0;
+          lastRefreshError.current = null;
+        }
+        
+        if (event === 'SIGNED_OUT') {
+          // Clear all state on sign out
+          refreshAttempts.current = 0;
+          lastRefreshError.current = null;
+          if (refreshTimeoutRef.current) {
+            clearTimeout(refreshTimeoutRef.current);
+          }
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -79,6 +179,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const supabase = getSupabaseClient();
+    
+    // Reset refresh attempts on new sign in
+    refreshAttempts.current = 0;
+    lastRefreshError.current = null;
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -100,32 +205,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     const supabase = getSupabaseClient();
+    
+    // Clear refresh state
+    refreshAttempts.current = 0;
+    lastRefreshError.current = null;
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+    
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
   }, []);
 
   const refreshSession = useCallback(async () => {
-    const supabase = getSupabaseClient();
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (!error && user) {
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(user);
-      } else {
-        setSession(null);
-        setUser(null);
-      }
-    } catch (err) {
-      console.error('[AuthContext] Error refreshing session:', err);
-      setSession(null);
-      setUser(null);
-    }
-  }, []);
+    await handleRefreshToken();
+  }, [handleRefreshToken]);
 
-  // During SSR, always render children without throwing
-  // The loading state will be resolved on client-side
   const value = {
     user,
     session,
@@ -149,10 +245,4 @@ export function useAuth() {
     throw new Error('useAuth må brukes innenfor AuthProvider');
   }
   return context;
-}
-
-// Safe hook that returns null instead of throwing (for optional auth usage)
-export function useAuthSafe() {
-  const context = useContext(AuthContext);
-  return context ?? null;
 }
