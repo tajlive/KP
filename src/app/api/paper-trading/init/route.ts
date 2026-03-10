@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get or create session
-    const session = await getOrCreatePaperTradingSession(user.id);
+    // Get or create session — send supabase-klienten inn (har riktige cookies)
+    const session = await getOrCreatePaperTradingSession(supabase, user.id);
     
     return NextResponse.json({
       success: true,
@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Paper trading init error:', error);
+    console.error('[paper-trading/init POST]', error);
     return NextResponse.json(
-      { error: 'Failed to initialize paper trading' },
+      { error: 'Failed to initialize paper trading', detail: String(error) },
       { status: 500 }
     );
   }
@@ -57,8 +57,8 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Get or create session
-    const session = await getOrCreatePaperTradingSession(user.id);
+    // Get or create session — send supabase-klienten inn (har riktige cookies)
+    const session = await getOrCreatePaperTradingSession(supabase, user.id);
     
     const pnl = session.current_capital_nok - session.starting_capital_nok;
     const pnlPercentage = (pnl / session.starting_capital_nok) * 100;
@@ -75,9 +75,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Paper trading get error:', error);
+    console.error('[paper-trading/init GET]', error);
     return NextResponse.json(
-      { error: 'Failed to get paper trading session' },
+      { error: 'Failed to get paper trading session', detail: String(error) },
       { status: 500 }
     );
   }
