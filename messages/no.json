@@ -1122,17 +1122,87 @@
     "subtitle": "La oss komme i gang med krypto-trading",
     "bankIdInfo": "Ingen lagring: Vi lagrer ALDRI ditt BankID-passord",
     "startFree": "Start gratis →",
+    "stepIndicator": "Steg {current} av {total}",
     "step1": {
-      "title": "Opprett konto",
-      "description": "Registrer deg gratis og få tilgang til paper trading"
+      "headline": "Boten jobber for deg",
+      "subtitle": "Kom i gang på 2 minutter",
+      "cta": "Kom i gang →",
+      "loading": "Starter...",
+      "timeEstimate": "Tar kun 2 minutter å fullføre",
+      "features": {
+        "safe": "Trygg trening",
+        "fast": "Rask oppstart",
+        "auto": "Automatisk trading"
+      }
     },
     "step2": {
-      "title": "Velg din vei",
-      "description": "Følg våre strukturerte kurs fra Student til Master"
+      "title": "Hva er din erfaring med krypto?",
+      "subtitle": "Dette hjelper oss å tilpasse innholdet til deg",
+      "cta": "Fortsett →",
+      "loading": "Lagrer...",
+      "options": {
+        "beginner": {
+          "label": "Nybegynner",
+          "description": "Jeg er helt ny og vil lære fra bunnen"
+        },
+        "intermediate": {
+          "label": "Erfaren",
+          "description": "Jeg har handlet litt før, men vil bli bedre"
+        },
+        "expert": {
+          "label": "Proff",
+          "description": "Jeg er erfaren og vil optimalisere strategiene"
+        }
+      }
     },
     "step3": {
-      "title": "Start å lære",
-      "description": "Få AI-signaler og gjør dine første simulerte trades"
+      "title": "Start med paper trading",
+      "subtitle": "Øv deg uten risiko med virtuell kapital",
+      "cta": "Start paper trading →",
+      "loading": "Lagrer...",
+      "paperTrading": {
+        "title": "Paper Trading",
+        "description": "En trygg måte å lære på uten å risikere egne penger",
+        "yourBalance": "Din virtuelle saldo",
+        "virtual": "Virtuell kapital - ingen reell verdi"
+      },
+      "whatIsPaperTrading": "Hva er paper trading?",
+      "tooltip": "Paper trading lar deg simulere ekte trading med virtuell kapital. Du kan teste strategier og lære uten risiko."
+    },
+    "step4": {
+      "title": "Koble til Binance (valgfritt)",
+      "subtitle": "Koble til din Binance-konto for ekte trading senere",
+      "cta": "Koble til Binance",
+      "connecting": "Kobler til...",
+      "skip": "Gjør dette senere",
+      "skipping": "Hopper over...",
+      "error": "Kunne ikke koble til. Sjekk API-nøklene dine.",
+      "security": {
+        "title": "Sikker tilkobling",
+        "description": "API-nøklene dine krypteres og lagres sikkert. Vi kan bare lese saldo og gjennomføre trades - vi kan ikke ta ut penger."
+      },
+      "apiKey": {
+        "label": "Binance API Key",
+        "placeholder": "Lim inn din API Key"
+      },
+      "apiSecret": {
+        "label": "Binance API Secret",
+        "placeholder": "Lim inn din API Secret"
+      }
+    },
+    "step5": {
+      "title": "Du er klar! 🎉",
+      "subtitle": "Din bot er klar for å handle",
+      "cta": "Gå til dashboard →",
+      "loading": "Laster...",
+      "initializing": "Fullfører onboarding...",
+      "paperBalance": "Din paper trading-saldo",
+      "botReady": "Bot klar",
+      "features": {
+        "paperTrading": "Paper trading med 10 000 kr",
+        "strategies": "Tilgang til automatiserte strategier",
+        "analytics": "Detaljert trading-analyse"
+      }
     },
     "email": "E-post",
     "bankid": "BankID",

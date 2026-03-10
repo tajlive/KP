@@ -1,123 +1,196 @@
-'use client';
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
+import { BookOpen, TrendingUp, Award } from "lucide-react";
 
-const experienceLevels = [
-  {
-    value: "beginner",
-    title: "🌱 Nybegynner",
-    description: "Jeg har lite eller ingen erfaring med trading",
-  },
-  {
-    value: "intermediate",
-    title: "📈 Middels",
-    description: "Jeg har prøvd trading før og forstår grunnleggende",
-  },
-  {
-    value: "experienced",
-    title: "💪 Erfaren",
-    description: "Jeg trader regelmessig og kjenner markedet godt",
-  },
-  {
-    value: "expert",
-    title: "🏆 Ekspert",
-    description: "Jeg er profesjonell trader med dyp markedskunnskap",
-  },
-];
+const EXPERIENCE_OPTIONS = [
+  { value: "beginner", icon: BookOpen },
+  { value: "intermediate", icon: TrendingUp },
+  { value: "expert", icon: Award },
+] as const;
 
 export default function OnboardingStep2() {
+  const t = useTranslations("onboarding.step2");
   const router = useRouter();
-  const [experience, setExperience] = useState<string>("");
+  const supabase = createClient();
+  const [selected, setSelected] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
 
-  const handleNext = async () => {
-    if (!experience) return;
+  // Sjekk auth og redirect hvis nødvendig
+  useEffect(() => {
+    const checkStatus = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/login?next=/onboarding/step2-experience");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("onboarding_step, onboarding_completed, trading_experience")
+        .eq("user_id", user.id)
+        .single();
+
+      if (profile?.onboarding_completed) {
+        router.push("/dashboard");
+        return;
+      }
+
+      // Hvis brukeren er på steg 0, send til steg 1
+      if (!profile?.onboarding_step || profile.onboarding_step < 1) {
+        router.push("/onboarding/step1-welcome");
+        return;
+      }
+
+      // Hvis brukeren er på et senere steg, send dit
+      if (profile.onboarding_step > 1) {
+        const steps = [
+          "/onboarding/step1-welcome",
+          "/onboarding/step2-experience",
+          "/onboarding/step3-trading-mode",
+          "/onboarding/step4-binance",
+          "/onboarding/step5-complete",
+        ];
+        router.push(steps[profile.onboarding_step]);
+        return;
+      }
+
+      // Hvis brukeren allerede har valgt erfaring, pre-fill
+      if (profile?.trading_experience) {
+        setSelected(profile.trading_experience);
+      }
+
+      setInitializing(false);
+    };
+
+    checkStatus();
+  }, [router, supabase]);
+
+  const handleContinue = async () => {
+    if (!selected) return;
 
     setLoading(true);
     try {
-      const res = await fetch("/api/onboarding/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          step: 2,
-          trading_experience: experience,
-        }),
-      });
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      if (res.ok) {
-        router.push("/onboarding/step3-trading-mode");
-      }
+      if (!user) throw new Error("Ikke autentisert");
+
+      // Oppdater profil
+      const { error } = await supabase
+        .from("user_profiles")
+        .update({
+          onboarding_step: 2,
+          trading_experience: selected,
+        })
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      router.push("/onboarding/step3-trading-mode");
     } catch (err) {
-      console.error("Failed to update:", err);
+      console.error("Failed to save experience:", err);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  return (
-    <Card className="border-0 shadow-lg">
-      <CardHeader>
-        <CardTitle>Din Trading-Erfaring</CardTitle>
-        <CardDescription>
-          Dette hjelper oss å tilpasse dashboardet for ditt nivå
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <RadioGroup value={experience} onValueChange={setExperience}>
-          <div className="space-y-3">
-            {experienceLevels.map((level) => (
-              <div
-                key={level.value}
-                className={`flex items-start space-x-3 space-y-0 rounded-lg border p-4 cursor-pointer transition-colors ${
-                  experience === level.value
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                    : "hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                }`}
-                onClick={() => setExperience(level.value)}
-              >
-                <RadioGroupItem value={level.value} id={level.value} />
-                <Label
-                  htmlFor={level.value}
-                  className="font-normal cursor-pointer flex-1"
-                >
-                  <span className="font-medium block">{level.title}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {level.description}
-                  </span>
-                </Label>
-              </div>
-            ))}
-          </div>
-        </RadioGroup>
+  if (initializing) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      </div>
+    );
+  }
 
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => router.push("/onboarding/step1-welcome")}
-            className="flex-1"
-          >
-            ← Tilbake
-          </Button>
-          <Button
-            onClick={handleNext}
-            disabled={!experience || loading}
-            className="flex-1"
-          >
-            {loading ? "Lagrer..." : "Neste →"}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          {t("title")}
+        </h1>
+        <p className="text-slate-600 dark:text-slate-400">{t("subtitle")}</p>
+      </div>
+
+      {/* Options */}
+      <div className="space-y-3">
+        {EXPERIENCE_OPTIONS.map((option) => {
+          const Icon = option.icon;
+          const isSelected = selected === option.value;
+
+          return (
+            <button
+              key={option.value}
+              onClick={() => setSelected(option.value)}
+              className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
+                isSelected
+                  ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                  : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700"
+              }`}
+            >
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  isSelected
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600"
+                }`}
+              >
+                <Icon className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-slate-900 dark:text-white">
+                  {t(`options.${option.value}.label`)}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {t(`options.${option.value}.description`)}
+                </p>
+              </div>
+              <div
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  isSelected
+                    ? "border-blue-600 bg-blue-600"
+                    : "border-slate-300 dark:border-slate-600"
+                }`}
+              >
+                {isSelected && (
+                  <svg
+                    className="w-4 h-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* CTA */}
+      <Button
+        onClick={handleContinue}
+        className="w-full h-12 text-lg font-semibold"
+        size="lg"
+        disabled={!selected || loading}
+      >
+        {loading ? t("loading") : t("cta")}
+      </Button>
+    </div>
   );
 }

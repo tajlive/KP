@@ -1,115 +1,176 @@
-'use client';
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CheckCircle2, BookOpen, Trophy, TrendingUp, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-
-const nextSteps = [
-  {
-    icon: BookOpen,
-    title: "Utforsk Paper Trading",
-    description: "Test strategier med virtuell kapital",
-  },
-  {
-    icon: Trophy,
-    title: "Sjekk ut Leaderboard",
-    description: "Se top-performing tradere",
-  },
-  {
-    icon: TrendingUp,
-    title: "Opprett din første strategi",
-    description: "Sett opp en trading-bot",
-  },
-  {
-    icon: Users,
-    title: "Bli med i fellesskapet",
-    description: "Følg andre tradere og lær",
-  },
-];
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
+import { CheckCircle2, Loader2 } from "lucide-react";
 
 export default function OnboardingStep5() {
+  const t = useTranslations("onboarding.step5");
   const router = useRouter();
+  const supabase = createClient();
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
+  const [paperBalance, setPaperBalance] = useState<number>(10000);
+  const [sessionCreated, setSessionCreated] = useState(false);
 
-  const handleComplete = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/onboarding/complete", {
-        method: "POST",
-      });
+  // Sjekk auth og fullfør onboarding
+  useEffect(() => {
+    const completeOnboarding = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (res.ok) {
-        const data = await res.json();
-        router.push(data.redirectTo || "/dashboard");
+        if (!user) {
+          router.push("/login?next=/onboarding/step5-complete");
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("onboarding_step, onboarding_completed, paper_balance")
+          .eq("user_id", user.id)
+          .single();
+
+        // Hvis allerede fullført, vis suksess
+        if (profile?.onboarding_completed) {
+          setPaperBalance(Number(profile.paper_balance) || 10000);
+          setSessionCreated(true);
+          setInitializing(false);
+          return;
+        }
+
+        // Redirect hvis brukeren ikke er på riktig steg
+        if (!profile?.onboarding_step || profile.onboarding_step < 4) {
+          const steps = [
+            "/onboarding/step1-welcome",
+            "/onboarding/step2-experience",
+            "/onboarding/step3-trading-mode",
+            "/onboarding/step4-binance",
+            "/onboarding/step5-complete",
+          ];
+          router.push(steps[profile?.onboarding_step || 0]);
+          return;
+        }
+
+        setPaperBalance(Number(profile.paper_balance) || 10000);
+
+        // Fullfør onboarding og opprett trading session
+        const response = await fetch("/api/onboarding/complete", {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          throw new Error("Kunne ikke fullføre onboarding");
+        }
+
+        setSessionCreated(true);
+        setInitializing(false);
+      } catch (err) {
+        console.error("Failed to complete onboarding:", err);
+        setInitializing(false);
       }
-    } catch (err) {
-      console.error("Failed to complete onboarding:", err);
-      // Fallback redirect
-      router.push("/dashboard");
-    }
-    setLoading(false);
+    };
+
+    completeOnboarding();
+  }, [router, supabase]);
+
+  const handleGoToDashboard = () => {
+    setLoading(true);
+    router.push("/dashboard");
   };
 
+  if (initializing) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <p className="text-slate-500">{t("initializing")}</p>
+      </div>
+    );
+  }
+
   return (
-    <Card className="border-0 shadow-lg">
-      <CardHeader className="text-center">
-        <div className="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
-          <CheckCircle2 className="h-10 w-10 text-green-600 dark:text-green-400" />
+    <div className="text-center space-y-8">
+      {/* Success Animation */}
+      <div className="relative">
+        <div className="mx-auto w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
+          <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
         </div>
-        <CardTitle className="text-2xl">Du er klar! 🎉</CardTitle>
-        <CardDescription>
-          Alt er satt opp og klart til bruk
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-3">
-          <h4 className="font-medium text-center">Neste steg:</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {nextSteps.map((step, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50"
-              >
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <step.icon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">{step.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Confetti effect (CSS) */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 rounded-full animate-ping"
+              style={{
+                backgroundColor: ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"][i],
+                transform: `rotate(${i * 60}deg) translateY(-40px)`,
+                animationDelay: `${i * 0.1}s`,
+                animationDuration: "1s",
+              }}
+            />
+          ))}
         </div>
+      </div>
 
-        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <p className="text-sm text-center">
-            <strong>Tips:</strong> Start med paper trading for å bli kjent med
-            plattformen. Når du føler deg komfortabel, kan du gå over til live
-            trading.
-          </p>
-        </div>
+      {/* Text */}
+      <div className="space-y-3">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+          {t("title")}
+        </h1>
+        <p className="text-lg text-slate-600 dark:text-slate-400">
+          {t("subtitle")}
+        </p>
+      </div>
 
-        <Button
-          onClick={handleComplete}
-          className="w-full h-12 text-lg"
-          size="lg"
-          disabled={loading}
-        >
-          {loading ? "Fullfører..." : "Gå til Dashboard →"}
-        </Button>
-      </CardContent>
-    </Card>
+      {/* Summary Card */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800">
+        <p className="text-sm text-slate-500 mb-2">{t("paperBalance")}</p>
+        <p className="text-3xl font-bold text-slate-900 dark:text-white">
+          {paperBalance.toLocaleString("nb-NO")} kr
+        </p>
+        <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30">
+            {t("botReady")}
+          </span>
+        </div>
+      </div>
+
+      {/* Features list */}
+      <div className="text-left space-y-3 max-w-sm mx-auto">
+        <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+          <span>{t("features.paperTrading")}</span>
+        </div>
+        <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+          <span>{t("features.strategies")}</span>
+        </div>
+        <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+          <span>{t("features.analytics")}</span>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <Button
+        onClick={handleGoToDashboard}
+        className="w-full h-12 text-lg font-semibold"
+        size="lg"
+        disabled={loading || !sessionCreated}
+      >
+        {loading ? (
+          <>
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            {t("loading")}
+          </>
+        ) : (
+          t("cta")
+        )}
+      </Button>
+    </div>
   );
 }

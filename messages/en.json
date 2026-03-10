@@ -1122,17 +1122,87 @@
     "subtitle": "Let's get you started with crypto trading",
     "bankIdInfo": "No storage: We NEVER store your BankID password",
     "startFree": "Start free →",
+    "stepIndicator": "Step {current} of {total}",
     "step1": {
-      "title": "Create account",
-      "description": "Sign up for free and get access to paper trading"
+      "headline": "The bot works for you",
+      "subtitle": "Get started in 2 minutes",
+      "cta": "Get started →",
+      "loading": "Starting...",
+      "timeEstimate": "Takes only 2 minutes to complete",
+      "features": {
+        "safe": "Safe practice",
+        "fast": "Quick start",
+        "auto": "Automatic trading"
+      }
     },
     "step2": {
-      "title": "Choose your path",
-      "description": "Follow our structured courses from Student to Master"
+      "title": "What's your experience with crypto?",
+      "subtitle": "This helps us tailor the content to you",
+      "cta": "Continue →",
+      "loading": "Saving...",
+      "options": {
+        "beginner": {
+          "label": "Beginner",
+          "description": "I'm completely new and want to learn from scratch"
+        },
+        "intermediate": {
+          "label": "Experienced",
+          "description": "I've traded a bit before, but want to get better"
+        },
+        "expert": {
+          "label": "Pro",
+          "description": "I'm experienced and want to optimize strategies"
+        }
+      }
     },
     "step3": {
-      "title": "Start learning",
-      "description": "Get AI signals and make your first simulated trades"
+      "title": "Start with paper trading",
+      "subtitle": "Practice without risk using virtual capital",
+      "cta": "Start paper trading →",
+      "loading": "Saving...",
+      "paperTrading": {
+        "title": "Paper Trading",
+        "description": "A safe way to learn without risking your own money",
+        "yourBalance": "Your virtual balance",
+        "virtual": "Virtual capital - no real value"
+      },
+      "whatIsPaperTrading": "What is paper trading?",
+      "tooltip": "Paper trading lets you simulate real trading with virtual capital. You can test strategies and learn without risk."
+    },
+    "step4": {
+      "title": "Connect Binance (optional)",
+      "subtitle": "Connect your Binance account for real trading later",
+      "cta": "Connect Binance",
+      "connecting": "Connecting...",
+      "skip": "Do this later",
+      "skipping": "Skipping...",
+      "error": "Could not connect. Check your API keys.",
+      "security": {
+        "title": "Secure connection",
+        "description": "Your API keys are encrypted and stored securely. We can only read balance and execute trades - we cannot withdraw funds."
+      },
+      "apiKey": {
+        "label": "Binance API Key",
+        "placeholder": "Paste your API Key"
+      },
+      "apiSecret": {
+        "label": "Binance API Secret",
+        "placeholder": "Paste your API Secret"
+      }
+    },
+    "step5": {
+      "title": "You're ready! 🎉",
+      "subtitle": "Your bot is ready to trade",
+      "cta": "Go to dashboard →",
+      "loading": "Loading...",
+      "initializing": "Completing onboarding...",
+      "paperBalance": "Your paper trading balance",
+      "botReady": "Bot ready",
+      "features": {
+        "paperTrading": "Paper trading with 10,000 NOK",
+        "strategies": "Access to automated strategies",
+        "analytics": "Detailed trading analytics"
+      }
     },
     "email": "Email",
     "bankid": "BankID",
