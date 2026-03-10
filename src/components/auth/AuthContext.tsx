@@ -120,29 +120,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
     const supabase = getSupabaseClient();
     
-    // Check existing session on mount
+    // Check existing session on mount with corrupt token handling
     const initAuth = async () => {
       try {
-        // First try getUser for verified auth state
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (!userError && user) {
-          // User is authenticated, now get session
-          const { data: { session } } = await supabase.auth.getSession();
-          setSession(session);
-          setUser(user);
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (!mounted) return
+
+        if (error) {
+          console.warn('[AuthContext] Session error, renser storage:', error.message)
+          // Rens korrupt storage
+          ;['sb-vuxbjlykgmzskxbclquf-auth-token',
+            'sb-vuxbjlykgmzskxbclquf-auth-token-code-verifier']
+            .forEach(k => { try { localStorage.removeItem(k) } catch { /* noop */ } })
+          if (mounted) {
+            setSession(null)
+            setUser(null)
+          }
         } else {
-          setSession(null);
-          setUser(null);
+          if (mounted) {
+            setSession(session)
+            setUser(session?.user ?? null)
+          }
         }
       } catch (err) {
-        console.error('[AuthContext] Error initializing auth:', err);
-        setSession(null);
-        setUser(null);
+        // Invalid UTF-8 eller annen storage-korrupsjon
+        console.warn('[AuthContext] Korrupt auth-storage, renser:', err)
+        if (mounted) {
+          // SafeStorage håndterer dette, men rens manuelt som backup
+          try {
+            Object.keys(localStorage)
+              .filter(k => k.startsWith('sb-'))
+              .forEach(k => { try { localStorage.removeItem(k) } catch { /* noop */ } })
+          } catch { /* noop */ }
+          setSession(null)
+          setUser(null)
+        }
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false)
       }
     };
 
@@ -151,6 +169,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
         if (event === 'TOKEN_REFRESHED') {
           // Reset attempts on successful refresh
           refreshAttempts.current = 0;
@@ -173,6 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
