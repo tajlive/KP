@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+import { getSupabaseClient } from '@/lib/supabase/client';
 import type { Database } from '@/lib/database.types';
 import type { Wallet, PortfolioItem, TradingStats } from '@/types';
 
@@ -36,34 +36,34 @@ export function useTrading(userId?: string) {
   const [loading, setLoading] = useState(true);
   const [executingTrade, setExecutingTrade] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-  
+
   const fetchData = useCallback(async () => {
     if (!userId) { setLoading(false); return; }
     setLoading(true);
-     
-    const fromAny = supabase.from as (t: string) => ReturnType<typeof supabase.from>;
+
+    const supabase = getSupabaseClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fromAny = supabase.from as (t: string) => any;
     const t = await supabase.from('trades').select('*').eq('user_id', userId).order('created_at', { ascending: false });
     const p = await supabase.from('portfolios').select('*').eq('user_id', userId);
     const w = await fromAny('wallets').select('*').eq('user_id', userId).single();
     const s = await fromAny('trading_stats').select('*').eq('user_id', userId).single();
     setTrades(t.data || []); setPortfolio(p.data || []); setWallet(w.data as WalletDB | null); setStats(s.data as TradingStatsDB | null); setLoading(false);
-  }, [userId, supabase]);
-  
+  }, [userId]);
+
   const refreshTrades = useCallback(async () => {
     if (!userId) return;
+    const supabase = getSupabaseClient();
     const r = await supabase.from('trades').select('*').eq('user_id', userId).order('created_at', { ascending: false });
     setTrades(r.data || []);
-  }, [userId, supabase]);
+  }, [userId]);
 
   const buy = useCallback(async (symbol: string, quantity: number, price: number) => {
     if (!userId) return { success: false, error: 'Not authenticated' };
     setExecutingTrade(true);
     setError(null);
     try {
+      const supabase = getSupabaseClient();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: tradeError } = await (supabase.rpc as any)('execute_trade', {
         p_user_id: userId,
@@ -83,13 +83,14 @@ export function useTrading(userId?: string) {
     } finally {
       setExecutingTrade(false);
     }
-  }, [userId, supabase, fetchData]);
+  }, [userId, fetchData]);
 
   const sell = useCallback(async (symbol: string, quantity: number, price: number) => {
     if (!userId) return { success: false, error: 'Not authenticated' };
     setExecutingTrade(true);
     setError(null);
     try {
+      const supabase = getSupabaseClient();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: tradeError } = await (supabase.rpc as any)('execute_trade', {
         p_user_id: userId,
@@ -109,14 +110,15 @@ export function useTrading(userId?: string) {
     } finally {
       setExecutingTrade(false);
     }
-  }, [userId, supabase, fetchData]);
-  
+  }, [userId, fetchData]);
+
   useEffect(() => {
+    const supabase = getSupabaseClient();
     fetchData();
     const ch = supabase.channel('trading').on('postgres_changes', { event: '*', schema: 'public', table: 'trades' }, fetchData).subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [fetchData, supabase]);
-  
+  }, [fetchData]);
+
   return { trades, portfolio, wallet, stats, loading, refreshData: fetchData, refreshTrades, buy, sell, executingTrade, error };
 }
 

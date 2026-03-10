@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { createBrowserClient } from '@supabase/ssr'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -39,18 +38,8 @@ export function formatDistanceToNow(date: Date): string {
   return `${diffInYears} år siden`
 }
 
-// Supabase browser client
-export const createClient = () => {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        flowType: 'pkce',
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false,
-      },
-    }
-  )
-}
+/**
+ * Re-export createClient from singleton for backwards compatibility.
+ * @deprecated Import from '@/lib/supabase/client' directly instead.
+ */
+export { createClient } from '@/lib/supabase/client'

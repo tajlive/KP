@@ -1,8 +1,7 @@
 "use client";
 
 import { PriceWebSocket } from "@/lib/auto-trading/binance-websocket";
-import type { Database } from "@/lib/database.types";
-import { createBrowserClient } from "@supabase/ssr";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 
 // Local type definition since coin_prices may not be in generated schema
@@ -34,16 +33,15 @@ export function usePrices() {
   const [prices, setPrices] = useState<Record<string, CoinPrice>>({});
   const [loading, setLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
-  const supabase = createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
 
   useEffect(() => {
+    const supabase = getSupabaseClient();
+
     const fetchPrices = async () => {
       setLoading(true);
       // Using type assertion since coin_prices table may vary by environment
-      const { data } = await (supabase as unknown).from("coin_prices").select("*");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (supabase as any).from("coin_prices").select("*");
 
       const priceMap = ((data || []) as CoinPrice[]).reduce(
         (acc: Record<string, CoinPrice>, price: unknown) => {
@@ -110,7 +108,7 @@ export function usePrices() {
       supabase.removeChannel(channel);
       ws.disconnect();
     };
-  }, [supabase]);
+  }, []); // Empty deps - singleton client is stable
 
   return { prices, loading, isConnected };
 }
