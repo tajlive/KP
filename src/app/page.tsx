@@ -164,9 +164,9 @@ export default async function RootPage() {
     messages = await getMessages();
   } catch {
     try {
-      messages = await import("../messages/no.json").then((m) => m.default);
+      messages = await import("../../messages/no.json").then((m) => m.default);
     } catch {
-      messages = await import("../messages/en.json").then((m) => m.default);
+      messages = await import("../../messages/en.json").then((m) => m.default);
     }
   }
 

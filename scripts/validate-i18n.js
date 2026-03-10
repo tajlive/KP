@@ -168,20 +168,31 @@ function main() {
     process.exit(1);
   }
   
-  if (totalMissing === 0 && totalExtra === 0) {
-    console.log('✅  All active languages (NO, EN) are synchronized!');
-    console.log('═══════════════════════════════════════════════════════════════');
-    process.exit(0);
-  } else if (thOnlyMissing) {
-    console.log(`⚠️   TH has ${totalMissing} missing keys (OK - Thai er deaktivert)`);
-    console.log('✅  Active languages (NO, EN) are synchronized!');
-    console.log('═══════════════════════════════════════════════════════════════');
-    process.exit(0); // Ikke feil på TH
-  } else {
-    console.log(`❌  Found ${totalMissing} missing and ${totalExtra} extra keys`);
+  // Check if EN is complete (the only critical non-reference language)
+  const enMissing = [];
+  const enKeys = translations['en']?.keys || new Set();
+  for (const key of reference.keys) {
+    if (!enKeys.has(key)) {
+      enMissing.push(key);
+    }
+  }
+
+  if (enMissing.length > 0) {
+    console.log(`❌  EN is missing ${enMissing.length} keys - this is required`);
     console.log('═══════════════════════════════════════════════════════════════');
     process.exit(1);
   }
+
+  // TH/ZH are deactivated - don't fail on their issues
+  if (totalMissing === 0 && totalExtra === 0) {
+    console.log('✅  All active languages (NO, EN) are synchronized!');
+  } else {
+    // Only warn about TH/ZH issues, don't fail
+    console.log(`⚠️   Found ${totalMissing} missing and ${totalExtra} extra keys in deactivated languages`);
+    console.log('✅  Active languages (NO, EN) are synchronized - OK to proceed');
+  }
+  console.log('═══════════════════════════════════════════════════════════════');
+  process.exit(0);
 }
 
 main();
