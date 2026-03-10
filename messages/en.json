@@ -726,6 +726,30 @@
       "taxReport": "Tax Report",
       "settings": "Settings",
       "admin": "Admin"
+    },
+    "botStatus": {
+      "title": "Bot Status",
+      "active": "Active",
+      "paused": "Paused",
+      "stopped": "Stopped",
+      "paperTrading": "Paper Trading",
+      "liveTrading": "Live Trading",
+      "pause": "Pause",
+      "resume": "Resume",
+      "viewDetails": "View Details",
+      "notResponding": "Bot Not Responding",
+      "noBot": "No Active Bot",
+      "noBotDescription": "The bot works for you — start your first paper trade and see results",
+      "startPaperTrading": "Start Paper Trading",
+      "started": "Started",
+      "justNow": "Now",
+      "minutesAgo": "{count} min ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago",
+      "whatToExpect": "What you get:",
+      "feature1": "Virtual capital",
+      "feature2": "Automated trades",
+      "feature3": "Real-time analysis"
     }
   },
   "auth": {

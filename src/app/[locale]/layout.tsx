@@ -154,20 +154,72 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       className={`${fraunces.variable} ${lexend.variable}`}
     >
       <head suppressHydrationWarning>
-        {/* Resource Hints for External APIs - Task 5 */}
-        {/* Binance API - used by LivePriceTicker */}
+        {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+  try {
+    var PROJECT = 'vuxbjlykgmzskxbclquf';
+    var keys = Object.keys(localStorage);
+    var toDelete = [];
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (k.indexOf('sb-') === 0) {
+        var v = localStorage.getItem(k);
+        if (v === null) continue;
+        var corrupt = false;
+        try {
+          new TextDecoder('utf-8',{fatal:true}).decode(
+            new TextEncoder().encode(v)
+          );
+        } catch(e) { corrupt = true; }
+        if (!corrupt && v.charAt(0) === '{') {
+          try { JSON.parse(v); } catch(e) { corrupt = true; }
+        }
+        if (corrupt) {
+          toDelete.push(k);
+          console.warn('[Klarpakke] Sletter korrupt token:', k);
+        }
+      }
+    }
+    var legacyKeys = [
+      'sb-' + PROJECT + '-auth-token',
+      'sb-' + PROJECT + '-auth-token-code-verifier',
+      'sb-' + PROJECT + '-auth-token-provider-token',
+    ];
+    for (var j = 0; j < legacyKeys.length; j++) {
+      if (toDelete.indexOf(legacyKeys[j]) === -1) {
+        var lv = localStorage.getItem(legacyKeys[j]);
+        if (lv !== null) {
+          var lc = false;
+          try {
+            new TextDecoder('utf-8',{fatal:true}).decode(
+              new TextEncoder().encode(lv)
+            );
+          } catch(e) { lc = true; }
+          if (lc) toDelete.push(legacyKeys[j]);
+        }
+      }
+    }
+    for (var d = 0; d < toDelete.length; d++) {
+      localStorage.removeItem(toDelete[d]);
+    }
+    if (toDelete.length > 0) {
+      console.warn('[Klarpakke] Rensede', toDelete.length, 'korrupte tokens');
+    }
+  } catch(e) {}
+})();`,
+          }}
+        />
+        {/* Resource Hints for External APIs */}
         <link rel="dns-prefetch" href="https://api.binance.com" />
         <link rel="preconnect" href="https://api.binance.com" crossOrigin="anonymous" />
-        
-        {/* Supabase - conditional on env var */}
         {supabaseHost && (
           <>
             <link rel="dns-prefetch" href={supabaseHost} />
             <link rel="preconnect" href={supabaseHost} crossOrigin="anonymous" />
           </>
         )}
-        
-        {/* Preconnect for critical domains - improves LCP */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <OrganizationJsonLd />
