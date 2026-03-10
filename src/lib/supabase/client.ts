@@ -34,8 +34,8 @@ export function getSupabaseClient(): SupabaseClient {
         persistSession: true,
         detectSessionInUrl: true,
         flowType: 'pkce',
-        // Use consistent storage key with SafeStorage adapter
-        storageKey: 'sb-vuxbjlykgmzskxbclquf-auth-token',
+        // Use default storage key (gotrue-js handles this internally)
+        // Custom storageKey was removed as it caused conflicts with internal keys
         storage: safeStorage,
         debug: process.env.NODE_ENV === 'development',
       },

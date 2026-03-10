@@ -124,7 +124,64 @@ export default function RootLayout({
             Inline synkront script — kjøres før React, før Supabase, garantert. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k=Object.keys(localStorage);for(var i=0;i<k.length;i++){if(k[i].indexOf('sb-')===0){var v=localStorage.getItem(k[i]);if(v!==null){try{new TextDecoder('utf-8',{fatal:true}).decode(new TextEncoder().encode(v))}catch(e){console.warn('[Klarpakke] Korrupt token slettet:',k[i]);localStorage.removeItem(k[i])}}}}}catch(e){}})();`,
+            __html: `(function(){
+  try {
+    var PROJECT = 'vuxbjlykgmzskxbclquf';
+    var keys = Object.keys(localStorage);
+    var toDelete = [];
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      // Slett alle sb-* nøkler (alle varianter gotrue-js bruker)
+      if (k.indexOf('sb-') === 0) {
+        var v = localStorage.getItem(k);
+        if (v === null) continue;
+        var corrupt = false;
+        // 1. UTF-8 validering
+        try {
+          new TextDecoder('utf-8',{fatal:true}).decode(
+            new TextEncoder().encode(v)
+          );
+        } catch(e) { corrupt = true; }
+        // 2. JSON validering (gotrue tokens er alltid JSON)
+        if (!corrupt && v.charAt(0) === '{') {
+          try { JSON.parse(v); } catch(e) { corrupt = true; }
+        }
+        if (corrupt) {
+          toDelete.push(k);
+          console.warn('[Klarpakke] Sletter korrupt token:', k);
+        }
+      }
+    }
+    // Slett alle korrupte + slett ALLTID custom storageKey-varianter
+    // fra gammel config (072a15dc8) som forstyrrer ny default nøkkel
+    var legacyKeys = [
+      'sb-' + PROJECT + '-auth-token',
+      'sb-' + PROJECT + '-auth-token-code-verifier',
+      'sb-' + PROJECT + '-auth-token-provider-token',
+    ];
+    for (var j = 0; j < legacyKeys.length; j++) {
+      if (toDelete.indexOf(legacyKeys[j]) === -1) {
+        var lv = localStorage.getItem(legacyKeys[j]);
+        if (lv !== null) {
+          // Sjekk om denne er korrupt
+          var lc = false;
+          try {
+            new TextDecoder('utf-8',{fatal:true}).decode(
+              new TextEncoder().encode(lv)
+            );
+          } catch(e) { lc = true; }
+          if (lc) toDelete.push(legacyKeys[j]);
+        }
+      }
+    }
+    for (var d = 0; d < toDelete.length; d++) {
+      localStorage.removeItem(toDelete[d]);
+    }
+    if (toDelete.length > 0) {
+      console.warn('[Klarpakke] Rensede', toDelete.length, 'korrupte tokens');
+    }
+  } catch(e) {}
+})();`,
           }}
         />
       </head>
