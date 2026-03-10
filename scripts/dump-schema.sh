@@ -17,7 +17,7 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 mkdir -p docs
 
 # Last env
-for env_file in .env.local .env.vercel .env.production; do
+for env_file in .env.local; do
   if [ -f "$env_file" ]; then
     while IFS='=' read -r key value; do
       [[ "$key" =~ ^[[:space:]]*# ]] && continue
