@@ -1,12 +1,41 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
+// KLA-108: Admin-guard
+async function requireAdmin() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    return { error: 'Ikke autentisert', status: 401 };
+  }
+
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single();
+
+  if (profile?.role !== 'admin') {
+    return { error: 'Ingen tilgang', status: 403 };
+  }
+
+  return { user };
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+    // KLA-108: Sjekk admin
+    const auth = await requireAdmin();
+    if ('error' in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
+    const { createClient: createServiceClient } = await import('@supabase/supabase-js');
+    const supabase = createServiceClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
@@ -78,12 +107,14 @@ export async function POST(req: NextRequest) {
           results.push({ success: true, data });
         }
       } catch (e: unknown) {
-        results.push({ success: false, error: e.message, sql: sql.substring(0, 50) });
+        const err = e as Error;
+        results.push({ success: false, error: err.message, sql: sql.substring(0, 50) });
       }
     }
 
     return NextResponse.json({ success: true, results });
   } catch (error: unknown) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const err = error as Error;
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

@@ -4,6 +4,10 @@ import { getAppUrl } from '@/lib/auth/config';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  // KLA-108: Prod-guard for dev-rute
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
   const headers: Record<string, string | null> = {};
   const relevantHeaders = [
     'host',
