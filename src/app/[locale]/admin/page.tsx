@@ -1,8 +1,10 @@
+import { redirect } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
-
-import ClientAdminDashboard from "./ClientAdminDashboard";
-
-export default function AdminPage() {
-  return <ClientAdminDashboard />;
+export default function AdminRedirectPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  // KLA-101: Konsolider admin-ruter til /admin-dashboard
+  redirect(`/${locale}/admin-dashboard`);
 }
