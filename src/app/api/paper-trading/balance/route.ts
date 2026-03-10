@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 
@@ -12,7 +12,15 @@ const DEFAULT_BALANCE = {
     pnlPercentage: 0,
     isPositive: true,
   },
-  recentTrades: [],
+  recentTrades: [] as Array<{
+    id: string;
+    symbol: string;
+    side: string;
+    quantity: number;
+    price: number;
+    total_value: number;
+    created_at: string;
+  }>,
 };
 
 export async function GET(request: NextRequest) {
@@ -27,7 +35,7 @@ export async function GET(request: NextRequest) {
       {
         cookies: {
           getAll: () => cookieStore.getAll(),
-          setAll: () => {}, // Read-only for GET request
+          setAll: () => { /* Read-only for GET request */ },
         },
       }
     );
@@ -57,10 +65,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(DEFAULT_BALANCE);
     }
     
-    // Calculate P&L
-    const pnl = session.current_capital_nok - session.starting_capital_nok;
-    const pnlPercentage = session.starting_capital_nok > 0 
-      ? (pnl / session.starting_capital_nok) * 100 
+    // Calculate P&L with null checks
+    const currentCapital = session.current_capital_nok ?? 100000;
+    const startingCapital = session.starting_capital_nok ?? 100000;
+    const pnl = currentCapital - startingCapital;
+    const pnlPercentage = startingCapital > 0 
+      ? (pnl / startingCapital) * 100 
       : 0;
     
     // Get recent trades
@@ -77,21 +87,13 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       balance: {
-        starting: session.starting_capital_nok,
-        current: session.current_capital_nok,
+        starting: startingCapital,
+        current: currentCapital,
         pnl: pnl,
         pnlPercentage: pnlPercentage,
         isPositive: pnl >= 0,
       },
-      recentTrades: (recentTrades || []).map((trade: { 
-        id: string; 
-        symbol: string; 
-        side: string; 
-        quantity: number; 
-        price: number; 
-        total_value: number; 
-        created_at: string;
-      }) => ({
+      recentTrades: (recentTrades || []).map((trade) => ({
         id: trade.id,
         symbol: trade.symbol,
         side: trade.side,

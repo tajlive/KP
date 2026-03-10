@@ -246,3 +246,15 @@ export function useAuth() {
   }
   return context;
 }
+
+/**
+ * Safe version of useAuth that returns null instead of throwing
+ * when used outside AuthProvider. Useful for optional auth checks.
+ */
+export function useAuthSafe() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    return null;
+  }
+  return context;
+}
