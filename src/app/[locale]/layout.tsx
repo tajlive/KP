@@ -153,7 +153,36 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       lang={locale}
       className={`${fraunces.variable} ${lexend.variable}`}
     >
-      <head>
+      <head suppressHydrationWarning>
+        {/* HOTFIX: Rens korrupt Supabase auth-token FØR gotrue-js initialiseres.
+            Må være inline script i <head> — useEffect er for sent. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var keys = Object.keys(localStorage);
+                  for (var i = 0; i < keys.length; i++) {
+                    if (keys[i].indexOf('sb-') === 0) {
+                      var val = localStorage.getItem(keys[i]);
+                      if (val !== null) {
+                        try {
+                          var enc = new TextEncoder().encode(val);
+                          new TextDecoder('utf-8', { fatal: true }).decode(enc);
+                        } catch(e) {
+                          console.warn('[Klarpakke] Sletter korrupt auth-token:', keys[i]);
+                          localStorage.removeItem(keys[i]);
+                        }
+                      }
+                    }
+                  }
+                } catch(e) {
+                  // localStorage ikke tilgjengelig (SSR/privat modus) — ignorer
+                }
+              })();
+            `,
+          }}
+        />
         {/* Resource Hints for External APIs - Task 5 */}
         {/* Binance API - used by LivePriceTicker */}
         <link rel="dns-prefetch" href="https://api.binance.com" />
