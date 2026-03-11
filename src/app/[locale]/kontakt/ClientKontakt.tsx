@@ -20,19 +20,19 @@ export default function ClientKontakt() {
     const newErrors: Record<string, string> = {};
     
     if (!formData.name.trim()) {
-      newErrors.name = "Navn er påkrevd";
+      newErrors.name = t("form.nameRequired");
     }
     
     if (!formData.email.trim()) {
-      newErrors.email = "E-post er påkrevd";
+      newErrors.email = t("form.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Ugyldig e-postadresse";
+      newErrors.email = t("form.emailInvalid");
     }
     
     if (!formData.message.trim()) {
-      newErrors.message = "Melding er påkrevd";
+      newErrors.message = t("form.messageRequired");
     } else if (formData.message.length < 10) {
-      newErrors.message = "Meldingen må være minst 10 tegn";
+      newErrors.message = t("form.messageMinLength");
     }
     
     setErrors(newErrors);
@@ -80,17 +80,17 @@ export default function ClientKontakt() {
                   <CheckCircle className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">
-                  Takk for din melding!
+                  {t("form.successTitle")}
                 </h3>
                 <p className="text-slate-600 mb-6">
-                  Vi har mottatt din henvendelse og vil svare deg så snart som mulig.
+                  {t("form.successDesc")}
                 </p>
                 <Button
                   onClick={() => setIsSubmitted(false)}
                   variant="outline"
                   className="rounded-full"
                 >
-                  Send ny melding
+                  {t("form.sendNew")}
                 </Button>
               </div>
             ) : (
@@ -164,7 +164,7 @@ export default function ClientKontakt() {
                 disabled={isSubmitting}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Sender..." : t("form.submit")}
+                {isSubmitting ? t("form.sending") : t("form.submit")}
               </Button>
             </form>
             )}
@@ -219,8 +219,8 @@ export default function ClientKontakt() {
                 <MapPin className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-900">Oslo, Norge</h3>
-                <p className="text-slate-500 text-sm">Hovedkontor</p>
+                <h3 className="font-bold text-slate-900">{t("info.location")}</h3>
+                <p className="text-slate-500 text-sm">{t("info.headquarters")}</p>
               </div>
             </div>
           </div>

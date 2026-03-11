@@ -13,5 +13,22 @@
   "close": "Lukk",
   "open": "Åpne",
   "yes": "Ja",
-  "no": "Nei"
+  "no": "Nei",
+  "errors": {
+    "404": {
+      "title": "Siden ble ikke funnet",
+      "description": "Beklager, vi kunne ikke finne siden du leter etter.",
+      "backHome": "Tilbake til forsiden"
+    },
+    "403": {
+      "title": "Ingen tilgang",
+      "description": "Du har ikke tillatelse til å se denne siden.",
+      "backHome": "Tilbake til forsiden"
+    },
+    "500": {
+      "title": "Serverfeil",
+      "description": "Noe gikk galt på vår side. Vennligst prøv igjen senere.",
+      "backHome": "Tilbake til forsiden"
+    }
+  }
 }

@@ -118,12 +118,12 @@ export default function CompetitionClient({
     }
 
     const handleCopy = async (entry: LeaderboardEntry) => {
-        if (confirm(`Vil du kopiere strategien til ${entry.user_display_name}? \n\nDette vil starte en ny simulering med risikonivå: ${entry.risk_level.toUpperCase()}.`)) {
+        if (confirm(tComp('copyStrategy', { name: entry.user_display_name }) + '\n\n' + tComp('copyStrategyDesc', { risk: entry.risk_level.toUpperCase() }))) {
             try {
                 await startAutoTrade(entry.risk_level)
                 router.push(`/${params.locale}/beta/auto-trade`)
             } catch (_error) {
-                toast.error('Kunne ikke kopiere strategi. Prøv igjen senere.')
+                toast.error(tComp('copyError'))
             }
         }
     }
@@ -138,10 +138,10 @@ export default function CompetitionClient({
                         <Trophy className="w-8 h-8 text-yellow-600" />
                     </div>
                     <h1 className="text-4xl font-bold text-slate-900 mb-4">
-                        Trading Konkurranse
+                        {tComp('title')}
                     </h1>
                     <p className="text-xl text-slate-600">
-                        Kjemp om heder og ære. Kopier strategiene til de beste traderne.
+                        {tComp('subtitle')}
                     </p>
                 </div>
 
@@ -154,7 +154,7 @@ export default function CompetitionClient({
                                     #{userRank.rank}
                                 </div>
                                 <div>
-                                    <p className="text-sm text-slate-500 font-medium">Din plassering</p>
+                                    <p className="text-sm text-slate-500 font-medium">{tComp('yourPosition')}</p>
                                     <p className="text-lg font-bold text-slate-900">Topp {Math.min(100, Math.round((userRank.rank / 1000) * 100))}%</p>
                                 </div>
                             </div>
@@ -169,12 +169,12 @@ export default function CompetitionClient({
                 ) : (
                     <Card className="bg-blue-50 border-blue-100">
                         <CardContent className="p-6 text-center">
-                            <p className="text-blue-800 font-medium mb-3">Du deltar ikke i konkurransen ennå</p>
+                            <p className="text-blue-800 font-medium mb-3">{tComp('notParticipating')}</p>
                             <Button
                                 onClick={() => router.push(`/${params.locale}/beta/auto-trade`)}
                                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-full"
                             >
-                                Start din første trade
+                                {tComp('startFirstTrade')}
                             </Button>
                         </CardContent>
                     </Card>
@@ -186,7 +186,7 @@ export default function CompetitionClient({
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <CardTitle className="flex items-center gap-2">
                                 <Users className="text-blue-400" />
-                                Topplisten
+                                {tComp('leaderboard')}
                             </CardTitle>
                             <div className="flex bg-slate-800 rounded-lg p-1">
                                 {(['weekly', 'monthly', 'all_time'] as const).map((t) => (
@@ -200,7 +200,7 @@ export default function CompetitionClient({
                                     >
                                         {t === 'weekly' && tComp('weekly')}
                                         {t === 'monthly' && tComp('monthly')}
-                                        {t === 'all_time' && 'Totalt'}
+                                        {t === 'all_time' && tComp('allTime')}
                                     </button>
                                 ))}
                             </div>
@@ -208,7 +208,7 @@ export default function CompetitionClient({
                     </CardHeader>
                     <CardContent className="p-0">
                         {loading ? (
-                            <div className="p-12 text-center text-slate-500">Laster topplisten...</div>
+                            <div className="p-12 text-center text-slate-500">{tComp('loading')}</div>
                         ) : (
                             <div className="divide-y divide-slate-100">
                                 {leaderboard.map((entry) => (
@@ -225,10 +225,10 @@ export default function CompetitionClient({
                                                 <p className="font-bold text-slate-900">{entry.user_display_name}</p>
                                                 <div className="flex items-center gap-2 text-xs text-slate-500">
                                                     <span className="capitalize px-2 py-0.5 rounded-full bg-slate-100">
-                                                        {entry.risk_level} Risk
+                                                        {entry.risk_level} {tComp('risk')}
                                                     </span>
                                                     <span>•</span>
-                                                    <span>{entry.total_trades} trades</span>
+                                                    <span>{entry.total_trades} {tComp('trades')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -236,11 +236,11 @@ export default function CompetitionClient({
                                         {/* Stats */}
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12 flex-1">
                                             <div className="text-center sm:text-left">
-                                                <p className="text-xs text-slate-400 uppercase font-bold mb-1">Win Rate</p>
+                                                <p className="text-xs text-slate-400 uppercase font-bold mb-1">{tComp('winRate')}</p>
                                                 <p className="font-bold text-slate-700">{entry.win_rate}%</p>
                                             </div>
                                             <div className="text-center sm:text-left">
-                                                <p className="text-xs text-slate-400 uppercase font-bold mb-1">Return</p>
+                                                <p className="text-xs text-slate-400 uppercase font-bold mb-1">{tComp('return')}</p>
                                                 <p className={`font-bold text-lg ${entry.return_pct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                                     {entry.return_pct > 0 ? '+' : ''}{entry.return_pct}%
                                                 </p>
@@ -252,7 +252,7 @@ export default function CompetitionClient({
                                                     className="bg-blue-50 text-blue-600 hover:bg-blue-100 gap-2 w-full sm:w-auto"
                                                 >
                                                     <Copy className="w-4 h-4" />
-                                                    Kopier
+                                                    {tComp('copy')}
                                                 </Button>
                                             </div>
                                         </div>
@@ -269,18 +269,18 @@ export default function CompetitionClient({
                         <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 mb-4">
                             <Target className="w-5 h-5" />
                         </div>
-                        <h3 className="font-bold text-slate-900 mb-2">Hvordan vinne?</h3>
+                        <h3 className="font-bold text-slate-900 mb-2">{tComp('howToWin')}</h3>
                         <p className="text-sm text-slate-500">
-                            Høyest prosentvis avkastning (ROI) vinner. Vi justerer for risiko ved å se på Sharpe-ratio.
+                            {tComp('howToWinDesc')}
                         </p>
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                         <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mb-4">
                             <Copy className="w-5 h-5" />
                         </div>
-                        <h3 className="font-bold text-slate-900 mb-2">Hva er kopiering?</h3>
+                        <h3 className="font-bold text-slate-900 mb-2">{tComp('whatIsCopying')}</h3>
                         <p className="text-sm text-slate-500">
-                            Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem.
+                            {tComp('whatIsCopyingDesc')}
                         </p>
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">

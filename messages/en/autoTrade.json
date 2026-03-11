@@ -68,6 +68,34 @@
     "notAuthenticated": "Du må være logget inn for å bruke AI auto-trading"
   },
   "selectRisk": "Select Risk Level",
+  "loading": "Loading...",
+  "startRobot": "Start Robot",
+  "pauseRobot": "Pause Robot",
+  "liveStatus": "Live Status",
+  "stats": {
+    "totalDecisions": "Total Decisions",
+    "buy": "Buy",
+    "sell": "Sell",
+    "hold": "Hold",
+    "avgConfidence": "Avg. Confidence",
+    "lastRun": "Last Run",
+    "positions": "Positions",
+    "totalPnL": "Total P&L",
+    "balance": "Balance"
+  },
+  "risk": {
+    "conservative": "Conservative",
+    "balanced": "Balanced",
+    "aggressive": "Aggressive",
+    "lowRisk": "Low Risk",
+    "recommended": "Recommended",
+    "highRisk": "High Risk"
+  },
+  "tradingPairs": "Trading Pairs",
+  "maxPositions": "Max Positions",
+  "recentActivity": "Recent Activity",
+  "emergencyStop": "Emergency Stop",
+  "forceCloseAll": "Force Close All",
   "closePositions": "Close all positions immediately and stop the robot.",
   "timeAgo": {
     "min": "{n} minute ago",

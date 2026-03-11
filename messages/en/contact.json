@@ -10,14 +10,25 @@
     "emailPlaceholder": "your@email.com",
     "message": "Message",
     "messagePlaceholder": "Write your message here...",
-    "submit": "Send message"
+    "submit": "Send message",
+    "sending": "Sending...",
+    "nameRequired": "Name is required",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email address",
+    "messageRequired": "Message is required",
+    "messageMinLength": "Message must be at least 10 characters",
+    "successTitle": "Thank you for your message!",
+    "successDesc": "We have received your inquiry and will respond as soon as possible.",
+    "sendNew": "Send new message"
   },
   "info": {
     "emailTitle": "Email support",
     "emailResponse": "We usually respond within 24 hours.",
     "chatTitle": "Live chat",
     "chatHours": "Available Mon-Fri, 09:00-17:00",
-    "startChat": "Start chat"
+    "startChat": "Start chat",
+    "location": "Oslo, Norway",
+    "headquarters": "Headquarters"
   },
   "emailDesc": "Send us an email and we will respond as soon as possible.",
   "linksTitle": "Useful links",
