@@ -26,6 +26,7 @@ export default async function PaperTradingSessionPage({
   params: Promise<{ locale: string; session_id: string }>;
 }) {
   const { locale, session_id } = await params;
+  const t = await getTranslations({ locale, namespace: "paperTrading" });
   const { user } = await requireAuth(locale);
 
   const supabase = await createClient();
