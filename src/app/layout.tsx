@@ -83,9 +83,10 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
+  // TODO: Add Google Search Console verification code when available
+  // verification: {
+  //   google: "your-verification-code-here",
+  // }
   appleWebApp: {
     capable: true,
     title: "Klarpakke",
