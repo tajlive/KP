@@ -4,8 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/send'
 import { getDailySummaryEmail } from '@/lib/email/templates'
 
-export const runtime = 'edge'
-
 interface UserForSummary {
   id: string
   user_id: string
