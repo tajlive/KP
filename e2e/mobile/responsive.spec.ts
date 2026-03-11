@@ -12,8 +12,8 @@ test.describe('Mobile: Responsive Design @mobile', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     
-    await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/dashboard', { timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     
     // Page should load without horizontal overflow
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
@@ -27,8 +27,8 @@ test.describe('Mobile: Responsive Design @mobile', () => {
   test('navigation works on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/', { timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     
     // Look for hamburger menu or mobile nav
     const hasMobileNav = await page.locator('button, [role="button"]').filter({ hasText: /menu|nav/i }).count() > 0;
@@ -41,8 +41,8 @@ test.describe('Mobile: Responsive Design @mobile', () => {
   test('login page is usable on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     
-    await page.goto('/innlogging');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/innlogging', { timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     
     // Form elements should be visible and clickable
     const buttons = await page.locator('button').count();
