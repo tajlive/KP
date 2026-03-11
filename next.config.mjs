@@ -19,6 +19,9 @@ const nextConfig = {
   // Cloudflare Pages compatibility
   trailingSlash: false,
 
+  // Transpile next-intl to avoid webpack cache warnings with dynamic imports
+  transpilePackages: ["next-intl"],
+
   // Use Node.js runtime (Cloudflare Pages supports this via next-on-pages)
   // Individual API routes can opt into edge runtime if needed
 
@@ -151,6 +154,20 @@ const nextConfig = {
       };
     }
 
+    // Suppress next-intl dynamic import cache warnings
+    // Fixes: webpack.cache.PackFileCacheStrategy warning for extractor/format/index.js
+    config.module = config.module || {};
+    config.module.unknownContextCritical = false;
+    config.module.exprContextCritical = false;
+
+    // Webpack cache optimization to fix "Serializing big strings" warning
+    if (!config.cache) {
+      config.cache = {
+        type: 'filesystem',
+        compression: 'gzip',
+      };
+    }
+
     // Note: splitChunks removed — Next.js 15 handles this optimally
 
     return config;
@@ -236,7 +253,6 @@ const sentryWebpackPluginOptions = {
   tunnelRoute: "/api/sentry",
   hideSourceMaps: true,
   widenClientFileUpload: true,
-  automaticVercelMonitors: false,
   // NOTE: Do NOT add disableClientWebpackPlugin — it does not work in v8
   // NOTE: Do NOT add autoInstrumentAppDirectory — causes build failures
   bundleSizeOptimizations: {
@@ -245,6 +261,7 @@ const sentryWebpackPluginOptions = {
     excludeReplayIframe: true,
     excludeReplayWorker: true,
   },
+  // automaticVercelMonitors moved to webpack config (deprecated in sentryWebpackPluginOptions)
 };
 
 // Bundle Analyzer configuration
