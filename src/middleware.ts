@@ -80,7 +80,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/favicon") ||
     pathname.startsWith("/images/") ||
     pathname.startsWith("/static/") ||
-    pathname.match(/\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|json)$/)
+    pathname.match(/\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|json|xml|txt)$/)
   ) {
     return NextResponse.next();
   }
