@@ -1,10 +1,26 @@
 -- ============================================================================
 -- KLA-FIX: Consolidate and fix all auth user creation triggers
--- Problem: Multiple triggers can conflict during user signup
--- Solution: Single trigger function that handles all initialization safely
+-- Applied: 2026-03-11
 -- ============================================================================
 
--- Drop all existing triggers on auth.users
+-- 1. Fix initialize_user_settings to use NEW.user_id (FK to auth.users)
+CREATE OR REPLACE FUNCTION initialize_user_settings()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- NEW.user_id is FK to auth.users (not NEW.id which is profile.id)
+  INSERT INTO user_notification_settings (user_id)
+  VALUES (NEW.user_id)
+  ON CONFLICT (user_id) DO NOTHING;
+  
+  INSERT INTO user_settings (user_id)
+  VALUES (NEW.user_id)
+  ON CONFLICT (user_id) DO NOTHING;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Drop all existing triggers on auth.users
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_created_defaults ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_created_onboarding ON auth.users;
@@ -13,7 +29,7 @@ DROP TRIGGER IF EXISTS create_email_prefs_on_signup ON auth.users;
 DROP TRIGGER IF EXISTS new_user_klt_bonus ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_referral ON auth.users;
 
--- Create consolidated trigger function
+-- 3. Create consolidated trigger function
 CREATE OR REPLACE FUNCTION handle_new_user_consolidated()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -75,7 +91,7 @@ BEGIN
     RAISE WARNING 'portfolios insert failed: %', SQLERRM;
   END;
 
-  -- 6. Create user_settings (via user_profiles trigger or directly)
+  -- 6. Create user_settings
   BEGIN
     INSERT INTO public.user_settings (user_id)
     VALUES (NEW.id)
@@ -152,7 +168,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Create single trigger
+-- 4. Create single trigger
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user_consolidated();
@@ -160,6 +176,7 @@ CREATE TRIGGER on_auth_user_created
 -- Verification
 DO $$
 BEGIN
+  RAISE NOTICE '✅ initialize_user_settings() fixed: uses NEW.user_id';
   RAISE NOTICE '✅ All auth triggers consolidated into handle_new_user_consolidated()';
   RAISE NOTICE '✅ Single trigger on_auth_user_created created';
 END $$;
