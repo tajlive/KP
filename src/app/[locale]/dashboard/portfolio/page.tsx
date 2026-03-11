@@ -1,84 +1,125 @@
 export const dynamic = 'force-dynamic';
 
 import { createClient } from '@/lib/supabase/server'
-import { Wallet, ArrowRight } from 'lucide-react'
+import { Wallet, ArrowRight, AlertCircle } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 
 interface PageProps {
     params: Promise<{ locale: string }>;
 }
 
-export default async function PortfolioPage({ params }: PageProps) {
-    const { locale } = await params;
-    const t = await getTranslations('dashboard.portfolioPage');
-
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    // Note: Auth is handled by middleware - user should always exist here
-    // But handle gracefully just in case
-    if (!user) {
-        return (
-            <div className="text-center p-20">
-                <p className="text-slate-400">Please log in to view your portfolio</p>
-            </div>
-        )
-    }
-
-    // Fetch wallets (assets)
-    const { data: wallets } = await supabase
-        .from('wallets')
-        .select('*')
-        .eq('user_id', user.id)
-        .gt('balance', 0)
-
+// Fallback UI for når datahenting feiler
+function PortfolioErrorFallback({ locale }: { locale: string }) {
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-white mb-2">{t('title')}</h1>
-                    <p className="text-slate-400">{t('subtitle')}</p>
-                </div>
-                <div className="p-3 bg-blue-600/10 rounded-xl border border-blue-600/20">
-                    <span className="text-blue-400 font-bold text-sm">
-                        {t('totalAssets', { count: wallets?.length || 0 })}
-                    </span>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-                {wallets?.map((wallet) => (
-                    <div key={wallet.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between hover:border-slate-700 transition-all group">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                                <Wallet className="w-6 h-6 text-slate-400 group-hover:text-blue-500" />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-white text-lg">{wallet.currency}</h3>
-                                <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{t('mainHolding')}</p>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-2xl font-black text-white">{wallet.balance.toFixed(6)}</p>
-                            <p className="text-slate-500 text-xs font-medium">{t('balance')}</p>
-                        </div>
+        <div className="min-h-screen bg-slate-950 p-6">
+            <div className="max-w-4xl mx-auto">
+                <div className="bg-red-900/20 border border-red-700/50 rounded-xl p-6 text-center">
+                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                    <h2 className="text-xl font-semibold text-red-200 mb-2">
+                        Kunne ikke laste portefølje
+                    </h2>
+                    <p className="text-red-300/80 mb-4">
+                        Det oppstod en feil ved lasting av din portefølje. Vennligst prøv igjen.
+                    </p>
+                    <div className="flex gap-3 justify-center">
+                        <Link
+                            href={`/${locale}/dashboard/portfolio`}
+                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                        >
+                            Last inn på nytt
+                        </Link>
+                        <Link
+                            href={`/${locale}/dashboard`}
+                            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                        >
+                            Tilbake til dashboard
+                        </Link>
                     </div>
-                ))}
-
-                {(!wallets || wallets.length === 0) && (
-                    <div className="text-center p-20 bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-800">
-                        <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Wallet className="w-8 h-8 text-slate-600" />
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">{t('noAssets.title')}</h3>
-                        <p className="text-slate-500 max-w-xs mx-auto mb-6">{t('noAssets.description')}</p>
-                        <a href={`/${locale}/beta/live-trading`} className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all">
-                            {t('noAssets.button')}
-                            <ArrowRight className="w-4 h-4" />
-                        </a>
-                    </div>
-                )}
+                </div>
             </div>
         </div>
-    )
+    );
+}
+
+export default async function PortfolioPage({ params }: PageProps) {
+    try {
+        const { locale } = await params;
+        const t = await getTranslations('dashboard.portfolioPage');
+
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        // Note: Auth is handled by middleware - user should always exist here
+        // But handle gracefully just in case
+        if (!user) {
+            return (
+                <div className="text-center p-20">
+                    <p className="text-slate-400">Please log in to view your portfolio</p>
+                </div>
+            )
+        }
+
+        // Fetch wallets (assets)
+        const { data: wallets } = await supabase
+            .from('wallets')
+            .select('*')
+            .eq('user_id', user.id)
+            .gt('balance', 0)
+
+        return (
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-white mb-2">{t('title')}</h1>
+                        <p className="text-slate-400">{t('subtitle')}</p>
+                    </div>
+                    <div className="p-3 bg-blue-600/10 rounded-xl border border-blue-600/20">
+                        <span className="text-blue-400 font-bold text-sm">
+                            {t('totalAssets', { count: wallets?.length || 0 })}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                    {wallets?.map((wallet) => (
+                        <div key={wallet.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between hover:border-slate-700 transition-all group">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
+                                    <Wallet className="w-6 h-6 text-slate-400 group-hover:text-blue-500" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-white text-lg">{wallet.currency}</h3>
+                                    <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{t('mainHolding')}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-black text-white">{wallet.balance.toFixed(6)}</p>
+                                <p className="text-slate-500 text-xs font-medium">{t('balance')}</p>
+                            </div>
+                        </div>
+                    ))}
+
+                    {(!wallets || wallets.length === 0) && (
+                        <div className="text-center p-20 bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-800">
+                            <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Wallet className="w-8 h-8 text-slate-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">{t('noAssets.title')}</h3>
+                            <p className="text-slate-500 max-w-xs mx-auto mb-6">{t('noAssets.description')}</p>
+                            <a href={`/${locale}/beta/live-trading`} className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all">
+                                {t('noAssets.button')}
+                                <ArrowRight className="w-4 h-4" />
+                            </a>
+                        </div>
+                    )}
+                </div>
+            </div>
+        )
+    } catch (error) {
+        console.error('Portfolio page error:', error);
+        const { locale } = await params;
+        // Return fallback UI istedenfor å krasje
+        return <PortfolioErrorFallback locale={locale} />;
+    }
 }

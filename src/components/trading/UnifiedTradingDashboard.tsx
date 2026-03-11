@@ -157,9 +157,15 @@ export default function UnifiedTradingDashboard({
       if (userId && active.length === 0 && !hasLocalSetup(userId)) {
         // Check onboarding_progress for server-side persistence
         const { createBrowserClient } = await import("@supabase/ssr");
+        const { safeStorage } = await import("@/lib/supabase/safe-storage");
         const sb = createBrowserClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            auth: {
+              storage: safeStorage,
+            },
+          }
         );
         const { data: progress } = await sb
           .from("onboarding_progress")
@@ -190,9 +196,15 @@ export default function UnifiedTradingDashboard({
     if (!userId) {
       const getUser = async () => {
         const { createBrowserClient } = await import("@supabase/ssr");
+        const { safeStorage } = await import("@/lib/supabase/safe-storage");
         const supabase = createBrowserClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            auth: {
+              storage: safeStorage,
+            },
+          }
         );
         const {
           data: { user },
