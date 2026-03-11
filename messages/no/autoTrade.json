@@ -68,6 +68,34 @@
     "notAuthenticated": "Du må være logget inn for å bruke AI auto-trading"
   },
   "selectRisk": "Velg risiko",
+  "loading": "Laster...",
+  "startRobot": "Start Robot",
+  "pauseRobot": "Pause Robot",
+  "liveStatus": "Live Status",
+  "stats": {
+    "totalDecisions": "Totale Beslutninger",
+    "buy": "Kjøp",
+    "sell": "Salg",
+    "hold": "Vent",
+    "avgConfidence": "Gj. Confidence",
+    "lastRun": "Siste analyse",
+    "positions": "Posisjoner",
+    "totalPnL": "Total P&L",
+    "balance": "Balans"
+  },
+  "risk": {
+    "conservative": "Konservativ",
+    "balanced": "Balansert",
+    "aggressive": "Aggressiv",
+    "lowRisk": "Lav Risk",
+    "recommended": "Anbefalt",
+    "highRisk": "Høy Risk"
+  },
+  "tradingPairs": "Handelspar",
+  "maxPositions": "Maks posisjoner",
+  "recentActivity": "Siste Aktivitet",
+  "emergencyStop": "Nødstopp",
+  "forceCloseAll": "Force Close All",
   "closePositions": "Steng alle posisjoner umiddelbart og stopp roboten.",
   "timeAgo": {
     "min": "{n} minutt siden",

@@ -7,7 +7,7 @@
   "whyFailedQ": "Hvorfor feilet betalingen?",
   "whyFailedA": "Det kan være flere årsaker: avvist kort, midler ikke tilgjengelig, eller teknisk feil.",
   "chargedQ": "Ble jeg belastet?",
-  "chargedQ": "Nei, ingen belastning skjer før betalingen er fullført.",
+  "chargedA": "Nei, ingen belastning skjer før betalingen er fullført.",
   "trialQ": "Kan jeg prøve gratis?",
   "trialA": "Ja, vi tilbyr prøveperiode på utvalgte planer.",
   "tryAgain": "Prøv igjen",

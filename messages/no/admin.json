@@ -46,5 +46,20 @@
   },
   "search": {
     "placeholder": "Søk brukere..."
+  },
+  "systemHealth": {
+    "title": "System Helse",
+    "lastChecked": "Sist sjekket",
+    "loading": "Laster...",
+    "checking": "Sjekker...",
+    "checkAgain": "Sjekk på nytt",
+    "allOperational": "Alle systemer operasjonelle",
+    "someIssues": "Noen systemer har problemer",
+    "checkStatusBelow": "Vennligst sjekk status nedenfor",
+    "status": {
+      "operational": "Operativ",
+      "degraded": "Degradert",
+      "down": "Nede"
+    }
   }
 }

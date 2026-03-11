@@ -46,5 +46,20 @@
   },
   "search": {
     "placeholder": "Search users..."
+  },
+  "systemHealth": {
+    "title": "System Health",
+    "lastChecked": "Last checked",
+    "loading": "Loading...",
+    "checking": "Checking...",
+    "checkAgain": "Check again",
+    "allOperational": "All systems operational",
+    "someIssues": "Some systems have issues",
+    "checkStatusBelow": "Please check status below",
+    "status": {
+      "operational": "Operational",
+      "degraded": "Degraded",
+      "down": "Down"
+    }
   }
 }

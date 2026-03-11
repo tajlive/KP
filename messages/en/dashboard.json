@@ -144,6 +144,12 @@
     "sell": "SELL"
   },
   "welcome": "Welcome to Klarpakke",
+  "tradingMode": {
+    "paper": "Paper Trading",
+    "live": "Live Trading",
+    "switchedToPaper": "Switched to Paper Trading",
+    "switchedToLive": "Switched to Live Trading"
+  },
   "topBar": {
     "myOverview": "My Overview",
     "systemOnline": "System Online",
@@ -250,5 +256,44 @@
   "bots": {
     "modeLive": "Live",
     "modePaper": "Paper"
+  },
+  "positions": {
+    "title": "My Positions",
+    "subtitle": "Overview of all open and closed trades",
+    "symbol": "Symbol",
+    "side": "Side",
+    "type": "Type",
+    "quantity": "Quantity",
+    "entryPrice": "Entry Price",
+    "currentPrice": "Current Price",
+    "exitPrice": "Exit Price",
+    "pnl": "P&L",
+    "pnlPercentage": "P&L %",
+    "status": "Status",
+    "actions": "Actions",
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "noPositions": "No open positions",
+    "noClosedPositions": "No closed positions",
+    "openPositions": "Open Positions",
+    "closedPositions": "Closed Positions",
+    "buy": "Buy",
+    "sell": "Sell",
+    "long": "Long",
+    "short": "Short",
+    "open": "Open",
+    "closed": "Closed",
+    "cancelled": "Cancelled",
+    "paper": "Paper",
+    "live": "Live",
+    "confirmClose": "Are you sure you want to close this position?"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "overview": "Overview",
+    "performance": "Performance",
+    "analytics": "Analytics",
+    "history": "History"
   }
 }

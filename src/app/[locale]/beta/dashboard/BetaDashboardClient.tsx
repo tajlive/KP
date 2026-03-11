@@ -164,7 +164,7 @@ export default function BetaDashboardClient({
                   {t("noExchangeConnected")}
                 </h2>
                 <p className="text-yellow-800 mb-4">
-                  For å starte live trading må du koble til Binance-kontoen din.
+                  {t("exchangeConnectDesc")}
                 </p>
                 <Link
                   href={`/${params.locale}/beta/connect-exchange`}
@@ -221,7 +221,7 @@ export default function BetaDashboardClient({
             <div className="text-5xl mb-4">💰</div>
             <h2 className="text-2xl font-bold mb-2">{t("liveTrading")}</h2>
             <p className="text-blue-100">
-              Trade med ekte penger og AI-veiledning
+              {t("liveTradingDesc")}
             </p>
           </Link>
 
@@ -231,7 +231,7 @@ export default function BetaDashboardClient({
           >
             <div className="text-5xl mb-4">📊</div>
             <h2 className="text-2xl font-bold mb-2">{t("paperTrading")}</h2>
-            <p className="text-green-100">Øv med simulerte penger</p>
+            <p className="text-green-100">{t("paperTradingDesc")}</p>
           </Link>
 
           <Link
@@ -241,7 +241,7 @@ export default function BetaDashboardClient({
             <div className="text-5xl mb-4">🤖</div>
             <h2 className="text-2xl font-bold mb-2">{t("aiCopilot")}</h2>
             <p className="text-emerald-100">
-              AI-assistent for trading-beslutninger
+              {t("aiCopilotDesc")}
             </p>
           </Link>
 
@@ -251,7 +251,7 @@ export default function BetaDashboardClient({
           >
             <div className="text-5xl mb-4">⚡</div>
             <h2 className="text-2xl font-bold mb-2">{t("autoTrade")}</h2>
-            <p className="text-orange-100">Automatisert trading med AI</p>
+            <p className="text-orange-100">{t("autoTradeDesc")}</p>
           </Link>
 
           <Link
@@ -259,9 +259,9 @@ export default function BetaDashboardClient({
             className="bg-gradient-to-br from-yellow-500 to-yellow-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all md:col-span-2 lg:col-span-1"
           >
             <div className="text-5xl mb-4">🏆</div>
-            <h2 className="text-2xl font-bold mb-2">Konkurranse</h2>
+            <h2 className="text-2xl font-bold mb-2">{t("competition")}</h2>
             <p className="text-yellow-100">
-              Vinn premier og kopier de beste traderne
+              {t("competitionDesc")}
             </p>
           </Link>
         </div>
@@ -273,14 +273,13 @@ export default function BetaDashboardClient({
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-sm font-medium mb-3">
                 <span className="text-yellow-300">★</span>
-                Verv & Vinn
+                {t("referralTitle")}
               </div>
               <h2 className="text-3xl font-bold mb-2">
-                Inviter 3 venner – få 1 måned gratis!
+                {t("referralCta")}
               </h2>
               <p className="text-indigo-100 max-w-xl text-lg">
-                Hjelp oss å vokse! Hvis du inviterer 3 venner som blir betalende
-                medlemmer, spanderer vi neste måned på din plan.
+                {t("referralDesc")}
               </p>
             </div>
             <div className="flex-shrink-0">
@@ -288,12 +287,12 @@ export default function BetaDashboardClient({
                 onClick={() => {
                   const url = `${getAppUrl()}/${params.locale}/beta/apply?ref=${profile?.id}`;
                   navigator.clipboard.writeText(url);
-                  toast.success("Verve-lenke kopiert til utklippstavlen!");
+                  toast.success(t("linkCopied"));
                 }}
                 className="bg-white text-indigo-600 font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:bg-indigo-50 transition-all flex items-center gap-2"
               >
                 <span>🔗</span>
-                Kopier din lenke
+                {t("copyLink")}
               </button>
             </div>
           </div>

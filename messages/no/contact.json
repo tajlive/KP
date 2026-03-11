@@ -10,14 +10,25 @@
     "emailPlaceholder": "din@epost.no",
     "message": "Melding",
     "messagePlaceholder": "Skriv din melding her...",
-    "submit": "Send melding"
+    "submit": "Send melding",
+    "sending": "Sender...",
+    "nameRequired": "Navn er påkrevd",
+    "emailRequired": "E-post er påkrevd",
+    "emailInvalid": "Ugyldig e-postadresse",
+    "messageRequired": "Melding er påkrevd",
+    "messageMinLength": "Meldingen må være minst 10 tegn",
+    "successTitle": "Takk for din melding!",
+    "successDesc": "Vi har mottatt din henvendelse og vil svare deg så snart som mulig.",
+    "sendNew": "Send ny melding"
   },
   "info": {
     "emailTitle": "E-post support",
     "emailResponse": "Vi svarer vanligvis innen 24 timer.",
     "chatTitle": "Live chat",
     "chatHours": "Tilgjengelig man-fre, 09:00-17:00",
-    "startChat": "Start chat"
+    "startChat": "Start chat",
+    "location": "Oslo, Norge",
+    "headquarters": "Hovedkontor"
   },
   "emailDesc": "Send oss en e-post og vi vil svare deg så fort som mulig.",
   "linksTitle": "Nyttige lenker",

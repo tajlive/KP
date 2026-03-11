@@ -22,5 +22,9 @@
   "login": {
     "title": "Login | Klarpakke",
     "description": "Sign in to your Klarpakke account."
+  },
+  "dashboard": {
+    "title": "Dashboard - Your Trading Overview | Klarpakke",
+    "description": "Your personal crypto trading dashboard with paper trading, live trading and real-time portfolio analysis."
   }
 }
