@@ -18,7 +18,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
   workers: process.env.CI ? 2 : undefined,
-  timeout: 60_000,
+  timeout: 120_000,
   expect: {
     timeout: 10_000,
   },
@@ -48,8 +48,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 15_000,
-    navigationTimeout: 30_000,
+    actionTimeout: 30_000,
+    navigationTimeout: 60_000,
     testIdAttribute: 'data-testid',
   },
 

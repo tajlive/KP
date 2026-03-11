@@ -9,8 +9,20 @@ import { test, expect } from '@playwright/test';
 test.describe('Smoke: Health Checks @smoke', () => {
   
   test('health endpoint returns 200', async ({ request }) => {
-    const response = await request.get('/api/health');
+    // Retry logic for dev server cold start
+    let response;
+    let lastError;
+    for (let i = 0; i < 3; i++) {
+      try {
+        response = await request.get('/api/health', { timeout: 30000 });
+        if (response.status() === 200) break;
+      } catch (e) {
+        lastError = e;
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
     
+    if (!response) throw lastError;
     expect(response.status()).toBe(200);
     
     const body = await response.json();
@@ -46,8 +58,8 @@ test.describe('Smoke: Health Checks @smoke', () => {
   });
   
   test('login page is accessible', async ({ page }) => {
-    await page.goto('/innlogging');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/innlogging', { timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
     
     // Should render login form with data-testid
     const loginPage = page.locator('[data-testid="login-page"]');

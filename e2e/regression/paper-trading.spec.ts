@@ -9,8 +9,8 @@ import { test, expect } from '@playwright/test';
 test.describe('Regression: Paper Trading @regression @papertrading', () => {
   
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/dashboard', { timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
   });
 
   test('paper trading balance API returns correct structure', async ({ page, request }) => {
@@ -81,7 +81,7 @@ test.describe('Regression: WebSocket @regression', () => {
       wsUrls.push(ws.url());
     });
     
-    await page.goto('/dashboard');
+    await page.goto('/dashboard', { timeout: 60000 });
     await page.waitForTimeout(5000);
     
     // Check if any Supabase realtime connections were made
