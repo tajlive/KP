@@ -41,6 +41,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const lastRefreshError = useRef<AuthError | null>(null);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Rydd eventuelle korrupte Supabase-nøkler ved mount
+  useEffect(() => {
+    const keys = Object.keys(localStorage)
+    keys.forEach(key => {
+      if (key.startsWith('sb-')) {
+        try {
+          const val = localStorage.getItem(key)
+          if (val) JSON.parse(val)
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    })
+  }, [])
+
   // Clear any pending refresh timeouts on unmount
   useEffect(() => {
     return () => {

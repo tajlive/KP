@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { createBrowserClient } from "@supabase/ssr";
+import { safeStorage } from "@/lib/supabase/safe-storage";
 import { Bot, Pause, Play, ArrowRight, AlertTriangle } from "lucide-react";
 
 interface TradingSession {
@@ -33,7 +34,12 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
   const router = useRouter();
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        storage: safeStorage,
+      },
+    }
   );
   const [session, setSession] = useState<TradingSession | null>(initialSession);
   const [loading, setLoading] = useState(false);

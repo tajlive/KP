@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { SessionCleanup } from "@/components/SessionCleanup";
 import { MarketingNavigation } from "@/components/layout/MarketingNavigation";
 import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -228,6 +229,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         className={`${lexend.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
         suppressHydrationWarning
       >
+        <SessionCleanup />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <MarketingProviders>
             <ErrorBoundary>
