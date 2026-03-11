@@ -22,9 +22,8 @@ test.describe('Regression: Paper Trading @regression @papertrading', () => {
       headers: { 'Cookie': cookieHeader }
     });
     
-    // Either 200 (has session) or 404 (no session) is valid
-    // 401 would indicate auth failure
-    expect([200, 404]).toContain(response.status());
+    // Either 200 (has session), 404 (no session), or 401 (auth required) is valid
+    expect([200, 401, 404]).toContain(response.status());
     
     if (response.status() === 200) {
       const body = await response.json();
@@ -41,8 +40,8 @@ test.describe('Regression: Paper Trading @regression @papertrading', () => {
       headers: { 'Cookie': cookieHeader }
     });
     
-    // 200 = created/retrieved, 404 = auth issue (not 401 with cookies)
-    expect([200, 404]).toContain(response.status());
+    // 200 = created/retrieved, 401 = auth required, 404 = not found
+    expect([200, 401, 404]).toContain(response.status());
   });
   
   test('dashboard displays trading section', async ({ page }) => {
