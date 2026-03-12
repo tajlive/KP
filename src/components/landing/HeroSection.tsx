@@ -73,15 +73,14 @@ export default async function HeroSection() {
               {t("bullets")}
             </p>
 
-            {/* Modern CTAs - Using Link instead of button + router */}
+            {/* Modern CTAs - Clear hierarchy: Primary filled, Secondary ghost */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
-                href="/paper-trading"
+                href="/signup"
                 aria-label={t("ctaPrimary")}
-                className="group px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                className="group px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-bold text-lg shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-400/40 hover:scale-105 transition-all flex items-center justify-center gap-2"
               >
                 {t("ctaPrimary")}
-                {/* Inline SVG ArrowRight */}
                 <svg
                   className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                   viewBox="0 0 24 24"
@@ -98,9 +97,9 @@ export default async function HeroSection() {
               </Link>
 
               <Link
-                href="/kurs"
+                href="/paper-trading"
                 aria-label={t("ctaSecondary")}
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-semibold text-lg border-2 border-white/20 hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                className="px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
               >
                 {t("ctaSecondary")}
               </Link>

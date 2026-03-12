@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { Calculator, Info, XCircle, TrendingUp, PiggyBank, Ticket } from "lucide-react";
 
 interface CalculationResult {
@@ -199,6 +200,14 @@ export function LottoCalculator() {
                 svinge kraftig, og du kan tape hele investeringen.
               </p>
             </div>
+
+            {/* CTA */}
+            <Link
+              href="/signup"
+              className="block w-full mt-6 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-lg rounded-xl shadow-lg shadow-emerald-500/30 text-center transition-all"
+            >
+              Test strategien selv — start gratis →
+            </Link>
           </motion.div>
         )}
       </div>
