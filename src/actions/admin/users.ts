@@ -54,8 +54,8 @@ export async function grantFounderStatus(userId: string) {
     const { data: balance } = await supabase
       .from("user_klt_balances")
       .select("balance")
-      .eq("user_id" as any, userId)
-      .single() as any;
+      .eq("user_id", userId)
+      .single();
 
     const currentBalance = balance?.balance || 0;
     const newBalance = currentBalance + 10000;
