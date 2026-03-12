@@ -74,8 +74,8 @@ async function shouldSendEmail(
     const { data: prefs } = (await supabase
       .from("email_preferences" as unknown)
       .select("*")
-      .eq("user_id", userId)
-      .single()) as unknown;
+      .eq("user_id" as any, userId)
+      .single() as any) as unknown;
 
     if (!prefs) {
       // Default to sending if no preferences set
@@ -119,7 +119,7 @@ async function getUserInfo(
       .from("user_profiles" as unknown)
       .select("email, full_name")
       .eq("id", userId)
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (!profile?.email) {
       // Fallback: get email from auth

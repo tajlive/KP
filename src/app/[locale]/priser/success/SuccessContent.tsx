@@ -42,7 +42,7 @@ export default function SuccessContent() {
           .from('user_profiles' as unknown)
           .select('subscription_tier, subscription_status')
           .eq('id', user.id)
-          .single();
+          .single() as any;
 
         if (error) {
           throw error;

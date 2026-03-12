@@ -44,7 +44,7 @@ export async function handleOnboarding(request: NextRequest): Promise<NextRespon
         .from("user_profiles")
         .select("onboarding_completed, setup_completed_at")
         .eq("id", user.id)
-        .single();
+        .single() as any;
 
       if (
         profile &&

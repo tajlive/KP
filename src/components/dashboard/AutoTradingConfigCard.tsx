@@ -48,9 +48,9 @@ export function AutoTradingConfigCard() {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from("auto_trading_configs")
+        .from("auto_trading_configs" as any)
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id" as any, user.id)
         .maybeSingle();
 
       if (error && error.code !== "PGRST116") {
@@ -83,22 +83,22 @@ export function AutoTradingConfigCard() {
       }
 
       const { data: existingConfig } = await supabase
-        .from("auto_trading_configs")
+        .from("auto_trading_configs" as any)
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id" as any, user.id)
         .maybeSingle();
 
       if (existingConfig) {
         await supabase
-          .from("auto_trading_configs")
+          .from("auto_trading_configs" as any)
           .update({
             ...config,
             updated_at: new Date().toISOString(),
           })
-          .eq("user_id", user.id);
+          .eq("user_id" as any, user.id);
       } else {
         await supabase
-          .from("auto_trading_configs")
+          .from("auto_trading_configs" as any)
           .insert({
             user_id: user.id,
             ...config,

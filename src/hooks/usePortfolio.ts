@@ -9,8 +9,8 @@ export function usePortfolio(userId: string | null) {
       const { data, error } = await supabase
         .from("user_profiles")
         .select("id, user_id, paper_balance, real_balance, tier")
-        .eq("user_id", userId!)
-        .single();
+        .eq("user_id" as any, userId!)
+        .single() as any;
       if (error) throw error;
       return data;
     },

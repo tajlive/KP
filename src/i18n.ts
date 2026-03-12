@@ -28,6 +28,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     autoTradingPage,
     taxReport,
     simulator,
+    about,
     aboutUs,
     tradeHistory,
     wallet,
@@ -132,6 +133,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
       .then((m) => m.default)
       .catch(() =>
         import("../messages/en/simulator.json").then((m) => m.default),
+      ),
+    import(`../messages/${validLocale}/about.json`)
+      .then((m) => m.default)
+      .catch(() =>
+        import("../messages/en/about.json").then((m) => m.default),
       ),
     import(`../messages/${validLocale}/aboutUs.json`)
       .then((m) => m.default)
@@ -254,6 +260,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       autoTradingPage,
       taxReport,
       simulator,
+      about,
       aboutUs,
       tradeHistory,
       wallet,

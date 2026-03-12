@@ -21,7 +21,7 @@ export default function AccessibilitySettings() {
             .from('user_profiles' as unknown)
             .select('font_size_preference, high_contrast_mode')
             .eq('id', user.id)
-            .single();
+            .single() as any;
 
           if (data) {
             setFontSize(data.font_size_preference || 'normal');

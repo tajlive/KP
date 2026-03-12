@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       }));
 
     // Upsert to Supabase
-    const supabase = (await createClient()) as unknown;
+    const supabase: any = (await createClient()) as unknown;
 
     const { error } = await (supabase as unknown)
       .from("coin_prices")

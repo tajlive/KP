@@ -73,8 +73,8 @@ export default function CreatorProfileClient({
       const { data: botData } = await supabase
         .from("leaderboard_bots")
         .select("*")
-        .eq("user_id", traderId)
-        .single();
+        .eq("user_id" as any, traderId)
+        .single() as any;
 
       if (botData) {
         setProfile({
@@ -99,8 +99,8 @@ export default function CreatorProfileClient({
       const { data: profileData } = await supabase
         .from("trader_profiles")
         .select("*")
-        .eq("user_id", traderId)
-        .single();
+        .eq("user_id" as any, traderId)
+        .single() as any;
 
       if (profileData) {
         setProfile({
@@ -123,10 +123,10 @@ export default function CreatorProfileClient({
 
       // Last resort: user_profiles table
       const { data: userProfile } = await supabase
-        .from("user_profiles")
+        .from("user_profiles" as any)
         .select("id, display_name, avatar_url")
         .eq("id", traderId)
-        .single();
+        .single() as any;
 
       if (userProfile) {
         setProfile({
@@ -158,7 +158,7 @@ export default function CreatorProfileClient({
       const { data: strategies } = await supabase
         .from("strategies" as unknown)
         .select("*")
-        .eq("user_id", traderId)
+        .eq("user_id" as any, traderId)
         .eq("is_public", true)
         .eq("status", "active");
 
@@ -186,7 +186,7 @@ export default function CreatorProfileClient({
       const { data: sessions } = await supabase
         .from("trading_sessions")
         .select("*")
-        .eq("user_id", traderId)
+        .eq("user_id" as any, traderId)
         .eq("status", "active");
 
       if (sessions) {
@@ -229,7 +229,7 @@ export default function CreatorProfileClient({
         .eq("follower_id", user.id)
         .eq("leader_id", traderId)
         .eq("is_active", true)
-        .single();
+        .single() as any;
 
       setIsFollowing(!!follow);
     } catch (error) {

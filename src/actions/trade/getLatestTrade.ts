@@ -21,7 +21,7 @@ export async function getLatestTrade(): Promise<TradeContext | null> {
       .select("trading_pair, side, price, quantity, realized_pnl, executed_at, strategy_signal")
       .order("executed_at", { ascending: false })
       .limit(1)
-      .single();
+      .single() as any;
 
     if (error || !data) return null;
 

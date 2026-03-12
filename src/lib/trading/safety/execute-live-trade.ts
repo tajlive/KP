@@ -92,9 +92,9 @@ export async function executeLiveTrade(
       .from("trading_sessions")
       .select("id, user_id, current_capital_nok, status, mode, risk_config")
       .eq("id", request.sessionId)
-      .eq("user_id", request.userId)
+      .eq("user_id" as any, request.userId)
       .eq("mode", "live")
-      .single();
+      .single() as any;
 
     if (sessionError || !session) {
       return {
@@ -219,7 +219,7 @@ export async function executeLiveTrade(
         executed_at: execResult.timestamp.toISOString(),
       })
       .select()
-      .single();
+      .single() as any;
 
     if (tradeError) {
       console.error("[LiveTrade] Failed to record trade:", tradeError);

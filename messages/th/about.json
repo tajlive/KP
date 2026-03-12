@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "title": "About Us | Klarpakke",
+    "description": "Learn more about the team behind Klarpakke and our mission to make crypto trading accessible for everyone in Norway."
+  },
+  "hero": {
+    "badge": "About Us",
+    "title": "The Team Behind Klarpakke",
+    "subtitle": "We're building the future of crypto education in Norway"
+  },
+  "story": {
+    "title": "Our Story",
+    "p1": "Klarpakke was founded with a simple mission: make crypto trading accessible and understandable for everyone in Norway.",
+    "p2": "After seeing too many people lose money due to lack of education, we decided to create a platform that teaches trading safely before you risk real money.",
+    "p3": "Today, we're proud to help hundreds of Norwegians learn to trade cryptocurrency the right way – with proper risk management and education first.",
+    "quote": "The best investment you can make is in your own knowledge.",
+    "quoteAuthor": "Tom Arne Jensen, Founder"
+  },
+  "mission": {
+    "title": "Our Mission",
+    "text": "To democratize crypto education and help every Norwegian make informed trading decisions.",
+    "values": "Education first. Safety always. Growth together."
+  },
+  "values": {
+    "title": "Our Values",
+    "education": {
+      "title": "Education First",
+      "desc": "We believe knowledge is the foundation of successful trading."
+    },
+    "transparency": {
+      "title": "Transparency",
+      "desc": "We are open about risks and never promise unrealistic returns."
+    },
+    "norwegian": {
+      "title": "Made for Norway",
+      "desc": "A platform built specifically for Norwegian traders."
+    },
+    "risk": {
+      "title": "Risk Awareness",
+      "desc": "We emphasize risk management in all our teaching."
+    }
+  },
+  "different": {
+    "title": "What Makes Us Different",
+    "subtitle": "We focus on education and safe practice before real trading",
+    "paperTrading": "Practice with paper trading before risking real money",
+    "norwegian": "The only Norwegian-language crypto education platform",
+    "education": "Comprehensive courses from beginner to advanced",
+    "transparency": "Clear information about fees, risks, and strategies",
+    "community": "Join a community of Norwegian crypto learners"
+  },
+  "risk": {
+    "warning": "Trading cryptocurrency involves risk. Never invest more than you can afford to lose."
+  },
+  "team": {
+    "title": "Meet the Team",
+    "tom": {
+      "role": "Founder & CEO",
+      "bio": "Tom Arne has been trading crypto since 2017 and is passionate about teaching others."
+    },
+    "partners": {
+      "title": "Our Partners"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We'd love to hear from you",
+    "email": "hei@klarpakke.no",
+    "org": "Klarpakke AS",
+    "location": "Oslo, Norway"
+  },
+  "cta": {
+    "title": "Ready to Start Learning?",
+    "subtitle": "Join thousands of Norwegians learning to trade crypto safely",
+    "button": "Start for Free",
+    "noCard": "No credit card required"
+  }
+}

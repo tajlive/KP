@@ -129,6 +129,8 @@ function SignupContent() {
               user_id: data.user.id,
               amount: 500,
               type: "welcome_bonus",
+              category: "signup",
+              description: "Signup bonus",
               reason: "Registreringsbonus - Velkommen til Klarpakke!",
               created_at: new Date().toISOString(),
             });

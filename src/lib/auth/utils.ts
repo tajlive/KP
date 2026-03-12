@@ -63,7 +63,7 @@ export async function getCurrentUser() {
     .from("user_profiles" as unknown)
     .select("*")
     .eq("id", user.id)
-    .single()) as unknown;
+    .single() as any) as unknown;
 
   if (profileError) {
     console.warn("Error fetching profile:", profileError);

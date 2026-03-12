@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       .eq('mode', 'paper')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .single() as any;
     
     // If no session exists, return default balance (frontend will handle init)
     if (sessionError || !session) {

@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
           .from('email_log')
           .select('user_id')
           .eq('resend_id', data.id)
-          .single();
+          .single() as any;
         
         if (logEntry?.user_id) {
           await supabase

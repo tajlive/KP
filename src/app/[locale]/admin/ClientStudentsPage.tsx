@@ -39,7 +39,7 @@ export default function ClientStudentsPage() {
     try {
       const supabase = createClient();
       const { data, error } = await supabase
-        .from("user_profiles")
+        .from("user_profiles" as any)
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -132,7 +132,7 @@ export default function ClientStudentsPage() {
     try {
       const supabase = createClient();
       const { error } = await supabase
-        .from("user_profiles")
+        .from("user_profiles" as any)
         .update({ role: confirmAction.newRole })
         .eq("id", confirmAction.userId);
 

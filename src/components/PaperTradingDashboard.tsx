@@ -32,7 +32,7 @@ export default function PaperTradingDashboard({
           .from('portfolios')
           .select('*')
           .eq('user_id', userId)
-          .single();
+          .single() as any;
 
         if (accountData) {
           setAccount(accountData);

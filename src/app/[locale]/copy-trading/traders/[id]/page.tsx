@@ -45,16 +45,16 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
     const { data: trader } = await supabase
       .from("leaderboard_bots")
       .select("display_name")
-      .eq("user_id", id)
-      .single();
+      .eq("user_id" as any, id)
+      .single() as any;
 
     if (!trader) {
       // Fallback to profiles
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("display_name")
-        .eq("user_id", id)
-        .single();
+        .eq("user_id" as any, id)
+        .single() as any;
 
       return {
         title: profile?.display_name
@@ -85,16 +85,16 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
     const { data: trader } = await supabase
       .from("leaderboard_bots")
       .select("user_id")
-      .eq("user_id", id)
-      .single();
+      .eq("user_id" as any, id)
+      .single() as any;
 
     if (!trader) {
       // Try profiles as fallback
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("user_id")
-        .eq("user_id", id)
-        .single();
+        .eq("user_id" as any, id)
+        .single() as any;
 
       if (!profile) {
         notFound();

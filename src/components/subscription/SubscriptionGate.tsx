@@ -78,10 +78,10 @@ export function SubscriptionGate({
         if (!response.ok) {
           // Fallback: sjekk profiles-tabellen direkte
           const { data: profile } = await supabase
-            .from("user_profiles")
+            .from("user_profiles" as any)
             .select("subscription_tier, subscription_status")
             .eq("id", user.id)
-            .single();
+            .single() as any;
 
           const tier = (profile?.subscription_tier as TierSlug) || "student";
           const hasAccess = checkTierAccess(tier, requiredTier);
@@ -183,10 +183,10 @@ export function useSubscription() {
         }
 
         const { data: profile } = await supabase
-          .from("user_profiles")
+          .from("user_profiles" as any)
           .select("subscription_tier")
           .eq("id", user.id)
-          .single();
+          .single() as any;
 
         setTier((profile?.subscription_tier as TierSlug) || "student");
       } catch (error) {

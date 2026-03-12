@@ -30,7 +30,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
     .from('user_profiles' as unknown)
     .select('created_at, subscription_tier, trial_started_at, trial_expires_at')
     .eq('id', userId)
-    .single();
+    .single() as any;
   
   if (error || !profile) {
     return {

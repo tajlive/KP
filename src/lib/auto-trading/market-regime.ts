@@ -242,7 +242,7 @@ export async function analyzeCurrentMarket(
     .eq('symbol', symbol)
     .order('timestamp', { ascending: false })
     .limit(1)
-    .single()
+    .single() as any
   
   if (error || !marketData) {
     // Return uncertain regime if no data

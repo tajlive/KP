@@ -83,7 +83,7 @@ export default function ClientAdminUsers() {
   const fetchUsers = async () => {
     try {
       const { data, error } = await supabase
-        .from("admin_user_list")
+        .from("admin_user_list" as any)
         .select("*")
         .order("user_number", { ascending: true });
 

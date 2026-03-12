@@ -179,7 +179,7 @@ export class RiskManager {
       .from("trading_sessions")
       .select("initial_capital")
       .eq("id", sessionId)
-      .single();
+      .single() as any;
 
     const startingCapital = session?.initial_capital || 10000;
     let runningEquity = startingCapital;
@@ -203,7 +203,7 @@ export class RiskManager {
       .from("trading_sessions")
       .select("open_position")
       .eq("id", sessionId)
-      .single();
+      .single() as any;
 
     if (!session?.open_position) return 0;
 
@@ -225,7 +225,7 @@ export class RiskManager {
       .from("trading_sessions")
       .select("open_position, trading_pair")
       .eq("id", sessionId)
-      .single();
+      .single() as any;
 
     // If there's an open position in the same symbol
     if (session?.open_position && session.trading_pair === symbol) {
@@ -238,7 +238,7 @@ export class RiskManager {
         .from("trading_sessions")
         .select("current_capital")
         .eq("id", sessionId)
-        .single();
+        .single() as any;
 
       if (sessionData?.current_capital) {
         return (exposure / sessionData.current_capital) * 100;

@@ -57,7 +57,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         .from("admin_users")
         .select<"*", { role: string }>("*")
         .eq("id", user.id)
-        .single();
+        .single() as any;
 
       if (error || adminUser?.role !== "admin") {
         await supabase.auth.signOut();

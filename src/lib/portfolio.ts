@@ -88,17 +88,17 @@ export async function getPortfolioOverview(
     const { data: apiKeys } = (await supabase
       .from("exchange_api_keys" as unknown)
       .select("*")
-      .eq("user_id", userId)
+      .eq("user_id" as any, userId)
       .eq("exchange", "binance")
       .eq("is_active", true)
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     // Hvis Binance-konto, prøv å hente Binance-balanser
     if (apiKeys) {
       const { data: binanceBalances } = (await supabase
         .from("binance_balances" as unknown)
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id" as any, userId)
         .gt("total", 0)
         .order("usd_value", { ascending: false })) as unknown;
 
@@ -149,7 +149,7 @@ export async function getPortfolioOverview(
     const { data: positions, error } = (await supabase
       .from("portfolios" as unknown)
       .select("*")
-      .eq("user_id", userId)) as unknown;
+      .eq("user_id" as any, userId)) as unknown;
 
     if (error) {
       console.error("Error fetching portfolio:", error);
@@ -246,10 +246,10 @@ export async function syncBinancePortfolio(
     const { data: apiKeys } = (await supabase
       .from("exchange_api_keys" as unknown)
       .select("api_key_encrypted, api_secret_encrypted, is_testnet")
-      .eq("user_id", userId)
+      .eq("user_id" as any, userId)
       .eq("exchange", "binance")
       .eq("is_active", true)
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (!apiKeys) {
       return { success: false, message: "No Binance API keys found" };
@@ -285,7 +285,7 @@ export async function getBinanceSyncLog(userId: string, limit = 10) {
   const { data, error } = (await supabase
     .from("binance_sync_log" as unknown)
     .select("*")
-    .eq("user_id", userId)
+    .eq("user_id" as any, userId)
     .order("created_at", { ascending: false })
     .limit(limit)) as unknown;
 

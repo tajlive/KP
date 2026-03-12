@@ -26,7 +26,7 @@ export function useProfile() {
         .from("user_profiles" as unknown)
         .select("*")
         .eq("id", user.id)
-        .single()) as unknown;
+        .single() as any) as unknown;
       if (fetchError) {
         setProfile(null);
       } else {
@@ -58,7 +58,7 @@ export function useProfile() {
           updated_at: new Date().toISOString(),
         })
         .select()
-        .single()) as unknown;
+        .single() as any) as unknown;
       if (upsertError) {
         setError(upsertError.message);
       } else {
@@ -87,7 +87,7 @@ export function useProfile() {
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq("id", user.id)
         .select()
-        .single()) as unknown;
+        .single() as any) as unknown;
       if (updateError) {
         setError(updateError.message);
       } else {

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Opprett trading session
     const { data: session, error: insertError } = await supabase
-      .from("trading_sessions")
+      .from("trading_sessions" as any)
       .insert({
         user_id: user.id,
         mode: "paper",
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         updated_at: now,
       })
       .select()
-      .single();
+      .single() as any;
 
     if (insertError) {
       console.error("Failed to create trading session:", insertError);

@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "Om oss | Klarpakke",
+    "description": "Lær mer om teamet bak Klarpakke og vår misjon om å gjøre krypto-trading tilgjengelig for alle i Norge."
+  },
   "hero": {
     "badge": "Om oss",
     "title": "Teamet bak Klarpakke",
@@ -18,11 +22,32 @@
     "values": "Utdanning først. Sikkerhet alltid. Vekst sammen."
   },
   "values": {
-    "title": "Våre verdier"
+    "title": "Våre verdier",
+    "education": {
+      "title": "Utdanning først",
+      "desc": "Vi tror kunnskap er grunnlaget for vellykket trading."
+    },
+    "transparency": {
+      "title": "Åpenhet",
+      "desc": "Vi er åpne om risikoer og lover aldri urealistiske avkastninger."
+    },
+    "norwegian": {
+      "title": "Lagd for Norge",
+      "desc": "En plattform bygget spesifikt for norske tradere."
+    },
+    "risk": {
+      "title": "Risikobevissthet",
+      "desc": "Vi vektlegger risikostyring i all vår undervisning."
+    }
   },
   "different": {
     "title": "Hva gjør oss annerledes",
-    "subtitle": "Vi fokuserer på utdanning og sikker øving før ekte trading"
+    "subtitle": "Vi fokuserer på utdanning og sikker øving før ekte trading",
+    "paperTrading": "Øv med papirhandel før du risikerer ekte penger",
+    "norwegian": "Den eneste norskspråklige krypto-utdanningsplattformen",
+    "education": "Omfattende kurs fra nybegynner til avansert",
+    "transparency": "Klar informasjon om gebyrer, risiko og strategier",
+    "community": "Bli med i et fellesskap av norske krypto-lærlinger"
   },
   "risk": {
     "warning": "Handel med kryptovaluta innebærer risiko. Aldri invester mer enn du har råd til å tape."

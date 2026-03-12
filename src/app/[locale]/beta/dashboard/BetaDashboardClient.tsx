@@ -79,10 +79,10 @@ export default function BetaDashboardClient({
       console.info("[BetaDashboard] User found:", user.email);
 
       const { data: profileData } = await supabase
-        .from("user_profiles")
+        .from("user_profiles" as any)
         .select("*")
         .eq("id", user.id)
-        .single();
+        .single() as any;
 
       if (!profileData?.beta_access) {
         router.push(`/${params.locale}/beta/apply`);
@@ -94,9 +94,9 @@ export default function BetaDashboardClient({
       const { data: apiKeys } = await supabase
         .from("trading_api_keys")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id" as any, user.id)
         .eq("exchange", "binance")
-        .single();
+        .single() as any;
 
       setExchangeConnected(!!apiKeys);
 
@@ -104,7 +104,7 @@ export default function BetaDashboardClient({
       const { data: trades } = await supabase
         .from("auto_trades")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id" as any, user.id)
         .gte("executed_at", today);
 
       if (trades) {

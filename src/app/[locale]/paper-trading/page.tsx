@@ -70,11 +70,11 @@ export default async function PaperTradingPage({
 
     // Hent alle paper trading sessions for brukeren
     const { data: sessions, error } = await supabase
-      .from("trading_sessions")
+      .from("trading_sessions" as any)
       .select(
         "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at"
       )
-      .eq("user_id", user.id)
+      .eq("user_id" as any, user.id)
       .eq("mode", "paper")
       .order("created_at", { ascending: false });
 
@@ -86,8 +86,8 @@ export default async function PaperTradingPage({
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("paper_balance")
-      .eq("user_id", user.id)
-      .single();
+      .eq("user_id" as any, user.id)
+      .single() as any;
 
     const balance = profile?.paper_balance || 10000;
 

@@ -61,7 +61,7 @@ export async function createPaperTradingSession(
       started_at: new Date().toISOString(),
     })
     .select()
-    .single()) as unknown;
+    .single() as any) as unknown;
 
   if (error) {
     console.error("Failed to create paper trading session:", error);
@@ -81,10 +81,10 @@ export async function getPaperTradingSession(
   const { data, error } = (await supabase
     .from("trading_sessions")
     .select("*")
-    .eq("user_id", userId)
+    .eq("user_id" as any, userId)
     .eq("mode", 'paper')
     .eq("status", 'active')
-    .single()) as unknown;
+    .single() as any) as unknown;
 
   if (error) {
     if (error.code === "PGRST116") {
@@ -141,7 +141,7 @@ export async function executePaperTrade(
       executed_at: new Date().toISOString(),
     })
     .select()
-    .single()) as unknown;
+    .single() as any) as unknown;
 
   if (tradeError) {
     console.error("Failed to execute trade:", tradeError);

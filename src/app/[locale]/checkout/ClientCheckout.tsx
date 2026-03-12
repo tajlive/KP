@@ -50,11 +50,11 @@ function CheckoutContent() {
   async function loadCourse() {
     try {
       const { data, error } = await supabase
-        .from("courses")
+        .from("courses" as any)
         .select("*")
         .eq("id", courseId)
         .eq("is_published", true)
-        .single();
+        .single() as any;
 
       if (error) throw error;
 

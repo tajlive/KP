@@ -70,8 +70,8 @@ export async function validateTradeAgainstRiskProfile(
       .from("trading_sessions")
       .select("id, user_id, mode, status, current_capital_nok, starting_capital_nok")
       .eq("id", trade.sessionId)
-      .eq("user_id", trade.userId)
-      .single();
+      .eq("user_id" as any, trade.userId)
+      .single() as any;
 
     if (sessionError || !session) {
       return {
@@ -108,9 +108,9 @@ export async function validateTradeAgainstRiskProfile(
     const { data: riskProfile, error: riskError } = await supabase
       .from("risk_profiles")
       .select("id, name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, leverage_allowed")
-      .eq("user_id", trade.userId)
+      .eq("user_id" as any, trade.userId)
       .eq("is_active", true)
-      .single();
+      .single() as any;
 
     if (riskError || !riskProfile) {
       // For paper trading: default til forsiktig hvis ingen profil
@@ -145,7 +145,7 @@ export async function validateTradeAgainstRiskProfile(
         .from("bot_health")
         .select("status, last_heartbeat, consecutive_errors, max_consecutive_errors")
         .eq("id", trade.botId)
-        .single();
+        .single() as any;
 
       if (!botHealth) {
         return {
