@@ -29,36 +29,29 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
 /**
  * Saniterer redirect-destinasjon til en sikker relativ sti.
- *
- * Blokkerer:
- *  - Full URL-dobling (f.eks. 'https://www.klarpakke.no/...' -> '/...')
- *  - Redirect tilbake til innlogging (loop)
- *  - Open redirect via '//' prefix
- *  - Malformede URLer
  */
 function sanitizeClientRedirect(value: string | null, locale: string): string {
   const fallback = `/${locale}/dashboard`;
   if (!value) return fallback;
 
   try {
-    // Full URL – ekstraher bare stien
     const url = new URL(value);
     const path = url.pathname + (url.search || "");
     if (!path || path.includes("/innlogging")) return fallback;
     return path;
   } catch {
-    // Relativ sti
     if (!value.startsWith("/") || value.startsWith("//")) return fallback;
     if (value.includes("/innlogging")) return fallback;
     return value;
   }
 }
 
-export function InnloggingClient() {
+// Inner component that uses useSearchParams - must be wrapped in Suspense
+function InnloggingForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -68,17 +61,14 @@ export function InnloggingClient() {
   );
   const [loginError, setLoginError] = useState("");
   const [showEmailForm, setShowEmailForm] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
   const t = useTranslations("auth");
   const locale = useLocale();
 
+  // Lagre referral-kode i cookie
   useEffect(() => {
-    setMounted(true);
-    // Lagre referral-kode i cookie (overlever OAuth-redirect)
     const ref = searchParams?.get("ref");
     if (ref && typeof window !== "undefined") {
-      // SameSite=Lax overlever same-site OAuth-redirect
       document.cookie = `kp_ref=${encodeURIComponent(ref)};path=/;max-age=3600;SameSite=Lax`;
     }
   }, [searchParams]);
@@ -93,23 +83,9 @@ export function InnloggingClient() {
     }
   }, [errorParam, t]);
 
-  // Leser både ?next= og ?redirectTo= for bakoverkompatibilitet
-  // Saniterer alltid til relativ sti for å forhindre URL-dobling
   const next = searchParams?.get("next") as string | null;
   const rawRedirect = next || searchParams?.get("redirectTo") || null;
   const safeRedirectTo = sanitizeClientRedirect(rawRedirect, locale);
-
-  if (!mounted) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-900 min-h-screen">
-        <div className="max-w-md w-full space-y-8 animate-pulse text-center">
-          <div className="mx-auto h-12 w-12 bg-slate-800 rounded-full" />
-          <div className="h-8 bg-slate-800 rounded w-3/4 mx-auto" />
-          <div className="h-[400px] bg-slate-800/50 rounded-3xl w-full border border-white/5" />
-        </div>
-      </div>
-    );
-  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,7 +118,6 @@ export function InnloggingClient() {
       }
 
       if (user) {
-        // safeRedirectTo er alltid en sanitert relativ sti
         router.push(safeRedirectTo, { scroll: false });
       }
     } catch {
@@ -325,5 +300,27 @@ export function InnloggingClient() {
         </p>
       </div>
     </div>
+  );
+}
+
+// Loading fallback
+function LoadingFallback() {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-900 min-h-screen">
+      <div className="max-w-md w-full space-y-8 animate-pulse text-center">
+        <div className="mx-auto h-12 w-12 bg-slate-800 rounded-full" />
+        <div className="h-8 bg-slate-800 rounded w-3/4 mx-auto" />
+        <div className="h-[400px] bg-slate-800/50 rounded-3xl w-full border border-white/5" />
+      </div>
+    </div>
+  );
+}
+
+// Main export - wraps the form in Suspense
+export function InnloggingClient() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <InnloggingForm />
+    </Suspense>
   );
 }
