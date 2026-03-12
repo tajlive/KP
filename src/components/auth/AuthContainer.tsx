@@ -47,10 +47,10 @@ export function AuthContainer({
     },
     {
       icon: Zap,
-      title: locale === 'no' ? 'AI Trading Coach' : 'AI Trading Coach',
+      title: locale === 'no' ? 'Trading Coach' : 'Trading Coach',
       description: locale === 'no'
-        ? 'Få personlige råd og strategier fra vår AI-coach'
-        : 'Get personalized advice and strategies from our AI coach',
+        ? 'Få personlige råd og strategier fra vår trading coach'
+        : 'Get personalized advice and strategies from our trading coach',
       color: 'emerald',
     },
   ];

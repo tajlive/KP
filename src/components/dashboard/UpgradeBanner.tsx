@@ -18,14 +18,14 @@ export function UpgradeBanner({ tierSlug, locale }: UpgradeBannerProps) {
         <Sparkles className="h-5 w-5 text-blue-600" />
         <div className="flex-1">
           <AlertTitle className="text-blue-900 font-bold text-lg">
-            Oppgrader til Bachelor — Lås opp AI-Lærer
+            Oppgrader til Bachelor — Lås opp Krypto-Professor
           </AlertTitle>
           <AlertDescription className="text-blue-700 mt-2">
             <p className="mb-3">
               Du bruker <strong>Student (gratis)</strong>. Oppgrader til Bachelor for 249 kr/mnd og få:
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm mb-4">
-              <li>AI-Lærer (Krypto-Professor) — stille spørsmål 24/7</li>
+              <li>Krypto-Professor — stille spørsmål når som helst</li>
               <li>Teknisk Analyse Masterclass</li>
               <li>Ukentlige Live-Webinarer</li>
               <li>1 000 KLT tokens/mnd</li>

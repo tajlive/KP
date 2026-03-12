@@ -91,8 +91,8 @@ export default function ClientDashboard() {
                   : "Paper Trading with 1M NOK virtual capital")}
               {tierSlug === "bachelor" &&
                 (locale === "no"
-                  ? "Bachelor — Paper Trading + AI-Lærer"
-                  : "Bachelor — Paper Trading + AI Tutor")}
+                  ? "Bachelor — Paper Trading + Lærer"
+                  : "Bachelor — Paper Trading + Tutor")}
               {tierSlug === "master" &&
                 (locale === "no"
                   ? "Master — Live Trading Aktivert"

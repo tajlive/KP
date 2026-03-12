@@ -36,11 +36,11 @@ export default function FAQSection() {
     },
     {
       question: 'Fungerer dette på mobil?',
-      answer: 'Ja, hele plattformen er mobil-optimalisert. Du kan ta kurs, gjøre paper trades, og chatte med AI-coachen fra telefonen din. Lær hvor som helst, når som helst.',
+      answer: 'Ja, hele plattformen er mobil-optimalisert. Du kan ta kurs, gjøre paper trades, og chatte med læringsassistenten fra telefonen din. Lær hvor som helst, når som helst.',
     },
     {
       question: 'Hva om jeg har spørsmål underveis?',
-      answer: 'AI-coachen vår er tilgjengelig 24/7 og svarer på norsk. I tillegg har du tilgang til community hvor du kan stille spørsmål og dele erfaringer med andre studenter. Vi svarer også på e-post innen 24 timer.',
+      answer: 'Læringsassistenten vår er tilgjengelig når som helst og svarer på norsk. I tillegg har du tilgang til community hvor du kan stille spørsmål og dele erfaringer med andre studenter. Vi svarer også på e-post innen 24 timer.',
     },
     {
       question: 'Må jeg bruke en spesifikk broker?',

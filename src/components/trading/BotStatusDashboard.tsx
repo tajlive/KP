@@ -960,12 +960,12 @@ function AIView({ userId, strategyId, lang }: AIViewProps) {
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">
-              {lang === "en" ? "AI Professor" : "AI Professor"}
+              {lang === "en" ? "Krypto Professor" : "Krypto Professor"}
             </h2>
             <p className="text-slate-400 text-sm">
               {lang === "en" 
-                ? "AI-powered trading insights and market analysis" 
-                : "AI-drevne tradinginnsikter og markedsanalyse"}
+                ? "Smart trading insights and market analysis" 
+                : "Smarte tradinginnsikter og markedsanalyse"}
             </p>
           </div>
         </div>

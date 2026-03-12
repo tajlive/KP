@@ -33,13 +33,13 @@ export default function FinalCTASection({
       ? [
           "Ingen binding — avslutt når som helst",
           "Ingen kredittkort nødvendig for å prøve",
-          "100% risikofri paper trading",
+          "Risikofri paper trading",
           "Alt innhold tilgjengelig umiddelbart",
         ]
       : [
           "No commitment — cancel anytime",
           "No credit card required to try",
-          "100% risk-free paper trading",
+          "Risk-free paper trading",
           "All content available immediately",
         ];
 

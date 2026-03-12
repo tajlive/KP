@@ -36,7 +36,7 @@ export const translations = {
       title: "Hva får du med Klarpakke?",
       items: [
         { title: "Simulert Trading", description: "Øv deg med virtuelle penger i et realistisk markedsmiljø." },
-        { title: "AI-drevet Veiledning", description: "Få personlig hjelp fra vår AI-assistent på norsk, 24/7." },
+        { title: "Personlig Veiledning", description: "Få personlig hjelp fra vår læringsassistent basert på dine behov." },
         { title: "Trading Signaler", description: "Motta daglige analyser og signaler basert på teknisk analyse." },
         { title: "Risikostyring", description: "Lær å håndtere risiko med innebygde verktøy." },
       ],
@@ -171,8 +171,8 @@ export const translations = {
         description: "Start med 1.000.000 kr i virtuell kapital. Tren på ekte markedsdata uten risiko.",
       },
       step2: {
-        title: "AI-Drevet Veiledning",
-        description: "Få personlige anbefalinger og lær av dine handler med vår AI-coach.",
+        title: "Personlig Veiledning",
+        description: "Få personlige anbefalinger og lær av dine handler med vår læringscoach.",
       },
       step3: {
         title: "Følg Fremgangen Din",
@@ -311,7 +311,7 @@ export const translations = {
     hero: {
       badge: "📚 100% Educational Focus - No real money at risk",
       heading: "The future of trading education is here.",
-      subheading: "Learn to trade with simulated capital. No risk, only knowledge. AI-powered guidance in Norwegian, 24/7.",
+      subheading: "Learn to trade with simulated capital. No risk, only knowledge. Personalized guidance in Norwegian.",
       emailPlaceholder: "Your email address",
       ctaButton: "Join the waitlist",
       trustBadge: "Free · No credit card · Unsubscribe anytime",
@@ -344,7 +344,7 @@ export const translations = {
       title: "What do you get with Klarpakke?",
       items: [
         { title: "Simulated Trading", description: "Practice with virtual money in a realistic market environment." },
-        { title: "AI-powered Guidance", description: "Get personal help from our AI assistant in Norwegian, 24/7." },
+        { title: "Personalized Guidance", description: "Get personal help from our learning assistant based on your needs." },
         { title: "Trading Signals", description: "Receive daily analyses and signals based on technical analysis." },
         { title: "Risk Management", description: "Learn to manage risk with built-in tools." },
       ],
@@ -479,8 +479,8 @@ export const translations = {
         description: "Start with 1,000,000 NOK in virtual capital. Practice on real market data risk-free.",
       },
       step2: {
-        title: "AI-Powered Guidance",
-        description: "Get personalized recommendations and learn from your trades with our AI coach.",
+        title: "Personalized Guidance",
+        description: "Get personalized recommendations and learn from your trades with our learning coach.",
       },
       step3: {
         title: "Track Your Progress",

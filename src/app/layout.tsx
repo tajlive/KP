@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     template: "%s | Klarpakke",
   },
   description:
-    "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital. 100% gratis å starte.",
+    "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital. Gratis å starte.",
   keywords: [
     "krypto",
     "trading",

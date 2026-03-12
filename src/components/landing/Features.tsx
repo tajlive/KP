@@ -36,8 +36,8 @@ export default function Features({ language = "no" }: FeaturesProps) {
       icon: Bot,
       title:
         language === "no"
-          ? "AI-coach som snakker norsk"
-          : "AI coach who speaks Norwegian",
+          ? "Læringsassistent på norsk"
+          : "Learning assistant in Norwegian",
       description:
         language === "no"
           ? "Spør hva som helst om trading, markedsanalyse eller strategier. Få svar med en gang — på norsk."

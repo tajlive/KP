@@ -198,7 +198,7 @@ export default function SocialProofSection() {
                     />
                   </svg>
                 </div>
-                <span>100% gratis å prøve</span>
+                <span>Gratis å prøve</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-green-400 flex items-center justify-center">
