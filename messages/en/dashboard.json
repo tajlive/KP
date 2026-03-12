@@ -287,7 +287,8 @@
     "taxReport": "Tax Report",
     "settings": "Settings",
     "admin": "Admin",
-    "logout": "Log out"
+    "logout": "Log out",
+    "paperTrading": "Paper Trading"
   },
   "bots": {
     "modeLive": "Live",
