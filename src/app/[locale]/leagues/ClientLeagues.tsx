@@ -85,7 +85,7 @@ export default function ClientLeagues() {
                                     </div>
                                     <div className="flex items-center gap-2 text-slate-300">
                                         <Calendar className="w-5 h-5 text-emerald-500" />
-                                        <span>{locale === 'no' ? 'Slutter' : 'Ends'} {new Date(league.end_date).toLocaleDateString(locale === 'no' ? 'no' : 'en')}</span>
+                                        <span>{locale === 'no' ? 'Slutter' : 'Ends'} {league.end_date ? new Date(league.end_date).toLocaleDateString(locale === 'no' ? 'no' : 'en') : '—'}</span>
                                     </div>
                                 </div>
 

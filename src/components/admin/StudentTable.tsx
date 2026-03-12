@@ -53,7 +53,7 @@ export function StudentTable({ students }: StudentTableProps) {
       (s.laeringsmaal || []).join(', '),
       s.handle || '',
       s.tokens_credited ? 'Ja' : 'Nei',
-      new Date(s.created_at).toLocaleString('no-NO')
+      s.created_at ? new Date(s.created_at).toLocaleString('no-NO') : '—'
     ])
 
     const csvContent = [headers, ...rows]

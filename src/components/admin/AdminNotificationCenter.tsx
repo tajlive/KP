@@ -212,7 +212,7 @@ export function AdminNotificationCenter() {
                                                         </a>
                                                     )}
                                                     <p className="text-xs text-slate-500 mt-2">
-                                                        {new Date(notification.created_at).toLocaleString('no')}
+                                                        {notification.created_at ? new Date(notification.created_at).toLocaleString('no') : '—'}
                                                     </p>
                                                 </div>
                                             </div>

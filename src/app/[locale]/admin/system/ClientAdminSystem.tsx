@@ -211,7 +211,7 @@ export default function ClientAdminSystem() {
                     <p className="text-slate-400 text-sm mt-1">{system.message}</p>
                     <p className="text-slate-600 text-xs mt-2">
                       <Clock className="w-3 h-3 inline mr-1" />
-                      {new Date(system.lastChecked).toLocaleString(locale === 'no' ? 'no-NO' : 'en-US')}
+                      {system.lastChecked ? new Date(system.lastChecked).toLocaleString(locale === 'no' ? 'no-NO' : 'en-US') : '—'}
                     </p>
                   </div>
                 </div>
