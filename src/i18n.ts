@@ -55,6 +55,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
     pricingCancel,
     pricingSuccess,
     studieprogram,
+    // Landing page namespaces
+    trustBar,
+    coursePreview,
+    threeSteps,
     // Previously missing namespaces
     contact,
     pricing,
@@ -223,6 +227,16 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../messages/${validLocale}/studieprogram.json`)
       .then((m) => m.default)
       .catch(() => import("../messages/en/studieprogram.json").then((m) => m.default)),
+    // Landing page namespaces
+    import(`../messages/${validLocale}/trustBar.json`)
+      .then((m) => m.default)
+      .catch(() => import("../messages/en/trustBar.json").then((m) => m.default)),
+    import(`../messages/${validLocale}/coursePreview.json`)
+      .then((m) => m.default)
+      .catch(() => import("../messages/en/coursePreview.json").then((m) => m.default)),
+    import(`../messages/${validLocale}/threeSteps.json`)
+      .then((m) => m.default)
+      .catch(() => import("../messages/en/threeSteps.json").then((m) => m.default)),
     // Previously missing namespaces
     import(`../messages/${validLocale}/contact.json`)
       .then((m) => m.default)
@@ -287,6 +301,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
       pricingCancel,
       pricingSuccess,
       studieprogram,
+      // Landing page namespaces
+      trustBar,
+      coursePreview,
+      threeSteps,
       // Previously missing namespaces
       contact,
       pricing,
