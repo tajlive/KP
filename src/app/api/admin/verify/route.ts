@@ -46,7 +46,7 @@ export async function GET(request: Request) {
 
     // Check if user is admin
     const { data: profile, error: profileError } = await supabase
-      .from('user_profiles' as any)
+      .from('user_profiles')
       .select('role, email, full_name')
       .eq('id', user.id)
       .single() as any;

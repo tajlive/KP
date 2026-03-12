@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
   try {
     // 1. Get total users from profiles
     const { count: totalUsers } = await supabase
-      .from('user_profiles' as any)
+      .from('user_profiles')
       .select('*', { count: 'exact', head: true });
     
     // 2. Get active traders (fra paper_accounts som har trades)
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     // 5. Get signup trend fra profiles
     const { data: signupData } = await supabase
-      .from('user_profiles' as any)
+      .from('user_profiles')
       .select('created_at')
       .gte('created_at', startDate.toISOString())
       .order('created_at');
