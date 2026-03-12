@@ -44,6 +44,17 @@ export function RiskProfilePulse({
     change: 0,
     changePercent: 0,
   });
+  // Hydration-safe time display
+  const [lastUpdateTime, setLastUpdateTime] = useState<string>("");
+
+  // Update time on client only to prevent hydration mismatch
+  useEffect(() => {
+    setLastUpdateTime(new Date().toLocaleTimeString("nb-NO"));
+    const timeInterval = setInterval(() => {
+      setLastUpdateTime(new Date().toLocaleTimeString("nb-NO"));
+    }, 1000);
+    return () => clearInterval(timeInterval);
+  }, []);
 
   // Fetch portfolio data
   useEffect(() => {
@@ -273,7 +284,7 @@ export function RiskProfilePulse({
       {/* Info footer */}
       <div className="flex items-center justify-between mt-4 text-xs text-slate-500">
         <span>Oppdatering: {config.updateInterval}</span>
-        <span>Siste: {new Date().toLocaleTimeString("nb-NO")}</span>
+        <span suppressHydrationWarning>Siste: {lastUpdateTime || "--:--:--"}</span>
       </div>
     </div>
   );
