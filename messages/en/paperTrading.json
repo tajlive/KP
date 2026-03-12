@@ -1,5 +1,9 @@
 {
   "title": "Paper Trading",
+  "description": "Practice trading without risk",
+  "yourBalance": "Your Balance",
+  "virtual": "Virtual",
+  "tooltip": "Paper trading lets you practice without risking real money",
   "subtitle": "Practice trading with {amount} virtual currency",
   "contextBanner": "Practice trading with 1,000,000 NOK in play money",
   "help": {
