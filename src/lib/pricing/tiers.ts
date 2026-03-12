@@ -109,7 +109,7 @@ export const TIERS = {
       'Dedikert Trading Rådgiver (1:1)',
       'Private Alpha-Signaler',
       'AI Porteføljeoptimalisering (Advanced)',
-      'Prioritert support (24/7)',
+      'Prioritert support (døgnet rundt)',
       'Master-sertifikat ved bestått eksamen',
       '5 000 KLT tokens/mnd',
     ],

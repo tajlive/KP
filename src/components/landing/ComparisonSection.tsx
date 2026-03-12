@@ -6,7 +6,7 @@ export default function ComparisonSection() {
   const features = [
     { name: 'Norsk språk', klarpakke: true, tradingskolen: true, nordic: false },
     { name: 'Paper trading med ekte data', klarpakke: true, tradingskolen: 'Begrenset', nordic: false },
-    { name: 'AI-coach 24/7', klarpakke: 'Ubegrenset', tradingskolen: 'Ikke tilgjengelig', nordic: false },
+    { name: 'Læringsassistent', klarpakke: 'Ubegrenset', tradingskolen: 'Ikke tilgjengelig', nordic: false },
     { name: 'Strukturerte videokurs', klarpakke: true, tradingskolen: 'Kun live webinar', nordic: true },
     { name: 'Lær i ditt eget tempo', klarpakke: true, tradingskolen: false, nordic: true },
     { name: 'Sertifikat ved fullføring', klarpakke: true, tradingskolen: false, nordic: 'Delvis' },

@@ -61,7 +61,7 @@ export const BrandedTemplates = {
     <div class="badge badge-success">Suksess</div>
     <h1>Velkommen som ${tier}-student! 🎓</h1>
     <p>Hei ${name}, vi er utrolig glade for å ha deg med på VIP-laget.</p>
-    <p>Ditt abonnement er nå aktivert, og du har fått full tilgang til alle algoritmene og AI-coachen i Klarpakke.</p>
+    <p>Ditt abonnement er nå aktivert, og du har fått full tilgang til alle algoritmene og læringsassistenten i Klarpakke.</p>
     <div style="background-color: #f1f5f9; padding: 24px; border-radius: 8px; margin: 24px 0;">
       <h3 style="margin-bottom: 12px;">Dine neste steg:</h3>
       <ul style="padding-left: 20px; margin: 0;">

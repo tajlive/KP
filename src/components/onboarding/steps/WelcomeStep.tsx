@@ -12,14 +12,14 @@ const FEATURES = [
   },
   {
     icon: TrendingUp,
-    title: "AI-strategier",
+    title: "Auto-strategier",
     desc: "Avanserte boter som handles for deg",
     gradient: "from-blue-500 to-indigo-500",
   },
   {
     icon: Zap,
     title: "Automatisk",
-    desc: "24/7 trading mens du sover",
+    desc: "Automatisk trading når du vil",
     gradient: "from-amber-500 to-orange-500",
   },
 ];
