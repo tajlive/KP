@@ -77,5 +77,20 @@
     "text": "Opprett en gratis konto for å delta i konkurransen",
     "button": "Logg inn / Registrer deg"
   },
-  "saving": "Lagrer..."
+  "saving": "Lagrer...",
+  "active": "Aktiv",
+  "buy": "Kjøp",
+  "capital": "Kapital",
+  "noSessions": "Ingen sesjoner",
+  "noSessionsDesc": "Start din første paper trading-sesjon for å begynne å øve",
+  "noTrades": "Ingen handler ennå",
+  "pauseBot": "Pause bot",
+  "paused": "Pauset",
+  "resume": "Fortsett",
+  "sell": "Selg",
+  "startFirst": "Start din første sesjon",
+  "stopSession": "Stopp sesjon",
+  "total": "Totalt",
+  "trades": "Handler",
+  "winRate": "Vinnerrate"
 }

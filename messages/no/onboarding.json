@@ -40,5 +40,79 @@
   "setRiskProfileDesc": "Velg mellom konservativ, balansert eller offensiv strategi",
   "goToDashboard": "Gå til Dashboard",
   "fastRegistration": "Lynrask registrering!",
-  "totalTime": "Total tid: under 2 minutter"
+  "totalTime": "Total tid: under 2 minutter",
+  "finish": "Fullfør",
+  "next": "Neste",
+  "skip": "Hopp over",
+  "step1": {
+    "title": "Velkommen til Klarpakke",
+    "subtitle": "Din reise mot krypto-mestring starter her",
+    "description": "Lær trading med virtuelle penger før du risikerer ekte midler",
+    "headline": "Start trading trygt",
+    "cta": "Kom i gang",
+    "loading": "Laster...",
+    "timeEstimate": "Tar ca. 2 minutter",
+    "features": {
+      "safe": "100% risikofri øving",
+      "fast": "Rask oppsett",
+      "auto": "Automatisert veiledning"
+    }
+  },
+  "step2": {
+    "title": "Din profil",
+    "subtitle": "Fortell oss litt om deg selv",
+    "description": "Dette hjelper oss å tilpasse læringsopplevelsen din",
+    "cta": "Fortsett",
+    "loading": "Lagrer..."
+  },
+  "step3": {
+    "title": "Paper Trading",
+    "subtitle": "Øv med virtuelle penger",
+    "description": "Du starter med 1 000 000 kr i virtuelle midler",
+    "cta": "Start trading",
+    "loading": "Setter opp...",
+    "whatIsPaperTrading": "Hva er paper trading?",
+    "paperTrading": {
+      "title": "Virtuell trading",
+      "description": "Handel med virtuelle penger for å lære uten risiko",
+      "tooltip": "Paper trading simulerer ekte markedsforhold",
+      "virtual": "Virtuell",
+      "yourBalance": "Din saldo"
+    }
+  },
+  "step4": {
+    "title": "Koble til Binance",
+    "subtitle": "Valgfritt: Koble til for live trading senere",
+    "cta": "Koble til",
+    "skip": "Hopp over for nå",
+    "skipping": "Hopper over...",
+    "connecting": "Kobler til...",
+    "error": "Tilkobling mislyktes. Sjekk API-nøklene.",
+    "apiKey": {
+      "label": "API-nøkkel",
+      "placeholder": "Skriv inn din Binance API-nøkkel"
+    },
+    "apiSecret": {
+      "label": "API-hemmelighet",
+      "placeholder": "Skriv inn din Binance API-hemmelighet"
+    },
+    "security": {
+      "title": "Sikker tilkobling",
+      "description": "API-nøklene dine er kryptert og vi har aldri uttakstilgang"
+    }
+  },
+  "step5": {
+    "title": "Du er klar!",
+    "subtitle": "Start din trading-reise",
+    "cta": "Gå til Dashboard",
+    "loading": "Laster dashboard...",
+    "initializing": "Initialiserer...",
+    "botReady": "Trading-boten din er klar",
+    "paperBalance": "Paper-saldo: 1 000 000 kr",
+    "features": {
+      "paperTrading": "Paper Trading klar",
+      "strategies": "Tradingstrategier tilgjengelig",
+      "analytics": "Analyse-dashboard"
+    }
+  }
 }

@@ -32,5 +32,8 @@
   "howToWin": "Hvordan vinne?",
   "howToWinDesc": "Høyest prosentvis avkastning (ROI) vinner. Vi justerer for risiko ved å se på Sharpe-ratio.",
   "whatIsCopying": "Hva er kopiering?",
-  "whatIsCopyingDesc": "Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem."
+  "whatIsCopyingDesc": "Når du kopierer en trader, starter du en robot med samme risikoprofil og strategi som dem.",
+  "monthlyCompetition": "Månedskonkurranse",
+  "thisMonth": "Denne måneden",
+  "thisWeek": "Denne uken"
 }

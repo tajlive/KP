@@ -32,5 +32,8 @@
   "howToWin": "How to win?",
   "howToWinDesc": "Highest percentage return (ROI) wins. We adjust for risk by looking at Sharpe ratio.",
   "whatIsCopying": "What is copying?",
-  "whatIsCopyingDesc": "When you copy a trader, you start a bot with the same risk profile and strategy as them."
+  "whatIsCopyingDesc": "When you copy a trader, you start a bot with the same risk profile and strategy as them.",
+  "monthlyCompetition": "Monthly Competition",
+  "thisMonth": "This Month",
+  "thisWeek": "This Week"
 }

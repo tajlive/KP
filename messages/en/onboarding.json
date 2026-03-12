@@ -40,5 +40,79 @@
   "setRiskProfileDesc": "Choose between conservative, balanced, or offensive strategy",
   "goToDashboard": "Go to Dashboard",
   "fastRegistration": "Lightning fast registration!",
-  "totalTime": "Total time: under 2 minutes"
+  "totalTime": "Total time: under 2 minutes",
+  "finish": "Finish",
+  "next": "Next",
+  "skip": "Skip",
+  "step1": {
+    "title": "Welcome to Klarpakke",
+    "subtitle": "Your journey to crypto mastery starts here",
+    "description": "Learn trading with virtual money before risking real funds",
+    "headline": "Start Trading Safely",
+    "cta": "Get Started",
+    "loading": "Loading...",
+    "timeEstimate": "Takes about 2 minutes",
+    "features": {
+      "safe": "100% risk-free practice",
+      "fast": "Quick setup",
+      "auto": "Automated guidance"
+    }
+  },
+  "step2": {
+    "title": "Your Profile",
+    "subtitle": "Tell us a bit about yourself",
+    "description": "This helps us personalize your learning experience",
+    "cta": "Continue",
+    "loading": "Saving..."
+  },
+  "step3": {
+    "title": "Paper Trading",
+    "subtitle": "Practice with virtual money",
+    "description": "You'll start with 1,000,000 NOK in virtual funds",
+    "cta": "Start Trading",
+    "loading": "Setting up...",
+    "whatIsPaperTrading": "What is paper trading?",
+    "paperTrading": {
+      "title": "Virtual Trading",
+      "description": "Trade with virtual money to learn without risk",
+      "tooltip": "Paper trading simulates real market conditions",
+      "virtual": "Virtual",
+      "yourBalance": "Your Balance"
+    }
+  },
+  "step4": {
+    "title": "Connect Binance",
+    "subtitle": "Optional: Connect for live trading later",
+    "cta": "Connect",
+    "skip": "Skip for now",
+    "skipping": "Skipping...",
+    "connecting": "Connecting...",
+    "error": "Connection failed. Check your API keys.",
+    "apiKey": {
+      "label": "API Key",
+      "placeholder": "Enter your Binance API key"
+    },
+    "apiSecret": {
+      "label": "API Secret",
+      "placeholder": "Enter your Binance API secret"
+    },
+    "security": {
+      "title": "Secure Connection",
+      "description": "Your API keys are encrypted and we never have withdrawal access"
+    }
+  },
+  "step5": {
+    "title": "You're All Set!",
+    "subtitle": "Start your trading journey",
+    "cta": "Go to Dashboard",
+    "loading": "Loading dashboard...",
+    "initializing": "Initializing...",
+    "botReady": "Your trading bot is ready",
+    "paperBalance": "Paper balance: 1,000,000 NOK",
+    "features": {
+      "paperTrading": "Paper Trading Ready",
+      "strategies": "Trading Strategies Available",
+      "analytics": "Analytics Dashboard"
+    }
+  }
 }

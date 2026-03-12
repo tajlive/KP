@@ -20,6 +20,11 @@
       "title": "Klarpakke (Binance)",
       "gain": "Possibilities",
       "desc": "Invest $10 in the future. With our knowledge you learn to build value over time. Start small, dream big."
+    },
+    "krypto": {
+      "title": "Klarpakke (Binance)",
+      "gain": "Possibilities",
+      "desc": "Invest $10 in the future. With our knowledge you learn to build value over time. Start small, dream big."
     }
   },
   "whyUs": {
@@ -112,6 +117,9 @@
     "spotsLeft": "spots remaining. First come, first served!"
   },
   "hero": {
+    "title": "Learn Trading the Right Way",
+    "subtitle": "From beginner to confident trader",
+    "description": "Practice with virtual money, learn from experts, and trade safely",
     "beta_badge": "BETA LAUNCH - ONLY 23/50 SPOTS LEFT",
     "title_emotional": "Master Trading in Your Language",
     "hook_emotional": "A year from now, you'll either be glad you started today –\nor wish you had.",

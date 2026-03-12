@@ -23,36 +23,36 @@
     "correct": "Riktig!",
     "wrong": "Feil"
   },
-  "questions": [
-    {
+  "questions": {
+    "0": {
       "question": "Hva er en \"stop loss\" i trading?",
-      "options": [
-        "En ordre som automatisk selger når prisen når et bestemt nivå",
-        "En måte å tjene mer penger på",
-        "En type aksje",
-        "En trading strategi"
-      ],
+      "options": {
+        "0": "En ordre som automatisk selger når prisen når et bestemt nivå",
+        "1": "En måte å tjene mer penger på",
+        "2": "En type aksje",
+        "3": "En trading strategi"
+      },
       "explanation": "En stop loss er en ordre som automatisk selger din posisjon når prisen faller til et bestemt nivå, og beskytter deg mot store tap."
     },
-    {
+    "1": {
       "question": "Hva betyr \"diversifisering\"?",
-      "options": [
-        "Å kjøpe én aksje",
-        "Å spre investeringer på ulike aktiva",
-        "Å selge alle aksjer",
-        "Å handle kun med krypto"
-      ],
+      "options": {
+        "0": "Å kjøpe én aksje",
+        "1": "Å spre investeringer på ulike aktiva",
+        "2": "Å selge alle aksjer",
+        "3": "Å handle kun med krypto"
+      },
       "explanation": "Diversifisering betyr å spre investeringene dine på ulike aktiva for å redusere risiko."
     },
-    {
+    "2": {
       "question": "Hva er risikoen ved leveraged trading?",
-      "options": [
-        "Ingen risiko",
-        "Potensielt høyere tap enn investert beløp",
-        "Garantert profitt",
-        "Ingen påvirkning"
-      ],
+      "options": {
+        "0": "Ingen risiko",
+        "1": "Potensielt høyere tap enn investert beløp",
+        "2": "Garantert profitt",
+        "3": "Ingen påvirkning"
+      },
       "explanation": "Leveraged trading øker både potensiell profitt og tap. Du kan tape mer enn du investerte."
     }
-  ]
+  }
 }

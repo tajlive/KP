@@ -77,5 +77,20 @@
     "text": "Create a free account to join the competition",
     "button": "Log in / Sign up"
   },
-  "saving": "Saving..."
+  "saving": "Saving...",
+  "active": "Active",
+  "buy": "Buy",
+  "capital": "Capital",
+  "noSessions": "No Sessions",
+  "noSessionsDesc": "Start your first paper trading session to begin practicing",
+  "noTrades": "No trades yet",
+  "pauseBot": "Pause Bot",
+  "paused": "Paused",
+  "resume": "Resume",
+  "sell": "Sell",
+  "startFirst": "Start your first session",
+  "stopSession": "Stop Session",
+  "total": "Total",
+  "trades": "Trades",
+  "winRate": "Win Rate"
 }
