@@ -1065,6 +1065,30 @@
     "bots": {
       "modeLive": "Live",
       "modePaper": "Paper"
+    },
+    "botStatus": {
+      "title": "Bot Status",
+      "justNow": "Just now",
+      "minutesAgo": "{count} minutes ago",
+      "hoursAgo": "{count} hours ago",
+      "daysAgo": "{count} days ago",
+      "notResponding": "Not responding",
+      "active": "Active",
+      "paused": "Paused",
+      "stopped": "Stopped",
+      "paperTrading": "Paper Trading",
+      "liveTrading": "Live Trading",
+      "started": "Started",
+      "pause": "Pause",
+      "resume": "Resume",
+      "viewDetails": "View details",
+      "noBot": "No bot active",
+      "noBotDescription": "Start your first trading bot to see status here.",
+      "startPaperTrading": "Start paper trading",
+      "whatToExpect": "What to expect",
+      "feature1": "Automatic 24/7 trading",
+      "feature2": "Real-time market analysis",
+      "feature3": "Risk management and stop-loss"
     }
   },
   "footer": {
