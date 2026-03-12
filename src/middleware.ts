@@ -103,19 +103,19 @@ export function middleware(request: NextRequest) {
   // ==========================================
   // 1. LEGACY /no/* CLEANUP (301 permanent)
   // ==========================================
-  // NOTE: /no/* redirects disabled - /no is now a valid locale prefix
-  // to prevent redirect loops with Accept-Language detection
-  // if (pathname.startsWith("/no/")) {
-  //   const newPath = pathname.slice(3) || "/";
-  //   const redirectUrl = new URL(newPath, request.url);
-  //   redirectUrl.search = request.nextUrl.search;
-  //   return NextResponse.redirect(redirectUrl, { status: 301 });
-  // }
-  // if (pathname === "/no") {
-  //   const redirectUrl = new URL("/", request.url);
-  //   redirectUrl.search = request.nextUrl.search;
-  //   return NextResponse.redirect(redirectUrl, { status: 301 });
-  // }
+  // /no is not a valid route - redirect to /
+  if (pathname.startsWith("/no/")) {
+    const newPath = pathname.slice(3) || "/";
+    const redirectUrl = new URL(newPath, request.url);
+    redirectUrl.search = request.nextUrl.search;
+    return NextResponse.redirect(redirectUrl, { status: 301 });
+  }
+
+  if (pathname === "/no") {
+    const redirectUrl = new URL("/", request.url);
+    redirectUrl.search = request.nextUrl.search;
+    return NextResponse.redirect(redirectUrl, { status: 301 });
+  }
 
   // Handle /leksjon/* routes - redirect to /kurs/leksjon/*
   if (pathname.startsWith("/leksjon/")) {
