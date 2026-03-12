@@ -206,7 +206,7 @@ export function LottoCalculator() {
               href="/signup"
               className="block w-full mt-6 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-lg rounded-xl shadow-lg shadow-emerald-500/30 text-center transition-all"
             >
-              Test strategien selv — start gratis →
+              Lær hvordan — start gratis →
             </Link>
           </motion.div>
         )}
