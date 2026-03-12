@@ -102,16 +102,16 @@ function HeroSection({ locale }: { locale: string }) {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <a
-                href="/innlogging"
-                className="bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors text-center"
+                href="/signup"
+                className="bg-emerald-500 hover:bg-emerald-400 text-white font-lexend font-bold px-8 py-4 rounded-xl shadow-lg shadow-emerald-500/30 transition-all text-center"
               >
-                {isNorwegian ? "Start gratis" : "Start free"}
+                {isNorwegian ? "Start gratis →" : "Start free →"}
               </a>
               <a
-                href="#lottocalc"
-                className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-lexend font-medium px-8 py-4 rounded-xl transition-colors text-center"
+                href="/paper-trading"
+                className="bg-white hover:bg-slate-100 text-slate-900 font-lexend font-medium px-8 py-4 rounded-xl transition-colors text-center"
               >
-                {isNorwegian ? "Se kalkulator" : "See calculator"}
+                {isNorwegian ? "Prøv paper trading" : "Try paper trading"}
               </a>
             </div>
           </div>
