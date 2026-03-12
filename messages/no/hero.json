@@ -1,12 +1,15 @@
 {
   "title": "Klarpakke",
+  "headline": "Lær å handle crypto",
+  "headlineHighlight": "trygt fra dag én.",
   "subtitle": "Lær trading",
-  "description": "Norges mest komplette plattform for krypto-utdanning og trading.",
+  "description": "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 10 000 i øvingspenger — ingen kredittkort.",
   "cta": "Kom i gang gratis",
+  "ctaPrimary": "Start gratis",
+  "ctaSecondary": "Se hva du lærer",
+  "trust": "Ingen kredittkort · Norsk veiledning · BankID-sikker",
   "badge": "🇳🇴 Norges ledende trading-akademi",
   "tagline": "Fra nybegynner til profesjonell trader",
-  "ctaPrimary": "Start gratis i dag",
-  "ctaSecondary": "Se kursene",
   "stats": {
     "weeks": "Live markedsdata",
     "students": "Aktive studenter",

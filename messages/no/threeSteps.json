@@ -1,0 +1,23 @@
+{
+  "sectionTitle": "Kom i gang på 4 enkle steg",
+  "sectionSubtitle": "Ingen forkunnskaper nødvendig. Vi guider deg fra første øyeblikk.",
+  "step1": {
+    "title": "Registrer deg gratis",
+    "description": "Opprett konto med BankID. Ingen kredittkort nødvendig. Start på under 2 minutter."
+  },
+  "step2": {
+    "title": "Ta ditt første kurs",
+    "description": "Velg blant norske nybegynnerkurs. Lær i ditt eget tempo."
+  },
+  "step3": {
+    "title": "Øv med papirhandel",
+    "description": "Bruk kr 10 000 i virtuelle midler. Test strategier uten risiko."
+  },
+  "step4": {
+    "title": "Automatiser med bot",
+    "description": "La AI handle for deg når du er klar. Du bestemmer når.",
+    "badge": "Valgfritt · Pro-funksjon"
+  },
+  "ctaButton": "Start gratis i dag",
+  "ctaSubtext": "Ingen kredittkort nødvendig · Avbryt når som helst"
+}
