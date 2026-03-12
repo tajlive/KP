@@ -1065,6 +1065,30 @@
     "bots": {
       "modeLive": "Ekte",
       "modePaper": "Øving"
+    },
+    "botStatus": {
+      "title": "Bot Status",
+      "justNow": "Akkurat nå",
+      "minutesAgo": "{count} minutter siden",
+      "hoursAgo": "{count} timer siden",
+      "daysAgo": "{count} dager siden",
+      "notResponding": "Svarer ikke",
+      "active": "Aktiv",
+      "paused": "Pauset",
+      "stopped": "Stoppet",
+      "paperTrading": "Øvingshandel",
+      "liveTrading": "Live-handel",
+      "started": "Startet",
+      "pause": "Pause",
+      "resume": "Fortsett",
+      "viewDetails": "Se detaljer",
+      "noBot": "Ingen bot aktiv",
+      "noBotDescription": "Start din første trading-bot for å se status her.",
+      "startPaperTrading": "Start øvingshandel",
+      "whatToExpect": "Forventet oppførsel",
+      "feature1": "Automatisk handel døgnet rundt",
+      "feature2": "Sanntids markedsanalyse",
+      "feature3": "Risikostyring og stop-loss"
     }
   },
   "footer": {
