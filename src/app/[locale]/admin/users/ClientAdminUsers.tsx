@@ -263,7 +263,7 @@ export default function ClientAdminUsers() {
               users.filter((u) => {
                 const weekAgo = new Date();
                 weekAgo.setDate(weekAgo.getDate() - 7);
-                return new Date(u.created_at) > weekAgo;
+                return u.created_at && new Date(u.created_at) > weekAgo;
               }).length
             }
           </p>

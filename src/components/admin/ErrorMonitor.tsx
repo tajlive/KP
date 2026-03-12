@@ -162,7 +162,7 @@ export function ErrorMonitor() {
                         {error.error_type}
                       </span>
                       <span className="text-xs text-slate-500">
-                        {new Date(error.created_at).toLocaleTimeString()}
+                        {error.created_at ? new Date(error.created_at).toLocaleTimeString() : '—'}
                       </span>
                     </div>
                     <p className="text-sm text-white truncate mb-1">

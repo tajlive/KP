@@ -148,7 +148,7 @@ export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChan
                   </span>
                 </td>
                 <td className="px-6 py-4 text-slate-400 text-sm">
-                  {new Date(user.created_at).toLocaleDateString('no-NO')}
+                  {user.created_at ? new Date(user.created_at).toLocaleDateString('no-NO') : '—'}
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-end gap-2">

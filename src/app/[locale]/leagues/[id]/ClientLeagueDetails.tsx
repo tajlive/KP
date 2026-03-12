@@ -107,13 +107,13 @@ export default function ClientLeagueDetails() {
                 <div className="flex justify-between items-center text-slate-300 bg-slate-800/50 p-3 rounded-lg">
                   <span>{locale === "no" ? "Start" : "Start"}</span>
                   <span className="font-mono">
-                    {new Date(league.start_date).toLocaleDateString()}
+                    {league.start_date ? new Date(league.start_date).toLocaleDateString() : '—'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-slate-300 bg-slate-800/50 p-3 rounded-lg">
                   <span>{locale === "no" ? "Slutt" : "End"}</span>
                   <span className="font-mono">
-                    {new Date(league.end_date).toLocaleDateString()}
+                    {league.end_date ? new Date(league.end_date).toLocaleDateString() : '—'}
                   </span>
                 </div>
               </div>
