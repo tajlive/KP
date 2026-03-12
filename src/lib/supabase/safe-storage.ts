@@ -7,6 +7,10 @@
  * <head> håndterer intern gotrue-js storage FØR React starter.
  */
 
+// Debounce guard for å stoppe infinite loops
+let lastClearTime = 0;
+const CLEAR_DEBOUNCE_MS = 5000;
+
 function isCorrupt(value: string): boolean {
   // Test 1: UTF-8 validering
   try {
@@ -26,15 +30,79 @@ function isCorrupt(value: string): boolean {
   return false
 }
 
-function nukeAllAuthKeys(): void {
+/**
+ * KRITISK: Rens ALLE Supabase auth-relaterte nøkler atomisk.
+ * Dette stopper infinite loops hvor Supabase reloader fra andre nøkler.
+ */
+function clearAllSupabaseStorage(): void {
+  const now = Date.now();
+  
+  // Debounce: ikke kjør mer enn én gang per 5 sekunder
+  if (now - lastClearTime < CLEAR_DEBOUNCE_MS) {
+    console.warn('[SafeStorage] Clear allerede kjørt nylig, ignorerer');
+    return;
+  }
+  lastClearTime = now;
+  
+  console.warn('[SafeStorage] RENSER ALLE Supabase storage-nøkler...');
+  
+  // Finn og fjern alle Supabase auth-relaterte nøkler fra localStorage
+  const keysToRemove: string[] = [];
   try {
-    const keys = Object.keys(localStorage)
-    keys
-      .filter(k => k.startsWith('sb-'))
-      .forEach(k => {
-        try { localStorage.removeItem(k) } catch { /* noop */ }
-      })
-  } catch { /* noop */ }
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (
+        key.startsWith('sb-') ||
+        key.includes('supabase') ||
+        key.includes('auth-token') ||
+        key.includes('gotrue')
+      )) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => {
+      try { 
+        localStorage.removeItem(key); 
+        console.warn(`[SafeStorage] Fjernet: ${key}`);
+      } catch {}
+    });
+  } catch {}
+  
+  // Rens også sessionStorage
+  try {
+    const ssKeys: string[] = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key && (
+        key.startsWith('sb-') ||
+        key.includes('supabase') ||
+        key.includes('auth-token') ||
+        key.includes('gotrue')
+      )) {
+        ssKeys.push(key);
+      }
+    }
+    ssKeys.forEach(key => {
+      try { 
+        sessionStorage.removeItem(key);
+        console.warn(`[SafeStorage] Fjernet fra sessionStorage: ${key}`);
+      } catch {}
+    });
+  } catch {}
+  
+  console.warn('[SafeStorage] Alle Supabase storage-nøkler ryddet');
+  
+  // KRITISK: Hard reload for å stoppe loopen permanent
+  // Dette sikrer at siden starter på nytt med tom, ren storage
+  if (typeof window !== 'undefined') {
+    console.warn('[SafeStorage] Hard reload for å fullføre rensing...');
+    window.location.reload();
+  }
+}
+
+// Deprecated: behold for bakoverkompatibilitet
+function nukeAllAuthKeys(): void {
+  clearAllSupabaseStorage();
 }
 
 export const safeStorage: {
@@ -47,14 +115,14 @@ export const safeStorage: {
       if (typeof window === 'undefined') return null
       const value = localStorage.getItem(key)
       if (value !== null && isCorrupt(value)) {
-        console.warn(`[SafeStorage] Korrupt verdi for ${key}, renser alle sb-*`)
-        nukeAllAuthKeys()
+        console.warn(`[SafeStorage] Korrupt verdi for ${key}, renser alle nøkler`)
+        clearAllSupabaseStorage()
         return null
       }
       return value
     } catch (err) {
       console.warn(`[SafeStorage] getItem feilet for ${key}:`, err)
-      nukeAllAuthKeys()
+      clearAllSupabaseStorage()
       return null
     }
   },
@@ -77,3 +145,6 @@ export const safeStorage: {
     }
   },
 }
+
+// Export for bruk i AuthContext og andre steder
+export { clearAllSupabaseStorage, nukeAllAuthKeys };

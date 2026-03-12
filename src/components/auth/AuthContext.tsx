@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/utils';
 import { Session, User, AuthError } from '@supabase/supabase-js';
+import { clearAllSupabaseStorage } from '@/lib/supabase/safe-storage';
 
 interface AuthContextType {
   user: User | null;
@@ -41,20 +42,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const lastRefreshError = useRef<AuthError | null>(null);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Rydd eventuelle korrupte Supabase-nøkler ved mount
+  // KRITISK: Rydd alle korrupte Supabase-nøkler ved mount
+  // Dette forhindrer infinite loops hvor Supabase reloader fra andre nøkler
   useEffect(() => {
-    const keys = Object.keys(localStorage)
-    keys.forEach(key => {
-      if (key.startsWith('sb-')) {
-        try {
-          const val = localStorage.getItem(key)
-          if (val) JSON.parse(val)
-        } catch {
-          localStorage.removeItem(key)
+    try {
+      // Sjekk for korrupte nøkler - hvis funnet, ryd ALT og reload
+      const keys = Object.keys(localStorage);
+      let foundCorrupt = false;
+      
+      for (const key of keys) {
+        if (key.startsWith('sb-') || key.includes('supabase') || key.includes('auth-token')) {
+          try {
+            const val = localStorage.getItem(key);
+            if (val) {
+              // Test UTF-8 og JSON
+              const enc = new TextEncoder().encode(val);
+              new TextDecoder('utf-8', { fatal: true }).decode(enc);
+              if (val.startsWith('{') || val.startsWith('[')) {
+                JSON.parse(val);
+              }
+            }
+          } catch {
+            console.warn(`[AuthContext] Korrupt nøkkel funnet: ${key}`);
+            foundCorrupt = true;
+            break; // Avbryt loop, vi skal uansett rydde alt
+          }
         }
       }
-    })
-  }, [])
+      
+      if (foundCorrupt) {
+        console.warn('[AuthContext] Korrupt storage oppdaget, rydder alle nøkler...');
+        clearAllSupabaseStorage();
+        // clearAllSupabaseStorage gjør window.location.reload()
+      }
+    } catch {
+      // Ignore errors under initial sjekk
+    }
+  }, []);
 
   // Clear any pending refresh timeouts on unmount
   useEffect(() => {
@@ -146,15 +170,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!mounted) return
 
         if (error) {
-          console.warn('[AuthContext] Session error, renser storage:', error.message)
-          // Rens korrupt storage
-          ;['sb-vuxbjlykgmzskxbclquf-auth-token',
-            'sb-vuxbjlykgmzskxbclquf-auth-token-code-verifier']
-            .forEach(k => { try { localStorage.removeItem(k) } catch { /* noop */ } })
-          if (mounted) {
-            setSession(null)
-            setUser(null)
-          }
+          console.warn('[AuthContext] Session error:', error.message)
+          // KRITISK: Rens ALLE Supabase-nøkler, ikke bare spesifikke
+          clearAllSupabaseStorage();
+          // clearAllSupabaseStorage gjør window.location.reload()
         } else {
           if (mounted) {
             setSession(session)
@@ -163,16 +182,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         // Invalid UTF-8 eller annen storage-korrupsjon
-        console.warn('[AuthContext] Korrupt auth-storage, renser:', err)
+        console.warn('[AuthContext] Korrupt auth-storage:', err)
         if (mounted) {
-          // SafeStorage håndterer dette, men rens manuelt som backup
-          try {
-            Object.keys(localStorage)
-              .filter(k => k.startsWith('sb-'))
-              .forEach(k => { try { localStorage.removeItem(k) } catch { /* noop */ } })
-          } catch { /* noop */ }
-          setSession(null)
-          setUser(null)
+          // KRITISK: Rens alle nøkler og reload
+          clearAllSupabaseStorage();
+          // clearAllSupabaseStorage gjør window.location.reload()
         }
       } finally {
         if (mounted) setLoading(false)
