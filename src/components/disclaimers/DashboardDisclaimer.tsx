@@ -1,3 +1,5 @@
+"use client"
+
 import { BookOpen, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 

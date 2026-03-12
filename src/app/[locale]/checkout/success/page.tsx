@@ -35,14 +35,14 @@ export default async function CheckoutSuccessPage({
           {tPricing('success.description', { tier: tierName })}
         </p>
         {tierData.kltMonthly > 0 && (
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4">
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4" suppressHydrationWarning>
             <p className="text-yellow-300 font-semibold">
               🪙 {tierData.kltMonthly.toLocaleString()} KLT tokens/mnd aktivert
             </p>
           </div>
         )}
         {tierData.kltSignup > 0 && (
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4">
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4" suppressHydrationWarning>
             <p className="text-yellow-300 font-semibold">
               🪙 {tierData.kltSignup.toLocaleString()} KLT tokens mottatt
             </p>

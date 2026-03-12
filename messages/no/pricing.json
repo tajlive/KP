@@ -1,4 +1,45 @@
 {
+  "metadata": {
+    "title": "Priser - Klarpakke Universitet",
+    "description": "Velg den planen som passer deg. Start gratis med Student, eller oppgrader til Bachelor, Master eller PhD for mer avanserte funksjoner."
+  },
+  "hero": {
+    "title": "Velg din læringsreise",
+    "subtitle": "Fra nybegynner til ekspert. Start gratis og oppgrader når du er klar."
+  },
+  "plans": {
+    "student": {
+      "description": "Perfekt for å komme i gang"
+    },
+    "bachelor": {
+      "description": "For seriøse tradere"
+    },
+    "master": {
+      "description": "Avanserte verktøy"
+    },
+    "phd": {
+      "description": "Full tilgang"
+    }
+  },
+  "free": "Gratis",
+  "startFree": "Start gratis",
+  "startTrial": "Start prøveperiode",
+  "comparison": {
+    "title": "Sammenlign planer",
+    "feature": "Funksjon"
+  },
+  "faq": {
+    "title": "Ofte stilte spørsmål"
+  },
+  "trust": {
+    "title": "Sikker betaling med"
+  },
+  "cta": {
+    "title": "Klar til å starte?",
+    "subtitle": "Bli med tusenvis av studenter som lærer å trade på en trygg måte.",
+    "button": "Kom i gang nå",
+    "guarantee": "30-dagers pengene-tilbake-garanti"
+  },
   "success": {
     "loadingTitle": "Behandler betaling...",
     "loadingMessage": "Vennligst vent...",

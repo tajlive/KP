@@ -8,7 +8,7 @@ export interface PaperTradingSession {
   user_id: string;
   trading_pair: string;
   mode: 'paper' | 'live';
-  strategy: string;
+  strategy_id: string;
   status: 'active' | 'paused' | 'stopped';
   starting_capital_nok: number;
   current_capital_nok: number;
@@ -54,7 +54,7 @@ export async function createPaperTradingSession(
       user_id: userId,
       trading_pair: 'BTCUSDT',
       mode: 'paper',
-      strategy: 'manual',
+      strategy_id: 'manual',
       status: 'active',
       starting_capital_nok: 100000,
       current_capital_nok: 100000,
