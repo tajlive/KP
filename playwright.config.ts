@@ -44,7 +44,7 @@ export default defineConfig({
   ],
   
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -139,13 +139,13 @@ export default defineConfig({
     },
   ],
 
-  // Local dev server (not used in CI - we test against preview/prod)
-  webServer: process.env.CI || process.env.TEST_AGAINST_PROD 
+  // Local dev server (not used in CI or when testing against prod)
+  webServer: process.env.CI || process.env.TEST_AGAINST_PROD || process.env.PLAYWRIGHT_TEST_BASE_URL
     ? undefined 
     : {
         command: 'npm run dev',
         url: 'http://localhost:3000',
         reuseExistingServer: true,
-        timeout: 120_000,
+        timeout: 180_000,
       },
 });
