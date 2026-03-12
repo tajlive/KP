@@ -56,6 +56,27 @@ export type Database = {
         }
         Relationships: []
       }
+      _trigger_debug: {
+        Row: {
+          created_at: string | null
+          event: string | null
+          id: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event?: string | null
+          id?: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event?: string | null
+          id?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       admin_alerts: {
         Row: {
           acknowledged: boolean | null
@@ -596,7 +617,7 @@ export type Database = {
         }
         Relationships: []
       }
-      auto_trades: {
+      auto_trades_legacy: {
         Row: {
           auto_trading_run_id: string | null
           client_order_id: string | null
@@ -2698,7 +2719,7 @@ export type Database = {
           },
         ]
       }
-      live_trades: {
+      live_trades_legacy: {
         Row: {
           amount: number
           binance_order_id: string
@@ -3109,6 +3130,42 @@ export type Database = {
           id?: string
           plan_type?: string | null
           status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      page_visits: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_hash: string | null
+          path: string
+          referrer: string | null
+          session_id: string | null
+          time_spent_seconds: number | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          path: string
+          referrer?: string | null
+          session_id?: string | null
+          time_spent_seconds?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+          time_spent_seconds?: number | null
+          user_agent?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -4617,7 +4674,7 @@ export type Database = {
           },
         ]
       }
-      trade_history: {
+      trade_history_legacy: {
         Row: {
           closed_at: string | null
           entry_price: number
@@ -4704,7 +4761,7 @@ export type Database = {
             foreignKeyName: "trade_notes_trade_id_fkey"
             columns: ["trade_id"]
             isOneToOne: false
-            referencedRelation: "auto_trades"
+            referencedRelation: "auto_trades_legacy"
             referencedColumns: ["id"]
           },
         ]
@@ -6917,6 +6974,16 @@ export type Database = {
         }[]
       }
       get_avg_onboarding_time: { Args: never; Returns: string }
+      get_cron_jobs_status: {
+        Args: never
+        Returns: {
+          active: boolean
+          jobname: string
+          schedule: string
+          siste_kjøring: string
+          siste_status: string
+        }[]
+      }
       get_daily_trading_metrics: {
         Args: { p_days?: number; p_user_id: string }
         Returns: {
@@ -7036,6 +7103,40 @@ export type Database = {
           winning_trades: number
         }[]
       }
+      get_rls_status: {
+        Args: never
+        Returns: {
+          enabled: number
+          tables: Json
+          total: number
+        }[]
+      }
+      get_system_metrics: {
+        Args: never
+        Returns: {
+          metric_name: string
+          metric_unit: string
+          metric_value: number
+        }[]
+      }
+      get_top_pages: {
+        Args: { p_limit?: number; p_start_date?: string }
+        Returns: {
+          path: string
+          visits: number
+        }[]
+      }
+      get_top_tables_by_rows: {
+        Args: { limit_count?: number }
+        Returns: {
+          rader: number
+          tablename: string
+        }[]
+      }
+      get_unique_visitors: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: number
+      }
       get_user_entitlements: {
         Args: { p_user_id: string }
         Returns: {
@@ -7098,6 +7199,10 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: undefined
       }
+      initialize_user_manually: {
+        Args: { user_uuid: string }
+        Returns: undefined
+      }
       is_admin: { Args: { user_uuid: string }; Returns: boolean }
       is_bot_healthy: { Args: { p_bot_id: string }; Returns: boolean }
       is_trading_allowed: { Args: never; Returns: boolean }
@@ -7128,6 +7233,14 @@ export type Database = {
         }[]
       }
       process_conditional_orders: { Args: never; Returns: number }
+      process_pending_notifications: {
+        Args: { batch_size?: number }
+        Returns: {
+          failed: number
+          processed: number
+          skipped: number
+        }[]
+      }
       record_app_event: {
         Args: {
           p_event_name: string
@@ -7174,6 +7287,10 @@ export type Database = {
       }
       set_trading_mode: {
         Args: { new_mode: string; user_uuid: string }
+        Returns: boolean
+      }
+      should_send_notification: {
+        Args: { p_notification_type: string; p_user_id: string }
         Returns: boolean
       }
       store_binance_keys: {
