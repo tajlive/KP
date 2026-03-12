@@ -33,7 +33,7 @@ export function AdminLoginGate({ children }: AdminLoginGateProps) {
       }
 
       const { data: profile } = await supabase
-        .from('user_profiles' as any)
+        .from('user_profiles')
         .select('role')
         .eq('id', user.id)
         .single() as any

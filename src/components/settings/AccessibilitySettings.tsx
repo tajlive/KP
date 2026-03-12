@@ -18,7 +18,7 @@ export default function AccessibilitySettings() {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const { data } = await supabase
-            .from('user_profiles' as any)
+            .from('user_profiles')
             .select('font_size_preference, high_contrast_mode')
             .eq('id', user.id)
             .single() as any;
@@ -51,7 +51,7 @@ export default function AccessibilitySettings() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase
-          .from('user_profiles' as any)
+          .from('user_profiles')
           .update({ font_size_preference: size })
           .eq('id', user.id);
 
@@ -73,7 +73,7 @@ export default function AccessibilitySettings() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase
-          .from('user_profiles' as any)
+          .from('user_profiles')
           .update({ high_contrast_mode: enabled })
           .eq('id', user.id);
 

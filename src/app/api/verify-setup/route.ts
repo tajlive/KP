@@ -29,7 +29,7 @@ export async function GET() {
     // Check connection by fetching a public table (or users if RLS allows)
     // We try to fetch 1 row from 'users'
     const { data: users, error: usersError } = await supabase
-      .from("users")
+      .from("user_profiles")
       .select("count")
       .limit(1);
 
