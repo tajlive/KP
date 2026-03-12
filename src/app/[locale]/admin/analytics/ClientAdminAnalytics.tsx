@@ -297,7 +297,9 @@ export default function ClientAdminAnalytics() {
                         </div>
                         <div className="text-right">
                           <p className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(visitor.created_at))}
+                            {visitor.created_at 
+                              ? formatDistanceToNow(new Date(visitor.created_at)) 
+                              : '—'}
                           </p>
                           {visitor.referrer && (
                             <p className="text-xs text-blue-500 truncate max-w-[120px]">
