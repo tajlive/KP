@@ -123,7 +123,7 @@ const nextConfig = {
       { source: "/blog/:path*", destination: "/en/blog/:path*", permanent: true },
       { source: "/dashboard", destination: "/en/dashboard", permanent: true },
       { source: "/marketplace", destination: "/en/marketplace", permanent: true },
-      { source: "/settings", destination: "/en/settings", permanent: true },
+      { source: "/settings", destination: "/innstillinger", permanent: true },
       { source: "/trading", destination: "/en/trading", permanent: true },
       { source: "/portfolio", destination: "/en/portfolio", permanent: true },
       
@@ -132,6 +132,23 @@ const nextConfig = {
       { source: "/auto-trade/:path*", destination: "/dashboard/trading", permanent: true },
       { source: "/auto-trading", destination: "/dashboard/trading", permanent: true },
       { source: "/auto-trading-ai", destination: "/dashboard/trading", permanent: true },
+
+      // Consolidated routes
+      { source: "/admin-dashboard", destination: "/admin", permanent: true },
+      { source: "/:locale/admin-dashboard", destination: "/:locale/admin", permanent: true },
+      { source: "/leaderboard-preview", destination: "/leaderboard", permanent: true },
+      { source: "/:locale/leaderboard-preview", destination: "/:locale/leaderboard", permanent: true },
+      { source: "/super-admin", destination: "/admin", permanent: true },
+      { source: "/:locale/super-admin", destination: "/:locale/admin", permanent: true },
+      
+      // Deleted routes → redirect to appropriate pages
+      { source: "/beta-testing", destination: "/beta", permanent: true },
+      { source: "/:locale/beta-testing", destination: "/:locale/beta", permanent: true },
+      { source: "/signals", destination: "/dashboard", permanent: true },
+      { source: "/:locale/signals", destination: "/:locale/dashboard", permanent: true },
+      { source: "/simulator", destination: "/paper-trading", permanent: true },
+      { source: "/:locale/simulator", destination: "/:locale/paper-trading", permanent: true },
+      { source: "/:locale/settings", destination: "/:locale/innstillinger", permanent: true },
     ];
   },
 

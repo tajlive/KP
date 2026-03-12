@@ -75,7 +75,7 @@ export function DashboardSidebar() {
     ...(isAdmin
       ? [
           {
-            href: "/admin-dashboard",
+            href: "/admin",
             label: t("admin"),
             icon: Shield,
             admin: true,

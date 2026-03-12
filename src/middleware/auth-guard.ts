@@ -5,8 +5,6 @@ import { NextResponse } from "next/server";
 export const PROTECTED_PATHS = [
   "/dashboard",
   "/admin",
-  "/admin-dashboard",
-  "/super-admin",
   "/profil",
   "/innstillinger",
   "/courses",
@@ -20,17 +18,13 @@ export const PROTECTED_PATHS = [
   "/varsler",
   "/konto",
   "/live-trading",
-  "/simulator",
   "/leagues",
   "/beta",
-  "/beta-testing",
   "/copy-trading",
   "/marketplace",
   "/profile",
   "/quiz",
-  "/signals",
   "/interessetest",
-  "/settings",
 ] as const;
 
 export const PUBLIC_PATHS = [

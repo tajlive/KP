@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 
-export default function AdminRedirectPage({
-  params: { locale },
-}: {
-  params: { locale: string };
-}) {
-  // KLA-101: Konsolider admin-ruter til /admin-dashboard
-  redirect(`/${locale}/admin-dashboard`);
+interface PageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AdminPage({ params }: PageProps) {
+  const { locale } = await params;
+  // Admin root redirects to analytics dashboard
+  redirect(`/${locale}/admin/analytics`);
 }
