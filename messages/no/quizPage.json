@@ -49,7 +49,7 @@
       "options": {
         "0": "Ingen risiko",
         "1": "Potensielt høyere tap enn investert beløp",
-        "2": "Garantert profitt",
+        "2": "Ingen risiko",
         "3": "Ingen påvirkning"
       },
       "explanation": "Leveraged trading øker både potensiell profitt og tap. Du kan tape mer enn du investerte."

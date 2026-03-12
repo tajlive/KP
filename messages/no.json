@@ -238,7 +238,7 @@
   },
   "autoTrade": {
     "title": "AI Auto-Trading",
-    "subtitle": "100% gratis AI-drevet auto-trading",
+    "subtitle": "AI-basert auto-trading",
     "status": {
       "title": "Status",
       "active": "Aktiv",
@@ -336,7 +336,7 @@
   },
   "autoTrading": {
     "title": "AI Auto-Trading",
-    "subtitle": "100% gratis AI-drevet auto-trading",
+    "subtitle": "AI-basert auto-trading",
     "status": {
       "title": "Status",
       "active": "Aktiv",
@@ -874,7 +874,7 @@
       "yourBalance": "Din Beholdning",
       "founderBenefits": {
         "title": "Founder-fordeler",
-        "desc": "Garantert 10 000 KLT til de 100 første studentene (0.1% av total tilgang)."
+        "desc": "10 000 KLT til de 100 første studentene (0.1% av total tilgang)."
       },
       "learnEarn": {
         "title": "Lær & Tjen",

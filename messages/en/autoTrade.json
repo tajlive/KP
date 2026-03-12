@@ -1,6 +1,6 @@
 {
   "title": "AI Auto-Trading",
-  "subtitle": "100% gratis AI-drevet auto-trading",
+  "subtitle": "AI-based auto-trading",
   "status": {
     "title": "Status",
     "active": "Active",
@@ -36,7 +36,7 @@
     "rsi": "RSI"
   },
   "howItWorks": {
-    "title": "Hvordan Det Fungerer (100% Gratis)",
+    "title": "How It Works",
     "step1": {
       "title": "Markedsdata",
       "description": "CoinLore API (gratis, 14,000+ coins)",

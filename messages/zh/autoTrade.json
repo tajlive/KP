@@ -1,6 +1,6 @@
 {
   "title": "AI 自动交易",
-  "subtitle": "100% 免费 AI 驱动自动交易",
+  "subtitle": "AI 自动交易",
   "status": {
     "title": "状态",
     "active": "活跃",
@@ -36,7 +36,7 @@
     "rsi": "RSI"
   },
   "howItWorks": {
-    "title": "工作原理（100% 免费）",
+    "title": "工作原理",
     "step1": {
       "title": "市场数据",
       "description": "CoinLore API（免费）",

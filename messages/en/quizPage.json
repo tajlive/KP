@@ -49,7 +49,7 @@
       "options": {
         "0": "No risk",
         "1": "Potentially higher losses than invested amount",
-        "2": "Guaranteed profit",
+        "2": "No risk",
         "3": "No impact"
       },
       "explanation": "Leveraged trading increases both potential profit and loss. You can lose more than you invested."
