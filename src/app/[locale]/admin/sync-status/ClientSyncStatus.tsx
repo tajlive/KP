@@ -78,7 +78,7 @@ export default function SyncStatusPage() {
 
       // Calculate stats
       const last24Hours = enrichedLogs.filter(
-        log => new Date(log.created_at).getTime() > Date.now() - 24 * 60 * 60 * 1000
+        log => log.created_at && new Date(log.created_at).getTime() > Date.now() - 24 * 60 * 60 * 1000
       );
 
       // Get unique users with API keys
@@ -154,7 +154,8 @@ export default function SyncStatusPage() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const formatTime = (date: string) => {
+  const formatTime = (date: string | null | undefined) => {
+    if (!date) return '—';
     return new Date(date).toLocaleString('no-NO');
   };
 
