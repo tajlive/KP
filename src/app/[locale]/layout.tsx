@@ -112,12 +112,12 @@ export async function generateMetadata({
     title: {
       template: "%s | Klarpakke",
       default: isNo
-        ? "Klarpakke — Lær krypto. Øv med lekepenger. Tjen når du er klar."
-        : "Klarpakke — Learn crypto. Practice with play money. Earn when you're ready.",
+        ? "Klarpakke — Krypto trading bot"
+        : "Klarpakke — Crypto Trading Bot",
     },
     description: isNo
-      ? "Norges eneste plattform som kombinerer kurs, autotrading og papirhandel — alt på norsk. Start gratis, ingen kort nødvendig."
-      : "Norway's only platform combining courses, autotrading and paper trading — in Norwegian. Free to start, no card needed.",
+      ? "Norges smarteste crypto trading bot. Øv med papirhandel, aktiver autotrading og la boten jobbe for deg — helt på norsk."
+      : "Norway's smartest crypto trading bot. Practice with paper trading, activate autotrading, and let the bot work for you.",
     keywords: ["crypto trading", "bitcoin", "kryptovaluta", "paper trading", "trading bot", "Norge"],
     openGraph: {
       images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
