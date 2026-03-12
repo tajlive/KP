@@ -196,7 +196,8 @@
     "taxReport": "Skatterapport",
     "settings": "Innstillinger",
     "admin": "Administrator",
-    "logout": "Logg ut"
+    "logout": "Logg ut",
+    "paperTrading": "Paper Trading"
   },
   "topBar": {
     "myOverview": "Min Oversikt",
