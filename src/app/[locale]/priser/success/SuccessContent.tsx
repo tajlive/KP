@@ -39,7 +39,7 @@ export default function SuccessContent() {
 
         // Sjekk at abonnementet ble oppdatert
         const { data: profile, error } = await supabase
-          .from('user_profiles' as unknown)
+          .from('user_profiles' as any)
           .select('subscription_tier, subscription_status')
           .eq('id', user.id)
           .single() as any;
