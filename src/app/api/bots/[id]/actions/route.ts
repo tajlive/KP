@@ -33,7 +33,7 @@ export const POST = withRateLimit(
     }
 
     const { action } = parsed.data;
-    const db = (await createClient()) as unknown;
+    const db: any = (await createClient()) as unknown;
 
     const statusMap: Record<string, string> = {
       pause: "paused",
@@ -47,9 +47,9 @@ export const POST = withRateLimit(
       .from("strategies")
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq("id", id)
-      .eq("user_id", user.id)
+      .eq("user_id" as any, user.id)
       .select("id, status, strategy_type")
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (!strategy) {
       return NextResponse.json(
@@ -75,7 +75,7 @@ export const POST = withRateLimit(
       .select("id")
       .eq("config_id", id)
       .eq("status", "ACTIVE")
-      .single();
+      .single() as any;
 
     await db
       .from("auto_trading_sessions")

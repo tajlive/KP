@@ -81,7 +81,7 @@ export async function getPortfolio(
     .select(
       "id, current_capital, initial_capital, total_pnl, total_trades, winning_trades",
     )
-    .eq("user_id", user.id)
+    .eq("user_id" as any, user.id)
     .eq("mode", mode)
     .eq("status", "active")
     .order("created_at", { ascending: false })
@@ -115,7 +115,7 @@ export async function getRecentTrades(
   const { data } = await supabase
     .from("trades")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id" as any, user.id)
     .eq("mode", mode)
     .order("executed_at", { ascending: false })
     .limit(limit);
@@ -129,7 +129,7 @@ export async function getActiveStrategies(
   const { data } = await supabase
     .from("trading_sessions")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id" as any, user.id)
     .eq("mode", mode)
     .eq("status", "active");
 
@@ -160,7 +160,7 @@ export async function getAllStrategies(
   const { data } = await supabase
     .from("trading_sessions")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id" as any, user.id)
     .eq("mode", mode)
     .order("created_at", { ascending: false });
 
@@ -194,7 +194,7 @@ export async function startStrategy(
   await supabase
     .from("trading_sessions")
     .update({ status: "stopped", stopped_at: new Date().toISOString() })
-    .eq("user_id", user.id)
+    .eq("user_id" as any, user.id)
     .eq("mode", mode)
     .eq("status", "active");
 
@@ -217,7 +217,7 @@ export async function startStrategy(
       started_at: new Date().toISOString(),
     })
     .select()
-    .single();
+    .single() as any;
 
   if (error) throw error;
 
@@ -250,7 +250,7 @@ export async function stopStrategy(
       stopped_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
-    .eq("user_id", user.id)
+    .eq("user_id" as any, user.id)
     .eq("mode", mode)
     .eq("strategy_id", strategyType)
     .eq("status", "active");
@@ -315,7 +315,7 @@ export async function createPaperTrade(
       executed_at: trade.executed_at || new Date().toISOString(),
     })
     .select()
-    .single();
+    .single() as any;
 
   if (error) throw error;
   return data;

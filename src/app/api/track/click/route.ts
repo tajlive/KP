@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       .from('campaign_contacts')
       .select('email')
       .eq('id', contactId)
-      .single();
+      .single() as any;
 
     // Logg klikk
     await supabase.from('email_tracking').insert({

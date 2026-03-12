@@ -3,8 +3,7 @@
 import {
   Locale,
   localeLabels,
-  needsReview,
-  visibleLocales,
+  locales,
 } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Check, Globe } from "lucide-react";
@@ -45,11 +44,11 @@ export function LanguageSwitcher({
       <button
         onClick={() => {
           // Cycle through visible locales only
-          const currentIndex = visibleLocales.indexOf(
-            locale as (typeof visibleLocales)[number],
+          const currentIndex = locales.indexOf(
+            locale as (typeof locales)[number],
           );
-          const nextIndex = (currentIndex + 1) % visibleLocales.length;
-          switchLocale(visibleLocales[nextIndex]);
+          const nextIndex = (currentIndex + 1) % locales.length;
+          switchLocale(locales[nextIndex]);
         }}
         className={cn(
           "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium",
@@ -72,7 +71,7 @@ export function LanguageSwitcher({
           className,
         )}
       >
-        {visibleLocales.map((l) => {
+        {locales.map((l) => {
           const isActive = l === locale;
           const label = localeLabels[l];
           const needReview = needsReview.includes(l);
@@ -127,7 +126,7 @@ export function LanguageSwitcher({
             <div className="px-3 py-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
               {t("language") || "Language"}
             </div>
-            {visibleLocales.map((l) => {
+            {locales.map((l) => {
               const isActive = l === locale;
               const label = localeLabels[l];
               const needReview = needsReview.includes(l);

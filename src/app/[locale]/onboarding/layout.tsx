@@ -6,13 +6,14 @@ import { Logo } from "@/components/Logo";
 
 interface OnboardingLayoutProps {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 export default async function OnboardingLayout({
   children,
-  params: { locale },
+  params,
 }: OnboardingLayoutProps) {
+  const { locale } = await params;
   const t = await getTranslations("onboarding");
   const supabase = await createClient();
 
@@ -29,8 +30,8 @@ export default async function OnboardingLayout({
   const { data: profile } = await supabase
     .from("user_profiles")
     .select("onboarding_step, onboarding_completed")
-    .eq("user_id", user.id)
-    .single();
+    .eq("user_id" as any, user.id)
+    .single() as any;
 
   // Hvis onboarding allerede er fullført → dashboard
   if (profile?.onboarding_completed) {

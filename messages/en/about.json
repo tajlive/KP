@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "title": "About Us | Klarpakke",
+    "description": "Learn more about the team behind Klarpakke and our mission to make crypto trading accessible for everyone in Norway."
+  },
   "hero": {
     "badge": "About Us",
     "title": "The Team Behind Klarpakke",
@@ -18,11 +22,32 @@
     "values": "Education first. Safety always. Growth together."
   },
   "values": {
-    "title": "Our Values"
+    "title": "Our Values",
+    "education": {
+      "title": "Education First",
+      "desc": "We believe knowledge is the foundation of successful trading."
+    },
+    "transparency": {
+      "title": "Transparency",
+      "desc": "We are open about risks and never promise unrealistic returns."
+    },
+    "norwegian": {
+      "title": "Made for Norway",
+      "desc": "A platform built specifically for Norwegian traders."
+    },
+    "risk": {
+      "title": "Risk Awareness",
+      "desc": "We emphasize risk management in all our teaching."
+    }
   },
   "different": {
     "title": "What Makes Us Different",
-    "subtitle": "We focus on education and safe practice before real trading"
+    "subtitle": "We focus on education and safe practice before real trading",
+    "paperTrading": "Practice with paper trading before risking real money",
+    "norwegian": "The only Norwegian-language crypto education platform",
+    "education": "Comprehensive courses from beginner to advanced",
+    "transparency": "Clear information about fees, risks, and strategies",
+    "community": "Join a community of Norwegian crypto learners"
   },
   "risk": {
     "warning": "Trading cryptocurrency involves risk. Never invest more than you can afford to lose."

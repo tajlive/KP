@@ -535,7 +535,7 @@ async function processSession(
       executed_at: new Date().toISOString(),
     })
     .select("id")
-    .single();
+    .single() as any;
 
   if (tradeError) {
     console.error("Trade insert failed:", {
@@ -697,7 +697,7 @@ export async function GET(req: NextRequest) {
             .from("trades")
             .select("*")
             .eq("id", result.trade_id)
-            .single();
+            .single() as any;
 
           if (trade) {
             await mirrorTradeToFollowers(db, session.id, trade);

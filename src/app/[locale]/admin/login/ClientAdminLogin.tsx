@@ -41,7 +41,7 @@ export default function ClientAdminLogin() {
         .from('user_profiles' as unknown)
         .select('role')
         .eq('user_id', data.user?.id)
-        .single()
+        .single() as any
 
       if (profileError || profile?.role !== 'admin') {
         await supabase.auth.signOut()

@@ -9,7 +9,7 @@ export function useActiveStrategies(userId: string | null) {
       const { data, error } = await supabase
         .from("strategies" as unknown)
         .select("*")
-        .eq("user_id", userId!)
+        .eq("user_id" as any, userId!)
         .eq("status", "active");
       if (error) throw error;
       return data ?? [];

@@ -43,7 +43,7 @@ export default function ClientCampaign() {
           .from('user_profiles' as unknown)
           .select('role')
           .eq('user_id', user.id)
-          .single();
+          .single() as any;
 
         setIsAdmin(profile?.role === 'admin');
       } catch (_e) {

@@ -26,7 +26,7 @@ export async function grantFounderStatus(userId: string) {
       .from("user_profiles")
       .select("role")
       .eq("id", adminUser.id)
-      .single();
+      .single() as any;
     if (!isWhitelisted && adminProfile?.role !== "admin") {
       throw new Error("Forbidden: Admin access required");
     }
@@ -36,7 +36,7 @@ export async function grantFounderStatus(userId: string) {
       .from("user_profiles")
       .select("*")
       .eq("id", userId)
-      .single();
+      .single() as any;
 
     if (userError || !user) throw new Error(`User not found: ${userId}`);
     if (user.role === "founder")
@@ -54,8 +54,8 @@ export async function grantFounderStatus(userId: string) {
     const { data: balance } = await supabase
       .from("user_klt_balances")
       .select("balance")
-      .eq("user_id", userId)
-      .single();
+      .eq("user_id" as any, userId)
+      .single() as any;
 
     const currentBalance = balance?.balance || 0;
     const newBalance = currentBalance + 10000;
@@ -117,7 +117,7 @@ export async function banUser(userId: string, reason: string) {
       .from("user_profiles")
       .select("role")
       .eq("id", adminUser.id)
-      .single();
+      .single() as any;
     if (!isWhitelisted && adminProfile?.role !== "admin") {
       throw new Error("Forbidden: Admin access required");
     }
@@ -157,7 +157,7 @@ export async function getUserDetails(userId: string) {
       .from("user_profiles")
       .select("*, user_klt_balances(balance), beta_signups(*)")
       .eq("id", userId)
-      .single();
+      .single() as any;
 
     if (error) throw error;
     return { success: true, data };

@@ -69,9 +69,9 @@ export function GamificationCard() {
       
       // Fetch achievements (table exists)
       const { data: achievementsData } = await supabase
-        .from("user_achievements")
+        .from("user_achievements" as any)
         .select("*")
-        .eq("user_id", user.id);
+        .eq("user_id" as any, user.id);
       
       if (achievementsData) {
         setAchievements(achievementsData);

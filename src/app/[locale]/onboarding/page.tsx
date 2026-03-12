@@ -35,11 +35,15 @@ function OnboardingErrorFallback({ locale }: { locale: string }) {
 }
 
 export default async function OnboardingPage({
-  params: { locale },
+  params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  let locale: string;
+  
   try {
+    const { locale: l } = await params;
+    locale = l;
     const supabase = await createClient();
 
     const {
@@ -54,8 +58,8 @@ export default async function OnboardingPage({
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("onboarding_step, onboarding_completed")
-      .eq("user_id", user.id)
-      .single();
+      .eq("user_id" as any, user.id)
+      .single() as any;
 
     // Hvis fullført → dashboard
     if (profile?.onboarding_completed) {
@@ -76,6 +80,7 @@ export default async function OnboardingPage({
   } catch (error) {
     console.error('Onboarding page error:', error);
     // Return fallback UI istedenfor å krasje
-    return <OnboardingErrorFallback locale={locale} />;
+    // Hvis locale ikke er satt, bruk default
+    return <OnboardingErrorFallback locale={locale || 'no'} />;
   }
 }

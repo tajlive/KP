@@ -55,7 +55,7 @@ export function useCopyTrading() {
           .from("user_profiles")
           .select("tier")
           .eq("id", user.id)
-          .single();
+          .single() as any;
 
         if (profileError) throw profileError;
 
@@ -63,7 +63,7 @@ export function useCopyTrading() {
         const { count: paperTradesCount } = await supabase
           .from("trades")
           .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
+          .eq("user_id" as any, user.id)
           .eq("mode", "paper");
         const currentMode = "paper";
         const subscriptionTier = profile?.tier || "free";

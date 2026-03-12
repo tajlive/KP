@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "listingId required" }, { status: 400 });
   }
 
-  const db = (await createClient()) as unknown;
+  const db: any = (await createClient()) as unknown;
 
   const { data, error } = await db
     .from("strategy_reviews")
@@ -68,15 +68,15 @@ export const POST = withRateLimit(
     }
 
     const { listingId, rating, reviewText } = parsed.data;
-    const db = (await createClient()) as unknown;
+    const db: any = (await createClient()) as unknown;
 
     // Check if user already reviewed
     const { data: existing } = await db
       .from("strategy_reviews")
       .select("id")
       .eq("strategy_id", listingId)
-      .eq("user_id", user.id)
-      .single();
+      .eq("user_id" as any, user.id)
+      .single() as any;
 
     if (existing) {
       return NextResponse.json({ error: "Already reviewed" }, { status: 409 });
@@ -91,7 +91,7 @@ export const POST = withRateLimit(
         review: reviewText || null,
       })
       .select()
-      .single();
+      .single() as any;
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

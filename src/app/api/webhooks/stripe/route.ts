@@ -331,7 +331,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       .from("subscriptions")
       .select("user_id")
       .eq("stripe_subscription_id", subscription.id)
-      .single();
+      .single() as any;
 
     if (!sub?.user_id) return;
 
@@ -392,7 +392,7 @@ async function sendWelcomeEmail(userId: string, planType: string) {
       .from("user_profiles")
       .select("email, full_name")
       .eq("id", userId)
-      .single();
+      .single() as any;
 
     if (!profile?.email) return;
 
@@ -401,8 +401,8 @@ async function sendWelcomeEmail(userId: string, planType: string) {
     const { data: sub } = await supabase
       .from("subscriptions")
       .select("stripe_customer_id")
-      .eq("user_id", userId)
-      .single();
+      .eq("user_id" as any, userId)
+      .single() as any;
 
     let portalUrl = "https://www.klarpakke.no/no/dashboard/settings";
     if (sub?.stripe_customer_id) {
@@ -451,7 +451,7 @@ async function sendPaymentFailedEmail(
       .from("subscriptions")
       .select("user_id")
       .eq("stripe_subscription_id", subscriptionId)
-      .single();
+      .single() as any;
 
     if (!sub?.user_id) return;
 
@@ -459,7 +459,7 @@ async function sendPaymentFailedEmail(
       .from("user_profiles")
       .select("email, full_name")
       .eq("id", sub.user_id)
-      .single();
+      .single() as any;
 
     if (!profile?.email) return;
 

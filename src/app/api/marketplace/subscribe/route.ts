@@ -64,7 +64,7 @@ export async function POST(
       .select("*")
       .eq("id", listingId)
       .eq("status", "published")
-      .single();
+      .single() as any;
 
     if (listingError || !listing) {
       return NextResponse.json(
@@ -80,7 +80,7 @@ export async function POST(
       .eq("subscriber_id", userId)
       .eq("listing_id", listingId)
       .eq("status", "active")
-      .single();
+      .single() as any;
 
     if (existingSub) {
       return NextResponse.json(
@@ -99,7 +99,7 @@ export async function POST(
         .from("strategies" as unknown)
         .select("strategy_config, strategy_type, trading_pair, strategy_id")
         .eq("id", listing.strategy_id)
-        .single();
+        .single() as any;
 
       if (originalStrategy) {
         strategyConfig = originalStrategy.strategy_config || strategyConfig;
@@ -137,7 +137,7 @@ export async function POST(
         is_marketplace_listed: false,
       })
       .select()
-      .single();
+      .single() as any;
 
     // Fallback to trading_sessions
     if (strategyError) {
@@ -163,7 +163,7 @@ export async function POST(
           },
         })
         .select()
-        .single();
+        .single() as any;
 
       if (fallbackError) {
         console.error("Failed to create strategy:", fallbackError);
@@ -184,7 +184,7 @@ export async function POST(
           started_at: new Date().toISOString(),
         })
         .select()
-        .single();
+        .single() as any;
 
       if (subError) {
         console.error("Failed to create subscription:", subError);
@@ -213,7 +213,7 @@ export async function POST(
         started_at: new Date().toISOString(),
       })
       .select()
-      .single();
+      .single() as any;
 
     if (subError) {
       console.error("Failed to create subscription:", subError);

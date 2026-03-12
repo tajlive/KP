@@ -54,7 +54,7 @@ export function useAutoTradingRealtime(
         .from("trading_sessions")
         .select("*")
         .eq("id", sessionId)
-        .single();
+        .single() as any;
 
       if (sessionError) {
         throw sessionError;
@@ -196,7 +196,7 @@ export function useUserAutoTradingSessions(userId: string | null): {
       const { data, error } = await supabase
         .from("trading_sessions")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id" as any, userId)
         .order("started_at", { ascending: false })
         .limit(10);
 

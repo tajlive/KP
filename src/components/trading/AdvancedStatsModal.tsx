@@ -210,7 +210,7 @@ export default function AdvancedStatsModal({
     const supabase = createClient();
     try {
       const { data, error } = await supabase
-        .from("signals")
+        .from("signals" as any)
         .select("*")
         .order("created_at", { ascending: false })
         .limit(50);
@@ -228,7 +228,7 @@ export default function AdvancedStatsModal({
       const { data, error } = await supabase
         .from("auto_trading_backtests")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id" as any, userId)
         .order("created_at", { ascending: false })
         .limit(10);
 

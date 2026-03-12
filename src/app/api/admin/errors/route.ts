@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       .from('user_profiles' as unknown)
       .select('role')
       .eq('id', user.id)
-      .single();
+      .single() as any;
 
     if (profile?.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

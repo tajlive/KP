@@ -42,7 +42,7 @@ export async function checkRebalanceNeeded(
     .from('auto_trading_sessions')
     .select('*, config:user_auto_trading_configs(*)')
     .eq('id', sessionId)
-    .single()
+    .single() as any
 
   if (!session) {
     return { needsRebalance: false, deviations: [], suggestedTrades: [] }
@@ -206,7 +206,7 @@ export async function checkEducationStatus(
     .from('auto_trading_sessions')
     .select('*')
     .eq('id', sessionId)
-    .single()
+    .single() as any
 
   if (!session) {
     return {

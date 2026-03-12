@@ -36,8 +36,8 @@ export default function OnboardingStep3() {
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("onboarding_step, onboarding_completed, paper_balance")
-        .eq("user_id", user.id)
-        .single();
+        .eq("user_id" as any, user.id)
+        .single() as any;
 
       if (profile?.onboarding_completed) {
         router.push("/dashboard");
@@ -94,7 +94,7 @@ export default function OnboardingStep3() {
           onboarding_step: 3,
           paper_balance: paperBalance,
         })
-        .eq("user_id", user.id);
+        .eq("user_id" as any, user.id);
 
       if (error) throw error;
 

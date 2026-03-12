@@ -4,13 +4,13 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const authClient = (await createClient()) as unknown;
+  const authClient: any = (await createClient()) as unknown;
   const { data: { user } } = await authClient.auth.getUser();
 
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data: profile } = await authClient
-    .from("user_profiles").select("role").eq("id", user.id).single();
+    .from("user_profiles").select("role").eq("id", user.id).single() as any;
 
   const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
   if (!ADMIN_EMAILS.includes(user.email ?? "") && profile?.role !== "admin") {

@@ -9,7 +9,7 @@ interface RouteParams {
 
 // PATCH /api/risk-profiles/[id] - Update profile
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
-  const supabase = (await createClient()) as unknown;
+  const supabase: any = (await createClient()) as unknown;
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -25,7 +25,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     .eq('id', id)
     .eq('user_id', user.id)
     .select()
-    .single();
+    .single() as any;
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -36,7 +36,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 // DELETE /api/risk-profiles/[id]
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
-  const supabase = (await createClient()) as unknown;
+  const supabase: any = (await createClient()) as unknown;
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {

@@ -93,8 +93,8 @@ export default function AdminLayout({
         const { data: userData, error } = await supabase
           .from("user_profiles")
           .select("role")
-          .eq("user_id", user.id)
-          .single();
+          .eq("user_id" as any, user.id)
+          .single() as any;
 
         if (error) {
           console.error("[Admin Layout] Profile fetch error:", error);
@@ -126,7 +126,7 @@ export default function AdminLayout({
           await supabase
             .from("user_profiles")
             .update({ role: "admin", updated_at: new Date().toISOString() })
-            .eq("user_id", user.id);
+            .eq("user_id" as any, user.id);
         }
 
         console.info("[Admin Layout] Admin access granted");

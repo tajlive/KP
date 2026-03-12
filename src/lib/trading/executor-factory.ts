@@ -43,7 +43,7 @@ export class ExecutorFactory {
         "tier, binance_connected, binance_api_key_id, binance_api_secret_id",
       )
       .eq("id", userId)
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (profileError || !profile) {
       throw new Error("User profile not found");
@@ -111,7 +111,7 @@ export class ExecutorFactory {
       .from("trading_sessions" as unknown)
       .select("user_id, mode")
       .eq("id", sessionId)
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (error || !session) {
       throw new Error("Trading session not found");
@@ -134,7 +134,7 @@ export class ExecutorFactory {
       .from("user_profiles" as unknown)
       .select("tier, binance_connected")
       .eq("id", userId)
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (!profile) {
       return false;

@@ -22,8 +22,8 @@ export async function POST() {
     const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
       .select("id, onboarding_step, onboarding_completed, paper_balance")
-      .eq("user_id", user.id)
-      .single();
+      .eq("user_id" as any, user.id)
+      .single() as any;
 
     if (profileError || !profile) {
       return NextResponse.json(
@@ -59,7 +59,7 @@ export async function POST() {
         onboarding_completed: true,
         onboarding_completed_at: now,
       })
-      .eq("user_id", user.id);
+      .eq("user_id" as any, user.id);
 
     if (updateError) {
       console.error("Failed to update user profile:", updateError);
@@ -87,7 +87,7 @@ export async function POST() {
         updated_at: now,
       })
       .select("id")
-      .single();
+      .single() as any;
 
     if (sessionError) {
       console.error("Failed to create trading session:", sessionError);

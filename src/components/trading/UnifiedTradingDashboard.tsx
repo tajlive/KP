@@ -170,7 +170,7 @@ export default function UnifiedTradingDashboard({
         const { data: progress } = await sb
           .from("onboarding_progress")
           .select("is_completed")
-          .eq("user_id", userId)
+          .eq("user_id" as any, userId)
           .maybeSingle();
         if (!progress?.is_completed) {
           setShowWizard(true);

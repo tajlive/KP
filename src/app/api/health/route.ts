@@ -28,7 +28,7 @@ const startTime = Date.now();
 async function checkDatabase(): Promise<CheckResult> {
   const start = Date.now();
   try {
-    const supabase = (await createClient()) as unknown;
+    const supabase: any = (await createClient()) as unknown;
     const { error } = await supabase.from("user_profiles").select("id").limit(1);
     
     if (error) {

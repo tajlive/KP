@@ -14,7 +14,7 @@ interface GoldenTicket {
 
 export async function GET() {
   try {
-    const supabase = (await createClient()) as unknown;
+    const supabase: any = (await createClient()) as unknown;
     const {
       data: { user },
       error: authError,
@@ -61,7 +61,7 @@ export async function GET() {
 
 export async function POST() {
   try {
-    const supabase = (await createClient()) as unknown;
+    const supabase: any = (await createClient()) as unknown;
     const {
       data: { user },
       error: authError,
@@ -98,7 +98,7 @@ export async function POST() {
         status: "pending",
       })
       .select()
-      .single();
+      .single() as any;
 
     if (insertError) {
       console.error("Ticket creation error:", insertError);

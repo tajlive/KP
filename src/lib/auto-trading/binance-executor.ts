@@ -98,7 +98,7 @@ export async function executeTrade(
       .from("auto_trading_sessions")
       .select("*")
       .eq("id", sessionId)
-      .single();
+      .single() as any;
 
     if (!session || session.status !== "ACTIVE") {
       return {
@@ -423,7 +423,7 @@ export async function executeTrade(
         partial_tp_levels: partialTpLevels,
       })
       .select()
-      .single();
+      .single() as any;
 
     if (tradeError) {
       console.error("Failed to record trade:", tradeError);
@@ -540,7 +540,7 @@ export async function closeTrade(
       .from("auto_trading_sessions")
       .select("*")
       .eq("id", trade.session_id)
-      .single();
+      .single() as any;
 
     if (session) {
       const newBalance = session.current_capital_nok + pnl;
@@ -600,7 +600,7 @@ async function checkPhaseProgression(
     .from("auto_trading_sessions")
     .select("*, config:user_auto_trading_configs(*)")
     .eq("id", sessionId)
-    .single();
+    .single() as any;
 
   if (!session || !session.config) return;
 
@@ -921,7 +921,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   const { data: openTrades } = await supabase
     .from("auto_trading_trades")
     .select("*")
-    .eq("user_id", userId)
+    .eq("user_id" as any, userId)
     .eq("status", "OPEN");
 
   if (!openTrades || openTrades.length === 0) return;
@@ -930,8 +930,8 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   const { data: userConfig } = await supabase
     .from("user_auto_trading_configs")
     .select("binance_api_key, binance_api_secret, is_testnet")
-    .eq("user_id", userId)
-    .single();
+    .eq("user_id" as any, userId)
+    .single() as any;
 
   if (!userConfig?.binance_api_key || !userConfig?.binance_api_secret) {
     console.warn(`No Binance credentials for user ${userId}`);
@@ -1149,8 +1149,8 @@ export async function runAutoTradingIteration(
             const { data: userConfig } = await supabase
               .from("user_auto_trading_configs")
               .select("binance_api_key, binance_api_secret, is_testnet")
-              .eq("user_id", session.user_id)
-              .single();
+              .eq("user_id" as any, session.user_id)
+              .single() as any;
 
             if (
               !userConfig?.binance_api_key ||

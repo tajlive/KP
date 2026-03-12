@@ -41,7 +41,7 @@ export default function ClientAutoTradingPage() {
         .from("user_profiles")
         .select("binance_connected")
         .eq("id", user.id)
-        .single();
+        .single() as any;
 
       setHasBinanceConnection(profile?.binance_connected || false);
     } catch (error) {

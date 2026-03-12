@@ -53,7 +53,7 @@ export default function SignalTable({
     setError("");
 
     try {
-      let query = supabase.from("signals").select("*");
+      let query = supabase.from("signals" as any).select("*");
 
       if (filter !== "all") {
         query = query.eq("status", filter);

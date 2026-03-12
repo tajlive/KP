@@ -32,8 +32,8 @@ export async function getAutoTradingConfig(
   const { data, error } = (await supabase
     .from("auto_trading_configs" as unknown)
     .select("*")
-    .eq("user_id", userId)
-    .single()) as unknown;
+    .eq("user_id" as any, userId)
+    .single() as any) as unknown;
 
   if (error) {
     if (error.code === "PGRST116") return null;
@@ -66,7 +66,7 @@ export async function upsertAutoTradingConfig(
       })
       .eq("id", existing.id)
       .select()
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (error) {
       console.error("Failed to update auto trading config:", error);
@@ -87,7 +87,7 @@ export async function upsertAutoTradingConfig(
         ...config,
       })
       .select()
-      .single()) as unknown;
+      .single() as any) as unknown;
 
     if (error) {
       console.error("Failed to create auto trading config:", error);

@@ -49,7 +49,7 @@ export function usePulseData({
       const { data: metrics, error: metricsError } = (await supabase
         .from("auto_trading_daily_metrics")
         .select("date, ending_capital_nok")
-        .eq("user_id", userId)
+        .eq("user_id" as any, userId)
         .order("date", { ascending: true })) as unknown;
 
       if (metricsError) throw metricsError;
@@ -64,7 +64,7 @@ export function usePulseData({
       const { data: trades, error: tradesError } = (await supabase
         .from("trades" as unknown)
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id" as any, userId)
         .order("created_at", { ascending: false })
         .limit(50)) as unknown;
 
@@ -90,7 +90,7 @@ export function usePulseData({
       const { data: session, error: sessionError } = (await supabase
         .from("trading_sessions")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id" as any, userId)
         .eq("status", "active")
         .maybeSingle()) as unknown;
 

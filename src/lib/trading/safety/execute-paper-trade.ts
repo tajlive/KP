@@ -47,10 +47,10 @@ export async function executePaperTrade(
     const { data: session, error: sessionError } = await supabase
       .from("trading_sessions")
       .select("id, user_id, current_capital_nok, status, mode")
-      .eq("user_id", request.userId)
+      .eq("user_id" as any, request.userId)
       .eq("mode", "paper")
       .eq("status", "active")
-      .single();
+      .single() as any;
 
     if (sessionError || !session) {
       // Auto-create session if none exists
@@ -67,7 +67,7 @@ export async function executePaperTrade(
           started_at: new Date().toISOString(),
         })
         .select()
-        .single();
+        .single() as any;
 
       if (createError || !newSession) {
         return {
@@ -151,7 +151,7 @@ export async function executePaperTrade(
         executed_at: new Date().toISOString(),
       })
       .select()
-      .single();
+      .single() as any;
 
     if (tradeError) {
       console.error("[PaperTrade] Failed to record trade:", tradeError);

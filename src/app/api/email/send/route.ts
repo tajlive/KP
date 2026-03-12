@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       .from('user_profiles')
       .select('role')
       .eq('user_id', user.id)
-      .single();
+      .single() as any;
 
     const role = profile?.role as string | null;
     if (role !== 'admin' && role !== 'superadmin') {
