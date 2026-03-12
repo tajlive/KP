@@ -111,7 +111,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl, { status: 301 });
   }
 
-  if (pathname === "/no") {
+  if (pathname === "/no" || pathname === "/no/") {
     const redirectUrl = new URL("/", request.url);
     redirectUrl.search = request.nextUrl.search;
     return NextResponse.redirect(redirectUrl, { status: 301 });
