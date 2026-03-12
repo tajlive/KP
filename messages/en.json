@@ -238,7 +238,7 @@
   },
   "autoTrade": {
     "title": "AI Auto-Trading",
-    "subtitle": "100% gratis AI-drevet auto-trading",
+    "subtitle": "AI-based auto-trading",
     "status": {
       "title": "Status",
       "active": "Active",
@@ -336,7 +336,7 @@
   },
   "autoTrading": {
     "title": "AI Auto-Trading",
-    "subtitle": "100% free AI-powered auto-trading",
+    "subtitle": "AI-based auto-trading",
     "status": {
       "title": "Status",
       "active": "Active",

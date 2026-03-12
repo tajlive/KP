@@ -1,6 +1,6 @@
 {
   "title": "AI อัตโนมัติเทรดดิ้ง",
-  "subtitle": "AI อัตโนมัติเทรดดิ้ง ฟรี 100%",
+  "subtitle": "AI อัตโนมัติเทรดดิ้ง",
   "status": {
     "title": "สถานะ",
     "active": "ใช้งานอยู่",
@@ -36,7 +36,7 @@
     "rsi": "RSI"
   },
   "howItWorks": {
-    "title": "ทำงานอย่างไร (ฟรี 100%)",
+    "title": "ทำงานอย่างไร",
     "step1": {
       "title": "ข้อมูลตลาด",
       "description": "CoinLore API (ฟรี)",

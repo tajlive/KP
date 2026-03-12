@@ -207,7 +207,7 @@ export function VelkommenContent() {
                   <Shield className="w-6 h-6 text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-amber-400 mb-2">100% Paper Trading i starten</h3>
+                  <h3 className="font-semibold text-amber-400 mb-2">Paper Trading i starten</h3>
                   <p className="text-amber-300/80 text-sm leading-relaxed">
                     I beta-perioden bruker vi kun lekepenger (paper trading).
                     Dette betyr at du kan øve og lære uten å risikere ekte penger.
