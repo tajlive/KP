@@ -29,9 +29,9 @@ export function DashboardPreview() {
   const currentData = mode === 'paper' ? paperData : liveData;
 
   return (
-    <div className="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl max-w-md mx-auto">
+    <div className="bg-slate-900 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl max-w-lg w-full mx-auto">
       {/* Header */}
-      <div className="bg-slate-800 px-6 py-4 flex items-center justify-between">
+      <div className="bg-slate-800 px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Wallet className="w-5 h-5 text-teal-400" />
           <span className="font-fraunces font-bold text-slate-100">Portefølje</span>
@@ -61,7 +61,7 @@ export function DashboardPreview() {
       </div>
 
       {/* Balance */}
-      <div className="px-6 py-6">
+      <div className="px-6 py-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={mode}
@@ -73,7 +73,7 @@ export function DashboardPreview() {
             <p className="font-lexend text-sm text-slate-400 mb-1">
               {mode === 'paper' ? 'Virtuell saldo' : 'Din saldo'}
             </p>
-            <p className="font-fraunces text-4xl font-bold text-slate-100">
+            <p className="font-fraunces text-5xl font-bold text-slate-100">
               {mode === 'paper' 
                 ? `kr ${currentData.balance.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}`
                 : 'kr 0,00'
@@ -95,7 +95,7 @@ export function DashboardPreview() {
       </div>
 
       {/* Positions */}
-      <div className="px-6 pb-6">
+      <div className="px-6 pb-8">
         <div className="flex items-center gap-2 mb-4">
           <PieChart className="w-4 h-4 text-slate-400" />
           <span className="font-lexend text-sm text-slate-400">Dine posisjoner</span>
@@ -113,11 +113,11 @@ export function DashboardPreview() {
                 {pos.symbol}
               </div>
               <div>
-                <p className="font-lexend font-medium text-slate-200">{pos.symbol}</p>
-                <p className="font-lexend text-xs text-slate-500">{pos.amount} {pos.symbol}</p>
+                <p className="font-lexend font-medium text-white/90">{pos.symbol}</p>
+                <p className="font-lexend text-sm text-white/70">{pos.amount} {pos.symbol}</p>
               </div>
             </div>
-            <p className="font-lexend font-medium text-slate-200">
+            <p className="font-lexend font-medium text-white/90">
               kr {pos.value.toLocaleString('nb-NO')}
             </p>
           </div>

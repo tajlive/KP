@@ -596,7 +596,9 @@
     "cta": {
       "text": "Ready to test your strategies without risk?",
       "button": "Try Paper Trading"
-    }
+    },
+    "cta_after_result": "Learn how — start free",
+    "cta_no_card": "No credit card required"
   },
   "checkout": {
     "loading": "Loading...",
@@ -770,6 +772,57 @@
     "newest": "Newest",
     "popular": "Most popular",
     "duration": "Duration"
+  },
+  "trustBar": {
+    "withCount": "Join {count} Norwegians learning crypto safely",
+    "fallback": "Norway's safest place to learn crypto",
+    "trust1": "BankID secure",
+    "trust2": "Norwegian courses",
+    "trust3": "No risk"
+  },
+  "threeSteps": {
+    "sectionTitle": "Get started in 4 simple steps",
+    "sectionSubtitle": "No prior knowledge needed. We guide you from the first moment.",
+    "step1": {
+      "title": "Register for free",
+      "description": "Create account with BankID. No credit card needed. Start in under 2 minutes."
+    },
+    "step2": {
+      "title": "Take your first course",
+      "description": "Choose from Norwegian beginner courses. Learn at your own pace."
+    },
+    "step3": {
+      "title": "Practice with paper trading",
+      "description": "Use 10,000 kr in virtual funds. Test strategies without risk."
+    },
+    "step4": {
+      "title": "Automate with bot",
+      "description": "Let AI trade for you when you're ready. You decide when.",
+      "badge": "Optional · Pro feature"
+    },
+    "ctaButton": "Start free today",
+    "ctaSubtext": "No credit card needed · Cancel anytime"
+  },
+  "coursePreview": {
+    "sectionTitle": "Get started in under one hour",
+    "sectionSubtitle": "Free to start — complete at your own pace",
+    "freeBadge": "Free",
+    "seeAllCourses": "See all courses →",
+    "course1": {
+      "title": "What is Bitcoin?",
+      "level": "Beginner",
+      "time": "15 min"
+    },
+    "course2": {
+      "title": "How to read charts",
+      "level": "Beginner",
+      "time": "20 min"
+    },
+    "course3": {
+      "title": "Your first paper trade",
+      "level": "Beginner",
+      "time": "10 min"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1173,7 +1226,8 @@
   },
   "hero": {
     "title": "Klarpakke",
-    "subtitle": "Learn to trade crypto — safely from day one.",
+    "headline": "Learn to trade crypto",
+    "headlineHighlight": "safely from day one.",
     "description": "Norway's only platform with courses, paper trading and autotrading. Start free with kr 10,000 in virtual money — no credit card.",
     "cta": "Start free",
     "badge": "🇳🇴 Norway's leading crypto academy",

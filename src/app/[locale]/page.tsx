@@ -2,10 +2,10 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 
 // Deferred load for LiveTicker - not critical for LCP
 import { DeferredLiveTicker } from "@/components/landing/DeferredLiveTicker";
+import { TrustBar } from "@/components/landing/TrustBar";
 
 // Lazy load ikke-kritiske komponenter for bedre LCP
 const DashboardPreview = dynamic(
@@ -31,10 +31,10 @@ const ThreeSteps = dynamic(
   }
 );
 
-const MinimalFooter = dynamic(
-  () => import("@/components/landing/MinimalFooter").then((mod) => ({ default: mod.MinimalFooter })),
+const CoursePreview = dynamic(
+  () => import("@/components/landing/CoursePreview").then((mod) => ({ default: mod.CoursePreview })),
   {
-    loading: () => <div className="h-32 bg-slate-950" />,
+    loading: () => <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />,
   }
 );
 
@@ -78,87 +78,9 @@ export async function generateMetadata({
   };
 }
 
-// Course preview cards
-function CoursePreview({ locale }: { locale: string }) {
-  const isNorwegian = locale === 'no';
-  
-  const courses = [
-    {
-      title: isNorwegian ? "Hva er Bitcoin?" : "What is Bitcoin?",
-      level: isNorwegian ? "Nybegynner" : "Beginner",
-      time: "15 min",
-      icon: "₿",
-    },
-    {
-      title: isNorwegian ? "Slik leser du en chart" : "How to read charts",
-      level: isNorwegian ? "Nybegynner" : "Beginner",
-      time: "20 min",
-      icon: "📊",
-    },
-    {
-      title: isNorwegian ? "Din første papirhandel" : "Your first paper trade",
-      level: isNorwegian ? "Nybegynner" : "Beginner",
-      time: "10 min",
-      icon: "🎯",
-    },
-  ];
-
-  return (
-    <section className="py-12 bg-slate-900/50">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-100 mb-3">
-            {isNorwegian ? "Start med disse kursene" : "Start with these courses"}
-          </h2>
-          <p className="text-slate-400">
-            {isNorwegian ? "Gratis å starte — fullfør på din egen tid" : "Free to start — complete at your own pace"}
-          </p>
-        </div>
-        
-        <div className="grid md:grid-cols-3 gap-6">
-          {courses.map((course, idx) => (
-            <div 
-              key={idx}
-              className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-teal-500/50 transition-colors group cursor-pointer"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-3xl">{course.icon}</span>
-                <span className="text-xs font-medium text-teal-400 bg-teal-500/10 px-2 py-1 rounded">
-                  {isNorwegian ? "Gratis" : "Free"}
-                </span>
-              </div>
-              <h3 className="text-lg font-semibold text-slate-100 mb-2 group-hover:text-teal-400 transition-colors">
-                {course.title}
-              </h3>
-              <div className="flex items-center gap-3 text-sm text-slate-500">
-                <span>{course.level}</span>
-                <span>·</span>
-                <span>{course.time}</span>
-              </div>
-              <div className="mt-4 h-1 bg-slate-700 rounded-full overflow-hidden">
-                <div className="h-full w-0 bg-teal-500 rounded-full" />
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="text-center mt-8">
-          <Link 
-            href="/kurs"
-            className="inline-flex items-center gap-2 text-teal-400 hover:text-teal-300 font-medium transition-colors"
-          >
-            {isNorwegian ? "Se alle kursene" : "Browse all courses"}
-            <span>→</span>
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // HeroSection - Critical for LCP, keep inline
-function HeroSection({ locale }: { locale: string }) {
-  const isNorwegian = locale === 'no';
+async function HeroSection({ locale }: { locale: string }) {
+  const t = await getTranslations('hero');
   
   return (
     <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
@@ -167,49 +89,39 @@ function HeroSection({ locale }: { locale: string }) {
           {/* Left: Text - CRITICAL LCP CONTENT */}
           <div className="text-center lg:text-left">
             <h1 className="font-fraunces text-4xl md:text-5xl lg:text-6xl font-bold text-slate-100 leading-tight mb-6">
-              {isNorwegian ? (
-                <>Lær å handle crypto<br /><span className="text-teal-400">trygt fra dag én.</span></>
-              ) : (
-                <>Learn to trade crypto<br /><span className="text-teal-400">safely from day one.</span></>
-              )}
+              {t('headline')}<br /><span className="text-teal-400">{t('headlineHighlight')}</span>
             </h1>
             <p className="font-lexend text-lg text-slate-400 mb-8 max-w-xl mx-auto lg:mx-0">
-              {isNorwegian
-                ? "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 10 000 i øvingspenger — ingen kredittkort."
-                : "Norway's only platform with courses, paper trading and autotrading. Start free with kr 10,000 in virtual money — no credit card."
-              }
+              {t('description')}
             </p>
             
             {/* CTA Hierarchy */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6">
               <a
-                href="/signup"
-                className="bg-emerald-500 hover:bg-emerald-400 text-white font-lexend font-bold px-8 py-4 rounded-xl shadow-lg shadow-emerald-500/30 transition-all text-center"
+                href={`/${locale}/signup`}
+                className="bg-teal-500 hover:bg-teal-400 text-white font-lexend font-bold px-8 py-4 rounded-xl shadow-lg shadow-teal-500/30 transition-all text-center"
               >
-                {isNorwegian ? "Start gratis →" : "Start free →"}
+                {t('ctaPrimary')} →
               </a>
               <a
-                href="/kurs"
-                className="bg-white hover:bg-slate-100 text-slate-900 font-lexend font-medium px-8 py-4 rounded-xl transition-colors text-center"
+                href={`/${locale}/kurs`}
+                className="bg-transparent border-2 border-slate-600 hover:border-slate-400 text-slate-200 font-lexend font-medium px-8 py-4 rounded-xl transition-colors text-center"
               >
-                {isNorwegian ? "Se hva du lærer" : "See what you'll learn"}
+                {t('ctaSecondary')}
               </a>
             </div>
             
             {/* Trust line */}
             <p className="text-sm text-slate-500">
-              {isNorwegian 
-                ? "Ingen kredittkort · Norsk veiledning · BankID-sikker"
-                : "No credit card · Norwegian guidance · BankID secured"
-              }
+              {t('trust')}
             </p>
           </div>
 
           {/* Right: Dashboard Preview - LAZY LOADED */}
-          <div className="relative">
+          <div className="relative w-full">
             <div className="absolute inset-0 bg-teal-500/20 blur-3xl rounded-full" />
             <Suspense fallback={
-              <div className="bg-slate-900 rounded-2xl border border-slate-700 h-64 animate-pulse" />
+              <div className="bg-slate-900 rounded-2xl border border-slate-700 h-64 animate-pulse max-w-lg mx-auto" />
             }>
               <DashboardPreview />
             </Suspense>
@@ -232,8 +144,13 @@ export default async function HomePage({
       {/* Hero Section - Critical for LCP */}
       <HeroSection locale={locale} />
       
+      {/* Trust Bar - Social proof */}
+      <TrustBar />
+      
       {/* Course Preview - Show what users will learn */}
-      <CoursePreview locale={locale} />
+      <Suspense fallback={<div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />}>
+        <CoursePreview />
+      </Suspense>
       
       {/* Live Price Ticker - Deferred, loads after hero */}
       <DeferredLiveTicker />
@@ -254,10 +171,7 @@ export default async function HomePage({
         </Suspense>
       </section>
       
-      {/* Minimal Footer - Lazy loaded */}
-      <Suspense fallback={<div className="h-32 bg-slate-950" />}>
-        <MinimalFooter />
-      </Suspense>
+
     </main>
   );
 }

@@ -40,7 +40,7 @@ export function DashboardTabs({ activeTab, onTabChange, locale = 'no' }: Dashboa
       <div className="hidden md:block border-b border-white/5">
         <div className="flex gap-1">
           {tabs.map((tab) => {
-            const Icon = tab.icon;
+            const Icon = tab?.icon;
             const isActive = activeTab === tab.id;
             
             return (
@@ -60,7 +60,7 @@ export function DashboardTabs({ activeTab, onTabChange, locale = 'no' }: Dashboa
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-emerald-500" />
                 )}
                 
-                <Icon className={cn("w-4 h-4", isActive && "text-blue-400")} />
+                {Icon && <Icon className={cn("w-4 h-4", isActive && "text-blue-400")} />}
                 {tab.label}
                 
                 {tab.badge && (
@@ -78,7 +78,7 @@ export function DashboardTabs({ activeTab, onTabChange, locale = 'no' }: Dashboa
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-t border-white/5 z-50">
         <div className="flex justify-around">
           {tabs.map((tab) => {
-            const Icon = tab.icon;
+            const Icon = tab?.icon;
             const isActive = activeTab === tab.id;
             
             return (
@@ -94,7 +94,7 @@ export function DashboardTabs({ activeTab, onTabChange, locale = 'no' }: Dashboa
                   "relative p-2 rounded-xl transition-all",
                   isActive && "bg-blue-500/10"
                 )}>
-                  <Icon className="w-5 h-5" />
+                  {Icon && <Icon className="w-5 h-5" />}
                   {tab.badge && (
                     <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
                       {tab.badge}
