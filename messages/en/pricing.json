@@ -1,4 +1,45 @@
 {
+  "metadata": {
+    "title": "Pricing - Klarpakke University",
+    "description": "Choose the plan that suits you. Start for free with Student, or upgrade to Bachelor, Master or PhD for more advanced features."
+  },
+  "hero": {
+    "title": "Choose Your Learning Journey",
+    "subtitle": "From beginner to expert. Start for free and upgrade when you're ready."
+  },
+  "plans": {
+    "student": {
+      "description": "Perfect for getting started"
+    },
+    "bachelor": {
+      "description": "For serious traders"
+    },
+    "master": {
+      "description": "Advanced tools"
+    },
+    "phd": {
+      "description": "Full access"
+    }
+  },
+  "free": "Free",
+  "startFree": "Start for free",
+  "startTrial": "Start trial",
+  "comparison": {
+    "title": "Compare Plans",
+    "feature": "Feature"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions"
+  },
+  "trust": {
+    "title": "Secure payment with"
+  },
+  "cta": {
+    "title": "Ready to start?",
+    "subtitle": "Join thousands of students learning to trade in a safe way.",
+    "button": "Get started now",
+    "guarantee": "30-day money-back guarantee"
+  },
   "success": {
     "loadingTitle": "Processing payment...",
     "loadingMessage": "Please wait...",

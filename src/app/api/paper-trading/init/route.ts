@@ -33,9 +33,16 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[paper-trading/init POST]', error);
+    console.error('[paper-trading/init POST] Error:', error);
+    // Return detailed error for debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
     return NextResponse.json(
-      { error: 'Failed to initialize paper trading', detail: String(error) },
+      { 
+        error: 'Failed to initialize paper trading', 
+        message: errorMessage,
+        stack: process.env.NODE_ENV === 'development' ? errorStack : undefined
+      },
       { status: 500 }
     );
   }
@@ -75,9 +82,16 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[paper-trading/init GET]', error);
+    console.error('[paper-trading/init GET] Error:', error);
+    // Return detailed error for debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
     return NextResponse.json(
-      { error: 'Failed to get paper trading session', detail: String(error) },
+      { 
+        error: 'Failed to get paper trading session', 
+        message: errorMessage,
+        stack: process.env.NODE_ENV === 'development' ? errorStack : undefined
+      },
       { status: 500 }
     );
   }

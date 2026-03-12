@@ -1,89 +1,519 @@
 {
-  "metadata": {
-    "title": "Klarpakke University - Norway's first crypto university",
-    "description": "Learn crypto trading from A to Z. From Student to Master Trader in 4 weeks. Paper trading with 1M NOK virtual capital.",
-    "ogTitle": "Klarpakke University - Norway's first crypto university",
-    "ogDescription": "Learn crypto trading from A to Z. Paper trading with 1M NOK virtual capital.",
-    "signup": {
-      "title": "Sign up - Join the first 100",
-      "description": "Secure your spot among the first 100 students at Klarpakke University. Get 10,000 KLT tokens free.",
-      "ogTitle": "Become student #{{number}}/100",
-      "ogDescription": "I've secured my spot at Klarpakke University! Join me and learn crypto trading from A to Z."
+  "aboutUs": {
+    "metadata": {
+      "title": "About Us",
+      "description": "Learn about Klarpakke's mission to make crypto trading accessible through education and paper trading."
     },
-    "login": {
-      "title": "Login - Student Portal",
-      "description": "Sign in to your student portal to access courses, paper trading, and your profile."
+    "quote": {
+      "title": "From \"Hope\" to \"Structure\"",
+      "text": "In 2021, I lost money because I traded on emotions. I built Klarpakke to remove emotions from the equation. By using software to follow rules, and paper trading to prove skills first, we have removed the biggest traps for new traders.",
+      "author": "Tom Jensen",
+      "role": "Founder & Developer"
     },
-    "about": {
-      "title": "About Us - Our Story",
-      "description": "Learn about the story behind Klarpakke University. From expensive lessons to a complete crypto university."
+    "title": "About Us",
+    "heroTitle": "From hard lessons to",
+    "heroTitleHighlight": "Financial Freedom",
+    "heroDescription": "My journey from losing everything to cracking the code – and how you can do the same.",
+    "story": {
+      "part1": {
+        "title": "The Expensive Lesson",
+        "content": "Six years ago, I lost 65,000 NOK on crypto. It was a brutal wake-up call. I blindly trusted \"experts\" who promised the moon but delivered nothing but fees and empty promises. Money drained away, and I was left with a costly but valuable lesson: Trust no one but yourself."
+      },
+      "part2": {
+        "title": "The Turning Point",
+        "content": "Two years ago, I took control. I immersed myself in advanced programming and AI, developing my own auto-trader. I started small, tested, failed, and adjusted. As the algorithms began delivering consistent results, I gained the confidence to scale up."
+      },
+      "part3": {
+        "title": "From Gambling to Strategy",
+        "content": "I quit betting, the lottery, and traditional savings accounts. All my focus went into the system. When the results exceeded my expectations, I started sharing the tool with friends and family. The response was overwhelming. It became clear that there was a need for an honest, transparent gateway to crypto for everyday people."
+      },
+      "part4": {
+        "title": "Klarpakke is Born",
+        "content": "I gathered a team of experts, developers, and traders with a simple goal: To make advanced technology accessible to everyone, without hidden agendas. Thus, Klarpakke University was born – a place where knowledge and integrity come first."
+      }
     },
-    "courses": {
-      "title": "Courses - Learn crypto trading",
-      "description": "Explore our courses from beginner to advanced level. Master crypto trading in 4 weeks."
-    },
-    "contact": {
-      "title": "Contact Us",
-      "description": "Have questions? Contact us. We're here to help you on your crypto journey."
-    },
-    "dashboard": {
-      "title": "Dashboard - Din Trading Oversikt",
-      "description": "Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse i sanntid."
+    "philosophy": {
+      "title": "Our Philosophy",
+      "noPyramid": "Total Transparency",
+      "noPyramidDesc": "No pyramid schemes, no recruiting, no secrets. We believe honesty is the only sustainable policy.",
+      "educationFirst": "Knowledge First",
+      "educationFirstDesc": "We give you the tools, but you're in the driver's seat. Our auto-trader does the heavy lifting, but your understanding ensures success.",
+      "patience": "Long-term Vision",
+      "patienceDesc": "Crypto isn't a get-rich-quick scheme. We aim for steady, sustainable growth – 0.2% daily profit beats 100% risk. That's the power of compound interest.",
+      "cta": "Join the journey!"
     }
   },
-  "meta": {
-    "pricing": "Pricing",
-    "pricingDescription": "Simple pricing for crypto education",
-    "login": "เข้าสู่ระบบ",
-    "loginDescription": "Log in to your student portal",
-    "coursesDescription": "Learn crypto trading from A to Z"
+  "admin": {
+    "title": "แดชบอร์ดผู้ดูแลระบบ",
+    "verifying": "กำลังตรวจสอบสิทธิ์...",
+    "noAccess": {
+      "title": "ไม่มีสิทธิ์เข้าถึง",
+      "backToHome": "กลับไปหน้าหลัก"
+    },
+    "overview": "ภาพรวม",
+    "users": "ผู้ใช้",
+    "students": "นักเรียน",
+    "tradeSync": "ซิงค์การเทรด",
+    "system": "ระบบ",
+    "settings": "การตั้งค่า",
+    "loggedInAs": "เข้าสู่ระบบเป็น",
+    "logout": "ออกจากระบบ",
+    "header": {
+      "subtitle": "{email} • ภาพรวมแคมเปญ"
+    },
+    "campaign": {
+      "title": "เป้าหมายแคมเปญ",
+      "spotsFilled": "{total} จาก 100 ที่เต็มแล้ว"
+    },
+    "stats": {
+      "totalRegistered": "ลงทะเบียนทั้งหมด",
+      "spotsLeft": "เหลืออีก {remaining} ที่",
+      "signedUpToday": "ลงทะเบียนวันนี้",
+      "last24Hours": "24 ชั่วโมงที่ผ่านมา",
+      "totalClicks": "คลิกทั้งหมด",
+      "allChannels": "จากทุกช่องทาง",
+      "conversion": "การแปลง",
+      "clickToReg": "คลิก → ลงทะเบียน",
+      "activeUsers": "ผู้ใช้ที่ใช้งาน"
+    },
+    "trafficSources": {
+      "title": "แหล่งที่มาของการเข้าชม",
+      "direct": "ตรง"
+    },
+    "funnel": {
+      "title": "การแปลง",
+      "falloff": "{count} ตกหล่น ({rate}%)",
+      "noData": "ยังไม่มีข้อมูล"
+    },
+    "footer": {
+      "lastUpdated": "อัปเดตล่าสุด: {date}",
+      "fallbackData": "⚠️ ข้อมูลสดไม่พร้อมใช้งาน แสดงแคช"
+    },
+    "search": {
+      "placeholder": "ค้นหาผู้ใช้..."
+    }
+  },
+  "adminDashboard": {
+    "title": "Admin Dashboard",
+    "verifying": "Verifiserer tilgang...",
+    "noAccess": {
+      "title": "Ingen tilgang",
+      "backToHome": "Tilbake til forsiden"
+    },
+    "header": {
+      "subtitle": "{email} • Kampanje-oversikt"
+    },
+    "campaign": {
+      "title": "Kampanje Mål",
+      "spotsFilled": "{total} av 100 plasser fylt"
+    },
+    "stats": {
+      "totalRegistered": "Totalt registrert",
+      "spotsLeft": "{remaining} plasser igjen",
+      "signedUpToday": "Påmeldt i dag",
+      "last24Hours": "Siste 24 timer",
+      "totalClicks": "Total klikk",
+      "allChannels": "Fra alle kanaler",
+      "conversion": "Konvertering",
+      "clickToReg": "Klikk → Registrering",
+      "activeUsers": "Aktive brukere"
+    },
+    "trafficSources": {
+      "title": "Trafikk Kilder",
+      "direct": "Direkte"
+    },
+    "funnel": {
+      "title": "Konvertering",
+      "falloff": "{count} falloff ({rate}%)",
+      "noData": "Ingen data ennå"
+    },
+    "footer": {
+      "lastUpdated": "Sist oppdatert: {date}",
+      "fallbackData": "⚠️ Live-data utilgjengelig, viser cache"
+    },
+    "search": {
+      "placeholder": "Søk brukere..."
+    }
+  },
+  "auth": {
+    "title": "Studentportal",
+    "signIn": "Logg inn",
+    "signInDescription": "Velg din foretrukne innloggingsmetode",
+    "noAccount": "Har du ikke konto ennå?",
+    "signupTitle": "Opprett konto",
+    "signupDescription": "Start din reise med Klarpakke i dag",
+    "subtitle": "Klarpakke Universitet",
+    "checkStatus": "Sjekk din status",
+    "checkStatusDesc": "Logg inn med Google/Microsoft, eller sjekk om du er registrert",
+    "emailLabel": "E-postadresse",
+    "emailPlaceholder": "din@email.no",
+    "passwordLabel": "Passord",
+    "passwordPlaceholder": "Ditt passord",
+    "loginBtn": "Logg inn",
+    "loggingIn": "Logger inn...",
+    "loginCardTitle": "Logg inn",
+    "loginCardDescription": "Velg din foretrukne metode under",
+    "orWithEmail": "eller med e-post",
+    "loginError": "Feil e-post eller passord. Prøv igjen.",
+    "genericError": "En feil oppstod. Prøv igjen senere.",
+    "tryAgain": "Prøv igjen →",
+    "dontHaveAccount": "Har du ikke konto ennå?",
+    "signupHere": "Registrer deg her",
+    "createAccount": "Opprett konto her →",
+    "backToHome": "← Tilbake til forsiden",
+    "forgotPassword": "Glemt passord?",
+    "resetPassword": {
+      "title": "Lag nytt passord",
+      "desc": "Skriv inn ditt nye passord under.",
+      "label": "Nytt passord",
+      "placeholder": "Minimum 8 tegn",
+      "submit": "Oppdater passord",
+      "success": "Passordet er oppdatert!",
+      "error": "Kunne ikke oppdatere passord. Prøv igjen."
+    },
+    "forgotPasswordPage": {
+      "title": "Glemt passord?",
+      "desc": "Skriv inn e-posten din, så sender vi en lenke for å lage nytt passord.",
+      "emailLabel": "E-post",
+      "emailPlaceholder": "din@email.no",
+      "submit": "Send lenke",
+      "sending": "Sender...",
+      "success": "E-post sendt! Sjekk innboksen din.",
+      "error": "Kunne ikke sende e-post. Prøv igjen."
+    },
+    "success": {
+      "title": "Du er inne! 🎉",
+      "startDate": "Oppstart: {date}",
+      "studentNumber": "Ditt studentnummer",
+      "registered": "Registrert",
+      "checklistTitle": "Din oppstartssjekkliste",
+      "checklistDesc": "Fullfør disse stegene før 15. februar",
+      "checklist": {
+        "discord": {
+          "title": "Bli med i Discord",
+          "desc": "Møt de andre studentene og få live updates",
+          "btn": "Bli med her"
+        },
+        "calendar": {
+          "title": "Marker 15. februar",
+          "desc": "Første leksjon slippes kl 09:00",
+          "btn": "Legg til i kalender"
+        },
+        "guide": {
+          "title": "Les beta-guiden",
+          "desc": "Forstå hva du kan forvente av beta-perioden",
+          "btn": "Les guiden"
+        },
+        "email": {
+          "title": "Følg med på e-post",
+          "desc": "Du får guide til paper trading før 15. februar",
+          "btn": "Gå til e-post"
+        }
+      },
+      "progress": "Fremdrift",
+      "completed": "{count} / {total} fullført",
+      "whatNext": "Hva skjer nå?",
+      "whatNextDesc": "Du vil motta en e-post med paper trading-guide i løpet av de neste dagene. Sjekk også søppelpost-mappen din!",
+      "checkAnother": "Sjekk annen e-post"
+    }
+  },
+  "autoTrade": {
+    "title": "AI อัตโนมัติเทรดดิ้ง",
+    "subtitle": "AI อัตโนมัติเทรดดิ้ง ฟรี 100%",
+    "status": {
+      "title": "สถานะ",
+      "active": "ใช้งานอยู่",
+      "paused": "หยุดชั่วคราว",
+      "running": "กำลังทำงาน",
+      "stopped": "หยุดแล้ว",
+      "activeDescription": "AI วิเคราะห์ตลาดทุก 5 นาที",
+      "pausedDescription": "คลิกเพื่อเริ่ม AI อัตโนมัติ"
+    },
+    "stats": {
+      "totalDecisions": "การตัดสินใจทั้งหมด",
+      "buy": "ซื้อ",
+      "sell": "ขาย",
+      "hold": "รอ",
+      "avgConfidence": "ความมั่นใจเฉลี่ย",
+      "lastRun": "การวิเคราะห์ล่าสุด"
+    },
+    "config": {
+      "title": "การกำหนดค่า",
+      "riskLevel": "ระดับความเสี่ยง",
+      "safe": "ปลอดภัย",
+      "moderate": "ปานกลาง",
+      "aggressive": "ดุดัน",
+      "symbols": "สัญลักษณ์",
+      "minConfidence": "ความมั่นใจขั้นต่ำ"
+    },
+    "recentDecisions": {
+      "title": "การตัดสินใจล่าสุด",
+      "empty": "ยังไม่มีการตัดสินใจ",
+      "emptyDescription": "เริ่ม AI เพื่อดูการวิเคราะห์",
+      "target": "เป้าหมาย",
+      "stop": "หยุด",
+      "rsi": "RSI"
+    },
+    "howItWorks": {
+      "title": "ทำงานอย่างไร (ฟรี 100%)",
+      "step1": {
+        "title": "ข้อมูลตลาด",
+        "description": "CoinLore API (ฟรี)",
+        "detail": "ราคาแบบเรียลไทม์"
+      },
+      "step2": {
+        "title": "วิเคราะห์ความรู้สึก",
+        "description": "Hugging Face + Reddit (ฟรี)",
+        "detail": "วิเคราะห์ข่าวและโซเชียลมีเดีย"
+      },
+      "step3": {
+        "title": "AI พยากรณ์",
+        "description": "Cloudflare Workers AI (ฟรี)",
+        "detail": "รวมการวิเคราะห์ทางเทคนิคกับความรู้สึก"
+      },
+      "step4": {
+        "title": "ดำเนินการอัตโนมัติ",
+        "description": "Paper trading (ฟรี)",
+        "detail": "ฝึกซ้อมด้วยเงินเสมือน"
+      },
+      "warning": "สำคัญ: นี่คือ AI ฟรีสำหรับการวิเคราะห์ การเทรดทั้งหมดเริ่มจาก paper mode"
+    },
+    "actions": {
+      "runNow": "เรียกใช้เลย",
+      "start": "เริ่ม AI",
+      "stop": "หยุด AI"
+    },
+    "errors": {
+      "notAuthenticated": "คุณต้องเข้าสู่ระบบก่อนใช้ AI อัตโนมัติ"
+    },
+    "selectRisk": "เลือกระดับความเสี่ยง",
+    "closePositions": "ปิดตำแหน่งทั้งหมดทันทีและหยุดหุ่นยนต์",
+    "timeAgo": {
+      "min": "{n} นาทีที่แล้ว",
+      "mins": "{n} นาทีที่แล้ว",
+      "hour": "{n} ชั่วโมงที่แล้ว",
+      "hours": "{n} ชั่วโมงที่แล้ว"
+    }
+  },
+  "autoTrading": {
+    "title": "AI Auto-Trading",
+    "subtitle": "100% gratis AI-drevet auto-trading",
+    "status": {
+      "title": "Status",
+      "active": "Aktiv",
+      "paused": "Pauset",
+      "activeDescription": "AI analyserer markedet hvert 5. minutt",
+      "pausedDescription": "Klikk for å starte AI auto-trading"
+    },
+    "stats": {
+      "totalDecisions": "Totale Beslutninger",
+      "buy": "Kjøp",
+      "sell": "Salg",
+      "hold": "Vent",
+      "avgConfidence": "Gj. Confidence",
+      "lastRun": "Siste analyse"
+    },
+    "config": {
+      "title": "Konfigurasjon",
+      "riskLevel": "Risiko Nivå",
+      "safe": "Sikker",
+      "moderate": "Moderat",
+      "aggressive": "Aggressiv",
+      "symbols": "Symboler",
+      "minConfidence": "Minimum Confidence"
+    },
+    "recentDecisions": {
+      "title": "Siste Beslutninger",
+      "empty": "Ingen beslutninger ennå",
+      "emptyDescription": "Start AI for å se analyser",
+      "target": "Target",
+      "stop": "Stop",
+      "rsi": "RSI"
+    },
+    "howItWorks": {
+      "title": "Hvordan Det Fungerer (100% Gratis)",
+      "step1": {
+        "title": "Markedsdata",
+        "description": "CoinLore API (gratis, 14,000+ coins)",
+        "detail": "Real-time priser og markedsinformasjon"
+      },
+      "step2": {
+        "title": "Sentiment Analyse",
+        "description": "Hugging Face + Reddit (gratis)",
+        "detail": "Analyserer nyheter og sosiale medier"
+      },
+      "step3": {
+        "title": "AI Prediksjon",
+        "description": "Cloudflare Workers AI (10,000 req/dag gratis)",
+        "detail": "Kombinerer teknisk analyse med sentiment"
+      },
+      "step4": {
+        "title": "Auto-Execution",
+        "description": "Paper trading (gratis øving)",
+        "detail": "Øv med virtuell kapital før live trading"
+      },
+      "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først i paper mode. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
+    },
+    "actions": {
+      "runNow": "Kjør nå",
+      "start": "Start AI",
+      "stop": "Stopp AI"
+    },
+    "errors": {
+      "notAuthenticated": "Du må være logget inn for å bruke AI auto-trading"
+    }
+  },
+  "autoTradingPage": {
+    "metadata": {
+      "title": "Auto-Trading | Klarpakke - 3 år med testing",
+      "description": "Automatisert trading basert på 3 år med testing og harde data. Ikke hype, bare resultater. Start risikofritt med paper trading."
+    },
+    "hero": {
+      "badge": "Testet i 3 år med egne penger",
+      "titlePart1": "Avansert teknologi.",
+      "titlePart2": "Enkel i bruk.",
+      "description": "Vi har brukt 3 år på å finjustere våre algoritmer. Ingen \"Quantum AI\" eller magiske løfter – bare solid matematikk og streng risikostyring som jobber 24/7.",
+      "ctaPrimary": "Start Paper Trading",
+      "ctaSecondary": "Se resultater",
+      "stats": {
+        "profitLabel": "Total Gevinst (3 år)",
+        "profitSub": "Verifiserte data",
+        "profitValue": "+142.5%"
+      }
+    },
+    "facts": {
+      "title": "Hvorfor Klarpakke?",
+      "subtitle": "Markedet er fullt av støy. Vi fokuserer på fakta.",
+      "fact1": {
+        "title": "3 år med data",
+        "desc": "Vi lanserte ikke i går. Algoritmene har kjørt gjennom både oppgangs- og nedgangstider siden 2021 for å sikre robusthet."
+      },
+      "fact2": {
+        "title": "Ingen \"Black Box\"",
+        "desc": "Du ser nøyaktig hva som skjer. Ingen skjulte gebyrer eller magiske formler. Du har full innsikt i hver eneste handel via dashbordet."
+      },
+      "fact3": {
+        "title": "Optimalisert for mobil",
+        "desc": "75% av våre brukere handler på mobilen. Vi har bygget hele opplevelsen for å være lynrask og oversiktlig på telefonen din."
+      }
+    },
+    "howItWorks": {
+      "title": "Slik fungerer det",
+      "step1": {
+        "step": "01",
+        "title": "Paper Trading",
+        "desc": "Du får 1 million lekepenger. Test helt risikofritt i 30 dager."
+      },
+      "step2": {
+        "step": "02",
+        "title": "Mikrokonto",
+        "desc": "Start med maks 1 000 kr når du føler deg trygg."
+      },
+      "step3": {
+        "step": "03",
+        "title": "Skaler opp",
+        "desc": "Øk beløpet gradvis etter hvert som du ser gevinst."
+      },
+      "step4": {
+        "step": "04",
+        "title": "Full Auto",
+        "desc": "La algoritmene håndtere porteføljen din 24/7."
+      }
+    },
+    "cta": {
+      "title": "Klar for å teste løsningen?",
+      "desc": "Det koster ingenting å prøve Paper Trading. Se selv hvorfor vår teknologi er bedre enn markedet.",
+      "button": "Opprett gratis konto",
+      "subtext": "Ingen kredittkort kreves. Start på 1 minutt."
+    }
   },
   "base": {
-    "language": "ภาษา",
+    "brand": "มหาวิทยาลัย Klarpakke",
+    "tagline": "การศึกษาคริปโตนอร์เวย์ เรียนโดยไม่มีความเสี่ยง",
     "loading": "กำลังโหลด...",
     "error": "เกิดข้อผิดพลาด",
-    "retry": "ลองใหม่",
-    "close": "ปิด",
+    "retry": "ลองอีกครั้ง",
     "save": "บันทึก",
     "cancel": "ยกเลิก",
-    "confirm": "ยืนยัน",
-    "submit": "ส่ง",
+    "continue": "ดำเนินการต่อ",
     "back": "กลับ",
     "next": "ถัดไป",
-    "continue": "ดำเนินการต่อ",
-    "done": "เสร็จสิ้น",
+    "submit": "ส่ง",
+    "close": "ปิด",
+    "open": "เปิด",
     "yes": "ใช่",
     "no": "ไม่"
   },
-  "common": {
+  "beta": {
+    "autoTrade": "AI อัตโนมัติเทรดดิ้ง เบต้า",
     "loading": "กำลังโหลด...",
-    "error": "เกิดข้อผิดพลาด",
-    "success": "สำเร็จ!",
-    "comingSoon": "เร็ว ๆ นี้",
-    "underDevelopment": "อยู่ระหว่างพัฒนา",
-    "notAvailable": "ไม่พร้อมใช้งาน",
-    "readMore": "อ่านเพิ่มเติม",
-    "learnMore": "เรียนรู้เพิ่มเติม",
-    "getStarted": "เริ่มต้น",
-    "startFree": "เริ่มต้นฟรี",
-    "signUp": "ลงทะเบียน",
-    "logIn": "เข้าสู่ระบบ",
-    "logOut": "ออกจากระบบ",
-    "myAccount": "บัญชีของฉัน",
-    "settings": "การตั้งค่า",
-    "help": "ช่วยเหลือ",
-    "support": "สนับสนุน"
+    "success": "ส่งคำขอแล้ว!",
+    "redirecting": "กำลังเปลี่ยนเส้นทาง...",
+    "applicationPending": "ได้รับคำขอแล้ว",
+    "applicationPendingDesc": "เราได้รับคำขอของคุณและกำลังดำเนินการ",
+    "backToDashboard": "กลับไปที่แดชบอร์ด",
+    "applyForBeta": "ขอเข้าร่วมเบต้า",
+    "applyForBetaDesc": "เป็นหนึ่งในกลุ่มแรกที่ทดสอบแพลตฟอร์มของเรา",
+    "tradingExperience": "ประสบการณ์การเทรด",
+    "tradingExperiencePlaceholder": "อธิบายประสบการณ์การเทรดของคุณ...",
+    "motivation": "แรงจูงใจ",
+    "motivationPlaceholder": "ทำไมคุณถึงอยากเข้าร่วม?",
+    "riskTolerance": "ความทนต่อความเสี่ยง",
+    "riskConservative": "อนุรักษนิยม",
+    "riskModerate": "ปานกลาง",
+    "riskAggressive": "ดุดัน",
+    "betaWarning": "สำคัญ",
+    "betaWarningText": "การทดสอบเบต้ามีความเสี่ยงจริง ลงทุนเฉพาะสิ่งที่คุณสามารถเสียได้",
+    "submitting": "กำลังส่ง...",
+    "submitApplication": "ส่งคำขอ",
+    "applicationError": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง"
   },
-  "payment": {
-    "chooseMethod": "เลือกวิธีการชำระเงิน",
-    "vipps": "Vipps",
-    "vippsDescription": "รวดเร็วสำหรับลูกค้านอร์เวย์",
-    "card": "บัตร",
-    "cardDescription": "Visa, Mastercard, ฯลฯ",
-    "or": "หรือ",
-    "payWithCard": "ชำระด้วยบัตร",
-    "securePayment": "การชำระเงินที่ปลอดภัย Vipps สำหรับลูกค้านอร์เวย์ บัตรสำหรับต่างชาติ",
-    "back": "กลับ"
+  "binanceGuide": {
+    "title": "คู่มือ Binance",
+    "description": "คู่มือสำหรับ Binance",
+    "subtitle": "Binance เป็นตลาดแลกเปลี่ยนคริปโตที่ใหญ่ที่สุดในโลก เราจะแนะนำคุณผ่านการลงทะเบียนทีละขั้นตอน",
+    "startSmall": "เริ่มต้นด้วยจำนวนเงินเล็กน้อย (เช่น 500 บาท) ผ่านการโอนเงินธนาคาร คุณสามารถฝากเพิ่มได้ในภายหลัง อย่าเริ่มต้นด้วยเงินที่คุณไม่สามารถเสียได้",
+    "timeEstimate": "การลงทะเบียนใช้เวลาประมาณ 5 นาที • การยืนยัน KYC ใช้เวลาถึง 24 ชั่วโมง",
+    "steps": "ขั้นตอน",
+    "guide": "คู่มือ",
+    "register": "ลงทะเบียนบัญชี",
+    "verify": "ยืนยันตัวตน",
+    "deposit": "ฝากเงิน",
+    "startTrading": "เริ่มเทรด"
+  },
+  "calculator": {
+    "title": "เครื่องคำนวณ",
+    "description": "เครื่องคำนวณการเทรด",
+    "subtitle": "ดูว่าการลงทุนของคุณสามารถเติบโตได้อย่างไรด้วยผลตอบแทนทบต้นรายวัน",
+    "intro": {
+      "title": "ผลตอบแทนทบต้นคืออะไร?",
+      "p1": "ผลตอบแทนทบต้นหมายความว่าคุณได้รับดอกเบี้ยบนดอกเบี้ย เมื่อคุณเทรดด้วยผลตอบแทนรายวัน กำไรจากแต่ละวันจะถูกเพิ่มเข้าไปในเงินทุนของคุณและสร้างกำไรใหม่ในวันถัดไป",
+      "p2": "เครื่องคำนวณนี้แสดงให้เห็นว่าคุณสามารถทำเงินได้เท่าใดในการเทรดอย่างสม่ำเสมอหนึ่งปี โดยพิจารณาจากเงินทุนเริ่มต้นและผลตอบแทนรายวันที่คาดหวัง"
+    },
+    "inputs": {
+      "startAmount": "จำนวนเงินเริ่มต้น",
+      "dailyReturn": "ผลตอบแทนรายวัน (%)"
+    },
+    "results": {
+      "afterYear": "หลังจาก 1 ปี",
+      "totalReturn": "ผลตอบแทนรวม",
+      "growthChart": "การเติบโตตลอดเวลา",
+      "monthly": "รายละเอียดรายเดือน"
+    },
+    "table": {
+      "month": "เดือน",
+      "balance": "ยอดคงเหลือ",
+      "monthProfit": "กำไรรายเดือน",
+      "totalProfit": "กำไรรวม"
+    },
+    "disclaimer": {
+      "title": "ข้อมูลสำคัญ",
+      "text": "นี่เป็นการคำนวณเชิงทฤษฎี ผลการเทรดที่แท้จริงอาจแตกต่างกันอย่างมาก ผลตอบแทนรายวัน 1-4% เป็นเป้าหมายที่ทะเยอทะยานมากและต้องการความเชี่ยวชาญอย่างมาก ผลงานในอดีตไม่ใช่การรับประกันผลลัพธ์ในอนาคต"
+    },
+    "cta": {
+      "text": "พร้อมที่จะทดสอบกลยุทธ์ของคุณโดยไม่มีความเสี่ยง?",
+      "button": "ลอง Paper Trading"
+    }
   },
   "checkout": {
     "loading": "กำลังโหลด...",
@@ -98,68 +528,490 @@
     "vippsForNorwegians": "Vipps สำหรับชาวนอร์เวย์",
     "cardForInternational": "บัตรสำหรับต่างชาติ",
     "secureNote": "การชำระเงินที่ปลอดภัย ไม่มีการจัดเก็บข้อมูลบัตรกับเรา",
-    "subscription": "การสมัครสมาชิก"
+    "subscription": "การสมัครสมาชิก",
+    "title": "ชำระเงิน",
+    "subtitle": "ดำเนินการซื้อให้เสร็จสิ้นเพื่อเข้าถึงหลักสูตร",
+    "total": "รวมทั้งหมด",
+    "proceedToPayment": "ดำเนินการชำระเงิน",
+    "processing": "กำลังดำเนินการ...",
+    "securePayment": "🔒 การชำระเงินที่ปลอดภัยผ่าน Stripe",
+    "error": "เกิดข้อผิดพลาดบางอย่าง",
+    "goBack": "ย้อนกลับ",
+    "noCourseSelected": "ไม่ได้เลือกหลักสูตร",
+    "courseNotFound": "ไม่พบหลักสูตร",
+    "courseIsFree": "หลักสูตรนี้ฟรี ไม่ต้องชำระเงิน",
+    "successTitle": "ชำระเงินสำเร็จ! 🎉",
+    "successMessage": "ตอนนี้คุณสามารถเข้าถึงหลักสูตรได้แล้ว ไปที่แดชบอร์ดเพื่อเริ่มต้น",
+    "goToDashboard": "ไปที่แดชบอร์ด"
   },
-  "navigation": {
-    "home": "Home",
-    "studyProgram": "หลักสูตรการศึกษา",
-    "school": "โรงเรียน",
-    "paperTrading": "พอร์ตจำลอง (Paper Trading)",
-    "courses": "คอร์สเรียน",
-    "about": "เกี่ยวกับเรา",
-    "pricing": "ราคา",
-    "calculator": "เครื่องคิดเลข",
-    "login": "Log in",
-    "signup": "Start free",
-    "welcomeOffer": "🎁 First 100 students get 10,000 KLT tokens free!",
-    "help": "Help",
-    "tools": "Tools",
-    "myPage": "แดชบอร์ด",
-    "upgrade": "อัปเกรด",
-    "upgradeNow": "อัปเกรดตอนนี้",
-    "language": "ภาษา",
-    "liveTrading": "เทรดสด",
-    "simulator": "เครื่องจำลอง",
-    "quiz": "ควิซ",
-    "leagues": "การแข่งขัน",
+  "common": {
     "loading": "กำลังโหลด...",
-    "closeMenu": "ปิดเมนู",
-    "openMenu": "เปิดเมนู",
-    "autoTrading": "Auto Trading",
-    "register": "Registrer"
+    "error": "เกิดข้อผิดพลาด",
+    "success": "สำเร็จ!",
+    "back": "กลับ",
+    "next": "ถัดไป",
+    "close": "ปิด",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "confirm": "ยืนยัน",
+    "search": "ค้นหา",
+    "noResults": "ไม่พบผลลัพธ์",
+    "tryAgain": "ลองอีกครั้ง",
+    "learnMore": "เรียนรู้เพิ่มเติม",
+    "seeAll": "ดูทั้งหมด",
+    "comingSoon": "เร็วๆ นี้",
+    "edit": "แก้ไข",
+    "update": "อัปเดต",
+    "submit": "ส่ง",
+    "refresh": "รีเฟรชหน้า"
   },
-  "admin": {
-    "login": "Log in",
-    "loggingIn": "Logging in...",
-    "resetPassword": "Reset password",
-    "choosePassword": "Choose a strong password for your admin account.",
-    "search": "Search by name, email or ID...",
-    "searchUsers": "Search by name, email, user number...",
-    "selectTier": "Select new subscription tier for",
-    "deleteConfirm": "WARNING: This will permanently delete the user and all their data. This action cannot be undone.",
-    "deletePermanent": "Delete permanently",
-    "allServicesNormal": "All services are operating normally",
-    "serviceStatus": "Service Status",
-    "students": "Students",
-    "users": "Users",
-    "system": "System",
-    "overview": "Overview",
-    "tradeSync": "Trade Sync",
-    "settings": "Settings",
-    "loggedInAs": "Logged in as admin",
-    "logout": "Log out",
-    "adminPanel": "Admin Panel",
-    "totalUsers": "Total Users",
-    "activeLeagues": "Active Leagues",
-    "totalTrades": "Total Trades",
-    "aiMessages": "AI Messages",
-    "sendEmail": "Send Email",
-    "emailTo": "To",
-    "emailSubject": "Subject",
-    "emailBody": "Message",
-    "sending": "Sending...",
-    "send": "Send",
-    "broadcast": "Broadcast to all users"
+  "competition": {
+    "title": "การแข่งขัน",
+    "description": "การแข่งขันเทรด",
+    "subtitle": "แข่งขันกับเทรดเดอร์คนอื่นและรับรางวัล",
+    "status": "ใช้งานอยู่",
+    "joinButton": "เข้าร่วม",
+    "leaderboard": "กระดานผู้นำ",
+    "prizes": "รางวัล",
+    "rules": "กฎ",
+    "timeLeft": "เวลาที่เหลือ",
+    "participants": "ผู้เข้าร่วม",
+    "yourRank": "อันดับของคุณ",
+    "noActive": "ไม่มีการแข่งขันที่เปิดอยู่ในขณะนี้",
+    "weekly": "การแข่งขันรายสัปดาห์",
+    "monthly": "การแข่งขันรายเดือน",
+    "weeklyPrize": "รางวัลรายสัปดาห์",
+    "monthlyPrize": "รางวัลรายเดือน"
+  },
+  "contact": {
+    "title": "ติดต่อเรา",
+    "description": "ติดต่อเรา",
+    "subtitle": "มีคำถาม? เราพร้อมช่วยเหลือคุณ",
+    "form": {
+      "title": "ส่งข้อความถึงเรา",
+      "name": "ชื่อ",
+      "namePlaceholder": "ชื่อเต็มของคุณ",
+      "email": "อีเมล",
+      "emailPlaceholder": "your@email.com",
+      "message": "ข้อความ",
+      "messagePlaceholder": "เขียนข้อความของคุณที่นี่...",
+      "submit": "ส่งข้อความ"
+    },
+    "info": {
+      "emailTitle": "อีเมลสนับสนุน",
+      "emailResponse": "เราตอบกลับภายใน 24 ชั่วโมง",
+      "chatTitle": "แชทสด",
+      "chatHours": "พร้อมให้บริการ จ-ศ 09:00-17:00",
+      "startChat": "เริ่มแชท"
+    },
+    "emailDesc": "ส่งอีเมลถึงเราและเราจะตอบกลับโดยเร็วที่สุด",
+    "linksTitle": "ลิงก์ที่มีประโยชน์",
+    "aboutLink": "เกี่ยวกับเรา",
+    "pricingLink": "ราคา",
+    "privacyLink": "ความเป็นส่วนตัว",
+    "termsLink": "ข้อกำหนด"
+  },
+  "courses": {
+    "title": "Kurs",
+    "allCourses": "Alle Kurs",
+    "myCourses": "Mine Kurs",
+    "browse": "Utforsk Kurs",
+    "level": {
+      "beginner": "Nybegynner",
+      "intermediate": "Middels",
+      "advanced": "Avansert"
+    },
+    "free": "GRATIS",
+    "minutes": "minutter",
+    "completed": "fullført",
+    "oneTimePayment": "Engangsbetaling",
+    "enrollFree": "Start Gratis Kurs",
+    "enrollPaid": "Kjøp Kurs",
+    "enrolling": "Registrerer...",
+    "processing": "Behandler...",
+    "continueCourse": "Fortsett Kurs",
+    "reviewCourse": "Se På Nytt",
+    "enrollError": "Kunne ikke registrere deg til kurset. Prøv igjen.",
+    "benefit": {
+      "lifetime": "Livslangtilgang til kurset",
+      "progress": "Spor din fremgang",
+      "certificate": "Motta sertifikat ved fullføring"
+    },
+    "whatYouWillLearn": "Hva Du Vil Lære",
+    "learningObjective1": "Forstå grunnleggende trading-konsepter",
+    "learningObjective2": "Lær å lese og analysere markedsdata",
+    "learningObjective3": "Implementer risikostyring i dine trades",
+    "learningObjective4": "Øv med paper trading før ekte penger",
+    "includes": {
+      "videos": "Videoleksjoner",
+      "videosDesc": "Se profesjonelle videoer på ditt eget tempo",
+      "community": "Fellesskap",
+      "communityDesc": "Bli med i vårt trading-fellesskap",
+      "certificate": "Sertifikat",
+      "certificateDesc": "Få bevis på din kompetanse"
+    },
+    "noCourses": "Ingen kurs funnet",
+    "noCoursesDesc": "Vi jobber med å lage flott innhold for deg",
+    "filterBy": "Filtrer etter",
+    "sortBy": "Sorter etter",
+    "newest": "Nyeste",
+    "popular": "Mest populære",
+    "duration": "Varighet"
+  },
+  "dashboard": {
+    "title": "แดชบอร์ด",
+    "pulse": {
+      "title": "ชีพจรตลาด",
+      "totalValue": "มูลค่ารวม",
+      "dailyChange": "การเปลี่ยนแปลงรายวัน",
+      "paperMode": "การซื้อขายจำลอง",
+      "liveMode": "การซื้อขายสด",
+      "systemOnline": "ระบบออนไลน์",
+      "connecting": "กำลังเชื่อมต่อ...",
+      "botStrategy": "กลยุทธ์บอท",
+      "noEvents": "ยังไม่มีเหตุการณ์ซื้อขาย",
+      "eventFeedTitle": "เหตุการณ์ล่าสุด",
+      "riskMetrics": {
+        "maxExposure": "ความเสี่ยงสูงสุด",
+        "stopLoss": "จุดตัดขาดทุน",
+        "positionSize": "ขนาดสถานะ"
+      },
+      "timeframe": {
+        "1h": "1 ชั่วโมง",
+        "4h": "4 ชั่วโมง",
+        "1d": "1 วัน",
+        "1w": "1 สัปดาห์"
+      },
+      "riskLevel": {
+        "low": "ความเสี่ยงต่ำ",
+        "medium": "ความเสี่ยงปานกลาง",
+        "high": "ความเสี่ยงสูง",
+        "extreme": "ความเสี่ยงสูงมาก"
+      },
+      "events": {
+        "title": "เหตุการณ์ล่าสุด",
+        "noEvents": "ไม่มีเหตุการณ์ใหม่"
+      }
+    },
+    "welcomeBack": "ยินดีต้อนรับกลับ! นี่คือสถานะเรียลไทม์ของคุณ",
+    "loading": "กำลังโหลดแดชบอร์ด...",
+    "overview": "ภาพรวม",
+    "portfolio": "พอร์ตโฟลิโอ",
+    "trading": "การเทรด",
+    "activity": "กิจกรรม",
+    "settings": "การตั้งค่า",
+    "logout": "ออกจากระบบ",
+    "totalValue": "มูลค่ารวม",
+    "totalProfit": "กำไรรวม",
+    "dailyChange": "การเปลี่ยนแปลงรายวัน",
+    "activeSignals": "สัญญาณที่ใช้งานอยู่",
+    "newToday": "ใหม่วันนี้",
+    "recentActivity": "กิจกรรมล่าสุด",
+    "portfolioComingSoon": "ฟังก์ชันพอร์ตโฟลิโอเร็วๆ นี้!",
+    "tradingComingSoon": "ฟังก์ชันการเทรดเร็วๆ นี้!",
+    "activityComingSoon": "บันทึกกิจกรรมเร็วๆ นี้!",
+    "profileSettings": "การตั้งค่าโปรไฟล์",
+    "positions": "ตำแหน่ง",
+    "marketPerformance": "ผลงานตลาด",
+    "quickLinks": "ลิงก์ด่วน",
+    "startTrading": "เริ่มเทรด",
+    "demoSimulator": "จำลองการสาธิต",
+    "email": "อีเมล",
+    "name": "ชื่อ",
+    "namePlaceholder": "ชื่อของคุณ",
+    "winRate": "อัตราการชนะ",
+    "totalTrades": "การเทรดทั้งหมด",
+    "price": "ราคา",
+    "amount": "จำนวน",
+    "profit": "กำไร",
+    "loss": "ขาดทุน",
+    "recentTrades": "การเทรดล่าสุด",
+    "noTrades": "ยังไม่มีการเทรด คลิก \"ซิงค์ Binance\" เพื่อโหลดการเทรด Binance ของคุณ",
+    "bought": "ซื้อ",
+    "sold": "ขาย",
+    "binanceCard": {
+      "title": "Binance API",
+      "subtitle": "เชื่อมต่อบัญชี Binance ของคุณ",
+      "description": "เชื่อมต่อกับ Binance ผ่าน API สำหรับการเทรดสดและภาพรวมพอร์ตโฟลิโอ เราต้องการสิทธิ์แค่ดูอย่างเดียว",
+      "button": "เชื่อมต่อ Binance"
+    },
+    "adminCard": {
+      "title": "แผงควบคุมผู้ดูแล",
+      "subtitle": "การดูแลระบบ",
+      "description": "จัดการผู้ใช้ ดูสถานะระบบ และดูแลแพลตฟอร์ม",
+      "button": "เปิดแผงควบคุมผู้ดูแล"
+    },
+    "activityPage": {
+      "title": "กิจกรรม",
+      "subtitle": "การเทรดและธุรกรรมล่าสุดของคุณ"
+    },
+    "portfolioPage": {
+      "title": "พอร์ตโฟลิโอของฉัน",
+      "subtitle": "ภาพรวมสินทรัพย์ที่ใช้งานอยู่ของคุณ",
+      "totalAssets": "รวม: {count} สินทรัพย์",
+      "mainHolding": "การถือครั้งหลัก",
+      "balance": "ยอดคงเหลือ",
+      "noAssets": {
+        "title": "ไม่มีเหรียญที่ใช้งานอยู่",
+        "description": "คุณยังไม่มีสินทรัพย์ที่ใช้งานอยู่ในพอร์ตโฟลิโอของคุณ เริ่มต้นการเทรดเพื่อดูที่นี่!",
+        "button": "เริ่มการเทรดครั้งแรกของคุณ"
+      }
+    },
+    "settingsPage": {
+      "title": "การตั้งค่า",
+      "subtitle": "จัดการบัญชีและการตั้งค่าส่วนบุคคลของคุณ",
+      "personalInfo": "ข้อมูลส่วนบุคคล",
+      "email": "อีเมล",
+      "emailNote": "ไม่สามารถเปลี่ยนอีเมลด้วยตนเองได้",
+      "fullName": "ชื่อเต็ม",
+      "namePlaceholder": "ชื่อของคุณ",
+      "profileUpdated": "อัปเดตโปรไฟล์แล้ว!",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง",
+      "notifications": "การแจ้งเตือน",
+      "notificationsComingSoon": "การจัดการการแจ้งเตือนจะมาในการอัปเดตครั้งต่อไป",
+      "security": "ความปลอดภัย",
+      "securityDesc": "การยืนยันตัวตนสองปัจจัยและการตั้งค่าความปลอดภัย"
+    },
+    "orderHistory": {
+      "loading": "กำลังโหลดประวัติคำสั่งซื้อ...",
+      "noOrders": "ไม่พบคำสั่งซื้อ",
+      "date": "วันที่",
+      "pair": "คู่",
+      "side": "ด้าน",
+      "price": "ราคา",
+      "amount": "จำนวน",
+      "total": "รวม (NOK)",
+      "buy": "ซื้อ",
+      "sell": "ขาย"
+    },
+    "welcome": "ยินดีต้อนรับสู่ Klarpakke",
+    "topBar": {
+      "myOverview": "ภาพรวมของฉัน",
+      "systemOnline": "ระบบออนไลน์",
+      "allSystemsOperational": "ระบบทั้งหมดทำงานปกติ",
+      "systemStatus": "สถานะระบบ"
+    },
+    "statusDesc": "สถานะระบบอัปเดตแบบสด",
+    "stats": {
+      "totalValue": "มูลค่ารวม",
+      "totalValueDesc": "มูลค่าพอร์ตโฟลิโอทั้งหมด",
+      "activePositions": "ตำแหน่งที่ใช้งานอยู่",
+      "activePositionsDesc": "จำนวนการเทรดที่เปิดอยู่",
+      "todayPnL": "P/L วันนี้",
+      "todayPnLDesc": "กำไร/ขาดทุนวันนี้",
+      "winRate": "อัตราการชนะ",
+      "winRateDesc": "เปอร์เซ็นต์การเทรดที่สำเร็จ",
+      "noActivePositions": "ไม่มีตำแหน่งที่ใช้งานอยู่",
+      "waitingForData": "รอข้อมูล...",
+      "readyToTrade": "พร้อมเทรด",
+      "locked": "ล็อก",
+      "paperTradingFirst": "เริ่มด้วย paper trading ก่อน"
+    },
+    "actions": {
+      "recommendedStart": "จุดเริ่มต้นที่แนะนำ",
+      "recommendedStartDesc": "วิธีที่ดีที่สุดในการเริ่มต้น",
+      "simulatorTitle": "Paper Trading Simulator",
+      "simulatorDesc": "ฝึกโดยไม่มีความเสี่ยงด้วยเงินทุนเสมือน",
+      "goToSimulator": "เริ่ม Simulator",
+      "goToCourses": "ไปที่หลักสูตร",
+      "viewPositions": "ดูตำแหน่ง",
+      "newTrade": "การเทรดใหม่",
+      "connectExchange": "เชื่อมต่อ Exchange",
+      "manageAccount": "จัดการบัญชี"
+    },
+    "learningJourney": {
+      "title": "เส้นทางการเรียนรู้ของคุณ",
+      "subtitle": "เส้นทางสู่การเทรดที่ทำกำไร",
+      "description": "ทำตามแผนการเรียนรู้ที่มีโครงสร้างของเราเพื่อเชี่ยวชาญการเทรด",
+      "youAreHere": "คุณอยู่ที่นี่",
+      "completed": "เสร็จแล้ว",
+      "inProgress": "กำลังดำเนินการ",
+      "locked": "ล็อก",
+      "notStarted": "ยังไม่เริ่ม",
+      "paperTrading": "Paper Trading",
+      "paperDesc": "ฝึกด้วยเงินทุนเสมือน",
+      "microAccount": "บัญชีขนาดเล็ก (10–100 USD)",
+      "microDesc": "เริ่มด้วยเงินจริง ความเสี่ยงต่ำ",
+      "standardAccount": "บัญชีมาตรฐาน",
+      "standardDesc": "เพิ่มเงินทุนเมื่อพร้อม",
+      "autoTrading": "Auto Trading",
+      "autoTradingDesc": "ให้ AI เทรดแทนคุณ",
+      "advancedStrategies": "กลยุทธ์ขั้นสูง",
+      "advancedDesc": "เชี่ยวชาญเทคนิคที่ซับซ้อน"
+    },
+    "coach": {
+      "title": "AI Trading Coach",
+      "subtitle": "ผู้ช่วยการเทรดส่วนตัวของคุณ",
+      "description": "รับคำแนะนำแบบเรียลไทม์ การวิเคราะห์ และคำตอบสำหรับคำถามของคุณ",
+      "placeholder": "ถามฉันเกี่ยวกับการเทรด กลยุทธ์ หรือตลาด...",
+      "send": "ส่ง",
+      "thinking": "กำลังคิด...",
+      "initialDefault": "สวัสดี! ฉันคือ AI trading coach ของคุณ วันนี้คุณอยากรู้เรื่องอะไร?",
+      "examples": {
+        "title": "ตัวอย่างคำถาม:",
+        "q1": "จุดเข้าที่ดีสำหรับ BTC ตอนนี้คืออะไร?",
+        "q2": "อธิบาย support และ resistance",
+        "q3": "วิธีตั้ง stop loss?",
+        "q4": "กลยุทธ์ไหนเหมาะกับผู้เริ่มต้น?"
+      }
+    },
+    "quickStats": {
+      "title": "ภาพรวมอย่างรวดเร็ว",
+      "balance": "ยอดคงเหลือ",
+      "equity": "ส่วนทุน",
+      "margin": "มาร์จิน",
+      "freeMargin": "มาร์จินว่าง",
+      "marginLevel": "ระดับมาร์จิน",
+      "drawdown": "Drawdown"
+    },
+    "notifications": {
+      "title": "การแจ้งเตือน",
+      "noNotifications": "ไม่มีการแจ้งเตือนใหม่",
+      "markAllRead": "ทำเครื่องหมายว่าอ่านทั้งหมด",
+      "settings": "การตั้งค่าการแจ้งเตือน"
+    },
+    "errors": {
+      "loadingFailed": "โหลดข้อมูลไม่สำเร็จ",
+      "connectionError": "ข้อผิดพลาดการเชื่อมต่อ",
+      "retry": "ลองใหม่",
+      "contactSupport": "ติดต่อฝ่ายสนับสนุนหากปัญหายังคงอยู่"
+    },
+    "sidebar": {
+      "overview": "ภาพรวม",
+      "portfolio": "พอร์ตโฟลิโอ",
+      "trading": "เทรด",
+      "liveTrading": "เทรดสด",
+      "paperTrading": "Paper Trading",
+      "courses": "หลักสูตร",
+      "simulator": "จำลอง",
+      "achievements": "ความสำเร็จ",
+      "leaderboard": "กระดานผู้นำ",
+      "referrals": "การอ้างอิง",
+      "help": "ช่วยเหลือ",
+      "binanceApi": "Binance API",
+      "activity": "กิจกรรม",
+      "taxReport": "รายงานภาษี",
+      "settings": "การตั้งค่า",
+      "admin": "แอดมิน",
+      "logout": "ออกจากระบบ"
+    },
+    "bots": {
+      "modeLive": "เทรดสด",
+      "modePaper": "เทรดจำลอง"
+    }
+  },
+  "footer": {
+    "product": "ผลิตภัณฑ์",
+    "company": "บริษัท",
+    "legal": "กฎหมาย",
+    "tagline": "การศึกษาคริปโตนอร์เวย์ เรียนโดยไม่มีความเสี่ยง",
+    "paymentLabel": "การชำระเงินที่ปลอดภัยด้วย:",
+    "copyright": "© {year} Klarpakke AS สงวนลิขสิทธิ์",
+    "disclaimer": "การซื้อขาย cryptocurrency มีความเสี่ยง Klarpakke เป็นแพลตฟอร์มการศึกษาและไม่ให้คำแนะนำทางการเงิน การตัดสินใจลงทุนทั้งหมดเป็นความรับผิดชอบของคุณเอง ผลลัพธ์ที่ผ่านมาไม่ใช่การรับประกันผลตอบแทนในอนาคต อย่าลงทุนมากกว่าที่คุณสามารถสูญเสียได้",
+    "links": {
+      "courses": "หลักสูตร",
+      "paperTrading": "การซื้อขายจำลอง",
+      "pricing": "ราคา",
+      "about": "เกี่ยวกับเรา",
+      "contact": "ติดต่อ",
+      "privacy": "ความเป็นส่วนตัว",
+      "terms": "ข้อกำหนด"
+    }
+  },
+  "gamification": {
+    "title": "เกมมิฟิเคชัน",
+    "description": "เรียนรู้และรับคะแนน",
+    "subtitle": "ทำภารกิจให้สำเร็จและไต่อันดับบนกระดานผู้นำ",
+    "points": "คะแนน",
+    "badges": "เหรียญ",
+    "streaks": "สถิติต่อเนื่อง",
+    "level": "ระดับ",
+    "nextLevel": "ระดับถัดไป",
+    "dailyChallenge": "ภารกิจประจำวัน",
+    "weeklyGoal": "เป้าหมายประจำสัปดาห์",
+    "achievements": "ความสำเร็จ",
+    "progress": "ความคืบหน้า",
+    "stats": {
+      "completed": "บทเรียนที่เสร็จสิ้น",
+      "accuracy": "ความแม่นยำในการเทรด",
+      "lessonsAvailable": "บทเรียนที่พร้อมใช้งาน"
+    }
+  },
+  "helpPage": {
+    "title": "Hjelp & Support",
+    "subtitle": "Finn svar på de vanligste spørsmålene om Klarpakke Universitet",
+    "searchPlaceholder": "Spør vår chatbot...",
+    "noResults": "Ingen resultater funnet for \"{query}\"",
+    "tryAnother": "Prøv et annet søkeord eller kontakt oss direkte",
+    "contact": {
+      "emailTitle": "Send oss en e-post",
+      "emailDesc": "Fant du ikke svaret? Vi svarer vanligvis innen 24 timer på hverdager.",
+      "linksTitle": "Nyttige lenker",
+      "aboutLink": "Om Klarpakke Universitet →",
+      "pricingLink": "Se priser og planer →",
+      "privacyLink": "Personvernerklæring →",
+      "termsLink": "Vilkår for bruk →"
+    },
+    "faqs": [
+      {
+        "q": "Hva er Klarpakke Universitet?",
+        "a": "Klarpakke Universitet er en norsk plattform for krypto-utdanning. Vi tilbyr kurs, simulator, paper trading og quizer – alt for å lære deg trading på en trygg måte. Alt er 100% simulert, så du kan øve uten å risikere ekte penger."
+      },
+      {
+        "q": "Hvilke planer finnes og hva koster de?",
+        "a": "Vi har fire planer: Gratis (0 kr) gir deg en smakebit. Basis (199 kr/mnd) inkluderer alle grunnkurs. Komplett (399 kr/mnd) er vår mest populære plan med alt i Basis pluss avanserte kurs, sertifikat og webinarer. Pro (999 kr/mnd) gir ekstra ressurser og prioritert support."
+      },
+      {
+        "q": "Kan jeg tape penger?",
+        "a": "Nei! Alt på Klarpakke Universitet er simulert. Når du bruker paper trading eller simulatoren, handler du med virtuelle penger. Du kan ikke tape ekte penger her. Dette er et trygt sted å lære før du eventuelt bruker ekte penger hos en ekstern megler."
+      },
+      {
+        "q": "Hvordan sier jeg opp?",
+        "a": "Du kan kansellere når som helst fra kontoinnstillingene dine. Du beholder tilgangen til slutten av den betalte perioden. Det er ingen bindingstid – du bestemmer selv hvor lenge du vil være med."
+      },
+      {
+        "q": "Hvordan starter jeg med paper trading?",
+        "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+      },
+      {
+        "q": "Hva lærer jeg i kursene?",
+        "a": "Grunnkursene dekker hva krypto er, hvordan trading fungerer, og grunnleggende risikostyring. Avanserte kurs går dypere inn i teknisk analyse, strategier og trading-psykologi. Alt er på norsk og tilpasset norske småsparere."
+      }
+    ]
+  },
+  "hero": {
+    "title": "Klarpakke",
+    "subtitle": "เรียนรู้การเทรด",
+    "description": "แพลตฟอร์มที่สมบูรณ์ที่สุดของนอร์เวย์สำหรับการศึกษาคริปโตและการเทรด",
+    "cta": "เริ่มต้นฟรี",
+    "badge": "🇳🇴 สถาบันสอนเทรดชั้นนำของนอร์เวย์",
+    "tagline": "จากมือใหม่สู่เทรดเดอร์มืออาชีพ",
+    "ctaPrimary": "เริ่มต้นฟรีวันนี้",
+    "ctaSecondary": "ดูหลักสูตร",
+    "stats": {
+      "weeks": "ข้อมูลตลาดแบบเรียลไทม์",
+      "students": "นักเรียนที่ใช้งานอยู่",
+      "accuracy": "ความแม่นยำของสัญญาณ"
+    }
+  },
+  "interestTest": {
+    "title": "แบบทดสอบความสนใจ",
+    "description": "ค้นหาสไตล์การเทรดของคุณ",
+    "subtitle": "ตอบคำถาม 5 ข้อแล้วค้นหาคอร์สที่เหมาะกับคุณที่สุด",
+    "loading": "กำลังโหลดแบบทดสอบความสนใจ...",
+    "start": "เริ่มทำแบบทดสอบ",
+    "next": "ถัดไป",
+    "back": "ย้อนกลับ",
+    "submit": "ดูผลลัพธ์",
+    "question": "คำถาม",
+    "of": "จาก",
+    "result": "ผลลัพธ์ของคุณ",
+    "recommended": "คอร์สที่แนะนำ",
+    "tryAgain": "ทำแบบทดสอบอีกครั้ง",
+    "beginner": "ผู้เริ่มต้น",
+    "intermediate": "ระดับกลาง",
+    "advanced": "ขั้นสูง"
   },
   "landing": {
     "badge": "มหาวิทยาลัย Klarpakke",
@@ -186,6 +1038,7 @@
       }
     },
     "whyUs": {
+      "title": "ทำไมเลือกเรา?",
       "safe": {
         "title": "สร้างขึ้นเพื่อความไว้วางใจ",
         "desc": "ภาษาที่เข้าใจง่าย การสนับสนุนจากมนุษย์ที่แท้จริง และไม่มีศัพท์เทคนิคที่สับสน"
@@ -232,1890 +1085,1071 @@
       "desc": "รับคำตอบสำหรับคำถามของคุณจากทีมหรือชุมชนของเรา",
       "button": "แชทกับเรา"
     },
-    "modernHero": {
-      "badge": "Norges første krypto-universitet",
-      "titlePart1": "Lær krypto-trading",
-      "titlePart2": "fra A til Å",
-      "subtitle": "Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital.",
-      "bullets": "✓ Gratis å starte ✓ 1M kr virtuell kapital ✓ AI-coaching ✓ Auto-trading",
-      "ctaPrimary": "Start nå",
-      "ctaSecondary": "Se kurs",
-      "trust1": "Ingen kredittkort nødvendig",
-      "trust2": "100+ studenter",
-      "trust3": "Norsk support"
-    }
-  },
-  "hero": {
-    "badge": "Norway's first crypto university",
-    "title": "🎓 KLARPAKKE UNIVERSITY",
-    "tagline": "From Student to Master Trader",
-    "description": "This university grows with you 📚",
-    "ctaPrimary": "Apply now - First 100 get tokens →",
-    "ctaSecondary": "See study program →",
-    "stats": {
-      "weeks": "Weeks to Master",
-      "students": "Students",
-      "accuracy": "Accuracy"
-    },
-    "title_part1": "Learn crypto.",
-    "title_part2": "Zero risk.",
-    "subtitle_part1": "1M virtual capital.",
-    "subtitle_part2": "Real prices.",
-    "ready": "Ready?",
-    "getStarted": "Get started",
     "features": {
-      "prices": "Live prices",
-      "risk": "Zero risk",
-      "fast": "Fast",
-      "courses": "Courses"
-    }
-  },
-  "foundersOffer": {
-    "badge": "Only {spotsLeft} spots left!",
-    "title": "🎁 FIRST 100 STUDENTS",
-    "subtitle": "Founder Student Package",
-    "benefits": {
-      "tokens": {
-        "title": "10,000 KLT tokens",
-        "description": "Of 10,000,000 total supply (0.1%)"
+      "title": "ทุกสิ่งที่คุณต้องการเพื่อเชี่ยวชาญการเทรด",
+      "subtitle": "เราได้รวบรวมเครื่องมือที่ดีที่สุดเพื่อเรียนรู้การเทรดอย่างปลอดภัย มีโครงสร้าง และน่าสนใจ",
+      "paperTrading": {
+        "title": "Paper Trading",
+        "desc": "เริ่มต้นด้วย $100,000 ในเงินเล่น ฝึกซ้อมโดยไม่เสี่ยงเงินออมจริง"
       },
-      "badge": {
-        "title": "\"Founder\" badge",
-        "description": "Permanent"
-      }
-    },
-    "progress": {
-      "enrolled": "enrolled",
-      "spotsLeft": "spots left"
-    },
-    "cta": "Apply now - {spotsLeft}/{spotsTotal} spots left →",
-    "disclaimer": "⚠️ KLT has no monetary value today. But imagine this: The first 100 Apple employees got stock options that \"just sat there\". Today they're worth millions. If Klarpakke becomes Norway's biggest crypto university, you'll own 1% of the network. Maybe it's just a cool badge. Maybe it's something more. Time will tell. 🚀",
-    "importantInfo": {
-      "title": "⚠️ IMPORTANT INFORMATION",
-      "p1": "Klarpakke is a learning tool (edtech). We are NOT financial advisors or regulated by any financial authority.",
-      "p2": "Crypto trading involves high risk. You can lose your entire investment. We do NOT handle your money. You connect your own exchange via API at your own risk.",
-      "p3": "AI signals are educational tools, not investment advice. You are solely responsible for all trading decisions.",
-      "p4": "🔒 INTEGRITY: We are not a pyramid, MLM, or referral machine. We sell knowledge and tools. Our only incentive: Invite 3 paying friends, get 1 month free."
-    }
-  },
-  "studieprogram": {
-    "sectionTitle": "Choose your degree",
-    "title": "🎓 Study Program",
-    "description": "From beginner to expert. Choose the study level that fits you.",
-    "disclaimer": "All prices in NOK. No commitment - cancel anytime.",
-    "tiers": {
-      "student": {
-        "name": "Free",
-        "price": "0 NOK",
-        "period": "Free",
-        "badge": "นักเรียน",
-        "description": "Join free - no application required",
-        "features": [
-          "7-day introduction course",
-          "Library access (articles/videos)",
-          "Campus community (read-only)",
-          "Quizzes & exams",
-          "\"Student ID\" badge",
-          "No trading. Theory only."
-        ],
-        "cta": "Start as Student →"
+      "aiTeacher": {
+        "title": "ครู AI",
+        "desc": "รับคำแนะนำและคำอธิบายส่วนบุคคล ปรับให้เข้ากับระดับและเป้าหมายของคุณ"
       },
-      "bachelor": {
-        "name": "Basic",
-        "price": "$25",
-        "period": "/mo",
-        "badge": "POPULAR",
-        "description": "Bachelor in Crypto Trading",
-        "features": [
-          "Everything in Student",
-          "Paper trading lab (simulation)",
-          "AI teacher in English",
-          "Weekly workshops",
-          "Learning log & progress",
-          "Student leaderboard",
-          "\"Bachelor Student\" badge",
-          "3-month study plan"
-        ],
-        "cta": "Start Bachelor →",
-        "highlight": true
+      "structured": {
+        "title": "การเรียนรู้ที่มีโครงสร้าง",
+        "desc": "ผสมผสานทฤษฎี การฝึกปฏิบัติ และแบบทดสอบ จากมือใหม่ไปสู่ขั้นสูงตามจังหวะของคุณเอง"
       },
-      "master": {
-        "name": "Complete",
-        "price": "$49",
-        "period": "/mo",
-        "badge": "ปริญญาโท",
-        "description": "Master in Crypto Trading",
-        "features": [
-          "Everything in Bachelor",
-          "Live trading (connect Binance API)",
-          "Advanced AI signals",
-          "Trading journal & analysis",
-          "Monthly 1-on-1 mentoring",
-          "\"Master Student\" badge",
-          "Trader lounge (exclusive)"
-        ],
-        "cta": "Start Master →",
-        "requirement": "Requirement: Completed Bachelor exam"
+      "safe": {
+        "title": "สภาพแวดล้อมที่ปลอดภัย",
+        "desc": "ไม่มีค่าธรรมเนียมที่ซ่อนอยู่ ไม่มีความกดดัน เรียนรู้ตามจังหวะของคุณเองโดยไม่มีความเครียด"
       },
-      "phd": {
-        "name": "Pro",
-        "price": "$79",
-        "period": "/mo",
-        "badge": "ปริญญาเอก",
-        "description": "PhD in Automated Trading",
-        "features": [
-          "Everything in Master",
-          "Auto-trading (your own rules)",
-          "Advanced AI models",
-          "Custom bot programming",
-          "Priority support (< 2h)",
-          "\"PhD Candidate\" badge",
-          "Teach-back program"
-        ],
-        "cta": "Start PhD →",
-        "requirement": "Requirement: 3+ months as Master"
+      "anywhere": {
+        "title": "ฝึกซ้อมได้ทุกที่",
+        "desc": "ฝึกซ้อมได้ตลอดเวลา ทุกที่ บนมือถือ แท็บเล็ต หรือ PC"
       },
-      "professor": {
-        "name": "Professor",
-        "price": "$120",
-        "period": "/mo",
-        "badge": "ELITE",
-        "description": "Professor / Researcher",
-        "features": [
-          "Everything in PhD",
-          "⚡ Advanced AI access",
-          "Dedicated research advisor",
-          "Early access to new features",
-          "\"Professor\" badge",
-          "Faculty lounge",
-          "Co-create courses with us"
-        ],
-        "cta": "Apply for Professor →",
-        "requirement": "Requirement: 6+ months PhD, proven track record"
-      }
-    }
-  },
-  "opptak": {
-    "title": "🎓 Apply to Klarpakke University",
-    "subtitle": "First 100 students get 10,000 tokens free",
-    "spotsLeft": "Only {count}/100 spots left",
-    "form": {
-      "erfaring": {
-        "label": "1. What is your experience with crypto?",
-        "options": {
-          "nybegynner": "Beginner (never traded, want to learn from scratch)",
-          "noe": "Some experience (bought/sold a bit, but unsure)",
-          "mellom": "Intermediate (trade sometimes, know basics)",
-          "avansert": "Advanced (know technical analysis, want to automate)"
-        }
+      "ctaTitle": "ลอง Paper Trading ตอนนี้",
+      "ctaSubtitle": "ไม่จำเป็นต้องลงทะเบียน"
+    },
+    "foundersOffer": {
+      "badge": "จำกัดเวลา",
+      "title": "เป็นหนึ่งใน 100 นักเรียนผู้ก่อตั้งคนแรก",
+      "subtitle": "รับประกันตำแหน่งของคุณในหมู่นักเรียนกลุ่มแรก",
+      "benefits": {
+        "tokens": "10,000 KLT Tokens",
+        "tokensDesc": "โทเค็นฟรีเมื่อเข้าสู่ระบบครั้งแรก",
+        "badge": "Founder Badge",
+        "badgeDesc": "ป้ายถาวรบนโปรไฟล์ของคุณ",
+        "price": "ราคาตลอดชีวิต",
+        "priceDesc": "รักษาราคาของคุณตลอดไป"
       },
-      "laeringsmaal": {
-        "label": "2. What do you want to learn most about?",
-        "sublabel": "Select up to 3 ({count}/3 selected)",
-        "options": [
-          "Crypto fundamentals (What is Bitcoin? Blockchain?)",
-          "How to read charts & patterns",
-          "Risk management (Stop-loss, position sizing)",
-          "Technical analysis (Indicators, signals)",
-          "AI-assisted trading",
-          "Automated trading (bots)",
-          "Paper trading (practice without risk)",
-          "Live trading strategies"
-        ],
-        "maxError": "Max 3 selections"
-      },
-      "kontakt": {
-        "label": "3. Contact info",
-        "email": {
-          "label": "Email *",
-          "placeholder": "your@email.com"
-        },
-        "handle": {
-          "label": "Twitter/Discord handle (optional)",
-          "placeholder": "@username"
-        },
-        "password": {
-          "label": "Password",
-          "placeholder": "Min. 8 characters",
-          "sublabel": "You will need this to log in later"
-        }
-      },
-      "validation": {
-        "required": "Please fill out all required fields.",
-        "email": "Invalid email address.",
-        "emailExists": "This email is already registered. Please log in instead.",
-        "createError": "Could not create account: {message}",
-        "genericError": "Could not submit. Please check your internet connection."
-      }
-    },
-    "rewards": {
-      "title": "🎁 By submitting you get:",
-      "items": [
-        "10,000 KLT tokens (free - of 10M total)",
-        "Beta access (launch February 15)",
-        "\"Founder-Student\" badge",
-        "Featured on Hall of Fame",
-        "Priority support on Discord"
-      ]
-    },
-    "submit": "Apply now →",
-    "submitLoading": "Submitting...",
-    "disclaimer": "⚠️ Crypto can involve high risk. We are an educational tool, not financial advisors.",
-    "backToHome": "← Back to homepage"
-  },
-  "takk": {
-    "title": "WELCOME TO KLARPAKKE UNIVERSITY!",
-    "studentBadge": "You are student #{number}/100",
-    "nextSteps": {
-      "title": "NEXT STEPS:",
-      "steps": [
-        {
-          "number": "1️⃣",
-          "title": "Check inbox (within 5 min)",
-          "description": "Welcome email with your 40k loss story"
-        },
-        {
-          "number": "2️⃣",
-          "title": "Join Discord (link in email)",
-          "description": "Meet other founder students in #founder-channel"
-        },
-        {
-          "number": "3️⃣",
-          "title": "Day 1 starts February 15 at 09:00",
-          "description": "\"What is crypto?\" (5 min video)"
-        }
-      ]
-    },
-    "rewards": {
-      "title": "🎁 YOUR REWARDS:",
-      "items": [
-        "10,000 KLT tokens → รับเครดิตเมื่อเข้าสู่ระบบครั้งแรก (0.1% ของทั้งหมด 10M)",
-        "เข็มกลัด \"Founder-Student\" → แสดงบนโปรไฟล์ของคุณ",
-        "สิทธิ์การสนับสนุนลำดับความสำคัญตลอดชีพ → ในช่อง Discord #founder-channel"
-      ]
-    },
-    "vision": {
-      "title": "🔮 WHAT IF...?",
-      "content": "The first 100 Apple employees got stock options that \"just sat there\". Most sold them for a few thousand dollars. Those who held on? They're worth millions today.",
-      "point1": "You are now one of the first 100 students at Norway's first crypto university",
-      "point2": "You own 0.1% of the KLT network (10,000 of 10,000,000 tokens)",
-      "point3": "If Klarpakke becomes \"The Apple of crypto education in Norway\"...",
-      "closing": "Maybe this is just a cool badge. Maybe it's the beginning of something big. One thing is certain: You'll always be able to say \"I was there from the start.\" 🚀"
-    },
-    "competition": {
-      "title": "🏆 SPRING SEMESTER 2026 COMPETITION",
-      "dates": {
-        "start": "Start: February 15",
-        "end": "End: June 15"
-      },
-      "prizes": [
-        "🥇 1st place: 1,000,000 KLT + \"Student of the Semester\"",
-        "🥈 2nd place: 500,000 KLT",
-        "🥉 3rd place: 250,000 KLT"
-      ],
-      "note": "Based on GPA (learning, not profit)."
-    },
-    "questions": "Questions? Reply to the welcome email (we read all!)",
-    "backToHome": "← Back to homepage"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "klt": {
-      "title": "Klarpakke Token (KLT)",
-      "founderNumber": "Founder Student #{number}",
-      "yourBalance": "Your Balance",
-      "founderBenefits": {
-        "title": "Founder Benefits",
-        "desc": "Guaranteed 10,000 KLT for the first 100 students (0.1% of total supply)."
-      },
-      "learnEarn": {
-        "title": "Learn & Earn",
-        "desc": "Get rewarded for every lesson you complete and every quiz you pass."
-      },
-      "futureValue": {
-        "title": "Future Value",
-        "desc": "KLT can be used to unlock advanced trading algorithms and reduce fees."
-      },
-      "readMore": "Read more about the KLT ecosystem"
-    },
-    "loading": "Loading dashboard...",
-    "overview": "Overview",
-    "portfolio": "Portfolio",
-    "trading": "Trading",
-    "activity": "Activity",
-    "settings": "Settings",
-    "logout": "Log out",
-    "totalValue": "Total Value",
-    "totalProfit": "Total Profit",
-    "dailyChange": "Daily Change",
-    "activeSignals": "Active Signals",
-    "newToday": "new today",
-    "recentActivity": "Recent Activity",
-    "portfolioComingSoon": "Portfolio functionality coming soon!",
-    "tradingComingSoon": "Trading functionality coming soon!",
-    "activityComingSoon": "Activity log coming soon!",
-    "profileSettings": "Profile Settings",
-    "welcomeBack": "Welcome back! Here is your real-time status.",
-    "statusDesc": "Here is the status of your portfolio and learning journey.",
-    "coach": {
-      "title": "Klarpakke AI Coach",
-      "subtitle": "Powered by Moonshot & DeepSeek",
-      "description": "Unsure about the market today? I can analyze your portfolio or explain complex concepts.",
-      "initialWithTrade": "I see you have a new trade! Shall we look at the numbers together?",
-      "initialDefault": "Hi! How can I help you today? We can look at the Bitcoin price or your strategy."
-    },
-    "topBar": {
-      "myOverview": "My Overview",
-      "systemOnline": "System Online"
-    },
-    "stats": {
-      "noActivePositions": "No active positions",
-      "waitingForData": "Waiting for data",
-      "readyToTrade": "Ready to trade",
-      "locked": "Locked",
-      "paperTradingFirst": "Paper Trading first"
-    },
-    "actions": {
-      "recommendedStart": "Recommended Start",
-      "simulatorTitle": "Paper Trading Simulator",
-      "simulatorDesc": "You have {amount} NOK available on your demo account. Use these to learn market movements without risk before depositing your own money.",
-      "goToCourses": "Go to Courses"
-    },
-    "learningJourney": {
-      "title": "Your Learning Journey",
-      "youAreHere": "You are here now",
-      "microAccount": "Micro Account",
-      "microDesc": "1,000 NOK real capital",
-      "autoTradingDesc": "Unlock algorithms"
-    },
-    "positions": "Positions",
-    "marketPerformance": "Market Performance",
-    "quickLinks": "Quick Links",
-    "startTrading": "Start Trading",
-    "demoSimulator": "Demo Simulator",
-    "email": "Email",
-    "name": "Name",
-    "namePlaceholder": "Your name",
-    "winRate": "Win Rate",
-    "totalTrades": "Total Trades",
-    "price": "Price",
-    "amount": "Amount",
-    "profit": "Profit",
-    "loss": "Loss",
-    "recentTrades": "Recent Trades",
-    "noTrades": "No trades yet. Click \"Sync Binance\" to load your Binance trades.",
-    "bought": "Bought",
-    "sold": "Sold",
-    "binanceCard": {
-      "title": "Binance API",
-      "subtitle": "Connect your Binance account",
-      "description": "Connect to Binance via API for live trading and portfolio overview. We only require read-only access.",
-      "button": "Connect Binance"
-    },
-    "adminCard": {
-      "title": "Admin Panel",
-      "subtitle": "System Administration",
-      "description": "Manage users, view system status, and administer the platform.",
-      "button": "Open Admin Panel"
-    },
-    "activityPage": {
-      "title": "Activity",
-      "subtitle": "Your latest trades and transactions."
-    },
-    "portfolioPage": {
-      "title": "My Portfolio",
-      "subtitle": "Overview of your active assets.",
-      "totalAssets": "TOTAL: {count} ASSETS",
-      "mainHolding": "Main Holding",
-      "balance": "Balance",
-      "noAssets": {
-        "title": "No active coins",
-        "description": "You have no active assets in your portfolio yet. Start trading to see them here!",
-        "button": "Start your first trade"
-      }
-    },
-    "settingsPage": {
-      "title": "Settings",
-      "subtitle": "Manage your account and personal preferences.",
-      "personalInfo": "Personal Information",
-      "email": "Email",
-      "emailNote": "Email cannot be changed manually.",
-      "fullName": "Full Name",
-      "namePlaceholder": "Your name",
-      "profileUpdated": "Profile updated!",
-      "saveChanges": "Save changes",
-      "notifications": "Notifications",
-      "notificationsComingSoon": "Notification management coming in a later update.",
-      "security": "Security",
-      "securityDesc": "Two-factor authentication and security settings."
-    },
-    "orderHistory": {
-      "loading": "Loading order history...",
-      "noOrders": "No orders found.",
-      "date": "Date",
-      "pair": "Pair",
-      "side": "Side",
-      "price": "Price",
-      "amount": "Amount",
-      "total": "Total (NOK)",
-      "buy": "BUY",
-      "sell": "SELL"
-    },
-    "sidebar": {
-      "overview": "ภาพรวม",
-      "portfolio": "พอร์ตโฟลิโอ",
-      "liveTrading": "เทรดสด",
-      "binanceApi": "Binance API",
-      "activity": "กิจกรรม",
-      "taxReport": "รายงานภาษี",
-      "settings": "การตั้งค่า",
-      "admin": "แอดมิน"
-    },
-    "pulse": {
-      "title": "ชีพจรตลาด",
-      "totalValue": "มูลค่ารวม",
-      "dailyChange": "การเปลี่ยนแปลงรายวัน",
-      "paperMode": "การซื้อขายจำลอง",
-      "liveMode": "การซื้อขายสด",
-      "systemOnline": "ระบบออนไลน์",
-      "connecting": "กำลังเชื่อมต่อ...",
-      "botStrategy": "กลยุทธ์บอท",
-      "noEvents": "ยังไม่มีเหตุการณ์การซื้อขาย",
-      "eventFeedTitle": "เหตุการณ์ล่าสุด",
-      "riskMetrics": {
-        "maxExposure": "ความเสี่ยงสูงสุด",
-        "stopLoss": "จุดตัดขาดทุน",
-        "positionSize": "ขนาดสถานะ"
-      },
-      "timeframe": {
-        "1h": "1 ชั่วโมง",
-        "4h": "4 ชั่วโมง",
-        "1d": "1 วัน",
-        "1w": "1 สัปดาห์"
-      },
-      "riskLevel": {
-        "low": "ความเสี่ยงต่ำ",
-        "medium": "ความเสี่ยงปานกลาง",
-        "high": "ความเสี่ยงสูง",
-        "extreme": "ความเสี่ยงสูงมาก"
-      },
-      "events": {
-        "title": "เหตุการณ์ล่าสุด",
-        "noEvents": "ไม่มีเหตุการณ์ล่าสุด"
-      }
-    }
-  },
-  "auth": {
-    "title": "Student Portal",
-    "signupTitle": "Create account",
-    "signupDescription": "Start your journey with Klarpakke today",
-    "subtitle": "Klarpakke University",
-    "checkStatus": "Check your status",
-    "checkStatusDesc": "Log in with Google/Microsoft, or check if you are registered",
-    "emailLabel": "Email address",
-    "emailPlaceholder": "your@email.com",
-    "passwordLabel": "Password",
-    "passwordPlaceholder": "Your password",
-    "loginBtn": "Log in",
-    "loggingIn": "Logging in...",
-    "loginCardTitle": "เข้าสู่ระบบ",
-    "loginCardDescription": "เลือกวิธีที่คุณต้องการด้านล่าง",
-    "orWithEmail": "หรือด้วยอีเมล",
-    "loginError": "Wrong email or password. Try again.",
-    "genericError": "An error occurred. Please try again later.",
-    "dontHaveAccount": "ยังไม่มีบัญชี?",
-    "signupHere": "ลงทะเบียนที่นี่",
-    "createAccount": "Create account here →",
-    "backToHome": "← Back to home",
-    "forgotPassword": "Forgot password?",
-    "resetPassword": {
-      "title": "Reset password",
-      "desc": "Enter your new password below.",
-      "label": "New password",
-      "placeholder": "Minimum 8 characters",
-      "submit": "Update password",
-      "success": "Password updated!",
-      "error": "Could not update password. Try again."
-    },
-    "forgotPasswordPage": {
-      "title": "Forgot password?",
-      "desc": "Enter your email and we'll send you a link to reset your password.",
-      "emailLabel": "Email",
-      "emailPlaceholder": "your@email.com",
-      "submit": "Send link",
-      "sending": "Sending...",
-      "success": "Email sent! Please check your inbox.",
-      "error": "Could not send email. Try again."
-    },
-    "success": {
-      "title": "You're in! 🎉",
-      "startDate": "Start date: {date}",
-      "studentNumber": "Your student number",
-      "registered": "Registered",
-      "checklistTitle": "Your startup checklist",
-      "checklistDesc": "Complete these steps before February 15",
-      "checklist": {
-        "discord": {
-          "title": "Join Discord",
-          "desc": "Meet other students and get live updates",
-          "btn": "Join here"
-        },
-        "calendar": {
-          "title": "Mark February 15",
-          "desc": "First lesson releases at 09:00",
-          "btn": "Add to calendar"
-        },
-        "guide": {
-          "title": "Read Beta Guide",
-          "desc": "Understand what to expect during the beta",
-          "btn": "Read guide"
-        },
-        "email": {
-          "title": "Watch your email",
-          "desc": "Checklist and guides will be sent before Feb 15",
-          "btn": "Gå til e-post"
-        }
-      },
-      "progress": "Progress",
-      "completed": "{count} / {total} completed",
-      "whatNext": "What happens now?",
-      "whatNextDesc": "You will receive an email with a paper trading guide within the next few days. Check your spam folder too!",
-      "checkAnother": "Check another email"
-    },
-    "email": "E-postadresse",
-    "password": "Passord"
-  },
-  "autoTrade": {
-    "title": "Auto Trade",
-    "subtitle": "Automated paper trading with Klarpakke AI Robot",
-    "selectRisk": "Select Risk Profile",
-    "closePositions": "Close all open positions immediately during sharp market drops.",
-    "timeAgo": {
-      "min": "{n} min ago",
-      "mins": "{n} mins ago",
-      "hour": "{n} hour ago",
-      "hours": "{n} hours ago"
-    },
-    "status": {
-      "running": "Running",
-      "paused": "Paused",
-      "stopped": "Stopped"
-    }
-  },
-  "autoTradingPage": {
-    "metadata": {
-      "title": "Auto-Trading | Klarpakke - 3 Years of Testing",
-      "description": "Automated trading based on 3 years of testing and hard data. No hype, just results. Start risk-free with paper trading."
+      "cta": "รับตำแหน่งของฉันตอนนี้ →",
+      "spotsLeft": "ที่นั่งที่เหลืออยู่ ใครก่อนได้ก่อน!"
     },
     "hero": {
-      "badge": "Tested for 3 years with own money",
-      "titlePart1": "Advanced technology.",
-      "titlePart2": "Simple to use.",
-      "description": "We spent 3 years fine-tuning our algorithms. No \"Quantum AI\" or magic promises – just solid math and strict risk management that works 24/7.",
-      "ctaPrimary": "Start Paper Trading",
-      "ctaSecondary": "See results",
-      "stats": {
-        "profitLabel": "Total Profit (3 years)",
-        "profitSub": "Verified data",
-        "profitValue": "+142.5%"
-      }
+      "beta_badge": "เบต้า – เหลือเพียง 23/50 ที่นั่ง",
+      "title_emotional": "เรียนรู้การเทรดอย่างมืออาชีพ",
+      "hook_emotional": "ในอีกหนึ่งปี คุณจะดีใจที่เริ่มต้นวันนี้ –\nหรือเสียใจที่ไม่ได้เริ่ม",
+      "question_emotional": "คุณต้องการพบตัวเองแบบไหน?",
+      "description_emotional": "คอร์สที่มีโครงสร้าง การเทรดจำลองด้วยทุนเสมือน 1 ล้านบาท และ AI coach ที่พร้อมช่วยเหลือ ทุกอย่างในแพลตฟอร์มเดียว",
+      "cta_start": "เริ่มฟรี",
+      "cta_demo": "ดูตัวอย่าง",
+      "social_proof_rating": "4.9/5 จาก 127 นักเรียน",
+      "social_proof_active": "active traders"
     },
-    "facts": {
-      "title": "Why Klarpakke?",
-      "subtitle": "The market is full of noise. We focus on facts.",
-      "fact1": {
-        "title": "3 Years of Data",
-        "desc": "We didn't launch yesterday. The algorithms have run through both bull and bear markets since 2021 to ensure robustness."
-      },
-      "fact2": {
-        "title": "No \"Black Box\"",
-        "desc": "You see exactly what happens. No hidden fees or magic formulas. You have full insight into every single trade via the dashboard."
-      },
-      "fact3": {
-        "title": "Optimized for Mobile",
-        "desc": "75% of our users trade on mobile. We built the entire experience to be lightning fast and clear on your phone."
-      }
-    },
-    "howItWorks": {
-      "title": "How it works",
-      "step1": {
-        "step": "01",
-        "title": "Paper Trading",
-        "desc": "You get 1 million play money. Test risk-free for 30 days."
-      },
-      "step2": {
-        "step": "02",
-        "title": "Micro Account",
-        "desc": "Start with max 1,000 NOK when you feel safe."
-      },
-      "step3": {
-        "step": "03",
-        "title": "Scale Up",
-        "desc": "Increase amount gradually as you see profit."
-      },
-      "step4": {
-        "step": "04",
-        "title": "Full Auto",
-        "desc": "Let the algorithms handle your portfolio 24/7."
-      }
-    },
-    "cta": {
-      "title": "Ready to test the solution?",
-      "desc": "It costs nothing to try Paper Trading. See for yourself why our technology is better than the market.",
-      "button": "Create free account",
-      "subtext": "No credit card required. Start in 1 minute."
+    "modernHero": {
+      "badge": "Beta — Become one of the first traders",
+      "titlePart1": "Learn Trading",
+      "titlePart2": "Step by Step",
+      "subtitle": "From beginner to independent trader with structured learning and risk-free practice",
+      "bullets": "Interactive courses • $100k paper trading • 24/7 AI coach • No credit card required",
+      "ctaPrimary": "Try Paper Trading Free",
+      "ctaSecondary": "View Courses",
+      "trust1": "100% transparent",
+      "trust2": "No lock-in",
+      "trust3": "Risk-free practice"
     }
-  },
-  "binanceGuide": {
-    "title": "Binance Guide",
-    "subtitle": "Complete guide for creating an account via Klarpakke",
-    "startSmall": "Start with a small amount you can afford to lose. You can deposit via bank transfer or buy directly with card.",
-    "timeEstimate": "Takes about 5-10 minutes • Free to create • KYC required",
-    "lowerFees": "Get lower trading fees",
-    "kickback": "You can get a discount on your trading fees (kickback).",
-    "connectAccount": "Connect your account here to see everything in one place.",
-    "step1": "Create account",
-    "step2": "Verify identity",
-    "step3": "Deposit funds",
-    "step4": "Start trading"
-  },
-  "competition": {
-    "weekly": "Weekly",
-    "monthly": "Monthly",
-    "weeklyWinner": "Weekly winner",
-    "monthlyWinner": "Monthly winner",
-    "weeklyPrize": "Weekly winner gets 1 month free subscription",
-    "monthlyPrize": "Monthly winner gets 1000 kr gift card",
-    "thisWeek": "This week",
-    "thisMonth": "This month",
-    "joinCompetition": "Join competition",
-    "monthlyCompetition": "Monthly competition",
-    "prize": "Prize"
-  },
-  "gamification": {
-    "xp": "XP",
-    "streak": "Today's streak",
-    "streakDays": "days",
-    "level": "Level",
-    "achievements": "Achievements",
-    "rank": "Rank",
-    "badges": {
-      "founder": "Founder",
-      "student": "Student",
-      "bachelor": "Bachelor",
-      "master": "Master",
-      "phd": "PhD",
-      "professor": "Professor"
-    }
-  },
-  "beta": {
-    "loading": "กำลังโหลด...",
-    "success": "ส่งคำขอแล้ว!",
-    "redirecting": "กำลังเปลี่ยนเส้นทาง...",
-    "applicationPending": "ได้รับคำขอแล้ว",
-    "applicationPendingDesc": "เราได้รับคำขอของคุณและกำลังดำเนินการ",
-    "backToDashboard": "กลับไปที่แดชบอร์ด",
-    "applyForBeta": "ขอเข้าร่วมเบต้า",
-    "applyForBetaDesc": "เป็นหนึ่งในกลุ่มแรกที่ทดสอบแพลตฟอร์มของเรา",
-    "tradingExperience": "ประสบการณ์การเทรด",
-    "tradingExperiencePlaceholder": "อธิบายประสบการณ์การเทรดของคุณ...",
-    "motivation": "แรงจูงใจ",
-    "motivationPlaceholder": "ทำไมคุณถึงอยากเข้าร่วม?",
-    "riskTolerance": "ความทนต่อความเสี่ยง",
-    "riskConservative": "อนุรักษนิยม",
-    "riskModerate": "ปานกลาง",
-    "riskAggressive": "ดุดัน",
-    "betaWarning": "สำคัญ",
-    "betaWarningText": "การทดสอบเบต้ามีความเสี่ยงจริง ลงทุนเฉพาะสิ่งที่คุณสามารถเสียได้",
-    "submitting": "กำลังส่ง...",
-    "submitApplication": "ส่งคำขอ",
-    "applicationError": "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง"
   },
   "leagues": {
-    "title": "Trading Leagues",
-    "subtitle": "Join our monthly trading competition!",
-    "forBeginners": "For those who just started. No risk.",
-    "winBitcoin": "Win 5000kr in Bitcoin!",
-    "paperTrading": "Trading with paper money.",
-    "joinLeague": "Join league",
-    "prize": "Prize",
-    "participants": "participants"
+    "title": "ลีกการเทรด",
+    "subtitle": "เข้าร่วมการแข่งขันเทรดรายเดือนของเรา!",
+    "description": "แข่งขันกับเทรดเดอร์คนอื่น ๆ และชนะรางวัล",
+    "joinButton": "เข้าร่วมเลย",
+    "createButton": "สร้างลีก",
+    "leaderboard": "ตารางคะแนน",
+    "rules": "กฎ",
+    "prizes": "รางวัล",
+    "participants": "ผู้เข้าร่วม",
+    "startsIn": "เริ่มใน",
+    "endsIn": "สิ้นสุดใน",
+    "competitionEnded": "การแข่งขันสิ้นสุดแล้ว",
+    "winBitcoin": "ชนะ Bitcoin",
+    "paperTrading": "การเทรดจำลอง",
+    "forBeginners": "สำหรับผู้เริ่มต้น",
+    "joinLeague": "เข้าร่วมลีก",
+    "prize": "รางวัล",
+    "weekly": "รายสัปดาห์",
+    "monthly": "รายเดือน",
+    "rank": "อันดับ",
+    "players": "ผู้เล่น",
+    "startDate": "วันที่เริ่มต้น",
+    "endDate": "วันที่สิ้นสุด"
   },
   "learning": {
-    "completed": "completed!",
-    "continueLearning": "Continue learning",
-    "partOf": "Part of",
-    "lesson": "Lesson",
-    "task": "Task",
-    "markComplete": "Mark as complete",
-    "seeFullPath": "See full learning path"
-  },
-  "liveTrading": {
-    "title": "Live Trading",
-    "warning": "Warning",
-    "warningText": "This is real trading with real money. You must have connected your Binance account to trade.",
-    "loading": "Loading market data...",
-    "retry": "Try again",
-    "marketOverview": "Market Overview",
-    "balance": "Balance:",
-    "amountPlaceholder": "Amount in NOK",
-    "buy": "Buy",
-    "sell": "Sell",
-    "recentOrders": "Your Recent Orders",
-    "security": {
-      "title": "Your Security is Our Priority",
-      "noWithdrawal": "No withdrawal access",
-      "noWithdrawalDesc": "Your API keys can only view balance and execute trades. Withdrawal access is disabled.",
-      "fullControl": "Full control",
-      "fullControlDesc": "You keep all funds in your own Binance account. The bot never takes control of your money.",
-      "transparency": "Transparency",
-      "transparencyDesc": "Every single transaction is logged and visible in your history immediately."
-    },
-    "info": {
-      "title": "Important About Trading",
-      "usdtRequirement": "USDT Requirement",
-      "usdtRequirementDesc": "The bot trades against USDT (Tether). You must have available USDT balance on Binance to execute buys.",
-      "realtimeData": "Real-time data",
-      "realtimeDataDesc": "Prices are updated every 10 seconds directly from the Binance exchange.",
-      "minimumAmount": "Minimum amount",
-      "minimumAmountDesc": "Binance requires minimum 100 kr (approx. $10) per trade."
-    },
-    "confirm": {
-      "title": "Confirm Trade",
-      "action": "Action:",
-      "symbol": "Symbol:",
-      "amount": "Amount:",
-      "price": "Price:",
-      "quantity": "Quantity:",
-      "cancel": "Cancel",
-      "confirm": "Confirm",
-      "bought": "Bought",
-      "sold": "Sold"
-    },
-    "errors": {
-      "enterAmount": "Please enter an amount",
-      "priceData": "Could not find price data",
-      "loginRequired": "You must be logged in to trade",
-      "tradeFailed": "Trade failed",
-      "checkBinance": "Could not complete trade. Check that you have connected Binance."
-    },
-    "masterOnly": "Master Plan Required",
-    "masterOnlyDesc": "Live trading with real money requires Master or PhD plan. Upgrade to unlock this feature.",
-    "upgradeBtn": "Upgrade to Master →"
-  },
-  "trading": {
-    "connectExchange": "Connect your exchange",
-    "connectExchangeDesc": "Connect Klarpakke securely to Binance, Firi or other exchanges. You always keep full control of your money.",
-    "analyzingTrade": "AI analyzing trade...",
-    "analysisError": "Could not analyze trade. Please try again.",
-    "riskAnalysis": "AI Risk Analysis",
-    "riskLevel": "Risk",
-    "risk": {
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High",
-      "extreme": "Extreme"
-    },
-    "type": "Type",
-    "buy": "Buy",
-    "sell": "Sell",
-    "coin": "Coin",
-    "amount": "Amount",
-    "amountInNok": "Amount in NOK",
-    "enterAmount": "Please enter amount",
-    "aiAssessment": "AI Assessment",
-    "learningPoints": "Learning Points",
-    "understandRisk": "I understand the risks and trade at my own responsibility",
-    "cancel": "Cancel",
-    "tradeBlocked": "Trade Blocked",
-    "proceedAnyway": "Proceed anyway",
-    "executeTrade": "Execute Trade",
-    "tradeSuccess": "Trade executed!",
-    "tradeError": "Trade failed",
-    "liveTrading": "Live Trading",
-    "warning": "Warning",
-    "liveTradingWarning": "You're trading with real money. Only invest what you can afford to lose.",
-    "apiKeyLabel": "API Key",
-    "apiSecretLabel": "API Secret",
-    "permissionsWarning": "Only READ and TRADE permissions. NEVER enable WITHDRAW!",
-    "securityNote": "Your API keys are encrypted with AES-256. We never have access to your funds.",
-    "security": "Security",
-    "important": "Important",
-    "howToGetApiKeys": "How to get API keys from Binance",
-    "connecting": "Connecting...",
-    "connectNow": "Connect Now",
-    "connectionError": "Could not connect to exchange",
-    "exchangeConnected": "Exchange connected!",
-    "masterOnly": "Real trading requires Master level",
-    "masterOnlyDesc": "You can see market data and analysis, but to execute real trades you must upgrade to Master or PhD.",
-    "upgradeBtn": "Upgrade to Master →"
-  },
-  "notifications": {
-    "title": "Notifications",
-    "subtitle": "Your notification settings",
-    "settingsTitle": "Your notification settings",
-    "pushNotifications": "Push Notifications",
-    "pushDescription": "Enable push notifications in your browser to get reminders about webinars and important updates.",
-    "monthlyWebinars": "Monthly webinars",
-    "webinarsDesc": "Get reminders before our monthly live webinars",
-    "courseReminders": "Course reminders",
-    "courseRemindersDesc": "Get reminded to complete quizzes in your courses",
-    "forCompleteMembers": "For Complete members",
-    "completeMembersDesc": "Upgrade to Complete to unlock all notification features",
-    "tip": "Tip: You can change your notification settings at any time.",
-    "save": "Save settings",
-    "saved": "Settings saved!"
-  },
-  "interestTest": {
-    "title": "What is your interest?",
-    "subtitle": "Tell us about your goals",
-    "question1": "How much trading experience do you have?",
-    "question2": "What is your main goal?",
-    "beginner": "Beginner",
-    "intermediate": "Intermediate",
-    "advanced": "Advanced",
-    "goalLearn": "Learn trading",
-    "goalProfit": "Make money",
-    "goalBoth": "Both",
-    "submit": "Submit answers",
-    "results": "Your results",
-    "recommendedPath": "Recommended path"
-  },
-  "orderHistory": {
-    "title": "Order History",
-    "noOrders": "No orders found",
-    "orderId": "Order ID",
-    "date": "Date",
-    "type": "Type",
-    "amount": "Amount",
-    "status": "Status",
-    "completed": "Completed",
-    "pending": "Pending",
-    "failed": "Failed",
-    "refunded": "Refunded"
-  },
-  "onboarding": {
-    "welcome": "Welcome to Klarpakke",
-    "subtitle": "Let's get you started with crypto trading",
-    "bankIdInfo": "No storage: We NEVER store your BankID password",
-    "startFree": "Start free →",
-    "step1": {
-      "title": "Create account",
-      "description": "Register for free and get access to paper trading"
-    },
-    "step2": {
-      "title": "Choose your path",
-      "description": "Follow our structured courses from Student to Master"
-    },
-    "step3": {
-      "title": "Start learning",
-      "description": "Get AI signals and make your first simulated trades"
-    },
-    "email": "Email",
-    "bankid": "BankID",
-    "video": "Video",
-    "done": "Done!",
-    "bankidTitle": "Secure login with BankID",
-    "bankidSubtitle": "For your security, we use BankID (like your online bank)",
-    "secureVerification": "Secure verification:",
-    "secureVerificationDesc": "Confirm you are a Norwegian citizen",
-    "noStorage": "No storage:",
-    "noStorageDesc": "We NEVER store your BankID password",
-    "oneTime": "One-time only:",
-    "oneTimeDesc": "BankID is only used during registration",
-    "connecting": "Connecting to BankID...",
-    "loginWithBankid": "Log in with BankID",
-    "questions": "Have questions?",
-    "welcomeTitle": "Welcome to Klarpakke! 🎉",
-    "welcomeVideo": "Welcome video from Tom (20 sec)",
-    "clickToPlay": "Click to play",
-    "transcript": "📝 What Tom says:",
-    "transcriptText": "\"Hi! I'm Tom, and I lost 40k NOK on crypto in 2021. I built Klarpakke so you don't make the same mistake.\n\nHere's what happens now:\n\n1. You get 1M NOK virtual capital (not real money)\n2. In 2 minutes we send your first AI signal\n3. In 5 minutes you can make your first simulated trade\n\nQuestions? Reply to the welcome email. I read all of them.\"",
-    "founderName": "Tom Arne",
-    "founderTitle": "Founder, Klarpakke",
-    "continueToDashboard": "Continue to dashboard →",
-    "accountCreated": "Account created (BankID verified)",
-    "identityConfirmed": "Your identity is confirmed",
-    "firstSignal": "First signal being sent",
-    "firstSignalDesc": "In 2 minutes to your email",
-    "connectBinance": "Connect Binance",
-    "connectBinanceDesc": "Do this when ready for real trading",
-    "setRiskProfile": "Set your risk profile",
-    "setRiskProfileDesc": "Customize to your comfort zone",
-    "goToDashboard": "Go to dashboard",
-    "fastRegistration": "Fast registration!",
-    "totalTime": "Total time: Under 60 seconds ✅",
-    "noCreditCard": "No credit card",
-    "virtualCapital": "1M NOK virtual capital",
-    "completelyFree": "100% free",
-    "agreeTerms": "By continuing you agree to our",
-    "terms": "terms",
-    "and": "and",
-    "privacyPolicy": "privacy policy",
-    "skip": "Skip",
-    "next": "Next",
-    "finish": "Get Started!"
-  },
-  "pricing": {
-    "metadata": {
-      "title": "ราคา - Klarpakke University",
-      "description": "เลือกแผนของคุณ: Student (ฟรี), Bachelor, Master หรือ PhD เริ่มต้นด้วย paper trading อัปเกรดเมื่อคุณพร้อม"
-    },
-    "hero": {
-      "title": "ราคาเรียบง่าย โปร่งใส",
-      "subtitle": "เริ่มต้นฟรีในระดับ Student อัปเกรดจาก Bachelor → Master → PhD ตามความก้าวหน้าของคุณ",
-      "trial": "ทดลองใช้ฟรี 14 วันสำหรับแผนเสียทั้งหมด"
-    },
-    "free": "ฟรี",
-    "popular": "ยอดนิยม",
-    "startFree": "เริ่มต้นฟรีในระดับ Student",
-    "startTrial": "เริ่มทดลองใช้ 14 วัน",
-    "plans": {
-      "student": {
-        "name": "Student",
-        "description": "เริ่มต้นที่นี่ - ฟรี totally"
-      },
-      "bachelor": {
-        "name": "Bachelor",
-        "description": "สำหรับผู้ที่ต้องการเรียนรู้เพิ่มเติม"
-      },
-      "master": {
-        "name": "Master",
-        "description": "สำหรับเทรดเดอร์จริงจัง"
-      },
-      "phd": {
-        "name": "PhD",
-        "description": "เชี่ยวชาญสมบูรณ์"
-      }
-    },
-    "comparison": {
-      "title": "เปรียบเทียบแผนทั้งหมด",
-      "feature": "ฟังก์ชัน"
-    },
-    "faq": {
-      "title": "คำถามที่พบบ่อย"
-    },
-    "trust": {
-      "title": "ชำระเงินอย่างปลอดภัยด้วย:"
-    },
-    "cta": {
-      "title": "พร้อมที่จะเริ่มต้นการเดินทาง crypto ของคุณ?",
-      "subtitle": "ร่วมกับชาวนอร์เวย์หลายพันคนที่เรียนรู้อย่างปลอดภัยกับ Klarpakke",
-      "button": "เริ่มต้นเป็น Student - ฟรี",
-      "guarantee": "รับประกันคืนเงิน 30 วัน • ไม่มีสัญญาผูกมัด • Org.nr 929 003 292"
-    }
+    "title": "การเรียนรู้",
+    "description": "เรียนรู้เกี่ยวกับคริปโตและการเทรด",
+    "subtitle": "สำรวจคอร์ส บทความ และคู่มือ",
+    "startLearning": "เริ่มเรียน",
+    "courses": "คอร์ส",
+    "articles": "บทความ",
+    "guides": "คู่มือ",
+    "progress": "ความคืบหน้าของคุณ",
+    "completed": "เสร็จสิ้น",
+    "continueLearning": "เรียนต่อ",
+    "partOf": "ส่วนหนึ่งของ",
+    "lesson": "บทเรียน",
+    "task": "งาน",
+    "markComplete": "ทำเครื่องหมายว่าเสร็จสิ้น",
+    "seeFullPath": "เส้นทางการเรียนรู้เต็มรูปแบบ"
   },
   "legal": {
-    "terms": {
-      "title": "Terms of Service",
-      "lastUpdated": "Last updated: February 11, 2026",
-      "sections": {
-        "1": {
-          "title": "1. Acceptance of Terms",
-          "content": "By registering and using Klarpakke University, you accept these terms. If you do not accept the terms, you cannot use the service."
-        },
-        "2": {
-          "title": "2. Description of Service",
-          "content": "Klarpakke University is an educational platform for cryptocurrency trading. The platform offers simulated trading (\"paper trading\") with fictitious money.",
-          "bold": "WE NEVER USE REAL MONEY."
-        },
-        "3": {
-          "title": "3. User Account",
-          "content": "To use the service you must:",
-          "list": [
-            "Be at least 18 years old",
-            "Create an account with a valid email address",
-            "Keep your password confidential",
-            "Notify us immediately of unauthorized access"
-          ]
-        },
-        "4": {
-          "title": "4. Intellectual Property Rights",
-          "content": "All content on the platform (text, graphics, logos, course material) is owned by Klarpakke or our licensors. You may not copy, distribute or sell the content without written permission."
-        },
-        "5": {
-          "title": "5. Disclaimer",
-          "content": "Klarpakke does not provide investment advice. All trading on the platform is simulated and does not use real money. Results in paper trading do not guarantee future success with real investments."
-        },
-        "6": {
-          "title": "6. Termination",
-          "content": "We may suspend or terminate your account for violation of these terms. You can delete your account at any time by contacting us."
-        },
-        "7": {
-          "title": "7. Contact",
-          "content": "Questions about the terms? Contact us at:"
-        }
-      }
-    },
+    "privacyTitle": "นโยบายความเป็นส่วนตัว",
+    "termsTitle": "เงื่อนไขการให้บริการ",
     "privacy": {
-      "title": "Privacy Policy",
+      "title": "นโยบายความเป็นส่วนตัว",
       "intro": {
-        "title": "1. Introduction",
-        "content": "Klarpakke (\"we\", \"us\") takes your privacy seriously. This statement describes how we collect, use and protect your personal data."
+        "title": "1. Innledning",
+        "content": "Klarpakke (\"vi\", \"oss\") tar ditt personvern på alvor. Denne erklæringen beskriver hvordan vi samler inn, bruker og beskytter dine personopplysninger."
       },
       "collection": {
-        "title": "2. Personal data we collect",
-        "content": "We may collect the following types of information:",
+        "title": "2. Personopplysninger vi samler inn",
+        "content": "Vi kan samle inn følgende typer informasjon:",
         "list": [
-          "Contact information (name, email).",
-          "Usage data (how you use the site).",
-          "Technical data (IP address, browser type)."
+          "Kontaktinformasjon (navn, e-post).",
+          "Bruksdata (hvordan du bruker nettstedet).",
+          "Tekniske data (IP-adresse, nettlesertype)."
         ]
       },
       "usage": {
-        "title": "3. How we use the information",
-        "content": "We use the information to:",
+        "title": "3. Hvordan vi bruker opplysningene",
+        "content": "Vi bruker opplysningene til å:",
         "list": [
-          "Deliver and improve our services.",
-          "Send you relevant information (e.g. about courses or leagues).",
-          "Comply with legal requirements."
+          "Levere og forbedre våre tjenester.",
+          "Sende deg relevant informasjon (f.eks. om kurs eller ligaer).",
+          "Overholde lovpålagte krav."
         ]
       },
       "cookies": {
-        "title": "4. Cookies",
-        "content": "We use cookies to improve the user experience. By using our site, you consent to this."
+        "title": "4. Informasjonskapsler (Cookies)",
+        "content": "Vi bruker informasjonskapsler for å forbedre brukeropplevelsen. Ved å bruke nettstedet vårt samtykker du til dette."
       },
       "rights": {
-        "title": "5. Your rights",
-        "content": "You have the right to access, correct and delete your personal data. Contact us at post@klarpakke.no for inquiries."
+        "title": "5. Dine rettigheter",
+        "content": "Du har rett til innsyn i, retting av og sletting av dine personopplysninger. Kontakt oss på post@klarpakke.no for henvendelser."
+      }
+    },
+    "terms": {
+      "title": "Vilkår for bruk",
+      "lastUpdated": "Sist oppdatert: 11. februar 2026",
+      "sections": {
+        "1": {
+          "title": "1. Aksept av vilkår",
+          "content": "Ved å registrere deg og bruke Klarpakke Universitet, aksepterer du disse vilkårene. Hvis du ikke aksepterer vilkårene, kan du ikke bruke tjenesten."
+        },
+        "2": {
+          "title": "2. Beskrivelse av tjenesten",
+          "content": "Klarpakke Universitet er en utdanningsplattform for kryptovaluta-handel. Plattformen tilbyr simulert trading («paper trading») med fiktive penger.",
+          "bold": "VI BRUKER ALDRI EKTE PENGER."
+        },
+        "3": {
+          "title": "3. Brukerkonto",
+          "content": "For å bruke tjenesten må du:",
+          "list": [
+            "Være minst 18 år gammel",
+            "Opprette en konto med gyldig e-postadresse",
+            "Holde passordet ditt konfidensielt",
+            "Varsle oss umiddelbart ved uautorisert tilgang"
+          ]
+        },
+        "4": {
+          "title": "4. Immaterielle rettigheter",
+          "content": "Alt innhold på plattformen (tekst, grafikk, logoer, kursmateriale) eies av Klarpakke eller våre lisensgivere. Du kan ikke kopiere, distribuere eller selge innholdet uten skriftlig tillatelse."
+        },
+        "5": {
+          "title": "5. Ansvarsfraskrivelse",
+          "content": "Klarpakke gir ingen investeringsråd. All trading på plattformen er simulert og bruker ikke ekte penger. Resultater i paper trading garanterer ikke fremtidig suksess med ekte investeringer."
+        },
+        "6": {
+          "title": "6. Oppsigelse",
+          "content": "Vi kan suspendere eller avslutte din konto ved brudd på disse vilkårene. Du kan når som helst slette din konto ved å kontakte oss."
+        },
+        "7": {
+          "title": "7. Kontakt",
+          "content": "Spørsmål om vilkårene? Kontakt oss på:"
+        }
       }
     }
   },
-  "contact": {
-    "title": "Contact Us",
-    "subtitle": "We are happy to help. Send us a message!",
-    "form": {
-      "title": "Send us a message",
-      "name": "Name",
-      "namePlaceholder": "Your name",
-      "email": "Email",
-      "emailPlaceholder": "your@email.com",
-      "message": "Message",
-      "messagePlaceholder": "How can we help you?",
-      "submit": "Send message"
+  "liveTrading": {
+    "title": "เทรดสด",
+    "description": "เทรดแบบเรียลไทม์",
+    "subtitle": "ติดตามตลาดและทำการเทรดแบบเรียลไทม์",
+    "connectExchange": "เชื่อมต่อตลาด",
+    "marketOverview": "ภาพรวมตลาด",
+    "openPositions": "ตำแหน่งที่เปิด",
+    "placeOrder": "ส่งคำสั่ง",
+    "orderBook": "สมุดคำสั่ง",
+    "loading": "กำลังโหลดข้อมูลการเทรด...",
+    "retry": "ลองอีกครั้ง",
+    "warning": "คำเตือน",
+    "warningText": "การเทรดสดมีความเสี่ยง เทรดเฉพาะเงินที่คุณรับได้หากสูญเสีย",
+    "masterOnly": "สำหรับนักศึกษาระดับ Master เท่านั้น",
+    "masterOnlyDesc": "การเทรดสดพร้อมใช้งานสำหรับแผน Master ขึ้นไป",
+    "upgradeBtn": "อัปเกรดแผน",
+    "balance": "ยอดคงเหลือ",
+    "amountPlaceholder": "ระบุจำนวนเป็น USDT",
+    "buy": "ซื้อ",
+    "sell": "ขาย",
+    "recentOrders": "คำสั่งล่าสุด",
+    "errors": {
+      "enterAmount": "กรุณาระบุจำนวน",
+      "priceData": "ไม่สามารถดึงข้อมูลราคาได้",
+      "loginRequired": "คุณต้องเข้าสู่ระบบเพื่อเทรด",
+      "tradeFailed": "การเทรดล้มเหลว กรุณาลองอีกครั้ง",
+      "checkBinance": "ตรวจสอบการเชื่อมต่อ Binance ของคุณ"
+    },
+    "security": {
+      "title": "ความปลอดภัยของคุณคือสิ่งสำคัญของเรา",
+      "noWithdrawal": "ไม่มีสิทธิ์ถอนเงิน",
+      "noWithdrawalDesc": "เราไม่มีสิทธิ์เข้าถึงการถอนเงินของคุณ",
+      "fullControl": "คุณมีการควบคุมทั้งหมด",
+      "fullControlDesc": "API key ของคุณถูกเข้ารหัสและจัดเก็บอย่างปลอดภัย",
+      "transparency": "ความโปร่งใสเต็มรูปแบบ",
+      "transparencyDesc": "การเทรดทั้งหมดสามารถติดตามได้โดยตรงในบัญชี Binance ของคุณ"
     },
     "info": {
-      "emailTitle": "Email",
-      "emailResponse": "We usually respond within 24 hours",
-      "chatTitle": "Live chat",
-      "chatHours": "Available Monday-Friday 09:00-17:00",
-      "startChat": "Start chat"
+      "title": "ข้อมูลสำคัญ",
+      "usdtRequirement": "ต้องการ USDT",
+      "usdtRequirementDesc": "คุณต้องมี USDT ในบัญชี Binance เพื่อเทรด",
+      "realtimeData": "ข้อมูลแบบเรียลไทม์",
+      "realtimeDataDesc": "ราคาอัปเดตแบบเรียลไทม์ผ่าน WebSocket",
+      "minimumAmount": "จำนวนขั้นต่ำ",
+      "minimumAmountDesc": "จำนวนการเทรดขั้นต่ำคือ 10 USDT"
+    },
+    "confirm": {
+      "title": "ยืนยันการเทรด",
+      "action": "การดำเนินการ",
+      "symbol": "สัญลักษณ์การเทรด",
+      "amount": "จำนวน",
+      "price": "ราคา",
+      "quantity": "ปริมาณ",
+      "cancel": "ยกเลิก",
+      "confirm": "ยืนยันการเทรด",
+      "bought": "ซื้อแล้ว",
+      "sold": "ขายแล้ว"
     }
   },
-  "calculator": {
-    "title": "Compound Interest Calculator",
-    "subtitle": "See how compound interest works. A learning tool to understand potential growth – not a guarantee.",
-    "intro": {
-      "title": "What does this calculator show?",
-      "p1": "The calculator shows how much money you theoretically could have after one year, given a fixed daily return. This is called \"compound interest\" – return on return.",
-      "p2": "Remember: In reality, returns are never even. Some days go up, others down. Use this as a learning tool, not as an expected result."
+  "meta": {
+    "title": "ออโต้เทรดดิ้ง | Klarpakke - 3 ปีแห่งการทดสอบ",
+    "description": "การเทรดอัตโนมัติจาก 3 ปีของการทดสอบและข้อมูลจริง เริ่มต้นฟรีด้วย paper trading",
+    "courses": {
+      "title": "คอร์ส - เรียนรู้การเทรดคริปโต",
+      "description": "สำรวจคอร์สของเราตั้งแต่ระดับเริ่มต้นจนถึงระดับสูง"
     },
-    "inputs": {
-      "startAmount": "Start amount (kr)",
-      "dailyReturn": "Daily return"
+    "about": {
+      "title": "เกี่ยวกับเรา | Klarpakke",
+      "description": "เรียนรู้เพิ่มเติมเกี่ยวกับ Klarpakke"
     },
-    "results": {
-      "afterYear": "After 1 year",
-      "totalReturn": "Total return",
-      "growthChart": "Growth over 12 months",
-      "monthly": "Monthly overview"
+    "contact": {
+      "title": "ติดต่อ | Klarpakke",
+      "description": "ติดต่อ Klarpakke สำหรับคำถามเกี่ยวกับการเทรดคริปโต"
     },
-    "table": {
-      "month": "Month",
-      "balance": "Balance",
-      "monthProfit": "Mo. profit",
-      "totalProfit": "Total profit"
+    "liveTrading": {
+      "title": "Live Trading | Klarpakke",
+      "description": "เทรดจริงด้วยสัญญาณแบบเรียลไทม์"
     },
-    "disclaimer": {
-      "title": "Important to remember",
-      "text": "This is a theoretical calculation. In reality the market fluctuates, and returns are never guaranteed. You can lose money trading. Use the calculator as a learning tool, not as an expected result."
+    "login": {
+      "title": "เข้าสู่ระบบ | Klarpakke",
+      "description": "ลงชื่อเข้าใช้บัญชี Klarpakke ของคุณ"
     },
-    "cta": {
-      "text": "Want to practice trading with virtual money?",
-      "button": "Try Paper Trading"
+    "loginDescription": "ลงชื่อเข้าใช้พอร์ทัลนักเรียนของคุณเพื่อเข้าถึงคอร์ส การเทรดจำลอง และโปรไฟล์ของคุณ",
+    "coursesDescription": "เรียนรู้การเทรดคริปโตตั้งแต่เริ่มต้นจนจบด้วยคอร์สที่จัดเป็นระบบของเรา",
+    "pricingDescription": "แผนราคาที่เรียบง่ายสำหรับการศึกษาคริปโต",
+    "pricing": {
+      "title": "ราคา | Klarpakke",
+      "description": "เลือกแผนที่เหมาะสมสำหรับการเทรดคริปโตของคุณ"
+    },
+    "autoTrade": {
+      "title": "Auto-Trading | Klarpakke",
+      "description": "การซื้อขายอัตโนมัติตามการทดสอบ 3 ปีและข้อมูลที่แข็งแกร่ง"
     }
   },
-  "school": {
-    "title": "Klarpakke Academy",
-    "subtitle": "Learn crypto step-by-step. Simple lessons, no fancy words.",
-    "levels": {
-      "1": {
-        "title": "Level 1: Beginner",
-        "desc": "The absolute basics.",
-        "questions": {
-          "1": {
-            "q": "Is Bitcoin a physical coin?",
-            "a": "No, it's digital money.",
-            "correct": false
-          },
-          "2": {
-            "q": "Can you lose money on crypto?",
-            "a": "Yes, the risk is high.",
-            "correct": true
-          },
-          "3": {
-            "q": "Is 'Blockchain' a type of cheese?",
-            "a": "No, it's the technology behind crypto.",
-            "correct": false
-          },
-          "4": {
-            "q": "Do you have to buy 1 whole Bitcoin?",
-            "a": "No, you can buy small fractions.",
-            "correct": false
-          },
-          "5": {
-            "q": "Is your password important?",
-            "a": "Yes, if you lose it, you lose everything.",
-            "correct": true
-          }
-        }
-      },
-      "2": {
-        "title": "Level 2: Student",
-        "desc": "Understand the market and terminology.",
-        "questions": {
-          "1": {
-            "q": "Does 'HODL' mean selling?",
-            "a": "No, it means holding your coins.",
-            "correct": false
-          },
-          "2": {
-            "q": "Is a 'Wallet' the same as a bank account?",
-            "a": "No, you are your own bank.",
-            "correct": false
-          },
-          "3": {
-            "q": "Can the price go up and down 10% in a day?",
-            "a": "Yes, crypto is very volatile.",
-            "correct": true
-          },
-          "4": {
-            "q": "Are 'Altcoins' all coins other than Bitcoin?",
-            "a": "Yes, mostly.",
-            "correct": true
-          },
-          "5": {
-            "q": "Should you invest money you need for rent?",
-            "a": "NO! Never invest more than you can afford to lose.",
-            "correct": false
-          }
-        }
-      },
-      "3": {
-        "title": "Level 3: Trader",
-        "desc": "Advanced strategies and security.",
-        "questions": {
-          "1": {
-            "q": "Is 'Stop-Loss' a celebration?",
-            "a": "No, it's an automatic sell order to limit losses.",
-            "correct": false
-          },
-          "2": {
-            "q": "Does 'Bear Market' mean prices go up?",
-            "a": "No, Bear means decline (Bull means rise).",
-            "correct": false
-          },
-          "3": {
-            "q": "Is '2FA' (Two-factor) necessary?",
-            "a": "Yes, absolutely critical for security.",
-            "correct": true
-          },
-          "4": {
-            "q": "Can you short (bet on decline) in crypto?",
-            "a": "Yes, but it's high risk.",
-            "correct": true
-          },
-          "5": {
-            "q": "Is technical analysis a guarantee of profit?",
-            "a": "No, no one can predict the future.",
-            "correct": false
-          }
-        }
-      }
+  "metadata": {
+    "title": "Klarpakke - เรียนการเทรดภาษาไทย | Paper Trading & AI Coach",
+    "description": "หลักสูตรการเทรดที่มีโครงสร้างเป็นภาษาไทย Paper trading simulator ด้วยเงินทุนเสมือน 1M. AI coach 24/7. ราคา Beta: 999 บาท",
+    "ogTitle": "Klarpakke - เรียนการเทรด",
+    "ogDescription": "เปิดตัว Beta: 999 บาท เหลือเพียง 50 ที่!",
+    "courses": {
+      "title": "หลักสูตร - เรียนการเทรด crypto",
+      "description": "สำรวจหลักสูตรของเราตั้งแต่ระดับเริ่มต้นถึงระดับสูง เชี่ยวชาญการเทรด crypto ใน 4 สัปดาห์"
     },
-    "ui": {
-      "correct": "Correct!",
-      "wrong": "Feil...",
-      "next": "Neste spørsmål",
-      "completed": "Nivå Fullført!",
-      "score": "Din score:",
-      "restart": "Prøv igjen",
-      "back": "Tilbake til oversikt",
-      "start": "Start Nivå",
-      "locked": "Låst",
-      "nextLevel": "Neste Nivå",
-      "tryAgain": "Prøv igjen"
+    "about": {
+      "title": "เกี่ยวกับเรา | Klarpakke",
+      "description": "เรียนรู้เพิ่มเติมเกี่ยวกับ Klarpakke - แพลตฟอร์มการศึกษา crypto แห่งแรกของนอร์เวย์"
+    },
+    "contact": {
+      "title": "ติดต่อ | Klarpakke",
+      "description": "ติดต่อ Klarpakke สำหรับคำถามเกี่ยวกับการเทรด crypto"
+    },
+    "liveTrading": {
+      "title": "Live Trading | Klarpakke",
+      "description": "ดำเนินการเทรดสดด้วยสัญญาณแบบเรียลไทม์และกลยุทธ์อัตโนมัติ"
+    },
+    "login": {
+      "title": "เข้าสู่ระบบ | Klarpakke",
+      "description": "เข้าสู่ระบบบัญชี Klarpakke ของคุณ"
     }
   },
-  "courses": {
-    "stats": {
-      "completedCourses": "Completed courses",
-      "activeStudents": "Active students",
-      "averageRating": "Average rating",
-      "totalLessons": "Total lessons"
-    },
-    "cryptoForSmallSavers": {
-      "title": "Crypto for Small Savers",
-      "subtitle": "4-week course for beginners. From zero to confident crypto owner.",
-      "week1": {
-        "title": "Week 1: Safe Start",
-        "description": "Understand what crypto is, set up wallet, buy first Bitcoin"
-      },
-      "week2": {
-        "title": "Week 2: Protection",
-        "description": "Avoid scams, secure your crypto, understand taxes"
-      },
-      "week3": {
-        "title": "Week 3: Trading",
-        "description": "When to buy/sell, learn technical analysis basics"
-      },
-      "week4": {
-        "title": "Week 4: Mastery",
-        "description": "Build your own strategy, avoid emotions, plan exit"
-      },
-      "lessons": {
-        "whatIsCrypto": {
-          "title": "What is Crypto?",
-          "description": "Bitcoin = Digital gold. Blockchain = Digital ledger.",
-          "q1": {
-            "question": "What is Bitcoin?",
-            "options": [
-              "A physical coin you get in the mail",
-              "Digital currency that lives on the internet",
-              "A stock on the stock exchange",
-              "An app on your phone"
-            ],
-            "correct": 1
-          },
-          "q2": {
-            "question": "Who controls Bitcoin?",
-            "options": [
-              "The Norwegian government",
-              "A big bank in the USA",
-              "No one - it's decentralized",
-              "Elon Musk"
-            ],
-            "correct": 2
-          }
-        },
-        "firstWallet": {
-          "title": "Your First Wallet",
-          "description": "Exchange vs. own wallet. Registration and 2FA.",
-          "warning": "NEVER share your seed phrase with anyone!"
-        },
-        "firstPurchase": {
-          "title": "Buy Your First Bitcoin",
-          "description": "You don't need to buy 1 whole Bitcoin. Start with $10.",
-          "tip": "Max 5% of savings in crypto"
-        },
-        "commonScams": {
-          "title": "The 5 Most Common Scams",
-          "scam1": "Fake emails",
-          "scam2": "'Send money, get back more'",
-          "scam3": "Fake support",
-          "scam4": "Romance scams",
-          "scam5": "Pump & Dump groups"
-        }
-      },
-      "quiz": {
-        "multipleChoice": "Select the correct answer:",
-        "dragDrop": "Drag to correct category:",
-        "scale": "Select on scale:",
-        "hotspot": "Tap the dangerous element:",
-        "correct": "Correct! 🎉",
-        "wrong": "Not quite. Explanation: ",
-        "next": "Next question",
-        "previous": "Previous"
-      },
-      "achievements": {
-        "firstLesson": {
-          "title": "First Lesson",
-          "description": "Completed your first lesson 📚"
-        },
-        "firstPurchase": {
-          "title": "First Purchase",
-          "description": "Bought your first crypto 🆕"
-        },
-        "safetyFirst": {
-          "title": "Safety First",
-          "description": "Enabled 2FA 🔒"
-        },
-        "scamHunter": {
-          "title": "Scam Hunter",
-          "description": "Identified 5 scam attempts 🧐"
-        },
-        "hodler": {
-          "title": "Hodler",
-          "description": "Held crypto for 1 year 💎🙌"
-        },
-        "dcaMaster": {
-          "title": "DCA Master",
-          "description": "Bought 12 months in a row 📅"
-        }
-      },
-      "exam": {
-        "title": "Exam - Simulated Trading",
-        "description": "You get $10,000 virtual money. 30 days of realistic prices.",
-        "start": "Start Exam",
-        "results": {
-          "master": "🏆 Master Trader - Outstanding risk management!",
-          "bachelor": "🎓 Bachelor Trader - Good effort!",
-          "student": "📚 Student - Practice more and try again"
-        }
-      }
-    },
-    "comingSoon": "Kurs kommer snart",
-    "description": "Vi bygger et komplett utdanningssystem",
-    "backToDashboard": "Tilbake til Dashboard"
+  "navigation": {
+    "home": "หน้าแรก",
+    "autoTrading": "การซื้อขายอัตโนมัติ",
+    "paperTrading": "Paper Trading",
+    "courses": "คอร์ส",
+    "about": "เกี่ยวกับเรา",
+    "pricing": "ราคา",
+    "calculator": "เครื่องคิดเลข",
+    "login": "เข้าสู่ระบบ",
+    "register": "ลงทะเบียน",
+    "signup": "เริ่มต้นฟรี",
+    "welcomeOffer": "🎁 นักเรียน 100 คนแรกรับโทเค็น KLT 10,000 ฟรี!",
+    "help": "ช่วยเหลือ",
+    "tools": "เครื่องมือ",
+    "myPage": "แดชบอร์ด",
+    "upgrade": "อัปเกรด",
+    "upgradeNow": "อัปเกรดเลย",
+    "language": "ภาษา",
+    "liveTrading": "การซื้อขายสด",
+    "simulator": "จำลอง",
+    "quiz": "แบบทดสอบ",
+    "leagues": "การแข่งขัน",
+    "loading": "กำลังโหลด...",
+    "closeMenu": "ปิดเมนู",
+    "openMenu": "เปิดเมนู",
+    "studyProgram": "โปรแกรมการศึกษา",
+    "school": "โรงเรียน"
   },
-  "about": {
-    "title": "Build Your Future with Klarpakke University",
-    "subtitle": "We create a new generation of traders through safe, structured and risk-free learning.",
-    "mission": {
-      "title": "Our Mission",
-      "p1": "The crypto market is full of opportunities, but also risks. Too many lose money because they lack knowledge or fall for scams.",
-      "p2": "Klarpakke University was created to solve this. We give you a safe environment to learn, practice and master trading before you risk a single penny."
-    },
-    "values": {
-      "title": "Our Values",
-      "subtitle": "Security, transparency and knowledge are at the core of everything we do.",
-      "v1": {
-        "title": "Safety First",
-        "desc": "We teach you risk management before trading strategies."
-      },
-      "v2": {
-        "title": "Community",
-        "desc": "Learning is better together. Our campus is open to everyone."
-      },
-      "v3": {
-        "title": "Transparency",
-        "desc": "No hidden agendas. We make money on subscriptions, not your losses."
-      },
-      "v4": {
-        "title": "Innovation",
-        "desc": "We use the latest technology to give you an edge."
-      }
-    },
-    "features": {
-      "video": {
-        "label": "Video Lessons",
-        "desc": "Short, easy-to-understand videos."
-      },
-      "quiz": {
-        "label": "Quizzes",
-        "desc": "Test your knowledge after each module."
-      },
-      "paper": {
-        "label": "Paper Trading",
-        "desc": "Practice with virtual money."
-      }
-    },
-    "howItWorks": {
-      "title": "How It Works",
-      "s1": {
-        "title": "1. Create Account",
-        "desc": "Sign up for free and get access to the Student Portal."
-      },
-      "s2": {
-        "title": "2. Learn the Basics",
-        "desc": "Complete the introductory course and pass the quiz."
-      },
-      "s3": {
-        "title": "3. Practice",
-        "desc": "Trade with 1M NOK in virtual capital in our simulator."
-      },
-      "s4": {
-        "title": "4. Master",
-        "desc": "When you are consistent, you are ready for the real market."
-      }
-    },
-    "quizTitle": "Test Your Knowledge",
-    "quizSubtitle": "Before you start – do you really know what the biggest risk is?",
-    "readyToStart": "Ready to Take Control?",
-    "readyToStartDesc": "Start your journey today. It's completely free to try.",
-    "important": "Important:",
-    "disclaimer": "Risk disclaimer applies.",
-    "startFree": "Start Free Now",
-    "seePricing": "See Pricing",
-    "metadata": {
-      "title": "เกี่ยวกับเรา - Klarpakke University",
-      "description": "เรียนรู้เกี่ยวกับภารกิจของเราในการทำให้การเทรด crypto เข้าถึงได้ผ่านการศึกษาและการฝึกฝนแบบไม่มีความเสี่ยง"
-    }
+  "notifications": {
+    "title": "การแจ้งเตือน",
+    "description": "การแจ้งเตือนของคุณ",
+    "monthlyWebinars": "เว็บินาร์รายเดือน",
+    "webinarsDesc": "รับการแจ้งเตือนเกี่ยวกับเว็บินาร์และเซสชัน Q&A สดที่กำลังจะมีขึ้น",
+    "courseRemindersDesc": "รับการแจ้งเตือนเกี่ยวกับแบบทดสอบและงานในหลักสูตร",
+    "pushNotifications": "การแจ้งเตือนแบบพุช",
+    "pushDescription": "รับการแจ้งเตือนสำคัญ",
+    "settingsTitle": "การตั้งค่าการแจ้งเตือน",
+    "save": "บันทึก",
+    "saved": "บันทึกแล้ว!",
+    "forCompleteMembers": "สำหรับสมาชิกเต็มรูปแบบ",
+    "tip": "เคล็ดลับ: เปิดการแจ้งเตือนเพื่อไม่พลาดโอกาส"
   },
-  "footer": {
-    "product": "ผลิตภัณฑ์",
-    "company": "บริษัท",
-    "legal": "กฎหมาย",
-    "tagline": "การศึกษาคริปโตนอร์เวย์ เรียนโดยไม่มีความเสี่ยง",
-    "copyright": "Klarpakke การศึกษาคริปโตนอร์เวย์",
-    "disclaimer": "⚠️ Klarpakke ให้บริการการศึกษาและการเทรดกระดาษด้วยเงินเสมือน เราไม่ให้คำแนะนำการลงทุน คริปโตมีความผันผวนและมีความเสี่ยง",
-    "links": {
-      "courses": "หลักสูตร",
-      "pricing": "ราคา",
-      "about": "เกี่ยวกับเรา",
-      "contact": "ติดต่อ",
-      "privacy": "ความเป็นส่วนตัว",
-      "terms": "ข้อกำหนด"
-    }
+  "onboarding": {
+    "email": "อีเมล",
+    "bankid": "BankID",
+    "video": "วิดีโอต้อนรับ",
+    "done": "เสร็จสิ้น",
+    "startFree": "เริ่มตอนนี้ – ฟรีทั้งหมด",
+    "noCreditCard": "ไม่ต้องใช้บัตรเครดิต",
+    "virtualCapital": "รวมทุนเสมือน 1 ล้านบาท",
+    "completelyFree": "ฟรี 100% ในช่วงเบต้า",
+    "agreeTerms": "เมื่อดำเนินการต่อ คุณยอมรับ",
+    "terms": "ข้อกำหนดการใช้งาน",
+    "and": "และ",
+    "privacyPolicy": "นโยบายความเป็นส่วนตัว",
+    "bankidTitle": "การยืนยันตัวตนที่ปลอดภัย",
+    "bankidSubtitle": "เราใช้ BankID เพื่อให้แน่ใจว่าผู้ใช้ทุกคนบนแพลตฟอร์มเป็นบุคคลจริง ซึ่งสร้างชุมชนที่ปลอดภัยสำหรับทุกคน",
+    "connecting": "กำลังเชื่อมต่อ BankID...",
+    "loginWithBankid": "ยืนยันตัวตนด้วย BankID",
+    "secureVerification": "การยืนยันที่ปลอดภัย",
+    "secureVerificationDesc": "เราได้รับเฉพาะชื่อและการยืนยันอายุของคุณเท่านั้น",
+    "noStorage": "ไม่มีการจัดเก็บข้อมูลส่วนบุคคล",
+    "noStorageDesc": "เราไม่เคยจัดเก็บข้อมูลที่ละเอียดอ่อนจาก BankID",
+    "oneTime": "กระบวนการครั้งเดียว",
+    "oneTimeDesc": "คุณต้องทำสิ่งนี้เพียงครั้งเดียวเท่านั้น",
+    "questions": "มีคำถามเกี่ยวกับความปลอดภัย?",
+    "welcomeTitle": "ยินดีต้อนรับสู่ทีม Klarpakke! 🚀",
+    "welcomeVideo": "ดูวิดีโอสั้นนี้",
+    "clickToPlay": "คลิกเพื่อเล่นวิดีโอ",
+    "transcript": "สรุปวิดีโอ",
+    "transcriptText": "สวัสดี! ฉันคือ Tom Arne ผู้ก่อตั้ง Klarpakke \n\n เรายินดีเป็นอย่างยิ่งที่มีคุณร่วมเดินทางด้วย เป้าหมายของเราคือทำให้การเทรดคริปโตเข้าใจได้และทำกำไรได้สำหรับทุกคน โดยไม่มีการ 'โฆษณาเกินจริง' ตามปกติ \n\n ตอนนี้คุณมีสิทธิ์เข้าถึงโปรแกรมจำลองการเทรดแบบ paper trading ของเราพร้อมเงินเสมือน 1 ล้านบาท เพื่อให้คุณฝึกซ้อมได้โดยไม่มีความเสี่ยงก่อนที่จะเริ่มเทรดจริง โชคดี!",
+    "founderName": "Tom Arne Jensen",
+    "founderTitle": "ผู้ก่อตั้ง & CEO",
+    "continueToDashboard": "ไปที่แดชบอร์ด",
+    "accountCreated": "สร้างบัญชีแล้ว",
+    "identityConfirmed": "ยืนยันตัวตนผ่าน BankID แล้ว",
+    "firstSignal": "สัญญาณแรกของคุณ",
+    "firstSignalDesc": "เราจะส่งการแจ้งเตือนให้คุณเมื่ออัลกอริทึม 300 ตัวที่ผ่านการทดสอบพบโอกาส",
+    "connectBinance": "เชื่อมต่อ Binance",
+    "connectBinanceDesc": "คุณสามารถเชื่อมต่อกับตลาดแลกเปลี่ยนของคุณเองเมื่อพร้อมสำหรับการเทรดสด",
+    "setRiskProfile": "กำหนดโปรไฟล์ความเสี่ยง",
+    "setRiskProfileDesc": "เลือกระหว่างกลยุทธ์แบบอนุรักษ์นิยม สมดุล หรือเชิงรุก",
+    "goToDashboard": "ไปที่แดชบอร์ด",
+    "fastRegistration": "ลงทะเบียนเร็วมาก!",
+    "totalTime": "เวลารวม: ไม่ถึง 2 นาที"
+  },
+  "orderHistory": {
+    "title": "ประวัติคำสั่ง",
+    "description": "ดูคำสั่งก่อนหน้าของคุณ",
+    "subtitle": "ภาพรวมของการเทรดทั้งหมดของคุณ",
+    "noOrders": "ไม่พบคำสั่ง",
+    "date": "วันที่",
+    "pair": "คู่",
+    "type": "ประเภท",
+    "side": "ด้าน",
+    "price": "ราคา",
+    "amount": "จำนวน",
+    "total": "รวม",
+    "status": "สถานะ",
+    "loading": "กำลังโหลดคำสั่ง...",
+    "buy": "ซื้อ",
+    "sell": "ขาย"
   },
   "paperTrading": {
     "title": "Paper Trading",
-    "subtitle": "Practice trading with {amount} virtual currency",
-    "contextBanner": "Practice trading with 1,000,000 NOK in play money",
+    "subtitle": "Øv deg på trading med {amount} virtuelle penger",
+    "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
     "help": {
-      "text": "Paper trading lets you practice trading without risking real money. You start with 1,000,000 NOK and can buy and sell cryptocurrency with real market prices from Binance.",
-      "close": "Close"
+      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "close": "Lukk"
     },
     "stats": {
-      "availableBalance": "Available Balance",
-      "positionValue": "Position Value",
-      "totalValue": "Total Value",
-      "return": "Return"
+      "availableBalance": "Tilgjengelig saldo",
+      "positionValue": "Verdi i posisjoner",
+      "totalValue": "Total verdi",
+      "return": "Avkastning"
     },
     "newTrade": {
-      "title": "New Trade",
-      "selectCrypto": "Select Cryptocurrency",
-      "amountLabel": "Amount (NOK)",
-      "amountPlaceholder": "E.g. 10000",
-      "buy": "Buy",
-      "sell": "Sell",
-      "reset": "Reset Simulation",
-      "confirmReset": "This will reset all your paper trading history. Are you sure?",
-      "invalidAmount": "Please enter a valid amount",
-      "fetchError": "Could not fetch price data. Try again.",
-      "insufficientBalance": "Insufficient balance!",
-      "insufficientHoldings": "You don't have enough of this cryptocurrency!",
-      "refresh": "Refresh"
+      "title": "Ny handel",
+      "selectCrypto": "Velg kryptovaluta",
+      "amountLabel": "Beløp (NOK)",
+      "amountPlaceholder": "F.eks. 10000",
+      "buy": "Kjøp",
+      "sell": "Selg",
+      "reset": "Nullstill simulering",
+      "confirmReset": "Dette vil nullstille all din paper trading-historikk. Er du sikker?",
+      "invalidAmount": "Vennligst angi et gyldig beløp",
+      "fetchError": "Kunne ikke hente prisdata. Prøv igjen.",
+      "insufficientBalance": "Ikke nok saldo!",
+      "insufficientHoldings": "Du har ikke nok av denne kryptovalutaen!",
+      "refresh": "Oppdater"
     },
     "chart": {
-      "title": "{symbol} Price"
+      "title": "{symbol} Pris"
     },
     "positions": {
-      "title": "Your Positions",
-      "empty": "You have no open positions yet.",
-      "start": "Start by buying some cryptocurrency!"
+      "title": "Dine posisjoner",
+      "empty": "Du har ingen åpne posisjoner ennå.",
+      "start": "Start med å kjøpe noe kryptovaluta!"
     },
     "history": {
-      "title": "Trade History",
-      "empty": "No trades yet.",
-      "bought": "Bought",
-      "sold": "Sold"
+      "title": "Handelshistorikk",
+      "empty": "Ingen handler ennå.",
+      "bought": "Kjøpte",
+      "sold": "Solgte"
     },
     "disclaimer": {
-      "important": "Important:",
-      "text": "This is a simulation with play money. Prices are fetched live from Binance API. No real money is involved. Trading with real money involves risk."
+      "important": "Viktig:",
+      "text": "Dette er en simulering med lekepenger. Prisene er hentet live fra Binance API. Ingen ekte penger er involvert. Trading med ekte penger innebærer risiko."
     },
     "leaderboard": {
-      "title": "Leaderboard",
-      "rank": "Rank",
+      "title": "Toppliste",
+      "rank": "Rang",
       "trader": "Trader",
-      "return": "Return",
-      "trades": "Trades",
-      "winRate": "Win Rate",
-      "risk": "Risk",
+      "return": "Avkastning",
+      "trades": "Handler",
+      "winRate": "Vinnrate",
+      "risk": "Risiko",
       "periods": {
-        "daily": "Today",
-        "weekly": "This Week",
-        "monthly": "This Month",
-        "all_time": "All Time"
+        "daily": "I dag",
+        "weekly": "Denne uken",
+        "monthly": "Denne måneden",
+        "all_time": "Totalt"
       }
     },
     "loginBanner": {
-      "title": "Log in to save trades",
-      "text": "Your trades are only saved locally in the browser. To save history and statistics permanently, log in.",
-      "button": "Log in now"
+      "title": "Logg inn for å se din toppliste-posisjon",
+      "text": "Opprett en gratis konto for å delta i konkurransen",
+      "button": "Logg inn / Registrer deg"
     },
-    "saving": "Saving trade to database..."
+    "saving": "Lagrer..."
+  },
+  "payment": {
+    "chooseMethod": "เลือกวิธีการชำระเงิน",
+    "vipps": "Vipps",
+    "vippsDescription": "รวดเร็วสำหรับลูกค้านอร์เวย์",
+    "card": "บัตร",
+    "cardDescription": "Visa, Mastercard, ฯลฯ",
+    "or": "หรือ",
+    "payWithCard": "ชำระด้วยบัตร",
+    "securePayment": "การชำระเงินที่ปลอดภัย Vipps สำหรับลูกค้านอร์เวย์ บัตรสำหรับต่างชาติ",
+    "back": "กลับ",
+    "loading": "กำลังโหลด...",
+    "errors": {
+      "checkout_failed": "ไม่สามารถเริ่มการชำระเงินได้",
+      "unexpected": "ไม่สามารถเริ่มการชำระเงินได้ กรุณาลองอีกครั้ง"
+    }
+  },
+  "pricing": {
+    "success": {
+      "loadingTitle": "กำลังประมวลผลการชำระเงิน...",
+      "loadingMessage": "กรุณารอ...",
+      "verifying": "กำลังยืนยันการชำระเงิน...",
+      "invalidSession": "เซสชันไม่ถูกต้อง",
+      "loginRequired": "คุณต้องเข้าสู่ระบบเพื่อดูหน้านี้",
+      "title": "ขอบคุณสำหรับการซื้อของคุณ!",
+      "messageConfirmed": "ยืนยันการชำระเงินแล้ว! คุณมีสิทธิ์เข้าถึงฟีเจอร์ทั้งหมดในแผนของคุณแล้ว",
+      "messagePending": "ได้รับเงินแล้ว! อาจใช้เวลาสักครู่ในการเปิดใช้งานการสมัครสมาชิกของคุณ",
+      "messageFallback": "ขอบคุณสำหรับการชำระเงิน! การสมัครของคุณจะเปิดใช้งานเร็วๆ นี้",
+      "goToDashboard": "ไปที่แดชบอร์ด",
+      "backToHome": "กลับไปที่หน้าหลัก",
+      "description": "อีเมลต้อนรับและคู่มือการเทรดส่วนตัวของคุณกำลังถูกส่งไปยังกล่องขาเข้าของคุณ มาเริ่มการเดินทางกับ {tier} กันเถอะ!",
+      "cta": "ไปที่แดชบอร์ด",
+      "viewProgram": "ดูหลักสูตรการศึกษา",
+      "errorTitle": "เกิดข้อผิดพลาด",
+      "backToPricing": "กลับไปที่หน้าแผนราคา"
+    },
+    "cancel": {
+      "title": "ยกเลิกการชำระเงิน",
+      "subtitle": "คุณยกเลิกการชำระเงิน ไม่ต้องกังวล คุณสามารถลองใหม่ได้ทุกเมื่อ!",
+      "faqTitle": "คำถามที่พบบ่อย",
+      "whyFailedQ": "ทำไมการชำระเงินถึงไม่สำเร็จ?",
+      "whyFailedA": "อาจมีปัญหาชั่วคราวกับธนาคารหรือบัตรของคุณ ลองใหม่อีกครั้งหรือใช้บัตรใบอื่น",
+      "chargedQ": "ฉันจะถูกเรียกเก็บเงินไหม?",
+      "chargedA": "ไม่ คุณจะถูกเรียกเก็บเงินเมื่อการชำระเงินเสร็จสิ้นเท่านั้น ไม่มีค่าธรรมเนียมแอบแฝง",
+      "trialQ": "ฉันสามารถทดลองใช้ฟรีก่อนได้ไหม?",
+      "trialA": "ใช่! แผนที่ชำระเงินทั้งหมดรวมช่วงทดลองใช้ฟรี 7 วัน คุณสามารถยกเลิกได้ทุกเมื่อ",
+      "tryAgain": "ลองอีกครั้ง",
+      "backHome": "กลับไปที่หน้าหลัก",
+      "needHelp": "ต้องการความช่วยเหลือ? ติดต่อเราที่"
+    },
+    "title": "ราคา",
+    "subtitle": "เลือกแผนที่เหมาะกับคุณ",
+    "monthly": "รายเดือน",
+    "yearly": "รายปี",
+    "savePercent": "ประหยัด {percent}%",
+    "perMonth": "ต่อเดือน",
+    "getStarted": "เริ่มต้น",
+    "mostPopular": "ยอดนิยมที่สุด"
+  },
+  "pricingCancel": {
+    "title": "การชำระเงินถูกยกเลิก",
+    "subtitle": "การชำระเงินไม่เสร็จสมบูรณ์",
+    "message": "ดูเหมือนว่าคุณได้ยกเลิกการชำระเงิน ไม่ต้องกังวล - คุณสามารถลองอีกครั้งได้ทุกเมื่อ",
+    "backButton": "กลับไปที่ราคา",
+    "faqTitle": "คำถามที่พบบ่อย",
+    "whyFailedQ": "ทำไมการชำระเงินถึงล้มเหลว?",
+    "whyFailedA": "อาจมีหลายสาเหตุ: บัตรถูกปฏิเสธ เงินไม่เพียงพอ หรือข้อผิดพลาดทางเทคนิค",
+    "chargedQ": "ฉันถูกเรียกเก็บเงินหรือไม่?",
+    "chargedA": "ไม่ จะไม่มีการเรียกเก็บเงินก่อนที่การชำระเงินจะเสร็จสมบูรณ์",
+    "trialQ": "ฉันสามารถทดลองใช้ฟรีได้หรือไม่?",
+    "trialA": "ใช่ เรามีช่วงทดลองใช้สำหรับแผนที่เลือก",
+    "tryAgain": "ลองอีกครั้ง",
+    "backHome": "กลับไปที่หน้าแรก",
+    "needHelp": "ต้องการความช่วยเหลือ? ติดต่อเราที่"
+  },
+  "pricingSuccess": {
+    "title": "การชำระเงินสำเร็จ!",
+    "subtitle": "ยินดีต้อนรับสมาชิก",
+    "message": "ขอบคุณสำหรับการซื้อ! คุณตอนนี้มีสิทธิ์เข้าถึงฟีเจอร์สมาชิกทั้งหมด",
+    "dashboardButton": "ไปที่แดชบอร์ด",
+    "verifying": "กำลังตรวจสอบการชำระเงิน...",
+    "invalidSession": "เซสชันไม่ถูกต้อง กรุณาลองอีกครั้ง",
+    "loginRequired": "คุณต้องเข้าสู่ระบบเพื่อดูหน้านี้",
+    "messageConfirmed": "การชำระเงินของคุณได้รับการยืนยัน! คุณตอนนี้มีสิทธิ์เข้าถึงฟีเจอร์ทั้งหมด",
+    "messagePending": "การชำระเงินของคุณกำลังดำเนินการ อาจใช้เวลาสองสามนาที",
+    "messageFallback": "การชำระเงินของคุณได้รับแล้ว ยินดีต้อนรับสมาชิก!",
+    "loadingTitle": "กำลังประมวลผล...",
+    "goToDashboard": "ไปที่แดชบอร์ด",
+    "backToHome": "กลับไปที่หน้าแรก",
+    "errorTitle": "บางอย่างผิดพลาด",
+    "backToPricing": "กลับไปที่ราคา"
   },
   "quizPage": {
     "title": "Trading Quiz",
-    "subtitle": "Test what you've learned",
-    "testKnowledge": "Test your knowledge",
-    "description": "This quiz tests basic understanding of trading concepts. You need 70% correct answers to pass. Read the explanations carefully – they help you understand why the answers are correct.",
-    "questionProgress": "Question {current} of {total}",
-    "correctCount": "{score} correct",
-    "nextQuestion": "Next question",
-    "seeResult": "See result",
+    "subtitle": "Test hva du har lært",
+    "testKnowledge": "Test kunnskapen din",
+    "description": "Denne quizen tester grunnleggende forståelse av trading-konsepter. Du trenger 70% riktige svar for å bestå. Les forklaringene nøye – de hjelper deg å forstå hvorfor svarene er riktige.",
+    "questionProgress": "Spørsmål {current} av {total}",
+    "correctCount": "{score} riktige",
+    "nextQuestion": "Neste spørsmål",
+    "seeResult": "Se resultat",
     "result": {
-      "congratulations": "Congratulations!",
-      "tryAgain": "Try again",
-      "passedMessage": "You passed the quiz! Good job.",
-      "failedMessage": "You need at least 70% to pass. Read the explanations and try again.",
-      "score": "Score",
+      "congratulations": "Gratulerer!",
+      "tryAgain": "Prøv igjen",
+      "passedMessage": "Du besto quizen! Godt jobbet.",
+      "failedMessage": "Du trenger minst 70% for å bestå. Les forklaringene og prøv igjen.",
+      "score": "Poeng",
       "status": "Status",
-      "passed": "Passed",
-      "failed": "Failed",
-      "whatNow": "What do you want to do now?",
-      "tryPaperTrading": "Try Paper Trading",
-      "continueLearning": "Continue learning",
-      "retry": "Retake quiz",
-      "correct": "Correct!",
-      "wrong": "Wrong"
+      "passed": "Bestått",
+      "failed": "Ikke bestått",
+      "whatNow": "Hva vil du gjøre nå?",
+      "tryPaperTrading": "Prøv Paper Trading",
+      "continueLearning": "Fortsett å lære",
+      "retry": "Ta quizen på nytt",
+      "correct": "Riktig!",
+      "wrong": "Feil"
     },
     "questions": [
       {
-        "question": "What is a \"stop loss\" in trading?",
+        "question": "Hva er en \"stop loss\" i trading?",
         "options": [
-          "An order that automatically sells when the price reaches a certain level",
-          "A way to make more money",
-          "A type of stock",
-          "A trading strategy"
+          "En ordre som automatisk selger når prisen når et bestemt nivå",
+          "En måte å tjene mer penger på",
+          "En type aksje",
+          "En trading strategi"
         ],
-        "explanation": "A stop loss is an order that automatically sells your position when the price falls to a certain level, protecting you from large losses."
+        "explanation": "En stop loss er en ordre som automatisk selger din posisjon når prisen faller til et bestemt nivå, og beskytter deg mot store tap."
       },
       {
-        "question": "What does \"diversification\" mean?",
+        "question": "Hva betyr \"diversifisering\"?",
         "options": [
-          "Buying one stock",
-          "Spreading investments across different assets",
-          "Selling all stocks",
-          "Trading only with crypto"
+          "Å kjøpe én aksje",
+          "Å spre investeringer på ulike aktiva",
+          "Å selge alle aksjer",
+          "Å handle kun med krypto"
         ],
-        "explanation": "Diversification means spreading your investments across different assets to reduce risk."
+        "explanation": "Diversifisering betyr å spre investeringene dine på ulike aktiva for å redusere risiko."
       },
       {
-        "question": "What is the risk of leveraged trading?",
+        "question": "Hva er risikoen ved leveraged trading?",
         "options": [
-          "No risk",
-          "Potentially higher losses than invested amount",
-          "Guaranteed profit",
-          "No impact"
+          "Ingen risiko",
+          "Potensielt høyere tap enn investert beløp",
+          "Garantert profitt",
+          "Ingen påvirkning"
         ],
-        "explanation": "Leveraged trading increases both potential profit and loss. You can lose more than you invested."
+        "explanation": "Leveraged trading øker både potensiell profitt og tap. Du kan tape mer enn du investerte."
       }
     ]
   },
-  "helpPage": {
-    "title": "Help & Support",
-    "subtitle": "Find answers to common questions about Klarpakke University",
-    "searchPlaceholder": "Ask our chatbot...",
-    "noResults": "No results found for \"{query}\"",
-    "tryAnother": "Try another keyword or contact us directly",
-    "contact": {
-      "emailTitle": "Send us an email",
-      "emailDesc": "Didn't find the answer? We usually respond within 24 hours on weekdays.",
-      "linksTitle": "Useful links",
-      "aboutLink": "About Klarpakke University →",
-      "pricingLink": "See prices and plans →",
-      "privacyLink": "Privacy Policy →",
-      "termsLink": "Terms of Service →"
+  "settings": {
+    "title": "Innstillinger",
+    "subtitle": "Administrer din konto og preferanser",
+    "tabs": {
+      "profile": "Profil",
+      "api": "API Nøkler",
+      "notifications": "Varsler",
+      "security": "Sikkerhet",
+      "preferences": "Preferanser"
     },
-    "faqs": [
-      {
-        "q": "What is Klarpakke University?",
-        "a": "Klarpakke University is a Norwegian crypto education platform. We offer courses, simulators, paper trading and quizzes – everything to teach you trading safely. All trading is 100% simulated, so you can practice without risking real money."
-      },
-      {
-        "q": "What plans exist and what do they cost?",
-        "a": "We have four plans: Free (0 kr) gives you a taste. Basic (199 kr/mo) includes all basic courses. Complete (399 kr/mo) is our most popular plan with everything in Basic plus advanced courses, certificate and webinars. Pro (999 kr/mo) gives extra resources and priority support."
-      },
-      {
-        "q": "Can I lose money?",
-        "a": "No! Everything at Klarpakke University is simulated. When you use paper trading or the simulator, you trade with virtual money. You cannot lose real money here. This is a safe place to learn before potentially using real money with an external broker."
-      },
-      {
-        "q": "How do I cancel?",
-        "a": "You can cancel anytime from your account settings. You keep access until the end of the paid period. There is no lock-in period – you decide how long you want to stay."
-      },
-      {
-        "q": "How do I start with paper trading?",
-        "a": "Sign up for free, and you automatically get 1,000,000 kr virtual capital. Go to the Paper Trading page, select a cryptocurrency, and press buy to make your first trade. It is completely risk-free!"
-      },
-      {
-        "q": "What do I learn in the courses?",
-        "a": "Basic courses cover what crypto is, how trading works, and basic risk management. Advanced courses go deeper into technical analysis, strategies and trading psychology. Everything is in plain language."
+    "profile": {
+      "title": "Profilinformasjon",
+      "fullName": "Fullt navn",
+      "email": "E-post",
+      "bio": "Bio",
+      "avatar": "Profilbilde",
+      "uploadAvatar": "Last opp bilde",
+      "changePassword": "Endre passord",
+      "save": "Lagre endringer",
+      "saved": "Endringer lagret!",
+      "error": "Kunne ikke lagre endringer"
+    },
+    "api": {
+      "title": "API Innstillinger",
+      "description": "Koble til handelsplattformer for automatisk trading",
+      "binance": {
+        "title": "Binance API",
+        "description": "Koble til din Binance-konto for automatisk trading",
+        "addNew": "Legg til ny API-nøkkel",
+        "label": "Merkelapp",
+        "labelPlaceholder": "F.eks. Hovedkonto, Testkonto",
+        "apiKey": "API-nøkkel",
+        "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
+        "apiSecret": "API Secret",
+        "apiSecretPlaceholder": "Skriv inn din Binance API Secret",
+        "testnet": "Bruk Binance Testnet (for testing)",
+        "testConnection": "Test Tilkobling",
+        "saveKey": "Lagre API-nøkkel",
+        "testing": "Tester...",
+        "saving": "Lagrer...",
+        "success": "✅ API-nøkkel lagret!",
+        "testSuccess": "✅ Tilkobling vellykket!",
+        "testFailed": "❌ Tilkobling feilet",
+        "error": "Feil ved lagring",
+        "deleteConfirm": "Er du sikker på at du vil slette denne API-nøkkelen?",
+        "showSecret": "Vis secret",
+        "hideSecret": "Skjul secret",
+        "yourKeys": "Dine API-nøkler",
+        "noKeys": "Ingen API-nøkler lagt til",
+        "noKeysDesc": "Legg til din første API-nøkkel for å komme i gang",
+        "lastTested": "Sist testet",
+        "status": {
+          "active": "Aktiv",
+          "inactive": "Inaktiv",
+          "success": "Vellykket",
+          "failed": "Feilet",
+          "pending": "Venter"
+        },
+        "howToGet": {
+          "title": "Hvordan få Binance API-nøkler",
+          "intro": "Følg disse stegene for å få dine API-nøkler:",
+          "step1": "1. Logg inn på din Binance-konto",
+          "step2": "2. Gå til Profil → API Management",
+          "step3": "3. Opprett en ny API-nøkkel (gi den et navn)",
+          "step4": "4. Fullfør 2FA-verifisering",
+          "step5": "5. Kopier både API Key og Secret Key",
+          "step6": "6. Aktiver 'Enable Spot & Margin Trading' tillatelse",
+          "step7": "7. Lim inn over og test tilkoblingen",
+          "warning": "⚠️ Aldri del dine API-nøkler med noen. Hold dem sikre."
+        }
       }
-    ]
+    },
+    "notifications": {
+      "title": "Varselinnstillinger",
+      "email": "E-postvarsler",
+      "push": "Push-varsler",
+      "trading": "Trading-varsler",
+      "positionOpened": "Når en posisjon åpnes",
+      "positionClosed": "Når en posisjon lukkes",
+      "priceAlerts": "Prisvarsler",
+      "courseUpdates": "Kursoppdateringer",
+      "newsletter": "Nyhetsbrev"
+    },
+    "security": {
+      "title": "Sikkerhet",
+      "twoFactor": "To-faktor autentisering",
+      "enable2FA": "Aktiver 2FA",
+      "disable2FA": "Deaktiver 2FA",
+      "sessions": "Aktive økter",
+      "signOutAll": "Logg ut alle enheter"
+    },
+    "preferences": {
+      "title": "Preferanser",
+      "language": "Språk",
+      "timezone": "Tidssone",
+      "currency": "Valuta",
+      "theme": "Tema",
+      "themeLight": "Lys",
+      "themeDark": "Mørk",
+      "themeAuto": "Automatisk"
+    }
   },
   "simulator": {
-    "title": "Trading Simulator",
-    "subtitle": "Learn crypto trading with real market data – completely risk-free",
+    "title": "Trading-simulator",
+    "subtitle": "Lær krypto-trading med ekte markedsdata – helt risikofritt",
     "stats": {
-      "completed": "Scenarios completed",
-      "accuracy": "Accuracy",
-      "lessonsAvailable": "Lessons available"
+      "completed": "Scenarioer fullført",
+      "accuracy": "Nøyaktighet",
+      "lessonsAvailable": "Leksjoner tilgjengelig"
     },
     "howTo": {
-      "title": "How to use the simulator",
-      "hide": "Hide tips",
+      "title": "Slik bruker du simulatoren",
+      "hide": "Skjul tips",
       "steps": [
-        "Select a scenario below to start a practice session",
-        "Study the chart – green triangles are buy opportunities, red are sell",
-        "Click on the chart to see explanations of price movements",
-        "Practice until you feel ready – no real money involved!"
+        "Velg et scenario under for å starte en øvelsesøkt",
+        "Studer diagrammet – grønne trekanter er kjøpsmuligheter, røde er salg",
+        "Klikk på diagrammet for å se forklaringer av prisbevegelser",
+        "Øv deg til du føler deg klar – ingen ekte penger involvert!"
       ]
     },
     "chart": {
-      "title": "Price development with explanations",
-      "selectScenario": "Select a scenario below to see specific learning objectives"
+      "title": "Prisutvikling med forklaringer",
+      "selectScenario": "Velg et scenario under for å se spesifikke læringsmål"
     },
     "scenarios": {
-      "title": "Choose a learning scenario",
+      "title": "Velg et læringsscenario",
       "difficulty": {
-        "easy": "Easy",
+        "easy": "Lett",
         "medium": "Medium",
-        "hard": "Hard"
+        "hard": "Vanskelig"
       },
       "list": [
         {
           "id": "1",
-          "title": "Your first trade",
-          "description": "Learn to buy and sell Bitcoin with simple strategies",
-          "learning": "Basic buying and selling, how to read a simple chart"
+          "title": "Din første trade",
+          "description": "Lær å kjøpe og selge Bitcoin med enkle strategier",
+          "learning": "Grunnleggende kjøp og salg, hvordan lese et enkelt diagram"
         },
         {
           "id": "2",
-          "title": "Stop Loss mastery",
-          "description": "Set up automatic risk management to protect capital",
-          "learning": "Risk management, stop-loss strategies"
+          "title": "Stop Loss-mestring",
+          "description": "Sett opp automatisk risikostyring for å beskytte kapital",
+          "learning": "Risikostyring, stop-loss-strategier"
         },
         {
           "id": "3",
-          "title": "Market analysis",
-          "description": "Read charts and identify trends before they happen",
-          "learning": "Trend analysis, support and resistance levels"
+          "title": "Markedsanalyse",
+          "description": "Les diagrammer og identifiser trender før de skjer",
+          "learning": "Trendanalyse, støtte- og motstandsnivåer"
         },
         {
           "id": "4",
-          "title": "Portfolio balancing",
-          "description": "Diversify your investments in a smart way",
-          "learning": "Diversification, portfolio management"
+          "title": "Porteføljebalansering",
+          "description": "Diversifiser investeringene dine på en smart måte",
+          "learning": "Diversifisering, porteføljeforvaltning"
         },
         {
           "id": "5",
-          "title": "Volatility handling",
-          "description": "Trade under extreme market conditions without panic",
-          "learning": "Emotional control, trading under pressure"
+          "title": "Volatilitetshåndtering",
+          "description": "Trade under ekstreme markedsforhold uten panikk",
+          "learning": "Emosjonell kontroll, trading under press"
         }
       ]
     },
     "buttons": {
-      "openPaperTrading": "Open Paper Trading →",
+      "openPaperTrading": "Åpne Paper Trading →",
       "startPaperTrading": "Start Paper Trading →"
     },
-    "ready": "Ready to practice with virtual money?"
+    "ready": "Klar til å øve med virtuelle penger?"
+  },
+  "studieprogram": {
+    "title": "โปรแกรมการศึกษา",
+    "description": "เส้นทางการเรียนรู้ที่เป็นโครงสร้างสำหรับการเทรด",
+    "subtitle": "เลือกโปรแกรมการศึกษาและติดตามเส้นทางที่เป็นโครงสร้างสู่ความรู้",
+    "beginner": "ผู้เริ่มต้น",
+    "intermediate": "ระดับกลาง",
+    "advanced": "ระดับสูง",
+    "duration": "ระยะเวลา",
+    "modules": "โมดูล",
+    "startProgram": "เริ่มโปรแกรม",
+    "sectionTitle": "เลือกแผนการศึกษาของคุณ",
+    "disclaimer": "ราคาเป็นหน่วยโครนนอร์เวย์รวมภาษีมูลค่าเพิ่ม การสมัครสมาชิกต่ออายุโดยอัตโนมัติ",
+    "tiers": {
+      "student": {
+        "name": "นักเรียน",
+        "price": "0",
+        "period": "ตลอดไป",
+        "description": "เริ่มต้นการเดินทางของคุณโดยไม่มีความเสี่ยง",
+        "badge": "🎓",
+        "cta": "เริ่มต้นฟรี",
+        "requirement": "ไม่ต้องมีความรู้พื้นฐาน",
+        "features": [
+          "บทนำคริปโตแบบครบถ้วน",
+          "Paper Trading 1,000,000 โครน",
+          "เข้าถึงชุมชน",
+          "อัปเดตตลาด",
+          "500 KLT tokens เมื่อสมัคร"
+        ]
+      },
+      "bachelor": {
+        "name": "ปริญญาตรี",
+        "price": "249",
+        "period": "ต่อเดือน",
+        "description": "สร้างรากฐานที่มั่นคงสำหรับอนาคต",
+        "badge": "📈",
+        "cta": "เลือกปริญญาตรี",
+        "requirement": "แนะนำ: จบนักเรียนแล้ว",
+        "features": [
+          "ทุกอย่างในนักเรียน",
+          "มาสเตอร์คลาสการวิเคราะห์ทางเทคนิค",
+          "AI ครู (Crypto-Professor)",
+          "เว็บินาร์สดประจำสัปดาห์",
+          "1,000 KLT tokens/เดือน"
+        ]
+      },
+      "master": {
+        "name": "ปริญญาโท",
+        "price": "499",
+        "period": "ต่อเดือน",
+        "description": "เร่งการเติบโตของคุณด้วยการเทรดอัตโนมัติ",
+        "badge": "🏆",
+        "cta": "เลือกปริญญาโท",
+        "requirement": "แนะนำ: จบปริญญาตรีแล้ว",
+        "features": [
+          "ทุกอย่างในปริญญาตรี",
+          "การเทรดอัตโนมัติ (3 กลยุทธ์)",
+          "เทรดสดบน Binance",
+          "คัดลอกเทรดเดอร์ชั้นนำ",
+          "ใบรับรองปริญญาตรีเมื่อสอบผ่าน",
+          "2,500 KLT tokens/เดือน"
+        ]
+      },
+      "phd": {
+        "name": "ปริญญาเอก",
+        "price": "999",
+        "period": "ต่อเดือน",
+        "description": "สำหรับเทรดเดอร์จริงจังที่มีกลยุทธ์ขั้นสูง",
+        "badge": "🎯",
+        "cta": "เลือกปริญญาเอก",
+        "requirement": "แนะนำ: จบปริญญาโทแล้ว",
+        "features": [
+          "ทุกอย่างในปริญญาโท",
+          "กลยุทธ์การเทรดอัตโนมัติไม่จำกัด",
+          "การปรับแต่งพอร์ตโฟลิโอ",
+          "ที่ปรึกษาเฉพาะทาง",
+          "ใบรับรองปริญญาโทเมื่อสอบผ่าน",
+          "5,000 KLT tokens/เดือน",
+          "เนื้อหาปริญญาเอกพิเศษ"
+        ]
+      },
+      "professor": {
+        "name": "ศาสตราจารย์",
+        "price": "1999",
+        "period": "ต่อเดือน",
+        "description": "โปรแกรมสูงสุดสำหรับเทรดเดอร์มืออาชีพ",
+        "badge": "👑",
+        "cta": "เป็นศาสตราจารย์",
+        "requirement": "แนะนำ: จบปริญญาเอกแล้ว",
+        "features": [
+          "ทุกอย่างในปริญญาเอก",
+          "โค้ชชิ่ง 1:1 กับ Tom Jensen",
+          "เข้าถึง VIP ทุกฟีเจอร์",
+          "กลยุทธ์การเทรดส่วนตัว",
+          "ใบรับรองศาสตราจารย์",
+          "กลุ่ม Alpha (เข้าถึงก่อน)",
+          "10,000 KLT tokens/เดือน",
+          "เข้าถึงฟีเจอร์ใหม่ก่อน"
+        ]
+      }
+    }
   },
   "taxReport": {
-    "title": "Tax Report",
-    "description": "Generate tax report for crypto trading. Compatible with Norwegian Tax Administration.",
-    "selectYear": "Select tax year",
-    "downloadCSV": "Download CSV",
-    "downloadSuccess": "Tax report downloaded!",
-    "downloadError": "Could not download report",
-    "errorFetching": "Could not fetch tax data",
-    "totalTrades": "Total trades",
-    "realizedProfitLoss": "Realized profit/loss",
-    "totalFees": "Total fees",
-    "taxObligation": "Tax obligation",
-    "taxable": "Taxable",
-    "deductible": "Deductible",
-    "skatteetatenTitle": "Tax Form RF-1189",
-    "skatteetatenDescription": "Pre-filled values for your tax return. Copy these values into the RF-1189 form.",
-    "post3_1_1": "Line 3.1.1 - Gains",
-    "post3_1_2": "Line 3.1.2 - Losses",
-    "post3_1_10": "Line 3.1.10 - Net",
-    "gains": "Gains",
-    "losses": "Losses",
-    "net": "Net profit/loss",
-    "skatteetatenInfo": "These numbers should be reported in your tax return. For gains you pay 22% tax. For losses you can get deductions.",
-    "quarterlyBreakdown": "Quarterly breakdown",
-    "q1": "Q1",
-    "q2": "Q2",
-    "q3": "Q3",
-    "q4": "Q4",
-    "trades": "trades",
-    "bySymbol": "By currency",
-    "symbol": "Currency",
-    "buys": "Buys",
-    "sells": "Sells",
-    "profitLoss": "Profit/Loss",
-    "noData": "No trading data found for this year.",
-    "pdfHelpText": "PDF opens in new window. Use Ctrl+P (or Cmd+P on Mac) to save as PDF.",
-    "pdfOpenInNewWindow": "PDF opened in new window. Use print function to save."
+    "title": "Skatterapport",
+    "description": "Generer skatterapport for krypto-handel. Kompatibel med Skatteetaten RF-1189.",
+    "selectYear": "Velg skatteår",
+    "downloadCSV": "Last ned CSV",
+    "downloadSuccess": "Skatterapport lastet ned!",
+    "downloadError": "Kunne ikke laste ned rapport",
+    "errorFetching": "Kunne ikke hente skattedata",
+    "totalTrades": "Totalt antall handler",
+    "realizedProfitLoss": "Realisert gevinst/tap",
+    "totalFees": "Totale gebyrer",
+    "taxReport": "Skatterapport",
+    "taxObligation": "Skatteplikt",
+    "taxable": "Skattepliktig",
+    "deductible": "Fradragsberettiget",
+    "skatteetatenTitle": "Skatteetaten RF-1189",
+    "skatteetatenDescription": "Ferdig utfylte tall for skattemeldingen. Kopier disse verdiene inn i RF-1189 skjemaet.",
+    "post3_1_1": "Post 3.1.1 - Gevinst",
+    "post3_1_2": "Post 3.1.2 - Tap",
+    "post3_1_10": "Post 3.1.10 - Netto",
+    "gains": "Gevinst",
+    "losses": "Tap",
+    "net": "Netto gevinst/tap",
+    "skatteetatenInfo": "Disse tallene skal rapporteres i skattemeldingen din. Ved gevinst betaler du 22% skatt. Ved tap kan du få fradrag.",
+    "quarterlyBreakdown": "Kvartalsvis oppdeling",
+    "q1": "1. kvartal",
+    "q2": "2. kvartal",
+    "q3": "3. kvartal",
+    "q4": "4. kvartal",
+    "trades": "handler",
+    "bySymbol": "Etter valuta",
+    "symbol": "Valuta",
+    "buys": "Kjøp",
+    "sells": "Salg",
+    "profitLoss": "Gevinst/Tap",
+    "noData": "Ingen handelsdata funnet for dette året.",
+    "pdfHelpText": "PDF åpnes i nytt vindu. Bruk Ctrl+P (eller Cmd+P på Mac) for å lagre som PDF.",
+    "pdfOpenInNewWindow": "PDF åpnet i nytt vindu. Bruk utskriftsfunksjonen for å lagre."
   },
   "tradeHistory": {
-    "title": "Trade History",
-    "subtitle": "Your complete trading history"
+    "buy": "ซื้อ",
+    "closed": "ปิด",
+    "date": "วันที่",
+    "entryPrice": "ราคาเข้า",
+    "exitPrice": "ราคาออก",
+    "exportCsv": "ส่งออก CSV",
+    "filterAll": "ทั้งหมด",
+    "filterLive": "สด",
+    "filterPaper": "กระดาษ",
+    "live": "สด",
+    "mode": "โหมด",
+    "noTrades": "ยังไม่มีการเทรด",
+    "open": "เปิด",
+    "pair": "คู่",
+    "paper": "กระดาษ",
+    "pnl": "กำไร/ขาดทุน",
+    "pnlPct": "กำไร/ขาดทุน %",
+    "quantity": "จำนวน",
+    "sell": "ขาย",
+    "side": "ด้าน",
+    "status": "สถานะ",
+    "strategy": "กลยุทธ์",
+    "subtitle": "ดูประวัติการเทรดของคุณ",
+    "title": "ประวัติการเทรด",
+    "totalPnl": "กำไร/ขาดทุนรวม",
+    "totalTrades": "การเทรดทั้งหมด",
+    "winRate": "อัตราการชนะ"
+  },
+  "trading": {
+    "paperMode": "Paper Trading",
+    "paperModeShort": "Paper",
+    "liveMode": "Live Trading",
+    "liveModeShort": "Live",
+    "paperModeDescription": "Øv med virtuell kapital",
+    "liveModeDescription": "Handel med ekte penger",
+    "switchToLiveTitle": "Bytt til Live Trading?",
+    "switchToLiveWarning": "Du er i ferd med å bytte til live trading med ekte penger.",
+    "switchToPaperTitle": "Bytt til Paper Trading?",
+    "switchToPaperWarning": "Du bytter tilbake til paper trading.",
+    "switchToPaperNote": "Åpne live posisjoner forblir aktive på Binance. Du kan bytte tilbake til live mode når som helst.",
+    "connectBinance": "Koble til Binance",
+    "connectBinanceRequired": "Koble til Binance",
+    "connectBinanceDescription": "For å bytte til live trading må du først koble til din Binance-konto med API-nøkler.",
+    "connectNow": "Koble til nå",
+    "apiKeySecurity": "Sikker lagring",
+    "apiKeySecurityDesc": "API-nøkler krypteres og lagres sikkert. Vi har aldri tilgang til å ta ut penger.",
+    "apiKeyPermissions": "Krevde tillatelser",
+    "apiKeyPermissionsDesc": "Kun spot trading og lesing. IKKE aktiver uttak (withdraw).",
+    "later": "Senere",
+    "cancel": "Avbryt",
+    "confirmSwitchToLive": "Ja, bytt til Live Trading",
+    "confirmSwitchToPaper": "Bytt til Paper",
+    "liveWarningRealMoney": "Du handler nå med EKTE penger",
+    "liveWarningLosses": "Tap er reelle, ikke simulerte",
+    "liveWarningFees": "Handelsgebyrer trekkes fra din Binance-konto",
+    "liveWarningSwitchBack": "Du kan bytte tilbake til paper mode når som helst",
+    "slippageSimulated": "Slippage simulert: {{amount}} kr ({{bps}} bps)",
+    "slippage": "Slippage",
+    "stressLevel": "Emosjonell Stress-Nivå",
+    "stressLevelCalm": "Rolig - Du håndterer dette bra",
+    "stressLevelModerate": "Moderat stress - Hold deg til planen",
+    "stressLevelHigh": "Høy stress - Vurder å ta en pause",
+    "stressLevelExtreme": "EKSTREM stress - STOPP og revurder strategien",
+    "stressTriggerTitle": "Stress-Trigger Detektert",
+    "stressTriggerDescription": "I live trading ville du nå føle:",
+    "stressTriggerImpulsivity": "Impulsivitet (vil stenge tapende trades for tidlig)",
+    "stressTriggerOvertrading": "Overtrading (vil \"vinne tilbake\" tapene)",
+    "stressTriggerFOMO": "Fear of Missing Out (FOMO)",
+    "stressTriggerAdvice": "Ta en pause. Revurder strategien. Dette er hvorfor du øver i paper mode.",
+    "transitionGuide": {
+      "title": "Paper → Live Overgang",
+      "readiness": "{{score}}% klar",
+      "notReady": "Ikke klar",
+      "preparing": "Begynn å forberede",
+      "almostReady": "Nesten klar",
+      "ready": "Klar for Live!",
+      "checkpoint1": "50+ Paper Trades",
+      "checkpoint2": "Konsekvent Profitabilitet",
+      "checkpoint3": "Risikostyring under Kontroll",
+      "checkpoint4": "Disiplin (Avg Hold Time)",
+      "recommendation": "Anbefalt strategi:",
+      "step1": "Start med SMÅ beløp (50-100 kr per trade)",
+      "step2": "Fortsett å trade i paper samtidig",
+      "step3": "Øk gradvis når du føler deg komfortabel",
+      "step4": "Forvent at emosjonene vil være forskjellige"
+    },
+    "paperTradingInfo": "Paper Trading Mode",
+    "paperTradingDescription": "Du handler med virtuell kapital. Slippage og gebyrer er simulert for realistisk øving.",
+    "liveTradingInfo": "Live Trading Mode",
+    "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
+    "balance": "Saldo",
+    "available": "Tilgjengelig",
+    "buy": "Kjøp",
+    "sell": "Selg",
+    "market": "Marked",
+    "limit": "Limit",
+    "amount": "Mengde",
+    "price": "Pris",
+    "total": "Totalt",
+    "fee": "Gebyr",
+    "confirmTrade": "Bekreft Handel",
+    "positions": "Posisjoner",
+    "noPositions": "Ingen åpne posisjoner",
+    "unrealizedPnL": "Urealisert P&L",
+    "realizedPnL": "Realisert P&L",
+    "closePosition": "Lukk posisjon"
   },
   "wallet": {
-    "title": "Wallet",
-    "subtitle": "Your personal wallet for crypto trading",
-    "connected": "Connected",
-    "notConnected": "Not connected",
-    "updatedNow": "Updated now",
-    "selectExchange": "Select exchange",
-    "addExchange": "Add exchange",
-    "exchangeHelp": "If you don't have an exchange account yet, we recommend Binance. You can later connect your account here to see everything in one place.",
+    "title": "Lommebok",
+    "subtitle": "Din personlige lommebok for krypto-trading",
+    "connected": "Tilkoblet",
+    "notConnected": "Ikke tilkoblet",
+    "updatedNow": "Oppdatert nå",
+    "selectExchange": "Velg børs",
+    "addExchange": "Legg til børs",
+    "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Binance. Du kan senere koble kontoen din hit for å se alt på ett sted.",
     "security": {
-      "title": "Security first",
-      "readOnly": "We only ask for <strong>read-only</strong> API keys. This means we can read your balance but never trade or withdraw.",
-      "warning": "Never share API keys with write access (write/trade/withdraw).",
-      "commission": "We receive a small commission from Binance at no extra cost to you. This helps us keep the service free."
+      "title": "Sikkerhet først",
+      "readOnly": "Vi ber kun om <strong>read-only</strong> API-nøkler. Dette betyr at vi kan lese saldo og transaksjoner, men <strong>ALDRI</strong> gjøre kjøp/salg eller uttak.",
+      "warning": "Aldri del API-nøkler med skrivetilgang (write/trade/withdraw).",
+      "commission": "Vi mottar en liten provisjon fra Binance uten ekstra kostnad for deg. Dette hjelper oss å holde tjenesten gratis."
     },
     "balances": {
-      "title": "Your balances",
-      "total": "Total value",
-      "currency": "Currency",
-      "amount": "Amount",
-      "value": "Value"
-    }
-  },
-  "adminDashboard": {
-    "title": "Admin Dashboard",
-    "verifying": "Verifying access...",
-    "noAccess": {
-      "title": "Access Denied",
-      "backToHome": "Back to homepage"
-    },
-    "header": {
-      "subtitle": "{email} • Campaign Overview"
-    },
-    "campaign": {
-      "title": "Campaign Goal",
-      "spotsFilled": "{total} of 100 spots filled"
-    },
-    "stats": {
-      "totalRegistered": "Total Registered",
-      "spotsLeft": "{remaining} spots left",
-      "signedUpToday": "Signed up today",
-      "last24Hours": "Last 24 hours",
-      "totalClicks": "Total Clicks",
-      "allChannels": "From all channels",
-      "conversion": "Conversion",
-      "clickToReg": "Click → Registration",
-      "activeUsers": "Active users",
-      "paperTrading": "Paper Trading",
-      "autoTrading": "Auto Trading"
-    },
-    "trafficSources": {
-      "title": "Traffic Sources",
-      "direct": "Direct"
-    },
-    "funnel": {
-      "title": "Conversion Funnel",
-      "falloff": "{count} falloff ({rate}%)",
-      "noData": "No data yet"
-    },
-    "footer": {
-      "lastUpdated": "Last updated: {date}",
-      "fallbackData": "⚠️ Live data unavailable, showing cache"
-    },
-    "search": {
-      "placeholder": "Search users..."
-    }
-  },
-  "aboutUs": {
-    "quote": {
-      "title": "From \"Hope\" to \"Structure\"",
-      "text": "In 2021, I lost money because I traded on emotions. I built Klarpakke to remove emotions from the equation. By using software to follow rules, and paper trading to prove skills first, we have removed the biggest traps for new traders.",
-      "author": "Tom Jensen",
-      "role": "Founder & Developer"
-    },
-    "title": "About Us",
-    "heroTitle": "From hard lessons to",
-    "heroTitleHighlight": "Financial Freedom",
-    "heroDescription": "My journey from losing everything to cracking the code – and how you can do the same.",
-    "story": {
-      "part1": {
-        "title": "The Expensive Lesson",
-        "content": "Six years ago, I lost 65,000 NOK on crypto. It was a brutal wake-up call. I blindly trusted \"experts\" who promised the moon but delivered nothing but fees and empty promises. Money drained away, and I was left with a costly but valuable lesson: Trust no one but yourself."
-      },
-      "part2": {
-        "title": "The Turning Point",
-        "content": "Two years ago, I took control. I immersed myself in advanced programming and AI, developing my own auto-trader. I started small, tested, failed, and adjusted. As the algorithms began delivering consistent results, I gained the confidence to scale up."
-      },
-      "part3": {
-        "title": "From Gambling to Strategy",
-        "content": "I quit betting, the lottery, and traditional savings accounts. All my focus went into the system. When the results exceeded my expectations, I started sharing the tool with friends and family. The response was overwhelming. It became clear that there was a need for an honest, transparent gateway to crypto for everyday people."
-      },
-      "part4": {
-        "title": "Klarpakke is Born",
-        "content": "I gathered a team of experts, developers, and traders with a simple goal: To make advanced technology accessible to everyone, without hidden agendas. Thus, Klarpakke University was born – a place where knowledge and integrity come first."
-      }
-    },
-    "philosophy": {
-      "title": "Our Philosophy",
-      "noPyramid": "Total Transparency",
-      "noPyramidDesc": "No pyramid schemes, no recruiting, no secrets. We believe honesty is the only sustainable policy.",
-      "educationFirst": "Knowledge First",
-      "educationFirstDesc": "We give you the tools, but you're in the driver's seat. Our auto-trader does the heavy lifting, but your understanding ensures success.",
-      "patience": "Long-term Vision",
-      "patienceDesc": "Crypto isn't a get-rich-quick scheme. We aim for steady, sustainable growth – 0.2% daily profit beats 100% risk. That's the power of compound interest.",
-      "cta": "Join the journey!"
-    }
-  },
-  "toasts": {
-    "auth": {
-      "loginSuccess": "Velkommen tilbake! 👋",
-      "loginFailed": "Innlogging mislyktes. Sjekk e-post og passord.",
-      "logoutSuccess": "Du er nå logget ut",
-      "signupSuccess": "Velkommen! Din konto er opprettet 🎉",
-      "signupFailed": "Kunne ikke opprette konto. Prøv igjen.",
-      "passwordResetSent": "E-post for tilbakestilling sendt 📧",
-      "passwordResetFailed": "Kunne ikke sende tilbakestilling",
-      "sessionExpired": "Økten din har utløpt. Vennligst logg inn igjen."
-    },
-    "strategy": {
-      "saved": "Strategi lagret! 💾",
-      "saveFailed": "Kunne ikke lagre strategi",
-      "started": "Strategi startet! 🚀",
-      "startFailed": "Kunne ikke starte strategi",
-      "stopped": "Strategi stoppet",
-      "stopFailed": "Kunne ikke stoppe strategi",
-      "deleted": "Strategi slettet",
-      "deleteFailed": "Kunne ikke slette strategi"
-    },
-    "api": {
-      "keysSaved": "API-nøkler lagret! 🔑",
-      "keysSaveFailed": "Kunne ikke lagre API-nøkler",
-      "keysInvalid": "Ugyldige API-nøkler",
-      "connectionSuccess": "Tilkobling vellykket! ✅",
-      "connectionFailed": "Tilkobling mislyktes"
-    },
-    "trading": {
-      "tradeExecuted": "Handel utført! 💰",
-      "tradeFailed": "Handel mislyktes",
-      "modeSwitched": "Trading-modus byttet",
-      "modeSwitchFailed": "Kunne ikke bytte modus",
-      "insufficientFunds": "Ikke nok midler",
-      "positionOpened": "Posisjon åpnet",
-      "positionClosed": "Posisjon lukket"
-    },
-    "copyTrading": {
-      "traderFollowed": "Du følger nå {name}! 📈",
-      "traderUnfollowed": "Du følger ikke lenger {name}",
-      "followFailed": "Kunne ikke følge trader",
-      "allocationUpdated": "Allokering oppdatert",
-      "maxTradersReached": "Maks antall tradere nådd"
-    },
-    "billing": {
-      "paymentSuccess": "Betaling vellykket! 🎉",
-      "paymentFailed": "Betaling mislyktes. Prøv igjen.",
-      "subscriptionUpdated": "Abonnement oppdatert",
-      "subscriptionCancelled": "Abonnement kansellert",
-      "invoiceGenerated": "Faktura generert",
-      "cardAdded": "Kort lagt til 💳",
-      "cardRemoved": "Kort fjernet"
-    },
-    "courses": {
-      "lessonCompleted": "Leksjon fullført! 🎓",
-      "quizPassed": "Quiz bestått! 🌟",
-      "quizFailed": "Quiz ikke bestått. Prøv igjen!",
-      "badgeEarned": "Badge oppnådd! 🏆",
-      "trackCompleted": "Kurs fullført! 🎉"
-    },
-    "general": {
-      "copied": "Kopiert til utklippstavle! 📋",
-      "saved": "Lagret! ✓",
-      "saveFailed": "Kunne ikke lagre",
-      "deleted": "Slettet! 🗑️",
-      "deleteFailed": "Kunne ikke slette",
-      "updated": "Oppdatert! ✓",
-      "updateFailed": "Kunne ikke oppdatere",
-      "error": "Noe gikk galt. Prøv igjen.",
-      "comingSoon": "Kommer snart! 🚀",
-      "featureDisabled": "Denne funksjonen er deaktivert",
-      "networkError": "Nettverksfeil. Sjekk internettforbindelsen."
+      "title": "Dine saldoer",
+      "total": "Total verdi",
+      "currency": "Valuta",
+      "amount": "Antall",
+      "value": "Verdi"
     }
   }
 }
