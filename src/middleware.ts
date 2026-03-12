@@ -149,15 +149,14 @@ export function middleware(request: NextRequest) {
     // Check if this is a known valid path
     // These are all the valid routes in src/app/[locale]/
     const validRoutes = [
-      '(auth)', 'admin', 'admin-dashboard', 'akademi', 'auth', 'auto-trading', 
-      'auto-trading-ai', 'beta', 'beta-testing', 'binance-guide', 'checkout', 
+      '(auth)', 'admin', 'akademi', 'auth', 'auto-trading', 
+      'auto-trading-ai', 'beta', 'binance-guide', 'checkout', 
       'copy-trading', 'dashboard', 'feil', 'handelshistorikk', 'hjelp', 
       'innstillinger', 'interessetest', 'kalkulator', 'kontakt', 'konto', 
-      'kurs', 'leaderboard', 'leaderboard-preview', 'leagues', 'live-trading', 
+      'kurs', 'leaderboard', 'leagues', 'live-trading', 
       'login', 'marketplace', 'om-oss', 'onboarding', 'paper-trading', 
       'personvern', 'priser', 'profile', 'quiz', 'registrer', 'reset-password', 
-      'settings', 'signals', 'simulator', 'super-admin', 'varsler', 
-      'velg-strategi', 'velkommen', 'verify', 'vilkar',
+      'varsler', 'velg-strategi', 'velkommen', 'verify', 'vilkar',
       // Auth paths (also in root)
       'innlogging', 'glemt-passord', 'signup', 'verify', 'reset-password'
     ];

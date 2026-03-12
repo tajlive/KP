@@ -29,7 +29,7 @@
         "testMatch": [
           "/.*\\.setup\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       },
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
@@ -45,7 +45,7 @@
         "testMatch": [
           "/.*\\.teardown\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       },
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
@@ -61,7 +61,7 @@
         "testMatch": [
           "/smoke\\/.*\\.spec\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       },
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
@@ -77,7 +77,7 @@
         "testMatch": [
           "/critical\\/.*\\.spec\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       },
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
@@ -93,7 +93,7 @@
         "testMatch": [
           "/critical\\/.*\\.spec\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       },
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
@@ -109,7 +109,7 @@
         "testMatch": [
           "/regression\\/.*\\.spec\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       },
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
@@ -125,7 +125,7 @@
         "testMatch": [
           "/mobile\\/.*\\.spec\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       },
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
@@ -141,7 +141,7 @@
         "testMatch": [
           "/mobile\\/.*\\.spec\\.ts/"
         ],
-        "timeout": 60000
+        "timeout": 120000
       }
     ],
     "quiet": false,
@@ -240,310 +240,504 @@
   },
   "suites": [
     {
-      "title": "smoke/health.spec.ts",
-      "file": "smoke/health.spec.ts",
+      "title": "smoke/i18n-coverage.spec.ts",
+      "file": "smoke/i18n-coverage.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [],
-      "suites": [
+      "specs": [
         {
-          "title": "Smoke: Health Checks @smoke",
-          "file": "smoke/health.spec.ts",
-          "line": 9,
-          "column": 6,
-          "specs": [
+          "title": "Ingen MISSING_MESSAGE på /no",
+          "ok": true,
+          "tags": [],
+          "tests": [
             {
-              "title": "health endpoint returns 200",
-              "ok": true,
-              "tags": [
-                "smoke"
-              ],
-              "tests": [
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
                 {
-                  "timeout": 60000,
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12211,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:21.403Z",
                   "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 744,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-09T00:28:16.578Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "attachments": []
                 }
               ],
-              "id": "4f244b27f1efae6c9c3d-a4b373d4d269a2601d22",
-              "file": "smoke/health.spec.ts",
-              "line": 11,
-              "column": 3
-            },
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-539fd798cb9620e885fb",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /en",
+          "ok": true,
+          "tags": [],
+          "tests": [
             {
-              "title": "homepage loads without errors",
-              "ok": false,
-              "tags": [
-                "smoke"
-              ],
-              "tests": [
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
                 {
-                  "timeout": 60000,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 22226,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:21.402Z",
                   "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
-                  "results": [
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-1530ddb4c87dd4c1b214",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /no/paper-trading",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 2,
+                  "status": "passed",
+                  "duration": 22918,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:21.402Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-0317bea5859234410731",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /en/paper-trading",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 3,
+                  "status": "passed",
+                  "duration": 22891,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:21.403Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-7f5be80239918ab6afe4",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /no/dashboard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16351,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:35.345Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-1bc29f187db52f110b3e",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /en/dashboard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 6319,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:45.371Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-6c22a8c615556539b3d3",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /no/priser",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 3,
+                  "status": "passed",
+                  "duration": 12076,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:46.007Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-aee23fdef4644be7eb29",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /en/priser",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 2,
+                  "status": "passed",
+                  "duration": 12075,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:46.029Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-009d9675b2ff98e4ea4b",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /no/innlogging",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21432,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:51.686Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-7b1a072db720e657ce1d",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Ingen MISSING_MESSAGE på /en/innlogging",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 21342,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:51.710Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-5cf7bfae3d931c797969",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 18,
+          "column": 3
+        },
+        {
+          "title": "Håndterer korrupt localStorage uten reload-loop",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 3,
+                  "status": "passed",
+                  "duration": 37543,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:58.099Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "881fe68ac5274d2a79fe-6ff867ac70d762961bef",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "Kun en navbar rendres per side",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "smoke-chromium",
+              "projectName": "smoke-chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 2,
+                  "status": "timedOut",
+                  "duration": 129332,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 3205,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28",
-                        "location": {
-                          "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
-                          "column": 28,
-                          "line": 40
-                        },
-                        "snippet": "  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
-                            "column": 28,
-                            "line": 40
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n\n  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-09T00:28:16.579Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
-                        "column": 28,
-                        "line": 40
-                      }
+                      "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
                     },
                     {
-                      "workerIndex": 4,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 2671,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28",
-                        "location": {
-                          "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
-                          "column": 28,
-                          "line": 40
-                        },
-                        "snippet": "  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {"
+                      "location": {
+                        "file": "/Users/taj/klarpakke/e2e/smoke/i18n-coverage.spec.ts",
+                        "column": 16,
+                        "line": 88
                       },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
-                            "column": 28,
-                            "line": 40
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoHaveLength\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected length: \u001b[32m0\u001b[39m\nReceived length: \u001b[31m2\u001b[39m\nReceived array:  \u001b[31m[\"Connecting to 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily' violates the following Content Security Policy directive: \\\"connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live\\\". The action has been blocked.\", \"Fetch API cannot load https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=nok&days=90&interval=daily. Refused to connect because it violates the document's Content Security Policy.\"]\u001b[39m\n\n  38 |       !e.includes('analytics')\n  39 |     );\n> 40 |     expect(criticalErrors).toHaveLength(0);\n     |                            ^\n  41 |   });\n  42 |   \n  43 |   test('login page is accessible', async ({ page }) => {\n    at /Users/taj/klarpakke/e2e/smoke/health.spec.ts:40:28"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-03-09T00:28:21.414Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/taj/klarpakke/test-results/smoke-health-Smoke-Health--7bd5b-mepage-loads-without-errors-smoke-chromium-retry1/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/taj/klarpakke/e2e/smoke/health.spec.ts",
-                        "column": 28,
-                        "line": 40
-                      }
+                      "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/no/innstillinger\", waiting until \"load\"\u001b[22m\n\n\n  86 |   \n  87 |   for (const route of routes) {\n> 88 |     await page.goto(route);\n     |                ^\n  89 |     await page.waitForLoadState('networkidle');\n  90 |     \n  91 |     // Tell nav og header elementer (typiske navbar-containere)\n    at /Users/taj/klarpakke/e2e/smoke/i18n-coverage.spec.ts:88:16"
                     }
                   ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "4f244b27f1efae6c9c3d-c7fa86a19827f79b0f9f",
-              "file": "smoke/health.spec.ts",
-              "line": 21,
-              "column": 3
-            },
-            {
-              "title": "login page is accessible",
-              "ok": true,
-              "tags": [
-                "smoke"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-03-12T07:30:58.122Z",
                   "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
-                  "results": [
+                  "attachments": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 2311,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-09T00:28:16.578Z",
-                      "annotations": [],
-                      "attachments": []
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/taj/klarpakke/test-results/smoke-i18n-coverage-Kun-en-navbar-rendres-per-side-smoke-chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/taj/klarpakke/test-results/smoke-i18n-coverage-Kun-en-navbar-rendres-per-side-smoke-chromium/error-context.md"
                     }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "4f244b27f1efae6c9c3d-8570e6e60b4a5c46837b",
-              "file": "smoke/health.spec.ts",
-              "line": 43,
-              "column": 3
-            },
-            {
-              "title": "leaderboard page loads",
-              "ok": true,
-              "tags": [
-                "smoke"
-              ],
-              "tests": [
+                  ]
+                },
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
-                  "results": [
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 121911,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
                     {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 3514,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠️ Leaderboard redirected to: https://www.klarpakke.no/en/innlogging\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-09T00:28:16.588Z",
-                      "annotations": [],
-                      "attachments": []
+                      "message": "\u001b[31mTest timeout of 120000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/Users/taj/klarpakke/e2e/smoke/i18n-coverage.spec.ts",
+                        "column": 16,
+                        "line": 88
+                      },
+                      "message": "Error: page.goto: Test timeout of 120000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/no/auto-trading\", waiting until \"load\"\u001b[22m\n\n\n  86 |   \n  87 |   for (const route of routes) {\n> 88 |     await page.goto(route);\n     |                ^\n  89 |     await page.waitForLoadState('networkidle');\n  90 |     \n  91 |     // Tell nav og header elementer (typiske navbar-containere)\n    at /Users/taj/klarpakke/e2e/smoke/i18n-coverage.spec.ts:88:16"
                     }
                   ],
-                  "status": "expected"
-                }
-              ],
-              "id": "4f244b27f1efae6c9c3d-d13594eba0e2257fbd2d",
-              "file": "smoke/health.spec.ts",
-              "line": 58,
-              "column": 3
-            },
-            {
-              "title": "static assets are served",
-              "ok": true,
-              "tags": [
-                "smoke"
-              ],
-              "tests": [
-                {
-                  "timeout": 60000,
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2026-03-12T07:33:10.488Z",
                   "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
-                  "results": [
+                  "attachments": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 360,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-09T00:28:17.342Z",
-                      "annotations": [],
-                      "attachments": []
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/taj/klarpakke/test-results/smoke-i18n-coverage-Kun-en-navbar-rendres-per-side-smoke-chromium-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/Users/taj/klarpakke/test-results/smoke-i18n-coverage-Kun-en-navbar-rendres-per-side-smoke-chromium-retry1/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/taj/klarpakke/test-results/smoke-i18n-coverage-Kun-en-navbar-rendres-per-side-smoke-chromium-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/Users/taj/klarpakke/test-results/smoke-i18n-coverage-Kun-en-navbar-rendres-per-side-smoke-chromium-retry1/trace.zip"
                     }
-                  ],
-                  "status": "expected"
+                  ]
                 }
               ],
-              "id": "4f244b27f1efae6c9c3d-9ed2e2e5e6a3fe4bbae5",
-              "file": "smoke/health.spec.ts",
-              "line": 79,
-              "column": 3
+              "status": "unexpected"
             }
-          ]
+          ],
+          "id": "881fe68ac5274d2a79fe-5440fed446e4f8303dc3",
+          "file": "smoke/i18n-coverage.spec.ts",
+          "line": 73,
+          "column": 1
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-03-09T00:28:04.827Z",
-    "duration": 19774.9,
-    "expected": 4,
+    "startTime": "2026-03-12T07:30:02.906Z",
+    "duration": 313338.72599999997,
+    "expected": 11,
     "skipped": 0,
     "unexpected": 1,
     "flaky": 0

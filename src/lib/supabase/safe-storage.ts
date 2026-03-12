@@ -64,9 +64,9 @@ function clearAllSupabaseStorage(): void {
       try { 
         localStorage.removeItem(key); 
         console.warn(`[SafeStorage] Fjernet: ${key}`);
-      } catch {}
+      } catch { /* ignore */ }
     });
-  } catch {}
+  } catch { /* ignore */ }
   
   // Rens også sessionStorage
   try {
@@ -86,9 +86,9 @@ function clearAllSupabaseStorage(): void {
       try { 
         sessionStorage.removeItem(key);
         console.warn(`[SafeStorage] Fjernet fra sessionStorage: ${key}`);
-      } catch {}
+      } catch { /* ignore */ }
     });
-  } catch {}
+  } catch { /* ignore */ }
   
   console.warn('[SafeStorage] Alle Supabase storage-nøkler ryddet');
   

@@ -50,7 +50,7 @@ const WHAT_HAPPENS_NOW = [
     title: 'Les beta-guiden',
     description: 'Forstå hva du kan forvente av beta-perioden',
     action: 'Les guiden',
-    href: '/LOCALE/beta-testing',
+    href: '/LOCALE/beta',
     primary: false
   },
   {
@@ -105,7 +105,7 @@ export function VelkommenContent() {
               className="border-slate-600 text-slate-300 hover:bg-slate-800"
               asChild
             >
-              <a href={`/${locale}/beta-testing`}>
+              <a href={`/${locale}/beta`}>
                 Les beta-guiden
               </a>
             </Button>
