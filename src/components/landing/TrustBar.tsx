@@ -8,7 +8,7 @@ export async function TrustBar() {
   
   // Hent brukerantall fra Supabase
   const { count, error } = await supabase
-    .from('profiles')
+    .from('user_profiles')
     .select('*', { count: 'exact', head: true });
 
   const userCount = count || 0;
