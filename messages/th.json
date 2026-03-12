@@ -513,7 +513,9 @@
     "cta": {
       "text": "พร้อมที่จะทดสอบกลยุทธ์ของคุณโดยไม่มีความเสี่ยง?",
       "button": "ลอง Paper Trading"
-    }
+    },
+    "cta_after_result": "เรียนรู้วิธีการ — เริ่มต้นฟรี",
+    "cta_no_card": "ไม่ต้องใช้บัตรเครดิต"
   },
   "checkout": {
     "loading": "กำลังโหลด...",
@@ -982,6 +984,8 @@
   },
   "hero": {
     "title": "Klarpakke",
+    "headline": "เรียนรู้การเทรดคริปโต",
+    "headlineHighlight": "อย่างปลอดภัยตั้งแต่วันแรก",
     "subtitle": "เรียนรู้การเทรด",
     "description": "แพลตฟอร์มที่สมบูรณ์ที่สุดของนอร์เวย์สำหรับการศึกษาคริปโตและการเทรด",
     "cta": "เริ่มต้นฟรี",
@@ -989,6 +993,7 @@
     "tagline": "จากมือใหม่สู่เทรดเดอร์มืออาชีพ",
     "ctaPrimary": "เริ่มต้นฟรีวันนี้",
     "ctaSecondary": "ดูหลักสูตร",
+    "trust": "ไม่ต้องใช้บัตรเครดิต · คำแนะนำภาษานอร์เวย์ · ปลอดภัยด้วย BankID",
     "stats": {
       "weeks": "ข้อมูลตลาดแบบเรียลไทม์",
       "students": "นักเรียนที่ใช้งานอยู่",
@@ -2138,6 +2143,57 @@
     "selectExchange": "Velg børs",
     "addExchange": "Legg til børs",
     "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Binance. Du kan senere koble kontoen din hit for å se alt på ett sted.",
+  "trustBar": {
+    "withCount": "Bli med {count} nordmenn som lærer krypto trygt",
+    "fallback": "Norges tryggeste sted å lære krypto",
+    "trust1": "BankID-sikker",
+    "trust2": "Norske kurs",
+    "trust3": "Ingen risiko"
+  },
+  "coursePreview": {
+    "sectionTitle": "Kom i gang på under én time",
+    "sectionSubtitle": "Gratis å starte — fullfør på din egen tid",
+    "freeBadge": "Gratis",
+    "seeAllCourses": "Se alle kurs →",
+    "course1": {
+      "title": "Hva er Bitcoin?",
+      "level": "Nybegynner",
+      "time": "15 min"
+    },
+    "course2": {
+      "title": "Slik leser du en chart",
+      "level": "Nybegynner",
+      "time": "20 min"
+    },
+    "course3": {
+      "title": "Din første papirhandel",
+      "level": "Nybegynner",
+      "time": "10 min"
+    }
+  },
+  "threeSteps": {
+    "sectionTitle": "Kom i gang på 4 enkle steg",
+    "sectionSubtitle": "Ingen forkunnskaper nødvendig. Vi guider deg fra første øyeblikk.",
+    "step1": {
+      "title": "Registrer deg gratis",
+      "description": "Opprett konto med BankID. Ingen kredittkort nødvendig. Start på under 2 minutter."
+    },
+    "step2": {
+      "title": "Ta ditt første kurs",
+      "description": "Velg blant norske nybegynnerkurs. Lær i ditt eget tempo."
+    },
+    "step3": {
+      "title": "Øv med papirhandel",
+      "description": "Bruk kr 10 000 i virtuelle midler. Test strategier uten risiko."
+    },
+    "step4": {
+      "title": "Automatiser med bot",
+      "description": "La AI handle for deg når du er klar. Du bestemmer når.",
+      "badge": "Valgfritt · Pro-funksjon"
+    },
+    "ctaButton": "Start gratis i dag",
+    "ctaSubtext": "Ingen kredittkort nødvendig · Avbryt når som helst"
+  },
     "security": {
       "title": "Sikkerhet først",
       "readOnly": "Vi ber kun om <strong>read-only</strong> API-nøkler. Dette betyr at vi kan lese saldo og transaksjoner, men <strong>ALDRI</strong> gjøre kjøp/salg eller uttak.",

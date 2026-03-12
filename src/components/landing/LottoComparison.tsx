@@ -1,17 +1,27 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Calculator, Coins, PiggyBank, TrendingUp, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calculator, Coins, PiggyBank, TrendingUp, AlertTriangle, ArrowRight } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 export function LottoComparison() {
+  const locale = useLocale();
+  const t = useTranslations('calculator');
   const [weeklyAmount, setWeeklyAmount] = useState(200);
   const [years, setYears] = useState(5);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [results, setResults] = useState({
     lotto: 0,
     bank: 0,
     crypto: 0,
   });
+
+  const handleSliderChange = (value: number) => {
+    setWeeklyAmount(value);
+    setHasInteracted(true);
+  };
 
   useEffect(() => {
     const weeks = years * 52;
@@ -63,7 +73,7 @@ export function LottoComparison() {
             max="1000"
             step="50"
             value={weeklyAmount}
-            onChange={(e) => setWeeklyAmount(Number(e.target.value))}
+            onChange={(e) => handleSliderChange(Number(e.target.value))}
             className="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-teal-500"
           />
           <div className="flex justify-between mt-2">
@@ -189,6 +199,30 @@ export function LottoComparison() {
           </p>
         </div>
       </div>
+
+      {/* CTA - vises kun etter interaksjon */}
+      <AnimatePresence>
+        {hasInteracted && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
+            className="mt-6 text-center"
+          >
+            <Link
+              href={`/${locale}/signup`}
+              className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-white font-lexend font-bold px-8 py-4 rounded-xl shadow-lg shadow-teal-500/30 transition-all"
+            >
+              {t('cta_after_result')}
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <p className="font-lexend text-sm text-slate-500 mt-3">
+              {t('cta_no_card')}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

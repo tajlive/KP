@@ -266,7 +266,7 @@ export default function GetStartedCard({
                             />
                           </svg>
                         ) : (
-                          item.icon || null
+                          item?.icon || null
                         )}
                       </div>
 

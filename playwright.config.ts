@@ -80,6 +80,18 @@ export default defineConfig({
     },
     
     // ============================================
+    // LANDING PAGE TESTS (Conversion critical)
+    // ============================================
+    {
+      name: 'landing-chromium',
+      testMatch: /landing\/.*\.spec\.ts/,
+      use: { 
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 }
+      },
+    },
+    
+    // ============================================
     // CRITICAL TESTS (Blocking, core journeys)
     // ============================================
     {
@@ -136,6 +148,14 @@ export default defineConfig({
         storageState: '.auth/user.json'
       },
       dependencies: ['setup'],
+    },
+    {
+      name: 'landing-mobile',
+      testMatch: /landing\/.*\.spec\.ts/,
+      use: {
+        ...devices['iPhone SE'],
+        viewport: { width: 375, height: 667 }
+      },
     },
   ],
 
