@@ -13,30 +13,30 @@
     "privacyLink": "Privacy Policy →",
     "termsLink": "Terms of Service →"
   },
-  "faqs": [
-    {
+  "faqs": {
+    "0": {
       "q": "What is Klarpakke University?",
       "a": "Klarpakke University is a Norwegian crypto education platform. We offer courses, simulators, paper trading and quizzes – everything to teach you trading safely. All trading is 100% simulated, so you can practice without risking real money."
     },
-    {
+    "1": {
       "q": "What plans exist and what do they cost?",
       "a": "We have four plans: Free (0 kr) gives you a taste. Basic (199 kr/mo) includes all basic courses. Complete (399 kr/mo) is our most popular plan with everything in Basic plus advanced courses, certificate and webinars. Pro (999 kr/mo) gives extra resources and priority support."
     },
-    {
+    "2": {
       "q": "Can I lose money?",
       "a": "No! Everything at Klarpakke University is simulated. When you use paper trading or the simulator, you trade with virtual money. You cannot lose real money here. This is a safe place to learn before potentially using real money with an external broker."
     },
-    {
+    "3": {
       "q": "How do I cancel?",
       "a": "You can cancel anytime from your account settings. You keep access until the end of the paid period. There is no lock-in period – you decide how long you want to stay."
     },
-    {
+    "4": {
       "q": "How do I start with paper trading?",
       "a": "Sign up for free, and you automatically get 1,000,000 kr virtual capital. Go to the Paper Trading page, select a cryptocurrency, and press buy to make your first trade. It is completely risk-free!"
     },
-    {
+    "5": {
       "q": "What do I learn in the courses?",
       "a": "Basic courses cover what crypto is, how trading works, and basic risk management. Advanced courses go deeper into technical analysis, strategies and trading psychology. Everything is in plain language."
     }
-  ]
+  }
 }

@@ -1,0 +1,24 @@
+{
+  "title": "Tradingguide",
+  "subtitle": "Lær grunnleggende om krypto-trading",
+  "cta": {
+    "title": "Klar til å øve?",
+    "description": "Start trading med virtuelle penger og bruk det du har lært",
+    "button": "Åpne Paper Trading"
+  },
+  "faq": {
+    "title": "Ofte stilte spørsmål",
+    "q1": {
+      "question": "Hva er paper trading?",
+      "answer": "Paper trading er simulert trading med virtuelle penger. Det lar deg øve på tradingstrategier uten å risikere ekte penger."
+    },
+    "q2": {
+      "question": "Hvordan kommer jeg i gang?",
+      "answer": "Opprett en gratis konto og du får automatisk 1 000 000 kr i virtuell valuta å øve med."
+    },
+    "q3": {
+      "question": "Er dette for nybegynnere?",
+      "answer": "Ja! Guiden vår er laget for komplette nybegynnere. Vi forklarer alt på enkel norsk uten forvirrende faguttrykk."
+    }
+  }
+}

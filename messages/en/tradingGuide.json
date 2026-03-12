@@ -1,0 +1,24 @@
+{
+  "title": "Trading Guide",
+  "subtitle": "Learn the fundamentals of crypto trading",
+  "cta": {
+    "title": "Ready to Practice?",
+    "description": "Start trading with virtual money and apply what you've learned",
+    "button": "Open Paper Trading"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": {
+      "question": "What is paper trading?",
+      "answer": "Paper trading is simulated trading with virtual money. It allows you to practice trading strategies without risking real funds."
+    },
+    "q2": {
+      "question": "How do I get started?",
+      "answer": "Create a free account and you'll automatically receive 1,000,000 NOK in virtual currency to practice with."
+    },
+    "q3": {
+      "question": "Is this for beginners?",
+      "answer": "Yes! Our guide is designed for complete beginners. We explain everything in plain language without confusing jargon."
+    }
+  }
+}

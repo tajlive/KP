@@ -14,7 +14,10 @@
   "tryAgain": "Try again",
   "learnMore": "Learn more",
   "seeAll": "See all",
-  "comingSoon": "Coming soon",
+  "comingSoon": {
+    "title": "Coming Soon",
+    "description": "This feature is under development. Check back soon!"
+  },
   "edit": "Edit",
   "update": "Update",
   "submit": "Submit",

@@ -60,6 +60,59 @@
       "operational": "Operational",
       "degraded": "Degraded",
       "down": "Down"
+    },
+    "active": "Active",
+    "inactive": "Inactive",
+    "lastRefresh": "Last refresh",
+    "never": "Never",
+    "cronJobs": {
+      "title": "Cron Jobs",
+      "name": "Name",
+      "schedule": "Schedule",
+      "status": "Status",
+      "lastRun": "Last Run",
+      "lastStatus": "Last Status"
+    },
+    "db": {
+      "title": "Database",
+      "rows": "Rows"
+    },
+    "rls": {
+      "title": "Row Level Security",
+      "tablesWithRls": "Tables with RLS"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "pending": "Pending",
+      "sent": "Sent",
+      "failed": "Failed",
+      "processButton": "Process",
+      "processed": "Processed"
+    },
+    "systemChecks": {
+      "title": "System Checks"
+    },
+    "errors": {
+      "connectionFailed": "Connection failed",
+      "refreshFailed": "Refresh failed",
+      "processFailed": "Process failed"
     }
-  }
+  },
+  "adminPanel": "Admin Panel",
+  "allServicesNormal": "All services normal",
+  "choosePassword": "Choose password",
+  "emailBody": "Email body",
+  "emailSubject": "Email subject",
+  "emailTo": "Email to",
+  "loggingIn": "Logging in...",
+  "login": "Log in",
+  "resetPassword": "Reset password",
+  "search": "Search",
+  "searchUsers": "Search users",
+  "selectTier": "Select tier",
+  "send": "Send",
+  "sendEmail": "Send email",
+  "sending": "Sending...",
+  "serviceStatus": "Service status",
+  "totalUsers": "Total users"
 }

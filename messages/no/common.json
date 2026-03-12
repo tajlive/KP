@@ -14,7 +14,10 @@
   "tryAgain": "Prøv igjen",
   "learnMore": "Les mer",
   "seeAll": "Se alle",
-  "comingSoon": "Kommer snart",
+  "comingSoon": {
+    "title": "Kommer snart",
+    "description": "Denne funksjonen er under utvikling. Sjekk tilbake snart!"
+  },
   "edit": "Rediger",
   "update": "Oppdater",
   "submit": "Send inn",

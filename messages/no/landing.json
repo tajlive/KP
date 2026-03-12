@@ -20,6 +20,11 @@
       "title": "Klarpakke (Binance)",
       "gain": "Muligheter",
       "desc": "Invester 100 kr i fremtiden. Med vår kunnskap lærer du å bygge verdi over tid. Start smått, drøm stort."
+    },
+    "krypto": {
+      "title": "Klarpakke (Binance)",
+      "gain": "Muligheter",
+      "desc": "Invester 100 kr i fremtiden. Med vår kunnskap lærer du å bygge verdi over tid. Start smått, drøm stort."
     }
   },
   "whyUs": {
@@ -112,6 +117,9 @@
     "spotsLeft": "plasser igjen. Først til mølle!"
   },
   "hero": {
+    "title": "Lær trading på riktig måte",
+    "subtitle": "Fra nybegynner til selvsikker trader",
+    "description": "Øv med virtuelle penger, lær av eksperter, og handle trygt",
     "beta_badge": "BETA-LANSERING - KUN 23/50 PLASSER IGJEN",
     "title_emotional": "Lær Trading På Norsk",
     "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",

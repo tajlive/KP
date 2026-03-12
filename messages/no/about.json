@@ -1,0 +1,53 @@
+{
+  "hero": {
+    "badge": "Om oss",
+    "title": "Teamet bak Klarpakke",
+    "subtitle": "Vi bygger fremtiden for krypto-utdanning i Norge"
+  },
+  "story": {
+    "title": "Vår historie",
+    "p1": "Klarpakke ble grunnlagt med en enkel misjon: gjøre krypto-trading tilgjengelig og forståelig for alle i Norge.",
+    "p2": "Etter å ha sett for mange tape penger på grunn av mangel på utdanning, bestemte vi oss for å lage en plattform som lærer deg trading trygt før du risikerer ekte penger.",
+    "p3": "I dag er vi stolte av å hjelpe hundrevis av nordmenn med å lære kryptovaluta-trading på riktig måte – med god risikostyring og utdanning først.",
+    "quote": "Den beste investeringen du kan gjøre er i din egen kunnskap.",
+    "quoteAuthor": "Tom Arne Jensen, Grunnlegger"
+  },
+  "mission": {
+    "title": "Vår misjon",
+    "text": "Å demokratisere krypto-utdanning og hjelpe enhver nordmann med å ta informerte handelsbeslutninger.",
+    "values": "Utdanning først. Sikkerhet alltid. Vekst sammen."
+  },
+  "values": {
+    "title": "Våre verdier"
+  },
+  "different": {
+    "title": "Hva gjør oss annerledes",
+    "subtitle": "Vi fokuserer på utdanning og sikker øving før ekte trading"
+  },
+  "risk": {
+    "warning": "Handel med kryptovaluta innebærer risiko. Aldri invester mer enn du har råd til å tape."
+  },
+  "team": {
+    "title": "Møt teamet",
+    "tom": {
+      "role": "Grunnlegger & CEO",
+      "bio": "Tom Arne har handlet krypto siden 2017 og brenner for å lære andre."
+    },
+    "partners": {
+      "title": "Våre partnere"
+    }
+  },
+  "contact": {
+    "title": "Kontakt oss",
+    "subtitle": "Vi vil gjerne høre fra deg",
+    "email": "hei@klarpakke.no",
+    "org": "Klarpakke AS",
+    "location": "Oslo, Norge"
+  },
+  "cta": {
+    "title": "Klar til å begynne å lære?",
+    "subtitle": "Bli med tusenvis av nordmenn som lærer å handle krypto trygt",
+    "button": "Start gratis",
+    "noCard": "Ingen kredittkort nødvendig"
+  }
+}

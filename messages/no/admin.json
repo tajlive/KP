@@ -60,6 +60,59 @@
       "operational": "Operativ",
       "degraded": "Degradert",
       "down": "Nede"
+    },
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "lastRefresh": "Sist oppdatert",
+    "never": "Aldri",
+    "cronJobs": {
+      "title": "Cron-jobber",
+      "name": "Navn",
+      "schedule": "Tidsplan",
+      "status": "Status",
+      "lastRun": "Sist kjørt",
+      "lastStatus": "Siste status"
+    },
+    "db": {
+      "title": "Database",
+      "rows": "Rader"
+    },
+    "rls": {
+      "title": "Row Level Security",
+      "tablesWithRls": "Tabeller med RLS"
+    },
+    "notifications": {
+      "title": "Varsler",
+      "pending": "Ventende",
+      "sent": "Sendt",
+      "failed": "Feilet",
+      "processButton": "Behandle",
+      "processed": "Behandlet"
+    },
+    "systemChecks": {
+      "title": "Systemsjekker"
+    },
+    "errors": {
+      "connectionFailed": "Tilkobling mislyktes",
+      "refreshFailed": "Oppdatering mislyktes",
+      "processFailed": "Behandling mislyktes"
     }
-  }
+  },
+  "adminPanel": "Admin-panel",
+  "allServicesNormal": "Alle tjenester normale",
+  "choosePassword": "Velg passord",
+  "emailBody": "E-posttekst",
+  "emailSubject": "E-postemne",
+  "emailTo": "E-post til",
+  "loggingIn": "Logger inn...",
+  "login": "Logg inn",
+  "resetPassword": "Tilbakestill passord",
+  "search": "Søk",
+  "searchUsers": "Søk brukere",
+  "selectTier": "Velg nivå",
+  "send": "Send",
+  "sendEmail": "Send e-post",
+  "sending": "Sender...",
+  "serviceStatus": "Tjenestestatus",
+  "totalUsers": "Totalt brukere"
 }
