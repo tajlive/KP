@@ -303,14 +303,25 @@ function InnloggingForm() {
   );
 }
 
-// Loading fallback
+// Loading fallback - matches InnloggingForm styling
 function LoadingFallback() {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-900 min-h-screen">
-      <div className="max-w-md w-full space-y-8 animate-pulse text-center">
-        <div className="mx-auto h-12 w-12 bg-slate-800 rounded-full" />
-        <div className="h-8 bg-slate-800 rounded w-3/4 mx-auto" />
-        <div className="h-[400px] bg-slate-800/50 rounded-3xl w-full border border-white/5" />
+    <div className="min-h-screen bg-white py-12 px-4 sm:px-6" data-testid="login-page">
+      <div className="max-w-md mx-auto">
+        <div className="flex justify-center mb-8">
+          <div className="h-10 w-40 bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="border border-gray-200 shadow-sm rounded-lg p-6">
+          <div className="space-y-4 animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto" />
+            <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto" />
+            <div className="space-y-3 pt-4">
+              <div className="h-12 bg-gray-200 rounded" />
+              <div className="h-12 bg-gray-200 rounded" />
+              <div className="h-12 bg-gray-200 rounded" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

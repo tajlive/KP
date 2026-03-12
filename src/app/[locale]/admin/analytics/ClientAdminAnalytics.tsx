@@ -33,16 +33,15 @@ interface RecentVisitor {
   id: string;
   path: string;
   referrer: string | null;
-  created_at: string;
-  user_email?: string;
-  user_name?: string;
+  created_at: string | null;
+  user_email?: string | null;
+  user_name?: string | null;
   is_authenticated: boolean;
 }
 
 interface TopPage {
   path: string;
   visits: number;
-  uniqueVisitors: number;
 }
 
 interface DeviceStats {
@@ -87,7 +86,7 @@ export default function ClientAdminAnalytics() {
 
       // Fetch unique visitors (by session_id)
       const { data: sessionsData } = await supabase
-        .rpc('get_unique_visitors', { start_date: startDate.toISOString() });
+        .rpc('get_unique_visitors', { p_start_date: startDate.toISOString() });
 
       // Fetch recent visitors with user info
       const { data: recentData } = await supabase
@@ -97,15 +96,14 @@ export default function ClientAdminAnalytics() {
           path,
           referrer,
           created_at,
-          user_id,
-          profiles:user_id (email, full_name)
+          user_id
         `)
         .order('created_at', { ascending: false })
         .limit(10);
 
       // Fetch top pages
       const { data: topPagesData } = await supabase
-        .rpc('get_top_pages', { start_date: startDate.toISOString(), limit_count: 5 });
+        .rpc('get_top_pages', { p_start_date: startDate.toISOString(), p_limit: 5 });
 
       // Calculate stats
       const totalVisits = visitsData?.length || 0;
@@ -121,20 +119,13 @@ export default function ClientAdminAnalytics() {
       });
 
       // Format recent visitors
-      const formattedVisitors = (recentData || []).map((visit: { 
-        id: string; 
-        path: string; 
-        referrer: string | null; 
-        created_at: string; 
-        user_id: string | null; 
-        profiles: { email: string; full_name: string }[] | null; 
-      }) => ({
+      const formattedVisitors = (recentData || []).map((visit) => ({
         id: visit.id,
         path: visit.path,
         referrer: visit.referrer,
         created_at: visit.created_at,
-        user_email: visit.profiles?.[0]?.email,
-        user_name: visit.profiles?.[0]?.full_name,
+        user_email: null,
+        user_name: null,
         is_authenticated: !!visit.user_id,
       }));
       setRecentVisitors(formattedVisitors);
