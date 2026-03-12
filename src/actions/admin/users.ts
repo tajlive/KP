@@ -69,17 +69,14 @@ export async function grantFounderStatus(userId: string) {
     if (tokenError) throw tokenError;
 
     // 5. Log transaction
-    await supabase.from("klt_transactions").insert([
-      {
-        user_id: userId,
-        amount: 10000,
-        type: "award",
-        category: "founder",
-        description: "Founder status granted",
-        reason: "Founder status granted",
-        created_at: new Date().toISOString(),
-      },
-    ]);
+    await supabase.from("klt_transactions").insert({
+      user_id: userId,
+      amount: 10000,
+      type: "award",
+      category: "founder",
+      description: "Founder status granted",
+      reason: "Founder status granted",
+    } as any);
 
     revalidatePath("/admin/students");
     return {

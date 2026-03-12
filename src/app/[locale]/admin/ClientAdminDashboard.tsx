@@ -122,7 +122,7 @@ export default function ClientAdminDashboard() {
       .channel("admin-profiles")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "profiles" },
+        { event: "INSERT", schema: "public", table: "user_profiles" },
         (payload) => {
           const newActivity = {
             id: payload.new.id,
