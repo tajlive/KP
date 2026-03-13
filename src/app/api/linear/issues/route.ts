@@ -39,7 +39,7 @@ async function requireAdmin() {
     .from('user_profiles')
     .select('role')
     .eq('user_id', user.id)
-    .single() as any;
+    .single() as unknown;
 
   if (profile?.role !== 'admin') {
     return { error: 'Ingen tilgang', status: 403 };

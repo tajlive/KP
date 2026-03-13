@@ -31,7 +31,7 @@ export async function checkEmergencyStatus(): Promise<EmergencyStatus> {
   const { data, error } = await supabase
     .from('global_settings')
     .select('emergency_stop, emergency_triggered_at, emergency_triggered_by, emergency_reason')
-    .single() as any;
+    .single() as unknown;
   
   if (error || !data) {
     // Default: ingen emergency
@@ -236,7 +236,7 @@ export async function canUserTrade(userId: string): Promise<{
     .from('user_profiles')
     .select('trading_suspended, trading_suspension_reason')
     .eq('id', userId)
-    .single() as any;
+    .single() as unknown;
   
   if (userStatus?.trading_suspended) {
     return {

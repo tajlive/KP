@@ -14,8 +14,20 @@
 import { createClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY mangler");
+  }
+
+  if (!resendClient) {
+    resendClient = new Resend(apiKey);
+  }
+
+  return resendClient;
+}
 
 const FROM_EMAIL = "Klarpakke <post@klarpakke.no>";
 const REPLY_TO = "support@klarpakke.no";
@@ -74,8 +86,8 @@ async function shouldSendEmail(
     const { data: prefs } = (await supabase
       .from("email_preferences" as unknown)
       .select("*")
-      .eq("user_id" as any, userId)
-      .single() as any) as unknown;
+      .eq("user_id" as unknown, userId)
+      .single() as unknown) as unknown;
 
     if (!prefs) {
       // Default to sending if no preferences set
@@ -119,7 +131,7 @@ async function getUserInfo(
       .from("user_profiles" as unknown)
       .select("email, full_name")
       .eq("id", userId)
-      .single() as any) as unknown;
+      .single() as unknown) as unknown;
 
     if (!profile?.email) {
       // Fallback: get email from auth
@@ -687,6 +699,7 @@ export async function sendTemplatedEmail(
     }
 
     // Send email
+    const resend = getResendClient();
     const { data: result, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: user.email,

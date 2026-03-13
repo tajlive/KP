@@ -33,7 +33,7 @@ export const POST = withRateLimit(
     }
 
     const { action } = parsed.data;
-    const db: any = (await createClient()) as unknown;
+    const db: unknown = (await createClient()) as unknown;
 
     const statusMap: Record<string, string> = {
       pause: "paused",
@@ -75,7 +75,7 @@ export const POST = withRateLimit(
       .select("id")
       .eq("config_id", id)
       .eq("status", "ACTIVE")
-      .single() as any;
+      .single() as unknown;
 
     await db
       .from("auto_trading_sessions")

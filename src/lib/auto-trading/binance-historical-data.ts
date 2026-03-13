@@ -297,7 +297,7 @@ export class BinanceHistoricalDataFetcher {
     interval: TimeInterval,
     candles: BinanceCandle[],
   ): Promise<void> {
-    const supabase = await createClient();
+    const supabase: unknown = await createClient();
 
     // Batch insert (Supabase can handle ~1000 rows efficiently)
     const BATCH_SIZE = 1000;
@@ -344,16 +344,16 @@ export class BinanceHistoricalDataFetcher {
     startTime: Date,
     endTime: Date,
   ): Promise<BinanceCandle[] | null> {
-    const supabase = await createClient();
+    const supabase: unknown = await createClient();
 
-    const { data, error } = (await supabase
-      .from("binance_historical_candles" as unknown)
+    const { data, error } = await supabase
+      .from("binance_historical_candles")
       .select("*")
       .eq("symbol", symbol.toUpperCase())
       .eq("interval", interval)
       .gte("open_time", startTime.toISOString())
       .lte("open_time", endTime.toISOString())
-      .order("open_time", { ascending: true })) as unknown;
+      .order("open_time", { ascending: true });
 
     if (error) {
       console.error("Error fetching cached candles:", error);
@@ -362,7 +362,18 @@ export class BinanceHistoricalDataFetcher {
 
     if (!data || data.length === 0) return null;
 
-    return (data || []).map((row: unknown) => ({
+    interface CandleRow {
+      open_time: string;
+      open: number;
+      high: number;
+      low: number;
+      close: number;
+      volume: number;
+      close_time: string;
+      quote_volume: number;
+      number_of_trades: number;
+    }
+    return ((data || []) as CandleRow[]).map((row) => ({
       openTime: new Date(row.open_time).getTime(),
       open: row.open,
       high: row.high,

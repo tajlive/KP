@@ -9,7 +9,7 @@ export function useRecentTrades(userId: string | null, limit = 20) {
       const { data, error } = await supabase
         .from("trades")
         .select("*")
-        .eq("user_id" as any, userId!)
+        .eq("user_id" as unknown, userId!)
         .order("created_at", { ascending: false })
         .limit(limit);
       if (error) throw error;

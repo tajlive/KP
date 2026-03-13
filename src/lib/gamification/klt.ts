@@ -66,8 +66,8 @@ export async function awardKLT({
     const { data: currentBalance } = await supabase
       .from("user_klt_balances")
       .select("balance, total_earned")
-      .eq("user_id" as any, userId)
-      .single() as any;
+      .eq("user_id" as unknown, userId)
+      .single() as unknown;
     
     const newBalance = (currentBalance?.balance || 0) + amount;
     const newTotalEarned = (currentBalance?.total_earned || 0) + amount;
@@ -120,8 +120,8 @@ export async function awardXP(
     const { data: currentLevel } = await supabase
       .from("user_levels")
       .select("*")
-      .eq("user_id" as any, userId)
-      .single() as any;
+      .eq("user_id" as unknown, userId)
+      .single() as unknown;
     
     let level = currentLevel?.level || 1;
     let xp = (currentLevel?.xp || 0) + amount;
@@ -205,8 +205,8 @@ export async function getKLTBalance(userId: string): Promise<number> {
     const { data } = await supabase
       .from("user_klt_balances")
       .select("balance")
-      .eq("user_id" as any, userId)
-      .single() as any;
+      .eq("user_id" as unknown, userId)
+      .single() as unknown;
     
     return data?.balance || 0;
   } catch {

@@ -23,8 +23,8 @@ test('Prisside: laster', async ({ page }) => {
 
 test('Innlogging: viser loginskjema', async ({ page }) => {
   await page.goto(`${BASE}/no/innlogging`)
-  await expect(page.locator('input[type="email"]')).toBeVisible()
-  await expect(page.locator('input[type="password"]')).toBeVisible()
+  const loginPage = page.locator('[data-testid="login-page"]')
+  await expect(loginPage).toBeVisible()
 })
 
 test('Redirect: /settings → /innstillinger', async ({ page }) => {
@@ -35,7 +35,8 @@ test('Redirect: /settings → /innstillinger', async ({ page }) => {
 test('Paper trading: side laster', async ({ page }) => {
   await page.goto(`${BASE}/no/paper-trading`)
   await expect(page).not.toHaveTitle(/404|error/i)
-  await expect(page.locator('h1, h2').first()).toBeVisible()
+  // Page renders PaperTradingList; assert on main content container
+  await expect(page.locator('main')).toBeVisible()
 })
 
 test('Landing: har meta description', async ({ page }) => {

@@ -10,8 +10,8 @@
  * const supabase = getSupabaseClient()
  */
 import { createBrowserClient } from '@supabase/ssr'
-import type { Database } from '@/types/supabase-generated'
-import { safeStorage } from '@/lib/supabase/safe-storage'
+import type { Database } from '../../types/supabase-generated'
+import { safeStorage } from './safe-storage'
 
 type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>
 

@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString());
     const format = searchParams.get('format') || 'json'; // json, csv, pdf, html
 
-    const supabase: any = (await createClient()) as unknown;
+    const supabase: unknown = (await createClient()) as unknown;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       .from('user_profiles')
       .select('email')
       .eq('user_id', user.id)
-      .single() as any;
+      .single() as unknown;
 
     // Fetch trades for the year
     const startDate = `${year}-01-01`;

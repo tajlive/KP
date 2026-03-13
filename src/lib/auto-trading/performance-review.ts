@@ -133,7 +133,7 @@ export async function generateWeeklyReview(
       .select('id')
       .eq('user_id', userId)
       .eq('status', 'ACTIVE')
-      .single() as any
+      .single() as unknown
     
     if (session) activeSessionId = session.id
   }

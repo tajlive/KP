@@ -190,8 +190,8 @@ export default function OnboardingFlow() {
       const { data, error } = await supabase
         .from("onboarding_progress")
         .select("*")
-        .eq("user_id" as any, user.id)
-        .single() as any;
+        .eq("user_id" as unknown, user.id)
+        .single() as unknown;
 
       const oData = data as OnboardingProgress | null;
 
@@ -294,7 +294,7 @@ export default function OnboardingFlow() {
     await supabase
       .from("onboarding_progress")
       .update(updates)
-      .eq("user_id" as any, user.id);
+      .eq("user_id" as unknown, user.id);
 
     // ✅ FIX: Auto-start paper trade etter steg 5
     if (stepId === 5 && selectedStrategy) {
@@ -304,8 +304,17 @@ export default function OnboardingFlow() {
           await supabase.functions.invoke("create-paper-bot", {
             body: { strategy_id: selectedStrategy, user_id: user.id },
           });
-        // Note: paper_bot_id field doesn't exist in onboarding_progress table
-        // Bot creation is logged but not stored in onboarding_progress
+        if (botError) {
+          throw botError;
+        }
+
+        if (botData?.bot_id) {
+          await supabase
+            .from("onboarding_progress")
+            .update({ paper_bot_id: botData.bot_id })
+            .eq("user_id" as unknown, user.id);
+        }
+
         console.log("Paper bot created:", botData?.bot_id);
       } catch (e) {
         // Paper bot-oppretting er ikke blokkerende – onboarding fullfører uansett

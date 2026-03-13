@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Manually triggers the strategy runner (for immediate feedback when user starts a strategy)
 export async function POST(_: NextRequest) {
   try {
-    const supabase: any = (await createClient()) as unknown;
+    const supabase: unknown = (await createClient()) as unknown;
 
     // Check auth
     const {
@@ -19,7 +19,7 @@ export async function POST(_: NextRequest) {
     const { data: strategies, error: stratError } = await supabase
       .from("strategies" as unknown)
       .select("*")
-      .eq("user_id" as any, user.id)
+      .eq("user_id" as unknown, user.id)
       .eq("is_active", true);
 
     if (stratError) throw stratError;

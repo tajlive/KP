@@ -72,6 +72,8 @@ interface Trade {
   side: 'BUY' | 'SELL';
   entry_price: number;
   exit_price?: number;
+  executed_at?: string | null;
+  pnl?: number | null;
   pnl_usdt?: number;
   trading_mode: 'paper' | 'live';
   opened_at: string;
@@ -151,11 +153,15 @@ export default function ClientAutoTradeDashboard() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setStrategies((data as unknown as Strategy[]) || []);
+      const typedStrategies = (data as unknown as Strategy[]) || [];
+      setStrategies(typedStrategies);
       
       // Calculate stats
-      const activeCount = data?.filter((s: any) => s.is_active).length || 0;
-      const totalPnl = data?.reduce((sum: number, s: any) => sum + (s.pnl_usdt || 0), 0) || 0;
+      const activeCount = typedStrategies.filter((s) => s.is_active).length || 0;
+      const totalPnl = typedStrategies.reduce(
+        (sum: number, s) => sum + (s.pnl_usdt || 0),
+        0,
+      ) || 0;
       
       setStats(prev => ({
         ...prev,
@@ -177,12 +183,13 @@ export default function ClientAutoTradeDashboard() {
         .limit(20);
 
       if (error) throw error;
-      setTrades((data as unknown as Trade[]) || []);
+      const typedTrades = (data as unknown as Trade[]) || [];
+      setTrades(typedTrades);
       
       // Calculate win rate
-      if (data && data.length > 0) {
-        const closedTrades = data.filter((t: any) => t.executed_at);
-        const winningTrades = closedTrades.filter((t: any) => (t.pnl || 0) > 0);
+      if (typedTrades.length > 0) {
+        const closedTrades = typedTrades.filter((t) => t.executed_at);
+        const winningTrades = closedTrades.filter((t) => (t.pnl || 0) > 0);
         const winRate = closedTrades.length > 0 
           ? (winningTrades.length / closedTrades.length) * 100 
           : 0;

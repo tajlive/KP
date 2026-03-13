@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Logg aktivitet
-    await supabase.from("activity_logs" as any).insert({
+    await supabase.from("activity_logs" as unknown).insert({
       user_id: user.id,
       action: "paper_trading_session_created",
       details: {

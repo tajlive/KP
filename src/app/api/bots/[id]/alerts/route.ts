@@ -13,14 +13,14 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
   const segments = url.pathname.split("/");
   const id = segments[segments.indexOf("bots") + 1];
 
-  const db: any = (await createClient()) as unknown;
+  const db: unknown = (await createClient()) as unknown;
 
   const { data, error } = await db
     .from("bot_alert_configs")
     .select("*")
     .eq("strategy_id", id)
-    .eq("user_id" as any, user.id)
-    .single() as any;
+    .eq("user_id" as unknown, user.id)
+    .single() as unknown;
 
   if (error && error.code !== "PGRST116") {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -59,15 +59,15 @@ export const POST = withRateLimit(
       );
     }
 
-    const db: any = (await createClient()) as unknown;
+    const db: unknown = (await createClient()) as unknown;
 
     // Verify ownership: user must own this strategy
     const { data: strategy } = await db
       .from("strategies" as unknown)
       .select("id")
       .eq("id", id)
-      .eq("user_id" as any, user.id)
-      .single() as any;
+      .eq("user_id" as unknown, user.id)
+      .single() as unknown;
 
     if (!strategy) {
       return NextResponse.json(
@@ -94,7 +94,7 @@ export const POST = withRateLimit(
         { onConflict: "strategy_id" },
       )
       .select()
-      .single() as any;
+      .single() as unknown;
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

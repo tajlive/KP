@@ -30,7 +30,7 @@ export async function getBotHealth(botId: string): Promise<BotHealth | null> {
     .from("bot_health")
     .select("id, user_id, status, last_heartbeat, last_error, error_count, consecutive_errors, max_consecutive_errors, updated_at")
     .eq("id", botId)
-    .single() as any;
+    .single() as unknown;
 
   if (error || !data) {
     return null;
@@ -99,7 +99,7 @@ export async function recordBotError(
       .from("bot_health")
       .select("consecutive_errors, max_consecutive_errors, error_count")
       .eq("id", botId)
-      .single() as any;
+      .single() as unknown;
 
     const consecutiveErrors = (current?.consecutive_errors || 0) + 1;
     const maxConsecutive = current?.max_consecutive_errors || 3;
@@ -159,7 +159,7 @@ export async function transitionBotStatus(
       .from("bot_health")
       .select("status, consecutive_errors")
       .eq("id", botId)
-      .single() as any;
+      .single() as unknown;
 
     // Validate transitions
     const validTransition = isValidTransition(

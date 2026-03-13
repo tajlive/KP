@@ -24,7 +24,7 @@ export const executeBuy = async (
       .from('wallets')
       .select('*')
       .eq('user_id', userId)
-      .single() as any;
+      .single() as unknown;
 
     if (walletError || !walletData) {
       return { success: false, error: 'Wallet not found' };
@@ -62,7 +62,7 @@ export const executeBuy = async (
       .from('trades')
       .select('*')
       .eq('id', tradeResult.trade_id as string)
-      .single() as any;
+      .single() as unknown;
 
     if (fetchError || !trade) {
       return { success: false, error: 'Failed to fetch trade' };
@@ -89,7 +89,7 @@ export const executeSell = async (
       .select('*')
       .eq('user_id', userId)
       .eq('symbol', symbol)
-      .single() as any;
+      .single() as unknown;
 
     if (portfolioError || !portfolioData) {
       return { success: false, error: 'No position found for this symbol' };
@@ -127,7 +127,7 @@ export const executeSell = async (
       .from('trades')
       .select('*')
       .eq('id', tradeResult.trade_id as string)
-      .single() as any;
+      .single() as unknown;
 
     if (fetchError || !trade) {
       return { success: false, error: 'Failed to fetch trade' };
@@ -146,7 +146,7 @@ export const getWallet = async (userId: string): Promise<Wallet | null> => {
     .from('wallets')
     .select('*')
     .eq('user_id', userId)
-    .single() as any;
+    .single() as unknown;
 
   if (error) {
     console.error('Error fetching wallet:', error);
@@ -207,7 +207,7 @@ export const getTradingStats = async (userId: string): Promise<TradingStats | nu
     .from('trading_stats')
     .select('*')
     .eq('user_id', userId)
-    .single() as any;
+    .single() as unknown;
 
   if (error) {
     console.error('Error fetching trading stats:', error);

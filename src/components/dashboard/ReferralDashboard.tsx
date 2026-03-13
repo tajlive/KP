@@ -31,8 +31,8 @@ export default function ReferralDashboard() {
         const { data } = await supabase
           .from("user_trading_config")
           .select("referral_code, referral_points")
-          .eq("user_id" as any, user.id)
-          .single() as any;
+          .eq("user_id" as unknown, user.id)
+          .single() as unknown;
 
         if (data) {
           setStats({
