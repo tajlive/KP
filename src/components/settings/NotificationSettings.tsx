@@ -166,11 +166,15 @@ export default function NotificationSettings() {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (user) {
+            const keys = subscription.toJSON().keys;
+            if (!keys?.p256dh || !keys?.auth) {
+                throw new Error('Push subscription keys missing');
+            }
             await supabase.from('push_subscriptions').insert({
                 user_id: user.id,
                 endpoint: subscription.endpoint,
-                p256dh: subscription.toJSON().keys?.p256dh,
-                auth: subscription.toJSON().keys?.auth
+                p256dh: keys.p256dh,
+                auth: keys.auth
             })
 
             // Create notification preferences if not exists

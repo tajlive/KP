@@ -99,7 +99,7 @@ export default function RealTradingDashboard() {
 
       if (fetchError) throw fetchError;
 
-      const typedData = (data || []) as Trade[];
+      const typedData = ((data || []) as unknown) as Trade[];
       setTrades(typedData);
       calculateStats(typedData);
     } catch (err: unknown) {

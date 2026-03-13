@@ -21,20 +21,19 @@ export async function getLatestTrade(): Promise<TradeContext | null> {
       .select("trading_pair, side, price, quantity, realized_pnl, executed_at, strategy_signal")
       .order("executed_at", { ascending: false })
       .limit(1)
-      .single() as any;
+      .single();
 
     if (error || !data) return null;
 
+    const strategySignal = data.strategy_signal as Record<string, unknown> | null;
     return {
-      symbol: data.trading_pair,
-      side: data.side.toUpperCase(), // 'BUY' or 'SELL'
-      entry_price: data.price,
-      quantity: data.quantity,
-      pnl: data.realized_pnl ?? undefined,
-      created_at: data.executed_at,
-      reason: (data.strategy_signal && typeof data.strategy_signal === 'object' && 'reason' in data.strategy_signal 
-        ? (data.strategy_signal as { reason?: string }).reason 
-        : undefined) || "Automatisk strategi-handel",
+      symbol: data.trading_pair as string,
+      side: String(data.side).toUpperCase(), // 'BUY' or 'SELL'
+      entry_price: data.price as number,
+      quantity: data.quantity as number,
+      pnl: (data.realized_pnl as number | null) ?? undefined,
+      created_at: data.executed_at as string,
+      reason: (strategySignal?.reason as string | undefined) || "Automatisk strategi-handel",
     };
   } catch (_) {
     return null;

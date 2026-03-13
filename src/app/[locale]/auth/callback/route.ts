@@ -1,6 +1,5 @@
 import { getAppUrl } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
-import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 import type { Database } from "@/lib/database.types";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -80,7 +79,8 @@ export async function GET(
   const response = successResponse;
 
   try {
-    const supabase = createServerClient(request, response) as ReturnType<typeof createSSRServerClient>;
+    // Server client for auth callback
+    const supabase = createServerClient(request, response);
 
     const { data, error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
