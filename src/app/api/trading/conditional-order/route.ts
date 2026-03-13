@@ -42,7 +42,7 @@ interface ConditionalOrderRequest {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase: any = (await createClient()) as unknown;
+  const supabase: unknown = (await createClient()) as unknown;
 
   // Auth check
   const {
@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
       .from("trading_sessions")
       .select("id, user_id, mode, status, current_capital_nok, trading_pair")
       .eq("id", session_id)
-      .eq("user_id" as any, user.id)
-      .single() as any;
+      .eq("user_id" as unknown, user.id)
+      .single() as unknown;
 
     if (sessionError || !session) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         .select("quantity")
         .eq("session_id", session_id)
         .eq("symbol", symbol)
-        .single() as any;
+        .single() as unknown;
 
       if (!position || position.quantity < quantity) {
         return NextResponse.json(
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       .from("conditional_orders")
       .insert(orderData)
       .select()
-      .single() as any;
+      .single() as unknown;
 
     if (orderError) {
       console.error("Failed to create conditional order:", orderError);
@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
 
 // GET - List user's conditional orders
 export async function GET(request: NextRequest) {
-  const supabase: any = (await createClient()) as unknown;
+  const supabase: unknown = (await createClient()) as unknown;
 
   const {
     data: { user },
@@ -242,7 +242,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from("conditional_orders")
       .select("*")
-      .eq("user_id" as any, user.id)
+      .eq("user_id" as unknown, user.id)
       .order("created_at", { ascending: false });
 
     if (session_id) {
@@ -274,7 +274,7 @@ export async function GET(request: NextRequest) {
 
 // DELETE - Cancel a conditional order
 export async function DELETE(request: NextRequest) {
-  const supabase: any = (await createClient()) as unknown;
+  const supabase: unknown = (await createClient()) as unknown;
 
   const {
     data: { user },
@@ -297,8 +297,8 @@ export async function DELETE(request: NextRequest) {
       .from("conditional_orders")
       .select("id, status, mode")
       .eq("id", order_id)
-      .eq("user_id" as any, user.id)
-      .single() as any;
+      .eq("user_id" as unknown, user.id)
+      .single() as unknown;
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });

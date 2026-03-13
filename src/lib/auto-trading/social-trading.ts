@@ -28,7 +28,7 @@ export async function followStrategy(
       phase: "paper", // Start alltid i paper trading for nye følgere
     })
     .select()
-    .single() as any) as unknown;
+    .single() as unknown) as unknown;
 
   if (configError) throw configError;
 
@@ -89,17 +89,17 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
       const { data: followerConfig } = await supabase
         .from("user_auto_trading_configs")
         .select("*")
-        .eq("user_id" as any, follower.user_id)
-        .single() as any;
+        .eq("user_id" as unknown, follower.user_id)
+        .single() as unknown;
 
       if (!followerConfig) continue;
 
       const { data: apiKeys } = await supabase
         .from("trading_api_keys")
         .select("*")
-        .eq("user_id" as any, follower.user_id)
+        .eq("user_id" as unknown, follower.user_id)
         .eq("exchange", "binance")
-        .single() as any;
+        .single() as unknown;
 
       if (!apiKeys) continue;
 

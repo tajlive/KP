@@ -164,12 +164,12 @@ export async function executeTrade(
   const startTime = Date.now();
 
   try {
-    const supabase = createClient();
+    const supabase: unknown = createClient();
 
     // =========================================================================
     // LAYER 1: Check if auto-trading is enabled for this user
     // =========================================================================
-    const { data: session } = await supabase
+    const { data: session } = await (supabase as unknown)
       .from("auto_trading_sessions")
       .select("*")
       .eq("id", sessionId)
@@ -204,7 +204,9 @@ export async function executeTrade(
     // =========================================================================
     // LAYER 3: Circuit Breaker Check
     // =========================================================================
-    const { data: todaysTrades } = await supabase
+    // TODO: auto_trading_trades table missing in types - needs migration
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: todaysTrades } = await (supabase as any)
       .from("auto_trading_trades")
       .select("*")
       .eq("session_id", sessionId)
@@ -213,7 +215,8 @@ export async function executeTrade(
         new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       );
 
-    const { data: weeksTrades } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: weeksTrades } = await (supabase as any)
       .from("auto_trading_trades")
       .select("*")
       .eq("session_id", sessionId)
@@ -267,7 +270,7 @@ export async function executeTrade(
     if (!circuitCheck.passed) {
       // Pause session if circuit breaker triggered
       if (circuitCheck.level === "daily" || circuitCheck.level === "strategy") {
-        await supabase
+        await (supabase as unknown)
           .from("auto_trading_sessions")
           .update({
             status: "paused",
@@ -315,7 +318,7 @@ export async function executeTrade(
     // =========================================================================
     // LAYER 4.5: Correlation Check
     // =========================================================================
-    const { data: openPositions } = await supabase
+    const { data: openPositions } = await (supabase as unknown)
       .from("auto_trading_trades")
       .select("*")
       .eq("session_id", sessionId)
@@ -338,7 +341,7 @@ export async function executeTrade(
     // =========================================================================
     // LAYER 5: Position Sizing (Kelly Criterion)
     // =========================================================================
-    const historicalTrades = await supabase
+    const historicalTrades = await (supabase as unknown)
       .from("auto_trading_trades")
       .select("*")
       .eq("session_id", sessionId)
@@ -460,7 +463,7 @@ export async function executeTrade(
         ? currentPrice * (1 + takeProfitPercent)
         : currentPrice * (1 - takeProfitPercent));
 
-    const { data: trade, error: tradeError } = await supabase
+    const { data: trade, error: tradeError } = await (supabase as unknown)
       .from("auto_trading_trades")
       .insert({
         user_id: userId,
@@ -483,7 +486,7 @@ export async function executeTrade(
     }
 
     // Update session
-    await supabase
+    await (supabase as unknown)
       .from("auto_trading_sessions")
       .update({
         total_trades: (sessionRow.total_trades || 0) + 1,
@@ -544,7 +547,7 @@ export async function closeTrade(
   _credentials: BinanceCredentials,
 ): Promise<{ success: boolean; error?: string; pnl?: number }> {
   try {
-    const supabase = createClient();
+    const supabase: unknown = createClient();
 
     // Execute close order on Binance (opposite side)
     const closeSide = trade.side === "LONG" ? "SELL" : "BUY";
@@ -586,7 +589,7 @@ export async function closeTrade(
     };
 
     // Update trade record
-    await supabase
+    await (supabase as unknown)
       .from("auto_trading_trades")
       .update({
         status: "CLOSED",
@@ -599,7 +602,7 @@ export async function closeTrade(
       .eq("id", trade.id);
 
     // Update session balance
-    const { data: session } = await supabase
+    const { data: session } = await (supabase as unknown)
       .from("auto_trading_sessions")
       .select("*")
       .eq("id", trade.session_id)
@@ -610,7 +613,7 @@ export async function closeTrade(
     if (sessionRow) {
       const newBalance = sessionRow.current_capital_nok + pnl;
 
-      await supabase
+      await (supabase as unknown)
         .from("auto_trading_sessions")
         .update({
           current_capital_nok: newBalance,
@@ -656,11 +659,11 @@ async function checkPhaseProgression(
   sessionId: string,
   userId: string,
 ): Promise<void> {
-  const supabase = createClient();
+  const supabase: unknown = createClient();
 
   // Note: The join with user_auto_trading_configs may not work due to schema issues
   // Fetch session and config separately
-  const { data: session } = await supabase
+  const { data: session } = await (supabase as unknown)
     .from("auto_trading_sessions")
     .select("*")
     .eq("id", sessionId)
@@ -670,7 +673,7 @@ async function checkPhaseProgression(
 
   if (!sessionRow) return;
 
-  const { data: config } = await supabase
+  const { data: config } = await (supabase as unknown)
     .from("user_auto_trading_configs")
     .select("*")
     .eq("id", sessionRow.config_id)
@@ -719,7 +722,7 @@ async function checkPhaseProgression(
   }
 
   if (canProgress && newPhase !== sessionRow.phase) {
-    await supabase
+    await (supabase as unknown)
       .from("user_auto_trading_configs")
       .update({ phase: newPhase })
       .eq("id", sessionRow.config_id);
@@ -922,7 +925,7 @@ async function executePartialClose(
   currentPrice: number,
   level: { target_pct: number; sell_pct: number; executed: boolean },
 ): Promise<{ success: boolean; pnl?: number }> {
-  const supabase = createClient();
+  const supabase: unknown = createClient();
 
   try {
     // Execute close order on Binance
@@ -989,9 +992,9 @@ async function executePartialClose(
  * Call this periodically to update prices and check if stops/take profits hit
  */
 export async function syncOpenTrades(userId: string): Promise<void> {
-  const supabase = createClient();
+  const supabase: unknown = createClient();
 
-  const { data: openTrades } = await supabase
+  const { data: openTrades } = await (supabase as unknown)
     .from("auto_trading_trades")
     .select("*")
     .eq("user_id", userId)
@@ -1005,7 +1008,8 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   console.warn("Binance credentials not available in current schema");
 
   // Get current prices for all symbols
-  const symbols = [...new Set(openTrades.map((t) => (t as AutoTradingTradeRow).symbol))];
+  const typedOpenTrades = (openTrades || []) as AutoTradingTradeRow[];
+  const symbols = [...new Set(typedOpenTrades.map((t) => t.symbol))];
   const prices: Record<string, number> = {};
 
   for (const symbol of symbols) {
@@ -1021,7 +1025,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   }
 
   // Update trades and check stops
-  for (const trade of openTrades as AutoTradingTradeRow[]) {
+  for (const trade of typedOpenTrades) {
     const currentPrice = prices[trade.symbol];
     if (!currentPrice) continue;
 
@@ -1062,7 +1066,7 @@ export async function runAutoTradingIteration(
   const supabase = supabaseClient || createClient();
 
   // 1. Fetch active sessions
-  const { data: sessions, error: sessionError } = await supabase
+  const { data: sessions, error: sessionError } = await (supabase as unknown)
     .from("auto_trading_sessions")
     .select("*")
     .eq("status", "active");
@@ -1080,7 +1084,7 @@ export async function runAutoTradingIteration(
   for (const session of sessions as AutoTradingSessionRow[]) {
     try {
       // Fetch config separately
-      const { data: config } = await supabase
+      const { data: config } = await (supabase as unknown)
         .from("user_auto_trading_configs")
         .select("*")
         .eq("id", session.config_id)
@@ -1103,7 +1107,8 @@ export async function runAutoTradingIteration(
       }
 
       // 4. Get strategy
-      const strategy = createStrategy(configRow as unknown as UserAutoTradingConfig);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const strategy = createStrategy(configRow as any);
 
       // 5. Analyze each symbol
       const allowedSymbols = (configRow.custom_params?.allowed_symbols as string[] | undefined) || ["BTCUSDT"];

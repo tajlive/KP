@@ -39,22 +39,11 @@ export default function BetaApplyClient({
       return;
     }
 
-    const { data: profile } = await supabase
-      .from("user_profiles" as any)
-      .select("beta_access")
-      .eq("id", user.id)
-      .single() as any;
-
-    if (profile?.beta_access) {
-      router.push(`/${params.locale}/dashboard`, { scroll: false });
-      return;
-    }
-
     const { data: application } = await supabase
       .from("beta_applications")
       .select("*")
-      .eq("user_id" as any, user.id)
-      .single() as any;
+      .eq("user_id", user.id)
+      .single();
 
     if (application) {
       setHasApplied(true);
@@ -87,24 +76,13 @@ export default function BetaApplyClient({
 
       if (error) throw error;
 
-      // AUTO-APPROVE for beta testing phase
-      await supabase
-        .from("user_profiles" as any)
-        .update({
-          beta_access: true,
-          beta_approved_at: new Date().toISOString(),
-          subscription_tier: "beta",
-          subscription_status: "active",
-        })
-        .eq("id", user.id);
-
       await supabase
         .from("beta_applications")
         .update({
           application_status: "approved",
           reviewed_at: new Date().toISOString(),
         })
-        .eq("user_id" as any, user.id);
+        .eq("user_id", user.id);
 
       setSubmitted(true);
 

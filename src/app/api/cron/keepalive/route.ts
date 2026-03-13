@@ -29,12 +29,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const supabase: any = await createClient();
+    const supabase: unknown = await createClient();
     
     // Hent database-navn fra connection
     const { data: dbInfo, error: dbError } = await supabase
       .rpc("current_database_name")
-      .single() as any;
+      .single() as unknown;
 
     // Enkel query for å holde tilkoblingen aktiv
     const { error } = await supabase

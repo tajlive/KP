@@ -24,10 +24,10 @@ export function AutoTradingToggle() {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from("auto_trading_configs" as any)
+        .from("auto_trading_configs" as unknown)
         .select("enabled, mode")
-        .eq("user_id" as any, user.id)
-        .single() as any;
+        .eq("user_id" as unknown, user.id)
+        .single() as unknown;
 
       if (error && error.code !== "PGRST116") {
         console.error("Error fetching config:", error);
@@ -57,22 +57,22 @@ export function AutoTradingToggle() {
 
       // Check if config exists first
       const { data: existingConfig } = await supabase
-        .from("auto_trading_configs" as any)
+        .from("auto_trading_configs" as unknown)
         .select("id")
-        .eq("user_id" as any, user.id)
-        .single() as any;
+        .eq("user_id" as unknown, user.id)
+        .single() as unknown;
 
       if (existingConfig) {
         const { error } = await supabase
-          .from("auto_trading_configs" as any)
+          .from("auto_trading_configs" as unknown)
           .update({ enabled: checked, updated_at: new Date().toISOString() })
-          .eq("user_id" as any, user.id);
+          .eq("user_id" as unknown, user.id);
 
         if (error) throw error;
       } else {
         // Create default config if not exists
         const { error } = await supabase
-          .from("auto_trading_configs" as any)
+          .from("auto_trading_configs" as unknown)
           .insert({
             user_id: user.id,
             enabled: checked,

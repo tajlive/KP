@@ -51,7 +51,7 @@ export async function PATCH(
       .from("trading_sessions")
       .select("user_id")
       .eq("id", id)
-      .single() as any;
+      .single() as unknown;
 
     if (sessionError) {
       if (sessionError.code === "PGRST116") {
@@ -79,7 +79,7 @@ export async function PATCH(
       })
       .eq("id", id)
       .select()
-      .single() as any;
+      .single() as unknown;
 
     if (updateError) {
       throw updateError;

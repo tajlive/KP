@@ -73,8 +73,8 @@ export default function CreatorProfileClient({
       const { data: botData } = await supabase
         .from("leaderboard_bots")
         .select("*")
-        .eq("user_id" as any, traderId)
-        .single() as any;
+        .eq("user_id" as unknown, traderId)
+        .single() as unknown;
 
       if (botData) {
         setProfile({
@@ -99,8 +99,8 @@ export default function CreatorProfileClient({
       const { data: profileData } = await supabase
         .from("trader_profiles")
         .select("*")
-        .eq("user_id" as any, traderId)
-        .single() as any;
+        .eq("user_id" as unknown, traderId)
+        .single() as unknown;
 
       if (profileData) {
         setProfile({
@@ -123,10 +123,10 @@ export default function CreatorProfileClient({
 
       // Last resort: user_profiles table
       const { data: userProfile } = await supabase
-        .from("user_profiles" as any)
+        .from("user_profiles" as unknown)
         .select("id, display_name, avatar_url")
         .eq("id", traderId)
-        .single() as any;
+        .single() as unknown;
 
       if (userProfile) {
         setProfile({
@@ -168,7 +168,7 @@ export default function CreatorProfileClient({
       };
 
       const { data: strategies } = await supabase
-        .from("user_strategies" as any)
+        .from("user_strategies" as unknown)
         .select("*")
         .eq("user_id", traderId)
         .eq("is_public", true)
@@ -250,7 +250,7 @@ export default function CreatorProfileClient({
         .eq("follower_id", user.id)
         .eq("leader_id", traderId)
         .eq("is_active", true)
-        .single() as any;
+        .single() as unknown;
 
       setIsFollowing(!!follow);
     } catch (error) {

@@ -50,11 +50,11 @@ function CheckoutContent() {
   async function loadCourse() {
     try {
       const { data, error } = await supabase
-        .from("courses" as any)
+        .from("courses")
         .select("*")
-        .eq("id", courseId)
+        .eq("id", courseId as string)
         .eq("is_published", true)
-        .single() as any;
+        .single();
 
       if (error) throw error;
 
@@ -68,7 +68,13 @@ function CheckoutContent() {
         return;
       }
 
-      setCourse(data);
+      setCourse({
+        id: (data as { id: string }).id,
+        title: (data as { title?: string | null }).title ?? "",
+        description: (data as { description?: string | null }).description ?? "",
+        price_nok: (data as { price_nok?: number | null }).price_nok ?? 0,
+        is_free: Boolean((data as { is_free?: boolean | null }).is_free),
+      });
     } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {

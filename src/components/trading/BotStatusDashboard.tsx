@@ -169,7 +169,7 @@ export default function BotStatusDashboard({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, mainStrategy?.id]);
+  }, [userId, mainStrategy]);
 
   // Calculate P&L periods (mock data - should come from API)
   const pnlToday = portfolio?.total_pnl || 0;

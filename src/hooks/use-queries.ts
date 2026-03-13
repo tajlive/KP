@@ -70,7 +70,7 @@ export function useProfile(userId?: string) {
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
-        .single() as any;
+        .single() as unknown;
 
       if (error) throw handleSupabaseError(error);
       return data;
@@ -176,7 +176,7 @@ export function useBetaApplication(userId: string) {
         .from('beta_applications')
         .select('*')
         .eq('user_id', userId)
-        .single() as any;
+        .single() as unknown;
 
       if (error && error.code !== 'PGRST116') {
         // PGRST116 = no rows found
@@ -201,7 +201,7 @@ export function useChartSignals(symbol: string, limit: number = 20) {
     queryKey: queryKeys.chartSignals(symbol),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('chart_signals' as any)
+        .from('chart_signals' as unknown)
         .select('*')
         .eq('symbol', symbol)
         .order('timestamp', { ascending: false })
@@ -230,7 +230,7 @@ export function useSubscription(userId: string) {
         .select('*')
         .eq('user_id', userId)
         .is('end_date', null)
-        .single() as any;
+        .single() as unknown;
 
       if (error && error.code !== 'PGRST116') {
         throw handleSupabaseError(error);
@@ -304,7 +304,7 @@ export function useUpdateProfile(userId: string) {
         .update(updates)
         .eq('id', userId)
         .select()
-        .single() as any;
+        .single() as unknown;
 
       if (error) throw handleSupabaseError(error);
       return data;
@@ -332,7 +332,7 @@ export function useCloseTrade(tradeId: string, userId: string) {
         })
         .eq('id', tradeId)
         .select()
-        .single() as any;
+        .single() as unknown;
 
       if (error) throw handleSupabaseError(error);
       return data;

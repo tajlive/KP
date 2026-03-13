@@ -195,7 +195,7 @@ export default function LiveTradingClient({
     const { data } = await supabase
       .from("wallets")
       .select("currency, balance")
-      .eq("user_id" as any, user.id);
+      .eq("user_id", user.id);
     if (data) {
       const balMap: Record<string, number> = {};
       data.forEach((w: { currency: string; balance: number }) => {
@@ -232,12 +232,18 @@ export default function LiveTradingClient({
         }
 
         const { data, error: _ } = await supabase
-          .from("user_profiles" as any)
+          .from("user_profiles")
           .select("*")
           .eq("id", user.id)
-          .single() as any;
+          .single();
 
-        if (data) setProfile(data);
+        if (data) {
+          setProfile({
+            ...(data as Record<string, unknown>),
+            id: (data as { id: string }).id,
+            email: (data as { email: string | null }).email ?? "",
+          } as Profile);
+        }
       } catch (err) {
         console.error("Error fetching profile:", err);
       } finally {

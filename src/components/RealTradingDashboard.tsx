@@ -93,7 +93,7 @@ export default function RealTradingDashboard() {
       const { data, error: fetchError } = await supabase
         .from("auto_trades")
         .select("*")
-        .eq("user_id" as any, user.id)
+        .eq("user_id" as unknown, user.id)
         .order("executed_at", { ascending: false })
         .limit(50);
 

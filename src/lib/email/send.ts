@@ -1,6 +1,19 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let resendClient: Resend | null = null
+
+function getResendClient(): Resend {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY mangler')
+  }
+
+  if (!resendClient) {
+    resendClient = new Resend(apiKey)
+  }
+
+  return resendClient
+}
 
 export async function sendEmail({
   to,
@@ -14,6 +27,7 @@ export async function sendEmail({
   text: string
 }) {
   try {
+    const resend = getResendClient()
     const { data, error } = await resend.emails.send({
       from: 'Klarpakke <no-reply@klarpakke.no>',
       to,

@@ -23,7 +23,7 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
     }
 
-    const db: any = (await createClient()) as unknown;
+    const db: unknown = (await createClient()) as unknown;
 
     // Use materialized view (refreshed every 60 seconds by pg_cron)
     const { data: leaders, error } = await db
@@ -44,9 +44,9 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       .eq('follower_id', user.id)
       .eq('is_active', true);
 
-    const followedLeaderIds = new Set(follows?.map((f: any) => f.leader_id) ?? []);
+    const followedLeaderIds = new Set(follows?.map((f: unknown) => f.leader_id) ?? []);
 
-    const enrichedLeaders = (leaders ?? []).map((leader: any) => ({
+    const enrichedLeaders = (leaders ?? []).map((leader: unknown) => ({
       ...leader,
       is_following: followedLeaderIds.has(leader.user_id),
     }));

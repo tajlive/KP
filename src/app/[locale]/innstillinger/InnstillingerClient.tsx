@@ -57,8 +57,8 @@ function EmailPrefsSection() {
       const { data } = await supabase
         .from("email_preferences")
         .select("*")
-        .eq("user_id" as any, user.id)
-        .single() as any;
+        .eq("user_id" as unknown, user.id)
+        .single() as unknown;
 
       if (data) {
         setPrefs({

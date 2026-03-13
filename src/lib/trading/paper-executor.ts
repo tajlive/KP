@@ -121,12 +121,12 @@ export class PaperExecutor implements OrderExecutor {
       const { data: session } = (await supabase
         .from("trading_sessions" as unknown)
         .select("id, current_capital_nok")
-        .eq("user_id" as any, this.userId)
+        .eq("user_id" as unknown, this.userId)
         .eq("mode", "paper")
         .eq("status", "active")
         .order("started_at", { ascending: false })
         .limit(1)
-        .single() as any) as unknown;
+        .single() as unknown) as unknown;
 
       if (!session) {
         return { available: 0, locked: 0, total: 0 };
@@ -140,7 +140,7 @@ export class PaperExecutor implements OrderExecutor {
       .from("trading_sessions" as unknown)
       .select("current_capital_nok, open_position")
       .eq("id", sessionId)
-      .single() as any) as unknown;
+      .single() as unknown) as unknown;
 
     if (!session) {
       return { available: 0, locked: 0, total: 0 };
@@ -169,10 +169,10 @@ export class PaperExecutor implements OrderExecutor {
       const { data: session } = (await supabase
         .from("trading_sessions" as unknown)
         .select("id")
-        .eq("user_id" as any, this.userId)
+        .eq("user_id" as unknown, this.userId)
         .eq("mode", "paper")
         .eq("status", "active")
-        .single() as any) as unknown;
+        .single() as unknown) as unknown;
 
       if (!session) return null;
       sessionId = session.id;
@@ -183,7 +183,7 @@ export class PaperExecutor implements OrderExecutor {
       .from("trading_sessions" as unknown)
       .select("open_position, trading_pair")
       .eq("id", sessionId)
-      .single() as any) as unknown;
+      .single() as unknown) as unknown;
 
     if (!session || !session.open_position || session.trading_pair !== symbol) {
       return null;
