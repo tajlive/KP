@@ -28,12 +28,7 @@ const ProfessionalChart = dynamic(
   },
 );
 
-const Leaderboard = dynamic(() => import("@/components/trading/Leaderboard"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-[400px] w-full bg-white dark:bg-gray-900 rounded-2xl animate-pulse border-2 border-gray-100 dark:border-gray-800" />
-  ),
-});
+// Leaderboard removed - feature dropped for beta launch
 
 export default function ClientDashboard() {
   const t = useTranslations("dashboard");
@@ -173,7 +168,6 @@ export default function ClientDashboard() {
             </div>
             <div className="space-y-6">
               {hasCopyTrading && <CopyTradingCard />}
-              <Leaderboard />
             </div>
           </div>
 

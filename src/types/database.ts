@@ -37,7 +37,7 @@ export interface Trade {
   portfolio_id?: string | null;
   symbol: string;
   side: 'BUY' | 'SELL' | 'LONG' | 'SHORT' | string;
-  status?: 'OPEN' | 'CLOSED' | 'CANCELLED' | string;
+  status?: 'OPEN' | 'CLOSED' | 'CANCELLED' | string | null;
   quantity?: number | null;
   price?: number | null;
   pnl?: number | null;

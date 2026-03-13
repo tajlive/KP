@@ -34,7 +34,7 @@ const nextConfig = {
     // TODO-KLA-152: 224 TS-feil gjenstår (hovedsakelig Supabase typer)
     // Blokkert av: auth/callback route.ts type-konflikt (complex)
     // Plan: Fiks i neste sprint før full strict mode
-    ignoreBuildErrors: true,  // MIDLERTIDIG - fjernes etter admin-rebuild [KLA-162]
+    ignoreBuildErrors: true,  // TODO: Fjern etter full TS-fix [KLA-163]
   },
 
   // Production optimizations

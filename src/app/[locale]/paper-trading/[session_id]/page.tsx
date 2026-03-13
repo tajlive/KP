@@ -92,7 +92,7 @@ export default async function PaperTradingSessionPage({
     // Hent trades for denne session
     const { data: trades, error: tradesError } = await supabase
       .from("trades")
-      .select("id, side, amount, price, profit_loss, created_at")
+      .select("id, side, quantity, price, realized_pnl, created_at")
       .eq("session_id", session_id)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -111,7 +111,7 @@ export default async function PaperTradingSessionPage({
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <PaperTradingSessionDetail
             session={session}
-            trades={trades || []}
+            trades={(trades as any) || []}
             locale={locale}
           />
         </main>

@@ -110,6 +110,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string | null
+        }
+        Relationships: []
+      }
       ai_analysis_logs: {
         Row: {
           executed: boolean | null
@@ -612,6 +639,45 @@ export type Database = {
           notify_on_sl_tp?: boolean | null
           notify_on_trade?: boolean | null
           risk_profile?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      auto_trades: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          price: number | null
+          side: string
+          status: string | null
+          strategy_id: string | null
+          symbol: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          price?: number | null
+          side: string
+          status?: string | null
+          strategy_id?: string | null
+          symbol: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          price?: number | null
+          side?: string
+          status?: string | null
+          strategy_id?: string | null
+          symbol?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -1223,6 +1289,33 @@ export type Database = {
           risk_tolerance?: string | null
           trading_experience?: string
           updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      beta_feedback: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          message: string | null
+          rating: number | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          rating?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          rating?: number | null
           user_id?: string | null
         }
         Relationships: []
@@ -2949,6 +3042,36 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          created_at: string | null
+          email_news: boolean | null
+          email_trades: boolean | null
+          id: string
+          push_trades: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_news?: boolean | null
+          email_trades?: boolean | null
+          id?: string
+          push_trades?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_news?: boolean | null
+          email_trades?: boolean | null
+          id?: string
+          push_trades?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_queue: {
         Row: {
           attempts: number
@@ -4118,6 +4241,39 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_strategies: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       signals: {
         Row: {
           confidence: number
@@ -4674,6 +4830,42 @@ export type Database = {
           },
         ]
       }
+      trade_history: {
+        Row: {
+          amount: number
+          created_at: string | null
+          executed_at: string | null
+          id: string
+          pnl: number | null
+          price: number
+          side: string
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          executed_at?: string | null
+          id?: string
+          pnl?: number | null
+          price: number
+          side: string
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          executed_at?: string | null
+          id?: string
+          pnl?: number | null
+          price?: number
+          side?: string
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       trade_history_legacy: {
         Row: {
           closed_at: string | null
@@ -5191,6 +5383,39 @@ export type Database = {
         }
         Relationships: []
       }
+      trading_risk_config: {
+        Row: {
+          created_at: string | null
+          id: string
+          max_daily_loss: number | null
+          max_position_size: number | null
+          stop_loss_pct: number | null
+          take_profit_pct: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          max_daily_loss?: number | null
+          max_position_size?: number | null
+          stop_loss_pct?: number | null
+          take_profit_pct?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          max_daily_loss?: number | null
+          max_position_size?: number | null
+          stop_loss_pct?: number | null
+          take_profit_pct?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       trading_sessions: {
         Row: {
           crash_count: number
@@ -5338,6 +5563,39 @@ export type Database = {
           stop_loss?: number | null
           symbol?: string
           target_price?: number | null
+        }
+        Relationships: []
+      }
+      trading_stats: {
+        Row: {
+          best_trade: number | null
+          id: string
+          total_pnl: number | null
+          total_trades: number | null
+          updated_at: string | null
+          user_id: string
+          winning_trades: number | null
+          worst_trade: number | null
+        }
+        Insert: {
+          best_trade?: number | null
+          id?: string
+          total_pnl?: number | null
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id: string
+          winning_trades?: number | null
+          worst_trade?: number | null
+        }
+        Update: {
+          best_trade?: number | null
+          id?: string
+          total_pnl?: number | null
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id?: string
+          winning_trades?: number | null
+          worst_trade?: number | null
         }
         Relationships: []
       }
@@ -5837,6 +6095,30 @@ export type Database = {
           icon?: string | null
           id?: string
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_activity_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
           user_id?: string
         }
         Relationships: []
@@ -6618,6 +6900,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      waitlist: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string | null
+          referral_code: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          name?: string | null
+          referral_code?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string | null
+          referral_code?: string | null
+        }
+        Relationships: []
       }
       wallets: {
         Row: {

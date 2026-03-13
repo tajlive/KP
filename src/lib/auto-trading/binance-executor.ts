@@ -128,7 +128,7 @@ export async function executeTrade(
     // LAYER 3: Circuit Breaker Check
     // =========================================================================
     const { data: todaysTrades } = await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .select("*")
       .eq("session_id", sessionId)
       .gte(
@@ -137,7 +137,7 @@ export async function executeTrade(
       );
 
     const { data: weeksTrades } = await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .select("*")
       .eq("session_id", sessionId)
       .gte(
@@ -239,7 +239,7 @@ export async function executeTrade(
     // LAYER 4.5: Correlation Check
     // =========================================================================
     const { data: openPositions } = await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .select("*")
       .eq("session_id", sessionId)
       .eq("status", "OPEN");
@@ -262,7 +262,7 @@ export async function executeTrade(
     // LAYER 5: Position Sizing (Kelly Criterion)
     // =========================================================================
     const historicalTrades = await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .select("*")
       .eq("session_id", sessionId)
       .eq("status", "CLOSED")
@@ -392,7 +392,7 @@ export async function executeTrade(
       })) || [];
 
     const { data: trade, error: tradeError } = await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .insert({
         user_id: userId,
         session_id: sessionId,
@@ -523,7 +523,7 @@ export async function closeTrade(
 
     // Update trade record
     await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .update({
         status: "CLOSED",
         exit_price: exitPrice,
@@ -883,7 +883,7 @@ async function executePartialClose(
     const newQuantity = trade.quantity - closeQuantity;
 
     await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .update({
         quantity: newQuantity,
         partial_tp_levels: updatedLevels,
@@ -919,7 +919,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   const supabase = createClient();
 
   const { data: openTrades } = await supabase
-    .from("auto_trading_trades")
+    .from("auto_trades")
     .select("*")
     .eq("user_id" as any, userId)
     .eq("status", "OPEN");
@@ -1011,7 +1011,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
     }
 
     await supabase
-      .from("auto_trading_trades")
+      .from("auto_trades")
       .update(updateData)
       .eq("id", trade.id);
 

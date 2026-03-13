@@ -23,14 +23,14 @@ import { toast } from 'sonner';
 interface SyncLog {
   id: string;
   user_id: string;
-  status: 'success' | 'error' | 'in_progress';
-  message: string;
-  trades_fetched: number;
-  trades_saved: number;
-  started_at: string;
-  completed_at: string;
-  created_at: string;
-  user_email?: string;
+  status: 'success' | 'error' | 'in_progress' | null;
+  message: string | null;
+  trades_fetched: number | null;
+  trades_saved: number | null;
+  started_at: string | null;
+  completed_at: string | null;
+  error_message?: string | null;
+  user_email?: string | null;
 }
 
 interface SyncStats {
@@ -78,7 +78,7 @@ export default function SyncStatusPage() {
 
       // Calculate stats
       const last24Hours = enrichedLogs.filter(
-        log => log.created_at && new Date(log.created_at).getTime() > Date.now() - 24 * 60 * 60 * 1000
+        log => log.started_at && new Date(log.started_at).getTime() > Date.now() - 24 * 60 * 60 * 1000
       );
 
       // Get unique users with API keys
@@ -88,7 +88,7 @@ export default function SyncStatusPage() {
 
       // Get total trades
       const { count: tradesCount } = await supabase
-        .from('auto_trades')
+        .from('auto_trades_legacy')
         .select('*', { count: 'exact', head: true });
 
       setStats({
@@ -100,7 +100,7 @@ export default function SyncStatusPage() {
           failed: last24Hours.filter(l => l.status === 'error').length,
         },
         totalTrades: tradesCount || 0,
-        recentSyncs: enrichedLogs.slice(0, 20),
+        recentSyncs: enrichedLogs.slice(0, 20) as SyncLog[],
       });
 
     } catch (_error) {
@@ -159,7 +159,7 @@ export default function SyncStatusPage() {
     return new Date(date).toLocaleString('no-NO');
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string | null | undefined) => {
     switch (status) {
       case 'success':
         return <CheckCircle className="w-5 h-5 text-green-400" />;
@@ -307,7 +307,7 @@ export default function SyncStatusPage() {
                       {sync.trades_saved} / {sync.trades_fetched}
                     </td>
                     <td className="py-3 text-slate-500 text-sm">
-                      {formatTime(sync.created_at)}
+                      {formatTime(sync.started_at)}
                     </td>
                   </tr>
                 ))}

@@ -307,9 +307,9 @@ export class BinanceHistoricalDataFetcher {
       const batch = candles.slice(i, i + BATCH_SIZE);
 
       const { error } = (await supabase
-        .from("binance_historical_candles" as unknown)
+        .from("binance_historical_candles")
         .upsert(
-          batch.map((c: unknown) => ({
+          batch.map((c: BinanceCandle) => ({
             symbol: symbol.toUpperCase(),
             interval,
             open_time: new Date(c.openTime).toISOString(),
@@ -323,7 +323,7 @@ export class BinanceHistoricalDataFetcher {
             quote_volume: c.quoteAssetVolume,
           })),
           { onConflict: "symbol,interval,open_time" },
-        )) as unknown;
+        )) ;
 
       if (error) {
         console.error("Error caching candles:", error);

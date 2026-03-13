@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import CopyTradingLeaderboard from "@/components/copy-trading/CopyTradingLeaderboard";
+import CopyTradingDashboard from "@/components/copy-trading/CopyTradingDashboard";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -17,7 +17,7 @@ export default async function CopyTradingPage({
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <CopyTradingLeaderboard />
+      <CopyTradingDashboard />
     </div>
   );
 }
