@@ -216,7 +216,7 @@ export default function AdvancedStatsModal({
         .limit(50);
 
       if (error) throw error;
-      setSignals(data || []);
+      setSignals(((data || []) as unknown) as Signal[]);
     } catch (error) {
       console.error("Failed to fetch signals:", error);
     }
@@ -225,10 +225,10 @@ export default function AdvancedStatsModal({
   const fetchBacktests = async () => {
     const supabase = createClient();
     try {
-      const { data, error } = await supabase
-        .from("auto_trading_backtests")
-        .select("*")
-        .eq("user_id" as any, userId)
+      const { data, error } = await (supabase
+        .from("auto_trading_backtests" as any)
+        .select("*") as any)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(10);
 

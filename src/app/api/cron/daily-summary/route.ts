@@ -3,6 +3,8 @@ import { verifyCronRequest } from '@/lib/auth/verify-cron'
 import { createClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/send'
 import { getDailySummaryEmail } from '@/lib/email/templates'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/supabase-generated'
 
 interface UserForSummary {
   id: string
@@ -16,7 +18,7 @@ export async function GET(req: NextRequest) {
   if (authError) return authError
 
   try {
-    const supabase: any = (await createClient()) as unknown
+    const supabase = await createClient() as SupabaseClient<Database>
     const yesterday = new Date(Date.now() - 86400000).toISOString()
 
     // Hent alle brukere med aktive sessions

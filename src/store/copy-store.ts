@@ -102,8 +102,8 @@ export const useCopyStore = create<CopyStore>()(
 
     follow: async (leaderId: string, config: unknown) => {
       const supabase = createClient();
-      const { error } = (await supabase
-        .from("copy_trading_follows" as unknown)
+      const { error } = await supabase
+        .from("copy_trading_follows")
         .insert({
           leader_id: leaderId,
           max_allocation_nok: config.maxAllocationNok,
@@ -111,7 +111,7 @@ export const useCopyStore = create<CopyStore>()(
           max_leverage: config.maxLeverage,
           auto_stop_drawdown_pct: config.autoStopDrawdownPct,
           is_active: true,
-        })) as unknown;
+        });
 
       if (!error) {
         await get().fetchFollowing();
@@ -126,9 +126,9 @@ export const useCopyStore = create<CopyStore>()(
         .eq("leader_id", leaderId);
 
       if (!error) {
-        set((state: unknown) => ({
-          following: state.following.map((f: unknown) =>
-            f.leaderId === leaderId ? { ...f, isActive: false } : f,
+        set((state) => ({
+          following: (state as {following: unknown[]}).following.map((f: unknown) =>
+            (f as {leaderId: string}).leaderId === leaderId ? { ...f as object, isActive: false } : f,
           ),
         }));
       }
@@ -147,22 +147,22 @@ export const useCopyStore = create<CopyStore>()(
         updates.auto_stop_drawdown_pct = config.autoStopDrawdownPct;
       updates.updated_at = new Date().toISOString();
 
-      (await supabase
-        .from("copy_trading_follows" as unknown)
+      await supabase
+        .from("copy_trading_follows")
         .update(updates)
-        .eq("leader_id", leaderId)) as unknown;
+        .eq("leader_id", leaderId);
 
       await get().fetchFollowing();
     },
 
     fetchActiveCopies: async () => {
       const supabase = createClient();
-      const { data } = (await supabase
-        .from("copy_trade_queue" as unknown)
+      const { data } = await supabase
+        .from("copy_trade_queue")
         .select("*")
         .eq("status", "executed")
         .order("created_at", { ascending: false })
-        .limit(50)) as unknown;
+        .limit(50);
 
       if (data) {
         const copies: CopiedPosition[] = data.map(

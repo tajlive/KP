@@ -7,6 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import Stripe from "stripe";
+import type { Database } from "@/types/supabase-generated";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,7 @@ const getStripe = () => {
 
 // Supabase admin client
 const getSupabase = () => {
-  return createClient(
+  return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
@@ -281,15 +282,20 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const supabase = getSupabase();
 
   try {
+    // Access current_period_end from the subscription items or cast to access it
+    const subWithPeriod = subscription as unknown as { 
+      current_period_end?: number;
+      status: string;
+      cancel_at_period_end: boolean;
+    };
+    
     const { error } = await supabase
       .from("subscriptions")
       .update({
-        status: (subscription as unknown).status as unknown,
-        cancel_at_period_end: (subscription as unknown)?.cancel_at_period_end,
-        current_period_end: (subscription as unknown)?.current_period_end
-          ? new Date(
-              (subscription as unknown).current_period_end * 1000,
-            ).toISOString()
+        status: subWithPeriod.status,
+        cancel_at_period_end: subWithPeriod.cancel_at_period_end,
+        current_period_end: subWithPeriod.current_period_end
+          ? new Date(subWithPeriod.current_period_end * 1000).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),
       })
@@ -331,7 +337,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       .from("subscriptions")
       .select("user_id")
       .eq("stripe_subscription_id", subscription.id)
-      .single() as any;
+      .single();
 
     if (!sub?.user_id) return;
 
@@ -345,14 +351,16 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       .eq("stripe_subscription_id", subscription.id);
 
     // Nedgrader bruker til free
-    await supabase
-      .from("user_profiles")
-      .update({
-        subscription_tier: "free",
-        subscription_status: "canceled",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", sub.user_id);
+    if (sub?.user_id) {
+      await supabase
+        .from("user_profiles")
+        .update({
+          subscription_tier: "free",
+          subscription_status: "canceled",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", sub.user_id);
+    }
 
     console.info(
       `[Stripe Webhook] Bruker ${sub.user_id} kansellerte abonnementet`,
@@ -392,7 +400,7 @@ async function sendWelcomeEmail(userId: string, planType: string) {
       .from("user_profiles")
       .select("email, full_name")
       .eq("id", userId)
-      .single() as any;
+      .single();
 
     if (!profile?.email) return;
 
@@ -401,8 +409,8 @@ async function sendWelcomeEmail(userId: string, planType: string) {
     const { data: sub } = await supabase
       .from("subscriptions")
       .select("stripe_customer_id")
-      .eq("user_id" as any, userId)
-      .single() as any;
+      .eq("user_id", userId)
+      .single();
 
     let portalUrl = "https://www.klarpakke.no/no/dashboard/settings";
     if (sub?.stripe_customer_id) {
@@ -451,7 +459,9 @@ async function sendPaymentFailedEmail(
       .from("subscriptions")
       .select("user_id")
       .eq("stripe_subscription_id", subscriptionId)
-      .single() as any;
+      .single();
+
+    if (!sub?.user_id) return;
 
     if (!sub?.user_id) return;
 
@@ -459,7 +469,7 @@ async function sendPaymentFailedEmail(
       .from("user_profiles")
       .select("email, full_name")
       .eq("id", sub.user_id)
-      .single() as any;
+      .single();
 
     if (!profile?.email) return;
 

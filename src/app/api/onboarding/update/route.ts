@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase-generated";
 
 const updateSchema = z.object({
   step: z.number().min(1).max(5),
@@ -10,7 +12,7 @@ const updateSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const supabase = (await createClient()) as unknown;
+  const supabase = await createClient() as SupabaseClient<Database>;
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

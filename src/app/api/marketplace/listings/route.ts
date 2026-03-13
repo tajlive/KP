@@ -5,8 +5,9 @@
 // ============================================================================
 
 import { createServerClient } from "@/lib/supabase/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+import type { Database } from "@/types/supabase-generated";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ export interface MarketplaceListing {
   description: string | null;
   priceModel: "free" | "subscription" | "one_time";
   priceNok: number;
-  backtestSummary: Record<string, unknown>;
+  backtestSummary: Record<string, unknown> | unknown;
   category: string | null;
   status: "draft" | "published" | "archived";
   subscriberCount: number;
@@ -77,10 +78,10 @@ export async function GET(
     }
 
     // Create public Supabase client
-    const supabase: any = createClient(
+    const supabase = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
+    ) as SupabaseClient<Database>;
 
     // Build query for marketplace_listings
     let query = supabase
@@ -113,9 +114,7 @@ export async function GET(
       console.error("Error fetching marketplace listings:", error);
 
       // Fallback: return user_strategies with is_marketplace_listed = true
-      const { data: fallbackData, error: fallbackError } = await (
-        supabase as unknown
-      )
+      const { data: fallbackData, error: fallbackError } = await supabase
         .from("strategies")
         .select("*, profiles:user_id(display_name, avatar_url)")
         .eq("is_marketplace_listed", true)
@@ -130,30 +129,31 @@ export async function GET(
       }
 
       // Map fallback data to MarketplaceListing format
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const listings: MarketplaceListing[] =
-        fallbackData?.map((item) => {
-          const profiles = item.profiles as
+        (fallbackData as any[])?.map((item) => {
+          const profiles = (item as Record<string, unknown>).profiles as
             | { display_name: string; avatar_url: string | null }
             | undefined;
           return {
             id: item.id,
-            sellerId: item.user_id,
+            sellerId: (item as Record<string, unknown>).user_id as string,
             strategyId: item.id,
-            title: `${item.strategy_type || "Strategy"} - ${profiles?.display_name || "Creator"}`,
+            title: `${(item as Record<string, unknown>).strategy_type || "Strategy"} - ${profiles?.display_name || "Creator"}`,
             description: null,
             priceModel: "free",
             priceNok: 0,
-            backtestSummary: item.strategy_config || {},
-            category: item.strategy_type,
+            backtestSummary: ((item as Record<string, unknown>).strategy_config || {}) as unknown,
+            category: (item as Record<string, unknown>).strategy_type as string | null,
             status: "published",
-            subscriberCount: item.subscriber_count || 0,
+            subscriberCount: ((item as Record<string, unknown>).subscriber_count as number) || 0,
             rating: 0,
             reviewCount: 0,
             createdAt: item.created_at,
             updatedAt: item.updated_at,
             sellerName: profiles?.display_name || "Anonym Creator",
             sellerAvatar: profiles?.avatar_url,
-            riskLevel: getRiskLevel(item.strategy_type),
+            riskLevel: getRiskLevel((item as Record<string, unknown>).strategy_type as string | null),
             winRate: 0,
             pnl30d: 0,
           };
@@ -168,32 +168,34 @@ export async function GET(
     }
 
     // Map data to MarketplaceListing format
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listings: MarketplaceListing[] =
-      data?.map((item) => {
-        const profiles = item.profiles as
+      (data as any[])?.map((item) => {
+        const profiles = (item as Record<string, unknown>).profiles as
           | { display_name: string; avatar_url: string | null }
           | undefined;
+        const backtestSummary = ((item as Record<string, unknown>).backtest_summary || {}) as unknown;
         return {
           id: item.id,
-          sellerId: item.seller_id,
-          strategyId: item.strategy_id,
-          title: item.title,
-          description: item.description,
-          priceModel: item.price_model,
-          priceNok: item.price_nok,
-          backtestSummary: item.backtest_summary || {},
-          category: item.category,
-          status: item.status,
-          subscriberCount: item.subscriber_count || 0,
-          rating: item.rating || 0,
-          reviewCount: item.review_count || 0,
+          sellerId: (item as Record<string, unknown>).seller_id as string,
+          strategyId: (item as Record<string, unknown>).strategy_id as string | null,
+          title: (item as Record<string, unknown>).title as string,
+          description: (item as Record<string, unknown>).description as string | null,
+          priceModel: (item as Record<string, unknown>).price_model as "free" | "subscription" | "one_time",
+          priceNok: (item as Record<string, unknown>).price_nok as number,
+          backtestSummary: backtestSummary,
+          category: (item as Record<string, unknown>).category as string | null,
+          status: (item as Record<string, unknown>).status as "draft" | "published" | "archived",
+          subscriberCount: ((item as Record<string, unknown>).subscriber_count as number) || 0,
+          rating: ((item as Record<string, unknown>).rating as number) || 0,
+          reviewCount: ((item as Record<string, unknown>).review_count as number) || 0,
           createdAt: item.created_at,
           updatedAt: item.updated_at,
           sellerName: profiles?.display_name || "Anonym Creator",
           sellerAvatar: profiles?.avatar_url,
-          riskLevel: getRiskLevelFromBacktest(item.backtest_summary),
-          winRate: item.backtest_summary?.win_rate || 0,
-          pnl30d: item.backtest_summary?.pnl_30d || 0,
+          riskLevel: getRiskLevelFromBacktest(backtestSummary as Record<string, unknown> | null),
+          winRate: ((backtestSummary as Record<string, unknown>)?.win_rate as number) || 0,
+          pnl30d: ((backtestSummary as Record<string, unknown>)?.pnl_30d as number) || 0,
         };
       }) || [];
 

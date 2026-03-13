@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Invalid request", details: (validation as unknown).error.errors },
+        { error: "Invalid request", details: validation.error.format() },
         { status: 400 },
       );
     }

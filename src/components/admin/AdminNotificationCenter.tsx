@@ -15,11 +15,9 @@ interface Notification {
     id: string
     title: string
     message: string
-    type: 'info' | 'success' | 'warning' | 'error'
-    priority: 'low' | 'normal' | 'high' | 'urgent'
+    type: string | null
     read: boolean
-    action_url?: string
-    created_at: string
+    created_at: string | null
 }
 
 export function AdminNotificationCenter() {
@@ -44,8 +42,13 @@ export function AdminNotificationCenter() {
 
             if (error) throw error
 
-            setNotifications(data || [])
-            setUnreadCount(data?.filter(n => !n.read).length || 0)
+            const mappedNotifications = (data || []).map(n => ({
+                ...n,
+                read: n.is_read ?? false,
+                type: n.type ?? 'info'
+            })) as Notification[]
+            setNotifications(mappedNotifications)
+            setUnreadCount(mappedNotifications.filter(n => !n.read).length)
         } catch (error) {
             console.error('Failed to fetch notifications:', error)
         } finally {
@@ -79,7 +82,7 @@ export function AdminNotificationCenter() {
         try {
             await supabase
                 .from('admin_notifications')
-                .update({ read: true, read_at: new Date().toISOString() })
+                .update({ is_read: true })
                 .eq('id', id)
 
             setNotifications(prev =>
@@ -97,7 +100,7 @@ export function AdminNotificationCenter() {
 
             await supabase
                 .from('admin_notifications')
-                .update({ read: true, read_at: new Date().toISOString() })
+                .update({ is_read: true })
                 .in('id', unreadIds)
 
             setNotifications(prev => prev.map(n => ({ ...n, read: true })))
@@ -184,7 +187,7 @@ export function AdminNotificationCenter() {
                                                 }`}
                                         >
                                             <div className="flex items-start gap-3">
-                                                <div className="mt-0.5">{getTypeIcon(notification.type)}</div>
+                                                <div className="mt-0.5">{getTypeIcon(notification.type || 'info')}</div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <h4 className="text-white font-medium text-sm">
@@ -202,15 +205,7 @@ export function AdminNotificationCenter() {
                                                     <p className="text-slate-400 text-sm mt-1">
                                                         {notification.message}
                                                     </p>
-                                                    {notification.action_url && (
-                                                        <a
-                                                            href={notification.action_url}
-                                                            className="inline-block mt-2 text-xs text-blue-400 hover:text-blue-300"
-                                                            onClick={() => markAsRead(notification.id)}
-                                                        >
-                                                            View details →
-                                                        </a>
-                                                    )}
+                                                    
                                                     <p className="text-xs text-slate-500 mt-2">
                                                         {notification.created_at ? new Date(notification.created_at).toLocaleString('no') : '—'}
                                                     </p>

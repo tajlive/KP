@@ -270,10 +270,10 @@ export function PaperTradingCard() {
             variant="outline"
             size="sm"
             onClick={fetchBalance}
-            disabled={state === 'loading'}
+            disabled={false}
             className="flex-1 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${state === 'loading' ? 'animate-spin' : ''}`} />
+            <RefreshCw className="w-4 h-4 mr-2" />
             Oppdater
           </Button>
           <Button

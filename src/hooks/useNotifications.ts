@@ -70,7 +70,7 @@ export function useNotifications() {
 
       if (error) throw error;
 
-      setNotifications(data || []);
+      setNotifications((data || []) as unknown as Notification[]);
       
       // Calculate unread count
       const unread = (data || []).filter(n => !n.is_read).length;
@@ -86,11 +86,11 @@ export function useNotifications() {
       const { data, error } = await supabase
         .from('notification_preferences')
         .select('*')
-        .single() as any;
+        .single();
 
       if (error && error.code !== 'PGRST116') throw error;
 
-      setPreferences(data || {
+      setPreferences((data as unknown as NotificationPreferences | null) || {
         price_alerts: true,
         trade_executed: true,
         course_reminder: true,
@@ -138,7 +138,7 @@ export function useNotifications() {
   // Mark notifications as read
   const markAsRead = async (notificationIds?: string[]) => {
     try {
-      const { error } = await supabase.rpc('mark_notifications_read', {
+      const { error } = await (supabase.rpc as any)('mark_notifications_read', {
         p_notification_ids: notificationIds || null,
       });
 
@@ -166,7 +166,7 @@ export function useNotifications() {
     try {
       const { error } = await supabase
         .from('notification_preferences')
-        .upsert({ ...preferences, ...newPrefs });
+        .upsert({ ...preferences, ...newPrefs } as any);
 
       if (error) throw error;
 

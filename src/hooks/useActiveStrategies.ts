@@ -7,7 +7,7 @@ export function useActiveStrategies(userId: string | null) {
     queryFn: async () => {
       const supabase = createClient();
       const { data, error } = await supabase
-        .from("strategies" as unknown)
+        .from("strategies" as any)
         .select("*")
         .eq("user_id" as any, userId!)
         .eq("status", "active");

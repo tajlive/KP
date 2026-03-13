@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Tables } from "@/types/supabase-generated";
 
 export interface AutoTradingConfig {
   id: string;
@@ -30,7 +31,7 @@ export async function getAutoTradingConfig(
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("auto_trading_configs")
+    .from("auto_trade_settings")
     .select("*")
     .eq("user_id", userId)
     .single();
@@ -41,7 +42,19 @@ export async function getAutoTradingConfig(
     throw new Error("Failed to get auto trading config");
   }
 
-  return data as unknown as AutoTradingConfig;
+  if (!data) return null;
+
+  // Map auto_trade_settings to AutoTradingConfig interface
+  return {
+    id: data.id,
+    user_id: data.user_id,
+    enabled: data.auto_trading_enabled ?? false,
+    mode: (data.risk_profile as "paper" | "live") || "paper",
+    risk_level: (data.risk_profile as "low" | "medium" | "high") || "medium",
+    max_trade_size_nok: data.max_position_percent * 1000, // Approximate conversion
+    created_at: data.created_at ?? "",
+    updated_at: data.updated_at ?? "",
+  };
 }
 
 /**
@@ -58,43 +71,67 @@ export async function upsertAutoTradingConfig(
 
   if (existing) {
     // Update
-    const { data, error } = (await supabase
-      .from("auto_trading_configs" as unknown)
+    const { data, error } = await supabase
+      .from("auto_trade_settings")
       .update({
-        ...config,
+        auto_trading_enabled: config.enabled,
+        risk_profile: config.risk_level,
+        max_position_percent: config.max_trade_size_nok
+          ? config.max_trade_size_nok / 1000
+          : undefined,
         updated_at: new Date().toISOString(),
       })
       .eq("id", existing.id)
       .select()
-      .single() as any) as unknown;
+      .single();
 
     if (error) {
       console.error("Failed to update auto trading config:", error);
       throw new Error("Failed to update auto trading config");
     }
 
-    return data as AutoTradingConfig;
+    return {
+      id: data.id,
+      user_id: data.user_id,
+      enabled: data.auto_trading_enabled ?? false,
+      mode: (data.risk_profile as "paper" | "live") || "paper",
+      risk_level: (data.risk_profile as "low" | "medium" | "high") || "medium",
+      max_trade_size_nok: data.max_position_percent * 1000,
+      created_at: data.created_at ?? "",
+      updated_at: data.updated_at ?? "",
+    };
   } else {
     // Create
-    const { data, error } = (await supabase
-      .from("auto_trading_configs" as unknown)
+    const { data, error } = await supabase
+      .from("auto_trade_settings")
       .insert({
         user_id: userId,
-        enabled: config.enabled ?? false,
-        mode: config.mode ?? "paper",
-        risk_level: config.risk_level ?? "medium",
-        max_trade_size_nok: config.max_trade_size_nok ?? 10000,
-        ...config,
+        auto_trading_enabled: config.enabled ?? false,
+        risk_profile: config.risk_level ?? "medium",
+        max_position_percent: config.max_trade_size_nok
+          ? config.max_trade_size_nok / 1000
+          : 10,
+        daily_loss_limit_percent: 5,
+        daily_trade_limit: 10,
       })
       .select()
-      .single() as any) as unknown;
+      .single();
 
     if (error) {
       console.error("Failed to create auto trading config:", error);
       throw new Error("Failed to create auto trading config");
     }
 
-    return data as AutoTradingConfig;
+    return {
+      id: data.id,
+      user_id: data.user_id,
+      enabled: data.auto_trading_enabled ?? false,
+      mode: (data.risk_profile as "paper" | "live") || "paper",
+      risk_level: (data.risk_profile as "low" | "medium" | "high") || "medium",
+      max_trade_size_nok: data.max_position_percent * 1000,
+      created_at: data.created_at ?? "",
+      updated_at: data.updated_at ?? "",
+    };
   }
 }
 
@@ -111,8 +148,11 @@ export async function toggleAutoTrading(
 
   if (config) {
     const { error } = await supabase
-      .from("auto_trading_configs")
-      .update({ enabled, updated_at: new Date().toISOString() })
+      .from("auto_trade_settings")
+      .update({
+        auto_trading_enabled: enabled,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", config.id);
 
     if (error) {
@@ -131,17 +171,26 @@ export async function toggleAutoTrading(
 export async function getActiveAutoTraders(): Promise<AutoTradingConfig[]> {
   const supabase = await createClient();
 
-  const { data, error } = (await supabase
-    .from("auto_trading_configs" as unknown)
+  const { data, error } = await supabase
+    .from("auto_trade_settings")
     .select("*")
-    .eq("enabled", true)) as unknown;
+    .eq("auto_trading_enabled", true);
 
   if (error) {
     console.error("Failed to get active auto traders:", error);
     throw new Error("Failed to get active auto traders");
   }
 
-  return data as AutoTradingConfig[];
+  return (data || []).map((item: Tables<"auto_trade_settings">) => ({
+    id: item.id,
+    user_id: item.user_id,
+    enabled: item.auto_trading_enabled ?? false,
+    mode: (item.risk_profile as "paper" | "live") || "paper",
+    risk_level: (item.risk_profile as "low" | "medium" | "high") || "medium",
+    max_trade_size_nok: item.max_position_percent * 1000,
+    created_at: item.created_at ?? "",
+    updated_at: item.updated_at ?? "",
+  }));
 }
 
 /**
@@ -153,27 +202,27 @@ export async function getRecentTradingSignals(
 ): Promise<TradingSignal[]> {
   const supabase = await createClient();
 
-  const { data, error } = (await supabase
-    .from("ai_decision_log" as unknown)
+  const { data, error } = await supabase
+    .from("ai_decision_log")
     .select("*")
     .in("decision_type", ["BUY", "SELL"])
     .gte("confidence", minConfidence)
     .order("created_at", { ascending: false })
-    .limit(limit)) as unknown;
+    .limit(limit);
 
   if (error) {
     console.error("Failed to get trading signals:", error);
     throw new Error("Failed to get trading signals");
   }
 
-  return (data || []).map((item: unknown) => ({
+  return (data || []).map((item: Tables<"ai_decision_log">) => ({
     id: item.id,
     symbol: item.symbol,
     action: item.decision_type.toLowerCase() as "buy" | "sell",
-    confidence: item.confidence,
-    price: item.price || 0,
-    reasoning: item.reasoning || "",
-    created_at: item.created_at,
+    confidence: item.sentiment_score ?? 0,
+    price: 0, // Not directly available in ai_decision_log
+    reasoning: item.decision_reason || "",
+    created_at: item.created_at ?? "",
   }));
 }
 
@@ -189,17 +238,13 @@ export async function logAutoTrade(
 ): Promise<void> {
   const supabase = await createClient();
 
-  const { error } = (await supabase.from("auto_trade_log" as unknown).insert({
+  const { error } = await supabase.from("auto_trade_log").insert({
     user_id: userId,
-    signal_id: signal.id,
     symbol: signal.symbol,
-    action: signal.action,
-    confidence: signal.confidence,
-    price: signal.price,
-    mode: config.mode,
-    success,
+    action: signal.action.toUpperCase(),
+    status: success ? "completed" : "failed",
     error_message: errorMessage,
-  })) as unknown;
+  });
 
   if (error) {
     console.error("Failed to log auto trade:", error);

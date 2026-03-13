@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase-generated";
 
 // Response type for tickets
 interface GoldenTicket {
@@ -14,7 +16,7 @@ interface GoldenTicket {
 
 export async function GET() {
   try {
-    const supabase: any = (await createClient()) as unknown;
+    const supabase = await createClient() as SupabaseClient<Database>;
     const {
       data: { user },
       error: authError,
@@ -40,7 +42,7 @@ export async function GET() {
     }
 
     // Map to expected format for backwards compatibility
-    const mappedTickets = (tickets ?? []).map((t) => ({
+    const mappedTickets = (tickets ?? []).map((t: { id: string; referral_code: string; referrer_user_id: string; status: string | null; created_at: string | null; referred_user_id: string | null }) => ({
       id: t.id,
       ticket_code: t.referral_code,
       referrer_id: t.referrer_user_id,
@@ -61,7 +63,7 @@ export async function GET() {
 
 export async function POST() {
   try {
-    const supabase: any = (await createClient()) as unknown;
+    const supabase = await createClient() as SupabaseClient<Database>;
     const {
       data: { user },
       error: authError,
@@ -98,7 +100,7 @@ export async function POST() {
         status: "pending",
       })
       .select()
-      .single() as any;
+      .single();
 
     if (insertError) {
       console.error("Ticket creation error:", insertError);

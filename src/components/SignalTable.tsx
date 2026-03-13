@@ -69,7 +69,7 @@ export default function SignalTable({
         return;
       }
 
-      setSignals(data || []);
+      setSignals(((data || []) as unknown) as Signal[]);
     } catch (err) {
       setError("En feil oppstod under henting av data");
       console.error("Error:", err);

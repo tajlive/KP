@@ -209,7 +209,7 @@ export default function InteractiveOnboardingWizard({
         .from("user_profiles")
         .update({
           setup_completed_at: new Date().toISOString(),
-          onboarding_step: "complete",
+          onboarding_step: 999, // Use a high number to indicate completion
         })
         .eq("id", userId);
 

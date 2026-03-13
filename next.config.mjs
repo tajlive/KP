@@ -30,11 +30,8 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // strict: true in tsconfig catches errors during dev
-    // TODO-KLA-152: 224 TS-feil gjenstår (hovedsakelig Supabase typer)
-    // Blokkert av: auth/callback route.ts type-konflikt (complex)
-    // Plan: Fiks i neste sprint før full strict mode
-    ignoreBuildErrors: true,  // TODO: Fjern etter full TS-fix [KLA-163]
+    // TypeScript strict mode enabled - all errors must be fixed
+    ignoreBuildErrors: false,
   },
 
   // Production optimizations

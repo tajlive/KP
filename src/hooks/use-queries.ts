@@ -134,7 +134,7 @@ export function useTradeStats(userId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('trades')
-        .select('profit_loss, type, status')
+        .select('realized_pnl, side, status')
         .eq('user_id', userId);
 
       if (error) throw handleSupabaseError(error);
@@ -144,12 +144,12 @@ export function useTradeStats(userId: string) {
         totalTrades: data.length,
         openTrades: data.filter((t) => t.status === 'open').length,
         closedTrades: data.filter((t) => t.status === 'closed').length,
-        totalProfit: data.reduce((sum, t) => sum + (t.profit_loss || 0), 0),
-        buyTrades: data.filter((t) => t.type === 'buy').length,
-        sellTrades: data.filter((t) => t.type === 'sell').length,
+        totalProfit: data.reduce((sum, t) => sum + (t.realized_pnl || 0), 0),
+        buyTrades: data.filter((t) => t.side === 'buy').length,
+        sellTrades: data.filter((t) => t.side === 'sell').length,
         winRate:
           data.length > 0
-            ? (data.filter((t) => (t.profit_loss || 0) > 0).length /
+            ? (data.filter((t) => (t.realized_pnl || 0) > 0).length /
                 data.length) *
               100
             : 0,
@@ -201,7 +201,7 @@ export function useChartSignals(symbol: string, limit: number = 20) {
     queryKey: queryKeys.chartSignals(symbol),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('chart_signals')
+        .from('chart_signals' as any)
         .select('*')
         .eq('symbol', symbol)
         .order('timestamp', { ascending: false })

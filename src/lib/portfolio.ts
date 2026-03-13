@@ -6,6 +6,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import type { Tables } from "@/types/supabase-generated";
 
 // =============================================================================
 // Types
@@ -26,10 +27,10 @@ export interface PortfolioOverview {
 interface BinanceBalance {
   id: string;
   asset: string;
-  total: number;
-  last_price: number;
-  usd_value: number;
-  updated_at: string;
+  total: number | null;
+  nok_value: number | null;
+  usd_value: number | null;
+  updated_at: string | null;
 }
 
 export interface PortfolioPosition {
@@ -42,7 +43,7 @@ export interface PortfolioPosition {
   unrealizedPnl: number;
   unrealizedPnlPercent: number;
   totalInvested: number;
-  lastUpdated: string;
+  lastUpdated: string | null;
   isReal: boolean; // true = Binance, false = Paper trading
 }
 
@@ -94,38 +95,39 @@ export async function getPortfolioOverview(
     const supabase = await createClient();
 
     // Sjekk om bruker har Binance API keys
-    const { data: apiKeys } = (await supabase
-      .from("exchange_api_keys" as unknown)
+    const { data: apiKeys } = await supabase
+      .from("exchange_api_keys")
       .select("*")
-      .eq("user_id" as any, userId)
+      .eq("user_id", userId)
       .eq("exchange", "binance")
       .eq("is_active", true)
-      .single() as any) as unknown;
+      .single();
 
     // Hvis Binance-konto, prøv å hente Binance-balanser
     if (apiKeys) {
-      const { data: binanceBalances } = (await supabase
-        .from("binance_balances" as unknown)
+      const { data: binanceBalances } = await supabase
+        .from("binance_balances")
         .select("*")
-        .eq("user_id" as any, userId)
+        .eq("user_id", userId)
         .gt("total", 0)
-        .order("usd_value", { ascending: false })) as unknown;
+        .order("usd_value", { ascending: false });
 
       if (binanceBalances && binanceBalances.length > 0) {
         // Bruker har Binance-data
         const totalValue = binanceBalances.reduce(
-          (sum: number, b: BinanceBalance) => sum + safeNumber(b.usd_value),
+          (sum: number, b: Tables<"binance_balances">) =>
+            sum + safeNumber(b.usd_value),
           0,
         );
         const lastSynced = binanceBalances[0]?.updated_at || null;
 
         const mappedPositions: PortfolioPosition[] = binanceBalances.map(
-          (bal: BinanceBalance) => ({
+          (bal: Tables<"binance_balances">) => ({
             id: bal.id,
             symbol: bal.asset,
             quantity: safeNumber(bal.total),
             avgBuyPrice: 0, // Vi har ikke denne fra Binance spot
-            currentPrice: safeNumber(bal.last_price),
+            currentPrice: 0, // Ikke tilgjengelig direkte
             currentValue: safeNumber(bal.usd_value),
             unrealizedPnl: 0,
             unrealizedPnlPercent: 0,
@@ -155,10 +157,10 @@ export async function getPortfolioOverview(
     }
 
     // Fallback til paper trading data
-    const { data: positions, error } = (await supabase
-      .from("portfolios" as unknown)
+    const { data: positions, error } = await supabase
+      .from("portfolios")
       .select("*")
-      .eq("user_id" as any, userId)) as unknown;
+      .eq("user_id", userId);
 
     if (error) {
       console.error("Error fetching portfolio:", error);
@@ -189,29 +191,31 @@ export async function getPortfolioOverview(
     let totalInvested = 0;
     let totalUnrealizedPnl = 0;
 
-    const mappedPositions: PortfolioPosition[] = positions.map((pos: unknown) => {
-      const positionValue = safeNumber(pos.current_value);
-      const positionInvested = safeNumber(pos.total_invested);
-      const positionPnl = safeNumber(pos.unrealized_pnl);
+    const mappedPositions: PortfolioPosition[] = positions.map(
+      (pos: Tables<"portfolios">) => {
+        const positionValue = safeNumber(pos.current_balance);
+        const positionInvested = safeNumber(pos.total_invested);
+        const positionPnl = safeNumber(pos.total_profit);
 
-      totalValue += positionValue;
-      totalInvested += positionInvested;
-      totalUnrealizedPnl += positionPnl;
+        totalValue += positionValue;
+        totalInvested += positionInvested;
+        totalUnrealizedPnl += positionPnl;
 
-      return {
-        id: pos.id,
-        symbol: pos.symbol,
-        quantity: safeNumber(pos.quantity),
-        avgBuyPrice: safeNumber(pos.avg_buy_price),
-        currentPrice: safeNumber(pos.current_price),
-        currentValue: positionValue,
-        unrealizedPnl: positionPnl,
-        unrealizedPnlPercent: safeNumber(pos.unrealized_pnl_percent),
-        totalInvested: positionInvested,
-        lastUpdated: pos.last_updated,
-        isReal: false,
-      };
-    });
+        return {
+          id: pos.id,
+          symbol: pos.currency || "UNKNOWN",
+          quantity: 0, // Ikke tilgjengelig direkte i portfolios-tabellen
+          avgBuyPrice: 0,
+          currentPrice: 0,
+          currentValue: positionValue,
+          unrealizedPnl: positionPnl,
+          unrealizedPnlPercent: safeNumber(pos.total_profit_percent),
+          totalInvested: positionInvested,
+          lastUpdated: pos.updated_at,
+          isReal: false,
+        };
+      },
+    );
 
     const totalProfitAbs = totalUnrealizedPnl;
     const totalProfitPct = calculatePercentChange(totalValue, totalInvested);
@@ -252,20 +256,20 @@ export async function syncBinancePortfolio(
     const supabase = await createClient();
 
     // Sjekk om bruker har API keys
-    const { data: apiKeys } = (await supabase
-      .from("exchange_api_keys" as unknown)
+    const { data: apiKeys } = await supabase
+      .from("exchange_api_keys")
       .select("api_key_encrypted, api_secret_encrypted, is_testnet")
-      .eq("user_id" as any, userId)
+      .eq("user_id", userId)
       .eq("exchange", "binance")
       .eq("is_active", true)
-      .single() as any) as unknown;
+      .single();
 
     if (!apiKeys) {
       return { success: false, message: "No Binance API keys found" };
     }
 
     // Logg sync-forsøk
-    await supabase.from("binance_sync_log" as unknown).insert({
+    await supabase.from("binance_sync_log").insert({
       user_id: userId,
       status: "in_progress",
       message: "Starting sync",
@@ -291,12 +295,12 @@ export async function syncBinancePortfolio(
 export async function getBinanceSyncLog(userId: string, limit = 10) {
   const supabase = await createClient();
 
-  const { data, error } = (await supabase
-    .from("binance_sync_log" as unknown)
+  const { data, error } = await supabase
+    .from("binance_sync_log")
     .select("*")
-    .eq("user_id" as any, userId)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
-    .limit(limit)) as unknown;
+    .limit(limit);
 
   if (error) {
     console.error("Error fetching sync log:", error);

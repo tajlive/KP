@@ -87,8 +87,9 @@ export function NotificationTray() {
     }
 
     if (data) {
-      setNotifications(data);
-      setUnreadCount(data.filter((n) => !n.is_read).length);
+      const notificationsData = (data as unknown) as Notification[];
+      setNotifications(notificationsData);
+      setUnreadCount(notificationsData.filter((n) => !n.is_read).length);
     }
   };
 

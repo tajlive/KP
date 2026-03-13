@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getTrialStatus } from '@/lib/trial/trial-manager';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase-generated';
 
 export async function GET(_request: NextRequest) {
   try {
-    const supabase = (await createClient()) as unknown;
+    const supabase = await createClient() as SupabaseClient<Database>;
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

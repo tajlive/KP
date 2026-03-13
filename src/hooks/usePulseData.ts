@@ -46,27 +46,27 @@ export function usePulseData({
       setIsLoading(true);
 
       // 1. Fetch historical data from daily metrics
-      const { data: metrics, error: metricsError } = (await supabase
+      const { data: metrics, error: metricsError } = await supabase
         .from("auto_trading_daily_metrics")
         .select("date, ending_capital_nok")
-        .eq("user_id" as any, userId)
-        .order("date", { ascending: true })) as unknown;
+        .eq("user_id", userId)
+        .order("date", { ascending: true });
 
       if (metricsError) throw metricsError;
 
       // Transform metrics to chart data
-      const chartData: PulseChartData[] = (metrics || []).map((m: unknown) => ({
+      const chartData: PulseChartData[] = ((metrics || []) as unknown as Array<{date: string; ending_capital_nok: number}>).map((m) => ({
         time: (new Date(m.date).getTime() / 1000) as unknown,
         value: Number(m.ending_capital_nok),
       }));
 
       // 2. Fetch recent trades for events
-      const { data: trades, error: tradesError } = (await supabase
-        .from("trades" as unknown)
+      const { data: trades, error: tradesError } = await supabase
+        .from("trades")
         .select("*")
-        .eq("user_id" as any, userId)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false })
-        .limit(50)) as unknown;
+        .limit(50);
 
       if (tradesError) throw tradesError;
 

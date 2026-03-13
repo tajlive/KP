@@ -74,7 +74,7 @@ export function LanguageSwitcher({
         {locales.map((l) => {
           const isActive = l === locale;
           const label = localeLabels[l];
-          const needReview = needsReview.includes(l);
+          const needReview = false; // TODO: Implement needsReview logic
 
           return (
             <button
@@ -129,7 +129,7 @@ export function LanguageSwitcher({
             {locales.map((l) => {
               const isActive = l === locale;
               const label = localeLabels[l];
-              const needReview = needsReview.includes(l);
+              const needsReviewFlag = false; // TODO: Implement needsReview logic
 
               return (
                 <button
@@ -152,7 +152,7 @@ export function LanguageSwitcher({
                     </div>
                   </div>
                   {isActive && <Check className="w-4 h-4" />}
-                  {needReview && !isActive && (
+                  {needsReviewFlag && !isActive && (
                     <AlertTriangle className="w-4 h-4 text-yellow-500" />
                   )}
                 </button>

@@ -64,7 +64,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setApiKeys(data || []);
+      setApiKeys((data || []) as ApiKey[]);
     } catch (error: unknown) {
       console.error('Error loading API keys:', getErrorMessage(error));
     } finally {
@@ -118,7 +118,11 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
     try {
       const encryptedSecret = await encryptData(form.apiSecret);
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Ikke logget inn');
+
       const { error } = await supabase.from('api_keys').insert({
+        user_id: user.id,
         exchange: form.testnet ? 'binance_testnet' : 'binance',
         label: form.label,
         api_key: form.apiKey,
@@ -131,7 +135,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
           futures: accountInfo.permissions?.includes('FUTURES') || false,
           margin: accountInfo.permissions?.includes('MARGIN') || false,
         },
-      });
+      } as any);
 
       if (error) throw error;
 

@@ -2,6 +2,8 @@ import { withRateLimit } from "@/lib/api-auth";
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase-generated";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "listingId required" }, { status: 400 });
   }
 
-  const db: any = (await createClient()) as unknown;
+  const db = await createClient() as SupabaseClient<Database>;
 
   const { data, error } = await db
     .from("strategy_reviews")
@@ -33,12 +35,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const ratings = ((data as unknown[]) || []).map(
-    (r: Record<string, unknown>) => r.rating as number,
+  const ratings = (data || []).map(
+    (r) => (r as { rating: number }).rating,
   );
   const avgRating =
     ratings.length > 0
-      ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length
+      ? ratings.reduce((a, b) => a + b, 0) / ratings.length
       : 0;
 
   return NextResponse.json({
@@ -68,15 +70,15 @@ export const POST = withRateLimit(
     }
 
     const { listingId, rating, reviewText } = parsed.data;
-    const db: any = (await createClient()) as unknown;
+    const db = await createClient() as SupabaseClient<Database>;
 
     // Check if user already reviewed
     const { data: existing } = await db
       .from("strategy_reviews")
       .select("id")
       .eq("strategy_id", listingId)
-      .eq("user_id" as any, user.id)
-      .single() as any;
+      .eq("user_id", user.id)
+      .single();
 
     if (existing) {
       return NextResponse.json({ error: "Already reviewed" }, { status: 409 });
@@ -91,7 +93,7 @@ export const POST = withRateLimit(
         review: reviewText || null,
       })
       .select()
-      .single() as any;
+      .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -106,8 +108,7 @@ export const POST = withRateLimit(
     if (allReviews && allReviews.length > 0) {
       const avg =
         allReviews.reduce(
-          (sum: number, r: Record<string, unknown>) =>
-            sum + (r.rating as number),
+          (sum, r) => sum + ((r as { rating: number }).rating || 0),
           0,
         ) / allReviews.length;
       await db

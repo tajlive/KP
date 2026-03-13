@@ -10,7 +10,7 @@ import { createBrowserClient } from "@supabase/ssr";
 import { safeStorage } from "@/lib/supabase/safe-storage";
 import { Bot, Pause, Play, ArrowRight, AlertTriangle } from "lucide-react";
 
-interface TradingSession {
+export interface TradingSession {
   id: string;
   mode: "paper" | "live";
   status: "active" | "paused" | "stopped";

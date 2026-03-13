@@ -29,7 +29,7 @@ export function PulseChart({
 }: PulseChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<unknown>(null);
+  const seriesRef = useRef<ReturnType<IChartApi['addSeries']> | null>(null);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -94,15 +94,15 @@ export function PulseChart({
     if (!chartRef.current || isLoading) return;
 
     // Remove old series if it exists
+    const chart = chartRef.current;
+    if (!chart) return;
+    
     if (seriesRef.current) {
-      (chartRef.current as unknown).removeSeries(seriesRef.current);
+      chart.removeSeries(seriesRef.current);
     }
 
     // Adaptive visualization based on profile
-    let series: unknown;
-
-    const chart = chartRef.current as unknown;
-    if (!chart) return;
+    let series: ReturnType<IChartApi['addSeries']> | null = null;
 
     if (profileId === "forsiktig") {
       // Area Chart - Smooth and safe
@@ -134,7 +134,7 @@ export function PulseChart({
     seriesRef.current = series;
 
     // Set Data
-    (series as unknown).setData(data as unknown);
+    series?.setData(data as any);
 
     // Add Event Markers
     const markers: SeriesMarker<Time>[] = (events || []).map((event) => ({
@@ -146,11 +146,11 @@ export function PulseChart({
       size: 1,
     }));
 
-    if (series && (series as unknown).setMarkers) {
-      (series as unknown).setMarkers(markers);
+    if (series && 'setMarkers' in series) {
+      (series as any).setMarkers(markers);
     }
 
-    (chartRef.current as unknown).timeScale().fitContent();
+    chart.timeScale().fitContent();
   }, [data, events, profileId, isLoading]);
 
   return (
