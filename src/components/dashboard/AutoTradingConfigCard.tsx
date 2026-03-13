@@ -47,11 +47,18 @@ export function AutoTradingConfigCard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      type UserAutoTradingConfig = {
+        is_enabled: boolean | null;
+        is_paper_trading: boolean | null;
+        trading_capital_nok: number | null;
+      };
+
       const { data, error } = await supabase
-        .from("auto_trading_configs" as any)
+        .from("user_auto_trading_configs")
         .select("*")
-        .eq("user_id" as any, user.id)
-        .maybeSingle();
+        .eq("user_id", user.id)
+        .maybeSingle()
+        .returns<UserAutoTradingConfig>();
 
       if (error && error.code !== "PGRST116") {
         console.error("Error fetching config:", error);
@@ -60,10 +67,10 @@ export function AutoTradingConfigCard() {
 
       if (data) {
         setConfig({
-          enabled: data.enabled,
-          mode: data.mode,
-          risk_level: data.risk_level,
-          max_trade_size_nok: data.max_trade_size_nok,
+          enabled: data.is_enabled ?? false,
+          mode: data.is_paper_trading ? "paper" : "live",
+          risk_level: "medium", // Default value - not in DB schema
+          max_trade_size_nok: data.trading_capital_nok ?? 10000,
         });
       }
     } catch (error) {
@@ -83,25 +90,29 @@ export function AutoTradingConfigCard() {
       }
 
       const { data: existingConfig } = await supabase
-        .from("auto_trading_configs" as any)
+        .from("user_auto_trading_configs")
         .select("id")
-        .eq("user_id" as any, user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (existingConfig) {
         await supabase
-          .from("auto_trading_configs" as any)
+          .from("user_auto_trading_configs")
           .update({
-            ...config,
+            is_enabled: config.enabled,
+            is_paper_trading: config.mode === "paper",
+            trading_capital_nok: config.max_trade_size_nok,
             updated_at: new Date().toISOString(),
           })
-          .eq("user_id" as any, user.id);
+          .eq("user_id", user.id);
       } else {
         await supabase
-          .from("auto_trading_configs" as any)
+          .from("user_auto_trading_configs")
           .insert({
             user_id: user.id,
-            ...config,
+            is_enabled: config.enabled,
+            is_paper_trading: config.mode === "paper",
+            trading_capital_nok: config.max_trade_size_nok,
           });
       }
 

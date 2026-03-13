@@ -41,9 +41,9 @@ export function DashboardSidebar() {
             .select("tier")
             .eq("user_id" as any, user.id)
             .maybeSingle();
-          setIsAdmin(
-            profile?.tier === "admin" || profile?.tier === "professor",
-          );
+          // Note: tier is enum 'free' | 'student' | 'master' | 'phd' | 'professor'
+          // 'professor' is considered admin-level
+          setIsAdmin(profile?.tier === "professor");
         }
       } catch {
         // Silently fail - user is not admin

@@ -82,10 +82,10 @@ export default function StrategyCharts({
                 }}
                 labelStyle={{ color: "#94a3b8" }}
                 formatter={
-                  ((v: unknown) => [
-                    `${Number(v).toFixed(2)} USDT`,
+                  ((v: number) => [
+                    `${v.toFixed(2)} USDT`,
                     "Equity",
-                  ]) as unknown
+                  ]) as any
                 }
               />
               <Area
@@ -162,7 +162,7 @@ export default function StrategyCharts({
                   borderRadius: 8,
                 }}
                 formatter={
-                  ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as unknown
+                  ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as any
                 }
               />
               <ReferenceLine

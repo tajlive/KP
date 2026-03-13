@@ -8,7 +8,7 @@ interface PulseTimeframeTabsProps {
   onTimeframeChange: (timeframe: ChartTimeframe) => void;
 }
 
-const TIMEFRAMES: ChartTimeframe[] = ["1D", "7D", "30D", "All"];
+const TIMEFRAMES: ChartTimeframe[] = ["1D", "7D", "30D", "ALL"];
 
 export function PulseTimeframeTabs({
   activeTimeframe,

@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase-generated";
 
 export async function POST() {
-  const supabase = (await createClient()) as unknown;
+  const supabase = await createClient() as SupabaseClient<Database>;
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

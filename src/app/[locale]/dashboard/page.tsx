@@ -1,5 +1,5 @@
 import GetStartedCard from "@/components/dashboard/GetStartedCard";
-import type { TradingSession } from "@/lib/shared";
+import type { TradingSession } from "@/components/dashboard/BotStatusCard";
 import { BotStatusCard } from "@/components/dashboard/BotStatusCard";
 import { EmptyBotState } from "@/components/dashboard/EmptyBotState";
 import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
@@ -121,7 +121,7 @@ export default async function DashboardPage({
         {/* Bot status card - shows active trading sessions */}
         {sessionRes.data ? (
           <BotStatusCard
-            initialSession={sessionRes.data as unknown as TradingSession}
+            initialSession={(sessionRes.data as unknown) as TradingSession}
           />
         ) : (
           <EmptyBotState />

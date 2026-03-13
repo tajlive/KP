@@ -304,12 +304,9 @@ export default function OnboardingFlow() {
           await supabase.functions.invoke("create-paper-bot", {
             body: { strategy_id: selectedStrategy, user_id: user.id },
           });
-        if (!botError && botData?.bot_id) {
-          await supabase
-            .from("onboarding_progress")
-            .update({ paper_bot_id: botData.bot_id })
-            .eq("user_id" as any, user.id);
-        }
+        // Note: paper_bot_id field doesn't exist in onboarding_progress table
+        // Bot creation is logged but not stored in onboarding_progress
+        console.log("Paper bot created:", botData?.bot_id);
       } catch (e) {
         // Paper bot-oppretting er ikke blokkerende – onboarding fullfører uansett
         console.warn("create-paper-bot feilet:", e);

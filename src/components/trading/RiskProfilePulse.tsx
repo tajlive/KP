@@ -9,7 +9,9 @@ import {
   CandlestickSeries,
   IChartApi,
   ISeriesApi,
+  LineData,
   LineSeries,
+  Time,
   createChart,
 } from "lightweight-charts";
 import { Shield, Target, TrendingDown, TrendingUp, Zap } from "lucide-react";
@@ -37,7 +39,7 @@ export function RiskProfilePulse({
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<
-    ISeriesApi<"Area"> | ISeriesApi<"Candlestick"> | null
+    ISeriesApi<"Area"> | ISeriesApi<"Line"> | ISeriesApi<"Candlestick"> | null
   >(null);
   const [portfolio, setPortfolio] = useState<PortfolioData>({
     value: 1000000,
@@ -108,7 +110,7 @@ export function RiskProfilePulse({
       },
     });
 
-    chartRef.current = chart as unknown;
+    chartRef.current = chart as IChartApi;
 
     // Different chart types based on risk profile
     if (profile === "forsiktig") {
@@ -128,11 +130,11 @@ export function RiskProfilePulse({
       for (let i = 100; i >= 0; i--) {
         value = value * (1 + (Math.random() - 0.48) * 0.002);
         data.push({
-          time: now - i * 300,
+          time: (now - i * 300) as Time,
           value: Math.round(value),
         } as AreaData);
       }
-      areaSeries.setData(data as unknown);
+      areaSeries.setData(data);
     } else if (profile === "moderat") {
       // Line chart with markers
       const lineSeries = chart.addSeries(LineSeries, {
@@ -141,17 +143,17 @@ export function RiskProfilePulse({
       });
       seriesRef.current = lineSeries;
 
-      const data = [];
+      const data: LineData[] = [];
       let value = 1000000;
       const now = Date.now() / 1000;
       for (let i = 100; i >= 0; i--) {
         value = value * (1 + (Math.random() - 0.48) * 0.004);
         data.push({
-          time: now - i * 300,
+          time: (now - i * 300) as Time,
           value: Math.round(value),
-        });
+        } as LineData);
       }
-      lineSeries.setData(data as unknown);
+      lineSeries.setData(data);
     } else {
       // Candlestick for aggressive
       const candleSeries = chart.addSeries(CandlestickSeries, {
@@ -173,7 +175,7 @@ export function RiskProfilePulse({
         const high = Math.max(open, close) * (1 + Math.random() * 0.003);
         const low = Math.min(open, close) * (1 - Math.random() * 0.003);
         data.push({
-          time: now - i * 600,
+          time: (now - i * 600) as Time,
           open: Math.round(open),
           high: Math.round(high),
           low: Math.round(low),
@@ -181,7 +183,7 @@ export function RiskProfilePulse({
         } as CandlestickData);
         value = close;
       }
-      candleSeries.setData(data as unknown);
+      candleSeries.setData(data);
     }
 
     chart.timeScale().fitContent();

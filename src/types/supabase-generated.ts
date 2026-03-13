@@ -800,6 +800,51 @@ export type Database = {
           },
         ]
       }
+      auto_trading_backtests: {
+        Row: {
+          created_at: string | null
+          end_date: string | null
+          final_capital: number | null
+          id: string
+          initial_capital: number | null
+          profitable_trades: number | null
+          result: Json | null
+          start_date: string | null
+          strategy_id: string | null
+          symbol: string | null
+          total_trades: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          end_date?: string | null
+          final_capital?: number | null
+          id?: string
+          initial_capital?: number | null
+          profitable_trades?: number | null
+          result?: Json | null
+          start_date?: string | null
+          strategy_id?: string | null
+          symbol?: string | null
+          total_trades?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string | null
+          final_capital?: number | null
+          id?: string
+          initial_capital?: number | null
+          profitable_trades?: number | null
+          result?: Json | null
+          start_date?: string | null
+          strategy_id?: string | null
+          symbol?: string | null
+          total_trades?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       auto_trading_circuit_breaker_logs: {
         Row: {
           action: string
@@ -1673,6 +1718,30 @@ export type Database = {
         }
         Relationships: []
       }
+      build_status: {
+        Row: {
+          error_count: number
+          files_affected: number
+          id: number
+          ignore_build_errors: boolean
+          updated_at: string
+        }
+        Insert: {
+          error_count?: number
+          files_affected?: number
+          id?: number
+          ignore_build_errors?: boolean
+          updated_at?: string
+        }
+        Update: {
+          error_count?: number
+          files_affected?: number
+          id?: number
+          ignore_build_errors?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       campaign_contacts: {
         Row: {
           clicked_at: string | null
@@ -1730,6 +1799,36 @@ export type Database = {
           tags?: string[] | null
           unsubscribed_at?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      chart_signals: {
+        Row: {
+          confidence: number | null
+          created_at: string | null
+          id: string
+          price: number | null
+          signal_type: string
+          symbol: string
+          user_id: string | null
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string | null
+          id?: string
+          price?: number | null
+          signal_type: string
+          symbol: string
+          user_id?: string | null
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string | null
+          id?: string
+          price?: number | null
+          signal_type?: string
+          symbol?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -3039,6 +3138,48 @@ export type Database = {
           success?: boolean | null
           timestamp?: string | null
           tool_name?: string
+        }
+        Relationships: []
+      }
+      mcp_terminal_logs: {
+        Row: {
+          blocked_reason: string | null
+          cmd: string
+          completed_at: string | null
+          created_at: string | null
+          duration_ms: number | null
+          exit_code: number | null
+          id: string
+          pid: number | null
+          session_id: string
+          stderr: string | null
+          stdout: string | null
+        }
+        Insert: {
+          blocked_reason?: string | null
+          cmd: string
+          completed_at?: string | null
+          created_at?: string | null
+          duration_ms?: number | null
+          exit_code?: number | null
+          id?: string
+          pid?: number | null
+          session_id: string
+          stderr?: string | null
+          stdout?: string | null
+        }
+        Update: {
+          blocked_reason?: string | null
+          cmd?: string
+          completed_at?: string | null
+          created_at?: string | null
+          duration_ms?: number | null
+          exit_code?: number | null
+          id?: string
+          pid?: number | null
+          session_id?: string
+          stderr?: string | null
+          stdout?: string | null
         }
         Relationships: []
       }
@@ -4746,6 +4887,45 @@ export type Database = {
           metadata?: Json | null
           response_time_ms?: number | null
           supabase_status?: string
+        }
+        Relationships: []
+      }
+      terminal_jobs: {
+        Row: {
+          cmd: string
+          completed_at: string | null
+          created_at: string | null
+          duration_ms: number | null
+          exit_code: number | null
+          id: string
+          started_at: string | null
+          status: string
+          stderr: string | null
+          stdout: string | null
+        }
+        Insert: {
+          cmd: string
+          completed_at?: string | null
+          created_at?: string | null
+          duration_ms?: number | null
+          exit_code?: number | null
+          id: string
+          started_at?: string | null
+          status?: string
+          stderr?: string | null
+          stdout?: string | null
+        }
+        Update: {
+          cmd?: string
+          completed_at?: string | null
+          created_at?: string | null
+          duration_ms?: number | null
+          exit_code?: number | null
+          id?: string
+          started_at?: string | null
+          status?: string
+          stderr?: string | null
+          stdout?: string | null
         }
         Relationships: []
       }
@@ -7412,9 +7592,16 @@ export type Database = {
       get_rls_status: {
         Args: never
         Returns: {
-          enabled: number
-          tables: Json
-          total: number
+          rls_enabled: boolean
+          table_name: string
+        }[]
+      }
+      get_rls_status_detailed: {
+        Args: never
+        Returns: {
+          policy_count: number
+          rls_enabled: boolean
+          table_name: string
         }[]
       }
       get_system_metrics: {
@@ -7423,6 +7610,14 @@ export type Database = {
           metric_name: string
           metric_unit: string
           metric_value: number
+        }[]
+      }
+      get_tables_info: {
+        Args: never
+        Returns: {
+          has_rls: boolean
+          row_count: number
+          table_name: string
         }[]
       }
       get_top_pages: {

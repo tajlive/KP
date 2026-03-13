@@ -45,15 +45,15 @@ export function KLTWallet() {
       }
       
       // Fetch recent transactions
-      const { data: txData } = await supabase
+      const txResult = await (supabase
         .from("klt_transactions" as any)
         .select("*")
-        .eq("user_id" as any, user.id)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(10) as any);
       
-      if (txData) {
-        setTransactions(txData);
+      if (txResult.data) {
+        setTransactions((txResult.data as unknown) as KLTTransaction[]);
       }
       
       setLoading(false);

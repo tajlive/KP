@@ -8,11 +8,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendTemplatedEmail, queueEmail } from '@/lib/email';
 import { createClient } from '@/lib/supabase/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase-generated';
 
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const supabase = (await createClient()) as unknown;
+    const supabase = await createClient() as SupabaseClient<Database>;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -27,9 +29,9 @@ export async function POST(req: NextRequest) {
       .from('user_profiles')
       .select('role')
       .eq('user_id', user.id)
-      .single() as any;
+      .single();
 
-    const role = profile?.role as string | null;
+    const role = profile?.role;
     if (role !== 'admin' && role !== 'superadmin') {
       return NextResponse.json(
         { error: 'Forbidden - Admin access required' },

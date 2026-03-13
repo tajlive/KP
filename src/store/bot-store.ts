@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { create } from "zustand";
+import type { Tables } from "@/lib/supabase/client";
 
 type BotStatus = "active" | "paused" | "stopped" | "error";
 type BotStrategyType =
@@ -98,55 +99,54 @@ export const useBotStore = create<BotStore>()((set, get) => ({
       const supabase = createClient();
 
       // Fetch strategies with their latest session data
-      const { data: strategies, error: stratError } = (await supabase
-        .from("bot_configs" as unknown)
+      const { data: strategies, error: stratError } = await supabase
+        .from("bot_configs")
         .select("*")
-        .order("created_at", { ascending: false })) as unknown;
+        .order("created_at", { ascending: false });
 
       if (stratError) throw stratError;
 
       // Fetch sessions for P&L data
-      const { data: sessions } = (await supabase
-        .from("unified_trading_sessions" as unknown)
+      const { data: sessions } = await supabase
+        .from("unified_trading_sessions")
         .select("*")
-        .order("created_at", { ascending: false })) as unknown;
+        .order("created_at", { ascending: false });
 
       const sessionMap = new Map(
-        (sessions ?? []).map((s: Record<string, unknown>) => [
-          s.config_id as string,
+        (sessions ?? []).map((s: Tables<"unified_trading_sessions">) => [
+          s.id,
           s,
         ]),
       );
 
       const bots: Bot[] = (strategies ?? []).map(
-        (strat: Record<string, unknown>) => {
-          const session = sessionMap.get(strat.id as string) as
-            | Record<string, unknown>
+        (strat: Tables<"bot_configs">) => {
+          const session = sessionMap.get(strat.id) as
+            | Tables<"unified_trading_sessions">
             | undefined;
 
           return {
-            id: strat.id as string,
-            userId: strat.user_id as string,
-            name: (strat.name as string) || "Unnamed Bot",
+            id: strat.id,
+            userId: strat.user_id,
+            name: strat.bot_name || "Unnamed Bot",
             strategyType: (strat.strategy_type as BotStrategyType) || "dca",
-            status: (strat.status as BotStatus) || "stopped",
-            mode: (strat.mode as "paper" | "live") || "paper",
+            status: strat.is_active ? "active" : "stopped",
+            mode: strat.is_paper_trade ? "paper" : "live",
             symbol:
               ((strat.config as Record<string, unknown>)?.symbol as string) ||
               "BTCUSDT",
             config: (strat.config as Record<string, unknown>) || {},
-            pnlNok: (session?.total_pnl_nok as number) || 0,
-            pnlPct: (session?.total_pnl_pct as number) || 0,
-            totalTrades: (session?.total_trades as number) || 0,
-            winningTrades: (session?.winning_trades as number) || 0,
-            losingTrades: (session?.losing_trades as number) || 0,
-            currentCapitalNok: (session?.current_capital_nok as number) || 0,
-            startingCapitalNok: (session?.starting_capital_nok as number) || 0,
-            maxDrawdownPct: (session?.max_drawdown_pct as number) || 0,
-            lastTradeAt: (session?.updated_at as string) || null,
-            createdAt: strat.created_at as string,
-            updatedAt:
-              (strat.updated_at as string) || (strat.created_at as string),
+            pnlNok: session?.total_pnl ?? 0,
+            pnlPct: session?.total_pnl_pct ?? 0,
+            totalTrades: session?.total_trades ?? 0,
+            winningTrades: session?.winning_trades ?? 0,
+            losingTrades: session?.losing_trades ?? 0,
+            currentCapitalNok: session?.current_capital ?? 0,
+            startingCapitalNok: session?.initial_capital ?? 0,
+            maxDrawdownPct: session?.max_drawdown_pct ?? 0,
+            lastTradeAt: session?.last_trade_at || null,
+            createdAt: strat.created_at ?? "",
+            updatedAt: strat.updated_at ?? strat.created_at ?? "",
           };
         },
       );
@@ -166,14 +166,14 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
   pauseBot: async (id) => {
     const supabase = createClient();
-    const { error } = (await supabase
-      .from("bot_configs" as unknown)
-      .update({ status: "paused" })
-      .eq("id", id)) as unknown;
+    const { error } = await supabase
+      .from("bot_configs")
+      .update({ is_active: false })
+      .eq("id", id);
 
     if (!error) {
-      set((state: unknown) => ({
-        bots: state.bots.map((b: unknown) =>
+      set((state) => ({
+        bots: state.bots.map((b) =>
           b.id === id ? { ...b, status: "paused" as BotStatus } : b,
         ),
       }));
@@ -182,14 +182,14 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
   resumeBot: async (id) => {
     const supabase = createClient();
-    const { error } = (await supabase
-      .from("bot_configs" as unknown)
-      .update({ status: "active" })
-      .eq("id", id)) as unknown;
+    const { error } = await supabase
+      .from("bot_configs")
+      .update({ is_active: true })
+      .eq("id", id);
 
     if (!error) {
-      set((state: unknown) => ({
-        bots: state.bots.map((b: unknown) =>
+      set((state) => ({
+        bots: state.bots.map((b) =>
           b.id === id ? { ...b, status: "active" as BotStatus } : b,
         ),
       }));
@@ -198,14 +198,14 @@ export const useBotStore = create<BotStore>()((set, get) => ({
 
   stopBot: async (id) => {
     const supabase = createClient();
-    const { error } = (await supabase
-      .from("bot_configs" as unknown)
-      .update({ status: "stopped" })
-      .eq("id", id)) as unknown;
+    const { error } = await supabase
+      .from("bot_configs")
+      .update({ is_active: false })
+      .eq("id", id);
 
     if (!error) {
-      set((state: unknown) => ({
-        bots: state.bots.map((b: unknown) =>
+      set((state) => ({
+        bots: state.bots.map((b) =>
           b.id === id ? { ...b, status: "stopped" as BotStatus } : b,
         ),
       }));
@@ -213,8 +213,8 @@ export const useBotStore = create<BotStore>()((set, get) => ({
   },
 
   updateBotFromRealtime: (strategyId, updates) => {
-    set((state: unknown) => {
-      const updatedBots = state.bots.map((b: unknown) =>
+    set((state) => {
+      const updatedBots = state.bots.map((b) =>
         b.id === strategyId ? { ...b, ...updates } : b,
       );
       return {
@@ -227,16 +227,16 @@ export const useBotStore = create<BotStore>()((set, get) => ({
   filteredBots: () => {
     const { bots, filter } = get();
     if (filter === "all") return bots;
-    return bots.filter((b: unknown) => b.status === filter);
+    return bots.filter((b) => b.status === filter);
   },
 
   selectedBot: () => {
     const { bots, selectedBotId } = get();
-    return bots.find((b: unknown) => b.id === selectedBotId) ?? null;
+    return bots.find((b) => b.id === selectedBotId) ?? null;
   },
 
   activeBotCount: () =>
-    get().bots.filter((b: unknown) => b.status === "active").length,
+    get().bots.filter((b) => b.status === "active").length,
 }));
 
 export type {

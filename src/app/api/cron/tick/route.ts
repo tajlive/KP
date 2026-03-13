@@ -10,6 +10,8 @@ import { div, mul } from "@/lib/decimal";
 import { createClient } from "@/lib/supabase/server";
 import type { TradeSide, TradingSession } from "@/types/trading";
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase-generated";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -336,7 +338,7 @@ async function fetchCandles(
  * CRITICAL: Process session with Risk Management
  */
 async function processSession(
-  db: Awaited<ReturnType<typeof createClient>>,
+  db: SupabaseClient<Database>,
   session: TradingSession,
 ): Promise<TickResult> {
   const strategy = strategies[session.strategy_id];
@@ -477,14 +479,14 @@ async function processSession(
   });
 
   if (!riskCheck.allowed) {
-    // Log risk block to database
+    // Log risk block to database - using correct table schema
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (db as any).from("trading_logs").insert({
       session_id: session.id,
       user_id: session.user_id,
-      level: "warning",
-      message: `Trade blocked by risk management: ${riskCheck.reason}`,
-      metadata: {
+      action: "risk_blocked",
+      details: {
+        reason: riskCheck.reason,
         signal: signal.action,
         requested_amount: tradeAmount,
         current_capital: session.current_capital,
@@ -535,7 +537,7 @@ async function processSession(
       executed_at: new Date().toISOString(),
     })
     .select("id")
-    .single() as any;
+    .single();
 
   if (tradeError) {
     console.error("Trade insert failed:", {
@@ -566,7 +568,7 @@ async function processSession(
  * Mirror a trade to all copy trading sessions
  */
 async function mirrorTradeToFollowers(
-  db: Awaited<ReturnType<typeof createClient>>,
+  db: SupabaseClient<Database>,
   sourceSessionId: string,
   trade: Record<string, unknown>,
 ): Promise<void> {
@@ -595,15 +597,16 @@ async function mirrorTradeToFollowers(
       const tradePrice = (trade.price as number) || 1;
       const followerQuantity = div(followerTradeAmount, tradePrice);
 
-      // Insert mirrored trade
+      // Insert mirrored trade - matching actual trades table schema
+      const tradeRecord = trade as Record<string, unknown>;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: mirrorError } = await (db as any).from("trades").insert({
         session_id: followerSession.id,
         user_id: followerSession.user_id,
-        idempotency_key: `copy-${trade.id}-${followerSession.id}-${Date.now()}`,
+        idempotency_key: `copy-${tradeRecord.id as string}-${followerSession.id}-${Date.now()}`,
         mode: followerSession.mode,
-        trading_pair: trade.trading_pair,
-        side: trade.side,
+        trading_pair: tradeRecord.trading_pair as string,
+        side: tradeRecord.side as string,
         order_type: "market",
         quantity: followerQuantity,
         price: tradePrice,
@@ -612,12 +615,12 @@ async function mirrorTradeToFollowers(
           followerSession.mode === "live" ? mul(followerTradeAmount, 0.001) : 0,
         status: "filled",
         strategy_signal: {
-          ...((trade as unknown).strategy_signal as Record<string, unknown>),
-          copied_from: (trade as unknown).id,
+          ...(tradeRecord.strategy_signal as Record<string, unknown>),
+          copied_from: tradeRecord.id as string,
         },
-        stop_loss_price: trade.stop_loss_price,
-        opened_at: new Date().toISOString(),
         executed_at: new Date().toISOString(),
+        is_copy: true,
+        leader_trade_id: tradeRecord.id as string,
       });
 
       if (mirrorError) {
@@ -649,7 +652,7 @@ export async function GET(req: NextRequest) {
   }
 
   const startTime = Date.now();
-  const db = (await createClient()) as unknown;
+  const db = await createClient() as SupabaseClient<Database>;
 
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)
@@ -674,8 +677,7 @@ export async function GET(req: NextRequest) {
 
     const results: TickResult[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    for (const session of sessions as any[]) {
+    for (const session of sessions as unknown as TradingSession[]) {
       // Timeout protection
       if (Date.now() - startTime > 55_000) {
         console.warn(
@@ -697,7 +699,7 @@ export async function GET(req: NextRequest) {
             .from("trades")
             .select("*")
             .eq("id", result.trade_id)
-            .single() as any;
+            .single();
 
           if (trade) {
             await mirrorTradeToFollowers(db, session.id, trade);

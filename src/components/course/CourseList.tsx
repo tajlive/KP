@@ -39,7 +39,7 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
           throw error;
         }
 
-        setCourses(data || []);
+        setCourses((data || []) as Course[]);
       } catch (err) {
         console.error('Error loading courses:', err);
         setError('Kunne ikke laste kurs. Vennligst prøv igjen senere.');

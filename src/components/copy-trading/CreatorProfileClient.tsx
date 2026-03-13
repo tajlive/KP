@@ -155,39 +155,60 @@ export default function CreatorProfileClient({
       const supabase = createClient();
 
       // Fetch public strategies from user_strategies
+      // Type cast to avoid deep type instantiation issues
+      type UserStrategy = {
+        id: string;
+        strategy_type: string;
+        mode: string;
+        total_pnl: number | null;
+        total_trades: number | null;
+        subscriber_count: number | null;
+        is_public: boolean | null;
+        is_active: boolean | null;
+      };
+
       const { data: strategies } = await supabase
-        .from("strategies" as unknown)
+        .from("user_strategies" as any)
         .select("*")
-        .eq("user_id" as any, traderId)
+        .eq("user_id", traderId)
         .eq("is_public", true)
-        .eq("status", "active");
+        .eq("is_active", true)
+        .returns<UserStrategy[]>();
 
       if (strategies && strategies.length > 0) {
         setPublicStrategies(
           strategies.map((s) => ({
             id: s.id,
-            strategyType: s.strategy_type || s.strategy_id,
-            tradingPair: s.trading_pair,
-            mode: s.mode,
+            strategyType: s.strategy_type,
+            tradingPair: "", // user_strategies doesn't have trading_pair
+            mode: s.mode as "paper" | "live",
             totalPnl: s.total_pnl || 0,
-            winRate:
-              s.total_trades > 0
-                ? ((s.winning_trades || 0) / s.total_trades) * 100
-                : 0,
+            winRate: 0, // user_strategies doesn't have winning_trades
             totalTrades: s.total_trades || 0,
             subscriberCount: s.subscriber_count || 0,
-            isPublic: s.is_public,
+            isPublic: s.is_public ?? true,
           })),
         );
         return;
       }
 
       // Fallback to trading_sessions
+      type TradingSession = {
+        id: string;
+        strategy_id: string;
+        trading_pair: string;
+        mode: string;
+        total_pnl: number;
+        total_trades: number;
+        winning_trades: number;
+      };
+
       const { data: sessions } = await supabase
         .from("trading_sessions")
         .select("*")
-        .eq("user_id" as any, traderId)
-        .eq("status", "active");
+        .eq("user_id", traderId)
+        .eq("status", "active")
+        .returns<TradingSession[]>();
 
       if (sessions) {
         setPublicStrategies(
@@ -195,7 +216,7 @@ export default function CreatorProfileClient({
             id: s.id,
             strategyType: s.strategy_id,
             tradingPair: s.trading_pair,
-            mode: s.mode,
+            mode: s.mode as "paper" | "live",
             totalPnl: s.total_pnl || 0,
             winRate:
               s.total_trades > 0

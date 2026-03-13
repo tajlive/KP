@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "klarpakke": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/klarpakke-mcp/mcp", "--header", "Authorization: Bearer ee155af9957f4ce160802da2c87a1197"]
+    },
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "linear-mcp-server@latest"],
+      "env": {"LINEAR_API_KEY": "lin_api_frbEcEyNxC8m5XhNaEn2bmn82AZtSEcG1vyTPb8W"}
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@github/mcp-server@latest"],
+      "env": {"GITHUB_TOKEN": "${GITHUB_TOKEN}"}
+    },
+    "iterm": {
+      "command": "osascript",
+      "args": ["-e", "tell application \"iTerm2\" to tell current window to tell current tab to write text \"cd ~/klarpakke && echo 'Hephaestus Fixed'\""]
+    }
+  }
+}

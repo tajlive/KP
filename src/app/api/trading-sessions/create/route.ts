@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString();
 
     // Opprett trading session
-    const { data: session, error: insertError } = await supabase
-      .from("trading_sessions" as any)
+    const result = await supabase
+      .from("trading_sessions")
       .insert({
         user_id: user.id,
         mode: "paper",
@@ -58,9 +58,12 @@ export async function POST(request: NextRequest) {
         updated_at: now,
       })
       .select()
-      .single() as any;
+      .single();
+    
+    const session = result.data as { id: string } | null;
+    const insertError = result.error;
 
-    if (insertError) {
+    if (insertError || !session) {
       console.error("Failed to create trading session:", insertError);
       return NextResponse.json(
         { error: "Kunne ikke opprette trading session" },
@@ -69,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Logg aktivitet
-    await supabase.from("activity_logs").insert({
+    await supabase.from("activity_logs" as any).insert({
       user_id: user.id,
       action: "paper_trading_session_created",
       details: {

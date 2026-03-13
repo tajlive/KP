@@ -43,9 +43,9 @@ export function usePrices() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data } = await (supabase as any).from("coin_prices").select("*");
 
-      const priceMap = ((data || []) as CoinPrice[]).reduce(
-        (acc: Record<string, CoinPrice>, price: unknown) => {
-          acc[price.symbol] = price as CoinPrice;
+      const priceMap = ((data || []) as unknown as CoinPrice[]).reduce(
+        (acc: Record<string, CoinPrice>, price) => {
+          acc[price.symbol] = price;
           return acc;
         },
         {} as Record<string, CoinPrice>,
