@@ -83,12 +83,12 @@ export default function ClientAdminUsers() {
   const fetchUsers = async () => {
     try {
       const { data, error } = await supabase
-        .from("admin_user_list" as any)
+        .from("user_profiles")
         .select("*")
-        .order("user_number", { ascending: true });
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
-      setUsers(data || []);
+      setUsers((data as unknown as UserData[]) || []);
     } catch (error) {
       console.error("Error fetching users:", error);
       toast.error("Kunne ikke hente brukere");
@@ -122,16 +122,17 @@ export default function ClientAdminUsers() {
       const { data, error } = await supabase.rpc("admin_change_role", {
         p_user_id: userId,
         p_new_role: newRole,
-        p_admin_id: user?.id,
+        p_admin_id: user?.id || '',
       });
 
       if (error) throw error;
 
-      if (data?.success) {
+      const result = data as { success?: boolean; error?: string } | null
+      if (result?.success) {
         toast.success(`Rolle endret til ${newRole}`);
         fetchUsers();
       } else {
-        toast.error(data?.error || "Kunne ikke endre rolle");
+        toast.error(result?.error || "Kunne ikke endre rolle");
       }
     } catch (error) {
       console.error("Error updating role:", error);
@@ -148,22 +149,17 @@ export default function ClientAdminUsers() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      const { data, error } = await supabase.rpc("admin_upgrade_user", {
-        p_user_id: selectedUser.id,
-        p_new_tier: newTier,
-        p_admin_id: user?.id,
-      });
-
-      if (error) throw error;
-
-      if (data?.success) {
-        toast.success(`Bruker oppgradert til ${newTier}`);
-        setShowUpgradeModal(false);
-        setSelectedUser(null);
-        fetchUsers();
-      } else {
-        toast.error(data?.error || "Kunne ikke oppgradere");
-      }
+      // TODO: Create admin_upgrade_user RPC in DB
+      // const { data, error } = await supabase.rpc("admin_upgrade_user", {
+      //   p_user_id: selectedUser.id,
+      //   p_new_tier: newTier,
+      //   p_admin_id: user?.id,
+      // });
+      // if (error) throw error;
+      
+      toast.info("Upgrade feature coming soon");
+      setShowUpgradeModal(false);
+      setSelectedUser(null);
     } catch (error) {
       console.error("Error upgrading user:", error);
       toast.error("Kunne ikke oppgradere bruker");

@@ -70,11 +70,11 @@ export default async function PaperTradingPage({
 
     // Hent alle paper trading sessions for brukeren
     const { data: sessions, error } = await supabase
-      .from("trading_sessions" as any)
+      .from("trading_sessions")
       .select(
         "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at"
       )
-      .eq("user_id" as any, user.id)
+      .eq("user_id", user.id)
       .eq("mode", "paper")
       .order("created_at", { ascending: false });
 
@@ -100,7 +100,7 @@ export default async function PaperTradingPage({
         </div>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <PaperTradingList 
-            sessions={sessions || []} 
+            sessions={(sessions as any) || []} 
             balance={balance}
             locale={locale}
           />

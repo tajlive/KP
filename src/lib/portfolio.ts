@@ -23,6 +23,15 @@ export interface PortfolioOverview {
   lastSynced: string | null;
 }
 
+interface BinanceBalance {
+  id: string;
+  asset: string;
+  total: number;
+  last_price: number;
+  usd_value: number;
+  updated_at: string;
+}
+
 export interface PortfolioPosition {
   id: string;
   symbol: string;
@@ -105,13 +114,13 @@ export async function getPortfolioOverview(
       if (binanceBalances && binanceBalances.length > 0) {
         // Bruker har Binance-data
         const totalValue = binanceBalances.reduce(
-          (sum: number, b: unknown) => sum + safeNumber(b.usd_value),
+          (sum: number, b: BinanceBalance) => sum + safeNumber(b.usd_value),
           0,
         );
         const lastSynced = binanceBalances[0]?.updated_at || null;
 
         const mappedPositions: PortfolioPosition[] = binanceBalances.map(
-          (bal: unknown) => ({
+          (bal: BinanceBalance) => ({
             id: bal.id,
             symbol: bal.asset,
             quantity: safeNumber(bal.total),

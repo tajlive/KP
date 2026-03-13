@@ -35,7 +35,7 @@ export * from './performance-review'
 export * from './notifications'
 
 // Advanced features
-export * from './backtest-engine'
+// export * from './backtest-engine'  // Removed - feature dropped
 export * from './portfolio-optimizer'
 export * from './ml-risk-assessment'
 

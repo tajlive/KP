@@ -146,16 +146,16 @@ export default function ClientAutoTradeDashboard() {
   const fetchStrategies = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('strategies' as unknown)
+        .from('user_strategies')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setStrategies(data || []);
+      setStrategies((data as unknown as Strategy[]) || []);
       
       // Calculate stats
-      const activeCount = data?.filter(s => s.is_active).length || 0;
-      const totalPnl = data?.reduce((sum, s) => sum + (s.pnl_usdt || 0), 0) || 0;
+      const activeCount = data?.filter((s: any) => s.is_active).length || 0;
+      const totalPnl = data?.reduce((sum: number, s: any) => sum + (s.pnl_usdt || 0), 0) || 0;
       
       setStats(prev => ({
         ...prev,
@@ -177,12 +177,12 @@ export default function ClientAutoTradeDashboard() {
         .limit(20);
 
       if (error) throw error;
-      setTrades(data || []);
+      setTrades((data as unknown as Trade[]) || []);
       
       // Calculate win rate
       if (data && data.length > 0) {
-        const closedTrades = data.filter(t => t.closed_at);
-        const winningTrades = closedTrades.filter(t => (t.pnl_usdt || 0) > 0);
+        const closedTrades = data.filter((t: any) => t.executed_at);
+        const winningTrades = closedTrades.filter((t: any) => (t.pnl || 0) > 0);
         const winRate = closedTrades.length > 0 
           ? (winningTrades.length / closedTrades.length) * 100 
           : 0;
@@ -235,7 +235,7 @@ export default function ClientAutoTradeDashboard() {
         return;
       }
 
-      const { error } = await supabase.from('strategies' as unknown).insert({
+      const { error } = await supabase.from('user_strategies').insert({
         user_id: user.id,
         ...newStrategy,
       });
@@ -251,12 +251,12 @@ export default function ClientAutoTradeDashboard() {
       setShowAddStrategy(false);
       // Open the newly created strategy in live view
       const { data: newStrategies } = await supabase
-        .from('strategies' as unknown)
+        .from('user_strategies')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(1);
       if (newStrategies?.[0]) {
-        setSelectedStrategy(newStrategies[0]);
+        setSelectedStrategy(newStrategies[0] as unknown as Strategy);
       }
       fetchStrategies();
     } catch (error) {
@@ -293,7 +293,7 @@ export default function ClientAutoTradeDashboard() {
   const toggleStrategy = async (id: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
-        .from('strategies' as unknown)
+        .from('user_strategies')
         .update({ is_active: !currentStatus })
         .eq('id', id);
 
@@ -311,7 +311,7 @@ export default function ClientAutoTradeDashboard() {
 
     try {
       const { error } = await supabase
-        .from('strategies' as unknown)
+        .from('user_strategies')
         .delete()
         .eq('id', id);
 

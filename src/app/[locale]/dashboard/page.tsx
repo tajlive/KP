@@ -76,30 +76,30 @@ export default async function DashboardPage({
         supabase
           .from("user_profiles")
           .select("id, user_id, paper_balance, real_balance, tier")
-          .eq("user_id" as any, user.id)
+          .eq("user_id", user.id)
           .single() as any,
         supabase
           .from("trades")
           .select("*")
-          .eq("user_id" as any, user.id)
+          .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(20),
-        (supabase as unknown)
-          .from("strategies")
+        supabase
+          .from("user_strategies")
           .select("*")
-          .eq("user_id" as any, user.id)
+          .eq("user_id", user.id)
           .eq("is_active", true),
         supabase
           .from("onboarding_progress")
           .select("completed_lessons")
-          .eq("user_id" as any, user.id)
+          .eq("user_id", user.id)
           .single() as any,
         supabase
           .from("trading_sessions")
           .select(
             "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, last_heartbeat, created_at"
           )
-          .eq("user_id" as any, user.id)
+          .eq("user_id", user.id)
           .eq("status", "active")
           .order("created_at", { ascending: false })
           .limit(1)
@@ -120,7 +120,7 @@ export default async function DashboardPage({
         {/* Bot status card - shows active trading sessions */}
         {sessionRes.data ? (
           <BotStatusCard
-            initialSession={sessionRes.data}
+            initialSession={sessionRes.data as any}
           />
         ) : (
           <EmptyBotState />

@@ -57,7 +57,7 @@ interface CopyStore {
 }
 
 export const useCopyStore = create<CopyStore>()(
-  (set: unknown, get: unknown) => ({
+  (set, get) => ({
     following: [],
     activeCopies: [],
     totalCopyPnl: 0,
@@ -69,14 +69,14 @@ export const useCopyStore = create<CopyStore>()(
       try {
         const supabase = createClient();
         const { data, error } = (await supabase
-          .from("copy_trading_follows" as unknown)
+          .from("copy_trading_follows")
           .select("*")
-          .order("created_at", { ascending: false })) as unknown;
+          .order("created_at", { ascending: false }));
 
         if (error) throw error;
 
         const following: FollowedTrader[] = (data || []).map(
-          (cfg: Record<string, unknown>) => ({
+          (cfg: any) => ({
             id: cfg.id as string,
             leaderId: cfg.leader_id as string,
             leaderName: (cfg.leader_name as string) || "Unknown Trader",

@@ -44,9 +44,9 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       .eq('follower_id', user.id)
       .eq('is_active', true);
 
-    const followedLeaderIds = new Set(follows?.map(f => f.leader_id) ?? []);
+    const followedLeaderIds = new Set(follows?.map((f: any) => f.leader_id) ?? []);
 
-    const enrichedLeaders = (leaders ?? []).map(leader => ({
+    const enrichedLeaders = (leaders ?? []).map((leader: any) => ({
       ...leader,
       is_following: followedLeaderIds.has(leader.user_id),
     }));

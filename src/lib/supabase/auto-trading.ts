@@ -29,11 +29,11 @@ export async function getAutoTradingConfig(
 ): Promise<AutoTradingConfig | null> {
   const supabase = await createClient();
 
-  const { data, error } = (await supabase
-    .from("auto_trading_configs" as unknown)
+  const { data, error } = await supabase
+    .from("auto_trading_configs")
     .select("*")
-    .eq("user_id" as any, userId)
-    .single() as any) as unknown;
+    .eq("user_id", userId)
+    .single();
 
   if (error) {
     if (error.code === "PGRST116") return null;
@@ -41,7 +41,7 @@ export async function getAutoTradingConfig(
     throw new Error("Failed to get auto trading config");
   }
 
-  return data as AutoTradingConfig;
+  return data as unknown as AutoTradingConfig;
 }
 
 /**

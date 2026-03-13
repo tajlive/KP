@@ -81,6 +81,6 @@ export default async function OnboardingPage({
     console.error('Onboarding page error:', error);
     // Return fallback UI istedenfor å krasje
     // Hvis locale ikke er satt, bruk default
-    return <OnboardingErrorFallback locale={locale || 'no'} />;
+    return <OnboardingErrorFallback locale="no" />;
   }
 }
