@@ -1,4 +1,5 @@
 import GetStartedCard from "@/components/dashboard/GetStartedCard";
+import type { TradingSession } from "@/lib/shared";
 import { BotStatusCard } from "@/components/dashboard/BotStatusCard";
 import { EmptyBotState } from "@/components/dashboard/EmptyBotState";
 import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
@@ -77,7 +78,7 @@ export default async function DashboardPage({
           .from("user_profiles")
           .select("id, user_id, paper_balance, real_balance, tier")
           .eq("user_id", user.id)
-          .single() as any,
+          .single(),
         supabase
           .from("trades")
           .select("*")
@@ -93,7 +94,7 @@ export default async function DashboardPage({
           .from("onboarding_progress")
           .select("completed_lessons")
           .eq("user_id", user.id)
-          .single() as any,
+          .single(),
         supabase
           .from("trading_sessions")
           .select(
@@ -120,7 +121,7 @@ export default async function DashboardPage({
         {/* Bot status card - shows active trading sessions */}
         {sessionRes.data ? (
           <BotStatusCard
-            initialSession={sessionRes.data as any}
+            initialSession={sessionRes.data as unknown as TradingSession}
           />
         ) : (
           <EmptyBotState />

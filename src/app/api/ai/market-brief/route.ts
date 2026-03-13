@@ -16,7 +16,8 @@ interface MarketBrief {
 
 export async function GET() {
   try {
-    const db = (await createClient()) as unknown;
+    // Database client (ready for caching)
+    // const db = await createClient();
 
     // TODO: Create ai_cache table in database
     // Check cache first (refresh every hour)
