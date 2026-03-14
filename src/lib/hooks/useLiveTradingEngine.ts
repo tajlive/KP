@@ -101,7 +101,6 @@ export function useLiveTradingEngine(symbol: string): LiveTradingEngine {
     };
 
     checkConnection();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Update price from Binance WebSocket or API
@@ -137,7 +136,6 @@ export function useLiveTradingEngine(symbol: string): LiveTradingEngine {
     const interval = setInterval(fetchPrice, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol]);
 
   // Calculate unrealized PnL

@@ -66,9 +66,9 @@ function DashboardErrorFallback({ locale }: { locale: string }) {
 /**
  * Check if user has completed all required course modules
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 async function checkRequiredCourseProgress(
-  supabase: any,
+  supabase: unknown,
   userId: string,
 ) {
   // Get required modules (include slug for CourseGate navigation)
@@ -88,7 +88,7 @@ async function checkRequiredCourseProgress(
     .select("id, module_id")
     .in(
       "module_id",
-      requiredModules.map((m: any) => m.id)
+      requiredModules.map((m: unknown) => m.id)
     )
     .eq("is_published", true);
 
@@ -104,7 +104,7 @@ async function checkRequiredCourseProgress(
     .eq("status", "completed")
     .in(
       "lesson_id",
-      requiredLessons.map((l: any) => l.id)
+      requiredLessons.map((l: unknown) => l.id)
     );
 
   const completedIds = new Set(
@@ -131,7 +131,7 @@ async function checkRequiredCourseProgress(
     };
   });
 
-  const allCompleted = progress.every((p: any) => p.isCompleted);
+  const allCompleted = progress.every((p: unknown) => p.isCompleted);
 
   return { allCompleted, progress };
 }

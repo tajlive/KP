@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LessonPage({ params }: PageProps) {
   const { lessonId, locale } = await params;
-  const t = await getTranslations({ locale, namespace: "courses" });
+  const _t = await getTranslations({ locale, namespace: "courses" });
 
   const isEnglish = locale === "en";
 

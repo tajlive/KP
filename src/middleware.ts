@@ -44,11 +44,12 @@ export async function middleware(request: NextRequest) {
   const isProtected = PROTECTED_PATHS.some(p => strippedPath.startsWith(p))
 
   if (isProtected) {
-    // Sjekk Supabase session via cookie
-    const sessionCookie = request.cookies.get('sb-access-token') ||
-                          request.cookies.get('sb-vuxbjlykgmzskxbclquf-auth-token')
-    
-    if (!sessionCookie) {
+    // Supabase SSR uses sb-<projectRef>-auth-token (or chunked: .0, .1, …)
+    const hasSession = request.cookies.getAll().some(
+      c => c.name === 'sb-access-token' ||
+           c.name.startsWith('sb-') && c.name.includes('-auth-token')
+    )
+    if (!hasSession) {
       const loginUrl = new URL(`/${locale}/innlogging`, request.url)
       loginUrl.searchParams.set('next', pathname)
       return NextResponse.redirect(loginUrl)

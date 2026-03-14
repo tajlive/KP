@@ -3,9 +3,11 @@
 import { useAuth } from "@/components/auth/AuthContext";
 import { usePulseData } from "@/hooks/usePulseData";
 import { Activity, TrendingDown, TrendingUp } from "lucide-react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 
 export function MiniPulseWidget() {
+  const locale = useLocale();
   const { user } = useAuth();
 
   const { stats, isConnected } = usePulseData({
@@ -19,7 +21,7 @@ export function MiniPulseWidget() {
 
   return (
     <Link
-      href="/dashboard"
+      href={`/${locale}/dashboard`}
       className="group flex items-center gap-3 px-3 py-1.5 bg-slate-900/50 hover:bg-slate-800 rounded-2xl border border-white/5 transition-all duration-300 hover:border-white/10"
     >
       <div className="relative">

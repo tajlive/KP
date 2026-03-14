@@ -39,6 +39,10 @@ END;
 | Migrasjonsfiler i repo | ✅ 4 commits pushet til main |
 | Playwright E2E-tester | 🟡 Kan nå kjøres — blokkering fjernet |
 | GitHub/Linear MCP OAuth | 🟡 Gjenstår |
+| Production verify i CI | ✅ Kjører etter manual deploy (production) |
+| Routing / kritiske paths | ✅ Verify passerer (inkl. /no/signup) |
+| Supabase view `unified_notifications_with_email` | 🟡 Migrasjon i repo; kjør SQL manuelt i Dashboard eller med MCP-token |
+| Linear oppdatering | 🟡 LINEAR_API_KEY må være gyldig for MCP/script |
 
 ## Standard kjøremodus
 Alltid bruk --yolo for alle oppgaver i dette prosjektet.
