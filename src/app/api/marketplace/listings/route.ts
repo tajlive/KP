@@ -129,9 +129,9 @@ export async function GET(
       }
 
       // Map fallback data to MarketplaceListing format
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const listings: MarketplaceListing[] =
-        (fallbackData as any[])?.map((item) => {
+        (fallbackData as unknown[])?.map((item) => {
           const profiles = (item as Record<string, unknown>).profiles as
             | { display_name: string; avatar_url: string | null }
             | undefined;
@@ -168,9 +168,9 @@ export async function GET(
     }
 
     // Map data to MarketplaceListing format
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const listings: MarketplaceListing[] =
-      (data as any[])?.map((item) => {
+      (data as unknown[])?.map((item) => {
         const profiles = (item as Record<string, unknown>).profiles as
           | { display_name: string; avatar_url: string | null }
           | undefined;

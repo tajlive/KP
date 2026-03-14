@@ -138,7 +138,7 @@ export class AutoTradingWebSocket {
    */
   private async getListenKey(): Promise<string | null> {
     try {
-      const supabase = createClient()
+      const supabase: unknown = createClient()
       
       // Call edge function to get listen key
       const { data, error } = await supabase.functions.invoke('binance-get-listen-key', {
@@ -164,7 +164,7 @@ export class AutoTradingWebSocket {
     if (!this.listenKey) return
 
     try {
-      const supabase = createClient()
+      const supabase: unknown = createClient()
       await supabase.functions.invoke('binance-keep-alive-listen-key', {
         body: { 
           userId: this.userId,
@@ -280,14 +280,14 @@ export class AutoTradingWebSocket {
    */
   private async updateOrderInDatabase(update: OrderUpdate): Promise<void> {
     try {
-      const supabase = createClient()
+      const supabase: unknown = createClient()
 
       // Find trade by Binance order ID
       const { data: trade } = await supabase
         .from('auto_trading_trades')
         .select('*')
         .eq('binance_order_id', update.orderId)
-        .single() as any
+        .single() as unknown
 
       if (!trade) return
 
@@ -312,14 +312,14 @@ export class AutoTradingWebSocket {
    */
   private async handleOrderFilled(update: OrderUpdate): Promise<void> {
     try {
-      const supabase = createClient()
+      const supabase: unknown = createClient()
 
       // Find trade
       const { data: trade } = await supabase
         .from('auto_trading_trades')
         .select('*')
         .eq('binance_order_id', update.orderId)
-        .single() as any
+        .single() as unknown
 
       if (!trade) return
 
@@ -416,7 +416,7 @@ export class AutoTradingWebSocket {
    */
   private async closeListenKey(): Promise<void> {
     try {
-      const supabase = createClient()
+      const supabase: unknown = createClient()
       await supabase.functions.invoke('binance-close-listen-key', {
         body: { 
           userId: this.userId,

@@ -23,7 +23,7 @@ export default function ProgressiveDashboard() {
             .from('user_profiles')
             .select('tier, view_mode_preference')
             .eq('id', user.id)
-            .single() as any;
+            .single() as unknown;
 
           if (data) {
             setUserTier(data.tier || 'student');

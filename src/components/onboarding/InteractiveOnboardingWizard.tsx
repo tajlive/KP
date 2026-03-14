@@ -17,7 +17,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 
 // KLA-98: Dynamically import canvas-confetti
@@ -83,14 +83,7 @@ export default function InteractiveOnboardingWizard({
     });
   }, []);
 
-  // KLA-98: Pre-initialize when template is selected in Step 2
-  useEffect(() => {
-    if (selectedTemplate && step === 2 && !preInitialized) {
-      preInitializeStrategy();
-    }
-  }, [selectedTemplate, step, preInitialized]);
-
-  const preInitializeStrategy = async () => {
+  const preInitializeStrategy = useCallback(async () => {
     if (!selectedTemplate) return;
 
     try {
@@ -113,7 +106,14 @@ export default function InteractiveOnboardingWizard({
     } catch (error) {
       console.error("Pre-initialization failed:", error);
     }
-  };
+  }, [selectedTemplate, capital]);
+
+  // KLA-98: Pre-initialize when template is selected in Step 2
+  useEffect(() => {
+    if (selectedTemplate && step === 2 && !preInitialized) {
+      preInitializeStrategy();
+    }
+  }, [selectedTemplate, step, preInitialized, preInitializeStrategy]);
 
   const triggerConfetti = () => {
     const fireConfetti = confetti;

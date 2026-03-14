@@ -67,9 +67,9 @@ export function RiskProfilePulse({
       const { data } = await supabase
         .from("paper_trading_sessions")
         .select("current_balance, starting_balance")
-        .eq("user_id" as any, user.id)
+        .eq("user_id" as unknown, user.id)
         .eq("status", "active")
-        .single() as any;
+        .single() as unknown;
 
       if (data) {
         const change = data.current_balance - data.starting_balance;
@@ -312,9 +312,9 @@ export function MiniPulseWidget() {
       const { data: portfolioData } = await supabase
         .from("paper_trading_sessions")
         .select("current_balance, starting_balance")
-        .eq("user_id" as any, user.id)
+        .eq("user_id" as unknown, user.id)
         .eq("status", "active")
-        .single() as any;
+        .single() as unknown;
 
       if (portfolioData) {
         const change =
@@ -330,8 +330,8 @@ export function MiniPulseWidget() {
       const { data: profileData } = await supabase
         .from("risk_profiles")
         .select("name")
-        .eq("user_id" as any, user.id)
-        .single() as any;
+        .eq("user_id" as unknown, user.id)
+        .single() as unknown;
 
       if (profileData) {
         setProfile(profileData.name as RiskProfile);

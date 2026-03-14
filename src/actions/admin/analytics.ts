@@ -34,7 +34,7 @@ export async function getDashboardMetrics(
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
-      .single() as any;
+      .single<{ role: string | null }>();
     if (!isWhitelisted && profile?.role !== "admin") {
       return { success: false, error: "Forbidden: Admin access required" };
     }
@@ -134,7 +134,7 @@ export async function getSignupTrend(days: number = 30) {
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
-      .single() as any;
+      .single<{ role: string | null }>();
     if (!isWhitelisted && profile?.role !== "admin") {
       return { success: false, error: "Forbidden: Admin access required" };
     }

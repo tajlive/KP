@@ -55,8 +55,12 @@ export function usePulseData({
       if (metricsError) throw metricsError;
 
       // Transform metrics to chart data
-      const chartData: PulseChartData[] = ((metrics || []) as unknown as Array<{date: string; ending_capital_nok: number}>).map((m) => ({
-        time: (new Date(m.date).getTime() / 1000) as unknown,
+      interface MetricData {
+        date: string;
+        ending_capital_nok: number;
+      }
+      const chartData: PulseChartData[] = ((metrics || []) as MetricData[]).map((m) => ({
+        time: Math.floor(new Date(m.date).getTime() / 1000),
         value: Number(m.ending_capital_nok),
       }));
 
@@ -72,11 +76,19 @@ export function usePulseData({
 
       // Transform trades to events
       const profile = PRESET_PROFILES[profileId];
-      const pulseEvents: PulseEvent[] = (trades || []).map((t: unknown) => ({
+      interface TradeRow {
+        id: string;
+        created_at: string;
+        side: string;
+        trading_pair: string;
+        price: number;
+        quantity: number;
+      }
+      const pulseEvents: PulseEvent[] = ((trades || []) as TradeRow[]).map((t) => ({
         id: t.id,
-        time: (new Date(t.created_at).getTime() / 1000) as unknown,
+        time: Math.floor(new Date(t.created_at).getTime() / 1000),
         type: t.side === "buy" ? "buy" : "sell",
-        symbol: t.symbol,
+        symbol: t.trading_pair,
         price: Number(t.price),
         amount: Number(t.quantity),
         explanation: profile.tooltip.explanation,
@@ -87,12 +99,17 @@ export function usePulseData({
       setEvents(pulseEvents);
 
       // 3. Get current session for real-time stats
-      const { data: session, error: sessionError } = (await supabase
+      interface TradingSession {
+        current_capital_nok: number;
+        total_pnl_nok?: number;
+        total_pnl_pct?: number;
+      }
+      const { data: session, error: sessionError } = await supabase
         .from("trading_sessions")
-        .select("*")
-        .eq("user_id" as any, userId)
+        .select("current_capital_nok, total_pnl_nok, total_pnl_pct")
+        .eq("user_id", userId)
         .eq("status", "active")
-        .maybeSingle()) as unknown;
+        .maybeSingle<TradingSession>();
 
       if (session && !sessionError) {
         setStats({
@@ -132,10 +149,10 @@ export function usePulseData({
           const profile = PRESET_PROFILES[profileId];
 
           const newEvent: PulseEvent = {
-            id: newTrade.id,
-            time: (new Date(newTrade.created_at).getTime() / 1000) as unknown,
-            type: newTrade.side === "buy" ? "buy" : "sell",
-            symbol: newTrade.symbol,
+            id: newTrade.id as string,
+            time: Math.floor(new Date(newTrade.created_at as string).getTime() / 1000),
+            type: (newTrade.side as string) === "buy" ? "buy" : "sell",
+            symbol: (newTrade.trading_pair as string) || "",
             price: Number(newTrade.price),
             amount: Number(newTrade.quantity),
             explanation: profile.tooltip.explanation,

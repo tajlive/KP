@@ -43,7 +43,7 @@ export async function getStrategyById(strategyId: string): Promise<AutoTradingSt
     .from('auto_trading_strategies')
     .select('*')
     .eq('id', strategyId)
-    .single() as any
+    .single() as unknown
 
   if (error) {
     console.error('Error fetching strategy:', error)
@@ -59,7 +59,7 @@ export async function getStrategyByRiskLevel(riskLevel: RiskLevel): Promise<Auto
     .select('*')
     .eq('risk_level', riskLevel)
     .eq('is_active', true)
-    .single() as any
+    .single() as unknown
 
   if (error) {
     console.error('Error fetching strategy by risk level:', error)
@@ -78,7 +78,7 @@ export async function getUserConfig(userId: string): Promise<UserAutoTradingConf
     .from('user_auto_trading_configs')
     .select('*')
     .eq('user_id', userId)
-    .single() as any
+    .single() as unknown
 
   if (error && error.code !== 'PGRST116') {
     console.error('Error fetching user config:', error)
@@ -105,7 +105,7 @@ export async function createUserConfig(
       allocated_capital_pct: 10.00,
     })
     .select()
-    .single() as any
+    .single() as unknown
 
   if (error) {
     console.error('Error creating user config:', error)
@@ -148,7 +148,7 @@ export async function getActiveSession(userId: string): Promise<AutoTradingSessi
     .eq('status', 'active')
     .order('started_at', { ascending: false })
     .limit(1)
-    .single() as any
+    .single() as unknown
 
   if (error && error.code !== 'PGRST116') {
     console.error('Error fetching active session:', error)
@@ -197,7 +197,7 @@ export async function createSession(
       status: 'active',
     })
     .select()
-    .single() as any
+    .single() as unknown
 
   if (error) {
     console.error('Error creating session:', error)
@@ -278,7 +278,7 @@ export async function createTrade(trade: Partial<AutoTradingTrade>): Promise<Aut
     .from('trades')                    // ← var: auto_trading_trades
     .insert(trade)
     .select()
-    .single() as any
+    .single() as unknown
 
   if (error) {
     console.error('Error creating trade:', error)
@@ -329,7 +329,7 @@ export async function getTodayMetrics(sessionId: string): Promise<Record<string,
     .select('*')
     .eq('session_id', sessionId)
     .eq('date', today)
-    .single() as any
+    .single() as unknown
 
   if (error && error.code !== 'PGRST116') {
     console.error('Error fetching today metrics:', error)

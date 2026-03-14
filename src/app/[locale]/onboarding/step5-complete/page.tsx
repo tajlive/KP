@@ -32,8 +32,8 @@ export default function OnboardingStep5() {
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("onboarding_step, onboarding_completed, paper_balance")
-          .eq("user_id" as any, user.id)
-          .single() as any;
+          .eq("user_id" as unknown, user.id)
+          .single() as unknown;
 
         // Hvis allerede fullført, vis suksess
         if (profile?.onboarding_completed) {

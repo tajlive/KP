@@ -1,0 +1,16 @@
+{
+  "plugins": {
+    "sentry": {
+      "enabled": true
+    },
+    "stripe": {
+      "enabled": true
+    },
+    "supabase": {
+      "enabled": true
+    },
+    "linear": {
+      "enabled": true
+    }
+  }
+}

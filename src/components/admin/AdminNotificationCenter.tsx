@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,18 +21,13 @@ interface Notification {
 }
 
 export function AdminNotificationCenter() {
-    const supabase = createClient()
+    const supabase = useMemo(() => createClient(), [])
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
     const [showPanel, setShowPanel] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        fetchNotifications()
-        subscribeToNotifications()
-    }, [])
-
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('admin_notifications')
@@ -54,9 +49,9 @@ export function AdminNotificationCenter() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [supabase])
 
-    const subscribeToNotifications = () => {
+    const subscribeToNotifications = useCallback(() => {
         const channel = supabase
             .channel('admin_notifications')
             .on(
@@ -76,7 +71,13 @@ export function AdminNotificationCenter() {
         return () => {
             supabase.removeChannel(channel)
         }
-    }
+    }, [supabase])
+
+    useEffect(() => {
+        fetchNotifications()
+        const unsubscribe = subscribeToNotifications()
+        return unsubscribe
+    }, [fetchNotifications, subscribeToNotifications])
 
     const markAsRead = async (id: string) => {
         try {

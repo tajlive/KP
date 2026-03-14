@@ -86,8 +86,8 @@ export default async function PaperTradingPage({
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("paper_balance")
-      .eq("user_id" as any, user.id)
-      .single() as any;
+      .eq("user_id" as unknown, user.id)
+      .single() as unknown;
 
     const balance = profile?.paper_balance || 10000;
 
@@ -100,7 +100,7 @@ export default async function PaperTradingPage({
         </div>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <PaperTradingList 
-            sessions={(sessions as any) || []} 
+            sessions={(sessions as unknown) || []} 
             balance={balance}
             locale={locale}
           />

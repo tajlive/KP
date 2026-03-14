@@ -46,7 +46,7 @@ async function verifyAdmin(request: NextRequest) {
     .from('user_profiles')
     .select('role')
     .eq('id', user.id)
-    .single() as any;
+    .single() as unknown;
   
   if (!isWhitelisted && profile?.role !== 'admin') {
     return { isAdmin: false, error: 'Forbidden: Admin access required', status: 403 };
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       .from('user_profiles')
       .select('*')
       .eq('user_id', userData.user.id)
-      .single() as any;
+      .single() as unknown;
     
     if (profileError || !profile) {
       console.error('[Admin Create User]: Profile not created:', profileError);

@@ -39,7 +39,7 @@ export function DashboardSidebar() {
           const { data: profile } = await supabase
             .from("user_profiles")
             .select("tier")
-            .eq("user_id" as any, user.id)
+            .eq("user_id" as unknown, user.id)
             .maybeSingle();
           // Note: tier is enum 'free' | 'student' | 'master' | 'phd' | 'professor'
           // 'professor' is considered admin-level

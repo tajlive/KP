@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { session_id, user_id, page_path } = body;
 
-    const supabase: any = (await createClient()) as unknown;
+    const supabase: unknown = (await createClient()) as unknown;
 
     // Track page view as analytics event
     await supabase.from('analytics_events').insert({

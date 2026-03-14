@@ -56,7 +56,7 @@ export function useProfile() {
           user_id: user.id,
           ...updates,
           updated_at: new Date().toISOString(),
-        } as any)
+        } as unknown)
         .select()
         .single();
       if (upsertError) {
@@ -84,7 +84,7 @@ export function useProfile() {
       }
       const { data, error: updateError } = await supabase
         .from("user_profiles")
-        .update({ ...updates, updated_at: new Date().toISOString() } as any)
+        .update({ ...updates, updated_at: new Date().toISOString() } as unknown)
         .eq("user_id", user.id)
         .select()
         .single();

@@ -4,8 +4,8 @@
  * Automatisk start ved første besøk til /dashboard/auto-trade
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { TIERS } from '@/lib/pricing/tiers';
+import { createClient } from '../supabase/server';
+import { TIERS } from '../pricing/tiers';
 
 export interface TrialStatus {
   isActive: boolean;
@@ -30,7 +30,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
     .from('user_profiles')
     .select('created_at, subscription_tier, trial_started_at, trial_expires_at')
     .eq('id', userId)
-    .single() as any;
+    .single() as unknown;
   
   if (error || !profile) {
     return {
@@ -45,7 +45,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
     };
   }
   
-  const tier = TIERS[profile.subscription_tier as keyof typeof TIERS];
+  const tier = TIERS[profile.tier as keyof typeof TIERS];
   
   // 2. Hvis betalt tier → ingen trial nødvendig
   if (tier.liveTrading && tier.priceNOK > 0) {
@@ -127,7 +127,7 @@ async function startTrial(userId: string): Promise<TrialStatus> {
     .update({
       trial_started_at: now.toISOString(),
       trial_expires_at: expiresAt.toISOString(),
-    })
+    } as unknown)
     .eq('id', userId);
   
   if (error) {

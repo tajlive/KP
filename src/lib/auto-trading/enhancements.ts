@@ -42,13 +42,13 @@ export async function checkRebalanceNeeded(
     .from('auto_trading_sessions')
     .select('*, config:user_auto_trading_configs(*)')
     .eq('id', sessionId)
-    .single() as any
+    .single() as unknown
 
   if (!session) {
     return { needsRebalance: false, deviations: [], suggestedTrades: [] }
   }
 
-  const { data: positions } = await supabase
+  const { data: positions } = await (supabase as unknown)
     .from('auto_trading_trades')
     .select('*')
     .eq('session_id', sessionId)
@@ -206,7 +206,7 @@ export async function checkEducationStatus(
     .from('auto_trading_sessions')
     .select('*')
     .eq('id', sessionId)
-    .single() as any
+    .single() as unknown
 
   if (!session) {
     return {

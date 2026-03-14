@@ -138,7 +138,7 @@ export function useNotifications() {
   // Mark notifications as read
   const markAsRead = async (notificationIds?: string[]) => {
     try {
-      const { error } = await (supabase.rpc as any)('mark_notifications_read', {
+      const { error } = await (supabase.rpc as unknown)('mark_notifications_read', {
         p_notification_ids: notificationIds || null,
       });
 
@@ -166,7 +166,7 @@ export function useNotifications() {
     try {
       const { error } = await supabase
         .from('notification_preferences')
-        .upsert({ ...preferences, ...newPrefs } as any);
+        .upsert({ ...preferences, ...newPrefs } as unknown);
 
       if (error) throw error;
 

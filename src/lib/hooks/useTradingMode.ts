@@ -44,7 +44,7 @@ export function useTradingMode() {
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("tier")
-          .eq("user_id" as any, user.id)
+          .eq("user_id" as unknown, user.id)
           .maybeSingle();
 
         const liveTiers = ["master", "phd", "professor"];

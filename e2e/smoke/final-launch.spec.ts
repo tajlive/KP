@@ -19,7 +19,9 @@ test('Prisside: laster', async ({ page }) => {
 
 test('Innlogging: viser loginskjema', async ({ page }) => {
   await page.goto(`${BASE}/no/innlogging`)
-  await expect(page.locator('input[type="email"]')).toBeVisible()
+  // Login page is implemented as a client component with data-testid
+  const loginPage = page.locator('[data-testid="login-page"]')
+  await expect(loginPage).toBeVisible()
 })
 
 test('Ingen MISSING_MESSAGE errors', async ({ page }) => {

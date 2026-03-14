@@ -335,17 +335,18 @@ export class AutoTradingEngine {
       // Log the trade execution
       await supabase.from('trades').insert({
         user_id: this.config.userId,
-        symbol: decision.symbol,
+        trading_pair: decision.symbol,
         side: decision.action === 'BUY' ? 'buy' : 'sell',
-        type: 'market',
-        entry_price: decision.targetPrice, // This would be current market price in reality
-        amount: positionSize,
-        stop_loss: decision.stopLoss,
-        take_profit: decision.targetPrice,
-        ai_confidence: decision.confidence,
-        ai_reason: decision.reason,
-        sentiment_score: decision.sentiment,
-        status: 'open'
+        order_type: 'market',
+        price: decision.targetPrice,
+        quantity: positionSize,
+        status: 'open',
+        mode: 'paper',
+        idempotency_key: `${this.config.userId}-${decision.symbol}-${Date.now()}`,
+        fee: 0,
+        total_value: positionSize * decision.targetPrice,
+        session_id: this.config.userId, // Using userId as fallback - should be actual session
+        executed_at: new Date().toISOString(),
       });
 
       // Mark as executed
