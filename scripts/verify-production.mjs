@@ -32,7 +32,7 @@ const CRITICAL_PATHS = [
   { path: "/no", status: 200, description: "Norwegian homepage" },
   { path: "/no/login", status: 200, description: "Login page" },
   { path: "/no/signup", status: 200, description: "Signup page" },
-  { path: "/no/pricing", status: 200, description: "Pricing page" },
+  { path: "/no/priser", status: 200, description: "Pricing page (priser)" },
   {
     path: "/no/paper-trading",
     status: 200,
