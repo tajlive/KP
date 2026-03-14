@@ -152,7 +152,7 @@ export default function ClientAdminAnalytics() {
     value,
     change,
     icon: Icon,
-    trend,
+    trend: _trend,
   }: {
     title: string;
     value: string | number;

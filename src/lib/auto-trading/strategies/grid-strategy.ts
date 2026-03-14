@@ -173,7 +173,8 @@ export class GridStrategy extends BaseStrategy {
     sellPrice: number;
     quantity: number;
   }> {
-    let { gridCount, gridRangePct, upperPrice, lowerPrice } = this.gridConfig;
+    const { gridCount } = this.gridConfig;
+    let { gridRangePct, upperPrice, lowerPrice } = this.gridConfig;
 
     // PRO REFINEMENT: Auto-Range med Bollinger Bands
     if (

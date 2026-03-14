@@ -51,3 +51,7 @@ jobs:
           else
             npx vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
           fi
+
+      - name: ✅ Verify production (kun ved production deploy)
+        if: github.event.inputs.environment == 'production'
+        run: npm run verify

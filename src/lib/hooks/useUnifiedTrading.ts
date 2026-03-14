@@ -218,7 +218,6 @@ export function useUnifiedTrading(
     };
 
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Refresh trades when session changes

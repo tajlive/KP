@@ -62,7 +62,7 @@ export default function ClientAkademi() {
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
 
   const { 
-    completedLessonIds, 
+    completedLessonIds: _completedLessonIds, 
     hasCompletedLesson,
     getTrackProgress 
   } = useLearningProgress();

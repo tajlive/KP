@@ -140,13 +140,13 @@ export default function ClientAdminUsers() {
     }
   };
 
-  const handleUpgrade = async (newTier: string) => {
+  const handleUpgrade = async (_newTier: string) => {
     if (!selectedUser) return;
 
     setUpgrading(true);
     try {
       const {
-        data: { user },
+        data: { user: _user },
       } = await supabase.auth.getUser();
 
       // TODO: Create admin_upgrade_user RPC in DB

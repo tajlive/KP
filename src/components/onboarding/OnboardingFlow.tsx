@@ -237,7 +237,6 @@ export default function OnboardingFlow() {
     };
 
     checkOnboarding();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase]);
 
   // Countdown for steg 2
@@ -258,7 +257,6 @@ export default function OnboardingFlow() {
       });
     }, 1000);
     return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
 
   const fireConfetti = useCallback(() => {

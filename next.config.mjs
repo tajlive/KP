@@ -80,6 +80,7 @@ const nextConfig = {
       "framer-motion",
       "date-fns",
       "recharts",
+      "zustand",
       "@radix-ui/react-accordion",
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
@@ -121,6 +122,9 @@ const nextConfig = {
       { source: "/blog", destination: "/en/blog", permanent: true },
       { source: "/blog/:path*", destination: "/en/blog/:path*", permanent: true },
       { source: "/dashboard", destination: "/en/dashboard", permanent: true },
+      // Typo: Norwegian "dashbord" → correct path "dashboard"
+      { source: "/dashbord", destination: "/no/dashboard", permanent: true },
+      { source: "/:locale/dashbord", destination: "/:locale/dashboard", permanent: true },
       { source: "/marketplace", destination: "/en/marketplace", permanent: true },
       { source: "/settings", destination: "/innstillinger", permanent: true },
       { source: "/trading", destination: "/en/trading", permanent: true },

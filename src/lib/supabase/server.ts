@@ -55,7 +55,7 @@ export function createServerClient(
         setAll: (cookiesToSet: any) => {
           cookiesToSet.forEach((cookie: any) => {
             const { name, value, options } = cookie;
-            request.cookies.set(name, value);
+            // Only set on response; request.cookies is read-only in Next.js
             response.cookies.set(name, value, options);
           });
         },
