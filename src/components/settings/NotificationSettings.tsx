@@ -77,7 +77,7 @@ export default function NotificationSettings() {
                     .from('notification_preferences')
                     .select('*')
                     .eq('user_id', user.id)
-                    .single() as any
+                    .single() as unknown
                 
                 if (data && !error) {
                     setPrefs({

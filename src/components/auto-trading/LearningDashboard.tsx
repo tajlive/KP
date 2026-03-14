@@ -14,7 +14,7 @@
  * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -88,7 +88,7 @@ export function LearningDashboard({ sessionId }: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
 
-  const fetchAnalysis = async () => {
+  const fetchAnalysis = useCallback(async () => {
     try {
       setRefreshing(true);
       const response = await fetch(`/api/auto-trading/mistakes?sessionId=${sessionId}`);
@@ -112,11 +112,11 @@ export function LearningDashboard({ sessionId }: Props) {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [sessionId, toast]);
 
   useEffect(() => {
     fetchAnalysis();
-  }, [sessionId]);
+  }, [fetchAnalysis]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

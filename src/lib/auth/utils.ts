@@ -59,11 +59,21 @@ export async function getCurrentUser() {
   }
 
   // Get user profile
-  const { data: profile, error: profileError } = (await supabase
-    .from("user_profiles" as unknown)
+  interface UserProfile {
+    id: string;
+    user_id: string;
+    email: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    tier: string;
+    created_at: string;
+    updated_at: string;
+  }
+  const { data: profile, error: profileError } = await supabase
+    .from("user_profiles")
     .select("*")
-    .eq("id", user.id)
-    .single() as any) as unknown;
+    .eq("user_id", user.id)
+    .single<UserProfile>();
 
   if (profileError) {
     console.warn("Error fetching profile:", profileError);

@@ -25,7 +25,7 @@ import {
   CheckCircle2,
   Clock,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface AdvancedStatsModalProps {
   userId: string;
@@ -89,15 +89,7 @@ export default function AdvancedStatsModal({
   const [loadingBacktest, setLoadingBacktest] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
-  useEffect(() => {
-    if (open) {
-      if (!stats) fetchStats();
-      fetchSignals();
-      fetchBacktests();
-    }
-  }, [open]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setLoading(true);
     try {
       const supabase = createClient();
@@ -204,13 +196,13 @@ export default function AdvancedStatsModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [strategy.id]);
 
-  const fetchSignals = async () => {
+  const fetchSignals = useCallback(async () => {
     const supabase = createClient();
     try {
       const { data, error } = await supabase
-        .from("signals" as any)
+        .from("signals" as unknown)
         .select("*")
         .order("created_at", { ascending: false })
         .limit(50);
@@ -220,14 +212,14 @@ export default function AdvancedStatsModal({
     } catch (error) {
       console.error("Failed to fetch signals:", error);
     }
-  };
+  }, []);
 
-  const fetchBacktests = async () => {
+  const fetchBacktests = useCallback(async () => {
     const supabase = createClient();
     try {
       const { data, error } = await (supabase
-        .from("auto_trading_backtests" as any)
-        .select("*") as any)
+        .from("auto_trading_backtests" as unknown)
+        .select("*") as unknown)
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(10);
@@ -237,9 +229,9 @@ export default function AdvancedStatsModal({
     } catch (error) {
       console.error("Failed to fetch backtests:", error);
     }
-  };
+  }, [userId]);
 
-  const runBacktest = async () => {
+  const runBacktest = useCallback(async () => {
     setLoadingBacktest(true);
     try {
       const supabase = createClient();
@@ -266,7 +258,15 @@ export default function AdvancedStatsModal({
     } finally {
       setLoadingBacktest(false);
     }
-  };
+  }, [strategy.id, fetchBacktests]);
+
+  useEffect(() => {
+    if (open) {
+      if (!stats) fetchStats();
+      fetchSignals();
+      fetchBacktests();
+    }
+  }, [open, stats, fetchStats, fetchSignals, fetchBacktests]);
 
   const formatNOK = (value: number) => {
     return new Intl.NumberFormat("no-NO", {

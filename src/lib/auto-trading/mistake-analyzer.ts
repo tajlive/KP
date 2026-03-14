@@ -324,7 +324,7 @@ export class MistakeAnalyzer {
       .from("auto_trading_sessions" as unknown)
       .select("win_rate, total_trades, max_drawdown_pct")
       .eq("id", sessionId)
-      .single() as any) as unknown;
+      .single() as unknown) as unknown;
 
     if (!session) return 50;
 
@@ -377,7 +377,7 @@ export class MistakeAnalyzer {
       .from("auto_trading_sessions" as unknown)
       .select("total_trades, winning_trades, losing_trades, total_pnl_nok")
       .eq("id", sessionId)
-      .single() as any) as unknown;
+      .single() as unknown) as unknown;
 
     const mistakesCost = mistakes.reduce((sum, m) => sum + m.impact, 0);
 

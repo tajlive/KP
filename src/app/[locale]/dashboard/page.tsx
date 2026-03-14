@@ -1,4 +1,5 @@
 import GetStartedCard from "@/components/dashboard/GetStartedCard";
+import { CourseGate } from "@/components/dashboard/CourseGate";
 import type { TradingSession } from "@/components/dashboard/BotStatusCard";
 import { BotStatusCard } from "@/components/dashboard/BotStatusCard";
 import { EmptyBotState } from "@/components/dashboard/EmptyBotState";
@@ -62,15 +63,92 @@ function DashboardErrorFallback({ locale }: { locale: string }) {
   );
 }
 
+/**
+ * Check if user has completed all required course modules
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function checkRequiredCourseProgress(
+  supabase: any,
+  userId: string,
+) {
+  // Get required modules (include slug for CourseGate navigation)
+  const { data: requiredModules } = await supabase
+    .from("course_modules")
+    .select("id, slug, title_no, title_en")
+    .eq("is_required", true)
+    .eq("is_published", true);
+
+  if (!requiredModules || requiredModules.length === 0) {
+    return { allCompleted: true, progress: [] };
+  }
+
+  // Get all lessons from required modules
+  const { data: requiredLessons } = await supabase
+    .from("course_lessons")
+    .select("id, module_id")
+    .in(
+      "module_id",
+      requiredModules.map((m: any) => m.id)
+    )
+    .eq("is_published", true);
+
+  if (!requiredLessons || requiredLessons.length === 0) {
+    return { allCompleted: true, progress: [] };
+  }
+
+  // Get user's completed lessons
+  const { data: completedLessons } = await supabase
+    .from("user_lesson_progress")
+    .select("lesson_id, status")
+    .eq("user_id", userId)
+    .eq("status", "completed")
+    .in(
+      "lesson_id",
+      requiredLessons.map((l: any) => l.id)
+    );
+
+  const completedIds = new Set(
+    completedLessons?.map((c: { lesson_id: string }) => c.lesson_id) || [],
+  );
+
+  // Calculate progress per module
+  const progress = requiredModules.map((module: { id: string; slug: string; title_no: string; title_en: string }) => {
+    const moduleLessons = requiredLessons.filter(
+      (l: { module_id: string }) => l.module_id === module.id,
+    );
+    const completedCount = moduleLessons.filter((l: { id: string }) =>
+      completedIds.has(l.id),
+    ).length;
+    const totalCount = moduleLessons.length;
+    const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+    return {
+      module,
+      completedCount,
+      totalCount,
+      percentage,
+      isCompleted: completedCount === totalCount,
+    };
+  });
+
+  const allCompleted = progress.every((p: any) => p.isCompleted);
+
+  return { allCompleted, progress };
+}
+
 export default async function DashboardPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
+
   try {
     const { supabase, user } = await requireAuth(locale);
+
+    // Check required course progress
+    const { allCompleted: hasCompletedRequired, progress: courseProgress } =
+      await checkRequiredCourseProgress(supabase, user.id);
 
     const [portfolioRes, tradesRes, strategiesRes, progressRes, sessionRes] =
       await Promise.all([
@@ -116,15 +194,34 @@ export default async function DashboardPage({
         ? Array.from({ length: lessonCount }, (_, i) => `lesson-${i + 1}`)
         : [];
 
+    // Get first required module for gate display
+    const firstRequiredModule = courseProgress[0];
+
     return (
       <>
         {/* Bot status card - shows active trading sessions */}
         {sessionRes.data ? (
           <BotStatusCard
-            initialSession={(sessionRes.data as unknown) as TradingSession}
+            initialSession={sessionRes.data as unknown as TradingSession}
           />
         ) : (
           <EmptyBotState />
+        )}
+
+        {/* Course Gate - show if user hasn't completed required course */}
+        {!hasCompletedRequired && firstRequiredModule && (
+          <CourseGate
+            locale={locale}
+            moduleSlug={firstRequiredModule.module.slug}
+            moduleTitle={
+              locale === "no"
+                ? firstRequiredModule.module.title_no
+                : firstRequiredModule.module.title_en
+            }
+            progress={firstRequiredModule.percentage}
+            completedLessons={firstRequiredModule.completedCount}
+            totalLessons={firstRequiredModule.totalCount}
+          />
         )}
 
         {/* Kom i gang for nye brukere – KLA-73 */}
@@ -152,7 +249,7 @@ export default async function DashboardPage({
       </>
     );
   } catch (error) {
-    console.error('Dashboard data fetch error:', error);
+    console.error("Dashboard data fetch error:", error);
     // Return fallback UI istedenfor å krasje
     return <DashboardErrorFallback locale={locale} />;
   }

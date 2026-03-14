@@ -81,7 +81,7 @@ export async function createSimulation(
       trading_pair: 'BTC/USDT',
     })
     .select()
-    .single() as any;
+    .single() as unknown;
 
   if (error) {
     console.error('Error creating simulation:', error);
@@ -103,7 +103,7 @@ export async function getActiveSimulation(userId: string): Promise<PaperSimulati
     .eq('status', 'active')
     .order('created_at', { ascending: false })
     .limit(1)
-    .single() as any;
+    .single() as unknown;
 
   if (error || !data) return null;
   return mapToPaperSimulation(data);
@@ -201,7 +201,7 @@ export async function createTrade(
       executed_at: trade.opened_at,
     })
     .select()
-    .single() as any;
+    .single() as unknown;
 
   if (error) {
     console.error('Error creating trade:', error);
@@ -290,7 +290,7 @@ export async function saveBacktestResult(
       trading_pair: backtestResult.symbol,
     })
     .select()
-    .single() as any;
+    .single() as unknown;
 
   if (error) {
     console.error('Error saving backtest:', error);
@@ -353,7 +353,7 @@ export async function getUserRank(
     .select('*')
     .eq('user_id', userId)
     .eq('period', period)
-    .single() as any;
+    .single() as unknown;
 
   if (error) return null;
   return data;
@@ -379,7 +379,7 @@ export async function saveStrategy(strategy: SavedStrategy): Promise<SavedStrate
     .from('saved_strategies')
     .insert(strategy)
     .select()
-    .single() as any;
+    .single() as unknown;
 
   if (error) {
     console.error('Error saving strategy:', error);

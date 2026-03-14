@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server';
  */
 export async function GET(_request: NextRequest) {
   try {
-    const supabase: any = (await createClient()) as unknown;
+    const supabase: unknown = (await createClient()) as unknown;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -27,7 +27,7 @@ export async function GET(_request: NextRequest) {
       .from('user_profiles')
       .select('trading_mode, binance_api_key_encrypted, paper_trades_count, exchange_connected')
       .eq('id', user.id)
-      .single() as any;
+      .single() as unknown;
 
     if (error) {
       console.error('Error fetching trading mode:', error);
@@ -59,7 +59,7 @@ export async function GET(_request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase: any = (await createClient()) as unknown;
+    const supabase: unknown = (await createClient()) as unknown;
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         .from('user_profiles')
         .select('binance_api_key_encrypted')
         .eq('id', user.id)
-        .single() as any;
+        .single() as unknown;
 
       if (!profile?.binance_api_key_encrypted) {
         return NextResponse.json(

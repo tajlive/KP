@@ -135,7 +135,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
           futures: accountInfo.permissions?.includes('FUTURES') || false,
           margin: accountInfo.permissions?.includes('MARGIN') || false,
         },
-      } as any);
+      } as unknown);
 
       if (error) throw error;
 

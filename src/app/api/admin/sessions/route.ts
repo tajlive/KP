@@ -20,7 +20,7 @@ export async function GET() {
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
-      .single() as any;
+      .single() as unknown;
 
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
-      .single() as any;
+      .single() as unknown;
 
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(

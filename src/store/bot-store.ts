@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { create } from "zustand";
-import type { Tables } from "@/lib/supabase/client";
+import type { Tables } from "../lib/supabase/client";
 
 type BotStatus = "active" | "paused" | "stopped" | "error";
 type BotStrategyType =
@@ -125,6 +125,11 @@ export const useBotStore = create<BotStore>()((set, get) => ({
             | Tables<"unified_trading_sessions">
             | undefined;
 
+          const stratRow = strat as Record<string, unknown>;
+          const config = (stratRow.config as Record<string, unknown>) ?? {};
+          const symbol =
+            (typeof config.symbol === "string" ? config.symbol : null) ??
+            "BTCUSDT";
           return {
             id: strat.id,
             userId: strat.user_id,
@@ -132,10 +137,8 @@ export const useBotStore = create<BotStore>()((set, get) => ({
             strategyType: (strat.strategy_type as BotStrategyType) || "dca",
             status: strat.is_active ? "active" : "stopped",
             mode: strat.is_paper_trade ? "paper" : "live",
-            symbol:
-              ((strat.config as Record<string, unknown>)?.symbol as string) ||
-              "BTCUSDT",
-            config: (strat.config as Record<string, unknown>) || {},
+            symbol,
+            config,
             pnlNok: session?.total_pnl ?? 0,
             pnlPct: session?.total_pnl_pct ?? 0,
             totalTrades: session?.total_trades ?? 0,

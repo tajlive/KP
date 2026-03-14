@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "../../types/supabase-generated";
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 import {
   createClient as createSupabaseClient,
@@ -32,7 +32,7 @@ export function createClient() {
  * - Route Handler (sync): createServerClient(request, response)
  * - Server Component (async): await createServerClient()
  */
-// eslint-disable-next-line no-redeclare
+ 
 export function createServerClient(
   request: NextRequest,
   response: NextResponse,

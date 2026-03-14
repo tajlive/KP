@@ -134,7 +134,7 @@ export function PulseChart({
     seriesRef.current = series;
 
     // Set Data
-    series?.setData(data as any);
+    series?.setData(data as unknown);
 
     // Add Event Markers
     const markers: SeriesMarker<Time>[] = (events || []).map((event) => ({
@@ -147,7 +147,7 @@ export function PulseChart({
     }));
 
     if (series && 'setMarkers' in series) {
-      (series as any).setMarkers(markers);
+      (series as unknown).setMarkers(markers);
     }
 
     chart.timeScale().fitContent();

@@ -49,7 +49,7 @@ export default function ClientAdminV2() {
         .from('user_profiles')
         .select('role')
         .eq('user_id', user.id)
-        .single() as any;
+        .single();
 
       if (profile?.role === 'admin') {
         setIsAdmin(true);

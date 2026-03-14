@@ -79,24 +79,39 @@ export default function BetaDashboardClient({
       console.info("[BetaDashboard] User found:", user.email);
 
       const { data: profileData } = await supabase
-        .from("user_profiles" as any)
+        .from("user_profiles")
         .select("*")
         .eq("id", user.id)
-        .single() as any;
+        .single();
 
-      if (!profileData?.beta_access) {
+      if (!profileData) {
         router.push(`/${params.locale}/beta/apply`);
         return;
       }
 
-      setProfile(profileData);
+      setProfile({
+        ...(profileData as Record<string, unknown>),
+        id: profileData.id,
+        email: (profileData as { email: string | null }).email ?? "",
+      } as Profile);
+
+      const { data: betaApplication } = await supabase
+        .from("beta_applications")
+        .select("application_status")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!betaApplication || betaApplication.application_status !== "approved") {
+        router.push(`/${params.locale}/beta/apply`);
+        return;
+      }
 
       const { data: apiKeys } = await supabase
         .from("trading_api_keys")
         .select("id")
-        .eq("user_id" as any, user.id)
+        .eq("user_id", user.id)
         .eq("exchange", "binance")
-        .single() as any;
+        .single();
 
       setExchangeConnected(!!apiKeys);
 
@@ -104,7 +119,7 @@ export default function BetaDashboardClient({
       const { data: trades } = await supabase
         .from("auto_trades")
         .select("*")
-        .eq("user_id" as any, user.id)
+        .eq("user_id", user.id)
         .gte("executed_at", today);
 
       if (trades) {

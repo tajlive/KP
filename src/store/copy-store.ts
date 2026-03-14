@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "../lib/supabase/client";
 import { create } from "zustand";
 
 interface FollowedTrader {
@@ -76,7 +76,7 @@ export const useCopyStore = create<CopyStore>()(
         if (error) throw error;
 
         const following: FollowedTrader[] = (data || []).map(
-          (cfg: any) => ({
+          (cfg: unknown) => ({
             id: cfg.id as string,
             leaderId: cfg.leader_id as string,
             leaderName: (cfg.leader_name as string) || "Unknown Trader",
@@ -100,8 +100,8 @@ export const useCopyStore = create<CopyStore>()(
       }
     },
 
-    follow: async (leaderId: string, config: unknown) => {
-      const supabase = createClient();
+    follow: async (leaderId: string, config: CopyConfig) => {
+      const supabase = createClient() as unknown;
       const { error } = await supabase
         .from("copy_trading_follows")
         .insert({
@@ -118,7 +118,7 @@ export const useCopyStore = create<CopyStore>()(
       }
     },
 
-    unfollow: async (leaderId) => {
+    unfollow: async (leaderId: string) => {
       const supabase = createClient();
       const { error } = await supabase
         .from("copy_trading_follows")
@@ -127,8 +127,8 @@ export const useCopyStore = create<CopyStore>()(
 
       if (!error) {
         set((state) => ({
-          following: (state as {following: unknown[]}).following.map((f: unknown) =>
-            (f as {leaderId: string}).leaderId === leaderId ? { ...f as object, isActive: false } : f,
+          following: state.following.map((f) =>
+            f.leaderId === leaderId ? { ...f, isActive: false } : f,
           ),
         }));
       }
