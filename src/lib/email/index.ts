@@ -14,8 +14,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResendClient(): Resend | null {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+
+  return new Resend(apiKey);
+}
 
 const FROM_EMAIL = "Klarpakke <post@klarpakke.no>";
 const REPLY_TO = "support@klarpakke.no";
@@ -580,6 +586,12 @@ export async function sendTemplatedEmail(
   const { userId, type, data, skipPreferences = false } = options;
 
   try {
+    const resend = getResendClient();
+    if (!resend) {
+      console.warn("[Email] RESEND_API_KEY mangler, hopper over sending");
+      return { success: false, error: "RESEND_API_KEY mangler" };
+    }
+
     // Check preferences (unless skipped)
     if (!skipPreferences) {
       const shouldSend = await shouldSendEmail(userId, type);

@@ -31,6 +31,11 @@ const ThreeSteps = dynamic(
   }
 );
 
+const Testimonials = dynamic(
+  () => import("@/components/landing/Testimonials").then((mod) => ({ default: mod.Testimonials })),
+  { ssr: true }
+);
+
 const CoursePreview = dynamic(
   () => import("@/components/landing/CoursePreview").then((mod) => ({ default: mod.CoursePreview })),
   {
@@ -170,7 +175,11 @@ export default async function HomePage({
           <ThreeSteps />
         </Suspense>
       </section>
-      
+
+      {/* Testimonials - Social proof for signup */}
+      <Suspense fallback={<div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />}>
+        <Testimonials language={locale === "no" ? "no" : "en"} />
+      </Suspense>
 
     </main>
   );
