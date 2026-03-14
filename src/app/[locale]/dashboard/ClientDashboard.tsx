@@ -7,6 +7,7 @@ import { PaperTradingCard } from "@/components/dashboard/PaperTradingCard";
 import ReferralDashboard from "@/components/dashboard/ReferralDashboard";
 import { TradingModeToggle } from "@/components/dashboard/TradingModeToggle";
 import { UpgradeBanner } from "@/components/dashboard/UpgradeBanner";
+import { TrialBanner } from "@/components/auto-trading/TrialBanner";
 import OrderEntry from "@/components/trading/OrderEntry";
 import PortfolioStats from "@/components/trading/PortfolioStats";
 import PositionsTable from "@/components/trading/PositionsTable";
@@ -15,7 +16,7 @@ import { useSubscription } from "@/lib/hooks/useSubscription";
 import { marketDataService } from "@/services/marketDataService";
 import { useLocale, useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // KLA-108: Dynamic imports for heavy trading components
 const ProfessionalChart = dynamic(
@@ -30,14 +31,29 @@ const ProfessionalChart = dynamic(
 
 // Leaderboard removed - feature dropped for beta launch
 
+interface TrialStatus {
+  isActive: boolean;
+  daysRemaining: number;
+  hoursRemaining: number;
+  urgency?: "none" | "warning" | "critical";
+  message?: string;
+}
+
 export default function ClientDashboard() {
   const t = useTranslations("dashboard");
   const locale = useLocale();
-  const { subscription, loading } = useSubscription();
+  const { subscription, loading, currentTier } = useSubscription();
+  const [trialStatus, setTrialStatus] = useState<TrialStatus | null>(null);
 
   useEffect(() => {
-    // Connect to market data
     marketDataService.connect();
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/trial/status")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => data && setTrialStatus(data))
+      .catch(() => {});
   }, []);
 
   // Hvis loading — vis skeleton loader
@@ -131,6 +147,23 @@ export default function ClientDashboard() {
             <AIMarketBrief />
           </div>
 
+          {/* UPGRADE BANNER øverst for konvertering (student/bachelor) */}
+          {(tierSlug === "student" || tierSlug === "bachelor") && (
+            <UpgradeBanner tierSlug={tierSlug} locale={locale} />
+          )}
+
+          {/* TRIAL COUNTDOWN — urgency for konvertering */}
+          {trialStatus?.isActive && (
+            <TrialBanner
+              trialStatus={trialStatus}
+              locale={locale}
+              tier={{
+                liveTrading: hasLiveTrading,
+                slug: currentTier,
+              }}
+            />
+          )}
+
           {/* PAPER TRADING CARD */}
           <div className="mb-6">
             <PaperTradingCard />
@@ -139,11 +172,6 @@ export default function ClientDashboard() {
           <div className="mb-6">
             <ReferralDashboard />
           </div>
-
-          {/* UPGRADE BANNER hvis student eller bachelor */}
-          {(tierSlug === "student" || tierSlug === "bachelor") && (
-            <UpgradeBanner tierSlug={tierSlug} locale={locale} />
-          )}
 
           {/* LIVE TRADING BANNER (kun hvis tier støtter det) */}
           {hasLiveTrading && <LiveTradingBanner />}

@@ -22,19 +22,18 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
     const { leader_id, scale_factor, max_trade_size, allocation_percent } = parsed.data;
     const db: unknown = (await createClient()) as unknown;
 
-    // Check subscription tier limits
+    // Check subscription tier limits (subscription_tier is source of truth from Stripe webhook)
     const { data: profile } = await db
       .from('user_profiles')
       .select('tier')
-      .eq('user_id', user.id)
-      .single() as unknown;
+      .eq('id', user.id)
+      .single() as { tier?: string } | null;
 
-    if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
-    }
+    const subscriptionTier = profile?.tier ?? 'student';
 
-    // Tier-based limits
+    // Tier-based limits (use same tier enum as subscriptions)
     const maxFollows: Record<string, number> = {
+      student: 0,
       free: 0,
       bachelor: 1,
       master: 3,
@@ -42,7 +41,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
       professor: 999,
     };
 
-    const limit = maxFollows[profile.tier] ?? 0;
+    const limit = maxFollows[subscriptionTier] ?? 0;
 
     if (limit === 0) {
       return NextResponse.json(
@@ -59,10 +58,10 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
       .eq('is_active', true);
 
     if ((currentFollows ?? 0) >= limit) {
-      const nextTier = profile.tier === 'student' ? 'master' : 'phd';
+      const nextTier = subscriptionTier === 'student' ? 'master' : 'phd';
       return NextResponse.json(
         {
-          error: `You can follow max ${limit} leader(s) on ${profile.tier} tier. Upgrade to ${nextTier} for more.`,
+          error: `You can follow max ${limit} leader(s) on ${subscriptionTier} tier. Upgrade to ${nextTier} for more.`,
           code: 'FOLLOW_LIMIT_REACHED',
           current: currentFollows,
           limit,

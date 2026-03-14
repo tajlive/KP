@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { CheckCircle, Star, Sparkles, Zap, Target, Crown } from 'lucide-react';
 import { TIERS } from '@/lib/pricing/tiers';
 
@@ -32,6 +33,7 @@ const getDisplayPlans = () => {
 
 export default function PricingSection() {
   const router = useRouter();
+  const locale = useLocale();
   const plans = getDisplayPlans();
 
   return (
@@ -113,10 +115,10 @@ export default function PricingSection() {
 
                 {/* CTA */}
                 <button
-                  onClick={() => router.push(`/no/priser`)}
+                  onClick={() => router.push(`/${locale}/priser`)}
                   className={`w-full px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
                     plan.popular
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white'
                   }`}
                 >

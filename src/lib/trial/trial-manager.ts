@@ -45,7 +45,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
     };
   }
   
-  const tier = TIERS[profile.tier as keyof typeof TIERS];
+  const tier = TIERS[(profile.subscription_tier ?? profile.tier) as keyof typeof TIERS];
   
   // 2. Hvis betalt tier → ingen trial nødvendig
   if (tier.liveTrading && tier.priceNOK > 0) {

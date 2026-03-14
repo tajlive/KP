@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { TierSlug } from "@/lib/pricing/tiers";
 import { cn } from "@/lib/utils";
-import { ArrowRight, CreditCard, Loader2, Smartphone } from "lucide-react";
+import { ArrowRight, CreditCard, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -32,7 +32,7 @@ export function CheckoutButton({
   const router = useRouter();
   const { user } = useAuth();
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [loading, setLoading] = useState<null | "stripe" | "vipps">(null);
+  const [loading, setLoading] = useState<null | "stripe">(null);
   const [error, setError] = useState<string | null>(null);
 
   // Student er alltid gratis — send til signup
@@ -68,28 +68,6 @@ export function CheckoutButton({
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) throw new Error(data.error ?? "Stripe feilet");
       window.location.href = data.url;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Noe gikk galt");
-      setLoading(null);
-    }
-  }
-
-  async function handleVipps() {
-    setLoading("vipps");
-    setError(null);
-    try {
-      const res = await fetch("/api/vipps/initiate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tierSlug, locale }),
-      });
-      const data = (await res.json()) as {
-        redirectUrl?: string;
-        error?: string;
-      };
-      if (!res.ok || !data.redirectUrl)
-        throw new Error(data.error ?? "Vipps feilet");
-      window.location.href = data.redirectUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Noe gikk galt");
       setLoading(null);
@@ -138,25 +116,6 @@ export function CheckoutButton({
                 <>
                   <CreditCard className="w-5 h-5 mr-2" />
                   Betal med kort (Stripe)
-                </>
-              )}
-            </Button>
-
-            {/* Vipps-knapp */}
-            <Button
-              onClick={handleVipps}
-              disabled={loading !== null}
-              className="w-full h-14 rounded-xl text-base font-semibold bg-[#FF5B24] hover:bg-[#e64d1a] text-white transition-all"
-            >
-              {loading === "vipps" ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Laster...
-                </>
-              ) : (
-                <>
-                  <Smartphone className="w-5 h-5 mr-2" />
-                  Betal med Vipps
                 </>
               )}
             </Button>
