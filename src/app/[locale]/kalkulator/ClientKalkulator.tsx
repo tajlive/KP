@@ -217,10 +217,10 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
           transition={{ delay: 0.05 }}
           className="mb-8"
         >
-          <label className="block text-sm font-medium text-[#0A0B0D] mb-3">
+          <span id="kalkulator-risk-label" className="block text-sm font-medium text-[#0A0B0D] mb-3">
             {isNorwegian ? "Velg risikoprofil:" : "Choose risk profile:"}
-          </label>
-          <div className="grid grid-cols-3 gap-2">
+          </span>
+          <div className="grid grid-cols-3 gap-2" role="group" aria-labelledby="kalkulator-risk-label">
             {PRESETS.map((preset) => (
               <button
                 key={preset.key}
@@ -310,13 +310,14 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
 
             {/* Lotte Comparison */}
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-              <label className="flex items-center gap-2 text-sm font-medium text-[#0A0B0D] mb-3">
+              <label htmlFor="kalkulator-weekly-savings" className="flex items-center gap-2 text-sm font-medium text-[#0A0B0D] mb-3">
                 <Coins className="w-4 h-4" />
                 {isNorwegian ? "Sammenlign med Lotto-spill" : "Compare with lottery play"}
               </label>
               <div className="flex items-center gap-4 mb-3">
                 <span className="text-sm text-gray-600">{isNorwegian ? "kr/uke:" : "NOK/week:"}</span>
                 <input
+                  id="kalkulator-weekly-savings"
                   type="range"
                   min="50"
                   max="1000"

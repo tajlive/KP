@@ -164,10 +164,11 @@ export default function BetaApplyClient({
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="beta-apply-experience" className="block text-sm font-medium text-slate-300 mb-2">
                 {t("tradingExperience")}
               </label>
               <textarea
+                id="beta-apply-experience"
                 value={formData.tradingExperience}
                 onChange={(e) =>
                   setFormData({
@@ -183,10 +184,11 @@ export default function BetaApplyClient({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="beta-apply-motivation" className="block text-sm font-medium text-slate-300 mb-2">
                 {t("motivation")}
               </label>
               <textarea
+                id="beta-apply-motivation"
                 value={formData.motivation}
                 onChange={(e) =>
                   setFormData({ ...formData, motivation: e.target.value })

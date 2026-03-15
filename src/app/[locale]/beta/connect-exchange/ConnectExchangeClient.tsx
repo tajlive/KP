@@ -94,10 +94,11 @@ export default function ConnectExchangeClient({
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="connect-api-key" className="block text-sm font-medium text-gray-700 mb-2">
                 {t("apiKeyLabel")}
               </label>
               <input
+                id="connect-api-key"
                 type="text"
                 value={formData.apiKey}
                 onChange={(e) =>
@@ -110,10 +111,11 @@ export default function ConnectExchangeClient({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="connect-api-secret" className="block text-sm font-medium text-gray-700 mb-2">
                 {t("apiSecretLabel")}
               </label>
               <input
+                id="connect-api-secret"
                 type="password"
                 value={formData.apiSecret}
                 onChange={(e) =>

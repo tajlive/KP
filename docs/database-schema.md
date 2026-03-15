@@ -283,6 +283,7 @@
 ### unified_daily_metrics
 ### unified_exchange_keys
 ### unified_notifications
+- For e-postutsendelse: bruk **view** `unified_notifications_with_email` (service_role) i stedet for PostgREST-select med `auth.users!inner(email)` (gir 400).
 ### unified_trades
 ### unified_trading_sessions
 ### user_achievements

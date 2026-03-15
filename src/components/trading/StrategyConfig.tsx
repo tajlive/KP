@@ -22,10 +22,11 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-dca-weekly" className="text-slate-400 text-sm">
               Ukentlig beløp: {dcaConfig.weeklyAmount} NOK
             </label>
             <input
+              id="stratcfg-dca-weekly"
               type="range"
               min="100"
               max="5000"
@@ -38,10 +39,11 @@ export function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-dca-btc" className="text-slate-400 text-sm">
               BTC-fordeling: {dcaConfig.btcAllocation}%
             </label>
             <input
+              id="stratcfg-dca-btc"
               type="range"
               min="0"
               max="100"
@@ -60,10 +62,11 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-trend-risk" className="text-slate-400 text-sm">
               Risiko per trade: {trendConfig.riskPerTrade}%
             </label>
             <input
+              id="stratcfg-trend-risk"
               type="range"
               min="1"
               max="5"
@@ -75,10 +78,11 @@ export function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-trend-stoploss" className="text-slate-400 text-sm">
               Stop-loss: {trendConfig.stopLoss}%
             </label>
             <input
+              id="stratcfg-trend-stoploss"
               type="range"
               min="5"
               max="15"
@@ -97,8 +101,9 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">Aggressivitet</label>
+            <label htmlFor="stratcfg-multi-agg" className="text-slate-400 text-sm">Aggressivitet</label>
             <select
+              id="stratcfg-multi-agg"
               value={multiConfig.aggressiveness}
               onChange={(e) =>
                 onChange({ ...config, aggressiveness: e.target.value })
@@ -124,8 +129,9 @@ export function StrategyConfig({
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-slate-400 text-sm">Øvre pris</label>
+              <label htmlFor="stratcfg-grid-upper" className="text-slate-400 text-sm">Øvre pris</label>
               <input
+                id="stratcfg-grid-upper"
                 type="number"
                 value={gridConfig.upperPrice}
                 onChange={(e) =>
@@ -135,8 +141,9 @@ export function StrategyConfig({
               />
             </div>
             <div>
-              <label className="text-slate-400 text-sm">Nedre pris</label>
+              <label htmlFor="stratcfg-grid-lower" className="text-slate-400 text-sm">Nedre pris</label>
               <input
+                id="stratcfg-grid-lower"
                 type="number"
                 value={gridConfig.lowerPrice}
                 onChange={(e) =>
@@ -147,10 +154,11 @@ export function StrategyConfig({
             </div>
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-grid-levels" className="text-slate-400 text-sm">
               Grid-nivåer: {gridConfig.levels}
             </label>
             <input
+              id="stratcfg-grid-levels"
               type="range"
               min="5"
               max="50"
@@ -162,10 +170,11 @@ export function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-grid-capital" className="text-slate-400 text-sm">
               Kapital: {gridConfig.capital} NOK
             </label>
             <input
+              id="stratcfg-grid-capital"
               type="range"
               min="1000"
               max="50000"
@@ -185,10 +194,11 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-ai-max" className="text-slate-400 text-sm">
               Maks per trade: {aiConfig.maxPerTrade} NOK
             </label>
             <input
+              id="stratcfg-ai-max"
               type="range"
               min="100"
               max="5000"
@@ -201,10 +211,11 @@ export function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="stratcfg-ai-loss" className="text-slate-400 text-sm">
               Maks tap: {aiConfig.maxLoss} NOK
             </label>
             <input
+              id="stratcfg-ai-loss"
               type="range"
               min="100"
               max="2000"

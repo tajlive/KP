@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { Trash2, Crown } from 'lucide-react'
 import { toast } from 'sonner'
+import { TABLE } from '@/lib/design/tokens'
 
 interface User {
   id: string
@@ -96,41 +97,33 @@ export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChan
           placeholder="Søk brukere..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          aria-label="Søk brukere"
           className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-white placeholder:text-slate-500"
         />
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-800">
+          <thead className="bg-slate-800 border-b border-slate-800">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase">
-                Bruker
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase">
-                Tier
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase">
-                Registrert
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-slate-300 uppercase">
-                Handlinger
-              </th>
+              <th className={TABLE.header}>Bruker</th>
+              <th className={TABLE.header}>Tier</th>
+              <th className={TABLE.header}>Status</th>
+              <th className={TABLE.header}>Registrert</th>
+              <th className={TABLE.header + ' text-right'}>Handlinger</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
             {filteredUsers.map((user) => (
-              <tr key={user.id} className="hover:bg-slate-800/50 transition-colors">
-                <td className="px-6 py-4">
+              <tr key={user.id} className={TABLE.row}>
+                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label -- cell is display-only (name/email) */}
+                <td className={TABLE.cell}>
                   <div>
                     <p className="text-white font-medium">{user.full_name || 'Ukjent'}</p>
                     <p className="text-slate-400 text-sm">{user.email}</p>
                   </div>
                 </td>
-                <td className="px-6 py-4">
+                <td className={TABLE.cell}>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                     user.subscription_tier === 'beta' ? 'bg-emerald-500/20 text-emerald-300' :
                     user.subscription_tier === 'pro' ? 'bg-blue-500/20 text-blue-300' :
@@ -139,7 +132,7 @@ export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChan
                     {user.subscription_tier}
                   </span>
                 </td>
-                <td className="px-6 py-4">
+                <td className={TABLE.cell}>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                     user.subscription_status === 'active' ? 'bg-green-500/20 text-green-300' :
                     'bg-slate-500/20 text-slate-300'
@@ -147,15 +140,19 @@ export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChan
                     {user.subscription_status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-slate-400 text-sm">
-                  {user.created_at ? new Date(user.created_at).toLocaleDateString('no-NO') : '—'}
+                <td className={TABLE.cellNumeric}>
+                  <span className="text-slate-400 tabular-nums">
+                    {user.created_at ? new Date(user.created_at).toLocaleDateString('no-NO') : '—'}
+                  </span>
                 </td>
-                <td className="px-6 py-4">
+                <td className={TABLE.cell}>
                   <div className="flex items-center justify-end gap-2">
                     {user.subscription_tier !== 'beta' && (
                       <button
+                        type="button"
                         onClick={() => handleUpgradeToBeta(user.id)}
                         disabled={upgrading === user.id}
+                        aria-label="Oppgrader til Beta"
                         className="p-2 hover:bg-emerald-500/20 rounded-lg transition-colors disabled:opacity-50"
                         title="Oppgrader til Beta"
                       >
@@ -163,8 +160,10 @@ export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChan
                       </button>
                     )}
                     <button
+                      type="button"
                       onClick={() => handleDelete(user.id, user.email)}
                       disabled={deleting === user.id}
+                      aria-label={`Slett bruker ${user.email}`}
                       className="p-2 hover:bg-red-500/20 rounded-lg transition-colors disabled:opacity-50"
                       title="Slett bruker"
                     >

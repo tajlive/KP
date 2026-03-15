@@ -110,9 +110,11 @@ export default function SettingsForm({ userEmail }: SettingsFormProps) {
         <CardHeader />
         <CardContent>
           <div className="kp-input-group">
-            <label className="kp-input-label">Innloggingsepost</label>
+            <label htmlFor="user-email" className="kp-input-label">Innloggingsepost</label>
             <div
               id="user-email"
+              role="textbox"
+              aria-readonly="true"
               className="kp-input"
               style={{ backgroundColor: 'var(--kp-bg-secondary)', cursor: 'not-allowed' }}
             >

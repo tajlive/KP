@@ -64,8 +64,10 @@ export function PushNotificationSettings({ userId }: PushNotificationSettingsPro
         </div>
 
         <button
+          type="button"
           onClick={handleToggle}
           disabled={permission === 'denied'}
+          aria-label={isSubscribed ? 'Slå av push-varsler' : 'Slå på push-varsler'}
           className={`relative w-14 h-8 rounded-full transition-colors ${
             isSubscribed ? 'bg-green-500' : 'bg-gray-600'
           } ${permission === 'denied' ? 'opacity-50 cursor-not-allowed' : ''}`}

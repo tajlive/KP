@@ -2,6 +2,9 @@
 
 Norges første krypto-trading skole. Lær krypto fra A til Å med paper trading, autotrading og kurs.
 
+**Repository:** [https://github.com/tajlive/KP](https://github.com/tajlive/KP)  
+**GitHub-oppsett (branch protection, secrets, CODEOWNERS):** [.github/GITHUB_SETUP.md](.github/GITHUB_SETUP.md)
+
 ## Production Verification
 
 Etter hver production deploy:

@@ -95,7 +95,6 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
     }, 2000);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol, price, positions.length, unrealizedPnL, pnlHistory.length]);
 
   // Fetch volatility on mount

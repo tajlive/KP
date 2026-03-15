@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpen, Clock, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,7 +18,7 @@ interface PageProps {
   }>;
 }
 
-interface QuizQuestion {
+interface _QuizQuestion {
   id: string;
   question_no: string;
   question_en: string;
@@ -38,7 +38,7 @@ interface LessonData {
   estimated_minutes: number | null;
 }
 
-interface ModuleData {
+interface _ModuleData {
   id: string;
   slug: string;
   title_no: string;
@@ -200,10 +200,10 @@ export default async function LessonPage({ params }: PageProps) {
   const content = locale === "no" ? lesson.content_no : lesson.content_en;
   const moduleTitle = locale === "no" ? module.title_no : module.title_en;
 
-  // Server action wrapper for marking lesson complete
+  // Server action wrapper for marking lesson complete (guard: lesson can be null in some runs)
   async function handleLessonComplete() {
     "use server";
-    if (user?.id) {
+    if (user?.id && lesson?.id) {
       await markLessonComplete(user.id, lesson.id);
     }
   }

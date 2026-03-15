@@ -4,14 +4,20 @@ import { ShieldCheck, GraduationCap, TrendingUp } from 'lucide-react';
 
 export async function TrustBar() {
   const t = await getTranslations('trustBar');
-  const supabase = await createClient();
-  
-  // Hent brukerantall fra Supabase
-  const { count, error } = await supabase
-    .from('user_profiles')
-    .select('*', { count: 'exact', head: true });
+  let userCount = 0;
 
-  const userCount = count || 0;
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const supabase = await createClient();
+      const { count } = await supabase
+        .from('user_profiles')
+        .select('*', { count: 'exact', head: true });
+      userCount = count ?? 0;
+    } catch {
+      userCount = 0;
+    }
+  }
+
   const showUserCount = userCount >= 50;
 
   return (

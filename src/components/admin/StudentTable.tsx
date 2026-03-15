@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Check, X, Download, Search, Filter, GraduationCap } from 'lucide-react'
+import { TABLE } from '@/lib/design/tokens'
 
 interface Student {
   student_nummer: number
@@ -180,25 +181,25 @@ export function StudentTable({ students }: StudentTableProps) {
           <table className="w-full text-sm">
             <thead className="bg-slate-900/50 border-b border-slate-700">
               <tr>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium">#</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium">E-post</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium">Erfaring</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium">Læringsmål</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium">Handle</th>
-                <th className="text-center py-3 px-4 text-slate-400 font-medium">Tokens</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-medium">Registrert</th>
+                <th className={TABLE.header}>#</th>
+                <th className={TABLE.header}>E-post</th>
+                <th className={TABLE.header}>Erfaring</th>
+                <th className={TABLE.header}>Læringsmål</th>
+                <th className={TABLE.header}>Handle</th>
+                <th className={TABLE.header + ' text-center'}>Tokens</th>
+                <th className={TABLE.header}>Registrert</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/50">
               {filteredStudents.map((student) => (
-                <tr key={student.student_nummer} className="hover:bg-slate-700/30">
-                  <td className="py-3 px-4 text-white font-medium">
-                    #{student.student_nummer}
+                <tr key={student.student_nummer} className={TABLE.row}>
+                  <td className={TABLE.cellNumeric}>
+                    <span className="text-white font-medium tabular-nums">#{student.student_nummer}</span>
                   </td>
-                  <td className="py-3 px-4 text-slate-300">
+                  <td className={TABLE.cell}>
                     {student.email}
                   </td>
-                  <td className="py-3 px-4">
+                  <td className={TABLE.cell}>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       student.erfaring === 'nybegynner' 
                         ? 'bg-green-500/10 text-green-400'
@@ -209,21 +210,21 @@ export function StudentTable({ students }: StudentTableProps) {
                       {formatErfaring(student.erfaring)}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-slate-400 max-w-xs truncate">
+                  <td className={TABLE.cell + ' text-slate-400 max-w-xs truncate'}>
                     {(student.laeringsmaal || []).join(', ')}
                   </td>
-                  <td className="py-3 px-4 text-slate-400">
+                  <td className={TABLE.cell + ' text-slate-400'}>
                     {student.handle || '-'}
                   </td>
-                  <td className="py-3 px-4 text-center">
+                  <td className={TABLE.cell + ' text-center'}>
                     {student.tokens_credited ? (
                       <Check className="w-5 h-5 text-green-500 mx-auto" />
                     ) : (
                       <X className="w-5 h-5 text-red-500 mx-auto" />
                     )}
                   </td>
-                  <td className="py-3 px-4 text-slate-500">
-                    {formatDate(student.created_at)}
+                  <td className={TABLE.cellNumeric}>
+                    <span className="text-slate-500 tabular-nums">{formatDate(student.created_at)}</span>
                   </td>
                 </tr>
               ))}

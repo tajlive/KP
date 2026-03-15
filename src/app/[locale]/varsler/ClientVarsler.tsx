@@ -126,7 +126,9 @@ export default function ClientVarsler() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => toggleSetting(setting.id)}
+                  aria-label={setting.enabled ? `Slå av ${setting.label}` : `Slå på ${setting.label}`}
                   className={`relative w-12 h-6 rounded-full transition-colors ${
                     setting.enabled ? 'bg-blue-600' : 'bg-gray-300'
                   }`}

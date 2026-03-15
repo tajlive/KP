@@ -1,43 +1,61 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/utils';
+import { useSubscription } from '@/lib/hooks/useSubscription';
+import type { TierSlug } from '@/lib/pricing/tiers';
+import { useLocale } from 'next-intl';
 
 type ViewMode = 'enkel' | 'mellom' | 'avansert';
 
+const UPGRADE_VALUE: Record<string, { title: string; features: string[]; cta: string }> = {
+  student: {
+    title: 'Oppgrader til Bachelor',
+    features: ['Krypto-Professor — stille spørsmål når som helst', 'Teknisk Analyse Masterclass', 'Ukentlige Live-Webinarer', '1 000 KLT tokens/mnd'],
+    cta: 'Se priser',
+  },
+  bachelor: {
+    title: 'Oppgrader til Master',
+    features: ['Live Trading på Binance', 'Automatisk Trading (3 strategier)', 'Kopiering av topp-tradere', '2 500 KLT tokens/mnd'],
+    cta: 'Oppgrader til Master',
+  },
+  master: { title: '', features: [], cta: '' },
+  phd: { title: '', features: [], cta: '' },
+  professor: { title: '', features: [], cta: '' },
+};
+
 export default function ProgressiveDashboard() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const locale = useLocale();
+  const supabase = createClient();
+  const { subscription, loading: subLoading, currentTier } = useSubscription();
+  const userTier = (subscription?.tier_slug ?? currentTier ?? 'student') as TierSlug;
   const [viewMode, setViewMode] = useState<ViewMode>('enkel');
-  const [userTier, setUserTier] = useState<string>('student');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadUserTier() {
+    async function loadPreference() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const { data } = await supabase
             .from('user_profiles')
-            .select('tier, view_mode_preference')
+            .select('view_mode_preference')
             .eq('id', user.id)
-            .single() as unknown;
-
-          if (data) {
-            setUserTier(data.tier || 'student');
-            setViewMode(data.view_mode_preference || getDefaultViewMode(data.tier));
+            .single() as unknown as { view_mode_preference?: ViewMode } | null;
+          if (data?.view_mode_preference) {
+            setViewMode(data.view_mode_preference);
+          } else {
+            setViewMode(getDefaultViewMode(userTier));
           }
         }
       } catch (error) {
-        console.error('Failed to load user tier:', error);
+        console.error('Failed to load view preference:', error);
       } finally {
         setLoading(false);
       }
     }
-    loadUserTier();
-  }, []);
+    if (!subLoading) loadPreference();
+  }, [subLoading, userTier]);
 
   function getDefaultViewMode(tier: string): ViewMode {
     if (tier === 'phd' || tier === 'professor') return 'avansert';
@@ -60,7 +78,9 @@ export default function ProgressiveDashboard() {
     }
   }
 
-  if (loading) {
+  const upgradeInfo = userTier && UPGRADE_VALUE[userTier]?.features?.length ? UPGRADE_VALUE[userTier] : null;
+
+  if (loading || subLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full" />
@@ -70,8 +90,26 @@ export default function ProgressiveDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-900 p-4 md:p-8">
-      {/* Header med toggle */}
       <div className="max-w-6xl mx-auto">
+        {/* Verdi av oppgradering — viser hva du låser opp */}
+        {upgradeInfo && (
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-blue-900/40 to-indigo-900/40 border border-blue-700/50">
+            <h3 className="text-lg font-semibold text-white mb-2">✨ {upgradeInfo.title}</h3>
+            <ul className="text-sm text-slate-300 space-y-1 mb-3">
+              {upgradeInfo.features.map((f, i) => (
+                <li key={i}>• {f}</li>
+              ))}
+            </ul>
+            <a
+              href={`/${locale}/priser`}
+              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium text-sm"
+            >
+              {upgradeInfo.cta} →
+            </a>
+          </div>
+        )}
+
+        {/* Header med toggle */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-white">Dashboard</h1>

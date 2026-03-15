@@ -1,4 +1,15 @@
 {
+  "stepIndicator": "Step {current} of {total}",
+  "error": {
+    "title": "Could not load onboarding",
+    "message": "Something went wrong while loading your onboarding status. Please try again.",
+    "retry": "Retry",
+    "backToLogin": "Back to login"
+  },
+  "complete": {
+    "title": "Done!",
+    "redirecting": "Taking you to the dashboard..."
+  },
   "email": "Email",
   "bankid": "BankID",
   "video": "Welcome Video",

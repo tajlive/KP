@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
 import { routing } from './i18n/routing'
+import { handleOnboarding } from './middleware/onboarding'
 
 const handleI18nRouting = createMiddleware(routing)
 
@@ -44,15 +45,19 @@ export async function middleware(request: NextRequest) {
   const isProtected = PROTECTED_PATHS.some(p => strippedPath.startsWith(p))
 
   if (isProtected) {
-    // Sjekk Supabase session via cookie
-    const sessionCookie = request.cookies.get('sb-access-token') ||
-                          request.cookies.get('sb-vuxbjlykgmzskxbclquf-auth-token')
-    
-    if (!sessionCookie) {
+    // Supabase SSR uses sb-<projectRef>-auth-token (or chunked: .0, .1, …)
+    const hasSession = request.cookies.getAll().some(
+      c => c.name === 'sb-access-token' ||
+           c.name.startsWith('sb-') && c.name.includes('-auth-token')
+    )
+    if (!hasSession) {
       const loginUrl = new URL(`/${locale}/innlogging`, request.url)
       loginUrl.searchParams.set('next', pathname)
       return NextResponse.redirect(loginUrl)
     }
+    // Onboarding: redirect to /onboarding if not completed (only for protected paths with session)
+    const onboardingResult = await handleOnboarding(request, response)
+    if (onboardingResult) return onboardingResult
   }
 
   return response

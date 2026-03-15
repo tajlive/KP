@@ -114,7 +114,8 @@ export const OAUTH_CONFIG: Record<
 // Error messages (Norwegian)
 export const AUTH_ERRORS: Record<string, string> = {
   no_code: "Ingen autorisasjonskode mottatt fra leverandør.",
-  exchange_failed: "Kunne ikke fullføre innlogging. Prøv igjen.",
+  exchange_failed:
+    "Google-innlogging feilet (sjekk at informasjonskapsler ikke blokkeres, eller prøv e-post/passord).",
   callback_error: "En uventet feil oppstod under innlogging.",
   admin_auth_required: "Admin-autentisering kreves.",
   provider_error: "Feil fra innloggingsleverandør.",

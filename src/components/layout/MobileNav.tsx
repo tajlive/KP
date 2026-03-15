@@ -73,9 +73,13 @@ export function MobileNav() {
         )}
       >
         {/* Backdrop */}
-        <div 
+        <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          role="button"
+          tabIndex={0}
+          aria-label="Lukk meny"
           onClick={() => setIsOpen(false)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setIsOpen(false); } }}
         />
 
         {/* Menu Panel */}
