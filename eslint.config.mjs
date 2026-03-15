@@ -275,6 +275,19 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-expressions": "off",
       // Tillat const/let i case blokker
       "no-case-declarations": "off",
+      // Zustand v5: forby default import (deprecated)
+      "no-restricted-imports": [
+        "error",
+        {
+          "paths": [
+            {
+              "name": "zustand",
+              "importNames": ["default"],
+              "message": "Default export is deprecated. Use: import { create } from 'zustand'",
+            },
+          ],
+        },
+      ],
     },
   },
 
@@ -328,20 +341,12 @@ const eslintConfig = [
     },
   },
 
-  // Next.js konfigurasjon - global (uten files restriction)
+  // Next.js konfigurasjon – offisiell flatConfig slik at build oppdager pluginen (ingen "plugin was not detected")
+  nextPlugin.flatConfig.coreWebVitals,
   {
-    name: "nextjs-plugin",
-    plugins: {
-      "@next/next": nextPlugin,
-    },
-    settings: {
-      next: {
-        rootDir: ".",
-      },
-    },
+    name: "nextjs-overrides",
+    settings: { next: { rootDir: "." } },
     rules: {
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs["core-web-vitals"].rules,
       "@next/next/no-img-element": "warn",
       "@next/next/no-html-link-for-pages": "off",
     },

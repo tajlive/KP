@@ -14,6 +14,7 @@ Kort liste over forbedringer som bringer prosjektet tettere på dagens best prac
 - **A11y-fikser**: `global-error.tsx` (html lang="no"), LoginForm og onboarding step4 (label htmlFor + input id), BetaFeedback (fjernet autoFocus), CommandPalette (ref-focus + aria-label), VideoHero (track + aria-label), pagination (default aria-label).
 - **Gradvise a11y-fikser**: Flere labels med htmlFor/id (auth: glemt-passord, signup, admin login/forgot/reset; beta apply; LommebokDashboard; SettingsForm; password-input med useId). Klikk-elementer med role="button" + onKeyDown (admin layout, AdminShell, AdminNotificationCenter, DashboardSidebar, CoinList, CopyTradingPanel, StrategySelectorSection, UnifiedTradingDashboard, BotStatusCard, NotificationTray). Lint: **0** advarsler, `--max-warnings 0`.
 - **Fjerning av alle a11y-advarsler**: ESLint `label-has-for` satt til `required: { "some": ["nesting", "id"] }`. Alle gjenværende labels fikk htmlFor/id eller fieldset/legend/role="group"+aria-labelledby. Kontroller fikk aria-label (admin, varsler, push, trading, simulator, settings). Backdrop/klikk fikk role="button"+onKeyDown (CommandPalette, LanguageSwitcher, MobileNav). Spesialtilfeller: NotificationTray (eslint-disable for li role="button"), input-group og CommandPalette (eslint-disable for dialog-panel). Tabellceller som ikke er kontroller fikk eslint-disable der linter feilaktig rapporterte. **Lint passerer med --max-warnings 0.**
+- **ESLint i build (mars 2026):** `eslint.ignoreDuringBuilds` satt til `false` i next.config.mjs. Build kjører nå lint og feiler ved brudd (2026-standard). Next.js flat config bruker `nextPlugin.flatConfig.coreWebVitals` + overstyrer. Advarselen «The Next.js plugin was not detected» er dokumentert i docs/vercel-build-notes.md (kosmetisk).
 
 ---
 
@@ -21,7 +22,7 @@ Kort liste over forbedringer som bringer prosjektet tettere på dagens best prac
 
 | Nå | Anbefaling |
 |----|------------|
-| `ignoreBuildErrors: true` og `eslint.ignoreDuringBuilds: true` i `next.config.mjs` | **Fjern begge** når type-/lint-gjelden er nedkjempet. I 2026 bør build feile på TS og ESLint. |
+| `ignoreBuildErrors: true` (TS) og ~~`eslint.ignoreDuringBuilds`~~ i `next.config.mjs` | **ESLint i build er på** (ignoreDuringBuilds: false). Fjern **ignoreBuildErrors** når type-gjelden er nedkjempet. |
 | Mange `as unknown` / `as any` rundt Supabase-kall | **Én kilde til sannhet:** Bruk genererte typer fra `supabase gen types` og importer i koden. Unngå `as unknown` på `.eq("user_id", user.id)` – få typen til å tillate `user_id` (evt. juster generert type eller lag typpede hjelpefunksjoner). |
 | `noUnusedLocals: false`, `noUnusedParameters: false` i `tsconfig.json` | **Sett til `true`** for raskere oppdagelse av død kode og renere API. |
 
@@ -45,7 +46,8 @@ Kort liste over forbedringer som bringer prosjektet tettere på dagens best prac
 ## 3. i18n
 
 - **Nå:** next-intl med no/en/th/zh; validering viser manglende/ekstra nøkler for th/zh.
-- **Anbefaling:**
+- **Beslutning (2026):** TH og ZH er **bevisst ufullstendige** for å spare tid. Kun NO og EN er aktive (`locales` i `src/i18n/config.ts`). Fyll ut th/zh når marked eller krav tilsier det; next-intl fallback til defaultLocale for manglende nøkler.
+- **Anbefaling (ved behov):**
   - Fullfør nøkler for th/zh der sidene er aktive, eller **automatiser fallback** (f.eks. til `en`) i valideringsskriptet så build ikke bryter.
   - Bruk **namespace-filer** konsekvent (som `messages/no/onboarding.json`) og unngå duplisering i store `no.json`/`en.json`.
 

@@ -23,7 +23,7 @@ test('Prisside: laster', async ({ page }) => {
 
 test('Innlogging: viser loginskjema', async ({ page }) => {
   await page.goto(`${BASE}/no/innlogging`)
-  const loginPage = page.locator('[data-testid="login-page"]')
+  const loginPage = page.getByTestId('login-page').first()
   await expect(loginPage).toBeVisible()
 })
 
