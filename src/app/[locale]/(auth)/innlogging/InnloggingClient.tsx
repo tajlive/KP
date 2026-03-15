@@ -185,7 +185,7 @@ function InnloggingForm() {
                     placeholder={t("emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-10 h-12 border-gray-300 focus:border-[#0052FF] focus:ring-[#0052FF]"
                     required
                     disabled={status === "logging_in"}
                     aria-invalid={!!loginError}
@@ -207,7 +207,7 @@ function InnloggingForm() {
                     placeholder={t("passwordPlaceholder")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-10 pr-10 h-12 border-gray-300 focus:border-[#0052FF] focus:ring-[#0052FF]"
                     required
                     disabled={status === "logging_in"}
                     aria-invalid={!!loginError}
@@ -216,7 +216,7 @@ function InnloggingForm() {
                     type="button"
                     tabIndex={0}
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded"
                     aria-label={showPassword ? (locale === "no" ? "Skjul passord" : "Hide password") : (locale === "no" ? "Vis passord" : "Show password")}
                   >
                     {showPassword ? (
@@ -231,7 +231,7 @@ function InnloggingForm() {
               <Button
                 type="submit"
                 disabled={status === "logging_in"}
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                className="w-full h-12 bg-[#0052FF] hover:bg-[#0041CC] text-white font-medium"
               >
                 {status === "logging_in" ? (
                   <>
@@ -268,7 +268,7 @@ function InnloggingForm() {
             <div className="flex flex-col gap-2 text-center text-sm">
               <Link
                 href={`/${locale}/glemt-passord`}
-                className="text-blue-600 hover:text-blue-800 hover:underline"
+                className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
               >
                 {t("forgotPassword")}
               </Link>
@@ -276,7 +276,7 @@ function InnloggingForm() {
                 {t("noAccount")}{" "}
                 <Link
                   href={`/${locale}/signup`}
-                  className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                  className="text-[#0052FF] hover:text-[#0041CC] hover:underline font-medium"
                 >
                   {t("createAccount")}
                 </Link>
@@ -289,14 +289,14 @@ function InnloggingForm() {
           Ved å logge inn godtar du våre{" "}
           <Link
             href={`/${locale}/vilkar`}
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
           >
             vilkår
           </Link>{" "}
           og{" "}
           <Link
             href={`/${locale}/personvern`}
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
           >
             personvernerklæring
           </Link>

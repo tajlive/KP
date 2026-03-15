@@ -74,12 +74,13 @@ export default function ClientAdminLogin() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="admin-login-email" className="block text-sm font-medium text-slate-300 mb-1.5">
                 E-post
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <Input
+                  id="admin-login-email"
                   type="email"
                   placeholder="admin@klarpakke.no"
                   value={email}
@@ -91,12 +92,13 @@ export default function ClientAdminLogin() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="admin-login-password" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Passord
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <Input
+                  id="admin-login-password"
                   type="password"
                   placeholder="••••••••"
                   value={password}

@@ -68,6 +68,7 @@ export default function PositionsTable() {
                 transition={{ delay: index * 0.1 }}
                 className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
               >
+                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label -- cell is display-only (symbol/leverage) */}
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-gray-900 dark:text-white">
@@ -133,6 +134,7 @@ export default function PositionsTable() {
                     variant="outline"
                     size="sm"
                     onClick={() => closePosition(position.id)}
+                    aria-label={`Lukk posisjon ${position.symbol}`}
                     className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/30"
                   >
                     <X className="w-4 h-4 mr-1" />

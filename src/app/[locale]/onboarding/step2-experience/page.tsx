@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { getProfileOnboardingExtended } from "@/lib/supabase/helpers";
 import { BookOpen, TrendingUp, Award } from "lucide-react";
 
 const EXPERIENCE_OPTIONS = [
@@ -16,10 +17,19 @@ const EXPERIENCE_OPTIONS = [
 export default function OnboardingStep2() {
   const t = useTranslations("onboarding.step2");
   const router = useRouter();
+  const locale = useLocale();
   const supabase = createClient();
   const [selected, setSelected] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
+
+  const steps = [
+    `/${locale}/onboarding/step1-welcome`,
+    `/${locale}/onboarding/step2-experience`,
+    `/${locale}/onboarding/step3-trading-mode`,
+    `/${locale}/onboarding/step4-binance`,
+    `/${locale}/onboarding/step5-complete`,
+  ];
 
   // Sjekk auth og redirect hvis nødvendig
   useEffect(() => {
@@ -29,36 +39,25 @@ export default function OnboardingStep2() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/login?next=/onboarding/step2-experience");
+        router.push(`/${locale}/login?next=/onboarding/step2-experience`);
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("onboarding_step, onboarding_completed, trading_experience")
-        .eq("user_id" as unknown, user.id)
-        .single() as unknown;
+      const { data: profile } = await getProfileOnboardingExtended(supabase, user.id);
 
       if (profile?.onboarding_completed) {
-        router.push("/dashboard");
+        router.push(`/${locale}/dashboard`);
         return;
       }
 
       // Hvis brukeren er på steg 0, send til steg 1
       if (!profile?.onboarding_step || profile.onboarding_step < 1) {
-        router.push("/onboarding/step1-welcome");
+        router.push(steps[0]);
         return;
       }
 
       // Hvis brukeren er på et senere steg, send dit
       if (profile.onboarding_step > 1) {
-        const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step2-experience",
-          "/onboarding/step3-trading-mode",
-          "/onboarding/step4-binance",
-          "/onboarding/step5-complete",
-        ];
         router.push(steps[profile.onboarding_step]);
         return;
       }
@@ -72,7 +71,7 @@ export default function OnboardingStep2() {
     };
 
     checkStatus();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleContinue = async () => {
     if (!selected) return;
@@ -96,7 +95,7 @@ export default function OnboardingStep2() {
 
       if (error) throw error;
 
-      router.push("/onboarding/step3-trading-mode");
+      router.push(`/${locale}/onboarding/step3-trading-mode`);
     } catch (err) {
       console.error("Failed to save experience:", err);
       setLoading(false);

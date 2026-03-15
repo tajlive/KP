@@ -181,7 +181,7 @@ export default function SignalTable({
                     </span>
                   </td>
                   <td>
-                    <div className="kp-flex kp-items-center kp-gap-2">
+                    <div className="kp-flex kp-items-center kp-gap-2" role="img" aria-label={`Konfidens: ${signal.confidence}%`}>
                       <div className="w-12 h-2 bg-slate-800 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-primary"

@@ -27,13 +27,12 @@ export const stripe = new Proxy({} as Stripe, {
   },
 });
 
-// KLARPAKKE UNIVERSITET - 4-nivå læringsmodell
-// UI: Gratis/Basis/Komplett/Pro
-// Stripe: price_student_199 / price_master_399 / price_professor_999
+// KLARPAKKE UNIVERSITET - 4-nivå læringsmodell: Student / Bachelor / Master / PhD
+// Stripe: price_student / price_master / price_professor
 
 export const STRIPE_PLANS = {
   free: {
-    name: 'Gratis',
+    name: 'Student',
     description: 'Prøv før du kjøper',
     price: 0,
     features: [
@@ -45,9 +44,9 @@ export const STRIPE_PLANS = {
     limitations: ['Kun smakebit av innhold'],
     popular: false,
   },
-  // Basis = Student i Stripe (199 kr)
+  // basis = Bachelor (199 kr)
   basis: {
-    name: 'Basis',
+    name: 'Bachelor',
     description: 'Perfekt for nybegynnere',
     price: 199,
     priceAnnual: 1990,
@@ -62,9 +61,9 @@ export const STRIPE_PLANS = {
     ],
     popular: false,
   },
-  // Komplett = Master i Stripe (399 kr)
+  // komplett = Master (399 kr)
   komplett: {
-    name: 'Komplett',
+    name: 'Master',
     description: 'Alt du trenger for å mestre trading',
     price: 399,
     priceAnnual: 3990,
@@ -81,9 +80,9 @@ export const STRIPE_PLANS = {
     ],
     popular: true,
   },
-  // Pro = Professor i Stripe (999 kr)
+  // pro = PhD (999 kr)
   pro: {
-    name: 'Pro',
+    name: 'PhD',
     description: 'For seriøse studenter',
     price: 999,
     priceAnnual: 9990,

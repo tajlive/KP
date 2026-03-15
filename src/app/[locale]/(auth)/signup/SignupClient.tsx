@@ -212,11 +212,12 @@ function SignupContent() {
 
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
+              <label htmlFor="signup-fullname" className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
                 <User className="w-4 h-4 text-blue-600" />
                 Navn
               </label>
               <Input
+                id="signup-fullname"
                 type="text"
                 placeholder="Ditt fulle navn"
                 value={fullName}
@@ -227,11 +228,12 @@ function SignupContent() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
+              <label htmlFor="signup-email" className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
                 <Mail className="w-4 h-4 text-blue-600" />
                 {t("email")}
               </label>
               <Input
+                id="signup-email"
                 type="email"
                 placeholder="navn@eksempel.no"
                 value={email}
@@ -242,12 +244,13 @@ function SignupContent() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
+              <label htmlFor="signup-password" className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
                 <Lock className="w-4 h-4 text-blue-600" />
                 {t("password")}
               </label>
               <div className="relative">
                 <Input
+                  id="signup-password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

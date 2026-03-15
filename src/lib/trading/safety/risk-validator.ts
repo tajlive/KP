@@ -6,6 +6,7 @@
  */
 
 import { createClient } from "../../supabase/server";
+import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 
 export type RejectionReason =
   | "NO_RISK_PROFILE"
@@ -205,28 +206,37 @@ export async function validateTradeAgainstRiskProfile(
       };
     }
 
-    // 6. Beregn nøkkeltall
+    // 6. Beregn nøkkeltall (for paper: kapital er NOK, priser fra Binance er USDT → konverter)
     const currentCapital = Number(session.current_capital_nok);
-    const orderValue = trade.quantity * trade.price;
-    
-    // Hent eksisterende posisjoner for eksponering
+    const orderValueUsdt = trade.quantity * trade.price;
+    const usdtNokRate = trade.tradingMode === "paper" ? await getUsdtToNokRateAsync(supabase) : null;
+    const orderValue = trade.tradingMode === "paper"
+      ? usdtToNok(orderValueUsdt, usdtNokRate ?? undefined)
+      : orderValueUsdt;
+
     const { data: positions } = await supabase
       .from("positions")
       .select("symbol, quantity, avg_entry_price")
       .eq("session_id", trade.sessionId);
 
-    const currentExposure = (positions || []).reduce((sum: number, pos: unknown) => {
+    const currentExposureUsdt = (positions || []).reduce((sum: number, pos: unknown) => {
       return sum + (Number(pos.quantity) * Number(pos.avg_entry_price));
     }, 0);
+    const rate = usdtNokRate ?? undefined;
+    const currentExposure = trade.tradingMode === "paper"
+      ? usdtToNok(currentExposureUsdt, rate)
+      : currentExposureUsdt;
 
     const existingPosition = (positions as unknown[] | null | undefined)?.find(
       (p) => p.symbol === trade.symbol,
     );
-    const existingPositionValue = existingPosition 
+    const existingPositionValueUsdt = existingPosition
       ? Number(existingPosition.quantity) * Number(existingPosition.avg_entry_price)
       : 0;
+    const existingPositionValue = trade.tradingMode === "paper"
+      ? usdtToNok(existingPositionValueUsdt, rate)
+      : existingPositionValueUsdt;
 
-    // Beregn post-trade verdier
     let postTradePositionValue: number;
     if (trade.side === "buy") {
       postTradePositionValue = existingPositionValue + orderValue;

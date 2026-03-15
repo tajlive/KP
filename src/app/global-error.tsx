@@ -32,7 +32,7 @@ export default function GlobalError({
     }, [error])
 
     return (
-        <html>
+        <html lang="no">
             <body>
                 <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-white text-center">
                     <div className="max-w-md w-full">

@@ -84,7 +84,6 @@ export function BetaFeedback() {
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <Textarea
-                                    autoFocus
                                     placeholder="Hva kan vi forbedre? Beskriv gjerne feilen hvis du fant en..."
                                     className="min-h-[120px] bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:ring-blue-500 focus:border-blue-500"
                                     value={feedback}

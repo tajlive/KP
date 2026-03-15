@@ -189,7 +189,17 @@ export function NotificationTray() {
                 {notifications.map((notif) => (
                   <li
                     key={notif.id}
+                    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role -- list item is clickable to mark read; delete is separate button
+                    role="button"
+                    tabIndex={0}
                     onClick={() => !notif.is_read && markAsRead(notif.id)}
+                    onKeyDown={(e) => {
+                      if ((e.key === "Enter" || e.key === " ") && !notif.is_read) {
+                        e.preventDefault();
+                        markAsRead(notif.id);
+                      }
+                    }}
+                    aria-label={notif.is_read ? "Varsel (lest)" : "Merk som lest"}
                     className={`p-4 transition-colors relative group cursor-pointer ${
                       notif.is_read
                         ? "bg-slate-900 hover:bg-slate-800/50"

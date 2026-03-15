@@ -136,21 +136,33 @@ export const CoinList: React.FC<CoinListProps> = ({
         <div className="border-b border-white/5">
           <div className="grid grid-cols-12 gap-2 px-4 py-2 text-xs text-muted-foreground">
             <div className="col-span-4">Valuta</div>
-            <div 
+            <div
+              role="button"
+              tabIndex={0}
               className="col-span-3 text-right cursor-pointer hover:text-foreground"
               onClick={() => setSortBy('price')}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortBy('price'); } }}
+              aria-label="Sorter på pris"
             >
               Pris {sortBy === 'price' && '•'}
             </div>
-            <div 
+            <div
+              role="button"
+              tabIndex={0}
               className="col-span-3 text-right cursor-pointer hover:text-foreground"
               onClick={() => setSortBy('change')}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortBy('change'); } }}
+              aria-label="Sorter på 24t endring"
             >
               24t {sortBy === 'change' && '•'}
             </div>
-            <div 
+            <div
+              role="button"
+              tabIndex={0}
               className="col-span-2 text-right cursor-pointer hover:text-foreground"
               onClick={() => setSortBy('volume')}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSortBy('volume'); } }}
+              aria-label="Sorter på volum"
             >
               Vol {sortBy === 'volume' && '•'}
             </div>
@@ -161,7 +173,10 @@ export const CoinList: React.FC<CoinListProps> = ({
           {coinList.map((coin) => (
             <div
               key={coin.symbol}
+              role="button"
+              tabIndex={0}
               onClick={() => onSelectSymbol(coin.symbol)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelectSymbol(coin.symbol); } }}
               className={cn(
                 "grid grid-cols-12 gap-2 px-4 py-3 cursor-pointer transition-colors hover:bg-white/5 border-b border-white/5",
                 selectedSymbol === coin.symbol && "bg-primary/10 hover:bg-primary/10"

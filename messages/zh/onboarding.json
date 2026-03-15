@@ -1,4 +1,15 @@
 {
+  "stepIndicator": "步骤 {current} / {total}",
+  "error": {
+    "title": "无法加载入门设置",
+    "message": "加载您的入门状态时出错，请重试。",
+    "retry": "重试",
+    "backToLogin": "返回登录"
+  },
+  "complete": {
+    "title": "完成！",
+    "redirecting": "正在跳转到仪表板…"
+  },
   "welcome": "Welcome, {{name}}!",
   "skip": "Skip",
   "next": "Next",

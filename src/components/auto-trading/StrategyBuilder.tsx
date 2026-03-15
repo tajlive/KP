@@ -318,12 +318,13 @@ export default function StrategyBuilder({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="strategy-builder-start-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Start Dato
               </label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
+                  id="strategy-builder-start-date"
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -333,12 +334,13 @@ export default function StrategyBuilder({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="strategy-builder-end-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Slutt Dato
               </label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
+                  id="strategy-builder-end-date"
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
@@ -453,10 +455,11 @@ export default function StrategyBuilder({
           {activeTab === "risk" && (
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="strategy-stop-loss" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Stop Loss (%)
                 </label>
                 <Input
+                  id="strategy-stop-loss"
                   type="number"
                   value={strategy.stopLoss}
                   onChange={(e) =>
@@ -472,10 +475,11 @@ export default function StrategyBuilder({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="strategy-take-profit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Take Profit (%)
                 </label>
                 <Input
+                  id="strategy-take-profit"
                   type="number"
                   value={strategy.takeProfit}
                   onChange={(e) =>
@@ -491,10 +495,11 @@ export default function StrategyBuilder({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="strategy-position-size" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Posisjonsstørrelse (%)
                 </label>
                 <Input
+                  id="strategy-position-size"
                   type="number"
                   value={strategy.positionSize}
                   onChange={(e) =>
@@ -510,10 +515,11 @@ export default function StrategyBuilder({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="strategy-max-positions" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Maks antall posisjoner
                 </label>
                 <Input
+                  id="strategy-max-positions"
                   type="number"
                   value={strategy.maxPositions}
                   onChange={(e) =>

@@ -2,65 +2,81 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { createSupabaseClient, redirectWithCookies } from "./auth-guard";
 
-export async function handleOnboarding(request: NextRequest): Promise<NextResponse | null> {
-  const { pathname } = request.nextUrl;
-  const response = NextResponse.next();
+const PROTECTED_PATHS = [
+  "/dashboard",
+  "/innstillinger",
+  "/beta",
+  "/admin",
+  "/checkout",
+  "/akademi",
+  "/paper-trading",
+  "/auto-trading",
+  "/konto",
+  "/handelshistorikk",
+  "/varsler",
+  "/leagues",
+  "/copy-trading",
+  "/marketplace",
+  "/profile",
+  "/quiz",
+];
 
+export async function handleOnboarding(
+  request: NextRequest,
+  response: NextResponse,
+): Promise<NextResponse | null> {
+  const { pathname } = request.nextUrl;
   const locale = pathname.split("/")[1] || "no";
   const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
 
-  const supabase = createSupabaseClient(request, response);
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return response;
-  }
-
-  // EMERGENCY BYPASS: Skip onboarding checks entirely for now
-  // TODO: Re-enable after fixing cookie/session issues
   const isOnboardingPage = pathWithoutLocale.startsWith("/onboarding");
-  
-  // Always allow access to all pages for authenticated users
-  // The onboarding wizard can still be accessed manually if needed
-  return response;
-  
-  /* DISABLED - Causing redirect loops
-  // Only check onboarding if they are navigating to a protected path
+
+  // Only run onboarding check on protected paths (not on onboarding wizard itself when already there)
   const isProtected = PROTECTED_PATHS.some(
     (p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`),
-  ) || pathWithoutLocale.startsWith("/onboarding");
+  );
 
-  if (!isProtected) {
-    return response;
+  if (!isProtected && !isOnboardingPage) {
+    return null;
   }
 
+  const supabase = createSupabaseClient(request, response);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  // Prefer cookie to avoid DB hit every request; cookie is set only after DB confirms completed
   let onboardingCompleted =
     request.cookies.get("kp_onboarding_status")?.value === "completed";
 
-  // If cookie doesn't say completed, check DB
   if (!onboardingCompleted) {
     try {
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("onboarding_completed, setup_completed_at")
-        .eq("id", user.id)
-        .single() as any;
+        .eq("user_id", user.id)
+        .maybeSingle();
 
       if (
         profile &&
-        (profile.onboarding_completed === true ||
-          profile.setup_completed_at !== null)
+        (profile.onboarding_completed === true || profile.setup_completed_at != null)
       ) {
         onboardingCompleted = true;
       }
 
       if (onboardingCompleted) {
+        const host = request.headers.get("host") || "";
+        const isLocalhost = host.startsWith("localhost") || host.startsWith("127.0.0.1");
         response.cookies.set("kp_onboarding_status", "completed", {
           path: "/",
           maxAge: 3600 * 24 * 30,
           sameSite: "lax",
-          secure: true,
-          domain: getCookieDomain(request),
+          secure: !isLocalhost,
+          ...(isLocalhost ? {} : { domain: getCookieDomain(request) }),
         });
       }
     } catch (err) {
@@ -68,7 +84,6 @@ export async function handleOnboarding(request: NextRequest): Promise<NextRespon
     }
   }
 
-  // Redirect to onboarding if not completed and not already there
   if (!onboardingCompleted && !isOnboardingPage) {
     return redirectWithCookies(
       new URL(`/${locale}/onboarding`, request.url),
@@ -77,7 +92,6 @@ export async function handleOnboarding(request: NextRequest): Promise<NextRespon
     );
   }
 
-  // If onboarding IS completed, prevent them from going back to onboarding wizard
   if (onboardingCompleted && isOnboardingPage) {
     return redirectWithCookies(
       new URL(`/${locale}/dashboard`, request.url),
@@ -86,8 +100,7 @@ export async function handleOnboarding(request: NextRequest): Promise<NextRespon
     );
   }
 
-  return response;
-  */
+  return null;
 }
 
 function getCookieDomain(request: NextRequest): string | undefined {

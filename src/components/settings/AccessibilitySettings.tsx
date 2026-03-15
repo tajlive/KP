@@ -104,8 +104,8 @@ export default function AccessibilitySettings() {
 
       <div className="space-y-8">
         {/* Font size toggle */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-3">Tekststørrelse</label>
+        <div role="group" aria-labelledby="a11y-font-size-label">
+          <span id="a11y-font-size-label" className="block text-sm font-medium text-gray-300 mb-3">Tekststørrelse</span>
           <div className="flex gap-3 flex-wrap">
             <button
               onClick={() => saveFontSize('normal')}
@@ -133,7 +133,7 @@ export default function AccessibilitySettings() {
 
         {/* High contrast toggle */}
         <div>
-          <label className="flex items-center justify-between cursor-pointer">
+          <label htmlFor="a11y-high-contrast" className="flex items-center justify-between cursor-pointer">
             <div>
               <div className="font-medium text-white mb-1">Høy kontrast</div>
               <p className="text-sm text-gray-400">
@@ -141,10 +141,12 @@ export default function AccessibilitySettings() {
               </p>
             </div>
             <button
+              id="a11y-high-contrast"
+              type="button"
               onClick={() => saveHighContrast(!highContrast)}
+              aria-label={highContrast ? "Slå av høy kontrast" : "Slå på høy kontrast"}
               className={`min-h-[44px] min-w-[64px] relative rounded-full transition-colors ${highContrast ? 'bg-green-600' : 'bg-gray-600'
                 }`}
-              aria-label={highContrast ? 'Slå av høy kontrast' : 'Slå på høy kontrast'}
             >
               <div
                 className={`absolute top-1 left-1 w-8 h-8 bg-white rounded-full transition-transform ${highContrast ? 'translate-x-8' : 'translate-x-0'

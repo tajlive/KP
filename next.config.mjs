@@ -26,13 +26,13 @@ const nextConfig = {
   // Individual API routes can opt into edge runtime if needed
 
   // Build: enforce lint, gradual TS strict migration
+  // TODO 2026: Sett ignoreDuringBuilds til false når lint er ren. Se docs/forbedringsforslag-2026.md
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // TEMP: Ignorerer TS-feil i build for lansering. Supabase-genererte typer matcher
-    // ikke lokal kode pga utbredt `as unknown`-mønster. Runtime-trygt, men bør fikses.
-    // Se LAUNCH_TYPE_DEBT.md for plan.
+    // TODO 2026: Fjern ignoreBuildErrors når type-gjelden er nedkjempet (Supabase-typer + as unknown).
+    // Se docs/forbedringsforslag-2026.md og LAUNCH_TYPE_DEBT.md.
     ignoreBuildErrors: true,
   },
 

@@ -144,7 +144,16 @@ export function AdminNotificationCenter() {
                 <>
                     <div
                         className="fixed inset-0 z-40"
+                        role="button"
+                        tabIndex={0}
                         onClick={() => setShowPanel(false)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
+                                e.preventDefault();
+                                setShowPanel(false);
+                            }
+                        }}
+                        aria-label="Lukk varselpanel"
                     />
                     <div className="absolute right-0 top-12 w-96 max-h-[600px] bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
                         <div className="p-4 border-b border-slate-700 flex items-center justify-between">

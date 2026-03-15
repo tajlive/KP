@@ -198,10 +198,10 @@ export function MobileSimulator() {
         </div>
 
         {/* Strategy Selector */}
-        <div className="px-4 pb-4">
-          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">
+        <div className="px-4 pb-4" role="group" aria-labelledby="mobile-sim-strategy-label">
+          <span id="mobile-sim-strategy-label" className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">
             Trading Strategi
-          </label>
+          </span>
           <Sheet>
             <SheetTrigger asChild>
               <button className="w-full flex items-center justify-between p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-left active:bg-zinc-900 transition-colors">
@@ -230,10 +230,12 @@ export function MobileSimulator() {
                 {Object.values(STRATEGIES).map((strat) => (
                   <button
                     key={strat.id}
+                    type="button"
                     onClick={() => {
                       setSelectedStrategy(strat.id);
                       // Close sheet - need to find a way to close it
                     }}
+                    aria-label={`Velg strategi: ${strat.name}`}
                     className={cn(
                       "w-full p-4 rounded-xl border text-left transition-all",
                       selectedStrategy === strat.id
@@ -422,7 +424,9 @@ export function MobileSimulator() {
             <div className="flex items-center justify-between p-3 bg-zinc-900/50 rounded-xl">
               <span className="text-sm text-zinc-300">Merk som favoritt</span>
               <button
+                type="button"
                 onClick={() => setIsFavorite(!isFavorite)}
+                aria-label={isFavorite ? "Fjern fra favoritter" : "Legg til i favoritter"}
                 className={cn(
                   "w-10 h-6 rounded-full transition-colors relative",
                   isFavorite ? "bg-emerald-500" : "bg-zinc-700"

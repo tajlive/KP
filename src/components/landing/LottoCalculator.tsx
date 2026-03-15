@@ -66,12 +66,13 @@ export function LottoCalculator() {
         <div className="bg-slate-800/50 rounded-2xl p-6 mb-8 border border-white/10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="lotto-calc-amount" className="block text-sm font-medium text-slate-300 mb-2">
                 Ukentlig beløp
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">kr</span>
                 <input
+                  id="lotto-calc-amount"
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value))}
@@ -83,10 +84,11 @@ export function LottoCalculator() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="lotto-calc-years" className="block text-sm font-medium text-slate-300 mb-2">
                 Tidshorisont (år)
               </label>
               <input
+                id="lotto-calc-years"
                 type="range"
                 value={years}
                 onChange={(e) => setYears(Number(e.target.value))}

@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import InteractiveOnboardingWizard from "./InteractiveOnboardingWizard";
 
 interface OnboardingClientProps {
@@ -11,6 +12,7 @@ interface OnboardingClientProps {
 export default function OnboardingClient({ userId }: OnboardingClientProps) {
   const router = useRouter();
   const { locale } = useParams();
+  const t = useTranslations("onboarding");
   const [isComplete, setIsComplete] = useState(false);
 
   const handleComplete = useCallback(() => {
@@ -39,8 +41,8 @@ export default function OnboardingClient({ userId }: OnboardingClientProps) {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-white">Ferdig!</h2>
-          <p className="text-slate-400">Sender deg til dashboardet...</p>
+          <h2 className="text-2xl font-bold text-white">{t("complete.title")}</h2>
+          <p className="text-slate-400">{t("complete.redirecting")}</p>
         </div>
       </div>
     );

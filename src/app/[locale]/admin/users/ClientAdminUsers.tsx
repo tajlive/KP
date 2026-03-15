@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/utils";
+import { TABLE } from "@/lib/design/tokens";
 import {
   ArrowUpCircle,
   Award,
@@ -275,13 +276,13 @@ export default function ClientAdminUsers() {
             placeholder={t("searchUsers")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-[#0052FF]"
           />
         </div>
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+          className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-[#0052FF]"
         >
           <option value="all">Alle roller</option>
           {roles.map((r) => (
@@ -293,7 +294,7 @@ export default function ClientAdminUsers() {
         <select
           value={tierFilter}
           onChange={(e) => setTierFilter(e.target.value)}
-          className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+          className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-[#0052FF]"
         >
           <option value="all">Alle nivåer</option>
           {tiers.map((t) => (
@@ -305,7 +306,7 @@ export default function ClientAdminUsers() {
         <select
           value={sourceFilter}
           onChange={(e) => setSourceFilter(e.target.value)}
-          className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+          className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-[#0052FF]"
         >
           <option value="all">Alle kilder</option>
           {sources.map((s) => (
@@ -322,9 +323,10 @@ export default function ClientAdminUsers() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-800">
-                <th className="px-4 py-4 text-left">
+                <th className={TABLE.header}>
                   <input
                     type="checkbox"
+                    aria-label="Velg alle brukere"
                     className="rounded border-slate-600 bg-slate-800"
                     onChange={(e) => {
                       if (e.target.checked) {
@@ -335,35 +337,22 @@ export default function ClientAdminUsers() {
                     }}
                   />
                 </th>
-                <th className="px-4 py-4 text-left text-sm font-medium text-slate-400">
-                  #
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-medium text-slate-400">
-                  Bruker
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-medium text-slate-400">
-                  Rolle
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-medium text-slate-400">
-                  Nivå
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-medium text-slate-400">
-                  Kilde
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-medium text-slate-400">
-                  Registrert
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-medium text-slate-400">
-                  Handlinger
-                </th>
+                <th className={TABLE.header}>#</th>
+                <th className={TABLE.header}>Bruker</th>
+                <th className={TABLE.header}>Rolle</th>
+                <th className={TABLE.header}>Nivå</th>
+                <th className={TABLE.header}>Kilde</th>
+                <th className={TABLE.header}>Registrert</th>
+                <th className={TABLE.header}>Handlinger</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-800/50">
-                  <td className="px-4 py-4">
+                <tr key={user.id} className={TABLE.row}>
+                  <td className={TABLE.cell}>
                     <input
                       type="checkbox"
+                      aria-label={`Velg ${user.email || user.id}`}
                       className="rounded border-slate-600 bg-slate-800"
                       checked={selectedUsers.includes(user.id)}
                       onChange={(e) => {
@@ -377,12 +366,12 @@ export default function ClientAdminUsers() {
                       }}
                     />
                   </td>
-                  <td className="px-4 py-4">
-                    <span className="text-slate-500 font-mono text-sm">
+                  <td className={TABLE.cellNumeric}>
+                    <span className="text-slate-500 font-mono text-sm tabular-nums">
                       KP-{user.user_number}
                     </span>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className={TABLE.cell}>
                     <div>
                       <p className="text-sm font-medium text-white">
                         {user.username || "Ukjent"}
@@ -400,7 +389,7 @@ export default function ClientAdminUsers() {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className={TABLE.cell}>
                     <select
                       value={user.role}
                       onChange={(e) =>
@@ -424,16 +413,16 @@ export default function ClientAdminUsers() {
                         user.source}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-sm text-slate-400">
-                    {formatDate(user.created_at)}
+                  <td className={TABLE.cellNumeric}>
+                    <span className="text-slate-400 tabular-nums">{formatDate(user.created_at)}</span>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className={TABLE.cell}>
                     <button
                       onClick={() => {
                         setSelectedUser(user);
                         setShowUpgradeModal(true);
                       }}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors text-xs font-medium"
+                      className="flex items-center gap-1 px-3 py-1.5 bg-[#0052FF]/20 text-[#6FA3FF] rounded-lg hover:bg-[#0052FF]/30 transition-colors text-xs font-medium"
                     >
                       <ArrowUpCircle className="w-3 h-3" />
                       Oppgrader

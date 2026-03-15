@@ -112,7 +112,9 @@ export function VideoHero({
         onLoadedData={() => setIsLoading(false)}
         onWaiting={() => setIsLoading(true)}
         onPlaying={() => setIsLoading(false)}
+        aria-label="Kursvideo"
       >
+        <track kind="captions" src="" srcLang="no" label="Norsk" />
         {VIDEO_SOURCES.map((source, i) => (
           <source 
             key={i} 

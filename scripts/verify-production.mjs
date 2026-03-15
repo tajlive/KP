@@ -169,7 +169,19 @@ async function main() {
     }
   }
 
-  // 2. Critical Paths
+  // 2. API health
+  for (const api of API_ENDPOINTS) {
+    const url = `${CANONICAL_DOMAIN}${api.path}`;
+    const res = await testUrl(url, api.status);
+    if (res.success && res.status === api.status)
+      logSuccess(`${api.path} ${api.description}`);
+    else {
+      logError(`${api.path} failed: ${res.status || res.error}`);
+      exitCode = 1;
+    }
+  }
+
+  // 3. Critical Paths
   for (const test of CRITICAL_PATHS) {
     const url = `${CANONICAL_DOMAIN}${test.path}`;
     if (test.expectedRedirect) {
@@ -190,6 +202,18 @@ async function main() {
         logError(`${test.path} failed: ${res.status || res.error}`);
         exitCode = 1;
       }
+    }
+  }
+
+  // 4. Security headers (sample from homepage)
+  const headerRes = await testUrl(`${CANONICAL_DOMAIN}/no`, 200);
+  if (headerRes.success && headerRes.headers) {
+    const missing = REQUIRED_HEADERS.filter(
+      (h) => !Object.keys(headerRes.headers).some((k) => k.toLowerCase() === h.toLowerCase())
+    );
+    if (missing.length === 0) logSuccess("Required security headers present");
+    else {
+      logWarning(`Missing headers: ${missing.join(", ")}`);
     }
   }
 

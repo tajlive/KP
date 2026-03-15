@@ -192,7 +192,16 @@ export function DashboardSidebar() {
       {mobileOpen && (
         <div
           className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-30 lg:hidden"
+          role="button"
+          tabIndex={0}
           onClick={() => setMobileOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
+              e.preventDefault();
+              setMobileOpen(false);
+            }
+          }}
+          aria-label="Lukk meny"
         />
       )}
     </>

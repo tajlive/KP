@@ -195,8 +195,9 @@ export function BinanceConnect({ userId, onConnected }: BinanceConnectProps) {
 
             <div className="space-y-3">
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">API Key</label>
+                <label htmlFor="binance-connect-api-key" className="text-sm text-slate-400 mb-1 block">API Key</label>
                 <Input
+                  id="binance-connect-api-key"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -204,9 +205,10 @@ export function BinanceConnect({ userId, onConnected }: BinanceConnectProps) {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">API Secret</label>
+                <label htmlFor="binance-connect-api-secret" className="text-sm text-slate-400 mb-1 block">API Secret</label>
                 <div className="relative">
                   <Input
+                    id="binance-connect-api-secret"
                     type={showSecret ? 'text' : 'password'}
                     value={apiSecret}
                     onChange={(e) => setApiSecret(e.target.value)}

@@ -110,12 +110,13 @@ export default function ResetPasswordClient() {
             {!success ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">
+                  <label htmlFor="reset-password-new" className="block text-sm font-medium text-slate-300 mb-1.5">
                     {t("resetPassword.label")}
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <Input
+                      id="reset-password-new"
                       type={showPassword ? "text" : "password"}
                       placeholder={t("resetPassword.placeholder")}
                       value={password}
