@@ -50,6 +50,15 @@ Denne filen beskriver anbefalt oppsett i GitHub-websiden for å få full optimal
 | `VERCEL_TOKEN` | Manual Deploy (og ev. Vercel CLI i CI) |
 | `SENTRY_AUTH_TOKEN` | Build (source maps til Sentry) |
 
+**Slik setter du SENTRY_AUTH_TOKEN (manuelt):**  
+Sentry MCP støtter ikke token-oppretting. Prosjektet **klarpakke-production** ligger i org **elbatt-chatbot**.
+
+1. Gå til [elbatt-chatbot → Auth Tokens](https://elbatt-chatbot.sentry.io/settings/auth-tokens/).
+2. Opprett ny token med scopes **project:releases** og **org:read**.
+3. Kjør:  
+   `gh secret set SENTRY_AUTH_TOKEN --repo tajlive/KP`  
+   og lim inn token når du blir bedt om det.
+
 ### Valgfrie secrets
 
 | Secret | Bruk |

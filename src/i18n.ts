@@ -2,14 +2,17 @@ import { getRequestConfig } from "next-intl/server";
 import { Locale, defaultLocale, locales } from "./i18n/config";
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  // In next-intl v4, locale comes from requestLocale
-  const locale = await requestLocale;
+  let validLocale: Locale = defaultLocale;
+  try {
+    const locale = await requestLocale;
+    validLocale = locales.includes(locale as Locale)
+      ? (locale as Locale)
+      : defaultLocale;
+  } catch {
+    // requestLocale can throw in edge/static contexts; keep defaultLocale
+  }
 
-  // Validate locale, fallback to default if invalid
-  const validLocale = locales.includes(locale as Locale)
-    ? (locale as Locale)
-    : defaultLocale;
-
+  try {
   // Load all namespaces for the locale
   const [
     base,
@@ -325,4 +328,16 @@ export default getRequestConfig(async ({ requestLocale }) => {
       return `[MISSING: ${namespace ? namespace + '.' : ''}${key}]`;
     },
   };
+  } catch (err) {
+    // Fallback so production never crashes with "Locale Error" (digest)
+    const base = await import("../messages/no/base.json").then((m) => m.default).catch(() => ({}));
+    return {
+      locale: defaultLocale,
+      messages: { base },
+      onError() {},
+      getMessageFallback({ namespace, key }) {
+        return `[${namespace ? namespace + '.' : ''}${key}]`;
+      },
+    };
+  }
 });

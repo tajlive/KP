@@ -125,20 +125,27 @@ export async function generateMetadata({
   };
 }
 
+const VALID_LOCALES = ['no', 'en'] as const;
+type ValidLocale = (typeof VALID_LOCALES)[number];
+
+function resolveLocale(raw: string | undefined): ValidLocale {
+  if (raw === 'no' || raw === 'en') return raw;
+  return 'no';
+}
+
 interface LayoutProps {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale?: string }>;
 }
 
 export default async function LocaleLayout({ children, params }: LayoutProps) {
-  const { locale } = await params;
-  
-  // Enable static rendering for locale - required by next-intl v4
-  // https://next-intl.dev/docs/routing/setup#static-rendering
-  setRequestLocale(locale);
-  
-  let messages;
+  const resolvedParams = await params;
+  const locale = resolveLocale(resolvedParams?.locale);
 
+  // Enable static rendering for locale - required by next-intl v4
+  setRequestLocale(locale);
+
+  let messages;
   try {
     messages = await getMessages();
   } catch {
