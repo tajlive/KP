@@ -4,6 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
+// Krever Supabase env; unngå statisk generering ved build
+export const dynamic = "force-dynamic";
+
 interface OnboardingLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
