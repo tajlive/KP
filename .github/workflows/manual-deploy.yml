@@ -5,7 +5,7 @@
 name: 🚀 Manual Deploy
 
 on:
-  workflow_dispatch:  # Kun manuell trigger
+  workflow_dispatch:
     inputs:
       environment:
         description: 'Deploy til'
@@ -15,6 +15,10 @@ on:
         options:
           - preview
           - production
+
+concurrency:
+  group: manual-deploy-${{ github.event.inputs.environment || 'preview' }}
+  cancel-in-progress: false
 
 jobs:
   test-and-deploy:
