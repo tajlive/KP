@@ -226,3 +226,4 @@ allure-results/
 *.bak
 .vercel
 .env.local
+.sentryclirc
