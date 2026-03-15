@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getProfileOnboardingExtended } from "@/lib/supabase/helpers";
 
 export async function POST() {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Sjekk autentisering
     const {
@@ -19,7 +18,12 @@ export async function POST() {
       );
     }
 
-    const { data: profile, error: profileError } = await getProfileOnboardingExtended(supabase, user.id);
+    // Hent brukerens profil
+    const { data: profile, error: profileError } = await supabase
+      .from("user_profiles")
+      .select("id, onboarding_step, onboarding_completed, paper_balance")
+      .eq("user_id" as unknown, user.id)
+      .single() as unknown;
 
     if (profileError || !profile) {
       return NextResponse.json(

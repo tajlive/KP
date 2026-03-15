@@ -1,12 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getUserProfileOnboarding } from "@/lib/supabase/helpers";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
-
-// Avoid prerender: layout and steps use Supabase; env vars may be missing at build.
-export const dynamic = "force-dynamic";
 
 interface OnboardingLayoutProps {
   children: React.ReactNode;
@@ -19,8 +15,9 @@ export default async function OnboardingLayout({
 }: OnboardingLayoutProps) {
   const { locale } = await params;
   const t = await getTranslations("onboarding");
-  const supabase = createClient();
+  const supabase = await createClient();
 
+  // Sjekk autentisering
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -29,7 +26,12 @@ export default async function OnboardingLayout({
     redirect(`/${locale}/login?next=/onboarding`);
   }
 
-  const { data: profile } = await getUserProfileOnboarding(supabase, user.id);
+  // Hent onboarding-status
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("onboarding_step, onboarding_completed")
+    .eq("user_id" as unknown, user.id)
+    .single() as unknown;
 
   // Hvis onboarding allerede er fullført → dashboard
   if (profile?.onboarding_completed) {

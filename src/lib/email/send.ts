@@ -1,12 +1,18 @@
 import { Resend } from 'resend'
 
-function getResendClient() {
+let resendClient: Resend | null = null
+
+function getResendClient(): Resend {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    return null
+    throw new Error('RESEND_API_KEY mangler')
   }
 
-  return new Resend(apiKey)
+  if (!resendClient) {
+    resendClient = new Resend(apiKey)
+  }
+
+  return resendClient
 }
 
 export async function sendEmail({
@@ -22,11 +28,6 @@ export async function sendEmail({
 }) {
   try {
     const resend = getResendClient()
-    if (!resend) {
-      console.warn('[Email] RESEND_API_KEY mangler, hopper over sending')
-      return { success: false, error: 'RESEND_API_KEY mangler' }
-    }
-
     const { data, error } = await resend.emails.send({
       from: 'Klarpakke <no-reply@klarpakke.no>',
       to,

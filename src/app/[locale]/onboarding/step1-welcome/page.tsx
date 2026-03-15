@@ -2,27 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Bot, Clock, Shield } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { getUserProfileOnboarding } from "@/lib/supabase/helpers";
 
 export default function OnboardingStep1() {
   const t = useTranslations("onboarding.step1");
   const router = useRouter();
-  const locale = useLocale();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
-
-  const steps = [
-    `/${locale}/onboarding/step1-welcome`,
-    `/${locale}/onboarding/step2-experience`,
-    `/${locale}/onboarding/step3-trading-mode`,
-    `/${locale}/onboarding/step4-binance`,
-    `/${locale}/onboarding/step5-complete`,
-  ];
 
   // Sjekk auth og onboarding-status
   useEffect(() => {
@@ -32,19 +22,31 @@ export default function OnboardingStep1() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push(`/${locale}/login?next=/onboarding`);
+        router.push("/login?next=/onboarding");
         return;
       }
 
-      const { data: profile } = await getUserProfileOnboarding(supabase, user.id);
+      // Sjekk om onboarding allerede er startet
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("onboarding_step, onboarding_completed")
+        .eq("user_id" as unknown, user.id)
+        .single() as unknown;
 
       if (profile?.onboarding_completed) {
-        router.push(`/${locale}/dashboard`);
+        router.push("/dashboard");
         return;
       }
 
       // Hvis brukeren allerede er på et senere steg, redirect dit
       if (profile?.onboarding_step && profile.onboarding_step > 0) {
+        const steps = [
+          "/onboarding/step1-welcome",
+          "/onboarding/step2-experience",
+          "/onboarding/step3-trading-mode",
+          "/onboarding/step4-binance",
+          "/onboarding/step5-complete",
+        ];
         router.push(steps[profile.onboarding_step] || steps[0]);
         return;
       }
@@ -53,7 +55,7 @@ export default function OnboardingStep1() {
     };
 
     checkStatus();
-  }, [router, supabase, locale]);
+  }, [router, supabase]);
 
   const handleStart = async () => {
     setLoading(true);
@@ -75,7 +77,7 @@ export default function OnboardingStep1() {
 
       if (error) throw error;
 
-      router.push(`/${locale}/onboarding/step2-experience`);
+      router.push("/onboarding/step2-experience");
     } catch (err) {
       console.error("Failed to start onboarding:", err);
       setLoading(false);
