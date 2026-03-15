@@ -367,7 +367,7 @@ export function LearningDashboard({ sessionId }: Props) {
                   key={index} 
                   className="flex items-start gap-3 p-4 bg-accent rounded-lg hover:bg-accent/80 transition-colors"
                 >
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                  <span className="shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
                     {lesson.priority}
                   </span>
                   <div className="flex-1">

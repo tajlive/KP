@@ -146,7 +146,7 @@ export function KLTWallet() {
 
       {/* Info */}
       <div className="flex items-start gap-2 text-xs text-slate-500 mb-4">
-        <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+        <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
           KLT brukes til å låse opp premium-funksjoner, redusere gebyrer, 
           og delta i konkurranser. Tokens har ingen pengeverdi.

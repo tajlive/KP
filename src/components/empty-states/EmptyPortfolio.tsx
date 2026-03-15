@@ -52,7 +52,7 @@ export function EmptyPortfolio({ hasRealAccount, locale = 'no' }: EmptyPortfolio
       
       <p className="text-slate-400 max-w-md mb-2 leading-relaxed">
         {isNorwegian 
-          ? 'Porteføljen din er tom. Start med paper trading for å øve uten risiko, eller koble til Binance for ekte trading.'
+          ? 'Porteføljen din er tom. Start med lekepenger for å øve uten risiko, eller koble til Binance for ekte trading.'
           : 'Your portfolio is empty. Start with paper trading to practice risk-free, or connect Binance for live trading.'}
       </p>
 
@@ -62,7 +62,7 @@ export function EmptyPortfolio({ hasRealAccount, locale = 'no' }: EmptyPortfolio
           <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
             <TrendingUp className="w-3 h-3 text-green-400" />
           </div>
-          {isNorwegian ? '1M kr virtuelle penger' : '1M NOK virtual money'}
+          {isNorwegian ? '1M kr lekepenger' : '1M NOK virtual money'}
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
@@ -80,7 +80,7 @@ export function EmptyPortfolio({ hasRealAccount, locale = 'no' }: EmptyPortfolio
           asChild
         >
           <Link href={`/${locale}/paper-trading`}>
-            {isNorwegian ? 'Start Paper Trading' : 'Start Paper Trading'}
+            {isNorwegian ? 'Start lekepenger' : 'Start Paper Trading'}
             <ArrowRight className="w-5 h-5 ml-2" />
           </Link>
         </Button>

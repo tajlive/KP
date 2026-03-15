@@ -217,16 +217,16 @@ export default function PaperTrading({
 
   return (
     <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
-      <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-6 border-b border-slate-800">
+      <div className="bg-linear-to-r from-blue-600/20 to-purple-600/20 p-6 border-b border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
               <Bot className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Paper Trading</h2>
+              <h2 className="text-xl font-bold text-white">Lekepenger</h2>
               <p className="text-slate-400 text-sm">
-                Øv uten risiko med virtuelle midler
+                Øv uten risiko med lekepenger
               </p>
             </div>
           </div>
@@ -345,7 +345,7 @@ export default function PaperTrading({
               ) : (
                 <PlayCircle className="w-5 h-5 mr-2" />
               )}
-              Start Paper Trading
+              Start lekepenger
             </Button>
           ) : (
             <Button

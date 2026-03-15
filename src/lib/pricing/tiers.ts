@@ -24,8 +24,8 @@ export const TIERS = {
     kltMonthly: 0,
     kltSignup: 500,
     
-    // Auto-trading limits
-    autoTradingStrategies: 1,           // Max samtidig
+    // Auto-trading limits – tilgjengelig for alle med en gang
+    autoTradingStrategies: 3,           // 3 strategier (paper), alle kan bruke auto-trade
     paperTradingStrategies: -1,         // Ubegrenset paper
     liveTrading: false,                 // Blokkert etter trial
     trialDays: 14,                      // 14-dagers full trial

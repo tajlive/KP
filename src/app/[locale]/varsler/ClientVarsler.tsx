@@ -78,7 +78,7 @@ export default function ClientVarsler() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 py-12 px-4">
+    <div className="min-h-screen bg-linear-to-b from-white to-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -94,7 +94,7 @@ export default function ClientVarsler() {
         <Card className="mb-8 bg-blue-50 border-blue-200">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
-              <Bell className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+              <Bell className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-blue-900 mb-1">{t('pushNotifications')}</h3>
                 <p className="text-blue-700 text-sm">

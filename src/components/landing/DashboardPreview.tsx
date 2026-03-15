@@ -127,7 +127,7 @@ export function DashboardPreview() {
           <div className="text-center py-8 text-slate-500">
             <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p className="font-lexend text-sm">Ingen posisjoner ennå</p>
-            <p className="font-lexend text-xs mt-1">Start paper trading for å øve</p>
+            <p className="font-lexend text-xs mt-1">Start lekepenger for å øve</p>
           </div>
         )}
       </div>
@@ -138,7 +138,7 @@ export function DashboardPreview() {
           onClick={() => router.push('/innlogging')}
           className="w-full py-3 bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium rounded-lg transition-colors min-h-[44px]"
         >
-          {mode === 'paper' ? 'Fortsett øving' : 'Start med paper trading'}
+          {mode === 'paper' ? 'Fortsett øving' : 'Start med lekepenger'}
         </button>
       </div>
     </div>

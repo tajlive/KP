@@ -332,11 +332,11 @@ export default function UnifiedTradingDashboard({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white">
-              {mode === "paper" ? "📄 Papirhandel" : "💰 Live Handel"}
+              {mode === "paper" ? "📄 Lekepenger" : "💰 Live Handel"}
             </h1>
             <p className="text-slate-400 text-sm mt-1">
               {mode === "paper"
-                ? "Øv med virtuell kapital — 1 000 000 NOK"
+                ? "Øv med lekepenger — 1 000 000 NOK"
                 : "Handel med ekte midler"}
             </p>
           </div>
@@ -420,7 +420,7 @@ function TradingModeToggle({
           setMode(mode === "paper" ? "live" : "paper");
         }
       }}
-      aria-label={mode === "paper" ? "Bytt til live trading" : "Bytt til paper trading"}
+      aria-label={mode === "paper" ? "Bytt til live trading" : "Bytt til lekepenger"}
     >
       <motion.div
         className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-linear-to-r from-blue-500 to-blue-600"

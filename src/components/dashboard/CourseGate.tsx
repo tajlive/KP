@@ -28,10 +28,10 @@ export function CourseGate({
   totalLessons,
 }: CourseGateProps) {
   const t = {
-    title: locale === "no" ? "Paper Trading Låst" : "Paper Trading Locked",
+    title: locale === "no" ? "Lekepenger låst" : "Paper Trading Locked",
     description:
       locale === "no"
-        ? "Fullfør det obligatoriske kurset for å låse opp paper trading"
+        ? "Fullfør det obligatoriske kurset for å låse opp lekepenger"
         : "Complete the required course to unlock paper trading",
     requiredCourse:
       locale === "no" ? "Obligatorisk kurs" : "Required course",

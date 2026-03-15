@@ -332,7 +332,7 @@ export default function ClientAutoTradeDashboard() {
 
   if (loading || subLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400 font-medium">Laster dashboard...</p>
@@ -346,7 +346,7 @@ export default function ClientAutoTradeDashboard() {
 
   if (selectedStrategy) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950">
         <div className="max-w-7xl mx-auto p-6">
           <LiveStrategyView
             strategy={selectedStrategy}
@@ -358,12 +358,12 @@ export default function ClientAutoTradeDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
               Auto Trading Dashboard
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -375,7 +375,7 @@ export default function ClientAutoTradeDashboard() {
             onClick={() => setShowAddStrategy(true)}
             size="lg"
             disabled={!canAddStrategy}
-            className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white shadow-lg"
+            className="bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white shadow-lg"
           >
             <Plus className="mr-2 h-5 w-5" />
             Ny Strategi
@@ -658,7 +658,7 @@ export default function ClientAutoTradeDashboard() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="paper">📝 Paper Trading (Simulert)</SelectItem>
+                  <SelectItem value="paper">📝 Lekepenger (Simulert)</SelectItem>
                   <SelectItem 
                     value="live" 
                     disabled={!tier.liveTrading && !trialStatus?.canUseLiveTrading}
@@ -699,7 +699,7 @@ export default function ClientAutoTradeDashboard() {
 
             <Button 
               onClick={handleCreateStrategy}
-              className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700"
+              className="w-full bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700"
             >
               Opprett Strategi
             </Button>
@@ -742,7 +742,7 @@ export default function ClientAutoTradeDashboard() {
             </div>
 
             <div className="flex items-center justify-between">
-              <Label>Bruk Testnet (paper trading)</Label>
+              <Label>Bruk Testnet (lekepenger)</Label>
               <Switch 
                 checked={binanceKeys.isTestnet}
                 onCheckedChange={(v) => setBinanceKeys({...binanceKeys, isTestnet: v})}

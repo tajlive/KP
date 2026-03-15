@@ -27,7 +27,7 @@ function SessionErrorFallback({ locale }: { locale: string }) {
               href={`/${locale}/paper-trading`}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
             >
-              Tilbake til Paper Trading
+              Tilbake til lekepenger
             </Link>
             <Link
               href={`/${locale}/dashboard`}

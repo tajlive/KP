@@ -111,7 +111,7 @@ export default function CopyConfigSheet({
                 className={`px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all active:scale-95
                            ${
                              config.maxAllocationNok === amount
-                               ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-[0_2px_8px_rgba(59,130,246,0.25)]"
+                               ? "bg-linear-to-r from-cyan-500 to-blue-500 text-white shadow-[0_2px_8px_rgba(59,130,246,0.25)]"
                                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                            }`}
               >
@@ -246,7 +246,7 @@ export default function CopyConfigSheet({
           onClick={handleSave}
           disabled={isSaving}
           className="w-full min-h-[56px] flex items-center justify-center gap-2
-                     bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500
+                     bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500
                      text-white font-semibold text-[17px]
                      rounded-2xl
                      shadow-[0_4px_16px_rgba(59,130,246,0.3)]

@@ -77,7 +77,7 @@ export default function ResetPasswordClient() {
     <main className="min-h-screen relative bg-slate-950 flex items-center justify-center p-4">
       <DotPattern
         className={cn(
-          "[mask-image:radial-gradient(400px_circle_at_center,white,transparent)]",
+          "mask-[radial-gradient(400px_circle_at_center,white,transparent)]",
           "absolute inset-0 h-full w-full fill-white/10",
         )}
       />
@@ -155,7 +155,7 @@ export default function ResetPasswordClient() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-bold py-6 rounded-xl shadow-lg shadow-blue-500/20"
+                  className="w-full bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-bold py-6 rounded-xl shadow-lg shadow-blue-500/20"
                   disabled={loading}
                 >
                   {loading ? (

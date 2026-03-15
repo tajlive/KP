@@ -227,3 +227,4 @@ allure-results/
 .vercel
 .env.local
 .sentryclirc
+lighthouse-landing.html

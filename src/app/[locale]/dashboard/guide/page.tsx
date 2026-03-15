@@ -26,7 +26,7 @@ export default function GuidePage() {
             key={i}
             className="bg-gray-800 rounded-lg p-6 border border-gray-700 flex gap-6 items-start"
           >
-            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-xl font-bold text-white flex-shrink-0">
+            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-xl font-bold text-white shrink-0">
               {String(i + 1)}
             </div>
             <div>

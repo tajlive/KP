@@ -150,7 +150,7 @@ export function RiskPanelMobile({ selected, onSelect, disabled }: RiskPanelMobil
             {/* Warning */}
             {(selected === 'high' || selected === 'extreme') && (
               <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
-                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
                 <p className="text-sm text-red-300">
                   {selected === 'extreme' 
                     ? 'Ekstrem risiko kan føre til betydelige tap. Kun for erfarne tradere.'

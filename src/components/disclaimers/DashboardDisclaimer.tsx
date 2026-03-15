@@ -55,7 +55,7 @@ export function DashboardDisclaimer({ dismissible = false }: DashboardDisclaimer
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-blue-600" />
             <span className="text-sm font-medium text-blue-900">
-              📚 Læringsmodus: All trading er simulert med virtuelle penger. Ingen ekte tap.
+              📚 Læringsmodus: All trading er simulert med lekepenger. Ingen ekte tap.
             </span>
           </div>
         </div>
@@ -75,7 +75,7 @@ export function DashboardDisclaimer({ dismissible = false }: DashboardDisclaimer
         <div className="flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-blue-600" />
           <span className="text-sm font-medium text-blue-900">
-            📚 Læringsmodus: All trading er simulert med virtuelle penger. Ingen ekte tap.
+            📚 Læringsmodus: All trading er simulert med lekepenger. Ingen ekte tap.
           </span>
         </div>
         

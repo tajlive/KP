@@ -171,7 +171,7 @@ export function Studieprogram() {
                     {features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         <Check
-                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          className="w-5 h-5 shrink-0 mt-0.5"
                           style={{ color: tier.textColor }}
                         />
                         <span className="text-gray-700 text-sm">{feature}</span>

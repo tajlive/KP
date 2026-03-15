@@ -286,7 +286,7 @@ function SignupContent() {
             <Button
               type="submit"
               disabled={status === "signing_up"}
-              className="w-full h-12 bg-[#1A1D26] hover:bg-black text-white font-bold rounded-xl transition-all hover:translate-y-[-2px] active:translate-y-[0px] shadow-lg shadow-black/10"
+              className="w-full h-12 bg-[#1A1D26] hover:bg-black text-white font-bold rounded-xl transition-all hover:translate-y-[-2px] active:translate-y-0 shadow-lg shadow-black/10"
             >
               {status === "signing_up" ? (
                 <>

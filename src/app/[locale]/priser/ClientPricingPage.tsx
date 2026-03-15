@@ -244,7 +244,7 @@ export function ClientPricingPage() {
                     </p>
                   </div>
 
-                  <ul className="space-y-4 mb-8 flex-grow">
+                  <ul className="space-y-4 mb-8 grow">
                     {plan.features.map((feature: string, i: number) => (
                       <li
                         key={i}

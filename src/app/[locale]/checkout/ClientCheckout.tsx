@@ -194,7 +194,7 @@ function CheckoutContent() {
           </div>
 
           {/* KLA-88: Trust Signals */}
-          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+          <div className="mb-6 p-4 bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
             <div className="flex items-start gap-3">
               <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
               <div>
@@ -220,15 +220,15 @@ function CheckoutContent() {
           </div>
 
           {/* Gratis for alltid info */}
-          <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
+          <div className="mb-6 p-4 bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
             <div className="flex items-start gap-3">
               <Gift className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-emerald-900 dark:text-emerald-200 text-sm">
-                  Gratis for alltid med Paper Trading
+                  Gratis for alltid med lekepenger
                 </p>
                 <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">
-                  Du kan alltid gå tilbake til gratis paper trading hvis du ombestemmer deg. 
+                  Du kan alltid gå tilbake til gratis lekepenger hvis du ombestemmer deg. 
                   Ingen skjulte gebyrer, ingen binding.
                 </p>
               </div>
@@ -239,7 +239,7 @@ function CheckoutContent() {
           <button
             onClick={handleCheckout}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50"
           >
             {loading ? (
               <>

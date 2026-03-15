@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 interface TradingSession {
   id: string;
   mode: "paper" | "live";
-  status: "active" | "paused" | "stopped";
+  status: "active" | "paused" | "stopped" | "crashed";
   trading_pair: string;
   strategy_id: string;
   current_capital_nok: number;
@@ -128,6 +128,8 @@ export function PaperTradingSessionDetail({
         return <Badge variant="secondary">{t("paused")}</Badge>;
       case "stopped":
         return <Badge variant="outline">{t("stopped")}</Badge>;
+      case "crashed":
+        return <Badge variant="destructive">{t("crashed")}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }

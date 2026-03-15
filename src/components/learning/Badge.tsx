@@ -210,7 +210,7 @@ export function NextSteps({ lessons, onStart, className }: NextStepsProps) {
           className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
         >
           <div className={cn(
-            'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold',
+            'w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-bold',
             index === 0 
               ? 'bg-blue-600 text-white' 
               : 'bg-gray-100 text-gray-500'

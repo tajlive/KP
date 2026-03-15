@@ -19,7 +19,7 @@ export function EmptyBotState() {
       <CardContent className="p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
           {/* Icon */}
-          <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center shrink-0">
             <Bot className="w-6 h-6 text-slate-400" />
           </div>
 

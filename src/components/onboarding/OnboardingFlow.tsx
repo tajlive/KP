@@ -343,7 +343,7 @@ export default function OnboardingFlow() {
   const time = formatTime(timeLeft);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/95 p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-lg">
         {/* Hopp over – setter IKKE is_completed for å bevare soft reminder */}
         <button
@@ -360,7 +360,7 @@ export default function OnboardingFlow() {
           <div className="relative flex items-center justify-between px-4">
             <div className="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-slate-800" />
             <motion.div
-              className="absolute left-0 top-1/2 h-1 -translate-y-1/2 bg-gradient-to-r from-emerald-500 to-teal-500"
+              className="absolute left-0 top-1/2 h-1 -translate-y-1/2 bg-linear-to-r from-emerald-500 to-teal-500"
               initial={{ width: "0%" }}
               animate={{
                 width:
@@ -466,7 +466,7 @@ export default function OnboardingFlow() {
                               <div className="flex items-center gap-4">
                                 <div
                                   className={cn(
-                                    "flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br",
+                                    "flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br",
                                     strategy.color,
                                   )}
                                 >
@@ -658,7 +658,7 @@ export default function OnboardingFlow() {
                   damping: 15,
                   delay: 0.3,
                 }}
-                className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 shadow-xl"
+                className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-emerald-500 to-teal-500 shadow-xl"
               >
                 <Check className="h-12 w-12 text-white stroke-[3px]" />
               </motion.div>

@@ -231,7 +231,7 @@ export default function BetaDashboardClient({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Link
             href={`/${params.locale}/beta/live-trading`}
-            className={`bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all ${!exchangeConnected && "opacity-50 pointer-events-none"}`}
+            className={`bg-linear-to-br from-blue-500 to-blue-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all ${!exchangeConnected && "opacity-50 pointer-events-none"}`}
           >
             <div className="text-5xl mb-4">💰</div>
             <h2 className="text-2xl font-bold mb-2">{t("liveTrading")}</h2>
@@ -242,7 +242,7 @@ export default function BetaDashboardClient({
 
           <Link
             href={`/${params.locale}/paper-trading`}
-            className="bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
+            className="bg-linear-to-br from-green-500 to-green-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
           >
             <div className="text-5xl mb-4">📊</div>
             <h2 className="text-2xl font-bold mb-2">{t("paperTrading")}</h2>
@@ -251,7 +251,7 @@ export default function BetaDashboardClient({
 
           <Link
             href={`/${params.locale}/beta/ai-copilot`}
-            className="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
+            className="bg-linear-to-br from-emerald-500 to-emerald-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
           >
             <div className="text-5xl mb-4">🤖</div>
             <h2 className="text-2xl font-bold mb-2">{t("aiCopilot")}</h2>
@@ -262,7 +262,7 @@ export default function BetaDashboardClient({
 
           <Link
             href={`/${params.locale}/beta/auto-trade`}
-            className={`bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all ${!exchangeConnected && "opacity-50 pointer-events-none"}`}
+            className={`bg-linear-to-br from-orange-500 to-orange-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all ${!exchangeConnected && "opacity-50 pointer-events-none"}`}
           >
             <div className="text-5xl mb-4">⚡</div>
             <h2 className="text-2xl font-bold mb-2">{t("autoTrade")}</h2>
@@ -271,7 +271,7 @@ export default function BetaDashboardClient({
 
           <Link
             href={`/${params.locale}/beta/konkurranse`}
-            className="bg-gradient-to-br from-yellow-500 to-yellow-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all md:col-span-2 lg:col-span-1"
+            className="bg-linear-to-br from-yellow-500 to-yellow-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all md:col-span-2 lg:col-span-1"
           >
             <div className="text-5xl mb-4">🏆</div>
             <h2 className="text-2xl font-bold mb-2">{t("competition")}</h2>
@@ -282,7 +282,7 @@ export default function BetaDashboardClient({
         </div>
 
         {/* Referral Program */}
-        <div className="bg-gradient-to-r from-indigo-500 via-emerald-500 to-pink-500 rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
+        <div className="bg-linear-to-r from-indigo-500 via-emerald-500 to-pink-500 rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-20 -mt-20"></div>
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
@@ -297,7 +297,7 @@ export default function BetaDashboardClient({
                 {t("referralDesc")}
               </p>
             </div>
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <button
                 onClick={() => {
                   const url = `${getAppUrl()}/${params.locale}/beta/apply?ref=${profile?.id}`;

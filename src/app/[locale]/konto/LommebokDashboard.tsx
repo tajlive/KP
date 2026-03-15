@@ -104,12 +104,12 @@ export function LommebokDashboard() {
   // Hvis tilkoblet, vis oversikt
   if (connected && exchanges.length > 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950">
         {/* Header */}
         <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-linear-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center">
                 <Landmark className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -139,7 +139,7 @@ export function LommebokDashboard() {
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
           {/* Total Balance */}
-          <Card className="border-emerald-500/20 bg-gradient-to-br from-emerald-950/50 to-teal-950/50">
+          <Card className="border-emerald-500/20 bg-linear-to-br from-emerald-950/50 to-teal-950/50">
             <CardContent className="p-8">
               <div className="flex items-center justify-between">
                 <div>
@@ -216,7 +216,7 @@ export function LommebokDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center font-bold text-white text-xl">
+                    <div className="w-12 h-12 bg-linear-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center font-bold text-white text-xl">
                       {exchange.logo}
                     </div>
                     <div>
@@ -282,11 +282,11 @@ export function LommebokDashboard() {
 
   // Vis tilkoblingsskjema
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-12 px-4">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 py-12 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl mb-6 shadow-2xl shadow-emerald-500/20">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-emerald-600 to-teal-600 rounded-2xl mb-6 shadow-2xl shadow-emerald-500/20">
             <Landmark className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">{t("title")}</h1>
@@ -476,7 +476,7 @@ export function LommebokDashboard() {
               disabled={
                 !selectedExchange || !apiKey || !apiSecret || isConnecting
               }
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 h-12 text-lg"
+              className="w-full bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 h-12 text-lg"
             >
               {isConnecting ? (
                 <>

@@ -138,7 +138,7 @@ export function MobileNav() {
               <Link
                 href={l('/beta/apply')}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl transition-all"
+                className="flex items-center gap-3 px-4 py-3 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl transition-all"
               >
                 <LogIn className="w-5 h-5" />
                 <span className="font-medium">{t('signup')}</span>

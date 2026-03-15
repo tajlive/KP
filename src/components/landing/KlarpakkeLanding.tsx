@@ -657,7 +657,7 @@ export default function KlarpakkeLanding() {
                   {[0, 1, 2].map((i) => (
                     <StaggerItem key={i}>
                       <div className="flex items-center gap-4">
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/50">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/50">
                           <CheckCircle className="h-5 w-5 text-white" />
                         </div>
                         <span className="text-lg">
@@ -711,7 +711,7 @@ export default function KlarpakkeLanding() {
             ].map((step, i, arr) => (
               <FadeInWhenVisible key={i} delay={i * 0.1}>
                 <div className="flex gap-6">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-100 bg-white shadow-sm"

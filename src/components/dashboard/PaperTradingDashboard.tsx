@@ -88,7 +88,7 @@ export function PaperTradingDashboard({ userId, locale }: PaperTradingDashboardP
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">Paper Trading</h2>
+          <h2 className="text-2xl font-bold text-white">Lekepenger</h2>
         </div>
 
         <Card className="bg-slate-900/50 border-slate-800">
@@ -98,12 +98,12 @@ export function PaperTradingDashboard({ userId, locale }: PaperTradingDashboardP
               Ingen aktiv simulering
             </h3>
             <p className="text-slate-400 mb-6">
-              Start din første paper trading-simulering for å øve på trading uten risiko.
+              Start din første lekepenger-simulering for å øve på trading uten risiko.
             </p>
             <Link href={`/${locale}/paper-trading`}>
               <Button className="bg-blue-600 hover:bg-blue-700">
                 <Target className="w-4 h-4 mr-2" />
-                Start Paper Trading
+                Start lekepenger
               </Button>
             </Link>
           </CardContent>
@@ -119,7 +119,7 @@ export function PaperTradingDashboard({ userId, locale }: PaperTradingDashboardP
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">Paper Trading</h2>
+        <h2 className="text-2xl font-bold text-white">Lekepenger</h2>
         <Link href={`/${locale}/paper-trading`}>
           <Button variant="outline" className="border-slate-700 text-slate-300">
             <Target className="w-4 h-4 mr-2" />

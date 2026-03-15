@@ -98,11 +98,11 @@ export default function ClientDashboard() {
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {tierSlug === "student" &&
                 (locale === "no"
-                  ? "Paper Trading med 1M NOK virtuell kapital"
+                  ? "Lekepenger med 1M NOK"
                   : "Paper Trading with 1M NOK virtual capital")}
               {tierSlug === "bachelor" &&
                 (locale === "no"
-                  ? "Bachelor — Paper Trading + Lærer"
+                  ? "Bachelor — Lekepenger + Lærer"
                   : "Bachelor — Paper Trading + Tutor")}
               {tierSlug === "master" &&
                 (locale === "no"

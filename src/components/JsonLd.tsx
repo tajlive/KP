@@ -29,7 +29,7 @@ export function CourseJsonLd({ locale }: { locale: string }) {
     "@type": "Course",
     name: isNo ? "Klarpakke Trading Kurs" : "Klarpakke Trading Course",
     description: isNo
-      ? "4-ukers intensivkurs i kryptotrading med paper trading simulator"
+      ? "4-ukers intensivkurs i kryptotrading med lekepenger-simulator"
       : "4-week intensive crypto trading course with paper trading simulator",
     provider: {
       "@type": "Organization",

@@ -172,7 +172,7 @@ export default function CopyTradingDashboard() {
                 {/* Avatar */}
                 <div
                   className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500
-                               flex items-center justify-center text-white font-bold text-[15px] flex-shrink-0"
+                               flex items-center justify-center text-white font-bold text-[15px] shrink-0"
                 >
                   {trader.leaderName.charAt(0).toUpperCase()}
                 </div>
@@ -203,7 +203,7 @@ export default function CopyTradingDashboard() {
                 </div>
 
                 {/* P&L + action */}
-                <div className="text-right flex-shrink-0">
+                <div className="text-right shrink-0">
                   <p
                     className={`text-[15px] font-bold tabular-nums ${trader.pnlNok >= 0 ? "text-emerald-500" : "text-rose-500"}`}
                   >

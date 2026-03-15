@@ -163,7 +163,7 @@ export function Hero({ language }: HeroProps) {
             <div className="flex justify-between items-center mb-10">
               <div>
                 <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-1">
-                  Paper Trading
+                  Lekepenger
                 </p>
                 <h3 className="text-4xl font-black text-white">1,000,000 kr</h3>
               </div>

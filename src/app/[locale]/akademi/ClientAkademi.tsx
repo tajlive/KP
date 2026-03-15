@@ -334,7 +334,7 @@ export default function ClientAkademi() {
                     <div className="flex items-center gap-4">
                       {/* Nummer eller check */}
                       <div className={cn(
-                        'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
+                        'w-10 h-10 rounded-full flex items-center justify-center shrink-0',
                         isCompleted 
                           ? 'bg-green-500 text-white' 
                           : 'bg-gray-100 text-gray-500'
@@ -348,7 +348,7 @@ export default function ClientAkademi() {
 
                       {/* Ikon */}
                       <div className={cn(
-                        'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0',
+                        'w-10 h-10 rounded-lg flex items-center justify-center shrink-0',
                         levelStyle.bg
                       )}>
                         <Icon className={cn('w-5 h-5', levelStyle.text)} />
@@ -412,7 +412,7 @@ export default function ClientAkademi() {
                 <ul className="space-y-2">
                   {selectedTrackDetails.whatYouLearn.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-gray-600">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -428,7 +428,7 @@ export default function ClientAkademi() {
                 <ul className="space-y-2">
                   {selectedTrackDetails.idealFor.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-gray-600">
-                      <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center shrink-0 mt-0.5">
                         <span className="text-xs text-blue-600">✓</span>
                       </div>
                       <span>{item}</span>

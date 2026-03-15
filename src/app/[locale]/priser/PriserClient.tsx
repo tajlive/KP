@@ -42,7 +42,7 @@ const plans = [
 
 const features = {
   student: [
-    "1M kr paper trading",
+    "1M kr lekepenger",
     "5 basis-moduler",
     "Community-tilgang",
     "E-post support",
@@ -50,7 +50,7 @@ const features = {
   bachelor: [
     "Alt fra Student",
     "15+ moduler",
-    "Paper trading med avanserte strategier",
+    "Lekepenger med avanserte strategier",
     "Discord VIP-kanal",
     "Prioritet support",
   ],
@@ -79,7 +79,7 @@ const faqs = [
   },
   {
     q: "Hva er forskjellen på paper og live trading?",
-    a: "Paper trading bruker virtuelle penger (1M kr) for risikofri øving. Live trading bruker ekte penger på Binance.",
+    a: "Lekepenger er risikofri øving med 1M kr. Live trading bruker ekte penger på Binance.",
   },
   {
     q: "Kan jeg få refusjon?",
@@ -172,7 +172,7 @@ export default function PriserClient() {
               <ul className="space-y-3 mb-6 flex-1">
                 {features[plan.key as keyof typeof features].map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <Check className="w-5 h-5 text-green-500 shrink-0" />
                     <span className="text-slate-600 text-sm">{feature}</span>
                   </li>
                 ))}
@@ -213,10 +213,10 @@ export default function PriserClient() {
               </thead>
               <tbody>
                 {[
-                  { name: "Paper Trading", student: "✓", bachelor: "✓", master: "✓", phd: "✓" },
+                  { name: "Lekepenger", student: "✓", bachelor: "✓", master: "✓", phd: "✓" },
                   { name: "Moduler", student: "5", bachelor: "15+", master: "30+", phd: "50+" },
                   { name: "AI Assistent", student: "—", bachelor: "—", master: "✓", phd: "✓" },
-                  { name: "Auto-trading", student: "—", bachelor: "—", master: "Paper", phd: "Paper + Live" },
+                  { name: "Auto-trading", student: "—", bachelor: "—", master: "Lekepenger", phd: "Lekepenger + Live" },
                   { name: "Support", student: "E-post", bachelor: "Prioritet", master: "1-on-1 mnd", phd: "Ukentlig" },
                   { name: "Discord", student: "Community", bachelor: "VIP", master: "VIP", phd: "VIP + Mentor" },
                   { name: "Skatterapport", student: "—", bachelor: "—", master: "✓", phd: "✓" },
@@ -244,7 +244,7 @@ export default function PriserClient() {
           {faqs.map((faq, i) => (
             <div key={i} className="bg-white p-6 rounded-xl border border-slate-100">
               <h3 className="font-semibold text-slate-900 mb-2 flex items-start gap-3">
-                <HelpCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                <HelpCircle className="w-5 h-5 text-blue-600 shrink-0" />
                 {faq.q}
               </h3>
               <p className="text-slate-600 ml-8">{faq.a}</p>

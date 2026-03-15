@@ -30,7 +30,7 @@ const commands = [
   { id: "simulator", label: "Simulator", icon: BookOpen, href: "/simulator" },
   {
     id: "paper-trading",
-    label: "Paper Trading",
+    label: "Lekepenger",
     icon: Target,
     href: "/paper-trading",
   },
@@ -114,7 +114,7 @@ export function CommandPalette() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 backdrop-blur-sm bg-black/60">
+    <div className="fixed inset-0 z-100 flex items-start justify-center pt-[15vh] px-4 backdrop-blur-sm bg-black/60">
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- dialog panel stops propagation for click/key */}
       <div
         className="w-full max-w-xl bg-slate-900/90 border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-slide-up"

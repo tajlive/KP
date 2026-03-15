@@ -121,7 +121,7 @@ export default function ClientCampaign() {
           <div className="flex gap-4 justify-center">
             <Button
               asChild
-              className="bg-gradient-to-r from-blue-600 to-emerald-600"
+              className="bg-linear-to-r from-blue-600 to-emerald-600"
             >
               <Link href={`/${locale}/innlogging`}>Logg inn</Link>
             </Button>
@@ -174,7 +174,7 @@ export default function ClientCampaign() {
 
           <div className="w-full bg-slate-800 rounded-full h-6 mb-4">
             <div
-              className="h-6 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all"
+              className="h-6 rounded-full bg-linear-to-r from-blue-500 to-cyan-400 transition-all"
               style={{ width: `${Math.min((stats.total / 100) * 100, 100)}%` }}
             />
           </div>

@@ -254,7 +254,7 @@ function SingleSignalCard() {
           Historisk sett stiger BTC 73% av gangene etter dette nivået.
         </p>
         <button className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg font-semibold text-white transition-colors min-h-[44px]">
-          Kjøp nå (paper trading)
+          Kjøp nå (lekepenger)
         </button>
       </div>
     </div>
@@ -288,7 +288,7 @@ function PaperTradingChart() {
     <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 h-64 flex items-center justify-center">
       <div className="text-center">
         <div className="text-4xl mb-2">📈</div>
-        <p className="text-gray-400">Paper Trading Chart</p>
+        <p className="text-gray-400">Lekepenger Chart</p>
         <p className="text-sm text-gray-500">(Integrasjon med TradingView kommer)</p>
       </div>
     </div>

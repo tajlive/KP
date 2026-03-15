@@ -25,7 +25,7 @@ export async function generateMetadata({
     title: t("dashboard.title", { defaultValue: "Dashboard - Klarpakke" }),
     description: t("dashboard.description", {
       defaultValue:
-        "Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse.",
+        "Ditt personlige dashboard for krypto-trading med lekepenger, live trading og porteføljeanalyse.",
     }),
   };
 }

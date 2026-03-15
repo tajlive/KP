@@ -288,7 +288,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
           className={cn(
             isPaper
               ? "border-blue-300 text-blue-700 dark:border-blue-700 dark:text-blue-300"
-              : "bg-gradient-to-r from-green-600 to-emerald-600 text-white",
+              : "bg-linear-to-r from-green-600 to-emerald-600 text-white",
           )}
         >
           {isPaper ? "📝 Paper" : "🟢 Live"}

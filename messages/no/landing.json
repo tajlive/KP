@@ -131,15 +131,15 @@
     "social_proof_active": "aktive traders"
   },
   "modernHero": {
-    "badge": "Beta — Bli en av de første norske traderne",
-    "titlePart1": "Lær Trading",
-    "titlePart2": "På Norsk",
-    "subtitle": "Fra nybegynner til selvstendig trader med strukturert læring og risikofri praksis",
-    "bullets": "Kurs på norsk • 1M kr paper trading • AI-coach 24/7 • Ingen kredittkort påkrevd",
-    "ctaPrimary": "Prøv Paper Trading Gratis",
-    "ctaSecondary": "Se Kurs",
-    "trust1": "100% norsk",
-    "trust2": "Ingen binding",
-    "trust3": "Risikofi praksis"
+    "badge": "For småsparere som vil lære – uten å være tech-nerd",
+    "titlePart1": "Vi bruker de riktige verktøyene",
+    "titlePart2": "for at du skal tjene penger.",
+    "subtitle": "Våre roboter jobber 24 timer hver dag for at du skal tjene penger. Du bestemmer selv risiko.",
+    "bullets": "Roboter jobber 24/7 • Du bestemmer risiko • 1M kr lekepenger • Ingen kredittkort",
+    "ctaPrimary": "Kom i gang gratis",
+    "ctaSecondary": "Se hvordan det fungerer",
+    "trust1": "Roboter 24/7",
+    "trust2": "Du bestemmer risiko",
+    "trust3": "1M kr lekepenger"
   }
 }

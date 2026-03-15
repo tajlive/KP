@@ -162,16 +162,16 @@ export default function SocialProofSection() {
             </h3>
             <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
               Ingen kredittkort. Ingen binding. Bare ren læring med 1 million
-              kroner virtuell kapital.
+              kroner lekepenger.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => router.push(`/${locale}/paper-trading`)}
-                aria-label="Start din reise med paper trading"
+                aria-label="Start din reise med lekepenger"
                 className="px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all"
               >
-                Start Paper Trading Nå
+                Start lekepenger nå
               </button>
               <button
                 onClick={() => router.push(`/${locale}/kurs`)}

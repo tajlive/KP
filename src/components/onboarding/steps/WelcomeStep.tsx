@@ -7,7 +7,7 @@ const FEATURES = [
   {
     icon: Shield,
     title: "Trygg simulering",
-    desc: "Øv med virtuell kapital — ingen risiko",
+    desc: "Øv med lekepenger — ingen risiko",
     gradient: "from-emerald-500 to-cyan-500",
   },
   {
@@ -121,7 +121,7 @@ export function WelcomeStep() {
             >
               <div
                 className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient}
-                              flex items-center justify-center flex-shrink-0`}
+                              flex items-center justify-center shrink-0`}
               >
                 <Icon className="w-6 h-6 text-white" />
               </div>

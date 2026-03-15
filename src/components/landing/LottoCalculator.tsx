@@ -46,7 +46,7 @@ export function LottoCalculator() {
     val.toLocaleString('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
 
   return (
-    <section className="py-16 bg-gradient-to-b from-slate-900 to-slate-800">
+    <section className="py-16 bg-linear-to-b from-slate-900 to-slate-800">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-300 rounded-full text-sm font-semibold mb-4">
@@ -124,7 +124,7 @@ export function LottoCalculator() {
             {/* Lotto */}
             <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-5">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center shrink-0">
                   <Ticket className="w-6 h-6 text-red-400" />
                 </div>
                 <div className="flex-1">
@@ -148,7 +148,7 @@ export function LottoCalculator() {
             {/* Bank savings */}
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-5">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center shrink-0">
                   <PiggyBank className="w-6 h-6 text-yellow-400" />
                 </div>
                 <div className="flex-1">
@@ -171,7 +171,7 @@ export function LottoCalculator() {
             {/* Investing */}
             <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-5">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0">
                   <TrendingUp className="w-6 h-6 text-green-400" />
                 </div>
                 <div className="flex-1">
@@ -180,7 +180,7 @@ export function LottoCalculator() {
                     <span className="text-green-400 text-sm font-medium">~7% historisk</span>
                   </div>
                   <p className="text-slate-400 text-sm mb-3">
-                    Lær å investere med paper trading først. Historisk avkastning 
+                    Lær å investere med lekepenger først. Historisk avkastning 
                     (ikke garanti for fremtidig avkastning).
                   </p>
                   <div className="flex items-center gap-2">
@@ -194,7 +194,7 @@ export function LottoCalculator() {
 
             {/* Disclaimer */}
             <div className="flex items-start gap-2 text-xs text-slate-500 mt-4">
-              <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <Info className="w-4 h-4 shrink-0 mt-0.5" />
               <p>
                 Beregningene er estimater basert på historiske data. Lotto har 50% RTP 
                 (Return to Player), bankrente er satt til 3%, og investeringsavkastning 

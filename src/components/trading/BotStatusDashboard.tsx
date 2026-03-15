@@ -239,7 +239,7 @@ export default function BotStatusDashboard({
         >
           <ShoppingBag className="w-4 h-4" /> {lang === "en" ? "Market" : "Marked"}
         </Link>
-        <div className="w-[1px] h-6 bg-slate-800 mx-1" />
+        <div className="w-px h-6 bg-slate-800 mx-1" />
         {/* KLA-100: Tab-basert navigasjon: Narrativ, Avansert, AI */}
         <button
           onClick={() => setCurrentView("narrative")}
@@ -642,7 +642,7 @@ function NarrativeView({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700 p-8 shadow-2xl"
+      className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700 p-8 shadow-2xl"
     >
       {/* Decorative radial gradient */}
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -817,7 +817,7 @@ function AdvancedView({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700 p-8 shadow-2xl"
+      className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700 p-8 shadow-2xl"
     >
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -953,7 +953,7 @@ function AIView({ userId, strategyId, lang }: AIViewProps) {
       className="space-y-6"
     >
       {/* AI Professor Header */}
-      <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-2xl p-6">
+      <div className="bg-linear-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
             <Brain className="w-6 h-6 text-purple-400" />

@@ -52,7 +52,7 @@ export function PWAInstallPrompt() {
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50">
       <div className="bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl animate-slide-up">
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shrink-0">
             <Smartphone className="w-6 h-6 text-white" />
           </div>
 

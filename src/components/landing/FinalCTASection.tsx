@@ -33,7 +33,7 @@ export default function FinalCTASection({
       ? [
           "Ingen binding — avslutt når som helst",
           "Ingen kredittkort nødvendig for å prøve",
-          "Risikofri paper trading",
+          "Risikofri lekepenger",
           "Alt innhold tilgjengelig umiddelbart",
         ]
       : [
@@ -119,7 +119,7 @@ export default function FinalCTASection({
                   key={idx}
                   className="flex items-center gap-3 text-slate-400 bg-white/5 p-4 rounded-xl border border-white/5"
                 >
-                  <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                  <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
                   <span className="text-sm font-bold tracking-tight">
                     {guarantee}
                   </span>
