@@ -63,11 +63,12 @@ export function LottoComparison() {
       {/* Controls */}
       <div className="bg-slate-800 rounded-xl p-6 mb-8">
         <div className="mb-6">
-          <label className="flex items-center gap-2 font-lexend text-sm text-slate-300 mb-3">
+          <label htmlFor="lotto-comp-weekly" className="flex items-center gap-2 font-lexend text-sm text-slate-300 mb-3">
             <Calculator className="w-4 h-4" />
             Penger brukt per uke
           </label>
           <input
+            id="lotto-comp-weekly"
             type="range"
             min="50"
             max="1000"
@@ -85,10 +86,10 @@ export function LottoComparison() {
           </div>
         </div>
 
-        <div>
-          <label className="font-lexend text-sm text-slate-300 mb-3 block">
+        <div role="group" aria-labelledby="lotto-comp-years-label">
+          <span id="lotto-comp-years-label" className="font-lexend text-sm text-slate-300 mb-3 block">
             Tidshorisont
-          </label>
+          </span>
           <div className="flex gap-2">
             {[1, 3, 5, 10].map((y) => (
               <button

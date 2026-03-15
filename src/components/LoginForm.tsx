@@ -39,20 +39,20 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label>Email</label>
-        <input {...register("email")} />
+        <label htmlFor="login-email">Email</label>
+        <input id="login-email" {...register("email")} />
         {errors.email && <p>{errors.email.message}</p>}
       </div>
 
       <div>
-        <label>Password</label>
-        <input type="password" {...register("password")} />
+        <label htmlFor="login-password">Password</label>
+        <input id="login-password" type="password" {...register("password")} />
         {errors.password && <p>{errors.password.message}</p>}
       </div>
 
       <div>
-        <label>
-          <input type="checkbox" {...register("rememberMe")} />
+        <label htmlFor="login-remember">
+          <input id="login-remember" type="checkbox" {...register("rememberMe")} />
           Remember me
         </label>
       </div>

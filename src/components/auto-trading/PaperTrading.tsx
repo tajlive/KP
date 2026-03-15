@@ -244,10 +244,10 @@ export default function PaperTrading({
       </div>
 
       <div className="p-6 space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+        <fieldset className="border-0 p-0 m-0">
+          <legend className="block text-sm font-medium text-slate-300 mb-2">
             Velg strategi
-          </label>
+          </legend>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {DEFAULT_STRATEGIES.map((strategy) => (
               <button
@@ -280,14 +280,15 @@ export default function PaperTrading({
               </button>
             ))}
           </div>
-        </div>
+        </fieldset>
 
         {!isRunning && (
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label htmlFor="paper-trading-capital" className="block text-sm font-medium text-slate-300 mb-2">
               Startkapital (NOK)
             </label>
             <Input
+              id="paper-trading-capital"
               type="number"
               value={capital}
               onChange={(e) => setCapital(Number(e.target.value))}

@@ -94,7 +94,7 @@ export default function CopyConfigSheet({
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Shield className="w-4 h-4 text-blue-500" />
-            <label className="text-[15px] font-semibold text-gray-900 dark:text-white">
+            <label htmlFor="allocation-range" className="text-[15px] font-semibold text-gray-900 dark:text-white">
               Maks allokering
             </label>
           </div>
@@ -141,12 +141,12 @@ export default function CopyConfigSheet({
         </div>
 
         {/* Sizing Mode */}
-        <div className="mb-6">
+        <div className="mb-6" role="group" aria-labelledby="copy-sizing-mode-label">
           <div className="flex items-center gap-2 mb-3">
             <Scaling className="w-4 h-4 text-indigo-500" />
-            <label className="text-[15px] font-semibold text-gray-900 dark:text-white">
+            <span id="copy-sizing-mode-label" className="text-[15px] font-semibold text-gray-900 dark:text-white">
               Størrelses-modus
-            </label>
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-2">
             {(["proportional", "fixed"] as const).map((mode) => (
@@ -177,7 +177,7 @@ export default function CopyConfigSheet({
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Gauge className="w-4 h-4 text-amber-500" />
-            <label className="text-[15px] font-semibold text-gray-900 dark:text-white">
+            <label htmlFor="leverage-range" className="text-[15px] font-semibold text-gray-900 dark:text-white">
               Maks leverage: {config.maxLeverage}x
             </label>
           </div>
@@ -208,7 +208,7 @@ export default function CopyConfigSheet({
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="w-4 h-4 text-rose-500" />
-            <label className="text-[15px] font-semibold text-gray-900 dark:text-white">
+            <label htmlFor="drawdown-range" className="text-[15px] font-semibold text-gray-900 dark:text-white">
               Auto-stopp ved drawdown: {config.autoStopDrawdownPct}%
             </label>
           </div>

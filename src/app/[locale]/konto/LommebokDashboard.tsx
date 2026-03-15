@@ -358,10 +358,10 @@ export function LommebokDashboard() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Velg børs */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-3">
+            <fieldset className="border-0 p-0 m-0">
+              <legend className="block text-sm font-medium text-slate-300 mb-3">
                 {t("selectExchange")}
-              </label>
+              </legend>
               <div className="grid grid-cols-2 gap-3">
                 {SUPPORTED_EXCHANGES.map((exchange) => (
                   <button
@@ -390,14 +390,15 @@ export function LommebokDashboard() {
                   </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
 
             {/* API Key */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="lommebok-api-key" className="block text-sm font-medium text-slate-300 mb-2">
                 API Key
               </label>
               <Input
+                id="lommebok-api-key"
                 type="text"
                 placeholder={
                   locale === "no" ? "Skriv inn API-nøkkel" : "Enter API key"
@@ -410,11 +411,12 @@ export function LommebokDashboard() {
 
             {/* API Secret */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="lommebok-api-secret" className="block text-sm font-medium text-slate-300 mb-2">
                 API Secret
               </label>
               <div className="relative">
                 <Input
+                  id="lommebok-api-secret"
                   type={showSecret ? "text" : "password"}
                   placeholder={
                     locale === "no"

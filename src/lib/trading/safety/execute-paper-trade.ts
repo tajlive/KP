@@ -6,11 +6,12 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import { 
-  validateTradeAgainstRiskProfile, 
-  recordTradeRejection, 
+import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
+import {
+  validateTradeAgainstRiskProfile,
+  recordTradeRejection,
   recordTradeDecision,
-  type TradeRequest 
+  type TradeRequest,
 } from "./risk-validator";
 
 export interface PaperTradeRequest {
@@ -108,16 +109,18 @@ export async function executePaperTrade(
       };
     }
 
-    // 4. Calculate trade value
-    const orderValue = request.quantity * request.price;
+    // 4. Calculate trade value (Binance price is USDT; session balance is NOK)
+    const rate = await getUsdtToNokRateAsync(supabase);
+    const orderValueUsdt = request.quantity * request.price;
+    const orderValueNok = usdtToNok(orderValueUsdt, rate);
     const currentBalance = Number(session.current_capital_nok);
 
     // Double-check balance (defense in depth)
-    if (request.side === "buy" && orderValue > currentBalance) {
+    if (request.side === "buy" && orderValueNok > currentBalance) {
       const rejectionResult = {
         allowed: false as const,
         rejectionReason: "INSUFFICIENT_BALANCE" as const,
-        rejectionDetails: { required: orderValue, available: currentBalance },
+        rejectionDetails: { required: orderValueNok, available: currentBalance },
       };
       await recordTradeRejection(tradeRequest, rejectionResult);
       
@@ -128,12 +131,12 @@ export async function executePaperTrade(
       };
     }
 
-    // 5. Calculate new balance (paper simulation)
+    // 5. Calculate new balance (paper simulation, in NOK)
     const newBalance = request.side === "buy"
-      ? currentBalance - orderValue
-      : currentBalance + orderValue;
+      ? currentBalance - orderValueNok
+      : currentBalance + orderValueNok;
 
-    // 6. Record trade in database
+    // 6. Record trade in database (total_value stored in NOK for reporting)
     const { data: trade, error: tradeError } = await supabase
       .from("trades")
       .insert({
@@ -143,7 +146,7 @@ export async function executePaperTrade(
         side: request.side,
         amount: request.quantity,
         price: request.price,
-        total_value: orderValue,
+        total_value: orderValueNok,
         fee: 0, // Paper trading has no fees
         status: "executed",
         mode: "paper",

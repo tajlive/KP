@@ -120,7 +120,11 @@ export function LanguageSwitcher({
         <>
           <div
             className="fixed inset-0 z-40"
+            role="button"
+            tabIndex={0}
+            aria-label="Lukk språkmeny"
             onClick={() => setIsOpen(false)}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setIsOpen(false); } }}
           />
           <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-xl z-50 py-2">
             <div className="px-3 py-2 text-xs font-medium text-slate-500 uppercase tracking-wider">

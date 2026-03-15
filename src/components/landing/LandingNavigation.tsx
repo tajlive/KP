@@ -30,7 +30,7 @@ export function LandingNavigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link href={l("/")} className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.3)] group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 bg-[#0052FF] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(0,82,255,0.3)] group-hover:scale-110 transition-transform">
               <Image
                 src="/logo.svg"
                 alt="Klarpakke"
@@ -62,7 +62,7 @@ export function LandingNavigation() {
             {!loading &&
               (user ? (
                 <Link href={l("/dashboard")}>
-                  <Button className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold px-6">
+                  <Button className="bg-[#0052FF] hover:bg-[#0041CC] text-white rounded-xl font-bold px-6">
                     {t("myPage")}
                   </Button>
                 </Link>
@@ -119,7 +119,7 @@ export function LandingNavigation() {
                 href={l(user ? "/dashboard" : "/innlogging")}
                 className="block"
               >
-                <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white h-14 rounded-2xl font-bold text-lg">
+                <Button className="w-full bg-[#0052FF] hover:bg-[#0041CC] text-white h-14 rounded-2xl font-bold text-lg">
                   {user ? t("myPage") : t("login")}
                 </Button>
               </Link>

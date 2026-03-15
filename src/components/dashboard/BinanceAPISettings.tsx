@@ -188,10 +188,11 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
         <div className="space-y-5">
           {/* Label */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="binance-api-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Merkelapp (valgfritt)
             </label>
             <input
+              id="binance-api-label"
               type="text"
               value={form.label}
               onChange={(e) => setForm({ ...form, label: e.target.value })}
@@ -202,10 +203,11 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
 
           {/* API Key */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="binance-api-key" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               API Key <span className="text-red-500">*</span>
             </label>
             <input
+              id="binance-api-key"
               type="text"
               value={form.apiKey}
               onChange={(e) => setForm({ ...form, apiKey: e.target.value })}
@@ -224,11 +226,12 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
 
           {/* API Secret */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="binance-api-secret" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               API Secret <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
+                id="binance-api-secret"
                 type={showSecret ? 'text' : 'password'}
                 value={form.apiSecret}
                 onChange={(e) => setForm({ ...form, apiSecret: e.target.value })}

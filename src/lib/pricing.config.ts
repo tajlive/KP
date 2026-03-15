@@ -1,4 +1,17 @@
+// Internal keys; URLs can use student|bachelor|master|phd (see PLAN_PARAM_TO_TIER)
 export type TierName = "gratis" | "basis" | "komplett" | "pro";
+export type PlanParam = TierName | "student" | "bachelor" | "master" | "phd";
+
+export const PLAN_PARAM_TO_TIER: Record<string, TierName> = {
+  gratis: "gratis",
+  basis: "basis",
+  komplett: "komplett",
+  pro: "pro",
+  student: "gratis",
+  bachelor: "basis",
+  master: "komplett",
+  phd: "pro",
+};
 export type BillingPeriod = "monthly" | "annual";
 
 export const TRIAL_DAYS = 7;
@@ -51,8 +64,8 @@ export const TIER_CONFIGS: Record<TierName, TierConfig> = {
   gratis: {
     name: "gratis",
     displayName: {
-      no: "Gratis",
-      en: "Free",
+      no: "Student",
+      en: "Student",
     },
     description: {
       no: "Prøv før du kjøper",
@@ -234,8 +247,8 @@ export const TIER_CONFIGS: Record<TierName, TierConfig> = {
   pro: {
     name: "pro",
     displayName: {
-      no: "Professor",
-      en: "Professor",
+      no: "PhD",
+      en: "PhD",
     },
     description: {
       no: "For seriøse studenter",
@@ -282,8 +295,8 @@ export const TIER_CONFIGS: Record<TierName, TierConfig> = {
     isRecommended: false,
     color: "amber",
     ctaText: {
-      no: "Velg Pro",
-      en: "Choose Pro",
+      no: "Velg PhD",
+      en: "Choose PhD",
     },
     ctaVariant: "default",
     features: {
@@ -311,6 +324,13 @@ export const TIER_ORDER: TierName[] = ["gratis", "basis", "komplett", "pro"];
 
 export function getTierConfig(tier: TierName): TierConfig {
   return TIER_CONFIGS[tier];
+}
+
+/** Normalize plan query param (student|bachelor|master|phd or legacy gratis|basis|komplett|pro) to TierName */
+export function planParamToTier(plan: string | null): TierName {
+  if (!plan) return "basis";
+  const normalized = plan.toLowerCase();
+  return PLAN_PARAM_TO_TIER[normalized] ?? "basis";
 }
 
 export function getDisplayName(tier: TierName, locale: string = "en"): string {

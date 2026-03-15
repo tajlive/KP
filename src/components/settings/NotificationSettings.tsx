@@ -382,8 +382,9 @@ export default function NotificationSettings() {
                         {prefs.quiet_hours_enabled && (
                             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-800">
                                 <div className="flex-1">
-                                    <label className="text-slate-400 text-xs">Fra</label>
+                                    <label htmlFor="quiet-hours-start" className="text-slate-400 text-xs">Fra</label>
                                     <input
+                                        id="quiet-hours-start"
                                         type="time"
                                         value={prefs.quiet_hours_start}
                                         onChange={(e) => {
@@ -395,8 +396,9 @@ export default function NotificationSettings() {
                                 </div>
                                 <div className="text-slate-500">til</div>
                                 <div className="flex-1">
-                                    <label className="text-slate-400 text-xs">Til</label>
+                                    <label htmlFor="quiet-hours-end" className="text-slate-400 text-xs">Til</label>
                                     <input
+                                        id="quiet-hours-end"
                                         type="time"
                                         value={prefs.quiet_hours_end}
                                         onChange={(e) => {

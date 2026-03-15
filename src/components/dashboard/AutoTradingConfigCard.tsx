@@ -227,7 +227,9 @@ export function AutoTradingConfigCard() {
             {RISK_LEVELS.map((risk) => (
               <button
                 key={risk.value}
+                type="button"
                 onClick={() => setConfig({ ...config, risk_level: risk.value })}
+                aria-label={risk.description || risk.label}
                 className={cn(
                   "flex-1 h-2 rounded-full transition-all",
                   config.risk_level === risk.value

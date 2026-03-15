@@ -4,6 +4,7 @@ import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
+import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -306,6 +307,24 @@ const eslintConfig = [
       "react-hooks/rules-of-hooks": "error",
       // exhaustive-deps: av for å unngå masse false positives; legg til deps kun der det er trygt
       "react-hooks/exhaustive-deps": "off",
+    },
+  },
+
+  // Tilgjengelighet (a11y) – 2026 standard. Alle som "warn" for gradvis fiksing.
+  {
+    files: ["**/*.jsx", "**/*.tsx"],
+    plugins: {
+      "jsx-a11y": jsxA11yPlugin,
+    },
+    rules: {
+      ...Object.fromEntries(
+        Object.entries(jsxA11yPlugin.configs.recommended.rules).map(([k, v]) => [
+          k,
+          typeof v === "string" ? "warn" : Array.isArray(v) ? ["warn", ...(v.slice(1) || [])] : "warn",
+        ])
+      ),
+      // Label: krever kun id ELLER nesting (htmlFor + id er gyldig a11y)
+      "jsx-a11y/label-has-for": ["warn", { "required": { "some": ["nesting", "id"] } }],
     },
   },
 

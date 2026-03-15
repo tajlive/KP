@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { getProfileOnboardingExtended } from "@/lib/supabase/helpers";
 import { Link2, SkipForward, Eye, EyeOff, Shield } from "lucide-react";
 
 export default function OnboardingStep4() {
   const t = useTranslations("onboarding.step4");
   const router = useRouter();
+  const locale = useLocale();
   const supabase = createClient();
   const [apiKey, setApiKey] = useState("");
   const [apiSecret, setApiSecret] = useState("");
@@ -18,6 +20,14 @@ export default function OnboardingStep4() {
   const [loading, setLoading] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [initializing, setInitializing] = useState(true);
+
+  const steps = [
+    `/${locale}/onboarding/step1-welcome`,
+    `/${locale}/onboarding/step2-experience`,
+    `/${locale}/onboarding/step3-trading-mode`,
+    `/${locale}/onboarding/step4-binance`,
+    `/${locale}/onboarding/step5-complete`,
+  ];
 
   // Sjekk auth
   useEffect(() => {
@@ -27,48 +37,31 @@ export default function OnboardingStep4() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/login?next=/onboarding/step4-binance");
+        router.push(`/${locale}/login?next=/onboarding/step4-binance`);
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("onboarding_step, onboarding_completed, binance_connected")
-        .eq("user_id" as unknown, user.id)
-        .single() as unknown;
+      const { data: profile } = await getProfileOnboardingExtended(supabase, user.id);
 
       if (profile?.onboarding_completed) {
-        router.push("/dashboard");
+        router.push(`/${locale}/dashboard`);
         return;
       }
 
       // Redirect hvis brukeren er på feil steg
       if (!profile?.onboarding_step || profile.onboarding_step < 3) {
-        const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step2-experience",
-          "/onboarding/step3-trading-mode",
-          "/onboarding/step4-binance",
-        ];
         router.push(steps[profile?.onboarding_step || 0]);
         return;
       }
 
       if (profile.onboarding_step > 3) {
-        const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step2-experience",
-          "/onboarding/step3-trading-mode",
-          "/onboarding/step4-binance",
-          "/onboarding/step5-complete",
-        ];
         router.push(steps[profile.onboarding_step]);
         return;
       }
 
       // Hvis allerede koblet, gå videre
       if (profile?.binance_connected) {
-        router.push("/onboarding/step5-complete");
+        router.push(steps[4]);
         return;
       }
 
@@ -76,7 +69,7 @@ export default function OnboardingStep4() {
     };
 
     checkStatus();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleConnect = async () => {
     if (!apiKey || !apiSecret) return;
@@ -116,7 +109,7 @@ export default function OnboardingStep4() {
 
       if (error) throw error;
 
-      router.push("/onboarding/step5-complete");
+      router.push(`/${locale}/onboarding/step5-complete`);
     } catch (err) {
       console.error("Failed to connect Binance:", err);
       alert(err instanceof Error ? err.message : t("error"));
@@ -143,7 +136,7 @@ export default function OnboardingStep4() {
 
       if (error) throw error;
 
-      router.push("/onboarding/step5-complete");
+      router.push(`/${locale}/onboarding/step5-complete`);
     } catch (err) {
       console.error("Failed to skip:", err);
       setLoading(false);
@@ -183,10 +176,11 @@ export default function OnboardingStep4() {
       {/* Form */}
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="onboarding-api-key" className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {t("apiKey.label")}
           </label>
           <Input
+            id="onboarding-api-key"
             type="text"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
@@ -196,11 +190,12 @@ export default function OnboardingStep4() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="onboarding-api-secret" className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {t("apiSecret.label")}
           </label>
           <div className="relative">
             <Input
+              id="onboarding-api-secret"
               type={showSecret ? "text" : "password"}
               value={apiSecret}
               onChange={(e) => setApiSecret(e.target.value)}

@@ -102,10 +102,11 @@ export default function OrderEntry() {
 
         {/* Quantity */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="order-entry-quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Antall (stk)
           </label>
           <Input
+            id="order-entry-quantity"
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
@@ -127,10 +128,11 @@ export default function OrderEntry() {
 
         {/* Leverage */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="order-entry-leverage" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Leverage: {leverage}x
           </label>
           <input
+            id="order-entry-leverage"
             type="range"
             min="1"
             max="125"
@@ -148,10 +150,11 @@ export default function OrderEntry() {
         {/* Stop Loss / Take Profit */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="order-entry-stop-loss" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Stop Loss
             </label>
             <Input
+              id="order-entry-stop-loss"
               type="number"
               value={stopLoss}
               onChange={(e) => setStopLoss(e.target.value)}
@@ -160,10 +163,11 @@ export default function OrderEntry() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label htmlFor="order-entry-take-profit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Take Profit
             </label>
             <Input
+              id="order-entry-take-profit"
               type="number"
               value={takeProfit}
               onChange={(e) => setTakeProfit(e.target.value)}

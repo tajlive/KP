@@ -70,10 +70,20 @@ export function StrategySelectorSection({
               className="bg-slate-700 rounded-lg overflow-hidden"
             >
               <div
+                role="button"
+                tabIndex={0}
                 className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-600 transition"
                 onClick={() =>
                   setExpandedStrategy(expanded ? null : strategy.type)
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setExpandedStrategy(expanded ? null : strategy.type);
+                  }
+                }}
+                aria-expanded={expanded}
+                aria-label={expanded ? "Lukk strategi" : `Velg ${strategy.name}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{strategy.icon}</span>

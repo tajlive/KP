@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
 import { routing } from './i18n/routing'
+import { handleOnboarding } from './middleware/onboarding'
 
 const handleI18nRouting = createMiddleware(routing)
 
@@ -54,6 +55,9 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set('next', pathname)
       return NextResponse.redirect(loginUrl)
     }
+    // Onboarding: redirect to /onboarding if not completed (only for protected paths with session)
+    const onboardingResult = await handleOnboarding(request, response)
+    if (onboardingResult) return onboardingResult
   }
 
   return response

@@ -426,10 +426,11 @@ export function ExchangeApiSettings() {
               <div className="space-y-4">
                 {/* Label */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="exchange-api-label" className="block text-sm font-medium text-slate-300 mb-2">
                     Merkelapp
                   </label>
                   <Input
+                    id="exchange-api-label"
                     value={form.label}
                     onChange={(e) =>
                       setForm({ ...form, label: e.target.value })
@@ -441,10 +442,11 @@ export function ExchangeApiSettings() {
 
                 {/* API Key */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="exchange-api-key" className="block text-sm font-medium text-slate-300 mb-2">
                     API Key <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id="exchange-api-key"
                     type="text"
                     value={form.apiKey}
                     onChange={(e) =>
@@ -465,11 +467,12 @@ export function ExchangeApiSettings() {
 
                 {/* API Secret */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label htmlFor="exchange-api-secret" className="block text-sm font-medium text-slate-300 mb-2">
                     API Secret <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <Input
+                      id="exchange-api-secret"
                       type={showSecret ? "text" : "password"}
                       value={form.apiSecret}
                       onChange={(e) =>

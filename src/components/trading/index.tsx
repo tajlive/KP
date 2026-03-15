@@ -88,7 +88,9 @@ export function UnifiedTradingDashboard({ initialSession }: DashboardProps) {
             📝 Paper
           </span>
           <button
+            type="button"
             onClick={handleModeToggle}
+            aria-label={mode === 'paper' ? 'Bytt til live-handel' : 'Bytt til papirhandel'}
             className={`relative w-14 h-7 rounded-full transition-colors ${
               mode === 'live' ? 'bg-green-500' : 'bg-gray-600'
             }`}
@@ -300,8 +302,9 @@ export function AutoTradingControls({ currentSession, mode, onSessionChange }: A
         <>
           {/* Strategy Selector */}
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Strategi</label>
+            <label htmlFor="sim-strategy" className="block text-sm text-gray-400 mb-1">Strategi</label>
             <select
+              id="sim-strategy"
               value={strategyId}
               onChange={(e) => setStrategyId(e.target.value as 'dca' | 'trend_follow' | 'multi_signal' | 'grid')}
               className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700"
@@ -317,8 +320,9 @@ export function AutoTradingControls({ currentSession, mode, onSessionChange }: A
 
           {/* Trading Pair */}
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Handelspar</label>
+            <label htmlFor="sim-pair" className="block text-sm text-gray-400 mb-1">Handelspar</label>
             <select
+              id="sim-pair"
               value={pair}
               onChange={(e) => setPair(e.target.value)}
               className="w-full bg-gray-800 text-white rounded-lg px-3 py-2 border border-gray-700"
@@ -331,10 +335,11 @@ export function AutoTradingControls({ currentSession, mode, onSessionChange }: A
 
           {/* Capital */}
           <div>
-            <label className="block text-sm text-gray-400 mb-1">
+            <label htmlFor="sim-capital" className="block text-sm text-gray-400 mb-1">
               Startkapital ({mode === 'paper' ? 'virtuell' : 'ekte'})
             </label>
             <input
+              id="sim-capital"
               type="number"
               value={capital}
               onChange={(e) => setCapital(Number(e.target.value))}

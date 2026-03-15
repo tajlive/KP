@@ -203,12 +203,14 @@ export default function ClientStudentsPage() {
             placeholder={t("search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label={t("search") || "Søk brukere"}
             className="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
         </div>
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
+          aria-label="Filtrer på rolle"
           className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
         >
           <option value="all">Alle roller</option>
@@ -246,6 +248,7 @@ export default function ClientStudentsPage() {
             <tbody className="divide-y divide-slate-800">
               {filteredUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-slate-800/50">
+                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label -- cell is display-only (name/email) */}
                   <td className="px-6 py-4">
                     <div>
                       <div className="flex items-center gap-2">
@@ -292,7 +295,9 @@ export default function ClientStudentsPage() {
                     <div className="flex items-center gap-2">
                       {user.role !== "founder" && (
                         <button
+                          type="button"
                           onClick={() => handleGrantFounder(user.id)}
+                          aria-label="Gi Founder Status (+10k KLT)"
                           className="p-2 text-slate-400 hover:text-amber-400 hover:bg-amber-400/10 rounded-lg transition-colors"
                           title="Gi Founder Status (+10k KLT)"
                         >
@@ -302,7 +307,9 @@ export default function ClientStudentsPage() {
 
                       {user.status !== "banned" ? (
                         <button
+                          type="button"
                           onClick={() => handleBan(user.id)}
+                          aria-label="Bann bruker"
                           className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
                           title="Ban Bruker"
                         >
@@ -313,7 +320,9 @@ export default function ClientStudentsPage() {
                       )}
 
                       <button
+                        type="button"
                         onClick={() => handleRoleChange(user.id, "admin")}
+                        aria-label="Endre til Admin"
                         className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
                         title="Endre til Admin"
                       >

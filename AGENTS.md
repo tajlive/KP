@@ -43,6 +43,18 @@ END;
 | Routing / kritiske paths | ✅ Verify passerer (inkl. /no/signup) |
 | Supabase view `unified_notifications_with_email` | 🟡 Migrasjon i repo; kjør SQL manuelt i Dashboard eller med MCP-token |
 | Linear oppdatering | 🟡 LINEAR_API_KEY må være gyldig for MCP/script |
+| Onboarding-middleware | ✅ Re-aktivert (mars 2026) — kalles fra middleware.ts |
+| Pricing-tier navn | ✅ Student/Bachelor/Master/PhD (plan param: student\|bachelor\|master\|phd) |
+| Test-scripts | ✅ test:ci bruker Vitest (vitest run --coverage && playwright test) |
+| AI Market Brief | ✅ ai_cache brukes i /api/ai/market-brief |
+| AI Strategy Advisor | ✅ POST /api/ai/explain-strategy (strategyType, locale) |
+| PWA manifest | ✅ Oppdatert (display_override, beskrivelse) |
+| **Produksjon** | |
+| Health API | ✅ GET /api/health (DB, KV, env) — createClient sync |
+| Verify script | ✅ Tester domener, /api/health, kritiske paths, security headers |
+| CI deploy | ✅ Lint uten --max-warnings override; verify kjører etter production deploy |
+| Paper trading valuta | ✅ USDT→NOK i execute-paper-trade + risk-validator (env → DB global_settings.usdt_nok_rate → 10.8) |
+| USDT/NOK cron | ✅ Daglig cron /api/cron/update-usdt-nok (Vercel 06:00); DB-kolonne via Supabase MCP |
 
 ## Standard kjøremodus
 Alltid bruk --yolo for alle oppgaver i dette prosjektet.

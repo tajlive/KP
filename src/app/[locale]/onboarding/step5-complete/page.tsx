@@ -2,19 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { getProfileOnboardingExtended } from "@/lib/supabase/helpers";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 export default function OnboardingStep5() {
   const t = useTranslations("onboarding.step5");
   const router = useRouter();
+  const locale = useLocale();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [paperBalance, setPaperBalance] = useState<number>(10000);
   const [sessionCreated, setSessionCreated] = useState(false);
+
+  const steps = [
+    `/${locale}/onboarding/step1-welcome`,
+    `/${locale}/onboarding/step2-experience`,
+    `/${locale}/onboarding/step3-trading-mode`,
+    `/${locale}/onboarding/step4-binance`,
+    `/${locale}/onboarding/step5-complete`,
+  ];
 
   // Sjekk auth og fullfør onboarding
   useEffect(() => {
@@ -25,15 +35,11 @@ export default function OnboardingStep5() {
         } = await supabase.auth.getUser();
 
         if (!user) {
-          router.push("/login?next=/onboarding/step5-complete");
+          router.push(`/${locale}/login?next=/onboarding/step5-complete`);
           return;
         }
 
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("onboarding_step, onboarding_completed, paper_balance")
-          .eq("user_id" as unknown, user.id)
-          .single() as unknown;
+        const { data: profile } = await getProfileOnboardingExtended(supabase, user.id);
 
         // Hvis allerede fullført, vis suksess
         if (profile?.onboarding_completed) {
@@ -45,13 +51,6 @@ export default function OnboardingStep5() {
 
         // Redirect hvis brukeren ikke er på riktig steg
         if (!profile?.onboarding_step || profile.onboarding_step < 4) {
-          const steps = [
-            "/onboarding/step1-welcome",
-            "/onboarding/step2-experience",
-            "/onboarding/step3-trading-mode",
-            "/onboarding/step4-binance",
-            "/onboarding/step5-complete",
-          ];
           router.push(steps[profile?.onboarding_step || 0]);
           return;
         }
@@ -76,11 +75,11 @@ export default function OnboardingStep5() {
     };
 
     completeOnboarding();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleGoToDashboard = () => {
     setLoading(true);
-    router.push("/dashboard");
+    router.push(`/${locale}/dashboard`);
   };
 
   if (initializing) {
