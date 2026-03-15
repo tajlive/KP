@@ -9,6 +9,10 @@ on:
     branches: [main]
     types: [opened, synchronize] # Kun ved ny PR eller endringer
 
+concurrency:
+  group: pr-check-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quick-check:
     runs-on: ubuntu-latest

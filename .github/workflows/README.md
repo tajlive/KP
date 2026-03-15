@@ -60,6 +60,11 @@ on:
 
 ---
 
+**Repo:** [https://github.com/tajlive/KP](https://github.com/tajlive/KP)  
+**Full GitHub-oppsett (description, branch protection, secrets):** [.github/GITHUB_SETUP.md](../GITHUB_SETUP.md)
+
+---
+
 ## 📋 Slik trigger du workflows manuelt
 
 1. Gå til: https://github.com/tajlive/KP/actions

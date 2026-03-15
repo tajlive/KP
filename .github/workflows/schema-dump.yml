@@ -11,6 +11,10 @@ on:
     - cron: '0 5 * * *'
   workflow_dispatch: # Kan kjøres manuelt
 
+concurrency:
+  group: schema-dump-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dump-schema:
     name: Dump Supabase Schema

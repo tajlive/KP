@@ -15,6 +15,10 @@ on:
       - "tests/e2e/**"
       - "package*.json"
 
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e:
     runs-on: ubuntu-latest

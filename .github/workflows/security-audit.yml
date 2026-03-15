@@ -9,6 +9,10 @@ on:
     - cron: "0 9 * * 1"  # Hver mandag kl 09:00 (1 gang per uke)
   workflow_dispatch:  # + manuell trigger
 
+concurrency:
+  group: security-audit
+  cancel-in-progress: true
+
 jobs:
   security:
     runs-on: ubuntu-latest
