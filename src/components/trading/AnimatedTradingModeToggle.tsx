@@ -188,7 +188,7 @@ function ConfirmationModal({
             ) : (
               <>
                 <Info className="h-5 w-5 text-blue-500" />
-                {t('switchToPaperTitle', { defaultValue: 'Bytt til Paper Trading?' })}
+                {t('switchToPaperTitle', { defaultValue: 'Bytt til lekepenger?' })}
               </>
             )}
           </DialogTitle>
@@ -229,7 +229,7 @@ function ConfirmationModal({
               </div>
             ) : (
               <div className="space-y-3">
-                <p>{t('switchToPaperWarning', { defaultValue: 'Du bytter tilbake til paper trading.' })}</p>
+                <p>{t('switchToPaperWarning', { defaultValue: 'Du bytter tilbake til lekepenger.' })}</p>
                 <div className="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
                   <p className="text-sm text-blue-700 dark:text-blue-400">
                     {t('switchToPaperNote', {

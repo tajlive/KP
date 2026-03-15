@@ -138,7 +138,7 @@ function InnloggingForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4 sm:px-6" data-testid="login-page">
+    <div className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6" data-testid="login-page">
       <div className="max-w-md mx-auto">
         <div className="flex justify-center mb-8">
           <Link href={`/${locale}`}>
@@ -147,18 +147,18 @@ function InnloggingForm() {
               alt="Klarpakke"
               width={180}
               height={40}
-              className="h-10 w-auto"
+              className="h-10 w-auto dark:invert"
               priority
             />
           </Link>
         </div>
 
-        <Card className="border border-gray-200 shadow-sm">
+        <Card className="border border-gray-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-900">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-gray-900">
+            <CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-slate-100">
               {t("signIn")}
             </CardTitle>
-            <CardDescription className="text-center text-gray-500">
+            <CardDescription className="text-center text-gray-500 dark:text-slate-400">
               {t("signInDescription")}
             </CardDescription>
           </CardHeader>
@@ -176,7 +176,7 @@ function InnloggingForm() {
                   {t("emailPlaceholder")}
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
                   <Input
                     id="innlogging-email"
                     type="email"
@@ -185,7 +185,7 @@ function InnloggingForm() {
                     placeholder={t("emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-12 border-gray-300 focus:border-[#0052FF] focus:ring-[#0052FF]"
+                    className="pl-10 h-12 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF]"
                     required
                     disabled={status === "logging_in"}
                     aria-invalid={!!loginError}
@@ -198,7 +198,7 @@ function InnloggingForm() {
                   {t("passwordPlaceholder")}
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
                   <Input
                     id="innlogging-password"
                     type={showPassword ? "text" : "password"}
@@ -207,7 +207,7 @@ function InnloggingForm() {
                     placeholder={t("passwordPlaceholder")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 h-12 border-gray-300 focus:border-[#0052FF] focus:ring-[#0052FF]"
+                    className="pl-10 pr-10 h-12 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF]"
                     required
                     disabled={status === "logging_in"}
                     aria-invalid={!!loginError}
@@ -216,7 +216,7 @@ function InnloggingForm() {
                     type="button"
                     tabIndex={0}
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded"
                     aria-label={showPassword ? (locale === "no" ? "Skjul passord" : "Hide password") : (locale === "no" ? "Vis passord" : "Show password")}
                   >
                     {showPassword ? (
@@ -249,10 +249,10 @@ function InnloggingForm() {
 
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-gray-300 dark:border-slate-600" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-white px-4 text-sm text-gray-500">
+                <span className="bg-white dark:bg-slate-900 px-4 text-sm text-gray-500 dark:text-slate-400">
                   {locale === "no" ? "eller" : "or"}
                 </span>
               </div>
@@ -272,7 +272,7 @@ function InnloggingForm() {
               >
                 {t("forgotPassword")}
               </Link>
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-slate-400">
                 {t("noAccount")}{" "}
                 <Link
                   href={`/${locale}/signup`}
@@ -285,7 +285,7 @@ function InnloggingForm() {
           </CardContent>
         </Card>
 
-        <p className="mt-8 text-center text-sm text-gray-500">
+        <p className="mt-8 text-center text-sm text-gray-500 dark:text-slate-400">
           Ved å logge inn godtar du våre{" "}
           <Link
             href={`/${locale}/vilkar`}
@@ -309,7 +309,7 @@ function InnloggingForm() {
 // Loading fallback - matches InnloggingForm styling
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-white py-12 px-4 sm:px-6" data-testid="login-page">
+    <div className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6" data-testid="login-page">
       <div className="max-w-md mx-auto">
         <div className="flex justify-center mb-8">
           <div className="h-10 w-40 bg-gray-200 rounded animate-pulse" />

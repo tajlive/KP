@@ -266,7 +266,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
           {errors.test && (
             <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
               <p className="text-red-700 dark:text-red-400 text-sm flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                 <span>{errors.test}</span>
               </p>
             </div>
@@ -299,7 +299,7 @@ export default function BinanceAPISettings({ user }: { user: UserData }) {
             <button
               type="submit"
               disabled={testing || loading || !form.apiKey || !form.apiSecret}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
             >
               {loading ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Lagrer...</>

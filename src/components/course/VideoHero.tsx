@@ -127,8 +127,8 @@ export function VideoHero({
       </video>
 
       {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-emerald-500/5 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/20 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-blue-500/5 to-emerald-500/5 pointer-events-none" />
 
       {/* Connection indicator (mobile) */}
       {connectionSpeed === 'slow' && (
@@ -216,7 +216,7 @@ export function VideoHero({
 function VideoPlaceholder({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <motion.div 
-      className="relative w-full aspect-video rounded-2xl md:rounded-3xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+      className="relative w-full aspect-video rounded-2xl md:rounded-3xl overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-900"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
@@ -257,7 +257,7 @@ function VideoPlaceholder({ title, subtitle }: { title: string; subtitle: string
       </div>
 
       {/* Text overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 bg-gradient-to-t from-slate-950 to-transparent">
+      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 bg-linear-to-t from-slate-950 to-transparent">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -291,7 +291,7 @@ export function VideoBackground({ videoSrc }: { videoSrc: string }) {
         preload="none"
         className="absolute w-full h-full object-cover opacity-30"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-slate-900/80 to-slate-950/80" />
+      <div className="absolute inset-0 bg-linear-to-br from-slate-950/80 via-slate-900/80 to-slate-950/80" />
     </div>
   )
 }

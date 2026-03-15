@@ -191,7 +191,7 @@ export function CopyTradingCard() {
                         Klar for live trading?
                       </p>
                       <p className="text-xs text-blue-700">
-                        Du har nok erfaring fra paper trading
+                        Du har nok erfaring fra lekepenger
                       </p>
                     </div>
                     <Button asChild size="sm" variant="outline">

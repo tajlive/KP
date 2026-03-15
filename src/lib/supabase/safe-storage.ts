@@ -30,22 +30,29 @@ function isCorrupt(value: string): boolean {
   return false
 }
 
+export type ClearStorageOptions = {
+  /** Ved true: renser nøkler men gjør IKKE location.reload(). Bruk ved korrupt auth så appen ikke går i reload-loop. */
+  skipReload?: boolean;
+};
+
 /**
  * KRITISK: Rens ALLE Supabase auth-relaterte nøkler atomisk.
  * Dette stopper infinite loops hvor Supabase reloader fra andre nøkler.
+ * Ved skipReload: true unngår vi reload (anbefalt ved "Invalid UTF-8" fra getSession).
  */
-function clearAllSupabaseStorage(): void {
+function clearAllSupabaseStorage(options?: ClearStorageOptions): void {
+  const skipReload = options?.skipReload === true;
   const now = Date.now();
-  
+
   // Debounce: ikke kjør mer enn én gang per 5 sekunder
   if (now - lastClearTime < CLEAR_DEBOUNCE_MS) {
     console.warn('[SafeStorage] Clear allerede kjørt nylig, ignorerer');
     return;
   }
   lastClearTime = now;
-  
+
   console.warn('[SafeStorage] RENSER ALLE Supabase storage-nøkler...');
-  
+
   // Finn og fjern alle Supabase auth-relaterte nøkler fra localStorage
   const keysToRemove: string[] = [];
   try {
@@ -61,13 +68,13 @@ function clearAllSupabaseStorage(): void {
       }
     }
     keysToRemove.forEach(key => {
-      try { 
-        localStorage.removeItem(key); 
+      try {
+        localStorage.removeItem(key);
         console.warn(`[SafeStorage] Fjernet: ${key}`);
       } catch { /* ignore */ }
     });
   } catch { /* ignore */ }
-  
+
   // Rens også sessionStorage
   try {
     const ssKeys: string[] = [];
@@ -83,18 +90,17 @@ function clearAllSupabaseStorage(): void {
       }
     }
     ssKeys.forEach(key => {
-      try { 
+      try {
         sessionStorage.removeItem(key);
         console.warn(`[SafeStorage] Fjernet fra sessionStorage: ${key}`);
       } catch { /* ignore */ }
     });
   } catch { /* ignore */ }
-  
+
   console.warn('[SafeStorage] Alle Supabase storage-nøkler ryddet');
-  
-  // KRITISK: Hard reload for å stoppe loopen permanent
-  // Dette sikrer at siden starter på nytt med tom, ren storage
-  if (typeof window !== 'undefined') {
+
+  // Hard reload kun hvis vi ikke er i korrupt-auth-tilfelle (da forårsaker reload ofte loop)
+  if (typeof window !== 'undefined' && !skipReload) {
     console.warn('[SafeStorage] Hard reload for å fullføre rensing...');
     window.location.reload();
   }
@@ -116,13 +122,13 @@ export const safeStorage: {
       const value = localStorage.getItem(key)
       if (value !== null && isCorrupt(value)) {
         console.warn(`[SafeStorage] Korrupt verdi for ${key}, renser alle nøkler`)
-        clearAllSupabaseStorage()
+        clearAllSupabaseStorage({ skipReload: true })
         return null
       }
       return value
     } catch (err) {
       console.warn(`[SafeStorage] getItem feilet for ${key}:`, err)
-      clearAllSupabaseStorage()
+      clearAllSupabaseStorage({ skipReload: true })
       return null
     }
   },

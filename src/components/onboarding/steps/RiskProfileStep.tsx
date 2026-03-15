@@ -218,13 +218,13 @@ export function RiskProfileStep() {
                            shadow-[0_2px_8px_rgba(0,0,0,0.04)]
                            transition-all duration-200"
               >
-                <span className="text-2xl w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl w-10 h-10 flex items-center justify-center shrink-0">
                   {opt.emoji}
                 </span>
                 <span className="text-[15px] font-medium text-gray-900 dark:text-white text-left flex-1">
                   {opt.label}
                 </span>
-                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0" />
               </motion.button>
             ))}
           </div>

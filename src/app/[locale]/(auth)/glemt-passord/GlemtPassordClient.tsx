@@ -49,7 +49,7 @@ export default function GlemtPassordClient() {
         <main className="min-h-screen relative bg-slate-950 flex items-center justify-center p-4">
             <DotPattern
                 className={cn(
-                    "[mask-image:radial-gradient(400px_circle_at_center,white,transparent)]",
+                    "mask-[radial-gradient(400px_circle_at_center,white,transparent)]",
                     "absolute inset-0 h-full w-full fill-white/10"
                 )}
             />

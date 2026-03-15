@@ -30,7 +30,7 @@ function PaperTradingErrorFallback({ locale }: { locale: string }) {
         <div className="bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700/50 rounded-xl p-6 text-center">
           <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-2">
-            Kunne ikke laste paper trading
+            Kunne ikke laste lekepenger
           </h2>
           <p className="text-red-700 dark:text-red-300/80 mb-4">
             Det oppstod en feil ved lasting av dine trading-sessions. Vennligst prøv igjen.
@@ -89,12 +89,15 @@ export default async function PaperTradingPage({
       .eq("user_id" as unknown, user.id)
       .single() as unknown;
 
-    const balance = profile?.paper_balance || 10000;
+    const balance = profile?.paper_balance ?? 1_000_000;
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="bg-blue-500/10 border-b border-blue-500/20 px-4 py-3">
-          <p className="text-blue-600 dark:text-blue-400 text-sm text-center">
+        <div className="bg-gradient-to-r from-emerald-500/15 to-blue-500/15 border-b border-emerald-500/20 dark:border-emerald-400/20 px-4 py-3 flex items-center justify-center gap-2">
+          <span className="text-emerald-600 dark:text-emerald-400" aria-hidden>
+            💰
+          </span>
+          <p className="text-emerald-800 dark:text-emerald-200 text-sm font-medium text-center">
             {t("contextBanner")}
           </p>
         </div>

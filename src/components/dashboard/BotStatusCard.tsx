@@ -150,7 +150,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
         <div className="flex items-start justify-between">
           {/* Left side - Icon and info */}
           <div className="flex gap-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center shrink-0">
               <Bot className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             

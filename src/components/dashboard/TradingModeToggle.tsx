@@ -62,7 +62,7 @@ export function TradingModeToggle() {
         >
           <span className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500" />
-            Paper Trading
+            Lekepenger
           </span>
           {mode === 'paper' && (
             <motion.div

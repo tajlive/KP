@@ -71,9 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       if (foundCorrupt) {
-        console.warn('[AuthContext] Korrupt storage oppdaget, rydder alle nøkler...');
-        clearAllSupabaseStorage();
-        // clearAllSupabaseStorage gjør window.location.reload()
+        console.warn('[AuthContext] Korrupt storage oppdaget, rydder alle nøkler (uten reload).');
+        clearAllSupabaseStorage({ skipReload: true });
       }
     } catch {
       // Ignore errors under initial sjekk
@@ -181,12 +180,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (err) {
-        // Invalid UTF-8 eller annen storage-korrupsjon
+        // Invalid UTF-8 eller annen storage-korrupsjon – rense UTEN reload for å unngå loop
         console.warn('[AuthContext] Korrupt auth-storage:', err)
         if (mounted) {
-          // KRITISK: Rens alle nøkler og reload
-          clearAllSupabaseStorage();
-          // clearAllSupabaseStorage gjør window.location.reload()
+          clearAllSupabaseStorage({ skipReload: true })
+          setSession(null)
+          setUser(null)
         }
       } finally {
         if (mounted) setLoading(false)

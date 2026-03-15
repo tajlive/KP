@@ -234,7 +234,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                 {/* Risk Explanation */}
                 <div className="mt-8 p-4 rounded-2xl bg-slate-800/30 border border-slate-700/30">
                   <div className="flex items-start gap-3">
-                    <Lightbulb className="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" />
+                    <Lightbulb className="w-5 h-5 text-indigo-400 mt-0.5 shrink-0" />
                     <div className="text-sm text-slate-400">
                       <span className="text-slate-300 font-medium">
                         💡 Tips:{" "}
@@ -333,7 +333,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                   {/* Help Text */}
                   <div className="mt-6 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
                     <div className="flex items-start gap-3">
-                      <Lightbulb className="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" />
+                      <Lightbulb className="w-5 h-5 text-indigo-400 mt-0.5 shrink-0" />
                       <div>
                         <p className="text-indigo-300 font-medium">
                           💡 Tips for småsparere
@@ -458,7 +458,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                   {/* Risk Warning */}
                   <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6">
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
+                      <AlertTriangle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
                       <div className="text-sm">
                         <p className="text-amber-300 font-medium mb-1">
                           Viktig å huske

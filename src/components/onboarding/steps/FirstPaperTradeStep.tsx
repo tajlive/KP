@@ -86,7 +86,7 @@ export function FirstPaperTradeStep() {
                 Din første trade
               </h2>
               <p className="text-[15px] text-gray-500 dark:text-gray-400">
-                Prøv en simulert trade — helt risikofritt med virtuell kapital
+                Prøv en simulert trade — helt risikofritt med lekepenger
               </p>
             </div>
 
@@ -105,7 +105,7 @@ export function FirstPaperTradeStep() {
                              transition-all duration-200 shadow-sm"
                 >
                   <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0
                                   ${
                                     trade.side === "buy"
                                       ? "bg-emerald-500/10"

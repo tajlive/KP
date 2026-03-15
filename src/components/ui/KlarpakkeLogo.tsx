@@ -39,7 +39,7 @@ export default function KlarpakkeLogo({
     >
       {/* Logo Icon - Gradient K */}
       <div
-        className={`${sizeClasses[size]} rounded-lg bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg`}
+        className={`${sizeClasses[size]} rounded-lg bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center shrink-0 shadow-lg`}
       >
         <span className="text-white font-black text-sm">K</span>
       </div>

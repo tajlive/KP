@@ -34,7 +34,7 @@ export function TradingModeProvider({
     setModeState(newMode);
     const message =
       newMode === "paper"
-        ? "Byttet til Paper Trading"
+        ? "Byttet til lekepenger"
         : "Byttet til Live Trading";
     toast.success(message, {
       id: "trading-mode-toast",

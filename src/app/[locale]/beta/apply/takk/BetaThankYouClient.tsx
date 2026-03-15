@@ -60,19 +60,19 @@ export default function BetaThankYouClient({ locale }: { locale: string }) {
 
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-5">
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
                   <span className="text-blue-400 font-bold">1</span>
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">
                     {locale === "en"
                       ? "Explore Paper Trading"
-                      : "Utforsk Paper Trading"}
+                      : "Utforsk lekepenger"}
                   </h3>
                   <p className="text-slate-400 text-sm">
                     {locale === "en"
                       ? "Practice with 1M virtual money"
-                      : "Øv deg med 1M virtuelle penger"}
+                      : "Øv deg med 1M lekepenger"}
                   </p>
                 </div>
               </div>
@@ -80,7 +80,7 @@ export default function BetaThankYouClient({ locale }: { locale: string }) {
 
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-5">
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
                   <span className="text-emerald-400 font-bold">2</span>
                 </div>
                 <div>
@@ -98,7 +98,7 @@ export default function BetaThankYouClient({ locale }: { locale: string }) {
 
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-5">
               <div className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                   <span className="text-green-400 font-bold">3</span>
                 </div>
                 <div>

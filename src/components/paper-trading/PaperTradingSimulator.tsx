@@ -96,10 +96,10 @@ export function PaperTradingSimulator({
         <div>
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-emerald-400" />
-            Paper Trading Simulator
+            Lekepenger Simulator
           </h2>
           <p className="text-zinc-400 mt-1">
-            Test strategier med <span className="text-emerald-400 font-semibold">1M USD</span> virtuell kapital
+            Test strategier med <span className="text-emerald-400 font-semibold">1M USD</span> lekepenger
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ export function PaperTradingSimulator({
       {/* Error Display */}
       {error && (
         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
           <div>
             <p className="text-red-400 font-medium">Feil under simulering</p>
             <p className="text-red-300/80 text-sm mt-1">{error}</p>

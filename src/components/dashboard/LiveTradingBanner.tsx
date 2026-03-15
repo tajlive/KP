@@ -59,7 +59,7 @@ export function LiveTradingBanner() {
             </AlertTitle>
             <AlertDescription className="text-blue-700 mt-2">
               <p className="mb-3">
-                Du har øvd med paper trading. Koble til Binance-kontoen din for å handle 
+                Du har øvd med lekepenger. Koble til Binance-kontoen din for å handle 
                 med ekte crypto og få tilgang til avanserte funksjoner som copy trading.
               </p>
               

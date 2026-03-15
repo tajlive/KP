@@ -183,7 +183,7 @@ export function StrategyTemplateStep() {
               <div className="flex items-center gap-3.5 mb-4">
                 <div
                   className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${template.gradientFrom} ${template.gradientTo}
-                                flex items-center justify-center flex-shrink-0
+                                flex items-center justify-center shrink-0
                                 shadow-[0_4px_12px_rgba(0,0,0,0.15)]`}
                 >
                   <Icon className="w-6 h-6 text-white" />
@@ -202,7 +202,7 @@ export function StrategyTemplateStep() {
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 300 }}
                     className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500
-                               flex items-center justify-center flex-shrink-0"
+                               flex items-center justify-center shrink-0"
                   >
                     <Check className="w-4 h-4 text-white" strokeWidth={3} />
                   </motion.div>

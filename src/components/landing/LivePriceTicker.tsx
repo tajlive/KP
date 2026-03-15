@@ -136,7 +136,7 @@ export function LivePriceTicker() {
             const isPositive = price.change24h >= 0;
             
             return (
-              <div key={price.symbol} className="flex-shrink-0 flex items-center gap-3 min-w-fit">
+              <div key={price.symbol} className="shrink-0 flex items-center gap-3 min-w-fit">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-white">{info.display}</span>
                   <span className="text-slate-400 text-sm hidden sm:inline">{info.name}</span>

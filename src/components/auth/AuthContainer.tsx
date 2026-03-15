@@ -33,7 +33,7 @@ export function AuthContainer({
       icon: Shield,
       title: locale === 'no' ? '100% Risikofri' : '100% Risk-Free',
       description: locale === 'no' 
-        ? 'Trade med virtuelle penger og lær uten å risikere egne midler'
+        ? 'Trade med lekepenger og lær uten å risikere egne midler'
         : 'Trade with virtual money and learn without risking your own funds',
       color: 'emerald',
     },
@@ -179,7 +179,7 @@ export function AuthContainer({
           <div className="space-y-4">
             {features.map((feature) => (
               <div key={feature.title} className="flex items-start gap-4">
-                <div className={`w-10 h-10 rounded-lg bg-${feature.color}-500/10 flex items-center justify-center flex-shrink-0`}>
+                <div className={`w-10 h-10 rounded-lg bg-${feature.color}-500/10 flex items-center justify-center shrink-0`}>
                   <feature.icon className={`h-5 w-5 text-${feature.color}-400`} />
                 </div>
                 <div>

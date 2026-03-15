@@ -2,11 +2,11 @@
   "aboutUs": {
     "metadata": {
       "title": "Om Oss",
-      "description": "Lær om Klarpakkes misjon om å gjøre krypto trading tilgjengelig gjennom utdanning og papirhandel."
+      "description": "Lær om Klarpakkes misjon om å gjøre krypto trading tilgjengelig gjennom utdanning og lekepenger."
     },
     "quote": {
       "title": "Fra \"Håp\" til \"Struktur\"",
-      "text": "I 2021 tapte jeg penger fordi jeg handlet på følelser. Jeg bygget Klarpakke for å fjerne følelsene fra ligningen. Ved å bruke programvare til å følge regler, og paper trading til å bevise ferdigheter først, har vi fjernet de største fellene for nye tradere.",
+      "text": "I 2021 tapte jeg penger fordi jeg handlet på følelser. Jeg bygget Klarpakke for å fjerne følelsene fra ligningen. Ved å bruke programvare til å følge regler, og trading med lekepenger for å bevise ferdigheter først, har vi fjernet de største fellene for nye tradere.",
       "author": "Tom Jensen",
       "role": "Grunnlegger & Utvikler"
     },
@@ -132,7 +132,7 @@
       "conversion": "Konvertering",
       "clickToReg": "Klikk → Registrering",
       "activeUsers": "Aktive brukere",
-      "paperTrading": "Papirhandel",
+      "paperTrading": "Lekepenger",
       "autoTrading": "Auto Trading"
     },
     "trafficSources": {
@@ -225,14 +225,14 @@
         },
         "email": {
           "title": "Følg med på e-post",
-          "desc": "Du får guide til paper trading før 15. februar",
+          "desc": "Du får guide til lekepenger før 15. februar",
           "btn": "Gå til e-post"
         }
       },
       "progress": "Fremdrift",
       "completed": "{count} / {total} fullført",
       "whatNext": "Hva skjer nå?",
-      "whatNextDesc": "Du vil motta en e-post med paper trading-guide i løpet av de neste dagene. Sjekk også søppelpost-mappen din!",
+      "whatNextDesc": "Du vil motta en e-post med lekepenger-guide i løpet av de neste dagene. Sjekk også søppelpost-mappen din!",
       "checkAnother": "Sjekk annen e-post"
     }
   },
@@ -295,10 +295,10 @@
       },
       "step4": {
         "title": "Auto-Execution",
-        "description": "Paper trading (gratis øving)",
-        "detail": "Øv med virtuell kapital før live trading"
+        "description": "Lekepenger (gratis øving)",
+        "detail": "Øv med lekepenger før live trading"
       },
-      "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først i paper mode. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
+      "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først med lekepenger. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
     },
     "actions": {
       "runNow": "Kjør nå",
@@ -388,10 +388,10 @@
       },
       "step4": {
         "title": "Auto-Execution",
-        "description": "Paper trading (gratis øving)",
-        "detail": "Øv med virtuell kapital før live trading"
+        "description": "Lekepenger (gratis øving)",
+        "detail": "Øv med lekepenger før live trading"
       },
-      "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først i paper mode. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
+      "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først med lekepenger. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
     },
     "actions": {
       "runNow": "Kjør nå",
@@ -405,14 +405,14 @@
   "autoTradingPage": {
     "metadata": {
       "title": "Auto-Trading | Klarpakke - 3 år med testing",
-      "description": "Automatisert trading basert på 3 år med testing og harde data. Ikke hype, bare resultater. Start risikofritt med paper trading."
+      "description": "Automatisert trading basert på 3 år med testing og harde data. Ikke hype, bare resultater. Start risikofritt med lekepenger."
     },
     "hero": {
       "badge": "Testet i 3 år med egne penger",
       "titlePart1": "Avansert teknologi.",
       "titlePart2": "Enkel i bruk.",
       "description": "Vi har brukt 3 år på å finjustere våre algoritmer. Ingen \"Quantum AI\" eller magiske løfter – bare solid matematikk og streng risikostyring som jobber 24/7.",
-      "ctaPrimary": "Start Paper Trading",
+      "ctaPrimary": "Start lekepenger",
       "ctaSecondary": "Se resultater",
       "stats": {
         "profitLabel": "Total Gevinst (3 år)",
@@ -440,7 +440,7 @@
       "title": "Slik fungerer det",
       "step1": {
         "step": "01",
-        "title": "Paper Trading",
+        "title": "Lekepenger",
         "desc": "Du får 1 million lekepenger. Test helt risikofritt i 30 dager."
       },
       "step2": {
@@ -461,7 +461,7 @@
     },
     "cta": {
       "title": "Klar for å teste løsningen?",
-      "desc": "Det koster ingenting å prøve Paper Trading. Se selv hvorfor vår teknologi er bedre enn markedet.",
+      "desc": "Det koster ingenting å prøve lekepenger. Se selv hvorfor vår teknologi er bedre enn markedet.",
       "button": "Opprett gratis konto",
       "subtext": "Ingen kredittkort kreves. Start på 1 minutt."
     }
@@ -534,8 +534,8 @@
     "winRate": "Vinnerrate",
     "liveTrading": "Live Trading",
     "liveTradingDesc": "Trade med ekte penger og AI-veiledning",
-    "paperTrading": "Paper Trading",
-    "paperTradingDesc": "Øv med simulerte penger",
+    "paperTrading": "Lekepenger",
+    "paperTradingDesc": "Øv med lekepenger",
     "aiCopilot": "AI Copilot",
     "aiCopilotDesc": "AI-assistent for trading-beslutninger",
     "autoTradeDesc": "Automatisert trading med AI",
@@ -595,7 +595,7 @@
     },
     "cta": {
       "text": "Klar til å teste strategiene dine uten risiko?",
-      "button": "Prøv Paper Trading"
+      "button": "Prøv lekepenger"
     },
     "cta_after_result": "Lær hvordan — start gratis",
     "cta_no_card": "Ingen kredittkort nødvendig"
@@ -731,9 +731,9 @@
     "allCourses": "Alle Kurs",
     "myCourses": "Mine Kurs",
     "browse": "Utforsk Kurs",
-    "required": "Obligatorisk før paper trading",
+    "required": "Obligatorisk før lekepenger",
     "optional": "Valgfritt",
-    "requiredBanner": "Fullfør obligatorisk kurs for å låse opp paper trading",
+    "requiredBanner": "Fullfør obligatorisk kurs for å låse opp lekepenger",
     "lessons": "Leksjoner",
     "startLesson": "Start leksjon",
     "continueLesson": "Fortsett",
@@ -773,7 +773,7 @@
     "learningObjective1": "Forstå grunnleggende trading-konsepter",
     "learningObjective2": "Lær å lese og analysere markedsdata",
     "learningObjective3": "Implementer risikostyring i dine trades",
-    "learningObjective4": "Øv med paper trading før ekte penger",
+    "learningObjective4": "Øv med lekepenger før ekte penger",
     "includes": {
       "videos": "Videoleksjoner",
       "videosDesc": "Se profesjonelle videoer på ditt eget tempo",
@@ -810,7 +810,7 @@
     },
     "step3": {
       "title": "Øv med papirhandel",
-      "description": "Bruk kr 10 000 i virtuelle midler. Test strategier uten risiko."
+      "description": "Bruk kr 10 000 i lekepenger. Test strategier uten risiko."
     },
     "step4": {
       "title": "Automatiser med bot",
@@ -847,7 +847,7 @@
       "title": "Porteføljepuls",
       "totalValue": "Total Verdi",
       "dailyChange": "Dagens Endring",
-      "paperMode": "Øvingshandel",
+      "paperMode": "Lekepenger",
       "liveMode": "Live-handel",
       "systemOnline": "Systemet er aktivt",
       "connecting": "Kobler til...",
@@ -953,7 +953,7 @@
       "open": "Åpen",
       "closed": "Lukket",
       "cancelled": "Kansellert",
-      "paper": "Øving",
+      "paper": "Lekepenger",
       "live": "Ekte",
       "confirmClose": "Er du sikker på at du vil lukke denne posisjonen?"
     },
@@ -1031,6 +1031,7 @@
     },
     "sidebar": {
       "overview": "Oversikt",
+      "autoTrade": "Auto-trading",
       "portfolio": "Portefølje",
       "trading": "Handel",
       "liveTrading": "Live-handel",
@@ -1040,7 +1041,7 @@
       "settings": "Innstillinger",
       "admin": "Administrator",
       "logout": "Logg ut",
-      "paperTrading": "Paper Trading"
+      "paperTrading": "Lekepenger"
     },
     "topBar": {
       "myOverview": "Min Oversikt",
@@ -1068,7 +1069,7 @@
       "recommendedStart": "Anbefalt Start",
       "recommendedStartDesc": "Beste måte å komme i gang",
       "simulatorTitle": "Øvingshandel-simulator",
-      "simulatorDesc": "Øv uten risiko med virtuell kapital",
+      "simulatorDesc": "Øv uten risiko med lekepenger",
       "goToSimulator": "Start simulator",
       "goToCourses": "Gå til Kurs",
       "viewPositions": "Se Posisjoner",
@@ -1086,7 +1087,7 @@
       "locked": "Låst",
       "notStarted": "Ikke startet",
       "paperTrading": "Øvingshandel",
-      "paperDesc": "Øv med virtuell kapital",
+      "paperDesc": "Øv med lekepenger",
       "microAccount": "Mikrokonto (10-100 USD)",
       "microDesc": "Start med ekte penger, lav risiko",
       "standardAccount": "Standard Konto",
@@ -1217,7 +1218,7 @@
     "faqs": [
       {
         "q": "Hva er Klarpakke Universitet?",
-        "a": "Klarpakke Universitet er en norsk plattform for krypto-utdanning. Vi tilbyr kurs, simulator, paper trading og quizer – alt for å lære deg trading på en trygg måte. Alt er 100% simulert, så du kan øve uten å risikere ekte penger."
+        "a": "Klarpakke Universitet er en norsk plattform for krypto-utdanning. Vi tilbyr kurs, simulator, lekepenger og quizer – alt for å lære deg trading på en trygg måte. Alt er 100% simulert, så du kan øve uten å risikere ekte penger."
       },
       {
         "q": "Hvilke planer finnes og hva koster de?",
@@ -1225,15 +1226,15 @@
       },
       {
         "q": "Kan jeg tape penger?",
-        "a": "Nei! Alt på Klarpakke Universitet er simulert. Når du bruker paper trading eller simulatoren, handler du med virtuelle penger. Du kan ikke tape ekte penger her. Dette er et trygt sted å lære før du eventuelt bruker ekte penger hos en ekstern megler."
+        "a": "Nei! Alt på Klarpakke Universitet er simulert. Når du bruker lekepenger eller simulatoren, handler du med lekepenger. Du kan ikke tape ekte penger her. Dette er et trygt sted å lære før du eventuelt bruker ekte penger hos en ekstern megler."
       },
       {
         "q": "Hvordan sier jeg opp?",
         "a": "Du kan kansellere når som helst fra kontoinnstillingene dine. Du beholder tilgangen til slutten av den betalte perioden. Det er ingen bindingstid – du bestemmer selv hvor lenge du vil være med."
       },
       {
-        "q": "Hvordan starter jeg med paper trading?",
-        "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+"q": "Hvordan starter jeg med lekepenger?",
+      "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr i lekepenger. Gå til Lekepenger-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
       },
       {
         "q": "Hva lærer jeg i kursene?",
@@ -1328,11 +1329,11 @@
       "title": "Din reise – steg for steg",
       "week1": {
         "title": "Uke 1: Forståelse",
-        "desc": "Lær det grunnleggende om krypto og trading. Sett opp din paper trading-konto."
+        "desc": "Lær det grunnleggende om krypto og trading. Sett opp din lekepenger-konto."
       },
       "week2": {
         "title": "Uke 2: Strategi",
-        "desc": "Oppdag ulike trading-strategier. Øv med virtuelle penger."
+        "desc": "Oppdag ulike trading-strategier. Øv med lekepenger."
       },
       "week3": {
         "title": "Uke 3: Analyse",
@@ -1352,7 +1353,7 @@
       "title": "Alt du trenger for å mestre trading",
       "subtitle": "Vi har samlet de beste verktøyene for å lære trading på en trygg, strukturert og engasjerende måte.",
       "paperTrading": {
-        "title": "Paper Trading",
+        "title": "Lekepenger",
         "desc": "Start med kr 100 000 i lekepenger. Øv deg uten å risikere ekte sparepenger."
       },
       "aiTeacher": {
@@ -1371,7 +1372,7 @@
         "title": "Øv deg hvor som helst",
         "desc": "Øv deg når som helst, hvor som helst. På mobil, nettbrett eller PC."
       },
-      "ctaTitle": "Prøv Paper Trading nå",
+      "ctaTitle": "Prøv lekepenger nå",
       "ctaSubtitle": "Ingen registrering nødvendig"
     },
     "foundersOffer": {
@@ -1394,23 +1395,23 @@
       "title_emotional": "Lær Trading På Norsk",
       "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
       "question_emotional": "Hvilken versjon av deg selv vil du møte?",
-      "description_emotional": "Strukturerte kurs, paper trading med 1M kr virtuell kapital, og AI-coach som svarer på norsk. Alt på én plattform.",
+      "description_emotional": "Strukturerte kurs, lekepenger med 1M kr, og AI-coach som svarer på norsk. Alt på én plattform.",
       "cta_start": "START GRATIS",
       "cta_demo": "SE DEMO",
       "social_proof_rating": "4.9/5 fra 127 studenter",
       "social_proof_active": "aktive traders"
     },
     "modernHero": {
-      "badge": "Beta — Bli en av de første norske traderne",
-      "titlePart1": "Lær Trading",
-      "titlePart2": "På Norsk",
-      "subtitle": "Fra nybegynner til selvstendig trader med strukturert læring og risikofri praksis",
-      "bullets": "Kurs på norsk • 1M kr paper trading • AI-coach 24/7 • Ingen kredittkort påkrevd",
-      "ctaPrimary": "Prøv Paper Trading Gratis",
-      "ctaSecondary": "Se Kurs",
-      "trust1": "100% norsk",
-      "trust2": "Ingen binding",
-      "trust3": "Risikofi praksis"
+      "badge": "For småsparere som vil lære – uten å være tech-nerd",
+      "titlePart1": "Vi bruker de riktige verktøyene",
+      "titlePart2": "for at du skal tjene penger.",
+      "subtitle": "Våre roboter jobber 24 timer hver dag for at du skal tjene penger. Du bestemmer selv risiko.",
+      "bullets": "Roboter jobber 24/7 • Du bestemmer risiko • 1M kr lekepenger • Ingen kredittkort",
+      "ctaPrimary": "Kom i gang gratis",
+      "ctaSecondary": "Se hvordan det fungerer",
+      "trust1": "Roboter 24/7",
+      "trust2": "Du bestemmer risiko",
+      "trust3": "1M kr lekepenger"
     }
   },
   "leagues": {
@@ -1418,7 +1419,7 @@
     "description": "Konkurrer i ligaer",
     "subtitle": "Bli med i trading-ligaer og konkurrer mot andre",
     "winBitcoin": "Vinn Bitcoin",
-    "paperTrading": "Paper Trading",
+    "paperTrading": "Lekepenger",
     "forBeginners": "For nybegynnere",
     "participants": "Deltakere",
     "joinLeague": "Bli med i liga",
@@ -1493,7 +1494,7 @@
         },
         "2": {
           "title": "2. Beskrivelse av tjenesten",
-          "content": "Klarpakke Universitet er en utdanningsplattform for kryptovaluta-handel. Plattformen tilbyr simulert trading («paper trading») med fiktive penger.",
+          "content": "Klarpakke Universitet er en utdanningsplattform for kryptovaluta-handel. Plattformen tilbyr simulert trading med lekepenger.",
           "bold": "VI BRUKER ALDRI EKTE PENGER."
         },
         "3": {
@@ -1512,7 +1513,7 @@
         },
         "5": {
           "title": "5. Ansvarsfraskrivelse",
-          "content": "Klarpakke gir ingen investeringsråd. All trading på plattformen er simulert og bruker ikke ekte penger. Resultater i paper trading garanterer ikke fremtidig suksess med ekte investeringer."
+          "content": "Klarpakke gir ingen investeringsråd. All trading på plattformen er simulert og bruker ikke ekte penger. Resultater med lekepenger garanterer ikke fremtidig suksess med ekte investeringer."
         },
         "6": {
           "title": "6. Oppsigelse",
@@ -1586,7 +1587,7 @@
   },
   "meta": {
     "title": "Auto-Trading | Klarpakke - 3 år med testing",
-    "description": "Automatisert trading basert på 3 år med testing og harde data. Ikke hype, bare resultater. Start risikofritt med paper trading.",
+    "description": "Automatisert trading basert på 3 år med testing og harde data. Ikke hype, bare resultater. Start risikofritt med lekepenger.",
     "courses": {
       "title": "Kurs - Lær krypto-trading",
       "description": "Utforsk våre kurs fra nybegynner til avansert nivå. Master krypto-trading på 4 uker."
@@ -1607,9 +1608,9 @@
       "title": "Innlogging | Klarpakke",
       "description": "Logg inn på din Klarpakke-konto."
     },
-    "loginDescription": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, paper trading og automatiserte signaler.",
+    "loginDescription": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, lekepenger og automatiserte signaler.",
     "coursesDescription": "Lær trading fra grunnen av med våre strukturerte krypto-kurs på norsk.",
-    "pricingDescription": "Se våre prisplaner for Klarpakke Universitet. Start gratis med paper trading i dag.",
+    "pricingDescription": "Se våre prisplaner for Klarpakke Universitet. Start gratis med lekepenger i dag.",
     "pricing": {
       "title": "Priser | Klarpakke",
       "description": "Velg riktig abonnement for din krypto-reise."
@@ -1620,8 +1621,8 @@
     }
   },
   "metadata": {
-    "title": "Klarpakke - Lær Trading på Norsk | Paper Trading & AI-Coach",
-    "description": "Strukturerte trading-kurs på norsk. Paper trading simulator med 1M kr virtuell kapital. AI-coach 24/7. Beta-pris: 249 kr (var 499 kr). Kun 50 plasser.",
+    "title": "Klarpakke - Lær Trading på Norsk | Lekepenger & AI-Coach",
+    "description": "Strukturerte trading-kurs på norsk. Lekepenger-simulator med 1M kr. AI-coach 24/7. Beta-pris: 249 kr (var 499 kr). Kun 50 plasser.",
     "ogTitle": "Klarpakke - Lær Trading på Norsk",
     "ogDescription": "Beta-lansering: 249 kr (var 499 kr). Kun 50 plasser igjen!",
     "courses": {
@@ -1642,18 +1643,18 @@
     },
     "login": {
       "title": "Logg inn - Student Portal | Klarpakke",
-      "description": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, paper trading og automatiserte signaler."
+      "description": "Logg inn på din Klarpakke-konto for å få tilgang til trading-kurs, lekepenger og automatiserte signaler."
     },
     "dashboard": {
       "title": "Dashboard - Din Trading Oversikt | Klarpakke",
-      "description": "Ditt personlige dashboard for krypto-trading med paper trading, live trading og porteføljeanalyse i sanntid."
+      "description": "Ditt personlige dashboard for krypto-trading med lekepenger, live trading og porteføljeanalyse i sanntid."
     }
   },
   "navigation": {
     "home": "Hjem",
     "studyProgram": "Studieprogram",
     "school": "Skole",
-    "paperTrading": "Paper Trading",
+    "paperTrading": "Lekepenger",
     "courses": "Kurs",
     "about": "Om Oss",
     "pricing": "Priser",
@@ -1698,7 +1699,7 @@
     "done": "Ferdig",
     "startFree": "Start nå – helt gratis",
     "noCreditCard": "Ingen kort nødvendig",
-    "virtualCapital": "1M kr virtuell kapital inkludert",
+    "virtualCapital": "1M kr lekepenger inkludert",
     "completelyFree": "100% gratis i beta-fasen",
     "agreeTerms": "Ved å fortsette godtar du våre",
     "terms": "Vilkår for bruk",
@@ -1719,7 +1720,7 @@
     "welcomeVideo": "Se denne korte videoen",
     "clickToPlay": "Klikk for å spille av videoen",
     "transcript": "Video-oppsummering",
-    "transcriptText": "Hei! Jeg er Tom Arne, gründeren av Klarpakke. \n\n Vi er utrolig glade for å ha deg med på reisen. Vårt mål er å gjøre krypto-trading forståelig og lønnsomt for alle, uten den vanlige 'hypen'. \n\n Du har nå tilgang til vår paper trading-simulator med 1 million kroner i virtuelle midler, slik at du kan øve deg helt risikofritt før du går videre til ekte trading. Lykke til!",
+    "transcriptText": "Hei! Jeg er Tom Arne, gründeren av Klarpakke. \n\n Vi er utrolig glade for å ha deg med på reisen. Vårt mål er å gjøre krypto-trading forståelig og lønnsomt for alle, uten den vanlige 'hypen'. \n\n Du har nå tilgang til vår lekepenger-simulator med 1 million kroner i lekepenger, slik at du kan øve deg helt risikofritt før du går videre til ekte trading. Lykke til!",
     "founderName": "Tom Arne Jensen",
     "founderTitle": "Gründer & CEO",
     "continueToDashboard": "Fortsett til Dashboard",
@@ -1753,7 +1754,7 @@
     "sell": "Salg"
   },
   "paperTrading": {
-    "title": "Paper Trading",
+    "title": "Lekepenger",
     "description": "Øv deg på trading uten risiko",
     "balance": "Saldo",
     "newSession": "Ny sesjon",
@@ -1762,14 +1763,17 @@
     "cancel": "Avbryt",
     "start": "Start",
     "started": "Startet",
+    "active": "Aktiv",
+    "paused": "Pauset",
     "stopped": "Stoppet",
+    "crashed": "Krasjet",
     "yourBalance": "Din saldo",
     "virtual": "Virtuell",
-    "tooltip": "Paper trading lar deg øve uten å risikere ekte penger",
-    "subtitle": "Øv deg på trading med {amount} virtuelle penger",
+    "tooltip": "Lekepenger lar deg øve uten å risikere ekte penger",
+    "subtitle": "Øv deg på trading med {amount} lekepenger",
     "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
     "help": {
-      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "text": "Lekepenger lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
       "close": "Lukk"
     },
     "stats": {
@@ -1786,7 +1790,7 @@
       "buy": "Kjøp",
       "sell": "Selg",
       "reset": "Nullstill simulering",
-      "confirmReset": "Dette vil nullstille all din paper trading-historikk. Er du sikker?",
+      "confirmReset": "Dette vil nullstille all din lekepenger-historikk. Er du sikker?",
       "invalidAmount": "Vennligst angi et gyldig beløp",
       "fetchError": "Kunne ikke hente prisdata. Prøv igjen.",
       "insufficientBalance": "Ikke nok saldo!",
@@ -1984,7 +1988,7 @@
       "passed": "Bestått",
       "failed": "Ikke bestått",
       "whatNow": "Hva vil du gjøre nå?",
-      "tryPaperTrading": "Prøv Paper Trading",
+      "tryPaperTrading": "Prøv lekepenger",
       "continueLearning": "Fortsett å lære",
       "retry": "Ta quizen på nytt",
       "correct": "Riktig!",
@@ -2188,10 +2192,10 @@
       ]
     },
     "buttons": {
-      "openPaperTrading": "Åpne Paper Trading →",
-      "startPaperTrading": "Start Paper Trading →"
+      "openPaperTrading": "Åpne lekepenger →",
+      "startPaperTrading": "Start lekepenger →"
     },
-    "ready": "Klar til å øve med virtuelle penger?"
+    "ready": "Klar til å øve med lekepenger?"
   },
   "studieprogram": {
     "title": "Studieprogram",
@@ -2216,7 +2220,7 @@
         "requirement": "Ingen forkunnskaper kreves",
         "features": [
           "Full krypto-introduksjon",
-          "1 000 000 kr Paper Trading",
+          "1 000 000 kr lekepenger",
           "Tilgang til Community",
           "Markedsoppdateringer",
           "500 KLT tokens ved registrering"
@@ -2363,16 +2367,16 @@
     "totalTrades": "Antall handler"
   },
   "trading": {
-    "paperMode": "Paper Trading",
+    "paperMode": "Lekepenger",
     "paperModeShort": "Paper",
     "liveMode": "Live Trading",
     "liveModeShort": "Live",
-    "paperModeDescription": "Øv med virtuell kapital",
+    "paperModeDescription": "Øv med lekepenger",
     "liveModeDescription": "Handel med ekte penger",
     "switchToLiveTitle": "Bytt til Live Trading?",
     "switchToLiveWarning": "Du er i ferd med å bytte til live trading med ekte penger.",
-    "switchToPaperTitle": "Bytt til Paper Trading?",
-    "switchToPaperWarning": "Du bytter tilbake til paper trading.",
+    "switchToPaperTitle": "Bytt til lekepenger?",
+    "switchToPaperWarning": "Du bytter tilbake til lekepenger.",
     "switchToPaperNote": "Åpne live posisjoner forblir aktive på Binance. Du kan bytte tilbake til live mode når som helst.",
     "connectBinance": "Koble til Binance",
     "connectBinanceRequired": "Koble til Binance",
@@ -2389,7 +2393,7 @@
     "liveWarningRealMoney": "Du handler nå med EKTE penger",
     "liveWarningLosses": "Tap er reelle, ikke simulerte",
     "liveWarningFees": "Handelsgebyrer trekkes fra din Binance-konto",
-    "liveWarningSwitchBack": "Du kan bytte tilbake til paper mode når som helst",
+    "liveWarningSwitchBack": "Du kan bytte tilbake til lekepenger når som helst",
     "slippageSimulated": "Slippage simulert: {{amount}} kr ({{bps}} bps)",
     "slippage": "Slippage",
     "stressLevel": "Emosjonell Stress-Nivå",
@@ -2402,7 +2406,7 @@
     "stressTriggerImpulsivity": "Impulsivitet (vil stenge tapende trades for tidlig)",
     "stressTriggerOvertrading": "Overtrading (vil \"vinne tilbake\" tapene)",
     "stressTriggerFOMO": "Fear of Missing Out (FOMO)",
-    "stressTriggerAdvice": "Ta en pause. Revurder strategien. Dette er hvorfor du øver i paper mode.",
+    "stressTriggerAdvice": "Ta en pause. Revurder strategien. Dette er hvorfor du øver med lekepenger.",
     "transitionGuide": {
       "title": "Paper → Live Overgang",
       "readiness": "{{score}}% klar",
@@ -2420,8 +2424,8 @@
       "step3": "Øk gradvis når du føler deg komfortabel",
       "step4": "Forvent at emosjonene vil være forskjellige"
     },
-    "paperTradingInfo": "Paper Trading Mode",
-    "paperTradingDescription": "Du handler med virtuell kapital. Slippage og gebyrer er simulert for realistisk øving.",
+    "paperTradingInfo": "Lekepenger-modus",
+    "paperTradingDescription": "Du handler med lekepenger. Slippage og gebyrer er simulert for realistisk øving.",
     "liveTradingInfo": "Live Trading Mode",
     "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
     "balance": "Saldo",

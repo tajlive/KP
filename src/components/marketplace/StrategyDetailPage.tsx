@@ -105,7 +105,7 @@ export default function StrategyDetailPage({
           <div className="flex items-start gap-4">
             <div
               className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600
-                           flex items-center justify-center flex-shrink-0
+                           flex items-center justify-center shrink-0
                            shadow-[0_4px_16px_rgba(59,130,246,0.25)]"
             >
               <BarChart3 className="w-8 h-8 text-white" aria-hidden="true" />

@@ -391,7 +391,7 @@ export function ExchangeApiSettings() {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Referral Box */}
-              <div className="bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 rounded-lg p-4">
+              <div className="bg-linear-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <div className="p-2 bg-amber-500/20 rounded-lg">
                     <ExternalLink className="w-5 h-5 text-amber-400" />
@@ -518,7 +518,7 @@ export function ExchangeApiSettings() {
                 {errors.test && (
                   <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
                     <p className="text-red-400 text-sm flex items-start gap-2">
-                      <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                       <span>{errors.test}</span>
                     </p>
                   </div>
@@ -589,7 +589,7 @@ export function ExchangeApiSettings() {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
                     <span className="text-blue-400 font-bold">1</span>
                   </div>
                   <div>
@@ -612,7 +612,7 @@ export function ExchangeApiSettings() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
                     <span className="text-blue-400 font-bold">2</span>
                   </div>
                   <div>
@@ -626,7 +626,7 @@ export function ExchangeApiSettings() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
                     <span className="text-blue-400 font-bold">3</span>
                   </div>
                   <div>
@@ -641,7 +641,7 @@ export function ExchangeApiSettings() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
                     <span className="text-blue-400 font-bold">4</span>
                   </div>
                   <div>
@@ -655,7 +655,7 @@ export function ExchangeApiSettings() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
                     <span className="text-blue-400 font-bold">5</span>
                   </div>
                   <div>
@@ -669,7 +669,7 @@ export function ExchangeApiSettings() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0">
                     <span className="text-blue-400 font-bold">6</span>
                   </div>
                   <div>

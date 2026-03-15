@@ -117,7 +117,7 @@ export function BinanceConnect({ userId, onConnected }: BinanceConnectProps) {
         {step === 'intro' && (
           <div className="space-y-6">
             {/* Referral Box */}
-            <div className="bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 rounded-lg p-4">
+            <div className="bg-linear-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-amber-500/20 rounded-lg">
                   <ExternalLink className="w-5 h-5 text-amber-400" />

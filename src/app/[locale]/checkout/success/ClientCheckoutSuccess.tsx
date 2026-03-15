@@ -117,7 +117,7 @@ function SuccessContent() {
           </h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 text-sm font-bold mt-0.5">
                 1
               </div>
               <div>
@@ -130,7 +130,7 @@ function SuccessContent() {
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 text-sm font-bold mt-0.5">
                 2
               </div>
               <div>
@@ -143,7 +143,7 @@ function SuccessContent() {
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 text-sm font-bold mt-0.5">
                 3
               </div>
               <div>

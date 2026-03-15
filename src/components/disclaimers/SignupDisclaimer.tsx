@@ -46,7 +46,7 @@ export function SignupDisclaimer({ onAccept, accepted = false, error = false }: 
       error ? 'border-red-500' : 'border-amber-500'
     } text-amber-800 mb-6 p-4 rounded-r-lg`}>
       <div className="flex items-start gap-3">
-        <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+        <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
         <div className="flex-1">
           <p className="text-sm font-medium leading-relaxed mb-3">
             Jeg forstår at Klarpakke kun tilbyr opplæring. Jeg vil ikke motta finansiell rådgivning. 

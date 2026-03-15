@@ -47,7 +47,7 @@ export default function OmOssClient() {
   const t = useTranslations("about");
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
       <div className="max-w-4xl mx-auto px-4 py-16">
         {/* Hero */}
         <div className="text-center mb-16">
@@ -141,7 +141,7 @@ export default function OmOssClient() {
               "different.community",
             ].map((item, i) => (
               <li key={i} className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-6 h-6 text-green-400 shrink-0 mt-0.5" />
                 <span className="font-lexend text-slate-200">{t(item)}</span>
               </li>
             ))}
@@ -164,7 +164,7 @@ export default function OmOssClient() {
           
           <div className="bg-white rounded-xl p-8 shadow-sm border border-slate-200 mb-6">
             <div className="flex items-start gap-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                 <span className="text-2xl font-bold text-blue-600">TJ</span>
               </div>
               <div>
@@ -241,7 +241,7 @@ export default function OmOssClient() {
         </section>
 
         {/* CTA */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white text-center">
+        <div className="bg-linear-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white text-center">
           <h2 className="font-fraunces text-3xl font-bold mb-4">{t("cta.title")}</h2>
           <p className="font-lexend text-xl text-blue-100 mb-8">{t("cta.subtitle")}</p>
           <Link href="/innlogging">

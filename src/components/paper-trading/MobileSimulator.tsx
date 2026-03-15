@@ -152,7 +152,7 @@ export function MobileSimulator() {
         <div>
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-emerald-400" />
-            Paper Trading
+            Lekepenger
           </h1>
           <p className="text-xs text-zinc-400 mt-0.5">
             Test med <span className="text-emerald-400 font-semibold">1M USD</span>
@@ -174,7 +174,7 @@ export function MobileSimulator() {
                 key={coin.symbol}
                 onClick={() => setSelectedCoin(coin.symbol)}
                 className={cn(
-                  "flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl min-w-[100px]",
+                  "shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl min-w-[100px]",
                   "transition-all active:scale-95",
                   selectedCoin === coin.symbol
                     ? "bg-emerald-500/20 border border-emerald-500/30 text-white"
@@ -245,7 +245,7 @@ export function MobileSimulator() {
                   >
                     <div className="flex items-start gap-3">
                       <div className={cn(
-                        "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+                        "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
                         selectedStrategy === strat.id ? "bg-emerald-500/20" : "bg-zinc-800"
                       )}>
                         {strat.id === 'ai_ml' ? (

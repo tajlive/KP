@@ -86,7 +86,7 @@ export function HelpClient() {
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className="w-full flex items-center gap-4 p-6 text-left hover:bg-gray-50 transition-colors"
                 >
-                  <faq.icon className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  <faq.icon className="w-5 h-5 text-blue-600 shrink-0" />
                   <span className="font-medium text-gray-900 flex-1">{faq.q}</span>
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
                 </button>

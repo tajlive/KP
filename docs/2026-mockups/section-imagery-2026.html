@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seksjon med bilder 2026 – Klarpakke</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#0052FF',
+            surface: '#0f172a',
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'DM Sans', system-ui, sans-serif; }
+    .font-display { font-family: 'Space Grotesk', sans-serif; }
+    .img-placeholder {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+    .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35); }
+  </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen antialiased">
+  <!-- Section: Slik fungerer det / Trust med bilder -->
+  <section class="py-24 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold mb-4">
+          Slik fungerer det
+        </h2>
+        <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+          Småsparere med lite IT-erfaring lærer plattformen – vi bruker de riktige verktøyene for at du skal tjene.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+        <!-- Card 1: Image + text -->
+        <div class="rounded-2xl overflow-hidden bg-slate-800/50 border border-slate-700/50 card-hover">
+          <div class="aspect-video img-placeholder">
+            [Bilde: småsparer som prøver lekepenger – rolig, fokusert, ikke «trader»-miljø]
+          </div>
+          <div class="p-6">
+            <h3 class="font-display text-xl font-semibold mb-2">1. Øv uten risiko</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              1 million i lekepenger. Ingen krav til IT – du lærer verktøyene våre steg for steg.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="rounded-2xl overflow-hidden bg-slate-800/50 border border-slate-700/50 card-hover">
+          <div class="aspect-video img-placeholder">
+            [Bilde: bruker som bruker kurs/verktøy – enkelt interface, tydelig veiledning]
+          </div>
+          <div class="p-6">
+            <h3 class="font-display text-xl font-semibold mb-2">2. Vi gjør det enkelt</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Kurs på norsk, klare oppgaver og verktøy som er laget for at du skal kunne – og tjene.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="rounded-2xl overflow-hidden bg-slate-800/50 border border-slate-700/50 card-hover">
+          <div class="aspect-video img-placeholder">
+            [Bilde: bruker som ser resultat/avkastning – positiv, «det funker»-følelse]
+          </div>
+          <div class="p-6">
+            <h3 class="font-display text-xl font-semibold mb-2">3. Robotene jobber for deg</h3>
+            <p class="text-slate-400 text-sm leading-relaxed">
+              Våre roboter jobber 24 timer hver dag for at du skal tjene penger. Du bestemmer selv risiko.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full-width "social proof" block: one big image + quote -->
+      <div class="mt-24 rounded-2xl overflow-hidden bg-slate-800/30 border border-slate-700/50">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+          <div class="aspect-[4/3] lg:aspect-auto lg:min-h-[320px] img-placeholder">
+            [Stort bilde: småsparer som har tatt i bruk plattformen – positiv, «jeg tjente»-vibe]
+          </div>
+          <div class="p-8 lg:p-12 flex flex-col justify-center">
+            <blockquote class="text-xl lg:text-2xl text-slate-200 leading-relaxed mb-6">
+              «Jeg er ikke tech-person – men her fikk jeg det til. De gjør det enkelt, og jeg følte at de virkelig ville at jeg skulle tjene penger.»
+            </blockquote>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full img-placeholder text-xs">Foto</div>
+              <div>
+                <p class="font-semibold text-white">Kari M.</p>
+                <p class="text-slate-500 text-sm">Småsparer, bruker Klarpakke siden 2025</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="text-center text-slate-500 text-sm pb-8">Eksempel: Seksjon med bilder 2026. Erstatt placeholders med ekte bilder/video. Åpne <code class="text-slate-400">docs/2026-mockups/section-imagery-2026.html</code> i nettleseren.</p>
+</body>
+</html>

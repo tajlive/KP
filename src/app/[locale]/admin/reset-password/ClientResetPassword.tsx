@@ -83,7 +83,7 @@ export default function ClientResetPassword() {
 
   if (verifying) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-slate-700 bg-slate-800/50">
           <CardContent className="p-8 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
@@ -96,7 +96,7 @@ export default function ClientResetPassword() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-slate-700 bg-slate-800/50">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 bg-green-600/20 rounded-xl flex items-center justify-center mb-4">
@@ -124,7 +124,7 @@ export default function ClientResetPassword() {
 
   if (error && !sessionValid) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-slate-700 bg-slate-800/50">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 bg-red-600/20 rounded-xl flex items-center justify-center mb-4">
@@ -161,7 +161,7 @@ export default function ClientResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-slate-700 bg-slate-800/50">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center mb-4">

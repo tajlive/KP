@@ -281,7 +281,7 @@ export default function InteractiveOnboardingWizard({
                 <strong className="text-blue-400">💡 Slik fungerer det:</strong>
                 <ol className="text-left mt-2 space-y-1 list-decimal list-inside">
                   <li>Velg din risikoprofil nedenfor</li>
-                  <li>Velg hvor mye virtuell kapital du vil teste med</li>
+                  <li>Velg hvor mye lekepenger du vil teste med</li>
                   <li>Start boten og se live handler i dashboardet!</li>
                 </ol>
               </div>
@@ -378,7 +378,7 @@ export default function InteractiveOnboardingWizard({
                   Paper Trade Oppsett
                 </h3>
                 <p className="text-slate-500 text-sm">
-                  Vi tildeler deg 1 000 000 NOK i virtuell kapital for å teste
+                  Vi tildeler deg 1 000 000 NOK i lekepenger for å teste
                   strategien.
                 </p>
               </div>
@@ -394,7 +394,7 @@ export default function InteractiveOnboardingWizard({
                 {/* Kapital-velger */}
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Virtuell Kapital:</span>
+                    <span className="text-slate-500">Lekepenger:</span>
                     <span className="text-green-400 font-bold text-lg">
                       {new Intl.NumberFormat("no-NO").format(capital)} kr
                     </span>

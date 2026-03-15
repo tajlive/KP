@@ -91,7 +91,7 @@ export default async function KursPage({ params }: PageProps) {
         : "Learn crypto trading from scratch",
     required:
       locale === "no"
-        ? "Obligatorisk før paper trading"
+        ? "Obligatorisk før lekepenger"
         : "Required before paper trading",
     optional: locale === "no" ? "Valgfritt" : "Optional",
     startModule: locale === "no" ? "Start modul" : "Start module",
@@ -103,7 +103,7 @@ export default async function KursPage({ params }: PageProps) {
     advanced: locale === "no" ? "Avansert" : "Advanced",
     requiredBanner:
       locale === "no"
-        ? "Fullfør obligatorisk kurs for å låse opp paper trading"
+        ? "Fullfør obligatorisk kurs for å låse opp lekepenger"
         : "Complete required course to unlock paper trading",
   };
 

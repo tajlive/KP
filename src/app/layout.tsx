@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     template: "%s | Klarpakke",
   },
   description:
-    "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital. Gratis å starte.",
+    "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Lekepenger med 1M kr. Gratis å starte.",
   keywords: [
     "krypto",
     "trading",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "norge",
     "bitcoin",
     "læring",
-    "paper trading",
+    "lekepenger",
     "simulator",
   ],
   authors: [{ name: "Klarpakke AS" }],
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     siteName: "Klarpakke Universitet",
     title: "Klarpakke Universitet - Norges første krypto-trading skole",
     description:
-      "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Paper trading med 1M kr virtuell kapital.",
+      "Lær krypto-trading fra A til Å. Fra Student til Master Trader på 4 uker. Lekepenger med 1M kr.",
     images: [
       {
         url: "/logo.svg",

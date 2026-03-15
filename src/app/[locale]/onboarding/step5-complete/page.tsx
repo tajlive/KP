@@ -127,7 +127,7 @@ export default function OnboardingStep5() {
       </div>
 
       {/* Summary Card */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800">
+      <div className="bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800">
         <p className="text-sm text-slate-500 mb-2">{t("paperBalance")}</p>
         <p className="text-3xl font-bold text-slate-900 dark:text-white">
           {paperBalance.toLocaleString("nb-NO")} kr
@@ -142,15 +142,15 @@ export default function OnboardingStep5() {
       {/* Features list */}
       <div className="text-left space-y-3 max-w-sm mx-auto">
         <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
           <span>{t("features.paperTrading")}</span>
         </div>
         <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
           <span>{t("features.strategies")}</span>
         </div>
         <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
           <span>{t("features.analytics")}</span>
         </div>
       </div>

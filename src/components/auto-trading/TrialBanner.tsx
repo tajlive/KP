@@ -52,7 +52,7 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
         
         <div className="relative flex items-start gap-4">
           <div className={cn(
-            "flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center",
+            "shrink-0 w-12 h-12 rounded-full flex items-center justify-center",
             isUrgent 
               ? "bg-red-100 dark:bg-red-900/50"
               : isWarning
@@ -145,7 +145,7 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
             asChild 
             size="lg"
             className={cn(
-              "flex-shrink-0 group",
+              "shrink-0 group",
               isUrgent 
                 ? "bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/50"
                 : isWarning

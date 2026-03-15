@@ -11,7 +11,7 @@ export default function MarketplaceLoading() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="h-8 w-20 bg-gray-200 dark:bg-gray-800 rounded-full flex-shrink-0"
+            className="h-8 w-20 bg-gray-200 dark:bg-gray-800 rounded-full shrink-0"
           />
         ))}
       </div>

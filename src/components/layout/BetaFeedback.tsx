@@ -45,7 +45,7 @@ export function BetaFeedback() {
     }
 
     return (
-        <div className="fixed bottom-6 right-24 z-[60]">
+        <div className="fixed bottom-6 right-24 z-60">
             {!isOpen ? (
                 <Button
                     onClick={() => setIsOpen(true)}

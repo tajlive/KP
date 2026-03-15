@@ -38,7 +38,7 @@ export function PaperTradingCard() {
       
       if (response.status === 401) {
         setState('empty');
-        setErrorMessage('Du må være logget inn for å se paper trading-saldo');
+        setErrorMessage('Du må være logget inn for å se lekepenger-saldo');
         hasSessionRef.current = false;
         return;
       }
@@ -47,7 +47,7 @@ export function PaperTradingCard() {
       // Stop polling to prevent repeated 404s
       if (response.status === 404) {
         setState('empty');
-        setErrorMessage('Ingen paper trading-session funnet');
+        setErrorMessage('Ingen lekepenger-session funnet');
         hasSessionRef.current = false;
         return;
       }
@@ -61,7 +61,7 @@ export function PaperTradingCard() {
       
       if (!data.balance) {
         setState('empty');
-        setErrorMessage('Ingen paper trading-session funnet');
+        setErrorMessage('Ingen lekepenger-session funnet');
         hasSessionRef.current = false;
         return;
       }
@@ -116,7 +116,7 @@ export function PaperTradingCard() {
   }, [fetchBalance, scheduleNextPoll]);
 
   const handleReset = async () => {
-    if (!confirm('Er du sikker på at du vil tilbakestille paper trading? All historikk vil slettes.')) {
+    if (!confirm('Er du sikker på at du vil tilbakestille lekepenger? All historikk vil slettes.')) {
       return;
     }
     
@@ -145,7 +145,7 @@ export function PaperTradingCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg text-white flex items-center gap-2">
             <Wallet className="w-5 h-5 text-blue-500" />
-            Paper Trading
+            Lekepenger
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -165,7 +165,7 @@ export function PaperTradingCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg text-white flex items-center gap-2">
             <Wallet className="w-5 h-5 text-blue-500" />
-            Paper Trading
+            Lekepenger
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -197,16 +197,16 @@ export function PaperTradingCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg text-white flex items-center gap-2">
             <Wallet className="w-5 h-5 text-blue-500" />
-            Paper Trading
+            Lekepenger
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-start gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
             <Loader2 className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
             <div>
-              <p className="text-slate-300 text-sm">{errorMessage || 'Ingen paper trading-data tilgjengelig'}</p>
+              <p className="text-slate-300 text-sm">{errorMessage || 'Ingen lekepenger-data tilgjengelig'}</p>
               <p className="text-slate-500 text-xs mt-1">
-                Start en øvingshandel-session for å se din virtuelle saldo.
+                Start en lekepenger-session for å se din saldo.
               </p>
             </div>
           </div>
@@ -230,7 +230,7 @@ export function PaperTradingCard() {
       <CardHeader className="pb-2">
         <CardTitle className="text-lg text-white flex items-center gap-2">
           <Wallet className="w-5 h-5 text-blue-500" />
-          Paper Trading
+          Lekepenger
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

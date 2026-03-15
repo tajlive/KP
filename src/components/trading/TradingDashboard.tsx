@@ -187,7 +187,7 @@ export default function TradingDashboard() {
             <div className="bg-gray-800 rounded-lg p-8 border border-gray-700">
               <h2 className="text-2xl font-bold mb-6">
                 Velg din strategi for{" "}
-                {mode === "paper" ? "paper trading" : "live trading"}
+                {mode === "paper" ? "lekepenger" : "live trading"}
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -44,7 +44,7 @@ export function ApiSetupStep() {
         className="w-full max-w-sm mb-6"
       >
         <div className="flex gap-3 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200/50 dark:border-blue-800/30">
-          <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+          <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
           <div className="text-[13px] text-blue-700 dark:text-blue-300 leading-relaxed">
             <strong>Trygt:</strong> Vi lagrer aldri dine nøkler. De krypteres
             med AES-256 og brukes kun for trading.
@@ -73,7 +73,7 @@ export function ApiSetupStep() {
         >
           <div
             className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500
-                         flex items-center justify-center flex-shrink-0"
+                         flex items-center justify-center shrink-0"
           >
             <Key className="w-5 h-5 text-white" />
           </div>
@@ -99,7 +99,7 @@ export function ApiSetupStep() {
         >
           <div
             className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500
-                         flex items-center justify-center flex-shrink-0"
+                         flex items-center justify-center shrink-0"
           >
             <CheckCircle2 className="w-5 h-5 text-white" />
           </div>
@@ -108,7 +108,7 @@ export function ApiSetupStep() {
               Start med simulering
             </p>
             <p className="text-[13px] text-emerald-600 dark:text-emerald-400">
-              1M NOK virtuell kapital — ingen risiko
+              1M NOK lekepenger — ingen risiko
             </p>
           </div>
         </button>

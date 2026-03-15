@@ -336,7 +336,7 @@ export function AutoTradingControls({ currentSession, mode, onSessionChange }: A
           {/* Capital */}
           <div>
             <label htmlFor="sim-capital" className="block text-sm text-gray-400 mb-1">
-              Startkapital ({mode === 'paper' ? 'virtuell' : 'ekte'})
+              Startkapital ({mode === 'paper' ? 'lekepenger' : 'ekte'})
             </label>
             <input
               id="sim-capital"

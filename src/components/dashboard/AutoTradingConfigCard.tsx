@@ -186,7 +186,7 @@ export function AutoTradingConfigCard() {
               }
             >
               <Shield className="h-4 w-4 mr-2" />
-              Paper Trading
+              Lekepenger
             </Button>
             <Button
               type="button"
@@ -205,12 +205,12 @@ export function AutoTradingConfigCard() {
           {config.mode === 'paper' ? (
             <p className="text-xs text-slate-400 flex items-start gap-1">
               <Shield className="h-3 w-3 mt-0.5" />
-              Paper trading bruker simulerte penger. Ingen ekte tap.
+              Lekepenger bruker simulerte penger. Ingen ekte tap.
             </p>
           ) : (
             <p className="text-xs text-amber-500 flex items-start gap-1">
               <AlertCircle className="h-3 w-3 mt-0.5" />
-              Live trading bruker ekte penger. Start med paper trading først!
+              Live trading bruker ekte penger. Start med lekepenger først!
             </p>
           )}
         </div>

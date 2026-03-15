@@ -10,7 +10,7 @@ export function RiskDisclaimer({ className = '' }: RiskDisclaimerProps) {
   return (
     <div className={`bg-slate-900 border-2 border-amber-500/50 rounded-xl p-6 ${className}`}>
       <div className="flex items-start gap-4">
-        <div className="p-2 bg-amber-500/10 rounded-lg flex-shrink-0">
+        <div className="p-2 bg-amber-500/10 rounded-lg shrink-0">
           <AlertTriangle className="w-6 h-6 text-amber-400" />
         </div>
         <div>

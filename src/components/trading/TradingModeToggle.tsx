@@ -167,7 +167,7 @@ export function TradingModeToggle({
             <p className="text-xs text-gray-500">
               {isPaper
                 ? t('paperModeDescription', {
-                    defaultValue: 'Øv med virtuell kapital',
+                    defaultValue: 'Øv med lekepenger',
                   })
                 : t('liveModeDescription', {
                     defaultValue: 'Handel med ekte penger',
@@ -270,7 +270,7 @@ function ConfirmationModal({
             ) : (
               <>
                 <Info className="w-5 h-5 text-blue-500" />
-                {t('switchToPaperTitle', { defaultValue: 'Bytt til Paper Trading?' })}
+                {t('switchToPaperTitle', { defaultValue: 'Bytt til lekepenger?' })}
               </>
             )}
           </DialogTitle>
@@ -311,7 +311,7 @@ function ConfirmationModal({
               </div>
             ) : (
               <div className="space-y-3">
-                <p>{t('switchToPaperWarning', { defaultValue: 'Du bytter tilbake til paper trading.' })}</p>
+                <p>{t('switchToPaperWarning', { defaultValue: 'Du bytter tilbake til lekepenger.' })}</p>
                 <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <p className="text-sm text-blue-700 dark:text-blue-400">
                     {t('switchToPaperNote', {

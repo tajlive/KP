@@ -173,7 +173,7 @@ export default function OnboardingStep4() {
 
       {/* Info Box */}
       <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex gap-3">
-        <Shield className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+        <Shield className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
         <div className="text-sm text-amber-800 dark:text-amber-200">
           <p className="font-medium">{t("security.title")}</p>
           <p className="mt-1">{t("security.description")}</p>
@@ -183,10 +183,11 @@ export default function OnboardingStep4() {
       {/* Form */}
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="binance-api-key" className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {t("apiKey.label")}
           </label>
           <Input
+            id="binance-api-key"
             type="text"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
@@ -196,11 +197,12 @@ export default function OnboardingStep4() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="binance-api-secret" className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {t("apiSecret.label")}
           </label>
           <div className="relative">
             <Input
+              id="binance-api-secret"
               type={showSecret ? "text" : "password"}
               value={apiSecret}
               onChange={(e) => setApiSecret(e.target.value)}

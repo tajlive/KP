@@ -229,9 +229,9 @@ export function ToolContextBanner({
         : 'Explore market data and learn to read charts without risk.',
     },
     'paper-trading': {
-      title: 'Paper Trading',
+      title: 'Lekepenger',
       description: locale === 'no'
-        ? 'Øv deg på å kjøpe og selge med 1 000 000 kr virtuelle penger.'
+        ? 'Øv deg på å kjøpe og selge med 1 000 000 kr lekepenger.'
         : 'Practice buying and selling with 1,000,000 virtual money.',
     },
     'quiz': {

@@ -320,11 +320,11 @@ export function AutoTradingAnalysis() {
 
       {/* Disclaimer */}
       <div className="flex items-start gap-2 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-        <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+        <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
         <p className="text-sm text-amber-200/80">
           Historisk avkastning er ingen garanti for fremtidige resultater. 
           Auto-trading innebærer risiko, og du kan tape hele investeringen din. 
-          Start alltid med paper trading.
+          Start alltid med lekepenger.
         </p>
       </div>
     </div>

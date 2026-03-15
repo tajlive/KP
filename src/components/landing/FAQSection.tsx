@@ -15,8 +15,8 @@ export default function FAQSection() {
       answer: 'Nei, du trenger ingen forkunnskaper. Våre kurs starter fra grunnleggende konsepter og bygger seg gradvis opp. Alt er forklart på norsk med praktiske eksempler. Du lærer steg-for-steg, fra de mest grunnleggende prinsippene til avanserte strategier.',
     },
     {
-      question: 'Hva er paper trading?',
-      answer: 'Paper trading betyr at du trader med virtuell kapital (1 million kr) i et simulert miljø. Du får øve på å kjøpe og selge krypto, sette stop-loss, og teste strategier uten å risikere ekte penger. Det er som en flysimulator for trading — du lærer uten konsekvenser.',
+      question: 'Hva er lekepenger?',
+      answer: 'Lekepenger betyr at du trader med simulert kapital (1 million kr) i et trygt miljø. Du får øve på å kjøpe og selge krypto, sette stop-loss, og teste strategier uten å risikere ekte penger. Det er som en flysimulator for trading — du lærer uten konsekvenser.',
     },
     {
       question: 'Kan jeg få pengene tilbake hvis jeg ikke er fornøyd?',
@@ -88,7 +88,7 @@ export default function FAQSection() {
                   {faq.question}
                 </span>
                 <ChevronDown
-                  className={`w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 transition-transform duration-300 ${
+                  className={`w-5 h-5 text-gray-600 dark:text-gray-400 shrink-0 transition-transform duration-300 ${
                     openIndex === idx ? 'transform rotate-180' : ''
                   }`}
                 />

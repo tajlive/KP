@@ -214,7 +214,7 @@ export function AIChat({
             )}
           >
             {message.role === "assistant" && (
-              <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900 flex items-center justify-center shrink-0">
                 <Bot className="w-4 h-4 text-teal-600 dark:text-teal-400" />
               </div>
             )}
@@ -249,7 +249,7 @@ export function AIChat({
               )}
             </div>
             {message.role === "user" && (
-              <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
                 <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
             )}

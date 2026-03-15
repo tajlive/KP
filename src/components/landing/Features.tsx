@@ -48,11 +48,11 @@ export default function Features({ language = "no" }: FeaturesProps) {
       icon: TrendingUp,
       title:
         language === "no"
-          ? "Paper trading med ekte markedsdata"
+          ? "Lekepenger med ekte markedsdata"
           : "Paper trading with real market data",
       description:
         language === "no"
-          ? "1 million kroner virtuell kapital. Tren på ekte Bitcoin- og Ethereum-priser uten å risikere egne penger."
+          ? "1 million kroner lekepenger. Tren på ekte Bitcoin- og Ethereum-priser uten å risikere egne penger."
           : "1 million kroner virtual capital. Practice with real Bitcoin and Ethereum prices without risking your own money.",
       gradient: "from-green-500 to-emerald-500",
     },

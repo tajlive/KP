@@ -21,12 +21,14 @@ import { getTranslations } from "next-intl/server";
  * and removes hydration blocking for LCP.
  */
 
-export default async function HeroSection() {
+type HeroSectionProps = { locale?: string };
+
+export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
   // Server-side translation
   const t = await getTranslations("landing.modernHero");
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0052FF] via-[#0041CC] to-slate-900">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-[#0052FF] via-[#0041CC] to-slate-900">
       {/* Subtle grid overlay - merke #0052FF */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-grid-pattern" />
@@ -59,7 +61,7 @@ export default async function HeroSection() {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
               {t("titlePart1")}
               <br />
-              <span className="bg-gradient-to-r from-blue-200 via-sky-200 to-blue-100 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-blue-200 via-sky-200 to-blue-100 bg-clip-text text-transparent">
                 {t("titlePart2")}
               </span>
             </h1>
@@ -76,7 +78,7 @@ export default async function HeroSection() {
             {/* Modern CTAs - Clear hierarchy: Primary filled, Secondary ghost */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
-                href="/signup"
+                href={`/${locale}/signup`}
                 aria-label={t("ctaPrimary")}
                 className="group px-8 py-4 bg-[#0052FF] hover:bg-[#0041CC] text-white rounded-xl font-bold text-lg shadow-2xl shadow-[#0052FF]/30 hover:shadow-[#0052FF]/40 hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2"
               >
@@ -97,7 +99,7 @@ export default async function HeroSection() {
               </Link>
 
               <Link
-                href="/paper-trading"
+                href={`/${locale}/paper-trading`}
                 aria-label={t("ctaSecondary")}
                 className="px-8 py-4 bg-white text-[#0052FF] rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-200 flex items-center justify-center gap-2"
               >
@@ -176,12 +178,12 @@ export default async function HeroSection() {
               </div>
 
               {/* Dashboard preview */}
-              <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+              <div className="bg-linear-to-br from-slate-50 to-blue-50 p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="text-xs text-slate-500 font-medium">
-                      Paper Trading
+                      Lekepenger
                     </div>
                     <div className="text-2xl font-black text-slate-900 mt-1">
                       1 000 000 kr
@@ -242,7 +244,7 @@ export default async function HeroSection() {
                 <div className="space-y-2">
                   <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
+                      <div className="w-8 h-8 rounded-full bg-linear-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
                         ₿
                       </div>
                       <div>
@@ -262,7 +264,7 @@ export default async function HeroSection() {
 
                   <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-sm font-bold">
+                      <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-sm font-bold">
                         Ξ
                       </div>
                       <div>
@@ -284,7 +286,7 @@ export default async function HeroSection() {
 
               {/* Floating badge - merke #0052FF */}
               <div className="absolute -top-3 -right-3 bg-[#0052FF] text-white px-4 py-2 rounded-full font-bold text-sm shadow-xl">
-                1M kr virtuelt
+                1M kr lekepenger
               </div>
             </div>
           </div>

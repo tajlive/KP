@@ -177,7 +177,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
       <div className="sticky top-0 z-50 bg-amber-50 border-b-2 border-amber-400">
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-amber-900 text-sm">
                 {isNorwegian ? "VIKTIG: Dette er IKKE en investeringsanbefaling" : "IMPORTANT: This is NOT investment advice"}
@@ -196,7 +196,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16" ref={resultRef}>
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <div className="w-14 h-14 bg-[#0052FF]/[0.08] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 bg-[#0052FF]/8 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <CalcIcon className="w-7 h-7 text-[#0052FF]" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#0A0B0D] tracking-tight mb-3">
@@ -410,7 +410,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
             {/* Extended Disclaimer */}
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
               <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div className="text-sm text-amber-800 space-y-2">
                   <p className="font-semibold">{isNorwegian ? "Viktig å forstå:" : "Important to understand:"}</p>
                   <ul className="space-y-1 text-amber-700">

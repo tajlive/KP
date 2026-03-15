@@ -46,10 +46,10 @@ export function Alert({
   ...props
 }: AlertProps) {
   const iconMap = {
-    error: <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />,
-    warning: <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />,
-    success: <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />,
-    info: <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />,
+    error: <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />,
+    warning: <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />,
+    success: <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />,
+    info: <Info className="w-5 h-5 shrink-0 mt-0.5" />,
     default: null,
   };
 
@@ -59,7 +59,7 @@ export function Alert({
       role="alert"
       {...props}
     >
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {icon || iconMap[variant as keyof typeof iconMap]}
       </div>
       <div className="flex-1">
@@ -161,7 +161,7 @@ export function InlineError({ message, className }: InlineErrorProps) {
       )}
       role="alert"
     >
-      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+      <AlertCircle className="w-4 h-4 shrink-0" />
       <p>{message}</p>
     </div>
   );
