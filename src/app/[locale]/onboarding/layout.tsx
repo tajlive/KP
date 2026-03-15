@@ -5,6 +5,9 @@ import { getUserProfileOnboarding } from "@/lib/supabase/helpers";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
+// Avoid prerender: layout and steps use Supabase; env vars may be missing at build.
+export const dynamic = "force-dynamic";
+
 interface OnboardingLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
