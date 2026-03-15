@@ -226,7 +226,7 @@
         "email": {
           "title": "Watch your email",
           "desc": "Checklist and guides will be sent before Feb 15",
-          "btn": null
+          "btn": "Go to email"
         }
       },
       "progress": "Progress",

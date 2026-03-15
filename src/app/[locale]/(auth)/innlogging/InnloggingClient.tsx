@@ -309,7 +309,7 @@ function InnloggingForm() {
 // Loading fallback - matches InnloggingForm styling
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6" data-testid="login-page">
+    <div className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6" data-testid="login-page-loading">
       <div className="max-w-md mx-auto">
         <div className="flex justify-center mb-8">
           <div className="h-10 w-40 bg-gray-200 rounded animate-pulse" />
