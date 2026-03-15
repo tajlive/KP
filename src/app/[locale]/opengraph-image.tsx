@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 
+// Edge required for ImageResponse (OG image). Build warning "disables static generation" is expected.
 export const runtime = 'edge';
 export const alt = 'Klarpakke - Norges Smarteste Kryptobot';
 export const size = {
