@@ -53,6 +53,7 @@ END;
 | Health API | ✅ GET /api/health (DB, KV, env) — createClient sync |
 | Verify script | ✅ Tester domener, /api/health, kritiske paths, security headers |
 | CI deploy | ✅ Lint uten --max-warnings override; verify kjører etter production deploy |
+| Vercel build warnings | ✅ Dokumentert og dempet — se `docs/vercel-build-notes.md` |
 | Paper trading valuta | ✅ USDT→NOK i execute-paper-trade + risk-validator (env → DB global_settings.usdt_nok_rate → 10.8) |
 | USDT/NOK cron | ✅ Daglig cron /api/cron/update-usdt-nok (Vercel 06:00); DB-kolonne via Supabase MCP |
 

@@ -157,6 +157,13 @@ const nextConfig = {
 
   // Webpack optimizations
   webpack: (config, { isServer, dev }) => {
+    // Reduce Vercel build log noise: next-intl extractor uses dynamic import(t)
+    // which webpack cannot statically parse (cache invalidation warning).
+    // Serializing big strings warning is from webpack cache; we use gzip.
+    if (process.env.NODE_ENV === "production" && !dev) {
+      config.infrastructureLogging = { level: "error" };
+    }
+
     // Ensure path aliases work correctly
     config.resolve.alias = {
       ...config.resolve.alias,
