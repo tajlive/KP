@@ -30,9 +30,11 @@ const getSupabase = () => {
   );
 };
 
-// Resend for email
-const getResend = () => {
-  return new Resend(process.env.RESEND_API_KEY);
+// Resend for email — null when key missing so webhook doesn't crash
+const getResend = (): Resend | null => {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  return new Resend(key);
 };
 
 export async function POST(req: NextRequest) {
@@ -394,6 +396,10 @@ async function sendWelcomeEmail(userId: string, planType: string) {
   try {
     const supabase = getSupabase();
     const resend = getResend();
+    if (!resend) {
+      console.warn("[Stripe Webhook] RESEND_API_KEY mangler, hopper over velkomst-email");
+      return;
+    }
 
     // Hent bruker-info
     const { data: profile } = await supabase
@@ -451,7 +457,6 @@ async function sendPaymentFailedEmail(
 ) {
   try {
     const supabase = getSupabase();
-    const resend = getResend();
     const stripe = getStripe();
 
     // Hent bruker fra subscription
@@ -463,7 +468,11 @@ async function sendPaymentFailedEmail(
 
     if (!sub?.user_id) return;
 
-    if (!sub?.user_id) return;
+    const resend = getResend();
+    if (!resend) {
+      console.warn("[Stripe Webhook] RESEND_API_KEY mangler, hopper over payment-failed email");
+      return;
+    }
 
     const { data: profile } = await supabase
       .from("user_profiles")

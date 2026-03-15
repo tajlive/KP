@@ -23,20 +23,24 @@ export default function Error({ error, reset }: ErrorProps) {
       timestamp: new Date().toISOString(),
     });
 
-    // Send to monitoring endpoint if available
+    // Send to the existing monitoring endpoint in production.
     if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-      fetch('/api/log', {
+      fetch('/api/monitoring', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'error',
-          level: 'error',
-          message: error.message,
-          digest: error.digest,
-          stack: error.stack,
-          url: window.location.href,
-          userAgent: navigator.userAgent,
-          timestamp: new Date().toISOString(),
+          reports: [
+            {
+              type: 'error',
+              level: 'error',
+              message: error.message,
+              digest: error.digest,
+              stack: error.stack,
+              url: window.location.href,
+              userAgent: navigator.userAgent,
+              timestamp: new Date().toISOString(),
+            },
+          ],
         }),
       }).catch(() => {
         // Silent fail - don't cause infinite error loops
@@ -45,7 +49,7 @@ export default function Error({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-red-50 to-orange-50">
       <div className="text-center space-y-8 p-8 max-w-lg">
         {/* Error Icon */}
         <div className="relative">

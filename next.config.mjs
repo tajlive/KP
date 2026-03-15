@@ -26,13 +26,13 @@ const nextConfig = {
   // Individual API routes can opt into edge runtime if needed
 
   // Build: enforce lint, gradual TS strict migration
+  // TODO 2026: Sett ignoreDuringBuilds til false når lint er ren. Se docs/forbedringsforslag-2026.md
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // TEMP: Ignorerer TS-feil i build for lansering. Supabase-genererte typer matcher
-    // ikke lokal kode pga utbredt `as unknown`-mønster. Runtime-trygt, men bør fikses.
-    // Se LAUNCH_TYPE_DEBT.md for plan.
+    // TODO 2026: Fjern ignoreBuildErrors når type-gjelden er nedkjempet (Supabase-typer + as unknown).
+    // Se docs/forbedringsforslag-2026.md og LAUNCH_TYPE_DEBT.md.
     ignoreBuildErrors: true,
   },
 
@@ -80,6 +80,7 @@ const nextConfig = {
       "framer-motion",
       "date-fns",
       "recharts",
+      "zustand",
       "@radix-ui/react-accordion",
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
@@ -121,6 +122,9 @@ const nextConfig = {
       { source: "/blog", destination: "/en/blog", permanent: true },
       { source: "/blog/:path*", destination: "/en/blog/:path*", permanent: true },
       { source: "/dashboard", destination: "/en/dashboard", permanent: true },
+      // Typo: Norwegian "dashbord" → correct path "dashboard"
+      { source: "/dashbord", destination: "/no/dashboard", permanent: true },
+      { source: "/:locale/dashbord", destination: "/:locale/dashboard", permanent: true },
       { source: "/marketplace", destination: "/en/marketplace", permanent: true },
       { source: "/settings", destination: "/innstillinger", permanent: true },
       { source: "/trading", destination: "/en/trading", permanent: true },
@@ -153,6 +157,13 @@ const nextConfig = {
 
   // Webpack optimizations
   webpack: (config, { isServer, dev }) => {
+    // Reduce Vercel build log noise: next-intl extractor uses dynamic import(t)
+    // which webpack cannot statically parse (cache invalidation warning).
+    // Serializing big strings warning is from webpack cache; we use gzip.
+    if (process.env.NODE_ENV === "production" && !dev) {
+      config.infrastructureLogging = { level: "error" };
+    }
+
     // Ensure path aliases work correctly
     config.resolve.alias = {
       ...config.resolve.alias,

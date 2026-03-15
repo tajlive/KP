@@ -50,8 +50,9 @@ export function OrderPanel() {
       <h2 className="text-xl font-semibold">{t('title')}</h2>
 
       <div>
-        <label className="text-sm text-kp-dark/70">{t('sizeLabel')}</label>
+        <label htmlFor="order-panel-size" className="text-sm text-kp-dark/70">{t('sizeLabel')}</label>
         <input
+          id="order-panel-size"
           type="number"
           value={size}
           onChange={(e) => setSize(Number(e.target.value))}
@@ -76,8 +77,9 @@ export function OrderPanel() {
       </div>
 
       <div>
-        <label className="text-sm text-kp-dark/70">{t('limitPrice')}</label>
+        <label htmlFor="order-panel-limit" className="text-sm text-kp-dark/70">{t('limitPrice')}</label>
         <input
+          id="order-panel-limit"
           type="number"
           value={limit}
           onChange={(e) => setLimit(e.target.value)}

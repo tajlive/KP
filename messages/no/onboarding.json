@@ -1,4 +1,15 @@
 {
+  "stepIndicator": "Steg {current} av {total}",
+  "error": {
+    "title": "Kunne ikke laste onboarding",
+    "message": "Det oppstod en feil ved lasting av din onboarding-status. Vennligst prøv igjen.",
+    "retry": "Last inn på nytt",
+    "backToLogin": "Tilbake til innlogging"
+  },
+  "complete": {
+    "title": "Ferdig!",
+    "redirecting": "Sender deg til dashboardet..."
+  },
   "email": "E-post",
   "bankid": "BankID",
   "video": "Velkomstvideo",

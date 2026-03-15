@@ -30,9 +30,15 @@ const CRITICAL_PATHS = [
     description: "Root redirect to locale",
   },
   { path: "/no", status: 200, description: "Norwegian homepage" },
-  { path: "/no/login", status: 200, description: "Login page" },
-  { path: "/no/signup", status: 200, description: "Signup page" },
-  { path: "/no/pricing", status: 200, description: "Pricing page" },
+  { path: "/no/innlogging", status: 200, description: "Login page (innlogging)" },
+  {
+    path: "/no/signup",
+    status: 200,
+    description: "Signup page",
+    noFollowRedirects: true,
+    acceptStatuses: [200, 302, 307],
+  },
+  { path: "/no/priser", status: 200, description: "Pricing page (priser)" },
   {
     path: "/no/paper-trading",
     status: 200,
@@ -163,7 +169,19 @@ async function main() {
     }
   }
 
-  // 2. Critical Paths
+  // 2. API health
+  for (const api of API_ENDPOINTS) {
+    const url = `${CANONICAL_DOMAIN}${api.path}`;
+    const res = await testUrl(url, api.status);
+    if (res.success && res.status === api.status)
+      logSuccess(`${api.path} ${api.description}`);
+    else {
+      logError(`${api.path} failed: ${res.status || res.error}`);
+      exitCode = 1;
+    }
+  }
+
+  // 3. Critical Paths
   for (const test of CRITICAL_PATHS) {
     const url = `${CANONICAL_DOMAIN}${test.path}`;
     if (test.expectedRedirect) {
@@ -174,13 +192,28 @@ async function main() {
         exitCode = 1;
       }
     } else {
-      const res = await testUrl(url, test.status);
-      if (res.success && res.status === test.status)
-        logSuccess(`${test.path} (OK)`);
+      const followRedirects = !test.noFollowRedirects;
+      const res = await testUrl(url, test.status, followRedirects);
+      const accepted = test.acceptStatuses
+        ? test.acceptStatuses.includes(res.status)
+        : res.status === test.status;
+      if (res.success && accepted) logSuccess(`${test.path} (OK)`);
       else {
         logError(`${test.path} failed: ${res.status || res.error}`);
         exitCode = 1;
       }
+    }
+  }
+
+  // 4. Security headers (sample from homepage)
+  const headerRes = await testUrl(`${CANONICAL_DOMAIN}/no`, 200);
+  if (headerRes.success && headerRes.headers) {
+    const missing = REQUIRED_HEADERS.filter(
+      (h) => !Object.keys(headerRes.headers).some((k) => k.toLowerCase() === h.toLowerCase())
+    );
+    if (missing.length === 0) logSuccess("Required security headers present");
+    else {
+      logWarning(`Missing headers: ${missing.join(", ")}`);
     }
   }
 

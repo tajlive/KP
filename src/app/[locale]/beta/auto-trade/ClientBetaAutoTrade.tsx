@@ -262,8 +262,8 @@ export default function ClientBetaAutoTrade() {
                                 </button>
                             </div>
 
-                            <div className="pt-4 border-t border-slate-800">
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-4">Handelspar</label>
+                            <div className="pt-4 border-t border-slate-800" role="group" aria-labelledby="beta-autotrade-symbols-label">
+                                <span id="beta-autotrade-symbols-label" className="block text-xs font-bold text-slate-500 uppercase mb-4">Handelspar</span>
                                 <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
                                     {symbols.map((symbol) => (
                                         <button

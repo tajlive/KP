@@ -18,6 +18,7 @@ import {
   getDisplayName,
   getPrice,
   getPriceId,
+  planParamToTier,
   TierName,
 } from "@/lib/pricing.config";
 import { User } from "@supabase/supabase-js";
@@ -32,7 +33,7 @@ export default function CheckoutContent() {
 
   const tStudie = useTranslations("studieprogram.tiers");
 
-  const planId = (searchParams?.get("plan") || "basis") as TierName; // Default to basis (bachelor)
+  const planId = planParamToTier(searchParams?.get("plan") ?? null) as TierName;
 
   // Use centralized config
   const price = getPrice(planId, "monthly", "NOK");

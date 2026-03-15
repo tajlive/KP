@@ -105,7 +105,15 @@ export default function BotStatusCard({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
       className={`relative bg-white dark:bg-gray-900 rounded-xl border-2 p-4 cursor-pointer transition-all hover:shadow-md ${
         isSelected
           ? "border-blue-500 dark:border-blue-400 shadow-md"

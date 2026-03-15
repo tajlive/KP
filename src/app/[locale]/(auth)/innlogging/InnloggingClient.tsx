@@ -42,11 +42,14 @@ function sanitizeClientRedirect(value: string | null, locale: string): string {
     const url = new URL(value);
     const path = url.pathname + (url.search || "");
     if (!path || path.includes("/innlogging")) return fallback;
-    return path;
+    // Normalize typo: dashbord → dashboard
+    const normalized = path.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
+    return normalized;
   } catch {
     if (!value.startsWith("/") || value.startsWith("//")) return fallback;
     if (value.includes("/innlogging")) return fallback;
-    return value;
+    const normalized = value.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
+    return normalized;
   }
 }
 
@@ -60,7 +63,6 @@ function InnloggingForm() {
     "idle",
   );
   const [loginError, setLoginError] = useState("");
-  const [showEmailForm, setShowEmailForm] = useState(false);
   const searchParams = useSearchParams();
   const t = useTranslations("auth");
   const locale = useLocale();
@@ -74,14 +76,23 @@ function InnloggingForm() {
   }, [searchParams]);
 
   const errorParam = searchParams?.get("error");
+  const detailParam = searchParams?.get("detail");
 
   useEffect(() => {
     if (errorParam) {
-      const errorMessage = getAuthErrorMessage(errorParam);
+      let errorMessage = getAuthErrorMessage(errorParam);
+      if (detailParam && typeof detailParam === "string") {
+        try {
+          const decoded = decodeURIComponent(detailParam);
+          if (decoded && decoded.length < 200) errorMessage += ` (${decoded})`;
+        } catch {
+          /* ignore */
+        }
+      }
       setLoginError(errorMessage || t("loginError"));
       setStatus("login_error");
     }
-  }, [errorParam, t]);
+  }, [errorParam, detailParam, t]);
 
   const next = searchParams?.get("next") as string | null;
   const rawRedirect = next || searchParams?.get("redirectTo") || null;
@@ -159,113 +170,105 @@ function InnloggingForm() {
               </div>
             )}
 
-            {!showEmailForm && (
-              <>
-                <AuthButtons
-                  locale={locale}
-                  providers={["GOOGLE", "MICROSOFT", "LINKEDIN"]}
-                  showMagicLink={true}
-                  redirectPath={rawRedirect ? safeRedirectTo : undefined}
-                />
-
-                <div className="relative py-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="bg-white px-4 text-sm text-gray-500">
-                      {locale === "no" ? "eller" : "or"}
-                    </span>
-                  </div>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="innlogging-email" className="sr-only">
+                  {t("emailPlaceholder")}
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <Input
+                    id="innlogging-email"
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    placeholder={t("emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 h-12 border-gray-300 focus:border-[#0052FF] focus:ring-[#0052FF]"
+                    required
+                    disabled={status === "logging_in"}
+                    aria-invalid={!!loginError}
+                  />
                 </div>
+              </div>
 
-                <Button
-                  onClick={() => setShowEmailForm(true)}
-                  variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  {locale === "no"
-                    ? "Logg inn med e-post"
-                    : "Sign in with email"}
-                </Button>
-              </>
-            )}
-
-            {showEmailForm && (
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <Input
-                      type="email"
-                      placeholder={t("emailPlaceholder")}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
+              <div className="space-y-2">
+                <label htmlFor="innlogging-password" className="sr-only">
+                  {t("passwordPlaceholder")}
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  <Input
+                    id="innlogging-password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    autoComplete="current-password"
+                    placeholder={t("passwordPlaceholder")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 h-12 border-gray-300 focus:border-[#0052FF] focus:ring-[#0052FF]"
+                    required
+                    disabled={status === "logging_in"}
+                    aria-invalid={!!loginError}
+                  />
+                  <button
+                    type="button"
+                    tabIndex={0}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded"
+                    aria-label={showPassword ? (locale === "no" ? "Skjul passord" : "Hide password") : (locale === "no" ? "Vis passord" : "Show password")}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder={t("passwordPlaceholder")}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
+              <Button
+                type="submit"
+                disabled={status === "logging_in"}
+                className="w-full h-12 bg-[#0052FF] hover:bg-[#0041CC] text-white font-medium"
+              >
+                {status === "logging_in" ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    {t("signingIn")}
+                  </>
+                ) : (
+                  <>
+                    {t("signIn")}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </>
+                )}
+              </Button>
+            </form>
 
-                <Button
-                  type="submit"
-                  disabled={status === "logging_in"}
-                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium"
-                >
-                  {status === "logging_in" ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      {t("signingIn")}
-                    </>
-                  ) : (
-                    <>
-                      {t("signIn")}
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </>
-                  )}
-                </Button>
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-white px-4 text-sm text-gray-500">
+                  {locale === "no" ? "eller" : "or"}
+                </span>
+              </div>
+            </div>
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setShowEmailForm(false)}
-                  className="w-full text-sm text-gray-500"
-                >
-                  ← {locale === "no" ? "Tilbake" : "Back"}
-                </Button>
-              </form>
-            )}
+            <AuthButtons
+              locale={locale}
+              providers={["GOOGLE", "MICROSOFT", "LINKEDIN"]}
+              showMagicLink={true}
+              redirectPath={rawRedirect ? safeRedirectTo : undefined}
+            />
 
             <div className="flex flex-col gap-2 text-center text-sm">
               <Link
                 href={`/${locale}/glemt-passord`}
-                className="text-blue-600 hover:text-blue-800 hover:underline"
+                className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
               >
                 {t("forgotPassword")}
               </Link>
@@ -273,7 +276,7 @@ function InnloggingForm() {
                 {t("noAccount")}{" "}
                 <Link
                   href={`/${locale}/signup`}
-                  className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                  className="text-[#0052FF] hover:text-[#0041CC] hover:underline font-medium"
                 >
                   {t("createAccount")}
                 </Link>
@@ -286,14 +289,14 @@ function InnloggingForm() {
           Ved å logge inn godtar du våre{" "}
           <Link
             href={`/${locale}/vilkar`}
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
           >
             vilkår
           </Link>{" "}
           og{" "}
           <Link
             href={`/${locale}/personvern`}
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+            className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
           >
             personvernerklæring
           </Link>

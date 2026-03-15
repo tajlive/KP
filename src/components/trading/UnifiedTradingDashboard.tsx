@@ -410,8 +410,17 @@ function TradingModeToggle({
 }) {
   return (
     <div
+      role="button"
+      tabIndex={0}
       className="relative w-[200px] h-10 bg-slate-800 rounded-full p-1 flex cursor-pointer"
       onClick={() => setMode(mode === "paper" ? "live" : "paper")}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setMode(mode === "paper" ? "live" : "paper");
+        }
+      }}
+      aria-label={mode === "paper" ? "Bytt til live trading" : "Bytt til paper trading"}
     >
       <motion.div
         className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-linear-to-r from-blue-500 to-blue-600"
@@ -684,10 +693,20 @@ function StrategySelectorSection({
               className="bg-slate-700 rounded-lg overflow-hidden"
             >
               <div
+                role="button"
+                tabIndex={0}
                 className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-slate-600 transition gap-3"
                 onClick={() =>
                   setExpandedStrategy(expanded ? null : strategy.type)
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setExpandedStrategy(expanded ? null : strategy.type);
+                  }
+                }}
+                aria-expanded={expanded}
+                aria-label={expanded ? "Lukk strategi" : `Velg ${strategy.name}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{strategy.icon}</span>
@@ -811,10 +830,11 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="dca-weekly-amount" className="text-slate-400 text-sm">
               Ukentlig beløp: {dcaConfig.weeklyAmount} NOK
             </label>
             <input
+              id="dca-weekly-amount"
               type="range"
               min="100"
               max="5000"
@@ -828,10 +848,11 @@ function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="dca-btc-allocation" className="text-slate-400 text-sm">
               BTC-fordeling: {dcaConfig.btcAllocation}%
             </label>
             <input
+              id="dca-btc-allocation"
               type="range"
               min="0"
               max="100"
@@ -851,10 +872,11 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="trend-risk-per-trade" className="text-slate-400 text-sm">
               Risiko per trade: {trendConfig.riskPerTrade}%
             </label>
             <input
+              id="trend-risk-per-trade"
               type="range"
               min="1"
               max="5"
@@ -867,10 +889,11 @@ function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="trend-stop-loss" className="text-slate-400 text-sm">
               Stop-loss: {trendConfig.stopLoss}%
             </label>
             <input
+              id="trend-stop-loss"
               type="range"
               min="5"
               max="15"
@@ -890,8 +913,9 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">Aggressivitet</label>
+            <label htmlFor="multi-aggressiveness" className="text-slate-400 text-sm">Aggressivitet</label>
             <select
+              id="multi-aggressiveness"
               value={multiConfig.aggressiveness}
               title="Aggressivitet"
               onChange={(e) =>
@@ -918,8 +942,9 @@ function StrategyConfig({
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-slate-400 text-sm">Øvre pris</label>
+              <label htmlFor="grid-upper-price" className="text-slate-400 text-sm">Øvre pris</label>
               <input
+                id="grid-upper-price"
                 type="number"
                 value={gridConfig.upperPrice}
                 title="Øvre pris"
@@ -930,8 +955,9 @@ function StrategyConfig({
               />
             </div>
             <div>
-              <label className="text-slate-400 text-sm">Nedre pris</label>
+              <label htmlFor="grid-lower-price" className="text-slate-400 text-sm">Nedre pris</label>
               <input
+                id="grid-lower-price"
                 type="number"
                 value={gridConfig.lowerPrice}
                 title="Nedre pris"
@@ -943,10 +969,11 @@ function StrategyConfig({
             </div>
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="grid-levels" className="text-slate-400 text-sm">
               Grid-nivåer: {gridConfig.levels}
             </label>
             <input
+              id="grid-levels"
               type="range"
               min="5"
               max="50"
@@ -959,10 +986,11 @@ function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="grid-capital" className="text-slate-400 text-sm">
               Kapital: {gridConfig.capital} NOK
             </label>
             <input
+              id="grid-capital"
               type="range"
               min="1000"
               max="50000"
@@ -983,10 +1011,11 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="ai-max-per-trade" className="text-slate-400 text-sm">
               Maks per trade: {aiConfig.maxPerTrade} NOK
             </label>
             <input
+              id="ai-max-per-trade"
               type="range"
               min="100"
               max="5000"
@@ -1000,10 +1029,11 @@ function StrategyConfig({
             />
           </div>
           <div>
-            <label className="text-slate-400 text-sm">
+            <label htmlFor="ai-max-loss" className="text-slate-400 text-sm">
               Maks tap: {aiConfig.maxLoss} NOK
             </label>
             <input
+              id="ai-max-loss"
               type="range"
               min="100"
               max="2000"

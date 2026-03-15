@@ -248,7 +248,16 @@ export default function AdminLayout({
       {mobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          role="button"
+          tabIndex={0}
           onClick={() => setMobileMenuOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
+              e.preventDefault();
+              setMobileMenuOpen(false);
+            }
+          }}
+          aria-label="Lukk meny"
         />
       )}
 

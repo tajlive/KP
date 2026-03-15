@@ -5,13 +5,17 @@
  * Lock "sb-*-auth-token" kan ikke deles mellom instanser og vil
  * forårsake "gotrue-js lock not released within 5000ms" feil.
  *
+ * OAuth/PKCE: Vi bruker IKKE custom storage (localStorage) her. @supabase/ssr
+ * må lagre code_verifier i cookies slik at server-callback kan lese den ved
+ * exchangeCodeForSession. Med storage: safeStorage (localStorage) havnet
+ * brukeren tilbake på innlogging etter Google fordi serveren ikke så verifier.
+ *
  * @usage
  * import { getSupabaseClient } from '@/lib/supabase/client'
  * const supabase = getSupabaseClient()
  */
 import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '../../types/supabase-generated'
-import { safeStorage } from './safe-storage'
 
 type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>
 
@@ -34,9 +38,7 @@ export function getSupabaseClient(): SupabaseClient {
         persistSession: true,
         detectSessionInUrl: true,
         flowType: 'pkce',
-        // Use default storage key (gotrue-js handles this internally)
-        // Custom storageKey was removed as it caused conflicts with internal keys
-        storage: safeStorage,
+        // Ikke custom storage: PKCE code_verifier må i cookie for at server-callback skal fungere
         debug: process.env.NODE_ENV === 'development',
       },
       global: {

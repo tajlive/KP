@@ -68,8 +68,8 @@ export function SettingsForm() {
                 <CardContent>
                     <form onSubmit={handleUpdateProfile} className="space-y-4">
                         <div>
-                            <label className="block text-sm text-slate-400 mb-2">{t('email')}</label>
-                            <div className="flex items-center gap-3 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-slate-500">
+                            <label htmlFor="settings-email" className="block text-sm text-slate-400 mb-2">{t('email')}</label>
+                            <div id="settings-email" role="textbox" aria-readonly="true" className="flex items-center gap-3 px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-slate-500">
                                 <Mail className="w-4 h-4" />
                                 {user?.email}
                             </div>
@@ -77,8 +77,9 @@ export function SettingsForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm text-slate-400 mb-2">{t('fullName')}</label>
+                            <label htmlFor="settings-fullname" className="block text-sm text-slate-400 mb-2">{t('fullName')}</label>
                             <input
+                                id="settings-fullname"
                                 type="text"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}

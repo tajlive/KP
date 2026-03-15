@@ -1,6 +1,5 @@
 import { getAppUrl } from "@/lib/auth/config";
 import { createServerClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/database.types";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -65,8 +64,9 @@ export async function GET(
   function sanitizeRedirectPath(path: string | null): string {
     if (!path) return `/${locale}/dashboard`;
     if (path.startsWith("//")) return `/${locale}/dashboard`;
-    if (path.startsWith("/")) return path;
-    return `/${locale}/dashboard`;
+    // Normalize common typo: dashbord → dashboard
+    const normalized = path.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
+    return normalized.startsWith("/") ? normalized : `/${locale}/dashboard`;
   }
 
   const nextParam =

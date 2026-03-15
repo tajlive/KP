@@ -256,7 +256,6 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
 
       return updated;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine.price]);
 
   const pnlChanged = simStats.pnl !== prevPnl.current;

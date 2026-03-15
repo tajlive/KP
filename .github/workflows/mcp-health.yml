@@ -6,6 +6,10 @@ on:
     - cron: '0 6 * * 1-5'
   workflow_dispatch:
 
+concurrency:
+  group: mcp-health
+  cancel-in-progress: true
+
 jobs:
   mcp-health:
     name: Sjekk MCP-tilkoblinger

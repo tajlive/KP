@@ -115,14 +115,19 @@ export function CommandPalette() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4 backdrop-blur-sm bg-black/60">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- dialog panel stops propagation for click/key */}
       <div
         className="w-full max-w-xl bg-slate-900/90 border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-slide-up"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.key === "Escape" && e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         <div className="relative flex items-center p-4 border-b border-white/5">
           <Search className="w-5 h-5 text-slate-400 mr-3" />
           <input
-            autoFocus
+            ref={(el) => el?.focus()}
+            aria-label="Søk etter verktøy, sider eller kommandoer"
             className="flex-1 bg-transparent border-none text-white outline-none placeholder:text-slate-500 text-lg"
             placeholder="Søk etter verktøy, sider eller kommandoer..."
             value={query}
@@ -182,7 +187,14 @@ export function CommandPalette() {
           <span>Blyt AS Modern Console</span>
         </div>
       </div>
-      <div className="fixed inset-0 -z-10" onClick={() => toggle(false)} />
+      <div
+        className="fixed inset-0 -z-10"
+        role="button"
+        tabIndex={0}
+        aria-label="Lukk"
+        onClick={() => toggle(false)}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(false); } }}
+      />
     </div>
   );
 }

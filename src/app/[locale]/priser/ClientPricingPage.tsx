@@ -4,11 +4,16 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
+  Award,
   Check,
-  Crown,
-  Loader2,
   CreditCard,
+  Crown,
+  GraduationCap,
+  Loader2,
+  Target,
+  TrendingUp,
 } from "lucide-react";
+import { CARD, RADIUS, SHADOW, SURFACE, TABLE } from "@/lib/design/tokens";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -25,12 +30,13 @@ interface PricingProduct {
   interval: string;
 }
 
+const tierIconClass = "w-6 h-6 shrink-0";
 const tierIcons: Record<string, React.ReactNode> = {
-  student: <span className="text-2xl">🎓</span>,
-  bachelor: <span className="text-2xl">📈</span>,
-  master: <span className="text-2xl">🏆</span>,
-  phd: <span className="text-2xl">🎯</span>,
-  professor: <Crown className="w-6 h-6 text-amber-500" />,
+  student: <GraduationCap className={`${tierIconClass} text-slate-400`} />,
+  bachelor: <TrendingUp className={`${tierIconClass} text-blue-400`} />,
+  master: <Award className={`${tierIconClass} text-emerald-400`} />,
+  phd: <Target className={`${tierIconClass} text-indigo-400`} />,
+  professor: <Crown className={`${tierIconClass} text-amber-400`} />,
 };
 
 // Default priser mens vi venter på API (riktige priser fra nettsiden)
@@ -168,23 +174,23 @@ export function ClientPricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1118] font-sans text-white">
-      {/* HERO */}
-      <section className="relative pt-24 pb-20 px-4 overflow-hidden bg-[#0F1118] border-b border-[#2A2D3A]">
+    <div className={`min-h-screen ${SURFACE.BG} font-sans ${SURFACE.TEXT}`}>
+      {/* HERO - samme stil som landing: merke #0052FF */}
+      <section className={`relative pt-24 pb-20 px-4 overflow-hidden ${SURFACE.BG} border-b ${SURFACE.BORDER}`}>
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#0052FF]/10 rounded-full blur-3xl opacity-60" />
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0052FF]/10 border border-[#0052FF]/20 text-[#6FA3FF] text-sm font-medium mb-8">
-            <Crown className="w-4 h-4" />
+          <div className={`inline-flex items-center gap-2 px-3 py-1 ${RADIUS.badge} bg-[#0052FF]/10 border border-[#0052FF]/20 text-[#6FA3FF] text-sm font-medium mb-8`}>
+            <GraduationCap className="w-4 h-4" />
             {t("title")}
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
             {t("sectionTitle")}
           </h1>
-          <p className="text-xl text-white/60 max-w-2xl mx-auto">
+          <p className={`text-xl ${SURFACE.TEXT_MUTED} max-w-2xl mx-auto`}>
             {t("description")}
           </p>
         </div>
@@ -203,27 +209,27 @@ export function ClientPricingPage() {
                 <div
                   key={index}
                   className={cn(
-                    "relative rounded-2xl p-8 flex flex-col h-full bg-[#171923] transition-all duration-300",
+                    `relative ${RADIUS.card} p-8 flex flex-col h-full ${SURFACE.BG_ELEVATED} border transition-all duration-200`,
                     plan.popular
-                      ? "border-2 border-[#0052FF] shadow-xl shadow-[#0052FF]/10 scale-105 z-10"
-                      : "border border-[#2A2D3A] hover:border-[#0052FF]/50",
+                      ? `border-2 border-[#0052FF] ${SHADOW.cardBrand} scale-105 z-10`
+                      : `${SURFACE.BORDER} hover:border-[#0052FF]/50`,
                   )}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#0052FF] text-white text-xs font-bold uppercase tracking-wide shadow-sm">
+                    <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 ${RADIUS.badge} bg-[#0052FF] text-white text-xs font-bold uppercase tracking-wide shadow-sm`}>
                       {tPricing("mostPopular")}
                     </div>
                   )}
 
                   <div className="mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-[#0F1118] flex items-center justify-center mb-6 border border-[#2A2D3A]">
+                    <div className={`w-12 h-12 ${RADIUS.button} ${SURFACE.BG} flex items-center justify-center mb-6 border ${SURFACE.BORDER}`}>
                       {plan.icon}
                     </div>
                     <h3 className="text-lg font-bold text-white mb-2">
                       {plan.name}
                     </h3>
                     <div className="flex items-baseline gap-1 mb-4">
-                      <span className="text-4xl font-extrabold text-white tracking-tight">
+                      <span className="text-4xl font-extrabold text-white tracking-tight tabular-nums">
                         {plan.formattedPrice}
                       </span>
                       <span className="text-sm font-medium text-white/40">
@@ -233,7 +239,7 @@ export function ClientPricingPage() {
                         {plan.period}
                       </span>
                     </div>
-                    <p className="text-white/50 text-sm border-b border-[#2A2D3A] pb-6">
+                    <p className={`${SURFACE.TEXT_SUBTLE} text-sm border-b ${SURFACE.BORDER} pb-6`}>
                       {plan.description}
                     </p>
                   </div>
@@ -255,15 +261,16 @@ export function ClientPricingPage() {
                     ))}
                   </ul>
 
-                  {/* Stripe-knapp */}
+                  {/* Stripe-knapp - tokens */}
                   <Button
                     onClick={() => handleCheckout(plan.slug)}
                     disabled={loadingTier === plan.slug || (!plan.priceId && plan.slug !== 'student')}
                     className={cn(
-                      "w-full h-12 rounded-xl text-base font-semibold transition-all",
+                      "w-full h-12 text-base font-semibold transition-all duration-200",
+                      RADIUS.button,
                       plan.popular
                         ? "bg-[#0052FF] hover:bg-[#0041CC] text-white shadow-lg shadow-[#0052FF]/20"
-                        : "bg-[#2A2D3A] hover:bg-[#3A3D4A] text-white border border-[#2A2D3A]",
+                        : "bg-slate-800 hover:bg-slate-700 text-white border border-slate-700",
                     )}
                   >
                     {loadingTier === plan.slug ? (
@@ -287,7 +294,7 @@ export function ClientPricingPage() {
           )}
 
           {/* Disclaimer */}
-          <p className="text-center text-sm text-white/40 mt-8">
+          <p className={`text-center text-sm ${SURFACE.TEXT_MUTED} mt-8`}>
             {t("disclaimer")}
           </p>
         </div>

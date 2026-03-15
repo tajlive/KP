@@ -174,7 +174,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            role="button"
+            tabIndex={0}
             onClick={() => setSidebarOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
+                e.preventDefault();
+                setSidebarOpen(false);
+              }
+            }}
+            aria-label="Lukk sidebar"
           />
         )}
       </div>

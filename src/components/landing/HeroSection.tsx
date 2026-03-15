@@ -26,8 +26,8 @@ export default async function HeroSection() {
   const t = await getTranslations("landing.modernHero");
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-emerald-700">
-      {/* Modern grid pattern overlay */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0052FF] via-[#0041CC] to-slate-900">
+      {/* Subtle grid overlay - merke #0052FF */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-grid-pattern" />
       </div>
@@ -37,8 +37,8 @@ export default async function HeroSection() {
           {/* Left: Copy - LCP CRITICAL PATH */}
           {/* Removed animate-fade-in to eliminate LCP delay */}
           <div className="text-center lg:text-left">
-            {/* Modern badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 backdrop-blur-sm text-white border border-blue-400/30 rounded-full text-sm font-semibold mb-6">
+            {/* Badge - merke #0052FF */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#0052FF]/20 backdrop-blur-sm text-white border border-[#0052FF]/40 rounded-full text-sm font-semibold mb-6">
               {/* Inline SVG instead of lucide-react */}
               <svg
                 className="w-4 h-4"
@@ -59,7 +59,7 @@ export default async function HeroSection() {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
               {t("titlePart1")}
               <br />
-              <span className="bg-gradient-to-r from-blue-200 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-200 via-sky-200 to-blue-100 bg-clip-text text-transparent">
                 {t("titlePart2")}
               </span>
             </h1>
@@ -78,7 +78,7 @@ export default async function HeroSection() {
               <Link
                 href="/signup"
                 aria-label={t("ctaPrimary")}
-                className="group px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-bold text-lg shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-400/40 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                className="group px-8 py-4 bg-[#0052FF] hover:bg-[#0041CC] text-white rounded-xl font-bold text-lg shadow-2xl shadow-[#0052FF]/30 hover:shadow-[#0052FF]/40 hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2"
               >
                 {t("ctaPrimary")}
                 <svg
@@ -99,7 +99,7 @@ export default async function HeroSection() {
               <Link
                 href="/paper-trading"
                 aria-label={t("ctaSecondary")}
-                className="px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                className="px-8 py-4 bg-white text-[#0052FF] rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 {t("ctaSecondary")}
               </Link>
@@ -282,9 +282,9 @@ export default async function HeroSection() {
                 </div>
               </div>
 
-              {/* Floating badge */}
-              <div className="absolute -top-3 -right-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full font-bold text-sm shadow-xl">
-                1M kr virtuelt 🎯
+              {/* Floating badge - merke #0052FF */}
+              <div className="absolute -top-3 -right-3 bg-[#0052FF] text-white px-4 py-2 rounded-full font-bold text-sm shadow-xl">
+                1M kr virtuelt
               </div>
             </div>
           </div>

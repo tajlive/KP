@@ -5,7 +5,8 @@
  * FAIL CLOSED principle: if data missing or checks fail, trade is blocked.
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "../../supabase/server";
+import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 
 export type RejectionReason =
   | "NO_RISK_PROFILE"
@@ -62,7 +63,7 @@ export interface RiskProfile {
 export async function validateTradeAgainstRiskProfile(
   trade: TradeRequest
 ): Promise<RiskValidationResult> {
-  const supabase = await createClient();
+  const supabase = (await createClient()) as unknown;
 
   try {
     // 1. Hent session info
@@ -70,8 +71,8 @@ export async function validateTradeAgainstRiskProfile(
       .from("trading_sessions")
       .select("id, user_id, mode, status, current_capital_nok, starting_capital_nok")
       .eq("id", trade.sessionId)
-      .eq("user_id" as any, trade.userId)
-      .single() as any;
+      .eq("user_id" as unknown, trade.userId)
+      .single() as unknown;
 
     if (sessionError || !session) {
       return {
@@ -108,9 +109,9 @@ export async function validateTradeAgainstRiskProfile(
     const { data: riskProfile, error: riskError } = await supabase
       .from("risk_profiles")
       .select("id, name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, leverage_allowed")
-      .eq("user_id" as any, trade.userId)
+      .eq("user_id" as unknown, trade.userId)
       .eq("is_active", true)
-      .single() as any;
+      .single() as unknown;
 
     if (riskError || !riskProfile) {
       // For paper trading: default til forsiktig hvis ingen profil
@@ -145,7 +146,7 @@ export async function validateTradeAgainstRiskProfile(
         .from("bot_health")
         .select("status, last_heartbeat, consecutive_errors, max_consecutive_errors")
         .eq("id", trade.botId)
-        .single() as any;
+        .single() as unknown;
 
       if (!botHealth) {
         return {
@@ -205,26 +206,37 @@ export async function validateTradeAgainstRiskProfile(
       };
     }
 
-    // 6. Beregn nøkkeltall
+    // 6. Beregn nøkkeltall (for paper: kapital er NOK, priser fra Binance er USDT → konverter)
     const currentCapital = Number(session.current_capital_nok);
-    const orderValue = trade.quantity * trade.price;
-    
-    // Hent eksisterende posisjoner for eksponering
+    const orderValueUsdt = trade.quantity * trade.price;
+    const usdtNokRate = trade.tradingMode === "paper" ? await getUsdtToNokRateAsync(supabase) : null;
+    const orderValue = trade.tradingMode === "paper"
+      ? usdtToNok(orderValueUsdt, usdtNokRate ?? undefined)
+      : orderValueUsdt;
+
     const { data: positions } = await supabase
       .from("positions")
       .select("symbol, quantity, avg_entry_price")
       .eq("session_id", trade.sessionId);
 
-    const currentExposure = (positions || []).reduce((sum, pos) => {
+    const currentExposureUsdt = (positions || []).reduce((sum: number, pos: unknown) => {
       return sum + (Number(pos.quantity) * Number(pos.avg_entry_price));
     }, 0);
+    const rate = usdtNokRate ?? undefined;
+    const currentExposure = trade.tradingMode === "paper"
+      ? usdtToNok(currentExposureUsdt, rate)
+      : currentExposureUsdt;
 
-    const existingPosition = positions?.find(p => p.symbol === trade.symbol);
-    const existingPositionValue = existingPosition 
+    const existingPosition = (positions as unknown[] | null | undefined)?.find(
+      (p) => p.symbol === trade.symbol,
+    );
+    const existingPositionValueUsdt = existingPosition
       ? Number(existingPosition.quantity) * Number(existingPosition.avg_entry_price)
       : 0;
+    const existingPositionValue = trade.tradingMode === "paper"
+      ? usdtToNok(existingPositionValueUsdt, rate)
+      : existingPositionValueUsdt;
 
-    // Beregn post-trade verdier
     let postTradePositionValue: number;
     if (trade.side === "buy") {
       postTradePositionValue = existingPositionValue + orderValue;
@@ -373,7 +385,7 @@ export async function recordTradeRejection(
 ): Promise<void> {
   if (result.allowed) return;
 
-  const supabase = await createClient();
+  const supabase = (await createClient()) as unknown;
 
   try {
     await supabase.from("trade_rejections").insert({
@@ -386,7 +398,7 @@ export async function recordTradeRejection(
       order_type: trade.orderType,
       trading_mode: trade.tradingMode,
       rejection_reason: result.rejectionReason,
-      rejection_details: result.rejectionDetails || {},
+      rejection_details: (result.rejectionDetails as unknown) || {},
       risk_profile_id: result.riskProfileId,
       bot_id: trade.botId,
     });

@@ -114,8 +114,18 @@ export function CopyTradingPanel({
               className="bg-slate-700/50 rounded-xl border border-slate-600 hover:border-blue-500/50 transition-colors overflow-hidden"
             >
               <div
+                role="button"
+                tabIndex={0}
                 className="p-4 cursor-pointer flex items-center justify-between"
                 onClick={() => setExpandedId(isExpanded ? null : trader.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setExpandedId(isExpanded ? null : trader.id);
+                  }
+                }}
+                aria-expanded={isExpanded}
+                aria-label={isExpanded ? "Lukk trader" : "Utvid trader"}
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-2xl border-2 border-slate-600 shadow-inner">
