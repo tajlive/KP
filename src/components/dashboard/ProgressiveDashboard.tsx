@@ -41,9 +41,10 @@ export default function ProgressiveDashboard() {
             .from('user_profiles')
             .select('view_mode_preference')
             .eq('id', user.id)
-            .single() as unknown as { view_mode_preference?: ViewMode } | null;
-          if (data?.view_mode_preference) {
-            setViewMode(data.view_mode_preference);
+            .single();
+          const pref = (data as { view_mode_preference?: ViewMode } | null)?.view_mode_preference;
+          if (pref) {
+            setViewMode(pref);
           } else {
             setViewMode(getDefaultViewMode(userTier));
           }
@@ -70,7 +71,7 @@ export default function ProgressiveDashboard() {
       if (user) {
         await supabase
           .from('user_profiles')
-          .update({ view_mode_preference: mode })
+          .update({ view_mode_preference: mode } as Record<string, unknown>)
           .eq('id', user.id);
       }
     } catch (error) {

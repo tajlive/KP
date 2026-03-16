@@ -9,13 +9,13 @@ export const dynamic = "force-dynamic";
  * Auth: JWT required
  */
 export const GET = withAuth(async (_req: NextRequest, { user }) => {
-  const db: unknown = (await createClient()) as unknown;
+  const db = createClient();
 
   const { data, error } = await db
     .from("onboarding_progress")
     .select("*")
-    .eq("user_id" as unknown, user.id)
-    .single() as unknown;
+    .eq("id", user.id)
+    .single();
 
   if (error && error.code !== "PGRST116") {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -30,7 +30,7 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
  */
 export const PUT = withAuth(async (req: NextRequest, { user }) => {
   const body = await req.json();
-  const db: unknown = (await createClient()) as unknown;
+  const db = createClient();
 
   const { data, error } = await db
     .from("onboarding_progress")
@@ -49,7 +49,7 @@ export const PUT = withAuth(async (req: NextRequest, { user }) => {
       { onConflict: "user_id" },
     )
     .select()
-    .single() as unknown;
+    .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

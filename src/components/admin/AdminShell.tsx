@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/utils";
 import {
   DollarSign,
   LayoutDashboard,
@@ -24,10 +24,7 @@ const navigation = [
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  const supabase = createClient();
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
@@ -53,19 +50,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       }
 
       // Sjekk om bruker er admin
-      const { data: adminUser, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: adminUser, error } = await (supabase as any)
         .from("admin_users")
-        .select<"*", { role: string }>("*")
+        .select("*")
         .eq("id", user.id)
-        .single() as unknown;
+        .single();
 
-      if (error || adminUser?.role !== "admin") {
+      const admin = adminUser as { role?: string } | null;
+      if (error || admin?.role !== "admin") {
         await supabase.auth.signOut();
         router.push(`/${locale}/admin/login`);
         return;
       }
 
-      setUser({ ...user, ...adminUser });
+      setUser({ ...user, ...admin });
       setLoading(false);
     } catch (error) {
       console.error("Auth check error:", error);
@@ -91,7 +90,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       {/* Mobile sidebar toggle */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Image src="/favicon.png" alt="Logo" width={24} height={24} />
+          <Image src="/favicon.svg" alt="Logo" width={24} height={24} />
           <span className="font-bold text-white">Klarpakke Admin</span>
         </div>
         <button
@@ -115,7 +114,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         >
           <div className="p-6">
             <div className="flex items-center gap-3 mb-8">
-              <Image src="/favicon.png" alt="Logo" width={40} height={40} />
+              <Image src="/favicon.svg" alt="Logo" width={40} height={40} />
               <div>
                 <h1 className="font-bold text-white">Klarpakke</h1>
                 <p className="text-xs text-slate-400">Admin Portal</p>

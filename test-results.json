@@ -2,7 +2,7 @@
   "config": {
     "configFile": "/Users/taj/klarpakke/playwright.config.ts",
     "rootDir": "/Users/taj/klarpakke/e2e",
-    "forbidOnly": false,
+    "forbidOnly": true,
     "fullyParallel": true,
     "globalSetup": null,
     "globalTeardown": null,
@@ -11,16 +11,16 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 4
+      "actualWorkers": 2
     },
     "preserveOutput": "always",
     "projects": [
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "setup",
         "name": "setup",
@@ -34,9 +34,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "cleanup",
         "name": "cleanup",
@@ -50,9 +50,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "smoke-chromium",
         "name": "smoke-chromium",
@@ -66,9 +66,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "landing-chromium",
         "name": "landing-chromium",
@@ -82,9 +82,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "critical-chromium",
         "name": "critical-chromium",
@@ -98,9 +98,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "critical-firefox",
         "name": "critical-firefox",
@@ -114,9 +114,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "regression-chromium",
         "name": "regression-chromium",
@@ -130,9 +130,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "mobile-safari",
         "name": "mobile-safari",
@@ -146,9 +146,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "mobile-chrome",
         "name": "mobile-chrome",
@@ -162,9 +162,9 @@
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 2
         },
         "id": "landing-mobile",
         "name": "landing-mobile",
@@ -242,8 +242,10 @@
         }
       ],
       [
-        "line",
-        null
+        "github",
+        {
+          "outputFile": "test-summary.md"
+        }
       ],
       [
         "json",
@@ -262,13 +264,8 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.58.2",
-    "workers": 4,
-    "webServer": {
-      "command": "npm run dev",
-      "url": "http://localhost:3000",
-      "reuseExistingServer": true,
-      "timeout": 180000
-    }
+    "workers": 2,
+    "webServer": null
   },
   "suites": [
     {
@@ -293,12 +290,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3997,
+                  "duration": 1823,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:24.525Z",
+                  "startTime": "2026-03-15T18:08:47.066Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -327,12 +324,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 3973,
+                  "duration": 1805,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:24.553Z",
+                  "startTime": "2026-03-15T18:08:47.068Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -358,15 +355,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 3670,
+                  "duration": 865,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:24.525Z",
+                  "startTime": "2026-03-15T18:08:50.277Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -392,15 +389,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4197,
+                  "duration": 1154,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:24.572Z",
+                  "startTime": "2026-03-15T18:08:50.289Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -426,15 +423,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 2318,
+                  "duration": 2670,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:30.619Z",
+                  "startTime": "2026-03-15T18:08:51.164Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -477,15 +474,15 @@
                   "projectName": "smoke-chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12609,
+                      "duration": 773,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-13T12:01:30.922Z",
+                      "startTime": "2026-03-15T18:08:51.478Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -516,12 +513,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 20591,
+                      "duration": 2129,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-13T12:01:30.946Z",
+                      "startTime": "2026-03-15T18:08:52.276Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -549,15 +546,15 @@
                   "projectName": "smoke-chromium",
                   "results": [
                     {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 21058,
+                      "duration": 2001,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-13T12:01:31.150Z",
+                      "startTime": "2026-03-15T18:08:53.878Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -585,19 +582,19 @@
                   "projectName": "smoke-chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 18728,
+                      "duration": 1544,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "⚠️ Leaderboard redirected to: http://localhost:3000/en/leaderboard\n"
+                          "text": "⚠️ Leaderboard redirected to: https://www.klarpakke.no/no/leaderboard\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-13T12:01:33.008Z",
+                      "startTime": "2026-03-15T18:08:54.426Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -628,12 +625,12 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 1942,
+                      "duration": 353,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-13T12:01:43.578Z",
+                      "startTime": "2026-03-15T18:08:55.893Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -669,15 +666,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6543,
+                  "duration": 1734,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:45.667Z",
+                  "startTime": "2026-03-15T18:08:55.991Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -703,15 +700,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 7170,
+                  "duration": 1946,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:51.649Z",
+                  "startTime": "2026-03-15T18:08:56.261Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -737,15 +734,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6929,
+                  "duration": 3923,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:51.834Z",
+                  "startTime": "2026-03-15T18:08:57.735Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -771,15 +768,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 6457,
+                  "duration": 3364,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:52.264Z",
+                  "startTime": "2026-03-15T18:08:58.222Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -808,12 +805,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 6434,
+                  "duration": 2338,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:52.255Z",
+                  "startTime": "2026-03-15T18:09:01.632Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -839,15 +836,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9702,
+                  "duration": 2085,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:58.757Z",
+                  "startTime": "2026-03-15T18:09:01.682Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -873,15 +870,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9516,
+                  "duration": 2173,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:58.773Z",
+                  "startTime": "2026-03-15T18:09:03.792Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -907,15 +904,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 9427,
+                  "duration": 2095,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:58.840Z",
+                  "startTime": "2026-03-15T18:09:03.987Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -944,12 +941,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9452,
+                  "duration": 2398,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:01:58.862Z",
+                  "startTime": "2026-03-15T18:09:05.986Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -975,15 +972,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 8958,
+                  "duration": 2081,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:08.312Z",
+                  "startTime": "2026-03-15T18:09:06.118Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1012,12 +1009,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 17197,
+                  "duration": 6234,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:08.334Z",
+                  "startTime": "2026-03-15T18:09:08.233Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1046,12 +1043,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 27092,
+                  "duration": 17355,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:08.461Z",
+                  "startTime": "2026-03-15T18:09:08.401Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1085,15 +1082,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 1169,
+                  "duration": 1462,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:08.508Z",
+                  "startTime": "2026-03-15T18:09:14.494Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1119,15 +1116,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 1629,
+                  "duration": 1518,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:09.696Z",
+                  "startTime": "2026-03-15T18:09:15.970Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1153,15 +1150,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 1595,
+                  "duration": 872,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:11.365Z",
+                  "startTime": "2026-03-15T18:09:17.504Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1187,15 +1184,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 1486,
+                  "duration": 862,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:13.003Z",
+                  "startTime": "2026-03-15T18:09:18.390Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1221,15 +1218,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 2176,
+                  "duration": 988,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:14.521Z",
+                  "startTime": "2026-03-15T18:09:19.263Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1255,15 +1252,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 2619,
+                  "duration": 1244,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:16.726Z",
+                  "startTime": "2026-03-15T18:09:20.262Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1289,15 +1286,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 2101,
+                  "duration": 1386,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:17.327Z",
+                  "startTime": "2026-03-15T18:09:21.552Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1323,15 +1320,15 @@
               "projectName": "smoke-chromium",
               "results": [
                 {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 2479,
+                  "duration": 2636,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-03-13T12:02:19.384Z",
+                  "startTime": "2026-03-15T18:09:22.948Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1349,8 +1346,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-03-13T12:00:48.149Z",
-    "duration": 107750.643,
+    "startTime": "2026-03-15T18:08:45.448Z",
+    "duration": 40396.998999999996,
     "expected": 30,
     "skipped": 0,
     "unexpected": 0,

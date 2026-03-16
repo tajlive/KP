@@ -1,6 +1,11 @@
 -- Migration: Legg til RPC-funksjoner for system health dashboard
 -- Issue: Admin dashboard
 -- Created: 2026-03-10 21:00:00 UTC
+-- Drop first so return types can change (CREATE OR REPLACE cannot change OUT/TABLE type)
+DROP FUNCTION IF EXISTS get_cron_jobs_status();
+DROP FUNCTION IF EXISTS get_rls_status();
+DROP FUNCTION IF EXISTS get_top_tables_by_rows(INTEGER);
+DROP FUNCTION IF EXISTS get_system_metrics();
 
 -- ============================================
 -- 1. Hent cron job status med siste kjøring

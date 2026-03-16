@@ -4,8 +4,11 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { PaperTradingSessionDetail } from "@/components/paper-trading/PaperTradingSessionDetail";
+import type { ComponentProps } from "react";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
+
+type SessionDetailProps = ComponentProps<typeof PaperTradingSessionDetail>;
 
 export const dynamic = "force-dynamic";
 
@@ -76,13 +79,13 @@ export default async function PaperTradingSessionPage({
 
     // Hent trading session med eiersjekk
     const { data: session, error: sessionError } = await supabase
-      .from("trading_sessions" as unknown)
+      .from("trading_sessions")
       .select(
         "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at"
       )
       .eq("id", session_id)
-      .eq("user_id" as unknown, user.id)
-      .single() as unknown;
+      .eq("user_id", user.id)
+      .single();
 
     if (sessionError || !session) {
       console.error("Session not found or access denied:", sessionError);
@@ -110,8 +113,8 @@ export default async function PaperTradingSessionPage({
         </div>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <PaperTradingSessionDetail
-            session={session}
-            trades={(trades as unknown) || []}
+            session={session as SessionDetailProps["session"]}
+            trades={(trades ?? []) as unknown as SessionDetailProps["trades"]}
             locale={locale}
           />
         </main>

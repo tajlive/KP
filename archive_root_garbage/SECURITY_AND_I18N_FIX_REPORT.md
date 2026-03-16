@@ -44,7 +44,7 @@ HTTP 422: Actions has been disabled for this user
 GitHub auto-disabled Actions etter at secrets ble oppdaget i git history.
 
 ### Løsning (MANUELL):
-1. Gå til: https://github.com/tomarnejensen/klarpakke/settings/actions
+1. Gå til: https://github.com/tajlive/KP/settings/actions
 2. Under "Actions permissions", velg:
    - ✅ **Allow all actions and reusable workflows**
 3. Klikk "Save"
@@ -139,7 +139,7 @@ rm -rf dist build
 
 ### 2. Enable GitHub Actions (KRITISK - 5 min)
 
-1. Gå til: https://github.com/tomarnejensen/klarpakke/settings/actions
+1. Gå til: https://github.com/tajlive/KP/settings/actions
 2. Velg: **Allow all actions and reusable workflows**
 3. Klikk "Save"
 4. Verifiser:
@@ -154,7 +154,7 @@ rm -rf dist build
 ```bash
 cd ..
 rm -rf klarpakke
-git clone https://github.com/tomarnejensen/klarpakke.git
+git clone https://github.com/tajlive/KP.git
 cd klarpakke
 npm ci --legacy-peer-deps
 ```
@@ -176,10 +176,10 @@ npm ci --legacy-peer-deps
 
 ## 🔗 Nyttige Lenker
 
-- GitHub Actions Settings: https://github.com/tomarnejensen/klarpakke/settings/actions
+- GitHub Actions Settings: https://github.com/tajlive/KP/settings/actions
 - Supabase Dashboard: https://app.supabase.com/project/vuxbjlykgmzskxbclquf/settings/api
-- GitHub Secrets: https://github.com/tomarnejensen/klarpakke/settings/secrets/actions
-- Pull Requests: https://github.com/tomarnejensen/klarpakke/pulls
+- GitHub Secrets: https://github.com/tajlive/KP/settings/secrets/actions
+- Pull Requests: https://github.com/tajlive/KP/pulls
 
 ---
 

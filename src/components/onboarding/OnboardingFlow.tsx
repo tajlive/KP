@@ -190,8 +190,8 @@ export default function OnboardingFlow() {
       const { data, error } = await supabase
         .from("onboarding_progress")
         .select("*")
-        .eq("user_id" as unknown, user.id)
-        .single() as unknown;
+        .eq("id", user.id)
+        .single();
 
       const oData = data as OnboardingProgress | null;
 
@@ -292,7 +292,7 @@ export default function OnboardingFlow() {
     await supabase
       .from("onboarding_progress")
       .update(updates)
-      .eq("user_id" as unknown, user.id);
+      .eq("id", user.id);
 
     // ✅ FIX: Auto-start paper trade etter steg 5
     if (stepId === 5 && selectedStrategy) {
@@ -309,8 +309,8 @@ export default function OnboardingFlow() {
         if (botData?.bot_id) {
           await supabase
             .from("onboarding_progress")
-            .update({ paper_bot_id: botData.bot_id })
-            .eq("user_id" as unknown, user.id);
+            .update({ paper_bot_id: botData.bot_id } as Record<string, unknown>)
+            .eq("id", user.id);
         }
 
         console.log("Paper bot created:", botData?.bot_id);

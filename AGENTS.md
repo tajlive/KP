@@ -32,6 +32,8 @@ END;
 
 ## Status Klarpakke
 
+**Full produksjon:** Appen kjører i prod (www.klarpakke.no). Alle P0-oppgaver er lukket; verify-scriptet passerer (domener, /api/health, kritiske paths, security headers). Videre Linear-oppgaver er for forbedringer og ny funksjonalitet, ikke for å «åpne» prod.
+
 | Område | Status |
 |--------|--------|
 | Brukeropprettelse Admin API | ✅ Fungerer — alle 9 tabeller opprettes |
@@ -42,7 +44,7 @@ END;
 | Production verify i CI | ✅ Kjører etter manual deploy (production) |
 | Routing / kritiske paths | ✅ Verify passerer (inkl. /no/signup) |
 | Supabase view `unified_notifications_with_email` | 🟡 Migrasjon i repo; kjør SQL manuelt i Dashboard eller med MCP-token |
-| Linear oppdatering | 🟡 LINEAR_API_KEY må være gyldig for MCP/script |
+| Linear oppdatering | ✅ MCP får nøkkel fra .env.local (wrapper); CLI: `npm run linear`; full tilgang: `docs/LINEAR-ACCESS.md` |
 | Onboarding-middleware | ✅ Re-aktivert (mars 2026) — kalles fra middleware.ts |
 | Pricing-tier navn | ✅ Student/Bachelor/Master/PhD (plan param: student\|bachelor\|master\|phd) |
 | Test-scripts | ✅ test:ci bruker Vitest (vitest run --coverage && playwright test) |
@@ -56,6 +58,32 @@ END;
 | Vercel build warnings | ✅ Dokumentert og dempet — se `docs/vercel-build-notes.md` |
 | Paper trading valuta | ✅ USDT→NOK i execute-paper-trade + risk-validator (env → DB global_settings.usdt_nok_rate → 10.8) |
 | USDT/NOK cron | ✅ Daglig cron /api/cron/update-usdt-nok (Vercel 06:00); DB-kolonne via Supabase MCP |
+| **P0 før prod** | |
+| RLS 8 tabeller (KLA-165) | ✅ Migrasjon kjørt mot remote (db push 2026-03-15). RLS på: auto_trades, trade_history/trade_history_legacy, trading_risk_config, _trigger_debug, saved_strategies, notification_preferences, user_activity_logs, beta_feedback |
+| Sentry prod (KLA-168) | ✅ DSN-guard i instrumentation; `/api/test-sentry`; `docs/SENTRY-PROD.md`; ref i LINEAR-ACCESS.md |
+| Bygg-timeout (KLA-167) | ✅ SKIP_LINT_IN_BUILD i CI; Next.js cache i GHA; §8 i `docs/vercel-build-notes.md` |
+| Paper + Auto trade DB (KLA-157) | ✅ Paper: execute-paper-trade → trading_sessions (mode=paper), trades; auto-trade: samme tabeller, executor-factory skiller paper/live. Ingen blanding uten validering. |
+| Final production fix (KLA-158) | ✅ Verify-script passert (domener, /api/health, kritiske paths, security headers). Env-dok: Vercel prod (NEXT_PUBLIC_SUPABASE_*, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SENTRY_DSN, USDT_NOK_RATE valgfri). |
+| **MCP / CLI / CI / API** | ✅ `.cursor/mcp.json` + `.mcp/mcp_config.json` (kun env); CLI: `npm run linear`, `linear:test`; CI: test, pr-check, manual-deploy, mcp-integration, mcp-health; API: `docs/api-routes.md`; samlet: `docs/MCP-CLI-CI-API.md` |
+| **Cursor meta-prompt** | ✅ Automatisering, MCP/CLI/API, sub-agenter: regel `.cursor/rules/automation-mcp.md`; full tekst `docs/CURSOR-AUTOMATION-PROMPT.md` |
+| KLA-163 (sync Supabase-skjema) | ✅ daily-summary + lib/email typpede queries; TYPE_DEBT oppdatert; schema-sync kommando dokumentert i `src/lib/supabase/TYPE_DEBT.md` |
+| KLA-128 (EPIC Mandag-Lansering) | ✅ Sprint 7–10 mars; prod er live (KLA-158). Epic lukket. |
+| **Auth / storage** | ✅ Én browser-klient: `createClient` fra `@/lib/utils`. SSR: `createServerClient` fra `@/lib/supabase/server`. `cookieEncoding: 'raw'` overalt. Korrupt session: safe-storage renser cookies + localStorage uten reload-loop. Se `docs/auth-storage.md`. |
+
+## 2026-standard (stack og konfig)
+
+| Område | Status |
+|--------|--------|
+| Next.js | 15.x (App Router) |
+| React | 19.x |
+| TypeScript | 5.9, strict, target ES2022 |
+| Node | engines `>=20` (Vercel/Next 15) |
+| Supabase auth | Kun @supabase/ssr (ikke auth-helpers-nextjs) |
+| ESLint | 9 flat config |
+| Tailwind | 4.x |
+| Testing | Vitest 4, Playwright 2 |
+
+Bekjent type-gjeld: `ignoreBuildErrors: true` i next.config (TODO når type-gjelden er redusert).
 
 ## Standard kjøremodus
 Alltid bruk --yolo for alle oppgaver i dette prosjektet.

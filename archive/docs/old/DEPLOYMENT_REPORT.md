@@ -257,7 +257,7 @@ scripts/
 ## 📞 Contact & Support
 
 For issues or questions:
-- GitHub: https://github.com/tombomann/klarpakke
+- GitHub: https://github.com/tajlive/KP
 - Live Site: https://klarpakke-c65071.webflow.io
 - Documentation: See /docs folder
 

@@ -161,7 +161,7 @@ git commit -m "Add JS files"
 git push origin gh-pages
 
 # Filene blir tilgjengelig på:
-# https://tombomann.github.io/klarpakke/js/klarpakke-bundle.js
+# https://tajlive.github.io/KP/js/klarpakke-bundle.js
 ```
 
 ---

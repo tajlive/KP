@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString());
     const format = searchParams.get('format') || 'json'; // json, csv, pdf, html
 
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -81,8 +81,8 @@ export async function GET(request: NextRequest) {
     const { data: userData } = await supabase
       .from('user_profiles')
       .select('email')
-      .eq('user_id', user.id)
-      .single() as unknown;
+      .eq('id', user.id)
+      .single();
 
     // Fetch trades for the year
     const startDate = `${year}-01-01`;
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
     const { data: trades, error: tradesError } = await supabase
       .from('auto_trades')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('id', user.id)
       .gte('executed_at', startDate)
       .lte('executed_at', endDate)
       .order('executed_at', { ascending: true });
@@ -102,11 +102,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate tax report data
-    const report = calculateTaxReport(trades || [], year, user.id, userData?.email);
+    const report = calculateTaxReport((trades || []) as unknown as Trade[], year, (user?.id != null ? user.id : undefined), userData?.email);
 
     // Return in requested format
     if (format === 'csv') {
-      const csv = generateCSV(report, trades || []);
+      const csv = generateCSV(report, (trades || []) as unknown as Trade[]);
       return new NextResponse(csv, {
         headers: {
           'Content-Type': 'text/csv; charset=utf-8',
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (format === 'html') {
-      const html = generateHTML(report, trades || []);
+      const html = generateHTML(report, (trades || []) as unknown as Trade[]);
       return new NextResponse(html, {
         headers: {
           'Content-Type': 'text/html; charset=utf-8',
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
 
     if (format === 'pdf') {
       // Generate HTML and return with PDF header for browser print-to-PDF
-      const html = generatePrintableHTML(report, trades || []);
+      const html = generatePrintableHTML(report, (trades || []) as unknown as Trade[]);
       return new NextResponse(html, {
         headers: {
           'Content-Type': 'text/html; charset=utf-8',

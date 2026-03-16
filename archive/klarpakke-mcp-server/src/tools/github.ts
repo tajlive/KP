@@ -33,7 +33,7 @@ interface GitHubConfig {
 
 const config: GitHubConfig = {
   pat: Deno.env.get("GITHUB_PAT") || "",
-  owner: Deno.env.get("GITHUB_OWNER") || "tomarnejensen",
+  owner: Deno.env.get("GITHUB_OWNER") || "tajlive",
   repo: Deno.env.get("GITHUB_REPO_NAME") || "klarpakke",
   apiVersion: "2022-11-28",
   maxRetries: 3,

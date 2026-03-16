@@ -97,6 +97,14 @@ curl -I https://www.klarpakke.no/api/webhooks/resend
 
 ---
 
+### 6. Linear (sporing – blokkerer ikke deploy)
+
+- [ ] Ingen åpne issues merket «Block production» / «Must fix before launch» som gjelder fortsatt
+- [ ] Releasemelding: opprett eller oppdater en Linear-oppgave for denne releasen (mal: `docs/linear-production-2026-03-15.md`)
+- [ ] Valgfritt: `LINEAR_API_KEY` satt i Cursor/Vercel hvis MCP eller script skal oppdatere Linear automatisk
+
+---
+
 ## ✅ POST GO-LIVE (Overvåking)
 
 ### Første 24 timer:
@@ -140,10 +148,10 @@ Hvis noe går galt:
 
 | Tjeneste | URL | Brukernavn |
 |----------|-----|------------|
-| Vercel | https://vercel.com/dashboard | tombomann |
-| Supabase | https://supabase.com/dashboard | tombomann@gmail.com |
+| Vercel | https://vercel.com/dashboard | tajlive |
+| Supabase | https://supabase.com/dashboard | (din e-post) |
 | Stripe | https://dashboard.stripe.com | tom@klarpakke.no |
-| Sentry | https://sentry.io | tombomann |
+| Sentry | https://sentry.io | tajlive |
 | Resend | https://resend.com | tom@klarpakke.no |
 
 ---

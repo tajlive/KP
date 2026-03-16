@@ -142,7 +142,7 @@ After every deployment:
 ## Contact & Escalation
 
 **On-Call Developer:** @tajlive  
-**Backup:** @tombomann
+**Backup:** @tajlive
 
 **Critical Issues:**
 

@@ -213,7 +213,7 @@ If migrating from Vercel:
 
 ## Support
 
-- **GitHub Issues:** https://github.com/tomarnejensen/klarpakke/issues
+- **GitHub Issues:** https://github.com/tajlive/KP/issues
 - **Email:** support@klarpakke.no
 - **Status:** https://www.cloudflarestatus.com/
 

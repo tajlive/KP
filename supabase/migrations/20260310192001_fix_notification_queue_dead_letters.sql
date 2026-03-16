@@ -34,6 +34,8 @@ WHERE
 -- ============================================
 -- 3. Lag funksjon for å prosessere pending notifications
 -- ============================================
+-- Drop first so return type can change (CREATE OR REPLACE cannot change OUT/TABLE type)
+DROP FUNCTION IF EXISTS process_pending_notifications(INTEGER);
 
 CREATE OR REPLACE FUNCTION process_pending_notifications(
     batch_size INTEGER DEFAULT 10

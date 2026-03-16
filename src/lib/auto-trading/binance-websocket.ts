@@ -287,7 +287,7 @@ export class AutoTradingWebSocket {
         .from('auto_trading_trades')
         .select('*')
         .eq('binance_order_id', update.orderId)
-        .single() as unknown
+        .single()
 
       if (!trade) return
 
@@ -319,7 +319,7 @@ export class AutoTradingWebSocket {
         .from('auto_trading_trades')
         .select('*')
         .eq('binance_order_id', update.orderId)
-        .single() as unknown
+        .single()
 
       if (!trade) return
 

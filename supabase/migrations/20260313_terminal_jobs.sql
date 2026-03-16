@@ -23,8 +23,12 @@ CREATE TABLE IF NOT EXISTS public.terminal_jobs (
 CREATE INDEX IF NOT EXISTS idx_terminal_jobs_status 
   ON public.terminal_jobs(status, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_terminal_jobs_session 
-  ON public.terminal_jobs(session_id);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'terminal_jobs' AND column_name = 'session_id') THEN
+    CREATE INDEX IF NOT EXISTS idx_terminal_jobs_session ON public.terminal_jobs(session_id);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_terminal_jobs_created 
   ON public.terminal_jobs(created_at DESC);
@@ -41,8 +45,17 @@ CREATE POLICY "Service role full access on terminal_jobs"
   USING (true)
   WITH CHECK (true);
 
--- Kommentarer
+-- Kommentarer (kun for kolonner som finnes)
 COMMENT ON TABLE public.terminal_jobs IS 'Queue and log for MCP terminal script executions';
-COMMENT ON COLUMN public.terminal_jobs.cmd IS 'The shell command that was executed';
-COMMENT ON COLUMN public.terminal_jobs.validation_result IS 'Security validation result (safe: boolean, reason?: string)';
-COMMENT ON COLUMN public.terminal_jobs.pid IS 'Process ID if command was executed locally';
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'terminal_jobs' AND column_name = 'cmd') THEN
+    EXECUTE 'COMMENT ON COLUMN public.terminal_jobs.cmd IS ''The shell command that was executed''';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'terminal_jobs' AND column_name = 'validation_result') THEN
+    EXECUTE 'COMMENT ON COLUMN public.terminal_jobs.validation_result IS ''Security validation result (safe: boolean, reason?: string)''';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'terminal_jobs' AND column_name = 'pid') THEN
+    EXECUTE 'COMMENT ON COLUMN public.terminal_jobs.pid IS ''Process ID if command was executed locally''';
+  END IF;
+END $$;

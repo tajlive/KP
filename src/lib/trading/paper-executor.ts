@@ -118,15 +118,15 @@ export class PaperExecutor implements OrderExecutor {
     // Find active paper session
     let sessionId = this.sessionId;
     if (!sessionId) {
-      const { data: session } = (await supabase
-        .from("trading_sessions" as unknown)
+      const { data: session } = await supabase
+        .from("trading_sessions")
         .select("id, current_capital_nok")
-        .eq("user_id" as unknown, this.userId)
+        .eq("user_id", this.userId)
         .eq("mode", "paper")
         .eq("status", "active")
         .order("started_at", { ascending: false })
         .limit(1)
-        .single() as unknown) as unknown;
+        .single();
 
       if (!session) {
         return { available: 0, locked: 0, total: 0 };
@@ -135,12 +135,14 @@ export class PaperExecutor implements OrderExecutor {
       sessionId = session.id;
     }
 
+    if (!sessionId) return { available: 0, locked: 0, total: 0 };
+
     // Fetch session capital
-    const { data: session } = (await supabase
-      .from("trading_sessions" as unknown)
+    const { data: session } = await supabase
+      .from("trading_sessions")
       .select("current_capital_nok, open_position")
       .eq("id", sessionId)
-      .single() as unknown) as unknown;
+      .single();
 
     if (!session) {
       return { available: 0, locked: 0, total: 0 };
@@ -150,10 +152,11 @@ export class PaperExecutor implements OrderExecutor {
     const position = session.open_position as OpenPosition | null;
     const locked = position ? position.quantity * position.entry_price : 0;
 
+    const cap = session.current_capital_nok ?? 0;
     return {
-      available: session.current_capital_nok,
+      available: cap,
       locked,
-      total: session.current_capital_nok + locked,
+      total: cap + locked,
     };
   }
 
@@ -166,30 +169,32 @@ export class PaperExecutor implements OrderExecutor {
     // Find active paper session
     let sessionId = this.sessionId;
     if (!sessionId) {
-      const { data: session } = (await supabase
-        .from("trading_sessions" as unknown)
+      const { data: session } = await supabase
+        .from("trading_sessions")
         .select("id")
-        .eq("user_id" as unknown, this.userId)
+        .eq("user_id", this.userId)
         .eq("mode", "paper")
         .eq("status", "active")
-        .single() as unknown) as unknown;
+        .single();
 
       if (!session) return null;
       sessionId = session.id;
     }
 
+    if (!sessionId) return null;
+
     // Fetch open position
-    const { data: session } = (await supabase
-      .from("trading_sessions" as unknown)
+    const { data: session } = await supabase
+      .from("trading_sessions")
       .select("open_position, trading_pair")
       .eq("id", sessionId)
-      .single() as unknown) as unknown;
+      .single();
 
     if (!session || !session.open_position || session.trading_pair !== symbol) {
       return null;
     }
 
-    const position = session.open_position as OpenPosition;
+    const position = session.open_position as unknown as OpenPosition;
 
     // Calculate unrealized P&L
     const currentPrice = await this.getMarketPrice(symbol);

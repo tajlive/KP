@@ -58,7 +58,7 @@ export async function handleOnboarding(
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("onboarding_completed, setup_completed_at")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (

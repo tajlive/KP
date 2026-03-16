@@ -76,7 +76,7 @@ export function setUser(
 export function startTransaction(name: string, op: string) {
   if (process.env.NODE_ENV !== "production") return null;
 
-  return (Sentry as unknown).startTransaction({ name, op });
+  return (Sentry as unknown as { startTransaction: (opts: { name: string; op: string }) => unknown }).startTransaction({ name, op });
 }
 
 /**

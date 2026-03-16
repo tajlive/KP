@@ -2,13 +2,17 @@
 
 Sammendrag fra arkitekt-sesjon. Linear-oppgaver er opprettet.
 
-## P0 (før prod)
+## P0 (før prod) — fullført 2026-03-15
 
-| Linear | Oppgave |
-|--------|--------|
-| [KLA-165](https://linear.app/klarpakke/issue/KLA-165) | **RLS på 8 tabeller** – auto_trades, trade_history, trading_risk_config, _trigger_debug, saved_strategies, notification_preferences, user_activity_logs, beta_feedback. Start med trading-core. |
-| [KLA-168](https://linear.app/klarpakke/issue/KLA-168) | **Sentry prod** – verifiser at error events mottas fra Vercel (DSN + env). |
-| [KLA-167](https://linear.app/klarpakke/issue/KLA-167) | **Bygg-timeout** – reduser build-tid under 300s for CI/CD. |
+| Linear | Oppgave | Status |
+|--------|--------|--------|
+| [KLA-165](https://linear.app/klarpakke/issue/KLA-165) | **RLS på 8 tabeller** | Done |
+| [KLA-168](https://linear.app/klarpakke/issue/KLA-168) | **Sentry prod** | Done |
+| [KLA-167](https://linear.app/klarpakke/issue/KLA-167) | **Bygg-timeout** | Done |
+| [KLA-164](https://linear.app/klarpakke/issue/KLA-164) | **USDT/NOK valuta** | Done |
+| [KLA-162](https://linear.app/klarpakke/issue/KLA-162) | **user_profiles join** | Done |
+| [KLA-157](https://linear.app/klarpakke/issue/KLA-157) | **Paper + Auto trade DB** | Done |
+| [KLA-158](https://linear.app/klarpakke/issue/KLA-158) | **FINAL PRODUCTION FIX** | Done (verify passert) |
 
 ## P1 (etter lansering)
 

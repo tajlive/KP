@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
     const { data: trader } = await supabase
       .from("leaderboard_bots")
       .select("display_name")
-      .eq("user_id", id)
+      .eq("id", id)
       .single();
 
     if (!trader) {
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: TraderProfilePageProps) {
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("display_name")
-        .eq("user_id", id)
+        .eq("id", id)
         .single();
 
       return {
@@ -85,7 +85,7 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
     const { data: trader } = await supabase
       .from("leaderboard_bots")
       .select("user_id")
-      .eq("user_id", id)
+      .eq("id", id)
       .single();
 
     if (!trader) {
@@ -93,7 +93,7 @@ export default async function TraderProfilePage({ params }: TraderProfilePagePro
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("user_id")
-        .eq("user_id", id)
+        .eq("id", id)
         .single();
 
       if (!profile) {

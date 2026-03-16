@@ -36,7 +36,7 @@ Velg en av tre metoder avhengig av dine behov:
 3. Navn: `Klarpakke Auto`
 4. URL - Kopier dette:
 ```
-javascript:(function(){fetch('https://raw.githubusercontent.com/tombomann/klarpakke/main/webflow-automation-enhanced.js').then(r=>r.text()).then(eval);})();
+javascript:(function(){fetch('https://raw.githubusercontent.com/tajlive/KP/main/webflow-automation-enhanced.js').then(r=>r.text()).then(eval);})();
 ```
 5. Lagre bookmark
 
@@ -215,11 +215,11 @@ gh secret set WEBFLOW_STORAGE_STATE --body "$(cat /Users/taj/klarpakke/.auth/web
 
 **Steg 2: Trigger Workflow**
 ```bash
-gh workflow run auto-deploy-webflow.yml --repo tombomann/klarpakke
+gh workflow run auto-deploy-webflow.yml --repo tajlive/KP
 ```
 
 Eller via GitHub Web:
-1. Gå til https://github.com/tombomann/klarpakke/actions
+1. Gå til https://github.com/tajlive/KP/actions
 2. Velg "Auto Deploy to Webflow"
 3. Klikk "Run workflow"
 

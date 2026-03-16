@@ -50,6 +50,7 @@ export function createServerClient(
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {
     return createSSRServerClient<Database>(url, key, {
+      cookieEncoding: "raw",
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookiesToSet: any) => {
@@ -68,6 +69,7 @@ export function createServerClient(
   return (async () => {
     const cookieStore = await cookies();
     return createSSRServerClient<Database>(url, key, {
+      cookieEncoding: "raw",
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll: (cookiesToSet: any) => {

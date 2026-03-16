@@ -87,7 +87,7 @@ export function ExchangeApiSettings() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setApiKeys(((data || []) as unknown) as ApiKey[]);
+      setApiKeys(((data || []) as ApiKey[]));
     } catch (error) {
       console.error("Error loading API keys:", error);
       toast.error("Kunne ikke laste API-nøkler");

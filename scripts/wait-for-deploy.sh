@@ -31,7 +31,7 @@ while true; do
         echo ""
         echo "❌ Timeout etter $MAX_WAIT sekunder"
         echo "Sjekk GitHub Actions for feil:"
-        echo "  https://github.com/tombomann/klarpakke/actions"
+        echo "  https://github.com/tajlive/KP/actions"
         exit 1
     fi
     

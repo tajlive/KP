@@ -50,10 +50,10 @@ git push --force  # STOPP!
 
 ```bash
 # Sett secret via CLI
-gh secret set MY_SECRET --body "value" --repo tomarnejensen/klarpakke
+gh secret set MY_SECRET --body "value" --repo tajlive/KP
 
 # List secrets
-gh secret list --repo tomarnejensen/klarpakke
+gh secret list --repo tajlive/KP
 
 # Injiser i workflow (.github/workflows/deploy-cloudrun.yml)
 # GitHub Actions setter dem i Cloud Run automatisk
@@ -82,8 +82,8 @@ curl -I https://www.klarpakke.no/no  # verifiser prod
 
 ## 🔗 Viktige linker
 
-- **GitHub:** https://github.com/tomarnejensen/klarpakke
-- **Actions:** https://github.com/tomarnejensen/klarpakke/actions  
+- **GitHub:** https://github.com/tajlive/KP
+- **Actions:** https://github.com/tajlive/KP/actions  
 - **Produksjon:** https://www.klarpakke.no
 - **Cloud Console:** https://console.cloud.google.com/run?project=klarpakke-universitet
 

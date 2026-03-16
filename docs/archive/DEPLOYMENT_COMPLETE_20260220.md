@@ -139,7 +139,7 @@ users_own_trades       ON trade_history
 **Feilmelding:** `Actions has been disabled for this user`
 
 **Løsning:** Aktiver GitHub Actions i repo-innstillingene:
-1. Gå til https://github.com/tomarnejensen/klarpakke/settings/actions
+1. Gå til https://github.com/tajlive/KP/settings/actions
 2. Velg "Allow all actions and reusable workflows"
 3. Lagre endringer
 4. Kjør: `git commit --allow-empty -m "trigger: enable actions" && git push`
@@ -198,7 +198,7 @@ gcloud run deploy klarpakke \
 Ved problemer, sjekk:
 - Supabase Dashboard: https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf
 - GCP Console: https://console.cloud.google.com/run/detail/us-central1/klarpakke
-- GitHub Actions: https://github.com/tomarnejensen/klarpakke/actions
+- GitHub Actions: https://github.com/tajlive/KP/actions
 
 ---
 

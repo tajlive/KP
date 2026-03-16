@@ -44,7 +44,7 @@
 ## Current Status
 
 ```
-Repository:     https://github.com/tombomann/klarpakke
+Repository:     https://github.com/tajlive/KP
 Main Branch:    f073a705e ✓ Latest commit
 Build Status:   ✓ All 62 pages build successfully
 i18n Status:    ✓ Norwegian + English complete
@@ -77,7 +77,7 @@ This will guide you through:
 ### Step 2: Add to GitLab (2 min)
 
 ```
-https://github.com/tombomann/klarpakke
+https://github.com/tajlive/KP
 → Settings
 → CI/CD
 → Variables
@@ -100,7 +100,7 @@ git push origin main
 
 Or manually trigger:
 ```
-https://github.com/tombomann/klarpakke/actions
+https://github.com/tajlive/KP/actions
 → Run pipeline
 ```
 
@@ -129,7 +129,7 @@ https://github.com/tombomann/klarpakke/actions
 ```
 1. Cloudflare Pages: https://dash.cloudflare.com/ → Workers & Pages
 2. Live site: https://klarpakke.pages.dev
-3. GitLab Pipeline: https://github.com/tombomann/klarpakke/actions
+3. GitLab Pipeline: https://github.com/tajlive/KP/actions
 ```
 
 ### Connect Custom Domain (Optional)
@@ -182,13 +182,13 @@ Already configured! Every push to `main` will:
 ### Monitor Pipeline
 ```bash
 # Watch in real-time
-https://github.com/tombomann/klarpakke/actions
+https://github.com/tajlive/KP/actions
 ```
 
 ### View Logs
 ```bash
 # Click on failed job → See full output
-https://github.com/tombomann/klarpakke/actions/[ID]
+https://github.com/tajlive/KP/actions/[ID]
 ```
 
 ### Redeploy Manually
@@ -211,7 +211,7 @@ git push origin main
 
 ### If Pipeline Fails
 
-1. **Check logs:** https://github.com/tombomann/klarpakke/actions
+1. **Check logs:** https://github.com/tajlive/KP/actions
 2. **Read guide:** `CLOUDFLARE-SETUP.md` (Troubleshooting section)
 3. **Verify credentials:**
    - Token valid? (https://dash.cloudflare.com/profile/api-tokens)

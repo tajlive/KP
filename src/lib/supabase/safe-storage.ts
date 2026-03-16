@@ -32,6 +32,7 @@ const BOOTSTRAP_CLEANED_KEY = '__klarpakke_sb_storage_cleaned__'
  * Synkron rens av korrupte Supabase-nøkler FØR createBrowserClient kalles.
  * Må kalles én gang per page load, f.eks. øverst i AuthProvider.
  * Unngår "Invalid UTF-8 sequence" fra gotrue-js ved å fjerne ugyldig data før lesing.
+ * Renser også auth-cookies (session lagres der ved @supabase/ssr).
  */
 export function clearCorruptSupabaseKeysSync(): void {
   if (typeof window === 'undefined') return
@@ -41,6 +42,9 @@ export function clearCorruptSupabaseKeysSync(): void {
   } catch {
     return
   }
+
+  // Rens potensielt korrupte auth-cookies før vi oppretter client (getItem leser cookies)
+  clearSupabaseAuthCookies()
 
   const keysToRemove: string[] = []
   try {
@@ -87,9 +91,29 @@ export type ClearStorageOptions = {
   skipReload?: boolean;
 };
 
+/** Rens Supabase auth-cookies (document.cookie). @supabase/ssr lagrer session i cookies; korrupt cookie gir "Invalid UTF-8". */
+function clearSupabaseAuthCookies(): void {
+  if (typeof document === 'undefined' || !document.cookie) return
+  try {
+    const names = document.cookie.split(';').map(s => s.trim().split('=')[0])
+    const toRemove = names.filter(
+      n => n.startsWith('sb-') || n.includes('auth-token') || n.includes('supabase')
+    )
+    const opts = 'path=/; max-age=0'
+    toRemove.forEach(name => {
+      try {
+        document.cookie = `${encodeURIComponent(name)}=; ${opts}`
+      } catch { /* ignore */ }
+    })
+    if (toRemove.length > 0) {
+      console.warn('[SafeStorage] Fjernet Supabase auth-cookies:', toRemove.length)
+    }
+  } catch { /* ignore */ }
+}
+
 /**
  * KRITISK: Rens ALLE Supabase auth-relaterte nøkler atomisk.
- * Dette stopper infinite loops hvor Supabase reloader fra andre nøkler.
+ * Inkluderer localStorage, sessionStorage OG cookies (session ligger i cookies ved @supabase/ssr).
  * Ved skipReload: true unngår vi reload (anbefalt ved "Invalid UTF-8" fra getSession).
  */
 function clearAllSupabaseStorage(options?: ClearStorageOptions): void {
@@ -104,6 +128,9 @@ function clearAllSupabaseStorage(options?: ClearStorageOptions): void {
   lastClearTime = now;
 
   console.warn('[SafeStorage] RENSER ALLE Supabase storage-nøkler...');
+
+  // Rens auth-cookies først (session leses herfra av createBrowserClient)
+  clearSupabaseAuthCookies();
 
   // Finn og fjern alle Supabase auth-relaterte nøkler fra localStorage
   const keysToRemove: string[] = [];

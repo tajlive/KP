@@ -202,7 +202,7 @@ export default function AdvancedStatsModal({
     const supabase = createClient();
     try {
       const { data, error } = await supabase
-        .from("signals" as unknown)
+        .from("signals")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(50);
@@ -217,15 +217,15 @@ export default function AdvancedStatsModal({
   const fetchBacktests = useCallback(async () => {
     const supabase = createClient();
     try {
-      const { data, error } = await (supabase
-        .from("auto_trading_backtests" as unknown)
-        .select("*") as unknown)
+      const { data, error } = await supabase
+        .from("auto_trading_backtests")
+        .select("*")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(10);
 
       if (error) throw error;
-      setBacktests(data || []);
+      setBacktests((data || []) as unknown as Backtest[]);
     } catch (error) {
       console.error("Failed to fetch backtests:", error);
     }

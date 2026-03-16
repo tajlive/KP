@@ -240,7 +240,7 @@ curl -fsSL https://claude.ai/install.sh | sh
 ### Steg 2: Klon repo
 
 ```bash
-git clone https://github.com/tombomann/klarpakke.git
+git clone https://github.com/tajlive/KP.git
 cd klarpakke
 ```
 
@@ -380,7 +380,7 @@ commit:
 
 **Sist oppdatert:** 2026-02-01  
 **Versjon:** 1.0.0  
-**Maintainer:** Tom Bomann (@tombomann)
+**Maintainer:** tajlive
 
 ### Changelog
 

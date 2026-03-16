@@ -33,6 +33,8 @@ export function getSupabaseClient(): SupabaseClient {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      // Unngår "Invalid UTF-8 sequence" ved korrupt base64url-dekoding av session i cookies
+      cookieEncoding: 'raw',
       auth: {
         autoRefreshToken: true,
         persistSession: true,
