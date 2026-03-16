@@ -62,7 +62,7 @@ Commit types:
 
 ### 3. Monitor CI/CD Pipeline
 
-**GitHub Actions URL:** https://github.com/tombomann/klarpakke/actions
+**GitHub Actions URL:** https://github.com/tajlive/KP/actions
 
 Pipeline stages:
 

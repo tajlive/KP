@@ -65,7 +65,7 @@ function EmailPrefsSection() {
           gamification_emails: data.gamification_emails ?? true,
           trading_alerts: data.trading_alerts ?? true,
           transaction_emails: data.transaction_emails ?? true,
-          digest_emails: data.digest_emails ?? "weekly",
+          digest_emails: (data.digest_emails as "daily" | "weekly" | "never") ?? "weekly",
           marketing_emails: data.marketing_emails ?? false,
         });
       }

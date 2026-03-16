@@ -507,7 +507,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                         isError: true,
                     };
                 }
-                const response = await fetch(`https://api.github.com/repos/tomarnejensen/klarpakke/commits?per_page=${limit}`, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
+                const response = await fetch(`https://api.github.com/repos/tajlive/KP/commits?per_page=${limit}`, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
                 if (!response.ok)
                     throw new Error(`GitHub API feil: ${response.status}`);
                 const commits = await response.json();
@@ -532,7 +532,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                         isError: true,
                     };
                 }
-                const response = await fetch(`https://api.github.com/repos/tomarnejensen/klarpakke/issues?state=${state}`, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
+                const response = await fetch(`https://api.github.com/repos/tajlive/KP/issues?state=${state}`, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
                 if (!response.ok)
                     throw new Error(`GitHub API feil: ${response.status}`);
                 const issues = await response.json();

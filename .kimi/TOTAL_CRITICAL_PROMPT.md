@@ -47,7 +47,7 @@ Actions has been disabled for this user (HTTP 422)
 - ❌ 3 Dependabot PRs blokkert (#5, #7, #8)
 - ❌ Manual trigger feiler
 
-**Må fikses:** Gå til https://github.com/tomarnejensen/klarpakke/settings/actions og enable manuelt
+**Må fikses:** Gå til https://github.com/tajlive/KP/settings/actions og enable manuelt
 
 ---
 
@@ -140,7 +140,7 @@ sed -i '' "s|NEXT_PUBLIC_SUPABASE_ANON_KEY=.*|NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEW
 grep NEXT_PUBLIC_SUPABASE_ANON_KEY .env.local
 
 # 5. Oppdater GitHub Secret
-gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --body "$NEW_ANON_KEY" --repo tomarnejensen/klarpakke
+gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --body "$NEW_ANON_KEY" --repo tajlive/KP
 ```
 
 #### Oppgave 1.2: Roter NextAuth Secret
@@ -153,17 +153,17 @@ NEW_NEXTAUTH_SECRET=$(openssl rand -base64 32)
 echo "NEXTAUTH_SECRET=$NEW_NEXTAUTH_SECRET" >> .env.local
 
 # 3. Oppdater GitHub Secret
-gh secret set NEXTAUTH_SECRET --body "$NEW_NEXTAUTH_SECRET" --repo tomarnejensen/klarpakke
+gh secret set NEXTAUTH_SECRET --body "$NEW_NEXTAUTH_SECRET" --repo tajlive/KP
 
 # 4. Verifiser
-gh secret list --repo tomarnejensen/klarpakke | grep NEXTAUTH
+gh secret list --repo tajlive/KP | grep NEXTAUTH
 ```
 
 #### Oppgave 1.3: Verifiser alle GitHub Secrets
 
 ```bash
 # List alle secrets
-gh secret list --repo tomarnejensen/klarpakke
+gh secret list --repo tajlive/KP
 
 # Forventet output:
 GCP_PROJECT_ID
@@ -194,7 +194,7 @@ SUPABASE_SERVICE_ROLE_KEY
 
 ```bash
 # 1. Åpne settings
-open https://github.com/tomarnejensen/klarpakke/settings/actions
+open https://github.com/tajlive/KP/settings/actions
 
 # 2. Under "Actions permissions":
 #    Velg: "Allow all actions and reusable workflows"
@@ -202,7 +202,7 @@ open https://github.com/tomarnejensen/klarpakke/settings/actions
 # 3. Klikk "Save"
 
 # 4. Verifiser at det er enabled
-gh api repos/tomarnejensen/klarpakke | jq '.has_workflows'
+gh api repos/tajlive/KP | jq '.has_workflows'
 # Skal returnere: true
 ```
 
@@ -447,7 +447,7 @@ gh issue create \
 - [ ] ✅ Verifisert at gamle verdier ikke lenger fungerer
 
 ### FASE 2: GitHub Actions
-- [ ] ✅ Enabled via https://github.com/tomarnejensen/klarpakke/settings/actions
+- [ ] ✅ Enabled via https://github.com/tajlive/KP/settings/actions
 - [ ] ✅ Manual workflow trigger lykkes
 - [ ] ✅ CI workflow kjører og blir grønn
 - [ ] ✅ Deploy workflow kjører (hvis CI grønn)
@@ -488,7 +488,7 @@ gh issue create \
 # IKKE prøv å pull!
 cd ..
 rm -rf klarpakke
-git clone https://github.com/tomarnejensen/klarpakke.git
+git clone https://github.com/tajlive/KP.git
 cd klarpakke
 npm ci --legacy-peer-deps
 cp /path/to/backup/.env.local .env.local  # Restore env
@@ -545,8 +545,8 @@ npm ci --legacy-peer-deps
 - **GitHub Actions Fix:** `.kimi/GITHUB_ACTIONS_CRITICAL_FIX.md`
 - **Workflow Rules:** `.kimi/WORKFLOW_RULES.md`
 - **Emergency Prod Fix:** `.kimi/EMERGENCY_PROD_FIX.md`
-- **GitHub Issues:** https://github.com/tomarnejensen/klarpakke/issues
-- **GitHub Actions:** https://github.com/tomarnejensen/klarpakke/actions
+- **GitHub Issues:** https://github.com/tajlive/KP/issues
+- **GitHub Actions:** https://github.com/tajlive/KP/actions
 - **Supabase Dashboard:** https://app.supabase.com/project/vuxbjlykgmzskxbclquf
 
 ---

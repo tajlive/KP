@@ -22,7 +22,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -72,12 +72,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/auth.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/signup.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/signup.js",
           "placement": "footer",
           "async": true
         }
@@ -122,12 +122,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/auth.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/login.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/login.js",
           "placement": "footer",
           "async": true
         }
@@ -213,12 +213,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/auth.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/password-reset.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/password-reset.js",
           "placement": "footer",
           "async": true
         }
@@ -258,12 +258,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/auth.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/auth.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/verify-email.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/verify-email.js",
           "placement": "footer",
           "async": true
         }
@@ -283,7 +283,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -309,12 +309,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/utils.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -352,12 +352,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/utils.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -384,12 +384,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/utils.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/history.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/history.js",
           "placement": "footer",
           "async": true
         }
@@ -416,12 +416,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/utils.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/profile.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/profile.js",
           "placement": "footer",
           "async": true
         }
@@ -442,12 +442,12 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/utils.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/utils.js",
           "placement": "footer",
           "async": false
         },
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/calculator.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/calculator.js",
           "placement": "footer",
           "async": true
         }
@@ -467,7 +467,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -487,7 +487,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -507,7 +507,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -527,7 +527,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -547,7 +547,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -572,7 +572,7 @@
       ],
       "scripts": [
         {
-          "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js",
+          "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js",
           "placement": "footer",
           "async": true
         }
@@ -586,7 +586,7 @@
       "note": "Supabase client library - required for all authenticated pages"
     },
     {
-      "src": "https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/styles/coinbase.css",
+      "src": "https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/styles/coinbase.css",
       "placement": "head",
       "note": "Coinbase Design System CSS"
     }

@@ -328,7 +328,7 @@ Spor alle handlinger:
 - [Supabase Dashboard](https://app.supabase.com)
 - [Stripe Dashboard](https://dashboard.stripe.com)
 - [Cloudflare Pages](https://dash.cloudflare.com)
-- [GitHub Repository](https://github.com/tombomann/klarpakke)
+- [GitHub Repository](https://github.com/tajlive/KP)
 
 ---
 

@@ -32,7 +32,7 @@
    git add .
    git commit -m "Add assets"
    git push origin gh-pages
-   # URL: https://tombomann.github.io/klarpakke/css/styles.css
+   # URL: https://tajlive.github.io/KP/css/styles.css
    ```
 
 #### Verifisering:

@@ -73,8 +73,8 @@ export default function CreatorProfileClient({
       const { data: botData } = await supabase
         .from("leaderboard_bots")
         .select("*")
-        .eq("user_id" as unknown, traderId)
-        .single() as unknown;
+        .eq("user_id", traderId)
+        .single();
 
       if (botData) {
         setProfile({
@@ -99,8 +99,8 @@ export default function CreatorProfileClient({
       const { data: profileData } = await supabase
         .from("trader_profiles")
         .select("*")
-        .eq("user_id" as unknown, traderId)
-        .single() as unknown;
+        .eq("user_id", traderId)
+        .single();
 
       if (profileData) {
         setProfile({
@@ -109,7 +109,7 @@ export default function CreatorProfileClient({
           displayName: profileData.display_name,
           bio: profileData.bio,
           avatarUrl: profileData.avatar_url,
-          isPublic: profileData.is_public,
+          isPublic: profileData.is_public ?? false,
           performanceFeePct: profileData.performance_fee_pct || 0,
           followerCount: profileData.follower_count || 0,
           verified: profileData.verified || false,
@@ -123,18 +123,19 @@ export default function CreatorProfileClient({
 
       // Last resort: user_profiles table
       const { data: userProfile } = await supabase
-        .from("user_profiles" as unknown)
+        .from("user_profiles")
         .select("id, display_name, avatar_url")
         .eq("id", traderId)
-        .single() as unknown;
+        .single();
 
-      if (userProfile) {
+      const up = userProfile as { id: string; display_name: string | null; avatar_url: string | null } | null;
+      if (up) {
         setProfile({
-          id: userProfile.id,
-          userId: userProfile.id,
-          displayName: userProfile.display_name || "Anonym Trader",
+          id: up.id,
+          userId: up.id,
+          displayName: up.display_name || "Anonym Trader",
           bio: null,
-          avatarUrl: userProfile.avatar_url,
+          avatarUrl: up.avatar_url,
           isPublic: true,
           performanceFeePct: 0,
           followerCount: 0,
@@ -168,7 +169,7 @@ export default function CreatorProfileClient({
       };
 
       const { data: strategies } = await supabase
-        .from("user_strategies" as unknown)
+        .from("user_strategies")
         .select("*")
         .eq("user_id", traderId)
         .eq("is_public", true)
@@ -250,7 +251,7 @@ export default function CreatorProfileClient({
         .eq("follower_id", user.id)
         .eq("leader_id", traderId)
         .eq("is_active", true)
-        .single() as unknown;
+        .single();
 
       setIsFollowing(!!follow);
     } catch (error) {

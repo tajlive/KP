@@ -1,7 +1,7 @@
 # 🔍 GitHub Actions Validation Report
 
 **Generert:** 31. januar 2026  
-**Repository:** tombomann/klarpakke  
+**Repository:** tajlive/KP  
 **Kontraktversjon:** 1.3.0
 
 ---

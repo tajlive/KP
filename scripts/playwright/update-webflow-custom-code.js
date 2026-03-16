@@ -54,7 +54,7 @@ async function updateCustomCode() {
     // FOOTER CODE
     console.log('📝 Oppdaterer FOOTER code...');
     const footerCode = `<!-- Klarpakke Site JavaScript -->
-<script src="https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js"></script>`;
+<script src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js"></script>`;
     
     const footerTextarea = await page.locator('textarea').nth(1);
     await footerTextarea.fill(footerCode);

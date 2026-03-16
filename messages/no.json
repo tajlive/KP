@@ -332,6 +332,72 @@
       "mins": "{n} minutter siden",
       "hour": "{n} time siden",
       "hours": "{n} timer siden"
+    },
+    "dashboard": {
+      "title": "Auto Trading Dashboard",
+      "subtitle": "Administrer dine automatiserte handelsstrategier",
+      "newStrategy": "Ny Strategi",
+      "loadingDashboard": "Laster dashboard...",
+      "totalPnl": "Total P&L",
+      "profitFromAll": "Profitt fra alle strategier",
+      "lossFromAll": "Tap fra alle strategier",
+      "activeStrategies": "Aktive Strategier",
+      "runningNow": "Kjørende nå",
+      "winRate": "Win Rate",
+      "winningTrades": "Vinnende trades",
+      "totalTrades": "Totale Trades",
+      "allExecuted": "Alle utførte trades",
+      "strategies": "Strategier",
+      "history": "Historie",
+      "settings": "Innstillinger",
+      "noStrategies": "Ingen strategier ennå",
+      "getStarted": "Kom i gang ved å opprette din første auto-trading strategi",
+      "createStrategy": "Opprett Strategi",
+      "recentTrades": "Siste Trades",
+      "noTrades": "Ingen trades ennå",
+      "subscriptionAccess": "Abonnement & Tilgang",
+      "currentTier": "Nåværende tier",
+      "maxStrategies": "Maks strategier",
+      "paperTrading": "Paper trading",
+      "liveTrading": "Live trading",
+      "activeTrial": "Aktiv Trial",
+      "upgradeSubscription": "Oppgrader abonnement",
+      "binanceSettings": "Binance API-innstillinger",
+      "binanceDescription": "Administrer dine Binance API-nøkler for auto trading",
+      "configureApiKeys": "Konfigurer API-nøkler",
+      "createNewStrategy": "Opprett Ny Strategi",
+      "strategyType": "Strategi Type",
+      "tradingMode": "Trading Mode",
+      "paperSimulated": "Lekepenger (Simulert)",
+      "liveTradingMode": "Live Trading",
+      "locked": "Låst",
+      "symbol": "Symbol",
+      "capital": "Kapital (USDT)",
+      "connectBinance": "Koble til Binance",
+      "apiSecurityNote": "API-nøklene krypteres før lagring. Vi lagrer aldri nøklene i klartekst.",
+      "apiKey": "API Key",
+      "apiSecret": "API Secret",
+      "useTestnet": "Bruk Testnet (lekepenger)",
+      "liveRequiresBachelor": "Live trading krever Bachelor-tier eller høyere",
+      "saveAndConnect": "Lagre og koble til",
+      "binanceAccountLink": "Du kan opprette API-nøkler i din",
+      "binanceAccount": "Binance-konto",
+      "strategyUpdated": "Strategi oppdatert",
+      "strategyDeleted": "Strategi slettet",
+      "apiKeysSaved": "API-nøkler lagret!",
+      "couldNotSaveKeys": "Kunne ikke lagre nøkler",
+      "couldNotCreateStrategy": "Kunne ikke opprette strategi",
+      "maxStrategiesReached": "Du har nådd maksimalt antall strategier ({max}) for ditt abonnement",
+      "duplicateStrategy": "Du har allerede en strategi av denne typen i denne modusen",
+      "liveRequiresPaid": "Live trading krever betalt abonnement",
+      "confirmDelete": "Er du sikker på at du vil slette denne strategien?"
+    },
+    "strategyTypes": {
+      "dca_trygg": { "name": "DCA Trygg", "description": "Ukentlig dollar-cost averaging" },
+      "trend_balansert": { "name": "Trend Balansert", "description": "MA-crossover med RSI-filter" },
+      "multisignal_aktiv": { "name": "Multi-Signal Aktiv", "description": "RSI + momentum på 4h" },
+      "grid_bot": { "name": "Grid Bot", "description": "Automatisk grid trading" },
+      "ai_copy": { "name": "AI Copy", "description": "Kopier AI-genererte signaler" }
     }
   },
   "autoTrading": {
@@ -598,7 +664,25 @@
       "button": "Prøv lekepenger"
     },
     "cta_after_result": "Lær hvordan — start gratis",
-    "cta_no_card": "Ingen kredittkort nødvendig"
+    "cta_no_card": "Ingen kredittkort nødvendig",
+    "lotto": {
+      "title": "Hva koster dine vaner?",
+      "subtitle": "Sammenlign hva du får for samme innsats",
+      "weeklySpend": "Penger brukt per uke",
+      "timeHorizon": "Tidshorisont",
+      "years": "år",
+      "lotto": "Lotto",
+      "expectedLoss": "Forventet tap",
+      "statLoss": "Statistisk tap på 40%",
+      "highInterest": "Høyrente",
+      "annualRate": "3% årlig rente (sikker)",
+      "bankGuarantee": "Garantert av banken",
+      "cryptoTheoretical": "Krypto (teoretisk)",
+      "dailyReturn": "0.1% daglig (EKSTREMT optimistisk)",
+      "noGuarantee": "Ingen garanti, du kan tape alt",
+      "important": "Viktig å vite",
+      "disclaimer": "Kalkulatoren viser teoretiske tall. 0.1% daglig avkastning er ekstremt optimistisk og ikke realistisk over tid. Du kan tape hele investeringen. Dette er ikke investeringsråd. Gjør egen research."
+    }
   },
   "checkout": {
     "loading": "Laster...",
@@ -1041,7 +1125,20 @@
       "settings": "Innstillinger",
       "admin": "Administrator",
       "logout": "Logg ut",
-      "paperTrading": "Lekepenger"
+      "paperTrading": "Lekepenger",
+      "guide": "Kom i gang",
+      "mainMenu": "Hovedmeny",
+      "closeMenu": "Lukk meny"
+    },
+    "learningPath": {
+      "title": "Læringsløp",
+      "level": "Nivå",
+      "lessons": "leksjoner",
+      "continueWhere": "Fortsett der du slapp",
+      "yourTracks": "Dine Spor",
+      "done": "Ferdig",
+      "yourBadges": "Dine Badges",
+      "goToAcademy": "Gå til Akademiet"
     },
     "topBar": {
       "myOverview": "Min Oversikt",
@@ -1412,6 +1509,48 @@
       "trust1": "Roboter 24/7",
       "trust2": "Du bestemmer risiko",
       "trust3": "1M kr lekepenger"
+    }
+  },
+  "tradingGuide": {
+    "title": "Kom i gang med trading",
+    "subtitle": "Følg disse stegene for å starte din trading-reise trygt og smart",
+    "steps": {
+      "1": {
+        "title": "Opprett konto og logg inn",
+        "description": "Registrer deg gratis og få tilgang til 1 000 000 kr i lekepenger. Ingen kredittkort nødvendig."
+      },
+      "2": {
+        "title": "Lær det grunnleggende",
+        "description": "Gå gjennom våre kurs-moduler om krypto, markedsanalyse og risikostyring. Ta det i ditt eget tempo."
+      },
+      "3": {
+        "title": "Øv med lekepenger",
+        "description": "Bruk paper trading til å teste strategier uten risiko. Se hvordan markedet fungerer i praksis."
+      },
+      "4": {
+        "title": "Aktiver auto-trading",
+        "description": "Når du er klar, kan du sette opp en auto-trading bot som handler for deg — med den risikoen du velger."
+      }
+    },
+    "cta": {
+      "title": "Klar til å begynne?",
+      "description": "Gå til trading-dashboardet og start med lekepenger. Du kan alltid komme tilbake hit for veiledning.",
+      "button": "Gå til Trading"
+    },
+    "faq": {
+      "title": "Vanlige spørsmål",
+      "q1": {
+        "question": "Kan jeg tape ekte penger med lekepenger?",
+        "answer": "Nei, lekepenger er 100% simulert. Du risikerer ingenting. Det er perfekt for å lære og øve."
+      },
+      "q2": {
+        "question": "Hva er auto-trading?",
+        "answer": "Auto-trading lar en bot handle for deg basert på strategier du velger. Du bestemmer risiko og kapital."
+      },
+      "q3": {
+        "question": "Trenger jeg Binance-konto?",
+        "answer": "Ikke for lekepenger. Hvis du vil bruke live trading, trenger du en Binance-konto med API-nøkler."
+      }
     }
   },
   "leagues": {
@@ -2428,6 +2567,13 @@
     "paperTradingDescription": "Du handler med lekepenger. Slippage og gebyrer er simulert for realistisk øving.",
     "liveTradingInfo": "Live Trading Mode",
     "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
+    "strategies": {
+      "dca_trygg": { "name": "DCA Trygg", "description": "Kjøper BTC/ETH automatisk hver uke. Dobler ved store dip." },
+      "trend_balansert": { "name": "Trend Balansert", "description": "Følger MA50/MA200 crossover med RSI-filter." },
+      "multisignal_aktiv": { "name": "Multi-Signal Aktiv", "description": "RSI + MACD + Bollinger gir hyppigere handler." },
+      "grid_bot": { "name": "Grid Bot", "description": "Kjøper lavt, selger høyt i prisgitter." },
+      "ai_copy": { "name": "AI Copy", "description": "Kopierer topp-tradere filtrert av AI." }
+    },
     "balance": "Saldo",
     "available": "Tilgjengelig",
     "buy": "Kjøp",

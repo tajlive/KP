@@ -32,10 +32,10 @@ export default function PaperTradingDashboard({
           .from('portfolios')
           .select('*')
           .eq('user_id', userId)
-          .single() as unknown;
+          .single();
 
         if (accountData) {
-          setAccount(accountData);
+          setAccount(accountData as unknown as PaperAccount);
         }
 
         // Fetch stats from trades
@@ -45,7 +45,7 @@ export default function PaperTradingDashboard({
           .eq('user_id', userId);
 
         if (trades && trades.length > 0) {
-          const typedTrades = (trades as unknown) as Trade[];
+          const typedTrades = (trades ?? []) as unknown as Trade[];
           const totalPnl = typedTrades.reduce((sum: number, t) => sum + (t.profit_loss || 0), 0);
           const wins = typedTrades.filter((t) => (t.profit_loss || 0) > 0).length;
           const losses = typedTrades.filter((t) => (t.profit_loss || 0) < 0).length;

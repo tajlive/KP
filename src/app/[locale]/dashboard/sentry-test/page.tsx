@@ -1,4 +1,3 @@
-'use client';
 "use client";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";

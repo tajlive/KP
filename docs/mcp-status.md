@@ -1,6 +1,6 @@
 # Klarpakke MCP Status
 
-> Sist oppdatert: 2026-03-10  
+> Sist oppdatert: 2026-03-15  
 > Arkitekt: Perplexity Pro (Chief Architect)  
 > Utført av: tajlive
 
@@ -53,25 +53,26 @@ Perplexity Pro (Chief Architect)
 ## Verktøykasse
 
 ### MCP-servere i `.cursor/mcp.json`
-- `github` — @modelcontextprotocol/server-github
-- `linear` — linear-mcp-server
-- `supabase` — @supabase/mcp-server-supabase
-- `vercel` — @vercel/mcp-adapter
-- `stripe` — @stripe/agent-toolkit
-- `sentry` — @sentry/mcp-server
+- `github` — @modelcontextprotocol/server-github (env: GITHUB_TOKEN)
+- `linear` — node scripts/run-linear-mcp.mjs (nøkkel fra .env.local)
+- `supabase` — @supabase/mcp-server-supabase (SUPABASE_ACCESS_TOKEN, project-ref)
 - `playwright` — @playwright/mcp
-- `resend` — resend-mcp *(lagt til 2026-03-10)*
+- `resend` — resend-mcp (RESEND_API_KEY)
+
+`.mcp/mcp_config.json` bruker kun env-variabler (ingen hemmeligheter). Samlet oversikt: **docs/MCP-CLI-CI-API.md**.
 
 ### Scripts
 ```bash
-npm run test:mcp        # Verifiser alle MCP-tilkoblinger
-npm run db:schema       # Dump DB-skjema til docs/database-schema.md
+npm run linear:test     # Linear: tilkobling, teams, issues
+npm run test:mcp        # Verifiser MCP-tilkoblinger (Supabase, Stripe, Vercel, Resend)
+npm run verify          # verify-production.mjs
 npm run verify:prod     # Smoke-test produksjon
 npm run deploy:prod     # Deploy til Vercel
 ```
 
 ### Nyttige filer
-- `.cursor/mcp.json` — MCP-konfigurasjon (placeholders, safe to commit)
+- `.cursor/mcp.json` — Cursor MCP (placeholders / env, safe to commit)
+- `.mcp/mcp_config.json` — Kun env-referanser (safe to commit)
 - `.env.local.example` — Mal for alle nøkler med dashbord-lenker
 - `docs/github-token-setup.md` — GitHub PAT + Sentry API-token guide
 - `scripts/test-mcp-connections.sh` — Full tilkoblings-verifikasjon

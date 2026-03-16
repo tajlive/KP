@@ -9,18 +9,6 @@ import HeroSection from "@/components/landing/HeroSection";
 import { TrustBar } from "@/components/landing/TrustBar";
 
 // Lazy load ikke-kritiske komponenter for bedre LCP
-const DashboardPreview = dynamic(
-  () =>
-    import("@/components/landing/DashboardPreview").then((mod) => ({
-      default: mod.DashboardPreview,
-    })),
-  {
-    loading: () => (
-      <div className="bg-slate-900 rounded-2xl border border-slate-700 h-64 animate-pulse" />
-    ),
-  },
-);
-
 const LottoComparison = dynamic(
   () =>
     import("@/components/landing/LottoComparison").then((mod) => ({

@@ -59,7 +59,7 @@ export const POST = withRateLimit(
     }
 
     if (stratError) {
-      return NextResponse.json({ error: stratError.message }, { status: 500 });
+      return NextResponse.json({ error: (stratError as Error).message }, { status: 500 });
     }
 
     // Update corresponding session status
@@ -97,7 +97,7 @@ export const POST = withRateLimit(
       await db.from("strategy_logs").insert({
         session_id: session.id,
         strategy_id: id,
-        strategy_type: strategy.strategy_type ?? "unknown",
+        strategy_type: (strategy as { strategy_type?: string }).strategy_type ?? "unknown",
         status: `bot_${action}`,
       });
     }

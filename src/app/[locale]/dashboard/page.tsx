@@ -90,7 +90,7 @@ async function checkRequiredCourseProgress(
     .select("id, module_id")
     .in(
       "module_id",
-      requiredModules.map((m: { id: string }) => m.id)
+      requiredModules.map((m) => m.id)
     )
     .eq("is_published", true);
 
@@ -106,19 +106,19 @@ async function checkRequiredCourseProgress(
     .eq("status", "completed")
     .in(
       "lesson_id",
-      requiredLessons.map((l: { id: string }) => l.id)
+      requiredLessons.map((l) => l.id)
     );
 
   const completedIds = new Set(
-    completedLessons?.map((c: { lesson_id: string }) => c.lesson_id) || [],
+    completedLessons?.map((c) => c.lesson_id) || [],
   );
 
   // Calculate progress per module
-  const progress = requiredModules.map((module: { id: string; slug: string; title_no: string; title_en: string }) => {
+  const progress = requiredModules.map((module) => {
     const moduleLessons = requiredLessons.filter(
-      (l: { module_id: string }) => l.module_id === module.id,
+      (l) => l.module_id === module.id,
     );
-    const completedCount = moduleLessons.filter((l: { id: string }) =>
+    const completedCount = moduleLessons.filter((l) =>
       completedIds.has(l.id),
     ).length;
     const totalCount = moduleLessons.length;
@@ -133,7 +133,7 @@ async function checkRequiredCourseProgress(
     };
   });
 
-  const allCompleted = progress.every((p: { isCompleted: boolean }) => p.isCompleted);
+  const allCompleted = progress.every((p) => p.isCompleted);
 
   return { allCompleted, progress };
 }
@@ -157,30 +157,30 @@ export default async function DashboardPage({
         supabase
           .from("user_profiles")
           .select("id, user_id, paper_balance, real_balance, tier")
-          .eq("user_id", user.id)
+          .eq("id", user.id)
           .single(),
         supabase
           .from("trades")
           .select("*")
-          .eq("user_id", user.id)
+          .eq("id", user.id)
           .order("created_at", { ascending: false })
           .limit(20),
         supabase
           .from("user_strategies")
           .select("*")
-          .eq("user_id", user.id)
+          .eq("id", user.id)
           .eq("is_active", true),
         supabase
           .from("onboarding_progress")
           .select("completed_lessons")
-          .eq("user_id", user.id)
+          .eq("id", user.id)
           .single(),
         supabase
           .from("trading_sessions")
           .select(
             "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, last_heartbeat, created_at"
           )
-          .eq("user_id", user.id)
+          .eq("id", user.id)
           .eq("status", "active")
           .order("created_at", { ascending: false })
           .limit(1)

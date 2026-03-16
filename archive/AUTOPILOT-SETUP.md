@@ -102,7 +102,7 @@ git commit -m "feat: din endring"
 git push origin main
 
 # 3. GitLab CI tar over
-# Se workflow på: https://github.com/tombomann/klarpakke/actions
+# Se workflow på: https://github.com/tajlive/KP/actions
 ```
 
 ### Manuell deploy (nødscenario)

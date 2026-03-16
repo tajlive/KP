@@ -183,14 +183,14 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="text-xs text-slate-500 font-medium">
-                      Lekepenger
+                      {locale === "en" ? "Paper money" : "Lekepenger"}
                     </div>
                     <div className="text-2xl font-black text-slate-900 mt-1">
                       1 000 000 kr
                     </div>
                   </div>
                   <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
-                    ✓ Risikofritt
+                    ✓ {locale === "en" ? "Risk-free" : "Risikofritt"}
                   </div>
                 </div>
 
@@ -200,7 +200,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
                     <span className="text-xs font-semibold text-slate-700">
                       BTC/USDT
                     </span>
-                    <span className="text-xs text-slate-500">Siste 24t</span>
+                    <span className="text-xs text-slate-500">{locale === "en" ? "Last 24h" : "Siste 24t"}</span>
                   </div>
                   <svg viewBox="0 0 200 60" className="w-full h-16">
                     <defs>
@@ -286,7 +286,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
 
               {/* Floating badge - merke #0052FF */}
               <div className="absolute -top-3 -right-3 bg-[#0052FF] text-white px-4 py-2 rounded-full font-bold text-sm shadow-xl">
-                1M kr lekepenger
+                {locale === "en" ? "1M paper money" : "1M kr lekepenger"}
               </div>
             </div>
           </div>

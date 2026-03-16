@@ -89,7 +89,7 @@ CREATE TRIGGER IF NOT EXISTS on_profile_created
 
 ### Steg 1: Gå til GitHub Settings
 
-1. Åpne [github.com/tombomann/klarpakke](https://github.com/tombomann/klarpakke)
+1. Åpne [github.com/tajlive/KP](https://github.com/tajlive/KP)
 2. Gå til Settings → Secrets and variables → Actions
 3. Klikk "New repository secret"
 

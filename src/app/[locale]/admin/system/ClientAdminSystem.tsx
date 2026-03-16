@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -30,14 +30,7 @@ export default function ClientAdminSystem() {
   const [loading, setLoading] = useState(true);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
 
-  const getSupabase = () => {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !key) {
-      throw new Error('Supabase environment variables not set');
-    }
-    return createClient(url, key);
-  };
+  const getSupabase = () => createClient();
 
   useEffect(() => {
     checkAllSystems();

@@ -1,7 +1,7 @@
 # Branch Protection Plan – main
 
 **Dato:** 2026-02-21  
-**Repo:** tomarnejensen/klarpakke  
+**Repo:** tajlive/KP  
 
 ---
 
@@ -65,7 +65,7 @@
 
 ### Steg-for-steg (GitHub UI)
 
-1. Gå til: https://github.com/tomarnejensen/klarpakke/settings/branches
+1. Gå til: https://github.com/tajlive/KP/settings/branches
 
 2. Klikk **"Add rule"** (eller rediger eksisterende rule for `main`)
 

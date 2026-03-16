@@ -30,14 +30,14 @@ export async function getRiskConfig(userId: string): Promise<TradingRiskConfig |
     .from('trading_risk_config')
     .select('*')
     .eq('user_id', userId)
-    .single() as unknown;
+    .single();
   
   if (error) {
     console.error('[Risk] Error fetching risk config:', error);
     return null;
   }
   
-  return data as TradingRiskConfig;
+  return data as unknown as TradingRiskConfig | null;
 }
 
 /**

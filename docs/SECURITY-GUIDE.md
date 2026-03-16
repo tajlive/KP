@@ -31,7 +31,7 @@ STRIPE_SECRET_KEY          # For webhook testing
 ```
 
 **Hvordan legge til:**
-1. Gå til https://github.com/tombomann/klarpakke/settings/secrets/actions
+1. Gå til https://github.com/tajlive/KP/settings/secrets/actions
 2. Klikk "New repository secret"
 3. Navn: `SUPABASE_ACCESS_TOKEN`
 4. Verdi: (fra https://app.supabase.com/account/tokens)

@@ -75,9 +75,9 @@ export function NotificationTray() {
 
     // Fetch latest 20 notifications
     const { data, error } = await supabase
-      .from("notifications" as unknown)
+      .from("notifications")
       .select("*")
-      .eq("user_id" as unknown, user.id)
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20);
 
@@ -87,7 +87,7 @@ export function NotificationTray() {
     }
 
     if (data) {
-      const notificationsData = (data as unknown) as Notification[];
+      const notificationsData = (data as Notification[]);
       setNotifications(notificationsData);
       setUnreadCount(notificationsData.filter((n) => !n.is_read).length);
     }
@@ -102,7 +102,7 @@ export function NotificationTray() {
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
 
-    await supabase.from("notifications" as unknown).update({ is_read: true }).eq("id", id);
+    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
   };
 
   const markAllAsRead = async () => {
@@ -113,9 +113,9 @@ export function NotificationTray() {
     setUnreadCount(0);
 
     await supabase
-      .from("notifications" as unknown)
+      .from("notifications")
       .update({ is_read: true })
-      .eq("user_id" as unknown, user.id)
+      .eq("user_id", user.id)
       .eq("is_read", false);
   };
 
@@ -130,7 +130,7 @@ export function NotificationTray() {
 
     setNotifications((prev) => prev.filter((n) => n.id !== id));
 
-    await supabase.from("notifications" as unknown).delete().eq("id", id);
+    await supabase.from("notifications").delete().eq("id", id);
   };
 
   const getIcon = (type: string) => {

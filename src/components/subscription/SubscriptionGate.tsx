@@ -78,12 +78,12 @@ export function SubscriptionGate({
         if (!response.ok) {
           // Fallback: sjekk profiles-tabellen direkte
           const { data: profile } = await supabase
-            .from("user_profiles" as unknown)
+            .from("user_profiles")
             .select("subscription_tier, subscription_status")
             .eq("id", user.id)
-            .single() as unknown;
+            .single();
 
-          const tier = (profile?.subscription_tier as TierSlug) || "student";
+          const tier = ((profile as { subscription_tier?: string } | null)?.subscription_tier as TierSlug) || "student";
           const hasAccess = checkTierAccess(tier, requiredTier);
 
           setEntitlements({
@@ -183,12 +183,12 @@ export function useSubscription() {
         }
 
         const { data: profile } = await supabase
-          .from("user_profiles" as unknown)
+          .from("user_profiles")
           .select("subscription_tier")
           .eq("id", user.id)
-          .single() as unknown;
+          .single();
 
-        setTier((profile?.subscription_tier as TierSlug) || "student");
+        setTier(((profile as { subscription_tier?: string } | null)?.subscription_tier as TierSlug) || "student");
       } catch (error) {
         console.error("Error fetching subscription:", error);
         setTier("student");

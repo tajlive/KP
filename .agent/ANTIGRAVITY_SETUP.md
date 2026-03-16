@@ -21,6 +21,6 @@ Rediger `~/.gemini/antigravity/mcp_config.json` og bytt ut:
 |---------|------------------|
 | **KIMI** | `.kimi/MASTER_PROMPT.md` |
 | **Claude** | `CLAUDE.md` → redirect til `.kimi/MASTER_PROMPT.md` |
-| **Perplexity Pro** | Space-innstillinger peker til `github.com/tomarnejensen/klarpakke` |
+| **Perplexity Pro** | Space-innstillinger peker til `github.com/tajlive/KP` |
 | **Antigravity (Gemini)** | `~/.gemini/antigravity/mcp_config.json` (fra `.agent/mcp_config.json`) |
 | **GitHub Copilot** | `.github/copilot-instructions.md` → redirect |

@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
   // Trigger handle_new_user() creates this on signup, but may be missing for older accounts
   const { error: profileErr } = await supabase
     .from("user_profiles")
-    .upsert({ id: user.id }, { onConflict: "id", ignoreDuplicates: true });
+    .upsert({ id: user.id, user_id: user.id }, { onConflict: "id", ignoreDuplicates: true });
   if (profileErr) {
     console.error(
       "[POST /api/trading/sessions] user_profiles upsert error:",

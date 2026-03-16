@@ -50,7 +50,7 @@ git push origin main
 ### 4. ⏳ Vent på deployment (~5-10 min)
 ```bash
 gh run watch
-# Eller: https://github.com/tomarnejensen/klarpakke/actions
+# Eller: https://github.com/tajlive/KP/actions
 ```
 
 ### 5. 🤖 Be KIMI om hjelp
@@ -74,8 +74,8 @@ KIMI vil:
 
 ## 🔗 Viktige linker
 
-- **GitHub:** https://github.com/tomarnejensen/klarpakke
-- **Actions:** https://github.com/tomarnejensen/klarpakke/actions
+- **GitHub:** https://github.com/tajlive/KP
+- **Actions:** https://github.com/tajlive/KP/actions
 - **Produksjon:** https://www.klarpakke.no
 - **Google Cloud:** https://console.cloud.google.com/run?project=klarpakke-universitet
 - **Supabase:** https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf

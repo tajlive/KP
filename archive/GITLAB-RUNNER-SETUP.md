@@ -36,7 +36,7 @@ gitlab-runner --version
 
 ### 2. Hent Registration Token
 
-1. Gå til: https://github.com/tombomann/klarpakke/-/settings/ci_cd
+1. Gå til: https://github.com/tajlive/KP/-/settings/ci_cd
 2. Klikk: **Runners** → **Expand**
 3. Klikk: **New project runner**
 4. Kopier: **Registration token**
@@ -68,7 +68,7 @@ gitlab-runner start
 # Verifiser
 gitlab-runner status
 
-# Se i GitLab: https://github.com/tombomann/klarpakke/-/settings/ci_cd
+# Se i GitLab: https://github.com/tajlive/KP/-/settings/ci_cd
 # Du skal se grønn prikk ved "Mac M1 Local Runner"
 ```
 

@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server';
 // GET - Fetch current user's preferences
 export async function GET() {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -49,7 +49,7 @@ export async function GET() {
 // POST - Update current user's preferences
 export async function POST(req: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -90,9 +90,9 @@ export async function POST(req: NextRequest) {
     const { data: prefs, error } = await supabase
       .from('email_preferences')
       .update(updates)
-      .eq('user_id', user.id)
+      .eq('id', user.id)
       .select()
-      .single() as unknown;
+      .single();
     
     if (error) {
       console.error('[API /email/preferences] Update error:', error);

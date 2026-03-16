@@ -19,8 +19,8 @@ test('Prisside: laster', async ({ page }) => {
 
 test('Innlogging: viser loginskjema', async ({ page }) => {
   await page.goto(`${BASE}/no/innlogging`)
-  // Login page is implemented as a client component with data-testid
-  const loginPage = page.locator('[data-testid="login-page"]')
+  // Login page (main form; loading fallback uses login-page-loading)
+  const loginPage = page.getByTestId('login-page')
   await expect(loginPage).toBeVisible()
 })
 

@@ -33,7 +33,7 @@ function getSupabaseAdminClient() {
  * Verify that the requesting user is an admin
  */
 async function verifyAdmin(request: NextRequest) {
-  const authClient = createServerClient();
+  const authClient = await createServerClient();
   const { data: { user } } = await authClient.auth.getUser();
   
   if (!user) {
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('*')
-      .eq('user_id', userData.user.id)
+      .eq('id', userData.user.id)
       .single();
     
     if (profileError || !profile) {

@@ -113,7 +113,7 @@ export default function GetStartedCard({
         const { data, error } = await supabase
           .from("user_profiles")
           .select("dismissed_get_started_card")
-          .eq("user_id" as unknown, userId)
+          .eq("id", userId)
           .maybeSingle();
 
         // Hvis feil eller ingen data, ikke kast — behandle som ikke-avvist
@@ -159,7 +159,7 @@ export default function GetStartedCard({
       const { error } = await supabase
         .from("user_profiles")
         .update({ dismissed_get_started_card: true })
-        .eq("user_id" as unknown, userId);
+        .eq("id", userId);
       
       if (error) {
         console.warn("[GetStarted] Kunne ikke lagre dismissed-status:", error.message);

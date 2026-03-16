@@ -2,7 +2,7 @@
 
 **Dato:** 2026-02-21  
 **Utført av:** Kimi Code CLI (DevOps-modus)  
-**Repo:** tomarnejensen/klarpakke  
+**Repo:** tajlive/KP  
 
 ---
 
@@ -63,7 +63,7 @@ Inneholder:
 - Feilsøkingsguide
 
 ### ✅ Testet endringer
-**PR:** https://github.com/tomarnejensen/klarpakke/pull/17
+**PR:** https://github.com/tajlive/KP/pull/17
 
 - Opprettet test-PR for å verifisere CI-opppførsel
 - Verifisert at continue-on-error logikken fungerer
@@ -107,7 +107,7 @@ Inneholder:
 ### Umiddelbart (denne uken)
 
 - [ ] **Aktivere branch protection i GitHub UI**
-  1. Gå til: https://github.com/tomarnejensen/klarpakke/settings/branches
+  1. Gå til: https://github.com/tajlive/KP/settings/branches
   2. Klikk "Add rule" for `main`
   3. Følg instruksjonene i `BRANCH-PROTECTION-PLAN.md`
   4. Test med en liten PR
@@ -162,10 +162,10 @@ Inneholder:
 - `GITHUB-CI-FINAL-REPORT.md` – Denne filen
 
 ### Nyttige URLer
-- Actions Dashboard: https://github.com/tomarnejensen/klarpakke/actions
-- Branch Protection: https://github.com/tomarnejensen/klarpakke/settings/branches
-- Secrets: https://github.com/tomarnejensen/klarpakke/settings/secrets/actions
-- Test PR: https://github.com/tomarnejensen/klarpakke/pull/17
+- Actions Dashboard: https://github.com/tajlive/KP/actions
+- Branch Protection: https://github.com/tajlive/KP/settings/branches
+- Secrets: https://github.com/tajlive/KP/settings/secrets/actions
+- Test PR: https://github.com/tajlive/KP/pull/17
 
 ---
 

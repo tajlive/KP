@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -95,6 +96,7 @@ export default function DashboardLearningSidebar({
 }: DashboardLearningSidebarProps) {
   const { locale } = useParams();
   const lang = (locale as string) || "no";
+  const t = useTranslations("dashboard.learningPath");
 
   // Beregn total progresjon på tvers av alle tracks
   const totalLessons = LEARNING_TRACKS.reduce((sum, track) => sum + track.lessons.length, 0);
@@ -135,10 +137,10 @@ export default function DashboardLearningSidebar({
             </div>
             <div>
               <h3 className="font-bold text-white">
-                {lang === "en" ? "Learning Path" : "Læringsløp"}
+                {t("title")}
               </h3>
               <p className="text-xs text-slate-400">
-                {lang === "en" ? "Level" : "Nivå"}: {levelName}
+                {t("level")}: {levelName}
               </p>
             </div>
           </div>
@@ -150,7 +152,7 @@ export default function DashboardLearningSidebar({
         {/* Total progresjonsbar */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-slate-400">
-            <span>{totalCompleted} / {totalLessons} {lang === "en" ? "lessons" : "leksjoner"}</span>
+            <span>{totalCompleted} / {totalLessons} {t("lessons")}</span>
             <span>{totalProgress}%</span>
           </div>
           <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -167,7 +169,7 @@ export default function DashboardLearningSidebar({
         {nextLesson && (
           <div className="mt-6 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50">
             <p className="text-xs text-slate-400 uppercase font-bold mb-2">
-              {lang === "en" ? "Continue where you left off" : "Fortsett der du slapp"}
+              {t("continueWhere")}
             </p>
             <Link href={`/${locale}${nextLesson.href}`}>
               <div className="flex items-center gap-3 group cursor-pointer">
@@ -192,7 +194,7 @@ export default function DashboardLearningSidebar({
       {/* Tracks oversikt */}
       <div className="space-y-3">
         <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider px-2">
-          {lang === "en" ? "Your Tracks" : "Dine Spor"}
+          {t("yourTracks")}
         </h4>
 
         {sortedTracks.map((track, index) => {
@@ -230,14 +232,14 @@ export default function DashboardLearningSidebar({
                       <div>
                         <h5 className="font-bold text-white text-sm">{track.title}</h5>
                         <p className="text-xs text-slate-500">
-                          {progress.completed} / {progress.total} {lang === "en" ? "lessons" : "leksjoner"}
+                          {progress.completed} / {progress.total} {t("lessons")}
                         </p>
                       </div>
                     </div>
                     {isCompleted && (
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         <Award className="w-3 h-3 mr-1" />
-                        {lang === "en" ? "Done" : "Ferdig"}
+                        {t("done")}
                       </Badge>
                     )}
                   </div>
@@ -271,7 +273,7 @@ export default function DashboardLearningSidebar({
         >
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-              {lang === "en" ? "Your Badges" : "Dine Badges"}
+              {t("yourBadges")}
             </h4>
             <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
               {earnedBadges.length}
@@ -307,7 +309,7 @@ export default function DashboardLearningSidebar({
         >
           <span className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            {lang === "en" ? "Go to Academy" : "Gå til Akademiet"}
+            {t("goToAcademy")}
           </span>
           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Button>

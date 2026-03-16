@@ -27,7 +27,8 @@ export interface PaperTradeRequest {
 export interface PaperTradeResult {
   success: boolean;
   tradeId?: string;
-  newBalance: number;
+  /** Present when success is true; can be 0 on error for convenience */
+  newBalance?: number;
   rejectionReason?: string;
   error?: string;
 }
@@ -41,17 +42,17 @@ export interface PaperTradeResult {
 export async function executePaperTrade(
   request: PaperTradeRequest
 ): Promise<PaperTradeResult> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     // 1. Get or create paper trading session
     const { data: session, error: sessionError } = await supabase
       .from("trading_sessions")
       .select("id, user_id, current_capital_nok, status, mode")
-      .eq("user_id" as unknown, request.userId)
+      .eq("user_id", request.userId)
       .eq("mode", "paper")
       .eq("status", "active")
-      .single() as unknown;
+      .single();
 
     if (sessionError || !session) {
       // Auto-create session if none exists
@@ -68,7 +69,7 @@ export async function executePaperTrade(
           started_at: new Date().toISOString(),
         })
         .select()
-        .single() as unknown;
+        .single();
 
       if (createError || !newSession) {
         return {
@@ -144,17 +145,18 @@ export async function executePaperTrade(
         user_id: request.userId,
         trading_pair: request.symbol,
         side: request.side,
-        amount: request.quantity,
+        quantity: request.quantity,
         price: request.price,
         total_value: orderValueNok,
         fee: 0, // Paper trading has no fees
         status: "executed",
         mode: "paper",
+        order_type: request.orderType ?? "market",
         idempotency_key: `${session.id}-${Date.now()}-${Math.random()}`,
         executed_at: new Date().toISOString(),
       })
       .select()
-      .single() as unknown;
+      .single();
 
     if (tradeError) {
       console.error("[PaperTrade] Failed to record trade:", tradeError);

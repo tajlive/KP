@@ -15,7 +15,7 @@ git push origin main
 
 # 4. Monitor deployment
 # GitHub Actions: https://github.com/tajlive/KP/actions
-# Vercel Dashboard: https://vercel.com/tom-jensens-projects/klarpakke
+# Vercel Dashboard: https://vercel.com (team: klarpakke)
 ```
 
 ## Health Check
@@ -69,7 +69,7 @@ SENTRY_AUTH_TOKEN=...
 
 Already enabled via @vercel/analytics package.
 
-Dashboard: https://vercel.com/tom-jensens-projects/klarpakke/analytics
+Dashboard: https://vercel.com (team: klarpakke → Analytics)
 
 ## Emergency Procedures
 
@@ -90,13 +90,13 @@ curl https://www.klarpakke.no/api/health | jq '.'
 
 ```bash
 # View recent logs
-vercel logs www.klarpakke.no --token=$VERCEL_TOKEN
+vercel logs www.klarpakke.no --scope klarpakke --token=$VERCEL_TOKEN
 
 # Check specific deployment
-vercel logs DEPLOYMENT_URL --token=$VERCEL_TOKEN
+vercel logs DEPLOYMENT_URL --scope klarpakke --token=$VERCEL_TOKEN
 
 # Real-time logs
-vercel logs www.klarpakke.no --follow --token=$VERCEL_TOKEN
+vercel logs www.klarpakke.no --scope klarpakke --follow --token=$VERCEL_TOKEN
 ```
 
 ## Common Issues
@@ -130,19 +130,29 @@ vercel logs www.klarpakke.no --follow --token=$VERCEL_TOKEN
 
 ## Post-Deployment Checklist
 
-After every deployment:
+See [docs/PRODUCTION_RELEASE_CHECKLIST.md](docs/PRODUCTION_RELEASE_CHECKLIST.md) for the full checklist.
 
-- [ ] Health check returns "healthy"
-- [ ] Login flow works (test on production)
-- [ ] Dashboard loads correctly
-- [ ] No errors in Sentry (first 5 minutes)
-- [ ] UptimeRobot shows "Up"
-- [ ] Verify correct version deployed (git SHA)
+Quick check after every deployment:
+
+- [ ] `curl -s https://www.klarpakke.no/api/health | jq '.status'` returns "healthy"
+- [ ] `npm run verify` passes all critical paths
+- [ ] No new errors in Sentry (first 5 minutes)
+- [ ] Correct git SHA in health endpoint version field
+
+## Related Documentation
+
+- [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) - All environment variables
+- [docs/PRODUCTION_RELEASE_CHECKLIST.md](docs/PRODUCTION_RELEASE_CHECKLIST.md) - Full release checklist
+- [ROLLBACK.md](ROLLBACK.md) - Emergency rollback procedure
+- [runbook.md](runbook.md) - Operational runbook (incident response, daily checks, monitoring)
+- [docs/SENTRY_SETUP.md](docs/SENTRY_SETUP.md) - Sentry configuration
+- [docs/VERCEL_KV_SETUP.md](docs/VERCEL_KV_SETUP.md) - Vercel KV / Upstash Redis setup
+- [docs/AUTO_TRADING.md](docs/AUTO_TRADING.md) - Auto-trading architecture and APIs
 
 ## Contact & Escalation
 
 **On-Call Developer:** @tajlive  
-**Backup:** @tombomann
+**Backup:** @tajlive
 
 **Critical Issues:**
 

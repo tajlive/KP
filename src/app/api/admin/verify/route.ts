@@ -1,14 +1,12 @@
-
-
+import type { Database } from '@/types/supabase-generated';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-function getSupabaseClient() {
+function getSupabaseClient(): ReturnType<typeof createClient<Database>> | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  
   if (!key) return null;
-  return createClient(url, key);
+  return createClient<Database>(url, key);
 }
 
 export async function GET(request: Request) {
@@ -35,7 +33,7 @@ export async function GET(request: Request) {
     const token = authHeader.replace('Bearer ', '');
     
     // Verify the user
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabase!.auth.getUser(token);
     
     if (authError || !user) {
       return NextResponse.json({ 
@@ -45,7 +43,7 @@ export async function GET(request: Request) {
     }
 
     // Check if user is admin
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabase!
       .from('user_profiles')
       .select('role, email, full_name')
       .eq('id', user.id)

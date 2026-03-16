@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, BarChart3 } from "lucide-react";
 import {
@@ -85,7 +86,7 @@ export default function StrategyCharts({
                   ((v: number) => [
                     `${v.toFixed(2)} USDT`,
                     "Equity",
-                  ]) as unknown
+                  ]) as unknown as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
                 }
               />
               <Area
@@ -161,9 +162,9 @@ export default function StrategyCharts({
                   border: "1px solid #475569",
                   borderRadius: 8,
                 }}
-                formatter={
-                  ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as unknown
-                }
+formatter={
+                ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as unknown as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
+              }
               />
               <ReferenceLine
                 y={startingEquity}
