@@ -20,6 +20,7 @@ import {
   type UserStrategy,
 } from "@/lib/trading-api";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import {
   AlertTriangle,
   BarChart3,
@@ -35,48 +36,16 @@ import { useCallback, useEffect, useState } from "react";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
 
-const STRATEGIES: {
+const STRATEGY_DEFS: {
   type: StrategyType;
-  name: string;
   icon: string;
   risk: number;
-  description: string;
 }[] = [
-  {
-    type: "dca_trygg",
-    name: "DCA Trygg",
-    icon: "🛡️",
-    risk: 1,
-    description: "Kjøper BTC/ETH automatisk hver uke. Dobler ved store dip.",
-  },
-  {
-    type: "trend_balansert",
-    name: "Trend Balansert",
-    icon: "📈",
-    risk: 3,
-    description: "Følger MA50/MA200 crossover med RSI-filter.",
-  },
-  {
-    type: "multisignal_aktiv",
-    name: "Multi-Signal Aktiv",
-    icon: "⚡",
-    risk: 4,
-    description: "RSI + MACD + Bollinger gir hyppigere handler.",
-  },
-  {
-    type: "grid_bot",
-    name: "Grid Bot",
-    icon: "🔲",
-    risk: 3,
-    description: "Kjøper lavt, selger høyt i prisgitter.",
-  },
-  {
-    type: "ai_copy",
-    name: "AI Copy",
-    icon: "🤖",
-    risk: 5,
-    description: "Kopierer topp-tradere filtrert av AI.",
-  },
+  { type: "dca_trygg", icon: "🛡️", risk: 1 },
+  { type: "trend_balansert", icon: "📈", risk: 3 },
+  { type: "multisignal_aktiv", icon: "⚡", risk: 4 },
+  { type: "grid_bot", icon: "🔲", risk: 3 },
+  { type: "ai_copy", icon: "🤖", risk: 5 },
 ];
 
 const RISK_COLORS: Record<number, string> = {
@@ -140,6 +109,13 @@ export default function UnifiedTradingDashboard({
   const { error: showError } = useI18nToast();
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
   const { success: showSuccess, error: showToastError } = useI18nToast();
+  const tTrading = useTranslations("trading");
+
+  const STRATEGIES = STRATEGY_DEFS.map((s) => ({
+    ...s,
+    name: tTrading(`strategies.${s.type}.name`),
+    description: tTrading(`strategies.${s.type}.description`),
+  }));
 
   const loadData = useCallback(async () => {
     try {
@@ -378,6 +354,7 @@ export default function UnifiedTradingDashboard({
           activeStrategies={activeStrategies}
           onStop={handleStopStrategy}
           formatNOK={formatNOK}
+          strategies={STRATEGIES}
         />
 
         {/* Recent Trades */}
@@ -521,10 +498,12 @@ function ActiveStrategiesSection({
   activeStrategies,
   onStop,
   formatNOK,
+  strategies: STRATEGIES,
 }: {
   activeStrategies: UserStrategy[];
   onStop: (type: StrategyType) => void;
   formatNOK: (v: number) => string;
+  strategies: { type: StrategyType; icon: string; risk: number; name: string; description: string }[];
 }) {
   if (activeStrategies.length === 0) {
     return (
@@ -656,7 +635,7 @@ function StrategySelectorSection({
   mode,
   isStarting,
 }: {
-  strategies: typeof STRATEGIES;
+  strategies: { type: StrategyType; icon: string; risk: number; name: string; description: string }[];
   activeStrategies: UserStrategy[];
   expandedStrategy: StrategyType | null;
   setExpandedStrategy: (t: StrategyType | null) => void;

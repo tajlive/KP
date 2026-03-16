@@ -18,7 +18,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import DashboardLearningSidebar from "./DashboardLearningSidebar";
 
 export function DashboardSidebar() {
@@ -27,31 +27,59 @@ export function DashboardSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
+  const [earnedBadges, setEarnedBadges] = useState<{ id: string; trackId: string; label: string; description: string; earnedAt: string; icon: string }[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase
-            .from("user_profiles")
-            .select("tier")
-            .eq("id", user.id)
-            .maybeSingle();
-          // Note: tier is enum 'free' | 'student' | 'master' | 'phd' | 'professor'
-          // 'professor' is considered admin-level
-          setIsAdmin(profile?.tier === "professor");
-        }
-      } catch {
-        // Silently fail - user is not admin
+  const fetchUserData = useCallback(async () => {
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      setUserId(user.id);
+
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("tier")
+        .eq("id", user.id)
+        .maybeSingle();
+      setIsAdmin(profile?.tier === "professor");
+
+      const { data: progress } = await supabase
+        .from("user_lesson_progress")
+        .select("lesson_id")
+        .eq("user_id", user.id)
+        .eq("completed", true);
+      if (progress) {
+        setCompletedLessonIds(progress.map((p: { lesson_id: string }) => p.lesson_id));
       }
-    };
-    checkAdmin();
+
+      const { data: badges } = await supabase
+        .from("user_badges")
+        .select("*")
+        .eq("user_id", user.id);
+      if (badges) {
+        setEarnedBadges(badges.map((b: Record<string, string>) => ({
+          id: b.badge_id || b.id,
+          trackId: b.track_id || "",
+          label: b.label || b.badge_id || "",
+          description: b.description || "",
+          earnedAt: b.earned_at || b.created_at || "",
+          icon: b.icon || "",
+        })));
+      }
+    } catch {
+      // Silently fail
+    }
   }, []);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   const isActive = (path: string) => (pathname ?? "/").endsWith(path);
 
@@ -62,15 +90,15 @@ export function DashboardSidebar() {
       icon: LayoutDashboard,
       exact: true,
     },
-    { href: "/dashboard/auto-trade", label: t("sidebar.autoTrade") || "Auto-trading", icon: Bot },
+    { href: "/dashboard/auto-trade", label: t("autoTrade"), icon: Bot },
     { href: "/dashboard/portfolio", label: t("portfolio"), icon: Wallet },
-    { href: "/dashboard/trading", label: t("trading") || "Trading", icon: Cog },
+    { href: "/dashboard/trading", label: t("trading"), icon: Cog },
     { href: "/konto", label: t("binanceApi"), icon: Wallet },
     { href: "/dashboard/activity", label: t("activity"), icon: Activity },
     { href: "/dashboard/tax-report", label: t("taxReport"), icon: FileText },
     {
       href: "/dashboard/guide",
-      label: locale === "no" ? "Kom i gang" : "Get started",
+      label: t("guide"),
       icon: BookOpen,
     },
     { href: "/dashboard/settings", label: t("settings"), icon: Settings },
@@ -129,16 +157,16 @@ export function DashboardSidebar() {
           {/* Learning Sidebar – KLA-75 */}
           <div className="px-6 py-4">
             <DashboardLearningSidebar
-              userId={""} // Hent fra auth
-              completedLessonIds={[]}
-              earnedBadges={[]}
+              userId={userId}
+              completedLessonIds={completedLessonIds}
+              earnedBadges={earnedBadges}
             />
           </div>
 
           {/* Nav */}
           <nav className="flex-1 p-6 space-y-1 overflow-y-auto">
             <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 px-4">
-              {locale === "no" ? "Hovedmeny" : "Main menu"}
+              {t("mainMenu")}
             </div>
             {links.map((link) => {
               const fullPath =
@@ -184,7 +212,7 @@ export function DashboardSidebar() {
               className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl w-full transition-colors font-medium border border-transparent hover:border-red-100"
             >
               <LogOut className="w-5 h-5" />
-              <span>{locale === "no" ? "Logg ut" : "Log out"}</span>
+              <span>{t("logout")}</span>
             </button>
           </div>
         </div>
@@ -203,7 +231,7 @@ export function DashboardSidebar() {
               setMobileOpen(false);
             }
           }}
-          aria-label="Lukk meny"
+          aria-label={t("closeMenu")}
         />
       )}
     </>

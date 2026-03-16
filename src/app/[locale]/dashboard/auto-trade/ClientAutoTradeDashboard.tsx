@@ -87,18 +87,19 @@ interface Stats {
   win_rate: number;
 }
 
-const STRATEGY_TYPES = [
-  { id: 'dca_trygg', name: 'DCA Trygg', description: 'Ukentlig dollar-cost averaging', risk: 'low' },
-  { id: 'trend_balansert', name: 'Trend Balansert', description: 'MA-crossover med RSI-filter', risk: 'medium' },
-  { id: 'multisignal_aktiv', name: 'Multi-Signal Aktiv', description: 'RSI + momentum på 4h', risk: 'medium' },
-  { id: 'grid_bot', name: 'Grid Bot', description: 'Automatisk grid trading', risk: 'medium' },
-  { id: 'ai_copy', name: 'AI Copy', description: 'Kopier AI-genererte signaler', risk: 'high' },
-];
+const STRATEGY_TYPE_IDS = ['dca_trygg', 'trend_balansert', 'multisignal_aktiv', 'grid_bot', 'ai_copy'] as const;
+const STRATEGY_RISK: Record<string, string> = {
+  dca_trygg: 'low',
+  trend_balansert: 'medium',
+  multisignal_aktiv: 'medium',
+  grid_bot: 'medium',
+  ai_copy: 'high',
+};
 
 const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT', 'ADAUSDT'];
 
 export default function ClientAutoTradeDashboard() {
-  const _t = useTranslations('autoTrade');
+  const t = useTranslations('autoTrade');
   const locale = useLocale();
   const _router = useRouter();
   const { subscription: _subscription, loading: subLoading, currentTier } = useSubscription();
@@ -228,7 +229,7 @@ export default function ClientAutoTradeDashboard() {
       // Check live trading access
       if (newStrategy.trading_mode === 'live') {
         if (!tier.liveTrading && !trialStatus?.canUseLiveTrading) {
-          toast.error(trialStatus?.message || 'Live trading krever betalt abonnement');
+          toast.error(trialStatus?.message || t('dashboard.liveRequiresPaid'));
           return;
         }
       }
@@ -238,7 +239,7 @@ export default function ClientAutoTradeDashboard() {
       const maxStrategies = tier.autoTradingStrategies === -1 ? 999 : tier.autoTradingStrategies;
       
       if (activeStrategies >= maxStrategies) {
-        toast.error(`Du har nådd maksimalt antall strategier (${maxStrategies}) for ditt abonnement`);
+        toast.error(t('dashboard.maxStrategiesReached', { max: String(maxStrategies) }));
         return;
       }
 
@@ -249,7 +250,7 @@ export default function ClientAutoTradeDashboard() {
 
       if (error) {
         if (error.message.includes('unique_user_strategy')) {
-          toast.error('Du har allerede en strategi av denne typen i denne modusen');
+          toast.error(t('dashboard.duplicateStrategy'));
           return;
         }
         throw error;
@@ -268,7 +269,7 @@ export default function ClientAutoTradeDashboard() {
       fetchStrategies();
     } catch (error) {
       console.error('Error creating strategy:', error);
-      toast.error('Kunne ikke opprette strategi');
+      toast.error(t('dashboard.couldNotCreateStrategy'));
     }
   };
 
@@ -284,15 +285,15 @@ export default function ClientAutoTradeDashboard() {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.error || 'Kunne ikke lagre nøkler');
+        toast.error(data.error || t('dashboard.couldNotSaveKeys'));
         return;
       }
 
       setShowBinanceSetup(false);
-      toast.success('API-nøkler lagret!');
+      toast.success(t('dashboard.apiKeysSaved'));
     } catch (error) {
       console.error('Error saving Binance keys:', error);
-      toast.error('Kunne ikke lagre nøkler');
+      toast.error(t('dashboard.couldNotSaveKeys'));
     }
   };
 
@@ -305,7 +306,7 @@ export default function ClientAutoTradeDashboard() {
         .eq('id', id);
 
       if (error) throw error;
-      toast.success('Strategi oppdatert');
+      toast.success(t('dashboard.strategyUpdated'));
       fetchStrategies();
     } catch (error) {
       console.error('Error toggling strategy:', error);
@@ -314,7 +315,7 @@ export default function ClientAutoTradeDashboard() {
 
   // Slett strategi
   const deleteStrategy = async (id: string) => {
-    if (!confirm('Er du sikker på at du vil slette denne strategien?')) return;
+    if (!confirm(t('dashboard.confirmDelete'))) return;
 
     try {
       const { error } = await supabase
@@ -323,7 +324,7 @@ export default function ClientAutoTradeDashboard() {
         .eq('id', id);
 
       if (error) throw error;
-      toast.success('Strategi slettet');
+      toast.success(t('dashboard.strategyDeleted'));
       fetchStrategies();
     } catch (error) {
       console.error('Error deleting strategy:', error);
@@ -335,7 +336,7 @@ export default function ClientAutoTradeDashboard() {
       <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Laster dashboard...</p>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">{t('dashboard.loadingDashboard')}</p>
         </div>
       </div>
     );
@@ -364,10 +365,10 @@ export default function ClientAutoTradeDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-              Auto Trading Dashboard
+              {t('dashboard.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Administrer dine automatiserte handelsstrategier
+              {t('dashboard.subtitle')}
             </p>
           </div>
           
@@ -378,7 +379,7 @@ export default function ClientAutoTradeDashboard() {
             className="bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white shadow-lg"
           >
             <Plus className="mr-2 h-5 w-5" />
-            Ny Strategi
+            {t('dashboard.newStrategy')}
           </Button>
         </div>
 
@@ -391,7 +392,7 @@ export default function ClientAutoTradeDashboard() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-green-500" />
-                Total P&L
+                {t('dashboard.totalPnl')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -402,7 +403,7 @@ export default function ClientAutoTradeDashboard() {
                 {(stats.total_pnl ?? 0) >= 0 ? '+' : ''}{(stats.total_pnl ?? 0).toFixed(2)} USDT
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                {stats.total_pnl >= 0 ? 'Profitt' : 'Tap'} fra alle strategier
+                {stats.total_pnl >= 0 ? t('dashboard.profitFromAll') : t('dashboard.lossFromAll')}
               </p>
             </CardContent>
           </Card>
@@ -411,7 +412,7 @@ export default function ClientAutoTradeDashboard() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <Activity className="h-4 w-4 text-blue-500" />
-                Aktive Strategier
+                {t('dashboard.activeStrategies')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -419,7 +420,7 @@ export default function ClientAutoTradeDashboard() {
                 {stats.active_strategies} / {maxStrategiesDisplay}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Kjørende nå
+                {t('dashboard.runningNow')}
               </p>
             </CardContent>
           </Card>
@@ -428,7 +429,7 @@ export default function ClientAutoTradeDashboard() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-emerald-500" />
-                Win Rate
+                {t('dashboard.winRate')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -436,7 +437,7 @@ export default function ClientAutoTradeDashboard() {
                 {(stats.win_rate ?? 0).toFixed(1)}%
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Vinnende trades
+                {t('dashboard.winningTrades')}
               </p>
             </CardContent>
           </Card>
@@ -445,7 +446,7 @@ export default function ClientAutoTradeDashboard() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <History className="h-4 w-4 text-orange-500" />
-                Totale Trades
+                {t('dashboard.totalTrades')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -453,7 +454,7 @@ export default function ClientAutoTradeDashboard() {
                 {stats.total_trades}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Alle utførte trades
+                {t('dashboard.allExecuted')}
               </p>
             </CardContent>
           </Card>
@@ -464,15 +465,15 @@ export default function ClientAutoTradeDashboard() {
           <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
             <TabsTrigger value="strategies" className="gap-2">
               <Bot className="w-4 h-4" />
-              Strategier
+              {t('dashboard.strategies')}
             </TabsTrigger>
             <TabsTrigger value="history" className="gap-2">
               <History className="w-4 h-4" />
-              Historie
+              {t('dashboard.history')}
             </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="w-4 h-4" />
-              Innstillinger
+              {t('dashboard.settings')}
             </TabsTrigger>
           </TabsList>
 
@@ -482,13 +483,13 @@ export default function ClientAutoTradeDashboard() {
               <Card className="border-2 border-dashed">
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                   <Bot className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Ingen strategier ennå</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('dashboard.noStrategies')}</h3>
                   <p className="text-muted-foreground mb-4">
-                    Kom i gang ved å opprette din første auto-trading strategi
+                    {t('dashboard.getStarted')}
                   </p>
                   <Button onClick={() => setShowAddStrategy(true)} size="lg">
                     <Plus className="mr-2 h-4 w-4" />
-                    Opprett Strategi
+                    {t('dashboard.createStrategy')}
                   </Button>
                 </CardContent>
               </Card>
@@ -511,11 +512,11 @@ export default function ClientAutoTradeDashboard() {
           <TabsContent value="history">
             <Card>
               <CardHeader>
-                <CardTitle>Siste Trades</CardTitle>
+                <CardTitle>{t('dashboard.recentTrades')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {trades.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">Ingen trades ennå</p>
+                  <p className="text-center text-muted-foreground py-8">{t('dashboard.noTrades')}</p>
                 ) : (
                   <div className="space-y-2">
                     {trades.map((trade) => (
@@ -562,30 +563,30 @@ export default function ClientAutoTradeDashboard() {
           <TabsContent value="settings" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Abonnement & Tilgang</CardTitle>
+                <CardTitle>{t('dashboard.subscriptionAccess')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-muted-foreground">Nåværende tier</span>
+                  <span className="text-muted-foreground">{t('dashboard.currentTier')}</span>
                   <Badge variant="secondary" className="capitalize text-lg px-3 py-1">
                     {tier.badge} {currentTier}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-muted-foreground">Maks strategier</span>
+                  <span className="text-muted-foreground">{t('dashboard.maxStrategies')}</span>
                   <span className="font-medium">{maxStrategiesDisplay}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-muted-foreground">Paper trading</span>
+                  <span className="text-muted-foreground">{t('dashboard.paperTrading')}</span>
                   <CheckCircle className="w-5 h-5 text-green-600" />
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-muted-foreground">Live trading</span>
+                  <span className="text-muted-foreground">{t('dashboard.liveTrading')}</span>
                   {tier.liveTrading ? (
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   ) : trialStatus?.canUseLiveTrading ? (
                     <Badge variant="outline" className="text-green-600 border-green-600">
-                      Aktiv Trial
+                      {t('dashboard.activeTrial')}
                     </Badge>
                   ) : (
                     <XCircle className="w-5 h-5 text-slate-400" />
@@ -593,7 +594,7 @@ export default function ClientAutoTradeDashboard() {
                 </div>
                 <Button asChild variant="outline" className="w-full">
                   <Link href={`/${locale}/priser`}>
-                    Oppgrader abonnement
+                    {t('dashboard.upgradeSubscription')}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
@@ -602,9 +603,9 @@ export default function ClientAutoTradeDashboard() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Binance API-innstillinger</CardTitle>
+                <CardTitle>{t('dashboard.binanceSettings')}</CardTitle>
                 <CardDescription>
-                  Administrer dine Binance API-nøkler for auto trading
+                  {t('dashboard.binanceDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -614,7 +615,7 @@ export default function ClientAutoTradeDashboard() {
                   className="w-full"
                 >
                   <Key className="w-4 h-4 mr-2" />
-                  Konfigurer API-nøkler
+                  {t('dashboard.configureApiKeys')}
                 </Button>
               </CardContent>
             </Card>
@@ -626,11 +627,11 @@ export default function ClientAutoTradeDashboard() {
       <Dialog open={showAddStrategy} onOpenChange={setShowAddStrategy}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Opprett Ny Strategi</DialogTitle>
+            <DialogTitle>{t('dashboard.createNewStrategy')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Strategi Type</Label>
+              <Label>{t('dashboard.strategyType')}</Label>
               <Select 
                 value={newStrategy.strategy_type}
                 onValueChange={(value) => setNewStrategy(prev => ({ ...prev, strategy_type: value }))}
@@ -639,9 +640,9 @@ export default function ClientAutoTradeDashboard() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {STRATEGY_TYPES.map(type => (
-                    <SelectItem key={type.id} value={type.id}>
-                      {type.name} - {type.description}
+                  {STRATEGY_TYPE_IDS.map(id => (
+                    <SelectItem key={id} value={id}>
+                      {t(`strategyTypes.${id}.name`)} - {t(`strategyTypes.${id}.description`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -649,7 +650,7 @@ export default function ClientAutoTradeDashboard() {
             </div>
 
             <div>
-              <Label>Trading Mode</Label>
+              <Label>{t('dashboard.tradingMode')}</Label>
               <Select 
                 value={newStrategy.trading_mode}
                 onValueChange={(value: 'paper' | 'live') => setNewStrategy(prev => ({ ...prev, trading_mode: value }))}
@@ -658,19 +659,19 @@ export default function ClientAutoTradeDashboard() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="paper">📝 Lekepenger (Simulert)</SelectItem>
+                  <SelectItem value="paper">📝 {t('dashboard.paperSimulated')}</SelectItem>
                   <SelectItem 
                     value="live" 
                     disabled={!tier.liveTrading && !trialStatus?.canUseLiveTrading}
                   >
-                    🟢 Live Trading {!tier.liveTrading && !trialStatus?.canUseLiveTrading ? '(Låst)' : ''}
+                    🟢 {t('dashboard.liveTradingMode')} {!tier.liveTrading && !trialStatus?.canUseLiveTrading ? `(${t('dashboard.locked')})` : ''}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label>Symbol</Label>
+              <Label>{t('dashboard.symbol')}</Label>
               <Select 
                 value={newStrategy.symbol}
                 onValueChange={(value) => setNewStrategy(prev => ({ ...prev, symbol: value }))}
@@ -687,7 +688,7 @@ export default function ClientAutoTradeDashboard() {
             </div>
 
             <div>
-              <Label>Kapital (USDT)</Label>
+              <Label>{t('dashboard.capital')}</Label>
               <Input
                 type="number"
                 min="10"
@@ -701,7 +702,7 @@ export default function ClientAutoTradeDashboard() {
               onClick={handleCreateStrategy}
               className="w-full bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700"
             >
-              Opprett Strategi
+              {t('dashboard.createStrategy')}
             </Button>
           </div>
         </DialogContent>
@@ -711,38 +712,38 @@ export default function ClientAutoTradeDashboard() {
       <Dialog open={showBinanceSetup} onOpenChange={setShowBinanceSetup}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Koble til Binance</DialogTitle>
+            <DialogTitle>{t('dashboard.connectBinance')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <Alert>
               <Shield className="h-4 w-4" />
               <AlertDescription>
-                API-nøklene krypteres før lagring. Vi lagrer aldri nøklene i klartekst.
+                {t('dashboard.apiSecurityNote')}
               </AlertDescription>
             </Alert>
 
             <div className="space-y-2">
-              <Label>API Key</Label>
+              <Label>{t('dashboard.apiKey')}</Label>
               <Input 
                 type="password"
                 value={binanceKeys.apiKey}
                 onChange={(e) => setBinanceKeys({...binanceKeys, apiKey: e.target.value})}
-                placeholder="Din Binance API Key"
+                placeholder={t('dashboard.apiKey')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>API Secret</Label>
+              <Label>{t('dashboard.apiSecret')}</Label>
               <Input 
                 type="password"
                 value={binanceKeys.apiSecret}
                 onChange={(e) => setBinanceKeys({...binanceKeys, apiSecret: e.target.value})}
-                placeholder="Din Binance API Secret"
+                placeholder={t('dashboard.apiSecret')}
               />
             </div>
 
             <div className="flex items-center justify-between">
-              <Label>Bruk Testnet (lekepenger)</Label>
+              <Label>{t('dashboard.useTestnet')}</Label>
               <Switch 
                 checked={binanceKeys.isTestnet}
                 onCheckedChange={(v) => setBinanceKeys({...binanceKeys, isTestnet: v})}
@@ -753,7 +754,7 @@ export default function ClientAutoTradeDashboard() {
               <Alert variant="destructive">
                 <Lock className="h-4 w-4" />
                 <AlertDescription>
-                  Live trading krever Bachelor-tier eller høyere
+                  {t('dashboard.liveRequiresBachelor')}
                 </AlertDescription>
               </Alert>
             )}
@@ -763,18 +764,18 @@ export default function ClientAutoTradeDashboard() {
               className="w-full"
               disabled={!binanceKeys.apiKey || !binanceKeys.apiSecret}
             >
-              Lagre og koble til
+              {t('dashboard.saveAndConnect')}
             </Button>
 
             <p className="text-xs text-slate-500 text-center">
-              Du kan opprette API-nøkler i din{' '}
+              {t('dashboard.binanceAccountLink')}{' '}
               <a 
                 href="https://www.binance.com/en/my/settings/api-management" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="underline"
               >
-                Binance-konto
+                {t('dashboard.binanceAccount')}
               </a>
             </p>
           </div>
