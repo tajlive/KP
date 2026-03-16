@@ -332,6 +332,72 @@
       "mins": "{n} minutes ago",
       "hour": "{n} hour ago",
       "hours": "{n} hours ago"
+    },
+    "dashboard": {
+      "title": "Auto Trading Dashboard",
+      "subtitle": "Manage your automated trading strategies",
+      "newStrategy": "New Strategy",
+      "loadingDashboard": "Loading dashboard...",
+      "totalPnl": "Total P&L",
+      "profitFromAll": "Profit from all strategies",
+      "lossFromAll": "Loss from all strategies",
+      "activeStrategies": "Active Strategies",
+      "runningNow": "Running now",
+      "winRate": "Win Rate",
+      "winningTrades": "Winning trades",
+      "totalTrades": "Total Trades",
+      "allExecuted": "All executed trades",
+      "strategies": "Strategies",
+      "history": "History",
+      "settings": "Settings",
+      "noStrategies": "No strategies yet",
+      "getStarted": "Get started by creating your first auto-trading strategy",
+      "createStrategy": "Create Strategy",
+      "recentTrades": "Recent Trades",
+      "noTrades": "No trades yet",
+      "subscriptionAccess": "Subscription & Access",
+      "currentTier": "Current tier",
+      "maxStrategies": "Max strategies",
+      "paperTrading": "Paper trading",
+      "liveTrading": "Live trading",
+      "activeTrial": "Active Trial",
+      "upgradeSubscription": "Upgrade subscription",
+      "binanceSettings": "Binance API Settings",
+      "binanceDescription": "Manage your Binance API keys for auto trading",
+      "configureApiKeys": "Configure API Keys",
+      "createNewStrategy": "Create New Strategy",
+      "strategyType": "Strategy Type",
+      "tradingMode": "Trading Mode",
+      "paperSimulated": "Paper money (Simulated)",
+      "liveTradingMode": "Live Trading",
+      "locked": "Locked",
+      "symbol": "Symbol",
+      "capital": "Capital (USDT)",
+      "connectBinance": "Connect to Binance",
+      "apiSecurityNote": "API keys are encrypted before storage. We never store keys in plain text.",
+      "apiKey": "API Key",
+      "apiSecret": "API Secret",
+      "useTestnet": "Use Testnet (paper money)",
+      "liveRequiresBachelor": "Live trading requires Bachelor tier or higher",
+      "saveAndConnect": "Save and connect",
+      "binanceAccountLink": "You can create API keys in your",
+      "binanceAccount": "Binance account",
+      "strategyUpdated": "Strategy updated",
+      "strategyDeleted": "Strategy deleted",
+      "apiKeysSaved": "API keys saved!",
+      "couldNotSaveKeys": "Could not save keys",
+      "couldNotCreateStrategy": "Could not create strategy",
+      "maxStrategiesReached": "You have reached the maximum number of strategies ({max}) for your subscription",
+      "duplicateStrategy": "You already have a strategy of this type in this mode",
+      "liveRequiresPaid": "Live trading requires a paid subscription",
+      "confirmDelete": "Are you sure you want to delete this strategy?"
+    },
+    "strategyTypes": {
+      "dca_trygg": { "name": "DCA Safe", "description": "Weekly dollar-cost averaging" },
+      "trend_balansert": { "name": "Trend Balanced", "description": "MA crossover with RSI filter" },
+      "multisignal_aktiv": { "name": "Multi-Signal Active", "description": "RSI + momentum on 4h" },
+      "grid_bot": { "name": "Grid Bot", "description": "Automatic grid trading" },
+      "ai_copy": { "name": "AI Copy", "description": "Copy AI-generated signals" }
     }
   },
   "autoTrading": {
@@ -598,7 +664,25 @@
       "button": "Try Paper Trading"
     },
     "cta_after_result": "Learn how — start free",
-    "cta_no_card": "No credit card required"
+    "cta_no_card": "No credit card required",
+    "lotto": {
+      "title": "What do your habits cost?",
+      "subtitle": "Compare what you get for the same effort",
+      "weeklySpend": "Money spent per week",
+      "timeHorizon": "Time horizon",
+      "years": "years",
+      "lotto": "Lottery",
+      "expectedLoss": "Expected loss",
+      "statLoss": "Statistical loss of 40%",
+      "highInterest": "High-yield savings",
+      "annualRate": "3% annual rate (safe)",
+      "bankGuarantee": "Guaranteed by the bank",
+      "cryptoTheoretical": "Crypto (theoretical)",
+      "dailyReturn": "0.1% daily (EXTREMELY optimistic)",
+      "noGuarantee": "No guarantee, you can lose everything",
+      "important": "Important to know",
+      "disclaimer": "The calculator shows theoretical figures. 0.1% daily return is extremely optimistic and not realistic over time. You can lose your entire investment. This is not investment advice. Do your own research."
+    }
   },
   "checkout": {
     "loading": "Loading...",
@@ -1132,7 +1216,20 @@
       "settings": "Settings",
       "admin": "Admin",
       "logout": "Log out",
-      "paperTrading": "Paper Trading"
+      "paperTrading": "Paper Trading",
+      "guide": "Get started",
+      "mainMenu": "Main menu",
+      "closeMenu": "Close menu"
+    },
+    "learningPath": {
+      "title": "Learning Path",
+      "level": "Level",
+      "lessons": "lessons",
+      "continueWhere": "Continue where you left off",
+      "yourTracks": "Your Tracks",
+      "done": "Done",
+      "yourBadges": "Your Badges",
+      "goToAcademy": "Go to Academy"
     },
     "bots": {
       "modeLive": "Live",
@@ -1412,6 +1509,48 @@
       "trust1": "Bots 24/7",
       "trust2": "You set risk",
       "trust3": "1M paper money"
+    }
+  },
+  "tradingGuide": {
+    "title": "Get started with trading",
+    "subtitle": "Follow these steps to start your trading journey safely and smartly",
+    "steps": {
+      "1": {
+        "title": "Create account and log in",
+        "description": "Sign up for free and get access to 1,000,000 kr in paper money. No credit card required."
+      },
+      "2": {
+        "title": "Learn the basics",
+        "description": "Go through our course modules on crypto, market analysis and risk management. Take it at your own pace."
+      },
+      "3": {
+        "title": "Practice with paper money",
+        "description": "Use paper trading to test strategies without risk. See how the market works in practice."
+      },
+      "4": {
+        "title": "Activate auto-trading",
+        "description": "When you're ready, set up an auto-trading bot that trades for you — with the risk level you choose."
+      }
+    },
+    "cta": {
+      "title": "Ready to begin?",
+      "description": "Go to the trading dashboard and start with paper money. You can always come back here for guidance.",
+      "button": "Go to Trading"
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": {
+        "question": "Can I lose real money with paper trading?",
+        "answer": "No, paper money is 100% simulated. You risk nothing. It's perfect for learning and practicing."
+      },
+      "q2": {
+        "question": "What is auto-trading?",
+        "answer": "Auto-trading lets a bot trade for you based on strategies you choose. You decide the risk and capital."
+      },
+      "q3": {
+        "question": "Do I need a Binance account?",
+        "answer": "Not for paper trading. If you want to use live trading, you need a Binance account with API keys."
+      }
     }
   },
   "leagues": {
@@ -2028,36 +2167,36 @@
     ]
   },
   "settings": {
-    "title": "Innstillinger",
-    "subtitle": "Administrer din konto og preferanser",
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences",
     "tabs": {
-      "profile": "Profil",
-      "api": "API Nøkler",
-      "notifications": "Varsler",
-      "security": "Sikkerhet",
-      "preferences": "Preferanser"
+      "profile": "Profile",
+      "api": "API Keys",
+      "notifications": "Notifications",
+      "security": "Security",
+      "preferences": "Preferences"
     },
     "profile": {
-      "title": "Profilinformasjon",
-      "fullName": "Fullt navn",
-      "email": "E-post",
+      "title": "Profile Information",
+      "fullName": "Full name",
+      "email": "Email",
       "bio": "Bio",
-      "avatar": "Profilbilde",
-      "uploadAvatar": "Last opp bilde",
-      "changePassword": "Endre passord",
-      "save": "Lagre endringer",
-      "saved": "Endringer lagret!",
-      "error": "Kunne ikke lagre endringer"
+      "avatar": "Profile picture",
+      "uploadAvatar": "Upload picture",
+      "changePassword": "Change password",
+      "save": "Save changes",
+      "saved": "Changes saved!",
+      "error": "Could not save changes"
     },
     "api": {
-      "title": "API Innstillinger",
-      "description": "Koble til handelsplattformer for automatisk trading",
+      "title": "API Settings",
+      "description": "Connect to trading platforms for automated trading",
       "binance": {
         "title": "Binance API",
-        "description": "Koble til din Binance-konto for automatisk trading",
-        "addNew": "Legg til ny API-nøkkel",
-        "label": "Merkelapp",
-        "labelPlaceholder": "F.eks. Hovedkonto, Testkonto",
+        "description": "Connect to your Binance account for automated trading",
+        "addNew": "Add new API key",
+        "label": "Label",
+        "labelPlaceholder": "E.g. Main account, Test account",
         "apiKey": "API-nøkkel",
         "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
         "apiSecret": "API Secret",
@@ -2443,7 +2582,14 @@
     "noPositions": "No open positions",
     "unrealizedPnL": "Unrealized P&L",
     "realizedPnL": "Realized P&L",
-    "closePosition": "Close Position"
+    "closePosition": "Close Position",
+    "strategies": {
+      "dca_trygg": { "name": "DCA Safe", "description": "Buys BTC/ETH automatically every week. Doubles on large dips." },
+      "trend_balansert": { "name": "Trend Balanced", "description": "Follows MA50/MA200 crossover with RSI filter." },
+      "multisignal_aktiv": { "name": "Multi-Signal Active", "description": "RSI + MACD + Bollinger for more frequent trades." },
+      "grid_bot": { "name": "Grid Bot", "description": "Buys low, sells high in a price grid." },
+      "ai_copy": { "name": "AI Copy", "description": "Copies top traders filtered by AI." }
+    }
   },
   "wallet": {
     "title": "Wallet",
