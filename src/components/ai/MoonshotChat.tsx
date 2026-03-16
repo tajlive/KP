@@ -106,7 +106,7 @@ export function MoonshotChat({ context, initialMessage }: Props) {
 
   return (
     <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col">
-      <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
+      <CardHeader className="border-b bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Sparkles className="w-5 h-5 text-blue-500" />
           <span>Spør Kimi AI</span>

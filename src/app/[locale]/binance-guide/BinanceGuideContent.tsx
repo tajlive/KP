@@ -65,7 +65,7 @@ export function BinanceGuideContent() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Hero */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
@@ -207,7 +207,7 @@ export function BinanceGuideContent() {
                 <Card key={step.number} className="border-slate-700/50 bg-slate-800/30">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 bg-linear-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shrink-0">
                         <span className="text-xl font-bold text-black">{step.number}</span>
                       </div>
                       <div className="flex-1">

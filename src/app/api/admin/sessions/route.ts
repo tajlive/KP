@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET() {
   try {
     // 1. Authenticate user using cookie-based client
-    const authClient = await createServerClient();
+    const authClient = createServerClient();
     const {
       data: { user },
       error: authError,
@@ -69,7 +69,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const authClient = await createServerClient();
+    const authClient = createServerClient();
     const {
       data: { user },
     } = await authClient.auth.getUser();

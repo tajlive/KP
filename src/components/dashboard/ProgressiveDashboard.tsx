@@ -94,7 +94,7 @@ export default function ProgressiveDashboard() {
       <div className="max-w-6xl mx-auto">
         {/* Verdi av oppgradering — viser hva du låser opp */}
         {upgradeInfo && (
-          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-blue-900/40 to-indigo-900/40 border border-blue-700/50">
+          <div className="mb-6 p-4 rounded-xl bg-linear-to-r from-blue-900/40 to-indigo-900/40 border border-blue-700/50">
             <h3 className="text-lg font-semibold text-white mb-2">✨ {upgradeInfo.title}</h3>
             <ul className="text-sm text-slate-300 space-y-1 mb-3">
               {upgradeInfo.features.map((f, i) => (

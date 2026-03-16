@@ -114,7 +114,7 @@ export default function AIDecisionPanel({
 
   if (state.loading) {
     return (
-      <Card className="bg-gradient-to-br from-violet-900/10 via-slate-900 to-slate-900 border-violet-500/20 rounded-3xl">
+      <Card className="bg-linear-to-br from-violet-900/10 via-slate-900 to-slate-900 border-violet-500/20 rounded-3xl">
         <CardContent className="p-8">
           <div className="flex items-center justify-center gap-3 text-slate-400">
             <div className="w-5 h-5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
@@ -127,7 +127,7 @@ export default function AIDecisionPanel({
 
   if (state.error) {
     return (
-      <Card className="bg-gradient-to-br from-red-900/10 via-slate-900 to-slate-900 border-red-500/20 rounded-3xl">
+      <Card className="bg-linear-to-br from-red-900/10 via-slate-900 to-slate-900 border-red-500/20 rounded-3xl">
         <CardContent className="p-8">
           <div className="flex items-center gap-3 text-red-400">
             <AlertTriangle className="w-5 h-5" />
@@ -148,7 +148,7 @@ export default function AIDecisionPanel({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="bg-gradient-to-br from-violet-900/10 via-slate-900 to-slate-900 border-violet-500/20 rounded-3xl overflow-hidden">
+      <Card className="bg-linear-to-br from-violet-900/10 via-slate-900 to-slate-900 border-violet-500/20 rounded-3xl overflow-hidden">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -193,7 +193,7 @@ export default function AIDecisionPanel({
 
               {/* Gauge */}
               <div className="relative h-4 bg-slate-700 rounded-full overflow-hidden mb-3">
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" />
+                <div className="absolute inset-0 bg-linear-to-r from-red-500 via-yellow-500 to-green-500" />
                 <div
                   className="absolute top-0 bottom-0 w-1 bg-white shadow-lg transition-all duration-500"
                   style={{ left: `${state.sentiment.currentValue}%` }}
@@ -271,7 +271,7 @@ export default function AIDecisionPanel({
               <div className="flex items-center gap-2">
                 <div className="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full"
+                    className="h-full bg-linear-to-r from-violet-500 to-fuchsia-500 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${state.sentiment.confidence * 100}%` }}
                     transition={{ duration: 0.5 }}

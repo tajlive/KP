@@ -14,7 +14,7 @@ interface UpgradeBannerProps {
 export function UpgradeBanner({ tierSlug, locale }: UpgradeBannerProps) {
   if (tierSlug === 'student') {
     return (
-      <Alert className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 mb-6">
+      <Alert className="bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200 mb-6">
         <Sparkles className="h-5 w-5 text-blue-600" />
         <div className="flex-1">
           <AlertTitle className="text-blue-900 font-bold text-lg">
@@ -47,7 +47,7 @@ export function UpgradeBanner({ tierSlug, locale }: UpgradeBannerProps) {
 
   if (tierSlug === 'bachelor') {
     return (
-      <Alert className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300 mb-6">
+      <Alert className="bg-linear-to-r from-yellow-50 to-orange-50 border-yellow-300 mb-6">
         <Zap className="h-5 w-5 text-yellow-600" />
         <div className="flex-1">
           <AlertTitle className="text-yellow-900 font-bold text-lg">

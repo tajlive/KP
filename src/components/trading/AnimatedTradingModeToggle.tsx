@@ -74,8 +74,8 @@ export function AnimatedTradingModeToggle({
         className={cn(
           'relative h-10 w-[200px] rounded-full p-1 transition-colors duration-300',
           isPaper
-            ? 'bg-gradient-to-r from-sky-500 to-cyan-500'
-            : 'bg-gradient-to-r from-emerald-500 to-amber-500',
+            ? 'bg-linear-to-r from-sky-500 to-cyan-500'
+            : 'bg-linear-to-r from-emerald-500 to-amber-500',
           className
         )}
         whileTap={{ scale: 0.98 }}

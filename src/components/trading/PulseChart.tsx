@@ -215,7 +215,7 @@ export function PulseChart() {
   const profile = RISK_PROFILES[selectedProfile];
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-white/10 overflow-hidden">
+    <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-2xl border border-white/10 overflow-hidden">
       {/* Header */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center justify-between flex-wrap gap-4">

@@ -39,15 +39,15 @@ export function TrialBanner({ trialStatus, locale, tier }: TrialBannerProps) {
         className={cn(
           "relative overflow-hidden border-2 transition-all duration-300",
           isUrgent 
-            ? "bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border-red-300 dark:border-red-800"
+            ? "bg-linear-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border-red-300 dark:border-red-800"
             : isWarning
-            ? "bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border-amber-300 dark:border-amber-800"
-            : "bg-gradient-to-r from-blue-50 via-indigo-50 to-emerald-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-emerald-950/30 border-blue-300 dark:border-blue-800"
+            ? "bg-linear-to-r from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border-amber-300 dark:border-amber-800"
+            : "bg-linear-to-r from-blue-50 via-indigo-50 to-emerald-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-emerald-950/30 border-blue-300 dark:border-blue-800"
         )}
       >
         {/* Animated gradient background */}
         <div className="absolute inset-0 opacity-30 dark:opacity-20 animate-gradient-slow">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent dark:via-white/10" />
+          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white to-transparent dark:via-white/10" />
         </div>
         
         <div className="relative flex items-start gap-4">

@@ -90,7 +90,7 @@ export default function StrategyDetailPage({
     <div className="min-h-screen bg-white dark:bg-[#0A0A0A]">
       {/* Header with gradient accent */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-indigo-500/10 dark:from-cyan-500/5 dark:via-blue-500/3 dark:to-indigo-500/5" />
+        <div className="absolute inset-0 bg-linear-to-br from-cyan-500/10 via-blue-500/5 to-indigo-500/10 dark:from-cyan-500/5 dark:via-blue-500/3 dark:to-indigo-500/5" />
         <div className="relative z-10 px-5 pt-[env(safe-area-inset-top,12px)] pb-6">
           {/* Back button */}
           <button
@@ -104,7 +104,7 @@ export default function StrategyDetailPage({
           {/* Strategy header */}
           <div className="flex items-start gap-4">
             <div
-              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600
+              className="w-16 h-16 rounded-2xl bg-linear-to-br from-cyan-500 to-blue-600
                            flex items-center justify-center shrink-0
                            shadow-[0_4px_16px_rgba(59,130,246,0.25)]"
             >
@@ -224,7 +224,7 @@ export default function StrategyDetailPage({
             : strategy.features.slice(0, 4)
           ).map((feat, i) => (
             <div key={i} className="flex items-center gap-2.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500" />
+              <div className="w-1.5 h-1.5 rounded-full bg-linear-to-r from-cyan-500 to-blue-500" />
               <span className="text-[15px] text-gray-600 dark:text-gray-400">
                 {feat}
               </span>
@@ -306,7 +306,7 @@ export default function StrategyDetailPage({
           <button
             onClick={onSubscribe}
             className="flex-1 min-h-[52px] px-6
-                       bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500
+                       bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500
                        text-white font-semibold text-[17px]
                        rounded-2xl
                        shadow-[0_4px_16px_rgba(59,130,246,0.3)]

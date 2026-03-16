@@ -71,7 +71,7 @@ export function Studieprogram() {
   return (
     <section id="studieprogram" className="py-16 sm:py-24 bg-slate-50 relative overflow-hidden">
       {/* Bakgrunnsdekorasjon */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-gray-300 to-transparent" />
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-40 left-10 w-96 h-96 bg-blue-400 rounded-full blur-3xl" />
         <div className="absolute bottom-40 right-10 w-96 h-96 bg-emerald-400 rounded-full blur-3xl" />
@@ -138,7 +138,7 @@ export function Studieprogram() {
                   {tierData.badge && tierData.badge !== 'null' && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                       <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${tier.color}`}
+                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-white bg-linear-to-r ${tier.color}`}
                       >
                         {tierData.badge === 'POPULÆR' || tierData.badge === 'POPULAR' ? (
                           <Sparkles className="w-3 h-3" />

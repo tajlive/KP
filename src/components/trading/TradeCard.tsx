@@ -88,12 +88,12 @@ export function TradeCard({ trade, onDismiss, index }: TradeCardProps) {
         className={cn(
           'relative w-[320px] overflow-hidden border-2 p-4 shadow-lg',
           isProfit &&
-            'border-emerald-400 bg-gradient-to-br from-emerald-50 to-green-50 shadow-emerald-200 dark:border-emerald-600 dark:from-emerald-950/30 dark:to-green-950/20 dark:shadow-emerald-900/20',
+            'border-emerald-400 bg-linear-to-br from-emerald-50 to-green-50 shadow-emerald-200 dark:border-emerald-600 dark:from-emerald-950/30 dark:to-green-950/20 dark:shadow-emerald-900/20',
           isLoss &&
-            'border-red-400 bg-gradient-to-br from-red-50 to-orange-50 shadow-red-200 dark:border-red-600 dark:from-red-950/30 dark:to-orange-950/20 dark:shadow-red-900/20',
+            'border-red-400 bg-linear-to-br from-red-50 to-orange-50 shadow-red-200 dark:border-red-600 dark:from-red-950/30 dark:to-orange-950/20 dark:shadow-red-900/20',
           !isProfit &&
             !isLoss &&
-            'border-blue-400 bg-gradient-to-br from-blue-50 to-sky-50 dark:border-blue-600 dark:from-blue-950/30 dark:to-sky-950/20'
+            'border-blue-400 bg-linear-to-br from-blue-50 to-sky-50 dark:border-blue-600 dark:from-blue-950/30 dark:to-sky-950/20'
         )}
       >
         {/* Animated border glow for profit */}

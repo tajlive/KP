@@ -20,8 +20,8 @@ export function TradeExampleCard({ trade, isWin }: TradeExampleCardProps) {
       className={cn(
         "rounded-xl border-2 p-4",
         isWin
-          ? "border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 to-green-500/5"
-          : "border-red-500/50 bg-gradient-to-br from-red-500/10 to-orange-500/5",
+          ? "border-emerald-500/50 bg-linear-to-br from-emerald-500/10 to-green-500/5"
+          : "border-red-500/50 bg-linear-to-br from-red-500/10 to-orange-500/5",
       )}
     >
       <div className="mb-3 flex items-center justify-between">

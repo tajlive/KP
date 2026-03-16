@@ -33,7 +33,7 @@ function getSupabaseClient() {
 
 export async function GET() {
   // 1. Authenticate user via server client
-  const authClient = await createServerClient();
+  const authClient = createServerClient();
   const {
     data: { user },
   } = await authClient.auth.getUser();

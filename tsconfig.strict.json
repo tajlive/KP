@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "exclude": [
+    "archive",
+    "supabase/functions",
+    "tests",
+    "playwright.config.ts",
+    "sentry.*.config.ts"
+  ]
+}
+
