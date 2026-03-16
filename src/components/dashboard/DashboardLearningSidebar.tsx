@@ -126,7 +126,7 @@ export default function DashboardLearningSidebar({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-indigo-900/20 via-slate-900 to-slate-900 border border-indigo-500/20 rounded-3xl p-6 shadow-xl"
+        className="bg-linear-to-br from-indigo-900/20 via-slate-900 to-slate-900 border border-indigo-500/20 rounded-3xl p-6 shadow-xl"
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ export default function DashboardLearningSidebar({
           </div>
           <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+              className="h-full bg-linear-to-r from-indigo-500 to-purple-500 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${totalProgress}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
@@ -285,7 +285,7 @@ export default function DashboardLearningSidebar({
                 whileHover={{ scale: 1.05 }}
                 className="group relative"
               >
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 flex items-center justify-center cursor-pointer hover:border-yellow-400 transition-colors">
+                <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 flex items-center justify-center cursor-pointer hover:border-yellow-400 transition-colors">
                   {BADGE_ICONS[badge.id] || <Star className="w-5 h-5 text-yellow-400" />}
                 </div>
                 {/* Tooltip */}

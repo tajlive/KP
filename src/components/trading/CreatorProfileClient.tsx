@@ -85,7 +85,7 @@ export default function CreatorProfileClient({
         animate={{ opacity: 1, y: 0 }}
         className="relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl"
       >
-        <div className="h-48 bg-gradient-to-r from-blue-600/30 via-slate-900 to-amber-500/10" />
+        <div className="h-48 bg-linear-to-r from-blue-600/30 via-slate-900 to-amber-500/10" />
         <div className="px-8 pb-8 -mt-16 flex flex-col md:flex-row items-end justify-between gap-6 relative z-10">
           <div className="flex flex-col md:flex-row items-end gap-6">
             <div className="w-32 h-32 rounded-3xl bg-slate-800 border-4 border-slate-950 flex items-center justify-center text-5xl shadow-xl overflow-hidden relative group">
@@ -98,7 +98,7 @@ export default function CreatorProfileClient({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="bg-gradient-to-br from-blue-500 to-amber-500 w-full h-full flex items-center justify-center text-white font-black">
+                <div className="bg-linear-to-br from-blue-500 to-amber-500 w-full h-full flex items-center justify-center text-white font-black">
                   {profile.display_name?.[0]?.toUpperCase() ||
                     profile.full_name?.[0]?.toUpperCase()}
                 </div>

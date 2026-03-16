@@ -19,7 +19,7 @@ export const DELETE = withAuth(async (req: NextRequest, { user }) => {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
-    const db: unknown = (await createClient()) as unknown;
+    const db = createClient();
 
     const { data, error } = await db
       .from('copy_trading_follows')
@@ -27,7 +27,7 @@ export const DELETE = withAuth(async (req: NextRequest, { user }) => {
       .eq('id', parsed.data.follow_id)
       .eq('follower_id', user.id) // Only own follows
       .select()
-      .single() as unknown;
+      .single();
 
     if (error || !data) {
       return NextResponse.json({ error: 'Follow relationship not found' }, { status: 404 });

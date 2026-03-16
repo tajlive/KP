@@ -309,7 +309,7 @@ export default function KlarpakkeLanding() {
           style={{ y: backgroundY }}
           className="absolute inset-0 -z-10"
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-white" />
+          <div className="absolute inset-0 bg-linear-to-b from-blue-50/50 to-white" />
           <motion.div
             animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -357,7 +357,7 @@ export default function KlarpakkeLanding() {
                 className="mr-[0.2em] inline-block"
               >
                 {word === "Klarpakke" || word === "trading" ? (
-                  <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
                     {word}
                   </span>
                 ) : (

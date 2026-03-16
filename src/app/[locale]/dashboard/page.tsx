@@ -5,6 +5,8 @@ import { BotStatusCard } from "@/components/dashboard/BotStatusCard";
 import { EmptyBotState } from "@/components/dashboard/EmptyBotState";
 import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
 import { requireAuth } from "@/lib/auth-guard";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase-generated";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -68,7 +70,7 @@ function DashboardErrorFallback({ locale }: { locale: string }) {
  */
  
 async function checkRequiredCourseProgress(
-  supabase: unknown,
+  supabase: SupabaseClient<Database>,
   userId: string,
 ) {
   // Get required modules (include slug for CourseGate navigation)
@@ -88,7 +90,7 @@ async function checkRequiredCourseProgress(
     .select("id, module_id")
     .in(
       "module_id",
-      requiredModules.map((m: unknown) => m.id)
+      requiredModules.map((m: { id: string }) => m.id)
     )
     .eq("is_published", true);
 
@@ -104,7 +106,7 @@ async function checkRequiredCourseProgress(
     .eq("status", "completed")
     .in(
       "lesson_id",
-      requiredLessons.map((l: unknown) => l.id)
+      requiredLessons.map((l: { id: string }) => l.id)
     );
 
   const completedIds = new Set(
@@ -131,7 +133,7 @@ async function checkRequiredCourseProgress(
     };
   });
 
-  const allCompleted = progress.every((p: unknown) => p.isCompleted);
+  const allCompleted = progress.every((p: { isCompleted: boolean }) => p.isCompleted);
 
   return { allCompleted, progress };
 }

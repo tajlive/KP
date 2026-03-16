@@ -33,7 +33,7 @@ function getSupabaseClient() {
 
 export async function GET() {
   // 1. Authenticate user via server client
-  const authClient = await createServerClient();
+  const authClient = createServerClient();
   const {
     data: { user },
   } = await authClient.auth.getUser();
@@ -49,7 +49,7 @@ export async function GET() {
     .from("user_profiles")
     .select("role")
     .eq("id", user.id)
-    .single() as unknown;
+    .single();
 
   if (!isWhitelisted && profile?.role !== "admin") {
     return NextResponse.json(

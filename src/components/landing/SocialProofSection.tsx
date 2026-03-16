@@ -68,7 +68,7 @@ export default function SocialProofSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-slate-50 dark:from-gray-900 dark:to-gray-950">
+    <section className="py-20 bg-linear-to-b from-white to-slate-50 dark:from-gray-900 dark:to-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
@@ -76,7 +76,7 @@ export default function SocialProofSection() {
             const Icon = stat.icon;
             return (
               <div key={idx} className="text-center">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex items-center justify-center border border-blue-100 dark:border-blue-800">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex items-center justify-center border border-blue-100 dark:border-blue-800">
                   <Icon
                     className={`w-7 h-7 ${stat.color} dark:opacity-90`}
                     aria-hidden="true"
@@ -120,13 +120,13 @@ export default function SocialProofSection() {
                 {/* Gradient orb background */}
                 <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div
-                    className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${perk.color} blur-3xl opacity-20`}
+                    className={`absolute top-0 right-0 w-32 h-32 bg-linear-to-br ${perk.color} blur-3xl opacity-20`}
                   />
                 </div>
 
                 <div className="relative">
                   <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${perk.color} flex items-center justify-center mb-4 shadow-lg`}
+                    className={`w-12 h-12 rounded-xl bg-linear-to-br ${perk.color} flex items-center justify-center mb-4 shadow-lg`}
                   >
                     <Icon className="w-6 h-6 text-white" aria-hidden="true" />
                   </div>
@@ -143,7 +143,7 @@ export default function SocialProofSection() {
         </div>
 
         {/* Final CTA Banner */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-emerald-700 rounded-3xl p-8 md:p-12 text-center">
+        <div className="relative overflow-hidden bg-linear-to-br from-blue-600 via-indigo-600 to-emerald-700 rounded-3xl p-8 md:p-12 text-center">
           {/* Decorative pattern */}
           <div className="absolute inset-0 opacity-10">
             <div

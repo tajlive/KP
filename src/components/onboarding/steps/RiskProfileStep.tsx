@@ -150,7 +150,7 @@ export function RiskProfileStep() {
               key={i}
               className={`flex-1 h-1 rounded-full ${
                 i < qIdx
-                  ? "bg-gradient-to-r from-cyan-500 to-blue-500"
+                  ? "bg-linear-to-r from-cyan-500 to-blue-500"
                   : i === qIdx
                     ? "bg-blue-500"
                     : "bg-gray-200 dark:bg-gray-800"
@@ -185,7 +185,7 @@ export function RiskProfileStep() {
               initial={{ rotate: -15, scale: 0 }}
               animate={{ rotate: 0, scale: 1 }}
               transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
-              className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600
+              className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-linear-to-br from-cyan-500 to-blue-600
                          flex items-center justify-center shadow-[0_4px_20px_rgba(59,130,246,0.25)]"
             >
               <Icon className="w-8 h-8 text-white" />
@@ -287,9 +287,9 @@ function RiskResult() {
         <h2
           className={`text-[32px] font-bold mb-3 bg-clip-text text-transparent ${
             {
-              conservative: "bg-gradient-to-r from-emerald-500 to-cyan-500",
-              balanced: "bg-gradient-to-r from-blue-500 to-indigo-500",
-              aggressive: "bg-gradient-to-r from-rose-500 to-amber-500",
+              conservative: "bg-linear-to-r from-emerald-500 to-cyan-500",
+              balanced: "bg-linear-to-r from-blue-500 to-indigo-500",
+              aggressive: "bg-linear-to-r from-rose-500 to-amber-500",
             }[riskProfile || "balanced"]
           }`}
         >

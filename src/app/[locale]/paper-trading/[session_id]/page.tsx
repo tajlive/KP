@@ -76,13 +76,13 @@ export default async function PaperTradingSessionPage({
 
     // Hent trading session med eiersjekk
     const { data: session, error: sessionError } = await supabase
-      .from("trading_sessions" as unknown)
+      .from("trading_sessions")
       .select(
         "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at"
       )
       .eq("id", session_id)
-      .eq("user_id" as unknown, user.id)
-      .single() as unknown;
+      .eq("user_id", user.id)
+      .single();
 
     if (sessionError || !session) {
       console.error("Session not found or access denied:", sessionError);
@@ -111,7 +111,7 @@ export default async function PaperTradingSessionPage({
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <PaperTradingSessionDetail
             session={session}
-            trades={(trades as unknown) || []}
+            trades={trades || []}
             locale={locale}
           />
         </main>

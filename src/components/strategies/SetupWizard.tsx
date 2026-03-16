@@ -123,7 +123,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
         >
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
             Kom i gang med{" "}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
               Klarpakke
             </span>
           </h1>
@@ -360,7 +360,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   >
-                    <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 rounded-full bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
                       <Sparkles className="w-8 h-8 md:w-10 md:h-10 text-white" />
                     </div>
                     <h2 className="text-xl md:text-2xl font-bold text-white mb-2">
@@ -503,7 +503,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             className={cn(
               "flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 rounded-2xl font-semibold transition-all duration-500",
               canProceed() && !isSubmitting
-                ? "bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 bg-[length:200%_100%] hover:bg-[position:100%_0] text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
+                ? "bg-linear-to-r from-indigo-500 via-purple-500 to-indigo-500 bg-[length:200%_100%] hover:bg-[position:100%_0] text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
                 : "bg-slate-700 text-slate-500 cursor-not-allowed",
             )}
           >

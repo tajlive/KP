@@ -62,7 +62,7 @@ export default function CopyTradingDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-indigo-500/10 to-blue-500/10 dark:from-indigo-500/20 dark:to-blue-500/20 rounded-2xl">
+          <div className="p-2.5 bg-linear-to-br from-indigo-500/10 to-blue-500/10 dark:from-indigo-500/20 dark:to-blue-500/20 rounded-2xl">
             <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
@@ -110,7 +110,7 @@ export default function CopyTradingDashboard() {
               className={`text-[28px] font-bold tabular-nums tracking-tight
                           ${
                             isPositive
-                              ? "bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent"
+                              ? "bg-linear-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent"
                               : "text-rose-500"
                           }`}
             >
@@ -171,7 +171,7 @@ export default function CopyTradingDashboard() {
               >
                 {/* Avatar */}
                 <div
-                  className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500
+                  className="w-11 h-11 rounded-full bg-linear-to-br from-indigo-500 to-blue-500
                                flex items-center justify-center text-white font-bold text-[15px] shrink-0"
                 >
                   {trader.leaderName.charAt(0).toUpperCase()}

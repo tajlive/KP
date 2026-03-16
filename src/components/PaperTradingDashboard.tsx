@@ -125,14 +125,14 @@ export default function PaperTradingDashboard({
 
       {/* Account Balance */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+        <div className="rounded-lg bg-linear-to-br from-blue-50 to-blue-100 p-4">
           <p className="text-sm text-gray-600">Initial Balance</p>
           <p className="text-2xl font-bold text-gray-900">
             ${ (10000).toLocaleString('en-US', { maximumFractionDigits: 2 })}
           </p>
         </div>
 
-        <div className="rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+        <div className="rounded-lg bg-linear-to-br from-gray-50 to-gray-100 p-4">
           <p className="text-sm text-gray-600">Current Balance</p>
           <p className="text-2xl font-bold text-gray-900">
             ${ (account.balance || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}
@@ -142,8 +142,8 @@ export default function PaperTradingDashboard({
         <div
           className={`rounded-lg p-4 ${
             isPositive
-              ? 'bg-gradient-to-br from-green-50 to-green-100'
-              : 'bg-gradient-to-br from-red-50 to-red-100'
+              ? 'bg-linear-to-br from-green-50 to-green-100'
+              : 'bg-linear-to-br from-red-50 to-red-100'
           }`}
         >
           <p className="text-sm text-gray-600">Profit/Loss</p>

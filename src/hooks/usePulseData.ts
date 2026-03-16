@@ -101,21 +101,23 @@ export function usePulseData({
       // 3. Get current session for real-time stats
       interface TradingSession {
         current_capital_nok: number;
-        total_pnl_nok?: number;
-        total_pnl_pct?: number;
+        initial_capital: number;
+        total_pnl: number;
       }
       const { data: session, error: sessionError } = await supabase
         .from("trading_sessions")
-        .select("current_capital_nok, total_pnl_nok, total_pnl_pct")
+        .select("current_capital_nok, initial_capital, total_pnl")
         .eq("user_id", userId)
         .eq("status", "active")
         .maybeSingle<TradingSession>();
 
       if (session && !sessionError) {
+        const pnl = Number(session.total_pnl || 0);
+        const initial = Number(session.initial_capital || 1);
         setStats({
           portfolioValue: Number(session.current_capital_nok),
-          dailyChangeNok: Number(session.total_pnl_nok || 0),
-          dailyChangePct: Number(session.total_pnl_pct || 0),
+          dailyChangeNok: pnl,
+          dailyChangePct: initial > 0 ? (pnl / initial) * 100 : 0,
         });
       }
 
@@ -172,10 +174,12 @@ export function usePulseData({
         },
         (payload) => {
           const session = payload.new;
+          const pnl = Number(session.total_pnl || 0);
+          const initial = Number(session.initial_capital || 1);
           setStats({
             portfolioValue: Number(session.current_capital_nok),
-            dailyChangeNok: Number(session.total_pnl_nok || 0),
-            dailyChangePct: Number(session.total_pnl_pct || 0),
+            dailyChangeNok: pnl,
+            dailyChangePct: initial > 0 ? (pnl / initial) * 100 : 0,
           });
         },
       )

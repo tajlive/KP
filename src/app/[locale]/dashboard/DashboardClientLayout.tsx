@@ -67,12 +67,8 @@ export default function DashboardClientLayout({
                       </div>
                     </div>
                   </ProtectedRoute>
-                  {process.env.VERCEL && (
-                    <>
-                      <Analytics />
-                      <SpeedInsights />
-                    </>
-                  )}
+                  <Analytics />
+                  <SpeedInsights />
                 </TradingModeProvider>
               </ToastProvider>
             </OnboardingProvider>

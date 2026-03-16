@@ -20,14 +20,14 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
     }
 
     const { leader_id, scale_factor, max_trade_size, allocation_percent } = parsed.data;
-    const db: unknown = (await createClient()) as unknown;
+    const db = createClient();
 
     // Check subscription tier limits
     const { data: profile } = await db
       .from('user_profiles')
       .select('tier')
       .eq('user_id', user.id)
-      .single() as unknown;
+      .single();
 
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -76,7 +76,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
       .from('user_profiles')
       .select('user_id, display_name')
       .eq('user_id', leader_id)
-      .single() as unknown;
+      .single();
 
     if (!leader) {
       return NextResponse.json({ error: 'Leader not found' }, { status: 404 });
@@ -102,7 +102,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
         { onConflict: 'follower_id,leader_id' }
       )
       .select()
-      .single() as unknown;
+      .single();
 
     if (error) {
       console.error('Failed to create follow:', error);

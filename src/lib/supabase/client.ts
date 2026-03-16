@@ -33,14 +33,7 @@ export function getSupabaseClient(): SupabaseClient {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'pkce',
-        // Ikke custom storage: PKCE code_verifier må i cookie for at server-callback skal fungere
-        debug: process.env.NODE_ENV === 'development',
-      },
+      cookieEncoding: 'raw',
       global: {
         headers: {
           'x-client-info': 'klarpakke/1.0',

@@ -63,7 +63,7 @@ export function AuthContainer({
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <Link href={`/${locale}`} className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-400 to-cyan-400 flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold gradient-text">Klarpakke</span>
@@ -152,10 +152,10 @@ export function AuthContainer({
       </div>
 
       {/* Right side - Features (hidden on mobile) */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-emerald-500/10 via-background to-cyan-500/10 items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 bg-linear-to-br from-emerald-500/10 via-background to-cyan-500/10 items-center justify-center p-12">
         <div className="max-w-lg">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-400 to-cyan-400 flex items-center justify-center">
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <span className="text-2xl font-bold gradient-text">Klarpakke</span>
@@ -195,7 +195,7 @@ export function AuthContainer({
               "Klarpakke hjalp meg å forstå trading før jeg satte inn ekte penger. Nå er jeg en selvsikker trader!"
             </p>
             <div className="mt-3 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400" />
+              <div className="w-10 h-10 rounded-full bg-linear-to-br from-emerald-400 to-cyan-400" />
               <div>
                 <p className="font-medium">Erik Hansen</p>
                 <p className="text-sm text-muted-foreground">{locale === 'no' ? 'Proff-medlem' : 'Pro Member'}</p>

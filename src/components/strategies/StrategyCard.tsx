@@ -63,7 +63,7 @@ export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardPro
       className={cn(
         "relative overflow-hidden cursor-pointer transition-all duration-500",
         "rounded-3xl p-6 md:p-8 border-2",
-        "bg-gradient-to-br from-slate-900/80 to-slate-800/50",
+        "bg-linear-to-br from-slate-900/80 to-slate-800/50",
         "backdrop-blur-xl",
         isSelected 
           ? "border-indigo-400 shadow-2xl scale-[1.02]"
@@ -83,7 +83,7 @@ export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardPro
       {/* Gradient Background Overlay */}
       <div 
         className={cn(
-          "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-500",
+          "absolute inset-0 bg-linear-to-br opacity-0 transition-opacity duration-500",
           config.bg,
           isSelected && "opacity-100"
         )} 

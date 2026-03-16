@@ -77,7 +77,7 @@ export function FirstPaperTradeStep() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 200, damping: 12 }}
-                className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600
+                className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-linear-to-br from-indigo-500 to-blue-600
                            flex items-center justify-center shadow-[0_4px_20px_rgba(99,102,241,0.25)]"
               >
                 <Play className="w-8 h-8 text-white ml-1" />
@@ -149,7 +149,7 @@ export function FirstPaperTradeStep() {
                 className="absolute inset-0 rounded-full border-4 border-transparent border-t-cyan-500 border-r-blue-500"
               />
               <div
-                className="absolute inset-3 rounded-full bg-gradient-to-br from-cyan-500/10 to-blue-500/10
+                className="absolute inset-3 rounded-full bg-linear-to-br from-cyan-500/10 to-blue-500/10
                              flex items-center justify-center"
               >
                 <TrendingUp className="w-8 h-8 text-blue-500" />

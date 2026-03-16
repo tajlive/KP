@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useLocale } from "next-intl";
+import { RiskDisclaimer } from "./RiskDisclaimer";
 import { useCallback, useEffect, useState } from "react";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -112,7 +113,7 @@ export default function SpeedOnboarding({
   onComplete?: () => void;
 }) {
   const locale = useLocale();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [selectedRisk, setSelectedRisk] = useState<string | null>(null);
   const [selectedCoins, setSelectedCoins] = useState<string[]>(["BTC"]);
   const [countdown, setCountdown] = useState(60);
@@ -131,7 +132,7 @@ export default function SpeedOnboarding({
 
   // Countdown timer
   useEffect(() => {
-    if (step >= 3) return;
+    if (step === 0 || step >= 3) return;
     const interval = setInterval(() => {
       setCountdown((prev) => Math.max(0, prev - 1));
     }, 1000);
@@ -211,7 +212,7 @@ export default function SpeedOnboarding({
   return (
     <div className="max-w-lg mx-auto">
       {/* Timer Bar */}
-      {step < 3 && (
+      {step > 0 && step < 3 && (
         <div className="flex items-center justify-center gap-2 mb-6">
           <Timer className="w-4 h-4 text-blue-500" />
           <div className="text-sm font-bold text-slate-500">
@@ -224,7 +225,7 @@ export default function SpeedOnboarding({
           </div>
           <div className="w-32 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"
+              className="h-full bg-linear-to-r from-blue-500 to-indigo-500 rounded-full"
               initial={{ width: "100%" }}
               animate={{ width: `${(countdown / 60) * 100}%` }}
               transition={{ duration: 1 }}
@@ -235,7 +236,7 @@ export default function SpeedOnboarding({
 
       {/* Progress Steps */}
       <div className="flex items-center justify-center gap-1 mb-8">
-        {[1, 2, 3].map((s) => (
+        {[0, 1, 2, 3].map((s) => (
           <div key={s} className="flex items-center gap-1">
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
@@ -250,7 +251,7 @@ export default function SpeedOnboarding({
             </div>
             {s < 3 && (
               <div
-                className={`w-12 h-0.5 transition-colors ${s < step ? "bg-green-500" : "bg-slate-200 dark:bg-slate-700"}`}
+                className={`w-8 h-0.5 transition-colors ${s < step ? "bg-green-500" : "bg-slate-200 dark:bg-slate-700"}`}
               />
             )}
           </div>
@@ -258,6 +259,19 @@ export default function SpeedOnboarding({
       </div>
 
       <AnimatePresence mode="wait">
+        {/* ─── Step 0: Risk Disclaimer ─── */}
+        {step === 0 && (
+          <motion.div
+            key="step0"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
+            <RiskDisclaimer onAccept={() => setStep(1)} locale={locale} />
+          </motion.div>
+        )}
+
         {/* ─── Step 1: Risk Profile ─── */}
         {step === 1 && (
           <motion.div
@@ -286,7 +300,7 @@ export default function SpeedOnboarding({
                     onClick={() => setSelectedRisk(profile.id)}
                     className={`relative p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
                       isSelected
-                        ? `${profile.border.split(" ")[0]} bg-gradient-to-br ${profile.bg} shadow-lg`
+                        ? `${profile.border.split(" ")[0]} bg-linear-to-br ${profile.bg} shadow-lg`
                         : `border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50`
                     }`}
                   >
@@ -361,7 +375,7 @@ export default function SpeedOnboarding({
                     }`}
                   >
                     <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${coin.color} flex items-center justify-center text-white text-lg font-bold shadow-lg`}
+                      className={`w-12 h-12 rounded-xl bg-linear-to-br ${coin.color} flex items-center justify-center text-white text-lg font-bold shadow-lg`}
                     >
                       {coin.emoji}
                     </div>
@@ -390,7 +404,7 @@ export default function SpeedOnboarding({
             </div>
 
             {/* Capital Display */}
-            <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-200 dark:border-green-800/50 text-center">
+            <div className="mt-6 p-4 bg-linear-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-200 dark:border-green-800/50 text-center">
               <div className="text-xs text-green-600 font-bold uppercase tracking-wider mb-1">
                 <Bitcoin className="w-3.5 h-3.5 inline mr-1" />
                 Din startkapital
@@ -414,7 +428,7 @@ export default function SpeedOnboarding({
               <Button
                 onClick={handleStart}
                 disabled={isStarting}
-                className="flex-[2] h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl font-bold text-base shadow-xl shadow-green-500/30"
+                className="flex-[2] h-12 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl font-bold text-base shadow-xl shadow-green-500/30"
               >
                 {isStarting ? (
                   <span className="animate-pulse">Starter...</span>
@@ -460,7 +474,7 @@ export default function SpeedOnboarding({
                 onClick={() =>
                   (window.location.href = `/${locale}/dashboard/auto-trade`)
                 }
-                className="h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl text-lg font-bold shadow-xl shadow-blue-600/25"
+                className="h-14 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl text-lg font-bold shadow-xl shadow-blue-600/25"
               >
                 Gå til Dashboard →
               </Button>

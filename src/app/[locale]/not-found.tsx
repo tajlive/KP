@@ -15,7 +15,7 @@ export default function NotFound() {
   // Default to Norwegian since we can't access params in not-found
   // The middleware ensures we're on the correct locale path
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
       <div className="text-center space-y-8 p-8 max-w-lg">
         {/* 404 Icon */}
         <div className="relative">

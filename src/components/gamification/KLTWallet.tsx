@@ -64,7 +64,7 @@ export function KLTWallet() {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10 animate-pulse">
+      <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10 animate-pulse">
         <div className="h-20 bg-white/5 rounded-xl" />
       </div>
     );
@@ -86,11 +86,11 @@ export function KLTWallet() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10">
+    <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center">
+          <div className="w-12 h-12 bg-linear-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center">
             <Coins className="w-6 h-6 text-white" />
           </div>
           <div>

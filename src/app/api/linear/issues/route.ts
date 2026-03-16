@@ -28,7 +28,7 @@ async function linearQuery(query: string, variables?: Record<string, unknown>) {
 
 // KLA-108: Auth-guard for admin-tilgang
 async function requireAdmin() {
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
@@ -39,7 +39,7 @@ async function requireAdmin() {
     .from('user_profiles')
     .select('role')
     .eq('user_id', user.id)
-    .single() as unknown;
+    .single();
 
   if (profile?.role !== 'admin') {
     return { error: 'Ingen tilgang', status: 403 };

@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET() {
   try {
     // 1. Authenticate user using cookie-based client
-    const authClient = await createServerClient();
+    const authClient = createServerClient();
     const {
       data: { user },
       error: authError,
@@ -20,7 +20,7 @@ export async function GET() {
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
-      .single() as unknown;
+      .single();
 
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
@@ -69,7 +69,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const authClient = await createServerClient();
+    const authClient = createServerClient();
     const {
       data: { user },
     } = await authClient.auth.getUser();
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
-      .single() as unknown;
+      .single();
 
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(

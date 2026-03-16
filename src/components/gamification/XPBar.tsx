@@ -31,7 +31,7 @@ export function XPBar() {
     <div className="flex items-center gap-4 bg-slate-900/50 border border-slate-800 rounded-full px-4 py-1.5 shadow-sm">
       {/* Level Badge */}
       <div className="flex items-center gap-1.5">
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-xs font-bold text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-blue-700 text-xs font-bold text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]">
           {level}
         </div>
         <span className="text-xs font-medium text-slate-300 hidden sm:inline-block">
@@ -50,7 +50,7 @@ export function XPBar() {
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 1.5, type: "spring", stiffness: 50 }}
-            className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-600 to-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]"
+            className="absolute top-0 left-0 h-full bg-linear-to-r from-blue-600 to-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]"
           />
         </div>
       </div>

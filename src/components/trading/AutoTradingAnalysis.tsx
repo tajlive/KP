@@ -153,7 +153,7 @@ export function AutoTradingAnalysis() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10">
+      <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
             <Bot className="w-6 h-6 text-blue-400" />
@@ -194,7 +194,7 @@ export function AutoTradingAnalysis() {
         key={selectedProfile.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10"
+        className="bg-linear-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10"
       >
         <div className="flex items-start justify-between mb-6">
           <div>

@@ -52,7 +52,7 @@ export function WelcomeStep() {
         className="relative mb-8"
       >
         <div
-          className="w-28 h-28 rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500
+          className="w-28 h-28 rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-500 to-indigo-500
                         flex items-center justify-center shadow-[0_8px_32px_rgba(59,130,246,0.3)]"
         >
           <Sparkles className="w-14 h-14 text-white" />
@@ -91,7 +91,7 @@ export function WelcomeStep() {
         <h1 className="text-[32px] font-bold text-gray-900 dark:text-white mb-3 leading-tight tracking-tight">
           Velkommen til
           <br />
-          <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
             Klarpakke
           </span>
         </h1>
@@ -120,7 +120,7 @@ export function WelcomeStep() {
                          shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
             >
               <div
-                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient}
+                className={`w-12 h-12 rounded-xl bg-linear-to-br ${feature.gradient}
                               flex items-center justify-center shrink-0`}
               >
                 <Icon className="w-6 h-6 text-white" />

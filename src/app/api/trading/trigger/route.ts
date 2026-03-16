@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Manually triggers the strategy runner (for immediate feedback when user starts a strategy)
 export async function POST(_: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
 
     // Check auth
     const {
@@ -17,9 +17,9 @@ export async function POST(_: NextRequest) {
 
     // Get user's active strategies
     const { data: strategies, error: stratError } = await supabase
-      .from("strategies" as unknown)
+      .from("strategies")
       .select("*")
-      .eq("user_id" as unknown, user.id)
+      .eq("user_id", user.id)
       .eq("is_active", true);
 
     if (stratError) throw stratError;
@@ -31,12 +31,19 @@ export async function POST(_: NextRequest) {
     const {
       data: { session },
     } = await supabase.auth.getSession(); // Still needed for the access_token to pass to Edge Function
+
+    if (!session?.access_token) {
+      return NextResponse.json(
+        { error: "Unauthorized: missing access token" },
+        { status: 401 },
+      );
+    }
     const functionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/strategy-runner`;
 
     const response = await fetch(functionUrl, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${session?.access_token || process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        Authorization: `Bearer ${session.access_token}`,
         "Content-Type": "application/json",
       },
     });

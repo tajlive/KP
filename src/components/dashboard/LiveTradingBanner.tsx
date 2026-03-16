@@ -25,7 +25,7 @@ export function LiveTradingBanner() {
   // If user doesn't have live trading tier — show upgrade prompt
   if (!hasLiveTrading) {
     return (
-      <Alert className="mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
+      <Alert className="mb-6 bg-linear-to-r from-amber-50 to-yellow-50 border-amber-200">
         <Lock className="h-5 w-5 text-amber-600" />
         <div className="flex-1">
           <AlertTitle className="text-amber-900">
@@ -51,7 +51,7 @@ export function LiveTradingBanner() {
   if (!canSwitchToLive) {
     return (
       <>
-        <Alert className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <Alert className="mb-6 bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200">
           <Rocket className="h-5 w-5 text-blue-600" />
           <div className="flex-1">
             <AlertTitle className="text-blue-900">
