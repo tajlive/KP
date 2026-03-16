@@ -79,14 +79,14 @@ bash scripts/webflow-setup-automation.sh
   - [ ] Save somewhere safe
 
 - [ ] Update GitHub Secret
-  - [ ] Go to: https://github.com/tombomann/klarpakke/settings/secrets/actions
+  - [ ] Go to: https://github.com/tajlive/KP/settings/secrets/actions
   - [ ] Find: `ANTHROPIC_API_KEY`
   - [ ] Click **Update**
   - [ ] Paste new key
   - [ ] Click **Update Secret**
 
 - [ ] Verify fix
-  - [ ] Go to: https://github.com/tombomann/klarpakke/security
+  - [ ] Go to: https://github.com/tajlive/KP/security
   - [ ] Check that issues #61-64 are resolved
 
 ---
@@ -217,8 +217,8 @@ npm run build
 
 - **Webflow:** https://webflow.com/dashboard
 - **Anthropic Console:** https://console.anthropic.com/account/api_keys
-- **GitHub Repo:** https://github.com/tombomann/klarpakke
-- **GitHub Secrets:** https://github.com/tombomann/klarpakke/settings/secrets/actions
+- **GitHub Repo:** https://github.com/tajlive/KP
+- **GitHub Secrets:** https://github.com/tajlive/KP/settings/secrets/actions
 
 ---
 

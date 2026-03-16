@@ -1,6 +1,6 @@
 # 🔬 KIRURGISK GITHUB ACTIONS TEST REPORT
 
-**Repo:** tomarnejensen/klarpakke  
+**Repo:** tajlive/KP  
 **Dato:** $(date '+%Y-%m-%d %H:%M:%S %Z')  
 **Utført av:** Kimi Code CLI  
 
@@ -360,10 +360,10 @@ Branch: dependabot/github_actions/actions/checkout-6
 
 | | URL |
 |:---|:---|
-| Actions Dashboard | https://github.com/tomarnejensen/klarpakke/actions |
-| Secrets | https://github.com/tomarnejensen/klarpakke/settings/secrets/actions |
-| Environments | https://github.com/tomarnejensen/klarpakke/settings/environments |
-| Branch Protection | https://github.com/tomarnejensen/klarpakke/settings/branches |
+| Actions Dashboard | https://github.com/tajlive/KP/actions |
+| Secrets | https://github.com/tajlive/KP/settings/secrets/actions |
+| Environments | https://github.com/tajlive/KP/settings/environments |
+| Branch Protection | https://github.com/tajlive/KP/settings/branches |
 
 ---
 

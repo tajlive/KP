@@ -21,7 +21,7 @@
 
 ### 1.1 Gå til repository Settings
 ```
-https://github.com/tombomann/klarpakke/settings
+https://github.com/tajlive/KP/settings
 ```
 
 ### 1.2 Aktiver Actions
@@ -32,7 +32,7 @@ https://github.com/tombomann/klarpakke/settings
 
 ### 1.3 Verifiser at workflows er synlige
 ```
-https://github.com/tombomann/klarpakke/actions
+https://github.com/tajlive/KP/actions
 ```
 
 Du skal se følgende workflows:
@@ -47,7 +47,7 @@ Du skal se følgende workflows:
 
 ### 2.1 Gå til Secrets-siden
 ```
-https://github.com/tombomann/klarpakke/settings/secrets/actions
+https://github.com/tajlive/KP/settings/secrets/actions
 ```
 
 ### 2.2 Legg til følgende Repository Secrets
@@ -92,7 +92,7 @@ git push origin main
 
 Gå til Actions-taben og verifiser at CI-kjøringen er grønn:
 ```
-https://github.com/tombomann/klarpakke/actions
+https://github.com/tajlive/KP/actions
 ```
 
 ### 3.2 Deploy to Webflow (manuel)
@@ -201,7 +201,7 @@ git push origin main
 
 Sjekk status på alle workflows:
 ```
-https://github.com/tombomann/klarpakke/actions
+https://github.com/tajlive/KP/actions
 ```
 
 ### Statusikoner

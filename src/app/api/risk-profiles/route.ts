@@ -15,7 +15,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from('risk_profiles')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('id', user.id)
     .order('is_default', { ascending: false });
 
   if (error) {

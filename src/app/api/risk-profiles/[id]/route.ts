@@ -23,7 +23,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     .from('risk_profiles')
     .update(body)
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('id', user.id)
     .select()
     .single();
 
@@ -49,7 +49,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     .from('risk_profiles')
     .delete()
     .eq('id', id)
-    .eq('user_id', user.id);
+    .eq('id', user.id);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

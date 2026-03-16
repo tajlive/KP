@@ -26,7 +26,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
     const { data: profile } = await db
       .from('user_profiles')
       .select('tier')
-      .eq('user_id', user.id)
+      .eq('id', user.id)
       .single();
 
     if (!profile) {
@@ -75,7 +75,7 @@ export const POST = withAuth(async (req: NextRequest, { user }) => {
     const { data: leader } = await db
       .from('user_profiles')
       .select('user_id, display_name')
-      .eq('user_id', leader_id)
+      .eq('id', leader_id)
       .single();
 
     if (!leader) {

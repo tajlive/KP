@@ -48,7 +48,7 @@ done
 
 echo ""
 echo "🔗 Dashboard URLer:"
-echo "  GitHub Actions: https://github.com/tombomann/klarpakke/actions"
+echo "  GitHub Actions: https://github.com/tajlive/KP/actions"
 echo "  Cloudflare:   https://dash.cloudflare.com/pages"
 echo ""
 echo "⏰ Normal deploy-tid: 2-3 minutter"

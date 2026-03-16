@@ -12,22 +12,78 @@ let lastClearTime = 0;
 const CLEAR_DEBOUNCE_MS = 5000;
 
 function isCorrupt(value: string): boolean {
-  // Test 1: UTF-8 validering
   try {
+    // Test 1: UTF-8 validering (kast aldri – Supabase kaster "Invalid UTF-8 sequence" ved korrupt data)
     const enc = new TextEncoder().encode(value)
     new TextDecoder('utf-8', { fatal: true }).decode(enc)
+    // Test 2: JSON validering (alle gotrue-tokens er JSON-objekter)
+    if (value.startsWith('{') || value.startsWith('[')) {
+      JSON.parse(value)
+    }
+    return false
   } catch {
     return true
   }
-  // Test 2: JSON validering (alle gotrue-tokens er JSON-objekter)
-  if (value.startsWith('{') || value.startsWith('[')) {
-    try {
-      JSON.parse(value)
-    } catch {
-      return true
-    }
+}
+
+const BOOTSTRAP_CLEANED_KEY = '__klarpakke_sb_storage_cleaned__'
+
+/**
+ * Synkron rens av korrupte Supabase-nøkler FØR createBrowserClient kalles.
+ * Må kalles én gang per page load, f.eks. øverst i AuthProvider.
+ * Unngår "Invalid UTF-8 sequence" fra gotrue-js ved å fjerne ugyldig data før lesing.
+ * Renser også auth-cookies (session lagres der ved @supabase/ssr).
+ */
+export function clearCorruptSupabaseKeysSync(): void {
+  if (typeof window === 'undefined') return
+  try {
+    if ((window as unknown as { [key: string]: boolean })[BOOTSTRAP_CLEANED_KEY]) return
+    ;(window as unknown as { [key: string]: boolean })[BOOTSTRAP_CLEANED_KEY] = true
+  } catch {
+    return
   }
-  return false
+
+  // Rens potensielt korrupte auth-cookies før vi oppretter client (getItem leser cookies)
+  clearSupabaseAuthCookies()
+
+  const keysToRemove: string[] = []
+  try {
+    const n = localStorage.length
+    for (let i = 0; i < n; i++) {
+      let key: string | null = null
+      try {
+        key = localStorage.key(i)
+      } catch {
+        keysToRemove.length = 0
+        for (let j = 0; j < localStorage.length; j++) {
+          try {
+            const k = localStorage.key(j)
+            if (k && (k.startsWith('sb-') || k.includes('supabase') || k.includes('auth-token') || k.includes('gotrue')))
+              keysToRemove.push(k)
+          } catch { /* skip */ }
+        }
+        break
+      }
+      if (!key || (!key.startsWith('sb-') && !key.includes('supabase') && !key.includes('auth-token') && !key.includes('gotrue')))
+        continue
+      try {
+        const val = localStorage.getItem(key)
+        if (val !== null && isCorrupt(val)) {
+          keysToRemove.push(key)
+        }
+      } catch {
+        keysToRemove.push(key)
+      }
+    }
+    keysToRemove.forEach((key) => {
+      try {
+        localStorage.removeItem(key)
+      } catch { /* ignore */ }
+    })
+    if (keysToRemove.length > 0) {
+      console.warn('[SafeStorage] Ryddet korrupte nøkler før Supabase-init:', keysToRemove.length)
+    }
+  } catch { /* ignore */ }
 }
 
 export type ClearStorageOptions = {
@@ -35,9 +91,29 @@ export type ClearStorageOptions = {
   skipReload?: boolean;
 };
 
+/** Rens Supabase auth-cookies (document.cookie). @supabase/ssr lagrer session i cookies; korrupt cookie gir "Invalid UTF-8". */
+function clearSupabaseAuthCookies(): void {
+  if (typeof document === 'undefined' || !document.cookie) return
+  try {
+    const names = document.cookie.split(';').map(s => s.trim().split('=')[0])
+    const toRemove = names.filter(
+      n => n.startsWith('sb-') || n.includes('auth-token') || n.includes('supabase')
+    )
+    const opts = 'path=/; max-age=0'
+    toRemove.forEach(name => {
+      try {
+        document.cookie = `${encodeURIComponent(name)}=; ${opts}`
+      } catch { /* ignore */ }
+    })
+    if (toRemove.length > 0) {
+      console.warn('[SafeStorage] Fjernet Supabase auth-cookies:', toRemove.length)
+    }
+  } catch { /* ignore */ }
+}
+
 /**
  * KRITISK: Rens ALLE Supabase auth-relaterte nøkler atomisk.
- * Dette stopper infinite loops hvor Supabase reloader fra andre nøkler.
+ * Inkluderer localStorage, sessionStorage OG cookies (session ligger i cookies ved @supabase/ssr).
  * Ved skipReload: true unngår vi reload (anbefalt ved "Invalid UTF-8" fra getSession).
  */
 function clearAllSupabaseStorage(options?: ClearStorageOptions): void {
@@ -52,6 +128,9 @@ function clearAllSupabaseStorage(options?: ClearStorageOptions): void {
   lastClearTime = now;
 
   console.warn('[SafeStorage] RENSER ALLE Supabase storage-nøkler...');
+
+  // Rens auth-cookies først (session leses herfra av createBrowserClient)
+  clearSupabaseAuthCookies();
 
   // Finn og fjern alle Supabase auth-relaterte nøkler fra localStorage
   const keysToRemove: string[] = [];

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/utils'
 import { Trash2, Crown } from 'lucide-react'
 import { toast } from 'sonner'
 import { TABLE } from '@/lib/design/tokens'
@@ -17,10 +17,7 @@ interface User {
 }
 
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  )
+  return createClient()
 }
 
 export function UserTable({ users, onUsersChange }: { users: User[]; onUsersChange: (users: User[]) => void }) {

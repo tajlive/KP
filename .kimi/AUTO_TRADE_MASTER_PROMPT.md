@@ -7,7 +7,7 @@
 
 ## 🔴 KRITISK KONTEKST
 
-Du jobber i repoet `~/klarpakke` (GitHub: `tomarnejensen/klarpakke`).
+Du jobber i repoet `~/klarpakke` (GitHub: `tajlive/KP`).
 
 | Egenskap | Verdi |
 |---|---|

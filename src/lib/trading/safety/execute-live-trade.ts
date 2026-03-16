@@ -90,11 +90,11 @@ export async function executeLiveTrade(
     // 2. Hent session og verifiser
     const { data: session, error: sessionError } = await supabase
       .from("trading_sessions")
-      .select("id, user_id, current_capital_nok, status, mode, risk_config")
+      .select("id, user_id, current_capital_nok, status, mode, strategy_config")
       .eq("id", request.sessionId)
-      .eq("user_id" as unknown, request.userId)
+      .eq("user_id", request.userId)
       .eq("mode", "live")
-      .single() as unknown;
+      .single();
 
     if (sessionError || !session) {
       return {
@@ -161,7 +161,7 @@ export async function executeLiveTrade(
     }
 
     // 6. Kjør risk config fra session hvis finnes
-    const riskConfig = session.risk_config as Record<string, number> | null;
+    const riskConfig = session.strategy_config as Record<string, number> | null;
     if (riskConfig?.maxPositionSizePercent) {
       const maxPositionValue = currentBalance * (riskConfig.maxPositionSizePercent / 100);
       if (orderValue > maxPositionValue) {
@@ -208,18 +208,19 @@ export async function executeLiveTrade(
         user_id: request.userId,
         trading_pair: request.symbol,
         side: request.side,
-        amount: execResult.executedQuantity,
-        price: execResult.executedPrice,
-        total_value: (execResult.executedQuantity || 0) * (execResult.executedPrice || 0),
-        fee: execResult.fee,
+        quantity: execResult.executedQuantity ?? 0,
+        price: execResult.executedPrice ?? 0,
+        total_value: (execResult.executedQuantity ?? 0) * (execResult.executedPrice ?? 0),
+        fee: execResult.fee ?? 0,
         status: "filled",
         mode: "live",
-        binance_order_id: execResult.orderId,
+        order_type: request.orderType ?? "market",
+        binance_order_id: execResult.orderId ?? null,
         idempotency_key: idempotencyKey,
         executed_at: execResult.timestamp.toISOString(),
       })
       .select()
-      .single() as unknown;
+      .single();
 
     if (tradeError) {
       console.error("[LiveTrade] Failed to record trade:", tradeError);

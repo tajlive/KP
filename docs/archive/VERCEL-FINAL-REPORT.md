@@ -332,7 +332,7 @@ Siden produksjons-trafikk går til Cloud Run (ikke Vercel), vil ikke Vercel Anal
 - `GITHUB-CI-DIAGNOSE.md` – GitHub Actions diagnose (relatert)
 
 ### GitHub Actions (primær CI)
-- Actions Dashboard: https://github.com/tomarnejensen/klarpakke/actions
+- Actions Dashboard: https://github.com/tajlive/KP/actions
 - Cloud Run Deploy: `.github/workflows/deploy-cloudrun.yml`
 - CI Workflow: `.github/workflows/ci.yml`
 

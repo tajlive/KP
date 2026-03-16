@@ -680,8 +680,12 @@
       "activity": "Aktivitet",
       "taxReport": "Skatterapport",
       "settings": "Innstillinger",
-      "admin": "Admin",
-      "logout": "Logg ut"
+      "admin": "管理员",
+      "logout": "退出登录",
+      "autoTrade": "自动交易",
+      "guide": "入门指南",
+      "mainMenu": "主菜单",
+      "closeMenu": "关闭菜单"
     },
     "topBar": {
       "myOverview": "Min Oversikt",

@@ -165,4 +165,4 @@ nslookup -type=txt klarpakke.no
 ---
 
 *Sist oppdatert: 1. februar 2026*  
-*Ansvarlig: Tom Bomann*
+*Ansvarlig: tajlive*

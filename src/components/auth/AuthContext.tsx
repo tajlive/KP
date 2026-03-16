@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/utils';
 import { Session, User, AuthError } from '@supabase/supabase-js';
-import { clearAllSupabaseStorage } from '@/lib/supabase/safe-storage';
+import { clearAllSupabaseStorage, clearCorruptSupabaseKeysSync } from '@/lib/supabase/safe-storage';
 
 interface AuthContextType {
   user: User | null;
@@ -32,6 +32,9 @@ const MAX_REFRESH_ATTEMPTS = 3;
 const BACKOFF_DELAYS = [5000, 15000, 60000]; // 5s, 15s, 60s
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  // KRITISK: Rydd korrupte sb-*-nøkler FØR Supabase-klient opprettes (forhindrer "Invalid UTF-8 sequence")
+  clearCorruptSupabaseKeysSync();
+
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);

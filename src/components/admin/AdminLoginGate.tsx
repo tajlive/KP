@@ -36,7 +36,7 @@ export function AdminLoginGate({ children }: AdminLoginGateProps) {
         .from('user_profiles')
         .select('role')
         .eq('id', user.id)
-        .single() as unknown
+        .single()
 
       setIsAuthenticated(profile?.role === 'admin')
     } catch (_err) {

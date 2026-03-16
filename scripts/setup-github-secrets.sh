@@ -13,8 +13,8 @@ if [ -z "$1" ]; then
 fi
 
 GITHUB_TOKEN="$1"
-OWNER="tomarnejensen"
-REPO="klarpakke"
+OWNER="tajlive"
+REPO="KP"
 
 echo "🔐 Setting up GitHub Secrets for Vercel..."
 echo ""

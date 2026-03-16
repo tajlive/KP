@@ -34,7 +34,7 @@ chmod +x scripts/setup-github-secret.sh
 ```bash
 # Kopierer CRON_SECRET fra .env.local og setter i GitHub
 grep '^CRON_SECRET=' .env.local | cut -d'=' -f2 | \
-  gh secret set CRON_SECRET --repo tomarnejensen/klarpakke
+  gh secret set CRON_SECRET --repo tajlive/KP
 ```
 
 ---
@@ -44,7 +44,7 @@ grep '^CRON_SECRET=' .env.local | cut -d'=' -f2 | \
 ### Sjekk at secret er satt:
 
 ```bash
-gh secret list --repo tomarnejensen/klarpakke
+gh secret list --repo tajlive/KP
 ```
 
 **Forventet output:**
@@ -55,7 +55,7 @@ CRON_SECRET  Updated 2026-02-25
 ### Sjekk workflow status:
 
 ```bash
-gh workflow list --repo tomarnejensen/klarpakke
+gh workflow list --repo tajlive/KP
 ```
 
 **Forventet output:**
@@ -70,18 +70,18 @@ Trading Tick Cron  active  4c7ba66
 ### Trigger første kjøring:
 
 ```bash
-gh workflow run trading-cron.yml --repo tomarnejensen/klarpakke
+gh workflow run trading-cron.yml --repo tajlive/KP
 ```
 
 ### Overveielse real-time:
 
 ```bash
-gh run watch --repo tomarnejensen/klarpakke
+gh run watch --repo tajlive/KP
 ```
 
 **Forventet output:**
 ```
-✓ tomarnejensen/klarpakke trading-tick (main) · 4c7ba66
+✓ tajlive/KP trading-tick (main) · 4c7ba66
 Triggered via workflow_dispatch about 1 minute ago
 
 JOBS
@@ -92,7 +92,7 @@ JOBS
 ### Sjekk resultatet:
 
 ```bash
-gh run view --repo tomarnejensen/klarpakke --log
+gh run view --repo tajlive/KP --log
 ```
 
 **Forventet log:**
@@ -123,19 +123,19 @@ Etter at CRON_SECRET er satt, vil GitHub Actions automatisk:
 ### Se siste 10 kjøringer:
 
 ```bash
-gh run list --workflow=trading-cron.yml --limit 10 --repo tomarnejensen/klarpakke
+gh run list --workflow=trading-cron.yml --limit 10 --repo tajlive/KP
 ```
 
 ### Overveielse live:
 
 ```bash
-watch -n 10 'gh run list --workflow=trading-cron.yml --limit 5 --repo tomarnejensen/klarpakke'
+watch -n 10 'gh run list --workflow=trading-cron.yml --limit 5 --repo tajlive/KP'
 ```
 
 ### Sjekk om noe har feilet:
 
 ```bash
-gh run list --workflow=trading-cron.yml --status failure --repo tomarnejensen/klarpakke
+gh run list --workflow=trading-cron.yml --status failure --repo tajlive/KP
 ```
 
 ---
@@ -174,18 +174,18 @@ gh auth login
 
 1. **Er CRON_SECRET satt?**
    ```bash
-   gh secret list --repo tomarnejensen/klarpakke | grep CRON_SECRET
+   gh secret list --repo tajlive/KP | grep CRON_SECRET
    ```
 
 2. **Er workflow enabled?**
    ```bash
-   gh workflow list --repo tomarnejensen/klarpakke
+   gh workflow list --repo tajlive/KP
    # Skal vise "active", ikke "disabled"
    ```
 
 3. **Er repo public?**
    ```bash
-   gh repo view tomarnejensen/klarpakke --json visibility
+   gh repo view tajlive/KP --json visibility
    # Skal vise: "visibility": "PUBLIC"
    ```
 
@@ -200,7 +200,7 @@ cat .env.local | grep CRON_SECRET
 
 # Sett på nytt
 grep '^CRON_SECRET=' .env.local | cut -d'=' -f2 | \
-  gh secret set CRON_SECRET --repo tomarnejensen/klarpakke
+  gh secret set CRON_SECRET --repo tajlive/KP
 ```
 
 ---
@@ -216,7 +216,7 @@ Etter 30 minutter skal du se:
 
 **Sjekk:**
 ```bash
-gh run list --workflow=trading-cron.yml --limit 10 --repo tomarnejensen/klarpakke
+gh run list --workflow=trading-cron.yml --limit 10 --repo tajlive/KP
 ```
 
 ---
@@ -236,7 +236,7 @@ gh run list --workflow=trading-cron.yml --limit 10 --repo tomarnejensen/klarpakk
 
 - **Full guide:** `docs/GITHUB_ACTIONS_CRON_SETUP.md`
 - **Workflow fil:** `.github/workflows/trading-cron.yml`
-- **Actions dashboard:** https://github.com/tomarnejensen/klarpakke/actions
+- **Actions dashboard:** https://github.com/tajlive/KP/actions
 
 ---
 

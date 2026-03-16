@@ -65,7 +65,7 @@
 #### A. Dupliserte/Hardkodede verdier
 ```html
 <!-- PROBLEMET: Webflow-bundle loader ekstra kode som konflikter -->
-<script src="https://github.com/tombomann/klarpakke/raw/refs/heads/main/webflow/klarpakke-bundle.js">
+<script src="https://github.com/tajlive/KP/raw/refs/heads/main/webflow/klarpakke-bundle.js">
 
 <!-- Dette loader TIDLIGERE versjon av koden -->
 ```
@@ -206,7 +206,7 @@ window.KLARPAKKE_CONFIG = {
 #### D. GitHub raw URL for bundle
 ```html
 <!-- USIKKERT: -->
-<script src="https://github.com/tombomann/klarpakke/raw/refs/heads/main/webflow/klarpakke-bundle.js">
+<script src="https://github.com/tajlive/KP/raw/refs/heads/main/webflow/klarpakke-bundle.js">
 <!-- Ingen integritetssjekk, kan endres -->
 ```
 

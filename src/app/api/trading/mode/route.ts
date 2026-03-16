@@ -22,10 +22,11 @@ export async function GET(_request: NextRequest) {
       );
     }
 
-    // Hent brukerprofil med trading info
-    const { data: profile, error } = await supabase
+    // Hent brukerprofil med trading info (kolonner kan mangle i generert type)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: profileRow, error } = await (supabase as any)
       .from('user_profiles')
-      .select('trading_mode, binance_api_key_encrypted, paper_trades_count, exchange_connected')
+      .select('trading_mode, binance_api_key_encrypted, paper_trades_count')
       .eq('id', user.id)
       .single();
 
@@ -37,6 +38,7 @@ export async function GET(_request: NextRequest) {
       );
     }
 
+    const profile = profileRow as { trading_mode?: string; binance_api_key_encrypted?: string; paper_trades_count?: number } | null;
     return NextResponse.json({
       success: true,
       mode: profile?.trading_mode || 'paper',
@@ -82,12 +84,13 @@ export async function POST(request: NextRequest) {
 
     // Hvis bytte til live, sjekk at Binance er koblet til
     if (mode === 'live') {
-      const { data: profile } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: profileRow } = await (supabase as any)
         .from('user_profiles')
         .select('binance_api_key_encrypted')
         .eq('id', user.id)
         .single();
-
+      const profile = profileRow as { binance_api_key_encrypted?: string } | null;
       if (!profile?.binance_api_key_encrypted) {
         return NextResponse.json(
           { 

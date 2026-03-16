@@ -114,6 +114,17 @@ const commonGlobals = {
 
 /** @type {import('eslint').Linter.Config[]} */
 const eslintConfig = [
+  // Next.js – først slik at Next build sin plugin-sjekk ser @next/next tidlig i config
+  nextPlugin.flatConfig.coreWebVitals,
+  {
+    name: "nextjs-overrides",
+    settings: { next: { rootDir: "." } },
+    rules: {
+      "@next/next/no-img-element": "warn",
+      "@next/next/no-html-link-for-pages": "off",
+    },
+  },
+
   // Base JS recommended rules
   js.configs.recommended,
 
@@ -275,6 +286,19 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-expressions": "off",
       // Tillat const/let i case blokker
       "no-case-declarations": "off",
+      // Zustand v5: forby default import (deprecated)
+      "no-restricted-imports": [
+        "error",
+        {
+          "paths": [
+            {
+              "name": "zustand",
+              "importNames": ["default"],
+              "message": "Default export is deprecated. Use: import { create } from 'zustand'",
+            },
+          ],
+        },
+      ],
     },
   },
 
@@ -325,25 +349,6 @@ const eslintConfig = [
       ),
       // Label: krever kun id ELLER nesting (htmlFor + id er gyldig a11y)
       "jsx-a11y/label-has-for": ["warn", { "required": { "some": ["nesting", "id"] } }],
-    },
-  },
-
-  // Next.js konfigurasjon - global (uten files restriction)
-  {
-    name: "nextjs-plugin",
-    plugins: {
-      "@next/next": nextPlugin,
-    },
-    settings: {
-      next: {
-        rootDir: ".",
-      },
-    },
-    rules: {
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs["core-web-vitals"].rules,
-      "@next/next/no-img-element": "warn",
-      "@next/next/no-html-link-for-pages": "off",
     },
   },
 

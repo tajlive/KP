@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_ID="tomarnejensen/klarpakke"
+PROJECT_ID="tajlive/KP"
 BRANCH="${1:-main}"
 
 # Krever GITLAB_TOKEN (Personal Access Token)

@@ -8,7 +8,6 @@ import type { Database } from '@/types/supabase-generated'
 
 interface UserForSummary {
   id: string
-  user_id: string
   email: string | null
   full_name: string | null
 }
@@ -21,24 +20,25 @@ export async function GET(req: NextRequest) {
     const supabase = await createClient() as SupabaseClient<Database>
     const yesterday = new Date(Date.now() - 86400000).toISOString()
 
-    // Hent alle brukere med aktive sessions
+    // Hent alle brukere med e-post (user_profiles.id = auth.uid(); noen migrasjoner har også user_id)
     const { data: users } = await supabase
       .from('user_profiles')
-      .select('id, user_id, email, full_name')
+      .select('id, email, full_name')
       .not('email', 'is', null)
 
     if (!users) return NextResponse.json({ ok: true, sent: 0 })
 
     let sent = 0
 
-    for (const user of users as UserForSummary[]) {
+    for (const user of users as Pick<UserForSummary, 'id' | 'email' | 'full_name'>[]) {
       if (!user.email) continue
+      const userId = user.id
 
       // Hent brukerens trades siste 24t
       const { data: trades } = await supabase
         .from('trades')
         .select('realized_pnl')
-        .eq('user_id', user.user_id)
+        .eq('user_id', userId)
         .gte('executed_at', yesterday)
 
       if (!trades || trades.length === 0) continue
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       const { data: sessions } = await supabase
         .from('trading_sessions')
         .select('id')
-        .eq('user_id', user.user_id)
+        .eq('user_id', userId)
         .eq('status', 'active')
 
       const template = getDailySummaryEmail({

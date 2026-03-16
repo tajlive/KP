@@ -8,7 +8,7 @@
 - 🔒 Renset Git-historikk med BFG Repo-Cleaner
 
 ### Changed
-- 🔄 Migrert fra GitLab til GitHub (https://github.com/tombomann/klarpakke)
+- 🔄 Migrert fra GitLab til GitHub (https://github.com/tajlive/KP)
 - 🔄 Byttet GitLab CI til GitHub Actions
 - 🔄 Oppdatert Cloudflare Pages git source til GitHub
 
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - 🔄 **GitHub Migration:** Full migration fra GitLab til GitHub
-  - Repository: `gitlab.com/tomarnejensen/klarkpakke` → `github.com/tombomann/klarpakke`
+  - Repository: `gitlab.com/tomarnejensen/klarkpakke` → `github.com/tajlive/KP`
   - CI/CD: GitLab CI → GitHub Actions (`.github/workflows/`)
   - Dokumentasjon oppdatert i alle 10+ docs-filer
   - Arkiverte GitLab-spesifikke filer (`GITLAB-RUNNER-SETUP.md`)
@@ -113,4 +113,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-For full commit-historikk, se GitHub: https://github.com/tombomann/klarpakke/commits/main
+For full commit-historikk, se GitHub: https://github.com/tajlive/KP/commits/main

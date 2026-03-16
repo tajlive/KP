@@ -1,6 +1,6 @@
 # 🔍 KLARPAKKE GITHUB REPO - DEBUG RAPPORT
 **Dato:** 2026-02-20 08:17  
-**Repo:** https://github.com/tomarnejensen/klarpakke  
+**Repo:** https://github.com/tajlive/KP  
 **Analyzer:** KIMI CODE 2.5 (MCP-verktøy)  
 
 ---

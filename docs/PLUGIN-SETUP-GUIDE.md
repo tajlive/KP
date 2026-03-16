@@ -31,7 +31,7 @@ echo "# Test" >> README.md
 
 ```bash
 # Gå til repo:
-open https://github.com/tombomann/klarpakke/actions
+open https://github.com/tajlive/KP/actions
 
 # Sjekk at "Claude Code Automation" workflow er synlig
 ```

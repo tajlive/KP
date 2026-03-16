@@ -75,23 +75,32 @@ export const useCopyStore = create<CopyStore>()(
 
         if (error) throw error;
 
-        const following: FollowedTrader[] = (data || []).map(
-          (cfg: unknown) => ({
-            id: cfg.id as string,
-            leaderId: cfg.leader_id as string,
-            leaderName: (cfg.leader_name as string) || "Unknown Trader",
-            leaderAvatar: (cfg.leader_avatar as string) || null,
-            maxAllocationNok: (cfg.max_allocation_nok as number) || 10000,
-            sizingMode:
-              (cfg.sizing_mode as "fixed" | "proportional") || "proportional",
-            maxLeverage: (cfg.max_leverage as number) || 5,
-            autoStopDrawdownPct: (cfg.auto_stop_drawdown_pct as number) || 20,
-            isActive: (cfg.is_active as boolean) ?? true,
-            pnlNok: 0, // Computed from copy_trade_log
-            activeCopies: 0,
-            followedAt: cfg.created_at as string,
-          }),
-        );
+        type CopyFollowRow = {
+          id?: string;
+          leader_id?: string;
+          leader_name?: string;
+          leader_avatar?: string;
+          max_allocation_nok?: number;
+          sizing_mode?: string;
+          max_leverage?: number;
+          auto_stop_drawdown_pct?: number;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        const following: FollowedTrader[] = (data || []).map((cfg: Record<string, unknown>) => ({
+          id: (cfg.id as string) ?? "",
+          leaderId: (cfg.leader_id as string) ?? "",
+          leaderName: (cfg.leader_name as string) ?? "Unknown Trader",
+          leaderAvatar: (cfg.leader_avatar as string | null) ?? null,
+          maxAllocationNok: (cfg.max_allocation_nok as number) ?? 10000,
+          sizingMode: (cfg.sizing_mode as "fixed" | "proportional") ?? "proportional",
+          maxLeverage: (cfg.max_leverage as number) ?? 5,
+          autoStopDrawdownPct: (cfg.auto_stop_drawdown_pct as number) ?? 20,
+          isActive: (cfg.is_active as boolean) ?? true,
+          pnlNok: 0,
+          activeCopies: 0,
+          followedAt: (cfg.created_at as string) ?? "",
+        }));
 
         const totalPnl = following.reduce((sum, f) => sum + f.pnlNok, 0);
         set({ following, totalCopyPnl: totalPnl, isLoading: false });
@@ -101,15 +110,15 @@ export const useCopyStore = create<CopyStore>()(
     },
 
     follow: async (leaderId: string, config: CopyConfig) => {
-      const supabase = createClient() as unknown;
+      const supabase = createClient();
       const { error } = await supabase
         .from("copy_trading_follows")
         .insert({
+          follower_id: (await supabase.auth.getUser()).data.user?.id ?? "",
           leader_id: leaderId,
-          max_allocation_nok: config.maxAllocationNok,
-          sizing_mode: config.sizingMode,
-          max_leverage: config.maxLeverage,
-          auto_stop_drawdown_pct: config.autoStopDrawdownPct,
+          max_trade_amount: config.maxAllocationNok,
+          scale_factor: config.sizingMode === "proportional" ? 1 : null,
+          allocation_percent: config.sizingMode === "proportional" ? 100 : 0,
           is_active: true,
         });
 

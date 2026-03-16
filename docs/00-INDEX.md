@@ -11,7 +11,7 @@
 
 ```bash
 # 1. Clone repo
-git clone https://github.com/tombomann/klarpakke.git
+git clone https://github.com/tajlive/KP.git
 cd klarpakke
 
 # 2. Installer avhengigheter
@@ -97,13 +97,13 @@ Steg-for-steg guider for vanlige operasjoner:
 - **API Health:** https://www.klarpakke.no/api/health
 
 ### Utvikling
-- **GitHub:** https://github.com/tombomann/klarpakke
+- **GitHub:** https://github.com/tajlive/KP
 - **Supabase:** https://app.supabase.com/project/vuxbjlykgmzskxbclquf
 - **Cloudflare:** https://dash.cloudflare.com
 
 ### Support
 - **E-post:** support@klarpakke.no
-- **Eier:** Taj (@tomarnejensen)
+- **Eier:** Taj (@tajlive)
 
 ---
 

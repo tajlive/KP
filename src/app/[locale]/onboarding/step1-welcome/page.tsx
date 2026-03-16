@@ -30,7 +30,7 @@ export default function OnboardingStep1() {
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("onboarding_step, onboarding_completed")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .single();
 
       if (profile?.onboarding_completed) {
@@ -73,7 +73,7 @@ export default function OnboardingStep1() {
           onboarding_step: 1,
           onboarding_started_at: new Date().toISOString(),
         })
-        .eq("user_id", user.id);
+        .eq("id", user.id);
 
       if (error) throw error;
 

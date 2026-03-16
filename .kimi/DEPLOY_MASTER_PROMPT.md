@@ -40,7 +40,7 @@ gcloud run deploy klarpakke \
 
 | Egenskap | Verdi |
 |---|---|
-| Repo | `~/klarpakke` (GitHub: `tomarnejensen/klarpakke`) |
+| Repo | `~/klarpakke` (GitHub: `tajlive/KP`) |
 | Hosting | **Google Cloud Run** (`us-central1`) |
 | GCP Prosjekt | `klarpakke-universitet` |
 | Database | Supabase (`vuxbjlykgmzskxbclquf`) |
@@ -188,7 +188,7 @@ git commit -m "feat: deploy via GitHub Actions"
 git push origin main
 
 # Vent på GitHub Actions
-# Følg med på: https://github.com/tomarnejensen/klarpakke/actions
+# Følg med på: https://github.com/tajlive/KP/actions
 
 # Verifiser
 gcloud run revisions list --service=klarpakke --region=us-central1 --limit=3

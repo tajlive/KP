@@ -77,8 +77,8 @@ export async function POST(request: Request) {
     const { data: existingSub } = await supabase
       .from("subscriptions")
       .select("stripe_customer_id")
-      .eq("user_id" as unknown, userId)
-      .single() as unknown;
+      .eq("user_id", userId)
+      .single();
 
     if (existingSub?.stripe_customer_id) {
       customerId = existingSub.stripe_customer_id;

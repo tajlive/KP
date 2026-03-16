@@ -90,7 +90,7 @@ export function useNotifications() {
 
       if (error && error.code !== 'PGRST116') throw error;
 
-      setPreferences((data as unknown as NotificationPreferences | null) || {
+      setPreferences((data as NotificationPreferences | null) || {
         price_alerts: true,
         trade_executed: true,
         course_reminder: true,
@@ -138,7 +138,8 @@ export function useNotifications() {
   // Mark notifications as read
   const markAsRead = async (notificationIds?: string[]) => {
     try {
-      const { error } = await (supabase.rpc as unknown)('mark_notifications_read', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any).rpc('mark_notifications_read', {
         p_notification_ids: notificationIds || null,
       });
 
@@ -164,9 +165,12 @@ export function useNotifications() {
   // Update preferences
   const updatePreferences = async (newPrefs: Partial<NotificationPreferences>) => {
     try {
-      const { error } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
         .from('notification_preferences')
-        .upsert({ ...preferences, ...newPrefs } as unknown);
+        .upsert({ ...preferences, ...newPrefs, user_id: user.id } as Record<string, unknown>);
 
       if (error) throw error;
 

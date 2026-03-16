@@ -125,11 +125,11 @@ export async function generateMetadata({
   };
 }
 
-const VALID_LOCALES = ['no', 'en'] as const;
+const VALID_LOCALES = ['no', 'en', 'th', 'zh'] as const;
 type ValidLocale = (typeof VALID_LOCALES)[number];
 
 function resolveLocale(raw: string | undefined): ValidLocale {
-  if (raw === 'no' || raw === 'en') return raw;
+  if (raw === 'no' || raw === 'en' || raw === 'th' || raw === 'zh') return raw;
   return 'no';
 }
 

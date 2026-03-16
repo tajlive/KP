@@ -34,7 +34,7 @@ export default function OnboardingStep4() {
       const { data: profile } = await supabase
         .from("user_profiles")
         .select("onboarding_step, onboarding_completed, binance_connected")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .single();
 
       if (profile?.onboarding_completed) {
@@ -112,7 +112,7 @@ export default function OnboardingStep4() {
           onboarding_step: 4,
           binance_connected: true,
         })
-        .eq("user_id", user.id);
+        .eq("id", user.id);
 
       if (error) throw error;
 
@@ -139,7 +139,7 @@ export default function OnboardingStep4() {
         .update({
           onboarding_step: 4,
         })
-        .eq("user_id", user.id);
+        .eq("id", user.id);
 
       if (error) throw error;
 

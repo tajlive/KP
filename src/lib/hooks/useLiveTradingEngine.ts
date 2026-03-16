@@ -70,7 +70,7 @@ export function useLiveTradingEngine(symbol: string): LiveTradingEngine {
         const { data: profile, error: profileError } = await supabase
           .from("user_profiles")
           .select("tier")
-          .eq("user_id" as unknown, user.id)
+          .eq("id", user.id)
           .maybeSingle();
 
         const liveTiers = ["master", "phd", "professor"];

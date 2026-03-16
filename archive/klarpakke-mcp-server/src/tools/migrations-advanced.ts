@@ -96,7 +96,7 @@ export async function deployAllPendingMigrations(): Promise<ToolOutput> {
     try {
       // Les SQL fra fil
       const response = await fetch(
-        `https://raw.githubusercontent.com/tomarnejensen/klarpakke/main/supabase/migrations/${migration.sql_file}`
+        `https://raw.githubusercontent.com/tajlive/KP/main/supabase/migrations/${migration.sql_file}`
       );
       const sql = await response.text();
       

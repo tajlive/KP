@@ -69,7 +69,7 @@ async function validateBinanceKeys(
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(_request: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -190,7 +190,7 @@ export async function GET(_request: NextRequest) {
     const { data: keys, error } = await supabase
       .from('user_binance_keys')
       .select('is_testnet, is_active, last_validated_at, created_at')
-      .eq('user_id', user.id)
+      .eq('id', user.id)
       .maybeSingle();
 
     if (error) {
@@ -226,7 +226,7 @@ export async function GET(_request: NextRequest) {
  */
 export async function DELETE(_request: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -240,7 +240,7 @@ export async function DELETE(_request: NextRequest) {
     const { error } = await supabase
       .from('user_binance_keys')
       .delete()
-      .eq('user_id', user.id);
+      .eq('id', user.id);
 
     if (error) {
       console.error('Error deleting keys:', getErrorMessage(error));

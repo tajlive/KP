@@ -2,7 +2,7 @@
 
 > **Dato**: 2026-01-31  
 > **Status**: ✅ Klart for aktivering  
-> **Repository**: tombomann/klarpakke
+> **Repository**: tajlive/KP
 
 ---
 
@@ -83,7 +83,7 @@ Følgende workflows oppdatert med riktig Site ID:
 Følgende secrets må legges til i GitHub:
 
 ```
-https://github.com/tombomann/klarpakke/settings/secrets/actions
+https://github.com/tajlive/KP/settings/secrets/actions
 ```
 
 | Secret | Value |
@@ -100,7 +100,7 @@ https://github.com/tombomann/klarpakke/settings/secrets/actions
 
 1. Gå til:
    ```
-   https://github.com/tombomann/klarpakke/settings/actions
+   https://github.com/tajlive/KP/settings/actions
    ```
 
 2. Under **Actions permissions** velg:
@@ -114,7 +114,7 @@ https://github.com/tombomann/klarpakke/settings/secrets/actions
 
 1. Gå til:
    ```
-   https://github.com/tombomann/klarpakke/settings/secrets/actions
+   https://github.com/tajlive/KP/settings/secrets/actions
    ```
 
 2. Klikk **New repository secret**
@@ -130,7 +130,7 @@ https://github.com/tombomann/klarpakke/settings/secrets/actions
 
 1. Gå til Actions-taben:
    ```
-   https://github.com/tombomann/klarpakke/actions
+   https://github.com/tajlive/KP/actions
    ```
 
 2. Du skal se:
@@ -224,7 +224,7 @@ git push origin main
 
 - **Teknisk support**: support@klarpakke.no
 - **GitHub Actions docs**: https://docs.github.com/en/actions
-- **Repository**: https://github.com/tombomann/klarpakke
+- **Repository**: https://github.com/tajlive/KP
 
 ---
 

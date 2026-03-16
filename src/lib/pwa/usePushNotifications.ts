@@ -67,14 +67,19 @@ export function usePushNotifications(userId: string | null): PushState {
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       })
 
-      // Save subscription to Supabase
+      // Save subscription to Supabase (auth/p256dh from subscription keys)
       const supabase = createClient()
+      const authKey = subscription.getKey('auth')
+      const p256dhKey = subscription.getKey('p256dh')
+      const toB64 = (buf: ArrayBuffer | null) =>
+        buf ? btoa(String.fromCharCode(...new Uint8Array(buf))) : ''
       await supabase
         .from('push_subscriptions')
         .upsert({
           user_id: userId,
           endpoint: subscription.endpoint,
-          subscription: subscription.toJSON(),
+          auth: toB64(authKey),
+          p256dh: toB64(p256dhKey),
           updated_at: new Date().toISOString(),
         }, { onConflict: 'endpoint' })
 

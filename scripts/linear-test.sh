@@ -16,9 +16,11 @@ echo ""
 
 # Sjekk om API key finnes
 if [ -z "$LINEAR_API_KEY" ]; then
-  # Prøv å hente fra .env.local
+  # Prøv å hente fra .env.local (fjern anførselstegn slik at Linear ikke får 401)
   if [ -f ".env.local" ]; then
-    export LINEAR_API_KEY=$(grep "LINEAR_API_KEY" .env.local | cut -d'=' -f2)
+    raw=$(grep "^LINEAR_API_KEY=" .env.local 2>/dev/null | cut -d'=' -f2-)
+    raw="${raw%\"}"; raw="${raw#\"}"; raw="${raw%\'}"; raw="${raw#\'}"
+    export LINEAR_API_KEY="$raw"
   fi
 fi
 
@@ -44,7 +46,7 @@ response=$(curl -s -X POST https://api.linear.app/graphql \
 if echo "$response" | grep -q '"data"'; then
   name=$(echo "$response" | grep -o '"name":"[^"]*"' | head -1 | cut -d'"' -f4)
   echo -e "${GREEN}✅ Tilkobling OK${NC}"
-  echo "  Bruker: ${CYAN}$name${NC}"
+  echo -e "  Bruker: ${CYAN}${name}${NC}"
 else
   echo -e "${RED}❌ Tilkobling feilet${NC}"
   echo "  Respons: $response"
@@ -64,7 +66,7 @@ team_response=$(curl -s -X POST https://api.linear.app/graphql \
 
 if echo "$team_response" | grep -q '"teams"'; then
   teams=$(echo "$team_response" | grep -o '"name":"[^"]*"' | cut -d'"' -f4)
-  team_count=$(echo "$teams" | wc -l)
+  team_count=$(echo "$teams" | wc -l | tr -d ' \n')
   echo -e "${GREEN}✅ Teams hentet ($team_count)${NC}"
   echo "$teams" | while read team; do
     echo "  • $team"
@@ -85,7 +87,7 @@ issue_response=$(curl -s -X POST https://api.linear.app/graphql \
   -d '{"query": "{ issues(first: 3) { nodes { identifier title state { name } } } }"}')
 
 if echo "$issue_response" | grep -q '"issues"'; then
-  issue_count=$(echo "$issue_response" | grep -o '"identifier"' | wc -l)
+  issue_count=$(echo "$issue_response" | grep -o '"identifier"' | wc -l | tr -d ' \n')
   echo -e "${GREEN}✅ Issues hentet ($issue_count)${NC}"
 else
   echo -e "${RED}❌ Kunne ikke hente issues${NC}"
