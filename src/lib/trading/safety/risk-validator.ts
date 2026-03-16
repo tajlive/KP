@@ -63,7 +63,7 @@ export interface RiskProfile {
 export async function validateTradeAgainstRiskProfile(
   trade: TradeRequest
 ): Promise<RiskValidationResult> {
-  const supabase = (await createClient()) as unknown;
+  const supabase = createClient();
 
   try {
     // 1. Hent session info
@@ -71,8 +71,8 @@ export async function validateTradeAgainstRiskProfile(
       .from("trading_sessions")
       .select("id, user_id, mode, status, current_capital_nok, starting_capital_nok")
       .eq("id", trade.sessionId)
-      .eq("user_id" as unknown, trade.userId)
-      .single() as unknown;
+      .eq("user_id", trade.userId)
+      .single();
 
     if (sessionError || !session) {
       return {
@@ -109,9 +109,9 @@ export async function validateTradeAgainstRiskProfile(
     const { data: riskProfile, error: riskError } = await supabase
       .from("risk_profiles")
       .select("id, name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, leverage_allowed")
-      .eq("user_id" as unknown, trade.userId)
+      .eq("user_id", trade.userId)
       .eq("is_active", true)
-      .single() as unknown;
+      .single();
 
     if (riskError || !riskProfile) {
       // For paper trading: default til forsiktig hvis ingen profil
@@ -130,15 +130,25 @@ export async function validateTradeAgainstRiskProfile(
       }
     }
 
-    const profile: RiskProfile = riskProfile || {
-      id: "default",
-      name: "forsiktig",
-      max_position_pct: 2.0,
-      max_exposure_pct: 5.0,
-      max_daily_loss_pct: 1.0,
-      allowed_pairs: ["BTCUSDT", "ETHUSDT"],
-      leverage_allowed: false,
-    };
+    const profile: RiskProfile = riskProfile
+      ? {
+          id: riskProfile.id,
+          name: riskProfile.name,
+          max_position_pct: riskProfile.max_position_pct ?? 2.0,
+          max_exposure_pct: riskProfile.max_exposure_pct ?? 5.0,
+          max_daily_loss_pct: riskProfile.max_daily_loss_pct ?? 1.0,
+          allowed_pairs: riskProfile.allowed_pairs ?? ["BTCUSDT", "ETHUSDT"],
+          leverage_allowed: riskProfile.leverage_allowed ?? false,
+        }
+      : {
+          id: "default",
+          name: "forsiktig",
+          max_position_pct: 2.0,
+          max_exposure_pct: 5.0,
+          max_daily_loss_pct: 1.0,
+          allowed_pairs: ["BTCUSDT", "ETHUSDT"],
+          leverage_allowed: false,
+        };
 
     // 4. Sjekk bot health hvis botId er spesifisert
     if (trade.botId) {
@@ -146,7 +156,7 @@ export async function validateTradeAgainstRiskProfile(
         .from("bot_health")
         .select("status, last_heartbeat, consecutive_errors, max_consecutive_errors")
         .eq("id", trade.botId)
-        .single() as unknown;
+        .single();
 
       if (!botHealth) {
         return {
@@ -168,7 +178,7 @@ export async function validateTradeAgainstRiskProfile(
       }
 
       // Sjekk heartbeat (maks 5 minutter gammel)
-      const heartbeatAge = Date.now() - new Date(botHealth.last_heartbeat).getTime();
+      const heartbeatAge = Date.now() - new Date(botHealth.last_heartbeat ?? 0).getTime();
       if (heartbeatAge > 5 * 60 * 1000) {
         return {
           allowed: false,
@@ -181,7 +191,7 @@ export async function validateTradeAgainstRiskProfile(
       }
 
       // Sjekk consecutive errors
-      if (botHealth.consecutive_errors >= (botHealth.max_consecutive_errors || 3)) {
+      if ((botHealth.consecutive_errors ?? 0) >= (botHealth.max_consecutive_errors || 3)) {
         return {
           allowed: false,
           rejectionReason: "BOT_NOT_HEALTHY",
@@ -219,7 +229,9 @@ export async function validateTradeAgainstRiskProfile(
       .select("symbol, quantity, avg_entry_price")
       .eq("session_id", trade.sessionId);
 
-    const currentExposureUsdt = (positions || []).reduce((sum: number, pos: unknown) => {
+    type PositionRow = { symbol?: string; quantity?: number; avg_entry_price?: number };
+    const positionsList = (positions ?? []) as PositionRow[];
+    const currentExposureUsdt = positionsList.reduce((sum, pos) => {
       return sum + (Number(pos.quantity) * Number(pos.avg_entry_price));
     }, 0);
     const rate = usdtNokRate ?? undefined;
@@ -227,9 +239,7 @@ export async function validateTradeAgainstRiskProfile(
       ? usdtToNok(currentExposureUsdt, rate)
       : currentExposureUsdt;
 
-    const existingPosition = (positions as unknown[] | null | undefined)?.find(
-      (p) => p.symbol === trade.symbol,
-    );
+    const existingPosition = positionsList.find((p) => p.symbol === trade.symbol);
     const existingPositionValueUsdt = existingPosition
       ? Number(existingPosition.quantity) * Number(existingPosition.avg_entry_price)
       : 0;
@@ -385,10 +395,11 @@ export async function recordTradeRejection(
 ): Promise<void> {
   if (result.allowed) return;
 
-  const supabase = (await createClient()) as unknown;
+  const supabase = createClient();
 
   try {
-    await supabase.from("trade_rejections").insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from("trade_rejections").insert({
       user_id: trade.userId,
       session_id: trade.sessionId,
       symbol: trade.symbol,
@@ -398,9 +409,9 @@ export async function recordTradeRejection(
       order_type: trade.orderType,
       trading_mode: trade.tradingMode,
       rejection_reason: result.rejectionReason,
-      rejection_details: (result.rejectionDetails as unknown) || {},
-      risk_profile_id: result.riskProfileId,
-      bot_id: trade.botId,
+      rejection_details: (result.rejectionDetails as Record<string, unknown>) ?? {},
+      risk_profile_id: result.riskProfileId ?? null,
+      bot_id: trade.botId ?? null,
     });
 
     console.warn(`[TradeRejection] ${result.rejectionReason} for user ${trade.userId}`, {
@@ -423,7 +434,7 @@ export async function recordTradeDecision(
   executedQuantity?: number,
   executedPrice?: number
 ): Promise<void> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     await supabase.from("trade_decisions").insert({

@@ -56,7 +56,7 @@ export function AutoTradingConfigCard() {
       const { data, error } = await supabase
         .from("user_auto_trading_configs")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .maybeSingle()
         .returns<UserAutoTradingConfig>();
 
@@ -92,7 +92,7 @@ export function AutoTradingConfigCard() {
       const { data: existingConfig } = await supabase
         .from("user_auto_trading_configs")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (existingConfig) {
@@ -104,7 +104,7 @@ export function AutoTradingConfigCard() {
             trading_capital_nok: config.max_trade_size_nok,
             updated_at: new Date().toISOString(),
           })
-          .eq("user_id", user.id);
+          .eq("id", user.id);
       } else {
         await supabase
           .from("user_auto_trading_configs")

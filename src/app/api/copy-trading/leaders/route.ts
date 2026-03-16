@@ -23,10 +23,11 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
     }
 
-    const db: unknown = (await createClient()) as unknown;
+    const db = createClient();
 
     // Use materialized view (refreshed every 60 seconds by pg_cron)
-    const { data: leaders, error } = await db
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: leaders, error } = await (db as any)
       .from('leaderboard')
       .select('*')
       .order('total_pnl', { ascending: false })
@@ -44,11 +45,11 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       .eq('follower_id', user.id)
       .eq('is_active', true);
 
-    const followedLeaderIds = new Set(follows?.map((f: unknown) => f.leader_id) ?? []);
-
-    const enrichedLeaders = (leaders ?? []).map((leader: unknown) => ({
+    type LeaderRow = { user_id?: string; [k: string]: unknown };
+    const followedLeaderIds = new Set(follows?.map((f: { leader_id: string }) => f.leader_id) ?? []);
+    const enrichedLeaders = (leaders ?? []).map((leader: LeaderRow) => ({
       ...leader,
-      is_following: followedLeaderIds.has(leader.user_id),
+      is_following: followedLeaderIds.has(leader.user_id ?? ''),
     }));
 
     return NextResponse.json({ leaders: enrichedLeaders });

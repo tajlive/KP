@@ -3,8 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PaperTradingList } from "@/components/paper-trading/PaperTradingList";
+import type { ComponentProps } from "react";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
+
+type PaperTradingListSession = ComponentProps<typeof PaperTradingList>["sessions"][number];
 
 export const dynamic = "force-dynamic";
 
@@ -74,7 +77,7 @@ export default async function PaperTradingPage({
       .select(
         "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at"
       )
-      .eq("user_id", user.id)
+      .eq("id", user.id)
       .eq("mode", "paper")
       .order("created_at", { ascending: false });
 
@@ -86,8 +89,8 @@ export default async function PaperTradingPage({
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("paper_balance")
-      .eq("user_id" as unknown, user.id)
-      .single() as unknown;
+      .eq("id", user.id)
+      .single();
 
     const balance = profile?.paper_balance ?? 1_000_000;
 
@@ -103,7 +106,7 @@ export default async function PaperTradingPage({
         </div>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <PaperTradingList 
-            sessions={(sessions as unknown) || []} 
+            sessions={(sessions ?? []) as PaperTradingListSession[]} 
             balance={balance}
             locale={locale}
           />

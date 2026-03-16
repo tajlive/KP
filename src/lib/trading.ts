@@ -24,13 +24,13 @@ export const executeBuy = async (
       .from('wallets')
       .select('*')
       .eq('user_id', userId)
-      .single() as unknown;
+      .single();
 
     if (walletError || !walletData) {
       return { success: false, error: 'Wallet not found' };
     }
 
-    const wallet = walletData as Wallet;
+    const wallet = walletData as unknown as Wallet;
 
     if (wallet.balance_usdt < totalCost) {
       return { success: false, error: 'Insufficient balance' };
@@ -62,13 +62,13 @@ export const executeBuy = async (
       .from('trades')
       .select('*')
       .eq('id', tradeResult.trade_id as string)
-      .single() as unknown;
+      .single();
 
     if (fetchError || !trade) {
       return { success: false, error: 'Failed to fetch trade' };
     }
 
-    return { success: true, trade };
+    return { success: true, trade: trade as unknown as Trade };
   } catch (error) {
     console.error('Buy execution error:', error);
     return { success: false, error: 'Unexpected error occurred' };
@@ -89,13 +89,13 @@ export const executeSell = async (
       .select('*')
       .eq('user_id', userId)
       .eq('symbol', symbol)
-      .single() as unknown;
+      .single();
 
     if (portfolioError || !portfolioData) {
       return { success: false, error: 'No position found for this symbol' };
     }
 
-    const position = portfolioData as PortfolioItem;
+    const position = portfolioData as unknown as PortfolioItem;
 
     if (position.quantity < quantity) {
       return { success: false, error: 'Insufficient quantity to sell' };
@@ -127,7 +127,7 @@ export const executeSell = async (
       .from('trades')
       .select('*')
       .eq('id', tradeResult.trade_id as string)
-      .single() as unknown;
+      .single();
 
     if (fetchError || !trade) {
       return { success: false, error: 'Failed to fetch trade' };
@@ -146,14 +146,14 @@ export const getWallet = async (userId: string): Promise<Wallet | null> => {
     .from('wallets')
     .select('*')
     .eq('user_id', userId)
-    .single() as unknown;
+    .single();
 
   if (error) {
     console.error('Error fetching wallet:', error);
     return null;
   }
 
-  return data as Wallet;
+  return data as unknown as Wallet;
 };
 
 // Get user's portfolio
@@ -170,7 +170,7 @@ export const getPortfolio = async (userId: string): Promise<PortfolioItem[]> => 
     return [];
   }
 
-  return (data || []) as PortfolioItem[];
+  return (data || []) as unknown as PortfolioItem[];
 };
 
 // Get user's trades
@@ -198,23 +198,25 @@ export const getTrades = async (
     return [];
   }
 
-  return (data || []) as Trade[];
+  return (data || []) as unknown as Trade[];
 };
 
-// Get trading stats
+
+// Get trading stats (table may not be in generated types)
 export const getTradingStats = async (userId: string): Promise<TradingStats | null> => {
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('trading_stats')
     .select('*')
     .eq('user_id', userId)
-    .single() as unknown;
+    .single();
 
   if (error) {
     console.error('Error fetching trading stats:', error);
     return null;
   }
 
-  return data as TradingStats;
+  return data as unknown as TradingStats;
 };
 
 // Calculate unrealized P&L for a position

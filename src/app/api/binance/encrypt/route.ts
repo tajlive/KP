@@ -15,7 +15,7 @@ import { encrypt } from '@/lib/crypto';
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {

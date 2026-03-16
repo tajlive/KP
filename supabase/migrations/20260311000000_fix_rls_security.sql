@@ -10,45 +10,22 @@ BEGIN;
 -- api.* views med riktig sikkerhetsmodell
 -- ============================================
 
--- api.risk_profiles
+-- api.risk_profiles (alle kolonner fra public.risk_profiles for egen bruker)
 DROP VIEW IF EXISTS api.risk_profiles CASCADE;
 CREATE OR REPLACE VIEW api.risk_profiles
 WITH (security_invoker = on)
 AS
-SELECT 
-  id,
-  user_id,
-  profile_type,
-  risk_level,
-  max_position_size,
-  max_daily_loss,
-  created_at,
-  updated_at
-FROM public.risk_profiles
-WHERE user_id = auth.uid();
+SELECT * FROM public.risk_profiles WHERE user_id = auth.uid();
 
 COMMENT ON VIEW api.risk_profiles IS 'Brukerens egne risikoprofiler — SECURITY INVOKER';
 GRANT SELECT ON api.risk_profiles TO authenticated;
 
--- api.auto_trading_configs  
+-- api.auto_trading_configs
 DROP VIEW IF EXISTS api.auto_trading_configs CASCADE;
 CREATE OR REPLACE VIEW api.auto_trading_configs
 WITH (security_invoker = on)
 AS
-SELECT 
-  id,
-  user_id,
-  config_name,
-  strategy_id,
-  is_active,
-  risk_profile_id,
-  trading_pair,
-  position_size,
-  max_positions,
-  created_at,
-  updated_at
-FROM public.auto_trading_configs
-WHERE user_id = auth.uid();
+SELECT * FROM public.auto_trading_configs WHERE user_id = auth.uid();
 
 COMMENT ON VIEW api.auto_trading_configs IS 'Brukerens auto-trading konfigurasjoner — SECURITY INVOKER';
 GRANT SELECT ON api.auto_trading_configs TO authenticated;
@@ -58,20 +35,7 @@ DROP VIEW IF EXISTS api.paper_trading_sessions CASCADE;
 CREATE OR REPLACE VIEW api.paper_trading_sessions
 WITH (security_invoker = on)
 AS
-SELECT 
-  id,
-  user_id,
-  session_name,
-  strategy_id,
-  status,
-  starting_capital,
-  current_capital,
-  total_pnl,
-  created_at,
-  updated_at,
-  ended_at
-FROM public.paper_trading_sessions
-WHERE user_id = auth.uid();
+SELECT * FROM public.paper_trading_sessions WHERE user_id = auth.uid();
 
 COMMENT ON VIEW api.paper_trading_sessions IS 'Brukerens paper trading-økter — SECURITY INVOKER';
 GRANT SELECT ON api.paper_trading_sessions TO authenticated;
@@ -87,79 +51,49 @@ ALTER TABLE IF EXISTS public.trading_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.strategy_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.user_trading_config ENABLE ROW LEVEL SECURITY;
 
--- real_positions: Bruker ser kun egne posisjoner
-DROP POLICY IF EXISTS "users_own_rows" ON public.real_positions;
-DROP POLICY IF EXISTS "users_insert_own" ON public.real_positions;
-DROP POLICY IF EXISTS "users_update_own" ON public.real_positions;
-DROP POLICY IF EXISTS "users_delete_own" ON public.real_positions;
+-- real_positions: kun hvis tabellen har user_id (noen miljøer har account_id)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'real_positions' AND column_name = 'user_id') THEN
+    DROP POLICY IF EXISTS "users_own_rows" ON public.real_positions;
+    DROP POLICY IF EXISTS "users_insert_own" ON public.real_positions;
+    DROP POLICY IF EXISTS "users_update_own" ON public.real_positions;
+    DROP POLICY IF EXISTS "users_delete_own" ON public.real_positions;
+    DROP POLICY IF EXISTS "real_positions_select_own" ON public.real_positions;
+    DROP POLICY IF EXISTS "real_positions_insert_own" ON public.real_positions;
+    DROP POLICY IF EXISTS "real_positions_update_own" ON public.real_positions;
+    DROP POLICY IF EXISTS "real_positions_delete_own" ON public.real_positions;
+    CREATE POLICY "real_positions_select_own" ON public.real_positions FOR SELECT USING (user_id = auth.uid());
+    CREATE POLICY "real_positions_insert_own" ON public.real_positions FOR INSERT WITH CHECK (user_id = auth.uid());
+    CREATE POLICY "real_positions_update_own" ON public.real_positions FOR UPDATE USING (user_id = auth.uid());
+    CREATE POLICY "real_positions_delete_own" ON public.real_positions FOR DELETE USING (user_id = auth.uid());
+  END IF;
+END $$;
 
-CREATE POLICY "real_positions_select_own"
-  ON public.real_positions
-  FOR SELECT
-  USING (user_id = auth.uid());
-
-CREATE POLICY "real_positions_insert_own"
-  ON public.real_positions
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "real_positions_update_own"
-  ON public.real_positions
-  FOR UPDATE
-  USING (user_id = auth.uid());
-
-CREATE POLICY "real_positions_delete_own"
-  ON public.real_positions
-  FOR DELETE
-  USING (user_id = auth.uid());
-
--- trading_logs: Bruker ser kun egne logger
-DROP POLICY IF EXISTS "trading_logs_select_own" ON public.trading_logs;
-DROP POLICY IF EXISTS "trading_logs_insert_own" ON public.trading_logs;
-
-CREATE POLICY "trading_logs_select_own"
-  ON public.trading_logs
-  FOR SELECT
-  USING (user_id = auth.uid());
-
-CREATE POLICY "trading_logs_insert_own"
-  ON public.trading_logs
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
--- strategy_logs: Bruker ser kun egne strategy-logger
-DROP POLICY IF EXISTS "strategy_logs_select_own" ON public.strategy_logs;
-DROP POLICY IF EXISTS "strategy_logs_insert_own" ON public.strategy_logs;
-
-CREATE POLICY "strategy_logs_select_own"
-  ON public.strategy_logs
-  FOR SELECT
-  USING (user_id = auth.uid());
-
-CREATE POLICY "strategy_logs_insert_own"
-  ON public.strategy_logs
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
--- user_trading_config: Bruker ser kun egen config
-DROP POLICY IF EXISTS "user_config_select_own" ON public.user_trading_config;
-DROP POLICY IF EXISTS "user_config_insert_own" ON public.user_trading_config;
-DROP POLICY IF EXISTS "user_config_update_own" ON public.user_trading_config;
-
-CREATE POLICY "user_config_select_own"
-  ON public.user_trading_config
-  FOR SELECT
-  USING (user_id = auth.uid());
-
-CREATE POLICY "user_config_insert_own"
-  ON public.user_trading_config
-  FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "user_config_update_own"
-  ON public.user_trading_config
-  FOR UPDATE
-  USING (user_id = auth.uid());
+-- trading_logs, strategy_logs, user_trading_config: policies kun hvis user_id finnes
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'trading_logs' AND column_name = 'user_id') THEN
+    DROP POLICY IF EXISTS "trading_logs_select_own" ON public.trading_logs;
+    DROP POLICY IF EXISTS "trading_logs_insert_own" ON public.trading_logs;
+    CREATE POLICY "trading_logs_select_own" ON public.trading_logs FOR SELECT USING (user_id = auth.uid());
+    CREATE POLICY "trading_logs_insert_own" ON public.trading_logs FOR INSERT WITH CHECK (user_id = auth.uid());
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'strategy_logs' AND column_name = 'user_id') THEN
+    DROP POLICY IF EXISTS "strategy_logs_select_own" ON public.strategy_logs;
+    DROP POLICY IF EXISTS "strategy_logs_insert_own" ON public.strategy_logs;
+    CREATE POLICY "strategy_logs_select_own" ON public.strategy_logs FOR SELECT USING (user_id = auth.uid());
+    CREATE POLICY "strategy_logs_insert_own" ON public.strategy_logs FOR INSERT WITH CHECK (user_id = auth.uid());
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'user_trading_config' AND column_name = 'user_id') THEN
+    DROP POLICY IF EXISTS "user_config_select_own" ON public.user_trading_config;
+    DROP POLICY IF EXISTS "user_config_insert_own" ON public.user_trading_config;
+    DROP POLICY IF EXISTS "user_config_update_own" ON public.user_trading_config;
+    CREATE POLICY "user_config_select_own" ON public.user_trading_config FOR SELECT USING (user_id = auth.uid());
+    CREATE POLICY "user_config_insert_own" ON public.user_trading_config FOR INSERT WITH CHECK (user_id = auth.uid());
+    CREATE POLICY "user_config_update_own" ON public.user_trading_config FOR UPDATE USING (user_id = auth.uid());
+  END IF;
+END $$;
 
 -- ============================================
 -- SEKSJON C: RLS POLICIES — ADMIN/SYSTEM

@@ -132,7 +132,7 @@ grep -rn "params: { locale: string }" src/app/[locale] --include="page.tsx"
 
 ### Migration Status: ✅ COMPLETE
 
-**Repository:** tomarnejensen/klarpakke  
+**Repository:** tajlive/KP  
 **Migration:** Next.js 14 → 15 async params  
 **Files requiring changes:** 1 (dashboard/auto-trade/page.tsx)  
 **Files already migrated:** 18  

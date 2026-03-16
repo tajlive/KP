@@ -93,13 +93,13 @@ export default function RealTradingDashboard() {
       const { data, error: fetchError } = await supabase
         .from("auto_trades")
         .select("*")
-        .eq("user_id" as unknown, user.id)
+        .eq("id", user.id)
         .order("executed_at", { ascending: false })
         .limit(50);
 
       if (fetchError) throw fetchError;
 
-      const typedData = ((data || []) as unknown) as Trade[];
+      const typedData = (data || []) as unknown as Trade[];
       setTrades(typedData);
       calculateStats(typedData);
     } catch (err: unknown) {

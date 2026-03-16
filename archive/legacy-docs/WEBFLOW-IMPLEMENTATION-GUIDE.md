@@ -17,7 +17,7 @@ This guide covers:
 ### Step 1.1: Create Test Users
 
 1. Go to [Supabase Dashboard](https://app.supabase.com)
-2. Select your project: `tombomann's Project`
+2. Select your project: `tajlive's Project`
 3. Click **Authentication** → **Users** → **Add User**
 
 Create 3 users:

@@ -32,7 +32,7 @@ export async function getUserProfileOnboarding(
   const { data, error } = await supabase
     .from("user_profiles")
     .select("onboarding_step, onboarding_completed, onboarding_started_at")
-    .eq("user_id", userId)
+    .eq("id", userId)
     .maybeSingle();
 
   if (error) return { data: null, error };
@@ -51,7 +51,7 @@ export async function getProfileOnboardingExtended(
     .select(
       "onboarding_step, onboarding_completed, onboarding_started_at, paper_balance, trading_experience, binance_connected"
     )
-    .eq("user_id", userId)
+    .eq("id", userId)
     .maybeSingle();
 
   if (error) return { data: null, error };

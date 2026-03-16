@@ -2,8 +2,8 @@
 
 Du er Claude Code (programmeringsagent). Din oppgave er å merge PR #68, verifisere at alt fungerer, og teste Paper Trading-integrasjonen.
 
-Repo: https://github.com/tombomann/klarpakke
-PR: https://github.com/tombomann/klarpakke/pull/68
+Repo: https://github.com/tajlive/KP
+PR: https://github.com/tajlive/KP/pull/68
 
 ---
 

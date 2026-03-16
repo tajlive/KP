@@ -7,7 +7,7 @@
 
 ```bash
 # 1. Klon
-git clone https://github.com/tombomann/klarpakke.git
+git clone https://github.com/tajlive/KP.git
 cd klarpakke
 
 # 2. Installer

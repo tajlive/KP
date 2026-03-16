@@ -1,3 +1,4 @@
+import path from "path";
 import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin({
@@ -25,9 +26,10 @@ const nextConfig = {
   // Use Node.js runtime (Cloudflare Pages supports this via next-on-pages)
   // Individual API routes can opt into edge runtime if needed
 
-  // Build: lint kjører under build (2026-standard). Type-check fortsatt av til type-gjeld.
+  // Build: lint kjører under build (2026-standard). I CI som allerede kjører lint kan
+  // SKIP_LINT_IN_BUILD=true settes for å unngå dobbel lint og redusere build-tid (KLA-167).
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: process.env.SKIP_LINT_IN_BUILD === "true",
   },
   typescript: {
     // TODO 2026: Fjern ignoreBuildErrors når type-gjelden er nedkjempet (Supabase-typer + as unknown).
@@ -167,6 +169,8 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": "./src",
+      // Exact match only: main 'zustand' -> shim; zustand/react, zustand/middleware stay as node_modules
+      "zustand$": path.resolve(process.cwd(), "src/lib/zustand-shim.ts"),
     };
 
     // Client-side polyfills

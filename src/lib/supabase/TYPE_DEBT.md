@@ -2,9 +2,9 @@
 
 ## Status: Production Ready with Documented Technical Debt
 
-**Last Updated:** 2026-03-07  
-**Commit:** d3f16ca1f  
-**Remaining Type Errors:** ~0-50 (non-critical)
+**Last Updated:** 2026-03-16  
+**Linear:** KLA-163 (sync kode mot Supabase-skjema)  
+**Remaining Type Errors:** ~0-50 (non-critical); full `tsc --noEmit` kan ta lang tid på store prosjekter.
 
 ---
 
@@ -76,9 +76,9 @@ These are **non-blocking**:
 
 ```bash
 # Tasks:
-- [ ] Fix SelectQueryError in cron/daily-summary
-- [ ] Fix SelectQueryError in email/send
-- [ ] Update user_profiles query types
+- [x] Fix SelectQueryError in cron/daily-summary (KLA-163: bruk id, typpede UserForSummary)
+- [x] Fix SelectQueryError in email/send + lib/email (KLA-163: fjernet as unknown på user_profiles)
+- [x] Update user_profiles query types (KLA-162: normalisert til .eq("id", user.id))
 - [ ] Fix analytics event types
 ```
 
@@ -153,6 +153,19 @@ async function getUser(id) {
 
 **Risk:** Low  
 **Mitigation:** Comprehensive monitoring + 3-week cleanup plan
+
+---
+
+## Supabase schema sync (KLA-163)
+
+Synk kode mot gjeldende Supabase-skjema ved å regenerere typer:
+
+```bash
+# Krever: SUPABASE_SERVICE_ROLE_KEY og NEXT_PUBLIC_SUPABASE_URL (eller Supabase login)
+npx supabase gen types typescript --project-id vuxbjlykgmzskxbclquf > src/types/supabase-generated.ts
+```
+
+Etter regenerering: kjør `npm run build` og fiks eventuelle nye type-feil. Se også `scripts/morning-setup.sh` og `deploy-now.sh`.
 
 ---
 

@@ -46,8 +46,8 @@ export function useTrading(userId?: string) {
     const fromAny = supabase.from as (t: string) => any;
     const t = await supabase.from('trades').select('*').eq('user_id', userId).order('created_at', { ascending: false });
     const p = await supabase.from('portfolios').select('*').eq('user_id', userId);
-    const w = await fromAny('wallets').select('*').eq('user_id', userId).single() as unknown;
-    const s = await fromAny('trading_stats').select('*').eq('user_id', userId).single() as unknown;
+    const w = await fromAny('wallets').select('*').eq('user_id', userId).single();
+    const s = await fromAny('trading_stats').select('*').eq('user_id', userId).single();
     setTrades(t.data || []); setPortfolio(p.data || []); setWallet(w.data as WalletDB | null); setStats(s.data as TradingStatsDB | null); setLoading(false);
   }, [userId]);
 

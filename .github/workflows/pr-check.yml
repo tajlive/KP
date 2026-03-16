@@ -31,6 +31,13 @@ jobs:
       - name: 📦 Install
         run: npm ci --prefer-offline
 
+      - name: 📂 Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
+          restore-keys: next-${{ runner.os }}-
+
       - name: 🔍 Lint
         run: npm run lint -- --quiet
 
@@ -43,6 +50,7 @@ jobs:
       - name: 🏗️ Build
         run: npm run build
         env:
+          SKIP_LINT_IN_BUILD: "true"
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         timeout-minutes: 10

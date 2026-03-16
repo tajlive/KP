@@ -32,9 +32,9 @@ export function useSubscription() {
         .eq('status', 'active')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single() as unknown;
+        .single();
 
-      setSubscription(data ?? null);
+      setSubscription((data ?? null) as Subscription | null);
       setLoading(false);
     }
 

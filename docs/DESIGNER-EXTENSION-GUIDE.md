@@ -561,7 +561,7 @@ npm run build
 
 ### Quick Links
 - [Webflow Designer API Docs](https://developers.webflow.com/designer/reference/introduction)
-- [GitHub Issues](https://github.com/tombomann/klarpakke/issues)
+- [GitHub Issues](https://github.com/tajlive/KP/issues)
 - [Webflow Developer Forum](https://discourse.webflow.com)
 
 ---

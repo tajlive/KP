@@ -52,7 +52,7 @@ export default function SignalTable({
     setError("");
 
     try {
-      let query = supabase.from("signals" as unknown).select("*");
+      let query = supabase.from("signals").select("*");
 
       if (filter !== "all") {
         query = query.eq("status", filter);
@@ -68,7 +68,7 @@ export default function SignalTable({
         return;
       }
 
-      setSignals(((data || []) as unknown) as Signal[]);
+      setSignals(((data || []) as Signal[]));
     } catch (err) {
       setError("En feil oppstod under henting av data");
       console.error("Error:", err);

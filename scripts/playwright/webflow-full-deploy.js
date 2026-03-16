@@ -90,7 +90,7 @@ async function fullDeploy() {
     
     // 6. Oppdater FOOTER Code
     console.log('📝 Oppdaterer FOOTER code...');
-    const footerCode = '<!-- Klarpakke Site JavaScript -->\n<script src="https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js"></script>';
+    const footerCode = '<!-- Klarpakke Site JavaScript -->\n<script src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js"></script>';
     
     try {
       const footerArea = await page.locator('textarea').nth(1);

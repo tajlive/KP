@@ -1,7 +1,7 @@
 # Klarpakke API-ruter
 
 > Dokumentasjon: API-ruteoversikt og sikkerhetsstatus  
-> Oppdatert: 2026-03-10 (KLA-108)  
+> Oppdatert: 2026-03-15 (KLA-168, MCP/CLI/CI)  
 
 ---
 
@@ -49,10 +49,11 @@
 
 | Rute | Metode(r) | Status | Notater |
 |------|-----------|--------|---------|
-| `/api/health` | GET | ✅ Prod | Health check |
+| `/api/health` | GET | ✅ Prod | Health check (DB, KV, env) |
 | `/api/status` | GET | ✅ Prod | System status |
 | `/api/pricing` | GET | ✅ Prod | Prisdata |
-| `/api/sentry` | POST | ✅ Prod | Error reporting |
+| `/api/sentry` | POST | ✅ Prod | Sentry tunnel (client events) |
+| `/api/test-sentry` | GET | ✅ Prod | Server-side test-event (kun prod + DSN); brukes av dashboard/sentry-test |
 | `/api/stripe/*` | POST | ✅ Prod | Webhooks |
 | `/api/webhooks/*` | POST | ✅ Prod | Ekstern integrasjon |
 
@@ -73,7 +74,16 @@
 | Rute | Aksjon | Erstattet av |
 |------|--------|--------------|
 | `/api/sentry-test` | ❌ Slettet | `/api/sentry` |
-| `/api/test-sentry` | ❌ Slettet | `/api/sentry` |
+| `/api/test-sentry` | ✅ Gjenopprettet (KLA-168) | GET: sender server-side test-event i prod når DSN er satt. Brukes av `/dashboard/sentry-test`. |
+
+---
+
+## Cron (Vercel)
+
+| Rute | Schedule | Beskrivelse |
+|------|----------|-------------|
+| `/api/cron/keepalive` | `0 6 */5 * *` (06:00 hver 5. dag) | Keepalive |
+| `/api/cron/update-usdt-nok` | `0 6 * * *` (06:00 daglig) | Oppdaterer `global_settings.usdt_nok_rate` for paper trading (USDT ≈ USD). Appen bruker: env `USDT_NOK_RATE` → DB `global_settings.usdt_nok_rate` → fallback 10.8. Se `src/lib/trading/currency.ts`. |
 
 ---
 

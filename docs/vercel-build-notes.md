@@ -33,8 +33,8 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 
 ## 6. «The Next.js plugin was not detected in your ESLint configuration»
 
-- **Årsak:** Next.js build sjekker om ESLint-config bruker deres presets. Vi bruker flat config med `@next/eslint-plugin-next` direkte (anbefalt ved egen react/jsx-a11y/react-hooks). Next sin detector finner ikke pluginen i vår oppsett.
-- **Fiks:** Ingen endring – reglene kjører (lint passerer). Advarselen er kosmetisk. Ved å bytte til `eslint-config-next/core-web-vitals` i stedet for plugin direkte ville vi fått konflikter med våre eksisterende react/jsx-a11y/react-hooks-regler.
+- **Årsak:** Next.js build sjekker om ESLint-config bruker deres presets. Vi bruker flat config med `@next/eslint-plugin-next` (nextPlugin.flatConfig.coreWebVitals) øverst i eslint.config.mjs. Next sin detector kan likevel rapportere at pluginen ikke er funnet (kjent med flat config).
+- **Fiks:** Pluginen er registrert og reglene kjører (lint passerer med `--max-warnings 0`). Advarselen er kosmetisk. Å registrere pluginen to ganger for å «trickere» detector gir ESLint-feil (Cannot redefine plugin).
 
 ## 7. Tester før produksjon
 
@@ -50,6 +50,51 @@ Kjør før deploy til prod for å fange feil:
    `npm run test:e2e:smoke` (uten TEST_AGAINST_PROD) – da brukes `webServer` i playwright.config.ts og localhost:3000.
 
 **Merk:** Critical E2E-tester inkluderer blant annet kursmodul (selector/innhold) og dashboard med auth; noen feiler uten gyldig testbruker eller ved endret innhold. Smoke (30 tester) dekker landing, priser, innlogging, health, i18n og er tilstrekkelig som pre-prod sjekk.
+
+## 8. Bygg-tid og timeout (KLA-167)
+
+**Mål:** Hold total build-tid under 300 sekunder i CI/CD (Vercel eller GitHub Actions).
+
+### Hva som bør måles i Vercel
+
+- **Vercel Dashboard → Project → Deployments → velg en deploy → Build Log**
+  - **Installing dependencies** – varighet for `npm install` / `npm ci`
+  - **Building** – varighet for `next build` (kompilering, lint under build, static generation)
+- **Total build duration** står øverst eller i deployment summary. Bruk dette som hovedtall for å verifisere at vi holder oss under 300 s.
+
+I GitHub Actions: se **Actions → workflow run → Build-jobben** for tidsfordeling (Lint, Type check, Build).
+
+### Identifisert tidsbruk
+
+- **next build:** Kompilering, webpack, ESLint (når ikke skippet), statisk generering. Største bidrag.
+- **Type-check:** Kjører ikke under `next build` fordi `typescript.ignoreBuildErrors: true` (beholdt inntil type-gjeld er nedkjempet). I CI kjører vi `npm run type-check` separat.
+- **Lint:** Under `next build` når `SKIP_LINT_IN_BUILD` ikke er satt. I CI som kjører lint før build unngår vi dobbel lint (se under).
+- **E2E:** Kjører i egne jobs etter build; er ikke del av den kritiske build-paden på Vercel.
+
+### Gjennomførte optimaliseringer
+
+1. **Unngå dobbel lint i CI**  
+   I `next.config.mjs` er `eslint.ignoreDuringBuilds` satt til `process.env.SKIP_LINT_IN_BUILD === "true"`.  
+   I GitHub Actions (manual-deploy, pr-check, test) settes `SKIP_LINT_IN_BUILD=true` før `npm run build`. Lint kjører én gang (eksplisitt lint-steg); build skipper da ESLint og sparer tid. På **Vercel** settes ikke denne variabelen, så lint kjører som før under `next build`.
+
+2. **Next.js / webpack cache**  
+   - I `next.config.mjs`: `config.cache = { type: 'filesystem', compression: 'gzip' }` er satt. Vercel cacher automatisk `.next/cache` mellom deploys.  
+   - I GitHub Actions er **actions/cache@v4** lagt inn for `.next/cache` med nøkkel basert på `package-lock.json` og kildefiler, slik at gjenbygg blir raskere.
+
+3. **Type-check under build**  
+   `typescript.ignoreBuildErrors` er fortsatt `true` (dokumentert i config). Ingen ekstra type-check under `next build`; type-check skjer kun der vi eksplisitt kjører `npm run type-check` (f.eks. i PR-check).
+
+4. **Vercel build- og install-kommandoer**  
+   `vercel.json`: `buildCommand: "next build"`, `installCommand: "npm install"`. Vi bruker ikke `npm run build` på Vercel (da ville prebuild/validate-i18n kjørt), så kun install + next build. Ingen endring i kommandoer; eksisterende oppsett er beholdt.
+
+5. **Eksisterende fiks beholdt**  
+   Edge runtime på opengraph-image og `transpilePackages: ["next-intl"]` er ikke endret (se §2 og §4).
+
+### Ved vedvarende høy build-tid
+
+- Sjekk Vercel Build Log for hvilken fase som tar lengst (install vs. build).
+- Vurder færre statiske sider eller økt `staticPageGenerationTimeout` kun ved reell timeout.
+- Vurder å flytte tunge avhengigheter til dynamisk import der det er trygt.
 
 ## Sjekkliste ved nye Vercel-advarsler
 

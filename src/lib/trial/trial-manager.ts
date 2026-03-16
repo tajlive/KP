@@ -30,7 +30,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
     .from('user_profiles')
     .select('created_at, subscription_tier, trial_started_at, trial_expires_at')
     .eq('id', userId)
-    .single() as unknown;
+    .single();
   
   if (error || !profile) {
     return {
@@ -45,7 +45,8 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
     };
   }
   
-  const tier = TIERS[(profile.subscription_tier ?? profile.tier) as keyof typeof TIERS];
+  const profileExt = profile as unknown as { subscription_tier?: string; tier?: string; trial_started_at?: string; trial_expires_at?: string };
+  const tier = TIERS[(profileExt.subscription_tier ?? profileExt.tier) as keyof typeof TIERS];
   
   // 2. Hvis betalt tier → ingen trial nødvendig
   if (tier.liveTrading && tier.priceNOK > 0) {
@@ -62,15 +63,15 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
   }
   
   // 3. Sjekk om trial er startet
-  if (!profile.trial_started_at) {
+  if (!profileExt.trial_started_at) {
     // Auto-start trial
     return await startTrial(userId);
   }
   
   // 4. Sjekk om trial er utløpt
   const now = new Date();
-  const expiresAt = new Date(profile.trial_expires_at);
-  const startedAt = new Date(profile.trial_started_at);
+  const expiresAt = new Date(profileExt.trial_expires_at ?? 0);
+  const startedAt = new Date(profileExt.trial_started_at ?? 0);
   const isExpired = now > expiresAt;
   
   if (isExpired) {
@@ -121,13 +122,13 @@ async function startTrial(userId: string): Promise<TrialStatus> {
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // +14 dager
   
-  // Oppdater profile
+  // Oppdater profile (trial-felter kan mangle i generert type)
   const { error } = await supabase
     .from('user_profiles')
     .update({
       trial_started_at: now.toISOString(),
       trial_expires_at: expiresAt.toISOString(),
-    } as unknown)
+    } as Record<string, string>)
     .eq('id', userId);
   
   if (error) {

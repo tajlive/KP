@@ -4,6 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
+// Krever Supabase env; unngå statisk generering ved build
+export const dynamic = "force-dynamic";
+
 interface OnboardingLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -30,8 +33,8 @@ export default async function OnboardingLayout({
   const { data: profile } = await supabase
     .from("user_profiles")
     .select("onboarding_step, onboarding_completed")
-    .eq("user_id" as unknown, user.id)
-    .single() as unknown;
+    .eq("id", user.id)
+    .single();
 
   // Hvis onboarding allerede er fullført → dashboard
   if (profile?.onboarding_completed) {

@@ -14,7 +14,7 @@ The `.env` file containing Supabase credentials was committed to git repository 
 
 ```bash
 commit 75d2f89e026822236cbfd0a400525d5a18db0443
-Author: tombomann <tomarnejensen@gmail.com>
+Author: tajlive
 Date:   Thu Jan 29 05:47:12 2026 +0100
     security: remove .env from tracking
 ```

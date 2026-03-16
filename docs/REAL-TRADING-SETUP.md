@@ -228,7 +228,7 @@ supabase studio
 
 Har du spørsmål?
 
-1. Sjekk [GitHub Issues](https://github.com/tombomann/klarpakke/issues)
+1. Sjekk [GitHub Issues](https://github.com/tajlive/KP/issues)
 2. Les [CLAUDE.md](../CLAUDE.md) for utvikler-detaljer
 3. Kontakt teamet på kontakt@klarpakke.no
 

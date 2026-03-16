@@ -38,7 +38,7 @@
 ## Konkret for ditt prosjekt
 
 ### 1. GitHub Secrets (kun hvis du bruker GitHub Actions)
-**Legg til:** https://github.com/tombomann/klarpakke/settings/secrets/actions
+**Legg til:** https://github.com/tajlive/KP/settings/secrets/actions
 
 ```
 SUPABASE_ACCESS_TOKEN=sbp_...

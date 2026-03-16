@@ -21,8 +21,8 @@ export async function GET() {
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("role")
-      .eq("user_id" as unknown, user.id)
-      .single() as unknown;
+      .eq("id", user.id)
+      .single();
 
     if (profile?.role !== "admin") {
       return NextResponse.json(

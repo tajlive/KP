@@ -44,7 +44,7 @@ git push origin main
 
 ### 3. Overvåk GitHub Actions
 
-URL: https://github.com/tombomann/klarpakke/actions
+URL: https://github.com/tajlive/KP/actions
 
 Jobs:
 

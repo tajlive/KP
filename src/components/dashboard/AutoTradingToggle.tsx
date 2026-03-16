@@ -23,20 +23,19 @@ export function AutoTradingToggle() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from("auto_trading_configs" as unknown)
-        .select("enabled, mode")
-        .eq("user_id" as unknown, user.id)
-        .single() as unknown;
+      // Schema has is_enabled/strategy, not enabled/mode
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).from("auto_trading_configs").select("is_enabled, strategy").eq("user_id", user.id).single();
 
-      if (error && error.code !== "PGRST116") {
+      if (error && (error as { code?: string }).code !== "PGRST116") {
         console.error("Error fetching config:", error);
         return;
       }
 
-      if (data) {
-        setIsEnabled(data.enabled);
-        setMode(data.mode);
+      const row = data as { is_enabled?: boolean; strategy?: string } | null;
+      if (row) {
+        setIsEnabled(row.is_enabled ?? false);
+        setMode((row.strategy === "live" ? "live" : "paper") as "paper" | "live");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -57,28 +56,25 @@ export function AutoTradingToggle() {
 
       // Check if config exists first
       const { data: existingConfig } = await supabase
-        .from("auto_trading_configs" as unknown)
+        .from("auto_trading_configs")
         .select("id")
-        .eq("user_id" as unknown, user.id)
-        .single() as unknown;
+        .eq("user_id", user.id)
+        .single();
 
       if (existingConfig) {
         const { error } = await supabase
-          .from("auto_trading_configs" as unknown)
-          .update({ enabled: checked, updated_at: new Date().toISOString() })
-          .eq("user_id" as unknown, user.id);
+          .from("auto_trading_configs")
+          .update({ is_enabled: checked, updated_at: new Date().toISOString() })
+          .eq("user_id", user.id);
 
         if (error) throw error;
       } else {
-        // Create default config if not exists
         const { error } = await supabase
-          .from("auto_trading_configs" as unknown)
+          .from("auto_trading_configs")
           .insert({
             user_id: user.id,
-            enabled: checked,
-            risk_level: 'medium',
-            mode: 'paper',
-            max_trade_size_nok: 10000,
+            is_enabled: checked,
+            strategy: "paper",
           });
         if (error) throw error;
       }

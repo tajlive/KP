@@ -30,7 +30,7 @@
 2. **Vent på Vercel deployment**
    - Vercel bygger automatisk ved push (~2-3 min)
    - Verifiser grønn status: https://vercel.com/dashboard
-   - Eller: https://github.com/tomarnejensen/klarpakke/actions (hvis CI enabled)
+   - Eller: https://github.com/tajlive/KP/actions (hvis CI enabled)
 
 3. **La KIMI hente data via MCP**
    - KIMI bruker Klarpakke MCP Server
@@ -316,7 +316,7 @@ sleep 120 && curl -I https://www.klarpakke.no/no
 
 ## 🔗 RESSURSER
 
-- **GitHub Repo:** https://github.com/tomarnejensen/klarpakke
+- **GitHub Repo:** https://github.com/tajlive/KP
 - **Vercel Dashboard:** https://vercel.com/dashboard
 - **Produksjon:** https://www.klarpakke.no
 - **Supabase Dashboard:** https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf

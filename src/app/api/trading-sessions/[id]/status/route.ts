@@ -15,6 +15,7 @@ export async function PATCH(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
+        cookieEncoding: "raw",
         cookies: {
           getAll: () => cookieStore.getAll(),
         },
@@ -51,7 +52,7 @@ export async function PATCH(
       .from("trading_sessions")
       .select("user_id")
       .eq("id", id)
-      .single() as unknown;
+      .single();
 
     if (sessionError) {
       if (sessionError.code === "PGRST116") {
@@ -79,7 +80,7 @@ export async function PATCH(
       })
       .eq("id", id)
       .select()
-      .single() as unknown;
+      .single();
 
     if (updateError) {
       throw updateError;

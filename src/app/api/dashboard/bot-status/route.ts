@@ -100,23 +100,23 @@ export async function GET(
         const [strategyResult, lastTradesResult, pnlResult] = await Promise.all(
           [
             supabase
-              .from("strategies" as unknown)
+              .from("strategies")
               .select("*")
-              .eq("user_id" as unknown, userId)
+              .eq("user_id", userId)
               .eq("status", "active")
               .order("created_at", { ascending: false })
               .limit(1)
-              .single() as unknown,
+              .single(),
             supabase
               .from("trades")
               .select("*")
-              .eq("user_id" as unknown, userId)
+              .eq("user_id", userId)
               .order("executed_at", { ascending: false })
               .limit(5),
             supabase
               .from("trades")
               .select("realized_pnl, executed_at")
-              .eq("user_id" as unknown, userId)
+              .eq("user_id", userId)
               .gte("executed_at", startOfMonth.toISOString())
               .not("realized_pnl", "is", null),
           ],
@@ -130,11 +130,11 @@ export async function GET(
           const fallbackResult = await supabase
             .from("trading_sessions")
             .select("*")
-            .eq("user_id" as unknown, userId)
+            .eq("user_id", userId)
             .eq("status", "active")
             .order("created_at", { ascending: false })
             .limit(1)
-            .single() as unknown;
+            .single();
 
           if (fallbackResult.data) {
             activeStrategy = fallbackResult.data;

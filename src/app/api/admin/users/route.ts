@@ -46,7 +46,7 @@ async function verifyAdmin(request: NextRequest) {
     .from('user_profiles')
     .select('role')
     .eq('id', user.id)
-    .single() as unknown;
+    .single();
   
   if (!isWhitelisted && profile?.role !== 'admin') {
     return { isAdmin: false, error: 'Forbidden: Admin access required', status: 403 };
@@ -151,8 +151,8 @@ export async function POST(request: NextRequest) {
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('*')
-      .eq('user_id', userData.user.id)
-      .single() as unknown;
+      .eq('id', userData.user.id)
+      .single();
     
     if (profileError || !profile) {
       console.error('[Admin Create User]: Profile not created:', profileError);
