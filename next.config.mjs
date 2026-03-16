@@ -1,4 +1,3 @@
-import path from "path";
 import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin({
@@ -169,8 +168,6 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": "./src",
-      // Exact match only: main 'zustand' -> shim; zustand/react, zustand/middleware stay as node_modules
-      "zustand$": path.resolve(process.cwd(), "src/lib/zustand-shim.ts"),
     };
 
     // Client-side polyfills
