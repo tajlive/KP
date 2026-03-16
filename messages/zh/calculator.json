@@ -30,5 +30,25 @@
   "cta": {
     "text": "准备在无风险的情况下测试您的策略？",
     "button": "尝试模拟交易"
-  }
+  },
+  "lotto": {
+    "title": "你的习惯花费多少？",
+    "subtitle": "比较同样投入的不同回报",
+    "weeklySpend": "每周花费",
+    "timeHorizon": "投资期限",
+    "years": "年",
+    "lotto": "彩票",
+    "expectedLoss": "预期亏损",
+    "statLoss": "统计亏损40%",
+    "highInterest": "高息储蓄",
+    "annualRate": "年利率3%（安全）",
+    "bankGuarantee": "银行担保",
+    "cryptoTheoretical": "加密货币（理论值）",
+    "dailyReturn": "每日0.1%（极度乐观）",
+    "noGuarantee": "无保证，可能损失全部",
+    "important": "重要提示",
+    "disclaimer": "计算器显示的是理论数据。每日0.1%的回报率极度乐观，长期来看不现实。您可能会损失全部投资。这不构成投资建议。请自行研究。"
+  },
+  "cta_after_result": "免费开始 — 学习智能投资",
+  "cta_no_card": "无需信用卡"
 }
