@@ -158,7 +158,7 @@ export function Hero({ language }: HeroProps) {
             style={{ y: useTransform(scrollYProgress, [0, 1], [0, 150]) }}
             className="bg-slate-900/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 p-8 shadow-2xl relative overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 to-transparent pointer-events-none" />
 
             <div className="flex justify-between items-center mb-10">
               <div>

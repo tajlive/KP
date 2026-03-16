@@ -12,7 +12,7 @@ function getSupabaseClient() {
 }
 
 export async function GET(request: Request) {
-  const supabase: unknown = getSupabaseClient();
+  const supabase = getSupabaseClient();
   
   if (!supabase) {
     return NextResponse.json({ 
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
       .from('user_profiles')
       .select('role, email, full_name')
       .eq('id', user.id)
-      .single() as unknown;
+      .single();
 
     if (profileError || !profile) {
       return NextResponse.json({ 

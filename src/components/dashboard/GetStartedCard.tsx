@@ -189,11 +189,11 @@ export default function GetStartedCard({
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="bg-gradient-to-br from-blue-900/20 via-slate-900 to-slate-900 border-blue-500/20 rounded-3xl overflow-hidden shadow-xl relative">
+          <Card className="bg-linear-to-br from-blue-900/20 via-slate-900 to-slate-900 border-blue-500/20 rounded-3xl overflow-hidden shadow-xl relative">
             {/* Progress bar på toppen */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-slate-800">
               <motion.div
-                className="h-full bg-gradient-to-r from-blue-500 to-blue-400"
+                className="h-full bg-linear-to-r from-blue-500 to-blue-400"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.5, delay: 0.2 }}

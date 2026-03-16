@@ -165,13 +165,13 @@ export default function Features({ language = "no" }: FeaturesProps) {
                 className="group relative bg-white/[0.03] backdrop-blur-sm rounded-3xl p-8 border border-white/10 hover:border-white/20 hover:bg-white/[0.05] transition-all duration-300 overflow-hidden will-change-transform"
               >
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+                  className={`absolute inset-0 bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
                 />
 
                 <div className="relative">
                   {/* Icon */}
                   <div
-                    className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-8 shadow-2xl group-hover:rotate-6 transition-transform duration-500`}
+                    className={`w-16 h-16 rounded-2xl bg-linear-to-br ${feature.gradient} flex items-center justify-center mb-8 shadow-2xl group-hover:rotate-6 transition-transform duration-500`}
                   >
                     <Icon className="w-8 h-8 text-white" />
                   </div>

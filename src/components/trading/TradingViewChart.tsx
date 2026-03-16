@@ -145,7 +145,7 @@ export function TradingViewChart({
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-slate-900/50">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-orange-500 to-yellow-500 flex items-center justify-center text-white font-bold text-sm">
               ₿
             </div>
             <div>

@@ -119,7 +119,7 @@ export default function BetaThankYouClient({ locale }: { locale: string }) {
           <div className="mb-6">
             <Button
               size="lg"
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-6 text-lg font-semibold rounded-xl shadow-lg shadow-blue-600/20"
+              className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white py-6 text-lg font-semibold rounded-xl shadow-lg shadow-blue-600/20"
               asChild
             >
               <Link href={`/${locale}/priser`}>

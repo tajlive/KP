@@ -21,7 +21,7 @@ export default function ComparisonSection() {
         <div className="flex items-center justify-center">
           <div className={`w-7 h-7 rounded-full ${
             isKlarpakke 
-              ? 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/50' 
+              ? 'bg-linear-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/50' 
               : 'bg-green-100 dark:bg-green-900/30'
           } flex items-center justify-center`}>
             <Check className={`w-4 h-4 ${
@@ -54,7 +54,7 @@ export default function ComparisonSection() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-gray-950 dark:to-gray-900">
+    <section className="py-20 bg-linear-to-b from-slate-50 to-white dark:from-gray-950 dark:to-gray-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -74,7 +74,7 @@ export default function ComparisonSection() {
         <div className="relative">
           {/* Spotlight badge for Klarpakke column */}
           <div className="absolute -top-4 left-1/2 -translate-x-1/2 md:left-[42%] z-10">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
+            <div className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Beste valg
             </div>
@@ -84,13 +84,13 @@ export default function ComparisonSection() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gradient-to-r from-slate-50 via-blue-50 to-slate-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-gray-800">
+                  <tr className="bg-linear-to-r from-slate-50 via-blue-50 to-slate-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-gray-800">
                     <th className="px-6 py-5 text-left text-sm font-semibold text-gray-900 dark:text-white">
                       Funksjoner
                     </th>
-                    <th className="px-6 py-5 text-center bg-gradient-to-b from-blue-600 to-indigo-600 text-white relative">
+                    <th className="px-6 py-5 text-center bg-linear-to-b from-blue-600 to-indigo-600 text-white relative">
                       {/* Highlight glow */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-linear-to-b from-blue-500/20 to-transparent pointer-events-none" />
                       <div className="relative">
                         <div className="text-xl font-black mb-1 flex items-center justify-center gap-2">
                           Klarpakke
@@ -134,7 +134,7 @@ export default function ComparisonSection() {
             </div>
 
             {/* Footer notes */}
-            <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-gray-800 dark:to-gray-850 border-t border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 bg-linear-to-r from-slate-50 to-slate-100 dark:from-gray-800 dark:to-gray-850 border-t border-gray-200 dark:border-gray-700">
               <div className="flex flex-col sm:flex-row gap-3 text-xs text-gray-600 dark:text-gray-400">
                 <div className="flex items-start gap-2">
                   <span className="text-blue-600 dark:text-blue-400 font-bold">*</span>

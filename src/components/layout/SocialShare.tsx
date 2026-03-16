@@ -71,7 +71,7 @@ export function SocialShare() {
                         href="https://instagram.com/klarpakke"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 h-12 px-6 rounded-xl bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white hover:scale-105 hover:opacity-90 transition-all shadow-md font-bold"
+                        className="flex items-center gap-2 h-12 px-6 rounded-xl bg-linear-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white hover:scale-105 hover:opacity-90 transition-all shadow-md font-bold"
                     >
                         <Instagram className="w-5 h-5" />
                         <span>Instagram</span>

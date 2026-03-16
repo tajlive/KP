@@ -62,7 +62,7 @@ export function DashboardSidebar() {
       icon: LayoutDashboard,
       exact: true,
     },
-    { href: "/dashboard/auto-trade", label: t("sidebar.autoTrade") || "Auto-trading", icon: Bot },
+    { href: "/dashboard/auto-trade", label: t("autoTrade") || "Auto-trading", icon: Bot },
     { href: "/dashboard/portfolio", label: t("portfolio"), icon: Wallet },
     { href: "/dashboard/trading", label: t("trading") || "Trading", icon: Cog },
     { href: "/konto", label: t("binanceApi"), icon: Wallet },

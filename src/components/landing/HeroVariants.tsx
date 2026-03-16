@@ -32,7 +32,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
@@ -66,7 +66,7 @@ export default function HeroSection() {
               </h1>
 
               {/* Emotional hook */}
-              <div className="bg-gradient-to-r from-blue-600 to-emerald-600 p-8 rounded-3xl mb-8">
+              <div className="bg-linear-to-r from-blue-600 to-emerald-600 p-8 rounded-3xl mb-8">
                 <p className="text-2xl md:text-3xl text-white font-bold mb-4 whitespace-pre-line">
                   {t("hook_emotional")}
                 </p>
@@ -85,7 +85,7 @@ export default function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <button
               onClick={handleSignup}
-              className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+              className="group px-8 py-4 bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
             >
               {t("cta_start")}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

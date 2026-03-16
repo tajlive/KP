@@ -30,8 +30,8 @@ export default async function OnboardingLayout({
   const { data: profile } = await supabase
     .from("user_profiles")
     .select("onboarding_step, onboarding_completed")
-    .eq("user_id" as unknown, user.id)
-    .single() as unknown;
+    .eq("user_id", user.id)
+    .single();
 
   // Hvis onboarding allerede er fullført → dashboard
   if (profile?.onboarding_completed) {

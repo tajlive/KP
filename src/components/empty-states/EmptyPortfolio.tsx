@@ -17,13 +17,13 @@ export function EmptyPortfolio({ hasRealAccount, locale = 'no' }: EmptyPortfolio
       {/* Animated Illustration */}
       <div className="relative w-48 h-48 mb-8">
         {/* Background glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-emerald-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute inset-0 bg-linear-to-br from-blue-500/20 to-emerald-500/20 rounded-full blur-3xl animate-pulse" />
         
         {/* Floating coins animation */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
             {/* Main wallet */}
-            <div className="relative z-10 w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+            <div className="relative z-10 w-24 h-24 bg-linear-to-br from-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
               <Wallet className="w-12 h-12 text-white" />
             </div>
             
@@ -76,7 +76,7 @@ export function EmptyPortfolio({ hasRealAccount, locale = 'no' }: EmptyPortfolio
       <div className="flex flex-col sm:flex-row gap-4">
         <Button
           size="lg"
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl px-8 shadow-lg shadow-blue-600/20"
+          className="bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl px-8 shadow-lg shadow-blue-600/20"
           asChild
         >
           <Link href={`/${locale}/paper-trading`}>

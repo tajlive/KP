@@ -94,7 +94,7 @@ export default function OnboardingContainer() {
               key={step}
               className={`rounded-full transition-all duration-500 ${
                 i === idx
-                  ? "w-6 h-2 bg-gradient-to-r from-cyan-500 to-blue-500"
+                  ? "w-6 h-2 bg-linear-to-r from-cyan-500 to-blue-500"
                   : i < idx || completedSteps.includes(step)
                     ? "w-2 h-2 bg-blue-500"
                     : "w-2 h-2 bg-gray-300 dark:bg-gray-700"
@@ -125,7 +125,7 @@ export default function OnboardingContainer() {
         aria-label="Onboarding-fremgang"
       >
         <motion.div
-          className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500"
+          className="h-full bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={
@@ -176,7 +176,7 @@ export default function OnboardingContainer() {
             onClick={nextStep}
             disabled={!canGoNext()}
             className="w-full min-h-[56px] px-6
-                       bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500
+                       bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500
                        text-white font-semibold text-[17px]
                        rounded-2xl
                        shadow-[0_4px_16px_rgba(59,130,246,0.3)]

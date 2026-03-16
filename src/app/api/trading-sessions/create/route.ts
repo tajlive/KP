@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = createClient();
 
     // Sjekk autentisering
     const {
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Logg aktivitet
-    await supabase.from("activity_logs" as unknown).insert({
+    await supabase.from("activity_logs").insert({
       user_id: user.id,
       action: "paper_trading_session_created",
       details: {

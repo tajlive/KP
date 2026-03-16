@@ -1,11 +1,11 @@
 import createMiddleware from 'next-intl/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 import { routing } from './i18n/routing'
 import { handleOnboarding } from './middleware/onboarding'
 
 const handleI18nRouting = createMiddleware(routing)
 
-// Auth-beskyttede ruter
 const PROTECTED_PATHS = [
   '/dashboard',
   '/innstillinger',
@@ -27,35 +27,62 @@ const PROTECTED_PATHS = [
 ]
 
 export async function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || ''
+
+  if (host.endsWith('.vercel.app') && process.env.NEXT_PUBLIC_APP_URL) {
+    const canonical = new URL(process.env.NEXT_PUBLIC_APP_URL)
+    const url = request.nextUrl.clone()
+    url.hostname = canonical.hostname
+    url.port = ''
+    url.protocol = canonical.protocol
+    return NextResponse.redirect(url, { status: 308 })
+  }
+
   const pathname = request.nextUrl.pathname
 
-  // 1. Håndter i18n routing (locale-deteksjon, redirects, rewrites)
+  // 1. i18n routing
   const response = handleI18nRouting(request)
 
-  // 2. Hvis i18n gjorde en redirect → returner den
   if (response.status !== 200) {
     return response
   }
 
-  // 3. Hent locale fra pathname
-  const locale = pathname.split('/')[1] || 'no'
-  const strippedPath = pathname.replace(/^\/(no|en)/, '') || '/'
+  // Skip Supabase processing for auth callback — the route handler does its own PKCE exchange
+  const strippedPath = pathname.replace(/^\/(no|en|th|zh)/, '') || '/'
+  if (strippedPath.startsWith('/auth/callback')) {
+    return response
+  }
 
-  // 4. Auth-guard: sjekk om ruten er beskyttet
+  // 2. Supabase session refresh (writes updated cookies to response)
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookieEncoding: 'raw',
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value)
+            response.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // 3. Auth-guard
+  const locale = pathname.split('/')[1] || 'no'
   const isProtected = PROTECTED_PATHS.some(p => strippedPath.startsWith(p))
 
-  if (isProtected) {
-    // Supabase SSR uses sb-<projectRef>-auth-token (or chunked: .0, .1, …)
-    const hasSession = request.cookies.getAll().some(
-      c => c.name === 'sb-access-token' ||
-           c.name.startsWith('sb-') && c.name.includes('-auth-token')
-    )
-    if (!hasSession) {
-      const loginUrl = new URL(`/${locale}/innlogging`, request.url)
-      loginUrl.searchParams.set('next', pathname)
-      return NextResponse.redirect(loginUrl)
-    }
-    // Onboarding: redirect to /onboarding if not completed (only for protected paths with session)
+  if (isProtected && !user) {
+    const loginUrl = new URL(`/${locale}/innlogging`, request.url)
+    loginUrl.searchParams.set('next', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  if (isProtected && user) {
     const onboardingResult = await handleOnboarding(request, response)
     if (onboardingResult) return onboardingResult
   }

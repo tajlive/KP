@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const {
       data: { user },
       error: authError,
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from("trading_sessions")
       .select("*")
-      .eq("user_id" as unknown, user.id)
+      .eq("user_id", user.id)
       .order("started_at", { ascending: false });
 
     if (mode) query = query.eq("mode", mode);
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase: unknown = (await createClient()) as unknown;
+  const supabase = createClient();
   const {
     data: { user },
     error: authError,
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
   const { data: existingActive } = await supabase
     .from("trading_sessions")
     .select("*")
-    .eq("user_id" as unknown, user.id)
+    .eq("user_id", user.id)
     .eq("mode", mode)
     .eq("status", "active")
     .limit(1);
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       total_pnl: 0,
     })
     .select()
-    .single() as unknown;
+    .single();
 
   if (error) {
     console.error(
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const supabase: unknown = (await createClient()) as unknown;
+  const supabase = createClient();
   const {
     data: { user },
     error: authError,
@@ -179,9 +179,9 @@ export async function PATCH(request: NextRequest) {
     .from("trading_sessions")
     .update(updates)
     .eq("id", session_id)
-    .eq("user_id" as unknown, user.id)
+    .eq("user_id", user.id)
     .select()
-    .single() as unknown;
+    .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -64,7 +64,7 @@ export default function AIMarketBrief() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-900 to-slate-800 p-6 animate-pulse">
+      <div className="rounded-2xl border border-slate-700/50 bg-linear-to-br from-slate-900 to-slate-800 p-6 animate-pulse">
         <div className="flex items-center gap-2 mb-3">
           <Brain className="h-5 w-5 text-blue-400" />
           <div className="h-4 w-32 bg-slate-700 rounded" />
@@ -89,7 +89,7 @@ export default function AIMarketBrief() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-2xl border ${config.border} bg-gradient-to-br ${config.bg} p-6 backdrop-blur-sm`}
+      className={`rounded-2xl border ${config.border} bg-linear-to-br ${config.bg} p-6 backdrop-blur-sm`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

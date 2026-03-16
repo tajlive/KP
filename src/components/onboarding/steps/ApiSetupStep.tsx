@@ -14,7 +14,7 @@ export function ApiSetupStep() {
         initial={{ scale: 0, rotate: -10 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
-        className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-amber-500 to-orange-500
+        className="w-20 h-20 rounded-[24px] bg-linear-to-br from-amber-500 to-orange-500
                    flex items-center justify-center mb-6
                    shadow-[0_8px_24px_rgba(245,158,11,0.25)]"
       >
@@ -72,7 +72,7 @@ export function ApiSetupStep() {
                      shadow-sm"
         >
           <div
-            className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500
+            className="w-11 h-11 rounded-xl bg-linear-to-br from-amber-400 to-yellow-500
                          flex items-center justify-center shrink-0"
           >
             <Key className="w-5 h-5 text-white" />
@@ -98,7 +98,7 @@ export function ApiSetupStep() {
                      active:scale-[0.97] transition-all duration-200"
         >
           <div
-            className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500
+            className="w-11 h-11 rounded-xl bg-linear-to-br from-emerald-500 to-cyan-500
                          flex items-center justify-center shrink-0"
           >
             <CheckCircle2 className="w-5 h-5 text-white" />

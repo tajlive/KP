@@ -110,7 +110,7 @@ export default function ClientKurs() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <div className="min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* HERO */}
       <section className="relative pt-24 pb-16 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -262,12 +262,12 @@ export default function ClientKurs() {
 
                       {/* Gradient Header */}
                       <div
-                        className={`h-36 bg-gradient-to-br ${course.color} flex items-center justify-center relative`}
+                        className={`h-36 bg-linear-to-br ${course.color} flex items-center justify-center relative`}
                       >
                         <span className="text-6xl drop-shadow-lg">
                           {course.icon}
                         </span>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/10 to-transparent" />
                       </div>
 
                       {/* Content */}
@@ -371,7 +371,7 @@ export default function ClientKurs() {
       {/* CTA Section */}
       <section className="pb-24 px-4">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl p-10 text-center text-white shadow-xl shadow-blue-600/20">
+          <div className="bg-linear-to-br from-blue-600 to-blue-700 rounded-3xl p-10 text-center text-white shadow-xl shadow-blue-600/20">
             <h2 className="text-2xl font-bold mb-3">
               {data.metadata.cta.title}
             </h2>

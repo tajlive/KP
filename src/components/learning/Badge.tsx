@@ -65,13 +65,13 @@ export function Badge({
 
   return (
     <Card className={cn(
-      'border-0 shadow-md bg-gradient-to-br from-yellow-50 to-orange-50',
+      'border-0 shadow-md bg-linear-to-br from-yellow-50 to-orange-50',
       className
     )}>
       <CardContent className={cn(s.card, 'flex items-center gap-4')}>
         <div className={cn(
           s.iconContainer,
-          'bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full',
+          'bg-linear-to-br from-yellow-400 to-orange-500 rounded-full',
           'flex items-center justify-center shadow-lg'
         )}>
           <Icon className={cn(s.icon, 'text-white')} />
@@ -176,7 +176,7 @@ export function TrackProgress({
       )}
       <div className={cn('bg-gray-200 rounded-full overflow-hidden', heightClass)}>
         <div
-          className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+          className="bg-linear-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
           style={{ width: `${percentage}%` }}
         />
       </div>

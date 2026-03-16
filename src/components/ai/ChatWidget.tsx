@@ -232,7 +232,7 @@ export function ChatWidget() {
                     <div className="relative bg-slate-900/60 backdrop-blur-md p-4 border-b border-white/5 flex items-center justify-between z-10">
                         <div className="flex items-center gap-3">
                             <div className="relative group">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-emerald-600 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity" />
+                                <div className="absolute inset-0 bg-linear-to-tr from-blue-600 to-emerald-600 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity" />
                                 <div className="relative p-2.5 bg-slate-900 rounded-xl ring-1 ring-white/10">
                                     <GraduationCap className="w-5 h-5 text-blue-400" />
                                 </div>
@@ -301,7 +301,7 @@ export function ChatWidget() {
                                 <div className={cn(
                                     "w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-lg border border-white/5",
                                     m.role === 'user'
-                                        ? "bg-gradient-to-br from-blue-600 to-indigo-600"
+                                        ? "bg-linear-to-br from-blue-600 to-indigo-600"
                                         : "bg-slate-800"
                                 )}>
                                     {m.role === 'user' ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-blue-400" />}
@@ -320,7 +320,7 @@ export function ChatWidget() {
                                         className={cn(
                                             "rounded-2xl px-5 py-3.5 text-sm leading-relaxed shadow-md backdrop-blur-sm transition-all duration-200",
                                             m.role === 'user'
-                                                ? "bg-gradient-to-br from-blue-600/90 to-indigo-600/90 text-white rounded-tr-sm border border-white/10"
+                                                ? "bg-linear-to-br from-blue-600/90 to-indigo-600/90 text-white rounded-tr-sm border border-white/10"
                                                 : "bg-slate-800/40 text-slate-200 rounded-tl-sm border border-white/5 hover:bg-slate-800/60"
                                         )}
                                     >
@@ -377,7 +377,7 @@ export function ChatWidget() {
                                     disabled={isLoading}
                                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-4 py-6 bg-slate-950/50 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500/50 rounded-2xl transition-all shadow-inner focus:bg-slate-900/90 h-auto"
                                 />
-                                <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+                                <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
                             </div>
                             <Button
                                 type="submit"
@@ -386,7 +386,7 @@ export function ChatWidget() {
                                 className={cn(
                                     "h-[52px] w-[52px] rounded-2xl shadow-lg transition-all duration-300",
                                     (input || '').trim() && !isLoading
-                                        ? "bg-gradient-to-br from-blue-600 to-indigo-600 hover:shadow-blue-500/25 hover:scale-105 active:scale-95 text-white"
+                                        ? "bg-linear-to-br from-blue-600 to-indigo-600 hover:shadow-blue-500/25 hover:scale-105 active:scale-95 text-white"
                                         : "bg-slate-800 text-slate-500 hover:bg-slate-700"
                                 )}
                             >
@@ -429,7 +429,7 @@ export function ChatWidget() {
                     "relative flex items-center justify-center w-16 h-16 rounded-full shadow-2xl border border-white/10 transition-all duration-500 ease-out transform",
                     isOpen 
                         ? "bg-slate-900 rotate-90 scale-90" 
-                        : "bg-gradient-to-br from-blue-600 to-indigo-600 hover:scale-110 hover:rotate-6"
+                        : "bg-linear-to-br from-blue-600 to-indigo-600 hover:scale-110 hover:rotate-6"
                 )}>
                     {isOpen ? (
                         <X className="w-7 h-7 text-white" />

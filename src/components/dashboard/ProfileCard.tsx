@@ -71,7 +71,7 @@ export function ProfileCard({
         ref={cardRef}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700/50 p-6 shadow-2xl aspect-[4/5] flex flex-col justify-between"
+        className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-800 to-slate-900 border-2 border-slate-700/50 p-6 shadow-2xl aspect-[4/5] flex flex-col justify-between"
       >
         {/* Background glow fx */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
@@ -80,7 +80,7 @@ export function ProfileCard({
         {/* Header */}
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center p-0.5 shadow-lg">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center p-0.5 shadow-lg">
               <div className="w-full h-full bg-slate-900 rounded-full flex items-center justify-center text-lg">
                 😎
               </div>
@@ -94,7 +94,7 @@ export function ProfileCard({
             </div>
           </div>
           {/* Klarpakke Logo Watermark essentially */}
-          <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+          <div className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-emerald-400">
             KLARPAKKE
           </div>
         </div>
@@ -142,7 +142,7 @@ export function ProfileCard({
           </div>
           <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500"
+              className="h-full bg-linear-to-r from-blue-500 to-indigo-500"
               initial={{ width: 0 }}
               animate={{
                 width: `${Math.min(100, ((state?.total_xp || 0) / 1000) * 100)}%`,
@@ -157,7 +157,7 @@ export function ProfileCard({
       <div className="flex flex-col gap-2">
         <button
           onClick={handleShare}
-          className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 focus:ring-4 focus:ring-amber-500/30"
+          className="w-full py-3 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 focus:ring-4 focus:ring-amber-500/30"
         >
           <Award className="w-5 h-5" />
           Inviter en venn (Få 1000 XP)

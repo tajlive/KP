@@ -111,7 +111,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
   return (
     <div className="space-y-6">
       {/* Saldo KPI-kort */}
-      <Card className="overflow-hidden border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/80 dark:to-slate-900/80">
+      <Card className="overflow-hidden border-slate-200 dark:border-slate-700 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-800/80 dark:to-slate-900/80">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -195,7 +195,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
 
       {/* Liste over sesjoner */}
       {sessions.length === 0 ? (
-        <Card className="border-2 border-dashed border-slate-200 dark:border-slate-600 overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50">
+        <Card className="border-2 border-dashed border-slate-200 dark:border-slate-600 overflow-hidden bg-linear-to-b from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50">
           <CardContent className="p-10 text-center">
             <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-5">
               <Wallet className="w-8 h-8 text-slate-500 dark:text-slate-400" />

@@ -5,7 +5,7 @@ import { Resend } from "resend";
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
-      .single() as unknown;
+      .single();
 
     if (!isWhitelisted && profile?.role !== "admin") {
       return NextResponse.json(
