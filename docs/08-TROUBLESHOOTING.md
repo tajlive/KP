@@ -290,7 +290,7 @@ npm install --legacy-peer-deps
 **Symptom:** Workflow fails at any job.
 
 **Debug:**
-1. Check logs in GitHub: https://github.com/tombomann/klarpakke/actions
+1. Check logs in GitHub: https://github.com/tajlive/KP/actions
 2. Run locally:
    ```bash
    npm run type-check
@@ -344,7 +344,7 @@ When reporting issues:
 
 - **Technical support:** support@klarpakke.no
 - **Admin issues:** taj@klarpakke.no
-- **GitHub Issues:** https://github.com/tombomann/klarpakke/issues
+- **GitHub Issues:** https://github.com/tajlive/KP/issues
 
 ---
 

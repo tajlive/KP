@@ -1,6 +1,6 @@
 START run-all.sh - 20260125T085709Z
 1) Oppdaterer repo...
-From https://github.com/tombomann/klarpakke
+From https://github.com/tajlive/KP
  - [deleted]         (none)     -> origin/auto/klarpakke-20260123-144735
  - [deleted]         (none)     -> origin/auto/klarpakke-20260123-150037
  - [deleted]         (none)     -> origin/auto/klarpakke-20260123-150358
@@ -9,7 +9,7 @@ Already on 'main'
 M	.gitignore
 M	klarpakke
 Your branch is up to date with 'origin/main'.
-From https://github.com/tombomann/klarpakke
+From https://github.com/tajlive/KP
  * branch            main       -> FETCH_HEAD
 Already up to date.
 2) Installerer root dependencies (hvis package.json finnes)...

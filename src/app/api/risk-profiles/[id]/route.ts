@@ -9,7 +9,7 @@ interface RouteParams {
 
 // PATCH /api/risk-profiles/[id] - Update profile
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
-  const supabase: unknown = (await createClient()) as unknown;
+  const supabase = createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -23,9 +23,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     .from('risk_profiles')
     .update(body)
     .eq('id', id)
-    .eq('user_id', user.id)
+    .eq('id', user.id)
     .select()
-    .single() as unknown;
+    .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -36,7 +36,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 // DELETE /api/risk-profiles/[id]
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
-  const supabase: unknown = (await createClient()) as unknown;
+  const supabase = createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -49,7 +49,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     .from('risk_profiles')
     .delete()
     .eq('id', id)
-    .eq('user_id', user.id);
+    .eq('id', user.id);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

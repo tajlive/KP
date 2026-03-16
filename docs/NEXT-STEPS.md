@@ -93,7 +93,7 @@ https://webflow.com/dashboard
 **Head Code:**
 ```html
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://tombomann.github.io/klarpakke/css/styles.css">
+<link rel="stylesheet" href="https://tajlive.github.io/KP/css/styles.css">
 ```
 
 **Footer Code:**
@@ -106,7 +106,7 @@ https://webflow.com/dashboard
     stripePublishableKey: 'pk_test_...'
   };
 </script>
-<script src="https://tombomann.github.io/klarpakke/js/klarpakke-bundle.js"></script>
+<script src="https://tajlive.github.io/KP/js/klarpakke-bundle.js"></script>
 ```
 
 **VIKTIG:** Erstatt `eyJ...` med din faktiske ANON key!

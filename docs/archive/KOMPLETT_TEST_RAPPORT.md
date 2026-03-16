@@ -250,7 +250,7 @@ $ npm run lint
 | Tjeneste | URL |
 |----------|-----|
 | Produksjon | https://www.klarpakke.no |
-| GitHub Repo | https://github.com/tomarnejensen/klarpakke |
+| GitHub Repo | https://github.com/tajlive/KP |
 | Vercel Dashboard | https://vercel.com/tom-jensens-projects/klarpakke |
 | Vercel Analytics | https://vercel.com/tom-jensens-projects/klarpakke/analytics |
 | Vercel Speed Insights | https://vercel.com/tom-jensens-projects/klarpakke/speed-insights |

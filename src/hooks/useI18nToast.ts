@@ -39,8 +39,8 @@ export function useI18nToast() {
 
   const showToast = useCallback(
     (type: ToastType, key: string, variables?: Record<string, string | number>, options?: ToastOptions) => {
-      const message = t(key as unknown, variables || {});
-      const description = options?.description ? t(options.description as unknown) : undefined;
+      const message = variables && Object.keys(variables).length > 0 ? t(key as never, variables as Record<string, string>) : t(key as never);
+      const description = options?.description ? t(options.description as never) : undefined;
 
       switch (type) {
         case "success":

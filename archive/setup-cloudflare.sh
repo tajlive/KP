@@ -76,7 +76,7 @@ if [[ ! "$HAS_PROJECT" =~ ^[Yy]$ ]]; then
   echo "  2. Workers & Pages → Pages"
   echo "  3. Create application"
   echo "  4. Name: 'klarpakke'"
-  echo "  5. Connect to Git repo: https://github.com/tombomann/klarpakke"
+  echo "  5. Connect to Git repo: https://github.com/tajlive/KP"
   echo "  6. Build command: npm run build"
   echo "  7. Build output: out"
   echo ""
@@ -95,7 +95,7 @@ echo ""
 echo -e "${BLUE}┌─ STEP 3: ADD TO GITLAB CI/CD VARIABLES${NC}"
 echo ""
 echo -e "${YELLOW}Go to GitLab Settings:${NC}"
-echo "   https://github.com/tombomann/klarpakke"
+echo "   https://github.com/tajlive/KP"
 echo "   → Settings"
 echo "   → CI/CD"
 echo "   → Variables"
@@ -135,7 +135,7 @@ echo "  git push origin main"
 echo ""
 
 echo -e "${YELLOW}Monitor pipeline:${NC}"
-echo "  https://github.com/tombomann/klarpakke/actions"
+echo "  https://github.com/tajlive/KP/actions"
 echo ""
 
 echo -e "${YELLOW}Expected flow:${NC}"
@@ -156,7 +156,7 @@ if [[ "$DEPLOY" =~ ^[Yy]$ ]]; then
   git push origin main
   echo -e "${GREEN}✓ Pushed to GitLab${NC}"
   echo ""
-  echo -e "${YELLOW}Watch pipeline: https://github.com/tombomann/klarpakke/actions${NC}"
+  echo -e "${YELLOW}Watch pipeline: https://github.com/tajlive/KP/actions${NC}"
   echo -e "${YELLOW}Expected: deploy:cloudflare job should PASS${NC}"
 fi
 

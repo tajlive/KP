@@ -1,19 +1,17 @@
 'use client'
 
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-
+import { getSupabaseClient } from '@/lib/supabase/client'
 import { getAppUrl } from './config'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+function supabase() {
+  return getSupabaseClient()
+}
 
 export async function signInWithGoogle() {
   const origin = getAppUrl()
   const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'no' : 'no'
   
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await (supabase() as { auth: { signInWithOAuth: (o: unknown) => Promise<{ data: unknown; error: unknown }> } }).auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: `${origin}/${locale}/auth/callback`,
@@ -32,24 +30,24 @@ export async function signInWithGoogle() {
 }
 
 export async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await (supabase() as { auth: { signOut: () => Promise<{ error: unknown }> } }).auth.signOut()
   if (error) {
     throw error
   }
 }
 
 export async function getSession() {
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const { data: { user }, error } = await (supabase() as { auth: { getUser: () => Promise<{ data: { user: unknown }; error: unknown }> } }).auth.getUser()
   if (error) {
     throw error
   }
   // Return session for backward compat (access_token needed by callers)
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { session } } = await (supabase() as { auth: { getSession: () => Promise<{ data: { session: unknown } }> } }).auth.getSession()
   return session
 }
 
 export async function getUser() {
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const { data: { user }, error } = await (supabase() as { auth: { getUser: () => Promise<{ data: { user: unknown }; error: unknown }> } }).auth.getUser()
   if (error) {
     throw error
   }

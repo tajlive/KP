@@ -108,7 +108,7 @@ export async function initSentryLazy(): Promise<void> {
     });
   } catch (e) {
     // Silent fail - don't break the app if Sentry fails to load
-    if (process.env.NODE_ENV === 'development') {
+    if (String(process.env.NODE_ENV) === 'development') {
       console.error('[Sentry Lazy] Failed to initialize:', e);
     }
   }

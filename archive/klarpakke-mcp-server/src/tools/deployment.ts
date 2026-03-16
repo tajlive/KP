@@ -85,7 +85,7 @@ Deployment ID: ${deployment.id}
 URL: ${deployment.url}
 Status: ${deployment.state}
 
-Build logs: https://vercel.com/tomarnejensen/klarpakke/${deployment.id}`,
+Build logs: https://vercel.com/tajlive/KP/${deployment.id}`,
       }],
     };
     */

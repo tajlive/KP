@@ -48,18 +48,18 @@ echo ""
 # Sett secret
 echo "🚀 Setter CRON_SECRET i GitHub..."
 
-if echo "$CRON_SECRET" | gh secret set CRON_SECRET --repo tomarnejensen/klarpakke; then
+if echo "$CRON_SECRET" | gh secret set CRON_SECRET --repo tajlive/KP; then
   echo "✅ CRON_SECRET satt i GitHub!"
   echo ""
   echo "🔍 Verifiserer..."
   
-  if gh secret list --repo tomarnejensen/klarpakke | grep -q CRON_SECRET; then
+  if gh secret list --repo tajlive/KP | grep -q CRON_SECRET; then
     echo "✅ Verifisert: CRON_SECRET eksisterer"
     echo ""
     echo "🎉 SUKSESS! GitHub Actions cron er nå aktivert!"
     echo ""
     echo "📅 Neste steg:"
-    echo "  1. Gå til: https://github.com/tomarnejensen/klarpakke/actions"
+    echo "  1. Gå til: https://github.com/tajlive/KP/actions"
     echo "  2. Klikk 'Trading Tick Cron'"
     echo "  3. Klikk 'Run workflow' for å teste"
     echo ""
@@ -71,7 +71,7 @@ else
   echo "❌ Feilet å sette secret"
   echo ""
   echo "🛠️ Manuell løsning:"
-  echo "  1. Gå til: https://github.com/tomarnejensen/klarpakke/settings/secrets/actions"
+  echo "  1. Gå til: https://github.com/tajlive/KP/settings/secrets/actions"
   echo "  2. Klikk 'New repository secret'"
   echo "  3. Name: CRON_SECRET"
   echo "  4. Secret: $CRON_SECRET"

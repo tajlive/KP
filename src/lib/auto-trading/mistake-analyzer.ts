@@ -70,11 +70,11 @@ export class MistakeAnalyzer {
     const supabase = await this.supabase;
     const mistakes: TradingMistake[] = [];
 
-    const { data: trades } = (await supabase
-      .from("auto_trading_trades" as unknown)
+    const { data: trades } = await supabase
+      .from("auto_trading_trades")
       .select("*")
       .eq("session_id", sessionId)
-      .order("opened_at", { ascending: false })) as unknown;
+      .order("opened_at", { ascending: false });
 
     if (!trades || trades.length === 0) {
       return [];
@@ -320,11 +320,11 @@ export class MistakeAnalyzer {
     const supabase = await this.supabase;
 
     // Get session stats
-    const { data: session } = (await supabase
-      .from("auto_trading_sessions" as unknown)
+    const { data: session } = await supabase
+      .from("auto_trading_sessions")
       .select("win_rate, total_trades, max_drawdown_pct")
       .eq("id", sessionId)
-      .single() as unknown) as unknown;
+      .single();
 
     if (!session) return 50;
 
@@ -373,11 +373,11 @@ export class MistakeAnalyzer {
     ]);
 
     // Get session summary
-    const { data: session } = (await supabase
-      .from("auto_trading_sessions" as unknown)
+    const { data: session } = await supabase
+      .from("auto_trading_sessions")
       .select("total_trades, winning_trades, losing_trades, total_pnl_nok")
       .eq("id", sessionId)
-      .single() as unknown) as unknown;
+      .single();
 
     const mistakesCost = mistakes.reduce((sum, m) => sum + m.impact, 0);
 

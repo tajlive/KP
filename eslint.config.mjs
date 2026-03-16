@@ -114,6 +114,17 @@ const commonGlobals = {
 
 /** @type {import('eslint').Linter.Config[]} */
 const eslintConfig = [
+  // Next.js – først slik at Next build sin plugin-sjekk ser @next/next tidlig i config
+  nextPlugin.flatConfig.coreWebVitals,
+  {
+    name: "nextjs-overrides",
+    settings: { next: { rootDir: "." } },
+    rules: {
+      "@next/next/no-img-element": "warn",
+      "@next/next/no-html-link-for-pages": "off",
+    },
+  },
+
   // Base JS recommended rules
   js.configs.recommended,
 
@@ -338,17 +349,6 @@ const eslintConfig = [
       ),
       // Label: krever kun id ELLER nesting (htmlFor + id er gyldig a11y)
       "jsx-a11y/label-has-for": ["warn", { "required": { "some": ["nesting", "id"] } }],
-    },
-  },
-
-  // Next.js konfigurasjon – offisiell flatConfig slik at build oppdager pluginen (ingen "plugin was not detected")
-  nextPlugin.flatConfig.coreWebVitals,
-  {
-    name: "nextjs-overrides",
-    settings: { next: { rootDir: "." } },
-    rules: {
-      "@next/next/no-img-element": "warn",
-      "@next/next/no-html-link-for-pages": "off",
     },
   },
 

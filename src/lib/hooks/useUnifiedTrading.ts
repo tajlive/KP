@@ -190,7 +190,7 @@ export function useUnifiedTrading(
         .limit(50);
 
       if (!queryError && data) {
-        setTrades(data);
+        setTrades(data as unknown as import('@/types/database').Trade[]);
       }
     } catch {
       // Non-critical

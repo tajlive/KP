@@ -112,12 +112,19 @@ CREATE INDEX IF NOT EXISTS idx_course_lessons_slug ON course_lessons(slug);
 CREATE INDEX IF NOT EXISTS idx_course_lessons_published ON course_lessons(is_published);
 CREATE INDEX IF NOT EXISTS idx_course_lessons_sort ON course_lessons(module_id, sort_order);
 
-CREATE INDEX IF NOT EXISTS idx_quiz_questions_lesson ON quiz_questions(lesson_id);
-CREATE INDEX IF NOT EXISTS idx_quiz_questions_sort ON quiz_questions(lesson_id, sort_order);
-
+-- Indexes that depend on lesson_id (skip if column missing, e.g. older schema)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'quiz_questions' AND column_name = 'lesson_id') THEN
+    CREATE INDEX IF NOT EXISTS idx_quiz_questions_lesson ON quiz_questions(lesson_id);
+    CREATE INDEX IF NOT EXISTS idx_quiz_questions_sort ON quiz_questions(lesson_id, sort_order);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'user_lesson_progress' AND column_name = 'lesson_id') THEN
+    CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_lesson ON user_lesson_progress(lesson_id);
+    CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_user_lesson ON user_lesson_progress(user_id, lesson_id);
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_user ON user_lesson_progress(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_lesson ON user_lesson_progress(lesson_id);
-CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_user_lesson ON user_lesson_progress(user_id, lesson_id);
 
 CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_user ON user_quiz_attempts(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_question ON user_quiz_attempts(question_id);
@@ -176,19 +183,24 @@ CREATE POLICY course_lessons_select_published ON course_lessons
     FOR SELECT TO public
     USING (is_published = true);
 
--- Quiz questions: anyone can read questions for published lessons
-DROP POLICY IF EXISTS quiz_questions_select_published ON quiz_questions;
-CREATE POLICY quiz_questions_select_published ON quiz_questions
-    FOR SELECT TO public
-    USING (
+-- Quiz questions: anyone can read questions for published lessons (kun hvis lesson_id finnes)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'quiz_questions' AND column_name = 'lesson_id') THEN
+    DROP POLICY IF EXISTS quiz_questions_select_published ON quiz_questions;
+    CREATE POLICY quiz_questions_select_published ON quiz_questions
+      FOR SELECT TO public
+      USING (
         EXISTS (
-            SELECT 1 FROM course_lessons cl
-            JOIN course_modules cm ON cl.module_id = cm.id
-            WHERE cl.id = quiz_questions.lesson_id
-            AND cl.is_published = true
-            AND cm.is_published = true
+          SELECT 1 FROM course_lessons cl
+          JOIN course_modules cm ON cl.module_id = cm.id
+          WHERE cl.id = quiz_questions.lesson_id
+          AND cl.is_published = true
+          AND cm.is_published = true
         )
-    );
+      );
+  END IF;
+END $$;
 
 -- User lesson progress: users can only manage their own progress
 DROP POLICY IF EXISTS user_lesson_progress_select_own ON user_lesson_progress;

@@ -414,7 +414,7 @@ async function loadUserProfile(userId: string) {
   try {
     const supabase = createClient();
     const { data, error } = await supabase
-      .from('profiles')
+      .from('user_profiles')
       .select('*')
       .eq('id', userId)
       .single();

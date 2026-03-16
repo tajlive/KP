@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
+        cookieEncoding: "raw",
         cookies: {
           getAll: () => cookieStore.getAll(),
           setAll: () => { /* Read-only for GET request */ },
@@ -54,11 +55,11 @@ export async function GET(request: NextRequest) {
     const { data: session, error: sessionError } = await supabase
       .from('trading_sessions')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('id', user.id)
       .eq('mode', 'paper')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single() as unknown;
+      .single();
     
     // If no session exists, return default balance (frontend will handle init)
     if (sessionError || !session) {

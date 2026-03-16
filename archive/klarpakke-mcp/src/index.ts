@@ -555,7 +555,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
         
         const response = await fetch(
-          `https://api.github.com/repos/tomarnejensen/klarpakke/commits?per_page=${limit}`,
+          `https://api.github.com/repos/tajlive/KP/commits?per_page=${limit}`,
           { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } }
         )
         
@@ -588,7 +588,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
         
         const response = await fetch(
-          `https://api.github.com/repos/tomarnejensen/klarpakke/issues?state=${state}`,
+          `https://api.github.com/repos/tajlive/KP/issues?state=${state}`,
           { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } }
         )
         

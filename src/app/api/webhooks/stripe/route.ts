@@ -415,7 +415,7 @@ async function sendWelcomeEmail(userId: string, planType: string) {
     const { data: sub } = await supabase
       .from("subscriptions")
       .select("stripe_customer_id")
-      .eq("user_id", userId)
+      .eq("id", userId)
       .single();
 
     let portalUrl = "https://www.klarpakke.no/no/dashboard/settings";

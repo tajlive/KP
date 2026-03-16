@@ -83,11 +83,11 @@ async function shouldSendEmail(
 
   try {
     const supabase = createClient();
-    const { data: prefs } = (await supabase
-      .from("email_preferences" as unknown)
+    const { data: prefs } = await supabase
+      .from("email_preferences")
       .select("*")
-      .eq("user_id" as unknown, userId)
-      .single() as unknown) as unknown;
+      .eq("user_id", userId)
+      .single();
 
     if (!prefs) {
       // Default to sending if no preferences set
@@ -96,13 +96,13 @@ async function shouldSendEmail(
 
     switch (type) {
       case "marketing":
-        return prefs.marketing_emails;
+        return prefs.marketing_emails ?? false;
       case "level_up":
       case "achievement_unlocked":
       case "leaderboard_climb":
-        return prefs.gamification_emails;
+        return prefs.gamification_emails ?? false;
       case "trade_executed":
-        return prefs.trading_alerts;
+        return prefs.trading_alerts ?? false;
       case "daily_digest":
         return prefs.digest_emails === "daily";
       case "weekly_digest":
@@ -127,11 +127,11 @@ async function getUserInfo(
 ): Promise<{ email: string; name: string } | null> {
   try {
     const supabase = createClient();
-    const { data: profile } = (await supabase
-      .from("user_profiles" as unknown)
+    const { data: profile } = await supabase
+      .from("user_profiles")
       .select("email, full_name")
       .eq("id", userId)
-      .single() as unknown) as unknown;
+      .single();
 
     if (!profile?.email) {
       // Fallback: get email from auth
@@ -730,12 +730,12 @@ export async function queueEmail(
   try {
     const supabase = createClient();
 
-    const { error } = (await supabase.from("notification_queue" as unknown).insert({
+    const { error } = await supabase.from("notification_queue").insert({
       user_id: options.userId,
       type: options.type,
       payload: options.data,
       status: "pending",
-    })) as unknown;
+    });
 
     if (error) {
       console.error("[Email] Queue error:", error);

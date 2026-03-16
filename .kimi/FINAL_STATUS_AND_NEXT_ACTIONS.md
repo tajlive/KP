@@ -61,7 +61,7 @@ NEW_ANON_KEY="<ny key fra Supabase>"
 sed -i '' "s|NEXT_PUBLIC_SUPABASE_ANON_KEY=.*|NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEW_ANON_KEY|" .env.local
 
 # 5. Oppdater GitHub Secret
-gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --body "$NEW_ANON_KEY" --repo tomarnejensen/klarpakke
+gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --body "$NEW_ANON_KEY" --repo tajlive/KP
 ```
 
 #### Steg 2: Generer ny NextAuth Secret (2 min)
@@ -74,7 +74,7 @@ NEW_NEXTAUTH_SECRET="6gfaFkkL9z3uW1hMVnvMCq9p7fQ2x8Bz76eFUP1Ngdc="
 echo "NEXTAUTH_SECRET=$NEW_NEXTAUTH_SECRET" >> .env.local
 
 # Oppdater GitHub Secret
-gh secret set NEXTAUTH_SECRET --body "$NEW_NEXTAUTH_SECRET" --repo tomarnejensen/klarpakke
+gh secret set NEXTAUTH_SECRET --body "$NEW_NEXTAUTH_SECRET" --repo tajlive/KP
 ```
 
 #### Steg 3: Verifiser rotation (2 min)
@@ -158,7 +158,7 @@ Error: HTTP 422: Actions has been disabled for this user
 
 ```bash
 # 1. Åpne GitHub Settings
-open https://github.com/tomarnejensen/klarpakke/settings/actions
+open https://github.com/tajlive/KP/settings/actions
 
 # 2. Under "Actions permissions":
 #    ✅ Velg: "Allow all actions and reusable workflows"
@@ -300,7 +300,7 @@ df -h | grep disk3s3s1
 # IKKE prøv å pull!
 cd ..
 rm -rf klarpakke
-git clone https://github.com/tomarnejensen/klarpakke.git
+git clone https://github.com/tajlive/KP.git
 cd klarpakke
 npm ci --legacy-peer-deps
 cp /path/to/backup/.env.local .env.local  # Restore env
@@ -316,7 +316,7 @@ cp /path/to/backup/.env.local .env.local  # Restore env
 
 ### ⚠️ 3. GitHub Actions Disabled
 
-- **Må re-enable manuelt:** https://github.com/tomarnejensen/klarpakke/settings/actions
+- **Må re-enable manuelt:** https://github.com/tajlive/KP/settings/actions
 - **Ingen CI/CD før dette er gjort**
 - **Dependabot PRs blokkert**
 
@@ -338,7 +338,7 @@ open https://app.supabase.com/project/vuxbjlykgmzskxbclquf/settings/api
 
 ```bash
 # 1. Åpne GitHub Settings
-open https://github.com/tomarnejensen/klarpakke/settings/actions
+open https://github.com/tajlive/KP/settings/actions
 
 # 2. Enable "Allow all actions and reusable workflows"
 # 3. Save
@@ -408,11 +408,11 @@ done
 
 ## 🔗 NYTTIGE LENKER
 
-- **GitHub Actions Settings:** https://github.com/tomarnejensen/klarpakke/settings/actions
+- **GitHub Actions Settings:** https://github.com/tajlive/KP/settings/actions
 - **Supabase Dashboard:** https://app.supabase.com/project/vuxbjlykgmzskxbclquf/settings/api
-- **GitHub Secrets:** https://github.com/tomarnejensen/klarpakke/settings/secrets/actions
-- **Pull Requests:** https://github.com/tomarnejensen/klarpakke/pulls
-- **GitHub Actions:** https://github.com/tomarnejensen/klarpakke/actions
+- **GitHub Secrets:** https://github.com/tajlive/KP/settings/secrets/actions
+- **Pull Requests:** https://github.com/tajlive/KP/pulls
+- **GitHub Actions:** https://github.com/tajlive/KP/actions
 - **Produksjon:** https://www.klarpakke.no
 
 ---

@@ -112,7 +112,7 @@ echo ""
 
 # 3.1: Enable auto-merge på repository-nivå
 echo "Enabler auto-merge for klarpakke repo..."
-if gh repo edit tomarnejensen/klarpakke --enable-auto-merge 2>/dev/null; then
+if gh repo edit tajlive/KP --enable-auto-merge 2>/dev/null; then
   echo "✅ Auto-merge enabled på repo-nivå"
 else
   echo "⚠️  Auto-merge kan ikke enables (kan allerede være på)"
@@ -122,7 +122,7 @@ echo ""
 
 # 3.2: Sjekk at branch protection tillater auto-merge
 echo "Sjekker branch protection for 'main'..."
-BRANCH_PROTECTION=$(gh api repos/tomarnejensen/klarpakke/branches/main/protection 2>/dev/null || echo "none")
+BRANCH_PROTECTION=$(gh api repos/tajlive/KP/branches/main/protection 2>/dev/null || echo "none")
 
 if echo "$BRANCH_PROTECTION" | grep -q '"required_status_checks"'; then
   echo "✅ Branch protection aktivert (CI må være grønn før merge)"
@@ -163,7 +163,7 @@ echo "  Dependabot kjører neste gang: Første mandag i mars 2026 kl 09:00"
 echo ""
 echo "💡 MANUELL TEST (valgfri):"
 echo "  Du kan tvinge en Dependabot-sjekk nå ved å:"
-echo "  1. Gå til: https://github.com/tomarnejensen/klarpakke/network/updates"
+echo "  1. Gå til: https://github.com/tajlive/KP/network/updates"
 echo "  2. Klikk 'Check for updates' (krever admin-tilgang)"
 echo ""
 echo "📚 DOKUMENTASJON:"
@@ -208,7 +208,7 @@ else
 fi
 
 # === OPPGAVE 3: Enable auto-merge ===
-gh repo edit tomarnejensen/klarpakke --enable-auto-merge 2>/dev/null && \
+gh repo edit tajlive/KP --enable-auto-merge 2>/dev/null && \
   echo "✅ [3/4] Auto-merge enabled" || \
   echo "⚠️  [3/4] Auto-merge status ukjent"
 
@@ -273,9 +273,9 @@ PR #1: chore(deps): bump production-updates group (3 pakker)
 
 ## 🔗 LENKER
 
-- **Konfig-fil:** [`.github/dependabot.yml`](https://github.com/tomarnejensen/klarpakke/blob/main/.github/dependabot.yml)
+- **Konfig-fil:** [`.github/dependabot.yml`](https://github.com/tajlive/KP/blob/main/.github/dependabot.yml)
 - **GitHub Dependabot docs:** https://docs.github.com/en/code-security/dependabot
-- **Dependabot dashboard:** https://github.com/tomarnejensen/klarpakke/network/updates
+- **Dependabot dashboard:** https://github.com/tajlive/KP/network/updates
 
 ---
 

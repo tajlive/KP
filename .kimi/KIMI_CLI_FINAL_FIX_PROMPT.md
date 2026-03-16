@@ -117,7 +117,7 @@ fi
 
 # Oppdater Supabase anon key
 echo "$NEW_SUPABASE_ANON_KEY" | gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY \
-  --repo tomarnejensen/klarpakke
+  --repo tajlive/KP
 
 if [ $? -eq 0 ]; then
   echo "✅ GitHub Secret NEXT_PUBLIC_SUPABASE_ANON_KEY oppdatert" >&2
@@ -128,7 +128,7 @@ fi
 
 # Oppdater NextAuth secret
 echo "$NEW_NEXTAUTH_SECRET" | gh secret set NEXTAUTH_SECRET \
-  --repo tomarnejensen/klarpakke
+  --repo tajlive/KP
 
 if [ $? -eq 0 ]; then
   echo "✅ GitHub Secret NEXTAUTH_SECRET oppdatert" >&2
@@ -212,7 +212,7 @@ Error: HTTP 422: Actions has been disabled for this user
 
 ```bash
 # 1. Åpne GitHub Actions Settings i browser
-open "https://github.com/tomarnejensen/klarpakke/settings/actions"
+open "https://github.com/tajlive/KP/settings/actions"
 
 # 2. VENT - bruker må manuelt:
 #    a) Under "Actions permissions"
@@ -242,7 +242,7 @@ echo "🔄 Tester om GitHub Actions er enabled..." >&2
 if gh workflow run "ci.yml" --ref main 2>&1 | grep -q "HTTP 422"; then
   echo "❌ ERROR: GitHub Actions er fortsatt disabled!" >&2
   echo "Vennligst verifiser at du har:" >&2
-  echo "  1. Åpnet: https://github.com/tomarnejensen/klarpakke/settings/actions" >&2
+  echo "  1. Åpnet: https://github.com/tajlive/KP/settings/actions" >&2
   echo "  2. Valgt: 'Allow all actions and reusable workflows'" >&2
   echo "  3. Klikket: 'Save'" >&2
   exit 1
@@ -282,10 +282,10 @@ LATEST_RUN_ID=$(gh run list --limit 1 --json databaseId --jq '.[0].databaseId')
 
 if [ -z "$LATEST_RUN_ID" ]; then
   echo "⚠️  WARNING: Ingen workflow runs funnet ennå" >&2
-  echo "Sjekk manuelt: https://github.com/tomarnejensen/klarpakke/actions" >&2
+  echo "Sjekk manuelt: https://github.com/tajlive/KP/actions" >&2
 else
   echo "✅ Siste run ID: $LATEST_RUN_ID" >&2
-  echo "🔗 URL: https://github.com/tomarnejensen/klarpakke/actions/runs/$LATEST_RUN_ID" >&2
+  echo "🔗 URL: https://github.com/tajlive/KP/actions/runs/$LATEST_RUN_ID" >&2
   
   # Monitor workflow (timeout etter 5 minutter)
   echo "⏳ Monitorer workflow (maks 5 min)..." >&2
@@ -407,7 +407,7 @@ gh run list --branch main --limit 3
 MAIN_RUN_ID=$(gh run list --branch main --limit 1 --json databaseId --jq '.[0].databaseId')
 
 if [ -n "$MAIN_RUN_ID" ]; then
-  echo "✅ Siste main run: https://github.com/tomarnejensen/klarpakke/actions/runs/$MAIN_RUN_ID" >&2
+  echo "✅ Siste main run: https://github.com/tajlive/KP/actions/runs/$MAIN_RUN_ID" >&2
   echo "📊 Status:" >&2
   gh run view $MAIN_RUN_ID --json conclusion,status --jq '.'
 fi
@@ -727,15 +727,15 @@ sed -i.bak "s|NEXT_PUBLIC_SUPABASE_ANON_KEY=.*|NEXT_PUBLIC_SUPABASE_ANON_KEY=${N
 sed -i.bak "s|NEXTAUTH_SECRET=.*|NEXTAUTH_SECRET=${NEW_NEXTAUTH_SECRET}|" .env.local
 rm -f .env.local.bak
 
-echo "$NEW_SUPABASE_ANON_KEY" | gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo tomarnejensen/klarpakke
-echo "$NEW_NEXTAUTH_SECRET" | gh secret set NEXTAUTH_SECRET --repo tomarnejensen/klarpakke
+echo "$NEW_SUPABASE_ANON_KEY" | gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo tajlive/KP
+echo "$NEW_NEXTAUTH_SECRET" | gh secret set NEXTAUTH_SECRET --repo tajlive/KP
 
 echo "✅ OPPGAVE 1 FULLFØRT!" >&2
 echo "" >&2
 
 # OPPGAVE 2: Enable GitHub Actions (5 min)
 echo "🔴 OPPGAVE 2: ENABLE GITHUB ACTIONS" >&2
-open "https://github.com/tomarnejensen/klarpakke/settings/actions"
+open "https://github.com/tajlive/KP/settings/actions"
 echo "Enable Actions i browser, deretter trykk ENTER..." >&2
 read -r
 

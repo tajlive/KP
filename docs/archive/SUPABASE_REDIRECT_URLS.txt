@@ -11,10 +11,6 @@ https://klarpakke-tom-jensens-projects.vercel.app/
 https://klarpakke-tom-jensens-projects.vercel.app/**
 https://klarpakke-*-tom-jensens-projects.vercel.app
 https://klarpakke-*-tom-jensens-projects.vercel.app/**
-https://klarpakke-tombomann-tom-jensens-projects.vercel.app/
-https://klarpakke-tombomann-tom-jensens-projects.vercel.app/**
-https://klarpakke-*-tombomann-tom-jensens-projects.vercel.app
-https://klarpakke-*-tombomann-tom-jensens-projects.vercel.app/**
 
 # Internationalized Callbacks (VIKTIG!)
 https://www.klarpakke.no/no/auth/callback

@@ -49,7 +49,7 @@ export async function GET() {
     .from("user_profiles")
     .select("role")
     .eq("id", user.id)
-    .single() as unknown;
+    .single();
 
   if (!isWhitelisted && profile?.role !== "admin") {
     return NextResponse.json(

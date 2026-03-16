@@ -48,7 +48,7 @@ done
 # Trigger workflow på main (verifiser Actions er oppe)
 if gh workflow run ci.yml --ref main 2>&1 | grep -q "422"; then
   echo "❌ STOPP: GitHub Actions er FORTSATT disabled!"
-  echo "Åpne: https://github.com/tomarnejensen/klarpakke/settings/actions"
+  echo "Åpne: https://github.com/tajlive/KP/settings/actions"
   echo "Enable 'Allow all actions' og klikk Save"
   exit 1
 fi
@@ -212,7 +212,7 @@ else
       
       # Oppdater GitHub Secret
       echo "$NEW_ANON_KEY" | gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY \
-        --repo tomarnejensen/klarpakke
+        --repo tajlive/KP
       
       echo "✅ GitHub Secret oppdatert!"
       
@@ -380,7 +380,7 @@ if echo "$CURRENT_KEY" | grep -q "${OLD_KEY_PREFIX:0:40}"; then
   read -r NEW_KEY
   if [[ "$NEW_KEY" =~ ^eyJ ]]; then
     sed -i '' "s|NEXT_PUBLIC_SUPABASE_ANON_KEY=.*|NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEW_KEY}|" .env.local
-    echo "$NEW_KEY" | gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo tomarnejensen/klarpakke
+    echo "$NEW_KEY" | gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo tajlive/KP
     echo "  ✅ Supabase key rotert!"
   fi
 else

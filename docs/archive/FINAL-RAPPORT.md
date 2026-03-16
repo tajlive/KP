@@ -171,7 +171,7 @@ For at Analytics skal fungere må:
 | Vercel Dashboard | https://vercel.com/tom-jensens-projects/klarpakke |
 | Vercel Analytics | https://vercel.com/tom-jensens-projects/klarpakke/analytics |
 | Vercel Speed Insights | https://vercel.com/tom-jensens-projects/klarpakke/speed-insights |
-| GitHub Repo | https://github.com/tomarnejensen/klarpakke |
+| GitHub Repo | https://github.com/tajlive/KP |
 
 ---
 

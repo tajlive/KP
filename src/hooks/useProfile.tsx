@@ -25,12 +25,12 @@ export function useProfile() {
       const { data, error: fetchError } = await supabase
         .from("user_profiles")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .single();
       if (fetchError) {
         setProfile(null);
       } else {
-        setProfile(data as unknown as Profile);
+        setProfile(data as Profile);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));
@@ -50,19 +50,21 @@ export function useProfile() {
         setError("Ikke innlogget");
         return;
       }
-      const { data, error: upsertError } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error: upsertError } = await (supabase as any)
         .from("user_profiles")
         .upsert({
+          id: user.id,
           user_id: user.id,
           ...updates,
           updated_at: new Date().toISOString(),
-        } as unknown)
+        })
         .select()
         .single();
       if (upsertError) {
         setError(upsertError.message);
       } else {
-        setProfile(data as unknown as Profile);
+        setProfile((data ?? null) as unknown as Profile | null);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));
@@ -84,14 +86,14 @@ export function useProfile() {
       }
       const { data, error: updateError } = await supabase
         .from("user_profiles")
-        .update({ ...updates, updated_at: new Date().toISOString() } as unknown)
-        .eq("user_id", user.id)
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq("id", user.id)
         .select()
         .single();
       if (updateError) {
         setError(updateError.message);
       } else {
-        setProfile(data as unknown as Profile);
+        setProfile((data ?? null) as unknown as Profile | null);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));
@@ -110,7 +112,7 @@ export function useProfile() {
       await supabase
         .from("user_profiles")
         .delete()
-        .eq("user_id", user.id);
+        .eq("id", user.id);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     }

@@ -62,7 +62,7 @@ React-komponenter monteres automatisk på disse root-elementene i Webflow:
 Legg til denne linjen i Webflow `<head>`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/klarpakke-site.js" async></script>
+<script src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js" async></script>
 ```
 
 ## Supabase Integration

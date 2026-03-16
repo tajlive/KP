@@ -32,7 +32,7 @@ GitHub Projects gir visuell styring av alle oppgaver i Klarpakke.
 
 ### Steg 1: Opprett prosjekt
 
-1. Gå til: https://github.com/tombomann/klarpakke/projects
+1. Gå til: https://github.com/tajlive/KP/projects
 2. Klikk **"New project"**
 3. Velg **"Board"**
 4. Navn: **"Klarpakke Development"**
@@ -63,10 +63,10 @@ GitHub Projects gir visuell styring av alle oppgaver i Klarpakke.
 gh issue list --state open --limit 100
 
 # Legg til i prosjekt (bytt ut X med prosjekt-nummer)
-gh project item-add X --url https://github.com/tombomann/klarpakke/issues/72
-gh project item-add X --url https://github.com/tombomann/klarpakke/issues/32
-gh project item-add X --url https://github.com/tombomann/klarpakke/issues/66
-gh project item-add X --url https://github.com/tombomann/klarpakke/issues/54
+gh project item-add X --url https://github.com/tajlive/KP/issues/72
+gh project item-add X --url https://github.com/tajlive/KP/issues/32
+gh project item-add X --url https://github.com/tajlive/KP/issues/66
+gh project item-add X --url https://github.com/tajlive/KP/issues/54
 ```
 
 ### Steg 5: Sett opp views
@@ -109,10 +109,10 @@ gh project item-add X --url https://github.com/tombomann/klarpakke/issues/54
 
 ```bash
 # Se prosjekt-status
-gh project view 1 --owner tombomann
+gh project view 1 --owner tajlive
 
 # Legg til issue
-gh project item-add 1 --url https://github.com/tombomann/klarpakke/issues/72
+gh project item-add 1 --url https://github.com/tajlive/KP/issues/72
 
 # Opprette issue med label
 gh issue create --title "Ny feature" --label "enhancement" --project "Klarpakke Development"

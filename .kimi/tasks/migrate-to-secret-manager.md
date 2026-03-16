@@ -115,7 +115,7 @@ echo "✅ Cloud Run oppdatert med Secret Manager-referanser"
 ## STEG 5 — Slett runtime-secrets fra GitHub (holder kun build-vars)
 
 ```bash
-REPO="tomarnejensen/klarpakke"
+REPO="tajlive/KP"
 
 GH_REMOVE=(
   STRIPE_SECRET_KEY
@@ -144,7 +144,7 @@ done
 ## STEG 6 — Sørg for at GitHub kun har build-vars
 
 ```bash
-REPO="tomarnejensen/klarpakke"
+REPO="tajlive/KP"
 
 BUILD_SECRETS=(
   NEXT_PUBLIC_SUPABASE_URL
@@ -168,7 +168,7 @@ done
 
 ```bash
 gh workflow run deploy-cloudrun.yml --repo "$REPO" --ref main
-echo "⏳ Deploy startet. Sjekk: https://github.com/tomarnejensen/klarpakke/actions"
+echo "⏳ Deploy startet. Sjekk: https://github.com/tajlive/KP/actions"
 
 sleep 30
 for i in {1..20}; do
