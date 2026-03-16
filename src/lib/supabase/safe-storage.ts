@@ -43,9 +43,7 @@ export function clearCorruptSupabaseKeysSync(): void {
     return
   }
 
-  // Rens potensielt korrupte auth-cookies før vi oppretter client (getItem leser cookies)
-  clearSupabaseAuthCookies()
-
+  let foundCorruption = false
   const keysToRemove: string[] = []
   try {
     const n = localStorage.length
@@ -81,9 +79,14 @@ export function clearCorruptSupabaseKeysSync(): void {
       } catch { /* ignore */ }
     })
     if (keysToRemove.length > 0) {
+      foundCorruption = true
       console.warn('[SafeStorage] Ryddet korrupte nøkler før Supabase-init:', keysToRemove.length)
     }
   } catch { /* ignore */ }
+
+  if (foundCorruption) {
+    clearSupabaseAuthCookies()
+  }
 }
 
 export type ClearStorageOptions = {
