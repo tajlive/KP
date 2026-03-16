@@ -32,7 +32,7 @@ echo ""
 echo "📋 Fetching deployment history..."
 
 # Get latest deployments
-DEPLOYMENTS=$(npx vercel@latest ls --token="$VERCEL_TOKEN" --json 2>/dev/null)
+DEPLOYMENTS=$(npx vercel@latest ls klarpakke --scope klarpakke --token="$VERCEL_TOKEN" --json 2>/dev/null)
 
 if [ -z "$DEPLOYMENTS" ] || [ "$DEPLOYMENTS" = "[]" ]; then
   echo "❌ Failed to fetch deployments"
@@ -62,7 +62,7 @@ echo ""
 
 # Perform rollback by aliasing previous deployment to production domain
 echo "🚀 Executing rollback..."
-npx vercel@latest alias "$PREVIOUS" www.klarpakke.no --token="$VERCEL_TOKEN" --yes
+npx vercel@latest alias "$PREVIOUS" www.klarpakke.no --scope klarpakke --token="$VERCEL_TOKEN" --yes
 
 if [ $? -eq 0 ]; then
   echo ""
