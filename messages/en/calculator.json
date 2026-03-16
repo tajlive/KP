@@ -30,5 +30,25 @@
   "cta": {
     "text": "Ready to test your strategies without risk?",
     "button": "Try Paper Trading"
-  }
+  },
+  "lotto": {
+    "title": "What do your habits cost?",
+    "subtitle": "Compare what you get for the same effort",
+    "weeklySpend": "Money spent per week",
+    "timeHorizon": "Time horizon",
+    "years": "years",
+    "lotto": "Lottery",
+    "expectedLoss": "Expected loss",
+    "statLoss": "Statistical loss of 40%",
+    "highInterest": "High-yield savings",
+    "annualRate": "3% annual rate (safe)",
+    "bankGuarantee": "Guaranteed by the bank",
+    "cryptoTheoretical": "Crypto (theoretical)",
+    "dailyReturn": "0.1% daily (EXTREMELY optimistic)",
+    "noGuarantee": "No guarantee, you can lose everything",
+    "important": "Important to know",
+    "disclaimer": "The calculator shows theoretical figures. 0.1% daily return is extremely optimistic and not realistic over time. You can lose your entire investment. This is not investment advice. Do your own research."
+  },
+  "cta_after_result": "Start free — learn to invest smart",
+  "cta_no_card": "No credit card needed"
 }
