@@ -64,7 +64,7 @@ export default function FinalCTASection({
               scale: [1, 1.05, 1],
             }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent pointer-events-none"
+            className="absolute inset-0 bg-linear-to-br from-blue-600/10 to-transparent pointer-events-none"
           />
 
           <div className="relative z-10">

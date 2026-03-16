@@ -41,7 +41,7 @@ export default function GuidePage() {
         ))}
       </div>
 
-      <div className="bg-gradient-to-r from-blue-900/50 to-emerald-900/50 rounded-lg p-6 border border-blue-700/50">
+      <div className="bg-linear-to-r from-blue-900/50 to-emerald-900/50 rounded-lg p-6 border border-blue-700/50">
         <h3 className="text-lg font-semibold text-white mb-2">
           {t("cta.title")}
         </h3>

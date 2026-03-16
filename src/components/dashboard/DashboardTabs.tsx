@@ -57,7 +57,7 @@ export function DashboardTabs({ activeTab, onTabChange, locale = 'no' }: Dashboa
               >
                 {/* Active indicator line */}
                 {isActive && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-emerald-500" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-500 to-emerald-500" />
                 )}
                 
                 {Icon && <Icon className={cn("w-4 h-4", isActive && "text-blue-400")} />}

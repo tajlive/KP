@@ -89,7 +89,7 @@ export default function ReferralDashboard() {
             </div>
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-2">
               Lås opp{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-amber-500">
                 PRO-strategier
               </span>
             </h3>
@@ -154,7 +154,7 @@ export default function ReferralDashboard() {
               transition={{ duration: 1, ease: "easeOut" }}
               className={`absolute top-0 left-0 h-full rounded-full ${
                 isUnlocked
-                  ? "bg-gradient-to-r from-amber-400 to-orange-500"
+                  ? "bg-linear-to-r from-amber-400 to-orange-500"
                   : "bg-blue-500"
               }`}
             />
@@ -167,7 +167,7 @@ export default function ReferralDashboard() {
               animate={{ scale: 1, opacity: 1 }}
               className="bg-amber-100 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700/50 p-4 rounded-2xl text-center"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-2 shadow-lg shadow-amber-500/30">
+              <div className="w-10 h-10 bg-linear-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-2 shadow-lg shadow-amber-500/30">
                 <Flame className="w-5 h-5 text-white" />
               </div>
               <div className="font-bold text-amber-800 dark:text-amber-400 text-sm">

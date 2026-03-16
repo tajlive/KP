@@ -33,16 +33,7 @@ export function getSupabaseClient(): SupabaseClient {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      // Unngår "Invalid UTF-8 sequence" ved korrupt base64url-dekoding av session i cookies
       cookieEncoding: 'raw',
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'pkce',
-        // Ikke custom storage: PKCE code_verifier må i cookie for at server-callback skal fungere
-        debug: process.env.NODE_ENV === 'development',
-      },
       global: {
         headers: {
           'x-client-info': 'klarpakke/1.0',

@@ -67,17 +67,17 @@ export function VelkommenContent() {
   const params = useParams();
   const locale = (params?.locale as string) || 'no';
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Hero */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-emerald-600 rounded-2xl mb-8 shadow-2xl shadow-blue-500/20">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-blue-600 to-emerald-600 rounded-2xl mb-8 shadow-2xl shadow-blue-500/20">
             <GraduationCap className="w-10 h-10 text-white" />
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6">
             Velkommen til{' '}
-            <span className="bg-gradient-to-r from-blue-400 via-emerald-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-400 via-emerald-400 to-pink-400 bg-clip-text text-transparent">
               Klarpakke Universitet
             </span>
           </h1>
@@ -90,7 +90,7 @@ export function VelkommenContent() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-lg px-8"
+              className="bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-lg px-8"
               asChild
             >
               <a href={`/${locale}/innlogging`}>
@@ -126,7 +126,7 @@ export function VelkommenContent() {
                 key={item.step}
                 className="border-slate-700/50 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden"
               >
-                <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-emerald-500/20 flex items-center justify-center text-sm font-bold text-slate-400">
+                <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-linear-to-br from-blue-500/20 to-emerald-500/20 flex items-center justify-center text-sm font-bold text-slate-400">
                   {item.step}
                 </div>
                 <CardHeader>
@@ -141,7 +141,7 @@ export function VelkommenContent() {
                       variant={item.primary ? 'default' : 'outline'}
                       size="sm"
                       className={item.primary
-                        ? 'bg-gradient-to-r from-blue-600 to-emerald-600'
+                        ? 'bg-linear-to-r from-blue-600 to-emerald-600'
                         : 'border-slate-600 text-slate-300 hover:bg-slate-700'
                       }
                       asChild
@@ -181,7 +181,7 @@ export function VelkommenContent() {
                 >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/10 to-emerald-500/10">
+                      <div className="p-3 rounded-xl bg-linear-to-br from-blue-500/10 to-emerald-500/10">
                         <Icon className="w-6 h-6 text-blue-400" />
                       </div>
                       <div>
@@ -231,7 +231,7 @@ export function VelkommenContent() {
           </p>
           <Button
             size="lg"
-            className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-lg px-8"
+            className="bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-lg px-8"
             asChild
           >
             <a href={`/${locale}/innlogging`}>

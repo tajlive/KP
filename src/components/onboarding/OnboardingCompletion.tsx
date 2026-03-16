@@ -31,7 +31,7 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
           damping: 15,
           delay: 0.3,
         }}
-        className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 shadow-xl"
+        className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-emerald-500 to-teal-500 shadow-xl"
       >
         <Check className="h-12 w-12 text-white stroke-[3px]" />
       </motion.div>

@@ -251,7 +251,7 @@ export function ToolContextBanner({
   const info = toolDescriptions[toolContext]
 
   return (
-    <Card className={cn('bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200', className)}>
+    <Card className={cn('bg-linear-to-r from-blue-50 to-indigo-50 border-blue-200', className)}>
       <div className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">

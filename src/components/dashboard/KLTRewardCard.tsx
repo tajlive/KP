@@ -17,7 +17,7 @@ export function KLTRewardCard({
   const t = useTranslations("dashboard.klt");
 
   return (
-    <Card className="bg-gradient-to-br from-[#171923] to-[#1a1c2e] border-[#2A2D3A] overflow-hidden relative group">
+    <Card className="bg-linear-to-br from-[#171923] to-[#1a1c2e] border-[#2A2D3A] overflow-hidden relative group">
       {/* Decorative background elements */}
       <div className="absolute -right-8 -top-8 w-32 h-32 bg-[#0052FF]/10 rounded-full blur-3xl group-hover:bg-[#0052FF]/20 transition-all duration-500" />
 

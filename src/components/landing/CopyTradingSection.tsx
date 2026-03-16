@@ -127,7 +127,7 @@ export function CopyTradingSection() {
               className="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-white hover:shadow-lg transition-all"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center relative">
+                <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center relative">
                   <Trophy
                     className={`h-5 w-5 ${i === 0 ? "text-amber-500" : i === 1 ? "text-slate-400" : "text-amber-700"}`}
                   />

@@ -70,7 +70,7 @@ export default function OnboardingModal() {
         {/* Content */}
         <div className="text-center">
           {/* Icon */}
-          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-6 bg-linear-to-br from-blue-500 to-emerald-600 rounded-2xl flex items-center justify-center">
             <Icon className="w-10 h-10 text-white" />
           </div>
 
@@ -108,7 +108,7 @@ export default function OnboardingModal() {
             </button>
             <button
               onClick={handleNext}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white rounded-xl font-medium transition-all shadow-lg shadow-blue-500/30"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white rounded-xl font-medium transition-all shadow-lg shadow-blue-500/30"
             >
               {currentStep < 2 ? t('next') : t('finish')}
               <ArrowRight className="w-5 h-5" />

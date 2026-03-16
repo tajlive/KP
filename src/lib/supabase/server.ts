@@ -50,13 +50,12 @@ export function createServerClient(
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {
     return createSSRServerClient<Database>(url, key, {
-      cookieEncoding: "raw",
+      cookieEncoding: 'raw',
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookiesToSet: any) => {
           cookiesToSet.forEach((cookie: any) => {
             const { name, value, options } = cookie;
-            // Only set on response; request.cookies is read-only in Next.js
             response.cookies.set(name, value, options);
           });
         },
@@ -69,7 +68,7 @@ export function createServerClient(
   return (async () => {
     const cookieStore = await cookies();
     return createSSRServerClient<Database>(url, key, {
-      cookieEncoding: "raw",
+      cookieEncoding: 'raw',
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll: (cookiesToSet: any) => {

@@ -87,7 +87,7 @@ export function StrategyCard({ strategy, onToggle, onDelete, onClick }: Strategy
     >
       {/* Status indicator stripe */}
       {strategy.is_active && (
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 animate-gradient-fast" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-green-400 via-emerald-500 to-green-600 animate-gradient-fast" />
       )}
       
       <CardHeader className="pb-3">
@@ -103,7 +103,7 @@ export function StrategyCard({ strategy, onToggle, onDelete, onClick }: Strategy
                     "text-xs",
                     isPaper 
                       ? "border-blue-300 text-blue-700 dark:border-blue-700 dark:text-blue-300"
-                      : "bg-gradient-to-r from-green-600 to-emerald-600 text-white"
+                      : "bg-linear-to-r from-green-600 to-emerald-600 text-white"
                   )}
                 >
                   {isPaper ? '📝 Paper' : '🟢 Live'}

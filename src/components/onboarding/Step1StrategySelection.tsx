@@ -50,7 +50,7 @@ export function Step1StrategySelection({
               <div className="flex items-center gap-4">
                 <div
                   className={cn(
-                    "flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br",
+                    "flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br",
                     strategy.color,
                   )}
                 >

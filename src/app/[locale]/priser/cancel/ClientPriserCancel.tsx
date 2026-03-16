@@ -9,7 +9,7 @@ export default function ClientPriserCancel() {
   const t = useTranslations('pricing.cancel');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 py-20 px-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-950 to-slate-900 py-20 px-4">
       <div className="max-w-2xl mx-auto text-center">
         <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-8">
           <XCircle className="w-12 h-12 text-gray-400" />

@@ -103,7 +103,7 @@ export function GamificationCard() {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10 animate-pulse">
+      <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10 animate-pulse">
         <div className="h-32 bg-white/5 rounded-xl" />
       </div>
     );
@@ -114,7 +114,7 @@ export function GamificationCard() {
   const xpProgress = level ? (level.xp / level.xp_to_next) * 100 : 0;
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10">
+    <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-white/10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -138,7 +138,7 @@ export function GamificationCard() {
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${xpProgress}%` }}
-            className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+            className="h-full bg-linear-to-r from-blue-500 to-purple-500"
           />
         </div>
         {nextRank && (

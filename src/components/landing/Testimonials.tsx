@@ -80,7 +80,7 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
                 </p>
 
                 <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg">
                     {item.name
                       .split(" ")
                       .map((n) => n[0])
@@ -116,7 +116,7 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
                   key={i}
                   className="w-10 h-10 rounded-full bg-slate-800 border-2 border-[#050510] relative overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 opacity-50" />
+                  <div className="absolute inset-0 bg-linear-to-br from-blue-500 to-indigo-600 opacity-50" />
                 </div>
               ))}
             </div>

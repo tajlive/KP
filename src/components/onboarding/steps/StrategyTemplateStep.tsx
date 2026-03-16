@@ -170,7 +170,7 @@ export function StrategyTemplateStep() {
                 <div className="absolute top-4 right-4 z-10">
                   <span
                     className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold
-                                   bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full
+                                   bg-linear-to-r from-cyan-500 to-blue-500 text-white rounded-full
                                    shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
                   >
                     <Star className="w-3 h-3" />
@@ -182,7 +182,7 @@ export function StrategyTemplateStep() {
               {/* Header */}
               <div className="flex items-center gap-3.5 mb-4">
                 <div
-                  className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${template.gradientFrom} ${template.gradientTo}
+                  className={`w-12 h-12 rounded-2xl bg-linear-to-br ${template.gradientFrom} ${template.gradientTo}
                                 flex items-center justify-center shrink-0
                                 shadow-[0_4px_12px_rgba(0,0,0,0.15)]`}
                 >
@@ -201,7 +201,7 @@ export function StrategyTemplateStep() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500
+                    className="w-7 h-7 rounded-full bg-linear-to-br from-cyan-500 to-blue-500
                                flex items-center justify-center shrink-0"
                   >
                     <Check className="w-4 h-4 text-white" strokeWidth={3} />
@@ -261,7 +261,7 @@ export function StrategyTemplateStep() {
                 {template.features.map((feat) => (
                   <div key={feat} className="flex items-center gap-1.5">
                     <div
-                      className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${template.gradientFrom} ${template.gradientTo}`}
+                      className={`w-1.5 h-1.5 rounded-full bg-linear-to-r ${template.gradientFrom} ${template.gradientTo}`}
                     />
                     <span className="text-[13px] text-gray-600 dark:text-gray-400">
                       {feat}

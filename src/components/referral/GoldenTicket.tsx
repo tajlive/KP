@@ -41,7 +41,7 @@ export function GoldenTicket({ ticket }: GoldenTicketProps) {
       className={`relative w-full overflow-hidden rounded-2xl border p-6 transition-all duration-300 transform-gpu preserve-3d cursor-pointer ${
         isUsed
           ? "border-slate-700 bg-slate-800/50 opacity-50 grayscale"
-          : "border-amber-500/30 bg-gradient-to-br from-amber-900/40 via-amber-800/20 to-slate-900 shadow-[0_0_30px_rgba(245,158,11,0.15)] hover:shadow-[0_0_50px_rgba(245,158,11,0.3)] hover:border-amber-400/50"
+          : "border-amber-500/30 bg-linear-to-br from-amber-900/40 via-amber-800/20 to-slate-900 shadow-[0_0_30px_rgba(245,158,11,0.15)] hover:shadow-[0_0_50px_rgba(245,158,11,0.3)] hover:border-amber-400/50"
       }`}
       onClick={!isUsed ? handleCopy : undefined}
     >
@@ -51,7 +51,7 @@ export function GoldenTicket({ ticket }: GoldenTicketProps) {
 
       {/* Gloss effect */}
       {!isUsed && (
-        <div className="pointer-events-none absolute -inset-[100%] animate-[spin_8s_linear_infinite] bg-gradient-to-r from-transparent via-amber-100/10 to-transparent opacity-30 blur-2xl" />
+        <div className="pointer-events-none absolute -inset-[100%] animate-[spin_8s_linear_infinite] bg-linear-to-r from-transparent via-amber-100/10 to-transparent opacity-30 blur-2xl" />
       )}
 
       <div className="relative z-10 flex flex-col h-full justify-between gap-4">

@@ -85,7 +85,7 @@ export function CompletionStep() {
             damping: 12,
             delay: 0.1,
           }}
-          className="w-24 h-24 rounded-[28px] bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500
+          className="w-24 h-24 rounded-[28px] bg-linear-to-br from-amber-400 via-orange-500 to-rose-500
                      flex items-center justify-center
                      shadow-[0_8px_32px_rgba(245,158,11,0.3)]"
         >
@@ -176,7 +176,7 @@ export function CompletionStep() {
                          transition-all duration-200"
             >
               <div
-                className={`w-11 h-11 rounded-xl bg-gradient-to-br ${action.gradient}
+                className={`w-11 h-11 rounded-xl bg-linear-to-br ${action.gradient}
                               flex items-center justify-center shrink-0
                               shadow-[0_4px_12px_rgba(0,0,0,0.1)]`}
               >

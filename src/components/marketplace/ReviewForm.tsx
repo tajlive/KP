@@ -141,7 +141,7 @@ export default function ReviewForm({
           onClick={handleSubmit}
           disabled={rating === 0 || isSubmitting}
           className="w-full mt-4 min-h-[52px] flex items-center justify-center gap-2
-                     bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500
+                     bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500
                      text-white font-semibold text-[17px]
                      rounded-2xl
                      shadow-[0_4px_16px_rgba(59,130,246,0.3)]

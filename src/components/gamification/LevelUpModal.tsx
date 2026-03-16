@@ -17,7 +17,7 @@ export function LevelUpModal() {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: "spring", damping: 15, stiffness: 100 }}
-          className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-b from-slate-900 to-slate-950 p-8 text-center shadow-[0_0_50px_rgba(59,130,246,0.2)]"
+          className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-blue-500/30 bg-linear-to-b from-slate-900 to-slate-950 p-8 text-center shadow-[0_0_50px_rgba(59,130,246,0.2)]"
         >
           {/* Confetti effect placeholder / background rays */}
           <div className="absolute inset-0 -z-10 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay" />
@@ -38,7 +38,7 @@ export function LevelUpModal() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
-            className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.4)]"
+            className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-tr from-blue-600 to-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.4)]"
           >
             <Trophy className="h-12 w-12 text-white" />
           </motion.div>
@@ -51,7 +51,7 @@ export function LevelUpModal() {
           </p>
 
           <div className="mb-8 flex items-center justify-center gap-3">
-            <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-cyan-200">
+            <span className="text-4xl font-black text-transparent bg-clip-text bg-linear-to-br from-blue-400 to-cyan-200">
               NIVÅ {newLevel}
             </span>
           </div>

@@ -81,7 +81,7 @@ export default function CreatorDashboard({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20 rounded-2xl">
+        <div className="p-2.5 bg-linear-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20 rounded-2xl">
           <BarChart3
             className="w-5 h-5 text-amber-600 dark:text-amber-400"
             aria-hidden="true"
@@ -130,7 +130,7 @@ export default function CreatorDashboard({
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-5 rounded-3xl bg-gradient-to-br from-emerald-500/5 to-cyan-500/5
+        className="p-5 rounded-3xl bg-linear-to-br from-emerald-500/5 to-cyan-500/5
                    dark:from-emerald-500/10 dark:to-cyan-500/10
                    border border-emerald-200/50 dark:border-emerald-800/30"
       >
@@ -140,7 +140,7 @@ export default function CreatorDashboard({
             Total inntekt
           </span>
         </div>
-        <p className="text-[28px] font-bold tabular-nums bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
+        <p className="text-[28px] font-bold tabular-nums bg-linear-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
           {formatNOK(stats.totalRevenue)}
         </p>
       </motion.div>
@@ -238,7 +238,7 @@ function StatCard({
                    border border-gray-200/50 dark:border-gray-800/50 shadow-sm"
     >
       <div
-        className={`w-9 h-9 rounded-xl bg-gradient-to-br ${gradient}
+        className={`w-9 h-9 rounded-xl bg-linear-to-br ${gradient}
                       flex items-center justify-center mb-3
                       shadow-[0_2px_8px_rgba(0,0,0,0.1)]`}
       >

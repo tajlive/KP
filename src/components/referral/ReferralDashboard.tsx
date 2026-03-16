@@ -72,7 +72,7 @@ export function ReferralDashboard() {
     <div className="space-y-6">
       {/* HEADER & STATS */}
       <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2 rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 via-slate-900 to-slate-900 p-6 flex flex-col justify-center">
+        <div className="md:col-span-2 rounded-2xl border border-amber-500/20 bg-linear-to-br from-amber-500/10 via-slate-900 to-slate-900 p-6 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-2">
             <Gift className="h-6 w-6 text-amber-400" />
             <h2 className="text-2xl font-bold text-white tracking-tight">
@@ -101,7 +101,7 @@ export function ReferralDashboard() {
               initial={{ width: 0 }}
               animate={{ width: `${progressPercent}%` }}
               transition={{ duration: 1, type: "spring" }}
-              className="h-full bg-gradient-to-r from-amber-600 to-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+              className="h-full bg-linear-to-r from-amber-600 to-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
             />
           </div>
         </div>

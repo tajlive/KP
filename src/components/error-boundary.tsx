@@ -89,7 +89,7 @@ interface ErrorFallbackProps {
 
 export function DefaultErrorFallback({ error, onRetry }: ErrorFallbackProps) {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
       <div className="max-w-md w-full mx-4 p-6 bg-white rounded-lg shadow-lg border border-slate-200">
         <div className="flex items-center gap-3 mb-4">
           <AlertCircle className="w-6 h-6 text-red-500" />
