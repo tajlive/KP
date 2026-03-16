@@ -357,7 +357,7 @@ Once Webflow setup is complete:
 - Contract: `webflow/contract/klarpakke-pages.v1.json`
 - Element IDs: `docs/WEBFLOW-ELEMENT-IDS-TEMPLATE.md`
 - Upload guide: `docs/WEBFLOW-UPLOAD-STEPS.md`
-- PR #67: https://github.com/tombomann/klarpakke/pull/67
+- PR #67: https://github.com/tajlive/KP/pull/67
 - Contract-driven guide: `docs/CONTRACT-DRIVEN-WEBFLOW.md`
 
 ---

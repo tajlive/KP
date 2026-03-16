@@ -3,7 +3,7 @@
 echo "🔐 GitLab CI/CD Variables Setup"
 echo "================================"
 echo ""
-echo "📍 Åpne: https://gitlab.com/tomarnejensen/klarpakke/-/settings/ci_cd"
+echo "📍 Åpne: https://gitlab.com/tajlive/KP/-/settings/ci_cd"
 echo "→ Expand 'Variables' → Add variable"
 echo ""
 echo "Legg til disse:"

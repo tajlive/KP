@@ -48,7 +48,7 @@ export async function createPaperTradingSession(
   supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession> {
-  const { data, error } = (await supabase
+  const { data, error } = await supabase
     .from("trading_sessions")
     .insert({
       user_id: userId,
@@ -61,14 +61,14 @@ export async function createPaperTradingSession(
       started_at: new Date().toISOString(),
     })
     .select()
-    .single() as unknown) as unknown;
+    .single();
 
   if (error) {
     console.error("Failed to create paper trading session:", error);
     throw new Error("Failed to create paper trading session");
   }
 
-  return data as PaperTradingSession;
+  return data as unknown as PaperTradingSession;
 }
 
 /**
@@ -78,13 +78,13 @@ export async function getPaperTradingSession(
   supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession | null> {
-  const { data, error } = (await supabase
+  const { data, error } = await supabase
     .from("trading_sessions")
     .select("*")
-    .eq("user_id" as unknown, userId)
+    .eq("user_id", userId)
     .eq("mode", 'paper')
     .eq("status", 'active')
-    .single() as unknown) as unknown;
+    .single();
 
   if (error) {
     if (error.code === "PGRST116") {
@@ -95,7 +95,7 @@ export async function getPaperTradingSession(
     throw new Error("Failed to get paper trading session");
   }
 
-  return data as PaperTradingSession;
+  return data as unknown as PaperTradingSession;
 }
 
 /**
@@ -126,22 +126,24 @@ export async function executePaperTrade(
       : session.current_capital_nok + totalValue;
 
   // Execute trade and update balance in a transaction-like manner
-  const { data: tradeData, error: tradeError } = (await supabase
+  const { data: tradeData, error: tradeError } = await supabase
     .from("trades")
     .insert({
       session_id: session.id,
       user_id: userId,
       trading_pair: trade.symbol,
       side: trade.side,
-      amount: trade.quantity,
+      quantity: trade.quantity,
       price: trade.price,
+      total_value: totalValue,
       fee: 0,
       status: 'executed',
       idempotency_key: `${Date.now()}-${Math.random()}`,
       executed_at: new Date().toISOString(),
+      mode: 'paper',
     })
     .select()
-    .single() as unknown) as unknown;
+    .single();
 
   if (tradeError) {
     console.error("Failed to execute trade:", tradeError);
@@ -176,19 +178,19 @@ export async function getPaperTradeHistory(
   sessionId: string,
   limit: number = 50,
 ): Promise<TradeHistoryItem[]> {
-  const { data, error } = (await supabase
+  const { data, error } = await supabase
     .from("trades")
     .select("*")
     .eq("session_id", sessionId)
     .order("created_at", { ascending: false })
-    .limit(limit)) as unknown;
+    .limit(limit);
 
   if (error) {
     console.error("Failed to get trade history:", error);
     throw new Error("Failed to get trade history");
   }
 
-  return data as TradeHistoryItem[];
+  return (data ?? []) as unknown as TradeHistoryItem[];
 }
 
 /**

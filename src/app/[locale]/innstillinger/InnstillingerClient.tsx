@@ -57,15 +57,15 @@ function EmailPrefsSection() {
       const { data } = await supabase
         .from("email_preferences")
         .select("*")
-        .eq("user_id" as unknown, user.id)
-        .single() as unknown;
+        .eq("user_id", user.id)
+        .single();
 
       if (data) {
         setPrefs({
           gamification_emails: data.gamification_emails ?? true,
           trading_alerts: data.trading_alerts ?? true,
           transaction_emails: data.transaction_emails ?? true,
-          digest_emails: data.digest_emails ?? "weekly",
+          digest_emails: (data.digest_emails as "daily" | "weekly" | "never") ?? "weekly",
           marketing_emails: data.marketing_emails ?? false,
         });
       }

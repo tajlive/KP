@@ -45,7 +45,7 @@ export function GamificationProvider({ children }: { children: ReactNode }) {
         const { data } = await supabase
           .from("user_gamification")
           .select("*")
-          .eq("user_id" as unknown, user.id)
+          .eq("user_id", user.id)
           .maybeSingle();
 
         if (data) {

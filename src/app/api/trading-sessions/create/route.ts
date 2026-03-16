@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Logg aktivitet
-    await supabase.from("activity_logs" as unknown).insert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from("activity_logs").insert({
       user_id: user.id,
       action: "paper_trading_session_created",
       details: {

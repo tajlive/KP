@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { AutoTradingTrade } from "@/lib/auto-trading/types";
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -149,7 +149,7 @@ export function PerformanceChart({
                   ((value: number) => [
                     `${value.toFixed(2)}%`,
                     "Avkastning",
-                  ]) as unknown
+                  ]) as unknown as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
                 }
               />
               <ReferenceLine

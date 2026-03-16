@@ -125,7 +125,7 @@ Se `DEPLOY-18-PAGES.md` for komplett liste over alle DOM-ankere.
 ### Head Scripts (Global)
 ```html
 <!-- Coinbase Design System CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/styles/coinbase.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/styles/coinbase.css">
 
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -144,9 +144,9 @@ Se `DEPLOY-18-PAGES.md` for komplett liste over alle DOM-ankere.
 
 ### Footer Scripts (Global)
 ```html
-<script src="https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/js/auth.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/js/login.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/tombomann/klarpakke@main/web/js/app-with-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/js/login.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/js/app-with-auth.js"></script>
 ```
 
 ### Side-spesifikke Scripts

@@ -1,6 +1,6 @@
 # 🔧 GitHub Setup Guide for Klarpakke
 
-Repository: [tomarnejensen/klarpakke](https://github.com/tomarnejensen/klarpakke)
+Repository: [tajlive/KP](https://github.com/tajlive/KP)
 
 ## ✅ Automatisert (Allerede gjort)
 

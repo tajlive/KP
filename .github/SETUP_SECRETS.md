@@ -15,7 +15,7 @@ Klikk "New repository secret" for hvert av disse (eller bruk `gh secret set NAME
 
 Etter secrets er satt:
   → Push én liten endring til main, eller gå til:
-    https://github.com/tomarnejensen/klarpakke/actions
+    https://github.com/tajlive/KP/actions
   → Klikk "Deploy Supabase" → "Run workflow"
 
 CI/CD kjører deretter AUTOMATISK ved alle fremtidige pushes til main

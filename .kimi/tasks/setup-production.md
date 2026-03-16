@@ -40,7 +40,7 @@ done
 ## STEG 2 — Sett GitHub Secrets automatisk
 
 ```bash
-REPO="tomarnejensen/klarpakke"
+REPO="tajlive/KP"
 
 # Les fra .env.local og sett som GitHub Secrets
 for VAR in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY \

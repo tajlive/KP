@@ -12,7 +12,7 @@
 | **Type** | Trading Platform with AI Signals |
 | **Stack** | Cloudflare Pages + Supabase + Webflow |
 | **Domene** | klarpakke.no |
-| **GitHub** | tombomann/klarpakke |
+| **GitHub** | tajlive/KP |
 
 ---
 
@@ -190,7 +190,7 @@ supabase db push
 - **Live site:** https://www.klarpakke.no
 - **Supabase Dashboard:** https://supabase.com/dashboard/project/swfyuwkptusceiouqlks
 - **Cloudflare Dashboard:** https://dash.cloudflare.com
-- **GitHub Issues:** https://github.com/tombomann/klarpakke/issues
+- **GitHub Issues:** https://github.com/tajlive/KP/issues
 
 ---
 

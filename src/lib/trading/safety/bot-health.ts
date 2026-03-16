@@ -24,13 +24,13 @@ export interface BotHealth {
  * Get bot health status
  */
 export async function getBotHealth(botId: string): Promise<BotHealth | null> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   const { data, error } = await supabase
     .from("bot_health")
     .select("id, user_id, status, last_heartbeat, last_error, error_count, consecutive_errors, max_consecutive_errors, updated_at")
     .eq("id", botId)
-    .single() as unknown;
+    .single();
 
   if (error || !data) {
     return null;
@@ -38,14 +38,14 @@ export async function getBotHealth(botId: string): Promise<BotHealth | null> {
 
   return {
     id: data.id,
-    userId: data.user_id,
-    status: data.status,
-    lastHeartbeat: new Date(data.last_heartbeat),
-    lastError: data.last_error,
-    errorCount: data.error_count,
-    consecutiveErrors: data.consecutive_errors,
-    maxConsecutiveErrors: data.max_consecutive_errors,
-    updatedAt: new Date(data.updated_at),
+    userId: data.user_id ?? "",
+    status: data.status as BotStatus,
+    lastHeartbeat: new Date(data.last_heartbeat ?? 0),
+    lastError: data.last_error ?? undefined,
+    errorCount: data.error_count ?? 0,
+    consecutiveErrors: data.consecutive_errors ?? 0,
+    maxConsecutiveErrors: data.max_consecutive_errors ?? 0,
+    updatedAt: new Date(data.updated_at ?? 0),
   };
 }
 
@@ -57,13 +57,14 @@ export async function updateBotHeartbeat(
   botId: string,
   status: BotStatus = "running"
 ): Promise<boolean> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     const { error } = await supabase
       .from("bot_health")
       .upsert({
         id: botId,
+        bot_name: botId,
         status,
         last_heartbeat: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -91,7 +92,7 @@ export async function recordBotError(
   botId: string,
   error: string
 ): Promise<void> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     // Get current state
@@ -99,19 +100,20 @@ export async function recordBotError(
       .from("bot_health")
       .select("consecutive_errors, max_consecutive_errors, error_count")
       .eq("id", botId)
-      .single() as unknown;
+      .single();
 
-    const consecutiveErrors = (current?.consecutive_errors || 0) + 1;
-    const maxConsecutive = current?.max_consecutive_errors || 3;
+    const consecutiveErrors = (current?.consecutive_errors ?? 0) + 1;
+    const maxConsecutive = current?.max_consecutive_errors ?? 3;
     const shouldPause = consecutiveErrors >= maxConsecutive;
 
     const { error: updateError } = await supabase
       .from("bot_health")
       .upsert({
         id: botId,
+        bot_name: botId,
         status: shouldPause ? "error" : "running",
         last_error: error,
-        error_count: (current?.error_count || 0) + 1,
+        error_count: (current?.error_count ?? 0) + 1,
         consecutive_errors: consecutiveErrors,
         last_heartbeat: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -152,18 +154,18 @@ export async function transitionBotStatus(
   newStatus: BotStatus,
   reason?: string
 ): Promise<boolean> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     const { data: current } = await supabase
       .from("bot_health")
       .select("status, consecutive_errors")
       .eq("id", botId)
-      .single() as unknown;
+      .single();
 
     // Validate transitions
     const validTransition = isValidTransition(
-      current?.status as BotStatus || "stopped",
+      (current?.status as BotStatus) || "stopped",
       newStatus
     );
 
@@ -174,13 +176,19 @@ export async function transitionBotStatus(
       return false;
     }
 
-    const updateData: Record<string, unknown> = {
+    const updateData: {
+      id: string;
+      bot_name: string;
+      status: string;
+      updated_at: string;
+      consecutive_errors?: number;
+    } = {
       id: botId,
+      bot_name: botId,
       status: newStatus,
       updated_at: new Date().toISOString(),
     };
 
-    // Reset consecutive errors on successful transition to running
     if (newStatus === "running") {
       updateData.consecutive_errors = 0;
     }
@@ -223,11 +231,12 @@ export async function initializeBotHealth(
   botId: string,
   userId: string
 ): Promise<boolean> {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
     const { error } = await supabase.from("bot_health").insert({
       id: botId,
+      bot_name: botId,
       user_id: userId,
       status: "stopped",
       last_heartbeat: new Date().toISOString(),

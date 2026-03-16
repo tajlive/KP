@@ -1,6 +1,6 @@
 # 🔍 GITHUB ACTIONS FULL ANALYSE (MCP)
 
-**Repo:** tomarnejensen/klarpakke  
+**Repo:** tajlive/KP  
 **Dato:** $(date '+%Y-%m-%d %H:%M:%S %Z')  
 **Utført med:** GitHub CLI (MCP-verktøy)  
 
@@ -350,11 +350,11 @@ jobs:
 
 | Tjeneste | URL |
 |----------|-----|
-| Actions Dashboard | https://github.com/tomarnejensen/klarpakke/actions |
-| Workflow Runs | https://github.com/tomarnejensen/klarpakke/actions/runs |
-| Secrets | https://github.com/tomarnejensen/klarpakke/settings/secrets/actions |
-| Environments | https://github.com/tomarnejensen/klarpakke/settings/environments |
-| Dependabot | https://github.com/tomarnejensen/klarpakke/network/updates |
+| Actions Dashboard | https://github.com/tajlive/KP/actions |
+| Workflow Runs | https://github.com/tajlive/KP/actions/runs |
+| Secrets | https://github.com/tajlive/KP/settings/secrets/actions |
+| Environments | https://github.com/tajlive/KP/settings/environments |
+| Dependabot | https://github.com/tajlive/KP/network/updates |
 
 ---
 

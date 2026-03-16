@@ -136,8 +136,8 @@ webflow/
 
 ## 🔗 Lenker
 
-- **GitHub Repository**: https://github.com/tombomann/klarpakke
-- **Siste Commit**: https://github.com/tombomann/klarpakke/commit/b83a7b67
+- **GitHub Repository**: https://github.com/tajlive/KP
+- **Siste Commit**: https://github.com/tajlive/KP/commit/b83a7b67
 - **Extension Guide**: `webflow-extension/README.md`
 
 ---

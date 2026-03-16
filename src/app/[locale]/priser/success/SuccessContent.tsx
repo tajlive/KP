@@ -42,13 +42,14 @@ export default function SuccessContent() {
           .from('user_profiles')
           .select('subscription_tier, subscription_status')
           .eq('id', user.id)
-          .single() as unknown;
+          .single();
 
         if (error) {
           throw error;
         }
 
-        if (profile?.subscription_status === 'active' || profile?.subscription_tier !== 'free') {
+        const p = profile as { subscription_status?: string; subscription_tier?: string } | null;
+        if (p?.subscription_status === 'active' || p?.subscription_tier !== 'free') {
           setStatus('success');
           setMessage(t('messageConfirmed'));
         } else {

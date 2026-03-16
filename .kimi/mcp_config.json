@@ -185,7 +185,7 @@
   },
   "troubleshooting": {
     "404-feil": "Sjekk middleware.ts og CSP headers",
-    "git-mismatch": "Kjør: git config user.name 'tomarnejensen'",
+    "git-mismatch": "Kjør: git config user.name 'tajlive'",
     "rate-limit": "Vent 3 timer eller bruk Vercel Dashboard",
     "build-feil": "Sjekk next.config.mjs for errors",
     "test-feil": "Kjør: npm run test:e2e:headed for å se hva som feiler"

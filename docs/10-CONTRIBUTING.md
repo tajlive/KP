@@ -19,7 +19,7 @@
 
 ```bash
 # 1. Fork repo (if external contributor)
-git clone https://github.com/tombomann/klarpakke.git
+git clone https://github.com/tajlive/KP.git
 cd klarpakke
 
 # 2. Install dependencies

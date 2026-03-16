@@ -2,7 +2,7 @@
 
 Du er Claude Code (programmeringsagent). Implementer en Webflow **Designer Extension** som automatiserer opprettelse/oppdatering av sider og DOM-ankere (IDs + `data-*`) for Klarpakke.
 
-Repo: https://github.com/tombomann/klarpakke
+Repo: https://github.com/tajlive/KP
 
 ## Mål
 Bygg en extension som teamet kan kjøre i Webflow Designer for å:

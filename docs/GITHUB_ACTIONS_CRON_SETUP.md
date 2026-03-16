@@ -29,7 +29,7 @@ Workflow krever `CRON_SECRET` for å autentisere mot Klarpakke API.
 
 ```bash
 # Gå til:
-https://github.com/tomarnejensen/klarpakke/settings/secrets/actions
+https://github.com/tajlive/KP/settings/secrets/actions
 
 # Klikk "New repository secret"
 # Name: CRON_SECRET
@@ -41,7 +41,7 @@ https://github.com/tomarnejensen/klarpakke/settings/secrets/actions
 ```bash
 gh secret set CRON_SECRET \
   --body "a18a07d157e02cbe4f4efad46eec7dbcb456ac3e31ae51f67d7e2e73f09e2df8" \
-  --repo tomarnejensen/klarpakke
+  --repo tajlive/KP
 ```
 
 ### 2. Aktiver Workflow
@@ -50,7 +50,7 @@ Workflow er automatisk aktivert når filen pushes til `main`.
 
 **Verifiser:**
 ```
-https://github.com/tomarnejensen/klarpakke/actions
+https://github.com/tajlive/KP/actions
 ```
 
 Du skal se:
@@ -66,7 +66,7 @@ For testing kan du kjøre workflow manuelt:
 ### Via GitHub UI:
 
 ```
-1. Gå til: https://github.com/tomarnejensen/klarpakke/actions
+1. Gå til: https://github.com/tajlive/KP/actions
 2. Klikk "Trading Tick Cron"
 3. Klikk "Run workflow" (høyre side)
 4. Velg branch: main
@@ -77,7 +77,7 @@ For testing kan du kjøre workflow manuelt:
 
 ```bash
 gh workflow run trading-cron.yml \
-  --repo tomarnejensen/klarpakke
+  --repo tajlive/KP
 ```
 
 ---
@@ -88,17 +88,17 @@ gh workflow run trading-cron.yml \
 
 **Siste kjøringer:**
 ```bash
-gh run list --workflow=trading-cron.yml --repo tomarnejensen/klarpakke --limit 10
+gh run list --workflow=trading-cron.yml --repo tajlive/KP --limit 10
 ```
 
 **Live logs:**
 ```bash
-gh run watch --repo tomarnejensen/klarpakke
+gh run watch --repo tajlive/KP
 ```
 
 **Eller via UI:**
 ```
-https://github.com/tomarnejensen/klarpakke/actions/workflows/trading-cron.yml
+https://github.com/tajlive/KP/actions/workflows/trading-cron.yml
 ```
 
 ### Success Metrics
@@ -157,18 +157,18 @@ GitHub Actions har 6 timer max runtime per job.
 
 1. **Er CRON_SECRET satt?**
    ```
-   https://github.com/tomarnejensen/klarpakke/settings/secrets/actions
+   https://github.com/tajlive/KP/settings/secrets/actions
    ```
 
 2. **Er repo public?**
    ```bash
    # GitHub Actions cron fungerer IKKE på private repos uten betalt plan
-   gh repo view tomarnejensen/klarpakke --json visibility
+   gh repo view tajlive/KP --json visibility
    ```
 
 3. **Er workflow enabled?**
    ```
-   https://github.com/tomarnejensen/klarpakke/actions
+   https://github.com/tajlive/KP/actions
    # Skal IKKE vise "This workflow is disabled"
    ```
 
@@ -179,12 +179,12 @@ GitHub Actions har 6 timer max runtime per job.
 **Løsning:**
 ```bash
 # Verifiser secret finnes
-gh secret list --repo tomarnejensen/klarpakke | grep CRON_SECRET
+gh secret list --repo tajlive/KP | grep CRON_SECRET
 
 # Hvis mangler, sett på nytt
 gh secret set CRON_SECRET \
   --body "a18a07d157e02cbe4f4efad46eec7dbcb456ac3e31ae51f67d7e2e73f09e2df8" \
-  --repo tomarnejensen/klarpakke
+  --repo tajlive/KP
 ```
 
 ### "Workflow runs but trades not executing"
@@ -193,7 +193,7 @@ gh secret set CRON_SECRET \
 
 1. **Sjekk workflow logs:**
    ```bash
-   gh run view --repo tomarnejensen/klarpakke --log
+   gh run view --repo tajlive/KP --log
    ```
 
 2. **Sjekk API response:**
@@ -228,7 +228,7 @@ Hvis du ønsker å stoppe GitHub Actions cron:
 ### Metode 1: Disable i GitHub UI
 
 ```
-1. Gå til: https://github.com/tomarnejensen/klarpakke/actions
+1. Gå til: https://github.com/tajlive/KP/actions
 2. Klikk "Trading Tick Cron"
 3. Klikk "..." (meny)
 4. Klikk "Disable workflow"

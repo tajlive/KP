@@ -64,7 +64,7 @@ export async function POST(
       .select("*")
       .eq("id", listingId)
       .eq("status", "published")
-      .single() as unknown;
+      .single();
 
     if (listingError || !listing) {
       return NextResponse.json(
@@ -80,7 +80,7 @@ export async function POST(
       .eq("subscriber_id", userId)
       .eq("listing_id", listingId)
       .eq("status", "active")
-      .single() as unknown;
+      .single();
 
     if (existingSub) {
       return NextResponse.json(
@@ -96,10 +96,10 @@ export async function POST(
 
     if (listing.strategy_id) {
       const { data: originalStrategy } = await supabase
-        .from("strategies" as unknown)
+        .from("strategies")
         .select("strategy_config, strategy_type, trading_pair, strategy_id")
         .eq("id", listing.strategy_id)
-        .single() as unknown;
+        .single();
 
       if (originalStrategy) {
         strategyConfig = originalStrategy.strategy_config || strategyConfig;
@@ -113,7 +113,7 @@ export async function POST(
 
     // Create user_strategies row cloned from the listing
     const { data: userStrategy, error: strategyError } = await supabase
-      .from("strategies" as unknown)
+      .from("strategies")
       .insert({
         user_id: userId,
         mode,
@@ -137,7 +137,7 @@ export async function POST(
         is_marketplace_listed: false,
       })
       .select()
-      .single() as unknown;
+      .single();
 
     // Fallback to trading_sessions
     if (strategyError) {
@@ -163,7 +163,7 @@ export async function POST(
           },
         })
         .select()
-        .single() as unknown;
+        .single();
 
       if (fallbackError) {
         console.error("Failed to create strategy:", fallbackError);
@@ -184,7 +184,7 @@ export async function POST(
           started_at: new Date().toISOString(),
         })
         .select()
-        .single() as unknown;
+        .single();
 
       if (subError) {
         console.error("Failed to create subscription:", subError);
@@ -213,7 +213,7 @@ export async function POST(
         started_at: new Date().toISOString(),
       })
       .select()
-      .single() as unknown;
+      .single();
 
     if (subError) {
       console.error("Failed to create subscription:", subError);

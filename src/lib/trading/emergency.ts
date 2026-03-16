@@ -31,7 +31,7 @@ export async function checkEmergencyStatus(): Promise<EmergencyStatus> {
   const { data, error } = await supabase
     .from('global_settings')
     .select('emergency_stop, emergency_triggered_at, emergency_triggered_by, emergency_reason')
-    .single() as unknown;
+    .single();
   
   if (error || !data) {
     // Default: ingen emergency
@@ -175,10 +175,10 @@ export async function panicCloseAllPositions(): Promise<number> {
     
     console.info(`[Emergency] Panic closing ${openPositions.length} positions...`);
     
-    // Lukk hver posisjon med MARKET order
-    for (const position of openPositions) {
+    // Lukk hver posisjon med MARKET order (session row: trading_pair, open_position)
+    for (const row of openPositions) {
+      const position = row as unknown as { id: string; symbol: string; quantity: number };
       try {
-        // SELL for å lukke posisjon
         const binance = getBinanceClient();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (binance as any).order({
@@ -196,7 +196,7 @@ export async function panicCloseAllPositions(): Promise<number> {
             closed_at: new Date().toISOString(),
             close_reason: 'EMERGENCY_PANIC_CLOSE',
           })
-          .eq('id', position.id);
+          .eq('id', (row as unknown as { id: string }).id);
         
         closedCount++;
       } catch (closeError) {
@@ -234,14 +234,14 @@ export async function canUserTrade(userId: string): Promise<{
   const supabase = createClient();
   const { data: userStatus } = await supabase
     .from('user_profiles')
-    .select('trading_suspended, trading_suspension_reason')
+    .select('id')
     .eq('id', userId)
-    .single() as unknown;
-  
-  if (userStatus?.trading_suspended) {
+    .single();
+  const status = userStatus as unknown as { trading_suspended?: boolean; trading_suspension_reason?: string } | null;
+  if (status?.trading_suspended) {
     return {
       allowed: false,
-      reason: `Bruker suspendert: ${userStatus.trading_suspension_reason || 'Ukjent grunn'}`,
+      reason: `Bruker suspendert: ${status.trading_suspension_reason || 'Ukjent grunn'}`,
     };
   }
   

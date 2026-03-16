@@ -13,7 +13,7 @@
 
 ### 2. Åpne disse i nettleseren:
 - Webflow Dashboard
-- GitHub repo (tombomann/klarpakke)
+- GitHub repo (tajlive/KP)
 - Denne mappen: `/Users/taj/klarpakke/webflow-pages/`
 
 ---
@@ -38,7 +38,7 @@ git push origin gh-pages --force
 
 **Din CSS blir tilgjengelig på:**
 ```
-https://tombomann.github.io/klarpakke/css/styles.css
+https://tajlive.github.io/KP/css/styles.css
 ```
 
 ### Alternativ B: Hvis GitHub Pages ikke fungerer
@@ -57,7 +57,7 @@ Last opp `webflow-pages/shared/styles.css` til:
 **Head Code:**
 ```html
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://tombomann.github.io/klarpakke/css/styles.css">
+<link rel="stylesheet" href="https://tajlive.github.io/KP/css/styles.css">
 ```
 
 **Footer Code (før `</body>`):**
@@ -70,7 +70,7 @@ Last opp `webflow-pages/shared/styles.css` til:
     stripePublishableKey: 'pk_test_din-key-her'
   };
 </script>
-<script src="https://tombomann.github.io/klarpakke/js/klarpakke-bundle.js"></script>
+<script src="https://tajlive.github.io/KP/js/klarpakke-bundle.js"></script>
 ```
 
 **Lagre endringer.**

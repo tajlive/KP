@@ -237,7 +237,7 @@ Beholder Kimis versjon for nå."
 - [ ] Fremtidig vedlikehold?
 
 /label ai-discussion
-/assign @tombomann
+/assign @tajlive
 ```
 
 ---

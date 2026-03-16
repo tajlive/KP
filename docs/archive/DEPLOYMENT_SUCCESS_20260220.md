@@ -66,7 +66,7 @@ gcloud services enable cloudscheduler.googleapis.com
 - **Fix applied:** Added secret version
 - **Action:** Triggered new deploy with empty commit (849e477ab)
 
-**Next:** Monitor https://github.com/tomarnejensen/klarpakke/actions
+**Next:** Monitor https://github.com/tajlive/KP/actions
 
 ### Database Migrations
 **Status:** Files ready, pending execution

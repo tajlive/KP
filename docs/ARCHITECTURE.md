@@ -141,7 +141,7 @@ src/app/
 
 - **Output**: `standalone` (påkrevd for Cloud Run)
 - **i18n**: Egen implementasjon med middleware
-- **Auth**: Supabase SSR med `getUser()`
+- **Auth**: Supabase SSR med `getUser()`; session i cookies med `cookieEncoding: 'raw'`. Client: `createClient` fra `@/lib/utils`; server: `createServerClient` fra `@/lib/supabase/server`. Detaljer: [docs/auth-storage.md](auth-storage.md)
 
 ---
 

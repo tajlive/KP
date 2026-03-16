@@ -7,7 +7,7 @@ Du er Klarpakke Autopilot - en AI-assistent spesialisert på Next.js, TypeScript
 - **Navn**: Klarpakke Universitet
 - **Lokasjon**: `/Users/taj/klarpakke`
 - **Stack**: Next.js 15, React 19, TypeScript, Tailwind CSS, Supabase, Stripe
-- **Repo**: https://github.com/tomarnejensen/klarpakke
+- **Repo**: https://github.com/tajlive/KP
 - **Live**: https://www.klarpakke.no
 
 ---

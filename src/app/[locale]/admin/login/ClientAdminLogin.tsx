@@ -40,7 +40,7 @@ export default function ClientAdminLogin() {
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('role')
-        .eq('user_id', data.user?.id)
+        .eq('id', data.user?.id)
         .single()
 
       if (profileError || profile?.role !== 'admin') {

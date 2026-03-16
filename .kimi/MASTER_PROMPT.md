@@ -97,7 +97,7 @@ gh run watch
 | **Navn**             | Klarpakke                                            |
 | **URL**              | https://www.klarpakke.no                             |
 | **Beskrivelse**      | Norsk kryptovaluta-læringsplattform med Auto Trading |
-| **Repo**             | https://github.com/tomarnejensen/klarpakke           |
+| **Repo**             | https://github.com/tajlive/KP           |
 | **Owner**            | tomarnejensen@gmail.com / tom@klarpakke.no           |
 | **Hosting**          | Vercel (Edge Network)                                |
 | **Region**           | arn1 (Stockholm, Sverige)                            |
@@ -211,8 +211,8 @@ NEXT_TELEMETRY_DISABLED=1
 ### Sette secrets via CLI
 
 ```bash
-gh secret set MY_SECRET --body "value" --repo tomarnejensen/klarpakke
-gh secret list --repo tomarnejensen/klarpakke
+gh secret set MY_SECRET --body "value" --repo tajlive/KP
+gh secret list --repo tajlive/KP
 ```
 
 ---
@@ -337,8 +337,8 @@ supabase db push
 supabase migration list
 
 # GitHub secrets
-gh secret set SECRET_NAME --body "value" --repo tomarnejensen/klarpakke
-gh secret list --repo tomarnejensen/klarpakke
+gh secret set SECRET_NAME --body "value" --repo tajlive/KP
+gh secret list --repo tajlive/KP
 ```
 
 ---
@@ -391,7 +391,7 @@ gh run view --log
 gh run rerun <run-id>
 
 # Sjekk secrets
-gh secret list --repo tomarnejensen/klarpakke
+gh secret list --repo tajlive/KP
 ```
 
 ### Produksjon nede?
@@ -431,9 +431,9 @@ gh secret list --repo tomarnejensen/klarpakke
 
 ### Eksterne lenker
 
-- **GitHub:** https://github.com/tomarnejensen/klarpakke
-- **Actions:** https://github.com/tomarnejensen/klarpakke/actions
-- **Issue #16:** https://github.com/tomarnejensen/klarpakke/issues/16
+- **GitHub:** https://github.com/tajlive/KP
+- **Actions:** https://github.com/tajlive/KP/actions
+- **Issue #16:** https://github.com/tajlive/KP/issues/16
 - **Produksjon:** https://www.klarpakke.no
 - **Vercel Dashboard:** https://vercel.com/tom-jensens-projects/klarpakke
 - **Supabase:** https://supabase.com/dashboard/project/vuxbjlykgmzskxbclquf

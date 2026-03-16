@@ -34,7 +34,7 @@
 
 ### 1.1 Sjekk GitHub Actions status
 ```bash
-gh run list --repo tomarnejensen/klarpakke --limit 5
+gh run list --repo tajlive/KP --limit 5
 ```
 
 **Forventet:** Siste run skal være ✅ grønn
@@ -368,8 +368,8 @@ gh pr create --title "HOTFIX: Critical production fix" --body "Emergency fix"
 
 ## 📞 KONTAKT VED KRITISKE PROBLEMER
 
-**GitHub Issue:** https://github.com/tomarnejensen/klarpakke/issues/16
-**Status dashboard:** https://github.com/tomarnejensen/klarpakke/actions
+**GitHub Issue:** https://github.com/tajlive/KP/issues/16
+**Status dashboard:** https://github.com/tajlive/KP/actions
 
 ---
 

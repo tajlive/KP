@@ -131,20 +131,21 @@ export async function GET(
       // Map fallback data to MarketplaceListing format
        
       const listings: MarketplaceListing[] =
-        (fallbackData as unknown[])?.map((item) => {
-          const profiles = (item as Record<string, unknown>).profiles as
+        (fallbackData as unknown[])?.map((value: unknown) => {
+          const item = value as Record<string, unknown>;
+          const profiles = item.profiles as
             | { display_name: string; avatar_url: string | null }
             | undefined;
           return {
-            id: item.id,
-            sellerId: (item as Record<string, unknown>).user_id as string,
-            strategyId: item.id,
-            title: `${(item as Record<string, unknown>).strategy_type || "Strategy"} - ${profiles?.display_name || "Creator"}`,
+            id: item.id as string,
+            sellerId: item.user_id as string,
+            strategyId: item.id as string,
+            title: `${item.strategy_type || "Strategy"} - ${profiles?.display_name || "Creator"}`,
             description: null,
             priceModel: "free",
             priceNok: 0,
-            backtestSummary: ((item as Record<string, unknown>).strategy_config || {}) as unknown,
-            category: (item as Record<string, unknown>).strategy_type as string | null,
+            backtestSummary: (item.strategy_config || {}) as unknown,
+            category: item.strategy_type as string | null,
             status: "published",
             subscriberCount: ((item as Record<string, unknown>).subscriber_count as number) || 0,
             rating: 0,
@@ -153,7 +154,7 @@ export async function GET(
             updatedAt: item.updated_at,
             sellerName: profiles?.display_name || "Anonym Creator",
             sellerAvatar: profiles?.avatar_url,
-            riskLevel: getRiskLevel((item as Record<string, unknown>).strategy_type as string | null),
+            riskLevel: getRiskLevel(item.strategy_type as string | null),
             winRate: 0,
             pnl30d: 0,
           };
@@ -170,27 +171,28 @@ export async function GET(
     // Map data to MarketplaceListing format
      
     const listings: MarketplaceListing[] =
-      (data as unknown[])?.map((item) => {
-        const profiles = (item as Record<string, unknown>).profiles as
+      (data as unknown[])?.map((value: unknown) => {
+        const item = value as Record<string, unknown>;
+        const profiles = item.profiles as
           | { display_name: string; avatar_url: string | null }
           | undefined;
-        const backtestSummary = ((item as Record<string, unknown>).backtest_summary || {}) as unknown;
+        const backtestSummary = (item.backtest_summary || {}) as unknown;
         return {
-          id: item.id,
-          sellerId: (item as Record<string, unknown>).seller_id as string,
-          strategyId: (item as Record<string, unknown>).strategy_id as string | null,
-          title: (item as Record<string, unknown>).title as string,
-          description: (item as Record<string, unknown>).description as string | null,
-          priceModel: (item as Record<string, unknown>).price_model as "free" | "subscription" | "one_time",
-          priceNok: (item as Record<string, unknown>).price_nok as number,
+          id: item.id as string,
+          sellerId: item.seller_id as string,
+          strategyId: item.strategy_id as string | null,
+          title: item.title as string,
+          description: item.description as string | null,
+          priceModel: item.price_model as "free" | "subscription" | "one_time",
+          priceNok: item.price_nok as number,
           backtestSummary: backtestSummary,
-          category: (item as Record<string, unknown>).category as string | null,
-          status: (item as Record<string, unknown>).status as "draft" | "published" | "archived",
-          subscriberCount: ((item as Record<string, unknown>).subscriber_count as number) || 0,
-          rating: ((item as Record<string, unknown>).rating as number) || 0,
-          reviewCount: ((item as Record<string, unknown>).review_count as number) || 0,
-          createdAt: item.created_at,
-          updatedAt: item.updated_at,
+          category: item.category as string | null,
+          status: item.status as "draft" | "published" | "archived",
+          subscriberCount: (item.subscriber_count as number) || 0,
+          rating: (item.rating as number) || 0,
+          reviewCount: (item.review_count as number) || 0,
+          createdAt: (item.created_at as string) ?? '',
+          updatedAt: (item.updated_at as string) ?? '',
           sellerName: profiles?.display_name || "Anonym Creator",
           sellerAvatar: profiles?.avatar_url,
           riskLevel: getRiskLevelFromBacktest(backtestSummary as Record<string, unknown> | null),

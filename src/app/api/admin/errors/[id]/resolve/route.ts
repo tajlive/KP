@@ -39,7 +39,7 @@ export async function POST(
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
-      .single() as unknown;
+      .single();
 
     if (profile?.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

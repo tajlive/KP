@@ -1,13 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/utils';
 
 export default function AccessibilitySettings() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClient();
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
   const [highContrast, setHighContrast] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -19,19 +16,20 @@ export default function AccessibilitySettings() {
         if (user) {
           const { data } = await supabase
             .from('user_profiles')
-            .select('font_size_preference, high_contrast_mode')
+            .select('id')
             .eq('id', user.id)
-            .single() as unknown;
+            .single();
 
-          if (data) {
-            setFontSize(data.font_size_preference || 'normal');
-            setHighContrast(data.high_contrast_mode || false);
+          const prefs = data as unknown as { font_size_preference?: string; high_contrast_mode?: boolean } | null;
+          if (prefs) {
+            setFontSize((prefs.font_size_preference as 'normal' | 'large') || 'normal');
+            setHighContrast(prefs.high_contrast_mode || false);
 
             // Apply to document
-            if (data.font_size_preference === 'large') {
+            if (prefs.font_size_preference === 'large') {
               document.documentElement.classList.add('text-lg');
             }
-            if (data.high_contrast_mode) {
+            if (prefs.high_contrast_mode) {
               document.documentElement.classList.add('high-contrast');
             }
           }
@@ -50,10 +48,8 @@ export default function AccessibilitySettings() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase
-          .from('user_profiles')
-          .update({ font_size_preference: size })
-          .eq('id', user.id);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any).from('user_profiles').update({ font_size_preference: size }).eq('id', user.id);
 
         // Apply to document
         if (size === 'large') {
@@ -74,7 +70,7 @@ export default function AccessibilitySettings() {
       if (user) {
         await supabase
           .from('user_profiles')
-          .update({ high_contrast_mode: enabled })
+          .update({ high_contrast_mode: enabled } as Record<string, unknown>)
           .eq('id', user.id);
 
         // Apply to document

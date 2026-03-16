@@ -67,15 +67,17 @@ export function RiskProfilePulse({
       const { data } = await supabase
         .from("paper_trading_sessions")
         .select("current_balance, starting_balance")
-        .eq("user_id" as unknown, user.id)
+        .eq("user_id", user.id)
         .eq("status", "active")
-        .single() as unknown;
+        .single();
 
       if (data) {
-        const change = data.current_balance - data.starting_balance;
-        const changePercent = (change / data.starting_balance) * 100;
+        const curr = data.current_balance ?? 0;
+        const start = data.starting_balance ?? 0;
+        const change = curr - start;
+        const changePercent = start !== 0 ? (change / start) * 100 : 0;
         setPortfolio({
-          value: data.current_balance,
+          value: curr,
           change,
           changePercent,
         });
@@ -312,17 +314,19 @@ export function MiniPulseWidget() {
       const { data: portfolioData } = await supabase
         .from("paper_trading_sessions")
         .select("current_balance, starting_balance")
-        .eq("user_id" as unknown, user.id)
+        .eq("user_id", user.id)
         .eq("status", "active")
-        .single() as unknown;
+        .single();
 
       if (portfolioData) {
-        const change =
-          portfolioData.current_balance - portfolioData.starting_balance;
+        const curr = portfolioData.current_balance ?? 0;
+        const start = portfolioData.starting_balance ?? 0;
+        const change = curr - start;
+        const changePercent = start !== 0 ? (change / start) * 100 : 0;
         setPortfolio({
-          value: portfolioData.current_balance,
+          value: curr,
           change,
-          changePercent: (change / portfolioData.starting_balance) * 100,
+          changePercent,
         });
       }
 
@@ -330,8 +334,8 @@ export function MiniPulseWidget() {
       const { data: profileData } = await supabase
         .from("risk_profiles")
         .select("name")
-        .eq("user_id" as unknown, user.id)
-        .single() as unknown;
+        .eq("user_id", user.id)
+        .single();
 
       if (profileData) {
         setProfile(profileData.name as RiskProfile);

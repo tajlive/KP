@@ -2,56 +2,44 @@
   "mcpServers": {
     "github": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
       }
     },
     "linear": {
-      "command": "npx",
-      "args": ["-y", "linear-mcp-server@latest"],
-      "env": {
-        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
-      }
+      "command": "node",
+      "args": [
+        "scripts/run-linear-mcp.mjs"
+      ]
     },
     "supabase": {
       "command": "npx",
       "args": [
         "-y",
         "@supabase/mcp-server-supabase@latest",
-        "--access-token", "${SUPABASE_ACCESS_TOKEN}",
-        "--project-ref", "vuxbjlykgmzskxbclquf"
+        "--access-token",
+        "${SUPABASE_ACCESS_TOKEN}",
+        "--project-ref",
+        "vuxbjlykgmzskxbclquf"
       ]
-    },
-    "vercel": {
-      "command": "npx",
-      "args": ["-y", "@vercel/mcp-adapter@latest"],
-      "env": {
-        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
-      }
-    },
-    "stripe": {
-      "command": "npx",
-      "args": ["-y", "@stripe/agent-toolkit@latest"],
-      "env": {
-        "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
-      }
-    },
-    "sentry": {
-      "command": "npx",
-      "args": ["-y", "@sentry/mcp-server@latest"],
-      "env": {
-        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
-        "SENTRY_ORG": "klarpakke"
-      }
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
     },
     "resend": {
       "command": "npx",
-      "args": ["-y", "resend-mcp@latest"],
+      "args": [
+        "-y",
+        "resend-mcp@latest"
+      ],
       "env": {
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }

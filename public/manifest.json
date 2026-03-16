@@ -32,9 +32,9 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.png",
+      "src": "/favicon.svg",
       "sizes": "48x48",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ],

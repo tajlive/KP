@@ -21,7 +21,7 @@ const XP_AWARDS: Record<string, number> = {
  */
 export async function POST(req: Request) {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const {
       data: { user },
       error: authError,
@@ -106,8 +106,8 @@ export async function POST(req: Request) {
     const { data: gamification } = await supabase
       .from("user_gamification")
       .select("current_level, total_xp, current_streak, last_login_date")
-      .eq("user_id" as unknown, user.id)
-      .single() as unknown;
+      .eq("user_id", user.id)
+      .single();
 
     return NextResponse.json({
       state: gamification || {
@@ -134,7 +134,7 @@ export async function POST(req: Request) {
  */
 export async function GET() {
   try {
-    const supabase: unknown = (await createClient()) as unknown;
+    const supabase = createClient();
     const {
       data: { user },
       error: authError,
@@ -147,8 +147,8 @@ export async function GET() {
     const { data: gamification, error } = await supabase
       .from("user_gamification")
       .select("current_level, total_xp, current_streak, last_login_date, level_up_at")
-      .eq("user_id" as unknown, user.id)
-      .single() as unknown;
+      .eq("user_id", user.id)
+      .single();
 
     if (error && error.code !== "PGRST116") {
       // PGRST116 = no rows found
