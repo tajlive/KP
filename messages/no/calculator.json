@@ -30,5 +30,25 @@
   "cta": {
     "text": "Klar til å teste strategiene dine uten risiko?",
     "button": "Prøv Paper Trading"
-  }
+  },
+  "lotto": {
+    "title": "Hva koster dine vaner?",
+    "subtitle": "Sammenlign hva du får for samme innsats",
+    "weeklySpend": "Penger brukt per uke",
+    "timeHorizon": "Tidshorisont",
+    "years": "år",
+    "lotto": "Lotto",
+    "expectedLoss": "Forventet tap",
+    "statLoss": "Statistisk tap på 40%",
+    "highInterest": "Høyrente",
+    "annualRate": "3% årlig rente (sikker)",
+    "bankGuarantee": "Garantert av banken",
+    "cryptoTheoretical": "Krypto (teoretisk)",
+    "dailyReturn": "0.1% daglig (EKSTREMT optimistisk)",
+    "noGuarantee": "Ingen garanti, du kan tape alt",
+    "important": "Viktig å vite",
+    "disclaimer": "Kalkulatoren viser teoretiske tall. 0.1% daglig avkastning er ekstremt optimistisk og ikke realistisk over tid. Du kan tape hele investeringen. Dette er ikke investeringsråd. Gjør egen research."
+  },
+  "cta_after_result": "Start gratis — lær å investere smart",
+  "cta_no_card": "Ingen kredittkort nødvendig"
 }
