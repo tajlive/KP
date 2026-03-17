@@ -17,6 +17,8 @@ import {
   CIRCUIT_BREAKER_DEFAULTS,
   calculateKellyPositionSize,
   checkCircuitBreakers,
+  getDrawdownPositionMultiplier,
+  getEffectiveConsecutiveLossesForDrawdown,
 } from "./risk-management";
 import { copyTrade } from "./social-trading";
 import { createStrategy } from "./strategies";
@@ -220,20 +222,40 @@ export async function executeTrade(
     const circuitBreakerConfig =
       CIRCUIT_BREAKER_DEFAULTS[config.risk_level || "balanced"];
 
-    // Calculate consecutive losses
+    // Calculate consecutive losses and wins (for circuit breaker and drawdown recovery)
     const todaysTradesRows = (todaysTrades || []) as AutoTradingTradeRow[];
-    const recentClosedTrades = todaysTradesRows
+    const weeksTradesRows = (weeksTrades || []) as AutoTradingTradeRow[];
+    const recentClosedTrades = [...todaysTradesRows, ...weeksTradesRows]
       .filter((t) => t.status === "CLOSED")
       .sort(
         (a, b) =>
           new Date(b.closed_at ?? 0).getTime() -
           new Date(a.closed_at ?? 0).getTime(),
       );
+    // Deduplicate by trade id (weeks includes today)
+    const seenIds = new Set<string>();
+    const uniqueClosed = recentClosedTrades.filter((t) => {
+      if (seenIds.has(t.id)) return false;
+      seenIds.add(t.id);
+      return true;
+    });
 
     let consecutiveLosses = 0;
-    for (const trade of recentClosedTrades) {
-      if ((trade.pnl_nok ?? 0) < 0) consecutiveLosses++;
-      else break;
+    let consecutiveWins = 0;
+    let consecutiveLossesBeforeWinStreak = 0;
+    for (const trade of uniqueClosed) {
+      const pnl = trade.pnl_nok ?? 0;
+      if (pnl < 0) {
+        if (consecutiveWins > 0) {
+          consecutiveLossesBeforeWinStreak++;
+        } else {
+          consecutiveLosses++;
+        }
+      } else {
+        if (consecutiveLossesBeforeWinStreak > 0) break;
+        if (consecutiveLosses > 0) break;
+        consecutiveWins++;
+      }
     }
 
     // Calculate current drawdown
@@ -381,11 +403,45 @@ export async function executeTrade(
     });
 
     // Apply position size limit from config
-    const maxPositionValue = Math.min(
+    let maxPositionValue = Math.min(
       positionSize.dollarAmount,
       sessionRow.current_capital_nok * ((config.max_position_size || 10) / 100),
       (config.max_capital || 1000) * 0.1, // Max 10% of max capital per trade
     );
+
+    // Apply drawdown position multiplier (gradual size reduction after consecutive losses)
+    const effectiveConsecutiveLosses = getEffectiveConsecutiveLossesForDrawdown(
+      consecutiveLosses,
+      consecutiveWins,
+      consecutiveLossesBeforeWinStreak,
+    );
+    const drawdownMultiplier = getDrawdownPositionMultiplier(
+      effectiveConsecutiveLosses,
+    );
+
+    if (drawdownMultiplier === 0) {
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        type: "drawdown_pause",
+        title: "Trading pauset – drawdownbeskyttelse",
+        message: `${effectiveConsecutiveLosses} tap på rad. Posisjon redusert til 0% – trading stoppet inntil ny handel mulig.`,
+        priority: "high",
+        read: false,
+      });
+      return {
+        success: false,
+        error: `Drawdown: ${effectiveConsecutiveLosses} tap på rad. Trading pauset for å beskytte kapital.`,
+        warnings,
+      };
+    }
+
+    if (drawdownMultiplier < 1.0) {
+      maxPositionValue *= drawdownMultiplier;
+      logger.info(
+        `Position reduced to ${(drawdownMultiplier * 100).toFixed(0)}% due to ${effectiveConsecutiveLosses} consecutive losses`,
+        { sessionId, effectiveConsecutiveLosses, drawdownMultiplier },
+      );
+    }
 
     if (maxPositionValue < 10) {
       return {

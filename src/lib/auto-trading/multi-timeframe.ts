@@ -125,20 +125,30 @@ export function getTimeframeWeight(alignment: TimeframeAlignment): number {
   }
 }
 
+const BINANCE_API_BASE = 'https://api.binance.com'
+
+const TIMEFRAME_TO_INTERVAL: Record<Timeframe, string> = {
+  '1h': '1h',
+  '4h': '4h',
+  '1d': '1d',
+  '1w': '1w',
+}
+
 /**
- * Mock function to fetch historical prices for different timeframes
- * I produksjon: Hent fra Binance API med ulike interval
+ * Fetch historical close prices from Binance klines for a given timeframe.
+ * Returns 200 candles for sufficient indicator warmup.
  */
 export async function fetchTimeframeData(
   symbol: string,
   timeframe: Timeframe
 ): Promise<number[]> {
-  // I produksjon: 
-  // - 1h: /api/v3/klines?symbol=${symbol}&interval=1h&limit=100
-  // - 4h: /api/v3/klines?symbol=${symbol}&interval=4h&limit=100
-  // - 1d: /api/v3/klines?symbol=${symbol}&interval=1d&limit=100
-  // - 1w: /api/v3/klines?symbol=${symbol}&interval=1w&limit=52
-  
-  // Mock data for now
-  return []
+  const interval = TIMEFRAME_TO_INTERVAL[timeframe]
+  const limit = 200
+  const url = `${BINANCE_API_BASE}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+  const res = await fetch(url)
+  if (!res.ok) {
+    throw new Error(`Binance klines HTTP ${res.status} for ${symbol} ${timeframe}`)
+  }
+  const klines = (await res.json()) as [unknown, unknown, unknown, unknown, string, unknown][]
+  return klines.map((k) => parseFloat(k[4]))
 }
