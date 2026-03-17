@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { BRAND } from "@/lib/design/tokens";
 
 const PAIRS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"] as const;
 
@@ -45,7 +46,7 @@ export function HeaderTicker() {
           {pair.replace("USDT", "")} ${formatPrice(prices[pair.replace("USDT", "")] ?? 0)}
         </span>
       ))}
-      <span className="text-[#0052FF] font-semibold">{t("freeBalance")}</span>
+      <span className={`${BRAND.link} font-semibold`}>{t("freeBalance")}</span>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
 // Deferred load for LiveTicker - not critical for LCP
+import { SURFACE } from "@/lib/design/tokens";
 import { DeferredLiveTicker } from "@/components/landing/DeferredLiveTicker";
 import HeroSection from "@/components/landing/HeroSection";
 import { TrustBar } from "@/components/landing/TrustBar";
@@ -142,7 +143,7 @@ export default async function HomePage({
   const { locale } = await params;
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA]">
+    <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
       <HeroSection locale={locale} />
 
       {/* Live Price Ticker - right under hero, light mode */}

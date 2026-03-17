@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { FormEvent, useState } from "react";
+import { BRAND } from "@/lib/design/tokens";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -99,7 +100,7 @@ export function EmailCapture() {
           <button
             type="submit"
             disabled={status === "loading"}
-            className="px-8 py-4 bg-[#0052FF] hover:bg-[#0041CC] text-white font-bold rounded-xl shadow-lg shadow-[#0052FF]/20 hover:shadow-[#0052FF]/30 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
+            className={`px-8 py-4 ${BRAND.primary} font-bold rounded-xl shadow-lg shadow-[#0052FF]/20 hover:shadow-[#0052FF]/30 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap`}
           >
             {status === "loading" ? (
               <span className="inline-flex items-center gap-2">

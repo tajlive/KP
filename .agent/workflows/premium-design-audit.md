@@ -30,7 +30,7 @@ Run a premium design audit across all user-facing pages and key components using
 4. **Report findings**
    - For each finding: file/component, issue, and before/after or concrete change suggestion where useful.
    - Group by priority (blocking vs. nice-to-have).
-   - Prioritized first run: landing, priser, onboarding, dashboard, paper-trading, handelshistorikk, trade, varsler, konto/innstillinger.
+   - Prioritized first run: landing, priser, onboarding, dashboard, paper-trading, handelshistorikk, trade, varsler, konto/innstillinger, akademi.
 
 ## Prioritized first run (page order)
 
@@ -43,3 +43,4 @@ Run a premium design audit across all user-facing pages and key components using
 7. Trade  
 8. Varsler  
 9. Konto/innstillinger  
+10. Akademi  

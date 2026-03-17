@@ -3,6 +3,7 @@
 import TradingModeToggle from "@/components/TradingModeToggle";
 import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
+import { BRAND } from "@/lib/design/tokens";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -62,7 +63,7 @@ export function LandingNavigation() {
             {!loading &&
               (user ? (
                 <Link href={l("/dashboard")}>
-                  <Button className="bg-[#0052FF] hover:bg-[#0041CC] text-white rounded-xl font-bold px-6">
+                  <Button className={`${BRAND.primary} rounded-xl font-bold px-6`}>
                     {t("myPage")}
                   </Button>
                 </Link>
@@ -119,7 +120,7 @@ export function LandingNavigation() {
                 href={l(user ? "/dashboard" : "/innlogging")}
                 className="block"
               >
-                <Button className="w-full bg-[#0052FF] hover:bg-[#0041CC] text-white h-14 rounded-2xl font-bold text-lg">
+                <Button className={`w-full ${BRAND.primary} h-14 rounded-2xl font-bold text-lg`}>
                   {user ? t("myPage") : t("login")}
                 </Button>
               </Link>

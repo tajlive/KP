@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { BRAND } from '@/lib/design/tokens';
 
 interface FirstTradeCardProps {
   userId: string;
@@ -51,7 +52,7 @@ export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProp
             </p>
             <a
               href={`/${locale}/trade`}
-              className="text-[#0052FF] text-sm font-medium mt-2 inline-block hover:underline"
+              className={`${BRAND.link} text-sm font-medium mt-2 inline-block hover:underline`}
             >
               {no ? 'Utforsk flere coins →' : 'Explore more coins →'}
             </a>
@@ -72,7 +73,7 @@ export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProp
             <button
               onClick={handleFirstTrade}
               disabled={loading}
-              className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-all hover:shadow-[0_4px_12px_rgba(0,82,255,0.3)] disabled:opacity-50"
+              className={`${BRAND.primary} font-semibold rounded-xl px-6 py-3 transition-all hover:shadow-[0_4px_12px_rgba(0,82,255,0.3)] disabled:opacity-50`}
             >
               {loading
                 ? (no ? 'Kjøper...' : 'Buying...')

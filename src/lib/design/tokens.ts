@@ -1,19 +1,21 @@
 // Klarpakke Design Tokens - Bruk DISSE overalt (samme stil på alle sider)
+// Merke-farge: #0052FF (Coinbase-blå, kp-tokens.css --kp-accent)
 
-/** Merke-farge #2563EB (KLA-182) - bruk overalt for primær CTA og accent */
+/** Merke-farge #0052FF – bruk overalt for primær CTA og accent */
 export const BRAND_COLOR = {
-  DEFAULT: '#2563EB',
-  HOVER: '#1d4ed8',
-  LIGHT: '#60a5fa',
-  MUTED: 'rgba(37, 99, 235, 0.1)',
-  BORDER: 'rgba(37, 99, 235, 0.2)',
+  DEFAULT: '#0052FF',
+  HOVER: '#0047E0',
+  LIGHT: '#3d7aff',
+  MUTED: 'rgba(0, 82, 255, 0.1)',
+  BORDER: 'rgba(0, 82, 255, 0.2)',
 } as const;
 
-/** Dark theme bakgrunn/border - konsistent på landing, priser, dashboard */
+/** Dark/light theme bakgrunn/border – konsistent på landing, priser, dashboard */
 export const SURFACE = {
-  BG: 'bg-slate-950',           // #0f172a
-  BG_ELEVATED: 'bg-slate-900',   // kort
-  BG_CARD: 'bg-slate-900/80',   // kort med subtil transparens
+  BG: 'bg-slate-950',             // #0f172a
+  BG_LIGHT: 'bg-[#F7F8FA]',       // lys landing/dashboard
+  BG_ELEVATED: 'bg-slate-900',    // kort
+  BG_CARD: 'bg-slate-900/80',     // kort med subtil transparens
   BORDER: 'border-slate-800',
   BORDER_MUTED: 'border-slate-800/80',
   TEXT: 'text-white',
@@ -22,8 +24,13 @@ export const SURFACE = {
 } as const;
 
 export const BRAND = {
-  primary: 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white',
-  primaryOutline: 'border-2 border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB]/10 dark:hover:bg-[#2563EB]/10',
+  primary: 'bg-[#0052FF] hover:bg-[#0047E0] text-white',
+  primaryOutline: 'border-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF]/10 dark:hover:bg-[#0052FF]/10',
+  link: 'text-[#0052FF] hover:text-[#0047E0] transition-colors',
+  focusRing: 'focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:ring-offset-2',
+  /** For Radix Switch etc. */
+  dataChecked: 'data-[state=checked]:bg-[#0052FF]',
+  gradient: 'bg-gradient-to-br from-[#0052FF] to-[#0047E0]',
   secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white',
   danger: 'bg-red-600 hover:bg-red-700 text-white',
   success: 'bg-emerald-600 hover:bg-emerald-700 text-white',
@@ -44,7 +51,7 @@ export const RADIUS = {
 
 export const SHADOW = {
   card: 'shadow-sm hover:shadow-md transition-shadow duration-200',
-  cardBrand: 'shadow-lg shadow-[#2563EB]/10',
+  cardBrand: 'shadow-lg shadow-[#0052FF]/10',
   button: 'shadow-sm active:shadow-none',
   modal: 'shadow-2xl',
 } as const;
@@ -62,6 +69,14 @@ export const CARD = {
   hover: `bg-white dark:bg-slate-900 ${RADIUS.card} border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow duration-200 p-6`,
   dark: `${SURFACE.BG_ELEVATED} ${RADIUS.card} border border-slate-800 shadow-sm p-6`,
   darkHover: `${SURFACE.BG_ELEVATED} ${RADIUS.card} border border-slate-800 shadow-sm hover:shadow-md hover:border-slate-700 transition-all duration-200 p-6`,
+} as const;
+
+/** Hero/landing – gradient og CTA (samme merke #0052FF) */
+export const HERO = {
+  gradient: 'from-[#0052FF] via-[#0041CC] to-slate-900',
+  badge: 'bg-[#0052FF]/20 backdrop-blur-sm text-white border border-[#0052FF]/40 rounded-full',
+  ctaPrimary: 'px-8 py-4 bg-[#0052FF] hover:bg-[#0041CC] text-white rounded-xl font-bold text-lg shadow-2xl shadow-[#0052FF]/30 hover:shadow-[#0052FF]/40 hover:scale-[1.02] transition-all duration-200',
+  ctaSecondary: 'px-8 py-4 bg-white text-[#0052FF] rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-200',
 } as const;
 
 /** Tabeller: tall alltid tabular-nums, rader med hover */

@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/utils';
 import { Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { BRAND } from '@/lib/design/tokens';
 
 // Admin emails whitelist
 const ADMIN_EMAILS = [
@@ -82,7 +83,7 @@ export default function ClientAdminV2() {
           <p className="text-slate-400 mb-6">{error}</p>
           <Link
             href={`/${locale}/innlogging?redirect=/${locale}/admin/v2`}
-            className="inline-block bg-[#0052FF] text-white px-6 py-3 rounded-lg font-semibold"
+            className={`inline-block ${BRAND.primary} px-6 py-3 rounded-lg font-semibold`}
           >
             Logg inn på nytt
           </Link>

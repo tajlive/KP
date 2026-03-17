@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Lock, CheckCircle2 } from "lucide-react";
+import { BRAND, SURFACE } from "@/lib/design/tokens";
 
 interface BotWizardProps {
   userId: string;
@@ -326,7 +327,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                     onClick={() => toggleCoin(coin)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       selected
-                        ? "bg-[#0052FF] text-white"
+                        ? `${BRAND.primary}`
                         : "bg-[#F1F3F9] text-[#5E6478] hover:bg-[#E2E5EC]"
                     }`}
                   >
@@ -401,7 +402,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
           <button
             type="button"
             onClick={() => setStep(step - 1)}
-            className="border border-[#E2E5EC] text-[#5E6478] hover:bg-[#F7F8FA] rounded-xl px-6 py-3 font-semibold transition-colors"
+            className={`border border-[#E2E5EC] text-[#5E6478] rounded-xl px-6 py-3 font-semibold transition-colors hover:bg-[#F7F8FA]`}
           >
             {isNo ? "Tilbake" : "Back"}
           </button>
@@ -421,7 +422,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
             type="button"
             onClick={handleStart}
             disabled={loading}
-            className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 w-full transition-colors disabled:opacity-60"
+            className={`${BRAND.primary} font-semibold rounded-xl px-6 py-3 w-full transition-colors disabled:opacity-60`}
           >
             {loading
               ? isNo
