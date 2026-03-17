@@ -1,104 +1,80 @@
-import { test as setup, expect } from '@playwright/test';
+import { test as setup } from '@playwright/test';
 import * as fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-
-/**
- * Auth setup - Cache authentication state
- * This runs before critical and regression tests
- */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const authFile = join(__dirname, '../.auth/user.json');
 
-setup('authenticate via API or mock', async ({ page, context }) => {
-  // Ensure .auth directory exists
+setup('authenticate via API', async ({ page, context }) => {
   const authDir = dirname(authFile);
   if (!fs.existsSync(authDir)) {
     fs.mkdirSync(authDir, { recursive: true });
   }
 
-  // Check if we have real credentials
-  const hasCredentials = process.env.E2E_USER_EMAIL && process.env.E2E_USER_PASSWORD;
-  
-  if (!hasCredentials) {
-    console.log('⚠️ No E2E credentials, using mock auth for testing');
-    
-    // Set minimal cookies for local testing
-    await context.addCookies([
-      {
-        name: 'sb-access-token',
-        value: 'mock-token-for-e2e-testing-only',
-        domain: 'localhost',
-        path: '/',
-        httpOnly: true,
-        secure: false,
-        sameSite: 'Lax'
-      }
-    ]);
-    
+  const email = process.env.E2E_USER_EMAIL;
+  const password = process.env.E2E_USER_PASSWORD;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+
+  if (!email || !password || !supabaseUrl || !supabaseAnonKey) {
+    console.log('⚠️ Missing E2E credentials or Supabase config, saving empty auth state');
     await context.storageState({ path: authFile });
-    console.log('✅ Mock auth state saved');
     return;
   }
 
-  // Real authentication flow (email/password or OAuth)
-  console.log('🔐 Attempting real authentication...');
-  
-  await page.goto('/no/innlogging');
-  await page.waitForLoadState('networkidle');
-  
-  // Check if already logged in (redirected to dashboard)
-  if (page.url().includes('/dashboard') || page.url().includes('/onboarding')) {
-    console.log('✅ Already authenticated');
+  console.log('🔐 Authenticating via Supabase API...');
+  const res = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': supabaseAnonKey,
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    console.log('⚠️ API auth failed:', res.status);
     await context.storageState({ path: authFile });
     return;
   }
-  
-  // 1) Try email/password form first (same as TEST_USER_EMAIL for compatibility)
-  const emailInput = page.getByLabel(/e-post|email/i).first();
-  const passwordInput = page.getByLabel(/passord|password/i).first();
-  const submitBtn = page.getByRole('button', { name: /logg inn|sign in/i });
-  
-  if (await emailInput.isVisible().catch(() => false)) {
-    console.log('Logging in with email/password...');
-    await emailInput.fill(process.env.E2E_USER_EMAIL!);
-    await passwordInput.fill(process.env.E2E_USER_PASSWORD!);
-    await submitBtn.click();
-    try {
-      await page.waitForURL(/\/(dashboard|onboarding)/, { timeout: 20000 });
-      console.log('✅ Email/password login successful');
-      await context.storageState({ path: authFile });
-      return;
-    } catch {
-      console.log('⚠️ Email/password login did not redirect, continuing...');
-    }
-  }
-  
-  // 2) Fallback: try Google OAuth
-  const googleButton = page.locator('[data-provider="google"], button:has-text("Google")').first();
-  if (await googleButton.isVisible().catch(() => false)) {
-    console.log('Trying Google OAuth...');
-    const [popup] = await Promise.all([
-      context.waitForEvent('page').catch(() => null),
-      googleButton.click()
-    ]);
-    if (popup) {
-      await popup.waitForLoadState();
-      try {
-        await popup.fill('input[type="email"]', process.env.E2E_USER_EMAIL!);
-        await popup.click('button:has-text("Next")');
-        await popup.fill('input[type="password"]', process.env.E2E_USER_PASSWORD!);
-        await popup.click('button:has-text("Next")');
-        await page.waitForURL(/.*dashboard.*/, { timeout: 30000 });
-        console.log('✅ OAuth authentication successful');
-      } catch (e) {
-        console.log('⚠️ OAuth flow failed');
-      }
-    }
-  }
-  
+
+  const data = await res.json();
+  const projectRef = supabaseUrl.match(/https:\/\/([^.]+)\./)?.[1] || '';
+
+  await page.goto('/no/innlogging', { waitUntil: 'domcontentloaded' });
+
+  // @supabase/ssr reads session from cookies set by the server,
+  // but the initial session can be bootstrapped via localStorage
+  // which the client-side JS picks up on hydration.
+  const storageKey = `sb-${projectRef}-auth-token`;
+  await page.evaluate(({ key, session }) => {
+    localStorage.setItem(key, JSON.stringify(session));
+  }, {
+    key: storageKey,
+    session: {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: data.expires_at,
+      expires_in: data.expires_in,
+      token_type: data.token_type,
+      user: data.user,
+    },
+  });
+
+  // Reload so the Supabase client reads the token from localStorage
+  // and sets the proper SSR cookies via the middleware
+  await page.reload({ waitUntil: 'networkidle' });
+
+  // Navigate to dashboard to trigger middleware cookie exchange
+  await page.goto('/no/dashboard', { waitUntil: 'networkidle', timeout: 30000 });
+
+  // Wait a moment for cookies to settle
+  await page.waitForTimeout(2000);
+
+  const finalUrl = page.url();
+  const isAuthed = !finalUrl.includes('innlogging') && !finalUrl.includes('login');
+  console.log(`✅ Auth complete (authenticated: ${isAuthed}), URL: ${finalUrl}`);
   await context.storageState({ path: authFile });
-  console.log('✅ Auth state saved to', authFile);
 });

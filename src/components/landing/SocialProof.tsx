@@ -55,7 +55,7 @@ export function SocialProof({ language = "no" }: SocialProofProps) {
     },
     {
       label: language === "no" ? "Virtuell kapital" : "Virtual Capital",
-      value: 1000000,
+      value: 100000,
       suffix: " kr",
     },
     {

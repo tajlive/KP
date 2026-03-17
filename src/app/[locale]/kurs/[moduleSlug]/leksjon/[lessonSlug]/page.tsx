@@ -160,7 +160,7 @@ export default async function LessonPage({ params }: PageProps) {
 
   const data = await getLessonData(moduleSlug, lessonSlug, user?.id);
 
-  if (!data) {
+  if (!data || !data.lesson || !data.module) {
     notFound();
   }
 
@@ -197,14 +197,17 @@ export default async function LessonPage({ params }: PageProps) {
   };
 
   const title = locale === "no" ? lesson.title_no : lesson.title_en;
-  const content = locale === "no" ? lesson.content_no : lesson.content_en;
+  const rawContent = locale === "no" ? lesson.content_no : lesson.content_en;
+  const content = rawContent?.replace(/\\n/g, "\n") ?? "";
   const moduleTitle = locale === "no" ? module.title_no : module.title_en;
 
-  // Server action wrapper for marking lesson complete (guard: lesson can be null in some runs)
+  const userId = user?.id ?? null;
+  const lessonId = lesson.id;
+
   async function handleLessonComplete() {
     "use server";
-    if (user?.id && lesson?.id) {
-      await markLessonComplete(user.id, lesson.id);
+    if (userId && lessonId) {
+      await markLessonComplete(userId, lessonId);
     }
   }
 

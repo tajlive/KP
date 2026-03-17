@@ -1,10 +1,5 @@
-import { redirect } from "next/navigation";
+import { SignupClient } from "./SignupClient";
 
-export default async function SignupRedirect({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  redirect(`/${locale}/registrer`);
+export default function SignupPage() {
+  return <SignupClient />;
 }

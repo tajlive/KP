@@ -231,8 +231,8 @@ export function ToolContextBanner({
     'paper-trading': {
       title: 'Lekepenger',
       description: locale === 'no'
-        ? 'Øv deg på å kjøpe og selge med 1 000 000 kr lekepenger.'
-        : 'Practice buying and selling with 1,000,000 virtual money.',
+        ? 'Øv deg på å kjøpe og selge med 100 000 kr lekepenger.'
+        : 'Practice buying and selling with 100,000 virtual money.',
     },
     'quiz': {
       title: 'Quiz',

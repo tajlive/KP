@@ -12,7 +12,7 @@ export function useTradingMode() {
   const [state, setState] = useState<TradingModeState>({
     mode: "paper",
     canSwitchToLive: false,
-    paperBalance: 1000000,
+    paperBalance: 100000,
     liveBalance: null,
     isLoading: true,
     error: null,

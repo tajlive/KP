@@ -79,7 +79,7 @@
   "step3": {
     "title": "Paper Trading",
     "subtitle": "Practice with virtual money",
-    "description": "You'll start with 1,000,000 NOK in virtual funds",
+    "description": "You'll start with 100,000 NOK in virtual funds",
     "cta": "Start Trading",
     "loading": "Setting up...",
     "whatIsPaperTrading": "What is paper trading?",
@@ -119,7 +119,7 @@
     "loading": "Loading dashboard...",
     "initializing": "Initializing...",
     "botReady": "Your trading bot is ready",
-    "paperBalance": "Paper balance: 1,000,000 NOK",
+    "paperBalance": "Paper balance: 100,000 NOK",
     "features": {
       "paperTrading": "Paper Trading Ready",
       "strategies": "Trading Strategies Available",

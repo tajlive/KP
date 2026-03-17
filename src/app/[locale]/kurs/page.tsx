@@ -288,11 +288,26 @@ function ModuleCard({ module, locale, translations }: ModuleCardProps) {
 
 export async function generateMetadata({ params }: PageProps) {
   const { locale } = await params;
+  const title = locale === "no" ? "Kurs | Klarpakke" : "Courses | Klarpakke";
+  const description =
+    locale === "no"
+      ? "Lær krypto-trading fra grunnen av"
+      : "Learn crypto trading from scratch";
+  const baseUrl = "https://www.klarpakke.no";
   return {
-    title: locale === "no" ? "Kurs | Klarpakke" : "Courses | Klarpakke",
-    description:
-      locale === "no"
-        ? "Lær krypto-trading fra grunnen av"
-        : "Learn crypto trading from scratch",
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `${baseUrl}/${locale}/kurs`,
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }

@@ -432,7 +432,7 @@ export default function KlarpakkeLanding() {
             </StaggerItem>
             <StaggerItem>
               <div className="text-3xl font-bold text-slate-900 sm:text-4xl">
-                <AnimatedCounter target={1000000} suffix=" kr" />
+                <AnimatedCounter target={100000} suffix=" kr" />
               </div>
               <p className="mt-1 text-sm text-slate-500">
                 Startkapital i paper mode

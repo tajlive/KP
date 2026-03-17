@@ -218,7 +218,7 @@ export function PlanSelectionWizard({
             <input
               type="range"
               min="1000"
-              max="1000000"
+              max="100000"
               step="1000"
               value={capital}
               title="Velg startkapital"
@@ -228,7 +228,7 @@ export function PlanSelectionWizard({
             />
             <div className="flex justify-between text-slate-500 text-sm mt-2">
               <span>1 000 kr</span>
-              <span>1 000 000 kr</span>
+              <span>100 000 kr</span>
             </div>
           </div>
 

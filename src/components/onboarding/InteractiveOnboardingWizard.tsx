@@ -378,7 +378,7 @@ export default function InteractiveOnboardingWizard({
                   Paper Trade Oppsett
                 </h3>
                 <p className="text-slate-500 text-sm">
-                  Vi tildeler deg 1 000 000 NOK i lekepenger for å teste
+                  Vi tildeler deg 100 000 NOK i lekepenger for å teste
                   strategien.
                 </p>
               </div>

@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  LayoutDashboard, 
-  Wallet, 
-  TrendingUp, 
-  BookOpen,
-  Bell,
-  Settings
-} from 'lucide-react';
+import { Home, GraduationCap, TrendingUp, User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface Tab {
@@ -25,13 +19,13 @@ interface DashboardTabsProps {
 }
 
 export function DashboardTabs({ activeTab, onTabChange, locale = 'no' }: DashboardTabsProps) {
-  const isNorwegian = locale === 'no';
+  const t = useTranslations('dashboard.tabs');
 
   const tabs: Tab[] = [
-    { id: 'overview', label: isNorwegian ? 'Oversikt' : 'Overview', icon: LayoutDashboard },
-    { id: 'portfolio', label: isNorwegian ? 'Portefølje' : 'Portfolio', icon: Wallet },
-    { id: 'trading', label: isNorwegian ? 'Trading' : 'Trading', icon: TrendingUp },
-    { id: 'learning', label: isNorwegian ? 'Læring' : 'Learning', icon: BookOpen },
+    { id: 'home', label: t('home', { defaultValue: 'Hjem' }), icon: Home },
+    { id: 'learn', label: t('learn', { defaultValue: 'Lær' }), icon: GraduationCap },
+    { id: 'practice', label: t('practice', { defaultValue: 'Øv' }), icon: TrendingUp },
+    { id: 'profile', label: t('profile', { defaultValue: 'Profil' }), icon: User },
   ];
 
   return (

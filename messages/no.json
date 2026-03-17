@@ -1331,7 +1331,7 @@
       },
       {
 "q": "Hvordan starter jeg med lekepenger?",
-      "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr i lekepenger. Gå til Lekepenger-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+      "a": "Registrer deg gratis, så får du automatisk 100 000 kr i lekepenger. Gå til Lekepenger-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
       },
       {
         "q": "Hva lærer jeg i kursene?",
@@ -1517,7 +1517,7 @@
     "steps": {
       "1": {
         "title": "Opprett konto og logg inn",
-        "description": "Registrer deg gratis og få tilgang til 1 000 000 kr i lekepenger. Ingen kredittkort nødvendig."
+        "description": "Registrer deg gratis og få tilgang til 100 000 kr i lekepenger. Ingen kredittkort nødvendig."
       },
       "2": {
         "title": "Lær det grunnleggende",
@@ -1910,9 +1910,9 @@
     "virtual": "Virtuell",
     "tooltip": "Lekepenger lar deg øve uten å risikere ekte penger",
     "subtitle": "Øv deg på trading med {amount} lekepenger",
-    "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
+    "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
     "help": {
-      "text": "Lekepenger lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "text": "Lekepenger lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
       "close": "Lukk"
     },
     "stats": {
@@ -2359,7 +2359,7 @@
         "requirement": "Ingen forkunnskaper kreves",
         "features": [
           "Full krypto-introduksjon",
-          "1 000 000 kr lekepenger",
+          "100 000 kr lekepenger",
           "Tilgang til Community",
           "Markedsoppdateringer",
           "500 KLT tokens ved registrering"

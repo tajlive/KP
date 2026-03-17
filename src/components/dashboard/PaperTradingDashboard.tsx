@@ -113,8 +113,8 @@ export function PaperTradingDashboard({ userId, locale }: PaperTradingDashboardP
   }
 
   const totalValue = (simulation.current_balance || 0)
-  const totalPnL = totalValue - (simulation.initial_balance || 1000000)
-  const totalPnLPercent = ((totalValue - (simulation.initial_balance || 1000000)) / (simulation.initial_balance || 1000000)) * 100
+  const totalPnL = totalValue - (simulation.initial_balance || 100000)
+  const totalPnLPercent = ((totalValue - (simulation.initial_balance || 100000)) / (simulation.initial_balance || 100000)) * 100
 
   return (
     <div className="space-y-6">

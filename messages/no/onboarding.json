@@ -79,7 +79,7 @@
   "step3": {
     "title": "Paper Trading",
     "subtitle": "Øv med virtuelle penger",
-    "description": "Du starter med 1 000 000 kr i virtuelle midler",
+    "description": "Du starter med 100 000 kr i virtuelle midler",
     "cta": "Start trading",
     "loading": "Setter opp...",
     "whatIsPaperTrading": "Hva er paper trading?",
@@ -119,7 +119,7 @@
     "loading": "Laster dashboard...",
     "initializing": "Initialiserer...",
     "botReady": "Trading-boten din er klar",
-    "paperBalance": "Paper-saldo: 1 000 000 kr",
+    "paperBalance": "Paper-saldo: 100 000 kr",
     "features": {
       "paperTrading": "Paper Trading klar",
       "strategies": "Tradingstrategier tilgjengelig",

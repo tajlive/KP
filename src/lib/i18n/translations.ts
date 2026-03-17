@@ -476,7 +476,7 @@ export const translations = {
       welcome: "Welcome to Klarpakke! 🚀",
       step1: {
         title: "Your Trading Simulator",
-        description: "Start with 1,000,000 NOK in virtual capital. Practice on real market data risk-free.",
+        description: "Start with 100,000 NOK in virtual capital. Practice on real market data risk-free.",
       },
       step2: {
         title: "Personalized Guidance",
