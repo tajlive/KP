@@ -54,6 +54,10 @@
       "env": {
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
+    },
+    "vipps": {
+      "command": "node",
+      "args": ["scripts/run-vipps-mcp.mjs"]
     }
   }
 }

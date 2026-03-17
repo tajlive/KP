@@ -13,10 +13,12 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
 
 export default function AdminLayout({
   children,
@@ -31,8 +33,9 @@ export default function AdminLayout({
   const [userEmail, setUserEmail] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Extract locale from pathname
-  const locale = (pathname ?? "/no").split("/")[1] || "no";
+  // useLocale() from next-intl — pathname with as-needed has no prefix for default (no), so parsing pathname would give "admin" as first segment
+  const rawLocale = useLocale();
+  const locale = SUPPORTED_LOCALES.includes(rawLocale as (typeof SUPPORTED_LOCALES)[number]) ? rawLocale : "no";
 
   useEffect(() => {
     const checkAdmin = async (retryCount = 0) => {
@@ -205,7 +208,9 @@ export default function AdminLayout({
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const pathWithoutLocale = (pathname ?? "").replace(/^\/(no|en|th|zh)/, "") || "/";
+            const hrefWithoutLocale = item.href.replace(/^\/(no|en|th|zh)/, "") || "/";
+            const isActive = pathWithoutLocale === hrefWithoutLocale;
             return (
               <Link
                 key={item.href}

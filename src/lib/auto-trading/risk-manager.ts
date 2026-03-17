@@ -181,7 +181,7 @@ export class RiskManager {
       .eq("id", sessionId)
       .single();
 
-    const startingCapital = session?.initial_capital || 10000;
+    const startingCapital = session?.initial_capital || 100000;
     let runningEquity = startingCapital;
     let peak = startingCapital;
     let maxDrawdown = 0;

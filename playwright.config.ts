@@ -15,6 +15,7 @@ dotenv.config({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)),
  * - @mobile: Mobile-specific tests, non-blocking
  * - @auth: Authentication required
  * - @papertrading: Paper trading features
+ * - @accessibility: axe-core WCAG-sjekk på kritiske sider
  */
 
 export default defineConfig({
@@ -160,6 +161,18 @@ export default defineConfig({
       use: {
         ...devices['iPhone SE'],
         viewport: { width: 375, height: 667 }
+      },
+    },
+
+    // ============================================
+    // ACCESSIBILITY (axe-core WCAG)
+    // ============================================
+    {
+      name: 'a11y-chromium',
+      testMatch: /accessibility\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 }
       },
     },
   ],

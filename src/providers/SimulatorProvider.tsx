@@ -7,7 +7,7 @@ const engine = typeof window !== 'undefined' ? new SimulatorEngine() : null;
 
 const defaultState = {
   prices: { BTC: 50000 },
-  balance: 10000,
+  balance: 100000,
   positions: [],
   history: []
 };
