@@ -402,7 +402,7 @@
       "step1": {
         "step": "01",
         "title": "Paper Trading",
-        "desc": "Du får 1 million lekepenger. Test helt risikofritt i 30 dager."
+        "desc": "Du får 100 000 kr i lekepenger. Test helt risikofritt i 30 dager."
       },
       "step2": {
         "step": "02",
@@ -1403,7 +1403,7 @@
   },
   "metadata": {
     "title": "Klarpakke - เรียนการเทรดภาษาไทย | Paper Trading & AI Coach",
-    "description": "หลักสูตรการเทรดที่มีโครงสร้างเป็นภาษาไทย Paper trading simulator ด้วยเงินทุนเสมือน 1M. AI coach 24/7. ราคา Beta: 999 บาท",
+    "description": "หลักสูตรการเทรดที่มีโครงสร้างเป็นภาษาไทย Paper trading simulator ด้วยเงินทุนเสมือน 100 000 kr. AI coach 24/7. ราคา Beta: 999 บาท",
     "ogTitle": "Klarpakke - เรียนการเทรด",
     "ogDescription": "เปิดตัว Beta: 999 บาท เหลือเพียง 50 ที่!",
     "courses": {

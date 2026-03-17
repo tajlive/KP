@@ -1,7 +1,7 @@
 export const translations = {
   no: {
     hero: {
-      badge: "📚 1 million i simulert kapital · Ingen ekte penger i fare",
+      badge: "📚 100 000 kr i simulert kapital · Ingen ekte penger i fare",
       heading: "Lær strukturert kryptotrading på 4 uker – med trygg papertrading",
       subheading: "Klarpakke lar deg trene på krypto og trading med simulert kapital, ekte markedsdata og enkel veiledning på norsk. Du følger et tydelig 4‑ukers opplegg laget for helt vanlige småsparere.",
       emailPlaceholder: "Din e-postadresse",
@@ -168,7 +168,7 @@ export const translations = {
       welcome: "Velkommen til Klarpakke! 🚀",
       step1: {
         title: "Din Trading-Simulator",
-        description: "Start med 1.000.000 kr i virtuell kapital. Tren på ekte markedsdata uten risiko.",
+        description: "Start med 100 000 kr i virtuell kapital. Tren på ekte markedsdata uten risiko.",
       },
       step2: {
         title: "Personlig Veiledning",

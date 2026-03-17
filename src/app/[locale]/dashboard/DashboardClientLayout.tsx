@@ -16,7 +16,6 @@ import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { ScrollToTop } from "@/components/dashboard/ScrollToTop";
 import { NotificationTray } from "@/components/layout/NotificationTray";
 import { usePaperTradingInit } from "@/hooks/usePaperTradingInit";
-import { OnboardingProvider } from "@/components/providers/OnboardingProvider";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
@@ -45,7 +44,6 @@ export default function DashboardClientLayout({
       <ClientSideProviders>
         <ErrorBoundary>
           <AuthProvider>
-            <OnboardingProvider>
               <OnboardingFlow />
               <ToastProvider>
                 <TradingModeProvider>
@@ -73,7 +71,6 @@ export default function DashboardClientLayout({
                   <SpeedInsights />
                 </TradingModeProvider>
               </ToastProvider>
-            </OnboardingProvider>
           </AuthProvider>
         </ErrorBoundary>
       </ClientSideProviders>

@@ -123,5 +123,27 @@
     "trust1": "100% transparent",
     "trust2": "No lock-in",
     "trust3": "Risk-free practice"
+  },
+  "demoWidget": {
+    "title": "免费试用模拟交易",
+    "subtitle": "点击买入和卖出，看看交易是如何运作的。无需注册。",
+    "portfolio": "投资组合",
+    "positionLabel": "持仓",
+    "buy": "买入 BTC",
+    "sell": "卖出 BTC",
+    "overlay": "注册以使用真实数据交易",
+    "overlayCta": "免费开始"
+  },
+  "emailCapture": {
+    "badge": "免费课程",
+    "title": "获取免费加密货币课程",
+    "subtitle": "学习加密货币和交易的基础知识——直接发送到您的收件箱。",
+    "placeholder": "您的电子邮件地址",
+    "cta": "注册",
+    "loading": "发送中...",
+    "errorMsg": "请输入有效的电子邮件地址",
+    "successTitle": "注册成功！",
+    "successDesc": "检查您的收件箱——第一课即将到达。",
+    "privacy": "我们绝不与第三方共享您的电子邮件。随时退订。"
   }
 }

@@ -345,9 +345,22 @@ export default function OnboardingFlow() {
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/95 p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-lg">
-        {/* Hopp over – setter IKKE is_completed for å bevare soft reminder */}
         <button
           onClick={async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              const now = new Date().toISOString();
+              await Promise.all([
+                supabase
+                  .from("onboarding_progress")
+                  .update({ is_completed: true, completed_at: now })
+                  .eq("id", user.id),
+                supabase
+                  .from("onboarding_progress")
+                  .update({ is_completed: true, completed_at: now })
+                  .eq("user_id", user.id),
+              ]);
+            }
             setIsVisible(false);
           }}
           className="absolute -top-16 right-0 text-slate-500 hover:text-slate-300 text-sm underline transition-colors"

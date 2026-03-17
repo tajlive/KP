@@ -62,7 +62,7 @@ export function EmptyPortfolio({ hasRealAccount, locale = 'no' }: EmptyPortfolio
           <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
             <TrendingUp className="w-3 h-3 text-green-400" />
           </div>
-          {isNorwegian ? '1M kr lekepenger' : '1M NOK virtual money'}
+          {isNorwegian ? '100 000 kr lekepenger' : '100,000 NOK virtual money'}
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">

@@ -507,7 +507,7 @@
       "step1": {
         "step": "01",
         "title": "Paper Trading",
-        "desc": "You get 1 million play money. Test risk-free for 30 days."
+        "desc": "You get 100,000 NOK play money. Test risk-free for 30 days."
       },
       "step2": {
         "step": "02",
@@ -1509,12 +1509,12 @@
       "titlePart1": "We use the right tools",
       "titlePart2": "so you can earn money.",
       "subtitle": "Our bots work 24 hours a day so you can earn. You decide the risk.",
-      "bullets": "Bots 24/7 • You set risk • 1M paper trading • No credit card",
+      "bullets": "Bots 24/7 • You set risk • 100,000 NOK paper trading • No credit card",
       "ctaPrimary": "Get started free",
       "ctaSecondary": "See how it works",
       "trust1": "Bots 24/7",
       "trust2": "You set risk",
-      "trust3": "1M paper money"
+      "trust3": "100,000 NOK paper money"
     },
     "emailCapture": {
       "badge": "Free course",
@@ -1789,7 +1789,7 @@
   },
   "metadata": {
     "title": "Klarpakke - Learn Trading in English | Paper Trading & AI Coach",
-    "description": "Structured trading courses in English. Paper trading simulator with 1M virtual capital. AI coach 24/7. Beta price: €29 (was €59). Only 50 spots.",
+    "description": "Structured trading courses in English. Paper trading simulator with 100,000 NOK virtual capital. AI coach 24/7. Beta price: €29 (was €59). Only 50 spots.",
     "ogTitle": "Klarpakke - Learn Trading",
     "ogDescription": "Beta launch: €29 (was €59). Only 50 spots left!",
     "courses": {
@@ -1866,7 +1866,7 @@
     "done": "Done",
     "startFree": "Start now – completely free",
     "noCreditCard": "No credit card needed",
-    "virtualCapital": "1M NOK virtual capital included",
+    "virtualCapital": "100,000 NOK virtual capital included",
     "completelyFree": "100% free in beta phase",
     "agreeTerms": "By continuing, you agree to our",
     "terms": "Terms of Use",
@@ -1887,7 +1887,7 @@
     "welcomeVideo": "Watch this short video",
     "clickToPlay": "Click to play the video",
     "transcript": "Video summary",
-    "transcriptText": "Hi! I am Tom Arne, the founder of Klarpakke. \n\n We are incredibly happy to have you on the journey. Our goal is to make crypto trading understandable and profitable for everyone, without the usual 'hype'. \n\n You now have access to our paper trading simulator with 1 million NOK in virtual funds, so you can practice completely risk-free before moving on to real trading. Good luck!",
+    "transcriptText": "Hi! I am Tom Arne, the founder of Klarpakke. \n\n We are incredibly happy to have you on the journey. Our goal is to make crypto trading understandable and profitable for everyone, without the usual 'hype'. \n\n You now have access to our paper trading simulator with 100,000 NOK in virtual funds, so you can practice completely risk-free before moving on to real trading. Good luck!",
     "founderName": "Tom Arne Jensen",
     "founderTitle": "Founder & CEO",
     "continueToDashboard": "Continue to Dashboard",

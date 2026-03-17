@@ -35,6 +35,12 @@
   },
   "welcome": "Velkommen til Klarpakke",
   "welcomeBack": "Velkommen tilbake 👋",
+  "tabs": {
+    "home": "首页",
+    "learn": "学习",
+    "practice": "练习",
+    "profile": "个人资料"
+  },
   "sidebar": {
     "overview": "Oversikt",
     "portfolio": "Portefølje",
@@ -46,6 +52,7 @@
     "settings": "Innstillinger",
     "admin": "Admin",
     "logout": "Logg ut",
+    "paperTrading": "模拟交易",
     "autoTrade": "自动交易",
     "guide": "指南",
     "mainMenu": "主菜单",

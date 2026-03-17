@@ -37,7 +37,7 @@ export default function SocialProofSection() {
     },
     {
       icon: TrendingUp,
-      value: "1M kr",
+      value: "100 000 kr",
       label: "Virtuell kapital",
       color: "text-amber-600",
     },
@@ -161,8 +161,8 @@ export default function SocialProofSection() {
               Klar for å starte?
             </h3>
             <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
-              Ingen kredittkort. Ingen binding. Bare ren læring med 1 million
-              kroner lekepenger.
+              Ingen kredittkort. Ingen binding. Bare ren læring med 100 000 kr
+              lekepenger.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
