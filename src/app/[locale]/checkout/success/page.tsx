@@ -27,7 +27,7 @@ export default async function CheckoutSuccessPage({
             <CheckCircle className="w-10 h-10 text-green-400" />
           </div>
         </div>
-        <div className="text-5xl mb-4">{tierData.badge}</div>
+        <div className="text-xl font-semibold text-slate-300 mb-4 uppercase tracking-wide">{tierData.badge}</div>
         <h1 className="text-2xl font-bold text-white mb-2">
           {tPricing('success.title')}
         </h1>

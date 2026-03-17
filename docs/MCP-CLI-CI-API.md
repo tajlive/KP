@@ -26,6 +26,7 @@
 | github | `npx -y @modelcontextprotocol/server-github` — env: `GITHUB_TOKEN` |
 | linear | `node scripts/run-linear-mcp.mjs` — nøkkel fra `.env.local` |
 | supabase | `npx -y @supabase/mcp-server-supabase@latest` — `SUPABASE_ACCESS_TOKEN`, project-ref |
+| **supabase-db** | `node scripts/run-supabase-mcp.mjs` — **DATABASE_URL** fra `.env.local`; 100 % uten Management API-token. Se `docs/MCP-SUPABASE-DB.md`. |
 | playwright | `npx -y @playwright/mcp@latest` |
 | resend | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY` |
 

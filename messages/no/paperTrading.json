@@ -92,5 +92,8 @@
   "stopSession": "Stopp sesjon",
   "total": "Totalt",
   "trades": "Handler",
-  "winRate": "Vinnerrate"
+  "winRate": "Vinnerrate",
+  "refreshList": "Oppdater listen",
+  "lastUpdated": "Sist oppdatert",
+  "binanceUpdateInfo": "Priser fra Binance oppdateres sanntid (WebSocket) eller ca. hvert 10. sekund. Listen oppdateres ved innlasting eller når du trykker Oppdater."
 }

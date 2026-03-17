@@ -27,6 +27,10 @@
         "vuxbjlykgmzskxbclquf"
       ]
     },
+    "supabase-db": {
+      "command": "node",
+      "args": ["scripts/run-supabase-mcp.mjs"]
+    },
     "playwright": {
       "command": "npx",
       "args": [

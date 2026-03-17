@@ -17,6 +17,8 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { TradingModeToggle } from "@/components/dashboard/TradingModeToggle";
 
 export function DashboardSidebar() {
   const t = useTranslations("dashboard.sidebar");
@@ -159,7 +161,23 @@ export function DashboardSidebar() {
             {secondaryLinks.map(renderLink)}
           </nav>
 
-          <div className={`border-t border-slate-100 bg-slate-50/50 ${collapsed ? "p-2" : "p-4"}`}>
+          <div className={`border-t border-slate-100 bg-slate-50/50 ${collapsed ? "p-2" : "p-4"} space-y-3`}>
+            {!collapsed && (
+              <>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    {locale === "no" ? "Språk" : "Language"}
+                  </span>
+                  <LanguageSwitcher variant="buttons" className="shrink-0" />
+                </div>
+                <div className="pt-1 border-t border-slate-200">
+                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">
+                    {locale === "no" ? "Modus" : "Mode"}
+                  </span>
+                  <TradingModeToggle />
+                </div>
+              </>
+            )}
             <button
               onClick={handleSignOut}
               title={collapsed ? t("logout") : undefined}

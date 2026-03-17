@@ -502,6 +502,7 @@ export default function ClientAutoTradeDashboard() {
                     onToggle={toggleStrategy}
                     onDelete={deleteStrategy}
                     onClick={setSelectedStrategy}
+                    locale={locale}
                   />
                 ))}
               </div>
