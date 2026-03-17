@@ -6,5 +6,5 @@ export default async function AutoTradingAIRedirect({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  redirect(`/${locale}/dashboard/trading?tab=auto`);
+  redirect(`/${locale}/dashboard/auto-trade`);
 }

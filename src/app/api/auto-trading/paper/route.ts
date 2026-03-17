@@ -16,6 +16,10 @@ export async function POST(request: NextRequest) {
     const strategy = body.strategy || "dca";
     const risk_level = body.risk_level || "moderat";
     const pairs: string[] = body.pairs || ["BTCUSDT"];
+    const startingCapital =
+      typeof body.starting_capital_nok === "number" && body.starting_capital_nok >= 10000
+        ? Math.min(1_000_000, body.starting_capital_nok)
+        : 100000;
 
     const { data: existing } = await supabase
       .from("trading_sessions")
@@ -38,11 +42,11 @@ export async function POST(request: NextRequest) {
         status: "active",
         strategy_id: strategy,
         strategy_config: { risk_level, pairs },
-        starting_capital_nok: 100000,
-        current_capital_nok: 100000,
+        starting_capital_nok: startingCapital,
+        current_capital_nok: startingCapital,
         trading_pair: pairs[0] || "BTCUSDT",
-        initial_capital: 100000,
-        current_capital: 100000,
+        initial_capital: startingCapital,
+        current_capital: startingCapital,
         total_trades: 0,
         winning_trades: 0,
         losing_trades: 0,

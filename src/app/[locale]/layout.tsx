@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { AuthProvider } from "@/components/auth/AuthContext";
 import { SessionCleanup } from "@/components/SessionCleanup";
 import { MarketingNavigation } from "@/components/layout/MarketingNavigation";
 import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
@@ -18,8 +19,7 @@ import "../globals.css";
  * 
  * KEY OPTIMIZATIONS:
  * 
- * 1. REMOVED AuthProvider - No Supabase init on marketing pages
- *    (available in /dashboard, /paper-trading, /auto-trading layouts)
+ * 1. AuthProvider in root - needed so MarketingNavigation can show Min side / Logg ut when logged in
  * 
  * 2. REMOVED OnboardingProvider + OnboardingFlow - Only for logged-in users
  *    (available in /dashboard layout)
@@ -226,11 +226,13 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <NextIntlClientProvider locale={locale} messages={messages}>
           <MarketingProviders>
             <ErrorBoundary>
-              <div className="relative min-h-screen flex flex-col">
-                <MarketingNavigation />
+              <AuthProvider>
+                <div className="relative min-h-screen flex flex-col">
+                  <MarketingNavigation />
                 <main className="flex-1">{children}</main>
-                <ConditionalFooter />
-              </div>
+                  <ConditionalFooter />
+                </div>
+              </AuthProvider>
             </ErrorBoundary>
           </MarketingProviders>
         </NextIntlClientProvider>

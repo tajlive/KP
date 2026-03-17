@@ -60,9 +60,9 @@ export default function SocialProofSection() {
     },
     {
       icon: Zap,
-      title: "Beta-priser for livet",
+      title: "Tydelige priser",
       description:
-        "Lås inn tidlige priser som aldri øker når vi går ut av beta.",
+        "Student gratis. Bachelor fra 249 kr/mnd. Ingen skjulte kostnader.",
       color: "from-amber-500 to-orange-600",
     },
   ];

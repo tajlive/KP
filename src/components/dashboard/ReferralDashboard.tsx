@@ -103,7 +103,7 @@ export default function ReferralDashboard() {
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-2">
               Lås opp{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-amber-500">
-                PRO-strategier
+                avanserte strategier
               </span>
             </h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base">
@@ -190,7 +190,7 @@ export default function ReferralDashboard() {
                 <Flame className="w-5 h-5 text-white" />
               </div>
               <div className="font-bold text-amber-800 dark:text-amber-400 text-sm">
-                PRO ulåst!
+                Strategier ulåst!
               </div>
               <div className="text-xs text-amber-700 dark:text-amber-500/80 leading-tight mt-1">
                 Du kan nå benytte deg av alle høy-risiko strategier.

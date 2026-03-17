@@ -5,7 +5,7 @@ export const translations = {
       heading: "Lær strukturert kryptotrading på 4 uker – med trygg papertrading",
       subheading: "Klarpakke lar deg trene på krypto og trading med simulert kapital, ekte markedsdata og enkel veiledning på norsk. Du følger et tydelig 4‑ukers opplegg laget for helt vanlige småsparere.",
       emailPlaceholder: "Din e-postadresse",
-      ctaButton: "Start gratis beta",
+      ctaButton: "Start gratis",
       trustBadge: "Gratis · Ingen kort · Avmeld når som helst",
     },
     disclaimers: {

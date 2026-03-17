@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { Calculator, Info, XCircle, TrendingUp, PiggyBank, Ticket } from "lucide-react";
 
 interface CalculationResult {
@@ -13,6 +14,7 @@ interface CalculationResult {
 }
 
 export function LottoCalculator() {
+  const locale = useLocale();
   const [amount, setAmount] = useState<number>(100);
   const [years, setYears] = useState<number>(10);
   const [showResults, setShowResults] = useState(false);
@@ -205,7 +207,7 @@ export function LottoCalculator() {
 
             {/* CTA */}
             <Link
-              href="/signup"
+              href={`/${locale}/signup`}
               className="block w-full mt-6 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-lg rounded-xl shadow-lg shadow-emerald-500/30 text-center transition-all"
             >
               Lær hvordan — start gratis →

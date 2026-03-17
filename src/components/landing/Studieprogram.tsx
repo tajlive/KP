@@ -188,7 +188,7 @@ export function Studieprogram() {
 
                   {/* CTA */}
                   <Link
-                    href={`/${locale}/beta/apply`}
+                    href={`/${locale}/signup`}
                     className={`block w-full text-center py-4 px-6 rounded-lg font-semibold transition-all duration-200 ${tier.highlight
                         ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200'
                         : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
