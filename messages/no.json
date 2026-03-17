@@ -1113,6 +1113,12 @@
       "buy": "KJØP",
       "sell": "SALG"
     },
+    "tabs": {
+      "home": "Hjem",
+      "learn": "Lær",
+      "practice": "Øv",
+      "profile": "Profil"
+    },
     "sidebar": {
       "overview": "Oversikt",
       "autoTrade": "Auto-trading",
@@ -1509,6 +1515,28 @@
       "trust1": "Roboter 24/7",
       "trust2": "Du bestemmer risiko",
       "trust3": "1M kr lekepenger"
+    },
+    "emailCapture": {
+      "badge": "Gratis kurs",
+      "title": "Få gratis krypto-kurs",
+      "subtitle": "Lær det grunnleggende om kryptovaluta og trading — rett i innboksen din.",
+      "placeholder": "Din e-postadresse",
+      "cta": "Registrer deg",
+      "loading": "Sender...",
+      "errorMsg": "Vennligst oppgi en gyldig e-postadresse",
+      "successTitle": "Du er registrert!",
+      "successDesc": "Sjekk innboksen din — første leksjon er på vei.",
+      "privacy": "Vi deler aldri e-posten din med tredjepart. Avmeld når som helst."
+    },
+    "demoWidget": {
+      "title": "Prøv papirhandel — helt gratis",
+      "subtitle": "Klikk kjøp og selg for å se hvordan trading fungerer. Ingen registrering nødvendig.",
+      "portfolio": "Portefølje",
+      "positionLabel": "Posisjon",
+      "buy": "Kjøp BTC",
+      "sell": "Selg BTC",
+      "overlay": "Registrer deg for å handle med ekte data",
+      "overlayCta": "Start gratis nå"
     }
   },
   "tradingGuide": {

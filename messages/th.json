@@ -879,6 +879,12 @@
       "retry": "ลองใหม่",
       "contactSupport": "ติดต่อฝ่ายสนับสนุนหากปัญหายังคงอยู่"
     },
+    "tabs": {
+      "home": "หน้าแรก",
+      "learn": "เรียนรู้",
+      "practice": "ฝึกฝน",
+      "profile": "โปรไฟล์"
+    },
     "sidebar": {
       "overview": "ภาพรวม",
       "portfolio": "พอร์ตโฟลิโอ",
@@ -1157,6 +1163,28 @@
       "trust1": "100% transparent",
       "trust2": "No lock-in",
       "trust3": "Risk-free practice"
+    },
+    "emailCapture": {
+      "badge": "Free course",
+      "title": "Get a free crypto course",
+      "subtitle": "Learn the basics of cryptocurrency and trading — delivered to your inbox.",
+      "placeholder": "Your email address",
+      "cta": "Sign up",
+      "loading": "Sending...",
+      "errorMsg": "Please enter a valid email address",
+      "successTitle": "You're signed up!",
+      "successDesc": "Check your inbox — the first lesson is on its way.",
+      "privacy": "We never share your email with third parties. Unsubscribe anytime."
+    },
+    "demoWidget": {
+      "title": "Try paper trading — completely free",
+      "subtitle": "Click buy and sell to see how trading works. No signup required.",
+      "portfolio": "Portfolio",
+      "positionLabel": "Position",
+      "buy": "Buy BTC",
+      "sell": "Sell BTC",
+      "overlay": "Sign up to trade with real data",
+      "overlayCta": "Start for free"
     }
   },
   "leagues": {

@@ -33,6 +33,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useCurrency } from "@/hooks/useCurrency";
+import { CurrencySwitcher } from "./CurrencySwitcher";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
 
@@ -110,6 +112,7 @@ export default function UnifiedTradingDashboard({
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
   const { success: showSuccess, error: showToastError } = useI18nToast();
   const tTrading = useTranslations("trading");
+  const { format: formatNOK } = useCurrency();
 
   const STRATEGIES = STRATEGY_DEFS.map((s) => ({
     ...s,
@@ -233,14 +236,6 @@ export default function UnifiedTradingDashboard({
     }
   };
 
-  const formatNOK = (value: number) => {
-    return new Intl.NumberFormat("no-NO", {
-      style: "currency",
-      currency: "NOK",
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 p-6">
@@ -316,7 +311,10 @@ export default function UnifiedTradingDashboard({
                 : "Handel med ekte midler"}
             </p>
           </div>
-          <TradingModeToggle mode={mode} setMode={setMode} />
+          <div className="flex items-center gap-3">
+            <CurrencySwitcher />
+            <TradingModeToggle mode={mode} setMode={setMode} />
+          </div>
         </div>
 
         {/* Mode Warning */}
