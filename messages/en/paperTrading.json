@@ -92,5 +92,8 @@
   "stopSession": "Stop Session",
   "total": "Total",
   "trades": "Trades",
-  "winRate": "Win Rate"
+  "winRate": "Win Rate",
+  "refreshList": "Refresh list",
+  "lastUpdated": "Last updated",
+  "binanceUpdateInfo": "Prices from Binance update in real time (WebSocket) or about every 10 seconds. This list updates on page load or when you click Refresh."
 }

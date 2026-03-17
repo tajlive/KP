@@ -41,10 +41,10 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // Root domain → /en/dashboard (klarpakke.no = www.klarpakke.no/en/dashboard)
+  // Root domain → default locale landing (www.klarpakke.no → /no)
   if (pathname === '/' || pathname === '') {
     const url = request.nextUrl.clone()
-    url.pathname = '/en/dashboard'
+    url.pathname = '/no'
     return NextResponse.redirect(url, 307)
   }
 
