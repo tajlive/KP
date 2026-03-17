@@ -45,15 +45,7 @@ interface ApiKey {
   };
 }
 
-// Binance Referral
-const BINANCE_REFERRAL = {
-  code: "43427892",
-  link: "https://accounts.binance.com/register?ref=43427892",
-  benefits: {
-    user: "20% rabatt på trading fees",
-    referrer: "Støtter videre utvikling av Klarpakke",
-  },
-};
+import { BINANCE_REFERRAL } from "@/lib/constants/binance";
 
 export function ExchangeApiSettings() {
   const supabase = createClient();

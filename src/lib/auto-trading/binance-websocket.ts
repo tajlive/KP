@@ -284,7 +284,7 @@ export class AutoTradingWebSocket {
 
       // Find trade by Binance order ID
       const { data: trade } = await supabase
-        .from('auto_trading_trades')
+        .from('trades')
         .select('*')
         .eq('binance_order_id', update.orderId)
         .single()
@@ -293,7 +293,7 @@ export class AutoTradingWebSocket {
 
       // Update trade with execution details
       await supabase
-        .from('auto_trading_trades')
+        .from('trades')
         .update({
           filled_quantity: update.executedQty,
           commission: update.commission,
@@ -316,7 +316,7 @@ export class AutoTradingWebSocket {
 
       // Find trade
       const { data: trade } = await supabase
-        .from('auto_trading_trades')
+        .from('trades')
         .select('*')
         .eq('binance_order_id', update.orderId)
         .single()
@@ -337,7 +337,7 @@ export class AutoTradingWebSocket {
 
         // Update trade as closed
         await supabase
-          .from('auto_trading_trades')
+          .from('trades')
           .update({
             status: 'CLOSED',
             exit_price: exitPrice,

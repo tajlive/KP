@@ -25,19 +25,19 @@ Deno.serve(async (req) => {
   )
 
   try {
-    // Hent alle åpne paper-ordrer
+    // KLA-214: Hent alle åpne trades fra unified trades-tabell
     const { data: positions, error } = await supabase
-      .from('paper_orders')
+      .from('trades')
       .select('*')
-      .eq('status', 'OPEN')
+      .eq('status', 'open')
+      .eq('mode', 'paper')
 
     if (error) throw error
 
     let triggered = 0
     const closedResults: Array<{ order_id: string; symbol: string; reason: string; pnl_pct: number }> = []
 
-    // Grupper per symbol for å minimere Binance-kall
-    const symbols = [...new Set((positions ?? []).map((p) => p.symbol ?? 'BTCUSDT'))]
+    const symbols = [...new Set((positions ?? []).map((p: any) => p.trading_pair ?? 'BTCUSDT'))]
     const priceCache: Record<string, number> = {}
     for (const sym of symbols) {
       try {
@@ -48,73 +48,54 @@ Deno.serve(async (req) => {
     }
 
     for (const pos of positions ?? []) {
-      const sym = pos.symbol ?? 'BTCUSDT'
+      const sym = pos.trading_pair ?? 'BTCUSDT'
       const currentPrice = priceCache[sym]
       if (!currentPrice) continue
+
+      const signal = pos.strategy_signal as Record<string, any> | null
+      const stopLoss = signal?.stop_loss ?? null
+      const takeProfit = signal?.take_profit ?? null
 
       let shouldClose = false
       let closeReason = ''
 
-      // ── Stop-loss sjekk ──
-      if (pos.stop_loss != null) {
-        if (pos.side === 'BUY' && currentPrice <= pos.stop_loss) {
+      if (stopLoss != null) {
+        if (pos.side === 'BUY' && currentPrice <= stopLoss) {
           shouldClose = true
-          closeReason = `STOP-LOSS: ${currentPrice.toFixed(2)} <= SL ${pos.stop_loss}`
-        } else if (pos.side === 'SELL' && currentPrice >= pos.stop_loss) {
+          closeReason = `STOP-LOSS: ${currentPrice.toFixed(2)} <= SL ${stopLoss}`
+        } else if (pos.side === 'SELL' && currentPrice >= stopLoss) {
           shouldClose = true
-          closeReason = `STOP-LOSS: ${currentPrice.toFixed(2)} >= SL ${pos.stop_loss}`
+          closeReason = `STOP-LOSS: ${currentPrice.toFixed(2)} >= SL ${stopLoss}`
         }
       }
 
-      // ── Take-profit sjekk ──
-      if (!shouldClose && pos.take_profit != null) {
-        if (pos.side === 'BUY' && currentPrice >= pos.take_profit) {
+      if (!shouldClose && takeProfit != null) {
+        if (pos.side === 'BUY' && currentPrice >= takeProfit) {
           shouldClose = true
-          closeReason = `TAKE-PROFIT: ${currentPrice.toFixed(2)} >= TP ${pos.take_profit}`
-        } else if (pos.side === 'SELL' && currentPrice <= pos.take_profit) {
+          closeReason = `TAKE-PROFIT: ${currentPrice.toFixed(2)} >= TP ${takeProfit}`
+        } else if (pos.side === 'SELL' && currentPrice <= takeProfit) {
           shouldClose = true
-          closeReason = `TAKE-PROFIT: ${currentPrice.toFixed(2)} <= TP ${pos.take_profit}`
+          closeReason = `TAKE-PROFIT: ${currentPrice.toFixed(2)} <= TP ${takeProfit}`
         }
       }
 
       if (!shouldClose) continue
 
-      const entryPrice = parseFloat(pos.entry_price)
+      const entryPrice = parseFloat(pos.price)
       const pnlPct =
         pos.side === 'BUY'
           ? ((currentPrice - entryPrice) / entryPrice) * 100
           : ((entryPrice - currentPrice) / entryPrice) * 100
 
       try {
-        // Lukk posisjonen
         await supabase
-          .from('paper_orders')
+          .from('trades')
           .update({
-            status: 'CLOSED',
-            exit_price: currentPrice,
-            exit_reason: closeReason,
-            pnl_pct: pnlPct,
-            closed_at: new Date().toISOString(),
+            status: 'closed',
+            realized_pnl: pnlPct,
           })
           .eq('id', pos.id)
 
-        // Logg til trade_history
-        await supabase.from('trade_history').insert({
-          user_id: pos.user_id,
-          strategy_type: pos.strategy_type ?? 'unknown',
-          symbol: sym,
-          side: pos.side,
-          entry_price: entryPrice,
-          exit_price: currentPrice,
-          quantity: pos.quantity,
-          pnl_pct: pnlPct,
-          trading_mode: 'paper',
-          exit_reason: closeReason,
-          opened_at: pos.created_at,
-          closed_at: new Date().toISOString(),
-        })
-
-        // Bot health-hendelse (trigger Web Push via Database Webhook)
         await supabase.from('bot_health').insert({
           event_type: pnlPct >= 0 ? 'TRADE_CLOSED_PROFIT' : 'TRADE_CLOSED_LOSS',
           user_id: pos.user_id,

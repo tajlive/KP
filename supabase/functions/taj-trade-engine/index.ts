@@ -123,31 +123,33 @@ serve(async (req: Request) => {
           currentPrice > ma50 && rsi > rsiBuyMin && rsi < rsiBuyMax;
 
         // Check if already open position
+        // KLA-214: Unified trades table
         const { data: openTrades } = await supabaseClient
-          .from("auto_trading_trades")
+          .from("trades")
           .select("*")
           .eq("user_id", config.user_id)
-          .eq("symbol", symbol)
-          .eq("status", "OPEN");
+          .eq("trading_pair", symbol)
+          .eq("status", "open");
 
         const hasOpenPosition = openTrades && openTrades.length > 0;
 
         if (signal && !hasOpenPosition) {
-          // 6. EXECUTE BUY
           const amountNOK = customParams.order_amount_nok || 40;
-          const quantity = amountNOK / 11 / currentPrice; // Approx rate
+          const quantity = amountNOK / 11 / currentPrice;
 
           const { data: trade } = await supabaseClient
-            .from("auto_trading_trades")
+            .from("trades")
             .insert({
-              session_id: "00000000-0000-0000-0000-000000000000",
               user_id: config.user_id,
-              symbol: symbol,
-              side: "LONG",
-              entry_price: currentPrice,
+              trading_pair: symbol,
+              side: "BUY",
+              price: currentPrice,
               quantity: quantity,
-              position_value_nok: amountNOK,
-              status: "OPEN",
+              total_value: amountNOK,
+              mode: "live",
+              order_type: "market",
+              status: "open",
+              strategy_signal: { engine: "taj-trade-engine", rsi },
             })
             .select()
             .single();
