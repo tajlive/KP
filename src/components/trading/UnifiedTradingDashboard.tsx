@@ -37,6 +37,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { CurrencySwitcher } from "./CurrencySwitcher";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
+import { SignalFeed } from "./SignalFeed";
 
 const STRATEGY_DEFS: {
   type: StrategyType;
@@ -334,6 +335,9 @@ export default function UnifiedTradingDashboard({
         <section className="space-y-4">
           <PulseChartContainer />
         </section>
+
+        {/* Trading Signals */}
+        <SignalFeed />
 
         {/* Gamification & KLT Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
