@@ -8,6 +8,30 @@ import { DeferredLiveTicker } from "@/components/landing/DeferredLiveTicker";
 import HeroSection from "@/components/landing/HeroSection";
 import { TrustBar } from "@/components/landing/TrustBar";
 
+const DemoWidget = dynamic(
+  () =>
+    import("@/components/landing/DemoWidget").then((mod) => ({
+      default: mod.DemoWidget,
+    })),
+  {
+    loading: () => (
+      <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+    ),
+  },
+);
+
+const EmailCapture = dynamic(
+  () =>
+    import("@/components/landing/EmailCapture").then((mod) => ({
+      default: mod.EmailCapture,
+    })),
+  {
+    loading: () => (
+      <div className="h-48 animate-pulse bg-slate-900/50 rounded-xl" />
+    ),
+  },
+);
+
 // Lazy load ikke-kritiske komponenter for bedre LCP
 const LottoComparison = dynamic(
   () =>
@@ -125,6 +149,15 @@ export default async function HomePage({
       {/* Trust Bar - Social proof */}
       <TrustBar />
 
+      {/* Interactive Demo Widget - Paper trading teaser */}
+      <Suspense
+        fallback={
+          <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+        }
+      >
+        <DemoWidget />
+      </Suspense>
+
       {/* Course Preview - Show what users will learn */}
       <Suspense
         fallback={
@@ -168,6 +201,15 @@ export default async function HomePage({
         }
       >
         <Testimonials language={locale === "no" ? "no" : "en"} />
+      </Suspense>
+
+      {/* Email Lead Capture - Above footer */}
+      <Suspense
+        fallback={
+          <div className="h-48 animate-pulse bg-slate-900/50 rounded-xl" />
+        }
+      >
+        <EmailCapture />
       </Suspense>
     </main>
   );

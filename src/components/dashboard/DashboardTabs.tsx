@@ -1,132 +1,93 @@
 'use client';
 
-import { useState } from 'react';
-import { 
-  LayoutDashboard, 
-  Wallet, 
-  TrendingUp, 
-  BookOpen,
-  Bell,
-  Settings
-} from 'lucide-react';
+import { Home, GraduationCap, TrendingUp, User } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-interface Tab {
+export interface NavItem {
   id: string;
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
-  badge?: number;
+  href: string;
 }
 
-interface DashboardTabsProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-  locale?: string;
-}
+export const NAV_ITEMS: NavItem[] = [
+  { id: 'home', labelKey: 'home', icon: Home, href: '/dashboard' },
+  { id: 'learn', labelKey: 'learn', icon: GraduationCap, href: '/akademi' },
+  { id: 'practice', labelKey: 'practice', icon: TrendingUp, href: '/paper-trading' },
+  { id: 'profile', labelKey: 'profile', icon: User, href: '/profile' },
+];
 
-export function DashboardTabs({ activeTab, onTabChange, locale = 'no' }: DashboardTabsProps) {
-  const isNorwegian = locale === 'no';
+export function DashboardTabs() {
+  const t = useTranslations('dashboard.tabs');
+  const locale = useLocale();
+  const pathname = usePathname() ?? '/';
 
-  const tabs: Tab[] = [
-    { id: 'overview', label: isNorwegian ? 'Oversikt' : 'Overview', icon: LayoutDashboard },
-    { id: 'portfolio', label: isNorwegian ? 'Portefølje' : 'Portfolio', icon: Wallet },
-    { id: 'trading', label: isNorwegian ? 'Trading' : 'Trading', icon: TrendingUp },
-    { id: 'learning', label: isNorwegian ? 'Læring' : 'Learning', icon: BookOpen },
-  ];
+  const isActive = (href: string) => {
+    const full = `/${locale}${href}`;
+    return href === '/dashboard'
+      ? pathname === full
+      : pathname.startsWith(full);
+  };
 
   return (
-    <div className="w-full">
-      {/* Desktop: Horizontal tabs */}
-      <div className="hidden md:block border-b border-white/5">
-        <div className="flex gap-1">
-          {tabs.map((tab) => {
-            const Icon = tab?.icon;
-            const isActive = activeTab === tab.id;
-            
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={cn(
-                  "relative flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all",
-                  "hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-t-lg",
-                  isActive 
-                    ? "text-white" 
-                    : "text-slate-400 hover:bg-white/5"
-                )}
-              >
-                {/* Active indicator line */}
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-500 to-emerald-500" />
-                )}
-                
-                {Icon && <Icon className={cn("w-4 h-4", isActive && "text-blue-400")} />}
-                {tab.label}
-                
-                {tab.badge && (
-                  <span className="ml-1.5 px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">
-                    {tab.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-t border-white/10 z-50 safe-area-pb">
+      <div className="flex justify-around">
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.href);
 
-      {/* Mobile: Bottom navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-t border-white/5 z-50">
-        <div className="flex justify-around">
-          {tabs.map((tab) => {
-            const Icon = tab?.icon;
-            const isActive = activeTab === tab.id;
-            
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
+          return (
+            <Link
+              key={item.id}
+              href={`/${locale}${item.href}`}
+              className={cn(
+                'flex flex-col items-center gap-1 py-3 px-4 transition-colors',
+                active ? 'text-blue-400' : 'text-slate-500',
+              )}
+            >
+              <div
                 className={cn(
-                  "flex flex-col items-center gap-1 py-3 px-4 transition-all",
-                  isActive ? "text-blue-400" : "text-slate-500"
+                  'relative p-2 rounded-xl transition-colors',
+                  active && 'bg-blue-500/10',
                 )}
               >
-                <div className={cn(
-                  "relative p-2 rounded-xl transition-all",
-                  isActive && "bg-blue-500/10"
-                )}>
-                  {Icon && <Icon className="w-5 h-5" />}
-                  {tab.badge && (
-                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-                      {tab.badge}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[10px] font-medium">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+                <Icon className="w-5 h-5" />
+              </div>
+              <span className="text-[10px] font-medium">
+                {t(item.labelKey, {
+                  defaultValue:
+                    item.id === 'home' ? 'Hjem'
+                    : item.id === 'learn' ? 'Lær'
+                    : item.id === 'practice' ? 'Øv'
+                    : 'Profil',
+                })}
+              </span>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </nav>
   );
 }
 
-// Quick Stats Component
-export function QuickStats({ 
-  totalValue, 
-  totalProfit, 
+export function QuickStats({
+  totalValue,
+  totalProfit,
   profitPercent,
   activePositions,
-  locale = 'no' 
-}: { 
-  totalValue: number; 
-  totalProfit: number; 
+  locale = 'no',
+}: {
+  totalValue: number;
+  totalProfit: number;
   profitPercent: number;
   activePositions: number;
   locale?: string;
 }) {
   const isNorwegian = locale === 'no';
-  const formatNOK = (n: number) => 
+  const formatNOK = (n: number) =>
     new Intl.NumberFormat(isNorwegian ? 'no-NO' : 'en-US', {
       style: 'currency',
       currency: 'NOK',
@@ -152,18 +113,24 @@ export function QuickStats({
   return (
     <div className="grid grid-cols-2 gap-4 mb-6">
       {stats.map((stat, i) => (
-        <div 
+        <div
           key={i}
           className="bg-slate-900/50 border border-white/5 rounded-2xl p-4 hover:border-white/10 transition-colors"
         >
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{stat.label}</p>
-          <p className={cn("text-2xl font-bold", stat.color)}>{stat.value}</p>
-          <p className={cn(
-            "text-sm mt-1",
-            stat.isPositive !== undefined 
-              ? stat.isPositive ? 'text-green-400' : 'text-red-400'
-              : 'text-slate-400'
-          )}>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">
+            {stat.label}
+          </p>
+          <p className={cn('text-2xl font-bold', stat.color)}>{stat.value}</p>
+          <p
+            className={cn(
+              'text-sm mt-1',
+              stat.isPositive !== undefined
+                ? stat.isPositive
+                  ? 'text-green-400'
+                  : 'text-red-400'
+                : 'text-slate-400',
+            )}
+          >
             {stat.subtext}
           </p>
         </div>

@@ -43,7 +43,8 @@ export function MarketingNavigation() {
           <Link href={l("/")} className="flex items-center gap-2">
             <Image
               src="/logo.svg"
-              alt="Klarpakke"
+              alt=""
+              role="presentation"
               width={32}
               height={32}
               className="h-8 w-8 object-contain"

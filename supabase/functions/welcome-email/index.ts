@@ -48,7 +48,7 @@ serve(async (req) => {
           <ol>
             <li>Log in at <a href="https://www.klarpakke.no/en" style="color: #0052FF; font-weight: bold;">Klarpakke.no</a></li>
             <li>Start your first lesson in the courses portal.</li>
-            <li>Try your first trade with 1,000,000 kr in virtual capital.</li>
+            <li>Try your first trade with 100,000 kr in virtual capital.</li>
           </ol>
         </div>
         <p>Got questions? Just reply to this email, and I will help you personally.</p>
@@ -70,7 +70,7 @@ serve(async (req) => {
           <ol>
             <li>Logg inn på <a href="https://www.klarpakke.no" style="color: #0052FF; font-weight: bold;">Klarpakke.no</a></li>
             <li>Start din første leksjon i kursportalen.</li>
-            <li>Prøv din første trade med 1 000 000 kr i virtuell kapital.</li>
+            <li>Prøv din første trade med 100 000 kr i virtuell kapital.</li>
           </ol>
         </div>
         <p>Har du spørsmål? Bare svar på denne e-posten, så hjelper jeg deg personlig.</p>

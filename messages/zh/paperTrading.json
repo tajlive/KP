@@ -1,9 +1,9 @@
 {
   "title": "Paper Trading",
   "subtitle": "Øv deg på trading med {amount} virtuelle penger",
-  "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
+  "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
   "help": {
-    "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+    "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
     "close": "Lukk"
   },
   "stats": {

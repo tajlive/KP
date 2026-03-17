@@ -29,6 +29,7 @@ export * from './phase-progression'
 
 // Market analysis
 export * from './market-regime'
+export * from './volume-analysis'
 
 // Performance & monitoring
 export * from './performance-review'

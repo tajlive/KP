@@ -186,7 +186,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
                       {locale === "en" ? "Paper money" : "Lekepenger"}
                     </div>
                     <div className="text-2xl font-black text-slate-900 mt-1">
-                      1 000 000 kr
+                      100 000 kr
                     </div>
                   </div>
                   <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
@@ -286,7 +286,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
 
               {/* Floating badge - merke #0052FF */}
               <div className="absolute -top-3 -right-3 bg-[#0052FF] text-white px-4 py-2 rounded-full font-bold text-sm shadow-xl">
-                {locale === "en" ? "1M paper money" : "1M kr lekepenger"}
+                {locale === "en" ? "100,000 NOK virtual money" : "100 000 kr lekepenger"}
               </div>
             </div>
           </div>

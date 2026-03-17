@@ -71,7 +71,13 @@
   "total": "Total",
   "fee": "Fee",
   "confirmTrade": "Confirm Trade",
-  "positions": "Positions",
+  "positions": {
+    "title": "Positions",
+    "empty": "No open positions",
+    "buy": "Buy",
+    "sell": "Sell",
+    "close": "Close"
+  },
   "noPositions": "No open positions",
   "unrealizedPnL": "Unrealized P&L",
   "realizedPnL": "Realized P&L",
@@ -101,13 +107,6 @@
     "sizeLabel": "Size"
   },
   "permissionsWarning": "Make sure to enable only Spot trading permissions. Never enable withdrawals.",
-  "positions": {
-    "title": "Positions",
-    "empty": "No open positions",
-    "buy": "Buy",
-    "sell": "Sell",
-    "close": "Close"
-  },
   "proceedAnyway": "Proceed Anyway",
   "riskAnalysis": "Risk Analysis",
   "riskLevel": "Risk Level",
@@ -115,5 +114,27 @@
   "securityNote": "Your API keys are encrypted and stored securely.",
   "tradeBlocked": "Trade Blocked",
   "type": "Type",
-  "understandRisk": "I understand the risks"
+  "understandRisk": "I understand the risks",
+  "strategies": {
+    "dca_trygg": {
+      "name": "Smart DCA (Safe)",
+      "description": "Automatic purchases at fixed amounts. Lowest risk, best for beginners."
+    },
+    "trend_balansert": {
+      "name": "Trend Follower (Balanced)",
+      "description": "Follows market trends with technical analysis. Medium risk."
+    },
+    "multisignal_aktiv": {
+      "name": "Multi-signal (Active)",
+      "description": "Combines multiple indicators for active trading. Higher risk."
+    },
+    "grid_bot": {
+      "name": "Grid Bot",
+      "description": "Places buy/sell orders in a grid. Works best in sideways markets."
+    },
+    "ai_copy": {
+      "name": "AI Copy-trade",
+      "description": "Automatically copies AI-recommended trades. Varying risk."
+    }
+  }
 }

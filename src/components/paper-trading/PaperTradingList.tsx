@@ -54,7 +54,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tradingPair, setTradingPair] = useState("BTC/USDT");
-  const [startCapital, setStartCapital] = useState("1000000");
+  const [startCapital, setStartCapital] = useState("100000");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateSession = async () => {
@@ -172,7 +172,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
                 id="start-capital"
                 type="number"
                 min="1000"
-                max="1000000"
+                max="100000"
                 value={startCapital}
                 onChange={(e) => setStartCapital(e.target.value)}
               />

@@ -71,7 +71,13 @@
   "total": "Totalt",
   "fee": "Gebyr",
   "confirmTrade": "Bekreft Handel",
-  "positions": "Posisjoner",
+  "positions": {
+    "title": "Posisjoner",
+    "empty": "Ingen åpne posisjoner",
+    "buy": "Kjøp",
+    "sell": "Selg",
+    "close": "Lukk"
+  },
   "noPositions": "Ingen åpne posisjoner",
   "unrealizedPnL": "Urealisert P&L",
   "realizedPnL": "Realisert P&L",
@@ -101,13 +107,6 @@
     "sizeLabel": "Størrelse"
   },
   "permissionsWarning": "Sørg for å kun aktivere Spot trading-tillatelser. Aldri aktiver uttak.",
-  "positions": {
-    "title": "Posisjoner",
-    "empty": "Ingen åpne posisjoner",
-    "buy": "Kjøp",
-    "sell": "Selg",
-    "close": "Lukk"
-  },
   "proceedAnyway": "Fortsett likevel",
   "riskAnalysis": "Risikoanalyse",
   "riskLevel": "Risikonivå",
@@ -115,5 +114,27 @@
   "securityNote": "API-nøklene dine er kryptert og lagret sikkert.",
   "tradeBlocked": "Handel blokkert",
   "type": "Type",
-  "understandRisk": "Jeg forstår risikoen"
+  "understandRisk": "Jeg forstår risikoen",
+  "strategies": {
+    "dca_trygg": {
+      "name": "Smart DCA (Trygg)",
+      "description": "Automatisk kjøp med fast beløp. Laveste risiko, best for nybegynnere."
+    },
+    "trend_balansert": {
+      "name": "Trend-følger (Balansert)",
+      "description": "Følger markedstrender med teknisk analyse. Middels risiko."
+    },
+    "multisignal_aktiv": {
+      "name": "Multi-signal (Aktiv)",
+      "description": "Kombinerer flere indikatorer for aktiv trading. Høyere risiko."
+    },
+    "grid_bot": {
+      "name": "Grid Bot",
+      "description": "Plasserer kjøp/salg i et rutenett. Fungerer best i sidelengs markeder."
+    },
+    "ai_copy": {
+      "name": "AI Copy-trade",
+      "description": "Kopierer AI-anbefalte handler automatisk. Varierende risiko."
+    }
+  }
 }

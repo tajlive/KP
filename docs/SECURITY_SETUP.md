@@ -106,6 +106,22 @@ export default {
 - Adaptive rate limiting
 - Challenge bad actors
 
+### 6. HSTS Configuration
+
+**Aktiver HSTS (HTTP Strict Transport Security) i Cloudflare:**
+
+```bash
+1. Gå til SSL/TLS > Edge Certificates
+2. Skru på "Always Use HTTPS"
+3. Aktiver "Automatic HTTPS Rewrites"
+4. Under "HSTS" → Enable HSTS
+   - Max-Age: 31536000 (1 år)
+   - Include subdomains: ✅
+   - No-Sniff: ✅
+```
+
+**Sjekk:** `curl -I https://klarpakke.no | grep -i strict-transport`
+
 ---
 
 ## 🗄️ Supabase Security Configuration

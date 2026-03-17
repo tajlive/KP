@@ -216,6 +216,12 @@
     "retry": "ลองใหม่",
     "contactSupport": "ติดต่อฝ่ายสนับสนุนหากปัญหายังคงอยู่"
   },
+  "tabs": {
+    "home": "หน้าแรก",
+    "learn": "เรียนรู้",
+    "practice": "ฝึกฝน",
+    "profile": "โปรไฟล์"
+  },
   "sidebar": {
     "overview": "ภาพรวม",
     "portfolio": "พอร์ตโฟลิโอ",
@@ -233,10 +239,24 @@
     "taxReport": "รายงานภาษี",
     "settings": "การตั้งค่า",
     "admin": "แอดมิน",
-    "logout": "ออกจากระบบ"
+    "logout": "ออกจากระบบ",
+    "autoTrade": "เทรดอัตโนมัติ",
+    "guide": "คู่มือ",
+    "mainMenu": "เมนูหลัก",
+    "closeMenu": "ปิดเมนู"
   },
   "bots": {
     "modeLive": "เทรดสด",
     "modePaper": "เทรดจำลอง"
+  },
+  "learningPath": {
+    "title": "เส้นทางการเรียนรู้ของคุณ",
+    "level": "ระดับ",
+    "lessons": "บทเรียน",
+    "continueWhere": "ดำเนินการต่อจากที่ค้างไว้",
+    "yourTracks": "คอร์สของคุณ",
+    "done": "เสร็จสิ้น",
+    "yourBadges": "เหรียญตราของคุณ",
+    "goToAcademy": "ไปที่สถาบัน"
   }
 }

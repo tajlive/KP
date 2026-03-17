@@ -75,4 +75,7 @@ export const trackExchangeConnected = (exchange: string) =>
 export const trackError = (context: string, message: string) =>
   track('client_error', { context, message: message.slice(0, 100) })
 
+/** Generic event tracking for Plausible (used by conversion-funnel, etc.) */
+export const trackEvent = track
+
 export default track

@@ -109,7 +109,7 @@ export default function MarketplaceClient() {
         body: JSON.stringify({
           listingId,
           mode: "paper",
-          initialCapital: 1000000,
+          initialCapital: 100000,
         }),
       });
 

@@ -186,6 +186,12 @@
     "buy": "KJØP",
     "sell": "SALG"
   },
+  "tabs": {
+    "home": "Hjem",
+    "learn": "Lær",
+    "practice": "Øv",
+    "profile": "Profil"
+  },
   "sidebar": {
     "overview": "Oversikt",
     "portfolio": "Portefølje",
@@ -197,7 +203,11 @@
     "settings": "Innstillinger",
     "admin": "Administrator",
     "logout": "Logg ut",
-    "paperTrading": "Paper Trading"
+    "paperTrading": "Paper Trading",
+    "autoTrade": "Auto-trading",
+    "guide": "Guide",
+    "mainMenu": "Hovedmeny",
+    "closeMenu": "Lukk meny"
   },
   "topBar": {
     "myOverview": "Min Oversikt",
@@ -317,5 +327,15 @@
     "feature1": "Automatisk handel døgnet rundt",
     "feature2": "Sanntids markedsanalyse",
     "feature3": "Risikostyring og stop-loss"
+  },
+  "learningPath": {
+    "title": "Din læringssti",
+    "level": "Nivå",
+    "lessons": "leksjoner",
+    "continueWhere": "Fortsett der du slapp",
+    "yourTracks": "Dine kurs",
+    "done": "Fullført",
+    "yourBadges": "Dine badges",
+    "goToAcademy": "Gå til Akademiet"
   }
 }

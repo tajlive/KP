@@ -17,7 +17,7 @@ const BETA_BENEFITS = [
   {
     icon: Wallet,
     title: 'Lekepenger',
-    description: 'Øv med 1 million kroner i lekepenger – helt risikofritt'
+    description: 'Øv med 100 000 kr i lekepenger – helt risikofritt'
   },
   {
     icon: BookOpen,
