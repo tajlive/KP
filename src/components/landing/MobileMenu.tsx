@@ -13,7 +13,7 @@ export function MobileMenu() {
   const l = (path: string) => `/${locale}${path === "/" ? "" : path}`;
 
   const menuItems = [
-    { href: l("/beta/apply"), label: t("signup") },
+    { href: l("/signup"), label: t("signup") },
     { href: l("/priser"), label: t("pricing") },
     { href: l("/innlogging"), label: t("login") },
   ];

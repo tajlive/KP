@@ -1,17 +1,21 @@
 "use client";
 
+import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import { HeaderTicker } from "@/components/landing/HeaderTicker";
-import { LogIn, Menu, X } from "lucide-react";
+import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function MarketingNavigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, loading, signOut } = useAuth();
   const locale = useLocale();
+  const router = useRouter();
   const t = useTranslations("navigation");
 
   const l = (path: string) => `/${locale}${path === "/" ? "" : path}`;
@@ -63,25 +67,56 @@ export function MarketingNavigation() {
 
             <div className="h-5 w-px bg-[#E2E5EC]" />
 
-            {/* Always show login/register for marketing pages */}
-            <Link href={l("/innlogging")}>
-              <Button
-                size="sm"
-                variant="outline"
-                className={`gap-2 ${BRAND.primaryOutline}`}
-              >
-                <LogIn className="w-4 h-4" />
-                {t("login")}
-              </Button>
-            </Link>
-            <Link href={l("/signup")}>
-              <Button
-                size="sm"
-                className={`${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
-              >
-                {t("register")}
-              </Button>
-            </Link>
+            {/* Logged in: Min side + Logg ut. Ikke innlogget: Logg inn + Registrer */}
+            {!loading && (
+              user ? (
+                <>
+                  <Link href={l("/dashboard")}>
+                    <Button
+                      size="sm"
+                      className={`gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      {t("myPage")}
+                    </Button>
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className={`gap-2 ${BRAND.primaryOutline}`}
+                    onClick={async () => {
+                      await signOut();
+                      router.refresh();
+                      router.push(l("/"));
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {t("logout")}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href={l("/innlogging")}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className={`gap-2 ${BRAND.primaryOutline}`}
+                    >
+                      <LogIn className="w-4 h-4" />
+                      {t("login")}
+                    </Button>
+                  </Link>
+                  <Link href={l("/signup")}>
+                    <Button
+                      size="sm"
+                      className={`${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                    >
+                      {t("register")}
+                    </Button>
+                  </Link>
+                </>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -117,24 +152,55 @@ export function MarketingNavigation() {
             <div className="my-4 border-t border-[#E2E5EC]" />
 
             <div className="px-4 space-y-2">
-              <Link href={l("/innlogging")} className="block">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className={`w-full gap-2 ${BRAND.primaryOutline}`}
-                >
-                  <LogIn className="w-4 h-4" />
-                  {t("login")}
-                </Button>
-              </Link>
-              <Link href={l("/signup")} className="block">
-                <Button
-                  size="sm"
-                  className={`w-full ${BRAND.primary}`}
-                >
-                  {t("register")}
-                </Button>
-              </Link>
+              {!loading &&
+                (user ? (
+                  <>
+                    <Link href={l("/dashboard")} className="block" onClick={() => setIsOpen(false)}>
+                      <Button
+                        size="sm"
+                        className={`w-full gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                      >
+                        <LayoutDashboard className="w-4 h-4" />
+                        {t("myPage")}
+                      </Button>
+                    </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className={`w-full gap-2 ${BRAND.primaryOutline}`}
+                      onClick={async () => {
+                        setIsOpen(false);
+                        await signOut();
+                        router.refresh();
+                        router.push(l("/"));
+                      }}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      {t("logout")}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link href={l("/innlogging")} className="block">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className={`w-full gap-2 ${BRAND.primaryOutline}`}
+                      >
+                        <LogIn className="w-4 h-4" />
+                        {t("login")}
+                      </Button>
+                    </Link>
+                    <Link href={l("/signup")} className="block">
+                      <Button
+                        size="sm"
+                        className={`w-full ${BRAND.primary}`}
+                      >
+                        {t("register")}
+                      </Button>
+                    </Link>
+                  </>
+                ))}
             </div>
           </div>
         )}

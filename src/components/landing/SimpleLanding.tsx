@@ -15,7 +15,7 @@ export default function SimpleLanding() {
       <p className="text-xl text-slate-300">{baseT('tagline')}</p>
       <p className="mt-4 text-slate-400">{t('heroDescription')}</p>
       <Link 
-        href={`/${locale}/beta/apply`}
+        href={`/${locale}/signup`}
         className="inline-block mt-8 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition-colors"
       >
         {t('heroButton')} →
