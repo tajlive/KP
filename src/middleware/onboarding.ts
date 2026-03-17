@@ -84,15 +84,7 @@ export async function handleOnboarding(
     }
   }
 
-  if (!onboardingCompleted && !isOnboardingPage) {
-    return redirectWithCookies(
-      new URL(`/${locale}/onboarding`, request.url),
-      request,
-      response,
-    );
-  }
-
-  if (onboardingCompleted && isOnboardingPage) {
+  if (isOnboardingPage) {
     return redirectWithCookies(
       new URL(`/${locale}/dashboard`, request.url),
       request,

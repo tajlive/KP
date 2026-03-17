@@ -171,8 +171,8 @@ export function AuthContainer({
 
           <p className="text-muted-foreground mb-8">
             {locale === 'no'
-              ? 'Øv deg på kryptotrading med papirpenger. Få 100 000 USDT i startkapital og lær å trade med ekte markedsdata fra Binance.'
-              : 'Practice crypto trading with paper money. Get 100,000 USDT in starting capital and learn to trade with real market data from Binance.'
+              ? 'Øv deg på kryptotrading med papirpenger. Få 100 000 kr i lekepenger og lær å trade med ekte markedsdata fra Binance.'
+              : 'Practice crypto trading with paper money. Get 100,000 NOK in virtual money and learn to trade with real market data from Binance.'
             }
           </p>
 

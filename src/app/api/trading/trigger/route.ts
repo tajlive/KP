@@ -15,15 +15,14 @@ export async function POST(_: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user's active strategies
-    const { data: strategies, error: stratError } = await supabase
-      .from("strategies")
+    const { data: sessions, error: sessError } = await supabase
+      .from("trading_sessions")
       .select("*")
-      .eq("id", user.id)
-      .eq("is_active", true);
+      .eq("user_id", user.id)
+      .eq("status", "active");
 
-    if (stratError) throw stratError;
-    if (!strategies?.length) {
+    if (sessError) throw sessError;
+    if (!sessions?.length) {
       return NextResponse.json({ message: "No active strategies for user" });
     }
 

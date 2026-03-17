@@ -13,7 +13,7 @@ export default function OnboardingStep5() {
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
-  const [paperBalance, setPaperBalance] = useState<number>(10000);
+  const [paperBalance, setPaperBalance] = useState<number>(100000);
   const [sessionCreated, setSessionCreated] = useState(false);
 
   // Sjekk auth og fullfør onboarding
@@ -37,7 +37,7 @@ export default function OnboardingStep5() {
 
         // Hvis allerede fullført, vis suksess
         if (profile?.onboarding_completed) {
-          setPaperBalance(Number(profile.paper_balance) || 10000);
+          setPaperBalance(Number(profile.paper_balance) || 100000);
           setSessionCreated(true);
           setInitializing(false);
           return;
@@ -56,7 +56,7 @@ export default function OnboardingStep5() {
           return;
         }
 
-        setPaperBalance(Number(profile.paper_balance) || 10000);
+        setPaperBalance(Number(profile.paper_balance) || 100000);
 
         // Fullfør onboarding og opprett trading session
         const response = await fetch("/api/onboarding/complete", {
