@@ -42,7 +42,7 @@ serve(async (req: Request) => {
     const masterUserIds = strategies.map((s) => s.user_id);
 
     const { data: masterTrades } = await supabaseClient
-      .from("auto_trading_trades")
+      .from("trades")
       .select("*")
       .in("user_id", masterUserIds)
       .eq("status", "OPEN");
@@ -72,7 +72,7 @@ serve(async (req: Request) => {
       for (const follower of followers) {
         // 3. Check if follower already has this trade open
         const { data: existing } = await supabaseClient
-          .from("auto_trading_trades")
+          .from("trades")
           .select("id")
           .eq("user_id", follower.follower_user_id)
           .eq("symbol", trade.symbol)
@@ -84,7 +84,7 @@ serve(async (req: Request) => {
           const quantity =
             (trade.quantity * (follower.allocation_percent || 100)) / 100;
 
-          await supabaseClient.from("auto_trading_trades").insert({
+          await supabaseClient.from("trades").insert({
             user_id: follower.follower_user_id,
             symbol: trade.symbol,
             side: trade.side,

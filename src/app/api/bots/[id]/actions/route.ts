@@ -71,14 +71,14 @@ export const POST = withRateLimit(
 
     // Get session for logging
     const { data: session } = await db
-      .from("auto_trading_sessions")
+      .from("trading_sessions")
       .select("id")
       .eq("config_id", id)
       .eq("status", "ACTIVE")
       .single();
 
     await db
-      .from("auto_trading_sessions")
+      .from("trading_sessions")
       .update({
         status: sessionStatusMap[action],
         ...(action === "pause"

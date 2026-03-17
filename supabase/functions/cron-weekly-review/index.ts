@@ -26,7 +26,7 @@ serve(async (req) => {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
     const { data: sessions } = await supabase
-      .from('auto_trading_sessions')
+      .from('trading_sessions')
       .select('*')
       .gte('updated_at', sevenDaysAgo.toISOString())
 
@@ -43,7 +43,7 @@ serve(async (req) => {
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
         const { data: trades } = await supabase
-          .from('auto_trading_trades')
+          .from('trades')
           .select('*')
           .eq('session_id', session.id)
           .gte('created_at', thirtyDaysAgo.toISOString())

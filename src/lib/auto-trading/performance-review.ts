@@ -129,7 +129,7 @@ export async function generateWeeklyReview(
   let activeSessionId = sessionId
   if (!activeSessionId) {
     const { data: session } = await supabase
-      .from('auto_trading_sessions')
+      .from('trading_sessions')
       .select('id')
       .eq('user_id', userId)
       .eq('status', 'ACTIVE')
@@ -145,7 +145,7 @@ export async function generateWeeklyReview(
   const startDate = new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000)
   
   const { data: trades } = await supabase
-    .from('auto_trading_trades')
+    .from('trades')
     .select('*')
     .eq('session_id', activeSessionId)
     .gte('created_at', startDate.toISOString())
@@ -787,7 +787,7 @@ export async function runWeeklyReviews(): Promise<{
   
   // Get all users with active sessions
   const { data: activeSessions, error } = await supabase
-    .from('auto_trading_sessions')
+    .from('trading_sessions')
     .select('user_id, id')
     .eq('status', 'ACTIVE')
   

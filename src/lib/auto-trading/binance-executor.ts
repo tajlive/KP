@@ -38,16 +38,8 @@ const logger = {
     console.info(`[METRIC] ${name}:${value}`, JSON.stringify(tags || {})),
 };
 
-// Binance Referral Configuration
-export const BINANCE_REFERRAL = {
-  code: "43427892", // Your referral code
-  link: "https://accounts.binance.com/register?ref=43427892",
-  commissionRate: 0.1, // 10% commission on trades
-  benefits: {
-    user: "20% fee discount",
-    referrer: "Commission on trading fees",
-  },
-};
+import { BINANCE_REFERRAL } from "@/lib/constants/binance";
+export { BINANCE_REFERRAL };
 
 interface BinanceCredentials {
   apiKey: string;
@@ -170,7 +162,7 @@ export async function executeTrade(
     // LAYER 1: Check if auto-trading is enabled for this user
     // =========================================================================
     const { data: session } = await supabase
-      .from("auto_trading_sessions")
+      .from("trading_sessions")
       .select("*")
       .eq("id", sessionId)
       .single();
@@ -204,10 +196,10 @@ export async function executeTrade(
     // =========================================================================
     // LAYER 3: Circuit Breaker Check
     // =========================================================================
-    // TODO: auto_trading_trades table missing in types - needs migration
+    // TODO: trades table missing in types - needs migration
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: todaysTrades } = await (supabase as any)
-      .from("auto_trading_trades")
+      .from("trades")
       .select("*")
       .eq("session_id", sessionId)
       .gte(
@@ -217,7 +209,7 @@ export async function executeTrade(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: weeksTrades } = await (supabase as any)
-      .from("auto_trading_trades")
+      .from("trades")
       .select("*")
       .eq("session_id", sessionId)
       .gte(
@@ -271,7 +263,7 @@ export async function executeTrade(
       // Pause session if circuit breaker triggered
       if (circuitCheck.level === "daily" || circuitCheck.level === "strategy") {
         await supabase
-          .from("auto_trading_sessions")
+          .from("trading_sessions")
           .update({
             status: "paused",
             pause_reason: circuitCheck.triggered,
@@ -320,7 +312,7 @@ export async function executeTrade(
     // =========================================================================
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: openPositions } = await (supabase as any)
-      .from("auto_trading_trades")
+      .from("trades")
       .select("*")
       .eq("session_id", sessionId)
       .eq("status", "OPEN");
@@ -344,7 +336,7 @@ export async function executeTrade(
     // =========================================================================
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const historicalTrades = await (supabase as any)
-      .from("auto_trading_trades")
+      .from("trades")
       .select("*")
       .eq("session_id", sessionId)
       .eq("status", "CLOSED")
@@ -466,7 +458,7 @@ export async function executeTrade(
         : currentPrice * (1 - takeProfitPercent));
 
     const { data: trade, error: tradeError } = await supabase
-      .from("auto_trading_trades")
+      .from("trades")
       .insert({
         user_id: userId,
         session_id: sessionId,
@@ -489,7 +481,7 @@ export async function executeTrade(
 
     // Update session
     await supabase
-      .from("auto_trading_sessions")
+      .from("trading_sessions")
       .update({
         total_trades: (sessionRow.total_trades || 0) + 1,
         updated_at: new Date().toISOString(),
@@ -592,7 +584,7 @@ export async function closeTrade(
 
     // Update trade record
     await supabase
-      .from("auto_trading_trades")
+      .from("trades")
       .update({
         status: "CLOSED",
         exit_price: exitPrice,
@@ -605,7 +597,7 @@ export async function closeTrade(
 
     // Update session balance
     const { data: session } = await supabase
-      .from("auto_trading_sessions")
+      .from("trading_sessions")
       .select("*")
       .eq("id", trade.session_id)
       .single();
@@ -616,7 +608,7 @@ export async function closeTrade(
       const newBalance = sessionRow.current_capital_nok + pnl;
 
       await supabase
-        .from("auto_trading_sessions")
+        .from("trading_sessions")
         .update({
           current_capital_nok: newBalance,
           total_pnl_nok: (sessionRow.total_pnl_nok || 0) + pnl,
@@ -666,7 +658,7 @@ async function checkPhaseProgression(
   // Note: The join with user_auto_trading_configs may not work due to schema issues
   // Fetch session and config separately
   const { data: session } = await supabase
-    .from("auto_trading_sessions")
+    .from("trading_sessions")
     .select("*")
     .eq("id", sessionId)
     .single();
@@ -997,7 +989,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   const supabase = createClient();
 
   const { data: openTrades } = await supabase
-    .from("auto_trading_trades")
+    .from("trades")
     .select("*")
     .eq("user_id", userId)
     .eq("status", "OPEN");
@@ -1069,7 +1061,7 @@ export async function runAutoTradingIteration(
 
   // 1. Fetch active sessions
   const { data: sessions, error: sessionError } = await supabase
-    .from("auto_trading_sessions")
+    .from("trading_sessions")
     .select("*")
     .eq("status", "active");
 

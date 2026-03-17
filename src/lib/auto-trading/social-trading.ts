@@ -34,7 +34,7 @@ export async function followStrategy(
 
   // 2. Start en sesjon
   const { data: session, error: sessionError } = await supabase
-    .from("auto_trading_sessions")
+    .from("trading_sessions")
     .insert({
       user_id: userId,
       config_id: config.id,
@@ -58,7 +58,7 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
   // 1. Finn alle aktive sesjoner som følger denne strategien
   // (Dette krever en join eller at vi vet hvilken strategi trade-en tilhører)
   const { data: followers, error: followersError } = await supabase
-    .from("auto_trading_sessions")
+    .from("trading_sessions")
     .select("*, user_auto_trading_configs!inner(*)")
     .eq("user_auto_trading_configs.strategy_id", originalTrade.strategy_used)
     .eq("status", "ACTIVE");

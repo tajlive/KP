@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Check, Copy, Flame, Gift, Unlock, Users } from "lucide-react";
+import { Check, Copy, Flame, Gift, Share2, Unlock, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface ReferralStats {
@@ -61,6 +61,19 @@ export default function ReferralDashboard() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleShare = async () => {
+    if (!stats?.referralCode) return;
+    if (navigator.share) {
+      await navigator.share({
+        title: "Prøv Klarpakke – lær krypto-trading",
+        text: "Bli med på Klarpakke og lær krypto-trading med paper trading!",
+        url: referralLink,
+      });
+    } else {
+      handleCopy();
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-xl animate-pulse h-64 flex items-center justify-center">
@@ -113,7 +126,7 @@ export default function ReferralDashboard() {
               </div>
               <Button
                 onClick={handleCopy}
-                className={`h-[46px] px-6 rounded-xl font-bold transition-all ${
+                className={`h-[46px] px-5 rounded-xl font-bold transition-all ${
                   copied
                     ? "bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30"
                     : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30"
@@ -124,6 +137,12 @@ export default function ReferralDashboard() {
                 ) : (
                   <Copy className="w-5 h-5" />
                 )}
+              </Button>
+              <Button
+                onClick={handleShare}
+                className="h-[46px] px-5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30"
+              >
+                <Share2 className="w-5 h-5" />
               </Button>
             </div>
           </div>
