@@ -29,13 +29,25 @@
 | **supabase-db** | `node scripts/run-supabase-mcp.mjs` — **DATABASE_URL** fra `.env.local`; 100 % uten Management API-token. Se `docs/MCP-SUPABASE-DB.md`. |
 | playwright | `npx -y @playwright/mcp@latest` |
 | resend | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY` |
+| **vercel** | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`. |
+| **cloudflare** | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`. |
+
+**Merk:** Cursor er selv MCP-klient; prosjektets MCP-er står i `.cursor/mcp.json`. Full oversikt for Cursor (MCP-oppsett, CLI, API): **docs/CURSOR-MCP-CLI-API.md**.
 
 ### Verifisere MCP
 
 ```bash
 npm run linear:test   # Linear API (leser .env.local)
-npm run test:mcp      # test-mcp-connections.sh (Supabase, Stripe, Vercel, Resend)
+npm run test:mcp      # test-mcp-connections.sh (Supabase, Stripe, Vercel, Resend, Cloudflare API)
+npm run cursor:config # MCP-server-navn + .cursor/rules (uten API-nøkkel)
+npm run vercel:test   # Vercel API (VERCEL_TOKEN)
+npm run cloudflare:test # Cloudflare API (CLOUDFLARE_API_TOKEN)
+npm run stripe:test   # Stripe API (STRIPE_SECRET_KEY)
+npm run vipps:test    # Vipps API (VIPPS_CLIENT_ID/SECRET)
+npm run cursor:test   # Cursor Cloud Agents API (CURSOR_API_KEY)
 ```
+
+**Full ENV/MCP/CLI/API/SQL-audit:** **docs/ENV-MCP-CLI-API-AUDIT.md**
 
 ---
 
@@ -64,9 +76,62 @@ npm run db:diff       # supabase db diff --linked
 ### Vercel
 
 ```bash
+npm run vercel:test   # Test Vercel API (VERCEL_TOKEN fra .env.local)
+npm run vercel projects
+npm run vercel deployments [limit]
+npm run vercel project [projectId]
 npm run vercel:env    # npx vercel env pull .env.local
 npm run deploy:prod   # npx vercel --prod
 ```
+
+MCP: I Cursor brukes offisiell Vercel MCP (`https://mcp.vercel.com`). Ved første bruk: klikk «Needs login» og autoriser. **Vercel env:** Agenten har tilgang til Vercel env via MCP og via `npm run vercel:env` (pull til .env.local). Full oversikt: **docs/VERCEL-MCP-CLI.md**.
+
+### Cloudflare
+
+```bash
+npm run cloudflare:test   # Test Cloudflare API (CLOUDFLARE_API_TOKEN fra .env.local)
+npm run cloudflare zones
+npm run cloudflare dns [zoneName]
+npm run cloudflare account
+npm run cloudflare pages
+```
+
+MCP: I Cursor brukes offisiell Cloudflare MCP (`https://mcp.cloudflare.com/mcp`). Ved første bruk: OAuth mot Cloudflare. Full oversikt: **docs/CLOUDFLARE-MCP-CLI.md**.
+
+### Stripe
+
+```bash
+npm run stripe:test   # Test Stripe API (STRIPE_SECRET_KEY fra .env.local)
+npm run stripe test
+npm run stripe prices # Hent pris-IDer fra env og vis Stripe-priser
+```
+
+CLI: `scripts/stripe-api.mjs`. MCP: Bruk Stripe MCP (Cursor plugin) eller denne CLI.
+
+### Vipps
+
+```bash
+npm run vipps:test    # Test Vipps OAuth-token (VIPPS_CLIENT_ID/SECRET fra .env.local)
+npm run vipps test
+```
+
+CLI: `scripts/vipps-api.mjs`. MCP: `scripts/run-vipps-mcp.mjs` (vipps i .cursor/mcp.json).
+
+### Cursor (IDE / Cloud Agents)
+
+```bash
+npm run cursor:test        # Test Cursor Cloud Agents API (CURSOR_API_KEY)
+npm run cursor config      # Vis MCP-server-navn + .cursor/rules (uten API-nøkkel)
+npm run cursor me          # API-nøkkelinfo
+npm run cursor agents      # List cloud-agenter
+npm run cursor agent <id>  # Hent én agent
+npm run cursor models      # List modeller
+npm run cursor:agent       # Start Cursor CLI agent (krever cursor.com/install)
+npm run cursor:agent-ls    # agent ls
+npm run cursor:agent-resume # agent resume
+```
+
+Cursor er MCP-klient; MCP-er konfigureres i `.cursor/mcp.json`. Cloud Agents API brukes via `scripts/cursor-api.mjs`. Full oversikt: **docs/CURSOR-MCP-CLI-API.md**.
 
 ### Test og verify
 
@@ -91,13 +156,14 @@ npm run verify:prod   # smoke mot prod-URL
 | **pr-check.yml** | PR mot main | Lint → build (SKIP_LINT_IN_BUILD) → artifact |
 | **manual-deploy.yml** | workflow_dispatch | Build → deploy til Vercel → verify mot prod |
 | **mcp-integration.yml** | push/PR ved endring av MCP-filer | Valider .cursor/mcp.json + .mcp/mcp_config.json (gyldig JSON), sikkerhetssjekk |
-| **mcp-health.yml** | Schedule + dispatch | Sjekk Supabase REST, Stripe, Vercel, Resend (bruker secrets) |
+| **mcp-health.yml** | Schedule + dispatch | Sjekk Supabase REST, Stripe, Vercel, Resend, Cloudflare (valgfri; bruker secrets) |
 
 ### Nødvendige secrets (CI)
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (eller vars/secrets som brukes i build)
 - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (mcp-health)
 - `STRIPE_SECRET_KEY`, `VERCEL_TOKEN`, `RESEND_API_KEY` (mcp-health)
+- `CLOUDFLARE_API_TOKEN` (mcp-health, valgfri – sjekk hoppes over hvis ikke satt)
 - For deploy: Vercel-prosjekt knyttes via `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` og token
 
 Bygg bruker `SKIP_LINT_IN_BUILD=true` slik at lint kjører én gang; build skipper ESLint. Se **docs/vercel-build-notes.md** §8.
@@ -139,7 +205,27 @@ Migrasjon som aktiverer RLS på 8 tabeller:
 
 ---
 
-## 6. Hurtigreferanse
+## 6. Cron (source of truth)
+
+Cron kjøres alltid fra **Supabase** (pg_cron/scheduler), ikke fra Vercel Cron. Se **docs/CRON-SOURCE-OF-TRUTH.md**.
+
+---
+
+## 7. SQL / PSQL – kanonisk flyt
+
+| Behov | Kommando / verktøy |
+|-------|---------------------|
+| Kjøre migrasjoner | `npm run db:push` (supabase db push --linked) |
+| Migrasjonsstatus | `npm run db:status` (supabase migration list --linked) |
+| Diff mot remote | `npm run db:diff` (supabase db diff --linked) |
+| Ad-hoc SQL (fra Cursor) | MCP **supabase-db** → execute_sql / list_tables / apply_migration (krever DATABASE_URL i .env.local) |
+| Ad-hoc SQL (terminal) | `scripts/run-sql-rest.mjs` eller `scripts/exec-sql-remote.mjs`; eller `psql $DATABASE_URL -f fil.sql` |
+
+Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-CLI-API-AUDIT.md** §5.
+
+---
+
+## 8. Hurtigreferanse
 
 | Ønske | Handling |
 |-------|----------|
@@ -148,4 +234,4 @@ Migrasjon som aktiverer RLS på 8 tabeller:
 | Sentry prod | Sett `NEXT_PUBLIC_SENTRY_DSN` i Vercel prod → **docs/SENTRY-PROD.md** |
 | Bygg raskere i CI | Allerede satt: SKIP_LINT_IN_BUILD + cache (§8 vercel-build-notes) |
 | API-dokumentasjon | **docs/api-routes.md** |
-| Alle secrets | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md** |
+| Alle secrets / ENV | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md**, **docs/ENV-MCP-CLI-API-AUDIT.md** |

@@ -51,6 +51,12 @@
     "vipps": {
       "command": "node",
       "args": ["scripts/run-vipps-mcp.mjs"]
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com"
+    },
+    "cloudflare": {
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   }
 }

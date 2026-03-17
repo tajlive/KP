@@ -57,14 +57,15 @@ END;
 | CI deploy | ✅ Lint uten --max-warnings override; verify kjører etter production deploy |
 | Vercel build warnings | ✅ Dokumentert og dempet — se `docs/vercel-build-notes.md` |
 | Paper trading valuta | ✅ USDT→NOK i execute-paper-trade + risk-validator (env → DB global_settings.usdt_nok_rate → 10.8) |
-| USDT/NOK cron | ✅ Daglig cron /api/cron/update-usdt-nok (Vercel 06:00); DB-kolonne via Supabase MCP |
+| USDT/NOK cron | ✅ Daglig cron /api/cron/update-usdt-nok; **source of truth: Supabase** (se under). |
+| **Cron (source of truth)** | **Cron skal alltid kjøres fra Supabase** (pg_cron eller Supabase scheduler). Vercel Cron er ikke source of truth. Nye tidsplanlegginger legges i Supabase; app-ruter /api/cron/* kalles med CRON_SECRET fra Supabase. Se **docs/CRON-SOURCE-OF-TRUTH.md**. |
 | **P0 før prod** | |
 | RLS 8 tabeller (KLA-165) | ✅ Migrasjon kjørt mot remote (db push 2026-03-15). RLS på: auto_trades, trade_history/trade_history_legacy, trading_risk_config, _trigger_debug, saved_strategies, notification_preferences, user_activity_logs, beta_feedback |
 | Sentry prod (KLA-168) | ✅ DSN-guard i instrumentation; `/api/test-sentry`; `docs/SENTRY-PROD.md`; ref i LINEAR-ACCESS.md |
 | Bygg-timeout (KLA-167) | ✅ SKIP_LINT_IN_BUILD i CI; Next.js cache i GHA; §8 i `docs/vercel-build-notes.md` |
 | Paper + Auto trade DB (KLA-157) | ✅ Paper: execute-paper-trade → trading_sessions (mode=paper), trades; auto-trade: samme tabeller, executor-factory skiller paper/live. Ingen blanding uten validering. |
 | Final production fix (KLA-158) | ✅ Verify-script passert (domener, /api/health, kritiske paths, security headers). Env-dok: Vercel prod (NEXT_PUBLIC_SUPABASE_*, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SENTRY_DSN, USDT_NOK_RATE valgfri). |
-| **MCP / CLI / CI / API** | ✅ `.cursor/mcp.json` + `.mcp/mcp_config.json` (kun env); CLI: `npm run linear`, `linear:test`; CI: test, pr-check, manual-deploy, mcp-integration, mcp-health; API: `docs/api-routes.md`; samlet: `docs/MCP-CLI-CI-API.md` |
+| **MCP / CLI / CI / API** | ✅ `.cursor/mcp.json` + `.mcp/mcp_config.json` (kun env); CLI: `npm run linear`, `linear:test`, `vercel`, `cloudflare`, `cursor`; CI: test, pr-check, manual-deploy, mcp-integration, mcp-health; API: `docs/api-routes.md`; samlet: `docs/MCP-CLI-CI-API.md`. **ENV/SQL-audit:** `docs/ENV-MCP-CLI-API-AUDIT.md`. |
 | **Cursor meta-prompt** | ✅ Automatisering, MCP/CLI/API, sub-agenter: regel `.cursor/rules/automation-mcp.md`; full tekst `docs/CURSOR-AUTOMATION-PROMPT.md` |
 | KLA-163 (sync Supabase-skjema) | ✅ daily-summary + lib/email typpede queries; TYPE_DEBT oppdatert; schema-sync kommando dokumentert i `src/lib/supabase/TYPE_DEBT.md` |
 | KLA-128 (EPIC Mandag-Lansering) | ✅ Sprint 7–10 mars; prod er live (KLA-158). Epic lukket. |
@@ -77,7 +78,7 @@ END;
 | Next.js | 15.x (App Router) |
 | React | 19.x |
 | TypeScript | 5.9, strict, target ES2022 |
-| Node | engines `>=20` (Vercel/Next 15) |
+| Node | engines `22.x` (Vercel LTS; [støttede versjoner](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)) |
 | Supabase auth | Kun @supabase/ssr (ikke auth-helpers-nextjs) |
 | ESLint | 9 flat config |
 | Tailwind | 4.x |

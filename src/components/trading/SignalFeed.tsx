@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface TradingSignal {
   id: string;
@@ -32,18 +33,21 @@ interface TradingSignal {
   created_at: string | null;
 }
 
-const REFRESH_INTERVAL_MS = 30_000;
+const REFRESH_INTERVAL_MS = 15_000; // Oppdater oftere så nye signaler vises raskt
 
 export function SignalFeed() {
   const [signals, setSignals] = useState<TradingSignal[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [liveIndicator, setLiveIndicator] = useState(false);
   const { hasAccess, loading: subLoading } = useSubscription();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevCountRef = useRef(0);
 
   const canSeeFullDetails = hasAccess("master");
 
-  const fetchSignals = useCallback(async (showRefresh = false) => {
+  const fetchSignals = useCallback(async (showRefresh = false, fromRealtime = false) => {
     if (showRefresh) setRefreshing(true);
     try {
       const supabase = getSupabaseClient();
@@ -59,7 +63,20 @@ export function SignalFeed() {
         console.error("Failed to fetch trading signals:", error);
         return;
       }
-      setSignals((data as TradingSignal[]) ?? []);
+      const next = (data as TradingSignal[]) ?? [];
+      const prevCount = prevCountRef.current;
+      prevCountRef.current = next.length;
+      setSignals(next);
+      setLastUpdated(new Date());
+      if (fromRealtime && next.length > 0) {
+        setLiveIndicator(true);
+        const newest = next[0];
+        const dir = newest.action?.toUpperCase() === "BUY" || newest.action?.toUpperCase() === "LONG" ? "Kjøp" : "Salg";
+        toast.success(`Nytt signal: ${newest.symbol} ${dir}`, {
+          description: newest.entry_price != null ? `Inngang ca. $${newest.entry_price.toLocaleString()}` : undefined,
+        });
+        setTimeout(() => setLiveIndicator(false), 2000);
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -71,6 +88,24 @@ export function SignalFeed() {
     intervalRef.current = setInterval(() => fetchSignals(), REFRESH_INTERVAL_MS);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [fetchSignals]);
+
+  // Realtime: nye signaler dukker opp med en gang (hvis tabell er i realtime-publikasjon)
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    const channel = supabase
+      .channel("signal-feed-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "trading_signals" },
+        () => {
+          fetchSignals(false, true);
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
     };
   }, [fetchSignals]);
 
@@ -95,7 +130,7 @@ export function SignalFeed() {
         <div className="flex items-center gap-2.5">
           <div className="relative">
             <Radio className="h-4 w-4 text-emerald-400" />
-            <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className={`absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 ${liveIndicator ? "animate-ping" : "animate-pulse"}`} />
           </div>
           <h2 className="text-sm font-semibold text-white tracking-wide uppercase">
             Trading Signaler
@@ -103,6 +138,11 @@ export function SignalFeed() {
           <span className="text-[10px] text-slate-500 tabular-nums">
             {signals.length} aktive
           </span>
+          {lastUpdated && (
+            <span className="text-[10px] text-slate-500">
+              · Oppdatert {formatDistanceToNow(lastUpdated, { addSuffix: true })}
+            </span>
+          )}
         </div>
         <button
           onClick={() => fetchSignals(true)}
@@ -121,9 +161,12 @@ export function SignalFeed() {
         {signals.length === 0 ? (
           <div className="p-8 text-center">
             <TrendingUp className="h-8 w-8 text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400 text-sm">Ingen signaler ennå</p>
-            <p className="text-slate-500 text-xs mt-1">
-              Signaler genereres automatisk av AI-motoren
+            <p className="text-slate-400 text-sm">Ingen signaler akkurat nå</p>
+            <p className="text-slate-500 text-xs mt-1 max-w-[260px] mx-auto">
+              Signaler fra Binance kommer flere ganger i timen. Aktiver en strategi for å se flere signaler.
+            </p>
+            <p className="text-slate-600 text-[10px] mt-2">
+              Live-oppdatering · også hvert 15. sek
             </p>
           </div>
         ) : (

@@ -8,6 +8,7 @@ import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { MarketingProviders } from "@/components/providers/MarketingProviders";
+import { PlausibleScript } from "@/components/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter } from "next/font/google";
@@ -236,6 +237,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             </ErrorBoundary>
           </MarketingProviders>
         </NextIntlClientProvider>
+        <PlausibleScript />
         {process.env.VERCEL && (
           <>
             <Analytics />

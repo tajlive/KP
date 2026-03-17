@@ -2,12 +2,24 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { awardKLT } from "@/lib/gamification/klt";
+import { KLT_REWARDS } from "@/lib/gamification/klt";
 
 /**
- * Mark a lesson as completed for a user
+ * Mark a lesson as completed for a user.
+ * Progress is stored in user_lesson_progress; KLT is awarded once per lesson (idempotent).
  */
 export async function markLessonComplete(userId: string, lessonId: string) {
   const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("user_lesson_progress")
+    .select("status")
+    .eq("user_id", userId)
+    .eq("lesson_id", lessonId)
+    .maybeSingle();
+
+  const wasAlreadyCompleted = existing?.status === "completed";
 
   const { data, error } = await supabase
     .from("user_lesson_progress")
@@ -28,6 +40,62 @@ export async function markLessonComplete(userId: string, lessonId: string) {
   if (error) {
     console.error("Error marking lesson complete:", error);
     throw new Error("Failed to mark lesson as complete");
+  }
+
+  if (!wasAlreadyCompleted) {
+    await awardKLT({
+      userId,
+      amount: KLT_REWARDS.LESSON_COMPLETE,
+      type: "lesson_complete",
+      reason: "Leksjon fullført",
+      metadata: { lesson_id: lessonId },
+      supabase,
+    });
+
+    // Check if this was the last lesson in the module → award module completion (500 KLT, once per module)
+    const { data: lessonRow } = await supabase
+      .from("course_lessons")
+      .select("module_id")
+      .eq("id", lessonId)
+      .single();
+    const moduleId = lessonRow?.module_id;
+    if (moduleId) {
+      const { data: moduleLessons } = await supabase
+        .from("course_lessons")
+        .select("id")
+        .eq("module_id", moduleId)
+        .eq("is_published", true);
+      const totalInModule = moduleLessons?.length ?? 0;
+      if (totalInModule > 0) {
+        const { data: completedInModule } = await supabase
+          .from("user_lesson_progress")
+          .select("lesson_id")
+          .eq("user_id", userId)
+          .eq("status", "completed")
+          .in("lesson_id", moduleLessons!.map((l) => l.id));
+        const completedCount = completedInModule?.length ?? 0;
+        if (completedCount === totalInModule) {
+          const { data: existingModuleRewards } = await supabase
+            .from("klt_transactions")
+            .select("id, metadata")
+            .eq("user_id", userId)
+            .eq("category", "course_complete");
+          const alreadyAwarded = (existingModuleRewards ?? []).some(
+            (r) => (r.metadata as { module_id?: string } | null)?.module_id === moduleId
+          );
+          if (!alreadyAwarded) {
+            await awardKLT({
+              userId,
+              amount: KLT_REWARDS.COURSE_COMPLETE,
+              type: "course_complete",
+              reason: "Modul fullført",
+              metadata: { module_id: moduleId },
+              supabase,
+            });
+          }
+        }
+      }
+    }
   }
 
   revalidatePath("/kurs");

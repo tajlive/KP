@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -76,10 +76,10 @@ async function getModulesWithProgress(userId?: string) {
 export default async function KursPage({ params }: PageProps) {
   const { locale } = await params;
 
-  const supabase = await createClient();
+  const supabaseAuth = await createServerClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabaseAuth.auth.getUser();
 
   const modules = await getModulesWithProgress(user?.id);
 
