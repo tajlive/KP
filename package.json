@@ -75,7 +75,7 @@
     "test:enterprise": "npm run test:security && npm run test:performance && npm run test:a11y",
     "test:security": "npm audit --audit-level=moderate",
     "test:performance": "echo 'Kjør: npx lighthouse https://www.klarpakke.no --preset=desktop'",
-    "test:a11y": "playwright test tests/e2e/ --grep @accessibility || echo 'Kjør: npx playwright test med axe'",
+    "test:a11y": "playwright test e2e/accessibility.spec.ts",
     "analyze:bundle": "ANALYZE=true npm run build",
     "analyze:deps": "npx depcheck && npx knip",
     "security:full": "npm audit && grep -r \"sk-\\|pk_\\|ghp_\\|AKIA\" src/ --include=\"*.ts\" --include=\"*.tsx\" 2>/dev/null || echo 'Ingen hemmeligheter funnet'",

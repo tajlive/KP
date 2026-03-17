@@ -5,6 +5,7 @@ import { useState, useCallback } from 'react';
 import { Loader2, Mail } from 'lucide-react';
 import { SUPPORTED_PROVIDERS, PROVIDER_NAMES } from '@/lib/auth/config';
 import { signInWithOAuth, sendMagicLink, isValidEmail } from '@/lib/auth/utils';
+import { RADIUS, SHADOW } from '@/lib/design/tokens';
 import { toast } from 'sonner';
 
 export type Provider = keyof typeof SUPPORTED_PROVIDERS;
@@ -17,6 +18,7 @@ interface UnifiedAuthButtonProps {
   redirectPath?: string;
 }
 
+/** Offisielle logoer: Google, Microsoft, LinkedIn, Vipps */
 const PROVIDER_STYLES: Record<Provider, {
   icon: React.ReactNode;
   className: string;
@@ -24,39 +26,47 @@ const PROVIDER_STYLES: Record<Provider, {
 }> = {
   GOOGLE: {
     icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden>
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
       </svg>
     ),
-    className: 'bg-white hover:bg-gray-50 border border-gray-300',
-    textClass: 'text-gray-900',
+    className: 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-slate-100',
+    textClass: 'text-gray-900 dark:text-slate-100',
   },
   MICROSOFT: {
     icon: (
-      <svg className="w-5 h-5" viewBox="0 0 21 21">
+      <svg className="w-5 h-5 shrink-0" viewBox="0 0 21 21" aria-hidden>
         <rect x="1" y="1" width="9" height="9" fill="#f25022" />
         <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
         <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
         <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
       </svg>
     ),
-    className: 'bg-white hover:bg-gray-50 border border-gray-300',
-    textClass: 'text-gray-900',
+    className: 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-900 dark:text-slate-100',
+    textClass: 'text-gray-900 dark:text-slate-100',
   },
   LINKEDIN: {
     icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-        <rect width="24" height="24" rx="4" fill="#0A66C2"/>
-        <path d="M5.372 9.671h2.717v8.257H5.372V9.671zm1.36-4.325c.87 0 1.575.707 1.575 1.576 0 .87-.706 1.575-1.575 1.575-.87 0-1.576-.705-1.576-1.575 0-.87.706-1.576 1.576-1.576zm3.78 4.325h2.602v1.129h.037c.362-.687 1.247-1.412 2.567-1.412 2.745 0 3.25 1.808 3.25 4.162v4.378h-2.714v-3.882c0-1.01-.018-2.308-1.405-2.308-1.407 0-1.622 1.1-1.622 2.233v3.957H10.51V9.671z" fill="white"/>
+      <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" fill="#0A66C2"/>
       </svg>
     ),
-    className: 'bg-[#0A66C2] hover:bg-[#004182]',
+    className: 'bg-[#0A66C2] hover:bg-[#004182] border border-[#0A66C2]',
     textClass: 'text-white',
   },
-
+  VIPPS: {
+    icon: (
+      <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <circle cx="12" cy="12" r="4" fill="currentColor" />
+      </svg>
+    ),
+    className: 'bg-[#FF5B24] hover:bg-[#E54E1B] border border-[#FF5B24] text-white',
+    textClass: 'text-white',
+  },
 };
 
 export function UnifiedAuthButton({
@@ -74,9 +84,18 @@ export function UnifiedAuthButton({
   const handleSignIn = useCallback(async () => {
     try {
       setIsLoading(true);
-      // Pass redirectPath if provided (sanitert i InnloggingClient)
+      if (provider === 'VIPPS') {
+        const next = redirectPath ? encodeURIComponent(redirectPath) : '';
+        const res = await fetch(`/api/auth/vipps-url?locale=${locale}${next ? `&next=${next}` : ''}`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || res.statusText);
+        }
+        const data = (await res.json()) as { url: string };
+        if (data.url) window.location.href = data.url;
+        return;
+      }
       const data = await signInWithOAuth(provider, locale, redirectPath);
-
       if (data.url) {
         window.location.href = data.url;
       }
@@ -93,11 +112,10 @@ export function UnifiedAuthButton({
 
   const baseClasses = `
     flex items-center justify-center gap-3
-    w-full px-4 py-4 min-h-[48px]
-    font-medium rounded-lg
+    w-full px-4 py-3.5 min-h-[52px]
+    font-medium ${RADIUS.button} ${SHADOW.card}
     transition-all duration-200
     disabled:opacity-50 disabled:cursor-not-allowed
-    shadow-sm hover:shadow-md
     active:scale-[0.98]
   `;
 
@@ -170,19 +188,21 @@ export function MagicLinkAuthButton({
   if (!showForm) {
     return (
       <button
+        type="button"
         onClick={() => setShowForm(true)}
         className={`
           flex items-center justify-center gap-3
-          w-full px-4 py-4 min-h-[48px]
-          bg-slate-100 hover:bg-slate-200
-          text-slate-700 font-medium
-          rounded-lg border border-slate-300
+          w-full px-4 py-3.5 min-h-[52px]
+          bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700
+          text-slate-700 dark:text-slate-200 font-medium
+          border border-slate-200 dark:border-slate-600
+          ${RADIUS.button} ${SHADOW.card}
           transition-all duration-200
           ${className}
         `}
       >
-        <Mail className="w-5 h-5" />
-        {locale === 'no' ? 'Magisk lenke (uten passord)' : 'Magic link (no password)'}
+        <Mail className="w-5 h-5 shrink-0 text-slate-500 dark:text-slate-400" />
+        {locale === 'no' ? 'Send lenke til e-post (uten passord)' : 'Email me a login link'}
       </button>
     );
   }
@@ -226,27 +246,21 @@ function MagicLinkForm({
 
   if (sent) {
     return (
-      <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
-        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <Mail className="w-6 h-6 text-green-600" />
+      <div className={`text-center p-6 ${RADIUS.button} bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800`}>
+        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
         </div>
-        <h3 className="text-lg font-semibold text-green-800">
-          {locale === 'no' ? 'Sjekk eposten din!' : 'Check your email!'}
+        <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+          {locale === 'no' ? 'Sjekk eposten din' : 'Check your email'}
         </h3>
-        <p className="text-green-700 mt-2 text-sm">
-          {locale === 'no' ? `Vi har sendt en magisk lenke til ${email}` : `We sent a magic link to ${email}`}
+        <p className="text-emerald-700 dark:text-emerald-300 mt-2 text-sm">
+          {locale === 'no' ? `Vi sendte en lenke til ${email}` : `We sent a link to ${email}`}
         </p>
-        <div className="mt-4 p-4 bg-white rounded-lg border border-green-200 text-left">
-          <p className="text-sm text-slate-700 font-medium mb-2">
-            {locale === 'no' ? 'Neste steg:' : 'Next steps:'}
-          </p>
-          <ol className="text-sm text-slate-600 space-y-1 list-decimal list-inside">
-            <li>{locale === 'no' ? 'Åpne eposten din' : 'Open your email'}</li>
-            <li>{locale === 'no' ? 'Klikk på den magiske lenken i mailen' : 'Click the magic link in the email'}</li>
-            <li>{locale === 'no' ? 'Du blir automatisk logget inn' : 'You will be automatically logged in'}</li>
-          </ol>
-        </div>
-        <button onClick={onBack} className="mt-4 text-sm text-green-600 hover:text-green-800 underline">
+        <ol className="mt-4 text-sm text-slate-600 dark:text-slate-400 space-y-1 list-decimal list-inside text-left max-w-xs mx-auto">
+          <li>{locale === 'no' ? 'Åpne eposten din' : 'Open your email'}</li>
+          <li>{locale === 'no' ? 'Klikk på lenken' : 'Click the link'}</li>
+        </ol>
+        <button type="button" onClick={onBack} className="mt-4 text-sm text-[#0052FF] hover:text-[#0047E0] font-medium">
           {locale === 'no' ? 'Tilbake' : 'Back'}
         </button>
       </div>
@@ -254,29 +268,29 @@ function MagicLinkForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+    <form onSubmit={handleSubmit} className={`space-y-4 p-5 bg-white dark:bg-slate-800/50 ${RADIUS.button} border border-slate-200 dark:border-slate-600 ${SHADOW.card}`}>
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-700">
-          {locale === 'no' ? 'Magisk lenke' : 'Magic link'}
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          {locale === 'no' ? 'Lenke til e-post' : 'Email link'}
         </span>
-        <button type="button" onClick={onBack} className="text-sm text-slate-500 hover:text-slate-700">✕</button>
+        <button type="button" onClick={onBack} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded">✕</button>
       </div>
 
-      {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
+      {error && <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 p-3 rounded-lg">{error}</div>}
 
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder={locale === 'no' ? 'din@epost.no' : 'your@email.com'}
-        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+        placeholder={locale === 'no' ? 'din@epost.no' : 'you@example.com'}
+        className="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-[#0052FF] focus:border-[#0052FF] transition-shadow duration-200"
         required
       />
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 font-semibold"
+        className="w-full bg-[#0052FF] hover:bg-[#0047E0] text-white py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50"
       >
         {loading
           ? locale === 'no' ? 'Sender...' : 'Sending...'
@@ -288,14 +302,16 @@ function MagicLinkForm({
 
 export function AuthButtons({
   locale = 'no',
-  providers = ['GOOGLE', 'MICROSOFT'],
+  providers = ['VIPPS', 'GOOGLE', 'MICROSOFT', 'LINKEDIN'],
   showMagicLink = true,
   redirectPath,
+  cardBg = 'bg-white dark:bg-slate-900',
 }: {
   locale?: string;
   providers?: Provider[];
   showMagicLink?: boolean;
   redirectPath?: string;
+  cardBg?: string;
 }) {
   return (
     <div className="space-y-3">
@@ -309,12 +325,12 @@ export function AuthButtons({
       ))}
 
       {providers.length > 0 && showMagicLink && (
-        <div className="relative py-2">
+        <div className="relative py-3">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-300"></div>
+            <div className="w-full border-t border-slate-200 dark:border-slate-700" />
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-white px-4 text-sm text-slate-500">
+            <span className={`${cardBg} px-4 text-sm text-slate-500 dark:text-slate-400`}>
               {locale === 'no' ? 'eller' : 'or'}
             </span>
           </div>

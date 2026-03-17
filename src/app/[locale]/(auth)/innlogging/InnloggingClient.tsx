@@ -25,7 +25,7 @@ import {
   Lock,
   Mail,
 } from "lucide-react";
-import { BRAND } from "@/lib/design/tokens";
+import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -155,8 +155,8 @@ function InnloggingForm() {
           </Link>
         </div>
 
-        <Card className="border border-gray-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-900">
-          <CardHeader className="space-y-1">
+        <Card className={`bg-white dark:bg-slate-900 ${RADIUS.card} border border-slate-200 dark:border-slate-800 ${SHADOW.card}`}>
+          <CardHeader className="space-y-1 pb-2">
             <CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-slate-100">
               {t("signIn")}
             </CardTitle>
@@ -164,107 +164,113 @@ function InnloggingForm() {
               {t("signInDescription")}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5 pt-2">
             {loginError && (
-              <div className="flex items-center gap-2 p-4 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200">
+              <div className="flex items-center gap-2 p-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800">
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span>{loginError}</span>
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="innlogging-email" className="sr-only">
-                  {t("emailPlaceholder")}
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
-                  <Input
-                    id="innlogging-email"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    placeholder={t("emailPlaceholder")}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-12 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF]"
-                    required
-                    disabled={status === "logging_in"}
-                    aria-invalid={!!loginError}
-                  />
+            <section aria-label={locale === "no" ? "Logg inn med e-post" : "Sign in with email"}>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                {locale === "no" ? "E-post" : "Email"}
+              </p>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="innlogging-email" className="sr-only">
+                    {t("emailPlaceholder")}
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
+                    <Input
+                      id="innlogging-email"
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      placeholder={t("emailPlaceholder")}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={`pl-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF] transition-shadow duration-200`}
+                      required
+                      disabled={status === "logging_in"}
+                      aria-invalid={!!loginError}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <label htmlFor="innlogging-password" className="sr-only">
-                  {t("passwordPlaceholder")}
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
-                  <Input
-                    id="innlogging-password"
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    autoComplete="current-password"
-                    placeholder={t("passwordPlaceholder")}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 h-12 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF]"
-                    required
-                    disabled={status === "logging_in"}
-                    aria-invalid={!!loginError}
-                  />
-                  <button
-                    type="button"
-                    tabIndex={0}
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded"
-                    aria-label={showPassword ? (locale === "no" ? "Skjul passord" : "Hide password") : (locale === "no" ? "Vis passord" : "Show password")}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
+                <div className="space-y-2">
+                  <label htmlFor="innlogging-password" className="sr-only">
+                    {t("passwordPlaceholder")}
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
+                    <Input
+                      id="innlogging-password"
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      autoComplete="current-password"
+                      placeholder={t("passwordPlaceholder")}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className={`pl-10 pr-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF] transition-shadow duration-200`}
+                      required
+                      disabled={status === "logging_in"}
+                      aria-invalid={!!loginError}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={0}
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded-lg"
+                      aria-label={showPassword ? (locale === "no" ? "Skjul passord" : "Hide password") : (locale === "no" ? "Vis passord" : "Show password")}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                type="submit"
-                disabled={status === "logging_in"}
-                className={`w-full h-12 ${BRAND.primary} font-medium`}
-              >
-                {status === "logging_in" ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    {t("signingIn")}
-                  </>
-                ) : (
-                  <>
-                    {t("signIn")}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </>
-                )}
-              </Button>
-            </form>
+                <Button
+                  type="submit"
+                  disabled={status === "logging_in"}
+                  className={`w-full h-12 ${RADIUS.button} ${BRAND.primary} font-semibold shadow-sm transition-all duration-200 active:scale-[0.98]`}
+                >
+                  {status === "logging_in" ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      {t("signingIn")}
+                    </>
+                  ) : (
+                    <>
+                      {t("signIn")}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </>
+                  )}
+                </Button>
+              </form>
+            </section>
 
-            <div className="relative py-2">
+            <div className="relative py-1">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-slate-600" />
+                <div className="w-full border-t border-gray-200 dark:border-slate-700" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-white dark:bg-slate-900 px-4 text-sm text-gray-500 dark:text-slate-400">
-                  {locale === "no" ? "eller" : "or"}
+                <span className="bg-white dark:bg-slate-900 px-4 text-sm text-slate-500 dark:text-slate-400">
+                  {locale === "no" ? "eller logg inn med" : "or continue with"}
                 </span>
               </div>
             </div>
 
             <AuthButtons
               locale={locale}
-              providers={["GOOGLE", "MICROSOFT", "LINKEDIN"]}
+              providers={["VIPPS", "GOOGLE", "MICROSOFT", "LINKEDIN"]}
               showMagicLink={true}
               redirectPath={rawRedirect ? safeRedirectTo : undefined}
+              cardBg="bg-white dark:bg-slate-900"
             />
 
             <div className="flex flex-col gap-2 text-center text-sm">

@@ -49,7 +49,7 @@ export async function POST() {
     }
 
     const now = new Date().toISOString();
-    const paperBalance = profile.paper_balance || 10000;
+    const paperBalance = profile.paper_balance || 100000;
 
     // Oppdater user_profiles
     const { error: updateError } = await supabase

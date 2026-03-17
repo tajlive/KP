@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const capital = starting_capital_nok || 10000;
+    const capital = starting_capital_nok || 100000;
     if (capital < 1000 || capital > 100000) {
       return NextResponse.json(
         { error: "Startkapital må være mellom 1 000 og 100 000 kr" },
