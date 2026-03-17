@@ -1,4 +1,6 @@
 @import "tailwindcss" layer(base);
+@import "../styles/kp-tokens.css";
+@import "../styles/kp-components.css";
 
 @theme {
   /* Reset alle farger først */
@@ -8,8 +10,8 @@
   --color-white: #ffffff;
   --color-black: #000000;
   
-  /* Brand */
-  --color-blue-500: #0052ff;
+  /* Brand (KLA-182: #2563EB canonical accent) */
+  --color-blue-500: #2563eb;
   --color-teal-400: #2dd4bf;
   
   /* Grays */
