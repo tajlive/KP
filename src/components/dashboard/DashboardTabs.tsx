@@ -33,7 +33,7 @@ export function DashboardTabs() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-lg border-t border-white/10 z-50 safe-area-pb">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/85 backdrop-blur-xl border-t border-black/[0.06] shadow-[0_-1px_3px_rgba(0,0,0,0.04)] z-50 safe-area-pb">
       <div className="flex justify-around">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
@@ -45,13 +45,13 @@ export function DashboardTabs() {
               href={`/${locale}${item.href}`}
               className={cn(
                 'flex flex-col items-center gap-1 py-3 px-4 transition-colors',
-                active ? 'text-blue-400' : 'text-slate-500',
+                active ? 'text-[#0052FF]' : 'text-[#8E95A9]',
               )}
             >
               <div
                 className={cn(
                   'relative p-2 rounded-xl transition-colors',
-                  active && 'bg-blue-500/10',
+                  active && 'bg-[#0052FF]/10',
                 )}
               >
                 <Icon className="w-5 h-5" />

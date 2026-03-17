@@ -1,33 +1,43 @@
-export const dynamic = 'force-dynamic';
+import { requireAuth } from "@/lib/auth-guard";
+import { Metadata } from "next";
+import { BotWizard } from "@/components/auto-trade/BotWizard";
 
-/**
- * Auto Trade Dashboard
- * Hovedside for administrasjon av auto trading-strategier
- * 
- * Tier-grenser:
- * - Student: 0 strategier, KUN paper, 1 posisjon
- * - Bachelor: 1 strategi, paper + live, 3 posisjoner
- * - Master: 3 strategier, paper + live, 7 posisjoner
- * - PhD/Professor: ubegrenset, paper + live, ubegrenset
- */
+export const dynamic = "force-dynamic";
 
-import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import ClientAutoTradeDashboard from './ClientAutoTradeDashboard';
-
-export async function generateMetadata({ 
-  params
-}: { 
+export async function generateMetadata({
+  params,
+}: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'autoTrade' });
+  const isNo = locale === "no";
   return {
-    title: t('meta.title'),
-    description: t('meta.description'),
+    title: isNo ? "Start trading-bot" : "Start trading bot",
+    description: isNo
+      ? "Sett opp din automatiske trading-strategi."
+      : "Set up your automated trading strategy.",
   };
 }
 
-export default function AutoTradePage() {
-  return <ClientAutoTradeDashboard />;
+export default async function AutoTradePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const { supabase, user } = await requireAuth(locale);
+
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("tier, paper_balance")
+    .eq("id", user.id)
+    .single();
+
+  return (
+    <BotWizard
+      userId={user.id}
+      locale={locale}
+      tier={profile?.tier ?? "student"}
+    />
+  );
 }

@@ -28,14 +28,14 @@ export async function generateMetadata({
 // Fallback UI for når datahenting feiler
 function PaperTradingErrorFallback({ locale }: { locale: string }) {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
+    <div className="min-h-screen bg-[#F7F8FA] p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700/50 rounded-xl p-6 text-center">
-          <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-2">
+        <div className="bg-red-100 border border-red-300 rounded-xl p-6 text-center">
+          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-red-800 mb-2">
             Kunne ikke laste lekepenger
           </h2>
-          <p className="text-red-700 dark:text-red-300/80 mb-4">
+          <p className="text-red-700 mb-4">
             Det oppstod en feil ved lasting av dine trading-sessions. Vennligst prøv igjen.
           </p>
           <div className="flex gap-3 justify-center">
@@ -95,12 +95,12 @@ export default async function PaperTradingPage({
     const balance = profile?.paper_balance ?? 100_000;
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="bg-gradient-to-r from-emerald-500/15 to-blue-500/15 border-b border-emerald-500/20 dark:border-emerald-400/20 px-4 py-3 flex items-center justify-center gap-2">
-          <span className="text-emerald-600 dark:text-emerald-400" aria-hidden>
+      <div className="min-h-screen bg-[#F7F8FA]">
+        <div className="bg-gradient-to-r from-emerald-500/15 to-blue-500/15 border-b border-emerald-500/20 px-4 py-3 flex items-center justify-center gap-2">
+          <span className="text-emerald-600" aria-hidden>
             💰
           </span>
-          <p className="text-emerald-800 dark:text-emerald-200 text-sm font-medium text-center">
+          <p className="text-emerald-800 text-sm font-medium text-center">
             {t("contextBanner")}
           </p>
         </div>

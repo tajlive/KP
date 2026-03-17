@@ -10,8 +10,8 @@
   --color-white: #ffffff;
   --color-black: #000000;
   
-  /* Brand (KLA-182: #2563EB canonical accent) */
-  --color-blue-500: #2563eb;
+  /* Brand (#0052FF canonical accent) */
+  --color-blue-500: #0052FF;
   --color-teal-400: #2dd4bf;
   
   /* Grays */
@@ -128,4 +128,98 @@
 .animate-fade-in-delayed {
   animation: fade-in-scale 0.6s ease-out 0.2s forwards;
   opacity: 0;
+}
+
+.kp-card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(226, 229, 236, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.kp-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.kp-card-interactive:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.kp-gradient-text {
+  background: linear-gradient(135deg, #0052FF, #00C2FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.kp-number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.10s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.20s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.30s; opacity: 0; }
+
+.coin-btc { background: linear-gradient(135deg, #F7931A, #E8860A); }
+.coin-eth { background: linear-gradient(135deg, #627EEA, #4A63D2); }
+.coin-sol { background: linear-gradient(135deg, #9945FF, #14F195); }
+.coin-bnb { background: linear-gradient(135deg, #F3BA2F, #E5A80D); }
+.coin-xrp { background: linear-gradient(135deg, #23292F, #4A4A4A); }
+.coin-doge { background: linear-gradient(135deg, #C2A633, #A38E24); }
+.coin-ada { background: linear-gradient(135deg, #0033AD, #002480); }
+.coin-avax { background: linear-gradient(135deg, #E84142, #C93031); }
+.coin-dot { background: linear-gradient(135deg, #E6007A, #C70068); }
+.coin-link { background: linear-gradient(135deg, #2A5ADA, #1E45B8); }
+
+@keyframes confetti {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+.animate-confetti {
+  animation: confetti 3s ease-in-out forwards;
 }
