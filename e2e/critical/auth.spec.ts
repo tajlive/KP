@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
  * 
  * Stability fixes applied:
  * - Use waitForURL instead of immediate assertions
- * - Wait for networkidle before checking content
+ * - Wait for domcontentloaded before checking content
  * - Use data-testid selectors where available
  */
 
@@ -27,8 +27,7 @@ test.describe('Critical: Authentication @critical @auth', () => {
     const url = page.url();
     expect(url).toMatch(/innlogging|login/);
     
-    // Verify login page content loaded
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('body')).toContainText(/logg inn|login|sign in/i);
   });
   
@@ -36,7 +35,7 @@ test.describe('Critical: Authentication @critical @auth', () => {
     await page.goto('/dashboard', { timeout: 60000 });
     
     // Wait for page to stabilize - either dashboard or redirect
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
     
     // Check current URL
     const url = page.url();
@@ -106,7 +105,7 @@ test.describe('Critical: Authentication @critical @auth', () => {
   test('API accepts authenticated requests', async ({ page, request }) => {
     // First ensure we're on dashboard (which may set cookies)
     await page.goto('/dashboard', { timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
     
     // Get cookies from page context
     const cookies = await page.context().cookies();
@@ -136,7 +135,7 @@ test.describe('Critical: Core Navigation @critical', () => {
   
   test('user can navigate between main sections', async ({ page }) => {
     await page.goto('/dashboard', { timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
     
     // Check that we can find navigation elements or any links
     let links = await page.locator('a[href^="/"]').count();
@@ -188,7 +187,7 @@ test.describe('Critical: Core Navigation @critical', () => {
   
   test('login page structure is correct', async ({ page }) => {
     await page.goto('/innlogging', { timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
     
     // Verify login page has expected structure (may need to wait for client hydration)
     const loginPage = page.locator('[data-testid="login-page"]');

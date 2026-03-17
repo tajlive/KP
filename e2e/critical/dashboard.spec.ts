@@ -10,7 +10,7 @@ test.describe('Critical: Dashboard @critical', () => {
   
   test('dashboard root element exists', async ({ page }) => {
     await page.goto('/dashboard', { timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
     
     // Check for dashboard root with data-testid
     const dashboardRoot = page.locator('[data-testid="dashboard-root"]');

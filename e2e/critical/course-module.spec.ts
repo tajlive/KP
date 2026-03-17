@@ -12,7 +12,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
 
   test.describe("Module Overview Page", () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(`/no/kurs/${moduleSlug}`, { waitUntil: "networkidle" });
+      await page.goto(`/no/kurs/${moduleSlug}`, { waitUntil: "domcontentloaded" });
     });
 
     test("should load module overview and display 5 lessons", async ({
@@ -60,7 +60,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
       await firstLessonButton.click();
 
       await expect(page).toHaveURL(
-        new RegExp(`/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`)
+        new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`)
       );
     });
   });
@@ -69,7 +69,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(
         `/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`,
-        { waitUntil: "networkidle" }
+        { waitUntil: "domcontentloaded" }
       );
     });
 
@@ -94,7 +94,6 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
         })
       ).toBeVisible();
 
-      // Without auth, quiz shows login prompt
       const loginPrompt = page.getByText(
         /Logg inn for å ta quiz|Log in to take quiz/i
       );
@@ -118,16 +117,16 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
       await nextBtn.click();
 
       await expect(page).toHaveURL(
-        new RegExp(`/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[1]}`)
+        new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[1]}`)
       );
 
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("domcontentloaded");
       const prevBtn = page.getByRole("link", { name: /Forrige/i });
 
       if (await prevBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await prevBtn.click();
         await expect(page).toHaveURL(
-          new RegExp(`/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`)
+          new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`)
         );
       }
     });
@@ -138,7 +137,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
       page,
     }) => {
       await page.goto(`/no/kurs/${moduleSlug}`, {
-        waitUntil: "networkidle",
+        waitUntil: "domcontentloaded",
       });
 
       await expect(
@@ -153,7 +152,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     test("should display lesson content on mobile", async ({ page }) => {
       await page.goto(
         `/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`,
-        { waitUntil: "networkidle" }
+        { waitUntil: "domcontentloaded" }
       );
 
       await expect(

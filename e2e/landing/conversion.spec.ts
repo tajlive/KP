@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Landing Page Conversion @critical', () => {
 
   test('Hero vises med norsk tekst på /no', async ({ page }) => {
-    await page.goto('/no', { waitUntil: 'networkidle' });
+    await page.goto('/no', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('link', { name: /Kom i gang gratis|Start gratis/i }).first()).toBeVisible();
@@ -15,7 +15,7 @@ test.describe('Landing Page Conversion @critical', () => {
   });
 
   test('Primær CTA klikk → lander på /no/signup', async ({ page }) => {
-    await page.goto('/no', { waitUntil: 'networkidle' });
+    await page.goto('/no', { waitUntil: 'domcontentloaded' });
 
     const primaryCta = page.getByRole('link', { name: /Kom i gang gratis|Start gratis/i }).first();
     await expect(primaryCta).toBeVisible({ timeout: 15000 });
@@ -26,7 +26,7 @@ test.describe('Landing Page Conversion @critical', () => {
   });
 
   test('Kalkulator slider interaksjon → CTA dukker opp', async ({ page }) => {
-    await page.goto('/no', { waitUntil: 'networkidle' });
+    await page.goto('/no', { waitUntil: 'domcontentloaded' });
 
     // Scroll to calculator section
     const slider = page.locator('input[type="range"]').first();
@@ -43,7 +43,7 @@ test.describe('Landing Page Conversion @critical', () => {
   });
 
   test('Nav-lenker fungerer (Kurs, Paper Trading, Priser)', async ({ page }) => {
-    await page.goto('/no', { waitUntil: 'networkidle' });
+    await page.goto('/no', { waitUntil: 'domcontentloaded' });
 
     const coursesLink = page.getByRole('link', { name: /^Kurs$/i }).first();
     await expect(coursesLink).toBeVisible({ timeout: 10000 });
@@ -59,7 +59,7 @@ test.describe('Landing Page Conversion @critical', () => {
   });
 
   test('/no/innlogging → skjema vises, kan fylle inn', async ({ page }) => {
-    await page.goto('/no/innlogging', { waitUntil: 'networkidle' });
+    await page.goto('/no/innlogging', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByText('Logg inn').first()).toBeVisible({ timeout: 10000 });
 
@@ -77,7 +77,7 @@ test.describe('Landing Page Conversion @critical', () => {
   });
 
   test('/no/signup → skjema vises', async ({ page }) => {
-    await page.goto('/no/signup', { waitUntil: 'networkidle' });
+    await page.goto('/no/signup', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByText(/Opprett konto|Registrer deg/i).first()).toBeVisible({ timeout: 10000 });
 
@@ -93,7 +93,7 @@ test.describe('Landing Page Mobile @mobile', () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test('Mobil 375px → hero synlig, CTA klikkbar', async ({ page }) => {
-    await page.goto('/no', { waitUntil: 'networkidle' });
+    await page.goto('/no', { waitUntil: 'domcontentloaded' });
 
     const heroHeading = page.getByRole('heading', { level: 1 });
     await expect(heroHeading).toBeVisible({ timeout: 15000 });
@@ -107,7 +107,7 @@ test.describe('Landing Page Mobile @mobile', () => {
   });
 
   test('Mobil: hamburger-meny fungerer', async ({ page }) => {
-    await page.goto('/no', { waitUntil: 'networkidle' });
+    await page.goto('/no', { waitUntil: 'domcontentloaded' });
 
     const menuButton = page.locator('button[aria-label*="meny"], button[aria-label*="menu"], button[aria-label*="Meny"]').first();
 
@@ -118,7 +118,7 @@ test.describe('Landing Page Mobile @mobile', () => {
   });
 
   test('Mobil: kalkulator slider fungerer på touch', async ({ page }) => {
-    await page.goto('/no', { waitUntil: 'networkidle' });
+    await page.goto('/no', { waitUntil: 'domcontentloaded' });
 
     const slider = page.locator('input[type="range"]').first();
     await slider.scrollIntoViewIfNeeded();
