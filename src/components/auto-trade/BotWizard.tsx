@@ -41,6 +41,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
   const [strategy, setStrategy] = useState("dca");
   const [riskLevel, setRiskLevel] = useState<"low" | "medium" | "high">("low");
   const [selectedPairs, setSelectedPairs] = useState<string[]>(["BTCUSDT"]);
+  const [startingCapital, setStartingCapital] = useState(100_000);
   const [loading, setLoading] = useState(false);
 
   const isNo = locale === "no";
@@ -141,6 +142,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
           strategy,
           risk_level: riskLevel,
           pairs: selectedPairs,
+          starting_capital_nok: startingCapital,
         }),
       });
       const data = await res.json();
@@ -155,9 +157,10 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
 
   const stepLabels = [
     isNo ? "Strategi" : "Strategy",
-    isNo ? "Innstillinger" : "Settings",
+    isNo ? "Beløp & valuta" : "Amount & coins",
     isNo ? "Start" : "Start",
   ];
+  const CAPITAL_PRESETS = [50_000, 100_000, 250_000, 500_000, 1_000_000];
 
   const selectedStrategy = STRATEGIES.find((s) => s.id === strategy);
 
@@ -309,6 +312,51 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
 
           <div>
             <h2 className="text-lg font-semibold text-[#1A1D26] mb-1">
+              {isNo ? "Startkapital (lekepenger)" : "Starting capital (paper)"}
+            </h2>
+            <p className="text-xs text-[#5E6478] mb-3">
+              {isNo ? "Beløpet boten handler med i papirmodus." : "Amount the bot trades with in paper mode."}
+            </p>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {CAPITAL_PRESETS.map((preset) => {
+                const selected = startingCapital === preset;
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setStartingCapital(preset)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selected ? `${BRAND.primary}` : "bg-[#F1F3F9] text-[#5E6478] hover:bg-[#E2E5EC]"
+                    }`}
+                  >
+                    {preset >= 1_000_000 ? "1M" : `${preset / 1000}k`} kr
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-3 mb-6">
+              <label htmlFor="capital-input" className="text-sm text-[#5E6478] shrink-0">
+                {isNo ? "Eget beløp:" : "Custom amount:"}
+              </label>
+              <input
+                id="capital-input"
+                type="number"
+                min={10000}
+                max={1000000}
+                step={10000}
+                value={startingCapital}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (!Number.isNaN(v)) setStartingCapital(Math.max(10000, Math.min(1_000_000, v)));
+                }}
+                className="w-32 px-3 py-2 rounded-lg border border-[#E2E5EC] text-[#1A1D26] font-medium"
+              />
+              <span className="text-sm text-[#5E6478]">kr</span>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-semibold text-[#1A1D26] mb-1">
               {isNo ? "Velg kryptovaluta" : "Select coins"}
             </h2>
             <p className="text-xs text-[#5E6478] mb-4">
@@ -386,10 +434,10 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
             <div className="h-px bg-[#E2E5EC]" />
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478]">
-                {isNo ? "Lekepenger brukt" : "Paper money used"}
+                {isNo ? "Startkapital (lekepenger)" : "Starting capital (paper)"}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26]">
-                kr 100 000
+                {startingCapital.toLocaleString("nb-NO")} kr
               </span>
             </div>
           </div>

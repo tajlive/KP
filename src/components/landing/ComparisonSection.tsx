@@ -12,7 +12,7 @@ export default function ComparisonSection() {
     { name: 'Sertifikat ved fullføring', klarpakke: true, tradingskolen: false, nordic: 'Delvis' },
     { name: 'Ingen broker-tvang', klarpakke: true, tradingskolen: false, nordic: true },
     { name: 'Copy-trading (kommer)', klarpakke: 'Snart', tradingskolen: false, nordic: false },
-    { name: 'Månedlig pris', klarpakke: '249-999 kr', tradingskolen: 'Gratis*', nordic: '21 200 kr' },
+    { name: 'Månedlig pris', klarpakke: '249–1 999 kr', tradingskolen: 'Gratis*', nordic: '21 200 kr' },
   ];
 
   const renderCell = (value: boolean | string, isKlarpakke = false) => {

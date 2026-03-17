@@ -135,8 +135,8 @@ export default function FinalCTASection({
               <Clock className="w-5 h-5" />
               <span className="text-sm font-black uppercase tracking-widest">
                 {language === "no"
-                  ? "Beta-priser gjelder ut 2026"
-                  : "Beta pricing valid through 2026"}
+                  ? "Student gratis · Bachelor fra 249 kr/mnd"
+                  : "Student free · Bachelor from 249 NOK/mo"}
               </span>
             </motion.div>
           </div>
