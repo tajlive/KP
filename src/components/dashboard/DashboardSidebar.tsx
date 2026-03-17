@@ -61,7 +61,7 @@ export function DashboardSidebar() {
 
   const links = [
     { href: "/dashboard", label: locale === "no" ? "Hjem" : "Home", icon: LayoutDashboard, exact: true },
-    { href: "/akademi", label: locale === "no" ? "Lær" : "Learn", icon: BookOpen },
+    { href: "/kurs", label: locale === "no" ? "Lær" : "Learn", icon: BookOpen },
     { href: "/paper-trading", label: locale === "no" ? "Handle" : "Trade", icon: TrendingUp },
     { href: "/dashboard/auto-trade", label: locale === "no" ? "Auto-trade" : "Auto-trade", icon: Bot },
     { href: "/profile", label: locale === "no" ? "Profil" : "Profile", icon: User },

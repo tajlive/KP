@@ -162,7 +162,7 @@ src/app/
 | ------------------ | ----------------------------------- | ----------------- |
 | `get-entitlements` | Hent brukertilganger basert på tier | HTTP/Edge         |
 | `strategy-runner`  | Kjør trading-strategier             | Scheduler/pg_cron |
-| `signal-engine`    | Generer trading-signaler            | pg_cron           |
+| `signal-engine`    | Generer trading-signaler (Binance)  | pg_cron (hver time); skriver til `bot_signals` + `trading_signals` (dashboard-feed) |
 | `binance-connect`  | Valider og test Binance API         | HTTP              |
 
 ---

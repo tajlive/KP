@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpen, Clock, CheckCircle2 } from "lucide-react";
@@ -153,10 +153,10 @@ async function getLessonData(
 export default async function LessonPage({ params }: PageProps) {
   const { locale, moduleSlug, lessonSlug } = await params;
 
-  const supabase = await createClient();
+  const supabaseAuth = await createServerClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabaseAuth.auth.getUser();
 
   const data = await getLessonData(moduleSlug, lessonSlug, user?.id);
 
@@ -283,7 +283,7 @@ export default async function LessonPage({ params }: PageProps) {
             <Card className="bg-muted/50">
               <CardContent className="p-6 text-center">
                 <p className="text-muted-foreground mb-4">{t.loginRequired}</p>
-                <Link href={`/${locale}/login`}>
+                <Link href={`/${locale}/innlogging`}>
                   <Button>{locale === "no" ? "Logg inn" : "Log in"}</Button>
                 </Link>
               </CardContent>

@@ -23,11 +23,10 @@
       ]
     },
     "vercel": {
-      "command": "npx",
-      "args": ["-y", "@vercel/mcp-adapter@latest"],
-      "env": {
-        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
-      }
+      "url": "https://mcp.vercel.com"
+    },
+    "cloudflare": {
+      "url": "https://mcp.cloudflare.com/mcp"
     },
     "stripe": {
       "command": "npx",

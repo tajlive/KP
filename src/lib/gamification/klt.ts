@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/utils";
+import { createClient as createBrowserClient } from "@/lib/utils";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // KLT Rewards Configuration
 export const KLT_REWARDS = {
@@ -46,11 +47,13 @@ interface AwardKLTPayload {
   type: KLTTransactionType;
   reason: string;
   metadata?: Record<string, unknown>;
+  /** Server-side: pass Supabase service client so RLS allows insert/upsert */
+  supabase?: SupabaseClient;
 }
 
 /**
  * Award KLT tokens to a user
- * This should be called from server-side code or API routes
+ * Call from server actions/API with supabase from createClient() (server) for writes to succeed under RLS.
  */
 export async function awardKLT({
   userId,
@@ -58,9 +61,10 @@ export async function awardKLT({
   type,
   reason,
   metadata = {},
+  supabase: injectedClient,
 }: AwardKLTPayload): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = createClient();
+    const supabase = injectedClient ?? createBrowserClient();
     
     // Get current balance
     const { data: currentBalance } = await supabase
@@ -84,16 +88,17 @@ export async function awardKLT({
     
     if (balanceError) throw balanceError;
     
-    // Record transaction
+    // Record transaction (type = reward|spend|bonus|founder; category = lesson_complete etc.)
     const { error: txError } = await supabase
       .from("klt_transactions")
       .insert({
         user_id: userId,
         amount,
-        type,
-        reason,
-        metadata,
-        created_at: new Date().toISOString(),
+        type: "reward",
+        category: type,
+        description: reason,
+        reason: reason,
+        metadata: metadata ?? {},
       });
     
     if (txError) throw txError;
@@ -114,7 +119,7 @@ export async function awardXP(
   reason: string
 ): Promise<{ success: boolean; newLevel?: boolean; error?: string }> {
   try {
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     
     // Get current level data
     const { data: currentLevel } = await supabase
@@ -175,7 +180,7 @@ export async function unlockAchievement(
   achievementId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     
     const { error } = await supabase
       .from("user_achievements")
@@ -200,7 +205,7 @@ export async function unlockAchievement(
  */
 export async function getKLTBalance(userId: string): Promise<number> {
   try {
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     
     const { data } = await supabase
       .from("user_klt_balances")
