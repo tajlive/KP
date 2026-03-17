@@ -2,6 +2,7 @@
 
 import { Lock } from "lucide-react";
 import Link from "next/link";
+import { BRAND } from "@/lib/design/tokens";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +64,7 @@ export function PaperLiveToggle({
         <p className="mt-1.5 text-xs text-slate-500">
           <Link
             href={`/${locale}/priser`}
-            className="text-[#0052FF] hover:underline"
+            className={`${BRAND.link} hover:underline`}
           >
             {locale === "no"
               ? "Oppgrader til Bachelor for ekte trading"

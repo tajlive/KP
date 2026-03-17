@@ -12,6 +12,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
+import { BRAND, SURFACE } from "@/lib/design/tokens";
 
 export function QuizClient() {
   const t = useTranslations("quizPage");
@@ -111,7 +112,7 @@ export function QuizClient() {
               {passed ? t("result.passedMessage") : t("result.failedMessage")}
             </p>
 
-            <div className="text-5xl font-bold text-[#0052FF] mb-8">
+            <div className={`text-5xl font-bold tabular-nums ${BRAND.link} mb-8`}>
               {score} / {questions.length}
             </div>
 
@@ -144,7 +145,7 @@ export function QuizClient() {
               <div className="grid sm:grid-cols-2 gap-3">
                 <Link
                   href={`/${locale}/paper-trading`}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-[#0052FF] text-white font-medium rounded-xl hover:bg-[#0047E0] transition-colors"
+                  className={`flex items-center justify-center gap-2 px-4 py-3 ${BRAND.primary} font-medium rounded-xl transition-colors`}
                 >
                   <TrendingUp className="w-4 h-4" />
                   {t("result.tryPaperTrading")}
@@ -188,7 +189,7 @@ export function QuizClient() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-[#0052FF] rounded-full flex items-center justify-center">
+            <div className={`w-12 h-12 ${BRAND.primary} rounded-full flex items-center justify-center`}>
               <Brain className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -262,7 +263,7 @@ export function QuizClient() {
 
           {showResult && (
             <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-              <div className="font-medium text-[#0052FF] mb-2">
+              <div className={`font-medium ${BRAND.link} mb-2`}>
                 {selectedAnswer === question.correct
                   ? t("result.correct")
                   : t("result.wrong")}
@@ -274,7 +275,7 @@ export function QuizClient() {
           {showResult && (
             <button
               onClick={handleNext}
-              className="w-full mt-6 py-4 bg-[#0052FF] text-white font-semibold rounded-full hover:bg-[#0047E0] transition-colors flex items-center justify-center gap-2"
+              className={`w-full mt-6 py-4 ${BRAND.primary} font-semibold rounded-full transition-colors flex items-center justify-center gap-2`}
             >
               {currentQuestion < questions.length - 1
                 ? t("nextQuestion")

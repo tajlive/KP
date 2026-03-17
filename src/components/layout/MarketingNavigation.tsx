@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { HeaderTicker } from "@/components/landing/HeaderTicker";
 import { LogIn, Menu, X } from "lucide-react";
+import { BRAND } from "@/lib/design/tokens";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,7 +68,7 @@ export function MarketingNavigation() {
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF] hover:text-white"
+                className={`gap-2 ${BRAND.primaryOutline}`}
               >
                 <LogIn className="w-4 h-4" />
                 {t("login")}
@@ -76,7 +77,7 @@ export function MarketingNavigation() {
             <Link href={l("/signup")}>
               <Button
                 size="sm"
-                className="bg-[#0052FF] hover:bg-[#0047E0] text-white shadow-md shadow-[#0052FF]/20"
+                className={`${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
               >
                 {t("register")}
               </Button>
@@ -120,7 +121,7 @@ export function MarketingNavigation() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-full gap-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF] hover:text-white"
+                  className={`w-full gap-2 ${BRAND.primaryOutline}`}
                 >
                   <LogIn className="w-4 h-4" />
                   {t("login")}
@@ -129,7 +130,7 @@ export function MarketingNavigation() {
               <Link href={l("/signup")} className="block">
                 <Button
                   size="sm"
-                  className="w-full bg-[#0052FF] hover:bg-[#0047E0] text-white"
+                  className={`w-full ${BRAND.primary}`}
                 >
                   {t("register")}
                 </Button>

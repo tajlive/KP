@@ -1,6 +1,7 @@
 'use client';
 
 import { Lock } from 'lucide-react';
+import { BRAND } from '@/lib/design/tokens';
 import type { ReactNode } from 'react';
 
 interface UpgradeGateProps {
@@ -48,7 +49,7 @@ export function UpgradeGate({
           <p className="text-xs text-[#5E6478] mb-3">{feature}</p>
           <a
             href={`/${locale}/priser`}
-            className="bg-[#0052FF] hover:bg-[#0047E0] text-white text-sm font-medium rounded-lg px-4 py-2 inline-block transition-colors"
+            className={`${BRAND.primary} text-sm font-medium rounded-lg px-4 py-2 inline-block transition-colors`}
           >
             {no ? 'Se priser' : 'See prices'}
           </a>

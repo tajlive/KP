@@ -23,9 +23,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, ArrowRight, TrendingUp, TrendingDown, Wallet, Banknote } from "lucide-react";
+import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
 
-const cardBase =
-  "bg-white dark:bg-slate-800/50 rounded-xl border border-[#E2E5EC] dark:border-slate-700 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]";
+/** Kort med skygge og 200ms overgang (tokens) */
+const cardBase = `bg-white dark:bg-slate-800/50 ${RADIUS.card} border border-[#E2E5EC] dark:border-slate-700 ${SHADOW.card}`;
 
 interface TradingSession {
   id: string;
@@ -133,7 +134,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
               </div>
             </div>
             <Button
-              className="gap-2 shrink-0 min-h-11 px-5 text-sm font-semibold bg-[#0052FF] hover:bg-[#0047E0] text-white rounded-xl [&>span]:truncate [&>span]:max-w-[12rem]"
+              className={`gap-2 shrink-0 min-h-11 px-5 text-sm font-semibold ${BRAND.primary} ${RADIUS.button} [&>span]:truncate [&>span]:max-w-[12rem]`}
               onClick={() => setIsModalOpen(true)}
             >
               <Plus className="w-4 h-4 shrink-0" aria-hidden />
@@ -195,7 +196,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
                 <span>{t("cancel")}</span>
               </Button>
               <Button
-                className="min-h-11 px-5 text-sm font-semibold rounded-xl bg-[#0052FF] hover:bg-[#0047E0] text-white [&>span]:truncate [&>span]:max-w-[8rem]"
+                className={`min-h-11 px-5 text-sm font-semibold ${RADIUS.button} ${BRAND.primary} [&>span]:truncate [&>span]:max-w-[8rem]`}
                 onClick={handleCreateSession}
                 disabled={isLoading}
               >
@@ -221,7 +222,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
             </p>
             <Button
               size="lg"
-              className="gap-2 min-h-12 px-6 text-sm font-semibold rounded-xl bg-[#0052FF] hover:bg-[#0047E0] text-white [&>span]:truncate [&>span]:max-w-[16rem]"
+              className={`gap-2 min-h-12 px-6 text-sm font-semibold ${RADIUS.button} ${BRAND.primary} [&>span]:truncate [&>span]:max-w-[16rem]`}
               onClick={() => setIsModalOpen(true)}
             >
               <Plus className="w-4 h-4 shrink-0" aria-hidden />
@@ -244,7 +245,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
               <Link
                 key={session.id}
                 href={href}
-                className={`block ${cardBase} p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:ring-offset-2 rounded-xl`}
+                className={`block ${cardBase} p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card}`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">

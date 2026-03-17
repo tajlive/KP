@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { HERO } from "@/lib/design/tokens";
 
 /**
  * HeroSection - Server Component (no "use client")
@@ -28,7 +29,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
   const t = await getTranslations("landing.modernHero");
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-[#0052FF] via-[#0041CC] to-slate-900">
+    <section className={`relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br ${HERO.gradient}`}>
       {/* Subtle grid overlay - merke #0052FF */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-grid-pattern" />
@@ -40,7 +41,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
           {/* Removed animate-fade-in to eliminate LCP delay */}
           <div className="text-center lg:text-left">
             {/* Badge - merke #0052FF */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#0052FF]/20 backdrop-blur-sm text-white border border-[#0052FF]/40 rounded-full text-sm font-semibold mb-6">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 ${HERO.badge} text-sm font-semibold mb-6`}>
               {/* Inline SVG instead of lucide-react */}
               <svg
                 className="w-4 h-4"
@@ -80,7 +81,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
               <Link
                 href={`/${locale}/signup`}
                 aria-label={t("ctaPrimary")}
-                className="group px-8 py-4 bg-[#0052FF] hover:bg-[#0041CC] text-white rounded-xl font-bold text-lg shadow-2xl shadow-[#0052FF]/30 hover:shadow-[#0052FF]/40 hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2"
+                className={`group ${HERO.ctaPrimary} flex items-center justify-center gap-2`}
               >
                 {t("ctaPrimary")}
                 <svg
@@ -101,7 +102,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
               <Link
                 href={`/${locale}/paper-trading`}
                 aria-label={t("ctaSecondary")}
-                className="px-8 py-4 bg-white text-[#0052FF] rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-200 flex items-center justify-center gap-2"
+                className={`${HERO.ctaSecondary} flex items-center justify-center gap-2`}
               >
                 {t("ctaSecondary")}
               </Link>

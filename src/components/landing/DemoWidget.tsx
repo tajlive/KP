@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
+import { BRAND } from "@/lib/design/tokens";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const INITIAL_BALANCE = 100_000;
@@ -187,7 +188,7 @@ export function DemoWidget() {
               <p className="text-white font-bold text-xl mb-4">{t("overlay")}</p>
               <Link
                 href={`/${locale}/signup`}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#0052FF] hover:bg-[#0041CC] text-white font-bold rounded-xl shadow-lg shadow-[#0052FF]/30 transition-all duration-200"
+                className={`inline-flex items-center gap-2 px-8 py-4 ${BRAND.primary} font-bold rounded-xl shadow-lg shadow-[#0052FF]/30 transition-all duration-200`}
               >
                 {t("overlayCta")}
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

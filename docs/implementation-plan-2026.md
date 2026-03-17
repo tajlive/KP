@@ -41,7 +41,9 @@ Kort oversikt over sentrale ruter under `src/app/[locale]/` som er i scope for p
 | **Varsler** | `/varsler` | Varslingssenter. |
 | **Konto** | `/konto`, `/innstillinger` | Profil og innstillinger. |
 
-Andre relevante: `/login`, `/(auth)/signup`, `/innlogging`, `/velkommen`, `/kurs`, `/akademi`.
+Andre relevante: `/login`, `/(auth)/signup`, `/innlogging`, `/velkommen`, `/kurs`, **`/akademi`** (prioritert i premium-audit).
+
+Konkurranseanalysen er utvidet med **dybdeanalyse** (per konkurrent: Coinbase, Robinhood, Firi, Revolut, Kraken, Bybit; tema på tvers; anbefalinger knyttet til [product-principles-2026.md](product-principles-2026.md)) – se [design-konkurranse-analyse-2026.md](design-konkurranse-analyse-2026.md).
 
 ---
 
@@ -68,3 +70,26 @@ Oppgaver opprettet og satt til **Done** for denne implementasjonen:
 Kjør minst `test:enterprise` etter endringer som berører UI, routing eller sikkerhet.
 
 **Siste kjøring:** Exit code 0. Security: `npm audit --audit-level=moderate` (4 low). Performance: placeholder (echo). A11y: ingen tester med `@accessibility` i Playwright – vurder å legge til a11y-tester eller axe.
+
+---
+
+## Siste premium-audit (mars 2026)
+
+Kjørt etter workflow [.agent/workflows/premium-design-audit.md](../.agent/workflows/premium-design-audit.md) på **landing** og **dashboard**.
+
+**Hovedfunn:** (1) Landing og dashboard bruker ad-hoc hex (#0052FF, #F7F8FA) – ikke `tokens.ts`; (2) `tokens.ts` har #2563EB, resten av appen #0052FF – uens merke-farge; (3) Emojis på dashboard (🥇🥈🥉, 🤖, 📘, ⚡) bør erstattes med Lucide; (4) Dashboard-kort mangler `transition-shadow duration-200`; (5) tabular-nums mangler på leaderboard %, coin change %, posisjon %.
+
+**Anbefalte tiltak (prioritet):**
+1. **Én merke-fargekilde:** Oppdater `tokens.ts` til #0052FF/#0047E0; importer CARD, BUTTON, SURFACE, SHADOW i `page.tsx`, HeroSection og PortfolioDashboard.
+2. **Lucide i stedet for emojis:** PortfolioDashboard – leaderboard (Medal/Trophy), AI Brief (Bot), Lær videre (BookOpen), Bot (Zap/Bot), BUY/SELL (ArrowUp/ArrowDown).
+3. **Kort med overgang:** Legg `transition-shadow duration-200` (og ev. hover:shadow-md) på dashboard cardBase og lekepenger-kort; bruk CARD.hover fra tokens der mulig.
+
+**Status:** Tiltak 1–3 er implementert. Feilsider (404, 403, 500), dashboard-layout, innlogging, paper-trading, trade, handelshistorikk, konto og root layout bruker nå tokens der det er gjort endringer.
+
+---
+
+## Design på resten av sidene (tokens/sjekkliste)
+
+Sider og komponenter som **bruker tokens** (SURFACE, BRAND, CARD, HERO, RADIUS, SHADOW, BRAND.dataChecked): landing (page, HeroSection, MarketingNavigation, EmailCapture, DemoWidget, HeaderTicker, LandingNavigation), priser (ClientPricingPage, PricingSection), dashboard (page, PortfolioDashboard, DashboardClientLayout, ReverseTrial, FirstTradeCard, UpgradeGate, PaperLiveToggle), paper-trading (page, PaperTradingList), trade (TradingInterface), handelshistorikk (ClientHandelshistorikk), konto (page), innlogging (InnloggingClient), feil (404, 403, 500), root layout (body), auto-trade (BotDetailView, BotWizard), quiz (QuizClient), kalkulator (ClientKalkulator), admin (ClientAdminV2), UI (switch.tsx med BRAND.dataChecked).
+
+**Status resten:** Landing, dashboard-komponenter, auto-trade, quiz, kalkulator, admin og switch er alignet til tokens. Onboarding, kurs, akademi og varsler kan alignes ved neste audit (hex/emojis → tokens).
