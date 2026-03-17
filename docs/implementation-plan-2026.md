@@ -69,7 +69,7 @@ Oppgaver opprettet og satt til **Done** for denne implementasjonen:
 
 Kjør minst `test:enterprise` etter endringer som berører UI, routing eller sikkerhet.
 
-**Siste kjøring:** Exit code 0. Security: `npm audit --audit-level=moderate` (4 low). Performance: placeholder (echo). A11y: ingen tester med `@accessibility` i Playwright – vurder å legge til a11y-tester eller axe.
+**Siste kjøring:** Exit code 0. Security: `npm audit --audit-level=moderate` (4 low). Performance: placeholder (echo). A11y: `npm run test:a11y` kjører axe-core på Priser, Innlogging, Kurs, Interessetest; feiler kun på impact=critical. Mot prod: `BASE_URL=https://www.klarpakke.no npm run test:a11y`.
 
 ---
 
@@ -93,3 +93,15 @@ Kjørt etter workflow [.agent/workflows/premium-design-audit.md](../.agent/workf
 Sider og komponenter som **bruker tokens** (SURFACE, BRAND, CARD, HERO, RADIUS, SHADOW, BRAND.dataChecked): landing (page, HeroSection, MarketingNavigation, EmailCapture, DemoWidget, HeaderTicker, LandingNavigation), priser (ClientPricingPage, PricingSection), dashboard (page, PortfolioDashboard, DashboardClientLayout, ReverseTrial, FirstTradeCard, UpgradeGate, PaperLiveToggle), paper-trading (page, PaperTradingList), trade (TradingInterface), handelshistorikk (ClientHandelshistorikk), konto (page), innlogging (InnloggingClient), feil (404, 403, 500), root layout (body), auto-trade (BotDetailView, BotWizard), quiz (QuizClient), kalkulator (ClientKalkulator), admin (ClientAdminV2), UI (switch.tsx med BRAND.dataChecked).
 
 **Status resten:** Landing, dashboard-komponenter, auto-trade, quiz, kalkulator, admin og switch er alignet til tokens. Onboarding, kurs, akademi og varsler kan alignes ved neste audit (hex/emojis → tokens).
+
+---
+
+## Neste steg (fra implementeringsplan)
+
+Referanse: [.cursor/plans/implementeringsplan_ux_agent_linear](.cursor/plans/). Del A (UX-fundament) er fullført. Gjenstår:
+
+| Del | Oppgaver | Beskrivelse |
+|-----|----------|-------------|
+| **B** | Dashboard-redesign | 2B samkjøre farge (#0052FF i kp-tokens/globals), 2C font Inter i layout, 3 erstatte dashboard/page med PortfolioDashboard, 4 akademi i dashboard-layout, 5 fjerne CourseGate som blokkerer, 6 første handel / upgrade-momenter / sosialt bevis / streak. |
+| **C** | Premium-audit | Kjør [premium-design-audit](.agent/workflows/premium-design-audit.md) på prioriterte sider (landing, priser, onboarding, dashboard, paper-trading, trade, handelshistorikk, varsler, konto, akademi); rapporter funn. |
+| **D** | Linear + GitHub + tester | Opprett ev. nye Linear-oppgaver for Del B/C; commit/push; `npm run test:enterprise` og ev. `npm run verify`. |

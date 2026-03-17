@@ -1,0 +1,41 @@
+/**
+ * Tilgjengelighet (a11y) – axe-core WCAG på kritiske sider
+ * Kjør: npm run test:a11y
+ * Mot prod: BASE_URL=https://www.klarpakke.no npm run test:a11y
+ *
+ * Feiler kun på impact=critical (blokkerer ikke på serious/minor).
+ * Rapporterer alle violations i feilmelding ved critical.
+ */
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test.describe('Tilgjengelighet (axe) @accessibility', () => {
+  const PUBLIC_PAGES = [
+    { path: '/no/priser', name: 'Priser' },
+    { path: '/no/innlogging', name: 'Innlogging' },
+    { path: '/no/kurs', name: 'Kurs' },
+    { path: '/no/interessetest', name: 'Interessetest' },
+  ] as const;
+
+  for (const { path, name } of PUBLIC_PAGES) {
+    test(`${name} (${path}) – ingen kritiske axe-brudd`, async ({ page }) => {
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await page.waitForLoadState('networkidle').catch(() => {});
+
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
+        .analyze();
+
+      const critical = results.violations.filter((v) => v.impact === 'critical');
+      if (critical.length > 0) {
+        const summary = critical
+          .map(
+            (v) =>
+              `[${v.impact}] ${v.id}: ${v.help} (${v.nodes.length} nodes)`
+          )
+          .join('\n');
+        expect(critical, `Kritiske a11y-brudd på ${path}:\n${summary}`).toHaveLength(0);
+      }
+    });
+  }
+});

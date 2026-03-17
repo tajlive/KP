@@ -77,6 +77,7 @@ export const SUPPORTED_PROVIDERS = {
   GOOGLE: "google",
   MICROSOFT: "azure", // Supabase uses 'azure' for Microsoft
   LINKEDIN: "linkedin", // Supabase Auth provider
+  VIPPS: "vipps", // Custom OAuth flow via /api/auth/vipps-url + callback
 } as const;
 
 // Provider display names (Norwegian)
@@ -84,6 +85,7 @@ export const PROVIDER_NAMES: Record<string, string> = {
   google: "Google",
   azure: "Microsoft",
   linkedin: "LinkedIn",
+  vipps: "Vipps",
   email: "E-post",
 };
 
@@ -123,6 +125,9 @@ export const AUTH_ERRORS: Record<string, string> = {
   session_expired: "Økten er utløpt. Vennligst logg inn på nytt.",
   user_not_found: "Bruker ikke funnet.",
   unauthorized: "Ikke autorisert.",
+  vipps_missing_verifier: "Vipps-innlogging utløpt. Prøv igjen.",
+  vipps_config: "Vipps er ikke konfigurert. Kontakt support.",
+  vipps_userinfo: "Kunne ikke hente brukerinfo fra Vipps. Prøv igjen.",
 };
 
 // Get human-readable error message

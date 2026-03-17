@@ -1,8 +1,12 @@
 import { getAppUrl } from "@/lib/auth/config";
+import { handleVippsCallback } from "@/lib/auth/vipps-callback";
 import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
+
+const VIPPS_PKCE_COOKIE = "vipps_pkce_verifier";
+const VIPPS_STATE_PREFIX = "vipps_";
 
 export async function GET(
   request: NextRequest,
@@ -17,7 +21,6 @@ export async function GET(
   const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
   const protocol = isLocalhost ? "http" : "https";
 
-  // Use localhost detection FIRST, then check forwardedHost
   const forwardedHost = request.headers.get("x-forwarded-host");
   const origin = isLocalhost
     ? `${protocol}://${host}`
@@ -27,24 +30,20 @@ export async function GET(
 
   const code = url.searchParams.get("code");
   const error = url.searchParams.get("error");
+  const state = url.searchParams.get("state");
 
   const allCookies = request.cookies.getAll();
   const pkceCookie = allCookies.find((c) => c.name.includes("code-verifier"));
+  const vippsVerifier = allCookies.find((c) => c.name === VIPPS_PKCE_COOKIE);
 
   console.info("🔥 CALLBACK DEBUG:", {
     code: code ? `${code.slice(0, 20)}...` : "MISSING",
     error,
+    statePrefix: state?.slice(0, 10) ?? "MISSING",
     totalCookies: allCookies.length,
     pkceCookieName: pkceCookie?.name || "NONE",
-    pkceCookieValue: pkceCookie?.value
-      ? `${pkceCookie.value.slice(0, 20)}...`
-      : "NONE",
-    allCookieNames: allCookies.map((c) => c.name),
+    vippsCookie: vippsVerifier ? "SET" : "NONE",
     originUsed: origin,
-    protocol: protocol,
-    host: host,
-    isLocalhost: isLocalhost,
-    referer: request.headers.get("referer"),
   });
 
   if (error) {
@@ -61,10 +60,22 @@ export async function GET(
     );
   }
 
+  // Vipps flow: state starts with vipps_, use code_verifier cookie and our handler
+  if (state?.startsWith(VIPPS_STATE_PREFIX)) {
+    const result = await handleVippsCallback({
+      code,
+      state,
+      codeVerifier: vippsVerifier?.value ?? null,
+      locale,
+    });
+    const res = NextResponse.redirect(result.redirectUrl, { status: 302 });
+    res.cookies.delete(VIPPS_PKCE_COOKIE);
+    return res;
+  }
+
   function sanitizeRedirectPath(path: string | null): string {
     if (!path) return `/${locale}/dashboard`;
     if (path.startsWith("//")) return `/${locale}/dashboard`;
-    // Normalize common typo: dashbord → dashboard
     const normalized = path.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
     return normalized.startsWith("/") ? normalized : `/${locale}/dashboard`;
   }
@@ -79,7 +90,6 @@ export async function GET(
   const response = successResponse;
 
   try {
-    // Server client for auth callback
     const supabase = createServerClient(request, response);
 
     const { data, error: exchangeError } =
@@ -92,7 +102,6 @@ export async function GET(
       error: exchangeError?.message,
       hasSession: !!data?.session,
       userId: data?.session?.user?.id?.slice(0, 8),
-      cookiesAfterExchange: response.cookies.getAll().map((c) => c.name),
       redirectingTo: `${origin}${next}`,
     });
 

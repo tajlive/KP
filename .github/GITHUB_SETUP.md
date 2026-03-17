@@ -126,6 +126,8 @@ Når **PR Check** (eller andre workflows) feiler på en PR:
 5. **Failure summary:** Ved feil skriver PR Check en **Failure summary** øverst i jobbloggen med de samme kommandoene. Ved type-check-feil kan du laste ned **typecheck**-artifactet (3 dager) for full feiloutput.
 6. **TypeScript-feil:** Ofte løses type-feil med `npm run type-check` lokalt; rett typene og push på nytt.
 
+7. **Auto-fix for lint:** Hvis **kun** Lint-feilet, prøver CI å kjøre `npm run lint -- --fix` og pushe en commit til PR-branchen. Da starter en ny kjøring automatisk. Hvis feilen var type-check eller build, skjer ingen auto-push.
+
 ---
 
 ## 8. Hurtigsjekkliste

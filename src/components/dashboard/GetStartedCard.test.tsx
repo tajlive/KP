@@ -11,13 +11,14 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({ locale: "no" }),
 }));
 
-// Mock Supabase - return dismissed: false by default
+// Mock Supabase - return dismissed: false by default (component uses .maybeSingle())
 vi.mock("@/lib/utils", () => ({
   createClient: () => ({
     from: () => ({
       select: () => ({
         eq: () => ({
           single: () => Promise.resolve({ data: { dismissed_get_started_card: false } }),
+          maybeSingle: () => Promise.resolve({ data: { dismissed_get_started_card: false } }),
         }),
       }),
       update: () => ({
