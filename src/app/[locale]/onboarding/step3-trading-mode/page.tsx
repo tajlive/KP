@@ -19,7 +19,7 @@ export default function OnboardingStep3() {
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
-  const [paperBalance, setPaperBalance] = useState<number>(10000);
+  const [paperBalance, setPaperBalance] = useState<number>(100000);
 
   // Sjekk auth
   useEffect(() => {

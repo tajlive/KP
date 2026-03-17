@@ -190,7 +190,7 @@ export default function OnboardingFlow() {
       const { data, error } = await supabase
         .from("onboarding_progress")
         .select("*")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .single();
 
       const oData = data as OnboardingProgress | null;
@@ -292,7 +292,7 @@ export default function OnboardingFlow() {
     await supabase
       .from("onboarding_progress")
       .update(updates)
-      .eq("id", user.id);
+      .eq("user_id", user.id);
 
     // ✅ FIX: Auto-start paper trade etter steg 5
     if (stepId === 5 && selectedStrategy) {
@@ -310,7 +310,7 @@ export default function OnboardingFlow() {
           await supabase
             .from("onboarding_progress")
             .update({ paper_bot_id: botData.bot_id } as Record<string, unknown>)
-            .eq("id", user.id);
+            .eq("user_id", user.id);
         }
 
         console.log("Paper bot created:", botData?.bot_id);
@@ -325,6 +325,11 @@ export default function OnboardingFlow() {
     if (stepId < 5) {
       setCurrentStep(stepId + 1);
     } else {
+      await supabase
+        .from("user_profiles")
+        .update({ onboarding_completed: true })
+        .eq("id", user.id);
+      document.cookie = "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
       setIsCompleted(true);
       fireConfetti();
     }
@@ -354,12 +359,13 @@ export default function OnboardingFlow() {
                 supabase
                   .from("onboarding_progress")
                   .update({ is_completed: true, completed_at: now })
-                  .eq("id", user.id),
-                supabase
-                  .from("onboarding_progress")
-                  .update({ is_completed: true, completed_at: now })
                   .eq("user_id", user.id),
+                supabase
+                  .from("user_profiles")
+                  .update({ onboarding_completed: true })
+                  .eq("id", user.id),
               ]);
+              document.cookie = "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
             }
             setIsVisible(false);
           }}

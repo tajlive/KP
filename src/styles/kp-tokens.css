@@ -13,11 +13,11 @@
      COLORS
      ═══════════════════════════════════════════════════════════════ */
 
-  /* Brand Colors (KLA-182: #2563EB canonical accent) */
-  --kp-accent: #2563EB;
-  --kp-primary: #2563EB;
-  --kp-primary-hover: #1d4ed8;
-  --kp-primary-active: #1e40af;
+  /* Brand Colors (#0052FF canonical accent) */
+  --kp-accent: #0052FF;
+  --kp-primary: #0052FF;
+  --kp-primary-hover: #0047E0;
+  --kp-primary-active: #003ECB;
   --kp-primary-light: #dbeafe;
 
   /* Secondary/Neutral */
@@ -42,7 +42,7 @@
   --kp-error-text: #991b1b;
 
   --kp-info: #3b82f6;
-  --kp-info-hover: #2563eb;
+  --kp-info-hover: #0052FF;
   --kp-info-light: #dbeafe;
   --kp-info-text: #1e40af;
 
@@ -79,14 +79,14 @@
   --kp-border: #e5e7eb;
   --kp-border-dark: #d1d5db;
   --kp-border-light: #f3f4f6;
-  --kp-border-focus: #2563EB;
+  --kp-border-focus: #0052FF;
 
   /* ═══════════════════════════════════════════════════════════════
      TYPOGRAPHY
      ═══════════════════════════════════════════════════════════════ */
 
   /* Font Family */
-  --kp-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --kp-font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --kp-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
 
   /* Font Sizes */

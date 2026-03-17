@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { AuthProvider } from "@/components/auth/AuthContext";
 
 // KRITISK: Inline script som kjører FØR AuthProvider for å rense korrupte tokens
@@ -16,7 +17,7 @@ import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { ScrollToTop } from "@/components/dashboard/ScrollToTop";
 import { NotificationTray } from "@/components/layout/NotificationTray";
 import { usePaperTradingInit } from "@/hooks/usePaperTradingInit";
-import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import { createClient } from "@/lib/utils";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
 import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
@@ -29,6 +30,14 @@ import { useAuth } from "@/components/auth/AuthContext";
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   usePaperTradingInit(user?.id);
+
+  useEffect(() => {
+    if (user?.id) {
+      const supabase = createClient();
+      supabase.from("user_profiles").update({ onboarding_completed: true }).eq("id", user.id).then();
+      document.cookie = "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
+    }
+  }, [user?.id]);
 
   return <>{children}</>;
 }
@@ -44,12 +53,11 @@ export default function DashboardClientLayout({
       <ClientSideProviders>
         <ErrorBoundary>
           <AuthProvider>
-              <OnboardingFlow />
               <ToastProvider>
                 <TradingModeProvider>
                   <ProtectedRoute>
                     <SentryInit />
-                    <div className="min-h-screen bg-slate-950 flex">
+                    <div className="min-h-screen bg-[#F7F8FA] flex">
                       <ScrollToTop />
                       <DashboardSidebar />
                       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
