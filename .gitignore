@@ -29,6 +29,7 @@ test-results.json
 # Lighthouse CI
 /.lighthouseci/
 /lighthouse-*.report.json
+lighthouse-*.report.html
 
 # =============================================================================
 # NEXT.JS BUILD OUTPUT
@@ -222,8 +223,8 @@ public/favicon.png
 allure-report/
 allure-results/
 .env.bak
-*.bak
-.env.bak
+.env*.save
+.env.local.save
 *.bak
 .vercel
 .env.local

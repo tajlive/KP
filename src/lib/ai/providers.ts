@@ -175,7 +175,7 @@ export const SYSTEM_PROMPTS = {
 - Binance-kobling: API-nøkler, sikkerhet, tilkoblingsguide
 - Copy Trading: Følg suksessfulle tradere, leaderboard
 - Dashboard: Oversikt over portefølje, handler, statistikk
-- Priser og abonnement: Gratis, Pro, Elite-medlemskap
+- Priser og abonnement: Student (gratis), Bachelor, Master, PhD, Professor
 
 ### 4. Praktisk Bruk
 - Hvordan sette inn penger (via Binance)
