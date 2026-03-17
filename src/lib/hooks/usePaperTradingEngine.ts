@@ -34,7 +34,7 @@ export interface PaperTradingEngine {
   error: string | null;
 }
 
-const PAPER_BALANCE = 1_000_000; // 1M NOK paper balance
+const PAPER_BALANCE = 100_000; // 100k NOK paper balance
 const INITIAL_PRICE = 850000; // BTC price in NOK
 
 export function usePaperTradingEngine(symbol: string): PaperTradingEngine {

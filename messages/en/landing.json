@@ -141,5 +141,27 @@
     "trust1": "Bots 24/7",
     "trust2": "You set risk",
     "trust3": "1M paper money"
+  },
+  "demoWidget": {
+    "title": "Try paper trading — completely free",
+    "subtitle": "Click buy and sell to see how trading works. No signup required.",
+    "portfolio": "Portfolio",
+    "positionLabel": "Position",
+    "buy": "Buy BTC",
+    "sell": "Sell BTC",
+    "overlay": "Sign up to trade with real data",
+    "overlayCta": "Start for free"
+  },
+  "emailCapture": {
+    "badge": "Free course",
+    "title": "Get a free crypto course",
+    "subtitle": "Learn the basics of cryptocurrency and trading — delivered to your inbox.",
+    "placeholder": "Your email address",
+    "cta": "Sign up",
+    "loading": "Sending...",
+    "errorMsg": "Please enter a valid email address",
+    "successTitle": "You're signed up!",
+    "successDesc": "Check your inbox — the first lesson is on its way.",
+    "privacy": "We never share your email with third parties. Unsubscribe anytime."
   }
 }

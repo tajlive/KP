@@ -50,7 +50,7 @@ const plans = [
 
 const features = {
   student: [
-    "1M kr lekepenger",
+    "100 000 kr lekepenger",
     "5 basis-moduler",
     "Community-tilgang",
     "E-post support",
@@ -87,7 +87,7 @@ const faqs = [
   },
   {
     q: "Hva er forskjellen på paper og live trading?",
-    a: "Lekepenger er risikofri øving med 1M kr. Live trading bruker ekte penger på Binance.",
+    a: "Lekepenger er risikofri øving med 100 000 kr. Live trading bruker ekte penger på Binance.",
   },
   {
     q: "Kan jeg få refusjon?",
@@ -137,12 +137,13 @@ export default function PriserClient() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan) => (
-            <div
+            <Link
               key={plan.key}
-              className={`bg-white rounded-2xl p-6 border-2 relative flex flex-col ${
+              href={`/${locale}/checkout?plan=${plan.key}`}
+              className={`bg-white rounded-2xl p-6 border-2 relative flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 ${
                 plan.popular
                   ? "border-blue-600 shadow-xl shadow-blue-600/10"
-                  : "border-slate-100"
+                  : "border-slate-100 hover:border-slate-300"
               }`}
             >
               {(locale === "no" ? plan.badgeNo : plan.badgeEn) && (
@@ -186,18 +187,17 @@ export default function PriserClient() {
                 ))}
               </ul>
 
-              <Link href={`/${locale}/checkout?plan=${plan.key}`}>
-                <Button
-                  className={`w-full ${
-                    plan.popular
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-slate-900 hover:bg-slate-800"
-                  }`}
-                >
-                  {plan.price === "0" ? t("startFree") : t("startTrial")}
-                </Button>
-              </Link>
-            </div>
+              <Button
+                className={`w-full ${
+                  plan.popular
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-slate-900 hover:bg-slate-800"
+                }`}
+                tabIndex={-1}
+              >
+                {plan.price === "0" ? t("startFree") : t("startTrial")}
+              </Button>
+            </Link>
           ))}
         </div>
       </div>

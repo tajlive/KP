@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { StrategyType, createPaperTrade } from "@/lib/trading-api";
-import { createClient } from "@/lib/utils";
+import { cn, createClient } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -489,8 +489,4 @@ export default function InteractiveOnboardingWizard({
       </AnimatePresence>
     </div>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }

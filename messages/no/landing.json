@@ -124,7 +124,7 @@
     "title_emotional": "Lær Trading På Norsk",
     "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
     "question_emotional": "Hvilken versjon av deg selv vil du møte?",
-    "description_emotional": "Strukturerte kurs, paper trading med 1M kr virtuell kapital, og AI-coach som svarer på norsk. Alt på én plattform.",
+    "description_emotional": "Strukturerte kurs, paper trading med 100 000 kr virtuell kapital, og AI-coach som svarer på norsk. Alt på én plattform.",
     "cta_start": "START GRATIS",
     "cta_demo": "SE DEMO",
     "social_proof_rating": "4.9/5 fra 127 studenter",
@@ -135,11 +135,33 @@
     "titlePart1": "Vi bruker de riktige verktøyene",
     "titlePart2": "for at du skal tjene penger.",
     "subtitle": "Våre roboter jobber 24 timer hver dag for at du skal tjene penger. Du bestemmer selv risiko.",
-    "bullets": "Roboter jobber 24/7 • Du bestemmer risiko • 1M kr lekepenger • Ingen kredittkort",
+    "bullets": "Roboter jobber 24/7 • Du bestemmer risiko • 100 000 kr lekepenger • Ingen kredittkort",
     "ctaPrimary": "Kom i gang gratis",
     "ctaSecondary": "Se hvordan det fungerer",
     "trust1": "Roboter 24/7",
     "trust2": "Du bestemmer risiko",
-    "trust3": "1M kr lekepenger"
+    "trust3": "100 000 kr lekepenger"
+  },
+  "demoWidget": {
+    "title": "Prøv papirhandel — helt gratis",
+    "subtitle": "Klikk kjøp og selg for å se hvordan trading fungerer. Ingen registrering nødvendig.",
+    "portfolio": "Portefølje",
+    "positionLabel": "Posisjon",
+    "buy": "Kjøp BTC",
+    "sell": "Selg BTC",
+    "overlay": "Registrer deg for å handle med ekte data",
+    "overlayCta": "Start gratis nå"
+  },
+  "emailCapture": {
+    "badge": "Gratis kurs",
+    "title": "Få gratis krypto-kurs",
+    "subtitle": "Lær det grunnleggende om kryptovaluta og trading — rett i innboksen din.",
+    "placeholder": "Din e-postadresse",
+    "cta": "Registrer deg",
+    "loading": "Sender...",
+    "errorMsg": "Vennligst oppgi en gyldig e-postadresse",
+    "successTitle": "Du er registrert!",
+    "successDesc": "Sjekk innboksen din — første leksjon er på vei.",
+    "privacy": "Vi deler aldri e-posten din med tredjepart. Avmeld når som helst."
   }
 }

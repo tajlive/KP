@@ -507,7 +507,7 @@
       "step1": {
         "step": "01",
         "title": "Lekepenger",
-        "desc": "Du får 1 million lekepenger. Test helt risikofritt i 30 dager."
+        "desc": "Du får 100 000 kr i lekepenger. Test helt risikofritt i 30 dager."
       },
       "step2": {
         "step": "02",
@@ -1498,7 +1498,7 @@
       "title_emotional": "Lær Trading På Norsk",
       "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
       "question_emotional": "Hvilken versjon av deg selv vil du møte?",
-      "description_emotional": "Strukturerte kurs, lekepenger med 1M kr, og AI-coach som svarer på norsk. Alt på én plattform.",
+      "description_emotional": "Strukturerte kurs, lekepenger med 100 000 kr, og AI-coach som svarer på norsk. Alt på én plattform.",
       "cta_start": "START GRATIS",
       "cta_demo": "SE DEMO",
       "social_proof_rating": "4.9/5 fra 127 studenter",
@@ -1509,12 +1509,12 @@
       "titlePart1": "Vi bruker de riktige verktøyene",
       "titlePart2": "for at du skal tjene penger.",
       "subtitle": "Våre roboter jobber 24 timer hver dag for at du skal tjene penger. Du bestemmer selv risiko.",
-      "bullets": "Roboter jobber 24/7 • Du bestemmer risiko • 1M kr lekepenger • Ingen kredittkort",
+      "bullets": "Roboter jobber 24/7 • Du bestemmer risiko • 100 000 kr lekepenger • Ingen kredittkort",
       "ctaPrimary": "Kom i gang gratis",
       "ctaSecondary": "Se hvordan det fungerer",
       "trust1": "Roboter 24/7",
       "trust2": "Du bestemmer risiko",
-      "trust3": "1M kr lekepenger"
+      "trust3": "100 000 kr lekepenger"
     },
     "emailCapture": {
       "badge": "Gratis kurs",
@@ -1789,7 +1789,7 @@
   },
   "metadata": {
     "title": "Klarpakke - Lær Trading på Norsk | Lekepenger & AI-Coach",
-    "description": "Strukturerte trading-kurs på norsk. Lekepenger-simulator med 1M kr. AI-coach 24/7. Beta-pris: 249 kr (var 499 kr). Kun 50 plasser.",
+    "description": "Strukturerte trading-kurs på norsk. Lekepenger-simulator med 100 000 kr. AI-coach 24/7. Beta-pris: 249 kr (var 499 kr). Kun 50 plasser.",
     "ogTitle": "Klarpakke - Lær Trading på Norsk",
     "ogDescription": "Beta-lansering: 249 kr (var 499 kr). Kun 50 plasser igjen!",
     "courses": {
@@ -1866,7 +1866,7 @@
     "done": "Ferdig",
     "startFree": "Start nå – helt gratis",
     "noCreditCard": "Ingen kort nødvendig",
-    "virtualCapital": "1M kr lekepenger inkludert",
+    "virtualCapital": "100 000 kr lekepenger inkludert",
     "completelyFree": "100% gratis i beta-fasen",
     "agreeTerms": "Ved å fortsette godtar du våre",
     "terms": "Vilkår for bruk",
@@ -1887,7 +1887,7 @@
     "welcomeVideo": "Se denne korte videoen",
     "clickToPlay": "Klikk for å spille av videoen",
     "transcript": "Video-oppsummering",
-    "transcriptText": "Hei! Jeg er Tom Arne, gründeren av Klarpakke. \n\n Vi er utrolig glade for å ha deg med på reisen. Vårt mål er å gjøre krypto-trading forståelig og lønnsomt for alle, uten den vanlige 'hypen'. \n\n Du har nå tilgang til vår lekepenger-simulator med 1 million kroner i lekepenger, slik at du kan øve deg helt risikofritt før du går videre til ekte trading. Lykke til!",
+    "transcriptText": "Hei! Jeg er Tom Arne, gründeren av Klarpakke. \n\n Vi er utrolig glade for å ha deg med på reisen. Vårt mål er å gjøre krypto-trading forståelig og lønnsomt for alle, uten den vanlige 'hypen'. \n\n Du har nå tilgang til vår lekepenger-simulator med 100 000 kr i lekepenger, slik at du kan øve deg helt risikofritt før du går videre til ekte trading. Lykke til!",
     "founderName": "Tom Arne Jensen",
     "founderTitle": "Gründer & CEO",
     "continueToDashboard": "Fortsett til Dashboard",
