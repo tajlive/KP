@@ -1,6 +1,7 @@
 'use client';
 
 import { Sparkles, Clock } from 'lucide-react';
+import { BRAND } from '@/lib/design/tokens';
 
 interface ReverseTrialProps {
   trialEndsAt: string | null;
@@ -32,7 +33,7 @@ export default function ReverseTrial({ trialEndsAt, tier, locale }: ReverseTrial
         </div>
         <a
           href={`/${locale}/priser`}
-          className="bg-[#0052FF] hover:bg-[#0047E0] text-white text-sm font-medium rounded-lg px-4 py-2 transition-colors"
+          className={`${BRAND.primary} text-sm font-medium rounded-lg px-4 py-2 transition-colors`}
         >
           {no ? 'Oppgrader nå' : 'Upgrade now'}
         </a>
@@ -57,7 +58,7 @@ export default function ReverseTrial({ trialEndsAt, tier, locale }: ReverseTrial
       </div>
       <a
         href={`/${locale}/priser`}
-        className="bg-[#0052FF] hover:bg-[#0047E0] text-white text-sm font-medium rounded-lg px-4 py-2 transition-colors"
+        className={`${BRAND.primary} text-sm font-medium rounded-lg px-4 py-2 transition-colors`}
       >
         {no ? 'Se priser' : 'See prices'}
       </a>

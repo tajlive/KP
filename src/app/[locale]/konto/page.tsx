@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { LommebokDashboard } from './LommebokDashboard'
 import { AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { BRAND } from '@/lib/design/tokens'
 
 export const metadata: Metadata = {
   title: 'Lommebok - Klarpakke Universitet',
@@ -31,13 +32,13 @@ function KontoErrorFallback({ locale }: { locale: string }) {
         <div className="flex gap-3 justify-center">
           <Link
             href={`/${locale}/konto`}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            className={`px-4 py-2 ${BRAND.primary} rounded-lg transition-colors`}
           >
             Last inn på nytt
           </Link>
           <Link
             href={`/${locale}/dashboard`}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+            className={`px-4 py-2 ${BRAND.secondary} rounded-lg transition-colors`}
           >
             Tilbake til dashboard
           </Link>

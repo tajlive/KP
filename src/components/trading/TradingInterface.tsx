@@ -12,6 +12,7 @@ import {
   Loader2,
   PartyPopper,
 } from "lucide-react";
+import { SURFACE, BRAND } from "@/lib/design/tokens";
 
 const POPULAR_COINS = [
   { symbol: "BTCUSDT", name: "Bitcoin", shortName: "BTC" },
@@ -112,11 +113,11 @@ export function TradingInterface({
   const quickAmounts = [500, 1000, 5000, 10000];
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA]">
+    <div className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
           <div className="animate-bounce">
-            <PartyPopper className="w-16 h-16 text-[#0052FF]" />
+            <PartyPopper className="w-16 h-16 text-[#0052FF]" aria-hidden />
           </div>
         </div>
       )}
@@ -124,7 +125,7 @@ export function TradingInterface({
       <div className="bg-white border-b border-[#E2E5EC]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[#0052FF]" />
+            <BarChart3 className="w-5 h-5 text-[#0052FF]" aria-hidden />
             <h1 className="text-lg font-semibold text-[#1A1D26]">
               {isNo ? "Handle" : "Trade"}
             </h1>
@@ -144,9 +145,9 @@ export function TradingInterface({
               <button
                 key={coin.symbol}
                 onClick={() => setSelectedCoin(coin.symbol)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCoin === coin.symbol
-                    ? "bg-[#0052FF] text-white"
+                    ? `${BRAND.primary}`
                     : "bg-[#F1F3F9] text-[#5E6478] hover:bg-[#E2E5EC]"
                 }`}
               >
@@ -177,7 +178,7 @@ export function TradingInterface({
                   +2.4%
                 </div>
               </div>
-              <div className="h-[250px] bg-[#F7F8FA] rounded-lg flex items-center justify-center border border-[#E2E5EC]">
+              <div className={`h-[250px] ${SURFACE.BG_LIGHT} rounded-lg flex items-center justify-center border border-[#E2E5EC]`}>
                 <p className="text-[#8E95A9] text-sm">
                   {isNo ? "Graf kommer snart" : "Chart coming soon"}
                 </p>
@@ -299,7 +300,7 @@ export function TradingInterface({
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-[#F7F8FA] border border-[#E2E5EC] rounded-lg pl-10 pr-4 py-3 text-[#1A1D26] placeholder:text-[#8E95A9] focus:ring-2 focus:ring-[#0052FF] focus:border-[#0052FF] outline-none transition-shadow text-right text-lg font-semibold"
+                    className={`w-full ${SURFACE.BG_LIGHT} border border-[#E2E5EC] rounded-lg pl-10 pr-4 py-3 text-[#1A1D26] placeholder:text-[#8E95A9] focus:ring-2 focus:ring-[#0052FF] focus:border-[#0052FF] outline-none transition-shadow text-right text-lg font-semibold`}
                   />
                 </div>
 
@@ -323,7 +324,7 @@ export function TradingInterface({
 
               {/* Summary */}
               {amountNum > 0 && (
-                <div className="mt-4 p-3 bg-[#F7F8FA] rounded-lg border border-[#E2E5EC]">
+                <div className={`mt-4 p-3 ${SURFACE.BG_LIGHT} rounded-lg border border-[#E2E5EC]`}>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#5E6478]">
                       {isNo
@@ -387,11 +388,11 @@ export function TradingInterface({
                     kr {formatNOK(balance)}
                   </p>
                 </div>
-                <Wallet className="w-8 h-8 text-[#0052FF] opacity-20" />
+                <Wallet className="w-8 h-8 text-[#0052FF] opacity-20" aria-hidden />
               </div>
               <Link
                 href={`/${locale}/dashboard`}
-                className="mt-3 flex items-center gap-1 text-sm text-[#0052FF] hover:text-[#003ECB] font-medium transition-colors"
+                className={`mt-3 flex items-center gap-1 text-sm font-medium ${BRAND.link}`}
               >
                 {isNo ? "Gå til dashbord" : "Go to dashboard"}
                 <ChevronRight className="w-4 h-4" />

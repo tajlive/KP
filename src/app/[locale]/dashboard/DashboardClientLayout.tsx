@@ -26,6 +26,7 @@ import { SentryInit } from "@/components/providers/SentryInit";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { useAuth } from "@/components/auth/AuthContext";
+import { SURFACE } from "@/lib/design/tokens";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -57,7 +58,7 @@ export default function DashboardClientLayout({
                 <TradingModeProvider>
                   <ProtectedRoute>
                     <SentryInit />
-                    <div className="min-h-screen bg-[#F7F8FA] flex">
+                    <div className={`min-h-screen ${SURFACE.BG_LIGHT} flex`}>
                       <ScrollToTop />
                       <DashboardSidebar />
                       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">

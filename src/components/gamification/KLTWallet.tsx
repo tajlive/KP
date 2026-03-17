@@ -37,7 +37,7 @@ export function KLTWallet() {
       const { data: balanceData } = await supabase
         .from("user_klt_balances")
         .select("*")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .single();
       
       if (balanceData) {
@@ -48,7 +48,7 @@ export function KLTWallet() {
       const txResult = await supabase
         .from("klt_transactions")
         .select("*")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(10);
       

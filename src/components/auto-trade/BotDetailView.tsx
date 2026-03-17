@@ -8,6 +8,7 @@ import {
   Activity,
   Clock,
 } from "lucide-react";
+import { BRAND, SURFACE, SHADOW, RADIUS } from "@/lib/design/tokens";
 
 interface Trade {
   id: string;
@@ -66,8 +67,7 @@ function formatDuration(startDate: string) {
   return `${hours}t`;
 }
 
-const cardBase =
-  "bg-white rounded-xl border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5";
+const cardBase = `bg-white ${RADIUS.card} border border-[#E2E5EC] ${SHADOW.card} p-5`;
 
 export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
   const no = locale === "no";
@@ -91,7 +91,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
     <div className="space-y-6">
       <Link
         href={`/${locale}/dashboard`}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0052FF] hover:text-[#0047E0] transition-colors"
+        className={`inline-flex items-center gap-1.5 text-sm font-medium ${BRAND.link}`}
       >
         <ArrowLeft className="w-4 h-4" />
         {no ? "Tilbake" : "Back"}
@@ -204,7 +204,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         <h2 className="text-lg font-semibold text-[#1A1D26] mb-3">
           {no ? "Equity graf" : "Equity chart"}
         </h2>
-        <div className="h-[200px] rounded-lg bg-[#F7F8FA] flex items-center justify-center">
+        <div className={`h-[200px] rounded-lg ${SURFACE.BG_LIGHT} flex items-center justify-center`}>
           <p className="text-sm text-[#8E95A9]">
             {no ? "Graf kommer snart" : "Chart coming soon"}
           </p>
@@ -248,7 +248,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
               </thead>
               <tbody className="divide-y divide-[#E2E5EC]">
                 {trades.map((trade: Trade, i: number) => (
-                  <tr key={trade.id ?? i} className="hover:bg-[#F7F8FA]/60 transition-colors">
+                  <tr key={trade.id ?? i} className="hover:bg-slate-50 transition-colors duration-200">
                     <td className="py-3 px-5 text-sm text-[#5E6478]" style={{ fontVariantNumeric: "tabular-nums" }}>
                       {trade.created_at
                         ? new Date(trade.created_at).toLocaleString(

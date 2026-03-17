@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       .from("trading_sessions")
       .select("id, user_id, mode, status, current_capital_nok, trading_pair")
       .eq("id", session_id)
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (sessionError || !session) {
@@ -242,7 +242,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from("conditional_orders")
       .select("*")
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (session_id) {
@@ -297,7 +297,7 @@ export async function DELETE(request: NextRequest) {
       .from("conditional_orders")
       .select("id, status, mode")
       .eq("id", order_id)
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (!order) {

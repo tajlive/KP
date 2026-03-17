@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { Medal, Bot, BookOpen, Zap, ArrowUp, ArrowDown } from 'lucide-react';
+import { CARD, BRAND } from '@/lib/design/tokens';
 import ReverseTrial from './ReverseTrial';
 import { SocialProof } from './SocialProof';
 import { StreakBadge } from './StreakBadge';
@@ -75,13 +77,13 @@ const COINS = [
 ];
 
 const LEADERBOARD = [
-  { rank: '🥇', name: 'KryptoKonge', pct: '+14.2%' },
-  { rank: '🥈', name: 'SatoshiFansen', pct: '+11.8%' },
-  { rank: '🥉', name: 'HodlQueen', pct: '+9.4%' },
+  { rank: 1, name: 'KryptoKonge', pct: '+14.2%' },
+  { rank: 2, name: 'SatoshiFansen', pct: '+11.8%' },
+  { rank: 3, name: 'HodlQueen', pct: '+9.4%' },
 ];
 
-const cardBase =
-  'bg-white rounded-xl border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] p-5';
+/** Kort med skygge og 200ms overgang (tokens CARD.hover med p-5) */
+const cardBase = `${CARD.hover.replace('p-6', 'p-5')}`;
 
 export default function PortfolioDashboard({
   userId,
@@ -119,8 +121,8 @@ export default function PortfolioDashboard({
 
       <FirstTradeCard userId={userId} locale={locale} hasTrades={trades.length > 0} />
 
-      {/* Widget 1: Portfolio Card */}
-      <div className="bg-gradient-to-br from-[#0052FF] to-[#0047E0] rounded-2xl p-6 text-white shadow-[0_8px_32px_rgba(0,82,255,0.15)] animate-fade-in-up stagger-1">
+      {/* Widget 1: Portfolio Card — her ser du hvordan det går med lekepengene */}
+      <div className={`${BRAND.gradient} rounded-2xl p-6 text-white shadow-[0_8px_32px_rgba(0,82,255,0.15)] animate-fade-in-up stagger-1`}>
         <p className="text-sm font-medium text-white/70 uppercase tracking-wider">
           {no ? 'Lekepenger' : 'Virtual money'}
         </p>
@@ -136,9 +138,12 @@ export default function PortfolioDashboard({
             {formatNOK(pnl)} ({pnlPercent.toFixed(1)}%)
           </span>
           <span className="text-white/50 text-sm">
-            {no ? 'Siste 24t' : 'Last 24h'}
+            {no ? 'Gevinst/tap totalt' : 'Total P&L'}
           </span>
         </div>
+        <p className="text-white/60 text-xs mt-3">
+          {no ? 'Posisjoner og handler vises under.' : 'Positions and trades shown below.'}
+        </p>
       </div>
 
       {/* Widget 2: Live Prices */}
@@ -167,7 +172,7 @@ export default function PortfolioDashboard({
                 {formatNOK(coin.price)}
               </p>
               <span
-                className={`text-sm font-medium ${coin.change >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}
+                className={`text-sm font-medium tabular-nums ${coin.change >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}
               >
                 {coin.change >= 0 ? '+' : ''}
                 {coin.change.toFixed(1)}%
@@ -188,8 +193,8 @@ export default function PortfolioDashboard({
               {no ? 'Mine posisjoner' : 'My positions'}
             </h3>
             <Link
-              href={`/${locale}/trades`}
-              className="text-sm font-medium text-[#0052FF] hover:text-[#0047E0] transition-colors"
+              href={`/${locale}/handelshistorikk`}
+              className={`text-sm font-medium ${BRAND.link}`}
             >
               {no ? 'Se alle' : 'See all'}
             </Link>
@@ -228,7 +233,7 @@ export default function PortfolioDashboard({
                         {formatNOK(pos.qty * (coin?.price ?? 0))}
                       </p>
                       <p
-                        className={`text-xs font-medium ${pnlPct >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}
+                        className={`text-xs font-medium tabular-nums ${pnlPct >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}
                       >
                         {pnlPct >= 0 ? '+' : ''}
                         {pnlPct.toFixed(1)}%
@@ -248,8 +253,8 @@ export default function PortfolioDashboard({
               {no ? 'Siste handler' : 'Recent trades'}
             </h3>
             <Link
-              href={`/${locale}/trades`}
-              className="text-sm font-medium text-[#0052FF] hover:text-[#0047E0] transition-colors"
+              href={`/${locale}/handelshistorikk`}
+              className={`text-sm font-medium ${BRAND.link}`}
             >
               {no ? 'Se alle' : 'See all'}
             </Link>
@@ -265,13 +270,13 @@ export default function PortfolioDashboard({
               {recentTrades.map((t: Trade, i: number) => (
                 <li key={i} className="flex items-center gap-3">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       t.side === 'BUY'
                         ? 'bg-[#16A34A]/10 text-[#16A34A]'
                         : 'bg-[#DC2626]/10 text-[#DC2626]'
                     }`}
                   >
-                    {t.side === 'BUY' ? '↑' : '↓'}
+                    {t.side === 'BUY' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#1A1D26]">
@@ -297,8 +302,8 @@ export default function PortfolioDashboard({
       {/* Widget 5: AI Market Brief */}
       <div className={`${cardBase} animate-fade-in-up stagger-4`}>
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center text-lg flex-shrink-0">
-            🤖
+          <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center flex-shrink-0">
+            <Bot className="w-5 h-5 text-[#0052FF]" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold text-[#1A1D26]">
@@ -319,8 +324,8 @@ export default function PortfolioDashboard({
         {/* Widget 6: Next Lesson */}
         <Link href={`/${locale}/kurs`} className={`${cardBase} block group`}>
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center text-lg flex-shrink-0">
-              📘
+            <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center flex-shrink-0">
+              <BookOpen className="w-5 h-5 text-[#0052FF]" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold text-[#1A1D26] group-hover:text-[#0052FF] transition-colors">
@@ -346,9 +351,15 @@ export default function PortfolioDashboard({
           <ul className="space-y-2.5">
             {LEADERBOARD.map((entry) => (
               <li key={entry.name} className="flex items-center gap-3">
-                <span className="text-lg w-7 text-center">{entry.rank}</span>
+                <span className="w-7 flex justify-center">
+                  <Medal
+                    className={`w-5 h-5 ${
+                      entry.rank === 1 ? 'text-amber-500' : entry.rank === 2 ? 'text-slate-400' : 'text-amber-700'
+                    }`}
+                  />
+                </span>
                 <span className="flex-1 text-sm font-medium text-[#1A1D26]">{entry.name}</span>
-                <span className="text-sm font-semibold text-[#16A34A]">{entry.pct}</span>
+                <span className="text-sm font-semibold text-[#16A34A] tabular-nums">{entry.pct}</span>
               </li>
             ))}
           </ul>
@@ -361,8 +372,8 @@ export default function PortfolioDashboard({
         <div className={`${cardBase} animate-fade-in-up stagger-6`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#16A34A]/10 flex items-center justify-center text-lg">
-                ⚡
+              <div className="w-10 h-10 rounded-xl bg-[#16A34A]/10 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-[#16A34A]" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-[#1A1D26]">
@@ -383,7 +394,7 @@ export default function PortfolioDashboard({
               </p>
               <Link
                 href={`/${locale}/dashboard/bot/${activeSession.id}`}
-                className="text-xs font-medium text-[#0052FF] hover:text-[#0047E0] transition-colors"
+                className={`text-xs font-medium ${BRAND.link}`}
               >
                 {no ? 'Se detaljer' : 'See details'}
               </Link>
@@ -395,8 +406,8 @@ export default function PortfolioDashboard({
           href={`/${locale}/dashboard/bot/new`}
           className="block rounded-xl border-2 border-dashed border-[#E2E5EC] p-5 text-center hover:border-[#0052FF]/40 hover:bg-[#0052FF]/[0.02] transition-all group animate-fade-in-up stagger-6"
         >
-          <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center text-lg mx-auto">
-            🤖
+          <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center mx-auto">
+            <Bot className="w-5 h-5 text-[#0052FF]" />
           </div>
           <p className="text-sm font-semibold text-[#1A1D26] mt-2 group-hover:text-[#0052FF] transition-colors">
             {no ? 'Start en trading-bot' : 'Start a trading bot'}

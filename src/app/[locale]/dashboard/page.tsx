@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import PortfolioDashboard from "@/components/dashboard/PortfolioDashboard";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
+import { BRAND } from "@/lib/design/tokens";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ function DashboardErrorFallback({ locale }: { locale: string }) {
           </p>
           <Link
             href={`/${locale}/dashboard`}
-            className="px-4 py-2 bg-[#0052FF] hover:bg-[#0047E0] text-white rounded-lg transition-colors inline-block"
+            className={`px-4 py-2 ${BRAND.primary} rounded-lg transition-colors inline-block`}
           >
             Last inn på nytt
           </Link>

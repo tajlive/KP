@@ -10,18 +10,14 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 2
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "projects": [
       {
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "setup",
         "name": "setup",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -35,9 +31,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "cleanup",
         "name": "cleanup",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -51,9 +45,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "smoke-chromium",
         "name": "smoke-chromium",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -67,9 +59,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "landing-chromium",
         "name": "landing-chromium",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -83,9 +73,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "critical-chromium",
         "name": "critical-chromium",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -99,9 +87,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "critical-firefox",
         "name": "critical-firefox",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -115,9 +101,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "regression-chromium",
         "name": "regression-chromium",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -131,9 +115,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "mobile-safari",
         "name": "mobile-safari",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -147,9 +129,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "mobile-chrome",
         "name": "mobile-chrome",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -163,9 +143,7 @@
         "outputDir": "/Users/taj/klarpakke/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {
-          "actualWorkers": 2
-        },
+        "metadata": {},
         "id": "landing-mobile",
         "name": "landing-mobile",
         "testDir": "/Users/taj/klarpakke/e2e",
@@ -267,362 +245,17 @@
     "workers": 2,
     "webServer": null
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "landing/conversion.spec.ts",
-      "file": "landing/conversion.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Landing Page Conversion @critical",
-          "file": "landing/conversion.spec.ts",
-          "line": 7,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Hero vises med norsk tekst på /no",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6736,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T03:59:24.787Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-3c76c5bf57c4d5c1ad26",
-              "file": "landing/conversion.spec.ts",
-              "line": 9,
-              "column": 3
-            },
-            {
-              "title": "Primær CTA klikk → lander på /no/signup",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 26726,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T03:59:24.787Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-c4b054db46a9cd2103ef",
-              "file": "landing/conversion.spec.ts",
-              "line": 17,
-              "column": 3
-            },
-            {
-              "title": "Kalkulator slider interaksjon → CTA dukker opp",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 19571,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T03:59:32.585Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-32d49ba73aaf1867b2df",
-              "file": "landing/conversion.spec.ts",
-              "line": 28,
-              "column": 3
-            },
-            {
-              "title": "Nav-lenker fungerer (Kurs, Paper Trading, Priser)",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 16796,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T03:59:52.209Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-89de3f403794c2d11b7c",
-              "file": "landing/conversion.spec.ts",
-              "line": 45,
-              "column": 3
-            },
-            {
-              "title": "/no/innlogging → skjema vises, kan fylle inn",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 7352,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T03:59:52.540Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-4134469246e4eefe8c92",
-              "file": "landing/conversion.spec.ts",
-              "line": 61,
-              "column": 3
-            },
-            {
-              "title": "/no/signup → skjema vises",
-              "ok": true,
-              "tags": [
-                "critical"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 10104,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T03:59:59.950Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-a45bf5e332b02452d4fd",
-              "file": "landing/conversion.spec.ts",
-              "line": 79,
-              "column": 3
-            }
-          ]
-        },
-        {
-          "title": "Landing Page Mobile @mobile",
-          "file": "landing/conversion.spec.ts",
-          "line": 92,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Mobil 375px → hero synlig, CTA klikkbar",
-              "ok": true,
-              "tags": [
-                "mobile"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6307,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T04:00:09.043Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-a45116988072016bff65",
-              "file": "landing/conversion.spec.ts",
-              "line": 95,
-              "column": 3
-            },
-            {
-              "title": "Mobil: hamburger-meny fungerer",
-              "ok": true,
-              "tags": [
-                "mobile"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 9657,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T04:00:10.084Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-b7218e5b5576f43f09d0",
-              "file": "landing/conversion.spec.ts",
-              "line": 109,
-              "column": 3
-            },
-            {
-              "title": "Mobil: kalkulator slider fungerer på touch",
-              "ok": true,
-              "tags": [
-                "mobile"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "landing-chromium",
-                  "projectName": "landing-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4500,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-17T04:00:15.376Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d679de7ceedf8bf5a301-8b5902b1f11626da6f62",
-              "file": "landing/conversion.spec.ts",
-              "line": 120,
-              "column": 3
-            }
-          ]
-        }
-      ]
+      "message": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.",
+      "stack": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments."
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2026-03-17T03:59:23.719Z",
-    "duration": 56227.643000000004,
-    "expected": 9,
+    "startTime": "2026-03-17T07:48:01.826Z",
+    "duration": 41.82100000000014,
+    "expected": 0,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

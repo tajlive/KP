@@ -3,17 +3,16 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-// Loading placeholder - minimal, no JS overhead
 function TickerSkeleton() {
   return (
-    <div className="bg-slate-900/50 border-b border-slate-800 py-2">
-      <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-8 text-sm text-slate-500">
-        <span className="hidden sm:inline">Loading market data...</span>
+    <div className="bg-white border-y border-[#E2E5EC] py-2.5">
+      <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-8 text-sm text-[#8E95A9]">
+        <span className="hidden sm:inline">Laster priser...</span>
         <div className="flex gap-6 animate-pulse">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center gap-2">
-              <div className="w-10 h-4 bg-slate-800 rounded" />
-              <div className="w-14 h-4 bg-slate-800 rounded" />
+              <div className="w-10 h-4 bg-[#E2E5EC] rounded" />
+              <div className="w-14 h-4 bg-[#E2E5EC] rounded" />
             </div>
           ))}
         </div>
