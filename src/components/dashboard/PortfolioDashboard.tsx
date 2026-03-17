@@ -3,10 +3,20 @@
 import Link from 'next/link';
 import { Medal, Bot, BookOpen, Zap, ArrowUp, ArrowDown } from 'lucide-react';
 import { CARD, BRAND } from '@/lib/design/tokens';
+import { useRealtimePrices } from '@/lib/hooks/useRealtimePrices';
 import ReverseTrial from './ReverseTrial';
 import { SocialProof } from './SocialProof';
 import { StreakBadge } from './StreakBadge';
 import FirstTradeCard from './FirstTradeCard';
+
+const DASHBOARD_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'];
+
+const COIN_GRADIENTS: Record<string, string> = {
+  BTCUSDT: 'from-[#F7931A] to-[#E8860A]',
+  ETHUSDT: 'from-[#627EEA] to-[#4A63D2]',
+  SOLUSDT: 'from-[#9945FF] to-[#14F195]',
+  BNBUSDT: 'from-[#F3BA2F] to-[#E8A80C]',
+};
 
 interface Trade {
   id: string;
@@ -70,12 +80,6 @@ function relativeTime(date: Date, locale: string) {
   return locale === 'no' ? `${days}d siden` : `${days}d ago`;
 }
 
-const COINS = [
-  { symbol: 'BTC', name: 'Bitcoin', price: 823400, change: 2.1, gradient: 'from-[#F7931A] to-[#E8860A]' },
-  { symbol: 'ETH', name: 'Ethereum', price: 24100, change: -0.8, gradient: 'from-[#627EEA] to-[#4A63D2]' },
-  { symbol: 'SOL', name: 'Solana', price: 1420, change: 5.3, gradient: 'from-[#9945FF] to-[#14F195]' },
-];
-
 const LEADERBOARD = [
   { rank: 1, name: 'KryptoKonge', pct: '+14.2%' },
   { rank: 2, name: 'SatoshiFansen', pct: '+11.8%' },
@@ -95,6 +99,7 @@ export default function PortfolioDashboard({
   activeSession,
 }: PortfolioDashboardProps) {
   const no = locale === 'no';
+  const { coins: liveCoins, loading: pricesLoading, error: pricesError } = useRealtimePrices(DASHBOARD_SYMBOLS);
 
   const pnl = trades.reduce((sum: number, t: Trade) => {
     const val = t.side === 'BUY' ? -(t.amount ?? 0) : (t.amount ?? 0);
@@ -104,14 +109,24 @@ export default function PortfolioDashboard({
 
   type Position = { symbol: string; qty: number; value: number };
   const positions = trades.reduce((acc: Record<string, Position>, t: Trade) => {
-    if (!t.symbol) return acc;
-    if (!acc[t.symbol]) acc[t.symbol] = { symbol: t.symbol, qty: 0, value: 0 };
+    const sym = (t.symbol ?? (t.trading_pair && t.trading_pair.replace('/', ''))) ?? '';
+    if (!sym) return acc;
+    if (!acc[sym]) acc[sym] = { symbol: sym, qty: 0, value: 0 };
     const sign = t.side === 'BUY' ? 1 : -1;
-    acc[t.symbol].qty += sign * (t.qty ?? 0);
-    acc[t.symbol].value += sign * (t.amount ?? 0);
+    acc[sym].qty += sign * (t.qty ?? 0);
+    acc[sym].value += sign * (t.amount ?? 0);
     return acc;
   }, {} as Record<string, Position>);
   const positionList = Object.values(positions).filter((p: Position) => p.qty > 0);
+
+  const priceForSymbol = (sym: string) => {
+    const key = sym.length <= 4 && !sym.includes('USDT') ? `${sym}USDT` : sym;
+    return liveCoins.find((c) => c.symbol === key)?.price ?? 0;
+  };
+  const gradientForSymbol = (sym: string) => {
+    const key = sym.length <= 4 && !sym.includes('USDT') ? `${sym}USDT` : sym;
+    return COIN_GRADIENTS[key] ?? 'from-gray-400 to-gray-500';
+  };
 
   const recentTrades = trades.slice(-3).reverse();
 
@@ -146,41 +161,67 @@ export default function PortfolioDashboard({
         </p>
       </div>
 
-      {/* Widget 2: Live Prices */}
-      <div className="flex gap-3 overflow-x-auto pb-1 lg:grid lg:grid-cols-3 lg:overflow-visible animate-fade-in-up stagger-2">
-        {COINS.map((coin) => (
-          <div
-            key={coin.symbol}
-            className={`${cardBase} min-w-[200px] flex-shrink-0 lg:min-w-0`}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-10 h-10 rounded-full bg-gradient-to-br ${coin.gradient} flex items-center justify-center text-white font-bold text-sm`}
-              >
-                {coin.symbol[0]}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[#1A1D26]">{coin.name}</p>
-                <p className="text-xs text-[#8E95A9]">{coin.symbol}</p>
-              </div>
-            </div>
-            <div className="mt-3 flex items-end justify-between">
-              <p
-                className="text-base font-semibold text-[#1A1D26]"
-                style={{ fontVariantNumeric: 'tabular-nums' }}
-              >
-                {formatNOK(coin.price)}
-              </p>
-              <span
-                className={`text-sm font-medium tabular-nums ${coin.change >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}
-              >
-                {coin.change >= 0 ? '+' : ''}
-                {coin.change.toFixed(1)}%
-              </span>
-            </div>
+      {/* Widget 2: Live Prices (Binance, oppdatert ca. hvert 10. sekund) */}
+      <div className="animate-fade-in-up stagger-2">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8E95A9]">
+            <span className="relative flex h-2 w-2" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16A34A] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#16A34A]" />
+            </span>
+            {no ? 'Live priser' : 'Live prices'}
+          </span>
+        </div>
+      <div className="flex gap-3 overflow-x-auto pb-1 lg:grid lg:grid-cols-3 lg:overflow-visible">
+        {pricesLoading && liveCoins.length === 0 ? (
+          [1, 2, 3].map((i) => (
+            <div key={i} className={`${cardBase} min-w-[200px] flex-shrink-0 lg:min-w-0 h-[88px] animate-pulse bg-[#F1F3F9]`} />
+          ))
+        ) : pricesError ? (
+          <div className={`${cardBase} min-w-[200px] lg:col-span-3 p-4 text-[#8E95A9] text-sm`}>
+            {no ? 'Kunne ikke hente priser. Prøv igjen senere.' : 'Could not load prices. Try again later.'}
           </div>
-        ))}
+        ) : (
+          liveCoins.map((coin) => (
+            <div
+              key={coin.symbol}
+              className={`${cardBase} min-w-[200px] flex-shrink-0 lg:min-w-0`}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-10 h-10 rounded-full bg-gradient-to-br ${COIN_GRADIENTS[coin.symbol] ?? 'from-gray-400 to-gray-500'} flex items-center justify-center text-white font-bold text-sm`}
+                >
+                  {coin.symbol.replace('USDT', '')[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-[#1A1D26]">{coin.name}</p>
+                  <p className="text-xs text-[#8E95A9]">{coin.symbol.replace('USDT', '')}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex items-end justify-between">
+                <p
+                  className="text-base font-semibold text-[#1A1D26]"
+                  style={{ fontVariantNumeric: 'tabular-nums' }}
+                >
+                  {formatNOK(coin.price)}
+                </p>
+                <span
+                  className={`text-sm font-medium tabular-nums ${coin.change24h >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}
+                >
+                  {coin.change24h >= 0 ? '+' : ''}
+                  {coin.change24h.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
+      </div>
+      {liveCoins.length > 0 && (
+        <p className="text-[10px] text-[#8E95A9] animate-fade-in-up stagger-2 -mt-1">
+          {no ? 'Priser fra Binance, oppdatert ca. hvert 10. sekund.' : 'Prices from Binance, updated approximately every 10 seconds.'}
+        </p>
+      )}
 
       <SocialProof locale={locale} />
 
@@ -210,19 +251,20 @@ export default function PortfolioDashboard({
           ) : (
             <ul className="space-y-3">
               {positionList.map((pos: Position) => {
-                const coin = COINS.find((c) => c.symbol === pos.symbol);
-                const pnlPct = pos.value !== 0 ? ((pos.qty * (coin?.price ?? 0) - pos.value) / pos.value) * 100 : 0;
+                const price = priceForSymbol(pos.symbol);
+                const pnlPct = pos.value !== 0 ? ((pos.qty * price - pos.value) / pos.value) * 100 : 0;
+                const shortSym = pos.symbol.replace('USDT', '');
                 return (
                   <li key={pos.symbol} className="flex items-center gap-3">
                     <div
-                      className={`w-8 h-8 rounded-full bg-gradient-to-br ${coin?.gradient ?? 'from-gray-400 to-gray-500'} flex items-center justify-center text-white text-xs font-bold`}
+                      className={`w-8 h-8 rounded-full bg-gradient-to-br ${gradientForSymbol(pos.symbol)} flex items-center justify-center text-white text-xs font-bold`}
                     >
-                      {pos.symbol[0]}
+                      {shortSym[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[#1A1D26]">{pos.symbol}</p>
+                      <p className="text-sm font-medium text-[#1A1D26]">{shortSym}</p>
                       <p className="text-xs text-[#8E95A9]">
-                        {pos.qty.toFixed(4)} {pos.symbol}
+                        {pos.qty.toFixed(4)} {shortSym}
                       </p>
                     </div>
                     <div className="text-right">
@@ -230,7 +272,7 @@ export default function PortfolioDashboard({
                         className="text-sm font-medium text-[#1A1D26]"
                         style={{ fontVariantNumeric: 'tabular-nums' }}
                       >
-                        {formatNOK(pos.qty * (coin?.price ?? 0))}
+                        {formatNOK(pos.qty * price)}
                       </p>
                       <p
                         className={`text-xs font-medium tabular-nums ${pnlPct >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}

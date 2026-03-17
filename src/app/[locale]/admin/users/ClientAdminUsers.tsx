@@ -74,6 +74,7 @@ export default function ClientAdminUsers() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [upgrading, setUpgrading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const supabase = createClient();
 
@@ -227,6 +228,31 @@ export default function ClientAdminUsers() {
           >
             <RefreshCw className="w-4 h-4" />
             Oppdater
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              setSyncing(true);
+              try {
+                const res = await fetch("/api/admin/users/sync", { method: "POST" });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                  toast.error(data.error || "Synk feilet");
+                  return;
+                }
+                toast.success(data.message ?? `Synkronisert ${data.synced ?? 0} brukere`);
+                await fetchUsers();
+              } catch (e) {
+                toast.error("Kunne ikke synkronisere brukere");
+              } finally {
+                setSyncing(false);
+              }
+            }}
+            disabled={syncing}
+            className="flex items-center gap-2 px-4 py-2 bg-[#0052FF]/20 text-[#0052FF] border border-[#0052FF]/50 rounded-lg hover:bg-[#0052FF]/30 transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
+            {syncing ? "Synker…" : "Synk brukere fra Auth"}
           </button>
         </div>
       </div>

@@ -143,7 +143,7 @@ export default function SocialProofSection() {
         </div>
 
         {/* Final CTA Banner */}
-        <div className="relative overflow-hidden bg-linear-to-br from-blue-600 via-indigo-600 to-emerald-700 rounded-3xl p-8 md:p-12 text-center">
+        <div className="relative overflow-hidden bg-linear-to-br from-[#0052FF] via-[#0041CC] to-slate-800 rounded-3xl p-8 md:p-12 text-center">
           {/* Decorative pattern */}
           <div className="absolute inset-0 opacity-10">
             <div

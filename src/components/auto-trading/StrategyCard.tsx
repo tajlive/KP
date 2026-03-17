@@ -34,6 +34,8 @@ interface StrategyCardProps {
   onToggle: (id: string, currentStatus: boolean) => void;
   onDelete: (id: string) => void;
   onClick?: (strategy: Strategy) => void;
+  /** Locale for "Åpne strategi" / "Open strategy" */
+  locale?: string;
 }
 
 const STRATEGY_LABELS: Record<string, { name: string; icon: string; description: string }> = {
@@ -64,7 +66,7 @@ const STRATEGY_LABELS: Record<string, { name: string; icon: string; description:
   },
 };
 
-export function StrategyCard({ strategy, onToggle, onDelete, onClick }: StrategyCardProps) {
+export function StrategyCard({ strategy, onToggle, onDelete, onClick, locale = "no" }: StrategyCardProps) {
   const strategyMeta = STRATEGY_LABELS[strategy.strategy_type] || {
     name: strategy.strategy_type,
     icon: '📊',
@@ -74,16 +76,27 @@ export function StrategyCard({ strategy, onToggle, onDelete, onClick }: Strategy
   const isProfit = (strategy.pnl_usdt ?? 0) >= 0;
   const isPaper = strategy.trading_mode === 'paper';
   
+  const handleOpen = () => onClick?.(strategy);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleOpen();
+    }
+  };
+
   return (
     <Card
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
       className={cn(
         "relative overflow-hidden transition-all duration-300 hover:shadow-lg",
-        onClick && "cursor-pointer",
+        onClick && "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2",
         strategy.is_active
           ? "border-2 border-green-500 dark:border-green-600"
           : "border-gray-200 dark:border-gray-800"
       )}
-      onClick={() => onClick?.(strategy)}
+      onClick={handleOpen}
+      onKeyDown={handleKeyDown}
     >
       {/* Status indicator stripe */}
       {strategy.is_active && (
@@ -206,6 +219,14 @@ export function StrategyCard({ strategy, onToggle, onDelete, onClick }: Strategy
             <span>
               {strategy.open_trades || 0} åpne trades 
               -  {strategy.total_trades} totalt
+            </span>
+          </div>
+        )}
+
+        {onClick && (
+          <div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-700">
+            <span className="text-sm font-medium text-[#0052FF] hover:underline">
+              {locale === "en" ? "Open strategy →" : "Åpne strategi →"}
             </span>
           </div>
         )}

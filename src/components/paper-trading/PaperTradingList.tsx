@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { createClient } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, ArrowRight, TrendingUp, TrendingDown, Wallet, Banknote } from "lucide-react";
+import { Plus, ArrowRight, TrendingUp, TrendingDown, Wallet, Banknote, RefreshCw, Info } from "lucide-react";
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
 
 /** Kort med skygge og 200ms overgang (tokens) */
@@ -46,6 +47,8 @@ interface PaperTradingListProps {
   sessions: TradingSession[];
   balance: number;
   locale: string;
+  /** Optional: when set, subscribe to Supabase realtime for trading_sessions so list updates without manual refresh */
+  userId?: string;
 }
 
 const TRADING_PAIRS = [
@@ -54,13 +57,57 @@ const TRADING_PAIRS = [
   { value: "SOL/USDT", label: "SOL/USDT" },
 ];
 
-export function PaperTradingList({ sessions, balance, locale }: PaperTradingListProps) {
+export function PaperTradingList({ sessions, balance, locale, userId }: PaperTradingListProps) {
   const t = useTranslations("paperTrading");
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tradingPair, setTradingPair] = useState("BTC/USDT");
   const [startCapital, setStartCapital] = useState("100000");
   const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Supabase realtime: oppdater listen når trading_sessions endres for denne brukeren
+  useEffect(() => {
+    if (!userId) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel("paper-trading-sessions")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "trading_sessions",
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          setLastUpdated(new Date());
+          router.refresh();
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, router]);
+
+  // Sorter: aktive først, deretter nyeste
+  const sortedSessions = useMemo(() => {
+    return [...sessions].sort((a, b) => {
+      const aActive = a.status === "active" ? 1 : 0;
+      const bActive = b.status === "active" ? 1 : 0;
+      if (bActive !== aActive) return bActive - aActive;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+  }, [sessions]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setLastUpdated(new Date());
+    router.refresh();
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
 
   const handleCreateSession = async () => {
     setIsLoading(true);
@@ -144,15 +191,40 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
         </CardContent>
       </Card>
 
-      {/* Sidetittel — 2026: lik typografi */}
-      <div className="min-w-0">
-        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate">
-          {sessions.length === 0 ? t("noSessions") : t("title")}
-        </h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
-          {t("description")}
-        </p>
+      {/* Sidetittel + oppdater + info om Binance */}
+      <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate">
+            {sessions.length === 0 ? t("noSessions") : t("title")}
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
+            {t("description")}
+          </p>
+        </div>
+        {sessions.length > 0 && (
+          <div className="flex items-center gap-3 shrink-0">
+            {lastUpdated && (
+              <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                {t("lastUpdated")}: {lastUpdated.toLocaleTimeString(locale === "no" ? "nb-NO" : "en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+              </span>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden />
+              {t("refreshList")}
+            </Button>
+          </div>
+        )}
       </div>
+      <p className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1" title={t("binanceUpdateInfo")}>
+        <Info className="w-3.5 h-3.5 shrink-0" aria-hidden />
+        {t("binanceUpdateInfo")}
+      </p>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
@@ -232,21 +304,30 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
         </Card>
       ) : (
         <div className="space-y-4">
-          {sessions.map((session) => {
+          {sortedSessions.map((session) => {
             const pnlPercent = session.starting_capital_nok
               ? ((session.current_capital_nok - session.starting_capital_nok) /
                   session.starting_capital_nok) *
                 100
               : 0;
             const isProfitable = pnlPercent >= 0;
+            const isActive = session.status === "active";
             const href = `/${locale}/paper-trading/${session.id}`;
 
             return (
               <Link
                 key={session.id}
                 href={href}
-                className={`block ${cardBase} p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card}`}
+                className={`block ${cardBase} p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card} relative overflow-hidden ${
+                  isActive ? "border-l-4 border-l-green-500 dark:border-l-green-400 shadow-[0_0_0_1px_rgba(34,197,94,0.08)] dark:shadow-[0_0_0_1px_rgba(34,197,94,0.15)]" : ""
+                }`}
               >
+                {isActive && (
+                  <span className="absolute top-3 right-3 flex h-2 w-2" aria-hidden>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+                  </span>
+                )}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
   ArrowDownRight,
   TrendingUp,
+  TrendingDown,
   Wallet,
   BarChart3,
   ChevronRight,
@@ -13,6 +14,7 @@ import {
   PartyPopper,
 } from "lucide-react";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
+import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
 
 const POPULAR_COINS = [
   { symbol: "BTCUSDT", name: "Bitcoin", shortName: "BTC" },
@@ -23,30 +25,7 @@ const POPULAR_COINS = [
   { symbol: "DOGEUSDT", name: "Dogecoin", shortName: "DOGE" },
 ];
 
-const PLACEHOLDER_PRICES: Record<string, number> = {
-  BTCUSDT: 824500,
-  ETHUSDT: 28350,
-  SOLUSDT: 1245,
-  BNBUSDT: 5890,
-  XRPUSDT: 8.42,
-  DOGEUSDT: 1.38,
-};
-
-const PLACEHOLDER_ASKS = [
-  { price: 825200, amount: 0.342, total: 282218 },
-  { price: 825050, amount: 0.128, total: 105606 },
-  { price: 824900, amount: 0.561, total: 462768 },
-  { price: 824800, amount: 0.215, total: 177332 },
-  { price: 824650, amount: 0.089, total: 73394 },
-];
-
-const PLACEHOLDER_BIDS = [
-  { price: 824400, amount: 0.198, total: 163231 },
-  { price: 824250, amount: 0.445, total: 366791 },
-  { price: 824100, amount: 0.312, total: 257119 },
-  { price: 823950, amount: 0.167, total: 137600 },
-  { price: 823800, amount: 0.534, total: 439909 },
-];
+const TRADE_SYMBOLS = POPULAR_COINS.map((c) => c.symbol);
 
 interface TradingInterfaceProps {
   userId: string;
@@ -63,6 +42,8 @@ function formatNOK(value: number): string {
   }).format(value);
 }
 
+type DepthRow = { price: number; amount: number; total: number };
+
 export function TradingInterface({
   locale,
   paperBalance,
@@ -73,12 +54,44 @@ export function TradingInterface({
   const [loading, setLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [balance, setBalance] = useState(paperBalance);
+  const [orderbook, setOrderbook] = useState<{ asks: DepthRow[]; bids: DepthRow[] } | null>(null);
+  const [orderbookLoading, setOrderbookLoading] = useState(false);
 
-  const isNo = locale === "no";
+  const { coins, loading: pricesLoading } = useRealtimePrices(TRADE_SYMBOLS);
   const currentCoin = POPULAR_COINS.find((c) => c.symbol === selectedCoin)!;
-  const currentPrice = PLACEHOLDER_PRICES[selectedCoin] ?? 0;
+  const currentCoinData = coins.find((c) => c.symbol === selectedCoin);
+  const currentPrice = currentCoinData?.price ?? 0;
+  const change24h = currentCoinData?.change24h ?? 0;
   const amountNum = parseFloat(amount) || 0;
   const estimatedQty = currentPrice > 0 ? amountNum / currentPrice : 0;
+
+  const fetchDepth = useCallback(async (symbol: string) => {
+    setOrderbookLoading(true);
+    try {
+      const res = await fetch(`/api/trading/depth?symbol=${encodeURIComponent(symbol)}`);
+      const data = await res.json();
+      if (data.bids && data.asks) {
+        const toRow = (arr: [number, number][]): DepthRow[] =>
+          arr.map(([price, amount]) => ({ price, amount, total: price * amount }));
+        setOrderbook({
+          asks: toRow(data.asks.slice(0, 5)),
+          bids: toRow(data.bids.slice(0, 5)),
+        });
+      } else {
+        setOrderbook(null);
+      }
+    } catch {
+      setOrderbook(null);
+    } finally {
+      setOrderbookLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDepth(selectedCoin);
+  }, [selectedCoin, fetchDepth]);
+
+  const isNo = locale === "no";
 
   const handleTrade = async () => {
     if (amountNum <= 0) return;
@@ -162,22 +175,32 @@ export function TradingInterface({
         <div className="lg:grid lg:grid-cols-5 lg:gap-6">
           {/* Left: Chart + Order Book */}
           <div className="lg:col-span-3 space-y-4 mb-6 lg:mb-0">
-            {/* Chart Placeholder */}
+            {/* Price + Chart placeholder */}
             <div className="bg-white rounded-xl border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-base font-semibold text-[#1A1D26]">
                     {isNo ? "Prisutvikling" : "Price Chart"} {currentCoin.shortName}
                   </h2>
-                  <p className="text-2xl font-bold text-[#1A1D26] mt-1">
-                    kr {formatNOK(currentPrice)}
-                  </p>
+                  {pricesLoading && !currentPrice ? (
+                    <div className="h-8 w-32 bg-[#F1F3F9] rounded animate-pulse mt-1" />
+                  ) : (
+                    <p className="text-2xl font-bold text-[#1A1D26] mt-1">
+                      kr {formatNOK(currentPrice)}
+                    </p>
+                  )}
                 </div>
-                <div className="flex items-center gap-1 text-[#16A34A] text-sm font-medium">
-                  <TrendingUp className="w-4 h-4" />
-                  +2.4%
-                </div>
+                {currentPrice > 0 && (
+                  <div className={`flex items-center gap-1 text-sm font-medium ${change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}>
+                    {change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                    {change24h >= 0 ? "+" : ""}
+                    {change24h.toFixed(2)}%
+                  </div>
+                )}
               </div>
+              <p className="text-[10px] text-[#8E95A9] mb-2">
+                {isNo ? "Priser fra Binance, oppdatert ca. hvert 10. sekund." : "Prices from Binance, updated approximately every 10 seconds."}
+              </p>
               <div className={`h-[250px] ${SURFACE.BG_LIGHT} rounded-lg flex items-center justify-center border border-[#E2E5EC]`}>
                 <p className="text-[#8E95A9] text-sm">
                   {isNo ? "Graf kommer snart" : "Chart coming soon"}
@@ -185,10 +208,15 @@ export function TradingInterface({
               </div>
             </div>
 
-            {/* Order Book */}
+            {/* Order Book (Binance) */}
             <div className="bg-white rounded-xl border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5">
               <h3 className="text-sm font-semibold text-[#1A1D26] mb-3">
                 {isNo ? "Ordrebok" : "Order Book"}
+                {orderbookLoading && (
+                  <span className="ml-2 inline-block">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8E95A9]" />
+                  </span>
+                )}
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
@@ -204,42 +232,61 @@ export function TradingInterface({
                     </tr>
                   </thead>
                   <tbody>
-                    {PLACEHOLDER_ASKS.slice()
-                      .reverse()
-                      .map((ask, i) => (
-                        <tr key={`ask-${i}`} className="text-[#DC2626]">
-                          <td className="py-0.5 font-mono">
-                            {formatNOK(ask.price)}
-                          </td>
-                          <td className="py-0.5 text-right font-mono">
-                            {ask.amount.toFixed(3)}
-                          </td>
-                          <td className="py-0.5 text-right font-mono">
-                            {formatNOK(ask.total)}
+                    {orderbook ? (
+                      <>
+                        {[...orderbook.asks].reverse().map((ask, i) => (
+                          <tr key={`ask-${i}`} className="text-[#DC2626]">
+                            <td className="py-0.5 font-mono">{formatNOK(ask.price)}</td>
+                            <td className="py-0.5 text-right font-mono">
+                              {ask.amount.toFixed(3)}
+                            </td>
+                            <td className="py-0.5 text-right font-mono">
+                              {formatNOK(ask.total)}
+                            </td>
+                          </tr>
+                        ))}
+                        <tr className="border-y border-[#E2E5EC]">
+                          <td
+                            colSpan={3}
+                            className="py-2 text-center font-semibold text-[#1A1D26] text-sm"
+                          >
+                            kr {formatNOK(currentPrice || 0)}
                           </td>
                         </tr>
-                      ))}
-                    <tr className="border-y border-[#E2E5EC]">
-                      <td
-                        colSpan={3}
-                        className="py-2 text-center font-semibold text-[#1A1D26] text-sm"
-                      >
-                        kr {formatNOK(currentPrice)}
-                      </td>
-                    </tr>
-                    {PLACEHOLDER_BIDS.map((bid, i) => (
-                      <tr key={`bid-${i}`} className="text-[#16A34A]">
-                        <td className="py-0.5 font-mono">
-                          {formatNOK(bid.price)}
-                        </td>
-                        <td className="py-0.5 text-right font-mono">
-                          {bid.amount.toFixed(3)}
-                        </td>
-                        <td className="py-0.5 text-right font-mono">
-                          {formatNOK(bid.total)}
-                        </td>
-                      </tr>
-                    ))}
+                        {orderbook.bids.map((bid, i) => (
+                          <tr key={`bid-${i}`} className="text-[#16A34A]">
+                            <td className="py-0.5 font-mono">{formatNOK(bid.price)}</td>
+                            <td className="py-0.5 text-right font-mono">
+                              {bid.amount.toFixed(3)}
+                            </td>
+                            <td className="py-0.5 text-right font-mono">
+                              {formatNOK(bid.total)}
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        <tr className="border-y border-[#E2E5EC]">
+                          <td
+                            colSpan={3}
+                            className="py-4 text-center font-medium text-[#8E95A9] text-sm"
+                          >
+                            kr {formatNOK(currentPrice || 0)}
+                          </td>
+                        </tr>
+                        {!orderbookLoading && (
+                          <tr>
+                            <td
+                              colSpan={3}
+                              className="py-2 text-center text-[#8E95A9] text-xs"
+                            >
+                              {isNo ? "Kunne ikke laste ordrebok" : "Could not load order book"}
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    )}
                   </tbody>
                 </table>
               </div>
