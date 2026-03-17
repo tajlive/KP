@@ -6,6 +6,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { TRIAL_DAYS } from "@/lib/pricing.config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
       billing_address_collection: "required",
       automatic_tax: { enabled: true },
       subscription_data: {
-        trial_period_days: 14, // 14 dager prøveperiode
+        trial_period_days: TRIAL_DAYS,
         metadata: {
           tier,
           userId,
