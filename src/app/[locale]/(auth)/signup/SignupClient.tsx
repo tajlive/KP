@@ -124,15 +124,14 @@ function SignupContent() {
             });
           
           if (!kltError) {
-            // Record the transaction
+            // Record the transaction (type must be reward|spend|bonus|founder per DB constraint)
             await supabase.from("klt_transactions").insert({
               user_id: data.user.id,
               amount: 500,
-              type: "welcome_bonus",
-              category: "signup",
-              description: "Signup bonus",
+              type: "reward",
+              category: "welcome_bonus",
+              description: "Registreringsbonus",
               reason: "Registreringsbonus - Velkommen til Klarpakke!",
-              created_at: new Date().toISOString(),
             });
           }
         } catch (kltErr) {

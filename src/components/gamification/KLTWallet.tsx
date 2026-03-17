@@ -10,7 +10,9 @@ interface KLTTransaction {
   id: string;
   amount: number;
   type: string;
-  reason: string;
+  category?: string;
+  reason?: string;
+  description?: string;
   created_at: string;
 }
 
@@ -70,12 +72,16 @@ export function KLTWallet() {
     );
   }
 
-  const getTransactionIcon = (type: string) => {
-    switch (type) {
+  // Use category for reward type (DB type is reward|spend|bonus|founder; category is lesson_complete, welcome_bonus, etc.)
+  const getTransactionIcon = (tx: KLTTransaction) => {
+    const key = tx.type === "reward" ? (tx.category || tx.type) : tx.type;
+    switch (key) {
       case "welcome_bonus":
         return <Gift className="w-4 h-4 text-purple-400" />;
       case "lesson_complete":
         return <Award className="w-4 h-4 text-blue-400" />;
+      case "course_complete":
+        return <Award className="w-4 h-4 text-amber-400" />;
       case "quiz_pass":
         return <TrendingUp className="w-4 h-4 text-green-400" />;
       case "referral":
@@ -174,9 +180,9 @@ export function KLTWallet() {
                       className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
                     >
                       <div className="flex items-center gap-3">
-                        {getTransactionIcon(tx.type)}
+                        {getTransactionIcon(tx)}
                         <div>
-                          <p className="text-white text-sm">{tx.reason}</p>
+                          <p className="text-white text-sm">{tx.reason ?? tx.description ?? "KLT"}</p>
                           <p className="text-slate-500 text-xs">
                             {new Date(tx.created_at).toLocaleDateString('nb-NO')}
                           </p>

@@ -189,6 +189,15 @@ else
   skip "Stripe API" "Legg STRIPE_SECRET_KEY i .env.local (dashboard.stripe.com/apikeys)"
 fi
 
+# ── 5b. CLOUDFLARE API ─────────────────────
+if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
+  check "Cloudflare API" \
+    "curl -sf -H 'Authorization: Bearer ${CLOUDFLARE_API_TOKEN}' https://api.cloudflare.com/client/v4/user | jq -r '.success'" \
+    "true"
+else
+  skip "Cloudflare API" "Legg CLOUDFLARE_API_TOKEN i .env.local (dash.cloudflare.com/profile/api-tokens)"
+fi
+
 # ── 6b. CLOUDFLARE CONNECTIVITY ───────────
 # Check that klarpakke.no is served via Cloudflare (CF headers)
 echo -n "  Testing Cloudflare connectivity... "

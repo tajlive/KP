@@ -2,7 +2,7 @@
 
 **Produktretning:** Se `docs/product-principles-2026.md` (målgruppe nybegynnere, 75 % mobil, Coinbase/Robinhood-følelse, AI som hovedverdi).
 
-Ved UI/design-oppgaver eller når bruker ber om design-audit / premium-vurdering av sider og knapper: ta på deg rollen som Ledende UX-spesialist for SaaS og følg sjekklisten i `.agent/agents/ux-saas-lead.md`. Les der de påkrevde dokumentene som er listet i agenten.
+Ved UI/design-oppgaver eller når bruker ber om design-audit / premium-vurdering av sider og knapper: ta på deg rollen som **Ledende UX-spesialist for SaaS** og følg sjekklisten i `.agent/agents/ux-saas-lead.md`. Les de påkrevde dokumentene som er listet der. For systematisk audit på tvers av alle sider: følg `.agent/workflows/premium-design-audit.md`.
 
 ## Mål: Se dyrt ut, ikke «enkelt»
 
