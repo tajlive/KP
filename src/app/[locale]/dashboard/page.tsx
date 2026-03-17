@@ -22,13 +22,27 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
+  const title = t("dashboard.title", { defaultValue: "Dashboard - Klarpakke" });
+  const description = t("dashboard.description", {
+    defaultValue:
+      "Ditt personlige dashboard for krypto-trading med lekepenger, live trading og porteføljeanalyse.",
+  });
 
   return {
-    title: t("dashboard.title", { defaultValue: "Dashboard - Klarpakke" }),
-    description: t("dashboard.description", {
-      defaultValue:
-        "Ditt personlige dashboard for krypto-trading med lekepenger, live trading og porteføljeanalyse.",
-    }),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `https://www.klarpakke.no/${locale}/dashboard`,
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -172,7 +186,7 @@ export default async function DashboardPage({
           .eq("is_active", true),
         supabase
           .from("onboarding_progress")
-          .select("completed_lessons")
+          .select("completed_lessons, is_completed")
           .eq("id", user.id)
           .single(),
         supabase
@@ -187,8 +201,6 @@ export default async function DashboardPage({
           .maybeSingle(),
       ]);
 
-    // Parse completed lessons - database stores count as number, but component expects string[]
-    // Generate array of lesson IDs based on count for backwards compatibility
     const lessonCount = progressRes.data?.completed_lessons ?? 0;
     const completedLessons: string[] = Array.isArray(lessonCount)
       ? lessonCount
@@ -196,13 +208,37 @@ export default async function DashboardPage({
         ? Array.from({ length: lessonCount }, (_, i) => `lesson-${i + 1}`)
         : [];
 
-    // Get first required module for gate display
+    const onboardingDone = progressRes.data?.is_completed === true;
+    const hasActiveSession = !!sessionRes.data;
     const firstRequiredModule = courseProgress[0];
+
+    if (!onboardingDone) {
+      return (
+        <Suspense
+          fallback={
+            <div className="min-h-screen bg-gray-950 p-6 space-y-6 animate-pulse">
+              <div className="h-12 bg-gray-800 rounded-lg w-1/3" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="h-48 bg-gray-800 rounded-xl" />
+                <div className="h-48 bg-gray-800 rounded-xl" />
+                <div className="h-48 bg-gray-800 rounded-xl" />
+              </div>
+            </div>
+          }
+        >
+          <UnifiedTradingDashboard
+            initialPortfolio={portfolioRes.data}
+            initialTrades={tradesRes.data ?? []}
+            initialStrategies={strategiesRes.data ?? []}
+            userId={user.id}
+          />
+        </Suspense>
+      );
+    }
 
     return (
       <>
-        {/* Bot status card - shows active trading sessions */}
-        {sessionRes.data ? (
+        {hasActiveSession ? (
           <BotStatusCard
             initialSession={sessionRes.data as unknown as TradingSession}
           />
@@ -210,7 +246,6 @@ export default async function DashboardPage({
           <EmptyBotState />
         )}
 
-        {/* Course Gate - show if user hasn't completed required course */}
         {!hasCompletedRequired && firstRequiredModule && (
           <CourseGate
             locale={locale}
@@ -226,7 +261,6 @@ export default async function DashboardPage({
           />
         )}
 
-        {/* Kom i gang for nye brukere – KLA-73 */}
         <GetStartedCard userId={user.id} completedLessons={completedLessons} />
 
         <Suspense

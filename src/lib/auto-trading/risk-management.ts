@@ -274,6 +274,46 @@ export function calculateFixedFractionalSize(
 }
 
 // ============================================================================
+// DRAWDOWN POSITION SIZE REDUCTION
+// ============================================================================
+
+/**
+ * Returns a multiplier (0-1) for position size based on consecutive losses.
+ * Use 0 as signal to pause trading entirely.
+ */
+export function getDrawdownPositionMultiplier(consecutiveLosses: number): number {
+  if (consecutiveLosses >= 10) return 0; // pause - return 0 to signal trading should stop
+  if (consecutiveLosses >= 7) return 0.25; // 25% of normal size
+  if (consecutiveLosses >= 5) return 0.5; // 50% of normal size
+  if (consecutiveLosses >= 3) return 0.75; // 75% of normal size
+  return 1.0; // full size
+}
+
+/**
+ * Compute effective consecutive losses for multiplier, with recovery logic.
+ * After 2 consecutive wins, each additional win recovers one step (one step up per win).
+ */
+export function getEffectiveConsecutiveLossesForDrawdown(
+  consecutiveLosses: number,
+  consecutiveWins: number,
+  consecutiveLossesBeforeWinStreak: number,
+): number {
+  if (consecutiveLosses > 0) {
+    return consecutiveLosses; // In active loss streak - use as-is
+  }
+  if (consecutiveWins >= 2 && consecutiveLossesBeforeWinStreak > 0) {
+    // Recovery: after 2 wins, each additional win recovers one step
+    const stepsRecovered = consecutiveWins - 1;
+    return Math.max(0, consecutiveLossesBeforeWinStreak - stepsRecovered);
+  }
+  if (consecutiveLossesBeforeWinStreak > 0) {
+    // Had losses, now 1 win – not yet recovered, still use reduced size
+    return consecutiveLossesBeforeWinStreak;
+  }
+  return 0; // No recent losses
+}
+
+// ============================================================================
 // CIRCUIT BREAKER CHECKS
 // ============================================================================
 

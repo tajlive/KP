@@ -16,7 +16,7 @@ export default function FAQSection() {
     },
     {
       question: 'Hva er lekepenger?',
-      answer: 'Lekepenger betyr at du trader med simulert kapital (1 million kr) i et trygt miljø. Du får øve på å kjøpe og selge krypto, sette stop-loss, og teste strategier uten å risikere ekte penger. Det er som en flysimulator for trading — du lærer uten konsekvenser.',
+      answer: 'Lekepenger betyr at du trader med simulert kapital (100 000 kr) i et trygt miljø. Du får øve på å kjøpe og selge krypto, sette stop-loss, og teste strategier uten å risikere ekte penger. Det er som en flysimulator for trading — du lærer uten konsekvenser.',
     },
     {
       question: 'Kan jeg få pengene tilbake hvis jeg ikke er fornøyd?',

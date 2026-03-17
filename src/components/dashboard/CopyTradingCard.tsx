@@ -263,7 +263,7 @@ export function CopyTradingCard() {
               )}
 
               <Button asChild className="w-full">
-                <Link href="/dashboard/copy-trading">
+                <Link href="/copy-trading">
                   <Users className="w-4 h-4 mr-2" />
                   {activeSessions && activeSessions.length > 0
                     ? "Administrer kopiering"

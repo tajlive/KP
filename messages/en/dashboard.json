@@ -277,6 +277,12 @@
     "retry": "Try again",
     "contactSupport": "Contact support if the problem persists"
   },
+  "tabs": {
+    "home": "Home",
+    "learn": "Learn",
+    "practice": "Practice",
+    "profile": "Profile"
+  },
   "sidebar": {
     "overview": "Overview",
     "portfolio": "Portfolio",
@@ -288,7 +294,11 @@
     "settings": "Settings",
     "admin": "Admin",
     "logout": "Log out",
-    "paperTrading": "Paper Trading"
+    "paperTrading": "Paper Trading",
+    "autoTrade": "Auto-trading",
+    "guide": "Guide",
+    "mainMenu": "Main Menu",
+    "closeMenu": "Close menu"
   },
   "bots": {
     "modeLive": "Live",
@@ -317,5 +327,15 @@
     "feature1": "Automatic 24/7 trading",
     "feature2": "Real-time market analysis",
     "feature3": "Risk management and stop-loss"
+  },
+  "learningPath": {
+    "title": "Your Learning Path",
+    "level": "Level",
+    "lessons": "lessons",
+    "continueWhere": "Continue where you left off",
+    "yourTracks": "Your Courses",
+    "done": "Completed",
+    "yourBadges": "Your Badges",
+    "goToAcademy": "Go to Academy"
   }
 }

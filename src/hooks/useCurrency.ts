@@ -1,92 +1,92 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import {
+  type Currency,
+  CURRENCIES,
+  CURRENCY_SYMBOLS,
+  convertFromNOK,
+  convertToNOK,
+  formatCurrency,
+  formatFromNOK,
+  getStoredCurrency,
+  setStoredCurrency,
+} from "@/lib/currency";
+import { useCallback, useSyncExternalStore } from "react";
 
-export type CurrencyCode = "NOK" | "EUR" | "USD" | "BTC";
+export type CurrencyCode = Currency | "BTC";
 
-interface CurrencyConfig {
-  code: CurrencyCode;
-  symbol: string;
-  locale: string;
-  decimals: number;
+let listeners: Array<() => void> = [];
+
+function emitChange() {
+  for (const listener of listeners) listener();
 }
 
-const currencyMap: Record<string, CurrencyConfig> = {
-  no: {
-    code: "NOK",
-    symbol: "kr",
-    locale: "nb-NO",
-    decimals: 0,
-  },
-  en: {
-    code: "USD",
-    symbol: "$",
-    locale: "en-US",
-    decimals: 2,
-  },
-  th: {
-    code: "USD",
-    symbol: "$",
-    locale: "en-US",
-    decimals: 2,
-  },
-  zh: {
-    code: "USD",
-    symbol: "$",
-    locale: "en-US",
-    decimals: 2,
-  },
-};
-
-export function useCurrency() {
-  const locale = useLocale();
-  const config = currencyMap[locale] || currencyMap["no"];
-
-  const format = (amount: number, options?: { compact?: boolean; crypto?: boolean }): string => {
-    const { compact = false, crypto = false } = options || {};
-    
-    if (crypto) {
-      return `${amount.toLocaleString(config.locale, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 8,
-      })} BTC`;
-    }
-
-    if (compact && Math.abs(amount) >= 1_000_000) {
-      return `${(amount / 1_000_000).toFixed(1)}M ${config.symbol}`;
-    }
-    
-    if (compact && Math.abs(amount) >= 1_000) {
-      return `${(amount / 1_000).toFixed(1)}k ${config.symbol}`;
-    }
-
-    // NOK typically doesn't show decimals for whole numbers
-    if (config.code === "NOK") {
-      const rounded = Math.round(amount);
-      return `${rounded.toLocaleString(config.locale)} ${config.symbol}`;
-    }
-
-    return `${config.symbol}${amount.toLocaleString(config.locale, {
-      minimumFractionDigits: config.decimals,
-      maximumFractionDigits: config.decimals,
-    })}`;
+function subscribe(listener: () => void) {
+  listeners = [...listeners, listener];
+  return () => {
+    listeners = listeners.filter((l) => l !== listener);
   };
+}
 
-  const formatPercent = (value: number): string => {
+function getSnapshot(): Currency {
+  return getStoredCurrency();
+}
+
+function getServerSnapshot(): Currency {
+  return "NOK";
+}
+
+/**
+ * Hook that provides the user-selected display currency with
+ * localStorage persistence. All values are assumed to be stored
+ * in NOK and converted on the fly.
+ */
+export function useCurrency() {
+  const currency = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  const setCurrency = useCallback((c: Currency) => {
+    setStoredCurrency(c);
+    emitChange();
+  }, []);
+
+  const format = useCallback(
+    (amountNOK: number) => formatFromNOK(amountNOK, currency),
+    [currency],
+  );
+
+  const formatRaw = useCallback(
+    (amount: number) => formatCurrency(amount, currency),
+    [currency],
+  );
+
+  const toDisplay = useCallback(
+    (amountNOK: number) => convertFromNOK(amountNOK, currency),
+    [currency],
+  );
+
+  const toNOK = useCallback(
+    (amount: number) => convertToNOK(amount, currency),
+    [currency],
+  );
+
+  const formatPercent = useCallback((value: number): string => {
     const sign = value > 0 ? "+" : "";
     return `${sign}${value.toFixed(2)}%`;
-  };
+  }, []);
 
   return {
-    code: config.code,
-    symbol: config.symbol,
-    locale: config.locale,
+    currency,
+    setCurrency,
+    currencies: CURRENCIES,
+    symbol: CURRENCY_SYMBOLS[currency],
     format,
+    formatRaw,
+    toDisplay,
+    toNOK,
     formatPercent,
   };
 }
 
-export function useCurrencyCode(): CurrencyCode {
-  const locale = useLocale();
-  return currencyMap[locale]?.code || "NOK";
+export function useCurrencyCode(): Currency {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

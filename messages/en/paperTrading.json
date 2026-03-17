@@ -13,9 +13,9 @@
   "virtual": "Virtual",
   "tooltip": "Paper trading lets you practice without risking real money",
   "subtitle": "Practice trading with {amount} virtual currency",
-  "contextBanner": "Practice trading with 1,000,000 NOK in play money",
+  "contextBanner": "Practice trading with 100,000 NOK in play money",
   "help": {
-    "text": "Paper trading lets you practice trading without risking real money. You start with 1,000,000 NOK and can buy and sell cryptocurrency with real market prices from Binance.",
+    "text": "Paper trading lets you practice trading without risking real money. You start with 100,000 NOK and can buy and sell cryptocurrency with real market prices from Binance.",
     "close": "Close"
   },
   "stats": {

@@ -1,7 +1,5 @@
 export { default as Features } from "./Features";
 export { Footer } from "./Footer";
-export { FoundersOffer } from "./FoundersOffer";
-export { Hero } from "./Hero";
 export { SocialProof } from "./SocialProof";
 export { Studieprogram } from "./Studieprogram";
 export { Testimonials } from "./Testimonials";
@@ -9,7 +7,5 @@ export { TrustBadges } from "./TrustBadges";
 export { AutoTradeDemo } from "./AutoTradeDemo";
 export { CopyTradingSection } from "./CopyTradingSection";
 export { LandingNavigation } from "./LandingNavigation";
-export { LandingPage } from "./LandingPage";
 export { LiveSignalFeed } from "./LiveSignalFeed";
 export { MobileMenu } from "./MobileMenu";
-export { PerformanceChart } from "./PerformanceChart";

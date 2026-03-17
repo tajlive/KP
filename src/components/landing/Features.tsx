@@ -52,8 +52,8 @@ export default function Features({ language = "no" }: FeaturesProps) {
           : "Paper trading with real market data",
       description:
         language === "no"
-          ? "1 million kroner lekepenger. Tren på ekte Bitcoin- og Ethereum-priser uten å risikere egne penger."
-          : "1 million kroner virtual capital. Practice with real Bitcoin and Ethereum prices without risking your own money.",
+          ? "100 000 kroner lekepenger. Tren på ekte Bitcoin- og Ethereum-priser uten å risikere egne penger."
+          : "100,000 NOK virtual capital. Practice with real Bitcoin and Ethereum prices without risking your own money.",
       gradient: "from-green-500 to-emerald-500",
     },
     {

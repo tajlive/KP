@@ -80,6 +80,7 @@ const nextConfig = {
       "framer-motion",
       "date-fns",
       "recharts",
+      "lightweight-charts",
       "zustand",
       "@radix-ui/react-accordion",
       "@radix-ui/react-dialog",

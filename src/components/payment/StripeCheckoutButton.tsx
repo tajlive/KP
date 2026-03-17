@@ -50,7 +50,7 @@ export function StripeCheckoutButton({
       const currentLocale = window.location.pathname.split("/")[1] || "no";
 
       // Kall Next.js API route
-      const response = await fetch("/api/checkout", {
+      const response = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -57,7 +57,7 @@ function generateMockData() {
   const buckets = ["morning", "afternoon", "evening", "night"];
 
   const trades = [];
-  let balance = 1000000;
+  let balance = 100000;
   // Use fixed reference date for consistent mock data
   const referenceDate = new Date('2026-02-10T00:00:00.000Z');
 

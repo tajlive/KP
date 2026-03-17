@@ -169,7 +169,7 @@ export default function SpeedOnboarding({
           user_id: user.id,
           risk_level: selectedRisk,
           selected_pairs: selectedCoins.map((c) => `${c}USDT`),
-          paper_balance: 1000000,
+          paper_balance: 100000,
           is_active: true,
           updated_at: new Date().toISOString(),
           // Generate a referral code for this user if they don't have one
@@ -410,7 +410,7 @@ export default function SpeedOnboarding({
                 Din startkapital
               </div>
               <div className="text-3xl font-black text-green-600">
-                1 000 000 <span className="text-lg">NOK</span>
+                100 000 <span className="text-lg">NOK</span>
               </div>
               <div className="text-[11px] text-green-500/80 mt-1">
                 Paper trading — null risiko for ekte penger
@@ -464,7 +464,7 @@ export default function SpeedOnboarding({
               Du er i gang! 🚀
             </h3>
             <p className="text-slate-500 mb-6">
-              Din AI-bot handler nå med <strong>1M NOK</strong> i paper-modus.
+              Din AI-bot handler nå med <strong>100K NOK</strong> i paper-modus.
               <br />
               Sjekk dashboardet for oppdateringer!
             </p>

@@ -21,7 +21,7 @@ export async function generateMetadata({
 
   return {
     title: t("title"),
-    description: t("subtitle", { amount: "1 000 000" }),
+    description: t("subtitle", { amount: "100 000" }),
   };
 }
 
@@ -92,7 +92,7 @@ export default async function PaperTradingPage({
       .eq("id", user.id)
       .single();
 
-    const balance = profile?.paper_balance ?? 1_000_000;
+    const balance = profile?.paper_balance ?? 100_000;
 
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900">

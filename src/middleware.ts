@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { routing } from './i18n/routing'
 import { handleOnboarding } from './middleware/onboarding'
+import { handleTierGate } from './middleware/tier-gate'
 
 const handleI18nRouting = createMiddleware(routing)
 
@@ -85,6 +86,9 @@ export async function middleware(request: NextRequest) {
   if (isProtected && user) {
     const onboardingResult = await handleOnboarding(request, response)
     if (onboardingResult) return onboardingResult
+
+    const tierResult = await handleTierGate(request, response, user.id)
+    if (tierResult) return tierResult
   }
 
   return response

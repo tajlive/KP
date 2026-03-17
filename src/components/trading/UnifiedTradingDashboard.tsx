@@ -33,8 +33,11 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useCurrency } from "@/hooks/useCurrency";
+import { CurrencySwitcher } from "./CurrencySwitcher";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
+import { SignalFeed } from "./SignalFeed";
 
 const STRATEGY_DEFS: {
   type: StrategyType;
@@ -110,6 +113,7 @@ export default function UnifiedTradingDashboard({
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
   const { success: showSuccess, error: showToastError } = useI18nToast();
   const tTrading = useTranslations("trading");
+  const { format: formatNOK } = useCurrency();
 
   const STRATEGIES = STRATEGY_DEFS.map((s) => ({
     ...s,
@@ -233,14 +237,6 @@ export default function UnifiedTradingDashboard({
     }
   };
 
-  const formatNOK = (value: number) => {
-    return new Intl.NumberFormat("no-NO", {
-      style: "currency",
-      currency: "NOK",
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 p-6">
@@ -312,11 +308,14 @@ export default function UnifiedTradingDashboard({
             </h1>
             <p className="text-slate-400 text-sm mt-1">
               {mode === "paper"
-                ? "Øv med lekepenger — 1 000 000 NOK"
+                ? "Øv med lekepenger — 100 000 NOK"
                 : "Handel med ekte midler"}
             </p>
           </div>
-          <TradingModeToggle mode={mode} setMode={setMode} />
+          <div className="flex items-center gap-3">
+            <CurrencySwitcher />
+            <TradingModeToggle mode={mode} setMode={setMode} />
+          </div>
         </div>
 
         {/* Mode Warning */}
@@ -336,6 +335,9 @@ export default function UnifiedTradingDashboard({
         <section className="space-y-4">
           <PulseChartContainer />
         </section>
+
+        {/* Trading Signals */}
+        <SignalFeed />
 
         {/* Gamification & KLT Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -419,7 +421,15 @@ function TradingModeToggle({
   );
 }
 
-import ProfessionalChart from "./ProfessionalChart";
+import dynamic from "next/dynamic";
+const ProfessionalChart = dynamic(() => import("./ProfessionalChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[400px] bg-gray-800/50 rounded-xl animate-pulse flex items-center justify-center">
+      <span className="text-gray-500 text-sm">Laster graf...</span>
+    </div>
+  ),
+});
 
 function PortfolioSection({
   portfolio,

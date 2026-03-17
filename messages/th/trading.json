@@ -75,5 +75,27 @@
   "noPositions": "Ingen åpne posisjoner",
   "unrealizedPnL": "Urealisert P&L",
   "realizedPnL": "Realisert P&L",
-  "closePosition": "Lukk posisjon"
+  "closePosition": "Lukk posisjon",
+  "strategies": {
+    "dca_trygg": {
+      "name": "Smart DCA (ปลอดภัย)",
+      "description": "ซื้ออัตโนมัติด้วยจำนวนคงที่ ความเสี่ยงต่ำสุด เหมาะสำหรับมือใหม่"
+    },
+    "trend_balansert": {
+      "name": "ตามเทรนด์ (สมดุล)",
+      "description": "ติดตามเทรนด์ตลาดด้วยการวิเคราะห์ทางเทคนิค ความเสี่ยงปานกลาง"
+    },
+    "multisignal_aktiv": {
+      "name": "มัลติซิกแนล (แอคทีฟ)",
+      "description": "รวมตัวบ่งชี้หลายตัวสำหรับการเทรดแบบแอคทีฟ ความเสี่ยงสูงขึ้น"
+    },
+    "grid_bot": {
+      "name": "Grid Bot",
+      "description": "วางคำสั่งซื้อ/ขายเป็นตาราง ทำงานดีที่สุดในตลาดไซด์เวย์"
+    },
+    "ai_copy": {
+      "name": "AI คัดลอกเทรด",
+      "description": "คัดลอกการเทรดที่ AI แนะนำอัตโนมัติ ความเสี่ยงแตกต่างกัน"
+    }
+  }
 }

@@ -269,220 +269,42 @@
   },
   "suites": [
     {
-      "title": "smoke/final-launch.spec.ts",
-      "file": "smoke/final-launch.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "Landing /: laster og har CTA",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1823,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:47.066Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "2642e4523735b634d2be-21fdfb994f74c3bcac71",
-          "file": "smoke/final-launch.spec.ts",
-          "line": 5,
-          "column": 1
-        },
-        {
-          "title": "Landing /en: laster",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 1805,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:47.068Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "2642e4523735b634d2be-5b8a31725d41f6d0e7c8",
-          "file": "smoke/final-launch.spec.ts",
-          "line": 10,
-          "column": 1
-        },
-        {
-          "title": "Prisside: laster",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 865,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:50.277Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "2642e4523735b634d2be-bd302e75bd5a76c806af",
-          "file": "smoke/final-launch.spec.ts",
-          "line": 15,
-          "column": 1
-        },
-        {
-          "title": "Innlogging: viser loginskjema",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1154,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:50.289Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "2642e4523735b634d2be-fcb35650e2ca7f0818b1",
-          "file": "smoke/final-launch.spec.ts",
-          "line": 20,
-          "column": 1
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE errors",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 2670,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:51.164Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "2642e4523735b634d2be-fd68a73a55fd829c5aa4",
-          "file": "smoke/final-launch.spec.ts",
-          "line": 27,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "smoke/health.spec.ts",
-      "file": "smoke/health.spec.ts",
+      "title": "landing/conversion.spec.ts",
+      "file": "landing/conversion.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Smoke: Health Checks @smoke",
-          "file": "smoke/health.spec.ts",
-          "line": 9,
+          "title": "Landing Page Conversion @critical",
+          "file": "landing/conversion.spec.ts",
+          "line": 7,
           "column": 6,
           "specs": [
             {
-              "title": "health endpoint returns 200",
+              "title": "Hero vises med norsk tekst på /no",
               "ok": true,
               "tags": [
-                "smoke"
+                "critical"
               ],
               "tests": [
                 {
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 773,
+                      "duration": 6736,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-15T18:08:51.478Z",
+                      "startTime": "2026-03-17T03:59:24.787Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -490,71 +312,35 @@
                   "status": "expected"
                 }
               ],
-              "id": "4f244b27f1efae6c9c3d-a4b373d4d269a2601d22",
-              "file": "smoke/health.spec.ts",
-              "line": 11,
+              "id": "d679de7ceedf8bf5a301-3c76c5bf57c4d5c1ad26",
+              "file": "landing/conversion.spec.ts",
+              "line": 9,
               "column": 3
             },
             {
-              "title": "homepage loads without errors",
+              "title": "Primær CTA klikk → lander på /no/signup",
               "ok": true,
               "tags": [
-                "smoke"
+                "critical"
               ],
               "tests": [
                 {
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2129,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-03-15T18:08:52.276Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "4f244b27f1efae6c9c3d-c7fa86a19827f79b0f9f",
-              "file": "smoke/health.spec.ts",
-              "line": 33,
-              "column": 3
-            },
-            {
-              "title": "login page is accessible",
-              "ok": true,
-              "tags": [
-                "smoke"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 2001,
+                      "duration": 26726,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-15T18:08:53.878Z",
+                      "startTime": "2026-03-17T03:59:24.787Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -562,39 +348,35 @@
                   "status": "expected"
                 }
               ],
-              "id": "4f244b27f1efae6c9c3d-8570e6e60b4a5c46837b",
-              "file": "smoke/health.spec.ts",
-              "line": 63,
+              "id": "d679de7ceedf8bf5a301-c4b054db46a9cd2103ef",
+              "file": "landing/conversion.spec.ts",
+              "line": 17,
               "column": 3
             },
             {
-              "title": "leaderboard page loads",
+              "title": "Kalkulator slider interaksjon → CTA dukker opp",
               "ok": true,
               "tags": [
-                "smoke"
+                "critical"
               ],
               "tests": [
                 {
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1544,
+                      "duration": 19571,
                       "errors": [],
-                      "stdout": [
-                        {
-                          "text": "⚠️ Leaderboard redirected to: https://www.klarpakke.no/no/leaderboard\n"
-                        }
-                      ],
+                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-15T18:08:54.426Z",
+                      "startTime": "2026-03-17T03:59:32.585Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -602,35 +384,35 @@
                   "status": "expected"
                 }
               ],
-              "id": "4f244b27f1efae6c9c3d-d13594eba0e2257fbd2d",
-              "file": "smoke/health.spec.ts",
-              "line": 78,
+              "id": "d679de7ceedf8bf5a301-32d49ba73aaf1867b2df",
+              "file": "landing/conversion.spec.ts",
+              "line": 28,
               "column": 3
             },
             {
-              "title": "static assets are served",
+              "title": "Nav-lenker fungerer (Kurs, Paper Trading, Priser)",
               "ok": true,
               "tags": [
-                "smoke"
+                "critical"
               ],
               "tests": [
                 {
                   "timeout": 120000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "smoke-chromium",
-                  "projectName": "smoke-chromium",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 353,
+                      "duration": 16796,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-03-15T18:08:55.893Z",
+                      "startTime": "2026-03-17T03:59:52.209Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -638,717 +420,209 @@
                   "status": "expected"
                 }
               ],
-              "id": "4f244b27f1efae6c9c3d-9ed2e2e5e6a3fe4bbae5",
-              "file": "smoke/health.spec.ts",
-              "line": 99,
+              "id": "d679de7ceedf8bf5a301-89de3f403794c2d11b7c",
+              "file": "landing/conversion.spec.ts",
+              "line": 45,
+              "column": 3
+            },
+            {
+              "title": "/no/innlogging → skjema vises, kan fylle inn",
+              "ok": true,
+              "tags": [
+                "critical"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 7352,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T03:59:52.540Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d679de7ceedf8bf5a301-4134469246e4eefe8c92",
+              "file": "landing/conversion.spec.ts",
+              "line": 61,
+              "column": 3
+            },
+            {
+              "title": "/no/signup → skjema vises",
+              "ok": true,
+              "tags": [
+                "critical"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 10104,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T03:59:59.950Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d679de7ceedf8bf5a301-a45bf5e332b02452d4fd",
+              "file": "landing/conversion.spec.ts",
+              "line": 79,
               "column": 3
             }
           ]
-        }
-      ]
-    },
-    {
-      "title": "smoke/i18n-coverage.spec.ts",
-      "file": "smoke/i18n-coverage.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "Ingen MISSING_MESSAGE på /no",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 1734,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:55.991Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-539fd798cb9620e885fb",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
         },
         {
-          "title": "Ingen MISSING_MESSAGE på /en",
-          "ok": true,
-          "tags": [],
-          "tests": [
+          "title": "Landing Page Mobile @mobile",
+          "file": "landing/conversion.spec.ts",
+          "line": 92,
+          "column": 6,
+          "specs": [
             {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
+              "title": "Mobil 375px → hero synlig, CTA klikkbar",
+              "ok": true,
+              "tags": [
+                "mobile"
+              ],
+              "tests": [
                 {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 1946,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:56.261Z",
+                  "timeout": 120000,
                   "annotations": [],
-                  "attachments": []
+                  "expectedStatus": "passed",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6307,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T04:00:09.043Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-1530ddb4c87dd4c1b214",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /no/paper-trading",
-          "ok": true,
-          "tags": [],
-          "tests": [
+              "id": "d679de7ceedf8bf5a301-a45116988072016bff65",
+              "file": "landing/conversion.spec.ts",
+              "line": 95,
+              "column": 3
+            },
             {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
+              "title": "Mobil: hamburger-meny fungerer",
+              "ok": true,
+              "tags": [
+                "mobile"
+              ],
+              "tests": [
                 {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 3923,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:57.735Z",
+                  "timeout": 120000,
                   "annotations": [],
-                  "attachments": []
+                  "expectedStatus": "passed",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 9657,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T04:00:10.084Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-0317bea5859234410731",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /en/paper-trading",
-          "ok": true,
-          "tags": [],
-          "tests": [
+              "id": "d679de7ceedf8bf5a301-b7218e5b5576f43f09d0",
+              "file": "landing/conversion.spec.ts",
+              "line": 109,
+              "column": 3
+            },
             {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
+              "title": "Mobil: kalkulator slider fungerer på touch",
+              "ok": true,
+              "tags": [
+                "mobile"
+              ],
+              "tests": [
                 {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 3364,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:08:58.222Z",
+                  "timeout": 120000,
                   "annotations": [],
-                  "attachments": []
+                  "expectedStatus": "passed",
+                  "projectId": "landing-chromium",
+                  "projectName": "landing-chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4500,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-17T04:00:15.376Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "status": "expected"
+              "id": "d679de7ceedf8bf5a301-8b5902b1f11626da6f62",
+              "file": "landing/conversion.spec.ts",
+              "line": 120,
+              "column": 3
             }
-          ],
-          "id": "881fe68ac5274d2a79fe-7f5be80239918ab6afe4",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /no/dashboard",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 2338,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:01.632Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-1bc29f187db52f110b3e",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /en/dashboard",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2085,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:01.682Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-6c22a8c615556539b3d3",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /no/priser",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2173,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:03.792Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-aee23fdef4644be7eb29",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /en/priser",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 2095,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:03.987Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-009d9675b2ff98e4ea4b",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /no/innlogging",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2398,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:05.986Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-7b1a072db720e657ce1d",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE på /en/innlogging",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 2081,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:06.118Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-5cf7bfae3d931c797969",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 18,
-          "column": 3
-        },
-        {
-          "title": "Håndterer korrupt localStorage uten reload-loop",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 6234,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:08.233Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-6ff867ac70d762961bef",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 34,
-          "column": 1
-        },
-        {
-          "title": "Kun en navbar rendres per side",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 17355,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:08.401Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "881fe68ac5274d2a79fe-5440fed446e4f8303dc3",
-          "file": "smoke/i18n-coverage.spec.ts",
-          "line": 73,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "smoke/launch-critical.spec.ts",
-      "file": "smoke/launch-critical.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "Landing NO: laster og har CTA",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 1462,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:14.494Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-6ea945c6565cb627519d",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 5,
-          "column": 1
-        },
-        {
-          "title": "Landing EN: laster og har CTA",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 1518,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:15.970Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-4755ccc38a6448888085",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 12,
-          "column": 1
-        },
-        {
-          "title": "Prisside: laster",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 872,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:17.504Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-db1e28758fe3a5563c7a",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 17,
-          "column": 1
-        },
-        {
-          "title": "Innlogging: viser loginskjema",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 862,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:18.390Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-44cb10596ab657d7ccd8",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 24,
-          "column": 1
-        },
-        {
-          "title": "Redirect: /settings → /innstillinger",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 988,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:19.263Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-437880acc7601704d53b",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 30,
-          "column": 1
-        },
-        {
-          "title": "Paper trading: side laster",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 1244,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:20.262Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-20f1d34a8e5b55fafbca",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 35,
-          "column": 1
-        },
-        {
-          "title": "Landing: har meta description",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 1386,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:21.552Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-9973517e63c2cf77c13d",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 42,
-          "column": 1
-        },
-        {
-          "title": "Ingen MISSING_MESSAGE console errors",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 120000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "smoke-chromium",
-              "projectName": "smoke-chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 2636,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-03-15T18:09:22.948Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "6846d8142a44209dc42f-b85ff0600044482ad7c3",
-          "file": "smoke/launch-critical.spec.ts",
-          "line": 49,
-          "column": 1
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-03-15T18:08:45.448Z",
-    "duration": 40396.998999999996,
-    "expected": 30,
+    "startTime": "2026-03-17T03:59:23.719Z",
+    "duration": 56227.643000000004,
+    "expected": 9,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

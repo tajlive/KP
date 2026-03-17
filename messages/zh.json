@@ -402,7 +402,7 @@
       "step1": {
         "step": "01",
         "title": "Paper Trading",
-        "desc": "Du får 1 million lekepenger. Test helt risikofritt i 30 dager."
+        "desc": "Du får 100 000 kr i lekepenger. Test helt risikofritt i 30 dager."
       },
       "step2": {
         "step": "02",
@@ -671,6 +671,12 @@
     },
     "welcome": "Velkommen til Klarpakke",
     "welcomeBack": "Velkommen tilbake 👋",
+    "tabs": {
+      "home": "首页",
+      "learn": "学习",
+      "practice": "练习",
+      "profile": "个人"
+    },
     "sidebar": {
       "overview": "Oversikt",
       "portfolio": "Portefølje",
@@ -888,7 +894,7 @@
       },
       {
         "q": "Hvordan starter jeg med paper trading?",
-        "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+        "a": "Registrer deg gratis, så får du automatisk 100 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
       },
       {
         "q": "Hva lærer jeg i kursene?",
@@ -1044,6 +1050,28 @@
       "trust1": "100% transparent",
       "trust2": "No lock-in",
       "trust3": "Risk-free practice"
+    },
+    "emailCapture": {
+      "badge": "免费课程",
+      "title": "获取免费加密货币课程",
+      "subtitle": "学习加密货币和交易的基础知识——直接发送到您的收件箱。",
+      "placeholder": "您的电子邮件地址",
+      "cta": "注册",
+      "loading": "发送中...",
+      "errorMsg": "请输入有效的电子邮件地址",
+      "successTitle": "注册成功！",
+      "successDesc": "检查您的收件箱——第一课即将到达。",
+      "privacy": "我们绝不与第三方共享您的电子邮件。随时退订。"
+    },
+    "demoWidget": {
+      "title": "免费试用模拟交易",
+      "subtitle": "点击买入和卖出，看看交易是如何运作的。无需注册。",
+      "portfolio": "投资组合",
+      "positionLabel": "持仓",
+      "buy": "买入 BTC",
+      "sell": "卖出 BTC",
+      "overlay": "注册以使用真实数据交易",
+      "overlayCta": "免费开始"
     }
   },
   "leagues": {
@@ -1304,9 +1332,9 @@
   "paperTrading": {
     "title": "Paper Trading",
     "subtitle": "Øv deg på trading med {amount} virtuelle penger",
-    "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
+    "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
     "help": {
-      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
       "close": "Lukk"
     },
     "stats": {
@@ -1707,7 +1735,7 @@
         "requirement": "无需先前知识",
         "features": [
           "完整的加密货币介绍",
-          "1,000,000 挪威克朗模拟交易",
+          "100,000 挪威克朗模拟交易",
           "访问社区",
           "市场更新",
           "注册时赠送 500 KLT 代币"

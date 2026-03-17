@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { StrategyType, createPaperTrade } from "@/lib/trading-api";
-import { createClient } from "@/lib/utils";
+import { cn, createClient } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -378,7 +378,7 @@ export default function InteractiveOnboardingWizard({
                   Paper Trade Oppsett
                 </h3>
                 <p className="text-slate-500 text-sm">
-                  Vi tildeler deg 1 000 000 NOK i lekepenger for å teste
+                  Vi tildeler deg 100 000 NOK i lekepenger for å teste
                   strategien.
                 </p>
               </div>
@@ -489,8 +489,4 @@ export default function InteractiveOnboardingWizard({
       </AnimatePresence>
     </div>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }
