@@ -26,14 +26,20 @@ Dette prosjektet er en Next.js 15 (App Router) applikasjon for kryptovaluta-hand
 - Oversettelser finnes i `messages/[locale].json`.
 
 ## Trading Logikk
-- Strategier kjøres i Supabase Edge Functions eller via Vercel Cron.
+- Strategier kjøres i Supabase Edge Functions eller via Supabase-basert cron (pg_cron/scheduler).
 - Se `src/components/trading` for UI-komponenter og `src/components/auto-trade` for strategi-oppsett.
+
+## Cron (source of truth)
+- **Cron skal alltid kjøres fra Supabase** (pg_cron eller Supabase scheduler). Vercel Cron er ikke source of truth. Nye tidsplanlegginger legges i Supabase; app-ruter `/api/cron/*` kalles med CRON_SECRET fra Supabase. Se `docs/CRON-SOURCE-OF-TRUTH.md`.
 
 ## Design og UX (premium)
 - Design skal se **dyrt og premium** ut, ikke bare enkelt. Se `.cursor/rules/design-ux-premium.md`.
 - Ved UI-endringer: vurder alltid mot `docs/design-assessment-2026.md` og `docs/design-konkurranse-analyse-2026.md`; bruk `src/lib/design/tokens.ts`.
 
 ## Spesifikke Cursor Instruksjoner
+- **Fiks automatisk, alltid** – implementer rettelser uten å spørre om bekreftelse; ikke vent på godkjenning.
+- **Alt automatisert** – foretrekk løsninger som kjører uten manuelle steg: CI/CD, migrasjoner ved deploy (`supabase db push`), ett-kommando oppsett; unngå manuelle psql-kommandoer der det kan automatiseres.
+- **Database-endringer fikses med PSQL** – bruk SQL-migrasjoner i `supabase/migrations/` eller kjørbar SQL (psql/Supabase Dashboard); ikke kun app-kode for skjemafiks.
 - Ved feilretting, sjekk alltid `ARCHITECTURE.md` for å forstå dataflyten.
 - Foretrekk funksjonelle komponenter med TypeScript-typer.
 - Ved endring av UI, oppretthold premium-uttrykk (mørkt tema, tokens, Lucide-ikoner) – se design-regelen over.

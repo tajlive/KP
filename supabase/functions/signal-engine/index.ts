@@ -276,6 +276,19 @@ Deno.serve(async (req) => {
         created_at: new Date().toISOString(),
       })
 
+      // Synk til trading_signals så dashboard SignalFeed viser noe (leser fra trading_signals)
+      await supabase.from('trading_signals').insert({
+        symbol: sig.symbol,
+        action: sig.action,
+        confidence: Math.round((sig.confidence ?? 0) * 100),
+        entry_price: sig.entry_price ?? null,
+        stop_loss: sig.stop_loss ?? null,
+        target_price: sig.take_profit ?? null,
+        reasoning: sig.reason ?? null,
+        signal_type: sig.strategy_type ?? null,
+        status: 'active',
+      }).then((r) => { if (r.error) console.warn('trading_signals insert:', r.error.message) })
+
       // Opprett trade automatisk (kun paper-modus) — unified trades-tabell (KLA-214)
       if (strategy.trading_mode === 'paper' && sig.entry_price) {
         const quantity = (strategy.capital_allocation ?? 100) / sig.entry_price
@@ -302,6 +315,24 @@ Deno.serve(async (req) => {
       }
 
       actionSignals.push(sig)
+    }
+
+    // Fallback: hvis ingen strategier ga signaler, generer ett markedsignal (BTC) så feed ikke er tom
+    if (actionSignals.length === 0 && (strategies ?? []).length === 0) {
+      const fallbackSig = await evaluateTrend(DEFAULT_SYMBOL).catch(() => null)
+      if (fallbackSig && fallbackSig.action !== 'HOLD') {
+        await supabase.from('trading_signals').insert({
+          symbol: fallbackSig.symbol,
+          action: fallbackSig.action,
+          confidence: Math.round((fallbackSig.confidence ?? 0) * 100),
+          entry_price: fallbackSig.entry_price ?? null,
+          stop_loss: fallbackSig.stop_loss ?? null,
+          target_price: fallbackSig.take_profit ?? null,
+          reasoning: fallbackSig.reason ?? null,
+          signal_type: fallbackSig.strategy_type ?? null,
+          status: 'active',
+        }).then((r) => { if (r.error) console.warn('trading_signals fallback:', r.error.message) })
+      }
     }
 
     await supabase.from('bot_health').insert({

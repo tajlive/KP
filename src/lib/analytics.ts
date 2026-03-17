@@ -1,30 +1,22 @@
 /**
  * Klarpakke Analytics
- * Bruker plausible-tracker (allerede installert)
- * GDPR-compliant, ingen cookies, EU-server
+ * Bruker Plausible via offisielt script (PlausibleScript.tsx). Ingen deprecated npm-pakke.
+ * GDPR-compliant, ingen cookies, EU-server.
  */
 
-import Plausible from 'plausible-tracker'
-
-let plausible: ReturnType<typeof Plausible> | null = null
+declare global {
+  interface Window {
+    plausible?: (event: string, options?: { props?: Record<string, string | number | boolean> }) => void;
+  }
+}
 
 export const initAnalytics = () => {
-  if (typeof window === 'undefined') return
-  if (process.env.NODE_ENV !== 'production') return
-
-  plausible = Plausible({
-    domain: 'klarpakke.no',
-    apiHost: 'https://plausible.io',
-    trackLocalhost: false,
-  })
-
-  plausible.enableAutoPageviews()
-  plausible.enableAutoOutboundTracking()
+  // Script lastes av PlausibleScript; ingen init nødvendig
 }
 
 const track = (event: string, props?: Record<string, string | number | boolean>) => {
-  if (!plausible) return
-  plausible.trackEvent(event, { props })
+  if (typeof window === 'undefined' || !window.plausible) return
+  window.plausible(event, { props })
 }
 
 // ── Onboarding ────────────────────────────────────────────────

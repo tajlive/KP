@@ -33,8 +33,25 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 
 ## 6. «The Next.js plugin was not detected in your ESLint configuration»
 
-- **Årsak:** Next.js build sjekker om ESLint-config bruker deres presets. Vi bruker flat config med `@next/eslint-plugin-next` (nextPlugin.flatConfig.coreWebVitals) øverst i eslint.config.mjs. Next sin detector kan likevel rapportere at pluginen ikke er funnet (kjent med flat config).
-- **Fiks:** Pluginen er registrert og reglene kjører (lint passerer med `--max-warnings 0`). Advarselen er kosmetisk. Å registrere pluginen to ganger for å «trickere» detector gir ESLint-feil (Cannot redefine plugin).
+- **Årsak:** Next.js build sjekker om ESLint-config bruker deres presets. Vi bruker flat config (ESLint 9) med `@next/eslint-plugin-next` (nextPlugin.flatConfig.coreWebVitals) øverst i eslint.config.mjs. Next sin detector gjenkjenner ikke flat config – kjent issue: [vercel/next.js#73655](https://github.com/vercel/next.js/issues/73655).
+- **Fiks:** Pluginen er registrert og reglene kjører (lint passerer med `--max-warnings 0`). Advarselen er kosmetisk. Å registrere pluginen to ganger gir ESLint-feil (Cannot redefine plugin).
+
+## 6b. Node-versjon – optimalt for Vercel
+
+- **Vercel støtter:** 20.x, 22.x, 24.x (default er 24.x). Kun **major.x** i `engines.node` anbefales; [docs](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions).
+- **Viktig:** `>=20.0.0` i package.json resulterer i at Vercel bygger med **latest 24.x** og viser advarsel om «automatic upgrade». Unngå derfor `>=20`.
+- **Valg i dette prosjektet:** **`22.x`** – LTS, god balanse mellom stabilitet og ny runtime; ingen nedgradering. Alternativ: `24.x` for å matche Vercel default.
+- **Konfigurasjon:** `package.json` har `"engines": { "node": "22.x" }`, og **`.nvmrc`** har `22` for lokalt/Vercel. Next.js 15 og React 19 støtter Node 22.
+
+## 6c. npm deprecated (rimraf, plausible-tracker, @vercel/kv, glob, inflight, boolean)
+
+- **Fiks gjort:**  
+  - **plausible-tracker** er fjernet. Plausible lastes nå via offisielt script (`PlausibleScript.tsx`); custom events bruker `window.plausible()` (src/lib/analytics.ts).  
+  - **rimraf:** `overrides` i package.json tvinger rimraf til ^4.0.0 for å fjerne deprecation.  
+  - **.nvmrc** med `22` for konsistent Node-versjon (samsvar med engines.node 22.x).
+- **Bevisst beholdt inntil videre:**  
+  - **@vercel/kv** er deprecated til fordel for Upstash Redis. Brukes i health, rate-limit og cache. Migrering krever eget oppsett (Vercel Marketplace / Upstash).  
+  - **glob**, **inflight**, **boolean** kommer som transitive avhengigheter; oppdatering kan gjøres gradvis ved oppgradering av avhengigheter.
 
 ## 7. Tester før produksjon
 
@@ -102,3 +119,8 @@ I GitHub Actions: se **Actions → workflow run → Build-jobben** for tidsforde
 2. Kommer den fra **egen kode**? Fiks i koden og oppdater denne filen.
 3. Kommer den fra **node_modules** (f.eks. next-intl, webpack)? Vurder oppgradering av pakken; hvis ikke mulig, dokumenter og evt. demp med `infrastructureLogging` eller tilsvarende.
 4. Oppdater denne filen med kort beskrivelse og fiks slik at det ikke «skjer igjen».
+
+## Vercel support og MCP/CLI
+
+- **Support:** [How to get support from Vercel](https://vercel.com/kb/guide/how-to-get-vercel-support) (Community Forum, Billing, Security, osv.).
+- **MCP + CLI:** Full oversikt over Vercel MCP (Cursor) og CLI (vercel-api.mjs): **docs/VERCEL-MCP-CLI.md**.
