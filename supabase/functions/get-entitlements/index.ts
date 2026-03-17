@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
 
     // Get open positions count
     const { count: positionCount, error: posError } = await supabase
-      .from('trade_history')
+      .from('trades')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
       .eq('status', 'OPEN');

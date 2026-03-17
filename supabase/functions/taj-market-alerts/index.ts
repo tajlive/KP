@@ -30,7 +30,7 @@ serve(async (req: Request) => {
 
     // 1. Fetch recent trade activity
     const { data: recentTrades } = await supabaseClient
-      .from("auto_trading_trades")
+      .from("trades")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(5);

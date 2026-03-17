@@ -51,7 +51,7 @@ export default function BotDashboard() {
 
   // Subscribe to session updates for P&L changes
   useRealtime<Record<string, unknown>>({
-    table: "auto_trading_sessions",
+    table: "trading_sessions",
     event: "UPDATE",
     onUpdate: (payload) => {
       updateBotFromRealtime(payload.config_id as string, {

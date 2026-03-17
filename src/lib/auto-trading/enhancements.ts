@@ -39,7 +39,7 @@ export async function checkRebalanceNeeded(
   
   // Fetch session and open positions
   const { data: session } = await supabase
-    .from('auto_trading_sessions')
+    .from('trading_sessions')
     .select('*, config:user_auto_trading_configs(*)')
     .eq('id', sessionId)
     .single()
@@ -49,7 +49,7 @@ export async function checkRebalanceNeeded(
   }
 
   const { data: positions } = await supabase
-    .from('auto_trading_trades')
+    .from('trades')
     .select('*')
     .eq('session_id', sessionId)
     .eq('status', 'OPEN')
@@ -203,7 +203,7 @@ export async function checkEducationStatus(
 
   // Fetch session data
   const { data: session } = await supabase
-    .from('auto_trading_sessions')
+    .from('trading_sessions')
     .select('*')
     .eq('id', sessionId)
     .single()

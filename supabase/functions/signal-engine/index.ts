@@ -261,20 +261,27 @@ Deno.serve(async (req) => {
         created_at: new Date().toISOString(),
       })
 
-      // Opprett paper-ordre automatisk (kun paper-modus)
+      // Opprett trade automatisk (kun paper-modus) — unified trades-tabell (KLA-214)
       if (strategy.trading_mode === 'paper' && sig.entry_price) {
         const quantity = (strategy.capital_allocation ?? 100) / sig.entry_price
-        await supabase.from('paper_orders').insert({
+        await supabase.from('trades').insert({
           user_id: strategy.user_id,
-          strategy_id: strategy.id,
-          strategy_type: strategy.strategy_type,
-          symbol: sig.symbol,
+          trading_pair: sig.symbol,
           side: sig.action,
-          entry_price: sig.entry_price,
+          price: sig.entry_price,
           quantity,
-          stop_loss: sig.stop_loss ?? null,
-          take_profit: sig.take_profit ?? null,
-          status: 'OPEN',
+          total_value: (strategy.capital_allocation ?? 100),
+          mode: 'paper',
+          order_type: 'market',
+          status: 'open',
+          strategy_signal: {
+            strategy_id: strategy.id,
+            strategy_type: strategy.strategy_type,
+            stop_loss: sig.stop_loss ?? null,
+            take_profit: sig.take_profit ?? null,
+            confidence: sig.confidence,
+            reason: sig.reason,
+          },
           created_at: new Date().toISOString(),
         })
       }
