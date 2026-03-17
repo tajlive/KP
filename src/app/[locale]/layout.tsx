@@ -9,7 +9,7 @@ import { OrganizationJsonLd } from "@/components/JsonLd";
 import { MarketingProviders } from "@/components/providers/MarketingProviders";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Fraunces, Lexend } from "next/font/google";
+import { Inter } from "next/font/google";
 import "../globals.css";
 
 /**
@@ -40,9 +40,8 @@ import "../globals.css";
  *    - Only essential error handling
  * 
  * 7. FONT OPTIMIZATIONS (Task 2):
- *    - Fraunces: display="optional", preload=false (display font, not critical)
- *    - Lexend: display="swap", preload=true (body text, needs swap)
- *    - adjustFontFallback: true for both (metric optimization)
+ *    - Inter: display="swap", preload=true (body text, needs swap)
+ *    - adjustFontFallback: true (metric optimization)
  * 
  * 8. RESOURCE HINTS (Task 5):
  *    - DNS prefetch + preconnect for Binance API
@@ -61,27 +60,13 @@ import "../globals.css";
  * - Initial JS: ~1.2MB → ~600KB (-50%)
  * - Hydration time: ~3s → ~1s (-67%)
  * - LCP: 6.2s → <3.0s (target)
- * - Font loading: No FOUT for Fraunces (optional), minimal FOUT for Lexend
+ * - Font loading: Minimal FOUT for Inter (swap)
  */
 
-// Fraunces: Display/heading font - NOT in critical path
-// display="optional": If not loaded in ~100ms, use fallback for this page visit
-// preload=false: Don't compete with LCP image/text for bandwidth
-// adjustFontFallback: Automatic metric adjustment for reduced CLS
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  display: "optional",
-  variable: "--font-fraunces",
-  preload: false,
-  adjustFontFallback: true,
-  fallback: ["Georgia", "Times New Roman", "serif"],
-});
-
-// Lexend: Body text font - in critical path, needs swap for readability
-const lexend = Lexend({
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-lexend",
+  variable: "--font-inter",
   preload: true,
   adjustFontFallback: true,
   fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
@@ -159,7 +144,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   return (
     <html
       lang={locale}
-      className={`${fraunces.variable} ${lexend.variable}`}
+      className={inter.variable}
     >
       <head suppressHydrationWarning>
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
@@ -233,7 +218,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <OrganizationJsonLd />
       </head>
       <body
-        className={`${lexend.className} font-sans antialiased bg-[#0A0B0D] text-white min-h-screen`}
+        className={`${inter.className} font-sans antialiased bg-[#F7F8FA] text-[#1A1D26] min-h-screen`}
         suppressHydrationWarning
       >
         <SessionCleanup />

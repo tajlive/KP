@@ -15,7 +15,7 @@ const DemoWidget = dynamic(
     })),
   {
     loading: () => (
-      <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+      <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
     ),
   },
 );
@@ -27,7 +27,7 @@ const EmailCapture = dynamic(
     })),
   {
     loading: () => (
-      <div className="h-48 animate-pulse bg-slate-900/50 rounded-xl" />
+      <div className="h-48 animate-pulse bg-slate-100 rounded-xl" />
     ),
   },
 );
@@ -40,7 +40,7 @@ const LottoComparison = dynamic(
     })),
   {
     loading: () => (
-      <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+      <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
     ),
   },
 );
@@ -52,7 +52,7 @@ const ThreeSteps = dynamic(
     })),
   {
     loading: () => (
-      <div className="h-64 animate-pulse bg-slate-900/50 rounded-xl" />
+      <div className="h-64 animate-pulse bg-slate-100 rounded-xl" />
     ),
   },
 );
@@ -72,7 +72,7 @@ const CoursePreview = dynamic(
     })),
   {
     loading: () => (
-      <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+      <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
     ),
   },
 );
@@ -93,8 +93,8 @@ export async function generateMetadata({
       ? "Klarpakke — Lær crypto trygt fra dag én"
       : "Klarpakke — Learn crypto safely from day one",
     description: isNorwegian
-      ? "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 10 000 i øvingspenger — ingen kredittkort."
-      : "Norway's only platform with courses, paper trading and autotrading. Start free with kr 10,000 in virtual money — no credit card.",
+      ? "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 100 000 i øvingspenger — ingen kredittkort."
+      : "Norway's only platform with courses, paper trading and autotrading. Start free with kr 100,000 in virtual money — no credit card.",
     keywords: isNorwegian
       ? [
           "lær trading",
@@ -114,8 +114,8 @@ export async function generateMetadata({
         ? "Klarpakke — Lær crypto trygt fra dag én"
         : "Klarpakke — Learn crypto safely from day one",
       description: isNorwegian
-        ? "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 10 000 i øvingspenger."
-        : "Norway's only platform with courses, paper trading and autotrading. Start free with kr 10,000 in virtual money.",
+        ? "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 100 000 i øvingspenger."
+        : "Norway's only platform with courses, paper trading and autotrading. Start free with kr 100,000 in virtual money.",
       type: "website",
       url: "https://www.klarpakke.no",
       images: [
@@ -142,7 +142,7 @@ export default async function HomePage({
   const { locale } = await params;
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-[#F7F8FA]">
       {/* Hero Section - 2026 copy, locale-aware links */}
       <HeroSection locale={locale} />
 
@@ -152,7 +152,7 @@ export default async function HomePage({
       {/* Interactive Demo Widget - Paper trading teaser */}
       <Suspense
         fallback={
-          <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+          <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
         }
       >
         <DemoWidget />
@@ -161,7 +161,7 @@ export default async function HomePage({
       {/* Course Preview - Show what users will learn */}
       <Suspense
         fallback={
-          <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+          <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
         }
       >
         <CoursePreview />
@@ -175,7 +175,7 @@ export default async function HomePage({
         <div className="max-w-4xl mx-auto px-4">
           <Suspense
             fallback={
-              <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+              <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
             }
           >
             <LottoComparison />
@@ -187,7 +187,7 @@ export default async function HomePage({
       <section className="max-w-6xl mx-auto px-4">
         <Suspense
           fallback={
-            <div className="h-64 animate-pulse bg-slate-900/50 rounded-xl" />
+            <div className="h-64 animate-pulse bg-slate-100 rounded-xl" />
           }
         >
           <ThreeSteps />
@@ -197,7 +197,7 @@ export default async function HomePage({
       {/* Testimonials - Social proof for signup */}
       <Suspense
         fallback={
-          <div className="h-96 animate-pulse bg-slate-900/50 rounded-xl" />
+          <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
         }
       >
         <Testimonials language={locale === "no" ? "no" : "en"} />
@@ -206,7 +206,7 @@ export default async function HomePage({
       {/* Email Lead Capture - Above footer */}
       <Suspense
         fallback={
-          <div className="h-48 animate-pulse bg-slate-900/50 rounded-xl" />
+          <div className="h-48 animate-pulse bg-slate-100 rounded-xl" />
         }
       >
         <EmailCapture />

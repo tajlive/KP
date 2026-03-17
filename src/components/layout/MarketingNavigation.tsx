@@ -36,7 +36,7 @@ export function MarketingNavigation() {
   ];
 
   return (
-    <nav className="bg-white/92 backdrop-blur-lg border-b border-[#E2E5EC] sticky top-0 z-50">
+    <nav className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
