@@ -59,16 +59,14 @@ export {
   executeTrade,
   closeTrade,
   syncOpenTrades,
-  BINANCE_REFERRAL
 } from './binance-executor'
+
+export { BINANCE_REFERRAL, BINANCE_REFERRAL_LINK } from '@/lib/constants/binance'
 
 export * from './binance-websocket'
 
 // Strategies (inkluderer nye Grid og DCA)
 export * from './strategies'
-
-// Binance Referral (also exported from binance-executor)
-export const BINANCE_REFERRAL_LINK = 'https://accounts.binance.com/register?ref=43427892'
 
 /**
  * Auto-Trading System Architecture

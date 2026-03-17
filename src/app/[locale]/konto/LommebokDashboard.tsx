@@ -48,8 +48,7 @@ const SUPPORTED_EXCHANGES = [
   { id: "firi", name: "Firi", logo: "F", color: "bg-green-500" },
 ];
 
-// Binance Referral Pro link
-const BINANCE_REF_LINK = "https://accounts.binance.com/register?ref=43427892";
+import { BINANCE_REFERRAL_LINK as BINANCE_REF_LINK } from "@/lib/constants/binance";
 
 export function LommebokDashboard() {
   const t = useTranslations("wallet");

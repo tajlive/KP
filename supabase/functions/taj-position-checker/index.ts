@@ -54,15 +54,16 @@ serve(async (req: Request) => {
     interface Trade {
       id: string;
       user_id: string;
-      symbol: string;
-      entry_price: number;
-      opened_at: string;
+      trading_pair: string;
+      price: number;
+      created_at: string;
     }
 
+    // KLA-214: Unified trades table
     const { data: trades, error: tradesError } = (await supabaseClient
-      .from("auto_trading_trades")
-      .select(`id, user_id, symbol, entry_price, opened_at`)
-      .eq("status", "OPEN")) as { data: Trade[] | null; error: any };
+      .from("trades")
+      .select(`id, user_id, trading_pair, price, created_at`)
+      .eq("status", "open")) as { data: Trade[] | null; error: any };
 
     if (tradesError) throw tradesError;
     if (!trades)
@@ -72,7 +73,7 @@ serve(async (req: Request) => {
       );
 
     const results: any[] = [];
-    const symbols = Array.from(new Set(trades.map((t: Trade) => t.symbol)));
+    const symbols = Array.from(new Set(trades.map((t: Trade) => t.trading_pair)));
     const prices: Record<string, number> = {};
 
     for (const symbol of symbols) {
@@ -80,9 +81,8 @@ serve(async (req: Request) => {
       if (price) prices[symbol] = price;
     }
 
-    // 3. Process exits
     for (const trade of trades) {
-      const currentPrice = prices[trade.symbol];
+      const currentPrice = prices[trade.trading_pair];
       if (!currentPrice) continue;
 
       const { data: config } = await supabaseClient
@@ -92,38 +92,34 @@ serve(async (req: Request) => {
         .single();
 
       const params = config?.custom_params || {};
-      const entryPrice = trade.entry_price;
+      const entryPrice = trade.price;
       const pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100;
 
-      // Default Params
       const stopLossPct = params.stop_loss_pct || 4.0;
       const maxTimeHours = 24;
 
       let action = "HOLD";
       let reason = "";
 
-      // Logic 1: Hard Stop Loss
       if (pnlPct <= -stopLossPct) {
         action = "CLOSE";
         reason = "stop_loss";
       }
 
-      // Logic 2: Time Limit
       const hoursOpen =
-        (Date.now() - new Date(trade.opened_at).getTime()) / (1000 * 60 * 60);
+        (Date.now() - new Date(trade.created_at).getTime()) / (1000 * 60 * 60);
       if (hoursOpen >= maxTimeHours) {
         action = "CLOSE";
         reason = "timeout";
       }
 
-      // Logic 3: Take Profit (Simple fixed for now)
       if (pnlPct >= 8.0) {
         action = "CLOSE";
         reason = "take_profit";
       }
 
       if (action === "CLOSE") {
-        await closeTrade(supabaseClient, trade.id, currentPrice, reason);
+        await closeTrade(supabaseClient, trade.id, currentPrice, pnlPct, reason);
         results.push({ tradeId: trade.id, action, pnlPct, reason });
       } else {
         results.push({ tradeId: trade.id, action: "HOLD", pnlPct });
@@ -163,16 +159,15 @@ async function fetchCurrentPrice(symbol: string): Promise<number | null> {
 async function closeTrade(
   supabase: any,
   tradeId: string,
-  price: number,
+  _price: number,
+  pnlPct: number,
   reason: string,
 ) {
   await supabase
-    .from("auto_trading_trades")
+    .from("trades")
     .update({
-      status: "CLOSED",
-      exit_price: price,
-      closed_at: new Date().toISOString(),
-      close_reason: reason,
+      status: "closed",
+      realized_pnl: pnlPct,
     })
     .eq("id", tradeId);
 }

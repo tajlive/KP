@@ -15,8 +15,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
 
-// Binance Referral Pro link
-const BINANCE_REF_LINK = 'https://accounts.binance.com/register?ref=43427892'
+import { BINANCE_REFERRAL_LINK as BINANCE_REF_LINK } from '@/lib/constants/binance'
 
 export function BinanceGuideContent() {
   const t = useTranslations('binanceGuide')

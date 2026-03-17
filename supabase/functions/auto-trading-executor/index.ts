@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const BINANCE_REFERRAL_CODE = '43427892'
+const BINANCE_REFERRAL_CODE = '43427892' // Kept inline -- Edge Functions can't import from src/
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -52,7 +52,7 @@ serve(async (req) => {
 
 async function startTrading(supabase: any, userId: string) {
   const { data: existing } = await supabase
-    .from('auto_trading_sessions')
+    .from('trading_sessions')
     .select('*')
     .eq('user_id', userId)
     .eq('status', 'ACTIVE')
@@ -96,7 +96,7 @@ async function startTrading(supabase: any, userId: string) {
   }
 
   const { data: session, error } = await supabase
-    .from('auto_trading_sessions')
+    .from('trading_sessions')
     .insert({
       user_id: userId,
       status: 'ACTIVE',
@@ -136,7 +136,7 @@ async function startTrading(supabase: any, userId: string) {
 
 async function stopTrading(supabase: any, userId: string) {
   const { data: session } = await supabase
-    .from('auto_trading_sessions')
+    .from('trading_sessions')
     .select('*')
     .eq('user_id', userId)
     .eq('status', 'ACTIVE')
@@ -150,7 +150,7 @@ async function stopTrading(supabase: any, userId: string) {
   }
 
   await supabase
-    .from('auto_trading_sessions')
+    .from('trading_sessions')
     .update({ 
       status: 'STOPPED',
       stopped_at: new Date().toISOString(),
@@ -170,8 +170,8 @@ async function stopTrading(supabase: any, userId: string) {
 
 async function getStatus(supabase: any, userId: string) {
   const { data: session } = await supabase
-    .from('auto_trading_sessions')
-    .select('*, trades:auto_trading_trades(*)')
+    .from('trading_sessions')
+    .select('*, trades:trades(*)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(1)

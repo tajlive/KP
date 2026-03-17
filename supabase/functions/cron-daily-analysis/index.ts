@@ -26,7 +26,7 @@ serve(async (req) => {
 
     // Get all active sessions
     const { data: activeSessions, error: sessionsError } = await supabase
-      .from('auto_trading_sessions')
+      .from('trading_sessions')
       .select('*')
       .eq('status', 'ACTIVE')
 
@@ -47,7 +47,7 @@ serve(async (req) => {
         today.setHours(0, 0, 0, 0)
 
         const { data: todaysTrades } = await supabase
-          .from('auto_trading_trades')
+          .from('trades')
           .select('*')
           .eq('session_id', session.id)
           .gte('created_at', today.toISOString())
@@ -68,7 +68,7 @@ serve(async (req) => {
 
         if (dailyLossPercent <= -dailyLossLimit) {
           await supabase
-            .from('auto_trading_sessions')
+            .from('trading_sessions')
             .update({ 
               status: 'PAUSED',
               paused_reason: 'DAILY_LOSS_LIMIT',

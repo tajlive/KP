@@ -71,7 +71,7 @@ export class MistakeAnalyzer {
     const mistakes: TradingMistake[] = [];
 
     const { data: trades } = await supabase
-      .from("auto_trading_trades")
+      .from("trades")
       .select("*")
       .eq("session_id", sessionId)
       .order("opened_at", { ascending: false });
@@ -321,7 +321,7 @@ export class MistakeAnalyzer {
 
     // Get session stats
     const { data: session } = await supabase
-      .from("auto_trading_sessions")
+      .from("trading_sessions")
       .select("win_rate, total_trades, max_drawdown_pct")
       .eq("id", sessionId)
       .single();
@@ -374,7 +374,7 @@ export class MistakeAnalyzer {
 
     // Get session summary
     const { data: session } = await supabase
-      .from("auto_trading_sessions")
+      .from("trading_sessions")
       .select("total_trades, winning_trades, losing_trades, total_pnl_nok")
       .eq("id", sessionId)
       .single();

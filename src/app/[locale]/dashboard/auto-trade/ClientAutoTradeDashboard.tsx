@@ -178,7 +178,7 @@ export default function ClientAutoTradeDashboard() {
   const fetchTrades = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('trade_history')
+        .from('trades')
         .select('*')
         .order('opened_at', { ascending: false })
         .limit(20);
