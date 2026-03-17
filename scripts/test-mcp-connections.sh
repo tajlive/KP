@@ -189,6 +189,20 @@ else
   skip "Stripe API" "Legg STRIPE_SECRET_KEY i .env.local (dashboard.stripe.com/apikeys)"
 fi
 
+# ── 6b. CLOUDFLARE CONNECTIVITY ───────────
+# Check that klarpakke.no is served via Cloudflare (CF headers)
+echo -n "  Testing Cloudflare connectivity... "
+cf_headers=$(curl -sI -m 10 "https://klarpakke.no" 2>&1 || true)
+if echo "$cf_headers" | grep -qi "cf-ray\|server:.*cloudflare"; then
+  echo -e "${GREEN}✅ OK (CF headers present)${NC}"
+  echo "✅ Cloudflare connectivity: OK" >> "$REPORT"
+  PASS=$((PASS + 1))
+else
+  echo -e "${RED}❌ FEIL (mangler CF-headere)${NC}"
+  echo "❌ Cloudflare connectivity: FEIL" >> "$REPORT"
+  FAIL=$((FAIL + 1))
+fi
+
 # ── 7. SENTRY ─────────────────────────────
 # Sentry har to token-typer:
 #   - CLI auth-token (sntryu_) — brukes av sentry-cli og build
@@ -244,7 +258,20 @@ echo -e "${BLUE}▶ Analytics & Monitoring${NC}"
 echo "" >> "$REPORT"
 echo "## Analytics" >> "$REPORT"
 
-# ── 9. PLAUSIBLE ──────────────────────────
+# ── 9. CLOUDFLARE CONNECTIVITY ─────────────
+echo -n "  Testing Cloudflare (klarpakke.no)... "
+cf_out=$(curl -sf -I "https://klarpakke.no" 2>&1 || true)
+if echo "$cf_out" | grep -qiE 'cf-ray|server:\s*cloudflare'; then
+  echo -e "${GREEN}✅ OK (CF headers present)${NC}"
+  echo "✅ Cloudflare (klarpakke.no): OK" >> "$REPORT"
+  PASS=$((PASS + 1))
+else
+  echo -e "${RED}❌ FEIL (manglende CF-headers)${NC}"
+  echo "❌ Cloudflare (klarpakke.no): FEIL" >> "$REPORT"
+  FAIL=$((FAIL + 1))
+fi
+
+# ── 10. PLAUSIBLE ─────────────────────────
 echo -n "  Testing Plausible Analytics... "
 if curl -sf "https://plausible.io" -o /dev/null; then
   echo -e "${GREEN}✅ Tilgjengelig (ingen API-nøkkel nødvendig)${NC}"

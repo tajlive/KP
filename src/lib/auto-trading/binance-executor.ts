@@ -809,46 +809,102 @@ function roundToStepSize(quantity: number, stepSize: number): number {
 }
 
 /**
+ * Calculate ATR(14) from Binance klines (OHLC format)
+ * Kline format: [openTime, open, high, low, close, ...]
+ */
+function calculateATRFromKlines(
+  klines: Array<{ 1?: string; 2?: string; 3?: string; 4?: string }>,
+  period: number = 14,
+): number {
+  if (klines.length < period + 1) return 0;
+
+  const ranges: number[] = [];
+  for (let i = 1; i < klines.length; i++) {
+    const high = parseFloat((klines[i] as { 2?: string })[2] ?? "0");
+    const low = parseFloat((klines[i] as { 3?: string })[3] ?? "0");
+    const prevClose = parseFloat((klines[i - 1] as { 4?: string })[4] ?? "0");
+    const tr = Math.max(
+      high - low,
+      Math.abs(high - prevClose),
+      Math.abs(low - prevClose),
+    );
+    ranges.push(tr);
+  }
+  const recentRanges = ranges.slice(-period);
+  return recentRanges.reduce((a, b) => a + b, 0) / period;
+}
+
+/**
+ * ATR multiplier per risk level for trailing stop distance.
+ * Conservative=2.5 (wider), Balanced=2.0, Aggressive=1.5 (tighter)
+ */
+function getTrailingStopATRMultiplier(riskLevel: string | undefined): number {
+  const multipliers: Record<string, number> = {
+    conservative: 2.5,
+    moderate: 2.0,
+    balanced: 2.0,
+    aggressive: 1.5,
+    dynamic: 2.0,
+    custom: 2.0,
+  };
+  return multipliers[riskLevel ?? ""] ?? 2.0;
+}
+
+export interface CalculateTrailingStopOptions {
+  atr?: number;
+  riskLevel?: string;
+}
+
+/**
  * Calculate trailing stop price
+ * When ATR is available: uses trailingDistance = atr * multiplier (volatility-adjusted)
+ * When ATR is not available: falls back to percentage-based logic
  */
 function calculateTrailingStop(
   trade: AutoTradingTrade,
   currentPrice: number,
+  options?: CalculateTrailingStopOptions,
 ): { newStopLoss: number | null; triggered: boolean } {
-  if (
-    !trade.trailing_stop_enabled ||
-    !trade.trailing_stop_activation_pct ||
-    !trade.trailing_stop_distance_pct
-  ) {
+  if (!trade.trailing_stop_enabled || !trade.trailing_stop_activation_pct) {
+    return { newStopLoss: null, triggered: false };
+  }
+
+  const useATR = (options?.atr ?? 0) > 0;
+  const hasPctFallback = (trade.trailing_stop_distance_pct ?? 0) > 0;
+  if (!useATR && !hasPctFallback) {
     return { newStopLoss: null, triggered: false };
   }
 
   const entryPrice = trade.entry_price;
   const activationPct = trade.trailing_stop_activation_pct;
-  const distancePct = trade.trailing_stop_distance_pct;
+  const distancePct = trade.trailing_stop_distance_pct ?? 0;
+  const atrMultiplier = getTrailingStopATRMultiplier(options?.riskLevel);
 
   if (trade.side === "LONG") {
-    // Update highest price
     const highestPrice = Math.max(
       trade.highest_price ?? entryPrice,
       currentPrice,
     );
-
-    // Calculate profit percentage
     const profitPct = ((currentPrice - entryPrice) / entryPrice) * 100;
 
-    // Check if trailing stop is activated
     if (profitPct >= activationPct) {
-      // Calculate new trailing stop
-      const newStop = highestPrice * (1 - distancePct / 100);
+      let newStop: number;
+      if (useATR) {
+        const trailingDistance = (options!.atr ?? 0) * atrMultiplier;
+        // Trail from new highs: trailingStop = max(trailingStop, highestPrice - atr*mult)
+        newStop = Math.max(
+          trade.stop_loss_price ?? 0,
+          highestPrice - trailingDistance,
+        );
+      } else {
+        newStop = highestPrice * (1 - distancePct / 100);
+      }
 
-      // Only update if new stop is higher than current stop
       if (newStop > (trade.stop_loss_price ?? 0)) {
         return { newStopLoss: newStop, triggered: false };
       }
     }
 
-    // Check if trailing stop is hit
     if (currentPrice <= (trade.stop_loss_price ?? 0)) {
       return { newStopLoss: null, triggered: true };
     }
@@ -861,7 +917,18 @@ function calculateTrailingStop(
     const profitPct = ((entryPrice - currentPrice) / entryPrice) * 100;
 
     if (profitPct >= activationPct) {
-      const newStop = lowestPrice * (1 + distancePct / 100);
+      let newStop: number;
+      if (useATR) {
+        const trailingDistance = (options!.atr ?? 0) * atrMultiplier;
+        // Trail from new lows: trailingStop = min(trailingStop, lowestPrice + atr*mult)
+        newStop = Math.min(
+          trade.stop_loss_price ?? Infinity,
+          lowestPrice + trailingDistance,
+        );
+      } else {
+        newStop = lowestPrice * (1 + distancePct / 100);
+      }
+
       if (newStop < (trade.stop_loss_price ?? Infinity)) {
         return { newStopLoss: newStop, triggered: false };
       }
@@ -1001,10 +1068,11 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   // This needs to be implemented based on your actual credential storage
   console.warn("Binance credentials not available in current schema");
 
-  // Get current prices for all symbols
+  // Get current prices and ATR for all symbols
   const typedOpenTrades = (openTrades || []) as AutoTradingTradeRow[];
   const symbols = [...new Set(typedOpenTrades.map((t) => t.symbol))];
   const prices: Record<string, number> = {};
+  const atrBySymbol: Record<string, number> = {};
 
   for (const symbol of symbols) {
     try {
@@ -1015,6 +1083,42 @@ export async function syncOpenTrades(userId: string): Promise<void> {
       prices[symbol] = parseFloat(data.price);
     } catch (error) {
       console.error(`Failed to get price for ${symbol}:`, error);
+    }
+
+    try {
+      const klines = await getKlines(symbol, "1h", 50);
+      atrBySymbol[symbol] = calculateATRFromKlines(klines, 14);
+    } catch (error) {
+      console.error(`Failed to fetch ATR for ${symbol}:`, error);
+    }
+  }
+
+  // Build session -> risk_level map for ATR multiplier
+  const sessionIds = [...new Set(typedOpenTrades.map((t) => t.session_id))];
+  const sessionRiskLevel: Record<string, string> = {};
+  for (const sessionId of sessionIds) {
+    const { data: session } = await supabase
+      .from("trading_sessions")
+      .select("config_id")
+      .eq("id", sessionId)
+      .single();
+    if (session?.config_id) {
+      const { data: config } = await supabase
+        .from("user_auto_trading_configs")
+        .select("strategy_id")
+        .eq("id", (session as { config_id: string }).config_id)
+        .single();
+      if (config?.strategy_id) {
+        const { data: strategy } = await supabase
+          .from("auto_trading_strategies")
+          .select("risk_level")
+          .eq("id", (config as { strategy_id: string }).strategy_id)
+          .single();
+        if (strategy?.risk_level) {
+          sessionRiskLevel[sessionId] = (strategy as { risk_level: string })
+            .risk_level;
+        }
+      }
     }
   }
 
@@ -1031,11 +1135,16 @@ export async function syncOpenTrades(userId: string): Promise<void> {
     const unrealizedPnlPercent =
       (unrealizedPnl / trade.position_value_nok) * 100;
 
-    // Calculate trailing stop
+    const atr = atrBySymbol[trade.symbol];
+    const riskLevel =
+      sessionRiskLevel[trade.session_id] ?? trade.risk_level ?? "balanced";
+
+    // Calculate trailing stop (ATR-based when available, else percentage fallback)
     const tradeAsAutoTradingTrade = trade as AutoTradingTrade;
     const trailingStopResult = calculateTrailingStop(
       tradeAsAutoTradingTrade,
       currentPrice,
+      { atr: atr > 0 ? atr : undefined, riskLevel },
     );
 
     // Note: The database schema doesn't have these columns
