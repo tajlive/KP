@@ -1,12 +1,12 @@
 // Klarpakke Design Tokens - Bruk DISSE overalt (samme stil på alle sider)
 
-/** Merke-farge #0052FF - bruk overalt for primær CTA og accent */
+/** Merke-farge #2563EB (KLA-182) - bruk overalt for primær CTA og accent */
 export const BRAND_COLOR = {
-  DEFAULT: '#0052FF',
-  HOVER: '#0041CC',
-  LIGHT: '#6FA3FF',
-  MUTED: 'rgba(0, 82, 255, 0.1)',
-  BORDER: 'rgba(0, 82, 255, 0.2)',
+  DEFAULT: '#2563EB',
+  HOVER: '#1d4ed8',
+  LIGHT: '#60a5fa',
+  MUTED: 'rgba(37, 99, 235, 0.1)',
+  BORDER: 'rgba(37, 99, 235, 0.2)',
 } as const;
 
 /** Dark theme bakgrunn/border - konsistent på landing, priser, dashboard */
@@ -22,8 +22,8 @@ export const SURFACE = {
 } as const;
 
 export const BRAND = {
-  primary: 'bg-[#0052FF] hover:bg-[#0041CC] text-white',
-  primaryOutline: 'border-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF]/10 dark:hover:bg-[#0052FF]/10',
+  primary: 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white',
+  primaryOutline: 'border-2 border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB]/10 dark:hover:bg-[#2563EB]/10',
   secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white',
   danger: 'bg-red-600 hover:bg-red-700 text-white',
   success: 'bg-emerald-600 hover:bg-emerald-700 text-white',
@@ -44,7 +44,7 @@ export const RADIUS = {
 
 export const SHADOW = {
   card: 'shadow-sm hover:shadow-md transition-shadow duration-200',
-  cardBrand: 'shadow-lg shadow-[#0052FF]/10',
+  cardBrand: 'shadow-lg shadow-[#2563EB]/10',
   button: 'shadow-sm active:shadow-none',
   modal: 'shadow-2xl',
 } as const;

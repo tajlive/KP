@@ -13,11 +13,12 @@
      COLORS
      ═══════════════════════════════════════════════════════════════ */
 
-  /* Brand Colors */
-  --kp-primary: #0ea5e9;
-  --kp-primary-hover: #0284c7;
-  --kp-primary-active: #0369a1;
-  --kp-primary-light: #e0f2fe;
+  /* Brand Colors (KLA-182: #2563EB canonical accent) */
+  --kp-accent: #2563EB;
+  --kp-primary: #2563EB;
+  --kp-primary-hover: #1d4ed8;
+  --kp-primary-active: #1e40af;
+  --kp-primary-light: #dbeafe;
 
   /* Secondary/Neutral */
   --kp-secondary: #64748b;
@@ -78,7 +79,7 @@
   --kp-border: #e5e7eb;
   --kp-border-dark: #d1d5db;
   --kp-border-light: #f3f4f6;
-  --kp-border-focus: #0ea5e9;
+  --kp-border-focus: #2563EB;
 
   /* ═══════════════════════════════════════════════════════════════
      TYPOGRAPHY
