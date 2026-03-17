@@ -38,9 +38,9 @@ test.describe('Smoke: Health Checks @smoke', () => {
     
     // Set Norwegian locale to avoid redirect (or use explicit /en)
     // This ensures consistent test behavior regardless of browser locale
-    await page.goto('/no', { waitUntil: 'networkidle' }).catch(async () => {
+    await page.goto('/no', { waitUntil: 'domcontentloaded' }).catch(async () => {
       // Fallback: go to root and accept any locale redirect
-      await page.goto('/', { waitUntil: 'networkidle' });
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
     });
     
     // Page should load on klarpakke domain with or without locale prefix
@@ -61,8 +61,7 @@ test.describe('Smoke: Health Checks @smoke', () => {
   });
   
   test('login page is accessible', async ({ page }) => {
-    await page.goto('/innlogging', { timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await page.goto('/innlogging', { waitUntil: 'domcontentloaded', timeout: 60000 });
     
     // Should render login form with data-testid
     const loginPage = page.locator('[data-testid="login-page"]');
@@ -76,8 +75,7 @@ test.describe('Smoke: Health Checks @smoke', () => {
   });
   
   test('leaderboard page loads', async ({ page }) => {
-    await page.goto('/leaderboard');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/leaderboard', { waitUntil: 'domcontentloaded' });
     
     // Check for leaderboard page with data-testid
     const leaderboardPage = page.locator('[data-testid="leaderboard-page"]');

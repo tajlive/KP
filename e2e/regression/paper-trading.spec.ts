@@ -10,7 +10,7 @@ test.describe('Regression: Paper Trading @regression @papertrading', () => {
   
   test.beforeEach(async ({ page }) => {
     await page.goto('/dashboard', { timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
   });
 
   test('paper trading balance API returns correct structure', async ({ page, request }) => {
