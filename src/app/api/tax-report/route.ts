@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
     const { data: trades, error: tradesError } = await supabase
       .from('auto_trades')
       .select('*')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .gte('executed_at', startDate)
       .lte('executed_at', endDate)
       .order('executed_at', { ascending: true });

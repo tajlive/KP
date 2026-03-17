@@ -4,6 +4,7 @@ import { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { Calculator as CalcIcon, TrendingUp, AlertTriangle, Download, Info, Coins, PiggyBank } from "lucide-react";
 import { motion } from "framer-motion";
+import { BRAND } from "@/lib/design/tokens";
 import { useLocale, useTranslations } from "next-intl";
 
 // ─── Formatering ────────────────────────────────────────────
@@ -266,7 +267,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
                     key={v}
                     onClick={() => { setStartSum(v); setStartSumInput(formatNOK(v, locale)); }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      startSum === v ? "bg-[#0052FF] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      startSum === v ? BRAND.primary : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
                     {formatNOK(v, locale)} kr
@@ -432,7 +433,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
           <p className="text-gray-500 text-sm mb-4">{t("cta.text")}</p>
           <Link
             href={`/${locale}/paper-trading`}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#0052FF] text-white font-semibold rounded-full hover:bg-[#0047E0] transition-colors"
+            className={`inline-flex items-center gap-2 px-6 py-3 ${BRAND.primary} font-semibold rounded-full transition-colors`}
           >
             <TrendingUp className="w-4 h-4" />
             {t("cta.button")}

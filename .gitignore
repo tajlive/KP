@@ -16,6 +16,7 @@ yarn.lock
 *.lcov
 .nyc_output
 /test-results/
+test-results.json
 /playwright-report/
 /playwright/.cache/
 /tests/e2e/test-results/

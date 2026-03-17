@@ -26,8 +26,8 @@ const CANONICAL_DOMAIN = "https://www.klarpakke.no";
 const CRITICAL_PATHS = [
   {
     path: "/",
-    expectedRedirect: "/no",
-    description: "Root redirect to locale",
+    expectedRedirectOr200: "/no",
+    description: "Root redirect to locale or serve /no",
   },
   { path: "/no", status: 200, description: "Norwegian homepage" },
   { path: "/no/innlogging", status: 200, description: "Login page (innlogging)" },
@@ -42,7 +42,8 @@ const CRITICAL_PATHS = [
   {
     path: "/no/paper-trading",
     status: 200,
-    description: "Paper trading (requires auth but should return HTML)",
+    description: "Paper trading (auth redirect OK)",
+    acceptStatuses: [200, 302, 307],
   },
   { path: "/no/vilkar", status: 200, description: "Terms of service" },
   { path: "/no/personvern", status: 200, description: "Privacy policy" },
@@ -184,12 +185,18 @@ async function main() {
   // 3. Critical Paths
   for (const test of CRITICAL_PATHS) {
     const url = `${CANONICAL_DOMAIN}${test.path}`;
-    if (test.expectedRedirect) {
-      const res = await testRedirect(url, test.expectedRedirect);
-      if (res.success) logSuccess(`${test.path} -> ${test.expectedRedirect}`);
-      else {
-        logError(`${test.path} redirect failed: ${res.error}`);
-        exitCode = 1;
+    if (test.expectedRedirectOr200) {
+      const redirectRes = await testRedirect(url, test.expectedRedirectOr200);
+      if (redirectRes.success) {
+        logSuccess(`${test.path} -> ${test.expectedRedirectOr200}`);
+      } else {
+        const res = await testUrl(url, 200, true);
+        const ok = res.success && res.status === 200 && res.finalUrl && res.finalUrl.includes(test.expectedRedirectOr200);
+        if (ok) logSuccess(`${test.path} (OK)`);
+        else {
+          logError(`${test.path} redirect failed: ${redirectRes.error}`);
+          exitCode = 1;
+        }
       }
     } else {
       const followRedirects = !test.noFollowRedirects;

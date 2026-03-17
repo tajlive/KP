@@ -25,6 +25,7 @@ import {
   Lock,
   Mail,
 } from "lucide-react";
+import { BRAND } from "@/lib/design/tokens";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -232,7 +233,7 @@ function InnloggingForm() {
               <Button
                 type="submit"
                 disabled={status === "logging_in"}
-                className="w-full h-12 bg-[#0052FF] hover:bg-[#0041CC] text-white font-medium"
+                className={`w-full h-12 ${BRAND.primary} font-medium`}
               >
                 {status === "logging_in" ? (
                   <>
@@ -269,7 +270,7 @@ function InnloggingForm() {
             <div className="flex flex-col gap-2 text-center text-sm">
               <Link
                 href={`/${locale}/glemt-passord`}
-                className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2"
+                className={`${BRAND.link} underline underline-offset-2`}
               >
                 {t("forgotPassword")}
               </Link>
@@ -277,7 +278,7 @@ function InnloggingForm() {
                 {t("noAccount")}{" "}
                 <Link
                   href={`/${locale}/signup`}
-                  className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2 font-medium"
+                  className={`${BRAND.link} underline underline-offset-2 font-medium`}
                 >
                   {t("createAccount")}
                 </Link>
@@ -290,14 +291,14 @@ function InnloggingForm() {
           Ved å logge inn godtar du våre{" "}
           <Link
             href={`/${locale}/vilkar`}
-            className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2"
+            className={`${BRAND.link} underline underline-offset-2`}
           >
             vilkår
           </Link>{" "}
           og{" "}
           <Link
             href={`/${locale}/personvern`}
-            className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2"
+            className={`${BRAND.link} underline underline-offset-2`}
           >
             personvernerklæring
           </Link>

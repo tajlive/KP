@@ -37,10 +37,10 @@ export function DashboardSidebar() {
 
       const { data: profile } = await supabase
         .from("user_profiles")
-        .select("tier")
+        .select("tier, role")
         .eq("id", user.id)
         .maybeSingle();
-      setIsAdmin(profile?.tier === "professor");
+      setIsAdmin(profile?.role === "admin" || profile?.tier === "professor");
     } catch {
       // Silently fail
     }

@@ -24,5 +24,11 @@
   "closeMenu": "关闭菜单",
   "openMenu": "打开菜单",
   "studyProgram": "学习项目",
-  "school": "学校"
+  "school": "学校",
+  "tagline": "Learn crypto safely",
+  "navLearn": "课程",
+  "navTrade": "模拟",
+  "navBots": "机器人",
+  "navPricing": "价格",
+  "freeBalance": "10万虚拟资金免费"
 }

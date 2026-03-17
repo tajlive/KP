@@ -10,6 +10,7 @@ import { MarketingProviders } from "@/components/providers/MarketingProviders";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter } from "next/font/google";
+import { SURFACE } from "@/lib/design/tokens";
 import "../globals.css";
 
 /**
@@ -218,7 +219,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <OrganizationJsonLd />
       </head>
       <body
-        className={`${inter.className} font-sans antialiased bg-[#F7F8FA] text-[#1A1D26] min-h-screen`}
+        className={`${inter.className} font-sans antialiased ${SURFACE.BG_LIGHT} text-[#1A1D26] min-h-screen`}
         suppressHydrationWarning
       >
         <SessionCleanup />

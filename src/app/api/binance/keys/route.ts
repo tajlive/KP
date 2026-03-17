@@ -190,7 +190,7 @@ export async function GET(_request: NextRequest) {
     const { data: keys, error } = await supabase
       .from('user_binance_keys')
       .select('is_testnet, is_active, last_validated_at, created_at')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle();
 
     if (error) {
@@ -240,7 +240,7 @@ export async function DELETE(_request: NextRequest) {
     const { error } = await supabase
       .from('user_binance_keys')
       .delete()
-      .eq('id', user.id);
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Error deleting keys:', getErrorMessage(error));

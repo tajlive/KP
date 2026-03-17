@@ -26,5 +26,11 @@
   "closeMenu": "Lukk meny",
   "openMenu": "Åpne meny",
   "studyProgram": "Studieprogram",
-  "school": "Skole"
+  "school": "Skole",
+  "tagline": "Lær crypto trygt",
+  "navLearn": "Lær",
+  "navTrade": "Handel",
+  "navBots": "Bots",
+  "navPricing": "Priser",
+  "freeBalance": "100 000 kr gratis"
 }
