@@ -12,6 +12,7 @@ const CorruptTokenCleanup = () => (
 );
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { ScrollToTop } from "@/components/dashboard/ScrollToTop";
 import { NotificationTray } from "@/components/layout/NotificationTray";
 import { usePaperTradingInit } from "@/hooks/usePaperTradingInit";
@@ -59,12 +60,13 @@ export default function DashboardClientLayout({
                             <NotificationTray />
                           </div>
                         </header>
-                        <main className="flex-1 overflow-y-auto p-4 lg:p-8 pt-20 lg:pt-24">
+                        <main className="flex-1 overflow-y-auto p-4 lg:p-8 pt-20 lg:pt-24 pb-24 md:pb-8">
                           <div className="max-w-6xl mx-auto">
                             <DashboardContent>{children}</DashboardContent>
                           </div>
                         </main>
                       </div>
+                      <DashboardTabs />
                     </div>
                   </ProtectedRoute>
                   <Analytics />
