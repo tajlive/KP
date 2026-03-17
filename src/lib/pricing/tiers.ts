@@ -8,7 +8,7 @@ export const TIERS = {
   student: {
     slug: 'student' as const,
     priceNOK: 0,
-    badge: '🎓',
+    badge: 'Student',
     popular: false,
     features: [
       'Ubegrenset Paper Trading',
@@ -40,7 +40,7 @@ export const TIERS = {
   bachelor: {
     slug: 'bachelor' as const,
     priceNOK: 249,
-    badge: '📈',
+    badge: 'Bachelor',
     popular: false,
     features: [
       'Alt i Student',
@@ -70,7 +70,7 @@ export const TIERS = {
   master: {
     slug: 'master' as const,
     priceNOK: 499,
-    badge: '🏆',
+    badge: 'Master',
     popular: true,
     features: [
       'Alt i Bachelor',
@@ -101,7 +101,7 @@ export const TIERS = {
   phd: {
     slug: 'phd' as const,
     priceNOK: 999,
-    badge: '🎯',
+    badge: 'PhD',
     popular: false,
     features: [
       'Alt i Master',
@@ -133,7 +133,7 @@ export const TIERS = {
   professor: {
     slug: 'professor' as const,
     priceNOK: 1999,
-    badge: '👑',
+    badge: 'Professor',
     popular: false,
     features: [
       'Alt i PhD',

@@ -108,6 +108,7 @@ export default async function PaperTradingPage({
             sessions={(sessions ?? []) as PaperTradingListSession[]}
             balance={balance}
             locale={locale}
+            userId={user.id}
           />
         </main>
       </div>

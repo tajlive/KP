@@ -18,6 +18,7 @@ const COIN_NAMES: Record<string, string> = {
   BNBUSDT: "BNB",
   ADAUSDT: "Cardano",
   XRPUSDT: "XRP",
+  DOGEUSDT: "Dogecoin",
 };
 
 const supabase = createClient();
