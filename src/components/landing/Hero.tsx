@@ -165,7 +165,7 @@ export function Hero({ language }: HeroProps) {
                 <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-1">
                   Lekepenger
                 </p>
-                <h3 className="text-4xl font-black text-white">1,000,000 kr</h3>
+                <h3 className="text-4xl font-black text-white">100,000 kr</h3>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30">
                 <TrendingUp className="text-blue-400 w-8 h-8" />

@@ -22,13 +22,27 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
+  const title = t("dashboard.title", { defaultValue: "Dashboard - Klarpakke" });
+  const description = t("dashboard.description", {
+    defaultValue:
+      "Ditt personlige dashboard for krypto-trading med lekepenger, live trading og porteføljeanalyse.",
+  });
 
   return {
-    title: t("dashboard.title", { defaultValue: "Dashboard - Klarpakke" }),
-    description: t("dashboard.description", {
-      defaultValue:
-        "Ditt personlige dashboard for krypto-trading med lekepenger, live trading og porteføljeanalyse.",
-    }),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `https://www.klarpakke.no/${locale}/dashboard`,
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 

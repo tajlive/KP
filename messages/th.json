@@ -978,7 +978,7 @@
       },
       {
         "q": "Hvordan starter jeg med paper trading?",
-        "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+        "a": "Registrer deg gratis, så får du automatisk 100 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
       },
       {
         "q": "Hva lærer jeg i kursene?",
@@ -1505,9 +1505,9 @@
   "paperTrading": {
     "title": "Paper Trading",
     "subtitle": "Øv deg på trading med {amount} virtuelle penger",
-    "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
+    "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
     "help": {
-      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
       "close": "Lukk"
     },
     "stats": {
@@ -1913,7 +1913,7 @@
         "requirement": "ไม่ต้องมีความรู้พื้นฐาน",
         "features": [
           "บทนำคริปโตแบบครบถ้วน",
-          "Paper Trading 1,000,000 โครน",
+          "Paper Trading 100,000 โครน",
           "เข้าถึงชุมชน",
           "อัปเดตตลาด",
           "500 KLT tokens เมื่อสมัคร"

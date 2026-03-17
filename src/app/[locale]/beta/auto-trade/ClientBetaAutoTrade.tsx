@@ -175,7 +175,7 @@ export default function ClientBetaAutoTrade() {
                             </div>
                             <div className="text-center p-4 rounded-xl bg-slate-800/30">
                                 <p className="text-xs text-slate-500 uppercase font-bold mb-1">Balans</p>
-                                <p className="text-2xl font-bold text-white">${simulation?.current_balance?.toLocaleString() || '1,000,000'}</p>
+                                <p className="text-2xl font-bold text-white">${simulation?.current_balance?.toLocaleString() || '100,000'}</p>
                             </div>
                         </div>
 

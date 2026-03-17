@@ -45,7 +45,11 @@
     "taxReport": "Skatterapport",
     "settings": "Innstillinger",
     "admin": "Admin",
-    "logout": "Logg ut"
+    "logout": "Logg ut",
+    "autoTrade": "自动交易",
+    "guide": "指南",
+    "mainMenu": "主菜单",
+    "closeMenu": "关闭菜单"
   },
   "topBar": {
     "myOverview": "Min Oversikt",
@@ -180,5 +184,15 @@
   "bots": {
     "modeLive": "实盘",
     "modePaper": "模拟"
+  },
+  "learningPath": {
+    "title": "你的学习路径",
+    "level": "等级",
+    "lessons": "课程",
+    "continueWhere": "继续上次学到的内容",
+    "yourTracks": "你的课程",
+    "done": "已完成",
+    "yourBadges": "你的徽章",
+    "goToAcademy": "前往学院"
   }
 }

@@ -144,7 +144,8 @@ function InnloggingForm() {
           <Link href={`/${locale}`}>
             <Image
               src="/logo.svg"
-              alt="Klarpakke"
+              alt=""
+              role="presentation"
               width={180}
               height={40}
               className="h-10 w-auto dark:invert"
@@ -216,7 +217,7 @@ function InnloggingForm() {
                     type="button"
                     tabIndex={0}
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded"
                     aria-label={showPassword ? (locale === "no" ? "Skjul passord" : "Hide password") : (locale === "no" ? "Vis passord" : "Show password")}
                   >
                     {showPassword ? (
@@ -268,7 +269,7 @@ function InnloggingForm() {
             <div className="flex flex-col gap-2 text-center text-sm">
               <Link
                 href={`/${locale}/glemt-passord`}
-                className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
+                className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2"
               >
                 {t("forgotPassword")}
               </Link>
@@ -276,7 +277,7 @@ function InnloggingForm() {
                 {t("noAccount")}{" "}
                 <Link
                   href={`/${locale}/signup`}
-                  className="text-[#0052FF] hover:text-[#0041CC] hover:underline font-medium"
+                  className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2 font-medium"
                 >
                   {t("createAccount")}
                 </Link>
@@ -289,14 +290,14 @@ function InnloggingForm() {
           Ved å logge inn godtar du våre{" "}
           <Link
             href={`/${locale}/vilkar`}
-            className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
+            className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2"
           >
             vilkår
           </Link>{" "}
           og{" "}
           <Link
             href={`/${locale}/personvern`}
-            className="text-[#0052FF] hover:text-[#0041CC] hover:underline"
+            className="text-[#0052FF] hover:text-[#0041CC] underline underline-offset-2"
           >
             personvernerklæring
           </Link>

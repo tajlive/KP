@@ -186,7 +186,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
                       {locale === "en" ? "Paper money" : "Lekepenger"}
                     </div>
                     <div className="text-2xl font-black text-slate-900 mt-1">
-                      1 000 000 kr
+                      100 000 kr
                     </div>
                   </div>
                   <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">

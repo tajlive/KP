@@ -2,8 +2,10 @@
  * Tester for DashboardLearningSidebar - KLA-75 Testplan
  */
 
+import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
 import DashboardLearningSidebar, { getCurrentLevel } from "./DashboardLearningSidebar";
 
 // Mock Next.js navigation
@@ -16,6 +18,29 @@ vi.mock("@/lib/utils", () => ({
   createClient: () => ({}),
   cn: (...classes: (string | boolean | undefined)[]) => classes.filter(Boolean).join(" "),
 }));
+
+const messages = {
+  dashboard: {
+    learningPath: {
+      title: "Læringsløp",
+      level: "Nivå",
+      lessons: "leksjoner",
+      continueWhere: "Fortsett der du slapp",
+      yourTracks: "Dine kurs",
+      done: "Ferdig",
+      yourBadges: "Dine Badges",
+      goToAcademy: "Gå til Akademiet",
+    },
+  },
+};
+
+function renderWithIntl(ui: React.ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="no" messages={messages}>
+      {ui}
+    </NextIntlClientProvider>
+  );
+}
 
 describe("DashboardLearningSidebar", () => {
   describe("getCurrentLevel", () => {
@@ -53,23 +78,23 @@ describe("DashboardLearningSidebar", () => {
     };
 
     it("renders learning path header", () => {
-      render(<DashboardLearningSidebar {...defaultProps} />);
+      renderWithIntl(<DashboardLearningSidebar {...defaultProps} />);
       expect(screen.getByText("Læringsløp")).toBeInTheDocument();
     });
 
     it("shows correct level based on progress", () => {
-      render(<DashboardLearningSidebar {...defaultProps} completedLessonIds={["gk-01", "gk-02", "gk-03"]} />);
+      renderWithIntl(<DashboardLearningSidebar {...defaultProps} completedLessonIds={["gk-01", "gk-02", "gk-03"]} />);
       expect(screen.getByText(/Nivå:/)).toBeInTheDocument();
     });
 
     it("shows progress percentage", () => {
-      render(<DashboardLearningSidebar {...defaultProps} completedLessonIds={["gk-01"]} />);
+      renderWithIntl(<DashboardLearningSidebar {...defaultProps} completedLessonIds={["gk-01"]} />);
       // Progress percentage should be visible
       expect(document.querySelector('[class*="bg-indigo-500/20"]')).toBeInTheDocument();
     });
 
     it("shows all learning tracks", () => {
-      render(<DashboardLearningSidebar {...defaultProps} />);
+      renderWithIntl(<DashboardLearningSidebar {...defaultProps} />);
       expect(screen.getByText("Grunnkurs i Krypto")).toBeInTheDocument();
       expect(screen.getByText("Risikostyring")).toBeInTheDocument();
       expect(screen.getByText("Teknisk Analyse")).toBeInTheDocument();
@@ -86,12 +111,12 @@ describe("DashboardLearningSidebar", () => {
           icon: "BookOpen",
         },
       ];
-      render(<DashboardLearningSidebar {...defaultProps} earnedBadges={badges} />);
+      renderWithIntl(<DashboardLearningSidebar {...defaultProps} earnedBadges={badges} />);
       expect(screen.getByText("Dine Badges")).toBeInTheDocument();
     });
 
     it("shows continue learning section when there are incomplete lessons", () => {
-      render(<DashboardLearningSidebar {...defaultProps} completedLessonIds={["gk-01"]} />);
+      renderWithIntl(<DashboardLearningSidebar {...defaultProps} completedLessonIds={["gk-01"]} />);
       expect(screen.getByText("Fortsett der du slapp")).toBeInTheDocument();
     });
 
@@ -101,7 +126,7 @@ describe("DashboardLearningSidebar", () => {
         "gk-01-intro", "gk-02-risiko", "gk-03-quiz-risiko", "gk-04-simulator-intro",
         "gk-05-kalkulator", "gk-06-first-trade", "gk-07-quiz-fullfor"
       ];
-      render(
+      renderWithIntl(
         <DashboardLearningSidebar
           {...defaultProps}
           completedLessonIds={allGrunnkursLessons}
@@ -112,7 +137,7 @@ describe("DashboardLearningSidebar", () => {
     });
 
     it("shows academy CTA button", () => {
-      render(<DashboardLearningSidebar {...defaultProps} />);
+      renderWithIntl(<DashboardLearningSidebar {...defaultProps} />);
       expect(screen.getByText("Gå til Akademiet")).toBeInTheDocument();
     });
   });

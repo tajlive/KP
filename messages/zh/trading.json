@@ -75,5 +75,27 @@
   "noPositions": "Ingen åpne posisjoner",
   "unrealizedPnL": "Urealisert P&L",
   "realizedPnL": "Realisert P&L",
-  "closePosition": "Lukk posisjon"
+  "closePosition": "Lukk posisjon",
+  "strategies": {
+    "dca_trygg": {
+      "name": "智能 DCA（安全）",
+      "description": "固定金额自动购买。风险最低，最适合初学者。"
+    },
+    "trend_balansert": {
+      "name": "趋势跟随（平衡）",
+      "description": "使用技术分析跟随市场趋势。中等风险。"
+    },
+    "multisignal_aktiv": {
+      "name": "多信号（活跃）",
+      "description": "结合多个指标进行主动交易。较高风险。"
+    },
+    "grid_bot": {
+      "name": "网格机器人",
+      "description": "在网格中放置买卖订单。在横盘市场中效果最佳。"
+    },
+    "ai_copy": {
+      "name": "AI 跟单",
+      "description": "自动复制 AI 推荐的交易。风险各异。"
+    }
+  }
 }

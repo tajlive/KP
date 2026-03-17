@@ -42,7 +42,7 @@ export function RiskProfilePulse({
     ISeriesApi<"Area"> | ISeriesApi<"Line"> | ISeriesApi<"Candlestick"> | null
   >(null);
   const [portfolio, setPortfolio] = useState<PortfolioData>({
-    value: 1000000,
+    value: 100000,
     change: 0,
     changePercent: 0,
   });
@@ -127,7 +127,7 @@ export function RiskProfilePulse({
 
       // Generate smooth data
       const data: AreaData[] = [];
-      let value = 1000000;
+      let value = 100000;
       const now = Date.now() / 1000;
       for (let i = 100; i >= 0; i--) {
         value = value * (1 + (Math.random() - 0.48) * 0.002);
@@ -146,7 +146,7 @@ export function RiskProfilePulse({
       seriesRef.current = lineSeries;
 
       const data: LineData[] = [];
-      let value = 1000000;
+      let value = 100000;
       const now = Date.now() / 1000;
       for (let i = 100; i >= 0; i--) {
         value = value * (1 + (Math.random() - 0.48) * 0.004);
@@ -169,7 +169,7 @@ export function RiskProfilePulse({
       seriesRef.current = candleSeries;
 
       const data: CandlestickData[] = [];
-      let value = 1000000;
+      let value = 100000;
       const now = Date.now() / 1000;
       for (let i = 50; i >= 0; i--) {
         const open = value;
@@ -298,7 +298,7 @@ export function RiskProfilePulse({
 export function MiniPulseWidget() {
   const { user } = useAuth();
   const [portfolio, setPortfolio] = useState<PortfolioData>({
-    value: 1000000,
+    value: 100000,
     change: 0,
     changePercent: 0,
   });

@@ -135,7 +135,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/40 hover:text-white transition-colors duration-200"
+                  className="text-white/60 hover:text-white transition-colors duration-200"
                   aria-label={social.name}
                 >
                   {social.icon}
@@ -205,7 +205,7 @@ export function Footer() {
         {/* Payment Methods */}
         <div className="mt-8 py-6 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <span className="text-white/40 text-xs">{t("paymentLabel")}</span>
+            <span className="text-white/60 text-xs">{t("paymentLabel")}</span>
             <div className="flex items-center gap-4">
               {/* Card icons */}
               <div className="flex items-center gap-1 text-white/50">
@@ -247,7 +247,7 @@ export function Footer() {
 
         {/* Disclaimer */}
         <div className="mt-12 pt-8 border-t border-white/10">
-          <p className="text-white/40 text-sm leading-relaxed max-w-3xl">
+          <p className="text-white/60 text-sm leading-relaxed max-w-3xl">
             {t("disclaimer")}
           </p>
         </div>
@@ -255,25 +255,25 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-8 pt-8 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-white/40 text-sm">
+            <p className="text-white/60 text-sm">
               {t("copyright", { year: currentYear })}
             </p>
             <div className="flex gap-6">
               <Link
                 href={canonicalPath("/personvern")}
-                className="text-white/40 text-sm hover:text-white/70 transition-colors duration-200"
+                className="text-white/60 text-sm hover:text-white/70 transition-colors duration-200"
               >
                 {t("links.privacy")}
               </Link>
               <Link
                 href={canonicalPath("/vilkar")}
-                className="text-white/40 text-sm hover:text-white/70 transition-colors duration-200"
+                className="text-white/60 text-sm hover:text-white/70 transition-colors duration-200"
               >
                 {t("links.terms")}
               </Link>
               <Link
                 href={canonicalPath("/kontakt")}
-                className="text-white/40 text-sm hover:text-white/70 transition-colors duration-200"
+                className="text-white/60 text-sm hover:text-white/70 transition-colors duration-200"
               >
                 {t("links.contact")}
               </Link>

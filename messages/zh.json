@@ -888,7 +888,7 @@
       },
       {
         "q": "Hvordan starter jeg med paper trading?",
-        "a": "Registrer deg gratis, så får du automatisk 1 000 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+        "a": "Registrer deg gratis, så får du automatisk 100 000 kr virtuell kapital. Gå til Paper Trading-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
       },
       {
         "q": "Hva lærer jeg i kursene?",
@@ -1304,9 +1304,9 @@
   "paperTrading": {
     "title": "Paper Trading",
     "subtitle": "Øv deg på trading med {amount} virtuelle penger",
-    "contextBanner": "Øv deg på trading med 1 000 000 kr i lekepenger",
+    "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
     "help": {
-      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 1 000 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
+      "text": "Paper trading lar deg øve på trading uten å risikere ekte penger. Du starter med 100 000 kr og kan kjøpe og selge kryptovaluta med ekte markedspriser fra Binance.",
       "close": "Lukk"
     },
     "stats": {
@@ -1707,7 +1707,7 @@
         "requirement": "无需先前知识",
         "features": [
           "完整的加密货币介绍",
-          "1,000,000 挪威克朗模拟交易",
+          "100,000 挪威克朗模拟交易",
           "访问社区",
           "市场更新",
           "注册时赠送 500 KLT 代币"

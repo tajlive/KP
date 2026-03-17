@@ -312,7 +312,7 @@ export default function UnifiedTradingDashboard({
             </h1>
             <p className="text-slate-400 text-sm mt-1">
               {mode === "paper"
-                ? "Øv med lekepenger — 1 000 000 NOK"
+                ? "Øv med lekepenger — 100 000 NOK"
                 : "Handel med ekte midler"}
             </p>
           </div>
@@ -419,7 +419,15 @@ function TradingModeToggle({
   );
 }
 
-import ProfessionalChart from "./ProfessionalChart";
+import dynamic from "next/dynamic";
+const ProfessionalChart = dynamic(() => import("./ProfessionalChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[400px] bg-gray-800/50 rounded-xl animate-pulse flex items-center justify-center">
+      <span className="text-gray-500 text-sm">Laster graf...</span>
+    </div>
+  ),
+});
 
 function PortfolioSection({
   portfolio,

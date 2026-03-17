@@ -232,10 +232,10 @@ export function ClientPricingPage() {
                       <span className="text-4xl font-extrabold text-white tracking-tight tabular-nums">
                         {plan.formattedPrice}
                       </span>
-                      <span className="text-sm font-medium text-white/40">
+                      <span className="text-sm font-medium text-white/60">
                         kr
                       </span>
-                      <span className="text-white/40 text-sm ml-1">
+                      <span className="text-white/60 text-sm ml-1">
                         {plan.period}
                       </span>
                     </div>
