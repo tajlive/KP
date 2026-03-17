@@ -47,12 +47,14 @@ Andre relevante: `/login`, `/(auth)/signup`, `/innlogging`, `/velkommen`, `/kurs
 
 ## Linear
 
-Relevante Linear-oppgaver for denne implementasjonen kan listes eller lenkes her. Forslag til fire issues:
+Oppgaver opprettet og satt til **Done** for denne implementasjonen:
 
-1. **Agent-fil** – UX SaaS Lead agent-fil og oppsett.
-2. **Cursor-integrasjon** – Regel og integrasjon i Cursor for UX-arbeid.
-3. **Audit-workflow** – Definisjon og kjøring av UX/design-audit.
-4. **Dette dokumentet** – Vedlikehold av `docs/implementation-plan-2026.md` som referanse.
+| Issue | Tittel | Status |
+|-------|--------|--------|
+| KLA-222 | UX SaaS Lead-agent: Opprett agent-fil | Done |
+| KLA-223 | UX SaaS Lead-agent: Cursor-integrasjon | Done |
+| KLA-224 | UX SaaS Lead-agent: Premium design audit-workflow | Done |
+| KLA-225 | Docs: Implementeringsplan 2026 | Done |
 
 ---
 
@@ -64,3 +66,5 @@ Relevante Linear-oppgaver for denne implementasjonen kan listes eller lenkes her
 | `npm run verify` | Verifiserer kritiske paths og produksjonssjekker. Valgfritt å kjøre etter endringer for å bekrefte at kritiske ruter og API fungerer. |
 
 Kjør minst `test:enterprise` etter endringer som berører UI, routing eller sikkerhet.
+
+**Siste kjøring:** Exit code 0. Security: `npm audit --audit-level=moderate` (4 low). Performance: placeholder (echo). A11y: ingen tester med `@accessibility` i Playwright – vurder å legge til a11y-tester eller axe.
