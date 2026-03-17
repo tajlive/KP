@@ -24,5 +24,11 @@
   "closeMenu": "ปิดเมนู",
   "openMenu": "เปิดเมนู",
   "studyProgram": "โปรแกรมการศึกษา",
-  "school": "โรงเรียน"
+  "school": "โรงเรียน",
+  "tagline": "Learn crypto safely",
+  "navLearn": "คอร์ส",
+  "navTrade": "จำลอง",
+  "navBots": "บอท",
+  "navPricing": "ราคา",
+  "freeBalance": "100k virtual money free"
 }

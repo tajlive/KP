@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const INITIAL_BALANCE = 10_000;
+const INITIAL_BALANCE = 100_000;
 const BTC_START = 68_420;
 
 function generatePriceHistory(base: number, count: number): number[] {

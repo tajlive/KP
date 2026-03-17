@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -22,6 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, ArrowRight, TrendingUp, TrendingDown, Wallet, Banknote } from "lucide-react";
+
+const cardBase =
+  "bg-white dark:bg-slate-800/50 rounded-xl border border-[#E2E5EC] dark:border-slate-700 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]";
 
 interface TradingSession {
   id: string;
@@ -94,53 +98,57 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
   };
 
   const getStatusBadge = (status: string) => {
+    const baseClass = "text-xs font-semibold truncate max-w-[5rem]";
     switch (status) {
       case "active":
-        return <Badge className="bg-green-500">{t("active")}</Badge>;
+        return <Badge className={`bg-green-500 ${baseClass}`}>{t("active")}</Badge>;
       case "paused":
-        return <Badge variant="secondary">{t("paused")}</Badge>;
+        return <Badge variant="secondary" className={baseClass}>{t("paused")}</Badge>;
       case "stopped":
-        return <Badge variant="outline">{t("stopped")}</Badge>;
+        return <Badge variant="outline" className={baseClass}>{t("stopped")}</Badge>;
       case "crashed":
-        return <Badge variant="destructive">{t("crashed")}</Badge>;
+        return <Badge variant="destructive" className={baseClass}>{t("crashed")}</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline" className={baseClass}>{status}</Badge>;
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Saldo KPI-kort */}
-      <Card className="overflow-hidden border-slate-200 dark:border-slate-700 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-800/80 dark:to-slate-900/80">
+      {/* Saldo KPI-kort — samme stil som dashboard-kort */}
+      <Card className={`overflow-hidden ${cardBase}`}>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 dark:bg-emerald-400/20 flex items-center justify-center">
                 <Banknote className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
                   {t("stats.availableBalance")}
                 </p>
-                <p className="text-3xl font-bold tabular-nums text-slate-900 dark:text-white">
+                <p className="text-3xl font-bold tabular-nums text-slate-900 dark:text-white truncate">
                   {balance.toLocaleString("nb-NO")} kr
                 </p>
               </div>
             </div>
-            <Button className="gap-2 shrink-0" onClick={() => setIsModalOpen(true)}>
-              <Plus className="w-4 h-4" />
-              {t("newSession")}
+            <Button
+              className="gap-2 shrink-0 min-h-11 px-5 text-sm font-semibold bg-[#0052FF] hover:bg-[#0047E0] text-white rounded-xl [&>span]:truncate [&>span]:max-w-[12rem]"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <Plus className="w-4 h-4 shrink-0" aria-hidden />
+              <span>{t("newSession")}</span>
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Sidetittel */}
-      <div>
-        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+      {/* Sidetittel — 2026: lik typografi */}
+      <div className="min-w-0">
+        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate">
           {sessions.length === 0 ? t("noSessions") : t("title")}
         </h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+        <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
           {t("description")}
         </p>
       </div>
@@ -177,16 +185,21 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
                 onChange={(e) => setStartCapital(e.target.value)}
               />
             </div>
-            <div className="flex gap-2 justify-end pt-4">
+            <div className="flex gap-3 justify-end pt-4">
               <Button
                 variant="outline"
+                className="min-h-11 px-5 text-sm font-semibold rounded-xl [&>span]:truncate [&>span]:max-w-[8rem]"
                 onClick={() => setIsModalOpen(false)}
                 disabled={isLoading}
               >
-                {t("cancel")}
+                <span>{t("cancel")}</span>
               </Button>
-              <Button onClick={handleCreateSession} disabled={isLoading}>
-                {isLoading ? "..." : t("start")}
+              <Button
+                className="min-h-11 px-5 text-sm font-semibold rounded-xl bg-[#0052FF] hover:bg-[#0047E0] text-white [&>span]:truncate [&>span]:max-w-[8rem]"
+                onClick={handleCreateSession}
+                disabled={isLoading}
+              >
+                <span>{isLoading ? "..." : t("start")}</span>
               </Button>
             </div>
           </div>
@@ -195,7 +208,7 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
 
       {/* Liste over sesjoner */}
       {sessions.length === 0 ? (
-        <Card className="border-2 border-dashed border-slate-200 dark:border-slate-600 overflow-hidden bg-linear-to-b from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50">
+        <Card className={`border-2 border-dashed border-slate-200 dark:border-slate-600 overflow-hidden ${cardBase}`}>
           <CardContent className="p-10 text-center">
             <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-5">
               <Wallet className="w-8 h-8 text-slate-500 dark:text-slate-400" />
@@ -206,9 +219,13 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
             <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm mx-auto">
               {t("noSessionsDesc")}
             </p>
-            <Button size="lg" className="gap-2" onClick={() => setIsModalOpen(true)}>
-              <Plus className="w-4 h-4" />
-              {t("startFirst")}
+            <Button
+              size="lg"
+              className="gap-2 min-h-12 px-6 text-sm font-semibold rounded-xl bg-[#0052FF] hover:bg-[#0047E0] text-white [&>span]:truncate [&>span]:max-w-[16rem]"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <Plus className="w-4 h-4 shrink-0" aria-hidden />
+              <span>{t("startFirst")}</span>
             </Button>
           </CardContent>
         </Card>
@@ -221,67 +238,64 @@ export function PaperTradingList({ sessions, balance, locale }: PaperTradingList
                 100
               : 0;
             const isProfitable = pnlPercent >= 0;
+            const href = `/${locale}/paper-trading/${session.id}`;
 
             return (
-              <Card
+              <Link
                 key={session.id}
-                className="cursor-pointer border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600"
-                onClick={() =>
-                  router.push(`/${locale}/paper-trading/${session.id}`)
-                }
+                href={href}
+                className={`block ${cardBase} p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:ring-offset-2 rounded-xl`}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                          isProfitable
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                            : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                        }`}
-                      >
-                        {isProfitable ? (
-                          <TrendingUp className="w-5 h-5" />
-                        ) : (
-                          <TrendingDown className="w-5 h-5" />
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          {getStatusBadge(session.status)}
-                          <span className="font-medium text-slate-900 dark:text-white">
-                            {session.trading_pair}
-                          </span>
-                        </div>
-                        <p className="text-sm text-slate-500">
-                          {t("started")}: {getRelativeTime(session.created_at)}
-                        </p>
-                      </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                        isProfitable
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                          : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                      }`}
+                    >
+                      {isProfitable ? (
+                        <TrendingUp className="w-5 h-5" />
+                      ) : (
+                        <TrendingDown className="w-5 h-5" />
+                      )}
                     </div>
-                    <div className="text-right flex items-center gap-4">
-                      <div>
-                        <p
-                          className={`font-bold ${
-                            isProfitable ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {isProfitable ? "+" : ""}
-                          {session.total_pnl?.toLocaleString("nb-NO") || 0} kr
-                        </p>
-                        <p
-                          className={`text-sm ${
-                            isProfitable ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {isProfitable ? "+" : ""}
-                          {pnlPercent.toFixed(1)}%
-                        </p>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        {getStatusBadge(session.status)}
+                        <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                          {session.trading_pair}
+                        </span>
                       </div>
-                      <ArrowRight className="w-5 h-5 text-slate-400" />
+                      <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
+                        {t("started")}: {getRelativeTime(session.created_at)}
+                      </p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="text-right flex items-center gap-4 shrink-0">
+                    <div className="min-w-0">
+                      <p
+                        className={`text-sm font-bold tabular-nums truncate ${
+                          isProfitable ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {isProfitable ? "+" : ""}
+                        {session.total_pnl?.toLocaleString("nb-NO") || 0} kr
+                      </p>
+                      <p
+                        className={`text-sm tabular-nums truncate ${
+                          isProfitable ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {isProfitable ? "+" : ""}
+                        {pnlPercent.toFixed(1)}%
+                      </p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-slate-400 shrink-0" aria-hidden />
+                  </div>
+                </div>
+              </Link>
             );
           })}
         </div>

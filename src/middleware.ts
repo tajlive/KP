@@ -41,6 +41,13 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
+  // Root domain → /en/dashboard (klarpakke.no = www.klarpakke.no/en/dashboard)
+  if (pathname === '/' || pathname === '') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/en/dashboard'
+    return NextResponse.redirect(url, 307)
+  }
+
   // 1. i18n routing
   const response = handleI18nRouting(request)
 

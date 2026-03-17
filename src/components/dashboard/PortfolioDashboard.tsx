@@ -119,7 +119,7 @@ export default function PortfolioDashboard({
 
       <FirstTradeCard userId={userId} locale={locale} hasTrades={trades.length > 0} />
 
-      {/* Widget 1: Portfolio Card */}
+      {/* Widget 1: Portfolio Card — her ser du hvordan det går med lekepengene */}
       <div className="bg-gradient-to-br from-[#0052FF] to-[#0047E0] rounded-2xl p-6 text-white shadow-[0_8px_32px_rgba(0,82,255,0.15)] animate-fade-in-up stagger-1">
         <p className="text-sm font-medium text-white/70 uppercase tracking-wider">
           {no ? 'Lekepenger' : 'Virtual money'}
@@ -136,9 +136,12 @@ export default function PortfolioDashboard({
             {formatNOK(pnl)} ({pnlPercent.toFixed(1)}%)
           </span>
           <span className="text-white/50 text-sm">
-            {no ? 'Siste 24t' : 'Last 24h'}
+            {no ? 'Gevinst/tap totalt' : 'Total P&L'}
           </span>
         </div>
+        <p className="text-white/60 text-xs mt-3">
+          {no ? 'Posisjoner og handler vises under.' : 'Positions and trades shown below.'}
+        </p>
       </div>
 
       {/* Widget 2: Live Prices */}
@@ -188,7 +191,7 @@ export default function PortfolioDashboard({
               {no ? 'Mine posisjoner' : 'My positions'}
             </h3>
             <Link
-              href={`/${locale}/trades`}
+              href={`/${locale}/handelshistorikk`}
               className="text-sm font-medium text-[#0052FF] hover:text-[#0047E0] transition-colors"
             >
               {no ? 'Se alle' : 'See all'}
@@ -248,7 +251,7 @@ export default function PortfolioDashboard({
               {no ? 'Siste handler' : 'Recent trades'}
             </h3>
             <Link
-              href={`/${locale}/trades`}
+              href={`/${locale}/handelshistorikk`}
               className="text-sm font-medium text-[#0052FF] hover:text-[#0047E0] transition-colors"
             >
               {no ? 'Se alle' : 'See all'}

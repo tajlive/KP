@@ -1,25 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { HeaderTicker } from "@/components/landing/HeaderTicker";
 import { LogIn, Menu, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-
-/**
- * MarketingNavigation - Simplified navigation for landing pages
- * 
- * KEY DIFFERENCES from Navigation:
- * - No auth dependency (no useAuth hook)
- * - No TradingModeToggle
- * - No MiniPulseWidget
- * - Always shows login/register buttons
- * - Smaller bundle, faster hydration
- * 
- * Use this for: /, /en/, /priser, /kurs (landing/marketing pages)
- * Use Navigation for: /dashboard, /paper-trading (app pages)
- */
 
 export function MarketingNavigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,18 +16,17 @@ export function MarketingNavigation() {
   const l = (path: string) => `/${locale}${path === "/" ? "" : path}`;
 
   const mainLinks = [
-    { path: "/kurs", label: t("courses") },
-    { path: "/paper-trading", label: t("paperTrading") },
-    { path: "/auto-trading", label: t("autoTrading") },
-    { path: "/priser", label: t("pricing") },
+    { path: "/kurs", label: t("navLearn") },
+    { path: "/paper-trading", label: t("navTrade") },
+    { path: "/auto-trading", label: t("navBots") },
+    { path: "/priser", label: t("navPricing") },
   ];
 
   return (
     <nav className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href={l("/")} className="flex items-center gap-2">
+        <div className="flex justify-between items-center h-14 gap-4">
+          <Link href={l("/")} className="flex items-center gap-2 shrink-0">
             <Image
               src="/logo.svg"
               alt=""
@@ -50,13 +36,20 @@ export function MarketingNavigation() {
               className="h-8 w-8 object-contain"
               priority
             />
-            <span className="text-xl font-bold text-[#1A1D26] dark:text-white">
-              Klarpakke
-            </span>
+            <div className="hidden sm:block">
+              <span className="text-xl font-bold text-[#1A1D26]">Klarpakke</span>
+              <span className="ml-2 text-sm font-medium text-[#5E6478] hidden md:inline">
+                — {t("tagline")}
+              </span>
+            </div>
+            <span className="text-xl font-bold text-[#1A1D26] sm:hidden">Klarpakke</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg:flex flex-1 justify-center min-w-0">
+            <HeaderTicker />
+          </div>
+
+          <div className="hidden md:flex items-center gap-6 shrink-0">
             {mainLinks.map((link) => (
               <Link
                 key={link.path}

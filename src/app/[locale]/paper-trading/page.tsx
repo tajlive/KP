@@ -25,29 +25,29 @@ export async function generateMetadata({
   };
 }
 
-// Fallback UI for når datahenting feiler
+// Fallback UI for når datahenting feiler — samme stil som andre feilsider
 function PaperTradingErrorFallback({ locale }: { locale: string }) {
   return (
-    <div className="min-h-screen bg-[#F7F8FA] p-6">
+    <div className="min-h-screen bg-[#F7F8FA] dark:bg-slate-950 p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-red-100 border border-red-300 rounded-xl p-6 text-center">
-          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-red-800 mb-2">
+        <div className="bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900/50 rounded-xl p-6 text-center shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-2">
             Kunne ikke laste lekepenger
           </h2>
-          <p className="text-red-700 mb-4">
+          <p className="text-red-700 dark:text-red-300 mb-6">
             Det oppstod en feil ved lasting av dine trading-sessions. Vennligst prøv igjen.
           </p>
-          <div className="flex gap-3 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href={`/${locale}/paper-trading`}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              className="inline-flex items-center justify-center px-5 py-2.5 bg-[#0052FF] hover:bg-[#0047E0] text-white rounded-lg font-medium transition-colors"
             >
               Last inn på nytt
             </Link>
             <Link
               href={`/${locale}/dashboard`}
-              className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
+              className="inline-flex items-center justify-center px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-colors"
             >
               Tilbake til dashboard
             </Link>
@@ -77,7 +77,7 @@ export default async function PaperTradingPage({
       .select(
         "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at"
       )
-      .eq("id", user.id)
+      .eq("user_id", user.id)
       .eq("mode", "paper")
       .order("created_at", { ascending: false });
 
@@ -95,18 +95,18 @@ export default async function PaperTradingPage({
     const balance = profile?.paper_balance ?? 100_000;
 
     return (
-      <div className="min-h-screen bg-[#F7F8FA]">
-        <div className="bg-gradient-to-r from-emerald-500/15 to-blue-500/15 border-b border-emerald-500/20 px-4 py-3 flex items-center justify-center gap-2">
-          <span className="text-emerald-600" aria-hidden>
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-slate-950">
+        <div className="bg-linear-to-r from-emerald-500/15 to-blue-500/15 dark:from-emerald-500/10 dark:to-blue-500/10 border-b border-emerald-500/20 dark:border-emerald-500/30 px-4 py-3 flex items-center justify-center gap-2">
+          <span className="text-emerald-600 dark:text-emerald-400" aria-hidden>
             💰
           </span>
-          <p className="text-emerald-800 text-sm font-medium text-center">
+          <p className="text-emerald-800 dark:text-emerald-200 text-sm font-medium text-center">
             {t("contextBanner")}
           </p>
         </div>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
-          <PaperTradingList 
-            sessions={(sessions ?? []) as PaperTradingListSession[]} 
+          <PaperTradingList
+            sessions={(sessions ?? []) as PaperTradingListSession[]}
             balance={balance}
             locale={locale}
           />
