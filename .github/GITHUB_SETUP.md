@@ -104,14 +104,31 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 | **Security Audit** | Ukentlig + manuell | npm audit, secret-scan, valgfritt Snyk |
 | **Dependency Check** | Månedlig + manuell | depcheck, knip |
 | **E2E Critical Flows** | Schedule + PR (paths) + manuell | Playwright kritiske flows |
-| **TypeScript Check** | Push/PR mot main/develop | type-check, lint, build |
+| **TypeScript Check** | Push/PR mot `develop` | type-check, lint, build (ikke for main – dekkes av PR Check) |
 | **MCP Health / Integration** | Etter behov | MCP-tjenester |
 
 Detaljer og kostnad: se [.github/workflows/README.md](workflows/README.md).
 
 ---
 
-## 7. Hurtigsjekkliste
+## 7. Feilretting når CI feiler
+
+Når **PR Check** (eller andre workflows) feiler på en PR:
+
+1. **Se status:** Åpne PR-en og sjekk at **quick-check** (PR Check) er rød, eller gå til [Actions](https://github.com/tajlive/KP/actions) og åpne den feilede kjøringen.
+2. **Krav for merge:** `quick-check` må være grønn for å kunne merge til `main`. Branch protection blokkerer merge inntil CI er grønn.
+3. **Finn feilen:** I den feilede kjøringen, klikk på jobben **quick-check** og se hvilket steg som er rødt (Lint, Type Check, Unit Tests, eller Build).
+4. **Fix lokalt:** Kjør de samme kommandoene lokalt:
+   - `npm run lint -- --quiet`
+   - `npm run type-check`
+   - `npm run test:coverage`
+   - `npm run build`
+5. **Failure summary:** Ved feil skriver PR Check en **Failure summary** øverst i jobbloggen med de samme kommandoene. Ved type-check-feil kan du laste ned **typecheck**-artifactet (3 dager) for full feiloutput.
+6. **TypeScript-feil:** Ofte løses type-feil med `npm run type-check` lokalt; rett typene og push på nytt.
+
+---
+
+## 8. Hurtigsjekkliste
 
 - [ ] Description og topics satt på repo
 - [ ] Default branch er `main`

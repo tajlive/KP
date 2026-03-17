@@ -1,10 +1,11 @@
 name: TypeScript Check
 
+# Kun develop – main dekkes av PR Check og test.yml (unngår duplikat og ødelagt PR-kommentar)
 on:
   push:
-    branches: [ main, develop ]
+    branches: [develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [develop]
 
 concurrency:
   group: typescript-check-${{ github.ref }}
