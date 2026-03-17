@@ -29,7 +29,11 @@ Dette prosjektet er en Next.js 15 (App Router) applikasjon for kryptovaluta-hand
 - Strategier kjøres i Supabase Edge Functions eller via Vercel Cron.
 - Se `src/components/trading` for UI-komponenter og `src/components/auto-trade` for strategi-oppsett.
 
+## Design og UX (premium)
+- Design skal se **dyrt og premium** ut, ikke bare enkelt. Se `.cursor/rules/design-ux-premium.md`.
+- Ved UI-endringer: vurder alltid mot `docs/design-assessment-2026.md` og `docs/design-konkurranse-analyse-2026.md`; bruk `src/lib/design/tokens.ts`.
+
 ## Spesifikke Cursor Instruksjoner
 - Ved feilretting, sjekk alltid `ARCHITECTURE.md` for å forstå dataflyten.
 - Foretrekk funksjonelle komponenter med TypeScript-typer.
-- Ved endring av UI, oppretthold den eksisterende estetiske profilen (mørkt tema, moderne UI).
+- Ved endring av UI, oppretthold premium-uttrykk (mørkt tema, tokens, Lucide-ikoner) – se design-regelen over.

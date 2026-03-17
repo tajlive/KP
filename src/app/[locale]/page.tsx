@@ -143,13 +143,13 @@ export default async function HomePage({
 
   return (
     <main className="min-h-screen bg-[#F7F8FA]">
-      {/* Hero Section - 2026 copy, locale-aware links */}
       <HeroSection locale={locale} />
 
-      {/* Trust Bar - Social proof */}
+      {/* Live Price Ticker - right under hero, light mode */}
+      <DeferredLiveTicker />
+
       <TrustBar />
 
-      {/* Interactive Demo Widget - Paper trading teaser */}
       <Suspense
         fallback={
           <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
@@ -158,7 +158,6 @@ export default async function HomePage({
         <DemoWidget />
       </Suspense>
 
-      {/* Course Preview - Show what users will learn */}
       <Suspense
         fallback={
           <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
@@ -166,9 +165,6 @@ export default async function HomePage({
       >
         <CoursePreview />
       </Suspense>
-
-      {/* Live Price Ticker - Deferred, loads after hero */}
-      <DeferredLiveTicker />
 
       {/* Lotto Comparison Calculator - Shows what users can achieve */}
       <section id="lottocalc" className="py-16 md:py-24">

@@ -96,22 +96,22 @@ export function LiveTicker() {
   };
 
   return (
-    <div className="w-full bg-slate-950 border-y border-slate-800 overflow-hidden">
+    <div className="w-full bg-white border-y border-[#E2E5EC] overflow-hidden">
       <div className="flex items-center gap-8 py-3 animate-scroll-x">
         {[...prices, ...prices, ...prices].map((coin, idx) => (
           <div
             key={`${coin.symbol}-${idx}`}
             className="flex items-center gap-3 px-4 shrink-0"
           >
-            <span className="font-fraunces font-bold text-lg text-slate-100">
+            <span className="font-semibold text-[#1A1D26]">
               {coin.symbol}
             </span>
-            <span className="font-lexend text-slate-300 tabular-nums">
+            <span className="text-[#5E6478] tabular-nums">
               {formatPrice(coin.price)}
             </span>
             <span
-              className={`flex items-center gap-1 font-lexend text-sm ${
-                coin.change24h >= 0 ? 'text-emerald-400' : 'text-rose-400'
+              className={`flex items-center gap-1 text-sm ${
+                coin.change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"
               }`}
             >
               {coin.change24h >= 0 ? (
@@ -122,7 +122,7 @@ export function LiveTicker() {
               {formatChange(coin.change24h)}
             </span>
             {!isConnected && idx === 0 && (
-              <span className="text-xs text-amber-400 ml-2">(connecting...)</span>
+              <span className="text-xs text-[#8E95A9] ml-2">(kobler…)</span>
             )}
           </div>
         ))}

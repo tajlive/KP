@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     const { data: session, error: sessionError } = await supabase
       .from('trading_sessions')
       .select('*')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .eq('mode', 'paper')
       .order('created_at', { ascending: false })
       .limit(1)
