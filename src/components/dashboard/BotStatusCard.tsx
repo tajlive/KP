@@ -80,7 +80,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
   // Beregn P&L prosent
   const getPnLPercent = () => {
     if (!session) return 0;
-    const starting = session.starting_capital_nok || 10000;
+    const starting = session.starting_capital_nok || 100000;
     const current = session.current_capital_nok || starting;
     return ((current - starting) / starting) * 100;
   };

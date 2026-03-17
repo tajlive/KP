@@ -23,13 +23,15 @@ const PRODUCTION_DOMAINS = ["https://klarpakke.no", "https://www.klarpakke.no"];
 const CANONICAL_DOMAIN = "https://www.klarpakke.no";
 
 // Kritiske paths som MÅ fungere
+// With localePrefix: 'as-needed', default locale (no) is served at /; /no redirects to /.
 const CRITICAL_PATHS = [
+  { path: "/", status: 200, description: "Root (default locale no at /)" },
   {
-    path: "/",
-    expectedRedirectOr200: "/no",
-    description: "Root redirect to locale or serve /no",
+    path: "/no",
+    status: 200,
+    description: "Norwegian homepage (/no normalizes to /, then 200)",
+    noFollowRedirects: false,
   },
-  { path: "/no", status: 200, description: "Norwegian homepage" },
   { path: "/no/innlogging", status: 200, description: "Login page (innlogging)" },
   {
     path: "/no/signup",
@@ -160,13 +162,13 @@ async function main() {
   log("\nKLARPAKKE PRODUCTION VERIFICATION\n", "cyan");
   let exitCode = 0;
 
-  // 1. Domain Accessibility
+  // 1. Domain Accessibility (root / is default locale; /no redirects to /)
   for (const domain of PRODUCTION_DOMAINS) {
-    const res = await testUrl(`${domain}/no`);
+    const res = await testUrl(`${domain}/`);
     if (res.success && res.status === 200)
-      logSuccess(`${domain}/no leads to 200`);
+      logSuccess(`${domain}/ leads to 200`);
     else {
-      logError(`${domain}/no failed`);
+      logError(`${domain}/ failed`);
       exitCode = 1;
     }
   }
@@ -199,7 +201,7 @@ async function main() {
           exitCode = 1;
         }
       }
-    } else {
+    } else if (test.status != null) {
       const followRedirects = !test.noFollowRedirects;
       const res = await testUrl(url, test.status, followRedirects);
       const accepted = test.acceptStatuses
@@ -214,7 +216,7 @@ async function main() {
   }
 
   // 4. Security headers (sample from homepage)
-  const headerRes = await testUrl(`${CANONICAL_DOMAIN}/no`, 200);
+  const headerRes = await testUrl(`${CANONICAL_DOMAIN}/`, 200);
   if (headerRes.success && headerRes.headers) {
     const missing = REQUIRED_HEADERS.filter(
       (h) => !Object.keys(headerRes.headers).some((k) => k.toLowerCase() === h.toLowerCase())

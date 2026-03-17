@@ -41,12 +41,8 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // Root domain → default locale landing (www.klarpakke.no → /no)
-  if (pathname === '/' || pathname === '') {
-    const url = request.nextUrl.clone()
-    url.pathname = '/no'
-    return NextResponse.redirect(url, 307)
-  }
+  // Do NOT redirect / to /no — next-intl with localePrefix: 'as-needed' serves
+  // default locale at / and would redirect /no back to /, causing ERR_TOO_MANY_REDIRECTS.
 
   // 1. i18n routing
   const response = handleI18nRouting(request)
