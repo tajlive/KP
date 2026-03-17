@@ -1,8 +1,10 @@
 // Signal Engine Edge Function — Sprint 11
 // Genererer kjøp/salg-signaler basert på tekniske indikatorer (SMA, RSI)
 // Lagrer signaler i bot_signals og logger til bot_health
+// MTF pre-filter: kun BUY/SELL når alignment score >= 2 / <= -2
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { getMTFAlignmentScore } from '../_shared/multi-timeframe.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -246,6 +248,19 @@ Deno.serve(async (req) => {
       }
 
       if (!sig || sig.action === 'HOLD') continue
+
+      // MTF pre-filter: kun for trend og multisignal (ikke DCA)
+      const useMTF = strategy.strategy_type === 'trend_balansert' || strategy.strategy_type === 'multisignal_aktiv'
+      if (useMTF) {
+        const mtf = await getMTFAlignmentScore(sym).catch(() => null)
+        if (mtf) {
+          if (sig.action === 'BUY' && mtf.score < 2) continue
+          if (sig.action === 'SELL' && mtf.score > -2) continue
+          if (mtf.weakAlignment) {
+            sig = { ...sig, confidence: Math.max(0.1, sig.confidence * 0.7), reason: `${sig.reason} [MTF svak]` }
+          }
+        }
+      }
 
       // Lagre signal
       await supabase.from('bot_signals').insert({
