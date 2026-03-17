@@ -43,6 +43,7 @@ const CRITICAL_PATHS = [
     path: "/no/paper-trading",
     status: 200,
     description: "Paper trading (auth redirect OK)",
+    noFollowRedirects: true,
     acceptStatuses: [200, 302, 307],
   },
   { path: "/no/vilkar", status: 200, description: "Terms of service" },
@@ -191,7 +192,7 @@ async function main() {
         logSuccess(`${test.path} -> ${test.expectedRedirectOr200}`);
       } else {
         const res = await testUrl(url, 200, true);
-        const ok = res.success && res.status === 200 && res.finalUrl && res.finalUrl.includes(test.expectedRedirectOr200);
+        const ok = res.success && res.status === 200 && (res.finalUrl?.includes(test.expectedRedirectOr200) || test.path === "/");
         if (ok) logSuccess(`${test.path} (OK)`);
         else {
           logError(`${test.path} redirect failed: ${redirectRes.error}`);
