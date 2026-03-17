@@ -61,7 +61,8 @@ on:
 ---
 
 **Repo:** [https://github.com/tajlive/KP](https://github.com/tajlive/KP)  
-**Full GitHub-oppsett (description, branch protection, secrets):** [.github/GITHUB_SETUP.md](../GITHUB_SETUP.md)
+**Full GitHub-oppsett (description, branch protection, secrets):** [.github/GITHUB_SETUP.md](../GITHUB_SETUP.md)  
+**Feilretting når CI feiler:** Se seksjon 7 i [GITHUB_SETUP.md](../GITHUB_SETUP.md#7-feilretting-når-ci-feiler).
 
 ---
 
