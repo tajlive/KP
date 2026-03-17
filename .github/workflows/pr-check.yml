@@ -38,19 +38,50 @@ jobs:
           key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
           restore-keys: next-${{ runner.os }}-
 
+      - name: Prepare typecheck log
+        run: touch typecheck.log
+
       - name: 🔍 Lint
         run: npm run lint -- --quiet
 
       - name: ⌨️ Type Check
-        run: npm run type-check
+        run: npm run type-check 2>&1 | tee typecheck.log
+        id: typecheck
 
       - name: 🧪 Unit Tests & Coverage
         run: npm run test:coverage
+        id: unittest
 
       - name: 🏗️ Build
         run: npm run build
+        id: build
         env:
           SKIP_LINT_IN_BUILD: "true"
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         timeout-minutes: 10
+
+      - name: 📋 Failure summary
+        if: failure()
+        run: |
+          echo "## ❌ PR Check failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "One or more steps failed. Open this run and check the failed step (Lint, Type Check, Unit Tests, or Build)." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Fix locally:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npm run lint -- --quiet" >> $GITHUB_STEP_SUMMARY
+          echo "npm run type-check" >> $GITHUB_STEP_SUMMARY
+          echo "npm run test:coverage" >> $GITHUB_STEP_SUMMARY
+          echo "npm run build" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "If type-check failed, download the **typecheck** artifact below for the full error output." >> $GITHUB_STEP_SUMMARY
+
+      - name: 📤 Upload typecheck log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck
+          path: typecheck.log
+          retention-days: 3
