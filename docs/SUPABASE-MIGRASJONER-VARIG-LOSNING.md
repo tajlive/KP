@@ -6,6 +6,8 @@ Anbefalinger basert på [Supabase Docs](https://supabase.com/docs/guides/deploym
 
 ## 1. Anbefalt: Supabase GitHub-integrasjon (native)
 
+**Steg-for-steg oppsett:** Se **docs/SUPABASE-GITHUB-INTEGRATION-OPPSETT.md** for full checklist.
+
 **Hvor:** Supabase Dashboard → Project Settings → [Integrations](https://supabase.com/dashboard/project/_/settings/integrations).
 
 **Hva det gir:**
