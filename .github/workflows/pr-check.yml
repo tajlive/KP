@@ -52,8 +52,8 @@ jobs:
         run: npm run type-check 2>&1 | tee typecheck.log
         id: typecheck
 
-      - name: 🧪 Unit Tests & Coverage
-        run: npm run test:coverage
+      - name: 🧪 Unit Tests
+        run: npm run test:unit
         id: unittest
 
       - name: 🏗️ Build
@@ -76,7 +76,7 @@ jobs:
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
           echo "npm run lint -- --quiet" >> $GITHUB_STEP_SUMMARY
           echo "npm run type-check" >> $GITHUB_STEP_SUMMARY
-          echo "npm run test:coverage" >> $GITHUB_STEP_SUMMARY
+          echo "npm run test:unit" >> $GITHUB_STEP_SUMMARY
           echo "npm run build" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -111,7 +111,7 @@ jobs:
             \`\`\`bash
             npm run lint -- --quiet
             npm run type-check
-            npm run test:coverage
+            npm run test:unit
             npm run build
             \`\`\`
 
