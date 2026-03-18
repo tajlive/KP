@@ -249,7 +249,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
 
       {/* Step 1: Strategy */}
       {step === 1 && (
-        <div>
+        <div className="relative z-10">
           <h2 className="text-lg font-semibold text-[#1A1D26] mb-4">
             {isNo ? "Velg strategi" : "Choose strategy"}
           </h2>
@@ -263,9 +263,15 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                   key={s.id}
                   type="button"
                   disabled={locked}
-                  onClick={() => !locked && setStrategy(s.id)}
-                  className={`relative text-left bg-white rounded-xl p-5 transition-all ${
-                    locked ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!locked) setStrategy(s.id);
+                  }}
+                  className={`relative z-10 text-left bg-white rounded-xl p-5 transition-all touch-manipulation ${
+                    locked
+                      ? "opacity-60 cursor-not-allowed"
+                      : "cursor-pointer hover:border-[#0052FF]/50"
                   } ${
                     selected
                       ? "ring-2 ring-[#0052FF] border border-[#0052FF]"

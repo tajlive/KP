@@ -4,7 +4,7 @@ import { HERO } from "@/lib/design/tokens";
 
 /**
  * HeroSection - Server Component (no "use client")
- * 
+ *
  * KEY OPTIMIZATIONS from previous version:
  * - No "use client" directive - renders on server
  * - No framer-motion - pure CSS only
@@ -12,12 +12,12 @@ import { HERO } from "@/lib/design/tokens";
  * - No lucide-react icons - uses inline SVG
  * - No animated scroll indicator
  * - NO CSS animations on LCP element (removed animate-fade-in)
- * 
+ *
  * LCP OPTIMIZATION (Task 3):
  * - Removed animate-fade-in from LCP container to prevent animation delay
  * - Kept animation on mockup (below-fold on mobile, acceptable delay)
  * - h1 renders immediately without transition/animation blocking
- * 
+ *
  * This eliminates ~30KB+ JS from the critical path
  * and removes hydration blocking for LCP.
  */
@@ -25,11 +25,13 @@ import { HERO } from "@/lib/design/tokens";
 type HeroSectionProps = { locale?: string };
 
 export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
-  // Server-side translation
-  const t = await getTranslations("landing.modernHero");
+  // Bruk alltid sidens locale så hero ikke viser feil språk
+  const t = await getTranslations({ locale, namespace: "landing.modernHero" });
 
   return (
-    <section className={`relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br ${HERO.gradient}`}>
+    <section
+      className={`relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br ${HERO.gradient}`}
+    >
       {/* Subtle grid overlay - merke #0052FF */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-grid-pattern" />
@@ -41,7 +43,9 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
           {/* Removed animate-fade-in to eliminate LCP delay */}
           <div className="text-center lg:text-left">
             {/* Badge - merke #0052FF */}
-            <div className={`inline-flex items-center gap-2 px-4 py-2 ${HERO.badge} text-sm font-semibold mb-6`}>
+            <div
+              className={`inline-flex items-center gap-2 px-4 py-2 ${HERO.badge} text-sm font-semibold mb-6`}
+            >
               {/* Inline SVG instead of lucide-react */}
               <svg
                 className="w-4 h-4"
@@ -201,7 +205,9 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
                     <span className="text-xs font-semibold text-slate-700">
                       BTC/USDT
                     </span>
-                    <span className="text-xs text-slate-500">{locale === "en" ? "Last 24h" : "Siste 24t"}</span>
+                    <span className="text-xs text-slate-500">
+                      {locale === "en" ? "Last 24h" : "Siste 24t"}
+                    </span>
                   </div>
                   <svg viewBox="0 0 200 60" className="w-full h-16">
                     <defs>
@@ -287,7 +293,9 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
 
               {/* Floating badge - merke #0052FF */}
               <div className="absolute -top-3 -right-3 bg-[#0052FF] text-white px-4 py-2 rounded-full font-bold text-sm shadow-xl">
-                {locale === "en" ? "100,000 NOK virtual money" : "100 000 kr lekepenger"}
+                {locale === "en"
+                  ? "100,000 NOK virtual money"
+                  : "100 000 kr lekepenger"}
               </div>
             </div>
           </div>
