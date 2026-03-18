@@ -1,0 +1,45 @@
+# ============================================================================
+# DB PUSH ON MERGE – Kjør migrasjoner automatisk ved push til main
+# ============================================================================
+# Varig løsning: Migrasjoner kjøres alltid når kode merges til main.
+# Unngår at migrasjoner ligger ubrukte mellom merge og neste manuell deploy.
+#
+# Kjører bare når supabase/ endres (sparer Actions-minutter).
+# Krever: SUPABASE_PROJECT_REF, SUPABASE_ACCESS_TOKEN
+# ============================================================================
+
+name: 🗄️ DB push (auto on merge)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/db-push*.yml'
+
+concurrency:
+  group: db-push-main
+  cancel-in-progress: false
+
+jobs:
+  db-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node (for npx supabase)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 🗄️ Supabase link & push
+        run: |
+          npx supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+          npx supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: ✅ Migrasjoner applisert
+        run: echo "Migrasjoner kjørt mot prod. Ved feil: se docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md §6."

@@ -69,6 +69,7 @@
     "db:realtime": "./scripts/run-realtime-migration.sh",
     "db:apply-admin-rls": "./scripts/sql.sh file supabase/migrations/20260317190000_admin_read_all_user_profiles.sql",
     "db:migrate-tier": "./scripts/sql.sh file supabase/migrations/20260318120000_tier_slug_single_source.sql",
+    "db:validate-migrations": "node scripts/validate-migrations.mjs",
     "vercel:env": "npx vercel env pull .env.local",
     "vercel:deploy": "npx vercel --prod",
     "dev:full": "npm run vercel:env && npm run dev",
