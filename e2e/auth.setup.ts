@@ -13,8 +13,9 @@ setup('authenticate via API', async ({ page, context }) => {
     fs.mkdirSync(authDir, { recursive: true });
   }
 
-  const email = process.env.E2E_USER_EMAIL;
-  const password = process.env.E2E_USER_PASSWORD;
+  const email = process.env.E2E_USER_EMAIL || process.env.TEST_USER_EMAIL;
+  const password =
+    process.env.E2E_USER_PASSWORD || process.env.TEST_USER_PASSWORD;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 

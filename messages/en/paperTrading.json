@@ -96,6 +96,7 @@
   "refreshList": "Refresh list",
   "lastUpdated": "Last updated",
   "binanceUpdateInfo": "Prices from Binance update in real time (WebSocket) or about every 10 seconds. This list updates on page load or when you click Refresh.",
+  "crashed": "Paper trading session crashed. Please refresh and try again.",
   "mySessions": "My sessions",
   "backToOverview": "Back to overview",
   "backToDashboard": "Back to dashboard"
