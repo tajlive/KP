@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { ShieldCheck, GraduationCap, TrendingUp, Trophy } from "lucide-react";
-import { BRAND } from "@/lib/design/tokens";
 
 export async function TrustBar({ locale = "no" }: { locale?: string }) {
   const t = await getTranslations({ locale, namespace: "trustBar" });
@@ -61,18 +59,12 @@ export async function TrustBar({ locale = "no" }: { locale?: string }) {
           </div>
         </div>
 
-        {/* KLT-teaser + CTA */}
-        <div className="mt-6 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-center gap-4">
+        {/* KLT-teaser */}
+        <div className="mt-6 pt-6 border-t border-slate-800 flex items-center justify-center">
           <p className="text-amber-200/90 text-sm font-medium flex items-center gap-2">
             <Trophy className="w-4 h-4 text-amber-400 shrink-0" aria-hidden />
             {t("kltTeaser")}
           </p>
-          <Link
-            href={`/${locale}/paper-trading`}
-            className={`text-sm font-semibold ${BRAND.link}`}
-          >
-            {t("cta")} →
-          </Link>
         </div>
       </div>
     </section>

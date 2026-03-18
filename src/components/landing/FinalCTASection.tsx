@@ -1,10 +1,9 @@
 "use client";
 
-import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Clock, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { BRAND, BRAND_COLOR } from "@/lib/design/tokens";
 
 interface FinalCTASectionProps {
@@ -14,20 +13,7 @@ interface FinalCTASectionProps {
 export default function FinalCTASection({
   language = "no",
 }: FinalCTASectionProps) {
-  const router = useRouter();
   const locale = useLocale();
-
-  const handleStartFree = () => {
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: [BRAND_COLOR.DEFAULT, BRAND_COLOR.LIGHT, "#ffffff"],
-    });
-    setTimeout(() => {
-      router.push(`/${locale}/paper-trading`);
-    }, 500);
-  };
 
   const guarantees =
     language === "no"
@@ -104,28 +90,25 @@ export default function FinalCTASection({
                 : "Join over 1,200 other Norwegians learning to trade the smart way."}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <motion.button
+            <div className="flex justify-center items-center mb-16">
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleStartFree}
-                className={`group relative ${BRAND.primary} px-12 py-6 rounded-2xl text-xl font-black text-white transition-all flex items-center gap-3 w-full sm:w-auto justify-center`}
-                style={{ boxShadow: `0 0 40px ${BRAND_COLOR.DEFAULT}66` }}
+                className="w-full sm:w-auto"
               >
-                {language === "no" ? "Start gratis nå" : "Start for free now"}
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                <span
-                  className="absolute inset-0 rounded-2xl animate-pulse blur-xl pointer-events-none opacity-20"
-                  style={{ backgroundColor: BRAND_COLOR.DEFAULT }}
-                />
-              </motion.button>
-
-              <button
-                onClick={() => router.push(`/${locale}/kurs`)}
-                className="px-10 py-6 bg-white/5 backdrop-blur-lg text-white border border-white/10 rounded-2xl font-black text-xl hover:bg-white/10 transition-all"
-              >
-                {language === "no" ? "Se studieplan" : "See curriculum"}
-              </button>
+                <Link
+                  href={`/${locale}/signup`}
+                  className={`group relative ${BRAND.primary} px-12 py-6 rounded-2xl text-xl font-black text-white transition-all flex items-center gap-3 w-full sm:w-auto justify-center`}
+                  style={{ boxShadow: `0 0 40px ${BRAND_COLOR.DEFAULT}66` }}
+                >
+                  {language === "no" ? "Start gratis nå" : "Start for free now"}
+                  <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                  <span
+                    className="absolute inset-0 rounded-2xl animate-pulse blur-xl pointer-events-none opacity-20"
+                    style={{ backgroundColor: BRAND_COLOR.DEFAULT }}
+                  />
+                </Link>
+              </motion.div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
