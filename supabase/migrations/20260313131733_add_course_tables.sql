@@ -3,7 +3,6 @@
 
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- ============================================
 -- COURSE MODULES
 -- ============================================
@@ -23,9 +22,7 @@ CREATE TABLE IF NOT EXISTS course_modules (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 COMMENT ON TABLE course_modules IS 'Top-level course modules';
-
 -- ============================================
 -- COURSE LESSONS
 -- ============================================
@@ -45,9 +42,7 @@ CREATE TABLE IF NOT EXISTS course_lessons (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(module_id, slug)
 );
-
 COMMENT ON TABLE course_lessons IS 'Individual lessons within a module';
-
 -- ============================================
 -- QUIZ QUESTIONS
 -- ============================================
@@ -64,10 +59,8 @@ CREATE TABLE IF NOT EXISTS quiz_questions (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 COMMENT ON TABLE quiz_questions IS 'Multiple choice quiz questions for lessons';
 COMMENT ON COLUMN quiz_questions.options IS 'JSON array of {id, text_no, text_en} objects';
-
 -- ============================================
 -- USER LESSON PROGRESS
 -- ============================================
@@ -82,9 +75,7 @@ CREATE TABLE IF NOT EXISTS user_lesson_progress (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(user_id, lesson_id)
 );
-
 COMMENT ON TABLE user_lesson_progress IS 'User progress tracking for lessons';
-
 -- ============================================
 -- USER QUIZ ATTEMPTS
 -- ============================================
@@ -97,21 +88,17 @@ CREATE TABLE IF NOT EXISTS user_quiz_attempts (
     attempted_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(user_id, question_id)
 );
-
 COMMENT ON TABLE user_quiz_attempts IS 'User quiz attempt tracking';
-
 -- ============================================
 -- INDEXES
 -- ============================================
 CREATE INDEX IF NOT EXISTS idx_course_modules_slug ON course_modules(slug);
 CREATE INDEX IF NOT EXISTS idx_course_modules_published ON course_modules(is_published);
 CREATE INDEX IF NOT EXISTS idx_course_modules_sort ON course_modules(sort_order);
-
 CREATE INDEX IF NOT EXISTS idx_course_lessons_module ON course_lessons(module_id);
 CREATE INDEX IF NOT EXISTS idx_course_lessons_slug ON course_lessons(slug);
 CREATE INDEX IF NOT EXISTS idx_course_lessons_published ON course_lessons(is_published);
 CREATE INDEX IF NOT EXISTS idx_course_lessons_sort ON course_lessons(module_id, sort_order);
-
 -- Indexes that depend on lesson_id (skip if column missing, e.g. older schema)
 DO $$
 BEGIN
@@ -125,11 +112,9 @@ BEGIN
   END IF;
 END $$;
 CREATE INDEX IF NOT EXISTS idx_user_lesson_progress_user ON user_lesson_progress(user_id);
-
 CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_user ON user_quiz_attempts(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_question ON user_quiz_attempts(question_id);
 CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_user_question ON user_quiz_attempts(user_id, question_id);
-
 -- ============================================
 -- TRIGGER: update_updated_at_column
 -- ============================================
@@ -140,28 +125,23 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Create triggers for all tables with updated_at
 DROP TRIGGER IF EXISTS update_course_modules_updated_at ON course_modules;
 CREATE TRIGGER update_course_modules_updated_at
     BEFORE UPDATE ON course_modules
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 DROP TRIGGER IF EXISTS update_course_lessons_updated_at ON course_lessons;
 CREATE TRIGGER update_course_lessons_updated_at
     BEFORE UPDATE ON course_lessons
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 DROP TRIGGER IF EXISTS update_quiz_questions_updated_at ON quiz_questions;
 CREATE TRIGGER update_quiz_questions_updated_at
     BEFORE UPDATE ON quiz_questions
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 DROP TRIGGER IF EXISTS update_user_lesson_progress_updated_at ON user_lesson_progress;
 CREATE TRIGGER update_user_lesson_progress_updated_at
     BEFORE UPDATE ON user_lesson_progress
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 -- ============================================
 -- RLS POLICIES
 -- ============================================
@@ -170,19 +150,16 @@ ALTER TABLE course_lessons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quiz_questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_lesson_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_quiz_attempts ENABLE ROW LEVEL SECURITY;
-
 -- Course modules: anyone can read published modules
 DROP POLICY IF EXISTS course_modules_select_published ON course_modules;
 CREATE POLICY course_modules_select_published ON course_modules
     FOR SELECT TO public
     USING (is_published = true);
-
 -- Course lessons: anyone can read published lessons
 DROP POLICY IF EXISTS course_lessons_select_published ON course_lessons;
 CREATE POLICY course_lessons_select_published ON course_lessons
     FOR SELECT TO public
     USING (is_published = true);
-
 -- Quiz questions: anyone can read questions for published lessons (kun hvis lesson_id finnes)
 DO $$
 BEGIN
@@ -201,46 +178,38 @@ BEGIN
       );
   END IF;
 END $$;
-
 -- User lesson progress: users can only manage their own progress
 DROP POLICY IF EXISTS user_lesson_progress_select_own ON user_lesson_progress;
 CREATE POLICY user_lesson_progress_select_own ON user_lesson_progress
     FOR SELECT TO authenticated
     USING (user_id = auth.uid());
-
 DROP POLICY IF EXISTS user_lesson_progress_insert_own ON user_lesson_progress;
 CREATE POLICY user_lesson_progress_insert_own ON user_lesson_progress
     FOR INSERT TO authenticated
     WITH CHECK (user_id = auth.uid());
-
 DROP POLICY IF EXISTS user_lesson_progress_update_own ON user_lesson_progress;
 CREATE POLICY user_lesson_progress_update_own ON user_lesson_progress
     FOR UPDATE TO authenticated
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
-
 DROP POLICY IF EXISTS user_lesson_progress_delete_own ON user_lesson_progress;
 CREATE POLICY user_lesson_progress_delete_own ON user_lesson_progress
     FOR DELETE TO authenticated
     USING (user_id = auth.uid());
-
 -- User quiz attempts: users can only manage their own attempts
 DROP POLICY IF EXISTS user_quiz_attempts_select_own ON user_quiz_attempts;
 CREATE POLICY user_quiz_attempts_select_own ON user_quiz_attempts
     FOR SELECT TO authenticated
     USING (user_id = auth.uid());
-
 DROP POLICY IF EXISTS user_quiz_attempts_insert_own ON user_quiz_attempts;
 CREATE POLICY user_quiz_attempts_insert_own ON user_quiz_attempts
     FOR INSERT TO authenticated
     WITH CHECK (user_id = auth.uid());
-
 DROP POLICY IF EXISTS user_quiz_attempts_update_own ON user_quiz_attempts;
 CREATE POLICY user_quiz_attempts_update_own ON user_quiz_attempts
     FOR UPDATE TO authenticated
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
-
 DROP POLICY IF EXISTS user_quiz_attempts_delete_own ON user_quiz_attempts;
 CREATE POLICY user_quiz_attempts_delete_own ON user_quiz_attempts
     FOR DELETE TO authenticated

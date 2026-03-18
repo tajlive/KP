@@ -23,14 +23,14 @@ interface ToastOptions {
 
 /**
  * Hook for å vise toast-meldinger med i18n-støtte
- * 
+ *
  * @example
  * const { t, success, error } = useI18nToast();
- * 
+ *
  * // Med i18n-nøkkel:
  * success("strategy.saved");
  * error("auth.loginFailed");
- * 
+ *
  * // Med variabler:
  * success("copyTrading.traderFollowed", { name: "John" });
  */
@@ -38,9 +38,19 @@ export function useI18nToast() {
   const t = useTranslations("toasts");
 
   const showToast = useCallback(
-    (type: ToastType, key: string, variables?: Record<string, string | number>, options?: ToastOptions) => {
-      const message = variables && Object.keys(variables).length > 0 ? t(key as never, variables as Record<string, string>) : t(key as never);
-      const description = options?.description ? t(options.description as never) : undefined;
+    (
+      type: ToastType,
+      key: string,
+      variables?: Record<string, string | number>,
+      options?: ToastOptions,
+    ) => {
+      const message =
+        variables && Object.keys(variables).length > 0
+          ? t(key as never, variables as Record<string, string> as never)
+          : t(key as never);
+      const description = options?.description
+        ? t(options.description as never)
+        : undefined;
 
       switch (type) {
         case "success":
@@ -57,42 +67,62 @@ export function useI18nToast() {
           return sonnerToast(message, { description, ...options });
       }
     },
-    [t]
+    [t],
   );
 
   const success = useCallback(
-    (key: string, variables?: Record<string, string | number>, options?: ToastOptions) => {
+    (
+      key: string,
+      variables?: Record<string, string | number>,
+      options?: ToastOptions,
+    ) => {
       return showToast("success", key, variables, options);
     },
-    [showToast]
+    [showToast],
   );
 
   const error = useCallback(
-    (key: string, variables?: Record<string, string | number>, options?: ToastOptions) => {
+    (
+      key: string,
+      variables?: Record<string, string | number>,
+      options?: ToastOptions,
+    ) => {
       return showToast("error", key, variables, options);
     },
-    [showToast]
+    [showToast],
   );
 
   const info = useCallback(
-    (key: string, variables?: Record<string, string | number>, options?: ToastOptions) => {
+    (
+      key: string,
+      variables?: Record<string, string | number>,
+      options?: ToastOptions,
+    ) => {
       return showToast("info", key, variables, options);
     },
-    [showToast]
+    [showToast],
   );
 
   const warning = useCallback(
-    (key: string, variables?: Record<string, string | number>, options?: ToastOptions) => {
+    (
+      key: string,
+      variables?: Record<string, string | number>,
+      options?: ToastOptions,
+    ) => {
       return showToast("warning", key, variables, options);
     },
-    [showToast]
+    [showToast],
   );
 
   const loading = useCallback(
-    (key: string, variables?: Record<string, string | number>, options?: ToastOptions) => {
+    (
+      key: string,
+      variables?: Record<string, string | number>,
+      options?: ToastOptions,
+    ) => {
       return showToast("loading", key, variables, options);
     },
-    [showToast]
+    [showToast],
   );
 
   // Helper for å vise standard error-melding
@@ -100,7 +130,7 @@ export function useI18nToast() {
     (fallbackMessage?: string) => {
       return sonnerToast.error(fallbackMessage || t("general.error"));
     },
-    [t]
+    [t],
   );
 
   // Helper for å vise standard success-melding
@@ -108,7 +138,7 @@ export function useI18nToast() {
     (fallbackMessage?: string) => {
       return sonnerToast.success(fallbackMessage || t("general.saved"));
     },
-    [t]
+    [t],
   );
 
   return {

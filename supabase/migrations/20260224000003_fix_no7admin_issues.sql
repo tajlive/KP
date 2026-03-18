@@ -64,11 +64,9 @@ BEGIN
         RAISE NOTICE 'La til paper_trades_count kolonne i profiles';
     END IF;
 END $$;
-
 -- 2. Sikre at RLS er aktivert
 -- ============================================================
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-
 -- 3. Drop eksisterende policies for å unngå duplikater
 -- ============================================================
 DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
@@ -77,7 +75,6 @@ DROP POLICY IF EXISTS "Admin can view all profiles" ON profiles;
 DROP POLICY IF EXISTS "Enable read access for users" ON profiles;
 DROP POLICY IF EXISTS "Enable update for users" ON profiles;
 DROP POLICY IF EXISTS "Enable all for admins" ON profiles;
-
 -- 4. Opprett RLS policies
 -- ============================================================
 
@@ -85,12 +82,10 @@ DROP POLICY IF EXISTS "Enable all for admins" ON profiles;
 CREATE POLICY "Users can view own profile"
   ON profiles FOR SELECT
   USING (auth.uid() = id);
-
 -- Policy: Brukere kan oppdatere sin egen profil
 CREATE POLICY "Users can update own profile"
   ON profiles FOR UPDATE
   USING (auth.uid() = id);
-
 -- Policy: Admin kan se alle profiler (viktig for /no7admin)
 CREATE POLICY "Admin can view all profiles"
   ON profiles FOR SELECT
@@ -100,7 +95,6 @@ CREATE POLICY "Admin can view all profiles"
       WHERE p.id = auth.uid() AND p.role = 'admin'
     )
   );
-
 -- Policy: Admin kan oppdatere alle profiler
 CREATE POLICY "Admin can update all profiles"
   ON profiles FOR UPDATE
@@ -110,7 +104,6 @@ CREATE POLICY "Admin can update all profiles"
       WHERE p.id = auth.uid() AND p.role = 'admin'
     )
   );
-
 -- 5. Funksjon for å sjekke om bruker er admin
 -- ============================================================
 CREATE OR REPLACE FUNCTION is_admin(user_uuid UUID)
@@ -122,13 +115,11 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 6. Sett admin-rolle for spesifikk bruker (tomarnejensen@gmail.com)
 -- ============================================================
 UPDATE profiles
 SET role = 'admin'
 WHERE email = 'tomarnejensen@gmail.com';
-
 -- 7. Verifiser at kolonnene finnes
 -- ============================================================
 SELECT 
@@ -139,7 +130,6 @@ FROM information_schema.columns
 WHERE table_name = 'profiles'
 AND column_name IN ('role', 'trading_mode', 'binance_api_key_encrypted', 'binance_connected_at', 'paper_trades_count')
 ORDER BY ordinal_position;
-
 -- 8. Verifiser RLS policies
 -- ============================================================
 SELECT 

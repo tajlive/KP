@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { AutoTradingConfigCard } from "@/components/dashboard/AutoTradingConfigCard";
 import { PaperTradingCard } from "@/components/dashboard/PaperTradingCard";
 import { PulseChartContainer } from "@/components/dashboard/pulse/PulseChartContainer";
@@ -27,28 +28,42 @@ import {
   ChevronDown,
   ChevronUp,
   DollarSign,
+  Grid3X3,
   Play,
   Square,
+  Target,
+  Shield,
   TrendingUp,
   Wallet,
+  Bot,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useCurrency } from "@/hooks/useCurrency";
 import { CurrencySwitcher } from "./CurrencySwitcher";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
 import { SignalFeed } from "./SignalFeed";
+import { MonthlyCompetitionBanner } from "@/components/gamification/MonthlyCompetitionBanner";
+import { SURFACE, RADIUS } from "@/lib/design/tokens";
+
+const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
+  dca_trygg: <Shield className="w-5 h-5" />,
+  trend_balansert: <TrendingUp className="w-5 h-5" />,
+  multisignal_aktiv: <Target className="w-5 h-5" />,
+  grid_bot: <Grid3X3 className="w-5 h-5" />,
+  ai_copy: <Bot className="w-5 h-5" />,
+};
 
 const STRATEGY_DEFS: {
   type: StrategyType;
-  icon: string;
   risk: number;
 }[] = [
-  { type: "dca_trygg", icon: "🛡️", risk: 1 },
-  { type: "trend_balansert", icon: "📈", risk: 3 },
-  { type: "multisignal_aktiv", icon: "⚡", risk: 4 },
-  { type: "grid_bot", icon: "🔲", risk: 3 },
-  { type: "ai_copy", icon: "🤖", risk: 5 },
+  { type: "dca_trygg", risk: 1 },
+  { type: "trend_balansert", risk: 3 },
+  { type: "multisignal_aktiv", risk: 4 },
+  { type: "grid_bot", risk: 3 },
+  { type: "ai_copy", risk: 5 },
 ];
 
 const RISK_COLORS: Record<number, string> = {
@@ -70,6 +85,8 @@ interface DashboardProps {
   initialTrades?: unknown[];
   initialStrategies?: unknown[];
   userId?: string;
+  /** Én trading-side: initial mode from URL (?mode=live) */
+  initialMode?: TradingMode;
 }
 
 export default function UnifiedTradingDashboard({
@@ -77,8 +94,28 @@ export default function UnifiedTradingDashboard({
   initialTrades,
   initialStrategies,
   userId: initialUserId,
+  initialMode = "paper",
 }: DashboardProps = {}) {
-  const [mode, setMode] = useState<TradingMode>("paper");
+  const [mode, setMode] = useState<TradingMode>(initialMode);
+  const router = useRouter();
+  const pathname = usePathname() ?? "";
+
+  // Synk URL med modus (paper/live) for tydelig UX og tier-gate
+  useEffect(() => {
+    const params = new URLSearchParams(
+      typeof window !== "undefined" ? window.location.search : "",
+    );
+    const wantLive = mode === "live";
+    const hasLive = params.get("mode") === "live";
+    if (wantLive !== hasLive) {
+      const next = new URL(pathname, "http://localhost");
+      if (wantLive) next.searchParams.set("mode", "live");
+      else next.searchParams.delete("mode");
+      const q = next.searchParams.toString();
+      router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
+    }
+  }, [mode, pathname, router]);
+
   const [portfolio, setPortfolio] = useState<Portfolio | null>(
     (initialPortfolio as Portfolio | null) ?? null,
   );
@@ -117,6 +154,7 @@ export default function UnifiedTradingDashboard({
 
   const STRATEGIES = STRATEGY_DEFS.map((s) => ({
     ...s,
+    icon: STRATEGY_ICONS[s.type],
     name: tTrading(`strategies.${s.type}.name`),
     description: tTrading(`strategies.${s.type}.description`),
   }));
@@ -145,7 +183,7 @@ export default function UnifiedTradingDashboard({
             auth: {
               storage: safeStorage,
             },
-          }
+          },
         );
         const { data: progress } = await sb
           .from("onboarding_progress")
@@ -184,7 +222,7 @@ export default function UnifiedTradingDashboard({
             auth: {
               storage: safeStorage,
             },
-          }
+          },
         );
         const {
           data: { user },
@@ -239,14 +277,16 @@ export default function UnifiedTradingDashboard({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 p-6">
+      <div className={`min-h-screen ${SURFACE.BG} p-6`}>
         <div className="max-w-6xl mx-auto space-y-6">
-          <div className="h-8 bg-slate-800 rounded animate-pulse w-1/3" />
+          <div
+            className={`h-8 ${SURFACE.BG_ELEVATED} ${RADIUS.input} animate-pulse w-1/3`}
+          />
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="h-24 bg-slate-800 rounded animate-pulse"
+                className={`h-24 ${SURFACE.BG_ELEVATED} ${RADIUS.card} animate-pulse`}
               />
             ))}
           </div>
@@ -258,7 +298,7 @@ export default function UnifiedTradingDashboard({
   // KLA-98: Show InteractiveOnboardingWizard if user hasn't completed setup and has no active strategies
   if (showWizard && userId) {
     return (
-      <div className="min-h-screen bg-slate-950">
+      <div className={`min-h-screen ${SURFACE.BG}`}>
         <InteractiveOnboardingWizard
           userId={userId}
           onComplete={() => {
@@ -298,30 +338,53 @@ export default function UnifiedTradingDashboard({
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6" data-testid="dashboard-root">
+    <div
+      className={`min-h-screen ${SURFACE.BG} p-6`}
+      data-testid="dashboard-root"
+    >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className={`text-2xl font-bold ${SURFACE.TEXT}`}>
               {mode === "paper" ? "📄 Lekepenger" : "💰 Live Handel"}
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className={`${SURFACE.TEXT_MUTED} text-sm mt-1`}>
               {mode === "paper"
                 ? "Øv med lekepenger — 100 000 NOK"
                 : "Handel med ekte midler"}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <a
+              href={`/${(pathname ?? "").split("/")[1] ?? "no"}/dashboard`}
+              className={`text-sm font-medium ${SURFACE.TEXT_MUTED} hover:text-white transition-colors`}
+            >
+              {tTrading("backToDashboard")}
+            </a>
+            <a
+              href={`${pathname}?view=sessions${mode === "live" ? "&mode=live" : ""}`}
+              className={`text-sm font-medium ${SURFACE.TEXT_MUTED} hover:text-white transition-colors`}
+            >
+              {tTrading("mySessions")}
+            </a>
             <CurrencySwitcher />
-            <TradingModeToggle mode={mode} setMode={setMode} />
+            <TradingModeToggle
+              mode={mode}
+              setMode={setMode}
+              paperLabel={tTrading("paperModeShort")}
+              liveLabel={tTrading("liveModeShort")}
+            />
           </div>
         </div>
 
+        {/* 50k KLT monthly prize – synlig på dashboard */}
+        <MonthlyCompetitionBanner />
+
         {/* Mode Warning */}
         {mode === "live" && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-400" />
+          <div className="bg-red-500/10 border border-red-500/30 p-4 flex items-center gap-3 rounded-xl">
+            <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
             <p className="text-red-400 text-sm">
               ⚠️ Du handler med ekte midler. Vær forsiktig.
             </p>
@@ -383,15 +446,19 @@ export default function UnifiedTradingDashboard({
 function TradingModeToggle({
   mode,
   setMode,
+  paperLabel,
+  liveLabel,
 }: {
   mode: TradingMode;
   setMode: (m: TradingMode) => void;
+  paperLabel: string;
+  liveLabel: string;
 }) {
   return (
     <div
       role="button"
       tabIndex={0}
-      className="relative w-[200px] h-10 bg-slate-800 rounded-full p-1 flex cursor-pointer"
+      className={`relative w-[200px] h-10 ${SURFACE.BG_ELEVATED} rounded-full p-1 flex cursor-pointer border ${SURFACE.BORDER}`}
       onClick={() => setMode(mode === "paper" ? "live" : "paper")}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -399,22 +466,28 @@ function TradingModeToggle({
           setMode(mode === "paper" ? "live" : "paper");
         }
       }}
-      aria-label={mode === "paper" ? "Bytt til live trading" : "Bytt til lekepenger"}
+      aria-label={
+        mode === "paper" ? "Bytt til live trading" : "Bytt til lekepenger"
+      }
     >
       <motion.div
-        className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-linear-to-r from-blue-500 to-blue-600"
+        className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full ${
+          mode === "live"
+            ? "bg-linear-to-r from-red-500 to-red-600"
+            : "bg-linear-to-r from-[#0052FF] to-[#0047E0]"
+        }`}
         animate={{ x: mode === "live" ? "100%" : "0%" }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
         style={{ left: 4 }}
       />
       <div className="flex-1 flex items-center justify-center relative z-10 text-sm font-medium">
         <span className={mode === "paper" ? "text-white" : "text-slate-400"}>
-          📄 Paper
+          {paperLabel}
         </span>
       </div>
       <div className="flex-1 flex items-center justify-center relative z-10 text-sm font-medium">
         <span className={mode === "live" ? "text-white" : "text-slate-400"}>
-          💰 Live
+          {liveLabel}
         </span>
       </div>
     </div>
@@ -513,7 +586,13 @@ function ActiveStrategiesSection({
   activeStrategies: UserStrategy[];
   onStop: (type: StrategyType) => void;
   formatNOK: (v: number) => string;
-  strategies: { type: StrategyType; icon: string; risk: number; name: string; description: string }[];
+  strategies: {
+    type: StrategyType;
+    icon: ReactNode;
+    risk: number;
+    name: string;
+    description: string;
+  }[];
 }) {
   if (activeStrategies.length === 0) {
     return (
@@ -542,8 +621,8 @@ function ActiveStrategiesSection({
               className="bg-slate-700 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
             >
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{info?.icon}</span>
+                <div className="flex items-center gap-2 text-slate-300">
+                  {info?.icon}
                   <span className="font-medium text-white">{info?.name}</span>
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 </div>
@@ -645,7 +724,13 @@ function StrategySelectorSection({
   mode,
   isStarting,
 }: {
-  strategies: { type: StrategyType; icon: string; risk: number; name: string; description: string }[];
+  strategies: {
+    type: StrategyType;
+    icon: ReactNode;
+    risk: number;
+    name: string;
+    description: string;
+  }[];
   activeStrategies: UserStrategy[];
   expandedStrategy: StrategyType | null;
   setExpandedStrategy: (t: StrategyType | null) => void;
@@ -695,10 +780,12 @@ function StrategySelectorSection({
                   }
                 }}
                 aria-expanded={expanded}
-                aria-label={expanded ? "Lukk strategi" : `Velg ${strategy.name}`}
+                aria-label={
+                  expanded ? "Lukk strategi" : `Velg ${strategy.name}`
+                }
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{strategy.icon}</span>
+                <div className="flex items-center gap-3 text-slate-300">
+                  {strategy.icon}
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium text-white">
@@ -819,7 +906,10 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="dca-weekly-amount" className="text-slate-400 text-sm">
+            <label
+              htmlFor="dca-weekly-amount"
+              className="text-slate-400 text-sm"
+            >
               Ukentlig beløp: {dcaConfig.weeklyAmount} NOK
             </label>
             <input
@@ -837,7 +927,10 @@ function StrategyConfig({
             />
           </div>
           <div>
-            <label htmlFor="dca-btc-allocation" className="text-slate-400 text-sm">
+            <label
+              htmlFor="dca-btc-allocation"
+              className="text-slate-400 text-sm"
+            >
               BTC-fordeling: {dcaConfig.btcAllocation}%
             </label>
             <input
@@ -861,7 +954,10 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="trend-risk-per-trade" className="text-slate-400 text-sm">
+            <label
+              htmlFor="trend-risk-per-trade"
+              className="text-slate-400 text-sm"
+            >
               Risiko per trade: {trendConfig.riskPerTrade}%
             </label>
             <input
@@ -902,7 +998,12 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="multi-aggressiveness" className="text-slate-400 text-sm">Aggressivitet</label>
+            <label
+              htmlFor="multi-aggressiveness"
+              className="text-slate-400 text-sm"
+            >
+              Aggressivitet
+            </label>
             <select
               id="multi-aggressiveness"
               value={multiConfig.aggressiveness}
@@ -931,7 +1032,12 @@ function StrategyConfig({
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="grid-upper-price" className="text-slate-400 text-sm">Øvre pris</label>
+              <label
+                htmlFor="grid-upper-price"
+                className="text-slate-400 text-sm"
+              >
+                Øvre pris
+              </label>
               <input
                 id="grid-upper-price"
                 type="number"
@@ -944,7 +1050,12 @@ function StrategyConfig({
               />
             </div>
             <div>
-              <label htmlFor="grid-lower-price" className="text-slate-400 text-sm">Nedre pris</label>
+              <label
+                htmlFor="grid-lower-price"
+                className="text-slate-400 text-sm"
+              >
+                Nedre pris
+              </label>
               <input
                 id="grid-lower-price"
                 type="number"
@@ -1000,7 +1111,10 @@ function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="ai-max-per-trade" className="text-slate-400 text-sm">
+            <label
+              htmlFor="ai-max-per-trade"
+              className="text-slate-400 text-sm"
+            >
               Maks per trade: {aiConfig.maxPerTrade} NOK
             </label>
             <input

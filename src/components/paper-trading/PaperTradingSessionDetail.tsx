@@ -6,8 +6,18 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Pause, Play, Square, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  ArrowLeft,
+  Pause,
+  Play,
+  Square,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { canUseAutoTradingNow } from "@/types/subscription";
+import { normalizeTier } from "@/lib/pricing/tiers";
 
 interface TradingSession {
   id: string;
@@ -36,20 +46,34 @@ interface PaperTradingSessionDetailProps {
   session: TradingSession;
   trades: Trade[];
   locale: string;
+  /** For client-side tier-gate: ved åpning av live-session uten ?mode=live */
+  userTier?: string;
+  trialStartedAt?: string | null;
 }
 
 export function PaperTradingSessionDetail({
   session: initialSession,
   trades: initialTrades,
   locale,
+  userTier,
+  trialStartedAt,
 }: PaperTradingSessionDetailProps) {
   const t = useTranslations("paperTrading");
   const router = useRouter();
   const supabase = createClient();
-  
+
   const [session, setSession] = useState<TradingSession>(initialSession);
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
   const [loading, setLoading] = useState(false);
+
+  // Client-side tier-gate: live-session uten ?mode=live — redirect til priser hvis ikke tilgang
+  useEffect(() => {
+    if (initialSession.mode !== "live" || !userTier) return;
+    const tier = normalizeTier(userTier);
+    if (!canUseAutoTradingNow(tier, trialStartedAt ?? null)) {
+      router.replace(`/${locale}/priser?upgrade=true`);
+    }
+  }, [initialSession.mode, userTier, trialStartedAt, locale, router]);
 
   // Realtime subscription for trades
   useEffect(() => {
@@ -65,7 +89,7 @@ export function PaperTradingSessionDetail({
         },
         (payload) => {
           setTrades((prev) => [payload.new as Trade, ...prev]);
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -77,7 +101,7 @@ export function PaperTradingSessionDetail({
         },
         (payload) => {
           setSession(payload.new as TradingSession);
-        }
+        },
       )
       .subscribe();
 
@@ -86,14 +110,19 @@ export function PaperTradingSessionDetail({
     };
   }, [session.id, supabase]);
 
-  const handleStatusChange = async (newStatus: "active" | "paused" | "stopped") => {
+  const handleStatusChange = async (
+    newStatus: "active" | "paused" | "stopped",
+  ) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/trading-sessions/${session.id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const response = await fetch(
+        `/api/trading-sessions/${session.id}/status`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to update status");
 
@@ -116,9 +145,10 @@ export function PaperTradingSessionDetail({
       100
     : 0;
   const isProfitable = pnlPercent >= 0;
-  const winRate = session.total_trades > 0
-    ? Math.round((session.winning_trades / session.total_trades) * 100)
-    : 0;
+  const winRate =
+    session.total_trades > 0
+      ? Math.round((session.winning_trades / session.total_trades) * 100)
+      : 0;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -135,8 +165,39 @@ export function PaperTradingSessionDetail({
     }
   };
 
+  const isLive = session.mode === "live";
+
   return (
     <div className="space-y-6">
+      {/* Tydelig UX: modus-banner (paper = merke #0052FF, live = rød) */}
+      <div
+        className={
+          isLive
+            ? "rounded-xl bg-red-500/15 border border-red-500/20 dark:border-red-500/30 px-4 py-3 flex items-center justify-center gap-2"
+            : "rounded-xl bg-[#0052FF]/10 border border-[#0052FF]/20 dark:border-[#0052FF]/30 px-4 py-3 flex items-center justify-center gap-2"
+        }
+      >
+        <Wallet
+          className={
+            isLive
+              ? "w-5 h-5 text-red-600 dark:text-red-400 shrink-0"
+              : "w-5 h-5 text-[#0052FF] dark:text-[#3d7aff] shrink-0"
+          }
+          aria-hidden
+        />
+        <p
+          className={
+            isLive
+              ? "text-red-800 dark:text-red-200 text-sm font-medium"
+              : "text-[#0047E0] dark:text-[#3d7aff] text-sm font-medium"
+          }
+        >
+          {isLive
+            ? "🔴 Live — Ekte penger. Handel med omhu."
+            : t("contextBanner")}
+        </p>
+      </div>
+
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -179,7 +240,8 @@ export function PaperTradingSessionDetail({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {t("startCapital")}: {session.starting_capital_nok.toLocaleString("nb-NO")} kr
+              {t("startCapital")}:{" "}
+              {session.starting_capital_nok.toLocaleString("nb-NO")} kr
             </p>
           </CardContent>
         </Card>
@@ -197,7 +259,8 @@ export function PaperTradingSessionDetail({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {session.winning_trades}/{session.total_trades} {t("trades").toLowerCase()}
+              {session.winning_trades}/{session.total_trades}{" "}
+              {t("trades").toLowerCase()}
             </p>
           </CardContent>
         </Card>

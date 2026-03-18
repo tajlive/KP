@@ -62,8 +62,14 @@ export default function ClientAdminSessions() {
     }
   };
 
-  const handleAction = async (sessionId: string, action: "stop" | "pause" | "resume") => {
-    if (action === "stop" && !window.confirm("Er du sikker på at du vil stoppe denne roboten?"))
+  const handleAction = async (
+    sessionId: string,
+    action: "stop" | "pause" | "resume",
+  ) => {
+    if (
+      action === "stop" &&
+      !window.confirm("Er du sikker på at du vil stoppe denne roboten?")
+    )
       return;
 
     try {
@@ -196,7 +202,7 @@ export default function ClientAdminSessions() {
                       {session.user_profiles?.display_name || "Ukjent"}
                     </div>
                     <div className="text-xs text-slate-500 capitalize">
-                      {session.user_profiles?.tier || "free"}
+                      {session.user_profiles?.tier || "student"}
                     </div>
                   </td>
                   <td className="px-4 py-4">

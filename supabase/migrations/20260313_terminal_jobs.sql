@@ -18,24 +18,19 @@ CREATE TABLE IF NOT EXISTS public.terminal_jobs (
   started_at TIMESTAMPTZ,
   completed_at TIMESTAMPTZ
 );
-
 -- Indexer for ytelse
 CREATE INDEX IF NOT EXISTS idx_terminal_jobs_status 
   ON public.terminal_jobs(status, created_at DESC);
-
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'terminal_jobs' AND column_name = 'session_id') THEN
     CREATE INDEX IF NOT EXISTS idx_terminal_jobs_session ON public.terminal_jobs(session_id);
   END IF;
 END $$;
-
 CREATE INDEX IF NOT EXISTS idx_terminal_jobs_created 
   ON public.terminal_jobs(created_at DESC);
-
 -- Enable RLS
 ALTER TABLE public.terminal_jobs ENABLE ROW LEVEL SECURITY;
-
 -- Policy for service_role (full tilgang for MCP server)
 DROP POLICY IF EXISTS "Service role full access on terminal_jobs" ON public.terminal_jobs;
 CREATE POLICY "Service role full access on terminal_jobs"
@@ -44,7 +39,6 @@ CREATE POLICY "Service role full access on terminal_jobs"
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 -- Kommentarer (kun for kolonner som finnes)
 COMMENT ON TABLE public.terminal_jobs IS 'Queue and log for MCP terminal script executions';
 DO $$

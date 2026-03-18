@@ -24,14 +24,11 @@ BEGIN
     ALTER TABLE profiles ADD COLUMN provider TEXT DEFAULT 'email';
   END IF;
 END $$;
-
 -- Add index for microsoft_id
 CREATE INDEX IF NOT EXISTS idx_profiles_microsoft_id ON profiles(microsoft_id);
-
 -- Add index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_profiles_google_id ON profiles(google_id);
 CREATE INDEX IF NOT EXISTS idx_profiles_provider ON profiles(provider);
-
 -- Create function to handle new Google auth users
 CREATE OR REPLACE FUNCTION handle_google_auth_user()
 RETURNS TRIGGER AS $$
@@ -75,14 +72,12 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Create trigger for new users
 DROP TRIGGER IF EXISTS on_auth_user_created_google ON auth.users;
 CREATE TRIGGER on_auth_user_created_google
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION handle_google_auth_user();
-
 -- Enable Google provider in Supabase (run this in Supabase Dashboard SQL Editor)
 -- Note: You must also enable Google OAuth in Supabase Dashboard:
 -- Authentication > Providers > Google > Enable

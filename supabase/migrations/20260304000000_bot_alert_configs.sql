@@ -29,4 +29,4 @@ CREATE POLICY "Users can insert own alert configs"
 CREATE POLICY "Users can update own alert configs"
   ON bot_alert_configs FOR UPDATE
   USING (auth.uid() = user_id);
-*/
+*/;

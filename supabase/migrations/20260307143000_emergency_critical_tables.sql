@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS paper_trading_sessions (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, status)
 );
-
 -- 2. RISK PROFILES
 CREATE TABLE IF NOT EXISTS risk_profiles (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -30,7 +29,6 @@ CREATE TABLE IF NOT EXISTS risk_profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, name)
 );
-
 -- 3. AUTO TRADING CONFIGS
 CREATE TABLE IF NOT EXISTS auto_trading_configs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -43,21 +41,16 @@ CREATE TABLE IF NOT EXISTS auto_trading_configs (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- RLS POLICIES
 ALTER TABLE paper_trading_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE risk_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auto_trading_configs ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users manage own paper sessions" 
   ON paper_trading_sessions FOR ALL USING (auth.uid() = user_id);
-
 CREATE POLICY "Users manage own risk profiles" 
   ON risk_profiles FOR ALL USING (auth.uid() = user_id);
-
 CREATE POLICY "Users manage own auto trading" 
   ON auto_trading_configs FOR ALL USING (auth.uid() = user_id);
-
 -- AUTO-CREATE DEFAULT DATA
 CREATE OR REPLACE FUNCTION create_default_user_data()
 RETURNS TRIGGER AS $$
@@ -73,7 +66,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users

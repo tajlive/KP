@@ -19,20 +19,15 @@ CREATE TABLE IF NOT EXISTS public.onboarding_progress (
   ) STORED,
   created_at timestamptz DEFAULT now()
 );
-
 -- Enable RLS
 ALTER TABLE public.onboarding_progress ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can read own progress" ON public.onboarding_progress
   FOR SELECT USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can update own progress" ON public.onboarding_progress
   FOR UPDATE USING (auth.uid() = user_id);
-
 CREATE POLICY "System can insert" ON public.onboarding_progress
   FOR INSERT WITH CHECK (auth.uid() = user_id);
-
 -- Auto-create progress row on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user_onboarding()
 RETURNS trigger AS $$
@@ -42,12 +37,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Trigger to create onboarding progress for new users
 DROP TRIGGER IF EXISTS on_auth_user_created_onboarding ON auth.users;
 CREATE TRIGGER on_auth_user_created_onboarding
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_onboarding();
-
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_onboarding_progress_user_id ON public.onboarding_progress(user_id);

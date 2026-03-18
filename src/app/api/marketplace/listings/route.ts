@@ -129,7 +129,7 @@ export async function GET(
       }
 
       // Map fallback data to MarketplaceListing format
-       
+
       const listings: MarketplaceListing[] =
         (fallbackData as unknown[])?.map((value: unknown) => {
           const item = value as Record<string, unknown>;
@@ -147,11 +147,13 @@ export async function GET(
             backtestSummary: (item.strategy_config || {}) as unknown,
             category: item.strategy_type as string | null,
             status: "published",
-            subscriberCount: ((item as Record<string, unknown>).subscriber_count as number) || 0,
+            subscriberCount:
+              ((item as Record<string, unknown>).subscriber_count as number) ||
+              0,
             rating: 0,
             reviewCount: 0,
-            createdAt: item.created_at,
-            updatedAt: item.updated_at,
+            createdAt: (item.created_at as string) ?? "",
+            updatedAt: (item.updated_at as string) ?? "",
             sellerName: profiles?.display_name || "Anonym Creator",
             sellerAvatar: profiles?.avatar_url,
             riskLevel: getRiskLevel(item.strategy_type as string | null),
@@ -169,7 +171,7 @@ export async function GET(
     }
 
     // Map data to MarketplaceListing format
-     
+
     const listings: MarketplaceListing[] =
       (data as unknown[])?.map((value: unknown) => {
         const item = value as Record<string, unknown>;
@@ -191,13 +193,19 @@ export async function GET(
           subscriberCount: (item.subscriber_count as number) || 0,
           rating: (item.rating as number) || 0,
           reviewCount: (item.review_count as number) || 0,
-          createdAt: (item.created_at as string) ?? '',
-          updatedAt: (item.updated_at as string) ?? '',
+          createdAt: (item.created_at as string) ?? "",
+          updatedAt: (item.updated_at as string) ?? "",
           sellerName: profiles?.display_name || "Anonym Creator",
           sellerAvatar: profiles?.avatar_url,
-          riskLevel: getRiskLevelFromBacktest(backtestSummary as Record<string, unknown> | null),
-          winRate: ((backtestSummary as Record<string, unknown>)?.win_rate as number) || 0,
-          pnl30d: ((backtestSummary as Record<string, unknown>)?.pnl_30d as number) || 0,
+          riskLevel: getRiskLevelFromBacktest(
+            backtestSummary as Record<string, unknown> | null,
+          ),
+          winRate:
+            ((backtestSummary as Record<string, unknown>)
+              ?.win_rate as number) || 0,
+          pnl30d:
+            ((backtestSummary as Record<string, unknown>)?.pnl_30d as number) ||
+            0,
         };
       }) || [];
 

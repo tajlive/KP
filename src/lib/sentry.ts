@@ -76,7 +76,35 @@ export function setUser(
 export function startTransaction(name: string, op: string) {
   if (process.env.NODE_ENV !== "production") return null;
 
-  return (Sentry as unknown as { startTransaction: (opts: { name: string; op: string }) => unknown }).startTransaction({ name, op });
+  return (
+    Sentry as unknown as {
+      startTransaction: (opts: { name: string; op: string }) => unknown;
+    }
+  ).startTransaction({ name, op });
+}
+
+/**
+ * Spor kritiske handlinger for produktinnsikt (audit 4.6).
+ * Brukes f.eks. ved registrering, checkout, første trade.
+ */
+export function trackCriticalAction(
+  action: "signup" | "checkout" | "first_trade" | "onboarding_complete",
+  context?: { userId?: string; requestId?: string; [key: string]: unknown },
+) {
+  if (process.env.NODE_ENV !== "production") return;
+  try {
+    Sentry.addBreadcrumb({
+      category: "critical_action",
+      message: action,
+      level: "info",
+      data: context,
+    });
+    if (context?.userId) {
+      Sentry.setTag("critical_action", action);
+    }
+  } catch {
+    // Sentry ikke tilgjengelig
+  }
 }
 
 /**

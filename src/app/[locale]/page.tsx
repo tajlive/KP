@@ -78,6 +78,15 @@ const CoursePreview = dynamic(
   },
 );
 
+const FinalCTASection = dynamic(
+  () => import("@/components/landing/FinalCTASection"),
+  {
+    loading: () => (
+      <div className="h-64 animate-pulse bg-slate-200 dark:bg-slate-800 rounded-xl" />
+    ),
+  },
+);
+
 // ISR: Regenerate page every hour
 export const revalidate = 3600;
 
@@ -149,7 +158,7 @@ export default async function HomePage({
       {/* Live Price Ticker - right under hero, light mode */}
       <DeferredLiveTicker />
 
-      <TrustBar />
+      <TrustBar locale={locale} />
 
       <Suspense
         fallback={
@@ -200,13 +209,22 @@ export default async function HomePage({
         <Testimonials language={locale === "no" ? "no" : "en"} />
       </Suspense>
 
-      {/* Email Lead Capture - Above footer */}
+      {/* Email Lead Capture */}
       <Suspense
         fallback={
           <div className="h-48 animate-pulse bg-slate-100 rounded-xl" />
         }
       >
         <EmailCapture />
+      </Suspense>
+
+      {/* Final CTA - sterk konvertering før footer */}
+      <Suspense
+        fallback={
+          <div className="h-64 animate-pulse bg-slate-200 dark:bg-slate-800 rounded-xl" />
+        }
+      >
+        <FinalCTASection language={locale === "no" ? "no" : "en"} />
       </Suspense>
     </main>
   );

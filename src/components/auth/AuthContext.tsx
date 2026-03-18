@@ -1,16 +1,33 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
-import { createClient } from '@/lib/utils';
-import { Session, User, AuthError } from '@supabase/supabase-js';
-import { clearAllSupabaseStorage, clearCorruptSupabaseKeysSync } from '@/lib/supabase/safe-storage';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useCallback,
+  useRef,
+} from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/utils";
+import { Session, User, AuthError } from "@supabase/supabase-js";
+import {
+  clearAllSupabaseStorage,
+  clearCorruptSupabaseKeysSync,
+} from "@/lib/supabase/safe-storage";
+import { queryKeys } from "@/lib/query-keys";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, metadata?: { [key: string]: unknown }) => Promise<{ error: Error | null; data: unknown }>;
+  signUp: (
+    email: string,
+    password: string,
+    metadata?: { [key: string]: unknown },
+  ) => Promise<{ error: Error | null; data: unknown }>;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
 }
@@ -35,10 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // KRITISK: Rydd korrupte sb-*-nøkler FØR Supabase-klient opprettes (forhindrer "Invalid UTF-8 sequence")
   clearCorruptSupabaseKeysSync();
 
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Refs for managing refresh state without triggering re-renders
   const refreshAttempts = useRef(0);
   const isRefreshing = useRef(false);
@@ -52,16 +70,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Sjekk for korrupte nøkler - hvis funnet, ryd ALT og reload
       const keys = Object.keys(localStorage);
       let foundCorrupt = false;
-      
+
       for (const key of keys) {
-        if (key.startsWith('sb-') || key.includes('supabase') || key.includes('auth-token')) {
+        if (
+          key.startsWith("sb-") ||
+          key.includes("supabase") ||
+          key.includes("auth-token")
+        ) {
           try {
             const val = localStorage.getItem(key);
             if (val) {
               // Test UTF-8 og JSON
               const enc = new TextEncoder().encode(val);
-              new TextDecoder('utf-8', { fatal: true }).decode(enc);
-              if (val.startsWith('{') || val.startsWith('[')) {
+              new TextDecoder("utf-8", { fatal: true }).decode(enc);
+              if (val.startsWith("{") || val.startsWith("[")) {
                 JSON.parse(val);
               }
             }
@@ -72,9 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       }
-      
+
       if (foundCorrupt) {
-        console.warn('[AuthContext] Korrupt storage oppdaget, rydder alle nøkler (uten reload).');
+        console.warn(
+          "[AuthContext] Korrupt storage oppdaget, rydder alle nøkler (uten reload).",
+        );
         clearAllSupabaseStorage({ skipReload: true });
       }
     } catch {
@@ -94,54 +118,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Handle session refresh with exponential backoff
   const handleRefreshToken = useCallback(async () => {
     if (isRefreshing.current) return;
-    
+
     isRefreshing.current = true;
     const supabase = getSupabaseClient();
-    
+
     try {
       const { data, error } = await supabase.auth.refreshSession();
-      
+
       if (error) {
         // Check for rate limit (429) or other auth errors
-        const isRateLimit = error.status === 429 || 
-                           error.message?.includes('rate limit') ||
-                           error.message?.includes('too many requests');
-        
+        const isRateLimit =
+          error.status === 429 ||
+          error.message?.includes("rate limit") ||
+          error.message?.includes("too many requests");
+
         if (isRateLimit || error.status === 401 || error.status === 403) {
           lastRefreshError.current = error;
           refreshAttempts.current++;
-          
+
           if (refreshAttempts.current >= MAX_REFRESH_ATTEMPTS) {
             // Max attempts reached - sign out and redirect
-            console.error('[AuthContext] Max refresh attempts reached, signing out');
+            console.error(
+              "[AuthContext] Max refresh attempts reached, signing out",
+            );
             await supabase.auth.signOut();
             setSession(null);
             setUser(null);
-            
+
             // Redirect to login with expired session param
-            if (typeof window !== 'undefined') {
-              window.location.href = '/innlogging?session=expired';
+            if (typeof window !== "undefined") {
+              window.location.href = "/innlogging?session=expired";
             }
             return;
           }
-          
+
           // Schedule retry with exponential backoff
-          const delay = BACKOFF_DELAYS[refreshAttempts.current - 1] || BACKOFF_DELAYS[BACKOFF_DELAYS.length - 1];
-          console.log(`[AuthContext] Refresh failed, retrying in ${delay}ms (attempt ${refreshAttempts.current}/${MAX_REFRESH_ATTEMPTS})`);
-          
+          const delay =
+            BACKOFF_DELAYS[refreshAttempts.current - 1] ||
+            BACKOFF_DELAYS[BACKOFF_DELAYS.length - 1];
+          console.log(
+            `[AuthContext] Refresh failed, retrying in ${delay}ms (attempt ${refreshAttempts.current}/${MAX_REFRESH_ATTEMPTS})`,
+          );
+
           if (refreshTimeoutRef.current) {
             clearTimeout(refreshTimeoutRef.current);
           }
-          
+
           refreshTimeoutRef.current = setTimeout(() => {
             isRefreshing.current = false;
             handleRefreshToken();
           }, delay);
           return;
         }
-        
+
         // Other errors - just log and reset
-        console.error('[AuthContext] Refresh error:', error);
+        console.error("[AuthContext] Refresh error:", error);
         setSession(null);
         setUser(null);
       } else {
@@ -152,7 +183,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.session?.user ?? null);
       }
     } catch (err) {
-      console.error('[AuthContext] Unexpected refresh error:', err);
+      console.error("[AuthContext] Unexpected refresh error:", err);
       setSession(null);
       setUser(null);
     } finally {
@@ -163,65 +194,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
     const supabase = getSupabaseClient();
-    
+
     // Check existing session on mount with corrupt token handling
     const initAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession()
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-        if (!mounted) return
+        if (!mounted) return;
 
         if (error) {
-          console.warn('[AuthContext] Session error:', error.message)
+          console.warn("[AuthContext] Session error:", error.message);
           // KRITISK: Rens ALLE Supabase-nøkler, ikke bare spesifikke
           clearAllSupabaseStorage();
           // clearAllSupabaseStorage gjør window.location.reload()
         } else {
           if (mounted) {
-            setSession(session)
-            setUser(session?.user ?? null)
+            setSession(session);
+            setUser(session?.user ?? null);
           }
         }
       } catch (err) {
         // Invalid UTF-8 eller annen storage-korrupsjon – rense UTEN reload for å unngå loop
-        console.warn('[AuthContext] Korrupt auth-storage:', err)
+        console.warn("[AuthContext] Korrupt auth-storage:", err);
         if (mounted) {
-          clearAllSupabaseStorage({ skipReload: true })
-          setSession(null)
-          setUser(null)
+          clearAllSupabaseStorage({ skipReload: true });
+          setSession(null);
+          setUser(null);
         }
       } finally {
-        if (mounted) setLoading(false)
+        if (mounted) setLoading(false);
       }
     };
 
     initAuth();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-        
-        if (event === 'TOKEN_REFRESHED') {
-          // Reset attempts on successful refresh
-          refreshAttempts.current = 0;
-          lastRefreshError.current = null;
-        }
-        
-        if (event === 'SIGNED_OUT') {
-          // Clear all state on sign out
-          refreshAttempts.current = 0;
-          lastRefreshError.current = null;
-          if (refreshTimeoutRef.current) {
-            clearTimeout(refreshTimeoutRef.current);
-          }
-        }
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
+      if (event === "TOKEN_REFRESHED") {
+        // Reset attempts on successful refresh
+        refreshAttempts.current = 0;
+        lastRefreshError.current = null;
       }
-    );
+
+      if (event === "SIGNED_OUT") {
+        // Clear all state on sign out
+        refreshAttempts.current = 0;
+        lastRefreshError.current = null;
+        if (refreshTimeoutRef.current) {
+          clearTimeout(refreshTimeoutRef.current);
+        }
+        queryClient.removeQueries({ queryKey: queryKeys.all });
+      } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        queryClient.invalidateQueries({ queryKey: queryKeys.profile(null) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.tier(null) });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tradingSessions(null),
+        });
+      }
+
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     return () => {
       mounted = false;
@@ -231,11 +272,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const supabase = getSupabaseClient();
-    
+
     // Reset refresh attempts on new sign in
     refreshAttempts.current = 0;
     lastRefreshError.current = null;
-    
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -243,28 +284,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, metadata?: { [key: string]: unknown }) => {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata,
-      },
-    });
-    return { data, error };
-  }, []);
+  const signUp = useCallback(
+    async (
+      email: string,
+      password: string,
+      metadata?: { [key: string]: unknown },
+    ) => {
+      const supabase = getSupabaseClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+        },
+      });
+      return { data, error };
+    },
+    [],
+  );
 
   const signOut = useCallback(async () => {
     const supabase = getSupabaseClient();
-    
+
     // Clear refresh state
     refreshAttempts.current = 0;
     lastRefreshError.current = null;
     if (refreshTimeoutRef.current) {
       clearTimeout(refreshTimeoutRef.current);
     }
-    
+
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
@@ -284,17 +332,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshSession,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth må brukes innenfor AuthProvider');
+    throw new Error("useAuth må brukes innenfor AuthProvider");
   }
   return context;
 }

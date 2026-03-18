@@ -1,17 +1,29 @@
-import UnifiedTradingDashboard from '@/components/trading/UnifiedTradingDashboard';
+import { redirect } from "next/navigation";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
   return {
-    title: locale === 'no'
-      ? 'Trading Dashboard - Klarpakke'
-      : 'Trading Dashboard - Klarpakke',
-    description: locale === 'no'
-      ? 'Ditt personlige trading dashboard med lekepenger, live trading og avanserte verktøy for krypto-handel'
-      : 'Your personal trading dashboard with paper money, live trading and advanced tools for crypto trading',
+    title: locale === "no" ? "Trading - Klarpakke" : "Trading - Klarpakke",
+    description:
+      locale === "no"
+        ? "Ditt personlige trading med lekepenger og live trading"
+        : "Your personal trading with paper and live trading",
   };
 }
 
-export default function TradingPage() {
-  return <UnifiedTradingDashboard />;
+/**
+ * Én trading-side (alt 1): All trading lives under /paper-trading.
+ * Redirect so old links and bookmarks still work.
+ */
+export default async function DashboardTradingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  redirect(`/${locale}/paper-trading`);
 }

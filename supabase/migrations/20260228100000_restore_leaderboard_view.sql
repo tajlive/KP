@@ -5,7 +5,6 @@
 -- Først dropp viewet om det finnes (for sikkerhets skyld)
 DROP MATERIALIZED VIEW IF EXISTS leaderboard;
 DROP TABLE IF EXISTS leaderboard CASCADE;
-
 -- Opprett materialized view for leaderboard
 CREATE MATERIALIZED VIEW leaderboard AS
 SELECT 
@@ -39,8 +38,6 @@ WHERE t.executed_at > now() - INTERVAL '30 days'
 GROUP BY up.id, up.display_name, up.avatar_url
 HAVING COUNT(t.id) >= 10  -- Minimum 10 trades to appear on leaderboard
 ORDER BY total_pnl DESC;
-
 CREATE UNIQUE INDEX IF NOT EXISTS idx_leaderboard_user ON leaderboard (user_id);
-
 -- Refresh leaderboard every 60 seconds (pg_cron update omitted here to avoid duplicate cron jobs, or we can ensure it's idempotent)
--- Vi overskriver kun selve viewet her for å unngå pg_cron duplikater hvis de allerede finnes.
+-- Vi overskriver kun selve viewet her for å unngå pg_cron duplikater hvis de allerede finnes.;

@@ -14,22 +14,16 @@ CREATE TABLE IF NOT EXISTS paper_trading_sessions (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_paper_trading_sessions_user_id 
   ON paper_trading_sessions(user_id);
-
 -- RLS
 ALTER TABLE paper_trading_sessions ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own sessions" ON paper_trading_sessions
   FOR SELECT USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can insert own sessions" ON paper_trading_sessions
   FOR INSERT WITH CHECK (auth.uid() = user_id);
-
 CREATE POLICY "Users can update own sessions" ON paper_trading_sessions
   FOR UPDATE USING (auth.uid() = user_id);
-
 -- ============================================================================
 -- 2. RISK PROFILES
 -- ============================================================================
@@ -41,19 +35,14 @@ CREATE TABLE IF NOT EXISTS risk_profiles (
   stop_loss_pct DECIMAL(5,2) DEFAULT 2.0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_risk_profiles_user_id 
   ON risk_profiles(user_id);
-
 -- RLS
 ALTER TABLE risk_profiles ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own risk profiles" ON risk_profiles
   FOR SELECT USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can insert own risk profiles" ON risk_profiles
   FOR INSERT WITH CHECK (auth.uid() = user_id);
-
 -- ============================================================================
 -- 3. AUTO TRADING TRADES (Minimal version for type safety)
 -- ============================================================================
@@ -72,18 +61,14 @@ CREATE TABLE IF NOT EXISTS auto_trading_trades (
   opened_at TIMESTAMPTZ DEFAULT NOW(),
   closed_at TIMESTAMPTZ
 );
-
 CREATE INDEX IF NOT EXISTS idx_auto_trading_trades_session_id 
   ON auto_trading_trades(session_id);
 CREATE INDEX IF NOT EXISTS idx_auto_trading_trades_user_id 
   ON auto_trading_trades(user_id);
-
 -- RLS
 ALTER TABLE auto_trading_trades ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own trades" ON auto_trading_trades
   FOR SELECT USING (auth.uid() = user_id);
-
 -- ============================================================================
 -- 4. AUTO TRADING SESSIONS (Extended)
 -- ============================================================================
@@ -94,7 +79,6 @@ ALTER TABLE auto_trading_sessions
   ADD COLUMN IF NOT EXISTS losing_trades INTEGER DEFAULT 0,
   ADD COLUMN IF NOT EXISTS total_pnl_nok DECIMAL(20,8) DEFAULT 0,
   ADD COLUMN IF NOT EXISTS max_drawdown_pct DECIMAL(5,2);
-
 -- ============================================================================
 -- 5. USER PROFILES (Add missing columns)
 -- ============================================================================

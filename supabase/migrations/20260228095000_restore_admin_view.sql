@@ -13,7 +13,6 @@ SELECT
 FROM profiles p
 LEFT JOIN trades t ON t.user_id = p.user_id
 GROUP BY p.id, p.email, p.display_name, p.role, p.created_at, p.paper_balance, p.real_balance;
-
 -- Grant access
 GRANT SELECT ON admin_user_list TO authenticated;
 GRANT SELECT ON admin_user_list TO service_role;

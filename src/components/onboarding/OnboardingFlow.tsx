@@ -22,7 +22,7 @@ import {
   Trophy,
   Zap,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { TradeExampleCard } from "./TradeExampleCard";
@@ -168,6 +168,7 @@ export default function OnboardingFlow() {
   const step2CompletedRef = useRef(false);
   const supabase = createClient();
   const router = useRouter();
+  const locale = (useParams()?.locale as string) ?? "no";
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -329,7 +330,8 @@ export default function OnboardingFlow() {
         .from("user_profiles")
         .update({ onboarding_completed: true })
         .eq("id", user.id);
-      document.cookie = "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
+      document.cookie =
+        "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
       setIsCompleted(true);
       fireConfetti();
     }
@@ -352,7 +354,9 @@ export default function OnboardingFlow() {
       <div className="relative w-full max-w-lg">
         <button
           onClick={async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
             if (user) {
               const now = new Date().toISOString();
               await Promise.all([
@@ -365,7 +369,8 @@ export default function OnboardingFlow() {
                   .update({ onboarding_completed: true })
                   .eq("id", user.id),
               ]);
-              document.cookie = "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
+              document.cookie =
+                "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
             }
             setIsVisible(false);
           }}
@@ -707,7 +712,9 @@ export default function OnboardingFlow() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => router.push("/live-trading")}
+                  onClick={() =>
+                    router.push(`/${locale}/paper-trading?mode=live`)
+                  }
                 >
                   Prøv live trading
                 </Button>

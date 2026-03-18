@@ -40,9 +40,20 @@ export default async function BotDetailPage({
     );
   }
 
+  const session = sessionRes.data;
+  const strategyConfig =
+    session.strategy_config &&
+    typeof session.strategy_config === "object" &&
+    !Array.isArray(session.strategy_config)
+      ? (session.strategy_config as Record<string, unknown>)
+      : undefined;
   return (
     <BotDetailView
-      session={sessionRes.data}
+      session={
+        { ...session, strategy_config: strategyConfig } as Parameters<
+          typeof BotDetailView
+        >[0]["session"]
+      }
       trades={tradesRes.data ?? []}
       locale={locale}
     />

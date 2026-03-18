@@ -36,7 +36,6 @@ BEGIN
   WHERE processed_by = user_uuid;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- =====================================================
 -- SIGNAL NOTIFICATIONS
 -- =====================================================
@@ -64,13 +63,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Create trigger
 CREATE TRIGGER signal_status_change_notification
   AFTER UPDATE ON signals
   FOR EACH ROW
   EXECUTE FUNCTION notify_signal_status_change();
-
 -- =====================================================
 -- DATA CLEANUP
 -- =====================================================
@@ -100,7 +97,6 @@ BEGIN
   WHERE created_at < NOW() - (days_old || ' days')::INTERVAL;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- =====================================================
 -- USER MANAGEMENT
 -- =====================================================
@@ -128,7 +124,6 @@ BEGIN
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Function to check if user has permission
 CREATE OR REPLACE FUNCTION user_has_permission(
   user_uuid UUID,
@@ -142,7 +137,6 @@ BEGIN
   RETURN user_role = ANY(required_roles);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- =====================================================
 -- AUDIT LOGGING
 -- =====================================================
@@ -165,7 +159,6 @@ BEGIN
   RETURN log_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- =====================================================
 -- SIGNAL VALIDATION
 -- =====================================================
@@ -199,7 +192,6 @@ BEGIN
   RETURN QUERY SELECT TRUE, NULL::TEXT;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- =====================================================
 -- PERFORMANCE VIEWS
 -- =====================================================
@@ -213,7 +205,6 @@ SELECT
   AVG(confidence)::NUMERIC(5,2) as avg_confidence
 FROM signals
 WHERE status = 'pending';
-
 -- View: User performance
 CREATE OR REPLACE VIEW user_performance AS
 SELECT
@@ -232,7 +223,6 @@ FROM auth.users u
 LEFT JOIN user_roles ur ON u.id = ur.user_id
 LEFT JOIN signals s ON u.id = s.processed_by
 GROUP BY u.id, u.email, ur.role;
-
 -- =====================================================
 -- GRANTS FOR FUNCTIONS AND VIEWS
 -- =====================================================
@@ -242,10 +232,8 @@ GRANT EXECUTE ON FUNCTION assign_user_role(UUID, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION user_has_permission(UUID, TEXT[]) TO authenticated;
 GRANT EXECUTE ON FUNCTION log_user_action(UUID, TEXT, UUID, JSONB) TO authenticated;
 GRANT EXECUTE ON FUNCTION validate_signal_for_processing(UUID) TO authenticated;
-
 GRANT SELECT ON active_signals_summary TO authenticated;
 GRANT SELECT ON user_performance TO authenticated;
-
 -- Comments
 COMMENT ON FUNCTION get_user_signal_stats IS 'Get signal processing statistics for a user';
 COMMENT ON FUNCTION assign_user_role IS 'Assign or update user role';

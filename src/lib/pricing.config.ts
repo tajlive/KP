@@ -1,17 +1,14 @@
-// Internal keys; URLs can use student|bachelor|master|phd (see PLAN_PARAM_TO_TIER)
-export type TierName = "gratis" | "basis" | "komplett" | "pro";
-export type PlanParam = TierName | "student" | "bachelor" | "master" | "phd";
+import type { TierSlug } from "@/lib/pricing/tiers";
+import { normalizeTier } from "@/lib/pricing/tiers";
 
-export const PLAN_PARAM_TO_TIER: Record<string, TierName> = {
-  gratis: "gratis",
-  basis: "basis",
-  komplett: "komplett",
-  pro: "pro",
-  student: "gratis",
-  bachelor: "basis",
-  master: "komplett",
-  phd: "pro",
-};
+/** Én kilde til sannhet: student | bachelor | master | phd | professor */
+export type { TierSlug };
+
+/** Plan query param → TierSlug (ukjent/gammel → student) */
+export function planParamToTier(plan: string | null): TierSlug {
+  if (!plan) return "student";
+  return normalizeTier(plan);
+}
 export type BillingPeriod = "monthly" | "annual";
 
 export const TRIAL_DAYS = 7;
@@ -37,7 +34,7 @@ export interface PriceConfig {
 }
 
 export interface TierConfig {
-  name: TierName;
+  name: TierSlug;
   displayName: Record<string, string>;
   description: Record<string, string>;
   prices: Record<
@@ -60,9 +57,9 @@ export const CURRENCY_MAP: Record<string, CurrencyCode> = {
   us: "USD",
 };
 
-export const TIER_CONFIGS: Record<TierName, TierConfig> = {
-  gratis: {
-    name: "gratis",
+export const TIER_CONFIGS: Record<TierSlug, TierConfig> = {
+  student: {
+    name: "student",
     displayName: {
       no: "Student",
       en: "Student",
@@ -104,8 +101,8 @@ export const TIER_CONFIGS: Record<TierName, TierConfig> = {
     },
   },
 
-  basis: {
-    name: "basis",
+  bachelor: {
+    name: "bachelor",
     displayName: {
       no: "Bachelor",
       en: "Bachelor",
@@ -171,8 +168,8 @@ export const TIER_CONFIGS: Record<TierName, TierConfig> = {
     },
   },
 
-  komplett: {
-    name: "komplett",
+  master: {
+    name: "master",
     displayName: {
       no: "Master",
       en: "Master",
@@ -244,8 +241,8 @@ export const TIER_CONFIGS: Record<TierName, TierConfig> = {
     },
   },
 
-  pro: {
-    name: "pro",
+  phd: {
+    name: "phd",
     displayName: {
       no: "PhD",
       en: "PhD",
@@ -318,82 +315,121 @@ export const TIER_CONFIGS: Record<TierName, TierConfig> = {
       prioritySupport: true,
     },
   },
+
+  professor: {
+    name: "professor",
+    displayName: { no: "Professor", en: "Professor" },
+    description: { no: "VIP og 1:1 coaching", en: "VIP and 1:1 coaching" },
+    prices: {
+      NOK: {
+        monthly: { amount: 1999, currency: "NOK", priceId: "" },
+        annual: { amount: 19990, currency: "NOK", priceId: "" },
+      },
+      EUR: {
+        monthly: { amount: 175, currency: "EUR", priceId: "" },
+        annual: { amount: 1750, currency: "EUR", priceId: "" },
+      },
+      USD: {
+        monthly: { amount: 190, currency: "USD", priceId: "" },
+        annual: { amount: 1900, currency: "USD", priceId: "" },
+      },
+    },
+    isRecommended: false,
+    color: "amber",
+    ctaText: { no: "Velg Professor", en: "Choose Professor" },
+    ctaVariant: "default",
+    features: {
+      coursesIncluded: [
+        "krypto-101",
+        "teknisk-analyse",
+        "risk-management",
+        "portfolio-management",
+        "trading-psykologi",
+        "avanserte-strategier",
+        "markedsmakro",
+      ],
+      maxSimulatorTrades: 999999,
+      hasAdvancedCourses: true,
+      hasCertification: true,
+      hasWebinars: true,
+      hasExtraResources: true,
+      supportResponseHours: 0,
+      prioritySupport: true,
+    },
+  },
 };
 
-export const TIER_ORDER: TierName[] = ["gratis", "basis", "komplett", "pro"];
+export const TIER_ORDER: TierSlug[] = [
+  "student",
+  "bachelor",
+  "master",
+  "phd",
+  "professor",
+];
 
-export function getTierConfig(tier: TierName): TierConfig {
+export function getTierConfig(tier: TierSlug): TierConfig {
   return TIER_CONFIGS[tier];
 }
 
-/** Normalize plan query param (student|bachelor|master|phd or legacy gratis|basis|komplett|pro) to TierName */
-export function planParamToTier(plan: string | null): TierName {
-  if (!plan) return "basis";
-  const normalized = plan.toLowerCase();
-  return PLAN_PARAM_TO_TIER[normalized] ?? "basis";
+export function getDisplayName(tier: TierSlug, locale: string = "en"): string {
+  const c = TIER_CONFIGS[tier];
+  return c?.displayName[locale] ?? c?.displayName["en"] ?? tier;
 }
 
-export function getDisplayName(tier: TierName, locale: string = "en"): string {
-  return (
-    TIER_CONFIGS[tier].displayName[locale] ||
-    TIER_CONFIGS[tier].displayName["en"]
-  );
+export function getDescription(tier: TierSlug, locale: string = "en"): string {
+  const c = TIER_CONFIGS[tier];
+  return c?.description[locale] ?? c?.description["en"] ?? "";
 }
 
-export function getDescription(tier: TierName, locale: string = "en"): string {
-  return (
-    TIER_CONFIGS[tier].description[locale] ||
-    TIER_CONFIGS[tier].description["en"]
-  );
-}
-
-export function getCtaText(tier: TierName, locale: string = "en"): string {
-  return TIER_CONFIGS[tier].ctaText[locale] || TIER_CONFIGS[tier].ctaText["en"];
+export function getCtaText(tier: TierSlug, locale: string = "en"): string {
+  const c = TIER_CONFIGS[tier];
+  return c?.ctaText[locale] ?? c?.ctaText["en"] ?? "";
 }
 
 export function getPrice(
-  tier: TierName,
+  tier: TierSlug,
   period: BillingPeriod,
   currency: CurrencyCode = "NOK",
 ): number {
   const config = TIER_CONFIGS[tier];
+  if (!config) return 0;
   return period === "monthly"
     ? config.prices[currency].monthly.amount
     : config.prices[currency].annual.amount;
 }
 
 export function getPriceId(
-  tier: TierName,
+  tier: TierSlug,
   period: BillingPeriod,
   currency: CurrencyCode = "NOK",
 ): string {
   const config = TIER_CONFIGS[tier];
+  if (!config) return "";
   return period === "monthly"
     ? config.prices[currency].monthly.priceId
     : config.prices[currency].annual.priceId;
 }
 
 export function getAnnualSavings(
-  tier: TierName,
+  tier: TierSlug,
   currency: CurrencyCode = "NOK",
 ): number {
   const config = TIER_CONFIGS[tier];
+  if (!config) return 0;
   const monthlyPrice = config.prices[currency].monthly.amount;
   const annualPrice = config.prices[currency].annual.amount;
-
   if (monthlyPrice === 0) return 0;
-  const monthlyTotal = monthlyPrice * 12;
-  return monthlyTotal - annualPrice;
+  return monthlyPrice * 12 - annualPrice;
 }
 
-export function canAccessFeature(tier: TierName, feature: string): boolean {
-  const featureMatrix: Record<string, TierName[]> = {
-    "advanced-courses": ["komplett", "pro"],
-    certification: ["komplett", "pro"],
-    webinars: ["komplett", "pro"],
-    "extra-resources": ["pro"],
-    "priority-support": ["pro"],
-    "unlimited-simulator": ["basis", "komplett", "pro"],
+export function canAccessFeature(tier: TierSlug, feature: string): boolean {
+  const featureMatrix: Record<string, TierSlug[]> = {
+    "advanced-courses": ["master", "phd", "professor"],
+    certification: ["master", "phd", "professor"],
+    webinars: ["master", "phd", "professor"],
+    "extra-resources": ["phd", "professor"],
+    "priority-support": ["phd", "professor"],
+    "unlimited-simulator": ["bachelor", "master", "phd", "professor"],
   };
   return featureMatrix[feature]?.includes(tier) ?? false;
 }

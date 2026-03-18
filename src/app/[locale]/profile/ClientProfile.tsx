@@ -16,7 +16,10 @@ import {
   User,
   Zap,
 } from "lucide-react";
-import { GamificationProvider, useGamification } from "@/components/gamification/GamificationProvider";
+import {
+  GamificationProvider,
+  useGamification,
+} from "@/components/gamification/GamificationProvider";
 import { XPBar } from "@/components/gamification/XPBar";
 import { LevelUpModal } from "@/components/gamification/LevelUpModal";
 import { UpgradeBanner } from "@/components/dashboard/UpgradeBanner";
@@ -73,19 +76,31 @@ function ProfileContent() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: badges } = await supabase
+      // user_badges table not in generated Supabase types
+      const { data: badgeData } = await (
+        supabase as unknown as {
+          from: (t: string) => {
+            select: (s: string) => {
+              eq: (
+                c: string,
+                v: string,
+              ) => Promise<{ data: Record<string, unknown>[] | null }>;
+            };
+          };
+        }
+      )
         .from("user_badges")
         .select("*")
         .eq("user_id", user.id);
-      if (badges) {
+      if (badgeData?.length) {
         setEarnedBadges(
-          badges.map((b: Record<string, string>) => ({
-            id: b.badge_id || b.id,
-            trackId: b.track_id || "",
-            label: b.label || b.badge_id || "",
-            description: b.description || "",
-            earnedAt: b.earned_at || b.created_at || "",
-            icon: b.icon || "Award",
+          badgeData.map((b: Record<string, unknown>) => ({
+            id: String(b.badge_id ?? b.id ?? ""),
+            trackId: String(b.track_id ?? ""),
+            label: String(b.label ?? b.badge_id ?? ""),
+            description: String(b.description ?? ""),
+            earnedAt: String(b.earned_at ?? b.created_at ?? ""),
+            icon: String(b.icon ?? "Award"),
           })),
         );
       }
@@ -119,7 +134,9 @@ function ProfileContent() {
   }, [isAuthenticated, fetchBadges]);
 
   if (!authChecked) {
-    return <div className="max-w-2xl mx-auto p-6 text-slate-400">Laster...</div>;
+    return (
+      <div className="max-w-2xl mx-auto p-6 text-slate-400">Laster...</div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -314,7 +331,8 @@ function ProfileContent() {
           </span>
         </div>
 
-        {earnedBadges.length === 0 && lockedTracks.length === LEARNING_TRACKS.length ? (
+        {earnedBadges.length === 0 &&
+        lockedTracks.length === LEARNING_TRACKS.length ? (
           <div className="text-center py-6">
             <div className="w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
               <Award className="w-7 h-7 text-slate-600" />

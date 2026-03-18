@@ -42,7 +42,6 @@
 -- ============================================
 
 SELECT 'Ingen dupliserte tabeller funnet - ingen action nødvendig' as result;
-
 -- ============================================
 -- Verifisering (skal returnere 1 rad per tabell):
 -- ============================================
@@ -50,4 +49,4 @@ SELECT 'Ingen dupliserte tabeller funnet - ingen action nødvendig' as result;
 -- FROM information_schema.tables
 -- WHERE table_schema = 'public'
 --   AND table_name IN ('paper_trading_sessions', 'auto_trading_configs', 'risk_profiles')
--- GROUP BY table_name;
+-- GROUP BY table_name;;

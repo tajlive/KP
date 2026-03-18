@@ -18,9 +18,12 @@
 -- ============================================================================
 
 -- Enable required extensions
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";      -- gen_random_uuid()
-CREATE EXTENSION IF NOT EXISTS "pgsodium";       -- Encryption for API keys
-CREATE EXTENSION IF NOT EXISTS "pg_cron";        -- Scheduled jobs
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+-- gen_random_uuid()
+CREATE EXTENSION IF NOT EXISTS "pgsodium";
+-- Encryption for API keys
+CREATE EXTENSION IF NOT EXISTS "pg_cron";
+-- Scheduled jobs
 
 -- ============================================================================
 -- 1. SUBSCRIPTION TIERS (drives all access control)
@@ -32,13 +35,11 @@ CREATE TYPE subscription_tier AS ENUM (
   'phd',         -- 999 NOK/month: Unlimited copy + live trading
   'professor'    -- 1999 NOK/month: Priority everything
 );
-
 CREATE TYPE trading_mode AS ENUM ('paper', 'live');
 CREATE TYPE session_status AS ENUM ('active', 'paused', 'crashed', 'stopped');
 CREATE TYPE trade_side AS ENUM ('buy', 'sell');
 CREATE TYPE trade_status AS ENUM ('pending', 'filled', 'partially_filled', 'cancelled', 'failed');
 CREATE TYPE order_type AS ENUM ('market', 'limit', 'stop_loss', 'take_profit');
-
 -- ============================================================================
 -- 2. USER PROFILES (extends Supabase auth.users)
 -- ============================================================================
@@ -65,7 +66,6 @@ CREATE TABLE user_profiles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
@@ -78,11 +78,9 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-
 -- ============================================================================
 -- 3. TRADING SESSIONS (mutable hot state)
 -- ============================================================================
@@ -120,21 +118,17 @@ CREATE TABLE trading_sessions (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- Prevent duplicate active sessions per user+pair
 CREATE UNIQUE INDEX idx_unique_active_session 
   ON trading_sessions (user_id, trading_pair)
   WHERE status = 'active';
-
 -- Fast lookup for crash recovery cron
 CREATE INDEX idx_sessions_heartbeat 
   ON trading_sessions (last_heartbeat)
   WHERE status = 'active';
-
 -- Fast lookup for user's sessions
 CREATE INDEX idx_sessions_user 
   ON trading_sessions (user_id, status);
-
 -- ============================================================================
 -- 4. TRADES (append-only event log - NEVER update or delete)
 -- ============================================================================
@@ -179,22 +173,16 @@ CREATE TABLE trades (
   executed_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- CRITICAL: Idempotency constraint prevents duplicate trades
 CREATE UNIQUE INDEX idx_trades_idempotency ON trades (idempotency_key);
-
 -- Fast queries for session trade history
 CREATE INDEX idx_trades_session ON trades (session_id, executed_at DESC);
-
 -- Fast queries for user trade history
 CREATE INDEX idx_trades_user ON trades (user_id, executed_at DESC);
-
 -- Copy-trading: find all copies of a leader's trade
 CREATE INDEX idx_trades_leader ON trades (leader_trade_id) WHERE leader_trade_id IS NOT NULL;
-
 -- Leaderboard aggregation
 CREATE INDEX idx_trades_leaderboard ON trades (user_id, mode, executed_at);
-
 -- ============================================================================
 -- 5. COPY-TRADING RELATIONSHIPS
 -- ============================================================================
@@ -218,16 +206,12 @@ CREATE TABLE copy_trading_follows (
   -- Can't follow yourself
   CONSTRAINT no_self_follow CHECK (follower_id != leader_id)
 );
-
 -- One follower can only follow a leader once
 CREATE UNIQUE INDEX idx_follow_unique ON copy_trading_follows (follower_id, leader_id);
-
 -- Fast lookup: who is following this leader?
 CREATE INDEX idx_follow_leader ON copy_trading_follows (leader_id) WHERE is_active = true;
-
 -- Fast lookup: who is this user following?
 CREATE INDEX idx_follow_follower ON copy_trading_follows (follower_id) WHERE is_active = true;
-
 -- ============================================================================
 -- 6. COPY-TRADE QUEUE (fan-out buffer for reliable delivery)
 -- ============================================================================
@@ -256,16 +240,13 @@ CREATE TABLE copy_trade_queue (
   
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- Process pending items efficiently
 CREATE INDEX idx_copy_queue_pending 
   ON copy_trade_queue (created_at)
   WHERE status = 'pending';
-
 -- Prevent duplicate queue entries
 CREATE UNIQUE INDEX idx_copy_queue_unique 
   ON copy_trade_queue (leader_trade_id, follower_id);
-
 -- ============================================================================
 -- 7. NOTIFICATION QUEUE (for Resend email delivery)
 -- ============================================================================
@@ -283,11 +264,9 @@ CREATE TABLE notification_queue (
   sent_at     TIMESTAMPTZ,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 CREATE INDEX idx_notifications_pending 
   ON notification_queue (created_at)
   WHERE status = 'pending';
-
 -- ============================================================================
 -- 8. LEADERBOARD VIEW (refreshed every 60 seconds via pg_cron)
 -- ============================================================================
@@ -323,16 +302,13 @@ WHERE t.executed_at > now() - INTERVAL '30 days'
 GROUP BY up.id, up.display_name, up.avatar_url
 HAVING COUNT(t.id) >= 10  -- Minimum 10 trades to appear on leaderboard
 ORDER BY total_pnl DESC;
-
 CREATE UNIQUE INDEX idx_leaderboard_user ON leaderboard (user_id);
-
 -- Refresh leaderboard every 60 seconds
 SELECT cron.schedule(
   'refresh-leaderboard',
   '* * * * *',  -- Every minute
   $$REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboard$$
 );
-
 -- ============================================================================
 -- 9. DATABASE TRIGGER: COPY-TRADE FAN-OUT
 -- ============================================================================
@@ -424,12 +400,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 CREATE TRIGGER on_trade_inserted
   AFTER INSERT ON trades
   FOR EACH ROW
   EXECUTE FUNCTION trigger_copy_trade_fanout();
-
 -- ============================================================================
 -- 10. DATABASE TRIGGER: UPDATE SESSION STATE
 -- ============================================================================
@@ -465,12 +439,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 CREATE TRIGGER on_trade_update_session
   AFTER INSERT ON trades
   FOR EACH ROW
   EXECUTE FUNCTION trigger_update_session_state();
-
 -- ============================================================================
 -- 11. NOTIFICATION TRIGGER
 -- ============================================================================
@@ -498,12 +470,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 CREATE TRIGGER on_trade_notify
   AFTER INSERT ON trades
   FOR EACH ROW
   EXECUTE FUNCTION trigger_trade_notification();
-
 -- ============================================================================
 -- 12. CRASH DETECTION CRON (runs every minute)
 -- ============================================================================
@@ -525,7 +495,6 @@ SELECT cron.schedule(
     FROM crashed;
   $$
 );
-
 -- ============================================================================
 -- 13. DATA ARCHIVAL CRON (keeps DB under 500MB free tier)
 -- ============================================================================
@@ -542,7 +511,6 @@ CREATE TABLE archived_trade_summaries (
   trade_data  JSONB NOT NULL,  -- Compressed summary
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 SELECT cron.schedule(
   'archive-old-trades',
   '0 3 * * 0',  -- Every Sunday at 3 AM
@@ -565,7 +533,6 @@ SELECT cron.schedule(
     GROUP BY user_id, session_id;
   $$
 );
-
 -- ============================================================================
 -- 14. ROW LEVEL SECURITY (users only see their own data)
 -- ============================================================================
@@ -576,12 +543,10 @@ CREATE POLICY "Users read own profile" ON user_profiles
   FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users update own profile" ON user_profiles
   FOR UPDATE USING (auth.uid() = id);
-
 -- trading_sessions: own sessions only
 ALTER TABLE trading_sessions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users manage own sessions" ON trading_sessions
   FOR ALL USING (auth.uid() = user_id);
-
 -- trades: own trades + can see leader trades they follow
 ALTER TABLE trades ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own trades" ON trades
@@ -598,28 +563,23 @@ CREATE POLICY "Users see leader trades" ON trades
 -- Service role bypasses RLS for API routes
 CREATE POLICY "Service role full access" ON trades
   FOR ALL USING (auth.role() = 'service_role');
-
 -- copy_trading_follows: participants only
 ALTER TABLE copy_trading_follows ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own follows" ON copy_trading_follows
   FOR SELECT USING (auth.uid() = follower_id OR auth.uid() = leader_id);
 CREATE POLICY "Users manage own follows" ON copy_trading_follows
   FOR ALL USING (auth.uid() = follower_id);
-
 -- notification_queue: own notifications only
 ALTER TABLE notification_queue ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own notifications" ON notification_queue
   FOR SELECT USING (auth.uid() = user_id);
-
 -- copy_trade_queue: service role only (processed by Edge Function)
 ALTER TABLE copy_trade_queue ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Service role processes queue" ON copy_trade_queue
   FOR ALL USING (auth.role() = 'service_role');
-
 -- leaderboard: public read
 -- (Materialized views don't support RLS, but we grant SELECT to authenticated)
 GRANT SELECT ON leaderboard TO authenticated;
-
 -- ============================================================================
 -- 15. HELPER FUNCTIONS
 -- ============================================================================
@@ -634,7 +594,6 @@ BEGIN
   RETURN p_session_id || '-' || p_side || '-' || to_char(p_timestamp, 'YYYYMMDD-HH24MISS-MS');
 END;
 $$ LANGUAGE plpgsql;
-
 -- Check if user can follow more leaders (based on tier)
 CREATE OR REPLACE FUNCTION can_follow_leader(p_user_id UUID)
 RETURNS BOOLEAN AS $$

@@ -16,25 +16,19 @@ CREATE TABLE IF NOT EXISTS risk_profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)
 );
-
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_risk_profiles_user_id ON risk_profiles(user_id);
-
 -- RLS
 ALTER TABLE risk_profiles ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own risk profile"
   ON risk_profiles FOR SELECT
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can update own risk profile"
   ON risk_profiles FOR UPDATE
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Service can insert risk profiles"
   ON risk_profiles FOR INSERT
   WITH CHECK (true);
-
 -- Trigger for updated_at
 CREATE OR REPLACE FUNCTION update_risk_profiles_updated_at()
 RETURNS TRIGGER AS $$
@@ -43,13 +37,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 DROP TRIGGER IF EXISTS update_risk_profiles_timestamp ON risk_profiles;
 CREATE TRIGGER update_risk_profiles_timestamp
   BEFORE UPDATE ON risk_profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_risk_profiles_updated_at();
-
 -- Badges Table
 CREATE TABLE IF NOT EXISTS badges (
   id TEXT PRIMARY KEY,
@@ -63,7 +55,6 @@ CREATE TABLE IF NOT EXISTS badges (
   condition_value JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- User Badges (earned)
 CREATE TABLE IF NOT EXISTS user_badges (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -72,24 +63,19 @@ CREATE TABLE IF NOT EXISTS user_badges (
   earned_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, badge_id)
 );
-
 -- RLS
 ALTER TABLE badges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_badges ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Anyone can view badges"
   ON badges FOR SELECT
   TO authenticated, anon
   USING (true);
-
 CREATE POLICY "Users can view own badges"
   ON user_badges FOR SELECT
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Service can award badges"
   ON user_badges FOR INSERT
   WITH CHECK (true);
-
 -- Seed Badges
 INSERT INTO badges (id, name_no, name_en, description_no, description_en, icon, xp_reward, condition_type) VALUES
   ('first_trade', 'Første Trade', 'First Trade', 'Utfør din første paper trade', 'Execute your first paper trade', 'Target', 100, 'trade_count'),
@@ -101,7 +87,6 @@ INSERT INTO badges (id, name_no, name_en, description_no, description_en, icon, 
   ('profitt_pro', 'Profitt Pro', 'Profit Pro', 'Gjør 10% profitt på paper trading', 'Make 10% profit on paper trading', 'TrendingUp', 500, 'profit_percent'),
   ('founder', 'Grunnlegger', 'Founder', 'Blant de første 100 studentene', 'Among the first 100 students', 'Crown', 10000, 'founder')
 ON CONFLICT (id) DO NOTHING;
-
 -- Function to create default risk profile for new users
 CREATE OR REPLACE FUNCTION create_default_risk_profile()
 RETURNS TRIGGER AS $$
@@ -112,7 +97,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Trigger to create risk profile on user creation
 DROP TRIGGER IF EXISTS create_risk_profile_on_signup ON auth.users;
 CREATE TRIGGER create_risk_profile_on_signup

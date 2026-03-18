@@ -149,18 +149,15 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Fix 2: Drop conflicting trigger on user_profiles
 -- This trigger was calling initialize_user_settings() which conflicted
 -- with the user_settings insert in handle_new_user_consolidated()
 DROP TRIGGER IF EXISTS on_user_profile_created ON user_profiles;
-
 -- Ensure the main trigger exists and is the only one
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user_consolidated();
-
 -- Verification
 DO $$
 BEGIN

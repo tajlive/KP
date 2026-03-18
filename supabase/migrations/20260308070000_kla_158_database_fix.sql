@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS risk_profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, name)
 );
-
 -- 2. PAPER TRADING SESSIONS
 CREATE TABLE IF NOT EXISTS paper_trading_sessions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -30,7 +29,6 @@ CREATE TABLE IF NOT EXISTS paper_trading_sessions (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, is_active)
 );
-
 -- 3. AUTO TRADING CONFIGS
 CREATE TABLE IF NOT EXISTS auto_trading_configs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -43,7 +41,6 @@ CREATE TABLE IF NOT EXISTS auto_trading_configs (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- 4. TRADING SESSIONS
 CREATE TABLE IF NOT EXISTS trading_sessions (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -56,26 +53,20 @@ CREATE TABLE IF NOT EXISTS trading_sessions (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- RLS Enablement
 ALTER TABLE risk_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE paper_trading_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auto_trading_configs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE trading_sessions ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 DROP POLICY IF EXISTS "Users manage own risk profiles" ON risk_profiles;
 CREATE POLICY "Users manage own risk profiles" ON risk_profiles FOR ALL USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users manage own paper sessions" ON paper_trading_sessions;
 CREATE POLICY "Users manage own paper sessions" ON paper_trading_sessions FOR ALL USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users manage own auto trading" ON auto_trading_configs;
 CREATE POLICY "Users manage own auto trading" ON auto_trading_configs FOR ALL USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users manage own sessions" ON trading_sessions;
 CREATE POLICY "Users manage own sessions" ON trading_sessions FOR ALL USING (auth.uid() = user_id);
-
 -- AUTO-CREATE TRIGGER
 CREATE OR REPLACE FUNCTION handle_new_user_onboarding_kla158()
 RETURNS TRIGGER AS $$
@@ -95,7 +86,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS on_auth_user_created_kla158 ON auth.users;
 CREATE TRIGGER on_auth_user_created_kla158
   AFTER INSERT ON auth.users

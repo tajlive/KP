@@ -25,18 +25,27 @@ export async function POST(req: NextRequest) {
 
     try {
       const supabase = await createClient();
-      await supabase
+      await (
+        supabase as unknown as {
+          from: (t: string) => {
+            upsert: (
+              row: object,
+              opts: { onConflict: string },
+            ) => Promise<unknown>;
+          };
+        }
+      )
         .from("leads")
-        .upsert({ email, source: "landing_email_capture" }, { onConflict: "email" });
+        .upsert(
+          { email, source: "landing_email_capture" },
+          { onConflict: "email" },
+        );
     } catch {
       // DB insert is best-effort — don't fail the request
     }
 
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json(
-      { error: "Bad request" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Bad request" }, { status: 400 });
   }
 }

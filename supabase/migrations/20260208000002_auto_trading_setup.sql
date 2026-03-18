@@ -25,34 +25,27 @@ CREATE TABLE IF NOT EXISTS trading_api_keys (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, exchange)
 );
-
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_trading_api_keys_active ON trading_api_keys(user_id, is_active);
 CREATE INDEX IF NOT EXISTS idx_trading_api_keys_exchange ON trading_api_keys(exchange);
-
 -- RLS Policies
 ALTER TABLE trading_api_keys ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can only see own API keys" ON trading_api_keys;
 CREATE POLICY "Users can only see own API keys"
   ON trading_api_keys FOR SELECT
   USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can only insert own API keys" ON trading_api_keys;
 CREATE POLICY "Users can only insert own API keys"
   ON trading_api_keys FOR INSERT
   WITH CHECK (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can only update own API keys" ON trading_api_keys;
 CREATE POLICY "Users can only update own API keys"
   ON trading_api_keys FOR UPDATE
   USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can only delete own API keys" ON trading_api_keys;
 CREATE POLICY "Users can only delete own API keys"
   ON trading_api_keys FOR DELETE
   USING (auth.uid() = user_id);
-
 -- ============================================================================
 -- 2. AUTO TRADE SETTINGS TABLE
 -- ============================================================================
@@ -76,14 +69,12 @@ CREATE TABLE IF NOT EXISTS auto_trade_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)
 );
-
 -- Indexes
 -- Index fjernet midlertidig pga kolonne-konflikt
 -- CREATE INDEX IF NOT EXISTS idx_auto_trade_settings_enabled ON auto_trade_settings(user_id, is_enabled);
 
 -- RLS Policies
 ALTER TABLE auto_trade_settings ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies (med IF NOT EXISTS logikk via DO block)
 DO $$
 BEGIN
@@ -127,7 +118,6 @@ BEGIN
       USING (auth.uid() = user_id);
   END IF;
 END $$;
-
 -- Auto-create settings on user signup
 CREATE OR REPLACE FUNCTION create_auto_trade_settings_for_new_user()
 RETURNS TRIGGER AS $$
@@ -138,12 +128,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS on_auth_user_created_auto_trade ON auth.users;
 CREATE TRIGGER on_auth_user_created_auto_trade 
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION create_auto_trade_settings_for_new_user();
-
 -- ============================================================================
 -- 3. AUTO TRADES TABLE
 -- ============================================================================
@@ -176,16 +164,13 @@ CREATE TABLE IF NOT EXISTS auto_trades (
   executed_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_auto_trades_user_status ON auto_trades(user_id, status);
 -- CREATE INDEX IF NOT EXISTS idx_auto_trades_signal ON auto_trades(signal_id);  -- Kolonne finnes ikke ennå
 CREATE INDEX IF NOT EXISTS idx_auto_trades_created ON auto_trades(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_auto_trades_symbol ON auto_trades(symbol);
-
 -- RLS Policies
 ALTER TABLE auto_trades ENABLE ROW LEVEL SECURITY;
-
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -206,7 +191,6 @@ BEGIN
       USING (auth.role() = 'service_role');
   END IF;
 END $$;
-
 -- ============================================================================
 -- 4. AUTO TRADE DAILY STATS TABLE
 -- ============================================================================
@@ -229,13 +213,11 @@ CREATE TABLE IF NOT EXISTS auto_trade_daily_stats (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, trade_date)
 );
-
 -- Indexes
 -- CREATE INDEX IF NOT EXISTS idx_auto_trade_daily_stats_date ON auto_trade_daily_stats(user_id, trade_date DESC);
 
 -- RLS Policies
 ALTER TABLE auto_trade_daily_stats ENABLE ROW LEVEL SECURITY;
-
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -247,7 +229,6 @@ BEGIN
       USING (auth.uid() = user_id);
   END IF;
 END $$;
-
 -- ============================================================================
 -- 5. HELPER FUNCTIONS
 -- ============================================================================
@@ -286,11 +267,9 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 CREATE TRIGGER on_trade_executed 
   AFTER UPDATE ON auto_trades
   FOR EACH ROW EXECUTE FUNCTION update_daily_stats_on_trade();
-
 -- Function: Check if daily loss limit exceeded
 CREATE OR REPLACE FUNCTION check_daily_loss_limit(p_user_id UUID)
 RETURNS TABLE(should_stop BOOLEAN, current_loss_percent DECIMAL) AS $$
@@ -321,7 +300,6 @@ BEGIN
     v_loss_percent;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- ============================================================================
 -- 6. COMMENTS (Documentation)
 -- ============================================================================
@@ -330,9 +308,8 @@ COMMENT ON TABLE trading_api_keys IS 'Krypterte Binance API keys per bruker. AES
 COMMENT ON TABLE auto_trade_settings IS 'Brukerens auto-trading preferanser og risikoinnstillinger.';
 COMMENT ON TABLE auto_trades IS 'Logg over alle auto-trades (paper + live). Inkluderer profit/loss tracking.';
 COMMENT ON TABLE auto_trade_daily_stats IS 'Daglig aggregert statistikk per bruker for dashboards.';
-
 -- ============================================================================
 -- SETUP COMPLETE
 -- ============================================================================
 -- Alt klart for auto-trading! 🚀
--- ============================================================================
+-- ============================================================================;

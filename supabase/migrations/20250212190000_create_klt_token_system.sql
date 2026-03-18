@@ -3,7 +3,6 @@
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- User KLT Balances
 CREATE TABLE IF NOT EXISTS user_klt_balances (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -15,7 +14,6 @@ CREATE TABLE IF NOT EXISTS user_klt_balances (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)
 );
-
 -- KLT Transactions
 CREATE TABLE IF NOT EXISTS klt_transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -27,7 +25,6 @@ CREATE TABLE IF NOT EXISTS klt_transactions (
   metadata JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- KLT Earning Categories
 CREATE TABLE IF NOT EXISTS klt_earning_categories (
   id VARCHAR(50) PRIMARY KEY,
@@ -40,7 +37,6 @@ CREATE TABLE IF NOT EXISTS klt_earning_categories (
   description_no TEXT,
   description_en TEXT
 );
-
 -- Insert earning categories
 INSERT INTO klt_earning_categories (id, name_no, name_en, amount, cooldown_minutes, max_per_day, description_no, description_en) VALUES
   ('founder_bonus', 'Grunnlegger-bonus', 'Founder Bonus', 10000, 0, NULL, 'Takk for at du var med fra starten! (0.1% av totalt 10M)', 'Thanks for being there from the start! (0.1% of 10M total)'),
@@ -52,7 +48,6 @@ INSERT INTO klt_earning_categories (id, name_no, name_en, amount, cooldown_minut
   ('bug_report', 'Bug rapport', 'Bug Report', 500, 0, NULL, 'Finn feil og rapporter', 'Find and report bugs'),
   ('content_create', 'Lag innhold', 'Create Content', 1000, 0, NULL, 'Lag opplæringsmateriale', 'Create educational content'),
   ('trading_profit', 'Trading profitt', 'Trading Profit', 0, 0, 1000, '1% av paper trading profitt', '1% of paper trading profit');
-
 -- Founder allocations tracking
 CREATE TABLE IF NOT EXISTS klt_founder_allocations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -65,37 +60,32 @@ CREATE TABLE IF NOT EXISTS klt_founder_allocations (
   UNIQUE(user_id),
   UNIQUE(student_number)
 );
-
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_klt_transactions_user_id ON klt_transactions(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_klt_transactions_type ON klt_transactions(type, category);
 CREATE INDEX IF NOT EXISTS idx_klt_balances_user_id ON user_klt_balances(user_id);
-
 -- RLS Policies
 ALTER TABLE user_klt_balances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE klt_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE klt_founder_allocations ENABLE ROW LEVEL SECURITY;
-
 -- Users can only see their own balance
 CREATE POLICY "Users can view own balance"
   ON user_klt_balances FOR SELECT
   USING (auth.uid() = user_id);
-
 -- Users can only see their own transactions
 CREATE POLICY "Users can view own transactions"
   ON klt_transactions FOR SELECT
   USING (auth.uid() = user_id);
-
 -- System can insert transactions (via service role)
 CREATE POLICY "Service can insert transactions"
   ON klt_transactions FOR INSERT
-  WITH CHECK (true); -- Managed by API with service key
+  WITH CHECK (true);
+-- Managed by API with service key
 
 -- Users can view their founder allocation
 CREATE POLICY "Users can view own founder allocation"
   ON klt_founder_allocations FOR SELECT
   USING (auth.uid() = user_id);
-
 -- Function to claim founder tokens
 CREATE OR REPLACE FUNCTION claim_founder_tokens(p_user_id UUID)
 RETURNS TABLE (claimed_amount INTEGER, student_num INTEGER) AS $$
@@ -139,7 +129,6 @@ BEGIN
   RETURN QUERY SELECT allocation_record.amount, allocation_record.student_number;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Function to get next founder student number
 CREATE OR REPLACE FUNCTION get_next_founder_number()
 RETURNS INTEGER AS $$
@@ -153,7 +142,6 @@ BEGIN
   RETURN next_num;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Grant founder allocation to a new beta user (called from application)
 CREATE OR REPLACE FUNCTION allocate_founder_tokens(p_user_id UUID)
 RETURNS TABLE (student_number INTEGER, amount INTEGER) AS $$
@@ -180,22 +168,18 @@ BEGIN
   RETURN QUERY SELECT next_student_num, 10000;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Grant execute permissions
 GRANT EXECUTE ON FUNCTION claim_founder_tokens(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION allocate_founder_tokens(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_next_founder_number() TO authenticated;
-
 -- Grant table permissions
 GRANT SELECT ON user_klt_balances TO authenticated;
 GRANT SELECT ON klt_transactions TO authenticated;
 GRANT SELECT ON klt_earning_categories TO authenticated;
 GRANT SELECT ON klt_founder_allocations TO authenticated;
-
 -- Comments
 COMMENT ON TABLE user_klt_balances IS 'User KLT token balances (10M total supply)';
 COMMENT ON TABLE klt_transactions IS 'All KLT token transactions';
 COMMENT ON TABLE klt_founder_allocations IS 'Reserved tokens for first 100 beta users (1M = 10% of total)';
-
 -- Verify setup
 SELECT 'KLT Token System created successfully! 10M total: 1M to founders (10%), 9M team reserve (90%)' as status;

@@ -32,26 +32,21 @@ CREATE TABLE IF NOT EXISTS ai_decision_log (
     -- Metadata
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- Index for efficient querying
 CREATE INDEX IF NOT EXISTS idx_ai_decision_user_id ON ai_decision_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_ai_decision_strategy_id ON ai_decision_log(strategy_id);
 CREATE INDEX IF NOT EXISTS idx_ai_decision_timestamp ON ai_decision_log(timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_ai_decision_created_at ON ai_decision_log(created_at DESC);
-
 -- Row Level Security (RLS)
 ALTER TABLE ai_decision_log ENABLE ROW LEVEL SECURITY;
-
 -- Policy: Users can only see their own AI decisions
 CREATE POLICY "Users can view own AI decisions"
     ON ai_decision_log FOR SELECT
     USING (auth.uid() = user_id);
-
 -- Policy: System can insert AI decisions
 CREATE POLICY "System can insert AI decisions"
     ON ai_decision_log FOR INSERT
     WITH CHECK (true);
-
 -- Comments for documentation
 COMMENT ON TABLE ai_decision_log IS 'Logs all AI-driven strategy adjustments for observability and user transparency';
 COMMENT ON COLUMN ai_decision_log.sentiment_value IS 'Fear & Greed Index value (0-100)';

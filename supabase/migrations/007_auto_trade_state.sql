@@ -25,11 +25,9 @@ CREATE TABLE IF NOT EXISTS bot_configs (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Indeks for raske oppslag
 CREATE INDEX IF NOT EXISTS bot_configs_user_id_idx ON bot_configs(user_id);
 CREATE INDEX IF NOT EXISTS bot_configs_is_active_idx ON bot_configs(is_active) WHERE is_active = true;
-
 -- auto_trade_log: Full historikk av alle automatiske handlinger
 CREATE TABLE IF NOT EXISTS auto_trade_log (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -48,26 +46,20 @@ CREATE TABLE IF NOT EXISTS auto_trade_log (
   executed_at TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS auto_trade_log_user_id_idx ON auto_trade_log(user_id);
 CREATE INDEX IF NOT EXISTS auto_trade_log_executed_at_idx ON auto_trade_log(executed_at DESC);
-
 -- RLS
 ALTER TABLE bot_configs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auto_trade_log ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users manage own bot_configs" ON bot_configs FOR ALL 
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-
 CREATE POLICY "Users see own auto_trade_log" ON auto_trade_log FOR ALL 
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-
 -- Trigger: auto-oppdater updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
 $$ language 'plpgsql';
-
 DROP TRIGGER IF EXISTS update_bot_configs_updated_at ON bot_configs;
 CREATE TRIGGER update_bot_configs_updated_at
   BEFORE UPDATE ON bot_configs

@@ -26,4 +26,4 @@ CREATE POLICY "Users can insert own onboarding progress"
 CREATE POLICY "Users can update own onboarding progress"
   ON onboarding_progress FOR UPDATE
   USING (auth.uid() = user_id);
-*/
+*/;
