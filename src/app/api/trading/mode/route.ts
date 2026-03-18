@@ -5,15 +5,20 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient, createClient } from '@/lib/supabase/server';
+
+function getAuthUser(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
+  return supabase.auth.getUser();
+}
 
 /**
  * GET: Hent trading mode status
  */
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await getAuthUser(request);
 
     if (authError || !user) {
       return NextResponse.json(
@@ -21,6 +26,8 @@ export async function GET(_request: NextRequest) {
         { status: 401 }
       );
     }
+
+    const supabase = createClient();
 
     // Hent brukerprofil med trading info (kolonner kan mangle i generert type)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,8 +68,7 @@ export async function GET(_request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await getAuthUser(request);
 
     if (authError || !user) {
       return NextResponse.json(
@@ -70,6 +76,8 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    const supabase = createClient();
 
     const body = await request.json();
     const { mode } = body;

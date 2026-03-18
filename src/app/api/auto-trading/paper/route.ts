@@ -1,14 +1,16 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
 
     const {
       data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+      error: authError,
+    } = await supabaseAuth.auth.getUser();
+    if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -20,6 +22,8 @@ export async function POST(request: NextRequest) {
       typeof body.starting_capital_nok === "number" && body.starting_capital_nok >= 10000
         ? Math.min(1_000_000, body.starting_capital_nok)
         : 100000;
+
+    const supabase = createClient();
 
     const { data: existing } = await supabase
       .from("trading_sessions")

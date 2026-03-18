@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
 
-    // Sjekk autentisering
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json(
@@ -17,6 +17,8 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    const supabase = createClient();
 
     // Parse body
     const body = await request.json();
