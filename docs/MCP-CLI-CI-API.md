@@ -37,6 +37,7 @@
 ### Verifisere MCP
 
 ```bash
+npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Vercel)
 npm run linear:test   # Linear API (leser .env.local)
 npm run test:mcp      # test-mcp-connections.sh (Supabase, Stripe, Vercel, Resend, Cloudflare API)
 npm run cursor:config # MCP-server-navn + .cursor/rules (uten API-nøkkel)
