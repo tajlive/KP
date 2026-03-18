@@ -11,6 +11,9 @@ test.describe("Trading flow and tier-gate @critical", () => {
   const localizedPath = (path: string) => new RegExp(`/([a-z]{2}/)?${path}`);
   const loginWithNext = (target: string) =>
     new RegExp(`/([a-z]{2}/)?(innlogging|login)\\?next=.*${target}`);
+  const hasE2EAuthCredentials = Boolean(
+    process.env.E2E_USER_EMAIL && process.env.E2E_USER_PASSWORD,
+  );
 
   test("Landing: Handle/paper-trading CTA går til paper-trading eller innlogging", async ({
     page,
@@ -64,6 +67,11 @@ test.describe("Trading flow and tier-gate @critical", () => {
   test("Paper-trading med view=sessions: Mine sesjoner og Tilbake-lenker synlige", async ({
     page,
   }) => {
+    test.skip(
+      !hasE2EAuthCredentials,
+      "Requires E2E credentials for authenticated sessions assertions",
+    );
+
     await page.goto("/no/paper-trading?view=sessions", {
       waitUntil: "domcontentloaded",
     });
