@@ -20,7 +20,6 @@ WHERE idx_scan = 0
   AND indexrelname NOT LIKE '%_pkey'  -- Primary keys
   AND indexrelname NOT LIKE '%_fkey'  -- Foreign keys
 ORDER BY pg_relation_size(indexrelid) DESC;
-
 -- Oppsummering
 SELECT 
   COUNT(*) AS unused_index_count,

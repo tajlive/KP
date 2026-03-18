@@ -4,9 +4,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { TRIAL_DAYS } from "@/lib/pricing.config";
+import { jsonSuccess, badRequest, internalError } from "@/lib/api-response";
+import { trackCriticalAction } from "@/lib/sentry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -55,16 +56,10 @@ export async function POST(request: Request) {
       const priceIds = getPriceIds();
       priceId = priceIds[tier as keyof typeof priceIds];
       if (!priceId || priceId.startsWith("price_placeholder")) {
-        return NextResponse.json(
-          { error: `Price ID ikke konfigurert for ${tier}` },
-          { status: 500 },
-        );
+        return internalError(`Price ID ikke konfigurert for ${tier}`);
       }
     } else {
-      return NextResponse.json(
-        { error: "Mangler tier eller priceId" },
-        { status: 400 },
-      );
+      return badRequest("Mangler tier eller priceId");
     }
 
     const baseUrl =
@@ -123,15 +118,12 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({
-      url: session.url,
-      sessionId: session.id,
-    });
+    trackCriticalAction("checkout", { userId, requestId: undefined });
+    return jsonSuccess({ url: session.url, sessionId: session.id });
   } catch (error: unknown) {
     console.error("[Stripe Checkout] Feil:", error);
-    return NextResponse.json(
-      { error: (error as Error).message || "Kunne ikke opprette checkout" },
-      { status: 500 },
+    return internalError(
+      (error as Error).message || "Kunne ikke opprette checkout",
     );
   }
 }

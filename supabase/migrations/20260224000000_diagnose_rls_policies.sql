@@ -17,7 +17,6 @@ FROM pg_policies
 WHERE (qual LIKE '%auth.uid()%' AND qual NOT LIKE '%(SELECT auth.uid())%')
    OR (with_check LIKE '%auth.uid()%' AND with_check NOT LIKE '%(SELECT auth.uid())%')
 ORDER BY tablename, cmd;
-
 -- 2. Tell antall
 SELECT COUNT(*) AS total_slow_policies
 FROM pg_policies

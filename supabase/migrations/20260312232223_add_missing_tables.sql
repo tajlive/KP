@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS auto_trades (
 );
 ALTER TABLE auto_trades ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own trades" ON auto_trades FOR ALL USING (auth.uid() = user_id);
-
 -- 2. trade_history
 CREATE TABLE IF NOT EXISTS trade_history (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -28,7 +27,6 @@ CREATE TABLE IF NOT EXISTS trade_history (
 );
 ALTER TABLE trade_history ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own history" ON trade_history FOR ALL USING (auth.uid() = user_id);
-
 -- 3. trading_stats
 CREATE TABLE IF NOT EXISTS trading_stats (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -42,7 +40,6 @@ CREATE TABLE IF NOT EXISTS trading_stats (
 );
 ALTER TABLE trading_stats ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own stats" ON trading_stats FOR ALL USING (auth.uid() = user_id);
-
 -- 4. trading_risk_config
 CREATE TABLE IF NOT EXISTS trading_risk_config (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -56,7 +53,6 @@ CREATE TABLE IF NOT EXISTS trading_risk_config (
 );
 ALTER TABLE trading_risk_config ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own config" ON trading_risk_config FOR ALL USING (auth.uid() = user_id);
-
 -- 5. saved_strategies
 CREATE TABLE IF NOT EXISTS saved_strategies (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -71,7 +67,6 @@ CREATE TABLE IF NOT EXISTS saved_strategies (
 ALTER TABLE saved_strategies ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own + public strategies" ON saved_strategies FOR SELECT USING (auth.uid() = user_id OR is_public = true);
 CREATE POLICY "Users manage own strategies" ON saved_strategies FOR ALL USING (auth.uid() = user_id);
-
 -- 6. notification_preferences
 CREATE TABLE IF NOT EXISTS notification_preferences (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -84,7 +79,6 @@ CREATE TABLE IF NOT EXISTS notification_preferences (
 );
 ALTER TABLE notification_preferences ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users manage own prefs" ON notification_preferences FOR ALL USING (auth.uid() = user_id);
-
 -- 7. user_activity_logs
 CREATE TABLE IF NOT EXISTS user_activity_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -95,7 +89,6 @@ CREATE TABLE IF NOT EXISTS user_activity_logs (
 );
 ALTER TABLE user_activity_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own logs" ON user_activity_logs FOR SELECT USING (auth.uid() = user_id);
-
 -- 8. waitlist
 CREATE TABLE IF NOT EXISTS waitlist (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -106,7 +99,6 @@ CREATE TABLE IF NOT EXISTS waitlist (
 );
 ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can join waitlist" ON waitlist FOR INSERT WITH CHECK (true);
-
 -- 9. beta_feedback
 CREATE TABLE IF NOT EXISTS beta_feedback (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -118,7 +110,6 @@ CREATE TABLE IF NOT EXISTS beta_feedback (
 );
 ALTER TABLE beta_feedback ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users submit own feedback" ON beta_feedback FOR INSERT WITH CHECK (auth.uid() = user_id);
-
 -- 10. admin_notifications
 CREATE TABLE IF NOT EXISTS admin_notifications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

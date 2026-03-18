@@ -47,45 +47,58 @@ export function SignalFeed() {
 
   const canSeeFullDetails = hasAccess("master");
 
-  const fetchSignals = useCallback(async (showRefresh = false, fromRealtime = false) => {
-    if (showRefresh) setRefreshing(true);
-    try {
-      const supabase = getSupabaseClient();
-      const { data, error } = await supabase
-        .from("trading_signals")
-        .select(
-          "id, symbol, action, asset_name, confidence, entry_price, stop_loss, target_price, signal_type, status, risk_level, reasoning, created_at",
-        )
-        .order("created_at", { ascending: false })
-        .limit(20);
+  const fetchSignals = useCallback(
+    async (showRefresh = false, fromRealtime = false) => {
+      if (showRefresh) setRefreshing(true);
+      try {
+        const supabase = getSupabaseClient();
+        const { data, error } = await supabase
+          .from("trading_signals")
+          .select(
+            "id, symbol, action, asset_name, confidence, entry_price, stop_loss, target_price, signal_type, status, risk_level, reasoning, created_at",
+          )
+          .order("created_at", { ascending: false })
+          .limit(20);
 
-      if (error) {
-        console.error("Failed to fetch trading signals:", error);
-        return;
+        if (error) {
+          console.error("Failed to fetch trading signals:", error);
+          return;
+        }
+        const next = (data as TradingSignal[]) ?? [];
+        const prevCount = prevCountRef.current;
+        prevCountRef.current = next.length;
+        setSignals(next);
+        setLastUpdated(new Date());
+        if (fromRealtime && next.length > 0) {
+          setLiveIndicator(true);
+          const newest = next[0];
+          const dir =
+            newest.action?.toUpperCase() === "BUY" ||
+            newest.action?.toUpperCase() === "LONG"
+              ? "Kjøp"
+              : "Salg";
+          toast.success(`Nytt signal: ${newest.symbol} ${dir}`, {
+            description:
+              newest.entry_price != null
+                ? `Inngang ca. $${newest.entry_price.toLocaleString()}`
+                : undefined,
+          });
+          setTimeout(() => setLiveIndicator(false), 2000);
+        }
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-      const next = (data as TradingSignal[]) ?? [];
-      const prevCount = prevCountRef.current;
-      prevCountRef.current = next.length;
-      setSignals(next);
-      setLastUpdated(new Date());
-      if (fromRealtime && next.length > 0) {
-        setLiveIndicator(true);
-        const newest = next[0];
-        const dir = newest.action?.toUpperCase() === "BUY" || newest.action?.toUpperCase() === "LONG" ? "Kjøp" : "Salg";
-        toast.success(`Nytt signal: ${newest.symbol} ${dir}`, {
-          description: newest.entry_price != null ? `Inngang ca. $${newest.entry_price.toLocaleString()}` : undefined,
-        });
-        setTimeout(() => setLiveIndicator(false), 2000);
-      }
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     fetchSignals();
-    intervalRef.current = setInterval(() => fetchSignals(), REFRESH_INTERVAL_MS);
+    intervalRef.current = setInterval(
+      () => fetchSignals(),
+      REFRESH_INTERVAL_MS,
+    );
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
@@ -101,7 +114,7 @@ export function SignalFeed() {
         { event: "INSERT", schema: "public", table: "trading_signals" },
         () => {
           fetchSignals(false, true);
-        }
+        },
       )
       .subscribe();
     return () => {
@@ -130,7 +143,9 @@ export function SignalFeed() {
         <div className="flex items-center gap-2.5">
           <div className="relative">
             <Radio className="h-4 w-4 text-emerald-400" />
-            <span className={`absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 ${liveIndicator ? "animate-ping" : "animate-pulse"}`} />
+            <span
+              className={`absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 ${liveIndicator ? "animate-ping" : "animate-pulse"}`}
+            />
           </div>
           <h2 className="text-sm font-semibold text-white tracking-wide uppercase">
             Trading Signaler
@@ -140,7 +155,7 @@ export function SignalFeed() {
           </span>
           {lastUpdated && (
             <span className="text-[10px] text-slate-500">
-              · Oppdatert {formatDistanceToNow(lastUpdated, { addSuffix: true })}
+              · Oppdatert {formatDistanceToNow(lastUpdated)}
             </span>
           )}
         </div>
@@ -163,7 +178,8 @@ export function SignalFeed() {
             <TrendingUp className="h-8 w-8 text-slate-600 mx-auto mb-3" />
             <p className="text-slate-400 text-sm">Ingen signaler akkurat nå</p>
             <p className="text-slate-500 text-xs mt-1 max-w-[260px] mx-auto">
-              Signaler fra Binance kommer flere ganger i timen. Aktiver en strategi for å se flere signaler.
+              Signaler fra Binance kommer flere ganger i timen. Aktiver en
+              strategi for å se flere signaler.
             </p>
             <p className="text-slate-600 text-[10px] mt-2">
               Live-oppdatering · også hvert 15. sek

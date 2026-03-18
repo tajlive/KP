@@ -2,13 +2,17 @@
 
 import { translations } from "@/lib/i18n/translations";
 import { motion } from "framer-motion";
-import { Quote, Star } from "lucide-react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
+import { Quote, Star, ArrowRight } from "lucide-react";
+import { BRAND, RADIUS } from "@/lib/design/tokens";
 
 interface TestimonialsProps {
   language?: "no" | "en";
 }
 
 export function Testimonials({ language = "no" }: TestimonialsProps) {
+  const locale = useLocale();
   const t = translations[language].testimonials;
 
   return (
@@ -58,7 +62,7 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
                   delay: index * 0.1,
                 }}
                 whileHover={{ y: -10, rotate: isEven ? 1 : -1 }}
-                className="bg-white/[0.03] backdrop-blur-sm p-8 rounded-[2rem] border border-white/10 hover:border-white/20 transition-all duration-500 group"
+                className="bg-white/3 backdrop-blur-sm p-8 rounded-4xl border border-white/10 hover:border-white/20 transition-all duration-500 group"
               >
                 <div className="mb-6">
                   <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4">
@@ -139,6 +143,25 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
               {language === "no" ? "vurdering" : "rating"}
             </span>
           </div>
+        </motion.div>
+
+        {/* CTA under testimonials */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.6 }}
+          className="mt-12 flex justify-center"
+        >
+          <Link
+            href={`/${locale}/paper-trading`}
+            className={`inline-flex items-center gap-2 px-8 py-4 ${BRAND.primary} ${RADIUS.button} font-bold transition-all duration-200 hover:scale-[1.02]`}
+          >
+            {language === "no"
+              ? "Start med lekepenger"
+              : "Start with paper trading"}
+            <ArrowRight className="w-5 h-5" />
+          </Link>
         </motion.div>
       </div>
     </section>

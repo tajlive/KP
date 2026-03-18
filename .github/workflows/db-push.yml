@@ -1,0 +1,30 @@
+# ============================================================================
+# DB PUSH – Kjør kun Supabase-migrasjoner (ingen build/Vercel-deploy)
+# ============================================================================
+# Bruk når du vil pushe nye migrasjoner uten å deploye appen.
+# Ved feil "Remote migration versions not found": se docs/AUTOMATISERE-DB-OG-MIGRASJONER.md §2.1
+
+name: 🗄️ DB push
+
+on:
+  workflow_dispatch:
+
+jobs:
+  db-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node (for npx supabase)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 🔗 Supabase link & push
+        run: |
+          npx supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+          npx supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

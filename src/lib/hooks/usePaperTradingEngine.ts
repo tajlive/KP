@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { createClient } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
-import { useTradingStore, Position } from '@/store/tradingStore';
-import { calculateSlippage, SlippageResult } from '@/lib/paper-trading/slippage';
-import { fetchMarketVolatility } from '@/lib/paper-trading/slippage';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { createClient } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { useTradingStore, Position } from "@/store/tradingStore";
+import {
+  calculateSlippage,
+  SlippageResult,
+} from "@/lib/paper-trading/slippage";
+import { fetchMarketVolatility } from "@/lib/paper-trading/slippage";
 
 interface PaperTradeResult {
   success: boolean;
@@ -24,12 +27,14 @@ export interface PaperTradingEngine {
   maxDrawdown: number;
   pnlHistory: number[];
   placeOrder: (order: {
-    side: 'buy' | 'sell';
-    type: 'market' | 'limit';
+    side: "buy" | "sell";
+    type: "market" | "limit";
     amount: number;
     price?: number;
   }) => Promise<PaperTradeResult>;
-  closePosition: (positionId: string) => Promise<{ success: boolean; error?: string }>;
+  closePosition: (
+    positionId: string,
+  ) => Promise<{ success: boolean; error?: string }>;
   isLoading: boolean;
   error: string | null;
 }
@@ -40,15 +45,15 @@ const INITIAL_PRICE = 850000; // BTC price in NOK
 export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
   const { user } = useAuth();
   const supabase = createClient();
-  
-  const { 
-    portfolio, 
-    positions, 
-    marketData, 
-    updateMarketData, 
-    openPosition, 
+
+  const {
+    portfolio,
+    positions,
+    marketData,
+    updateMarketData,
+    openPosition,
     closePosition: closeStorePosition,
-    trades 
+    trades,
   } = useTradingStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -71,7 +76,7 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
       const volatility = 0.002; // 0.2% volatility
       const change = (Math.random() - 0.5) * 2 * volatility;
       const newPrice = price * (1 + change);
-      
+
       updateMarketData(symbol, {
         price: newPrice,
         lastUpdate: new Date().toISOString(),
@@ -105,8 +110,8 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
   // Place order with slippage simulation
   const placeOrder = useCallback(
     async (order: {
-      side: 'buy' | 'sell';
-      type: 'market' | 'limit';
+      side: "buy" | "sell";
+      type: "market" | "limit";
       amount: number;
       price?: number;
     }): Promise<PaperTradeResult> => {
@@ -115,14 +120,14 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
 
       try {
         if (!user) {
-          throw new Error('Not authenticated');
+          throw new Error("Not authenticated");
         }
 
         // Calculate slippage for market orders
         let executionPrice = price;
         let slippageResult: SlippageResult | null = null;
 
-        if (order.type === 'market') {
+        if (order.type === "market") {
           slippageResult = calculateSlippage({
             symbol,
             side: order.side,
@@ -131,15 +136,15 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
             currentPrice: price,
           });
           executionPrice = slippageResult.executionPrice;
-        } else if (order.type === 'limit' && order.price) {
+        } else if (order.type === "limit" && order.price) {
           executionPrice = order.price;
         }
 
         // Optimistic update: show position in UI immediately
-        if (order.side === 'buy') {
+        if (order.side === "buy") {
           openPosition({
             symbol,
-            side: 'long',
+            side: "long",
             entryPrice: executionPrice,
             quantity: order.amount,
             leverage: 1,
@@ -148,7 +153,7 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
 
         // Persist to database in background
         const { error: tradeError } = await supabase.rpc(
-          'place_paper_trade_with_slippage',
+          "place_paper_trade_with_slippage",
           {
             p_user_id: user.id,
             p_symbol: symbol,
@@ -156,11 +161,11 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
             p_order_type: order.type,
             p_amount: order.amount,
             p_requested_price: price,
-          }
+          },
         );
 
         if (tradeError) {
-          console.warn('RPC failed, position kept in local store:', tradeError);
+          console.warn("RPC failed, position kept in local store:", tradeError);
         }
 
         return {
@@ -173,26 +178,28 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
             : undefined,
         };
       } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Trade failed';
+        const errorMsg = err instanceof Error ? err.message : "Trade failed";
         setError(errorMsg);
         return { success: false, error: errorMsg };
       } finally {
         setIsLoading(false);
       }
     },
-    [user, symbol, price, supabase, openPosition]
+    [user, symbol, price, supabase, openPosition],
   );
 
   // Close position
   const closePositionHandler = useCallback(
-    async (positionId: string): Promise<{ success: boolean; error?: string }> => {
+    async (
+      positionId: string,
+    ): Promise<{ success: boolean; error?: string }> => {
       setIsLoading(true);
       setError(null);
 
       try {
         const position = positions.find((p) => p.id === positionId);
         if (!position) {
-          throw new Error('Position not found');
+          throw new Error("Position not found");
         }
 
         // Close in store
@@ -200,7 +207,11 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
 
         // Update database
         if (user) {
-          await supabase.rpc('close_paper_trade', {
+          await (
+            supabase as unknown as {
+              rpc: (name: string, params: object) => Promise<unknown>;
+            }
+          ).rpc("close_paper_trade", {
             p_trade_id: positionId,
             p_exit_price: price,
             p_pnl: position.pnl,
@@ -209,14 +220,14 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
 
         return { success: true };
       } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Close failed';
+        const errorMsg = err instanceof Error ? err.message : "Close failed";
         setError(errorMsg);
         return { success: false, error: errorMsg };
       } finally {
         setIsLoading(false);
       }
     },
-    [positions, price, user, supabase, closeStorePosition]
+    [positions, price, user, supabase, closeStorePosition],
   );
 
   return {

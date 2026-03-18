@@ -16,4 +16,4 @@ ALTER PUBLICATION supabase_realtime ADD TABLE auto_trading_trades;
 
 -- Enable Realtime on strategy_logs (bot action logs)
 ALTER PUBLICATION supabase_realtime ADD TABLE strategy_logs;
-*/
+*/;

@@ -10,7 +10,6 @@ ADD COLUMN IF NOT EXISTS binance_api_key_encrypted TEXT,
 ADD COLUMN IF NOT EXISTS binance_api_secret_encrypted TEXT,
 ADD COLUMN IF NOT EXISTS binance_connected_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS paper_trades_count INTEGER DEFAULT 0;
-
 -- 2. Opprett live_trades tabell (for ekte Binance trades)
 CREATE TABLE IF NOT EXISTS live_trades (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -33,20 +32,17 @@ CREATE TABLE IF NOT EXISTS live_trades (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Trigger for å oppdatere updated_at
 DROP TRIGGER IF EXISTS update_live_trades_updated_at ON live_trades;
 CREATE TRIGGER update_live_trades_updated_at 
     BEFORE UPDATE ON live_trades 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
-
 -- 3. Indekser for live_trades
 CREATE INDEX IF NOT EXISTS idx_live_trades_user_id ON live_trades(user_id);
 CREATE INDEX IF NOT EXISTS idx_live_trades_user_status ON live_trades(user_id, status) WHERE status = 'open';
 CREATE INDEX IF NOT EXISTS idx_live_trades_symbol ON live_trades(symbol);
 CREATE INDEX IF NOT EXISTS idx_live_trades_opened_at ON live_trades(opened_at DESC);
-
 -- 4. Funksjon for å telle paper trades (for copy trading unlock)
 CREATE OR REPLACE FUNCTION increment_paper_trades_count(user_uuid UUID)
 RETURNS VOID AS $$
@@ -56,7 +52,6 @@ BEGIN
     WHERE id = user_uuid;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 5. Funksjon for å bytte trading mode
 CREATE OR REPLACE FUNCTION set_trading_mode(
     user_uuid UUID,
@@ -85,25 +80,20 @@ BEGIN
     RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 6. RLS Policies for live_trades
 ALTER TABLE live_trades ENABLE ROW LEVEL SECURITY;
-
 -- Brukere kan kun se egne live trades
 CREATE POLICY "Users can view own live trades"
     ON live_trades FOR SELECT
     USING (auth.uid() = user_id);
-
 -- Brukere kan kun insert egne trades
 CREATE POLICY "Users can insert own live trades"
     ON live_trades FOR INSERT
     WITH CHECK (auth.uid() = user_id);
-
 -- Brukere kan kun oppdatere egne trades
 CREATE POLICY "Users can update own live trades"
     ON live_trades FOR UPDATE
     USING (auth.uid() = user_id);
-
 -- 7. Kommentarer for dokumentasjon
 COMMENT ON COLUMN profiles.trading_mode IS 'Current trading mode: paper (virtual) or live (real Binance)';
 COMMENT ON COLUMN profiles.binance_api_key_encrypted IS 'Encrypted Binance API key (AES-256)';

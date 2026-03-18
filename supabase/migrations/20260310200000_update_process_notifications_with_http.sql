@@ -45,13 +45,11 @@ BEGIN
     END CASE;
 END;
 $$;
-
 -- ============================================
 -- 2. Hovedfunksjon: Prosesser med HTTP og dead-letter
 -- ============================================
 -- Må droppe først pga. endret retur-type (3 kolonner istedenfor 2)
 DROP FUNCTION IF EXISTS process_pending_notifications(INTEGER);
-
 CREATE FUNCTION process_pending_notifications(
     batch_size INTEGER DEFAULT 10
 )
@@ -183,7 +181,6 @@ BEGIN
     RETURN QUERY SELECT v_processed, v_failed, v_skipped;
 END;
 $$;
-
 -- ============================================
 -- 3. Rettigheter
 -- ============================================
@@ -191,7 +188,6 @@ GRANT EXECUTE ON FUNCTION should_send_notification(UUID, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION should_send_notification(UUID, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION process_pending_notifications(INTEGER) TO authenticated;
 GRANT EXECUTE ON FUNCTION process_pending_notifications(INTEGER) TO service_role;
-
 -- ============================================
 -- Verifisering:
 -- ============================================
@@ -202,4 +198,4 @@ GRANT EXECUTE ON FUNCTION process_pending_notifications(INTEGER) TO service_role
 -- SELECT status, COUNT(*) FROM notification_queue GROUP BY status;
 --
 -- -- Sjekk dead-letters:
--- SELECT * FROM notification_queue WHERE status = 'failed' ORDER BY updated_at DESC;
+-- SELECT * FROM notification_queue WHERE status = 'failed' ORDER BY updated_at DESC;;

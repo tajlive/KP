@@ -20,22 +20,18 @@ CREATE TABLE IF NOT EXISTS vipps_agreements (
   
   CONSTRAINT valid_dates CHECK (activated_at IS NULL OR activated_at >= created_at)
 );
-
 -- Indekser for ytelse
 CREATE INDEX IF NOT EXISTS idx_vipps_agreement_id ON vipps_agreements(agreement_id);
 CREATE INDEX IF NOT EXISTS idx_vipps_user_id ON vipps_agreements(user_id);
 CREATE INDEX IF NOT EXISTS idx_vipps_status ON vipps_agreements(status);
 CREATE INDEX IF NOT EXISTS idx_vipps_created_at ON vipps_agreements(created_at);
-
 -- RLS Policies
 ALTER TABLE vipps_agreements ENABLE ROW LEVEL SECURITY;
-
 -- Brukere kan se egne avtaler
 DROP POLICY IF EXISTS "Users can view own agreements" ON vipps_agreements;
 CREATE POLICY "Users can view own agreements"
   ON vipps_agreements FOR SELECT
   USING (auth.uid() = user_id);
-
 -- Service role kan administrere alle avtaler (for webhooks)
 DROP POLICY IF EXISTS "Service role can manage agreements" ON vipps_agreements;
 CREATE POLICY "Service role can manage agreements"
@@ -43,14 +39,12 @@ CREATE POLICY "Service role can manage agreements"
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 -- Autentiserte brukere kan opprette avtaler
 DROP POLICY IF EXISTS "Authenticated users can create agreements" ON vipps_agreements;
 CREATE POLICY "Authenticated users can create agreements"
   ON vipps_agreements FOR INSERT
   TO authenticated
   WITH CHECK (true);
-
 COMMENT ON TABLE vipps_agreements IS 'Stores Vipps Recurring payment agreements';
 COMMENT ON COLUMN vipps_agreements.agreement_id IS 'Unique Vipps agreement ID';
 COMMENT ON COLUMN vipps_agreements.status IS 'PENDING, ACTIVE, STOPPED, or EXPIRED';

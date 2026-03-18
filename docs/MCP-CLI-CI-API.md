@@ -9,10 +9,10 @@
 
 ### Konfigurasjon
 
-| Fil | Bruk |
-|-----|------|
-| `.cursor/mcp.json` | Cursor IDE: hvilke MCP-servere som startes og med hvilke args/env |
-| `.mcp/mcp_config.json` | Generell MCP-konfig (kun env-referanser, ingen hemmeligheter) |
+| Fil                    | Bruk                                                              |
+| ---------------------- | ----------------------------------------------------------------- |
+| `.cursor/mcp.json`     | Cursor IDE: hvilke MCP-servere som startes og med hvilke args/env |
+| `.mcp/mcp_config.json` | Generell MCP-konfig (kun env-referanser, ingen hemmeligheter)     |
 
 **Hemmeligheter:** Aldri committe tokens. Bruk miljøvariabler:
 
@@ -21,16 +21,16 @@
 
 ### Servere i `.cursor/mcp.json`
 
-| Server | Kommando / notater |
-|--------|---------------------|
-| github | `npx -y @modelcontextprotocol/server-github` — env: `GITHUB_TOKEN` |
-| linear | `node scripts/run-linear-mcp.mjs` — nøkkel fra `.env.local` |
-| supabase | `npx -y @supabase/mcp-server-supabase@latest` — `SUPABASE_ACCESS_TOKEN`, project-ref |
+| Server          | Kommando / notater                                                                                                                      |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| github          | `npx -y @modelcontextprotocol/server-github` — env: `GITHUB_TOKEN`                                                                      |
+| linear          | `node scripts/run-linear-mcp.mjs` — nøkkel fra `.env.local`                                                                             |
+| supabase        | `npx -y @supabase/mcp-server-supabase@latest` — `SUPABASE_ACCESS_TOKEN`, project-ref                                                    |
 | **supabase-db** | `node scripts/run-supabase-mcp.mjs` — **DATABASE_URL** fra `.env.local`; 100 % uten Management API-token. Se `docs/MCP-SUPABASE-DB.md`. |
-| playwright | `npx -y @playwright/mcp@latest` |
-| resend | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY` |
-| **vercel** | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`. |
-| **cloudflare** | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`. |
+| playwright      | `npx -y @playwright/mcp@latest`                                                                                                         |
+| resend          | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY`                                                                                      |
+| **vercel**      | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`.                                     |
+| **cloudflare**  | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`.                         |
 
 **Merk:** Cursor er selv MCP-klient; prosjektets MCP-er står i `.cursor/mcp.json`. Full oversikt for Cursor (MCP-oppsett, CLI, API): **docs/CURSOR-MCP-CLI-API.md**.
 
@@ -150,13 +150,13 @@ npm run verify:prod   # smoke mot prod-URL
 
 ### Viktige workflows
 
-| Workflow | Trigger | Hovedsteg |
-|----------|---------|-----------|
-| **test.yml** | push/PR til main, develop | Lint → type-check → i18n audit → build (SKIP_LINT_IN_BUILD) → E2E smoke |
-| **pr-check.yml** | PR mot main | Lint → build (SKIP_LINT_IN_BUILD) → artifact |
-| **manual-deploy.yml** | workflow_dispatch | Build → deploy til Vercel → verify mot prod |
-| **mcp-integration.yml** | push/PR ved endring av MCP-filer | Valider .cursor/mcp.json + .mcp/mcp_config.json (gyldig JSON), sikkerhetssjekk |
-| **mcp-health.yml** | Schedule + dispatch | Sjekk Supabase REST, Stripe, Vercel, Resend, Cloudflare (valgfri; bruker secrets) |
+| Workflow                | Trigger                          | Hovedsteg                                                                         |
+| ----------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| **test.yml**            | push/PR til main, develop        | Lint → type-check → i18n audit → build (SKIP_LINT_IN_BUILD) → E2E smoke           |
+| **pr-check.yml**        | PR mot main                      | Lint → build (SKIP_LINT_IN_BUILD) → artifact                                      |
+| **manual-deploy.yml**   | workflow_dispatch                | Build → deploy til Vercel → verify mot prod                                       |
+| **mcp-integration.yml** | push/PR ved endring av MCP-filer | Valider .cursor/mcp.json + .mcp/mcp_config.json (gyldig JSON), sikkerhetssjekk    |
+| **mcp-health.yml**      | Schedule + dispatch              | Sjekk Supabase REST, Stripe, Vercel, Resend, Cloudflare (valgfri; bruker secrets) |
 
 ### Nødvendige secrets (CI)
 
@@ -174,16 +174,16 @@ Bygg bruker `SKIP_LINT_IN_BUILD=true` slik at lint kjører én gang; build skipp
 
 ### Oversikt
 
-- **Admin:** `/api/admin/*` — krever innlogging + admin-rolle  
-- **Linear:** `/api/linear/*` — krever admin (bruker `LINEAR_API_KEY` fra env)  
-- **Beskyttet:** `/api/onboarding/*`, `/api/referral`, `/api/risk-profiles`, `/api/trading/*`, osv.  
-- **Offentlig:** `/api/health`, `/api/status`, `/api/pricing`, `/api/sentry`, `/api/test-sentry`, `/api/stripe/*`, `/api/webhooks/*`  
+- **Admin:** `/api/admin/*` — krever innlogging + admin-rolle
+- **Linear:** `/api/linear/*` — krever admin (bruker `LINEAR_API_KEY` fra env)
+- **Beskyttet:** `/api/onboarding/*`, `/api/referral`, `/api/risk-profiles`, `/api/trading/*`, osv.
+- **Offentlig:** `/api/health`, `/api/status`, `/api/pricing`, `/api/sentry`, `/api/test-sentry`, `/api/stripe/*`, `/api/webhooks/*`
 
 Full tabell og sikkerhet: **docs/api-routes.md**
 
 ### Sentry (prod)
 
-- `GET /api/test-sentry` — sender server-side test-event når `NEXT_PUBLIC_SENTRY_DSN` er satt i prod.  
+- `GET /api/test-sentry` — sender server-side test-event når `NEXT_PUBLIC_SENTRY_DSN` er satt i prod.
 - Konfigurasjon og verifikasjon: **docs/SENTRY-PROD.md**
 
 ### Health
@@ -197,9 +197,9 @@ Full tabell og sikkerhet: **docs/api-routes.md**
 Migrasjon som aktiverer RLS på 8 tabeller:
 
 - **Fil:** `supabase/migrations/20260315100000_enable_rls_eight_tables.sql`
-- **Kjøring:**  
-  - **Supabase CLI:** `supabase db push` (ev. `supabase migration repair --status reverted <version>` først hvis remote har divergert).  
-  - **Supabase MCP:** Når MCP er tilkoblet, bruk verktøyet `apply_migration` med name `enable_rls_eight_tables` og query = innholdet i migrasjonsfilen.  
+- **Kjøring:**
+  - **Supabase CLI:** `supabase db push` (ev. `supabase migration repair --status reverted <version>` først hvis remote har divergert). **Automatisering:** **docs/AUTOMATISERE-DB-OG-MIGRASJONER.md**. **Varig løsning:** **docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md** (Supabase GitHub-integrasjon / én CI-kanal). Workflow «DB push»: `.github/workflows/db-push.yml`.
+  - **Supabase MCP:** Når MCP er tilkoblet, bruk verktøyet `apply_migration` med name `enable_rls_eight_tables` og query = innholdet i migrasjonsfilen.
   - **Manuelt:** Lim inn SQL i Supabase Dashboard → SQL Editor.
 - **Detaljer:** **docs/RLS-AUDIT-2026-03-13.md** (se «Løsning (KLA-165)»).
 
@@ -213,13 +213,13 @@ Cron kjøres alltid fra **Supabase** (pg_cron/scheduler), ikke fra Vercel Cron. 
 
 ## 7. SQL / PSQL – kanonisk flyt
 
-| Behov | Kommando / verktøy |
-|-------|---------------------|
-| Kjøre migrasjoner | `npm run db:push` (supabase db push --linked) |
-| Migrasjonsstatus | `npm run db:status` (supabase migration list --linked) |
-| Diff mot remote | `npm run db:diff` (supabase db diff --linked) |
-| Ad-hoc SQL (fra Cursor) | MCP **supabase-db** → execute_sql / list_tables / apply_migration (krever DATABASE_URL i .env.local) |
-| Ad-hoc SQL (terminal) | `scripts/run-sql-rest.mjs` eller `scripts/exec-sql-remote.mjs`; eller `psql $DATABASE_URL -f fil.sql` |
+| Behov                   | Kommando / verktøy                                                                                                                                                |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kjøre migrasjoner       | `npm run db:push` (supabase db push --linked)                                                                                                                     |
+| Migrasjonsstatus        | `npm run db:status` (supabase migration list --linked)                                                                                                            |
+| Diff mot remote         | `npm run db:diff` (supabase db diff --linked)                                                                                                                     |
+| Ad-hoc SQL (fra Cursor) | MCP **supabase-db** → execute_sql / list_tables / apply_migration (krever DATABASE_URL i .env.local). **Notis for Supabase MCP:** **docs/SUPABASE-MCP-NOTIS.md**. |
+| Ad-hoc SQL (terminal)   | `scripts/run-sql-rest.mjs` eller `scripts/exec-sql-remote.mjs`; eller `psql $DATABASE_URL -f fil.sql`                                                             |
 
 Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-CLI-API-AUDIT.md** §5.
 
@@ -227,11 +227,11 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 
 ## 8. Hurtigreferanse
 
-| Ønske | Handling |
-|-------|----------|
-| Linear i Cursor | `.env.local` med `LINEAR_API_KEY` → omstart Cursor → `npm run linear:test` |
-| Linear uten MCP | `npm run linear issues` / `create` / `update` |
-| Sentry prod | Sett `NEXT_PUBLIC_SENTRY_DSN` i Vercel prod → **docs/SENTRY-PROD.md** |
-| Bygg raskere i CI | Allerede satt: SKIP_LINT_IN_BUILD + cache (§8 vercel-build-notes) |
-| API-dokumentasjon | **docs/api-routes.md** |
+| Ønske              | Handling                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| Linear i Cursor    | `.env.local` med `LINEAR_API_KEY` → omstart Cursor → `npm run linear:test`                   |
+| Linear uten MCP    | `npm run linear issues` / `create` / `update`                                                |
+| Sentry prod        | Sett `NEXT_PUBLIC_SENTRY_DSN` i Vercel prod → **docs/SENTRY-PROD.md**                        |
+| Bygg raskere i CI  | Allerede satt: SKIP_LINT_IN_BUILD + cache (§8 vercel-build-notes)                            |
+| API-dokumentasjon  | **docs/api-routes.md**                                                                       |
 | Alle secrets / ENV | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md**, **docs/ENV-MCP-CLI-API-AUDIT.md** |

@@ -1,131 +1,133 @@
-import { createBrowserClient } from '@supabase/ssr'
+import type { TierSlug } from "@/lib/pricing/tiers";
+import { normalizeTier } from "@/lib/pricing/tiers";
+import { getTierDisplayName as getTierDisplayNameFromTypes } from "@/types/subscription";
 
-// KLARPAKKE UNIVERSITET - 4-nivå modell
-export type TierName = 'gratis' | 'basis' | 'komplett' | 'pro'
+export type { TierSlug };
 
 export interface SubscriptionStatus {
-  tier: TierName
-  trialEndsAt: Date | null
-  daysLeft: number
-  isExpired: boolean
-  hasPaidAccess: boolean
+  tier: TierSlug;
+  trialEndsAt: Date | null;
+  daysLeft: number;
+  isExpired: boolean;
+  hasPaidAccess: boolean;
 }
 
 interface UserMetadata {
-  trial_ends_at?: string
-  tier?: string
-  subscription_status?: string
+  trial_ends_at?: string;
+  tier?: string;
+  subscription_status?: string;
 }
 
 interface UserWithMetadata {
-  user_metadata?: UserMetadata
+  user_metadata?: UserMetadata;
 }
 
-export function useSubscriptionStatus(user: UserWithMetadata | null): SubscriptionStatus {
-  // Default: gratis tier
+export function useSubscriptionStatus(
+  user: UserWithMetadata | null,
+): SubscriptionStatus {
   if (!user) {
     return {
-      tier: 'gratis',
+      tier: "student",
       trialEndsAt: null,
       daysLeft: 0,
       isExpired: true,
-      hasPaidAccess: false
-    }
+      hasPaidAccess: false,
+    };
   }
 
-  // Check user metadata for subscription status
   const metadata = user.user_metadata;
-  const trialEndsAt = metadata?.trial_ends_at 
+  const trialEndsAt = metadata?.trial_ends_at
     ? new Date(metadata.trial_ends_at)
-    : null
-  
-  const userTier = metadata?.tier || 'gratis'
-  const hasPaidSubscription = metadata?.subscription_status === 'active'
-  
-  // Calculate days left in trial
-  const now = new Date()
-  const daysLeft = trialEndsAt 
-    ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-    : 0
-  
-  const isExpired = trialEndsAt ? now > trialEndsAt : true
+    : null;
+  const tier = normalizeTier(metadata?.tier);
+  const hasPaidSubscription = metadata?.subscription_status === "active";
 
-  // Determine tier - validate it's one of the 4 valid tiers
-  let tier: TierName = 'gratis'
-  if (['gratis', 'basis', 'komplett', 'pro'].includes(userTier)) {
-    tier = userTier as TierName
-  }
-  
-  // Has paid access if active subscription and tier is paid
-  const hasPaidAccess = hasPaidSubscription && tier !== 'gratis'
+  const now = new Date();
+  const daysLeft = trialEndsAt
+    ? Math.max(
+        0,
+        Math.ceil(
+          (trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+        ),
+      )
+    : 0;
+  const isExpired = trialEndsAt ? now > trialEndsAt : true;
+  const hasPaidAccess = hasPaidSubscription && tier !== "student";
 
   return {
     tier,
     trialEndsAt,
     daysLeft,
     isExpired,
-    hasPaidAccess
-  }
+    hasPaidAccess,
+  };
 }
 
-export function getAccessLimits(tier: TierName) {
+export interface AccessLimits {
+  maxModules: number;
+  maxQuizzes: number;
+  maxTrades: number;
+  hasFullAccess: boolean;
+  hasCertification: boolean;
+  hasWebinars: boolean;
+}
+
+export function getAccessLimits(tier: TierSlug): AccessLimits {
   switch (tier) {
-    case 'gratis':
+    case "student":
       return {
-        maxModules: 1,  // Only Krypto 101 module 1
-        maxQuizzes: 1,  // Only 1 quiz
-        maxTrades: 5,   // Only 5 simulator trades
+        maxModules: 1,
+        maxQuizzes: 1,
+        maxTrades: 5,
         hasFullAccess: false,
         hasCertification: false,
-        hasWebinars: false
-      }
-    case 'basis':
+        hasWebinars: false,
+      };
+    case "bachelor":
       return {
-        maxModules: Infinity,  // All basic courses
+        maxModules: Infinity,
         maxQuizzes: Infinity,
         maxTrades: Infinity,
         hasFullAccess: true,
         hasCertification: false,
-        hasWebinars: false
-      }
-    case 'komplett':
+        hasWebinars: false,
+      };
+    case "master":
       return {
-        maxModules: Infinity,  // All courses
+        maxModules: Infinity,
         maxQuizzes: Infinity,
         maxTrades: Infinity,
         hasFullAccess: true,
         hasCertification: true,
-        hasWebinars: true
-      }
-    case 'pro':
+        hasWebinars: true,
+      };
+    case "phd":
+    case "professor":
       return {
-        maxModules: Infinity,  // All courses + extras
+        maxModules: Infinity,
         maxQuizzes: Infinity,
         maxTrades: Infinity,
         hasFullAccess: true,
         hasCertification: true,
-        hasWebinars: true
-      }
+        hasWebinars: true,
+      };
   }
 }
 
-export function getTierDisplayName(tier: TierName, locale: string = 'no'): string {
-  const names: Record<TierName, Record<string, string>> = {
-    'gratis': { no: 'Gratis', en: 'Free' },
-    'basis': { no: 'Basis', en: 'Starter' },
-    'komplett': { no: 'Komplett', en: 'Complete' },
-    'pro': { no: 'Pro', en: 'Pro' }
-  }
-  return names[tier][locale] || names[tier]['no']
+export function getTierDisplayName(tier: TierSlug, _locale?: string): string {
+  return getTierDisplayNameFromTypes(tier);
 }
 
-export function formatTrialText(daysLeft: number, locale: string = 'no'): string {
-  if (locale === 'en') {
-    if (daysLeft === 0) return 'Last day of trial'
-    if (daysLeft === 1) return '1 day left of trial'
-    return `${daysLeft} days left of trial`
+export function formatTrialText(
+  daysLeft: number,
+  locale: string = "no",
+): string {
+  if (locale === "en") {
+    if (daysLeft === 0) return "Last day of trial";
+    if (daysLeft === 1) return "1 day left of trial";
+    return `${daysLeft} days left of trial`;
   }
-  if (daysLeft === 0) return 'Siste dag av prøveperioden'
-  if (daysLeft === 1) return '1 dag igjen av prøveperioden'
-  return `${daysLeft} dager igjen av prøveperioden`
+  if (daysLeft === 0) return "Siste dag av prøveperioden";
+  if (daysLeft === 1) return "1 dag igjen av prøveperioden";
+  return `${daysLeft} dager igjen av prøveperioden`;
 }

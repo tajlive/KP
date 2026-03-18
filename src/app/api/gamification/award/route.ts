@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { trackCriticalAction } from "@/lib/sentry";
 
 // XP awards configuration
 const XP_AWARDS: Record<string, number> = {
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
         console.error("award_login_xp error:", error);
         return NextResponse.json(
           { error: "Failed to award login XP" },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
@@ -95,12 +96,16 @@ export async function POST(req: Request) {
       console.error("award_xp error:", error);
       return NextResponse.json(
         { error: "Failed to award XP" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // result is an array with one row
     const row = Array.isArray(result) ? result[0] : result;
+
+    if (action === "first_trade") {
+      trackCriticalAction("first_trade", { userId: user.id });
+    }
 
     // Fetch updated state
     const { data: gamification } = await supabase
@@ -123,7 +128,7 @@ export async function POST(req: Request) {
     console.error("Gamification POST error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -146,7 +151,9 @@ export async function GET() {
 
     const { data: gamification, error } = await supabase
       .from("user_gamification")
-      .select("current_level, total_xp, current_streak, last_login_date, level_up_at")
+      .select(
+        "current_level, total_xp, current_streak, last_login_date, level_up_at",
+      )
       .eq("user_id", user.id)
       .single();
 
@@ -155,7 +162,7 @@ export async function GET() {
       console.error("Fetch gamification error:", error);
       return NextResponse.json(
         { error: "Failed to fetch state" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -184,7 +191,7 @@ export async function GET() {
     console.error("Gamification GET error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

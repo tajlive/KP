@@ -285,12 +285,12 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   try {
     // Access current_period_end from the subscription items or cast to access it
-    const subWithPeriod = subscription as unknown as { 
+    const subWithPeriod = subscription as unknown as {
       current_period_end?: number;
       status: string;
       cancel_at_period_end: boolean;
     };
-    
+
     const { error } = await supabase
       .from("subscriptions")
       .update({
@@ -357,7 +357,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       await supabase
         .from("user_profiles")
         .update({
-          subscription_tier: "free",
+          subscription_tier: "student",
           subscription_status: "canceled",
           updated_at: new Date().toISOString(),
         })
@@ -389,7 +389,7 @@ function mapTierToPlanType(tier: string): string {
     student: "student14", // Note: some plans might have trailing IDs from Stripe
     free: "student",
   };
-  return tierMap[tier] || "free";
+  return tierMap[tier] || "student";
 }
 
 async function sendWelcomeEmail(userId: string, planType: string) {
@@ -397,7 +397,9 @@ async function sendWelcomeEmail(userId: string, planType: string) {
     const supabase = getSupabase();
     const resend = getResend();
     if (!resend) {
-      console.warn("[Stripe Webhook] RESEND_API_KEY mangler, hopper over velkomst-email");
+      console.warn(
+        "[Stripe Webhook] RESEND_API_KEY mangler, hopper over velkomst-email",
+      );
       return;
     }
 
@@ -470,7 +472,9 @@ async function sendPaymentFailedEmail(
 
     const resend = getResend();
     if (!resend) {
-      console.warn("[Stripe Webhook] RESEND_API_KEY mangler, hopper over payment-failed email");
+      console.warn(
+        "[Stripe Webhook] RESEND_API_KEY mangler, hopper over payment-failed email",
+      );
       return;
     }
 

@@ -7,26 +7,19 @@
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS view_mode_preference TEXT DEFAULT 'enkel' 
   CHECK (view_mode_preference IN ('enkel', 'mellom', 'avansert'));
-
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS font_size_preference TEXT DEFAULT 'normal' 
   CHECK (font_size_preference IN ('normal', 'large'));
-
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS high_contrast_mode BOOLEAN DEFAULT false;
-
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS bankid_verified BOOLEAN DEFAULT false;
-
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS bankid_verified_at TIMESTAMPTZ;
-
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false;
-
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS onboarding_completed_at TIMESTAMPTZ;
-
 -- Oppdater eksisterende brukere med default verdier (kommentert ut)
 -- UPDATE profiles 
 -- SET view_mode_preference = CASE 
@@ -40,14 +33,12 @@ ADD COLUMN IF NOT EXISTS onboarding_completed_at TIMESTAMPTZ;
 CREATE INDEX IF NOT EXISTS idx_profiles_view_mode ON profiles(view_mode_preference);
 CREATE INDEX IF NOT EXISTS idx_profiles_bankid_verified ON profiles(bankid_verified);
 CREATE INDEX IF NOT EXISTS idx_profiles_onboarding ON profiles(onboarding_completed);
-
 -- Kommentarer
 COMMENT ON COLUMN profiles.view_mode_preference IS 'Dashboard visningsmodus: enkel, mellom, eller avansert';
 COMMENT ON COLUMN profiles.font_size_preference IS 'Tekststørrelse: normal (20px) eller large (24px)';
 COMMENT ON COLUMN profiles.high_contrast_mode IS 'Høy kontrast modus for synshemmede';
 COMMENT ON COLUMN profiles.bankid_verified IS 'Om bruker har verifisert med BankID';
 COMMENT ON COLUMN profiles.onboarding_completed IS 'Om bruker har fullført onboarding';
-
 -- =====================================================
 -- SYSTEM HEALTH LOGGING (for SystemStatus komponent)
 -- =====================================================
@@ -61,21 +52,16 @@ CREATE TABLE IF NOT EXISTS system_health_logs (
   checked_at TIMESTAMPTZ DEFAULT NOW(),
   metadata JSONB
 );
-
 -- Indeks for rask querying
 CREATE INDEX IF NOT EXISTS idx_system_health_checked_at ON system_health_logs(checked_at DESC);
-
 -- RLS policy (kun service role kan insert)
 ALTER TABLE system_health_logs ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Allow service role to insert health logs"
   ON system_health_logs FOR INSERT
   WITH CHECK (true);
-
 CREATE POLICY "Allow public to read health logs"
   ON system_health_logs FOR SELECT
   USING (true);
-
 -- =====================================================
 -- ONBOARDING TRACKING
 -- =====================================================
@@ -87,22 +73,17 @@ CREATE TABLE IF NOT EXISTS onboarding_events (
   completed_at TIMESTAMPTZ DEFAULT NOW(),
   metadata JSONB
 );
-
 -- Indekser
 CREATE INDEX IF NOT EXISTS idx_onboarding_events_user ON onboarding_events(user_id);
 CREATE INDEX IF NOT EXISTS idx_onboarding_events_step ON onboarding_events(step);
-
 -- RLS
 ALTER TABLE onboarding_events ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can see own onboarding events"
   ON onboarding_events FOR SELECT
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Service role can insert onboarding events"
   ON onboarding_events FOR INSERT
   WITH CHECK (true);
-
 -- Funksjon for å beregne gjennomsnittlig onboarding-tid
 CREATE OR REPLACE FUNCTION get_avg_onboarding_time()
 RETURNS INTERVAL AS $$
@@ -124,7 +105,6 @@ BEGIN
   RETURN avg_time;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- =====================================================
 -- VERIFISERING
 -- =====================================================

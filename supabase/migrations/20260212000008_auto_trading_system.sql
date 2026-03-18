@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS auto_trading_strategies (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Insert default strategies
 INSERT INTO auto_trading_strategies (name, risk_level, description, max_position_size_pct, stop_loss_pct, daily_loss_limit_pct, allow_long, allow_short, max_leverage, allowed_symbols, expected_annual_return_pct)
 VALUES
@@ -41,7 +40,6 @@ VALUES
   ('Balansert', 'balanced', 'Mean Reversion + Breakout - Moderat risiko, top 10 coins', 5.00, 8.00, 15.00, true, true, 1.5, ARRAY['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT', 'ADAUSDT', 'DOGEUSDT', 'AVAXUSDT', 'DOTUSDT', 'MATICUSDT'], 30.00),
   ('Aggressiv', 'aggressive', 'Momentum + Volatility Breakout - Høy risiko, leverage', 10.00, 12.00, 20.00, true, true, 2.0, ARRAY['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT', 'ADAUSDT', 'DOGEUSDT', 'AVAXUSDT', 'DOTUSDT', 'MATICUSDT', 'LINKUSDT', 'LTCUSDT', 'UNIUSDT', 'ATOMUSDT'], 60.00),
   ('Custom', 'custom', 'Egendefinert - Alle parametere kan justeres', 10.00, 15.00, 25.00, true, true, 5.0, ARRAY['BTCUSDT'], 50.00);
-
 -- ============================================================
 -- 2. USER AUTO TRADING CONFIGS
 -- ============================================================
@@ -84,26 +82,21 @@ CREATE TABLE IF NOT EXISTS user_auto_trading_configs (
 
   UNIQUE(user_id) -- One config per user
 );
-
 -- Enable RLS
 ALTER TABLE user_auto_trading_configs ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can view own config"
   ON user_auto_trading_configs FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can update own config"
   ON user_auto_trading_configs FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can insert own config"
   ON user_auto_trading_configs FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
-
 -- ============================================================
 -- 3. AUTO TRADING SESSIONS
 -- ============================================================
@@ -140,20 +133,16 @@ CREATE TABLE IF NOT EXISTS auto_trading_sessions (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS
 ALTER TABLE auto_trading_sessions ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can view own sessions"
   ON auto_trading_sessions FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
-
 -- Index for performance
 CREATE INDEX idx_auto_trading_sessions_user ON auto_trading_sessions(user_id);
 CREATE INDEX idx_auto_trading_sessions_status ON auto_trading_sessions(status);
-
 -- ============================================================
 -- 4. AUTO TRADING TRADES
 -- ============================================================
@@ -194,22 +183,18 @@ CREATE TABLE IF NOT EXISTS auto_trading_trades (
   closed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS
 ALTER TABLE auto_trading_trades ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can view own trades"
   ON auto_trading_trades FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
-
 -- Indexes
 CREATE INDEX idx_auto_trading_trades_session ON auto_trading_trades(session_id);
 CREATE INDEX idx_auto_trading_trades_user ON auto_trading_trades(user_id);
 CREATE INDEX idx_auto_trading_trades_status ON auto_trading_trades(status);
 CREATE INDEX idx_auto_trading_trades_symbol ON auto_trading_trades(symbol);
-
 -- ============================================================
 -- 5. DAILY PERFORMANCE METRICS
 -- ============================================================
@@ -247,19 +232,15 @@ CREATE TABLE IF NOT EXISTS auto_trading_daily_metrics (
 
   UNIQUE(session_id, date)
 );
-
 -- Enable RLS
 ALTER TABLE auto_trading_daily_metrics ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can view own metrics"
   ON auto_trading_daily_metrics FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
-
 -- Index
 CREATE INDEX idx_daily_metrics_session_date ON auto_trading_daily_metrics(session_id, date DESC);
-
 -- ============================================================
 -- 6. CIRCUIT BREAKER LOGS
 -- ============================================================
@@ -283,19 +264,15 @@ CREATE TABLE IF NOT EXISTS auto_trading_circuit_breaker_logs (
 
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS
 ALTER TABLE auto_trading_circuit_breaker_logs ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can view own circuit breaker logs"
   ON auto_trading_circuit_breaker_logs FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
-
 -- Index
 CREATE INDEX idx_circuit_breaker_session ON auto_trading_circuit_breaker_logs(session_id);
-
 -- ============================================================
 -- 7. PROFIT EXTRACTION HISTORY
 -- ============================================================
@@ -320,19 +297,15 @@ CREATE TABLE IF NOT EXISTS auto_trading_profit_extractions (
 
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS
 ALTER TABLE auto_trading_profit_extractions ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can view own extractions"
   ON auto_trading_profit_extractions FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
-
 -- Index
 CREATE INDEX idx_profit_extractions_session ON auto_trading_profit_extractions(session_id);
-
 -- ============================================================
 -- 8. FUNCTIONS & TRIGGERS
 -- ============================================================
@@ -345,20 +318,16 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Triggers for updated_at
 CREATE TRIGGER update_auto_trading_strategies_updated_at
   BEFORE UPDATE ON auto_trading_strategies
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_user_auto_trading_configs_updated_at
   BEFORE UPDATE ON user_auto_trading_configs
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_auto_trading_sessions_updated_at
   BEFORE UPDATE ON auto_trading_sessions
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 -- ============================================================
 -- COMMENTS
 -- ============================================================
@@ -370,7 +339,6 @@ COMMENT ON TABLE auto_trading_trades IS 'Individual trades executed by the auto-
 COMMENT ON TABLE auto_trading_daily_metrics IS 'Daily aggregated performance metrics';
 COMMENT ON TABLE auto_trading_circuit_breaker_logs IS 'Log of all circuit breaker activations';
 COMMENT ON TABLE auto_trading_profit_extractions IS 'History of automatic profit extractions';
-
 COMMENT ON COLUMN user_auto_trading_configs.phase IS 'paper: 30d paper trading → micro: 1% capital → small: 5% capital → full: 100% capital';
 COMMENT ON COLUMN user_auto_trading_configs.phase_min_days IS 'Minimum days required in current phase before advancing';
 COMMENT ON COLUMN user_auto_trading_configs.phase_profitable IS 'User must be profitable in phase to advance to next';

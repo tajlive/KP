@@ -32,7 +32,6 @@ EXCEPTION
     );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Alternative: exec_sql that returns SETOF (for SELECT queries)
 CREATE OR REPLACE FUNCTION exec_sql_query(
   query_text TEXT
@@ -47,7 +46,6 @@ BEGIN
   RETURN QUERY EXECUTE query_text;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Function to run migrations safely
 CREATE OR REPLACE FUNCTION run_migration(
   migration_name TEXT,
@@ -87,7 +85,6 @@ BEGIN
   END;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Migration history table
 CREATE TABLE IF NOT EXISTS migration_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -97,15 +94,12 @@ CREATE TABLE IF NOT EXISTS migration_history (
   error_message TEXT,
   executed_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS on migration history
 ALTER TABLE migration_history ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Service role can manage migrations"
   ON migration_history FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
-
 -- Comments
 COMMENT ON FUNCTION exec_sql IS 'Execute dynamic SQL via RPC. Service role only.';
 COMMENT ON FUNCTION exec_sql_query IS 'Execute SELECT queries via RPC. Service role only.';

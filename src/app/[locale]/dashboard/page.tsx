@@ -29,7 +29,9 @@ export async function generateMetadata({
       description,
       type: "website",
       url: `https://www.klarpakke.no/${locale}/dashboard`,
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
+      images: [
+        { url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" },
+      ],
     },
   };
 }
@@ -71,19 +73,23 @@ export default async function DashboardPage({
     const [profileRes, tradesRes, sessionRes] = await Promise.all([
       supabase
         .from("user_profiles")
-        .select("paper_balance, tier, trial_ends_at")
+        .select("paper_balance, tier")
         .eq("id", user.id)
         .single(),
       supabase
         .from("trades")
-        .select("id, trading_pair, side, quantity, price, total_value, status, mode, created_at")
+        .select(
+          "id, trading_pair, side, quantity, price, total_value, status, mode, created_at",
+        )
         .eq("user_id", user.id)
         .eq("mode", "paper")
         .order("created_at", { ascending: false })
         .limit(20),
       supabase
         .from("trading_sessions")
-        .select("id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, created_at")
+        .select(
+          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, created_at",
+        )
         .eq("user_id", user.id)
         .eq("status", "active")
         .eq("mode", "paper")
@@ -92,15 +98,27 @@ export default async function DashboardPage({
         .maybeSingle(),
     ]);
 
+    const profile = profileRes.data;
+    const session = sessionRes.data;
+    const activeSession =
+      session != null
+        ? {
+            ...session,
+            current_capital_nok:
+              session.current_capital_nok ?? session.starting_capital_nok ?? 0,
+            starting_capital_nok: session.starting_capital_nok ?? 0,
+          }
+        : null;
+
     return (
       <PortfolioDashboard
         userId={user.id}
         locale={locale}
-        paperBalance={profileRes.data?.paper_balance ?? 100000}
-        tier={profileRes.data?.tier ?? "student"}
-        trialEndsAt={profileRes.data?.trial_ends_at ?? null}
+        paperBalance={profile?.paper_balance ?? 100000}
+        tier={profile?.tier ?? "student"}
+        trialEndsAt={null}
         trades={tradesRes.data ?? []}
-        activeSession={sessionRes.data}
+        activeSession={activeSession}
       />
     );
   } catch (error) {

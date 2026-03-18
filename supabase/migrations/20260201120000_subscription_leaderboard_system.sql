@@ -24,7 +24,6 @@ BEGIN
     ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referred_by UUID REFERENCES profiles(id);
   END IF;
 END $$;
-
 -- Index for fast lookup (only if columns exist)
 DO $$
 BEGIN
@@ -38,7 +37,6 @@ BEGIN
     CREATE INDEX IF NOT EXISTS idx_profiles_trial_ends ON profiles(trial_ends_at) WHERE subscription_status = 'trial';
   END IF;
 END $$;
-
 -- ============================================
 -- 2. QUIZZES (Quiz definitions)
 -- ============================================
@@ -52,14 +50,12 @@ CREATE TABLE IF NOT EXISTS quizzes (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Insert default quizzes
 INSERT INTO quizzes (slug, title, description, pass_score, is_required_for_futures) VALUES
   ('spot_basics', 'Spot Trading Grunnleggende', 'Grunnleggende kunnskap om spot trading', 70, false),
   ('risk_management', 'Risikostyring', 'Lær å håndtere risiko i trading', 80, false),
   ('futures', 'Futures Trading Sertifisering', 'Påkrevd quiz for Futures-tilgang', 85, true)
 ON CONFLICT (slug) DO NOTHING;
-
 -- ============================================
 -- 3. QUIZ ATTEMPTS
 -- ============================================
@@ -73,11 +69,9 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
   completed_at TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user ON quiz_attempts(user_id);
 CREATE INDEX IF NOT EXISTS idx_quiz_attempts_quiz ON quiz_attempts(quiz_id);
 CREATE INDEX IF NOT EXISTS idx_quiz_attempts_passed ON quiz_attempts(user_id, quiz_id, passed) WHERE passed = true;
-
 -- ============================================
 -- 4. ENTITLEMENTS VIEW (Computed permissions)
 -- ============================================
@@ -118,7 +112,6 @@ SELECT
   COALESCE(qs.futures_quiz_passed, false) AS futures_quiz_passed
 FROM profiles p
 LEFT JOIN quiz_status qs ON p.id = qs.user_id;
-
 -- ============================================
 -- 5. LEARNING EVENTS (Points basis for leaderboard)
 -- ============================================
@@ -139,12 +132,10 @@ CREATE TABLE IF NOT EXISTS learning_events (
   metadata JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_learning_events_user ON learning_events(user_id);
 CREATE INDEX IF NOT EXISTS idx_learning_events_type ON learning_events(event_type);
 CREATE INDEX IF NOT EXISTS idx_learning_events_created ON learning_events(created_at);
 CREATE INDEX IF NOT EXISTS idx_learning_events_monthly ON learning_events(user_id, created_at);
-
 -- ============================================
 -- 6. LEADERBOARD MONTHLY
 -- ============================================
@@ -160,11 +151,9 @@ CREATE TABLE IF NOT EXISTS leaderboard_monthly (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(month, user_id)
 );
-
 CREATE INDEX IF NOT EXISTS idx_leaderboard_month ON leaderboard_monthly(month);
 CREATE INDEX IF NOT EXISTS idx_leaderboard_rank ON leaderboard_monthly(month, rank);
 CREATE INDEX IF NOT EXISTS idx_leaderboard_points ON leaderboard_monthly(month, points DESC);
-
 -- ============================================
 -- 7. APP EVENTS (Tracking)
 -- ============================================
@@ -179,12 +168,10 @@ CREATE TABLE IF NOT EXISTS app_events (
   ip_address INET,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_app_events_user ON app_events(user_id) WHERE user_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_app_events_name ON app_events(event_name);
 CREATE INDEX IF NOT EXISTS idx_app_events_created ON app_events(created_at);
 CREATE INDEX IF NOT EXISTS idx_app_events_session ON app_events(session_id) WHERE session_id IS NOT NULL;
-
 -- ============================================
 -- 8. EXCHANGE CONNECTIONS (Encrypted storage)
 -- ============================================
@@ -204,103 +191,81 @@ CREATE TABLE IF NOT EXISTS exchange_connections (
   revoked_at TIMESTAMPTZ,
   UNIQUE(user_id, exchange)
 );
-
 CREATE INDEX IF NOT EXISTS idx_exchange_connections_user ON exchange_connections(user_id);
 CREATE INDEX IF NOT EXISTS idx_exchange_connections_active ON exchange_connections(user_id, is_active) WHERE is_active = true;
-
 -- ============================================
 -- RLS POLICIES
 -- ============================================
 
 -- Profiles: Users can only see/update own profile
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 CREATE POLICY "Users can view own profile"
   ON profiles FOR SELECT
   USING (auth.uid() = id);
-
 DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile"
   ON profiles FOR UPDATE
   USING (auth.uid() = id);
-
 -- Quiz attempts: Users see own attempts
 ALTER TABLE quiz_attempts ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can view own quiz attempts" ON quiz_attempts;
 CREATE POLICY "Users can view own quiz attempts"
   ON quiz_attempts FOR SELECT
   USING (auth.uid() = id);
-
 DROP POLICY IF EXISTS "Users can insert own quiz attempts" ON quiz_attempts;
 CREATE POLICY "Users can insert own quiz attempts"
   ON quiz_attempts FOR INSERT
   WITH CHECK (auth.uid() = id);
-
 -- Quizzes: Public read
 ALTER TABLE quizzes ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Quizzes are public readable" ON quizzes;
 CREATE POLICY "Quizzes are public readable"
   ON quizzes FOR SELECT
   TO authenticated, anon
   USING (true);
-
 -- Learning events: Users insert own, view own
 ALTER TABLE learning_events ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can view own learning events" ON learning_events;
 CREATE POLICY "Users can view own learning events"
   ON learning_events FOR SELECT
   USING (auth.uid() = id);
-
 DROP POLICY IF EXISTS "Users can insert own learning events" ON learning_events;
 CREATE POLICY "Users can insert own learning events"
   ON learning_events FOR INSERT
   WITH CHECK (auth.uid() = id);
-
 -- Leaderboard: Public read (anonymized)
 ALTER TABLE leaderboard_monthly ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Leaderboard is public readable" ON leaderboard_monthly;
 CREATE POLICY "Leaderboard is public readable"
   ON leaderboard_monthly FOR SELECT
   TO authenticated, anon
   USING (true);
-
 DROP POLICY IF EXISTS "Users can identify self in leaderboard" ON leaderboard_monthly;
 CREATE POLICY "Users can identify self in leaderboard"
   ON leaderboard_monthly FOR SELECT
   USING (auth.uid() = id);
-
 -- App events: Users insert own, view own (admins can view all via service role)
 ALTER TABLE app_events ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can view own events" ON app_events;
 CREATE POLICY "Users can view own events"
   ON app_events FOR SELECT
   USING (auth.uid() = id);
-
 DROP POLICY IF EXISTS "Users can insert own events" ON app_events;
 CREATE POLICY "Users can insert own events"
   ON app_events FOR INSERT
   WITH CHECK (auth.uid() = id);
-
 DROP POLICY IF EXISTS "Anonymous can insert events" ON app_events;
 CREATE POLICY "Anonymous can insert events"
   ON app_events FOR INSERT
   TO anon
   WITH CHECK (user_id IS NULL);
-
 -- Exchange connections: Users cannot read encrypted secrets directly
 ALTER TABLE exchange_connections ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can view own connections (no secrets)" ON exchange_connections;
 CREATE POLICY "Users can view own connections (no secrets)"
   ON exchange_connections FOR SELECT
   USING (auth.uid() = id);
-
 -- Secrets only accessible via security definer functions
 
 -- ============================================
@@ -333,7 +298,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Trigger (enable in supabase dashboard or run separately)
 -- CREATE TRIGGER on_auth_user_created
 --   AFTER INSERT ON auth.users
@@ -380,7 +344,6 @@ BEGIN
   WHERE e.user_id = p_user_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Record app event
 CREATE OR REPLACE FUNCTION record_app_event(
   p_user_id UUID,
@@ -399,7 +362,6 @@ BEGIN
   RETURN v_event_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Store exchange secret (to be called from Edge Function with encryption)
 CREATE OR REPLACE FUNCTION store_exchange_connection(
   p_user_id UUID,
@@ -449,7 +411,6 @@ BEGIN
   RETURN v_connection_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Compute leaderboard for month
 CREATE OR REPLACE FUNCTION compute_leaderboard_monthly(p_month DATE DEFAULT DATE_TRUNC('month', NOW())::DATE)
 RETURNS INTEGER AS $$
@@ -506,7 +467,6 @@ BEGIN
   RETURN v_count;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Set subscription tier (admin/testing)
 CREATE OR REPLACE FUNCTION set_subscription_tier(
   p_user_id UUID,
@@ -525,7 +485,6 @@ BEGIN
   RETURN FOUND;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Award points for learning event
 CREATE OR REPLACE FUNCTION award_learning_points(
   p_user_id UUID,
@@ -558,7 +517,6 @@ BEGIN
   RETURN v_event_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- ============================================
 -- TRIGGERS
 -- ============================================
@@ -571,31 +529,26 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
-
 DROP TRIGGER IF EXISTS update_quizzes_updated_at ON quizzes;
 CREATE TRIGGER update_quizzes_updated_at
   BEFORE UPDATE ON quizzes
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
-
 DROP TRIGGER IF EXISTS update_leaderboard_updated_at ON leaderboard_monthly;
 CREATE TRIGGER update_leaderboard_updated_at
   BEFORE UPDATE ON leaderboard_monthly
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
-
 DROP TRIGGER IF EXISTS update_exchange_connections_updated_at ON exchange_connections;
 CREATE TRIGGER update_exchange_connections_updated_at
   BEFORE UPDATE ON exchange_connections
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
-
 -- ============================================
 -- VIEWS FOR CONVENIENCE
 -- ============================================
@@ -614,7 +567,6 @@ FROM leaderboard_monthly lm
 JOIN profiles p ON lm.user_id = p.id
 WHERE lm.month = DATE_TRUNC('month', NOW())::DATE
 ORDER BY lm.rank ASC;
-
 -- User stats summary
 CREATE OR REPLACE VIEW user_stats_summary AS
 SELECT 

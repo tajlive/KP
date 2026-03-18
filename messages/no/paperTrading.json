@@ -95,5 +95,8 @@
   "winRate": "Vinnerrate",
   "refreshList": "Oppdater listen",
   "lastUpdated": "Sist oppdatert",
-  "binanceUpdateInfo": "Priser fra Binance oppdateres sanntid (WebSocket) eller ca. hvert 10. sekund. Listen oppdateres ved innlasting eller når du trykker Oppdater."
+  "binanceUpdateInfo": "Priser fra Binance oppdateres sanntid (WebSocket) eller ca. hvert 10. sekund. Listen oppdateres ved innlasting eller når du trykker Oppdater.",
+  "mySessions": "Mine sesjoner",
+  "backToOverview": "Tilbake til oversikt",
+  "backToDashboard": "Tilbake til dashboard"
 }

@@ -46,7 +46,7 @@ const roles = [
 ];
 
 const tiers = [
-  { id: "free", label: "Gratis", color: "bg-slate-500" },
+  { id: "student", label: "Gratis", color: "bg-slate-500" },
   { id: "bachelor", label: "Bachelor (Copy 1)", color: "bg-blue-500" },
   { id: "master", label: "Master (Copy 3)", color: "bg-emerald-500" },
   { id: "phd", label: "PhD (Live)", color: "bg-indigo-500" },
@@ -124,12 +124,12 @@ export default function ClientAdminUsers() {
       const { data, error } = await supabase.rpc("admin_change_role", {
         p_user_id: userId,
         p_new_role: newRole,
-        p_admin_id: user?.id || '',
+        p_admin_id: user?.id || "",
       });
 
       if (error) throw error;
 
-      const result = data as { success?: boolean; error?: string } | null
+      const result = data as { success?: boolean; error?: string } | null;
       if (result?.success) {
         toast.success(`Rolle endret til ${newRole}`);
         fetchUsers();
@@ -158,7 +158,7 @@ export default function ClientAdminUsers() {
       //   p_admin_id: user?.id,
       // });
       // if (error) throw error;
-      
+
       toast.info("Upgrade feature coming soon");
       setShowUpgradeModal(false);
       setSelectedUser(null);
@@ -234,13 +234,17 @@ export default function ClientAdminUsers() {
             onClick={async () => {
               setSyncing(true);
               try {
-                const res = await fetch("/api/admin/users/sync", { method: "POST" });
+                const res = await fetch("/api/admin/users/sync", {
+                  method: "POST",
+                });
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) {
                   toast.error(data.error || "Synk feilet");
                   return;
                 }
-                toast.success(data.message ?? `Synkronisert ${data.synced ?? 0} brukere`);
+                toast.success(
+                  data.message ?? `Synkronisert ${data.synced ?? 0} brukere`,
+                );
                 await fetchUsers();
               } catch (e) {
                 toast.error("Kunne ikke synkronisere brukere");
@@ -440,7 +444,9 @@ export default function ClientAdminUsers() {
                     </span>
                   </td>
                   <td className={TABLE.cellNumeric}>
-                    <span className="text-slate-400 tabular-nums">{formatDate(user.created_at)}</span>
+                    <span className="text-slate-400 tabular-nums">
+                      {formatDate(user.created_at)}
+                    </span>
                   </td>
                   <td className={TABLE.cell}>
                     <button

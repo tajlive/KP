@@ -26,12 +26,10 @@ BEGIN
         ALTER TABLE user_profiles ADD COLUMN role TEXT DEFAULT 'user';
     END IF;
 END $$;
-
 -- 2. Drop all conflicting triggers and functions
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_created_google ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_created_auto_trade ON auth.users;
-
 -- 3. Consolidated handle_new_user() function
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
@@ -110,13 +108,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 4. Re-attach single trigger
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
-
 -- 5. Sync existing data from legacy 'profiles' if it exists
 DO $$
 BEGIN
@@ -150,7 +146,6 @@ BEGIN
         -- ALTER TABLE public.profiles RENAME TO profiles_deprecated;
     END IF;
 END $$;
-
 -- 6. Setup indexes
 CREATE INDEX IF NOT EXISTS idx_user_profiles_google_id ON user_profiles(google_id);
 CREATE INDEX IF NOT EXISTS idx_user_profiles_microsoft_id ON user_profiles(microsoft_id);

@@ -4,20 +4,16 @@
 -- 1. Add username column for competition/leaderboard
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS username TEXT UNIQUE;
-
 -- 2. Add user_number column (starting from 4101)
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS user_number INTEGER UNIQUE;
-
 -- 3. Add source tracking (where user came from)
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'organic' 
 CHECK (source IN ('organic', 'google_ads', 'referral', 'social', 'partner', 'beta_invite'));
-
 -- 4. Create sequence for user numbers starting at 4101
 DROP SEQUENCE IF EXISTS user_number_seq;
 CREATE SEQUENCE user_number_seq START 4101;
-
 -- 5. Function to auto-assign user number on insert
 CREATE OR REPLACE FUNCTION assign_user_number()
 RETURNS TRIGGER AS $$
@@ -34,28 +30,23 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- 6. Create trigger for auto-assigning user_number
 DROP TRIGGER IF EXISTS trigger_assign_user_number ON profiles;
 CREATE TRIGGER trigger_assign_user_number
   BEFORE INSERT ON profiles
   FOR EACH ROW
   EXECUTE FUNCTION assign_user_number();
-
 -- 7. Backfill existing users
 UPDATE profiles 
 SET user_number = nextval('user_number_seq')
 WHERE user_number IS NULL;
-
 UPDATE profiles 
 SET username = SPLIT_PART(email, '@', 1)
 WHERE username IS NULL AND email IS NOT NULL;
-
 -- 8. Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_profiles_username ON profiles(username);
 CREATE INDEX IF NOT EXISTS idx_profiles_user_number ON profiles(user_number);
 CREATE INDEX IF NOT EXISTS idx_profiles_source ON profiles(source);
-
 -- 9. Admin function to upgrade user subscription tier
 CREATE OR REPLACE FUNCTION admin_upgrade_user(
   p_user_id UUID,
@@ -105,7 +96,6 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 10. Admin function to change user role
 CREATE OR REPLACE FUNCTION admin_change_role(
   p_user_id UUID,
@@ -139,7 +129,6 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 11. View for admin user list
 CREATE OR REPLACE VIEW admin_user_list AS
 SELECT 
@@ -164,10 +153,8 @@ GROUP BY p.id, p.user_number, p.username, p.email, p.full_name,
          p.role, p.subscription_tier, p.subscription_status, 
          p.source, p.beta_approved, p.created_at, p.last_sign_in_at,
          ps.total_value_nok;
-
 -- Grant access
 GRANT SELECT ON admin_user_list TO authenticated;
-
 -- 12. Update your profile (tomarnejensen@gmail.com) as first user
 UPDATE profiles 
 SET 
@@ -178,10 +165,8 @@ SET
   subscription_status = 'active',
   source = 'organic'
 WHERE email = 'tomarnejensen@gmail.com';
-
 -- 13. Set sequence to start after 4100
 SELECT setval('user_number_seq', 4101, false);
-
 -- Verify setup
 SELECT 'User management setup complete' as status;
 SELECT user_number, username, email, role FROM profiles WHERE email = 'tomarnejensen@gmail.com';

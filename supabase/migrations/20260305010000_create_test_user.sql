@@ -56,7 +56,6 @@ BEGIN
     RAISE NOTICE 'Test user profile created/updated';
     
 END $$;
-
 -- =====================================================
 -- MANUELL OPPRETTELSE (alternativ)
 -- =====================================================
@@ -70,4 +69,4 @@ END $$;
 -- 4. Passord: TestPassword123!
 -- 5. Huk av "Auto-confirm email"
 -- 6. Klikk "Create user"
---
+--;

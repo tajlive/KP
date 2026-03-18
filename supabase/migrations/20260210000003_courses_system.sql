@@ -18,9 +18,7 @@ CREATE TABLE IF NOT EXISTS courses (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 COMMENT ON TABLE courses IS 'Trading courses available to students';
-
 -- 2. LESSONS TABLE
 CREATE TABLE IF NOT EXISTS lessons (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -39,9 +37,7 @@ CREATE TABLE IF NOT EXISTS lessons (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(course_id, slug)
 );
-
 COMMENT ON TABLE lessons IS 'Individual lessons within a course';
-
 -- 3. USER COURSE PROGRESS
 CREATE TABLE IF NOT EXISTS user_course_progress (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -55,9 +51,7 @@ CREATE TABLE IF NOT EXISTS user_course_progress (
   last_accessed_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, course_id, lesson_id)
 );
-
 COMMENT ON TABLE user_course_progress IS 'Tracks user progress through courses and lessons';
-
 -- 4. USER ENROLLMENTS
 CREATE TABLE IF NOT EXISTS user_enrollments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -68,9 +62,7 @@ CREATE TABLE IF NOT EXISTS user_enrollments (
   status TEXT DEFAULT 'active' CHECK (status IN ('active', 'completed', 'expired', 'cancelled')),
   UNIQUE(user_id, course_id)
 );
-
 COMMENT ON TABLE user_enrollments IS 'User enrollments in courses';
-
 -- ============================================================================
 -- INDEXES
 -- ============================================================================
@@ -78,18 +70,14 @@ COMMENT ON TABLE user_enrollments IS 'User enrollments in courses';
 CREATE INDEX IF NOT EXISTS idx_courses_level ON courses(level);
 CREATE INDEX IF NOT EXISTS idx_courses_published ON courses(is_published);
 CREATE INDEX IF NOT EXISTS idx_courses_order ON courses(order_index);
-
 CREATE INDEX IF NOT EXISTS idx_lessons_course ON lessons(course_id);
 CREATE INDEX IF NOT EXISTS idx_lessons_order ON lessons(course_id, order_index);
 CREATE INDEX IF NOT EXISTS idx_lessons_published ON lessons(is_published);
-
 CREATE INDEX IF NOT EXISTS idx_user_progress_user ON user_course_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_progress_course ON user_course_progress(course_id);
 CREATE INDEX IF NOT EXISTS idx_user_progress_lesson ON user_course_progress(lesson_id);
-
 CREATE INDEX IF NOT EXISTS idx_enrollments_user ON user_enrollments(user_id);
 CREATE INDEX IF NOT EXISTS idx_enrollments_course ON user_enrollments(course_id);
-
 -- ============================================================================
 -- RLS POLICIES
 -- ============================================================================
@@ -98,13 +86,11 @@ ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lessons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_course_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_enrollments ENABLE ROW LEVEL SECURITY;
-
 -- Courses: Anyone can read published courses
 DROP POLICY IF EXISTS "Published courses are publicly readable" ON courses;
 CREATE POLICY "Published courses are publicly readable"
   ON courses FOR SELECT
   USING (is_published = true);
-
 -- Courses: Only admins can modify
 DROP POLICY IF EXISTS "Only admins can insert courses" ON courses;
 CREATE POLICY "Only admins can insert courses"
@@ -116,7 +102,6 @@ CREATE POLICY "Only admins can insert courses"
       AND profiles.id = auth.uid()
     )
   );
-
 DROP POLICY IF EXISTS "Only admins can update courses" ON courses;
 CREATE POLICY "Only admins can update courses"
   ON courses FOR UPDATE
@@ -127,7 +112,6 @@ CREATE POLICY "Only admins can update courses"
       AND profiles.id = auth.uid()
     )
   );
-
 DROP POLICY IF EXISTS "Only admins can delete courses" ON courses;
 CREATE POLICY "Only admins can delete courses"
   ON courses FOR DELETE
@@ -138,7 +122,6 @@ CREATE POLICY "Only admins can delete courses"
       AND profiles.id = auth.uid()
     )
   );
-
 -- Lessons: Anyone can read published lessons of published courses
 DROP POLICY IF EXISTS "Published lessons are publicly readable" ON lessons;
 CREATE POLICY "Published lessons are publicly readable"
@@ -151,7 +134,6 @@ CREATE POLICY "Published lessons are publicly readable"
       AND courses.is_published = true
     )
   );
-
 -- Lessons: Only admins can modify
 DROP POLICY IF EXISTS "Only admins can modify lessons" ON lessons;
 CREATE POLICY "Only admins can modify lessons"
@@ -163,29 +145,24 @@ CREATE POLICY "Only admins can modify lessons"
       AND profiles.id = auth.uid()
     )
   );
-
 -- User progress: Users can only see own progress
 DROP POLICY IF EXISTS "Users can view own progress" ON user_course_progress;
 CREATE POLICY "Users can view own progress"
   ON user_course_progress FOR SELECT
   USING (user_id = auth.uid());
-
 DROP POLICY IF EXISTS "Users can update own progress" ON user_course_progress;
 CREATE POLICY "Users can update own progress"
   ON user_course_progress FOR ALL
   USING (user_id = auth.uid());
-
 -- Enrollments: Users can see own enrollments
 DROP POLICY IF EXISTS "Users can view own enrollments" ON user_enrollments;
 CREATE POLICY "Users can view own enrollments"
   ON user_enrollments FOR SELECT
   USING (user_id = auth.uid());
-
 DROP POLICY IF EXISTS "Users can enroll themselves" ON user_enrollments;
 CREATE POLICY "Users can enroll themselves"
   ON user_enrollments FOR INSERT
   WITH CHECK (user_id = auth.uid());
-
 -- ============================================================================
 -- FUNCTIONS
 -- ============================================================================
@@ -216,7 +193,6 @@ BEGIN
   RETURN progress;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Function to update course progress when lesson is completed
 CREATE OR REPLACE FUNCTION update_course_progress()
 RETURNS TRIGGER AS $$
@@ -231,14 +207,12 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Trigger to auto-update progress
 DROP TRIGGER IF EXISTS on_lesson_completed ON user_course_progress;
 CREATE TRIGGER on_lesson_completed
   AFTER INSERT OR UPDATE ON user_course_progress
   FOR EACH ROW
   EXECUTE FUNCTION update_course_progress();
-
 -- ============================================================================
 -- SEED DATA
 -- ============================================================================
@@ -249,7 +223,6 @@ INSERT INTO courses (slug, title, description, short_description, level, duratio
 ('teknisk-analyse', 'Teknisk Analyse', 'Forstå grafer, mønstre og indikatorer. Lær å lese markedet og identifisere handelsmuligheter.', 'Les markeder som en pro', 'intermediate', 12, 2, 1990),
 ('risikostyring', 'Risikostyring', 'Lær å beskytte kapitalen og unngå store tap. Den viktigste ferdigheten for alle tradere.', 'Beskytt kapitalen din', 'intermediate', 6, 3, 990)
 ON CONFLICT (slug) DO NOTHING;
-
 -- Insert sample lessons for Trading Grunnkurs
 DO $$
 DECLARE
@@ -268,7 +241,6 @@ BEGIN
     ON CONFLICT (course_id, slug) DO NOTHING;
   END IF;
 END $$;
-
 -- Insert sample lessons for Teknisk Analyse
 DO $$
 DECLARE
@@ -287,7 +259,6 @@ BEGIN
     ON CONFLICT (course_id, slug) DO NOTHING;
   END IF;
 END $$;
-
 -- Insert sample lessons for Risikostyring
 DO $$
 DECLARE

@@ -5,7 +5,6 @@
 -- This migration runs BEFORE 20260129140000_initial_schema.sql (note the timestamp)
 
 BEGIN;
-
 -- =====================================================
 -- ENSURE UUID EXTENSION IS PROPERLY CONFIGURED
 -- =====================================================
@@ -13,7 +12,6 @@ BEGIN;
 -- Enable UUID extension in both extensions and public schema
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA extensions;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Make sure uuid functions are available in public schema
 DO $$
 BEGIN
@@ -27,7 +25,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =====================================================
 -- ENSURE SIGNALS TABLE EXISTS WITH PROPER STRUCTURE
 -- =====================================================
@@ -47,7 +44,6 @@ CREATE TABLE IF NOT EXISTS signals (
   -- Additional data
   metadata JSONB DEFAULT '{}'::jsonb
 );
-
 -- Add missing columns if they don't exist
 DO $$
 BEGIN
@@ -85,7 +81,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =====================================================
 -- CREATE INDEXES (Idempotent)
 -- =====================================================
@@ -123,7 +118,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =====================================================
 -- VERIFICATION
 -- =====================================================
@@ -156,5 +150,4 @@ BEGIN
   RAISE NOTICE '================================================';
 END;
 $$;
-
 COMMIT;

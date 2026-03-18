@@ -5,12 +5,10 @@
 -- Add column if it doesn't exist
 ALTER TABLE user_profiles
 ADD COLUMN IF NOT EXISTS dismissed_get_started_card boolean NOT NULL DEFAULT false;
-
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_user_profiles_dismissed_card 
 ON user_profiles(user_id, dismissed_get_started_card) 
 WHERE dismissed_get_started_card = true;
-
 -- Verify the column was added
 DO $$
 BEGIN

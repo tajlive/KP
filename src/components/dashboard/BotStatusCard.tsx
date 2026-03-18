@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +32,8 @@ interface BotStatusCardProps {
 export function BotStatusCard({ initialSession }: BotStatusCardProps) {
   const t = useTranslations();
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "no";
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -39,7 +41,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
       auth: {
         storage: safeStorage,
       },
-    }
+    },
   );
   const [session, setSession] = useState<TradingSession | null>(initialSession);
   const [loading, setLoading] = useState(false);
@@ -60,7 +62,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
         },
         (payload) => {
           setSession(payload.new as TradingSession);
-        }
+        },
       )
       .subscribe();
 
@@ -86,7 +88,7 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
   };
 
   const getPnLAmount = () => {
-    return (session?.total_pnl || 0);
+    return session?.total_pnl || 0;
   };
 
   // Format relativ tid
@@ -99,8 +101,10 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMins < 1) return t("dashboard.botStatus.justNow");
-    if (diffMins < 60) return t("dashboard.botStatus.minutesAgo", { count: diffMins });
-    if (diffHours < 24) return t("dashboard.botStatus.hoursAgo", { count: diffHours });
+    if (diffMins < 60)
+      return t("dashboard.botStatus.minutesAgo", { count: diffMins });
+    if (diffHours < 24)
+      return t("dashboard.botStatus.hoursAgo", { count: diffHours });
     return t("dashboard.botStatus.daysAgo", { count: diffDays });
   };
 
@@ -111,12 +115,15 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
     setLoading(true);
     try {
       const newStatus = session.status === "active" ? "paused" : "active";
-      
-      const response = await fetch(`/api/trading-sessions/${session.id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
+
+      const response = await fetch(
+        `/api/trading-sessions/${session.id}/status`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
 
       if (!response.ok) throw new Error("Kunne ikke oppdatere status");
 
@@ -129,12 +136,13 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
     }
   };
 
-  // Naviger til trading-siden
+  // Én trading-side: alle sessions under /paper-trading
   const handleViewDetails = () => {
     if (!session) return;
-    const path = session.mode === "paper" 
-      ? `/paper-trading/${session.id}` 
-      : `/live-trading/${session.id}`;
+    const path =
+      session.mode === "live"
+        ? `/${locale}/paper-trading/${session.id}?mode=live`
+        : `/${locale}/paper-trading/${session.id}`;
     router.push(path);
   };
 
@@ -153,38 +161,48 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center shrink-0">
               <Bot className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            
+
             <div>
               {/* Header */}
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-semibold text-slate-900 dark:text-white">
                   {t("dashboard.botStatus.title")}
                 </h3>
-                <Badge 
-                  variant={session.status === "active" && !notResponding ? "default" : "secondary"}
+                <Badge
+                  variant={
+                    session.status === "active" && !notResponding
+                      ? "default"
+                      : "secondary"
+                  }
                   className={notResponding ? "bg-amber-500" : ""}
                 >
-                  {notResponding 
-                    ? t("dashboard.botStatus.notResponding") 
+                  {notResponding
+                    ? t("dashboard.botStatus.notResponding")
                     : t(`dashboard.botStatus.${session.status}`)}
                 </Badge>
               </div>
 
               {/* Trading info */}
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                {session.mode === "paper" ? t("dashboard.botStatus.paperTrading") : t("dashboard.botStatus.liveTrading")} · {session.trading_pair}
+                {session.mode === "paper"
+                  ? t("dashboard.botStatus.paperTrading")
+                  : t("dashboard.botStatus.liveTrading")}{" "}
+                · {session.trading_pair}
               </p>
 
               {/* Started time */}
               <p className="text-xs text-slate-500 mt-0.5">
-                {t("dashboard.botStatus.started")}: {getRelativeTime(session.created_at)}
+                {t("dashboard.botStatus.started")}:{" "}
+                {getRelativeTime(session.created_at)}
               </p>
 
               {/* Not responding warning */}
               {notResponding && (
                 <div className="flex items-center gap-1.5 mt-2 text-amber-600">
                   <AlertTriangle className="w-4 h-4" />
-                  <span className="text-xs font-medium">{t("dashboard.botStatus.notResponding")}</span>
+                  <span className="text-xs font-medium">
+                    {t("dashboard.botStatus.notResponding")}
+                  </span>
                 </div>
               )}
             </div>
@@ -194,11 +212,17 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
           <div className="text-right">
             {/* P&L */}
             <div className="mb-3">
-              <p className={`text-lg font-bold ${pnlPercent >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {pnlPercent >= 0 ? "+" : ""}{pnlPercent.toFixed(1)}%
+              <p
+                className={`text-lg font-bold ${pnlPercent >= 0 ? "text-green-600" : "text-red-600"}`}
+              >
+                {pnlPercent >= 0 ? "+" : ""}
+                {pnlPercent.toFixed(1)}%
               </p>
-              <p className={`text-sm ${pnlPercent >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {pnlAmount >= 0 ? "+" : ""}{pnlAmount.toLocaleString("nb-NO")} kr
+              <p
+                className={`text-sm ${pnlPercent >= 0 ? "text-green-600" : "text-red-600"}`}
+              >
+                {pnlAmount >= 0 ? "+" : ""}
+                {pnlAmount.toLocaleString("nb-NO")} kr
               </p>
             </div>
 

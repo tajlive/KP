@@ -19,7 +19,6 @@ export const PROTECTED_PATHS = [
   "/konto",
   "/live-trading",
   "/leagues",
-  "/beta",
   "/copy-trading",
   "/marketplace",
   "/profile",
@@ -45,14 +44,17 @@ export function getCookieDomain(request: NextRequest): string | undefined {
   return rootDomain.includes(":") ? undefined : `.${rootDomain}`;
 }
 
-export function createSupabaseClient(request: NextRequest, response: NextResponse) {
+export function createSupabaseClient(
+  request: NextRequest,
+  response: NextResponse,
+) {
   const cookieDomain = getCookieDomain(request);
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookieEncoding: 'raw',
+      cookieEncoding: "raw",
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -73,13 +75,13 @@ export function createSupabaseClient(request: NextRequest, response: NextRespons
 }
 
 export function redirectWithCookies(
-  url: URL, 
-  request: NextRequest, 
-  response: NextResponse
+  url: URL,
+  request: NextRequest,
+  response: NextResponse,
 ): NextResponse {
   const redirectResponse = NextResponse.redirect(url);
   const cookieDomain = getCookieDomain(request);
-  
+
   // Copy cookies from the next() response to the redirect response
   response.cookies.getAll().forEach((cookie) => {
     redirectResponse.cookies.set(cookie.name, cookie.value, {
@@ -92,7 +94,9 @@ export function redirectWithCookies(
   return redirectResponse;
 }
 
-export async function handleAuthGuard(request: NextRequest): Promise<NextResponse | null> {
+export async function handleAuthGuard(
+  request: NextRequest,
+): Promise<NextResponse | null> {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
 
@@ -106,13 +110,16 @@ export async function handleAuthGuard(request: NextRequest): Promise<NextRespons
 
   // Create supabase client
   const supabase = createSupabaseClient(request, response);
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Check path types
   const isProtectedPath = PROTECTED_PATHS.some(
     (p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`),
   );
-  const isProtected = isProtectedPath || pathWithoutLocale.startsWith("/onboarding");
+  const isProtected =
+    isProtectedPath || pathWithoutLocale.startsWith("/onboarding");
 
   const isAuthPage = PUBLIC_PATHS.some(
     (p) => pathWithoutLocale === p || pathWithoutLocale.startsWith(`${p}/`),
@@ -127,7 +134,11 @@ export async function handleAuthGuard(request: NextRequest): Promise<NextRespons
 
   // 2. Authenticated users trying to access auth pages (login/signup)
   if (isAuthPage && user) {
-    return redirectWithCookies(new URL(`/${locale}/dashboard`, request.url), request, response);
+    return redirectWithCookies(
+      new URL(`/${locale}/dashboard`, request.url),
+      request,
+      response,
+    );
   }
 
   return response;

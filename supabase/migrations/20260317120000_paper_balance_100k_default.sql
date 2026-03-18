@@ -11,7 +11,6 @@ BEGIN
     RAISE NOTICE 'user_profiles.paper_balance default set to 100000';
   END IF;
 END $$;
-
 -- user_trading_config.paper_balance (if exists)
 DO $$
 BEGIN

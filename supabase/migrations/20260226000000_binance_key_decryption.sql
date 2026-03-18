@@ -48,12 +48,10 @@ BEGIN
   RETURN QUERY SELECT decrypted_key, decrypted_secret, is_test;
 END;
 $$;
-
 -- Grant access to service role only (not to regular authenticated users)
 REVOKE ALL ON FUNCTION decrypt_binance_keys(UUID, UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION decrypt_binance_keys(UUID, UUID) FROM authenticated;
 GRANT EXECUTE ON FUNCTION decrypt_binance_keys(UUID, UUID) TO service_role;
-
 -- ============================================================================
 -- HELPER FUNCTION: Encrypt and store Binance API keys
 -- ============================================================================
@@ -117,10 +115,8 @@ BEGIN
   RETURN QUERY SELECT v_api_key_id, v_api_secret_id;
 END;
 $$;
-
 -- Grant to authenticated users (they can store their own keys)
 GRANT EXECUTE ON FUNCTION store_binance_keys(UUID, TEXT, TEXT, BOOLEAN) TO authenticated;
-
 -- ============================================================================
 -- HELPER FUNCTION: Remove Binance API keys
 -- ============================================================================
@@ -162,9 +158,7 @@ BEGIN
   RETURN true;
 END;
 $$;
-
 GRANT EXECUTE ON FUNCTION remove_binance_keys(UUID) TO authenticated;
-
 -- ============================================================================
 -- AUDIT LOG: Track key access
 -- ============================================================================
@@ -178,9 +172,7 @@ CREATE TABLE IF NOT EXISTS binance_key_access_log (
   user_agent TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 CREATE INDEX idx_binance_key_access_user ON binance_key_access_log (user_id, created_at DESC);
-
 -- Enable RLS
 ALTER TABLE binance_key_access_log ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users see own key access logs" ON binance_key_access_log

@@ -19,7 +19,6 @@ BEGIN
     RAISE NOTICE 'subscription_tier column already exists';
   END IF;
 END $$;
-
 -- Sjekk og legg til subscription_status hvis den mangler
 DO $$
 BEGIN
@@ -37,7 +36,6 @@ BEGIN
     RAISE NOTICE 'subscription_status column already exists';
   END IF;
 END $$;
-
 -- Sjekk og legg til trial kolonner hvis de mangler
 DO $$
 BEGIN
@@ -65,7 +63,6 @@ BEGIN
     RAISE NOTICE 'Added updated_at column';
   END IF;
 END $$;
-
 -- Sjekk og legg til display_name hvis den mangler
 DO $$
 BEGIN
@@ -77,20 +74,17 @@ BEGIN
     RAISE NOTICE 'Added display_name column';
   END IF;
 END $$;
-
 -- Opprett indexer (hvis de ikke finnes fra før)
 CREATE INDEX IF NOT EXISTS idx_profiles_tier ON profiles(subscription_tier);
 CREATE INDEX IF NOT EXISTS idx_profiles_status ON profiles(subscription_status);
 CREATE INDEX IF NOT EXISTS idx_profiles_trial_ends ON profiles(trial_ends_at) 
   WHERE subscription_status = 'trial';
-
 -- Verifiser at alle kolonner er på plass
 SELECT 
   'Profiles table columns:' as info,
   COUNT(*) as column_count
 FROM information_schema.columns 
 WHERE table_name = 'profiles';
-
 -- Vis eksisterende kolonner
 SELECT 
   column_name,

@@ -16,12 +16,9 @@ CREATE TABLE IF NOT EXISTS public.terminal_jobs (
   started_at TIMESTAMPTZ,
   completed_at TIMESTAMPTZ
 );
-
 CREATE INDEX IF NOT EXISTS idx_terminal_jobs_status ON public.terminal_jobs(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_terminal_jobs_created ON public.terminal_jobs(created_at DESC);
-
 ALTER TABLE public.terminal_jobs ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Service role full access" ON public.terminal_jobs;
 CREATE POLICY "Service role full access"
   ON public.terminal_jobs
@@ -29,5 +26,4 @@ CREATE POLICY "Service role full access"
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 COMMENT ON TABLE public.terminal_jobs IS 'MCP terminal script executions';
