@@ -10,7 +10,6 @@ import {
   LogOut,
   Settings,
   Shield,
-  TrendingUp,
   User,
   X,
 } from "lucide-react";
@@ -60,15 +59,31 @@ export function DashboardSidebar() {
   };
 
   const links = [
-    { href: "/dashboard", label: locale === "no" ? "Hjem" : "Home", icon: LayoutDashboard, exact: true },
+    {
+      href: "/dashboard",
+      label: locale === "no" ? "Hjem" : "Home",
+      icon: LayoutDashboard,
+      exact: true,
+    },
     { href: "/kurs", label: locale === "no" ? "Lær" : "Learn", icon: BookOpen },
-    { href: "/paper-trading", label: locale === "no" ? "Handle" : "Trade", icon: TrendingUp },
-    { href: "/dashboard/auto-trade", label: locale === "no" ? "Auto-trade" : "Auto-trade", icon: Bot },
-    { href: "/profile", label: locale === "no" ? "Profil" : "Profile", icon: User },
+    {
+      href: "/dashboard/auto-trade",
+      label: locale === "no" ? "Auto-trade" : "Auto-trade",
+      icon: Bot,
+    },
+    {
+      href: "/profile",
+      label: locale === "no" ? "Profil" : "Profile",
+      icon: User,
+    },
   ];
 
   const secondaryLinks = [
-    { href: "/dashboard/settings", label: locale === "no" ? "Innstillinger" : "Settings", icon: Settings },
+    {
+      href: "/dashboard/settings",
+      label: locale === "no" ? "Innstillinger" : "Settings",
+      icon: Settings,
+    },
     ...(isAdmin
       ? [{ href: "/admin", label: "Admin", icon: Shield, admin: true as const }]
       : []),
@@ -83,7 +98,13 @@ export function DashboardSidebar() {
 
   const l = (path: string) => `/${locale}${path}`;
 
-  const renderLink = (link: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; admin?: boolean }) => {
+  const renderLink = (link: {
+    href: string;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    exact?: boolean;
+    admin?: boolean;
+  }) => {
     const fullPath = `/${locale}${link.href}`;
     const active = isActive(link.href, link.exact);
 
@@ -133,7 +154,9 @@ export function DashboardSidebar() {
         `}
       >
         <div className="flex flex-col h-full overflow-hidden">
-          <div className={`border-b border-slate-100 flex items-center ${collapsed ? "justify-center p-4" : "justify-between p-6"}`}>
+          <div
+            className={`border-b border-slate-100 flex items-center ${collapsed ? "justify-center p-4" : "justify-between p-6"}`}
+          >
             <Link href={l("/")} className="flex items-center gap-2 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-[#0052FF] flex items-center justify-center shrink-0">
                 <span className="text-white font-bold text-lg">K</span>
@@ -163,7 +186,9 @@ export function DashboardSidebar() {
             {secondaryLinks.map(renderLink)}
           </nav>
 
-          <div className={`border-t border-slate-100 bg-slate-50/50 ${collapsed ? "p-2" : "p-4"} space-y-3`}>
+          <div
+            className={`border-t border-slate-100 bg-slate-50/50 ${collapsed ? "p-2" : "p-4"} space-y-3`}
+          >
             {!collapsed && (
               <>
                 <div className="flex items-center justify-between gap-2">
