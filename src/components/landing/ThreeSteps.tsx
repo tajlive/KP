@@ -1,55 +1,55 @@
-'use client';
+"use client";
 
-import { UserPlus, BookOpen, Gamepad2, Rocket } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { UserPlus, BookOpen, Gamepad2, Rocket } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
 export function ThreeSteps() {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('threeSteps');
-  
+  const t = useTranslations("threeSteps");
+
   const steps = [
     {
       icon: UserPlus,
-      number: '01',
-      title: t('step1.title'),
-      description: t('step1.description'),
-      color: 'bg-teal-500',
+      number: "01",
+      title: t("step1.title"),
+      description: t("step1.description"),
+      color: "bg-teal-500",
     },
     {
       icon: BookOpen,
-      number: '02',
-      title: t('step2.title'),
-      description: t('step2.description'),
-      color: 'bg-amber-500',
+      number: "02",
+      title: t("step2.title"),
+      description: t("step2.description"),
+      color: "bg-amber-500",
     },
     {
       icon: Gamepad2,
-      number: '03',
-      title: t('step3.title'),
-      description: t('step3.description'),
-      color: 'bg-indigo-500',
+      number: "03",
+      title: t("step3.title"),
+      description: t("step3.description"),
+      color: "bg-indigo-500",
     },
     {
       icon: Rocket,
-      number: '04',
-      title: t('step4.title'),
-      description: t('step4.description'),
-      color: 'bg-purple-500',
-      badge: t('step4.badge'),
+      number: "04",
+      title: t("step4.title"),
+      description: t("step4.description"),
+      color: "bg-purple-500",
+      badge: t("step4.badge"),
       optional: true,
     },
   ];
-  
+
   return (
-    <div className="py-16 md:py-24">
+    <div className="pt-16 pb-12 md:pt-24 md:pb-16">
       <div className="text-center mb-12">
         <h2 className="font-fraunces text-3xl md:text-4xl font-bold text-slate-100 mb-4">
-          {t('sectionTitle')}
+          {t("sectionTitle")}
         </h2>
         <p className="font-lexend text-slate-400 max-w-2xl mx-auto">
-          {t('sectionSubtitle')}
+          {t("sectionSubtitle")}
         </p>
       </div>
 
@@ -58,7 +58,7 @@ export function ThreeSteps() {
           <div
             key={step.number}
             className={`relative bg-slate-800/50 border rounded-2xl p-6 md:p-8 group hover:border-slate-600 transition-colors ${
-              step.optional ? 'border-purple-700/50' : 'border-slate-700'
+              step.optional ? "border-purple-700/50" : "border-slate-700"
             }`}
           >
             {/* Connector line (hidden on mobile) */}
@@ -67,7 +67,9 @@ export function ThreeSteps() {
             )}
 
             {/* Step number */}
-            <div className={`w-12 h-12 ${step.color} rounded-xl flex items-center justify-center mb-6`}>
+            <div
+              className={`w-12 h-12 ${step.color} rounded-xl flex items-center justify-center mb-6`}
+            >
               <step.icon className="w-6 h-6 text-white" />
             </div>
 
@@ -96,15 +98,15 @@ export function ThreeSteps() {
 
       {/* CTA */}
       <div className="text-center mt-12">
-        <button 
+        <button
           onClick={() => router.push(`/${locale}/signup`)}
           className="bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
         >
           <UserPlus className="w-5 h-5" />
-          {t('ctaButton')}
+          {t("ctaButton")}
         </button>
         <p className="font-lexend text-slate-500 text-sm mt-4">
-          {t('ctaSubtext')}
+          {t("ctaSubtext")}
         </p>
       </div>
     </div>

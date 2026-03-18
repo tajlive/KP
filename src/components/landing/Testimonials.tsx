@@ -3,7 +3,7 @@
 import { translations } from "@/lib/i18n/translations";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Quote, Star, ArrowRight } from "lucide-react";
 import { BRAND, RADIUS } from "@/lib/design/tokens";
 
@@ -13,10 +13,11 @@ interface TestimonialsProps {
 
 export function Testimonials({ language = "no" }: TestimonialsProps) {
   const locale = useLocale();
+  const tLanding = useTranslations("landing.testimonials");
   const t = translations[language].testimonials;
 
   return (
-    <section className="py-32 bg-[#050510] relative overflow-hidden">
+    <section className="pt-20 pb-32 bg-[#050510] relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -29,12 +30,10 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
           className="text-center mb-24"
         >
           <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
-            {t.title}
+            {tLanding("title")}
           </h2>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            {language === "no"
-              ? "Se hva andre sier om å lære trading med Klarpakke"
-              : "See what others are saying about learning to trade with Klarpakke"}
+            {tLanding("subtitle")}
           </p>
         </motion.div>
 
