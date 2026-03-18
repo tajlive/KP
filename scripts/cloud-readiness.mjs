@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,10 +31,6 @@ const envFromFiles = {
   ...loadEnvFile(resolve(rootDir, ".env.vercel")),
 };
 
-function getEnv(name) {
-  return process.env[name] || envFromFiles[name] || "";
-}
-
 function mask(value) {
   if (!value) return "(missing)";
   if (value.length <= 6) return "***";
@@ -47,8 +43,25 @@ function parseArg(name) {
   return process.argv[index + 1] || "";
 }
 
+function hasFlag(flag) {
+  return process.argv.includes(flag);
+}
+
 const profile = parseArg("--profile") || "agent";
 const environment = parseArg("--environment") || "preview";
+const exportGithubEnv = hasFlag("--export-github-env");
+const autoResolveVercel = !hasFlag("--no-auto-resolve-vercel");
+
+const resolvedVars = {};
+const resolveNotes = [];
+
+function setResolvedVar(name, value, source) {
+  if (!value) return;
+  if (!resolvedVars[name]) {
+    resolvedVars[name] = value;
+    resolveNotes.push(`${name} resolved from ${source}`);
+  }
+}
 
 const profiles = {
   agent: {
@@ -79,41 +92,129 @@ if (!profiles[profile]) {
   process.exit(1);
 }
 
-const active = profiles[profile];
-const required = [...active.required];
-
-if (profile === "manual-deploy" && environment === "production") {
-  required.push("SUPABASE_PROJECT_REF", "SUPABASE_ACCESS_TOKEN");
+function getEnv(name) {
+  return resolvedVars[name] || process.env[name] || envFromFiles[name] || "";
 }
 
-const missing = required.filter((name) => !getEnv(name));
+function readLocalVercelProjectConfig() {
+  const vercelProjectPath = resolve(rootDir, ".vercel", "project.json");
+  if (!existsSync(vercelProjectPath)) return {};
 
-console.log("Cloud readiness");
-console.log(`  profile: ${profile}`);
-console.log(`  environment: ${environment}`);
-console.log("");
-console.log("Required variables:");
-for (const name of required) {
-  const value = getEnv(name);
-  const status = value ? "OK " : "MISSING";
-  console.log(`  - ${name}: ${status} ${mask(value)}`);
+  try {
+    const content = JSON.parse(readFileSync(vercelProjectPath, "utf8"));
+    return {
+      orgId: content.orgId || "",
+      projectId: content.projectId || "",
+    };
+  } catch {
+    return {};
+  }
 }
 
-if (active.optional.length > 0) {
+async function fetchVercel(path, token) {
+  const response = await fetch(`https://api.vercel.com${path}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) return null;
+  return response.json();
+}
+
+async function resolveVercelContext() {
+  const token = getEnv("VERCEL_TOKEN");
+  if (!token) return;
+
+  const localConfig = readLocalVercelProjectConfig();
+  if (!getEnv("VERCEL_PROJECT_ID") && localConfig.projectId) {
+    setResolvedVar("VERCEL_PROJECT_ID", localConfig.projectId, ".vercel/project.json");
+  }
+  if (!getEnv("VERCEL_ORG_ID") && localConfig.orgId) {
+    setResolvedVar("VERCEL_ORG_ID", localConfig.orgId, ".vercel/project.json");
+  }
+
+  const projectId = getEnv("VERCEL_PROJECT_ID");
+  if (!getEnv("VERCEL_ORG_ID") && projectId) {
+    const project = await fetchVercel(`/v9/projects/${encodeURIComponent(projectId)}`, token);
+    const orgIdFromProject = project?.accountId || project?.teamId || project?.orgId || "";
+    if (orgIdFromProject) {
+      setResolvedVar("VERCEL_ORG_ID", orgIdFromProject, "Vercel project lookup");
+    }
+  }
+
+  if (!getEnv("VERCEL_ORG_ID")) {
+    const user = await fetchVercel("/v2/user", token);
+    const personalOrgId = user?.user?.id || "";
+    if (personalOrgId) {
+      setResolvedVar("VERCEL_ORG_ID", personalOrgId, "Vercel user lookup");
+    }
+  }
+}
+
+function exportResolvedToGithubEnv() {
+  if (!exportGithubEnv || !process.env.GITHUB_ENV) return;
+  const lines = Object.entries(resolvedVars).map(([key, value]) => `${key}=${value}`);
+  if (lines.length === 0) return;
+  appendFileSync(process.env.GITHUB_ENV, `${lines.join("\n")}\n`);
+}
+
+async function main() {
+  const active = profiles[profile];
+  const required = [...active.required];
+
+  if (profile === "manual-deploy" && environment === "production") {
+    required.push("SUPABASE_PROJECT_REF", "SUPABASE_ACCESS_TOKEN");
+  }
+
+  if (autoResolveVercel && required.some((name) => name.startsWith("VERCEL_"))) {
+    await resolveVercelContext();
+  }
+
+  const missing = required.filter((name) => !getEnv(name));
+
+  console.log("Cloud readiness");
+  console.log(`  profile: ${profile}`);
+  console.log(`  environment: ${environment}`);
   console.log("");
-  console.log("Optional variables:");
-  for (const name of active.optional) {
+  console.log("Required variables:");
+  for (const name of required) {
     const value = getEnv(name);
     const status = value ? "OK " : "MISSING";
     console.log(`  - ${name}: ${status} ${mask(value)}`);
   }
+
+  if (resolveNotes.length > 0) {
+    console.log("");
+    console.log("Resolution notes:");
+    for (const note of resolveNotes) {
+      console.log(`  - ${note}`);
+    }
+  }
+
+  if (active.optional.length > 0) {
+    console.log("");
+    console.log("Optional variables:");
+    for (const name of active.optional) {
+      const value = getEnv(name);
+      const status = value ? "OK " : "MISSING";
+      console.log(`  - ${name}: ${status} ${mask(value)}`);
+    }
+  }
+
+  if (missing.length > 0) {
+    console.error("");
+    console.error(`Readiness failed: missing required variables (${missing.join(", ")}).`);
+    process.exit(1);
+  }
+
+  exportResolvedToGithubEnv();
+
+  console.log("");
+  console.log("Readiness check passed.");
 }
 
-if (missing.length > 0) {
-  console.error("");
-  console.error(`Readiness failed: missing required variables (${missing.join(", ")}).`);
+main().catch((error) => {
+  console.error(`Readiness failed with error: ${error?.message || String(error)}`);
   process.exit(1);
-}
-
-console.log("");
-console.log("Readiness check passed.");
+});

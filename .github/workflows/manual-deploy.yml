@@ -38,8 +38,8 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --prefer-offline
 
-      - name: ✅ Validate deploy prerequisites
-        run: node scripts/cloud-readiness.mjs --profile manual-deploy --environment "${{ github.event.inputs.environment }}"
+      - name: ✅ Resolve and validate deploy prerequisites
+        run: node scripts/cloud-readiness.mjs --profile manual-deploy --environment "${{ github.event.inputs.environment }}" --export-github-env
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
@@ -81,9 +81,6 @@ jobs:
           else
             npx vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
           fi
-        env:
-          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
 
       - name: ✅ Verify production (kun ved production deploy)
         if: github.event.inputs.environment == 'production'

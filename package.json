@@ -13,6 +13,8 @@
     "type-check": "tsc --noEmit",
     "check": "bash scripts/verify-production.sh",
     "cloud:ready": "node scripts/cloud-readiness.mjs --profile agent",
+    "cloud:ready:deploy": "node scripts/cloud-readiness.mjs --profile deploy",
+    "cloud:ready:manual:prod": "node scripts/cloud-readiness.mjs --profile manual-deploy --environment production",
     "check-mcp": "./scripts/mcp.sh check",
     "pre-commit": "npm run check:secrets-staged && npm run lint && npm run type-check",
     "check:secrets-staged": "./scripts/check-secrets-staged.sh",
