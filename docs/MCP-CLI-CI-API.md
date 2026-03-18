@@ -37,6 +37,7 @@
 ### Verifisere MCP
 
 ```bash
+npm run cloud:bootstrap # Fyller kritiske cloud-keys i .env.local automatisk
 npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Vercel)
 npm run cloud:ready:deploy # Sjekk deploy-krav (Vercel) + auto-resolve av ORG_ID
 npm run cloud:ready:manual:prod # Sjekk manuell production deploy-krav (inkl. Supabase)
