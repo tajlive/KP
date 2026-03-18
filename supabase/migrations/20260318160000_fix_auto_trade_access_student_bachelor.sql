@@ -8,6 +8,7 @@
 -- Endringer:
 -- 1. can_use_autotrade: true for student, bachelor, master, phd, professor
 -- 2. auto_trade_max_strategies: 1 for student (var 0)
+-- 3. Fallback til user_profiles.tier når subscriptions er tom (admin-granted professor)
 -- ============================================================================
 
 CREATE OR REPLACE FUNCTION public.get_user_entitlements(p_user_id UUID)
@@ -55,10 +56,19 @@ BEGIN
   ORDER BY s.created_at DESC
   LIMIT 1;
 
-  -- Default til student hvis ingen aktiv subscription
+  -- Fallback: når ingen aktiv subscription, bruk user_profiles.tier (admin-granted professor etc.)
   IF v_tier_slug IS NULL THEN
+    SELECT up.tier::text INTO v_tier_slug
+    FROM user_profiles up
+    WHERE up.id = p_user_id
+    LIMIT 1;
+    IF v_status IS NULL THEN
+      v_status := 'inactive';
+    END IF;
+  END IF;
+  -- Default til student hvis tier fortsatt ukjent
+  IF v_tier_slug IS NULL OR v_tier_slug NOT IN ('student', 'bachelor', 'master', 'phd', 'professor') THEN
     v_tier_slug := 'student';
-    v_status := 'inactive';
   END IF;
 
   -- Sjekk trial status
@@ -107,8 +117,6 @@ BEGIN
     true;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
-ALTER FUNCTION public.get_user_entitlements(UUID) SET search_path = public, pg_catalog;
 
 ALTER FUNCTION public.get_user_entitlements(UUID) SET search_path = public, pg_catalog;
 COMMENT ON FUNCTION public.get_user_entitlements(UUID) IS 
