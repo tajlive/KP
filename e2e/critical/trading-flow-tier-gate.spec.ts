@@ -15,6 +15,11 @@ test.describe("Trading flow and tier-gate @critical", () => {
     (process.env.E2E_USER_EMAIL || process.env.TEST_USER_EMAIL) &&
       (process.env.E2E_USER_PASSWORD || process.env.TEST_USER_PASSWORD),
   );
+  const hasSupabaseAuthConfig = Boolean(
+    (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) &&
+      (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY),
+  );
+  const canBootstrapAuthState = hasE2EAuthCredentials && hasSupabaseAuthConfig;
 
   test("Landing: Handle/paper-trading CTA går til paper-trading eller innlogging", async ({
     page,
@@ -69,8 +74,8 @@ test.describe("Trading flow and tier-gate @critical", () => {
     page,
   }) => {
     test.skip(
-      !hasE2EAuthCredentials,
-      "Requires E2E credentials for authenticated sessions assertions",
+      !canBootstrapAuthState,
+      "Requires E2E credentials and Supabase auth config for authenticated sessions assertions",
     );
 
     await page.goto("/no/paper-trading?view=sessions", {
