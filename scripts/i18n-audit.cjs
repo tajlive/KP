@@ -19,33 +19,54 @@ const files = glob.sync('src/**/*.{tsx,ts}', {ignore: ['node_modules/**','**/*.t
 
 const usedKeys = new Set();
 
-// Regex to find useTranslations("namespace") calls
-const useTranslationsRegex = /useTranslations\(['"]([\w.]+)['"]\)/g;
-// Regex to find t("key") calls
-const tCallRegex = /\bt\(['"]([\w.]+)['"]/g;
+// Matches: const t = useTranslations('ns') / const t = await getTranslations('ns')
+const translatorAssignmentRegex =
+  /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:await\s+)?(?:useTranslations|getTranslations)\(\s*['"]([\w.]+)['"]\s*\)/g;
+// Matches inline usage: useTranslations('ns')('key')
+const inlineTranslatorCallRegex =
+  /(?:useTranslations|getTranslations)\(\s*['"]([\w.]+)['"]\s*\)\(\s*['"]([\w.]+)['"]/g;
+// Matches direct key calls: t('key')
+const translatorCallRegex = /\b([A-Za-z_$][\w$]*)\(\s*['"]([\w.]+)['"]/g;
+// Matches method calls: t.rich('key'), t.raw('key'), t.markup('key')
+const translatorMethodCallRegex =
+  /\b([A-Za-z_$][\w$]*)\.(?:rich|raw|markup)\(\s*['"]([\w.]+)['"]/g;
 
 files.forEach(file => {
   const content = fs.readFileSync(file, 'utf-8');
-
-  // Find all useTranslations namespaces in this file
-  const namespaces = [];
+  const translators = new Map();
   let match;
-  while ((match = useTranslationsRegex.exec(content)) !== null) {
-    namespaces.push(match[1]);
+
+  // Reset regex state for this file
+  translatorAssignmentRegex.lastIndex = 0;
+  inlineTranslatorCallRegex.lastIndex = 0;
+  translatorCallRegex.lastIndex = 0;
+  translatorMethodCallRegex.lastIndex = 0;
+
+  while ((match = translatorAssignmentRegex.exec(content)) !== null) {
+    const [, varName, namespace] = match;
+    translators.set(varName, namespace);
   }
 
-  // If no namespaces found, skip
-  if (namespaces.length === 0) return;
+  while ((match = inlineTranslatorCallRegex.exec(content)) !== null) {
+    const [, namespace, key] = match;
+    usedKeys.add(`${namespace}.${key}`);
+  }
 
-  // For simplicity, use the first namespace (most common pattern)
-  const namespace = namespaces[0];
+  // If no translator bindings in file, skip direct call parsing
+  if (translators.size === 0) return;
 
-  // Find all t() calls
-  while ((match = tCallRegex.exec(content)) !== null) {
-    const key = match[1];
-    // Build full key: namespace.key
-    const fullKey = namespace + '.' + key;
-    usedKeys.add(fullKey);
+  while ((match = translatorCallRegex.exec(content)) !== null) {
+    const [, varName, key] = match;
+    const namespace = translators.get(varName);
+    if (!namespace) continue;
+    usedKeys.add(`${namespace}.${key}`);
+  }
+
+  while ((match = translatorMethodCallRegex.exec(content)) !== null) {
+    const [, varName, key] = match;
+    const namespace = translators.get(varName);
+    if (!namespace) continue;
+    usedKeys.add(`${namespace}.${key}`);
   }
 });
 
