@@ -28,10 +28,11 @@
   "openMenu": "Åpne meny",
   "studyProgram": "Studieprogram",
   "school": "Skole",
-  "tagline": "Lær crypto trygt",
+  "tagline": "Lær krypto trygt",
   "navLearn": "Lær",
   "navTrade": "Handel",
   "navBots": "Bots",
   "navPricing": "Priser",
-  "freeBalance": "100 000 kr gratis"
+  "liveMarkets": "Live markeder",
+  "freeBalance": "Demo: 100 000 kr startsaldo"
 }
