@@ -38,6 +38,8 @@
 
 ```bash
 npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Vercel)
+npm run cloud:ready:deploy # Sjekk deploy-krav (Vercel) + auto-resolve av ORG_ID
+npm run cloud:ready:manual:prod # Sjekk manuell production deploy-krav (inkl. Supabase)
 npm run linear:test   # Linear API (leser .env.local)
 npm run test:mcp      # test-mcp-connections.sh (Supabase, Stripe, Vercel, Resend, Cloudflare API)
 npm run cursor:config # MCP-server-navn + .cursor/rules (uten API-nøkkel)
@@ -168,6 +170,8 @@ npm run verify:prod   # smoke mot prod-URL
 - For deploy: Vercel-prosjekt knyttes via `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` og token
 
 Bygg bruker `SKIP_LINT_IN_BUILD=true` slik at lint kjører én gang; build skipper ESLint. Se **docs/vercel-build-notes.md** §8.
+
+`cloud-readiness.mjs` forsøker automatisk å resolve `VERCEL_ORG_ID` fra Vercel API når `VERCEL_PROJECT_ID` og `VERCEL_TOKEN` er satt.
 
 ---
 
