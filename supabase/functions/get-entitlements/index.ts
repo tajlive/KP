@@ -11,7 +11,7 @@ import { handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
 // Tier configuration for auto trade
 const TIER_CONFIG = {
   student: {
-    auto_trade_max_strategies: 0,
+    auto_trade_max_strategies: 1, // 1 paper auto trade (per AUTO-TRADE-PLAN.md)
     auto_trade_max_positions: 1,
     auto_trade_allow_live: false,
     auto_trade_allow_paper: true,
