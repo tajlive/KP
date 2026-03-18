@@ -38,6 +38,15 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --prefer-offline
 
+      - name: ✅ Validate deploy prerequisites
+        run: node scripts/cloud-readiness.mjs --profile manual-deploy --environment "${{ github.event.inputs.environment }}"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
       - name: 📂 Restore Next.js build cache
         uses: actions/cache@v4
         with:
@@ -61,17 +70,20 @@ jobs:
         run: npm run build
         env:
           SKIP_LINT_IN_BUILD: "true"
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: 🚀 Deploy to Vercel
         run: |
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then
-            npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+            npx vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
           else
-            npx vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+            npx vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
           fi
+        env:
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
 
       - name: ✅ Verify production (kun ved production deploy)
         if: github.event.inputs.environment == 'production'
