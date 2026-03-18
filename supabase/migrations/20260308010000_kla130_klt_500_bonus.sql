@@ -11,31 +11,24 @@ CREATE TABLE IF NOT EXISTS public.kltbalances (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Add comment
 COMMENT ON TABLE public.kltbalances IS 'User KLT balances with 500 welcome bonus';
-
 -- Enable RLS
 ALTER TABLE public.kltbalances ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policy: Users can only see their own balance
 CREATE POLICY "Users can view own klt balance"
     ON public.kltbalances FOR SELECT
     USING (auth.uid() = userid);
-
 -- RLS Policy: Service role can manage all balances
 CREATE POLICY "Service can manage klt balances"
     ON public.kltbalances FOR ALL
     USING (true)
     WITH CHECK (true);
-
 -- Grant permissions
 GRANT SELECT ON public.kltbalances TO authenticated;
 GRANT ALL ON public.kltbalances TO service_role;
-
 -- Create index for performance
 CREATE INDEX IF NOT EXISTS idx_kltbalances_userid ON public.kltbalances(userid);
-
 -- ============================================================================
 -- Function: Add 500 KLT to new users on signup
 -- ============================================================================
@@ -50,23 +43,19 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Drop existing trigger if exists
 DROP TRIGGER IF EXISTS new_user_klt_bonus ON auth.users;
-
 -- Create trigger to give 500 KLT on new user signup
 CREATE TRIGGER new_user_klt_bonus
     AFTER INSERT ON auth.users
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_user_klt();
-
 -- ============================================================================
 -- PG_CRON: Daily KLT bonus for active users (5 KLT per day)
 -- ============================================================================
 
 -- Enable pg_cron extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS pg_cron;
-
 -- Schedule daily KLT bonus for users older than 1 day
 SELECT cron.schedule(
     'daily-klt-bonus',
@@ -89,7 +78,6 @@ SELECT cron.schedule(
         updated_at = NOW()
     $$
 );
-
 -- Verify setup
 DO $$
 BEGIN

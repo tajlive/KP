@@ -4,7 +4,6 @@
 -- ============================================
 
 BEGIN;
-
 -- ============================================
 -- SEKSJON A: SECURITY DEFINER → INVOKER
 -- api.* views med riktig sikkerhetsmodell
@@ -16,30 +15,24 @@ CREATE OR REPLACE VIEW api.risk_profiles
 WITH (security_invoker = on)
 AS
 SELECT * FROM public.risk_profiles WHERE user_id = auth.uid();
-
 COMMENT ON VIEW api.risk_profiles IS 'Brukerens egne risikoprofiler — SECURITY INVOKER';
 GRANT SELECT ON api.risk_profiles TO authenticated;
-
 -- api.auto_trading_configs
 DROP VIEW IF EXISTS api.auto_trading_configs CASCADE;
 CREATE OR REPLACE VIEW api.auto_trading_configs
 WITH (security_invoker = on)
 AS
 SELECT * FROM public.auto_trading_configs WHERE user_id = auth.uid();
-
 COMMENT ON VIEW api.auto_trading_configs IS 'Brukerens auto-trading konfigurasjoner — SECURITY INVOKER';
 GRANT SELECT ON api.auto_trading_configs TO authenticated;
-
 -- api.paper_trading_sessions
 DROP VIEW IF EXISTS api.paper_trading_sessions CASCADE;
 CREATE OR REPLACE VIEW api.paper_trading_sessions
 WITH (security_invoker = on)
 AS
 SELECT * FROM public.paper_trading_sessions WHERE user_id = auth.uid();
-
 COMMENT ON VIEW api.paper_trading_sessions IS 'Brukerens paper trading-økter — SECURITY INVOKER';
 GRANT SELECT ON api.paper_trading_sessions TO authenticated;
-
 -- ============================================
 -- SEKSJON B: RLS POLICIES — BRUKERDATA
 -- Bruker-isolasjon for sensitive trading-data
@@ -50,7 +43,6 @@ ALTER TABLE IF EXISTS public.real_positions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.trading_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.strategy_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.user_trading_config ENABLE ROW LEVEL SECURITY;
-
 -- real_positions: kun hvis tabellen har user_id (noen miljøer har account_id)
 DO $$
 BEGIN
@@ -69,7 +61,6 @@ BEGIN
     CREATE POLICY "real_positions_delete_own" ON public.real_positions FOR DELETE USING (user_id = auth.uid());
   END IF;
 END $$;
-
 -- trading_logs, strategy_logs, user_trading_config: policies kun hvis user_id finnes
 DO $$
 BEGIN
@@ -94,7 +85,6 @@ BEGIN
     CREATE POLICY "user_config_update_own" ON public.user_trading_config FOR UPDATE USING (user_id = auth.uid());
   END IF;
 END $$;
-
 -- ============================================
 -- SEKSJON C: RLS POLICIES — ADMIN/SYSTEM
 -- Service role only for system-tabeller
@@ -106,7 +96,6 @@ ALTER TABLE IF EXISTS public.ai_cache ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.emergency_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.global_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.stripe_events ENABLE ROW LEVEL SECURITY;
-
 -- Funksjon for å sjekke service_role
 CREATE OR REPLACE FUNCTION public.is_service_role()
 RETURNS BOOLEAN AS $$
@@ -116,47 +105,36 @@ EXCEPTION
   WHEN OTHERS THEN RETURN FALSE;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- admin_alerts: Kun service_role
 DROP POLICY IF EXISTS "admin_alerts_service_role" ON public.admin_alerts;
-
 CREATE POLICY "admin_alerts_service_role"
   ON public.admin_alerts
   FOR ALL
   USING (public.is_service_role());
-
 -- ai_cache: Kun service_role
 DROP POLICY IF EXISTS "ai_cache_service_role" ON public.ai_cache;
-
 CREATE POLICY "ai_cache_service_role"
   ON public.ai_cache
   FOR ALL
   USING (public.is_service_role());
-
 -- emergency_logs: Kun service_role
 DROP POLICY IF EXISTS "emergency_logs_service_role" ON public.emergency_logs;
-
 CREATE POLICY "emergency_logs_service_role"
   ON public.emergency_logs
   FOR ALL
   USING (public.is_service_role());
-
 -- global_settings: Kun service_role
 DROP POLICY IF EXISTS "global_settings_service_role" ON public.global_settings;
-
 CREATE POLICY "global_settings_service_role"
   ON public.global_settings
   FOR ALL
   USING (public.is_service_role());
-
 -- stripe_events: Kun service_role
 DROP POLICY IF EXISTS "stripe_events_service_role" ON public.stripe_events;
-
 CREATE POLICY "stripe_events_service_role"
   ON public.stripe_events
   FOR ALL
   USING (public.is_service_role());
-
 -- ============================================
 -- SEKSJON D: VERIFISERING
 -- ============================================
@@ -174,7 +152,6 @@ FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE n.nspname = 'api'
 AND c.relname IN ('risk_profiles', 'auto_trading_configs', 'paper_trading_sessions');
-
 -- Verifiser RLS policies
 SELECT 
   tablename,
@@ -192,7 +169,6 @@ AND tablename IN (
   'admin_alerts','ai_cache','emergency_logs','global_settings','stripe_events'
 )
 ORDER BY tablename, policyname;
-
 -- Verifiser RLS enabled
 SELECT 
   relname as table_name,
@@ -204,9 +180,7 @@ WHERE relname IN (
   'admin_alerts','ai_cache','emergency_logs','global_settings','stripe_events'
 )
 AND relnamespace = 'public'::regnamespace;
-
 COMMIT;
-
 -- ============================================
 -- POST-DEPLOY VERIFISERING
 -- Kjør dette manuelt etter deploy:
@@ -225,4 +199,4 @@ SELECT COUNT(*) FROM public.admin_alerts;
 
 -- Reset
 RESET ROLE;
-*/
+*/;

@@ -65,7 +65,7 @@ export default function AdminAutoTradingClient() {
       if (!res.ok) throw new Error(data.error);
       const result = data.result;
       toast.success(
-        `Cron kjørt — ${result?.processed ?? 0} sesjoner behandlet`
+        `Cron kjørt — ${result?.processed ?? 0} sesjoner behandlet`,
       );
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Feil ved cron-trigger");
@@ -82,18 +82,24 @@ export default function AdminAutoTradingClient() {
       crashed: acc.crashed + (s.status === "crashed" ? 1 : 0),
       totalPnl: acc.totalPnl + (s.total_pnl || 0),
     }),
-    { total: 0, active: 0, paused: 0, crashed: 0, totalPnl: 0 }
+    { total: 0, active: 0, paused: 0, crashed: 0, totalPnl: 0 },
   );
 
-  const activeSessions = sessions.filter((s) => s.status === "active").slice(0, 5);
+  const activeSessions = sessions
+    .filter((s) => s.status === "active")
+    .slice(0, 5);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Auto-Trading Oversikt</h1>
-          <p className="text-slate-400 text-sm mt-1">Platform-wide administrasjon</p>
+          <h1 className="text-2xl font-bold text-white">
+            Auto-Trading Oversikt
+          </h1>
+          <p className="text-slate-400 text-sm mt-1">
+            Platform-wide administrasjon
+          </p>
         </div>
         <div className="flex gap-3">
           <button
@@ -122,7 +128,10 @@ export default function AdminAutoTradingClient() {
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-slate-800 rounded-xl animate-pulse" />
+            <div
+              key={i}
+              className="h-28 bg-slate-800 rounded-xl animate-pulse"
+            />
           ))}
         </div>
       ) : (
@@ -157,7 +166,9 @@ export default function AdminAutoTradingClient() {
       {/* Active sessions preview */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-white">Aktive Sesjoner (topp 5)</h2>
+          <h2 className="text-base font-semibold text-white">
+            Aktive Sesjoner (topp 5)
+          </h2>
           <Link
             href={`/${locale}/admin/auto-trading/sessions`}
             className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
@@ -194,17 +205,22 @@ export default function AdminAutoTradingClient() {
                       {s.user_profiles?.display_name || s.user_id.slice(0, 8)}
                     </div>
                     <div className="text-xs text-slate-500 capitalize">
-                      {s.user_profiles?.tier || "free"}
+                      {s.user_profiles?.tier || "student"}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-slate-300">{s.strategy_id}</td>
+                  <td className="px-4 py-3 text-sm text-slate-300">
+                    {s.strategy_id}
+                  </td>
                   <td className="px-4 py-3">
                     <span className="text-xs font-medium uppercase px-2 py-1 rounded bg-slate-700 text-slate-300">
                       {s.mode}
                     </span>
                   </td>
-                  <td className={`px-4 py-3 text-right text-sm font-medium ${s.total_pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    {s.total_pnl >= 0 ? "+" : ""}{s.total_pnl?.toFixed(0)} NOK
+                  <td
+                    className={`px-4 py-3 text-right text-sm font-medium ${s.total_pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                  >
+                    {s.total_pnl >= 0 ? "+" : ""}
+                    {s.total_pnl?.toFixed(0)} NOK
                   </td>
                   <td className="px-4 py-3 text-right text-sm text-slate-400">
                     {s.total_trades}
@@ -224,7 +240,9 @@ export default function AdminAutoTradingClient() {
         >
           <div>
             <div className="text-white font-medium">Alle Sesjoner</div>
-            <div className="text-slate-500 text-sm mt-1">Stopp, pause, filtrer</div>
+            <div className="text-slate-500 text-sm mt-1">
+              Stopp, pause, filtrer
+            </div>
           </div>
           <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-blue-400 transition-colors" />
         </Link>
@@ -234,7 +252,9 @@ export default function AdminAutoTradingClient() {
         >
           <div>
             <div className="text-white font-medium">Brukeradministrasjon</div>
-            <div className="text-slate-500 text-sm mt-1">Oppgrader / nedgrader tier</div>
+            <div className="text-slate-500 text-sm mt-1">
+              Oppgrader / nedgrader tier
+            </div>
           </div>
           <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-blue-400 transition-colors" />
         </Link>
@@ -262,7 +282,9 @@ function StatCard({
   };
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-      <div className={`inline-flex p-2 rounded-lg ${bg[color]} mb-3`}>{icon}</div>
+      <div className={`inline-flex p-2 rounded-lg ${bg[color]} mb-3`}>
+        {icon}
+      </div>
       <div className="text-2xl font-bold text-white">{value}</div>
       <div className="text-sm text-slate-400 mt-1">{label}</div>
     </div>

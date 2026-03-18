@@ -9,20 +9,16 @@ CREATE TABLE IF NOT EXISTS public.signup_funnel (
   referrer TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Index for fast queries
 CREATE INDEX IF NOT EXISTS idx_signup_funnel_session ON signup_funnel(session_id);
 CREATE INDEX IF NOT EXISTS idx_signup_funnel_event_type ON signup_funnel(event_type);
 CREATE INDEX IF NOT EXISTS idx_signup_funnel_created_at ON signup_funnel(created_at DESC);
-
 -- Enable RLS
 ALTER TABLE signup_funnel ENABLE ROW LEVEL SECURITY;
-
 -- Policy: Anyone can insert (for tracking)
 CREATE POLICY "Anyone can track funnel"
   ON signup_funnel FOR INSERT
   WITH CHECK (true);
-
 -- Policy: Only admins can read
 CREATE POLICY "Admins can view funnel"
   ON signup_funnel FOR SELECT
@@ -33,7 +29,6 @@ CREATE POLICY "Admins can view funnel"
       AND profiles.role = 'admin'
     )
   );
-
 -- View for conversion statistics
 CREATE OR REPLACE VIEW public.signup_funnel_stats AS
 WITH funnel_steps AS (
@@ -54,7 +49,6 @@ SELECT
   total_events,
   ROUND(100.0 * unique_users / NULLIF((SELECT unique_users FROM funnel_steps WHERE event_type = 'page_view'), 0), 2) as conversion_rate
 FROM funnel_steps;
-
 -- Function to get funnel drop-off
 CREATE OR REPLACE FUNCTION public.get_funnel_dropoff()
 RETURNS TABLE (

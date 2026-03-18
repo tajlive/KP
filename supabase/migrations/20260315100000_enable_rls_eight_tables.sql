@@ -6,7 +6,6 @@
 -- =============================================================================
 
 BEGIN;
-
 -- =============================================================================
 -- HELPER: drop_policy_if_exists (public schema)
 -- =============================================================================
@@ -28,12 +27,10 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- 1. auto_trades — user_id = auth.uid()
 -- =============================================================================
 ALTER TABLE IF EXISTS public.auto_trades ENABLE ROW LEVEL SECURITY;
-
 SELECT public.drop_policy_if_exists('Users see own trades', 'auto_trades');
 SELECT public.drop_policy_if_exists('auto_trades_own', 'auto_trades');
 CREATE POLICY "auto_trades_own"
@@ -42,7 +39,6 @@ CREATE POLICY "auto_trades_own"
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 -- =============================================================================
 -- 2. trade_history — bruk tabell som finnes (trade_history eller trade_history_legacy)
 -- =============================================================================
@@ -77,12 +73,10 @@ EXCEPTION
     RAISE;
 END;
 $$;
-
 -- =============================================================================
 -- 3. trading_risk_config — user_id = auth.uid()
 -- =============================================================================
 ALTER TABLE IF EXISTS public.trading_risk_config ENABLE ROW LEVEL SECURITY;
-
 SELECT public.drop_policy_if_exists('Users see own config', 'trading_risk_config');
 SELECT public.drop_policy_if_exists('trading_risk_config_own', 'trading_risk_config');
 CREATE POLICY "trading_risk_config_own"
@@ -91,7 +85,6 @@ CREATE POLICY "trading_risk_config_own"
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 -- =============================================================================
 -- 4. _trigger_debug — service_role only (system/debug table, no user_id)
 -- =============================================================================
@@ -122,12 +115,10 @@ EXCEPTION
     RAISE;
 END;
 $$;
-
 -- =============================================================================
 -- 5. saved_strategies — user_id = auth.uid(); SELECT kan inkludere is_public
 -- =============================================================================
 ALTER TABLE IF EXISTS public.saved_strategies ENABLE ROW LEVEL SECURITY;
-
 SELECT public.drop_policy_if_exists('Users see own + public strategies', 'saved_strategies');
 SELECT public.drop_policy_if_exists('Users manage own strategies', 'saved_strategies');
 SELECT public.drop_policy_if_exists('saved_strategies_select', 'saved_strategies');
@@ -143,12 +134,10 @@ CREATE POLICY "saved_strategies_manage_own"
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 -- =============================================================================
 -- 6. notification_preferences — user_id = auth.uid()
 -- =============================================================================
 ALTER TABLE IF EXISTS public.notification_preferences ENABLE ROW LEVEL SECURITY;
-
 SELECT public.drop_policy_if_exists('Users manage own prefs', 'notification_preferences');
 SELECT public.drop_policy_if_exists('notification_preferences_own', 'notification_preferences');
 CREATE POLICY "notification_preferences_own"
@@ -157,12 +146,10 @@ CREATE POLICY "notification_preferences_own"
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 -- =============================================================================
 -- 7. user_activity_logs — user_id = auth.uid()
 -- =============================================================================
 ALTER TABLE IF EXISTS public.user_activity_logs ENABLE ROW LEVEL SECURITY;
-
 SELECT public.drop_policy_if_exists('Users see own logs', 'user_activity_logs');
 SELECT public.drop_policy_if_exists('user_activity_logs_select_own', 'user_activity_logs');
 SELECT public.drop_policy_if_exists('user_activity_logs_insert_own', 'user_activity_logs');
@@ -176,12 +163,10 @@ CREATE POLICY "user_activity_logs_insert_own"
   FOR INSERT
   TO authenticated
   WITH CHECK (user_id = auth.uid());
-
 -- =============================================================================
 -- 8. beta_feedback — user_id = auth.uid() (INSERT + SELECT own)
 -- =============================================================================
 ALTER TABLE IF EXISTS public.beta_feedback ENABLE ROW LEVEL SECURITY;
-
 SELECT public.drop_policy_if_exists('Users submit own feedback', 'beta_feedback');
 SELECT public.drop_policy_if_exists('beta_feedback_insert_own', 'beta_feedback');
 SELECT public.drop_policy_if_exists('beta_feedback_select_own', 'beta_feedback');
@@ -195,7 +180,6 @@ CREATE POLICY "beta_feedback_select_own"
   FOR SELECT
   TO authenticated
   USING (user_id = auth.uid());
-
 -- =============================================================================
 -- Optional: Enable RLS only if not already (idempotent check)
 -- (ALTER TABLE ... ENABLE RLS is already idempotent; no-op if already enabled)
@@ -203,9 +187,7 @@ CREATE POLICY "beta_feedback_select_own"
 
 -- Clean up helper
 DROP FUNCTION IF EXISTS public.drop_policy_if_exists(TEXT, TEXT);
-
 COMMIT;
-
 -- =============================================================================
 -- Summary (for deploy verification)
 -- =============================================================================
@@ -216,4 +198,4 @@ COMMIT;
 -- saved_strategies:      "saved_strategies_select" (SELECT own+public), "saved_strategies_manage_own" (ALL own)
 -- notification_preferences: policy "notification_preferences_own" (ALL, user_id = auth.uid())
 -- user_activity_logs:    "user_activity_logs_select_own", "user_activity_logs_insert_own"
--- beta_feedback:         "beta_feedback_insert_own", "beta_feedback_select_own"
+-- beta_feedback:         "beta_feedback_insert_own", "beta_feedback_select_own";

@@ -427,7 +427,7 @@ export async function executeTrade(
         message: `${effectiveConsecutiveLosses} tap på rad. Posisjon redusert til 0% – trading stoppet inntil ny handel mulig.`,
         priority: "high",
         read: false,
-      });
+      } as never);
       return {
         success: false,
         error: `Drawdown: ${effectiveConsecutiveLosses} tap på rad. Trading pauset for å beskytte kapital.`,
@@ -527,7 +527,7 @@ export async function executeTrade(
         stop_loss_price: stopLoss,
         take_profit_price: takeProfit,
         status: "OPEN",
-      })
+      } as never)
       .select()
       .single();
 
@@ -555,7 +555,7 @@ export async function executeTrade(
       related_id: tradeRow?.id,
       priority: "medium",
       read: false,
-    });
+    } as never);
 
     // Trigger social copy trading (async, don't await)
     if (tradeRow) {
@@ -690,7 +690,7 @@ export async function closeTrade(
       related_id: trade.id,
       priority: "medium",
       read: false,
-    });
+    } as never);
 
     return { success: true, pnl };
   } catch (error) {
@@ -784,7 +784,7 @@ async function checkPhaseProgression(
       message: `Du har avansert til ${newPhase}-fasen! ${getPhaseMessage(newPhase)}`,
       priority: "high",
       read: false,
-    });
+    } as never);
   }
 }
 
@@ -1095,7 +1095,7 @@ async function executePartialClose(
       related_id: trade.id,
       priority: "medium",
       read: false,
-    });
+    } as never);
 
     return { success: true, pnl };
   } catch (error) {
@@ -1125,7 +1125,8 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   console.warn("Binance credentials not available in current schema");
 
   // Get current prices and ATR for all symbols
-  const typedOpenTrades = (openTrades || []) as AutoTradingTradeRow[];
+  const typedOpenTrades = (openTrades ||
+    []) as unknown as AutoTradingTradeRow[];
   const symbols = [...new Set(typedOpenTrades.map((t) => t.symbol))];
   const prices: Record<string, number> = {};
   const atrBySymbol: Record<string, number> = {};
@@ -1153,16 +1154,17 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   const sessionIds = [...new Set(typedOpenTrades.map((t) => t.session_id))];
   const sessionRiskLevel: Record<string, string> = {};
   for (const sessionId of sessionIds) {
-    const { data: session } = await supabase
+    const { data: sessionData } = await supabase
       .from("trading_sessions")
-      .select("config_id")
+      .select("*")
       .eq("id", sessionId)
       .single();
+    const session = sessionData as { config_id?: string } | null;
     if (session?.config_id) {
       const { data: config } = await supabase
         .from("user_auto_trading_configs")
         .select("strategy_id")
-        .eq("id", (session as { config_id: string }).config_id)
+        .eq("id", session.config_id)
         .single();
       if (config?.strategy_id) {
         const { data: strategy } = await supabase
@@ -1171,8 +1173,9 @@ export async function syncOpenTrades(userId: string): Promise<void> {
           .eq("id", (config as { strategy_id: string }).strategy_id)
           .single();
         if (strategy?.risk_level) {
-          sessionRiskLevel[sessionId] = (strategy as { risk_level: string })
-            .risk_level;
+          sessionRiskLevel[sessionId] = (
+            strategy as { risk_level: string }
+          ).risk_level;
         }
       }
     }
@@ -1193,7 +1196,9 @@ export async function syncOpenTrades(userId: string): Promise<void> {
 
     const atr = atrBySymbol[trade.symbol];
     const riskLevel =
-      sessionRiskLevel[trade.session_id] ?? trade.risk_level ?? "balanced";
+      sessionRiskLevel[trade.session_id] ??
+      (trade as { risk_level?: string }).risk_level ??
+      "balanced";
 
     // Calculate trailing stop (ATR-based when available, else percentage fallback)
     const tradeAsAutoTradingTrade = trade as AutoTradingTrade;
@@ -1240,7 +1245,7 @@ export async function runAutoTradingIteration(
   }
 
   // 2. Process each session
-  for (const session of sessions as AutoTradingSessionRow[]) {
+  for (const session of sessions as unknown as AutoTradingSessionRow[]) {
     try {
       // Fetch config separately
       const { data: config } = await supabase
@@ -1270,7 +1275,9 @@ export async function runAutoTradingIteration(
       const strategy = createStrategy(configRow as any);
 
       // 5. Analyze each symbol
-      const allowedSymbols = (configRow.custom_params?.allowed_symbols as string[] | undefined) || ["BTCUSDT"];
+      const allowedSymbols = (configRow.custom_params?.allowed_symbols as
+        | string[]
+        | undefined) || ["BTCUSDT"];
       for (const symbol of allowedSymbols) {
         try {
           // Get market data

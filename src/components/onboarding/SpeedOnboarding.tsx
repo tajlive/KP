@@ -481,7 +481,7 @@ export default function SpeedOnboarding({
               <Button
                 variant="ghost"
                 onClick={() =>
-                  (window.location.href = `/${locale}/beta/auto-trade`)
+                  (window.location.href = `/${locale}/dashboard/auto-trade`)
                 }
                 className="text-slate-500 text-sm"
               >

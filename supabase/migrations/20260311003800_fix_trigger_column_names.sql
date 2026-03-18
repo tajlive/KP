@@ -22,13 +22,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Fix 2: Create trigger on user_profiles (canonical table)
 DROP TRIGGER IF EXISTS on_user_profile_created ON user_profiles;
 CREATE TRIGGER on_user_profile_created
   AFTER INSERT ON user_profiles
   FOR EACH ROW EXECUTE FUNCTION initialize_user_settings();
-
 -- Fix 3: Update create_default_user_data to create user_profiles correctly
 -- Note: user_profiles has id (PK, gen_random_uuid()) AND user_id (FK to auth.users)
 CREATE OR REPLACE FUNCTION create_default_user_data()
@@ -75,7 +73,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 -- ============================================================================
 -- Backfill: Ensure existing users have all required data
 -- ============================================================================
@@ -85,13 +82,11 @@ INSERT INTO user_settings (user_id)
 SELECT user_id FROM user_profiles
 WHERE user_id NOT IN (SELECT user_id FROM user_settings)
 ON CONFLICT (user_id) DO NOTHING;
-
 -- Backfill user_notification_settings for existing user_profiles
 INSERT INTO user_notification_settings (user_id)
 SELECT user_id FROM user_profiles
 WHERE user_id NOT IN (SELECT user_id FROM user_notification_settings)
 ON CONFLICT (user_id) DO NOTHING;
-
 -- Verification
 DO $$
 BEGIN

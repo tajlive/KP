@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Clock, Sparkles } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import { BRAND, BRAND_COLOR } from "@/lib/design/tokens";
 
 interface FinalCTASectionProps {
   language?: "no" | "en";
@@ -21,7 +22,7 @@ export default function FinalCTASection({
       particleCount: 150,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ["#2563eb", "#3b82f6", "#60a5fa", "#ffffff"],
+      colors: [BRAND_COLOR.DEFAULT, BRAND_COLOR.LIGHT, "#ffffff"],
     });
     setTimeout(() => {
       router.push(`/${locale}/paper-trading`);
@@ -47,7 +48,10 @@ export default function FinalCTASection({
     <section className="relative py-32 overflow-hidden bg-[#050510]">
       {/* Background decoration */}
       <div className="absolute inset-0 z-0 opacity-20">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600 rounded-full blur-[150px]" />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[150px]"
+          style={{ backgroundColor: BRAND_COLOR.DEFAULT }}
+        />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -64,7 +68,10 @@ export default function FinalCTASection({
               scale: [1, 1.05, 1],
             }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 bg-linear-to-br from-blue-600/10 to-transparent pointer-events-none"
+            className="absolute inset-0 to-transparent pointer-events-none"
+            style={{
+              background: `linear-gradient(to bottom right, ${BRAND_COLOR.DEFAULT}1A, transparent)`,
+            }}
           />
 
           <div className="relative z-10">
@@ -72,7 +79,11 @@ export default function FinalCTASection({
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-[0_0_50px_rgba(37,99,235,0.4)]"
+              className="w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-10"
+              style={{
+                backgroundColor: BRAND_COLOR.DEFAULT,
+                boxShadow: `0 0 50px ${BRAND_COLOR.DEFAULT}66`,
+              }}
             >
               <Sparkles className="w-10 h-10 text-white" />
             </motion.div>
@@ -82,7 +93,7 @@ export default function FinalCTASection({
                 ? "Start din trading-reise"
                 : "Start your trading journey"}
               <br />
-              <span className="text-blue-500">
+              <span className={BRAND.link}>
                 {language === "no" ? "i dag" : "today"}
               </span>
             </h2>
@@ -98,11 +109,15 @@ export default function FinalCTASection({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleStartFree}
-                className="group relative bg-blue-600 hover:bg-blue-500 px-12 py-6 rounded-2xl text-xl font-black text-white transition-all flex items-center gap-3 w-full sm:w-auto justify-center shadow-[0_0_40px_rgba(37,99,235,0.4)] hover:shadow-[0_0_60px_rgba(37,99,235,0.6)]"
+                className={`group relative ${BRAND.primary} px-12 py-6 rounded-2xl text-xl font-black text-white transition-all flex items-center gap-3 w-full sm:w-auto justify-center`}
+                style={{ boxShadow: `0 0 40px ${BRAND_COLOR.DEFAULT}66` }}
               >
                 {language === "no" ? "Start gratis nå" : "Start for free now"}
                 <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                <span className="absolute inset-0 rounded-2xl animate-pulse bg-blue-400/20 blur-xl pointer-events-none" />
+                <span
+                  className="absolute inset-0 rounded-2xl animate-pulse blur-xl pointer-events-none opacity-20"
+                  style={{ backgroundColor: BRAND_COLOR.DEFAULT }}
+                />
               </motion.button>
 
               <button
@@ -130,7 +145,12 @@ export default function FinalCTASection({
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
-              className="mt-16 inline-flex items-center gap-3 px-6 py-3 bg-blue-500/10 backdrop-blur-sm border border-blue-500/20 rounded-full text-blue-300"
+              className="mt-16 inline-flex items-center gap-3 px-6 py-3 backdrop-blur-sm rounded-full border"
+              style={{
+                backgroundColor: `${BRAND_COLOR.DEFAULT}1A`,
+                borderColor: `${BRAND_COLOR.DEFAULT}33`,
+                color: BRAND_COLOR.LIGHT,
+              }}
             >
               <Clock className="w-5 h-5" />
               <span className="text-sm font-black uppercase tracking-widest">

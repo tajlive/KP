@@ -4,7 +4,6 @@
 -- Purpose: Enable RLS and create policies without modifying existing schema
 
 BEGIN;
-
 -- =============================================================================
 -- HELPER FUNCTION: Drop policy if exists (PostgreSQL doesn't have DROP POLICY IF EXISTS)
 -- =============================================================================
@@ -27,7 +26,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- ENABLE RLS ON ALL TABLES (Idempotent)
 -- =============================================================================
@@ -48,7 +46,6 @@ BEGIN
   END LOOP;
 END;
 $$;
-
 -- =============================================================================
 -- PROFILES TABLE POLICIES (replaces missing users table)
 -- =============================================================================
@@ -57,24 +54,20 @@ $$;
 SELECT drop_policy_if_exists('profiles_select_own', 'profiles');
 SELECT drop_policy_if_exists('profiles_update_own', 'profiles');
 SELECT drop_policy_if_exists('profiles_insert_service', 'profiles');
-
 -- Create new policies
 CREATE POLICY "profiles_select_own"
   ON profiles FOR SELECT
   TO authenticated
   USING (auth.uid() = id);
-
 CREATE POLICY "profiles_update_own"
   ON profiles FOR UPDATE
   TO authenticated
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
-
 CREATE POLICY "profiles_insert_service"
   ON profiles FOR INSERT
   TO service_role
   WITH CHECK (true);
-
 -- =============================================================================
 -- TRADES TABLE POLICIES (if table exists)
 -- =============================================================================
@@ -134,7 +127,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- SIGNALS TABLE POLICIES (if table exists)
 -- =============================================================================
@@ -171,7 +163,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- POSITIONS TABLE POLICIES (if table exists)
 -- =============================================================================
@@ -220,7 +211,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- SUBSCRIPTIONS TABLE POLICIES (if table exists)
 -- =============================================================================
@@ -257,7 +247,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- RISK_SETTINGS TABLE POLICIES (if table exists)
 -- =============================================================================
@@ -295,7 +284,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- AUDIT_LOGS TABLE POLICIES (if table exists)
 -- =============================================================================
@@ -324,7 +312,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- STORAGE POLICIES (if storage.objects table exists)
 -- =============================================================================
@@ -391,7 +378,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =============================================================================
 -- VERIFICATION: Show RLS status for all tables
 -- =============================================================================
@@ -424,12 +410,9 @@ BEGIN
   RAISE NOTICE '================================================';
 END;
 $$;
-
 -- Clean up helper function
 DROP FUNCTION IF EXISTS drop_policy_if_exists(TEXT, TEXT);
-
 COMMIT;
-
 -- Success message
 DO $$
 BEGIN

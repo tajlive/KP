@@ -6,15 +6,12 @@ CREATE TABLE IF NOT EXISTS leaderboard_history (
     rank INTEGER NOT NULL,
     recorded_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_leaderboard_history_user_period ON leaderboard_history(user_id, time_period);
 CREATE INDEX IF NOT EXISTS idx_leaderboard_history_recorded ON leaderboard_history(recorded_at);
-
 -- Fix notification_queue constraint violation by updating existing rows first
 UPDATE notification_queue 
 SET type = 'trade_executed' 
 WHERE type NOT IN ('trade_executed', 'bot_crashed', 'bot_recovered', 'copy_started', 'daily_digest', 'subscription_change', 'level_up', 'leaderboard_climb');
-
 -- Now add the constraint
 ALTER TABLE notification_queue DROP CONSTRAINT IF EXISTS notification_queue_type_check;
 ALTER TABLE notification_queue ADD CONSTRAINT notification_queue_type_check
@@ -23,7 +20,6 @@ ALTER TABLE notification_queue ADD CONSTRAINT notification_queue_type_check
         'copy_started', 'daily_digest', 'subscription_change',
         'level_up', 'leaderboard_climb'
     ));
-
 -- Create record_leaderboard_position function
 CREATE OR REPLACE FUNCTION record_leaderboard_position(
     p_user_id UUID,

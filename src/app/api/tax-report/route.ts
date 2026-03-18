@@ -3,8 +3,8 @@
  * Generates tax reports compatible with Norwegian Tax Administration (Skatteetaten)
  */
 
-import { createClient } from '@/lib/supabase/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Mapped trade type from auto_trades table
 interface Trade {
@@ -42,12 +42,15 @@ interface TaxReportData {
   totalSellVolume: number;
   realizedProfitLoss: number;
   totalFees: number;
-  tradesBySymbol: Record<string, {
-    symbol: string;
-    buyCount: number;
-    sellCount: number;
-    realizedProfitLoss: number;
-  }>;
+  tradesBySymbol: Record<
+    string,
+    {
+      symbol: string;
+      buyCount: number;
+      sellCount: number;
+      realizedProfitLoss: number;
+    }
+  >;
   quarterlyBreakdown: {
     q1: { profitLoss: number; trades: number };
     q2: { profitLoss: number; trades: number };
@@ -67,21 +70,26 @@ interface TaxReportData {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString());
-    const format = searchParams.get('format') || 'json'; // json, csv, pdf, html
+    const year = parseInt(
+      searchParams.get("year") || new Date().getFullYear().toString(),
+    );
+    const format = searchParams.get("format") || "json"; // json, csv, pdf, html
 
     const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get user email
     const { data: userData } = await supabase
-      .from('user_profiles')
-      .select('email')
-      .eq('id', user.id)
+      .from("user_profiles")
+      .select("email")
+      .eq("id", user.id)
       .single();
 
     // Fetch trades for the year
@@ -89,65 +97,83 @@ export async function GET(request: NextRequest) {
     const endDate = `${year}-12-31`;
 
     const { data: trades, error: tradesError } = await supabase
-      .from('auto_trades')
-      .select('*')
-      .eq('user_id', user.id)
-      .gte('executed_at', startDate)
-      .lte('executed_at', endDate)
-      .order('executed_at', { ascending: true });
+      .from("auto_trades")
+      .select("*")
+      .eq("user_id", user.id)
+      .gte("executed_at", startDate)
+      .lte("executed_at", endDate)
+      .order("executed_at", { ascending: true });
 
     if (tradesError) {
-      console.error('Error fetching trades:', tradesError);
-      return NextResponse.json({ error: 'Failed to fetch trades' }, { status: 500 });
+      console.error("Error fetching trades:", tradesError);
+      return NextResponse.json(
+        { error: "Failed to fetch trades" },
+        { status: 500 },
+      );
     }
 
     // Calculate tax report data
-    const report = calculateTaxReport((trades || []) as unknown as Trade[], year, (user?.id != null ? user.id : undefined), userData?.email);
+    const report = calculateTaxReport(
+      (trades || []) as unknown as Trade[],
+      year,
+      user?.id ?? "",
+      userData?.email ?? undefined,
+    );
 
     // Return in requested format
-    if (format === 'csv') {
+    if (format === "csv") {
       const csv = generateCSV(report, (trades || []) as unknown as Trade[]);
       return new NextResponse(csv, {
         headers: {
-          'Content-Type': 'text/csv; charset=utf-8',
-          'Content-Disposition': `attachment; filename="skatterapport-${year}.csv"`,
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": `attachment; filename="skatterapport-${year}.csv"`,
         },
       });
     }
 
-    if (format === 'html') {
+    if (format === "html") {
       const html = generateHTML(report, (trades || []) as unknown as Trade[]);
       return new NextResponse(html, {
         headers: {
-          'Content-Type': 'text/html; charset=utf-8',
-          'Content-Disposition': `attachment; filename="skatterapport-${year}.html"`,
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Disposition": `attachment; filename="skatterapport-${year}.html"`,
         },
       });
     }
 
-    if (format === 'pdf') {
+    if (format === "pdf") {
       // Generate HTML and return with PDF header for browser print-to-PDF
-      const html = generatePrintableHTML(report, (trades || []) as unknown as Trade[]);
+      const html = generatePrintableHTML(
+        report,
+        (trades || []) as unknown as Trade[],
+      );
       return new NextResponse(html, {
         headers: {
-          'Content-Type': 'text/html; charset=utf-8',
+          "Content-Type": "text/html; charset=utf-8",
         },
       });
     }
 
     return NextResponse.json(report);
-
   } catch (error) {
-    console.error('Tax report error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Tax report error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
-function calculateTaxReport(trades: Trade[], year: number, userId: string, userEmail?: string): TaxReportData {
+function calculateTaxReport(
+  trades: Trade[],
+  year: number,
+  userId: string,
+  userEmail?: string,
+): TaxReportData {
   // Group trades by symbol for FIFO calculation
   const symbolTrades: Record<string, Trade[]> = {};
 
-  trades.forEach(trade => {
+  trades.forEach((trade) => {
     if (!symbolTrades[trade.symbol]) {
       symbolTrades[trade.symbol] = [];
     }
@@ -155,7 +181,15 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
   });
 
   // Calculate using FIFO method (Norwegian standard)
-  const tradesBySymbol: Record<string, { symbol: string; buyCount: number; sellCount: number; realizedProfitLoss: number }> = {};
+  const tradesBySymbol: Record<
+    string,
+    {
+      symbol: string;
+      buyCount: number;
+      sellCount: number;
+      realizedProfitLoss: number;
+    }
+  > = {};
   let totalRealizedProfitLoss = 0;
   let totalFees = 0;
 
@@ -165,13 +199,13 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
     let buyCount = 0;
     let sellCount = 0;
 
-    symbolTradeList.forEach(trade => {
+    symbolTradeList.forEach((trade) => {
       const fees = getTradeFees(trade);
       const price = getTradePrice(trade);
       const quantity = trade.quantity ?? 0;
       totalFees += fees;
 
-      if (trade.side === 'buy') {
+      if (trade.side === "buy") {
         buyQueue.push({
           quantity,
           price,
@@ -188,7 +222,8 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
           const buy = buyQueue[0];
           const qtyToUse = Math.min(remainingQty, buy.quantity);
 
-          costBasis += qtyToUse * buy.price + (buy.fees * (qtyToUse / buy.quantity));
+          costBasis +=
+            qtyToUse * buy.price + buy.fees * (qtyToUse / buy.quantity);
           buy.quantity -= qtyToUse;
           remainingQty -= qtyToUse;
 
@@ -221,7 +256,7 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
     q4: { profitLoss: 0, trades: 0 },
   };
 
-  trades.forEach(trade => {
+  trades.forEach((trade) => {
     if (!trade.executed_at) return;
     const month = new Date(trade.executed_at).getMonth();
     const quarter = Math.floor(month / 3) + 1;
@@ -229,18 +264,18 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
 
     quarterlyBreakdown[qKey].trades++;
 
-    if (trade.side === 'sell') {
+    if (trade.side === "sell") {
       quarterlyBreakdown[qKey].profitLoss += getTradeTotal(trade);
     }
   });
 
   // Calculate total volumes
   const totalBuyVolume = trades
-    .filter(t => t.side === 'buy')
+    .filter((t) => t.side === "buy")
     .reduce((sum, t) => sum + getTradeTotal(t), 0);
 
   const totalSellVolume = trades
-    .filter(t => t.side === 'sell')
+    .filter((t) => t.side === "sell")
     .reduce((sum, t) => sum + getTradeTotal(t), 0);
 
   return {
@@ -267,59 +302,62 @@ function calculateTaxReport(trades: Trade[], year: number, userId: string, userE
 
 function generateCSV(report: TaxReportData, trades: Trade[]): string {
   const headers = [
-    'Dato',
-    'Tid',
-    'Valuta/Asset',
-    'Type',
-    'Antall',
-    'Kurs',
-    'Beløp',
-    'Gebyr',
-    'Realisert Gevinst/Tap',
-    'Notater',
-  ].join(';');
+    "Dato",
+    "Tid",
+    "Valuta/Asset",
+    "Type",
+    "Antall",
+    "Kurs",
+    "Beløp",
+    "Gebyr",
+    "Realisert Gevinst/Tap",
+    "Notater",
+  ].join(";");
 
-  const rows = trades.map(trade => {
+  const rows = trades.map((trade) => {
     const date = trade.executed_at ? new Date(trade.executed_at) : new Date();
-    const dateStr = date.toLocaleDateString('no-NO');
-    const timeStr = date.toLocaleTimeString('no-NO');
+    const dateStr = date.toLocaleDateString("no-NO");
+    const timeStr = date.toLocaleTimeString("no-NO");
 
     return [
       dateStr,
       timeStr,
       trade.symbol,
-      trade.side === 'buy' ? 'Kjøp' : 'Salg',
+      trade.side === "buy" ? "Kjøp" : "Salg",
       trade.quantity ?? 0,
       getTradePrice(trade),
       getTradeTotal(trade),
       getTradeFees(trade),
-      trade.realized_pnl ?? '',
-      'Klarpakke Trading',
-    ].join(';');
+      trade.realized_pnl ?? "",
+      "Klarpakke Trading",
+    ].join(";");
   });
 
   const summaryRows = [
-    '',
-    'OPPSUMMERING SKATTEÅR ' + report.year,
-    '',
+    "",
+    "OPPSUMMERING SKATTEÅR " + report.year,
+    "",
     `Totalt antall handler;${report.totalTrades}`,
-    `Kjøpsvolum;${report.totalBuyVolume.toLocaleString('no-NO')} NOK`,
-    `Salgsvolum;${report.totalSellVolume.toLocaleString('no-NO')} NOK`,
-    `Realisert gevinst/tap;${report.realizedProfitLoss.toLocaleString('no-NO')} NOK`,
-    `Totale gebyrer;${report.totalFees.toLocaleString('no-NO')} NOK`,
-    '',
-    'SKATTEETATEN RF-1189 (Skjema for gevinst og tap på cryptocurrency)',
-    `Post 3.1.1 - Gevinst;${report.skatteetatenFormat.formData.post3_1_1.toLocaleString('no-NO')}`,
-    `Post 3.1.2 - Tap;${report.skatteetatenFormat.formData.post3_1_2.toLocaleString('no-NO')}`,
-    `Post 3.1.10 - Netto;${report.skatteetatenFormat.formData.post3_1_10.toLocaleString('no-NO')}`,
+    `Kjøpsvolum;${report.totalBuyVolume.toLocaleString("no-NO")} NOK`,
+    `Salgsvolum;${report.totalSellVolume.toLocaleString("no-NO")} NOK`,
+    `Realisert gevinst/tap;${report.realizedProfitLoss.toLocaleString("no-NO")} NOK`,
+    `Totale gebyrer;${report.totalFees.toLocaleString("no-NO")} NOK`,
+    "",
+    "SKATTEETATEN RF-1189 (Skjema for gevinst og tap på cryptocurrency)",
+    `Post 3.1.1 - Gevinst;${report.skatteetatenFormat.formData.post3_1_1.toLocaleString("no-NO")}`,
+    `Post 3.1.2 - Tap;${report.skatteetatenFormat.formData.post3_1_2.toLocaleString("no-NO")}`,
+    `Post 3.1.10 - Netto;${report.skatteetatenFormat.formData.post3_1_10.toLocaleString("no-NO")}`,
   ];
 
-  return [headers, ...rows, ...summaryRows].join('\n');
+  return [headers, ...rows, ...summaryRows].join("\n");
 }
 
 function generateHTML(report: TaxReportData, trades: Trade[]): string {
-  const formatCurrency = (amount: number) => 
-    new Intl.NumberFormat('no-NO', { style: 'currency', currency: 'NOK' }).format(amount);
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat("no-NO", {
+      style: "currency",
+      currency: "NOK",
+    }).format(amount);
 
   return `<!DOCTYPE html>
 <html lang="no">
@@ -341,15 +379,15 @@ function generateHTML(report: TaxReportData, trades: Trade[]): string {
 </head>
 <body>
     <h1>🧾 Skatterapport ${report.year}</h1>
-    <p>Generert: ${new Date().toLocaleDateString('no-NO')}</p>
-    ${report.userEmail ? `<p>Bruker: ${report.userEmail}</p>` : ''}
+    <p>Generert: ${new Date().toLocaleDateString("no-NO")}</p>
+    ${report.userEmail ? `<p>Bruker: ${report.userEmail}</p>` : ""}
     
     <div class="summary">
         <h2>📊 Oppsummering</h2>
         <p><strong>Totalt antall handler:</strong> ${report.totalTrades}</p>
         <p><strong>Kjøpsvolum:</strong> ${formatCurrency(report.totalBuyVolume)}</p>
         <p><strong>Salgsvolum:</strong> ${formatCurrency(report.totalSellVolume)}</p>
-        <p><strong>Realisert gevinst/tap:</strong> <span class="${report.realizedProfitLoss >= 0 ? 'positive' : 'negative'}">${formatCurrency(report.realizedProfitLoss)}</span></p>
+        <p><strong>Realisert gevinst/tap:</strong> <span class="${report.realizedProfitLoss >= 0 ? "positive" : "negative"}">${formatCurrency(report.realizedProfitLoss)}</span></p>
         <p><strong>Totale gebyrer:</strong> ${formatCurrency(report.totalFees)}</p>
     </div>
 
@@ -357,7 +395,7 @@ function generateHTML(report: TaxReportData, trades: Trade[]): string {
         <h2>🇳🇴 Skatteetaten RF-1189</h2>
         <p><strong>Post 3.1.1 - Gevinst:</strong> ${formatCurrency(report.skatteetatenFormat.formData.post3_1_1)}</p>
         <p><strong>Post 3.1.2 - Tap:</strong> ${formatCurrency(report.skatteetatenFormat.formData.post3_1_2)}</p>
-        <p><strong>Post 3.1.10 - Netto:</strong> <span class="${report.skatteetatenFormat.formData.post3_1_10 >= 0 ? 'positive' : 'negative'}">${formatCurrency(report.skatteetatenFormat.formData.post3_1_10)}</span></p>
+        <p><strong>Post 3.1.10 - Netto:</strong> <span class="${report.skatteetatenFormat.formData.post3_1_10 >= 0 ? "positive" : "negative"}">${formatCurrency(report.skatteetatenFormat.formData.post3_1_10)}</span></p>
     </div>
 
     <h2>📋 Alle handler</h2>
@@ -373,16 +411,20 @@ function generateHTML(report: TaxReportData, trades: Trade[]): string {
             </tr>
         </thead>
         <tbody>
-            ${trades.map(t => `
+            ${trades
+              .map(
+                (t) => `
                 <tr>
-                    <td>${t.executed_at ? new Date(t.executed_at).toLocaleDateString('no-NO') : '-'}</td>
+                    <td>${t.executed_at ? new Date(t.executed_at).toLocaleDateString("no-NO") : "-"}</td>
                     <td>${t.symbol}</td>
-                    <td>${t.side === 'buy' ? 'Kjøp' : 'Salg'}</td>
+                    <td>${t.side === "buy" ? "Kjøp" : "Salg"}</td>
                     <td>${t.quantity ?? 0}</td>
                     <td>${formatCurrency(getTradePrice(t))}</td>
                     <td>${formatCurrency(getTradeTotal(t))}</td>
                 </tr>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </tbody>
     </table>
 
@@ -395,12 +437,15 @@ function generateHTML(report: TaxReportData, trades: Trade[]): string {
 }
 
 function generatePrintableHTML(report: TaxReportData, trades: Trade[]): string {
-  return generateHTML(report, trades) + `
+  return (
+    generateHTML(report, trades) +
+    `
 <script>
     window.onload = function() {
         setTimeout(function() {
             window.print();
         }, 500);
     };
-</script>`;
+</script>`
+  );
 }

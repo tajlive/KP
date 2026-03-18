@@ -1,10 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Coins, TrendingUp, Gift, Award, History, Info } from "lucide-react";
+import {
+  Coins,
+  TrendingUp,
+  Gift,
+  Award,
+  History,
+  Info,
+  Trophy,
+} from "lucide-react";
 import { createClient } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthContext";
+import { useTranslations } from "next-intl";
 
 interface KLTTransaction {
   id: string;
@@ -24,43 +35,49 @@ interface KLTBalance {
 
 export function KLTWallet() {
   const { user } = useAuth();
+  const t = useTranslations("gamification");
+  const locale = (useParams()?.locale as string) ?? "no";
   const [balance, setBalance] = useState<KLTBalance | null>(null);
   const [transactions, setTransactions] = useState<KLTTransaction[]>([]);
+  const [monthlyRank, setMonthlyRank] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     if (!user) return;
-    
+
+    const thisMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+
     const fetchKLTData = async () => {
       const supabase = createClient();
-      
-      // Fetch balance
-      const { data: balanceData } = await supabase
-        .from("user_klt_balances")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-      
-      if (balanceData) {
-        setBalance(balanceData);
-      }
-      
-      // Fetch recent transactions
-      const txResult = await supabase
-        .from("klt_transactions")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
-      
-      if (txResult.data) {
-        setTransactions((txResult.data as KLTTransaction[]));
-      }
-      
+
+      const [balanceRes, txResult, rankRes] = await Promise.all([
+        supabase
+          .from("user_klt_balances")
+          .select("*")
+          .eq("user_id", user.id)
+          .single(),
+        supabase
+          .from("klt_transactions")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10),
+        supabase
+          .from("leaderboard_monthly")
+          .select("rank")
+          .eq("user_id", user.id)
+          .eq("month", thisMonth)
+          .maybeSingle(),
+      ]);
+
+      if (balanceRes.data) setBalance(balanceRes.data as KLTBalance);
+      if (txResult.data) setTransactions(txResult.data as KLTTransaction[]);
+      if (rankRes.data?.rank != null) setMonthlyRank(rankRes.data.rank);
+
       setLoading(false);
     };
-    
+
     fetchKLTData();
   }, [user]);
 
@@ -74,7 +91,7 @@ export function KLTWallet() {
 
   // Use category for reward type (DB type is reward|spend|bonus|founder; category is lesson_complete, welcome_bonus, etc.)
   const getTransactionIcon = (tx: KLTTransaction) => {
-    const key = tx.type === "reward" ? (tx.category || tx.type) : tx.type;
+    const key = tx.type === "reward" ? tx.category || tx.type : tx.type;
     switch (key) {
       case "welcome_bonus":
         return <Gift className="w-4 h-4 text-purple-400" />;
@@ -117,14 +134,39 @@ export function KLTWallet() {
         <div className="text-slate-400 text-sm mb-1">Din beholdning</div>
         <div className="flex items-baseline gap-2">
           <span className="text-3xl font-bold text-white">
-            {balance?.balance.toLocaleString('nb-NO') || "0"}
+            {balance?.balance.toLocaleString("nb-NO") || "0"}
           </span>
           <span className="text-yellow-400 font-medium">KLT</span>
         </div>
         {balance && balance.total_earned > 0 && (
           <div className="mt-2 text-xs text-slate-500">
-            Totalt tjent: {balance.total_earned.toLocaleString('nb-NO')} KLT
+            Totalt tjent: {balance.total_earned.toLocaleString("nb-NO")} KLT
           </div>
+        )}
+      </div>
+
+      {/* Månedens premie + din rang */}
+      <div className="mb-4 space-y-2">
+        <p className="text-xs font-medium text-amber-400/90 flex items-center gap-1.5">
+          <Trophy className="w-4 h-4 shrink-0" aria-hidden />
+          {t("monthlyPrize")}
+        </p>
+        {monthlyRank != null ? (
+          <Link
+            href={`/${locale}/leaderboard`}
+            className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+          >
+            <Trophy className="w-4 h-4 text-amber-400" />
+            {t("yourRankThisMonth", { rank: monthlyRank })}
+          </Link>
+        ) : (
+          <Link
+            href={`/${locale}/leaderboard`}
+            className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-300 transition-colors"
+          >
+            <Trophy className="w-4 h-4" />
+            {t("viewLeaderboard")}
+          </Link>
         )}
       </div>
 
@@ -136,7 +178,7 @@ export function KLTWallet() {
             <span>Tjent</span>
           </div>
           <div className="text-white font-semibold">
-            {balance?.total_earned.toLocaleString('nb-NO') || "0"}
+            {balance?.total_earned.toLocaleString("nb-NO") || "0"}
           </div>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
@@ -145,7 +187,7 @@ export function KLTWallet() {
             <span>Brukt</span>
           </div>
           <div className="text-white font-semibold">
-            {balance?.total_spent.toLocaleString('nb-NO') || "0"}
+            {balance?.total_spent.toLocaleString("nb-NO") || "0"}
           </div>
         </div>
       </div>
@@ -154,8 +196,7 @@ export function KLTWallet() {
       <div className="flex items-start gap-2 text-xs text-slate-500 mb-4">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
         <p>
-          KLT brukes til å låse opp premium-funksjoner, redusere gebyrer, 
-          og delta i konkurranser. Tokens har ingen pengeverdi.
+          {t("kltStoryShort")} Tokens har ingen pengeverdi utenfor plattformen.
         </p>
       </div>
 
@@ -169,10 +210,14 @@ export function KLTWallet() {
             className="overflow-hidden"
           >
             <div className="border-t border-white/10 pt-4 mt-4">
-              <h4 className="text-white font-semibold mb-3">Siste transaksjoner</h4>
+              <h4 className="text-white font-semibold mb-3">
+                Siste transaksjoner
+              </h4>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {transactions.length === 0 ? (
-                  <p className="text-slate-500 text-sm">Ingen transaksjoner ennå</p>
+                  <p className="text-slate-500 text-sm">
+                    Ingen transaksjoner ennå
+                  </p>
                 ) : (
                   transactions.map((tx) => (
                     <div
@@ -182,14 +227,21 @@ export function KLTWallet() {
                       <div className="flex items-center gap-3">
                         {getTransactionIcon(tx)}
                         <div>
-                          <p className="text-white text-sm">{tx.reason ?? tx.description ?? "KLT"}</p>
+                          <p className="text-white text-sm">
+                            {tx.reason ?? tx.description ?? "KLT"}
+                          </p>
                           <p className="text-slate-500 text-xs">
-                            {new Date(tx.created_at).toLocaleDateString('nb-NO')}
+                            {new Date(tx.created_at).toLocaleDateString(
+                              "nb-NO",
+                            )}
                           </p>
                         </div>
                       </div>
-                      <span className={`font-semibold ${tx.amount > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {tx.amount > 0 ? '+' : ''}{tx.amount}
+                      <span
+                        className={`font-semibold ${tx.amount > 0 ? "text-green-400" : "text-red-400"}`}
+                      >
+                        {tx.amount > 0 ? "+" : ""}
+                        {tx.amount}
                       </span>
                     </div>
                   ))

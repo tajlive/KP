@@ -9,7 +9,6 @@
 -- STEG 1: BACKUP (ALLTID FØRST!)
 -- ═══════════════════════════════════════════════════════════════════════════
 DROP TABLE IF EXISTS public.backup_policies_20260224;
-
 CREATE TABLE public.backup_policies_20260224 AS
 SELECT 
   schemaname,
@@ -23,18 +22,15 @@ SELECT
   NOW() as backed_up_at
 FROM pg_policies
 WHERE schemaname = 'public';
-
 SELECT 
   '✅ BACKUP FULLFØRT' as status,
   COUNT(*) as total_policies_backed_up,
   COUNT(DISTINCT tablename) as tables_with_policies
 FROM public.backup_policies_20260224;
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- STEG 2: DIAGNOSTIKK - Slow RLS Policies (auth.uid() problem)
 -- ═══════════════════════════════════════════════════════════════════════════
 SELECT '=== SLOW RLS POLICIES (auth.uid() problem) ===' as section;
-
 SELECT 
   COUNT(*) as total_slow_policies,
   ' policies trenger auth.uid() -> (SELECT auth.uid()) fix' as action
@@ -44,12 +40,10 @@ WHERE schemaname = 'public'
     (qual LIKE '%auth.uid()%' AND qual NOT LIKE '%(SELECT auth.uid())%')
     OR (with_check LIKE '%auth.uid()%' AND with_check NOT LIKE '%(SELECT auth.uid())%')
   );
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- STEG 3: DIAGNOSTIKK - Overlappende Policies
 -- ═══════════════════════════════════════════════════════════════════════════
 SELECT '=== OVERLAPPENDE POLICIES ===' as section;
-
 SELECT 
   tablename,
   cmd as operation,
@@ -62,12 +56,10 @@ WHERE schemaname = 'public'
 GROUP BY tablename, cmd
 HAVING COUNT(*) > 2
 ORDER BY policy_count DESC, tablename;
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- STEG 4: DIAGNOSTIKK - Unused Indexes
 -- ═══════════════════════════════════════════════════════════════════════════
 SELECT '=== UNUSED INDEXES ===' as section;
-
 SELECT 
   COUNT(*) as total_unused_indexes,
   pg_size_pretty(SUM(pg_relation_size(indexrelid))) as total_wasted_space
@@ -77,12 +69,10 @@ WHERE idx_scan = 0
   AND indexrelname NOT LIKE 'pg_%'
   AND indexrelname NOT LIKE '%_pkey'
   AND indexrelname NOT LIKE '%_unique%';
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- STEG 5: FIX SLOW RLS-POLICIES (auth.uid() -> (SELECT auth.uid()))
 -- ═══════════════════════════════════════════════════════════════════════════
 SELECT '=== FIXER SLOW RLS-POLICIES ===' as section;
-
 DO $$
 DECLARE
   policy_record RECORD;
@@ -120,12 +110,10 @@ BEGIN
   
   RAISE NOTICE '✅ Fixed: % policies, ❌ Errors: %', fix_count, error_count;
 END $$;
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- STEG 6: VERIFISER FIX
 -- ═══════════════════════════════════════════════════════════════════════════
 SELECT '=== VERIFISERING ETTER FIX ===' as section;
-
 SELECT 
   COUNT(*) as remaining_slow_policies,
   CASE 
@@ -138,12 +126,10 @@ WHERE schemaname = 'public'
     (qual LIKE '%auth.uid()%' AND qual NOT LIKE '%(SELECT auth.uid())%')
     OR (with_check LIKE '%auth.uid()%' AND with_check NOT LIKE '%(SELECT auth.uid())%')
   );
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- STEG 7: SETT OPP BOT HEALTH ALERTING
 -- ═══════════════════════════════════════════════════════════════════════════
 SELECT '=== BOT HEALTH ALERTING ===' as section;
-
 -- Opprett tabell hvis den ikke finnes
 CREATE TABLE IF NOT EXISTS public.bot_health (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -155,16 +141,12 @@ CREATE TABLE IF NOT EXISTS public.bot_health (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_bot_health_status ON public.bot_health(status);
 CREATE INDEX IF NOT EXISTS idx_bot_health_heartbeat ON public.bot_health(last_heartbeat);
-
 -- Aktiver pg_cron
 CREATE EXTENSION IF NOT EXISTS pg_cron;
-
 -- Fjern gammel jobb
 SELECT cron.unschedule('bot-health-monitor');
-
 -- Opprett ny cron-job
 SELECT cron.schedule(
   'bot-health-monitor',
@@ -192,17 +174,14 @@ SELECT cron.schedule(
   FROM unhealthy;
   $$
 );
-
 SELECT 
   jobname, schedule, active,
   CASE WHEN active THEN '✅ AKTIV' ELSE '❌ INAKTIV' END as status
 FROM cron.job WHERE jobname = 'bot-health-monitor';
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- STEG 8: FINAL VERIFICATION
 -- ═══════════════════════════════════════════════════════════════════════════
 SELECT '=== FINAL VERIFICATION ===' as section;
-
 -- 1. Slow RLS policies
 SELECT 
   'Slow RLS policies' as check_item,
@@ -217,7 +196,6 @@ SELECT
     THEN '✅'
     ELSE '❌'
   END as status;
-
 -- 2. Bot monitoring
 SELECT 
   'Bot monitoring' as check_item,
@@ -226,7 +204,6 @@ SELECT
   'AKTIV' as target,
   CASE WHEN EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'bot-health-monitor' AND active) 
     THEN '✅' ELSE '❌' END as status;
-
 -- ═══════════════════════════════════════════════════════════════════════════
 -- FULLFØRT!
 -- ═══════════════════════════════════════════════════════════════════════════

@@ -6,11 +6,9 @@
 -- 1. Aktiver utvidelser
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 CREATE EXTENSION IF NOT EXISTS pg_net;
-
 -- 2. Fjern eventuelle eksisterende jobber for å unngå duplikater ved re-run
 SELECT cron.unschedule('strategy-runner-5min');
 SELECT cron.unschedule('daily-analysis-cron');
-
 -- 3. Schedule strategy-runner (Hvert 5. minutt for trading-ticks)
 -- Bruker 'app.settings.service_role_key' som må være satt i Supabase Project Settings / Vault
 SELECT cron.schedule(
@@ -24,7 +22,6 @@ SELECT cron.schedule(
   ) AS request_id;
   $$
 );
-
 -- 4. Schedule cron-daily-analysis (Daglig kl 00:00 UTC)
 SELECT cron.schedule(
   'daily-analysis-cron',
@@ -37,6 +34,5 @@ SELECT cron.schedule(
   ) AS request_id;
   $$
 );
-
 -- Kommentar: 'app.settings.service_role_key' kan settes via:
--- ALTER DATABASE postgres SET "app.settings.service_role_key" = 'din-service-role-key';
+-- ALTER DATABASE postgres SET "app.settings.service_role_key" = 'din-service-role-key';;

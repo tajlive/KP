@@ -5,7 +5,6 @@
 -- 1. SCHEMA & EXTENSIONS HARDENING
 -- ====================================================================
 CREATE SCHEMA IF NOT EXISTS extensions;
-
 -- Move pg_net extension to the extensions schema
 DO $$
 BEGIN
@@ -15,7 +14,6 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
   RAISE NOTICE 'Could not move pg_net extension: %', SQLERRM;
 END $$;
-
 -- ====================================================================
 -- 2. ENABLE ROW LEVEL SECURITY (RLS)
 -- ====================================================================
@@ -28,7 +26,6 @@ ALTER TABLE IF EXISTS public.analytics_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.vipps_payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.auto_trading_strategies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.client_errors ENABLE ROW LEVEL SECURITY;
-
 -- Add baseline policies for the newly protected tables
 DO $$
 BEGIN
@@ -52,7 +49,6 @@ BEGIN
         CREATE POLICY "Users can see own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id);
     END IF;
 END $$;
-
 -- ====================================================================
 -- 3. HARDEN SECURITY DEFINER VIEWS
 -- ====================================================================
@@ -76,10 +72,10 @@ SELECT
 FROM public.profiles p
 LEFT JOIN public.signals s ON p.id = s.processed_by
 GROUP BY p.id, p.username, p.role;
-
 -- Revoke potentially dangerous grants
 REVOKE SELECT ON public.user_performance FROM authenticated;
-GRANT SELECT ON public.user_performance TO service_role; -- Restrict to internal use/admin
+GRANT SELECT ON public.user_performance TO service_role;
+-- Restrict to internal use/admin
 
 -- ====================================================================
 -- 4. SET EXPLICIT SEARCH_PATH ON FUNCTIONS
@@ -123,7 +119,6 @@ BEGIN
         END;
     END LOOP;
 END $$;
-
 -- ====================================================================
 -- 5. REFINE OVERLY PERMISSIVE RLS POLICIES
 -- ====================================================================
@@ -138,7 +133,6 @@ BEGIN
         WITH CHECK (auth.role() = 'service_role');
     END IF;
 END $$;
-
 -- Table public.signup_funnel: Ensure "Anyone can track" is only for INSERT
 DO $$
 BEGIN
@@ -148,10 +142,9 @@ BEGIN
         CREATE POLICY "Anyone can track funnel" ON public.signup_funnel FOR INSERT WITH CHECK (true);
     END IF;
 END $$;
-
 -- ====================================================================
 -- 6. LEAKED PASSWORD PROTECTION
 -- ====================================================================
 -- This is usually a Supabase Auth setting, but can be referenced here.
 -- Note: Cannot be set via standard SQL migration in many Supabase environments.
--- User should enable "Pwned Passwords" in Supabase Auth Dashboard.
+-- User should enable "Pwned Passwords" in Supabase Auth Dashboard.;

@@ -23,23 +23,19 @@ CREATE TABLE IF NOT EXISTS auto_trading_settings (
   take_profit_percent FLOAT DEFAULT 6.0 CHECK (take_profit_percent > 0),
   auto_trading_enabled BOOLEAN DEFAULT false,
   use_compounding BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_auto_trading_settings_user_id ON auto_trading_settings(user_id);
 CREATE INDEX IF NOT EXISTS idx_auto_trading_settings_risk_level ON auto_trading_settings(risk_level);
-
 ALTER TABLE auto_trading_settings ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can manage own auto-trading settings" ON auto_trading_settings;
 CREATE POLICY "Users can manage own auto-trading settings"
   ON auto_trading_settings
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
-
 GRANT SELECT, INSERT, UPDATE ON auto_trading_settings TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON auto_trading_settings TO service_role;
-
 -- ============================================
 -- 2. auto_trading_markets (Which coins to trade)
 -- ============================================
@@ -48,31 +44,27 @@ CREATE TABLE IF NOT EXISTS auto_trading_markets (
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   symbol TEXT NOT NULL,
   enabled BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
   UNIQUE(user_id, symbol)
 );
-
 CREATE INDEX IF NOT EXISTS idx_auto_trading_markets_user_id ON auto_trading_markets(user_id);
 CREATE INDEX IF NOT EXISTS idx_auto_trading_markets_enabled ON auto_trading_markets(enabled);
-
 ALTER TABLE auto_trading_markets ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can manage own auto-trading markets" ON auto_trading_markets;
 CREATE POLICY "Users can manage own auto-trading markets"
   ON auto_trading_markets
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
-
 GRANT SELECT, INSERT, UPDATE ON auto_trading_markets TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON auto_trading_markets TO service_role;
-
 -- ============================================
 -- 3. auto_trading_runs (Audit log)
 -- ============================================
 CREATE TABLE IF NOT EXISTS auto_trading_runs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  run_timestamp TIMESTAMPTZ DEFAULT NOW(),
+  run_timestamp TIMESTAMP DEFAULT NOW(),
   binance_balance_nok FLOAT,
   max_auto_budget_nok FLOAT,
   allocated_in_open_trades_nok FLOAT,
@@ -85,21 +77,17 @@ CREATE TABLE IF NOT EXISTS auto_trading_runs (
   status TEXT NOT NULL CHECK (status IN ('success', 'error', 'partial')) DEFAULT 'success',
   error_message TEXT,
   execution_time_ms INT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_auto_trading_runs_user_id ON auto_trading_runs(user_id);
 CREATE INDEX IF NOT EXISTS idx_auto_trading_runs_timestamp ON auto_trading_runs(run_timestamp);
 CREATE INDEX IF NOT EXISTS idx_auto_trading_runs_status ON auto_trading_runs(status);
-
 ALTER TABLE auto_trading_runs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can read own auto-trading runs" ON auto_trading_runs;
 CREATE POLICY "Users can read own auto-trading runs"
   ON auto_trading_runs FOR SELECT
   USING (auth.uid() = user_id);
-
 GRANT SELECT, INSERT, UPDATE ON auto_trading_runs TO service_role;
-
 -- ============================================
 -- 4. Extend auto_trades with auto-trading fields
 -- ============================================
@@ -119,10 +107,8 @@ BEGIN
     ALTER TABLE auto_trades ADD COLUMN auto_trading_run_id UUID REFERENCES auto_trading_runs(id) ON DELETE SET NULL;
   END IF;
 END $$;
-
 CREATE INDEX IF NOT EXISTS idx_auto_trades_is_auto_trade ON auto_trades(is_auto_trade);
 CREATE INDEX IF NOT EXISTS idx_auto_trades_auto_trading_run_id ON auto_trades(auto_trading_run_id);
-
 -- ============================================
 -- Helper function for budget calculation
 -- ============================================
@@ -146,7 +132,6 @@ BEGIN
       COALESCE((SELECT SUM(quantity_nok) FROM auto_trades WHERE user_id = p_user_id AND status = 'open' AND is_auto_trade = true), 0)::float as available_auto_budget_nok;
 END;
 $$ LANGUAGE plpgsql STABLE;
-
 -- ============================================
 -- Success message
 -- ============================================

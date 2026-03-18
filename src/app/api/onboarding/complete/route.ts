@@ -1,24 +1,36 @@
-import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import {
+  jsonSuccess,
+  unauthorized,
+  notFound,
+  badRequest,
+  conflict,
+  internalError,
+} from "@/lib/api-response";
+import {
+  getRequestContext,
+  getOrCreateRequestId,
+  logApi,
+} from "@/lib/api-request-context";
+import { trackCriticalAction } from "@/lib/sentry";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const requestId = getOrCreateRequestId(request);
   try {
     const supabase = await createClient();
 
-    // Sjekk autentisering
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Ikke autentisert" },
-        { status: 401 }
-      );
+      return unauthorized("Ikke autentisert");
     }
 
-    // Hent brukerens profil
+    const ctx = getRequestContext(request, user.id);
+
     const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
       .select("id, onboarding_step, onboarding_completed, paper_balance")
@@ -26,26 +38,16 @@ export async function POST() {
       .single();
 
     if (profileError || !profile) {
-      return NextResponse.json(
-        { error: "Kunne ikke finne brukerprofil" },
-        { status: 404 }
-      );
+      logApi(ctx, "warn", "Profile not found for onboarding complete");
+      return notFound("Kunne ikke finne brukerprofil");
     }
 
-    // Sjekk om onboarding allerede er fullført
     if (profile.onboarding_completed) {
-      return NextResponse.json(
-        { error: "Onboarding er allerede fullført" },
-        { status: 400 }
-      );
+      return conflict("Onboarding er allerede fullført");
     }
 
-    // Sjekk at brukeren er på riktig steg
     if ((profile.onboarding_step ?? 0) < 4) {
-      return NextResponse.json(
-        { error: "Onboarding er ikke klar for fullføring" },
-        { status: 400 }
-      );
+      return badRequest("Onboarding er ikke klar for fullføring");
     }
 
     const now = new Date().toISOString();
@@ -62,11 +64,10 @@ export async function POST() {
       .eq("id", user.id);
 
     if (updateError) {
-      console.error("Failed to update user profile:", updateError);
-      return NextResponse.json(
-        { error: "Kunne ikke oppdatere profil" },
-        { status: 500 }
-      );
+      logApi(ctx, "error", "Failed to update user profile", {
+        error: updateError.message,
+      });
+      return internalError("Kunne ikke oppdatere profil");
     }
 
     // Opprett paper trading session
@@ -90,12 +91,10 @@ export async function POST() {
       .single();
 
     if (sessionError) {
-      console.error("Failed to create trading session:", sessionError);
-      // Rollback ikke kritisk her - brukeren kan opprette session manuelt
-      return NextResponse.json(
-        { error: "Kunne ikke opprette trading session" },
-        { status: 500 }
-      );
+      logApi(ctx, "error", "Failed to create trading session", {
+        error: sessionError.message,
+      });
+      return internalError("Kunne ikke opprette trading session");
     }
 
     // Send velkomst-e-post (ikke-blokkerende)
@@ -109,16 +108,17 @@ export async function POST() {
       console.warn("Failed to send welcome email:", emailError);
     }
 
-    return NextResponse.json({
+    trackCriticalAction("onboarding_complete", {
+      userId: user.id,
+      requestId,
+    });
+    return jsonSuccess({
       success: true,
       session_id: session.id,
       message: "Onboarding fullført",
     });
   } catch (error) {
-    console.error("Unexpected error in onboarding complete:", error);
-    return NextResponse.json(
-      { error: "Uventet feil" },
-      { status: 500 }
-    );
+    console.error("[onboarding/complete]", requestId, error);
+    return internalError("Uventet feil");
   }
 }

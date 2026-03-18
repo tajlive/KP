@@ -2,7 +2,7 @@
 // src/lib/supabase/server.ts
 // Server-side Supabase client (for API routes)
 // ============================================================================
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 // Database type definition (since @/types/database doesn't exist)
 interface Database {
   public: {
@@ -30,7 +30,7 @@ export function createClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
-    throw new Error('Missing Supabase environment variables');
+    throw new Error("Missing Supabase environment variables");
   }
 
   _client = createSupabaseClient<Database>(url, key, {
@@ -42,14 +42,20 @@ export function createClient() {
 
 // ============================================================================
 // src/lib/types.ts
-// Core domain types
+// Core domain types – tier: én kilde i @/lib/pricing/tiers
 // ============================================================================
-export type SubscriptionTier = 'free' | 'bachelor' | 'master' | 'phd' | 'professor';
-export type TradingMode = 'paper' | 'live';
-export type SessionStatus = 'active' | 'paused' | 'crashed' | 'stopped';
-export type TradeSide = 'buy' | 'sell';
-export type TradeStatus = 'pending' | 'filled' | 'partially_filled' | 'cancelled' | 'failed';
-export type OrderType = 'market' | 'limit' | 'stop_loss' | 'take_profit';
+import type { TierSlug } from "@/lib/pricing/tiers";
+export type SubscriptionTier = TierSlug;
+export type TradingMode = "paper" | "live";
+export type SessionStatus = "active" | "paused" | "crashed" | "stopped";
+export type TradeSide = "buy" | "sell";
+export type TradeStatus =
+  | "pending"
+  | "filled"
+  | "partially_filled"
+  | "cancelled"
+  | "failed";
+export type OrderType = "market" | "limit" | "stop_loss" | "take_profit";
 
 export interface TradingSession {
   id: string;
@@ -73,7 +79,7 @@ export interface TradingSession {
 }
 
 export interface OpenPosition {
-  side: 'long' | 'short';
+  side: "long" | "short";
   quantity: number;
   entry_price: number;
   entry_time: string;
@@ -118,12 +124,12 @@ export interface LeaderboardEntry {
 // src/lib/schemas.ts
 // Zod validation schemas for all API inputs
 // ============================================================================
-import { z } from 'zod';
+import { z } from "zod";
 
 export const StartSessionSchema = z.object({
-  strategy_id: z.enum(['dca', 'trend_follow', 'multi_signal', 'grid']),
-  trading_pair: z.string().regex(/^[A-Z]+\/[A-Z]+$/, 'Format: BTC/USDT'),
-  mode: z.enum(['paper', 'live']).default('paper'),
+  strategy_id: z.enum(["dca", "trend_follow", "multi_signal", "grid"]),
+  trading_pair: z.string().regex(/^[A-Z]+\/[A-Z]+$/, "Format: BTC/USDT"),
+  mode: z.enum(["paper", "live"]).default("paper"),
   initial_capital: z.number().positive().max(10_000_000),
   strategy_config: z.record(z.string(), z.unknown()).default({}),
 });
@@ -135,10 +141,12 @@ export const StopSessionSchema = z.object({
 
 export const ExecuteTradeSchema = z.object({
   session_id: z.string().uuid(),
-  side: z.enum(['buy', 'sell']),
+  side: z.enum(["buy", "sell"]),
   quantity: z.number().positive(),
   price: z.number().positive(),
-  order_type: z.enum(['market', 'limit', 'stop_loss', 'take_profit']).default('market'),
+  order_type: z
+    .enum(["market", "limit", "stop_loss", "take_profit"])
+    .default("market"),
   idempotency_key: z.string().min(1).max(200),
   strategy_signal: z.record(z.string(), z.unknown()).optional(),
 });
@@ -164,7 +172,7 @@ export const RecoverSessionSchema = z.object({
 });
 
 export const LeaderboardQuerySchema = z.object({
-  timeframe: z.enum(['7d', '30d', '90d']).default('30d'),
+  timeframe: z.enum(["7d", "30d", "90d"]).default("30d"),
   limit: z.number().int().min(1).max(100).default(20),
 });
 
@@ -172,8 +180,8 @@ export const LeaderboardQuerySchema = z.object({
 // src/lib/auth.ts
 // Extract authenticated user from request
 // ============================================================================
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function getAuthUser() {
   const cookieStore = await cookies();
@@ -186,19 +194,22 @@ export async function getAuthUser() {
       cookies: {
         getAll: () => cookieStore.getAll(),
       },
-    }
+    },
   );
 
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error || !user) return null;
   return user;
 }
 
 // ============================================================================
-// src/lib/decimal.ts  
+// src/lib/decimal.ts
 // Safe money math (never use Number for financial calculations)
 // ============================================================================
-import Decimal from 'decimal.js';
+import Decimal from "decimal.js";
 
 Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 
@@ -218,7 +229,11 @@ export function add(a: number | string, b: number | string): number {
   return new Decimal(a).add(new Decimal(b)).toDP(2).toNumber();
 }
 
-export function pnl(entryPrice: number, exitPrice: number, quantity: number): number {
+export function pnl(
+  entryPrice: number,
+  exitPrice: number,
+  quantity: number,
+): number {
   return new Decimal(exitPrice)
     .sub(entryPrice)
     .mul(quantity)
@@ -235,7 +250,7 @@ const limitMap = new Map<string, { count: number; resetAt: number }>();
 export function checkRateLimit(
   key: string,
   maxRequests: number = 10,
-  windowMs: number = 60_000
+  windowMs: number = 60_000,
 ): { allowed: boolean; remaining: number } {
   const now = Date.now();
   const entry = limitMap.get(key);

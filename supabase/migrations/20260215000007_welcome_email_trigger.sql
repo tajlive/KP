@@ -33,14 +33,11 @@ EXCEPTION WHEN OTHERS THEN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 2. Create the trigger on public.profiles
 DROP TRIGGER IF EXISTS trigger_welcome_email ON public.profiles;
-
 CREATE TRIGGER trigger_welcome_email
   AFTER INSERT ON public.profiles
   FOR EACH ROW
   EXECUTE FUNCTION public.activate_welcome_email();
-
 -- 3. Mark as complete
 SELECT 'Welcome email trigger implemented' as status;

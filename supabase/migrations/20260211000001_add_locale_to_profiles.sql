@@ -3,7 +3,6 @@
 
 -- 1. Add locale column to profiles
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS locale TEXT DEFAULT 'no';
-
 -- 2. Update the handle_new_user function to capture locale from metadata
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$

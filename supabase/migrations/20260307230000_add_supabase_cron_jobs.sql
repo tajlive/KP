@@ -1,6 +1,5 @@
 -- Enable pg_cron extension
 CREATE EXTENSION IF NOT EXISTS pg_cron;
-
 -- Cron job for auto-trading (runs every 5 minutes)
 -- This calls the auto-trade Edge Function
 SELECT cron.schedule(
@@ -15,7 +14,6 @@ SELECT cron.schedule(
     );
     $$
 );
-
 -- Cron job for price syncing (runs every hour)
 SELECT cron.schedule(
     'sync-prices-hourly',
@@ -29,10 +27,8 @@ SELECT cron.schedule(
     );
     $$
 );
-
 -- View existing cron jobs
 COMMENT ON TABLE cron.job IS 'Scheduled cron jobs for Klarpakke';
-
 -- Log table for cron executions
 CREATE TABLE IF NOT EXISTS cron_execution_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -42,10 +38,8 @@ CREATE TABLE IF NOT EXISTS cron_execution_logs (
     response_body TEXT,
     error_message TEXT
 );
-
 -- Enable RLS
 ALTER TABLE cron_execution_logs ENABLE ROW LEVEL SECURITY;
-
 -- Only service role can read logs
 CREATE POLICY "Service role can read cron logs"
     ON cron_execution_logs

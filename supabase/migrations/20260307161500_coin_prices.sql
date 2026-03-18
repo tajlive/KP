@@ -13,13 +13,10 @@ CREATE TABLE IF NOT EXISTS coin_prices (
   last_updated TIMESTAMPTZ DEFAULT NOW(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_coin_prices_symbol ON coin_prices(symbol);
 CREATE INDEX IF NOT EXISTS idx_coin_prices_updated ON coin_prices(last_updated DESC);
-
 -- Enable realtime for live price updates
 ALTER PUBLICATION supabase_realtime ADD TABLE coin_prices;
-
 -- Seed initial symbols
 INSERT INTO coin_prices (symbol, name, price) VALUES
   ('BTCUSDT', 'BTC', 0),

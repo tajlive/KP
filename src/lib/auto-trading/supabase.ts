@@ -7,7 +7,7 @@
  *   auto_trading_trades   → trades
  */
 
-import { createClient } from '@/lib/utils'
+import { createClient } from "@/lib/utils";
 import type {
   AutoTradingStrategy,
   UserAutoTradingConfig,
@@ -15,9 +15,9 @@ import type {
   AutoTradingTrade,
   TradingPhase,
   RiskLevel,
-} from './types'
+} from "./types";
 
-const supabase = createClient()
+const supabase = createClient();
 
 // ============================================================
 // STRATEGIES
@@ -25,153 +25,167 @@ const supabase = createClient()
 
 export async function getAllStrategies(): Promise<AutoTradingStrategy[]> {
   const { data, error } = await supabase
-    .from('auto_trading_strategies')
-    .select('*')
-    .eq('is_active', true)
-    .order('risk_level')
+    .from("auto_trading_strategies")
+    .select("*")
+    .eq("is_active", true)
+    .order("risk_level");
 
   if (error) {
-    console.error('Error fetching strategies:', error)
-    throw error
+    console.error("Error fetching strategies:", error);
+    throw error;
   }
 
-  return data || []
+  return (data || []) as unknown as AutoTradingStrategy[];
 }
 
-export async function getStrategyById(strategyId: string): Promise<AutoTradingStrategy | null> {
+export async function getStrategyById(
+  strategyId: string,
+): Promise<AutoTradingStrategy | null> {
   const { data, error } = await supabase
-    .from('auto_trading_strategies')
-    .select('*')
-    .eq('id', strategyId)
-    .single()
+    .from("auto_trading_strategies")
+    .select("*")
+    .eq("id", strategyId)
+    .single();
 
   if (error) {
-    console.error('Error fetching strategy:', error)
-    return null
+    console.error("Error fetching strategy:", error);
+    return null;
   }
 
-  return data
+  return data as unknown as AutoTradingStrategy | null;
 }
 
-export async function getStrategyByRiskLevel(riskLevel: RiskLevel): Promise<AutoTradingStrategy | null> {
+export async function getStrategyByRiskLevel(
+  riskLevel: RiskLevel,
+): Promise<AutoTradingStrategy | null> {
   const { data, error } = await supabase
-    .from('auto_trading_strategies')
-    .select('*')
-    .eq('risk_level', riskLevel)
-    .eq('is_active', true)
-    .single()
+    .from("auto_trading_strategies")
+    .select("*")
+    .eq("risk_level", riskLevel)
+    .eq("is_active", true)
+    .single();
 
   if (error) {
-    console.error('Error fetching strategy by risk level:', error)
-    return null
+    console.error("Error fetching strategy by risk level:", error);
+    return null;
   }
 
-  return data
+  return data as unknown as AutoTradingStrategy | null;
 }
 
 // ============================================================
 // USER CONFIG
 // ============================================================
 
-export async function getUserConfig(userId: string): Promise<UserAutoTradingConfig | null> {
+export async function getUserConfig(
+  userId: string,
+): Promise<UserAutoTradingConfig | null> {
   const { data, error } = await supabase
-    .from('user_auto_trading_configs')
-    .select('*')
-    .eq('user_id', userId)
-    .single()
+    .from("user_auto_trading_configs")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
 
-  if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching user config:', error)
-    return null
+  if (error && error.code !== "PGRST116") {
+    console.error("Error fetching user config:", error);
+    return null;
   }
 
-  return data
+  return data as unknown as UserAutoTradingConfig | null;
 }
 
 export async function createUserConfig(
   userId: string,
   strategyId: string,
-  tradingCapital: number = 10000
+  tradingCapital: number = 10000,
 ): Promise<UserAutoTradingConfig | null> {
   const { data, error } = await supabase
-    .from('user_auto_trading_configs')
+    .from("user_auto_trading_configs")
     .insert({
       user_id: userId,
       strategy_id: strategyId,
       is_enabled: false,
       is_paper_trading: true,
       trading_capital_nok: tradingCapital,
-      phase: 'paper' as TradingPhase,
-      allocated_capital_pct: 10.00,
+      phase: "paper" as TradingPhase,
+      allocated_capital_pct: 10.0,
     })
     .select()
-    .single()
+    .single();
 
   if (error) {
-    console.error('Error creating user config:', error)
-    return null
+    console.error("Error creating user config:", error);
+    return null;
   }
 
-  return data
+  return data as unknown as UserAutoTradingConfig | null;
 }
 
 export async function updateUserConfig(
   userId: string,
-  updates: Partial<UserAutoTradingConfig>
+  updates: Partial<UserAutoTradingConfig>,
 ): Promise<boolean> {
   const { error } = await supabase
-    .from('user_auto_trading_configs')
+    .from("user_auto_trading_configs")
     .update(updates)
-    .eq('user_id', userId)
+    .eq("user_id", userId);
 
   if (error) {
-    console.error('Error updating user config:', error)
-    return false
+    console.error("Error updating user config:", error);
+    return false;
   }
 
-  return true
+  return true;
 }
 
-export async function enableAutoTrading(userId: string, enabled: boolean): Promise<boolean> {
-  return await updateUserConfig(userId, { is_enabled: enabled })
+export async function enableAutoTrading(
+  userId: string,
+  enabled: boolean,
+): Promise<boolean> {
+  return await updateUserConfig(userId, { is_enabled: enabled });
 }
 
 // ============================================================
 // SESSIONS — bruker nå canonical tabell: trading_sessions
 // ============================================================
 
-export async function getActiveSession(userId: string): Promise<AutoTradingSession | null> {
+export async function getActiveSession(
+  userId: string,
+): Promise<AutoTradingSession | null> {
   const { data, error } = await supabase
-    .from('trading_sessions')          // ← var: auto_trading_sessions
-    .select('*')
-    .eq('user_id', userId)
-    .eq('status', 'active')
-    .order('started_at', { ascending: false })
+    .from("trading_sessions") // ← var: auto_trading_sessions
+    .select("*")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .order("started_at", { ascending: false })
     .limit(1)
-    .single()
+    .single();
 
-  if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching active session:', error)
-    return null
+  if (error && error.code !== "PGRST116") {
+    console.error("Error fetching active session:", error);
+    return null;
   }
 
-  return data
+  return data as unknown as AutoTradingSession | null;
 }
 
-export async function getUserSessions(userId: string, limit: number = 10): Promise<AutoTradingSession[]> {
+export async function getUserSessions(
+  userId: string,
+  limit: number = 10,
+): Promise<AutoTradingSession[]> {
   const { data, error } = await supabase
-    .from('trading_sessions')          // ← var: auto_trading_sessions
-    .select('*')
-    .eq('user_id', userId)
-    .order('started_at', { ascending: false })
-    .limit(limit)
+    .from("trading_sessions") // ← var: auto_trading_sessions
+    .select("*")
+    .eq("user_id", userId)
+    .order("started_at", { ascending: false })
+    .limit(limit);
 
   if (error) {
-    console.error('Error fetching user sessions:', error)
-    return []
+    console.error("Error fetching user sessions:", error);
+    return [];
   }
 
-  return data || []
+  return (data || []) as unknown as AutoTradingSession[];
 }
 
 export async function createSession(
@@ -181,10 +195,10 @@ export async function createSession(
   isPaperTrading: boolean,
   phase: TradingPhase,
   startingCapital: number,
-  allocatedCapitalPct: number
+  allocatedCapitalPct: number,
 ): Promise<AutoTradingSession | null> {
   const { data, error } = await supabase
-    .from('trading_sessions')          // ← var: auto_trading_sessions
+    .from("trading_sessions") // ← var: auto_trading_sessions
     .insert({
       user_id: userId,
       config_id: configId,
@@ -194,98 +208,107 @@ export async function createSession(
       starting_capital_nok: startingCapital,
       current_capital_nok: startingCapital,
       allocated_capital_pct: allocatedCapitalPct,
-      status: 'active',
+      status: "active",
     })
     .select()
-    .single()
+    .single();
 
   if (error) {
-    console.error('Error creating session:', error)
-    return null
+    console.error("Error creating session:", error);
+    return null;
   }
 
-  return data
+  return data as unknown as AutoTradingSession | null;
 }
 
 export async function updateSession(
   sessionId: string,
-  updates: Partial<AutoTradingSession>
+  updates: Partial<AutoTradingSession>,
 ): Promise<boolean> {
   const { error } = await supabase
-    .from('trading_sessions')          // ← var: auto_trading_sessions
+    .from("trading_sessions") // ← var: auto_trading_sessions
     .update(updates)
-    .eq('id', sessionId)
+    .eq("id", sessionId);
 
   if (error) {
-    console.error('Error updating session:', error)
-    return false
+    console.error("Error updating session:", error);
+    return false;
   }
 
-  return true
+  return true;
 }
 
-export async function pauseSession(sessionId: string, reason: string): Promise<boolean> {
+export async function pauseSession(
+  sessionId: string,
+  reason: string,
+): Promise<boolean> {
   return await updateSession(sessionId, {
-    status: 'PAUSED',
+    status: "PAUSED",
     pause_reason: reason,
-  })
+  });
 }
 
 export async function stopSession(sessionId: string): Promise<boolean> {
   return await updateSession(sessionId, {
-    status: 'STOPPED',
+    status: "STOPPED",
     ended_at: new Date().toISOString(),
-  })
+  });
 }
 
 // ============================================================
 // TRADES — bruker nå canonical tabell: trades
 // ============================================================
 
-export async function getSessionTrades(sessionId: string): Promise<AutoTradingTrade[]> {
+export async function getSessionTrades(
+  sessionId: string,
+): Promise<AutoTradingTrade[]> {
   const { data, error } = await supabase
-    .from('trades')                    // ← var: auto_trading_trades
-    .select('*')
-    .eq('session_id', sessionId)
-    .order('opened_at', { ascending: false })
+    .from("trades") // ← var: auto_trading_trades
+    .select("*")
+    .eq("session_id", sessionId)
+    .order("opened_at", { ascending: false });
 
   if (error) {
-    console.error('Error fetching session trades:', error)
-    return []
+    console.error("Error fetching session trades:", error);
+    return [];
   }
 
-  return data || []
+  return (data || []) as unknown as AutoTradingTrade[];
 }
 
-export async function getOpenTrades(sessionId: string): Promise<AutoTradingTrade[]> {
+export async function getOpenTrades(
+  sessionId: string,
+): Promise<AutoTradingTrade[]> {
   const { data, error } = await supabase
-    .from('trades')                    // ← var: auto_trading_trades
-    .select('*')
-    .eq('session_id', sessionId)
-    .eq('status', 'OPEN')
-    .order('opened_at', { ascending: false })
+    .from("trades") // ← var: auto_trading_trades
+    .select("*")
+    .eq("session_id", sessionId)
+    .eq("status", "OPEN")
+    .order("opened_at", { ascending: false });
 
   if (error) {
-    console.error('Error fetching open trades:', error)
-    return []
+    console.error("Error fetching open trades:", error);
+    return [];
   }
 
-  return data || []
+  return (data || []) as unknown as AutoTradingTrade[];
 }
 
-export async function createTrade(trade: Partial<AutoTradingTrade>): Promise<AutoTradingTrade | null> {
+export async function createTrade(
+  trade: Partial<AutoTradingTrade>,
+): Promise<AutoTradingTrade | null> {
   const { data, error } = await supabase
-    .from('trades')                    // ← var: auto_trading_trades
-    .insert(trade)
+    .from("trades") // ← var: auto_trading_trades
+    .insert(trade as never)
     .select()
-    .single()
+    .single();
 
   if (error) {
-    console.error('Error creating trade:', error)
-    return null
+    console.error("Error creating trade:", error);
+    return null;
   }
 
-  return data
+  return data as unknown as AutoTradingTrade | null;
 }
 
 export async function closeTrade(
@@ -294,12 +317,12 @@ export async function closeTrade(
   pnlNok: number,
   pnlPct: number,
   closeReason: string,
-  feesNok: number = 0
+  feesNok: number = 0,
 ): Promise<boolean> {
   const { error } = await supabase
-    .from('trades')                    // ← var: auto_trading_trades
+    .from("trades") // ← var: auto_trading_trades
     .update({
-      status: 'CLOSED',
+      status: "CLOSED",
       exit_price: exitPrice,
       pnl_nok: pnlNok,
       pnl_pct: pnlPct,
@@ -307,60 +330,60 @@ export async function closeTrade(
       fees_nok: feesNok,
       closed_at: new Date().toISOString(),
     })
-    .eq('id', tradeId)
+    .eq("id", tradeId);
 
   if (error) {
-    console.error('Error closing trade:', error)
-    return false
+    console.error("Error closing trade:", error);
+    return false;
   }
 
-  return true
+  return true;
 }
 
 // ============================================================
 // DAILY METRICS
 // ============================================================
 
-export async function getTodayMetrics(sessionId: string): Promise<Record<string, unknown> | null> {
-  const today = new Date().toISOString().split('T')[0]
+export async function getTodayMetrics(
+  sessionId: string,
+): Promise<Record<string, unknown> | null> {
+  const today = new Date().toISOString().split("T")[0];
 
   const { data, error } = await supabase
-    .from('auto_trading_daily_metrics')
-    .select('*')
-    .eq('session_id', sessionId)
-    .eq('date', today)
-    .single()
+    .from("auto_trading_daily_metrics")
+    .select("*")
+    .eq("session_id", sessionId)
+    .eq("date", today)
+    .single();
 
-  if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching today metrics:', error)
-    return null
+  if (error && error.code !== "PGRST116") {
+    console.error("Error fetching today metrics:", error);
+    return null;
   }
 
-  return data
+  return data;
 }
 
 export async function updateDailyMetrics(
   sessionId: string,
   userId: string,
-  metrics: Record<string, unknown>
+  metrics: Record<string, unknown>,
 ): Promise<boolean> {
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date().toISOString().split("T")[0];
 
-  const { error } = await supabase
-    .from('auto_trading_daily_metrics')
-    .upsert({
-      session_id: sessionId,
-      user_id: userId,
-      date: today,
-      ...metrics,
-    })
+  const { error } = await supabase.from("auto_trading_daily_metrics").upsert({
+    session_id: sessionId,
+    user_id: userId,
+    date: today,
+    ...metrics,
+  } as never);
 
   if (error) {
-    console.error('Error updating daily metrics:', error)
-    return false
+    console.error("Error updating daily metrics:", error);
+    return false;
   }
 
-  return true
+  return true;
 }
 
 // ============================================================
@@ -373,10 +396,10 @@ export async function logCircuitBreaker(
   triggerType: string,
   triggerValue: string,
   action: string,
-  resumeAt?: string
+  resumeAt?: string,
 ): Promise<boolean> {
   const { error } = await supabase
-    .from('auto_trading_circuit_breaker_logs')
+    .from("auto_trading_circuit_breaker_logs")
     .insert({
       session_id: sessionId,
       user_id: userId,
@@ -384,14 +407,14 @@ export async function logCircuitBreaker(
       trigger_value: triggerValue,
       action,
       resume_at: resumeAt,
-    })
+    });
 
   if (error) {
-    console.error('Error logging circuit breaker:', error)
-    return false
+    console.error("Error logging circuit breaker:", error);
+    return false;
   }
 
-  return true
+  return true;
 }
 
 // ============================================================
@@ -408,10 +431,10 @@ export async function logProfitExtraction(
   remainingProfitNok: number,
   capitalBeforeNok: number,
   capitalAfterNok: number,
-  method: 'auto' | 'manual' = 'auto'
+  method: "auto" | "manual" = "auto",
 ): Promise<boolean> {
   const { error } = await supabase
-    .from('auto_trading_profit_extractions')
+    .from("auto_trading_profit_extractions")
     .insert({
       session_id: sessionId,
       user_id: userId,
@@ -423,12 +446,12 @@ export async function logProfitExtraction(
       capital_before_nok: capitalBeforeNok,
       capital_after_nok: capitalAfterNok,
       extraction_method: method,
-    })
+    });
 
   if (error) {
-    console.error('Error logging profit extraction:', error)
-    return false
+    console.error("Error logging profit extraction:", error);
+    return false;
   }
 
-  return true
+  return true;
 }

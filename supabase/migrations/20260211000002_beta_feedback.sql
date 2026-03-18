@@ -10,16 +10,13 @@ CREATE TABLE IF NOT EXISTS public.beta_feedback (
   status TEXT DEFAULT 'new', -- new, in-progress, resolved, closed
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS
 ALTER TABLE public.beta_feedback ENABLE ROW LEVEL SECURITY;
-
 -- Allow anyone (even unauthenticated) to submit feedback during beta
 -- (Or restrict to authenticated if you prefer)
 CREATE POLICY "Anyone can submit feedback"
   ON public.beta_feedback FOR INSERT
   WITH CHECK (true);
-
 -- Only admins can view feedback
 CREATE POLICY "Admins can view feedback"
   ON public.beta_feedback FOR SELECT

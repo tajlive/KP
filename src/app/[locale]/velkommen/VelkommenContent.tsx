@@ -1,7 +1,13 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   GraduationCap,
   Target,
@@ -9,63 +15,65 @@ import {
   BookOpen,
   ArrowRight,
   Sparkles,
-  Shield
-} from 'lucide-react'
-import { useParams } from 'next/navigation'
+  Shield,
+} from "lucide-react";
+import { useParams } from "next/navigation";
 
 const BETA_BENEFITS = [
   {
     icon: Wallet,
-    title: 'Lekepenger',
-    description: 'Øv med 100 000 kr i lekepenger – helt risikofritt'
+    title: "Lekepenger",
+    description: "Øv med 100 000 kr i lekepenger – helt risikofritt",
   },
   {
     icon: BookOpen,
-    title: 'Trading Journal',
-    description: 'Systematisk logging av trades for å bygge gode vaner'
+    title: "Trading Journal",
+    description: "Systematisk logging av trades for å bygge gode vaner",
   },
   {
     icon: Target,
-    title: 'Direkte påvirkning',
-    description: 'Din feedback formater kurset – du er med på å bygge Norges beste trading-utdanning'
+    title: "Direkte påvirkning",
+    description:
+      "Din feedback formater kurset – du er med på å bygge Norges beste trading-utdanning",
   },
   {
     icon: Sparkles,
-    title: 'KLT-poeng (Early Adopter)',
-    description: 'Beta-studenter får ekstra poeng som kan brukes på fremtidige kurs og verktøy'
-  }
-]
+    title: "KLT-poeng (Early Adopter)",
+    description:
+      "Beta-studenter får ekstra poeng som kan brukes på fremtidige kurs og verktøy",
+  },
+];
 
 const WHAT_HAPPENS_NOW = [
   {
-    step: '1',
-    title: 'Sjekk din status',
-    description: 'Bekreft at du er registrert og se ditt studentnummer',
-    action: 'Sjekk status',
-    href: '/LOCALE/innlogging',
-    primary: true
+    step: "1",
+    title: "Sjekk din status",
+    description: "Bekreft at du er registrert og se ditt studentnummer",
+    action: "Sjekk status",
+    href: "/LOCALE/innlogging",
+    primary: true,
   },
   {
-    step: '2',
-    title: 'Les beta-guiden',
-    description: 'Forstå hva du kan forvente av beta-perioden',
-    action: 'Les guiden',
-    href: '/LOCALE/beta',
-    primary: false
+    step: "2",
+    title: "Se dashboard",
+    description: "Utforsk trading og strategier",
+    action: "Se dashboard",
+    href: "/LOCALE/dashboard",
+    primary: false,
   },
   {
-    step: '3',
-    title: 'Vent på oppstart',
-    description: '15. februar 2026 starter vi! Du får mer info på e-post',
+    step: "3",
+    title: "Vent på oppstart",
+    description: "15. februar 2026 starter vi! Du får mer info på e-post",
     action: null,
     href: null,
-    primary: false
-  }
-]
+    primary: false,
+  },
+];
 
 export function VelkommenContent() {
   const params = useParams();
-  const locale = (params?.locale as string) || 'no';
+  const locale = (params?.locale as string) || "no";
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Hero */}
@@ -76,15 +84,15 @@ export function VelkommenContent() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-            Velkommen til{' '}
+            Velkommen til{" "}
             <span className="bg-linear-to-r from-blue-400 via-emerald-400 to-pink-400 bg-clip-text text-transparent">
               Klarpakke Universitet
             </span>
           </h1>
 
           <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-8">
-            Du er nå en del av Norges første krypto-universitet.
-            Sammen skal vi bygge den beste trading-utdanningen for nordmenn.
+            Du er nå en del av Norges første krypto-universitet. Sammen skal vi
+            bygge den beste trading-utdanningen for nordmenn.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -105,9 +113,7 @@ export function VelkommenContent() {
               className="border-slate-600 text-slate-300 hover:bg-slate-800"
               asChild
             >
-              <a href={`/${locale}/beta`}>
-                Les beta-guiden
-              </a>
+              <a href={`/${locale}/dashboard`}>Se dashboard</a>
             </Button>
           </div>
         </div>
@@ -130,7 +136,9 @@ export function VelkommenContent() {
                   {item.step}
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-white text-lg">{item.title}</CardTitle>
+                  <CardTitle className="text-white text-lg">
+                    {item.title}
+                  </CardTitle>
                   <CardDescription className="text-slate-400">
                     {item.description}
                   </CardDescription>
@@ -138,17 +146,20 @@ export function VelkommenContent() {
                 {item.action && (
                   <CardContent>
                     <Button
-                      variant={item.primary ? 'default' : 'outline'}
+                      variant={item.primary ? "default" : "outline"}
                       size="sm"
-                      className={item.primary
-                        ? 'bg-linear-to-r from-blue-600 to-emerald-600'
-                        : 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                      className={
+                        item.primary
+                          ? "bg-linear-to-r from-blue-600 to-emerald-600"
+                          : "border-slate-600 text-slate-300 hover:bg-slate-700"
                       }
                       asChild
                     >
-                      <a href={item.href!.replace('/LOCALE/', `/${locale}/`)}>
+                      <a href={item.href!.replace("/LOCALE/", `/${locale}/`)}>
                         {item.action}
-                        {item.primary && <ArrowRight className="w-4 h-4 ml-2" />}
+                        {item.primary && (
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        )}
                       </a>
                     </Button>
                   </CardContent>
@@ -173,7 +184,7 @@ export function VelkommenContent() {
 
           <div className="grid sm:grid-cols-2 gap-6">
             {BETA_BENEFITS.map((benefit) => {
-              const Icon = benefit.icon
+              const Icon = benefit.icon;
               return (
                 <Card
                   key={benefit.title}
@@ -185,13 +196,17 @@ export function VelkommenContent() {
                         <Icon className="w-6 h-6 text-blue-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-white mb-1">{benefit.title}</h3>
-                        <p className="text-sm text-slate-400">{benefit.description}</p>
+                        <h3 className="font-semibold text-white mb-1">
+                          {benefit.title}
+                        </h3>
+                        <p className="text-sm text-slate-400">
+                          {benefit.description}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         </div>
@@ -207,11 +222,14 @@ export function VelkommenContent() {
                   <Shield className="w-6 h-6 text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-amber-400 mb-2">Lekepenger i starten</h3>
+                  <h3 className="font-semibold text-amber-400 mb-2">
+                    Lekepenger i starten
+                  </h3>
                   <p className="text-amber-300/80 text-sm leading-relaxed">
-                    I beta-perioden bruker vi kun lekepenger.
-                    Dette betyr at du kan øve og lære uten å risikere ekte penger.
-                    Fokuset er på å bygge kunnskap og gode vaner før du eventuelt går over til ekte trading.
+                    I beta-perioden bruker vi kun lekepenger. Dette betyr at du
+                    kan øve og lære uten å risikere ekte penger. Fokuset er på å
+                    bygge kunnskap og gode vaner før du eventuelt går over til
+                    ekte trading.
                   </p>
                 </div>
               </div>
@@ -245,13 +263,17 @@ export function VelkommenContent() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-slate-800/50">
         <div className="max-w-4xl mx-auto text-center text-slate-500 text-sm">
-          <p>Spørsmål? Kontakt oss på{' '}
-            <a href="mailto:post@klarpakke.no" className="text-blue-400 hover:text-blue-300">
+          <p>
+            Spørsmål? Kontakt oss på{" "}
+            <a
+              href="mailto:post@klarpakke.no"
+              className="text-blue-400 hover:text-blue-300"
+            >
               post@klarpakke.no
             </a>
           </p>
         </div>
       </footer>
     </div>
-  )
+  );
 }

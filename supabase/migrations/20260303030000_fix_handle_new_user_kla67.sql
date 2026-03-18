@@ -10,7 +10,6 @@ DROP TRIGGER IF EXISTS on_auth_user_created        ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_created_google ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_created_v2     ON auth.users;
 DROP TRIGGER IF EXISTS handle_new_user_trigger     ON auth.users;
-
 -- 2. Ny konsolidert handle_new_user() — skriver til user_profiles
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
@@ -112,13 +111,11 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
 -- 3. Én trigger, én funksjon
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
-
 -- 4. Backfill: lag user_profiles for eksisterende auth.users som mangler det
 INSERT INTO public.user_profiles (id, email, full_name, role, subscription_tier, subscription_status, created_at, updated_at)
 SELECT
@@ -139,7 +136,6 @@ WHERE NOT EXISTS (
   SELECT 1 FROM public.user_profiles up WHERE up.id = u.id
 )
 ON CONFLICT (id) DO NOTHING;
-
 -- 5. Sett admin-bruker korrekt i user_profiles
 INSERT INTO public.user_profiles (id, email, full_name, role, subscription_tier, subscription_status, created_at, updated_at)
 SELECT
@@ -158,7 +154,6 @@ ON CONFLICT (id) DO UPDATE SET
   subscription_tier   = 'professor',
   subscription_status = 'active',
   updated_at          = NOW();
-
 -- 6. Verifiser
 DO $$
 DECLARE
@@ -188,9 +183,8 @@ BEGIN
     RAISE WARNING '⚠️ % brukere mangler fortsatt user_profiles-rad', v_orphan_count;
   END IF;
 END $$;
-
 -- ============================================================
 -- KLA-67 LØST: handle_new_user() skriver nå til user_profiles
 -- Alle eksisterende brukere er backfillt
 -- Admin har professor-tier
--- ============================================================
+-- ============================================================;

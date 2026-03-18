@@ -5,7 +5,11 @@
 
 import { createClient } from "../supabase/client";
 import { executeTrade } from "./binance-executor";
-import type { AutoTradingTrade, TradingSignal } from "./types";
+import type {
+  AutoTradingTrade,
+  TradingSignal,
+  UserAutoTradingConfig,
+} from "./types";
 
 /**
  * Følg en strategi
@@ -60,15 +64,23 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
   const { data: followers, error: followersError } = await supabase
     .from("trading_sessions")
     .select("*, user_auto_trading_configs!inner(*)")
-    .eq("user_auto_trading_configs.strategy_id", originalTrade.strategy_used)
+    .eq(
+      "user_auto_trading_configs.strategy_id",
+      originalTrade.strategy_used ?? "",
+    )
     .eq("status", "ACTIVE");
 
   if (followersError || !followers) return;
 
   console.info(`Copying trade for ${followers.length} followers`);
 
-  for (const follower of followers) {
+  for (const follower of followers as {
+    user_id: string;
+    id: string;
+    user_auto_trading_configs?: { max_position_size_pct?: number };
+  }[]) {
     try {
+      const config = follower.user_auto_trading_configs;
       // 2. Opprett et signal som speiler original trade
       const copySignal: TradingSignal = {
         symbol: originalTrade.symbol,
@@ -76,8 +88,7 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
         entry_price: originalTrade.entry_price,
         stop_loss_price: originalTrade.stop_loss_price || 0,
         take_profit_price: originalTrade.take_profit_price,
-        position_size_pct:
-          follower.user_auto_trading_configs.max_position_size_pct || 5,
+        position_size_pct: config?.max_position_size_pct ?? 5,
         leverage: originalTrade.leverage,
         confidence: originalTrade.ml_confidence || 100,
         risk_score: originalTrade.risk_score || 50,
@@ -108,11 +119,18 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
         userId: follower.user_id,
         sessionId: follower.id,
         signal: copySignal,
-        config: followerConfig,
+        config: followerConfig as UserAutoTradingConfig,
         credentials: {
-          apiKey: apiKeys.api_key,
-          apiSecret: apiKeys.api_secret,
-          isTestnet: apiKeys.is_testnet,
+          apiKey:
+            (
+              apiKeys as {
+                api_key?: string;
+                api_secret?: string;
+                is_testnet?: boolean;
+              }
+            ).api_key ?? "",
+          apiSecret: (apiKeys as { api_secret?: string }).api_secret ?? "",
+          isTestnet: (apiKeys as { is_testnet?: boolean }).is_testnet ?? false,
         },
       });
     } catch (err) {

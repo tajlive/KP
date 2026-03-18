@@ -17,11 +17,9 @@ CREATE TABLE IF NOT EXISTS price_alerts (
 
   CONSTRAINT valid_price CHECK (price_nok > 0)
 );
-
 CREATE INDEX IF NOT EXISTS idx_price_alerts_user_id ON price_alerts(user_id);
 CREATE INDEX IF NOT EXISTS idx_price_alerts_active ON price_alerts(is_active);
 CREATE INDEX IF NOT EXISTS idx_price_alerts_symbol ON price_alerts(symbol);
-
 -- ============================================================================
 -- 2. TRADE_NOTES - User notes on trades for analysis
 -- ============================================================================
@@ -36,10 +34,8 @@ CREATE TABLE IF NOT EXISTS trade_notes (
 
   CONSTRAINT valid_note CHECK (LENGTH(note) > 0 AND LENGTH(note) <= 1000)
 );
-
 CREATE INDEX IF NOT EXISTS idx_trade_notes_user_id ON trade_notes(user_id);
 CREATE INDEX IF NOT EXISTS idx_trade_notes_trade_id ON trade_notes(trade_id);
-
 -- ============================================================================
 -- 3. PORTFOLIO_POSITIONS - Current open positions with live P&L
 -- ============================================================================
@@ -58,10 +54,8 @@ CREATE TABLE IF NOT EXISTS portfolio_positions (
   CONSTRAINT valid_quantity CHECK (total_quantity > 0),
   CONSTRAINT valid_price CHECK (avg_entry_price > 0)
 );
-
 CREATE INDEX IF NOT EXISTS idx_portfolio_positions_user_id ON portfolio_positions(user_id);
 CREATE INDEX IF NOT EXISTS idx_portfolio_positions_symbol ON portfolio_positions(symbol);
-
 -- ============================================================================
 -- 4. USER_SETTINGS - User preferences
 -- ============================================================================
@@ -77,9 +71,7 @@ CREATE TABLE IF NOT EXISTS user_settings (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id);
-
 -- ============================================================================
 -- 5. NOTIFICATIONS - Notification history
 -- ============================================================================
@@ -94,7 +86,6 @@ CREATE TABLE IF NOT EXISTS notifications (
   sent_at TIMESTAMP DEFAULT NOW(),
   read_at TIMESTAMP
 );
-
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read);
 -- CREATE INDEX IF NOT EXISTS idx_notifications_sent_at ON notifications(sent_at);
@@ -112,10 +103,8 @@ CREATE TABLE IF NOT EXISTS api_logs (
   response_time_ms INT,
   created_at TIMESTAMP DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_api_logs_user_id ON api_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_api_logs_created_at ON api_logs(created_at);
-
 -- ============================================================================
 -- 7. PORTFOLIO_HISTORY - Daily portfolio snapshots for charting
 -- ============================================================================
@@ -134,10 +123,8 @@ CREATE TABLE IF NOT EXISTS portfolio_history (
 
   UNIQUE(user_id, date)
 );
-
 CREATE INDEX IF NOT EXISTS idx_portfolio_history_user_id ON portfolio_history(user_id);
 CREATE INDEX IF NOT EXISTS idx_portfolio_history_date ON portfolio_history(date);
-
 -- ============================================================================
 -- 8. PENDING_ORDERS - Track live orders placed from dashboard
 -- ============================================================================
@@ -158,10 +145,8 @@ CREATE TABLE IF NOT EXISTS pending_orders (
 
   CONSTRAINT valid_quantity CHECK (quantity > 0)
 );
-
 CREATE INDEX IF NOT EXISTS idx_pending_orders_user_id ON pending_orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_pending_orders_status ON pending_orders(status);
-
 -- ============================================================================
 -- RLS POLICIES
 -- ============================================================================
@@ -174,62 +159,53 @@ ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE api_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE portfolio_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pending_orders ENABLE ROW LEVEL SECURITY;
-
 -- Price Alerts
 DROP POLICY IF EXISTS "Users can manage own price alerts" ON price_alerts;
 CREATE POLICY "Users can manage own price alerts"
   ON price_alerts
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
-
 -- Trade Notes
 DROP POLICY IF EXISTS "Users can manage own trade notes" ON trade_notes;
 CREATE POLICY "Users can manage own trade notes"
   ON trade_notes
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
-
 -- Portfolio Positions
 DROP POLICY IF EXISTS "Users can read own portfolio positions" ON portfolio_positions;
 CREATE POLICY "Users can read own portfolio positions"
   ON portfolio_positions
   FOR SELECT
   USING (auth.uid() = user_id);
-
 -- User Settings
 DROP POLICY IF EXISTS "Users can manage own settings" ON user_settings;
 CREATE POLICY "Users can manage own settings"
   ON user_settings
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
-
 -- Notifications
 DROP POLICY IF EXISTS "Users can read own notifications" ON notifications;
 CREATE POLICY "Users can read own notifications"
   ON notifications
   USING (auth.uid() = user_id);
-
 -- API Logs
 DROP POLICY IF EXISTS "Users can read own API logs" ON api_logs;
 CREATE POLICY "Users can read own API logs"
   ON api_logs
   FOR SELECT
   USING (auth.uid() = user_id);
-
 -- Portfolio History
 DROP POLICY IF EXISTS "Users can read own portfolio history" ON portfolio_history;
 CREATE POLICY "Users can read own portfolio history"
   ON portfolio_history
   FOR SELECT
   USING (auth.uid() = user_id);
-
 -- Pending Orders
 DROP POLICY IF EXISTS "Users can manage own pending orders" ON pending_orders;
 CREATE POLICY "Users can manage own pending orders"
   ON pending_orders
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
-
 -- ============================================================================
 -- SERVICE ROLE PERMISSIONS
 -- ============================================================================
@@ -242,7 +218,6 @@ GRANT SELECT, INSERT ON notifications TO service_role;
 GRANT SELECT, INSERT ON api_logs TO service_role;
 GRANT SELECT, INSERT ON portfolio_history TO service_role;
 GRANT SELECT, INSERT, UPDATE ON pending_orders TO service_role;
-
 -- ============================================================================
 -- AUTHENTICATED PERMISSIONS
 -- ============================================================================

@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS public.client_errors (
   notes TEXT, -- Admin notater
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- 2. Indexer for ytelse
 CREATE INDEX IF NOT EXISTS idx_client_errors_created_at ON client_errors(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_client_errors_error_type ON client_errors(error_type);
@@ -32,7 +31,6 @@ CREATE INDEX IF NOT EXISTS idx_client_errors_page_url ON client_errors(page_url)
 CREATE INDEX IF NOT EXISTS idx_client_errors_severity ON client_errors(severity);
 CREATE INDEX IF NOT EXISTS idx_client_errors_resolved ON client_errors(resolved);
 CREATE INDEX IF NOT EXISTS idx_client_errors_user_id ON client_errors(user_id);
-
 -- 3. Funksjon for å hente feil-statistikk
 CREATE OR REPLACE FUNCTION public.get_error_stats(
   p_hours INTEGER DEFAULT 24
@@ -84,15 +82,12 @@ BEGIN
   CROSS JOIN top_page_url tp;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 4. RLS Policies
 ALTER TABLE public.client_errors ENABLE ROW LEVEL SECURITY;
-
 -- Service role kan insert (fra API)
 CREATE POLICY "Service role can insert errors"
   ON public.client_errors FOR INSERT
   WITH CHECK (true);
-
 -- Kun admins kan lese
 CREATE POLICY "Admins can view all errors"
   ON public.client_errors FOR SELECT
@@ -103,7 +98,6 @@ CREATE POLICY "Admins can view all errors"
       AND profiles.role = 'admin'
     )
   );
-
 -- Kun admins kan oppdatere (markere som løst)
 CREATE POLICY "Admins can update errors"
   ON public.client_errors FOR UPDATE
@@ -114,7 +108,6 @@ CREATE POLICY "Admins can update errors"
       AND profiles.role = 'admin'
     )
   );
-
 -- 5. Trigger for å logge til admin_notifications ved kritiske feil
 CREATE OR REPLACE FUNCTION public.notify_critical_error()
 RETURNS TRIGGER AS $$
@@ -133,13 +126,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS trg_critical_error_notification ON public.client_errors;
 CREATE TRIGGER trg_critical_error_notification
   AFTER INSERT ON public.client_errors
   FOR EACH ROW
   EXECUTE FUNCTION public.notify_critical_error();
-
 -- 6. View for enkel visning i admin
 CREATE OR REPLACE VIEW public.client_errors_summary AS
 SELECT 
@@ -160,7 +151,6 @@ SELECT
   END as time_ago
 FROM public.client_errors
 ORDER BY created_at DESC;
-
 -- ============================================
 -- FERDIG! Nå kan vi tracke feil i admin
--- ============================================
+-- ============================================;

@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS public.onboarding_progress (
     updated_at TIMESTAMPTZ DEFAULT now(),
     UNIQUE(user_id)
 );
-
 DO $$
 BEGIN
     -- step1_completed
@@ -54,7 +53,6 @@ BEGIN
         ALTER TABLE public.onboarding_progress ADD COLUMN completed_at TIMESTAMPTZ;
     END IF;
 END $$;
-
 -- 2. Ensure user_portfolios and user_strategies are accessible
 -- Sometimes 404/400 happens if columns are missing or types are wrong.
 -- For user_portfolios we need: user_id, mode, total_value, cash_balance, invested_value, total_pnl, daily_pnl, total_trades, win_rate
@@ -72,7 +70,6 @@ CREATE TABLE IF NOT EXISTS public.user_portfolios (
     updated_at timestamptz DEFAULT now(),
     UNIQUE(user_id, mode)
 );
-
 -- user_strategies
 CREATE TABLE IF NOT EXISTS public.user_strategies (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -89,30 +86,24 @@ CREATE TABLE IF NOT EXISTS public.user_strategies (
     updated_at timestamptz DEFAULT now(),
     UNIQUE(user_id, strategy_type, mode)
 );
-
 -- 3. RLS - Critical for 400/404/406 access
 ALTER TABLE public.onboarding_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_portfolios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_strategies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.trades ENABLE ROW LEVEL SECURITY;
-
 -- Reset and apply policies
 DROP POLICY IF EXISTS "Users can manage own onboarding progress" ON public.onboarding_progress;
 DROP POLICY IF EXISTS "own_data" ON public.onboarding_progress;
 CREATE POLICY "own_data" ON public.onboarding_progress FOR ALL USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can manage own portfolios" ON public.user_portfolios;
 DROP POLICY IF EXISTS "own_data" ON public.user_portfolios;
 CREATE POLICY "own_data" ON public.user_portfolios FOR ALL USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can manage own strategies" ON public.user_strategies;
 DROP POLICY IF EXISTS "own_data" ON public.user_strategies;
 CREATE POLICY "own_data" ON public.user_strategies FOR ALL USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can manage own trades" ON public.trades;
 DROP POLICY IF EXISTS "own_data" ON public.trades;
 CREATE POLICY "own_data" ON public.trades FOR ALL USING (auth.uid() = user_id);
-
 -- Grants
 GRANT ALL ON public.onboarding_progress TO authenticated;
 GRANT ALL ON public.onboarding_progress TO service_role;
@@ -122,7 +113,6 @@ GRANT ALL ON public.user_strategies TO authenticated;
 GRANT ALL ON public.user_strategies TO service_role;
 GRANT ALL ON public.trades TO authenticated;
 GRANT ALL ON public.trades TO service_role;
-
 -- 4. Final cleanup for trades table - resolving 400 errors
 DO $$ 
 BEGIN

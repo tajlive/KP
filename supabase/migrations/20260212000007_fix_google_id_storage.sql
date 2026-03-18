@@ -51,5 +51,4 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 COMMENT ON FUNCTION handle_google_auth_user() IS 'Extracts full_name, avatar_url, and google_id (sub) from Google OAuth metadata';

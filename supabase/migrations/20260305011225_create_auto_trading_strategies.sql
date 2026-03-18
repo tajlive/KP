@@ -19,17 +19,14 @@ CREATE TABLE IF NOT EXISTS public.auto_trading_strategies (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS
 ALTER TABLE public.auto_trading_strategies ENABLE ROW LEVEL SECURITY;
-
 -- Allow read access to all authenticated users
 CREATE POLICY "Allow read access for authenticated users to auto_trading_strategies" 
 ON public.auto_trading_strategies 
 FOR SELECT 
 TO authenticated 
 USING (true);
-
 -- Insert the 4 default risk levels from RISK_LEVELS
 INSERT INTO public.auto_trading_strategies (id, name, risk_level, description, max_position_size_pct, stop_loss_pct, daily_loss_limit_pct, max_trades_per_day, allowed_symbols, is_active)
 VALUES
@@ -46,7 +43,6 @@ ON CONFLICT (id) DO UPDATE SET
   daily_loss_limit_pct = EXCLUDED.daily_loss_limit_pct,
   max_trades_per_day = EXCLUDED.max_trades_per_day,
   is_active = EXCLUDED.is_active;
-
 -- Ensure user_auto_trading_configs table exists
 CREATE TABLE IF NOT EXISTS public.user_auto_trading_configs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -67,17 +63,12 @@ CREATE TABLE IF NOT EXISTS public.user_auto_trading_configs (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)
 );
-
 ALTER TABLE public.user_auto_trading_configs ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own auto_trading_configs" 
 ON public.user_auto_trading_configs FOR SELECT TO authenticated USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can insert own auto_trading_configs" 
 ON public.user_auto_trading_configs FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-
 CREATE POLICY "Users can update own auto_trading_configs" 
 ON public.user_auto_trading_configs FOR UPDATE TO authenticated USING (auth.uid() = user_id);
-
 -- Also fix schema cache issue with Supabase
 NOTIFY pgrst, 'reload schema';

@@ -34,4 +34,4 @@
 -- CREATE INDEX IF NOT EXISTS idx_paper_simulations_active 
 --   ON paper_simulations(user_id, is_active, created_at DESC);
 -- COMMENT ON INDEX idx_paper_simulations_active IS 'Rask lookup av aktive simuleringer';
-*/
+*/;

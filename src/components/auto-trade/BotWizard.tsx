@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import {
+  Lock,
+  CheckCircle2,
+  Sparkles,
+  BarChart2,
+  TrendingUp,
+  Grid3X3,
+  Target,
+  Bot,
+} from "lucide-react";
 import { BRAND, SURFACE } from "@/lib/design/tokens";
 
 interface BotWizardProps {
@@ -54,7 +64,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
       description: isNo
         ? "Dollar Cost Averaging — kjøp automatisk til fast tid"
         : "Dollar Cost Averaging — buy automatically on schedule",
-      icon: "📊",
+      Icon: BarChart2,
       tier: "student",
       recommended: true,
     },
@@ -64,7 +74,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
       description: isNo
         ? "Følg markedstrenden med teknisk analyse"
         : "Follow market trends with technical analysis",
-      icon: "📈",
+      Icon: TrendingUp,
       tier: "bachelor",
     },
     {
@@ -73,7 +83,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
       description: isNo
         ? "Kjøp lavt, selg høyt i et prisbånd"
         : "Buy low, sell high within a price range",
-      icon: "🔲",
+      Icon: Grid3X3,
       tier: "bachelor",
     },
     {
@@ -82,7 +92,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
       description: isNo
         ? "Kombiner flere indikatorer for signaler"
         : "Combine multiple indicators for signals",
-      icon: "🎯",
+      Icon: Target,
       tier: "master",
     },
     {
@@ -91,7 +101,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
       description: isNo
         ? "Kopier topphandlernes strategier med AI"
         : "Copy top traders with AI",
-      icon: "🤖",
+      Icon: Bot,
       tier: "master",
     },
   ];
@@ -166,9 +176,26 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-[#1A1D26] mb-8">
+      <h1 className="text-2xl font-bold text-[#1A1D26] mb-4">
         {isNo ? "Start trading-bot" : "Start trading bot"}
       </h1>
+
+      {tier === "student" && (
+        <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-[#E8F0FE] dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 px-4 py-3">
+          <p className="text-sm text-[#1A1D26] dark:text-slate-200">
+            {isNo
+              ? "Du har 1 strategi inkludert. Oppgrader for flere strategier og flere valutaer."
+              : "You get 1 strategy included. Upgrade for more strategies and coins."}
+          </p>
+          <Link
+            href={`/${locale}/priser`}
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-[#0052FF] px-3 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
+          >
+            <Sparkles className="h-4 w-4" />
+            {isNo ? "Se planer" : "See plans"}
+          </Link>
+        </div>
+      )}
 
       {/* Step Indicator */}
       <div className="flex items-center justify-center mb-10">
@@ -200,16 +227,16 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                     color: isPast || isActive ? "#FFFFFF" : "#B4BFCE",
                   }}
                 >
-                  {isPast ? (
-                    <CheckCircle2 className="w-5 h-5" />
-                  ) : (
-                    stepNum
-                  )}
+                  {isPast ? <CheckCircle2 className="w-5 h-5" /> : stepNum}
                 </div>
                 <span
                   className="text-xs font-medium"
                   style={{
-                    color: isActive ? "#0052FF" : isPast ? "#22C55E" : "#B4BFCE",
+                    color: isActive
+                      ? "#0052FF"
+                      : isPast
+                        ? "#22C55E"
+                        : "#B4BFCE",
                   }}
                 >
                   {label}
@@ -257,7 +284,9 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                       {s.tier.charAt(0).toUpperCase() + s.tier.slice(1)}
                     </span>
                   )}
-                  <span className="text-3xl block mb-3">{s.icon}</span>
+                  <span className="block mb-3 text-[#0052FF]">
+                    <s.Icon className="w-8 h-8" />
+                  </span>
                   <span className="text-sm font-bold text-[#1A1D26] block mb-1">
                     {s.name}
                   </span>
@@ -315,7 +344,9 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
               {isNo ? "Startkapital (lekepenger)" : "Starting capital (paper)"}
             </h2>
             <p className="text-xs text-[#5E6478] mb-3">
-              {isNo ? "Beløpet boten handler med i papirmodus." : "Amount the bot trades with in paper mode."}
+              {isNo
+                ? "Beløpet boten handler med i papirmodus."
+                : "Amount the bot trades with in paper mode."}
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
               {CAPITAL_PRESETS.map((preset) => {
@@ -326,7 +357,9 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                     type="button"
                     onClick={() => setStartingCapital(preset)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      selected ? `${BRAND.primary}` : "bg-[#F1F3F9] text-[#5E6478] hover:bg-[#E2E5EC]"
+                      selected
+                        ? `${BRAND.primary}`
+                        : "bg-[#F1F3F9] text-[#5E6478] hover:bg-[#E2E5EC]"
                     }`}
                   >
                     {preset >= 1_000_000 ? "1M" : `${preset / 1000}k`} kr
@@ -335,7 +368,10 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
               })}
             </div>
             <div className="flex items-center gap-3 mb-6">
-              <label htmlFor="capital-input" className="text-sm text-[#5E6478] shrink-0">
+              <label
+                htmlFor="capital-input"
+                className="text-sm text-[#5E6478] shrink-0"
+              >
                 {isNo ? "Eget beløp:" : "Custom amount:"}
               </label>
               <input
@@ -347,7 +383,8 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                 value={startingCapital}
                 onChange={(e) => {
                   const v = Number(e.target.value);
-                  if (!Number.isNaN(v)) setStartingCapital(Math.max(10000, Math.min(1_000_000, v)));
+                  if (!Number.isNaN(v))
+                    setStartingCapital(Math.max(10000, Math.min(1_000_000, v)));
                 }}
                 className="w-32 px-3 py-2 rounded-lg border border-[#E2E5EC] text-[#1A1D26] font-medium"
               />
@@ -400,7 +437,10 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                 {isNo ? "Strategi" : "Strategy"}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26]">
-                {selectedStrategy?.icon} {selectedStrategy?.name}
+                {selectedStrategy?.Icon != null ? (
+                  <selectedStrategy.Icon className="w-4 h-4 inline-block align-middle mr-1" />
+                ) : null}{" "}
+                {selectedStrategy?.name}
               </span>
             </div>
             <div className="h-px bg-[#E2E5EC]" />
@@ -434,7 +474,9 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
             <div className="h-px bg-[#E2E5EC]" />
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478]">
-                {isNo ? "Startkapital (lekepenger)" : "Starting capital (paper)"}
+                {isNo
+                  ? "Startkapital (lekepenger)"
+                  : "Starting capital (paper)"}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26]">
                 {startingCapital.toLocaleString("nb-NO")} kr

@@ -32,7 +32,7 @@ export function useCopyTrading() {
     canCopyTrade: false,
     paperTradesCount: 0,
     currentMode: "paper",
-    subscriptionTier: "free",
+    subscriptionTier: "student",
     activeSessions: [],
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -66,7 +66,7 @@ export function useCopyTrading() {
           .eq("user_id", user.id)
           .eq("mode", "paper");
         const currentMode = "paper";
-        const subscriptionTier = profile?.tier || "free";
+        const subscriptionTier = profile?.tier || "student";
 
         const { canCopyTrade, reason } = checkCopyTradingEligibility(
           paperTradesCount ?? 0,
