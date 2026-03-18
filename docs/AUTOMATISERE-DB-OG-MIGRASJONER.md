@@ -2,7 +2,7 @@
 
 Hva som allerede er automatisert, og hva du må gjøre for full automatisering.
 
-**Varig løsning (anbefaling):** Se **docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md** for å få migrasjoner helt automatisk og unngå migrasjonshistorikk-mismatch. Kort fortalt: bruk **Supabase GitHub-integrasjon** med «Deploy to production» som eneste kanal for db push mot prod, eller én dedikert CI-job på `main`.
+**Varig løsning (anbefaling):** Se **docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md** for å få migrasjoner helt automatisk og unngå migrasjonshistorikk-mismatch. **Konkret oppsett:** Se **docs/SUPABASE-GITHUB-INTEGRATION-OPPSETT.md** – steg-for-steg slik du aktiverer Supabase GitHub-integrasjon (mest automatisk, ingen CI-secrets).
 
 ---
 
