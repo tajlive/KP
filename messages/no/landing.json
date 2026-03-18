@@ -152,6 +152,10 @@
     "overlay": "Registrer deg for å handle med ekte data",
     "overlayCta": "Start gratis nå"
   },
+  "testimonials": {
+    "title": "Hva våre brukere sier",
+    "subtitle": "Se hva andre sier om å lære trading med Klarpakke"
+  },
   "emailCapture": {
     "badge": "Gratis kurs",
     "title": "Få gratis krypto-kurs",

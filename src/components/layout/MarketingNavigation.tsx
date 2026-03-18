@@ -30,31 +30,36 @@ export function MarketingNavigation() {
   return (
     <nav className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center h-14 gap-4">
-          <Link href={l("/")} className="flex items-center gap-2 shrink-0">
+        <div className="flex justify-between items-center h-14 gap-2 min-w-0">
+          <Link
+            href={l("/")}
+            className="flex items-center gap-2 min-w-0 shrink-0 overflow-hidden"
+          >
             <Image
               src="/logo.svg"
               alt=""
               role="presentation"
               width={32}
               height={32}
-              className="h-8 w-8 object-contain"
+              className="h-8 w-8 object-contain shrink-0"
               priority
             />
-            <div className="hidden sm:block">
-              <span className="text-xl font-bold text-[#1A1D26]">Klarpakke</span>
-              <span className="ml-2 text-sm font-medium text-[#5E6478] hidden md:inline">
-                — {t("tagline")}
-              </span>
-            </div>
-            <span className="text-xl font-bold text-[#1A1D26] sm:hidden">Klarpakke</span>
+            <span className="text-xl font-bold text-[#1A1D26] truncate hidden sm:inline">
+              Klarpakke
+            </span>
+            <span className="text-xl font-bold text-[#1A1D26] sm:hidden truncate">
+              Klarpakke
+            </span>
+            <span className="ml-1.5 text-sm font-medium text-[#5E6478] truncate hidden 2xl:inline shrink-0">
+              — {t("tagline")}
+            </span>
           </Link>
 
-          <div className="hidden lg:flex flex-1 justify-center min-w-0">
+          <div className="hidden 2xl:flex flex-1 justify-center min-w-0 max-w-xl mx-2">
             <HeaderTicker />
           </div>
 
-          <div className="hidden md:flex items-center gap-6 shrink-0">
+          <div className="hidden md:flex items-center gap-4 lg:gap-6 shrink-0">
             {mainLinks.map((link) => (
               <Link
                 key={link.path}
@@ -67,55 +72,55 @@ export function MarketingNavigation() {
 
             <div className="h-5 w-px bg-[#E2E5EC]" />
 
-            {/* Logged in: Min side + Logg ut. Ikke innlogget: Logg inn + Registrer */}
-            {!loading && (
-              user ? (
-                <>
-                  <Link href={l("/dashboard")}>
-                    <Button
-                      size="sm"
-                      className={`gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
-                    >
-                      <LayoutDashboard className="w-4 h-4" />
-                      {t("myPage")}
-                    </Button>
-                  </Link>
+            {/* Logged in: Min side + Logg ut. Ikke innlogget: Logg inn + Start gratis — CTA alltid synlig */}
+            {user ? (
+              <>
+                <Link href={l("/dashboard")}>
+                  <Button
+                    size="sm"
+                    className={`gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    {t("myPage")}
+                  </Button>
+                </Link>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className={`gap-2 ${BRAND.primaryOutline}`}
+                  onClick={async () => {
+                    await signOut();
+                    router.refresh();
+                    router.push(l("/"));
+                  }}
+                >
+                  <LogOut className="w-4 h-4" />
+                  {t("logout")}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href={l("/innlogging")}>
                   <Button
                     size="sm"
                     variant="outline"
                     className={`gap-2 ${BRAND.primaryOutline}`}
-                    onClick={async () => {
-                      await signOut();
-                      router.refresh();
-                      router.push(l("/"));
-                    }}
+                    aria-disabled={loading}
                   >
-                    <LogOut className="w-4 h-4" />
-                    {t("logout")}
+                    <LogIn className="w-4 h-4" />
+                    {t("login")}
                   </Button>
-                </>
-              ) : (
-                <>
-                  <Link href={l("/innlogging")}>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className={`gap-2 ${BRAND.primaryOutline}`}
-                    >
-                      <LogIn className="w-4 h-4" />
-                      {t("login")}
-                    </Button>
-                  </Link>
-                  <Link href={l("/signup")}>
-                    <Button
-                      size="sm"
-                      className={`${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
-                    >
-                      {t("register")}
-                    </Button>
-                  </Link>
-                </>
-              )
+                </Link>
+                <Link href={l("/signup")}>
+                  <Button
+                    size="sm"
+                    className={`${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                    aria-disabled={loading}
+                  >
+                    {t("signup")}
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
 
@@ -152,55 +157,66 @@ export function MarketingNavigation() {
             <div className="my-4 border-t border-[#E2E5EC]" />
 
             <div className="px-4 space-y-2">
-              {!loading &&
-                (user ? (
-                  <>
-                    <Link href={l("/dashboard")} className="block" onClick={() => setIsOpen(false)}>
-                      <Button
-                        size="sm"
-                        className={`w-full gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
-                      >
-                        <LayoutDashboard className="w-4 h-4" />
-                        {t("myPage")}
-                      </Button>
-                    </Link>
+              {user ? (
+                <>
+                  <Link
+                    href={l("/dashboard")}
+                    className="block"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Button
+                      size="sm"
+                      className={`w-full gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      {t("myPage")}
+                    </Button>
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className={`w-full gap-2 ${BRAND.primaryOutline}`}
+                    onClick={async () => {
+                      setIsOpen(false);
+                      await signOut();
+                      router.refresh();
+                      router.push(l("/"));
+                    }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {t("logout")}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href={l("/innlogging")}
+                    className="block"
+                    onClick={() => setIsOpen(false)}
+                  >
                     <Button
                       size="sm"
                       variant="outline"
-                      className={`w-full gap-2 ${BRAND.primaryOutline}`}
-                      onClick={async () => {
-                        setIsOpen(false);
-                        await signOut();
-                        router.refresh();
-                        router.push(l("/"));
-                      }}
+                      className="w-full gap-2 border-[#E2E5EC]"
                     >
-                      <LogOut className="w-4 h-4" />
-                      {t("logout")}
+                      <LogIn className="w-4 h-4" />
+                      {t("login")}
                     </Button>
-                  </>
-                ) : (
-                  <>
-                    <Link href={l("/innlogging")} className="block">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className={`w-full gap-2 ${BRAND.primaryOutline}`}
-                      >
-                        <LogIn className="w-4 h-4" />
-                        {t("login")}
-                      </Button>
-                    </Link>
-                    <Link href={l("/signup")} className="block">
-                      <Button
-                        size="sm"
-                        className={`w-full ${BRAND.primary}`}
-                      >
-                        {t("register")}
-                      </Button>
-                    </Link>
-                  </>
-                ))}
+                  </Link>
+                  <Link
+                    href={l("/signup")}
+                    className="block"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Button
+                      size="sm"
+                      className={`w-full ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                    >
+                      {t("signup")}
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

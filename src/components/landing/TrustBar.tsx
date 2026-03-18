@@ -5,7 +5,7 @@ import { ShieldCheck, GraduationCap, TrendingUp, Trophy } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
 
 export async function TrustBar({ locale = "no" }: { locale?: string }) {
-  const t = await getTranslations("trustBar");
+  const t = await getTranslations({ locale, namespace: "trustBar" });
   let userCount = 0;
 
   if (

@@ -152,6 +152,10 @@
     "overlay": "Sign up to trade with real data",
     "overlayCta": "Start for free"
   },
+  "testimonials": {
+    "title": "What our users say",
+    "subtitle": "See what others are saying about learning to trade with Klarpakke"
+  },
   "emailCapture": {
     "badge": "Free course",
     "title": "Get a free crypto course",
