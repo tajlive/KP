@@ -152,6 +152,27 @@
     "overlay": "Sign up to trade with real data",
     "overlayCta": "Start for free"
   },
+  "aiTools": {
+    "badge": "AI tools",
+    "title": "AI tools for smarter decisions",
+    "subtitle": "Use AI to understand markets faster and build confidence.",
+    "marketBrief": {
+      "title": "AI Market Brief",
+      "description": "Get a concise market summary with key moves and sentiment.",
+      "cta": "Open market brief"
+    },
+    "strategyAdvisor": {
+      "title": "AI Strategy Advisor",
+      "description": "Get strategy explanations adapted to your level.",
+      "cta": "Ask strategy advisor"
+    }
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need before getting started.",
+    "contactText": "Still have questions?",
+    "contactCta": "Contact us"
+  },
   "testimonials": {
     "title": "What our users say",
     "subtitle": "See what others are saying about learning to trade with Klarpakke"
