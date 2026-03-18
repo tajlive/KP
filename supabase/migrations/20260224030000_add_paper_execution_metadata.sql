@@ -19,22 +19,16 @@
 -- Add execution metadata columns to auto_trading_trades
 ALTER TABLE auto_trading_trades 
 ADD COLUMN IF NOT EXISTS fees_paid NUMERIC DEFAULT 0;
-
 ALTER TABLE auto_trading_trades 
 ADD COLUMN IF NOT EXISTS execution_time_ms INTEGER;
-
 ALTER TABLE auto_trading_trades 
 ADD COLUMN IF NOT EXISTS slippage_pct NUMERIC DEFAULT 0;
-
 ALTER TABLE auto_trading_trades 
 ADD COLUMN IF NOT EXISTS bid_price NUMERIC;
-
 ALTER TABLE auto_trading_trades 
 ADD COLUMN IF NOT EXISTS ask_price NUMERIC;
-
 ALTER TABLE auto_trading_trades 
 ADD COLUMN IF NOT EXISTS volume_24h NUMERIC;
-
 -- Add execution logs table for monitoring paper vs live quality
 CREATE TABLE IF NOT EXISTS execution_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -64,16 +58,13 @@ CREATE TABLE IF NOT EXISTS execution_logs (
   -- Metadata
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Indexes for execution_logs
 CREATE INDEX IF NOT EXISTS idx_execution_logs_user ON execution_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_execution_logs_timestamp ON execution_logs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_execution_logs_mode ON execution_logs(trading_mode);
 CREATE INDEX IF NOT EXISTS idx_execution_logs_symbol ON execution_logs(symbol);
-
 -- Add index for session filtering on auto_trading_trades
 CREATE INDEX IF NOT EXISTS idx_auto_trading_trades_session ON auto_trading_trades(session_id);
-
 -- Comments
 COMMENT ON COLUMN auto_trading_trades.fees_paid IS 'Trading fees paid (e.g., Binance 0.1% maker/taker)';
 COMMENT ON COLUMN auto_trading_trades.execution_time_ms IS 'Time from order submission to execution in milliseconds';
@@ -81,7 +72,6 @@ COMMENT ON COLUMN auto_trading_trades.slippage_pct IS 'Realized slippage as perc
 COMMENT ON COLUMN auto_trading_trades.bid_price IS 'Bid price at time of execution (for spread analysis)';
 COMMENT ON COLUMN auto_trading_trades.ask_price IS 'Ask price at time of execution (for spread analysis)';
 COMMENT ON COLUMN auto_trading_trades.volume_24h IS '24h trading volume at time of execution (for liquidity analysis)';
-
 -- Note: View paper_trading_performance kan opprettes manuelt senere
 -- hvis trading_mode eller is_paper kolonnen eksisterer
 

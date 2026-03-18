@@ -2,33 +2,37 @@
 
 ## Oversikt
 
-KLT er Klarpakke Universitetets interne utility token designet for å belønne læring, engasjement og bidrag til fellesskapet.
+KLT er Klarpakke Universitetets interne utility token designet for å belønne læring, engasjement og bidrag til fellesskapet. **Totalt finnes det 10 000 000 KLT.**
 
 **Viktig**: KLT har ingen pengeverdi utenfor plattformen. Dette er et lærings- og engasjementsverktøy, ikke et investeringsobjekt.
+
+For en fortelling om KLT og 50 000 KLT til månedens vinner, se [docs/KLT-HISTORIE.md](KLT-HISTORIE.md).
 
 ---
 
 ## Tokenomics
 
 ### Forsyning
+
 - **Totalt**: 10,000,000 KLT
 - **Udelelighet**: 0 desimaler (hele tokens)
 - **Type**: Utility token (ikke tradable)
 
 ### Distribusjon
 
-| Kategori | Antall | Prosent | Beskrivelse |
-|----------|--------|---------|-------------|
-| **Grunnleggere** | 1,000,000 | 10% | 100 første studenter får 10,000 KLT hver |
-| **Team/Reserve** | 9,000,000 | 90% | Utvikling, fremtidige belønninger, partnerskap |
+| Kategori         | Antall    | Prosent | Beskrivelse                                    |
+| ---------------- | --------- | ------- | ---------------------------------------------- |
+| **Grunnleggere** | 1,000,000 | 10%     | 100 første studenter får 10,000 KLT hver       |
+| **Team/Reserve** | 9,000,000 | 90%     | Utvikling, fremtidige belønninger, partnerskap |
 
-*Fremtidige runder kan øke total forsyning ved behov.*
+_Fremtidige runder kan øke total forsyning ved behov._
 
 ---
 
 ## Bruksområder
 
 ### 1. Paper Trading Simulator
+
 - **Startkapital**: Alle får 1,000,000 kr virtuelle penger
 - **KLT kan brukes til**:
   - Å låse opp avanserte trading-scenarier
@@ -36,16 +40,19 @@ KLT er Klarpakke Universitetets interne utility token designet for å belønne l
   - Kjøp av virtuelle "power-ups" (f.eks. ekstra analyseverktøy)
 
 ### 2. Læringsbelønninger
+
 - **Fullfør kurs**: +500 KLT
 - **Bestå quiz**: +1,000 KLT
 - **7-dagers streak**: +2,000 KLT
 - **Hjelp andre studenter**: +100 KLT per godkjent svar
 
 ### 3. Konkurranser
+
 - **Månedlig trading-konkurranse**: Inngangsbillett = 1,000 KLT
 - **Premier**: KLT-baserte belønninger + ekte premier
 
 ### 4. Staking (fremtidig)
+
 - **Stak KLT** for å få:
   - Tidlig tilgang til nye kurs
   - Prioritert support
@@ -56,26 +63,29 @@ KLT er Klarpakke Universitetets interne utility token designet for å belønne l
 ## Hvordan få KLT
 
 ### Grunnlegger-Runde (NÅ)
+
 - Bli en av de første 100 studentene
 - Motta 10,000 KLT ved første innlogging
 - Verdi: 1% av total forsyning per person
 
 ### Fremtidige måter å tjene KLT
-| Aktivitet | Belønning | Maks per dag |
-|-----------|-----------|--------------|
-| Daglig innlogging | 10 KLT | 10 KLT |
-| Fullfør leksjon | 100 KLT | 500 KLT |
-| Bestå quiz | 200 KLT | 600 KLT |
-| Trading profit (paper) | 1% av profitt i KLT | 1,000 KLT |
-| Discord engagement | 5-50 KLT | 200 KLT |
-| Bug rapportering | 500-5,000 KLT | - |
-| Kursinnhold | 1,000-10,000 KLT | - |
+
+| Aktivitet              | Belønning           | Maks per dag |
+| ---------------------- | ------------------- | ------------ |
+| Daglig innlogging      | 10 KLT              | 10 KLT       |
+| Fullfør leksjon        | 100 KLT             | 500 KLT      |
+| Bestå quiz             | 200 KLT             | 600 KLT      |
+| Trading profit (paper) | 1% av profitt i KLT | 1,000 KLT    |
+| Discord engagement     | 5-50 KLT            | 200 KLT      |
+| Bug rapportering       | 500-5,000 KLT       | -            |
+| Kursinnhold            | 1,000-10,000 KLT    | -            |
 
 ---
 
 ## Teknisk implementasjon
 
 ### Database Schema
+
 ```sql
 CREATE TABLE user_klt_balances (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id),
@@ -99,6 +109,7 @@ CREATE TABLE klt_transactions (
 ```
 
 ### API Endpoints
+
 - `GET /api/klt/balance` - Hent brukerens saldo
 - `POST /api/klt/spend` - Bruk KLT
 - `POST /api/klt/earn` - Tjen KLT (internal)
@@ -117,31 +128,35 @@ A: Du kan tjene mer ved å være aktiv på plattformen, eller kjøpe flere i mar
 **Q: Vil KLT bli en kryptovaluta?**  
 A: Vi vurderer blockchain-basert KLT i fremtiden, men dette krever regulatorisk avklaring.
 
-**Q: Hvorfor 1,000,000 totalt?**  
-A: Dette gir hver grunnlegger 1% av nettverket - en meningsfull andel for tidlig støtte.
+**Q: Hvorfor 10 000 000 totalt?**  
+A: Det gir en tydelig, begrenset forsyning. De 100 grunnleggerne får hver 10 000 KLT (0,1 % av totalt) – en meningsfull andel for tidlig støtte. Resten brukes til læringsbelønninger og **50 000 KLT til månedens vinner**.
 
 ---
 
 ## Roadmap
 
 ### Fase 1: Beta (NÅ)
+
 - ✅ 100 grunnleggere får 10,000 KLT
 - ✅ Basic paper trading integration
 
 ### Fase 2: Launch (Mars 2026)
+
 - Earn mechanics aktiveres
 - Kurs-belønninger
 - Quiz-belønninger
 
 ### Fase 3: Ecosystem (Q2 2026)
+
 - Marketplace for KLT
 - Staking mekanisme
 - Governance (avstemninger)
 
 ### Fase 4: Expansion (2027)
+
 - Vurdering av blockchain-migrasjon
 - Eventuell ekstern handel (regulert)
 
 ---
 
-*Sist oppdatert: 12. februar 2026*
+_Sist oppdatert: 12. februar 2026_

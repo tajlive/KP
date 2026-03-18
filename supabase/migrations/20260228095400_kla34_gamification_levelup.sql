@@ -17,7 +17,6 @@ BEGIN
         ALTER TYPE notification_type ADD VALUE 'leaderboard_climb';
     END IF;
 END $$;
-
 -- ============================================================================
 -- 2. CREATE USER_GAMIFICATION TABLE (if not exists)
 -- ============================================================================
@@ -33,7 +32,6 @@ CREATE TABLE IF NOT EXISTS user_gamification (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(user_id)
 );
-
 -- Legg til level_up_at hvis kolonnen mangler
 DO $$
 BEGIN
@@ -42,25 +40,20 @@ BEGIN
         ALTER TABLE user_gamification ADD COLUMN level_up_at TIMESTAMPTZ;
     END IF;
 END $$;
-
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_user_gamification_user_id ON user_gamification(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_gamification_level ON user_gamification(current_level);
 CREATE INDEX IF NOT EXISTS idx_user_gamification_xp ON user_gamification(total_xp DESC);
-
 -- Enable RLS
 ALTER TABLE user_gamification ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 CREATE POLICY "Users can view own gamification"
     ON user_gamification FOR SELECT
     USING (auth.uid() = user_id);
-
 CREATE POLICY "Service role can manage gamification"
     ON user_gamification FOR ALL
     USING (true)
     WITH CHECK (true);
-
 -- Trigger for updated_at
 CREATE OR REPLACE FUNCTION update_user_gamification_updated_at()
 RETURNS TRIGGER AS $$
@@ -69,13 +62,11 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 DROP TRIGGER IF EXISTS update_user_gamification_timestamp ON user_gamification;
 CREATE TRIGGER update_user_gamification_timestamp
     BEFORE UPDATE ON user_gamification
     FOR EACH ROW
     EXECUTE FUNCTION update_user_gamification_updated_at();
-
 -- ============================================================================
 -- 3. CREATE XP_TRANSACTIONS TABLE (audit log)
 -- ============================================================================
@@ -93,21 +84,16 @@ CREATE TABLE IF NOT EXISTS xp_transactions (
     level_up BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_xp_transactions_user_id ON xp_transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_xp_transactions_created_at ON xp_transactions(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_xp_transactions_level_up ON xp_transactions(level_up) WHERE level_up = TRUE;
-
 ALTER TABLE xp_transactions ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own xp transactions"
     ON xp_transactions FOR SELECT
     USING (auth.uid() = user_id);
-
 CREATE POLICY "Service role can insert xp transactions"
     ON xp_transactions FOR INSERT
     WITH CHECK (true);
-
 -- ============================================================================
 -- 4. LEVEL CALCULATION FUNCTION
 -- Formula: Level = floor(sqrt(total_xp / 100)) + 1
@@ -120,7 +106,6 @@ BEGIN
     RETURN floor(sqrt(xp::FLOAT / 100)) + 1;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
-
 -- Get XP needed for next level
 CREATE OR REPLACE FUNCTION xp_for_level(level INTEGER)
 RETURNS INTEGER AS $$
@@ -129,7 +114,6 @@ BEGIN
     RETURN ((level - 1) * (level - 1)) * 100;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
-
 -- ============================================================================
 -- 5. TRIGGER: Auto-level up on XP update
 -- ============================================================================
@@ -180,13 +164,11 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 DROP TRIGGER IF EXISTS check_level_up_trigger ON user_gamification;
 CREATE TRIGGER check_level_up_trigger
     BEFORE UPDATE OF total_xp ON user_gamification
     FOR EACH ROW
     EXECUTE FUNCTION trigger_check_level_up();
-
 -- ============================================================================
 -- 6. FUNCTION: Award XP with transaction logging
 -- ============================================================================
@@ -258,7 +240,6 @@ BEGIN
         END;
 END;
 $$ LANGUAGE plpgsql;
-
 -- ============================================================================
 -- 7. FUNCTION: Award login XP with streak calculation
 -- ============================================================================
@@ -336,7 +317,6 @@ BEGIN
         FALSE;
 END;
 $$ LANGUAGE plpgsql;
-
 -- ============================================================================
 -- 8. LEADERBOARD CLIMB DETECTION
 -- ============================================================================
@@ -348,10 +328,8 @@ CREATE TABLE IF NOT EXISTS leaderboard_history (
     recorded_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(user_id, time_period, DATE(recorded_at))
 );
-
 CREATE INDEX IF NOT EXISTS idx_leaderboard_history_user_period ON leaderboard_history(user_id, time_period);
 CREATE INDEX IF NOT EXISTS idx_leaderboard_history_recorded ON leaderboard_history(recorded_at);
-
 -- Function to record leaderboard position and detect climb
 CREATE OR REPLACE FUNCTION record_leaderboard_position(
     p_user_id UUID,
@@ -404,7 +382,6 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
-
 -- ============================================================================
 -- 9. ADD 'level_up' AND 'leaderboard_climb' TO notification_queue TYPE CHECK
 -- ============================================================================
@@ -418,7 +395,6 @@ ALTER TABLE notification_queue ADD CONSTRAINT notification_queue_type_check
         'copy_started', 'daily_digest', 'subscription_change',
         'level_up', 'leaderboard_climb'
     ));
-
 -- ============================================================================
 -- 10. INITIAL DATA: Create gamification records for existing users
 -- ============================================================================
@@ -432,7 +408,6 @@ FROM auth.users u
 LEFT JOIN user_gamification ug ON u.id = ug.user_id
 WHERE ug.id IS NULL
 ON CONFLICT (user_id) DO NOTHING;
-
 -- ============================================================================
 -- DOCUMENTATION
 -- ============================================================================

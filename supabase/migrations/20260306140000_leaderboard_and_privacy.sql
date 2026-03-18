@@ -5,16 +5,13 @@
 -- 1. Add show_on_leaderboard column to user_profiles
 ALTER TABLE user_profiles 
 ADD COLUMN IF NOT EXISTS show_on_leaderboard BOOLEAN DEFAULT false;
-
 -- 2. Add index for efficient leaderboard queries
 CREATE INDEX IF NOT EXISTS idx_user_profiles_leaderboard 
 ON user_profiles(show_on_leaderboard) 
 WHERE show_on_leaderboard = true;
-
 -- 3. Add comment explaining the column
 COMMENT ON COLUMN user_profiles.show_on_leaderboard IS 
 'User preference to appear on paper trading leaderboard. Default false for privacy.';
-
 -- 4. Update existing users to opt-in (optional - set to false for privacy by default)
 -- Uncomment if you want existing users to be opted in:
 -- UPDATE user_profiles SET show_on_leaderboard = true WHERE created_at < NOW();
@@ -27,26 +24,22 @@ COMMENT ON COLUMN user_profiles.show_on_leaderboard IS
 CREATE INDEX IF NOT EXISTS idx_trading_sessions_leaderboard 
 ON trading_sessions(user_id, mode, status, current_capital_nok DESC) 
 WHERE mode = 'paper' AND status = 'active';
-
 -- Index for trades statistics
 CREATE INDEX IF NOT EXISTS idx_trades_user_pnl 
 ON trades(user_id, mode, side, realized_pnl) 
 WHERE mode = 'paper';
-
 -- ============================================================================
 -- RLS Policy for Leaderboard
 -- ============================================================================
 
 -- Ensure user_profiles has RLS enabled
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-
 -- Policy: Users can update their own leaderboard preference
 DROP POLICY IF EXISTS "Users can update own leaderboard preference" ON user_profiles;
 CREATE POLICY "Users can update own leaderboard preference" 
 ON user_profiles FOR UPDATE
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
-
 -- ============================================================================
 -- Helper Function: Get User Rank
 -- ============================================================================
@@ -73,7 +66,6 @@ BEGIN
   RETURN COALESCE(v_rank, 0);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- ============================================================================
 -- Helper Function: Get Leaderboard Stats
 -- ============================================================================

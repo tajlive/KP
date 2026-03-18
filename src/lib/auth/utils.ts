@@ -13,10 +13,14 @@ export async function signInWithOAuth(
 ) {
   const supabase = createClient();
   const providerKey = SUPPORTED_PROVIDERS[provider];
+  if (providerKey === "vipps") {
+    throw new Error(
+      "Vipps uses custom flow via /api/auth/vipps-url; do not call signInWithOAuth for VIPPS.",
+    );
+  }
   const redirectTo = getCallbackUrl(locale);
 
   // FIX: Use ?next= to align with callback/route.ts which reads searchParams.get('next')
-  // Previously used ?redirectTo= which was never read by the callback handler
   const finalRedirectTo = redirectPath
     ? `${redirectTo}?next=${encodeURIComponent(redirectPath)}`
     : redirectTo;
@@ -186,9 +190,7 @@ export async function signInWithEmail(
   return { user: data.user, error: null };
 }
 
-export async function signUpWithEmail(
-  credentials: SignUpCredentials,
-): Promise<{
+export async function signUpWithEmail(credentials: SignUpCredentials): Promise<{
   user: unknown | null;
   error: Error | null;
   session: unknown | null;

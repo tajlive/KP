@@ -1,24 +1,16 @@
-import { requireAuth } from "@/lib/auth-guard";
-import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Én trading-side (alt 1): All trading lives under /paper-trading.
+ * Redirect to single trading page with mode=live for tydelig UX.
+ */
 export default async function LiveTradingPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  await requireAuth(locale);
-  
-  return (
-    <div className="min-h-screen bg-slate-900">
-      <div className="bg-red-500/10 border-b border-red-500/20 px-4 py-3">
-        <p className="text-red-400 text-sm text-center">
-          🔴 Live Trading Mode — Ekte penger er i bruk. Handel med omhu.
-        </p>
-      </div>
-      <UnifiedTradingDashboard />
-    </div>
-  );
+  redirect(`/${locale}/paper-trading?mode=live`);
 }

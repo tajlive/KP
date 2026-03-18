@@ -15,7 +15,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 2. Suggested SQL to run in Supabase SQL Editor if using Webhooks via SQL:
 /*
 SELECT
@@ -30,4 +29,4 @@ SELECT
 */
 
 -- NOTE: The most robust way is to go to Supabase Dashboard -> Database -> Webhooks
--- and create a webhook for "public.profiles" on "INSERT" that calls the "welcome-email" function.
+-- and create a webhook for "public.profiles" on "INSERT" that calls the "welcome-email" function.;

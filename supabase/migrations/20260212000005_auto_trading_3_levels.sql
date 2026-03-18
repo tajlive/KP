@@ -4,11 +4,9 @@
 -- Update risk_level to include Norwegian names and better defaults
 ALTER TABLE auto_trading_settings 
 DROP CONSTRAINT IF EXISTS auto_trading_settings_risk_level_check;
-
 ALTER TABLE auto_trading_settings 
 ADD CONSTRAINT auto_trading_settings_risk_level_check 
 CHECK (risk_level IN ('conservative', 'balanced', 'aggressive', 'low', 'medium', 'high'));
-
 -- Function to get trading level config
 CREATE OR REPLACE FUNCTION get_trading_level_config(p_level TEXT)
 RETURNS JSONB AS $$
@@ -76,7 +74,6 @@ BEGIN
   RETURN v_config;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
-
 -- Function to apply trading level to user settings
 CREATE OR REPLACE FUNCTION apply_trading_level(
   p_user_id UUID,
@@ -139,7 +136,6 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- View for trading levels overview
 CREATE OR REPLACE VIEW trading_levels AS
 SELECT 
@@ -163,14 +159,11 @@ UNION ALL SELECT
   '🚀' as icon,
   'red' as color,
   3 as sort_order;
-
 GRANT SELECT ON trading_levels TO authenticated;
-
 -- Default settings for existing users (set to balanced)
 INSERT INTO auto_trading_settings (user_id, risk_level)
 SELECT id, 'balanced'
 FROM profiles
 WHERE id NOT IN (SELECT user_id FROM auto_trading_settings)
 ON CONFLICT (user_id) DO NOTHING;
-
 SELECT 'Auto-trading 3 levels setup complete' as status;

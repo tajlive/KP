@@ -16,7 +16,6 @@
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "pg_cron";
-
 -- ============================================================================
 -- 1. ENUM TYPES
 -- ============================================================================
@@ -58,7 +57,6 @@ BEGIN
     CREATE TYPE risk_level AS ENUM ('conservative', 'balanced', 'aggressive');
   END IF;
 END $$;
-
 -- ============================================================================
 -- 2. USER PROFILES (extends Supabase auth.users)
 -- ============================================================================
@@ -88,7 +86,6 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
@@ -102,12 +99,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-
 -- ============================================================================
 -- 3. TRADING SESSIONS (mutable hot state)
 -- ============================================================================
@@ -149,23 +144,18 @@ CREATE TABLE IF NOT EXISTS trading_sessions (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- Prevent duplicate active sessions per user+pair
 CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_session 
   ON trading_sessions (user_id, trading_pair)
   WHERE status = 'active';
-
 -- Fast lookup indexes
 CREATE INDEX IF NOT EXISTS idx_sessions_heartbeat 
   ON trading_sessions (last_heartbeat)
   WHERE status = 'active';
-
 CREATE INDEX IF NOT EXISTS idx_sessions_user 
   ON trading_sessions (user_id, status);
-
 CREATE INDEX IF NOT EXISTS idx_sessions_user_mode 
   ON trading_sessions (user_id, mode);
-
 -- ============================================================================
 -- 4. TRADES (append-only event log - NEVER update or delete)
 -- ============================================================================
@@ -208,16 +198,13 @@ CREATE TABLE IF NOT EXISTS trades (
   executed_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 -- CRITICAL: Idempotency constraint prevents duplicate trades
 CREATE UNIQUE INDEX IF NOT EXISTS idx_trades_idempotency ON trades (idempotency_key);
-
 -- Performance indexes
 CREATE INDEX IF NOT EXISTS idx_trades_session ON trades (session_id, executed_at DESC);
 CREATE INDEX IF NOT EXISTS idx_trades_user ON trades (user_id, executed_at DESC);
 CREATE INDEX IF NOT EXISTS idx_trades_user_mode ON trades (user_id, mode, executed_at DESC);
 CREATE INDEX IF NOT EXISTS idx_trades_leader ON trades (leader_trade_id) WHERE leader_trade_id IS NOT NULL;
-
 -- ============================================================================
 -- 5. COPY-TRADING RELATIONSHIPS
 -- ============================================================================
@@ -241,11 +228,9 @@ CREATE TABLE IF NOT EXISTS copy_trading_follows (
   -- Can't follow yourself
   CONSTRAINT no_self_follow CHECK (follower_id != leader_id)
 );
-
 CREATE UNIQUE INDEX IF NOT EXISTS idx_follow_unique ON copy_trading_follows (follower_id, leader_id);
 CREATE INDEX IF NOT EXISTS idx_follow_leader ON copy_trading_follows (leader_id) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS idx_follow_follower ON copy_trading_follows (follower_id) WHERE is_active = true;
-
 -- ============================================================================
 -- 6. COPY-TRADE QUEUE (fan-out buffer)
 -- ============================================================================
@@ -271,10 +256,8 @@ CREATE TABLE IF NOT EXISTS copy_trade_queue (
   
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 CREATE INDEX IF NOT EXISTS idx_copy_queue_pending ON copy_trade_queue (created_at) WHERE status = 'pending';
 CREATE UNIQUE INDEX IF NOT EXISTS idx_copy_queue_unique ON copy_trade_queue (leader_trade_id, follower_id);
-
 -- ============================================================================
 -- 7. NOTIFICATION QUEUE
 -- ============================================================================
@@ -292,9 +275,7 @@ CREATE TABLE IF NOT EXISTS notification_queue (
   sent_at     TIMESTAMPTZ,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
 CREATE INDEX IF NOT EXISTS idx_notifications_pending ON notification_queue (created_at) WHERE status = 'pending';
-
 -- ============================================================================
 -- 8. LEADERBOARD VIEW
 -- ============================================================================
@@ -330,9 +311,7 @@ WHERE t.executed_at > now() - INTERVAL '30 days'
 GROUP BY up.id, up.display_name, up.avatar_url
 HAVING COUNT(t.id) >= 5
 ORDER BY total_pnl DESC;
-
 CREATE UNIQUE INDEX IF NOT EXISTS idx_leaderboard_user ON leaderboard (user_id);
-
 -- Refresh leaderboard every minute
 SELECT cron.unschedule('refresh-leaderboard');
 SELECT cron.schedule(
@@ -340,7 +319,6 @@ SELECT cron.schedule(
   '* * * * *',
   $$REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboard$$
 );
-
 -- ============================================================================
 -- 9. DATABASE TRIGGERS
 -- ============================================================================
@@ -383,13 +361,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS on_trade_update_session ON trades;
 CREATE TRIGGER on_trade_update_session
   AFTER INSERT ON trades
   FOR EACH ROW
   EXECUTE FUNCTION trigger_update_session_state();
-
 -- Trigger: Trade notification
 CREATE OR REPLACE FUNCTION trigger_trade_notification()
 RETURNS TRIGGER AS $$
@@ -415,13 +391,11 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS on_trade_notify ON trades;
 CREATE TRIGGER on_trade_notify
   AFTER INSERT ON trades
   FOR EACH ROW
   EXECUTE FUNCTION trigger_trade_notification();
-
 -- ============================================================================
 -- 10. CRASH DETECTION CRON
 -- ============================================================================
@@ -442,7 +416,6 @@ SELECT cron.schedule(
     FROM crashed;
   $$
 );
-
 -- ============================================================================
 -- 11. ROW LEVEL SECURITY
 -- ============================================================================
@@ -455,13 +428,11 @@ CREATE POLICY "Users read own profile" ON user_profiles
   FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users update own profile" ON user_profiles
   FOR UPDATE USING (auth.uid() = id);
-
 -- trading_sessions: own sessions only
 ALTER TABLE trading_sessions ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users manage own sessions" ON trading_sessions;
 CREATE POLICY "Users manage own sessions" ON trading_sessions
   FOR ALL USING (auth.uid() = user_id);
-
 -- trades: own trades only
 ALTER TABLE trades ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users see own trades" ON trades;
@@ -471,7 +442,6 @@ CREATE POLICY "Users see own trades" ON trades
 -- Service role bypass for API routes
 CREATE POLICY "Service role full access" ON trades
   FOR ALL USING (auth.role() = 'service_role');
-
 -- copy_trading_follows
 ALTER TABLE copy_trading_follows ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users see own follows" ON copy_trading_follows;
@@ -480,23 +450,19 @@ CREATE POLICY "Users see own follows" ON copy_trading_follows
   FOR SELECT USING (auth.uid() = follower_id OR auth.uid() = leader_id);
 CREATE POLICY "Users manage own follows" ON copy_trading_follows
   FOR ALL USING (auth.uid() = follower_id);
-
 -- notification_queue
 ALTER TABLE notification_queue ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users see own notifications" ON notification_queue;
 CREATE POLICY "Users see own notifications" ON notification_queue
   FOR ALL USING (auth.uid() = user_id);
-
 -- copy_trade_queue: service role only
 ALTER TABLE copy_trade_queue ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Service role processes queue" ON copy_trade_queue;
 CREATE POLICY "Service role processes queue" ON copy_trade_queue
   FOR ALL USING (auth.role() = 'service_role');
-
 -- leaderboard: public read (grant to authenticated)
 GRANT SELECT ON leaderboard TO authenticated;
 GRANT SELECT ON leaderboard TO anon;
-
 -- ============================================================================
 -- 12. HELPER FUNCTIONS
 -- ============================================================================
@@ -511,7 +477,6 @@ BEGIN
   RETURN p_session_id || '-' || p_side || '-' || to_char(p_timestamp, 'YYYYMMDD-HH24MISS-MS');
 END;
 $$ LANGUAGE plpgsql;
-
 -- Check if user can follow more leaders (based on tier)
 CREATE OR REPLACE FUNCTION can_follow_leader(p_user_id UUID)
 RETURNS BOOLEAN AS $$
@@ -536,7 +501,6 @@ BEGIN
   RETURN current_follows < max_follows;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- ============================================================================
 -- 13. BACKWARD COMPATIBILITY VIEWS (for smooth migration)
 -- ============================================================================
@@ -570,7 +534,6 @@ SELECT
   NULL::text as close_reason
 FROM trades t
 WHERE t.mode = 'paper';
-
 -- ============================================================================
 -- VERIFICATION
 -- ============================================================================

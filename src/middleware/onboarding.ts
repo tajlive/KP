@@ -5,7 +5,6 @@ import { createSupabaseClient, redirectWithCookies } from "./auth-guard";
 const PROTECTED_PATHS = [
   "/dashboard",
   "/innstillinger",
-  "/beta",
   "/admin",
   "/checkout",
   "/akademi",
@@ -63,14 +62,16 @@ export async function handleOnboarding(
 
       if (
         profile &&
-        (profile.onboarding_completed === true || profile.setup_completed_at != null)
+        (profile.onboarding_completed === true ||
+          profile.setup_completed_at != null)
       ) {
         onboardingCompleted = true;
       }
 
       if (onboardingCompleted) {
         const host = request.headers.get("host") || "";
-        const isLocalhost = host.startsWith("localhost") || host.startsWith("127.0.0.1");
+        const isLocalhost =
+          host.startsWith("localhost") || host.startsWith("127.0.0.1");
         response.cookies.set("kp_onboarding_status", "completed", {
           path: "/",
           maxAge: 3600 * 24 * 30,

@@ -8,6 +8,7 @@ import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { MarketingProviders } from "@/components/providers/MarketingProviders";
+import { QueryProvider } from "@/components/query-provider";
 import { PlausibleScript } from "@/components/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -17,38 +18,38 @@ import "../globals.css";
 
 /**
  * MARKETING LAYOUT - Optimized for Performance
- * 
+ *
  * KEY OPTIMIZATIONS:
- * 
+ *
  * 1. AuthProvider in root - needed so MarketingNavigation can show Min side / Logg ut when logged in
- * 
+ *
  * 2. REMOVED OnboardingProvider + OnboardingFlow - Only for logged-in users
  *    (available in /dashboard layout)
- * 
+ *
  * 3. REMOVED TradingModeProvider - Only for trading features
  *    (available in /paper-trading, /auto-trading layouts)
- * 
+ *
  * 4. REMOVED ToastProvider - Not critical for marketing
  *    (available in app areas)
- * 
+ *
  * 5. REPLACED Navigation with MarketingNavigation
  *    - No auth dependency
  *    - No TradingModeToggle
  *    - Smaller bundle, faster hydration
- * 
+ *
  * 6. REPLACED ClientSideProviders with MarketingProviders
  *    - No ChatWidget (deferred to dashboard)
  *    - No PWA loader (deferred)
  *    - Only essential error handling
- * 
+ *
  * 7. FONT OPTIMIZATIONS (Task 2):
  *    - Inter: display="swap", preload=true (body text, needs swap)
  *    - adjustFontFallback: true (metric optimization)
- * 
+ *
  * 8. RESOURCE HINTS (Task 5):
  *    - DNS prefetch + preconnect for Binance API
  *    - DNS prefetch + preconnect for Supabase (conditional)
- * 
+ *
  * APP ROUTES with full providers:
  * - /[locale]/dashboard/* - has AuthProvider, OnboardingProvider
  * - /[locale]/paper-trading/* - has AuthProvider, TradingModeProvider
@@ -57,7 +58,7 @@ import "../globals.css";
  * - /[locale]/marketplace/* - has AuthProvider
  * - /[locale]/checkout/* - has AuthProvider
  * - /[locale]/onboarding/* - has OnboardingProvider
- * 
+ *
  * EXPECTED IMPACT:
  * - Initial JS: ~1.2MB → ~600KB (-50%)
  * - Hydration time: ~3s → ~1s (-67%)
@@ -71,14 +72,21 @@ const inter = Inter({
   variable: "--font-inter",
   preload: true,
   adjustFontFallback: true,
-  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+  fallback: [
+    "system-ui",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "sans-serif",
+  ],
 });
 
 export async function generateStaticParams() {
   // Generate static pages for ALL locales including default "no"
   // This ensures / (no), /en/, /th/, /zh/ are all pre-rendered at build time
   return [
-    { locale: "no" },  // Default locale - critical for TTFB
+    { locale: "no" }, // Default locale - critical for TTFB
     { locale: "en" },
     { locale: "th" },
     { locale: "zh" },
@@ -105,19 +113,28 @@ export async function generateMetadata({
     description: isNo
       ? "Norges smarteste crypto trading bot. Øv med papirhandel, aktiver autotrading og la boten jobbe for deg — helt på norsk."
       : "Norway's smartest crypto trading bot. Practice with paper trading, activate autotrading, and let the bot work for you.",
-    keywords: ["crypto trading", "bitcoin", "kryptovaluta", "paper trading", "trading bot", "Norge"],
+    keywords: [
+      "crypto trading",
+      "bitcoin",
+      "kryptovaluta",
+      "paper trading",
+      "trading bot",
+      "Norge",
+    ],
     openGraph: {
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
+      images: [
+        { url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" },
+      ],
     },
   };
 }
 
-const VALID_LOCALES = ['no', 'en', 'th', 'zh'] as const;
+const VALID_LOCALES = ["no", "en", "th", "zh"] as const;
 type ValidLocale = (typeof VALID_LOCALES)[number];
 
 function resolveLocale(raw: string | undefined): ValidLocale {
-  if (raw === 'no' || raw === 'en' || raw === 'th' || raw === 'zh') return raw;
-  return 'no';
+  if (raw === "no" || raw === "en" || raw === "th" || raw === "zh") return raw;
+  return "no";
 }
 
 interface LayoutProps {
@@ -144,10 +161,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
 
   return (
-    <html
-      lang={locale}
-      className={inter.variable}
-    >
+    <html lang={locale} className={inter.variable}>
       <head suppressHydrationWarning>
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
         <script
@@ -208,15 +222,27 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         />
         {/* Resource Hints for External APIs */}
         <link rel="dns-prefetch" href="https://api.binance.com" />
-        <link rel="preconnect" href="https://api.binance.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://api.binance.com"
+          crossOrigin="anonymous"
+        />
         {supabaseHost && (
           <>
             <link rel="dns-prefetch" href={supabaseHost} />
-            <link rel="preconnect" href={supabaseHost} crossOrigin="anonymous" />
+            <link
+              rel="preconnect"
+              href={supabaseHost}
+              crossOrigin="anonymous"
+            />
           </>
         )}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <OrganizationJsonLd />
       </head>
       <body
@@ -226,15 +252,17 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <SessionCleanup />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <MarketingProviders>
-            <ErrorBoundary>
-              <AuthProvider>
-                <div className="relative min-h-screen flex flex-col">
-                  <MarketingNavigation />
-                <main className="flex-1">{children}</main>
-                  <ConditionalFooter />
-                </div>
-              </AuthProvider>
-            </ErrorBoundary>
+            <QueryProvider>
+              <ErrorBoundary>
+                <AuthProvider>
+                  <div className="relative min-h-screen flex flex-col">
+                    <MarketingNavigation />
+                    <main className="flex-1">{children}</main>
+                    <ConditionalFooter />
+                  </div>
+                </AuthProvider>
+              </ErrorBoundary>
+            </QueryProvider>
           </MarketingProviders>
         </NextIntlClientProvider>
         <PlausibleScript />

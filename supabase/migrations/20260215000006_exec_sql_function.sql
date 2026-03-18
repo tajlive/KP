@@ -29,9 +29,7 @@ EXCEPTION WHEN OTHERS THEN
   RETURN result;
 END;
 $$;
-
 -- Grant execute to service_role only
 GRANT EXECUTE ON FUNCTION exec_sql(text) TO service_role;
 REVOKE EXECUTE ON FUNCTION exec_sql(text) FROM authenticated, anon;
-
 COMMENT ON FUNCTION exec_sql(text) IS 'Execute SQL queries via RPC (service_role only)';

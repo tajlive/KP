@@ -10,7 +10,6 @@ ALTER TABLE risk_profiles
   ADD COLUMN IF NOT EXISTS leverage_allowed BOOLEAN DEFAULT false,
   ADD COLUMN IF NOT EXISTS max_position_pct DECIMAL(5,2) DEFAULT 5.0,
   ADD COLUMN IF NOT EXISTS max_exposure_pct DECIMAL(5,2) DEFAULT 15.0;
-
 -- Oppdater eksisterende profiler med nye defaults
 UPDATE risk_profiles 
   SET max_daily_loss_pct = COALESCE(max_daily_loss_pct, 3.0),
@@ -18,7 +17,6 @@ UPDATE risk_profiles
       max_exposure_pct = COALESCE(max_exposure_pct, max_total_exposure_pct, 15.0),
       allowed_pairs = COALESCE(allowed_pairs, '{BTCUSDT,ETHUSDT}'),
       leverage_allowed = COALESCE(leverage_allowed, false);
-
 -- 2. OPPDATERT bot_health med KLA-137 felter
 ALTER TABLE bot_health
   ADD COLUMN IF NOT EXISTS status TEXT CHECK (status IN ('running', 'paused', 'error', 'stopped')) DEFAULT 'stopped',
@@ -28,7 +26,6 @@ ALTER TABLE bot_health
   ADD COLUMN IF NOT EXISTS consecutive_errors INTEGER DEFAULT 0,
   ADD COLUMN IF NOT EXISTS max_consecutive_errors INTEGER DEFAULT 3,
   ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
-
 -- 3. NY trade_rejections tabell
 CREATE TABLE IF NOT EXISTS trade_rejections (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -66,12 +63,10 @@ CREATE TABLE IF NOT EXISTS trade_rejections (
   
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_trade_rejections_user ON trade_rejections(user_id);
 CREATE INDEX IF NOT EXISTS idx_trade_rejections_session ON trade_rejections(session_id);
 CREATE INDEX IF NOT EXISTS idx_trade_rejections_reason ON trade_rejections(rejection_reason);
 CREATE INDEX IF NOT EXISTS idx_trade_rejections_created ON trade_rejections(created_at DESC);
-
 -- 4. NY trade_decisions tabell (for audit trail)
 CREATE TABLE IF NOT EXISTS trade_decisions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -105,28 +100,21 @@ CREATE TABLE IF NOT EXISTS trade_decisions (
   
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_trade_decisions_user ON trade_decisions(user_id);
 CREATE INDEX IF NOT EXISTS idx_trade_decisions_session ON trade_decisions(session_id);
 CREATE INDEX IF NOT EXISTS idx_trade_decisions_created ON trade_decisions(created_at DESC);
-
 -- 5. RLS Policies
 ALTER TABLE trade_rejections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE trade_decisions ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users view own trade rejections" 
   ON trade_rejections FOR SELECT USING (auth.uid() = user_id);
-
 CREATE POLICY "Users view own trade decisions" 
   ON trade_decisions FOR SELECT USING (auth.uid() = user_id);
-
 -- System kan insert (via service role)
 CREATE POLICY "System insert trade rejections" 
   ON trade_rejections FOR INSERT WITH CHECK (auth.uid() = user_id);
-
 CREATE POLICY "System insert trade decisions" 
   ON trade_decisions FOR INSERT WITH CHECK (auth.uid() = user_id);
-
 -- 6. SEED standard risk profiler (hvis de ikke finnes)
 -- Bruker VALUES i stedet for unnest for å unngå CASE/unnest-konflikten
 INSERT INTO risk_profiles (user_id, name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, leverage_allowed, is_active)
@@ -150,7 +138,6 @@ WHERE NOT EXISTS (
   SELECT 1 FROM risk_profiles rp WHERE rp.user_id = u.id
 )
 ON CONFLICT DO NOTHING;
-
 -- 7. Funksjon for å beregne daily loss
 CREATE OR REPLACE FUNCTION calculate_daily_loss(p_user_id UUID, p_session_id UUID)
 RETURNS NUMERIC AS $$
@@ -182,7 +169,6 @@ BEGIN
   RETURN daily_loss;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 8. Funksjon for å sjekke bot health
 CREATE OR REPLACE FUNCTION is_bot_healthy(p_bot_id UUID)
 RETURNS BOOLEAN AS $$

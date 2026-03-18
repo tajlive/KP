@@ -15,7 +15,7 @@ Klarpakke is **production-ready** for Monday's launch. All critical paths are ty
 ✅ **Auth flow** - 100% type-safe  
 ✅ **Dashboard** - 100% type-safe  
 ✅ **API routes** - 100% type-safe  
-✅ **Build** - SUCCESS with `ignoreBuildErrors: true`  
+✅ **Build** - SUCCESS with `ignoreBuildErrors: true`
 
 ### Why `ignoreBuildErrors: true` is SAFE for launch:
 
@@ -33,14 +33,14 @@ Klarpakke is **production-ready** for Monday's launch. All critical paths are ty
 
 ### Fixed Errors (229 → ~0)
 
-| Category | Before | After | Status |
-|----------|--------|-------|--------|
-| Supabase client types | 40 | 0 | ✅ Fixed |
-| Next.js 15 PageProps | 20 | 0 | ✅ Fixed |
-| Auth flow | 15 | 0 | ✅ Fixed |
-| Dashboard | 25 | 0 | ✅ Fixed |
-| API routes | 100+ | 0 | ✅ Fixed |
-| Misc type errors | 29 | ~0 | ✅ Fixed |
+| Category              | Before | After | Status   |
+| --------------------- | ------ | ----- | -------- |
+| Supabase client types | 40     | 0     | ✅ Fixed |
+| Next.js 15 PageProps  | 20     | 0     | ✅ Fixed |
+| Auth flow             | 15     | 0     | ✅ Fixed |
+| Dashboard             | 25     | 0     | ✅ Fixed |
+| API routes            | 100+   | 0     | ✅ Fixed |
+| Misc type errors      | 29     | ~0    | ✅ Fixed |
 
 ### Remaining Errors (if any)
 
@@ -61,6 +61,7 @@ These are **non-blocking**:
 ## Post-Launch Cleanup Roadmap
 
 ### Week 1 (March 10-17): KLA-160
+
 **Goal:** Fix auto_trading table types
 
 ```bash
@@ -72,6 +73,7 @@ These are **non-blocking**:
 ```
 
 ### Week 2 (March 17-24): KLA-161
+
 **Goal:** Fix relationship query types
 
 ```bash
@@ -79,10 +81,14 @@ These are **non-blocking**:
 - [x] Fix SelectQueryError in cron/daily-summary (KLA-163: bruk id, typpede UserForSummary)
 - [x] Fix SelectQueryError in email/send + lib/email (KLA-163: fjernet as unknown på user_profiles)
 - [x] Update user_profiles query types (KLA-162: normalisert til .eq("id", user.id))
-- [ ] Fix analytics event types
+- [x] Dashboard page: fjernet trial_ends_at fra select, normalisert activeSession (current_capital_nok)
+- [x] BotWizard: Icon-komponent i stedet for icon-streng; useProfile update payload (created_at null)
+- [x] Auth utils: Vipps runtime-check før signInWithOAuth
+- [ ] Fix analytics event types; ClientProfile user_badges/leads (genererte typer); binance-executor notification type enum
 ```
 
 ### Week 3 (March 24-31): KLA-162
+
 **Goal:** Enable strict mode
 
 ```bash
@@ -99,12 +105,15 @@ These are **non-blocking**:
 ## Monitoring
 
 ### Production Monitoring
+
 - **Sentry:** https://sentry.io/klarpakke
 - **Vercel Analytics:** https://vercel.com/tom-jensens-projects/klarpakke
 - **Uptime:** Target 99.9%
 
 ### Type-Related Error Tracking
+
 Watch for these Sentry errors:
+
 - `TypeError: Cannot read property of undefined` - Possible type mismatch
 - `Supabase query failed` - Database type mismatch
 
@@ -126,13 +135,21 @@ If any type-related errors appear in production, escalate to P0 immediately.
 ```typescript
 // ✅ GOOD: Explicit return type
 async function getUser(id: string): Promise<User | null> {
-  const { data } = await supabase.from('users').select('*').eq('id', id).single();
+  const { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", id)
+    .single();
   return data as User | null;
 }
 
 // ❌ BAD: Implicit any
 async function getUser(id) {
-  const { data } = await supabase.from('users').select('*').eq('id', id).single();
+  const { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", id)
+    .single();
   return data;
 }
 ```
@@ -145,6 +162,7 @@ async function getUser(id) {
 
 **Decision:** Enable `ignoreBuildErrors: true` for launch  
 **Rationale:**
+
 - 229 → 0 critical type errors fixed
 - All user-facing paths are type-safe
 - Remaining errors are in non-critical background jobs
@@ -177,4 +195,4 @@ Etter regenerering: kjør `npm run build` og fiks eventuelle nye type-feil. Se o
 
 ---
 
-*This document should be updated weekly until all technical debt is resolved.*
+_This document should be updated weekly until all technical debt is resolved._

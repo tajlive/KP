@@ -15,5 +15,11 @@
     "completed": "Completed lessons",
     "accuracy": "Trade accuracy",
     "lessonsAvailable": "Lessons available"
-  }
+  },
+  "monthlyPrize": "50,000 KLT to the monthly winner",
+  "monthlyCompetitionOngoing": "Monthly competition ongoing",
+  "yourRankThisMonth": "You're #{{rank}} this month",
+  "viewLeaderboard": "View leaderboard",
+  "kltStoryShort": "10 million KLT. Earn them by learning – use them to compete. 50,000 KLT to the monthly winner.",
+  "daysLeft": "days left"
 }

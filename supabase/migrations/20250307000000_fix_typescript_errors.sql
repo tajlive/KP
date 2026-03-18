@@ -10,23 +10,18 @@
 ALTER TABLE user_profiles 
 ADD COLUMN IF NOT EXISTS display_name text,
 ADD COLUMN IF NOT EXISTS full_name text;
-
 -- Add amount column to subscriptions if not exists
 ALTER TABLE subscriptions 
 ADD COLUMN IF NOT EXISTS amount numeric;
-
 -- Add completed_lessons column to onboarding_progress if not exists
 ALTER TABLE onboarding_progress 
 ADD COLUMN IF NOT EXISTS completed_lessons integer DEFAULT 0;
-
 -- Add email column to user_profiles if not exists
 ALTER TABLE user_profiles 
 ADD COLUMN IF NOT EXISTS email text;
-
 -- Add status column to user_profiles if not exists
 ALTER TABLE user_profiles 
 ADD COLUMN IF NOT EXISTS status text DEFAULT 'active';
-
 -- -----------------------------------------------------------------------------
 -- 2. Create missing tables
 -- -----------------------------------------------------------------------------
@@ -39,7 +34,6 @@ CREATE TABLE IF NOT EXISTS ai_cache (
     created_at timestamptz DEFAULT now(),
     updated_at timestamptz DEFAULT now()
 );
-
 -- Create auto_trading_sessions table
 CREATE TABLE IF NOT EXISTS auto_trading_sessions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -50,7 +44,6 @@ CREATE TABLE IF NOT EXISTS auto_trading_sessions (
     created_at timestamptz DEFAULT now(),
     updated_at timestamptz DEFAULT now()
 );
-
 -- Create strategy_logs table
 CREATE TABLE IF NOT EXISTS strategy_logs (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -59,7 +52,6 @@ CREATE TABLE IF NOT EXISTS strategy_logs (
     status text NOT NULL,
     created_at timestamptz DEFAULT now()
 );
-
 -- Create trading_logs table
 CREATE TABLE IF NOT EXISTS trading_logs (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -69,7 +61,6 @@ CREATE TABLE IF NOT EXISTS trading_logs (
     details jsonb,
     created_at timestamptz DEFAULT now()
 );
-
 -- Create strategy_reviews table
 CREATE TABLE IF NOT EXISTS strategy_reviews (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -79,7 +70,6 @@ CREATE TABLE IF NOT EXISTS strategy_reviews (
     review text,
     created_at timestamptz DEFAULT now()
 );
-
 -- Create leaderboard table
 CREATE TABLE IF NOT EXISTS leaderboard (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -92,7 +82,6 @@ CREATE TABLE IF NOT EXISTS leaderboard (
     created_at timestamptz DEFAULT now(),
     updated_at timestamptz DEFAULT now()
 );
-
 -- -----------------------------------------------------------------------------
 -- 3. Enable RLS on new tables
 -- -----------------------------------------------------------------------------
@@ -103,7 +92,6 @@ ALTER TABLE strategy_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE trading_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE strategy_reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leaderboard ENABLE ROW LEVEL SECURITY;
-
 -- -----------------------------------------------------------------------------
 -- 4. Create basic RLS policies
 -- -----------------------------------------------------------------------------
@@ -121,7 +109,6 @@ BEGIN
             FOR INSERT WITH CHECK (user_id = auth.uid());
     END IF;
 END $$;
-
 -- Strategy reviews policies
 DO $$
 BEGIN
@@ -130,7 +117,6 @@ BEGIN
             FOR SELECT USING (true);
     END IF;
 END $$;
-
 -- Leaderboard policies
 DO $$
 BEGIN

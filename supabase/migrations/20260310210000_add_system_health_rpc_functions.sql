@@ -6,7 +6,6 @@ DROP FUNCTION IF EXISTS get_cron_jobs_status();
 DROP FUNCTION IF EXISTS get_rls_status();
 DROP FUNCTION IF EXISTS get_top_tables_by_rows(INTEGER);
 DROP FUNCTION IF EXISTS get_system_metrics();
-
 -- ============================================
 -- 1. Hent cron job status med siste kjøring
 -- ============================================
@@ -40,7 +39,6 @@ BEGIN
     ORDER BY j.jobname;
 END;
 $$;
-
 -- ============================================
 -- 2. Hent RLS status for alle tabeller
 -- ============================================
@@ -80,7 +78,6 @@ BEGIN
     RETURN QUERY SELECT v_total, v_enabled, v_tables;
 END;
 $$;
-
 -- ============================================
 -- 3. Hent topp tabeller etter radtall
 -- ============================================
@@ -103,7 +100,6 @@ BEGIN
     LIMIT limit_count;
 END;
 $$;
-
 -- ============================================
 -- 4. Hent system metrics (for fremtidig bruk)
 -- ============================================
@@ -149,26 +145,21 @@ BEGIN
       AND updated_at > NOW() - INTERVAL '24 hours';
 END;
 $$;
-
 -- ============================================
 -- Rettigheter
 -- ============================================
 GRANT EXECUTE ON FUNCTION get_cron_jobs_status() TO authenticated;
 GRANT EXECUTE ON FUNCTION get_cron_jobs_status() TO service_role;
-
 GRANT EXECUTE ON FUNCTION get_rls_status() TO authenticated;
 GRANT EXECUTE ON FUNCTION get_rls_status() TO service_role;
-
 GRANT EXECUTE ON FUNCTION get_top_tables_by_rows(integer) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_top_tables_by_rows(integer) TO service_role;
-
 GRANT EXECUTE ON FUNCTION get_system_metrics() TO authenticated;
 GRANT EXECUTE ON FUNCTION get_system_metrics() TO service_role;
-
 -- ============================================
 -- Verifisering:
 -- ============================================
 -- SELECT * FROM get_cron_jobs_status();
 -- SELECT * FROM get_rls_status();
 -- SELECT * FROM get_top_tables_by_rows(10);
--- SELECT * FROM get_system_metrics();
+-- SELECT * FROM get_system_metrics();;

@@ -3,13 +3,7 @@
 import { PaymentMethodSelector } from "@/components/payment/PaymentMethodSelector";
 import { createClient } from "@/lib/utils";
 import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  Check,
-  CreditCard,
-  Loader2,
-  Shield,
-} from "lucide-react";
+import { ArrowLeft, Check, CreditCard, Loader2, Shield } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,7 +13,7 @@ import {
   getPrice,
   getPriceId,
   planParamToTier,
-  TierName,
+  type TierSlug,
 } from "@/lib/pricing.config";
 import { User } from "@supabase/supabase-js";
 
@@ -33,7 +27,7 @@ export default function CheckoutContent() {
 
   const tStudie = useTranslations("studieprogram.tiers");
 
-  const planId = planParamToTier(searchParams?.get("plan") ?? null) as TierName;
+  const planId = planParamToTier(searchParams?.get("plan") ?? null);
 
   // Use centralized config
   const price = getPrice(planId, "monthly", "NOK");

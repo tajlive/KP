@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Check, ChevronRight, Shield } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 interface OnboardingCompletionProps {
   onClose: () => void;
@@ -11,6 +11,7 @@ interface OnboardingCompletionProps {
 
 export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
   const router = useRouter();
+  const locale = (useParams()?.locale as string) ?? "no";
 
   return (
     <motion.div
@@ -62,7 +63,7 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => router.push("/live-trading")}
+          onClick={() => router.push(`/${locale}/paper-trading?mode=live`)}
         >
           Prøv live trading
         </Button>

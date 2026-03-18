@@ -19,7 +19,6 @@ EXCEPTION WHEN OTHERS THEN
     -- Jobben eksisterte ikke, fortsett
     NULL;
 END $$;
-
 -- ============================================
 -- 3. Opprett ny cron-jobb
 -- Kjør hvert 5. minutt for å prosessere notification queue
@@ -31,7 +30,6 @@ SELECT cron.schedule(
     SELECT process_pending_notifications(10);
     $$
 );
-
 -- ============================================
 -- 4. Verifiser at jobben ble opprettet
 -- ============================================
@@ -42,7 +40,6 @@ SELECT
     active
 FROM cron.job
 WHERE jobname = 'process-notification-queue';
-
 -- ============================================
 -- Verifisering etter deploy:
 -- ============================================
@@ -56,4 +53,4 @@ WHERE jobname = 'process-notification-queue';
 -- LIMIT 5;
 --
 -- -- Test manuell kjøring:
--- SELECT * FROM process_pending_notifications(5);
+-- SELECT * FROM process_pending_notifications(5);;

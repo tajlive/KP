@@ -5,11 +5,11 @@
  * får opprettet profil slik at de vises i admin-brukerlisten.
  */
 
-import { createClient } from '@supabase/supabase-js';
-import { createClient as createServerClient } from '@/lib/supabase/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 
-const ADMIN_EMAILS = ['tomarnejensen@gmail.com', 'admin@klarpakke.no'];
+const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
 
 function getSupabaseAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -22,17 +22,23 @@ function getSupabaseAdminClient() {
 
 async function verifyAdmin(request: NextRequest) {
   const authClient = await createServerClient();
-  const { data: { user } } = await authClient.auth.getUser();
+  const {
+    data: { user },
+  } = await authClient.auth.getUser();
   if (!user)
-    return { isAdmin: false as const, error: 'Unauthorized', status: 401 };
-  const isWhitelisted = ADMIN_EMAILS.includes(user.email || '');
+    return { isAdmin: false as const, error: "Unauthorized", status: 401 };
+  const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
   const { data: profile } = await authClient
-    .from('user_profiles')
-    .select('role')
-    .eq('id', user.id)
+    .from("user_profiles")
+    .select("role")
+    .eq("id", user.id)
     .single();
-  if (!isWhitelisted && profile?.role !== 'admin')
-    return { isAdmin: false as const, error: 'Forbidden: Admin required', status: 403 };
+  if (!isWhitelisted && profile?.role !== "admin")
+    return {
+      isAdmin: false as const,
+      error: "Forbidden: Admin required",
+      status: 403,
+    };
   return { isAdmin: true as const, user };
 }
 
@@ -44,23 +50,27 @@ export async function POST(request: NextRequest) {
   if (!adminCheck.isAdmin) {
     return NextResponse.json(
       { error: adminCheck.error },
-      { status: adminCheck.status }
+      { status: adminCheck.status },
     );
   }
 
   const supabase = getSupabaseAdminClient();
   if (!supabase) {
     return NextResponse.json(
-      { error: 'Admin client not configured' },
-      { status: 503 }
+      { error: "Admin client not configured" },
+      { status: 503 },
     );
   }
 
   try {
     const existingProfileIds = new Set<string>();
-    const { data: profiles } = await supabase.from('user_profiles').select('id');
+    const { data: profiles } = await supabase
+      .from("user_profiles")
+      .select("id");
     if (profiles) {
-      (profiles as { id: string }[]).forEach((p) => existingProfileIds.add(p.id));
+      (profiles as { id: string }[]).forEach((p) =>
+        existingProfileIds.add(p.id),
+      );
     }
 
     let page = 1;
@@ -78,16 +88,14 @@ export async function POST(request: NextRequest) {
     }> = [];
 
     while (true) {
-      const { data: listData, error: listError } = await supabase.auth.admin.listUsers({
-        page,
-        perPage,
-      });
+      const { data: listData, error: listError } =
+        await supabase.auth.admin.listUsers({
+          page,
+          perPage,
+        });
       if (listError) {
-        console.error('[Admin Users Sync] listUsers error:', listError);
-        return NextResponse.json(
-          { error: listError.message },
-          { status: 400 }
-        );
+        console.error("[Admin Users Sync] listUsers error:", listError);
+        return NextResponse.json({ error: listError.message }, { status: 400 });
       }
       const users = listData.users;
       if (!users?.length) break;
@@ -98,14 +106,14 @@ export async function POST(request: NextRequest) {
         const fullName =
           (u.user_metadata?.full_name as string) ||
           (u.user_metadata?.name as string) ||
-          (u.email?.split('@')[0] ?? 'Trader');
+          (u.email?.split("@")[0] ?? "Trader");
         toUpsert.push({
           id: authId,
-          email: u.email ?? '',
+          email: u.email ?? "",
           full_name: fullName,
-          role: 'user',
-          subscription_tier: 'free',
-          subscription_status: 'inactive',
+          role: "user",
+          subscription_tier: "student",
+          subscription_status: "inactive",
           created_at: u.created_at ?? new Date().toISOString(),
           updated_at: new Date().toISOString(),
         });
@@ -119,7 +127,7 @@ export async function POST(request: NextRequest) {
     const errors: string[] = [];
 
     for (const row of toUpsert) {
-      const { error } = await supabase.from('user_profiles').upsert(
+      const { error } = await supabase.from("user_profiles").upsert(
         {
           id: row.id,
           email: row.email,
@@ -130,7 +138,7 @@ export async function POST(request: NextRequest) {
           created_at: row.created_at,
           updated_at: row.updated_at,
         },
-        { onConflict: 'id' }
+        { onConflict: "id" },
       );
       if (error) {
         errors.push(`${row.email}: ${error.message}`);
@@ -147,10 +155,10 @@ export async function POST(request: NextRequest) {
       errors: errors.length ? errors.slice(0, 10) : undefined,
     });
   } catch (err) {
-    console.error('[Admin Users Sync]:', err);
+    console.error("[Admin Users Sync]:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Internal server error' },
-      { status: 500 }
+      { error: err instanceof Error ? err.message : "Internal server error" },
+      { status: 500 },
     );
   }
 }

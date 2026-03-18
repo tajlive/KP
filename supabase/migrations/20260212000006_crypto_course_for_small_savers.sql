@@ -10,7 +10,6 @@ ON CONFLICT (slug) DO UPDATE SET
   title = EXCLUDED.title,
   description = EXCLUDED.description,
   updated_at = NOW();
-
 -- Hent course_id
 DO $$
 DECLARE
@@ -49,7 +48,6 @@ BEGIN
   ON CONFLICT (course_id, slug) DO NOTHING;
 
 END $$;
-
 -- 3. OPPRETT ACHIEVEMENTS/BADGES
 CREATE TABLE IF NOT EXISTS user_achievements (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -61,9 +59,7 @@ CREATE TABLE IF NOT EXISTS user_achievements (
   awarded_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, achievement_id)
 );
-
 CREATE INDEX IF NOT EXISTS idx_user_achievements_user_id ON user_achievements(user_id);
-
 -- Standard achievements
 INSERT INTO user_achievements (user_id, achievement_id, title, description, icon)
 SELECT 
@@ -77,16 +73,15 @@ WHERE NOT EXISTS (
   SELECT 1 FROM user_achievements ua 
   WHERE ua.user_id = p.id AND ua.achievement_id = 'first_purchase'
 )
-LIMIT 0; -- Bare oppretter tabellen, ikke tildeler ennå
+LIMIT 0;
+-- Bare oppretter tabellen, ikke tildeler ennå
 
 -- RLS for achievements
 ALTER TABLE user_achievements ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can view own achievements" ON user_achievements;
 CREATE POLICY "Users can view own achievements"
   ON user_achievements FOR SELECT
   USING (user_id = auth.uid());
-
 -- 4. FUNKSJON FOR Å TILDELE ACHIEVEMENTS
 CREATE OR REPLACE FUNCTION award_achievement(
   p_user_id UUID,
@@ -108,7 +103,6 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 5. TRIGGER FOR AUTOMATISKE ACHIEVEMENTS
 CREATE OR REPLACE FUNCTION check_course_completion_achievements()
 RETURNS TRIGGER AS $$
@@ -127,12 +121,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 DROP TRIGGER IF EXISTS trigger_course_achievements ON user_course_progress;
 CREATE TRIGGER trigger_course_achievements
   AFTER UPDATE ON user_course_progress
   FOR EACH ROW
   EXECUTE FUNCTION check_course_completion_achievements();
-
 -- Verifiser
 SELECT 'Kurs "Krypto for Småsparere" opprettet med 12 leksjoner' as status;

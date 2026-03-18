@@ -20,10 +20,8 @@ SELECT
   u.email
 FROM public.unified_notifications n
 JOIN auth.users u ON u.id = n.user_id;
-
 COMMENT ON VIEW public.unified_notifications_with_email IS
   'Unified notifications med e-post. Bruk i stedet for PostgREST-select med auth.users!inner(email) for å unngå 400. Kun service_role.';
-
 -- Kun service_role kan lese (Edge Functions med service key). Ikke eksponer til anon.
 REVOKE ALL ON public.unified_notifications_with_email FROM anon, authenticated;
 GRANT SELECT ON public.unified_notifications_with_email TO service_role;

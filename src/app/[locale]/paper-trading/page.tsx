@@ -1,14 +1,16 @@
-import { requireAuth } from "@/lib/auth-guard";
 import { createClient } from "@/lib/supabase/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { PaperTradingList } from "@/components/paper-trading/PaperTradingList";
+import { PaperTradingPageClient } from "@/components/paper-trading/PaperTradingPageClient";
 import type { ComponentProps } from "react";
-import { AlertCircle, Wallet } from "lucide-react";
+import { AlertCircle, Wallet, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
+import { PaperTradingList } from "@/components/paper-trading/PaperTradingList";
 
-type PaperTradingListSession = ComponentProps<typeof PaperTradingList>["sessions"][number];
+type PaperTradingListSession = ComponentProps<
+  typeof PaperTradingList
+>["sessions"][number];
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +39,8 @@ function PaperTradingErrorFallback({ locale }: { locale: string }) {
             Kunne ikke laste lekepenger
           </h2>
           <p className="text-red-700 dark:text-red-300 mb-6">
-            Det oppstod en feil ved lasting av dine trading-sessions. Vennligst prøv igjen.
+            Det oppstod en feil ved lasting av dine trading-sessions. Vennligst
+            prøv igjen.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
@@ -59,24 +62,67 @@ function PaperTradingErrorFallback({ locale }: { locale: string }) {
   );
 }
 
+/** Offentlig teaser for uinnloggede — /paper-trading er ubeskyttet */
+function PaperTradingPublicTeaser({ locale }: { locale: string }) {
+  const isNo = locale === "no";
+  return (
+    <div
+      className={`min-h-screen ${SURFACE.BG_LIGHT} dark:bg-slate-950 flex flex-col items-center justify-center px-4 py-12`}
+    >
+      <div className="max-w-lg mx-auto text-center space-y-6">
+        <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 dark:bg-emerald-400/20 flex items-center justify-center mx-auto">
+          <TrendingUp className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+          {isNo
+            ? "Øv trading med 100 000 kr lekepenger"
+            : "Practice trading with 100,000 kr virtual money"}
+        </h1>
+        <p className="text-slate-600 dark:text-slate-400">
+          {isNo
+            ? "Ingen ekte penger. Full tilgang til BTC, ETH, SOL og mer. Logg inn for å starte."
+            : "No real money. Full access to BTC, ETH, SOL and more. Log in to get started."}
+        </p>
+        <div className="flex flex-wrap gap-3 justify-center pt-2">
+          <Link
+            href={`/${locale}/innlogging?next=/${locale}/paper-trading`}
+            className={`inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-white ${BRAND.primary} transition-opacity hover:opacity-90`}
+          >
+            {isNo ? "Logg inn" : "Log in"}
+          </Link>
+          <Link
+            href={`/${locale}/signup?redirect=/${locale}/paper-trading`}
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            {isNo ? "Opprett konto" : "Create account"}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function PaperTradingPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
+  const t = await getTranslations({ locale, namespace: "paperTrading" });
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <PaperTradingPublicTeaser locale={locale} />;
+  }
+
   try {
-    const t = await getTranslations({ locale, namespace: "paperTrading" });
-    const { user } = await requireAuth(locale);
-
-    const supabase = await createClient();
-
-    // Hent alle paper trading sessions for brukeren
     const { data: sessions, error } = await supabase
       .from("trading_sessions")
       .select(
-        "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at"
+        "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at",
       )
       .eq("user_id", user.id)
       .eq("mode", "paper")
@@ -86,7 +132,6 @@ export default async function PaperTradingPage({
       console.error("Failed to fetch trading sessions:", error);
     }
 
-    // Hent user_profiles for saldo
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("paper_balance")
@@ -94,28 +139,19 @@ export default async function PaperTradingPage({
       .single();
 
     const balance = profile?.paper_balance ?? 100_000;
+    const contextBannerText = t("contextBanner");
 
     return (
-      <div className={`min-h-screen ${SURFACE.BG_LIGHT} dark:bg-slate-950`}>
-        <div className="bg-linear-to-r from-emerald-500/15 to-blue-500/15 dark:from-emerald-500/10 dark:to-blue-500/10 border-b border-emerald-500/20 dark:border-emerald-500/30 px-4 py-3 flex items-center justify-center gap-2">
-          <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden />
-          <p className="text-emerald-800 dark:text-emerald-200 text-sm font-medium text-center">
-            {t("contextBanner")}
-          </p>
-        </div>
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
-          <PaperTradingList
-            sessions={(sessions ?? []) as PaperTradingListSession[]}
-            balance={balance}
-            locale={locale}
-            userId={user.id}
-          />
-        </main>
-      </div>
+      <PaperTradingPageClient
+        sessions={(sessions ?? []) as PaperTradingListSession[]}
+        balance={balance}
+        locale={locale}
+        userId={user.id}
+        contextBannerText={contextBannerText}
+      />
     );
   } catch (error) {
-    console.error('Paper trading page error:', error);
-    // Return fallback UI istedenfor å krasje
+    console.error("Paper trading page error:", error);
     return <PaperTradingErrorFallback locale={locale} />;
   }
 }

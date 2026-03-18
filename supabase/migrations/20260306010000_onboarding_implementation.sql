@@ -15,11 +15,9 @@ ADD COLUMN IF NOT EXISTS onboarding_step INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS binance_connected BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS onboarding_started_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS onboarding_completed_at TIMESTAMPTZ;
-
 -- Index for faster onboarding checks
 CREATE INDEX IF NOT EXISTS idx_user_profiles_onboarding 
 ON user_profiles(id, onboarding_completed, onboarding_step);
-
 -- Add comments for documentation
 COMMENT ON COLUMN user_profiles.trading_experience IS 'User trading experience level';
 COMMENT ON COLUMN user_profiles.preferred_trading_mode IS 'Preferred trading mode: paper or live';
@@ -28,7 +26,6 @@ COMMENT ON COLUMN user_profiles.onboarding_step IS 'Current onboarding step (0-5
 COMMENT ON COLUMN user_profiles.binance_connected IS 'Whether user has connected Binance API';
 COMMENT ON COLUMN user_profiles.onboarding_started_at IS 'When user started onboarding';
 COMMENT ON COLUMN user_profiles.onboarding_completed_at IS 'When user completed onboarding';
-
 -- Update existing users to completed (migration safety)
 UPDATE user_profiles 
 SET 
@@ -38,7 +35,6 @@ SET
   onboarding_step = 5
 WHERE setup_completed_at IS NOT NULL 
   AND onboarding_completed IS NULL;
-
 -- Create view for easier onboarding status checks
 CREATE OR REPLACE VIEW user_onboarding_status AS
 SELECT 
@@ -54,7 +50,6 @@ SELECT
     ELSE 'not_started'
   END as status
 FROM user_profiles;
-
 -- Verify
 SELECT 
   'Migration complete' as status,

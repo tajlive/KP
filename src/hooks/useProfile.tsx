@@ -84,9 +84,13 @@ export function useProfile() {
         setError("Ikke innlogget");
         return;
       }
+      const payload = { ...updates, updated_at: new Date().toISOString() };
+      if ("created_at" in payload && payload.created_at === null)
+        delete (payload as Record<string, unknown>).created_at;
       const { data, error: updateError } = await supabase
         .from("user_profiles")
-        .update({ ...updates, updated_at: new Date().toISOString() })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Profile partial may include null; DB Update expects undefined
+        .update(payload as any)
         .eq("id", user.id)
         .select()
         .single();
@@ -109,10 +113,7 @@ export function useProfile() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
-      await supabase
-        .from("user_profiles")
-        .delete()
-        .eq("id", user.id);
+      await supabase.from("user_profiles").delete().eq("id", user.id);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     }

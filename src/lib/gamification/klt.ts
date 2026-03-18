@@ -1,33 +1,37 @@
 import { createClient as createBrowserClient } from "@/lib/utils";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+/** Supabase-like client for tables not in generated types (e.g. user_levels) */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySupabase = any;
+
 // KLT Rewards Configuration
 export const KLT_REWARDS = {
   // Onboarding
   WELCOME_BONUS: 500,
-  
+
   // Learning
   LESSON_COMPLETE: 50,
   QUIZ_PASS: 100,
   QUIZ_PERFECT: 200,
   COURSE_COMPLETE: 500,
-  
+
   // Trading (Paper)
   FIRST_PAPER_TRADE: 100,
   PAPER_TRADE_WIN: 25,
   PAPER_TRADE_WIN_STREAK_5: 150,
-  
+
   // Social
   INVITE_FRIEND: 200,
   FRIEND_PURCHASE: 500,
-  
+
   // Engagement
   DAILY_LOGIN_STREAK_7: 100,
   DAILY_LOGIN_STREAK_30: 500,
   PROFILE_COMPLETE: 100,
 };
 
-export type KLTTransactionType = 
+export type KLTTransactionType =
   | "welcome_bonus"
   | "lesson_complete"
   | "quiz_pass"
@@ -65,17 +69,17 @@ export async function awardKLT({
 }: AwardKLTPayload): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = injectedClient ?? createBrowserClient();
-    
+
     // Get current balance
     const { data: currentBalance } = await supabase
       .from("user_klt_balances")
       .select("balance, total_earned")
       .eq("user_id", userId)
       .single();
-    
+
     const newBalance = (currentBalance?.balance || 0) + amount;
     const newTotalEarned = (currentBalance?.total_earned || 0) + amount;
-    
+
     // Upsert balance
     const { error: balanceError } = await supabase
       .from("user_klt_balances")
@@ -85,24 +89,22 @@ export async function awardKLT({
         total_earned: newTotalEarned,
         updated_at: new Date().toISOString(),
       });
-    
+
     if (balanceError) throw balanceError;
-    
+
     // Record transaction (type = reward|spend|bonus|founder; category = lesson_complete etc.)
-    const { error: txError } = await supabase
-      .from("klt_transactions")
-      .insert({
-        user_id: userId,
-        amount,
-        type: "reward",
-        category: type,
-        description: reason,
-        reason: reason,
-        metadata: metadata ?? {},
-      });
-    
+    const { error: txError } = await supabase.from("klt_transactions").insert({
+      user_id: userId,
+      amount,
+      type: "reward",
+      category: type,
+      description: reason,
+      reason: reason,
+      metadata: (metadata ?? {}) as import("@/types/supabase-generated").Json,
+    });
+
     if (txError) throw txError;
-    
+
     return { success: true };
   } catch (error) {
     console.error("[awardKLT] Error:", error);
@@ -116,23 +118,29 @@ export async function awardKLT({
 export async function awardXP(
   userId: string,
   amount: number,
-  reason: string
+  reason: string,
 ): Promise<{ success: boolean; newLevel?: boolean; error?: string }> {
   try {
     const supabase = createBrowserClient();
-    
+
     // Get current level data
-    const { data: currentLevel } = await supabase
+    // user_levels not in generated types
+    const { data: currentLevel } = await (supabase as AnySupabase)
       .from("user_levels")
       .select("*")
       .eq("user_id", userId)
       .single();
-    
-    let level = currentLevel?.level || 1;
-    let xp = (currentLevel?.xp || 0) + amount;
-    let xpToNext = currentLevel?.xp_to_next || 100;
-    const totalXP = (currentLevel?.total_xp || 0) + amount;
-    
+    const cl = currentLevel as {
+      level?: number;
+      xp?: number;
+      xp_to_next?: number;
+      total_xp?: number;
+    } | null;
+    let level = cl?.level ?? 1;
+    let xp = (cl?.xp ?? 0) + amount;
+    let xpToNext = cl?.xp_to_next ?? 100;
+    const totalXP = (cl?.total_xp ?? 0) + amount;
+
     // Check for level up
     let newLevel = false;
     while (xp >= xpToNext) {
@@ -141,9 +149,9 @@ export async function awardXP(
       xpToNext = Math.floor(xpToNext * 1.2); // Increase XP requirement
       newLevel = true;
     }
-    
+
     // Update level
-    const { error } = await supabase
+    const { error } = await (supabase as AnySupabase)
       .from("user_levels")
       .upsert({
         user_id: userId,
@@ -154,9 +162,9 @@ export async function awardXP(
         rank: getRankForLevel(level),
         updated_at: new Date().toISOString(),
       });
-    
+
     if (error) throw error;
-    
+
     return { success: true, newLevel };
   } catch (error) {
     console.error("[awardXP] Error:", error);
@@ -177,22 +185,20 @@ function getRankForLevel(level: number): string {
  */
 export async function unlockAchievement(
   userId: string,
-  achievementId: string
+  achievementId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = createBrowserClient();
-    
-    const { error } = await supabase
-      .from("user_achievements")
-      .upsert({
-        user_id: userId,
-        achievement_id: achievementId,
-        unlocked_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-    
+
+    const { error } = await supabase.from("user_achievements").upsert({
+      user_id: userId,
+      achievement_id: achievementId,
+      unlocked_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as never);
+
     if (error) throw error;
-    
+
     return { success: true };
   } catch (error) {
     console.error("[unlockAchievement] Error:", error);
@@ -206,13 +212,13 @@ export async function unlockAchievement(
 export async function getKLTBalance(userId: string): Promise<number> {
   try {
     const supabase = createBrowserClient();
-    
+
     const { data } = await supabase
       .from("user_klt_balances")
       .select("balance")
       .eq("user_id", userId)
       .single();
-    
+
     return data?.balance || 0;
   } catch {
     return 0;

@@ -115,6 +115,9 @@
   "tradeBlocked": "Handel blokkert",
   "type": "Type",
   "understandRisk": "Jeg forstår risikoen",
+  "mySessions": "Mine sesjoner",
+  "backToOverview": "Tilbake til oversikt",
+  "backToDashboard": "Tilbake til dashboard",
   "strategies": {
     "dca_trygg": {
       "name": "Smart DCA (Trygg)",

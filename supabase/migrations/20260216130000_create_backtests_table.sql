@@ -14,36 +14,29 @@ CREATE TABLE IF NOT EXISTS public.auto_trading_backtests (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Enable RLS
 ALTER TABLE public.auto_trading_backtests ENABLE ROW LEVEL SECURITY;
-
 -- RLS Policies
 DROP POLICY IF EXISTS "Users can view own backtests" ON public.auto_trading_backtests;
 CREATE POLICY "Users can view own backtests" 
   ON public.auto_trading_backtests FOR SELECT 
   USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can insert own backtests" ON public.auto_trading_backtests;
 CREATE POLICY "Users can insert own backtests" 
   ON public.auto_trading_backtests FOR INSERT 
   WITH CHECK (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can update own backtests" ON public.auto_trading_backtests;
 CREATE POLICY "Users can update own backtests" 
   ON public.auto_trading_backtests FOR UPDATE 
   USING (auth.uid() = user_id);
-
 DROP POLICY IF EXISTS "Users can delete own backtests" ON public.auto_trading_backtests;
 CREATE POLICY "Users can delete own backtests" 
   ON public.auto_trading_backtests FOR DELETE 
   USING (auth.uid() = user_id);
-
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_backtests_user_id ON public.auto_trading_backtests(user_id);
 CREATE INDEX IF NOT EXISTS idx_backtests_strategy_id ON public.auto_trading_backtests(strategy_id);
 CREATE INDEX IF NOT EXISTS idx_backtests_created_at ON public.auto_trading_backtests(created_at DESC);
-
 -- Add is_paper column to auto_trading_trades if not exists
 DO $$
 BEGIN
@@ -54,6 +47,5 @@ BEGIN
     ALTER TABLE public.auto_trading_trades ADD COLUMN is_paper BOOLEAN NOT NULL DEFAULT false;
   END IF;
 END $$;
-
 -- Add comment
 COMMENT ON TABLE public.auto_trading_backtests IS 'Stores backtest results from the backtest-engine';

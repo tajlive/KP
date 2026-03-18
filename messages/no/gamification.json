@@ -15,5 +15,11 @@
     "completed": "Fullførte leksjoner",
     "accuracy": "Handlingsnøyaktighet",
     "lessonsAvailable": "Tilgjengelige leksjoner"
-  }
+  },
+  "monthlyPrize": "50 000 KLT til månedens vinner",
+  "monthlyCompetitionOngoing": "Månedens konkurranse pågår",
+  "yourRankThisMonth": "Du er #{{rank}} denne måneden",
+  "viewLeaderboard": "Se leaderboard",
+  "kltStoryShort": "10 millioner KLT. Tjen dem ved å lære – bruk dem til å konkurrere. 50 000 KLT til månedens vinner.",
+  "daysLeft": "dager igjen"
 }

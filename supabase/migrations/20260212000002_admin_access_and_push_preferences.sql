@@ -5,18 +5,15 @@
 ALTER TABLE profiles 
 ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user' 
 CHECK (role IN ('admin', 'user', 'beta', 'premium', 'master', 'phd', 'professor'));
-
 -- Set tomarnejensen@gmail.com as admin
 UPDATE profiles 
 SET role = 'admin',
     updated_at = NOW()
 WHERE email = 'tomarnejensen@gmail.com';
-
 -- Verify admin status
 SELECT id, email, role, created_at 
 FROM profiles 
 WHERE email = 'tomarnejensen@gmail.com';
-
 -- 2. Extend notification_preferences with fine-grained push control
 ALTER TABLE notification_preferences 
 ADD COLUMN IF NOT EXISTS push_price_alerts BOOLEAN DEFAULT TRUE,
@@ -29,7 +26,6 @@ ADD COLUMN IF NOT EXISTS push_transactions BOOLEAN DEFAULT TRUE,
 ADD COLUMN IF NOT EXISTS quiet_hours_start TIME DEFAULT '22:00',
 ADD COLUMN IF NOT EXISTS quiet_hours_end TIME DEFAULT '08:00',
 ADD COLUMN IF NOT EXISTS quiet_hours_enabled BOOLEAN DEFAULT TRUE;
-
 -- 3. Create function to check if push should be sent
 CREATE OR REPLACE FUNCTION should_send_push(
   p_user_id UUID,
@@ -92,19 +88,15 @@ BEGIN
   
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- 4. Create RLS policy for notification preferences
 CREATE POLICY "Users can view own notification preferences"
   ON notification_preferences FOR SELECT
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can update own notification preferences"
   ON notification_preferences FOR UPDATE
   USING (auth.uid() = user_id);
-
 CREATE POLICY "Users can insert own notification preferences"
   ON notification_preferences FOR INSERT
   WITH CHECK (auth.uid() = user_id);
-
 -- Done!
 SELECT 'Admin access granted and push preferences extended!' as status;

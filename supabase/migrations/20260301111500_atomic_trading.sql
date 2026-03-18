@@ -12,13 +12,10 @@ CREATE TABLE IF NOT EXISTS positions (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(session_id, symbol)
 );
-
 ALTER TABLE positions ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users manage own positions" ON positions;
 CREATE POLICY "Users manage own positions" ON positions
   FOR ALL USING (auth.uid() = user_id);
-
 -- Handle_new_user trigger (sikre at user_profiles alltid finnes)
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
@@ -29,12 +26,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-
 -- Atomic decrement (hindrer race condition)
 CREATE OR REPLACE FUNCTION decrement_capital(
   p_session_id UUID,
@@ -54,7 +49,6 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Atomic increment
 CREATE OR REPLACE FUNCTION increment_capital(
   p_session_id UUID,

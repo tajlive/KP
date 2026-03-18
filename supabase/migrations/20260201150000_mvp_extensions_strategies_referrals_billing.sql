@@ -15,10 +15,8 @@ CREATE TABLE IF NOT EXISTS quiz_questions (
   points INTEGER DEFAULT 1,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX idx_quiz_questions_quiz ON quiz_questions(quiz_id);
 CREATE INDEX idx_quiz_questions_number ON quiz_questions(quiz_id, question_number);
-
 -- Insert sample Futures Quiz questions
 DO $$
 DECLARE
@@ -73,7 +71,6 @@ BEGIN
     ON CONFLICT DO NOTHING;
   END IF;
 END $$;
-
 -- ============================================
 -- 2. STRATEGIES (for copy trading)
 -- ============================================
@@ -103,11 +100,9 @@ CREATE TABLE IF NOT EXISTS strategies (
   
   CONSTRAINT unique_user_strategy_name UNIQUE(user_id, name)
 );
-
 CREATE INDEX idx_strategies_user ON strategies(user_id);
 CREATE INDEX idx_strategies_public ON strategies(is_public, is_active) WHERE is_public = true AND is_active = true;
 CREATE INDEX idx_strategies_return ON strategies(total_return_percent) WHERE is_public = true;
-
 -- ============================================
 -- 3. STRATEGY FOLLOWERS (copy trading relationships)
 -- ============================================
@@ -136,11 +131,9 @@ CREATE TABLE IF NOT EXISTS strategy_followers (
   
   UNIQUE(strategy_id, follower_user_id)
 );
-
 CREATE INDEX idx_strategy_followers_strategy ON strategy_followers(strategy_id);
 CREATE INDEX idx_strategy_followers_follower ON strategy_followers(follower_user_id);
 CREATE INDEX idx_strategy_followers_active ON strategy_followers(follower_user_id, is_active) WHERE is_active = true;
-
 -- ============================================
 -- 4. REFERRAL TRACKING
 -- ============================================
@@ -173,12 +166,10 @@ CREATE TABLE IF NOT EXISTS referral_tracking (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX idx_referral_tracking_referrer ON referral_tracking(referrer_user_id);
 CREATE INDEX idx_referral_tracking_code ON referral_tracking(referral_code);
 CREATE INDEX idx_referral_tracking_referred ON referral_tracking(referred_user_id) WHERE referred_user_id IS NOT NULL;
 CREATE INDEX idx_referral_tracking_status ON referral_tracking(status);
-
 -- ============================================
 -- 5. BILLING EVENTS
 -- ============================================
@@ -215,11 +206,9 @@ CREATE TABLE IF NOT EXISTS billing_events (
   
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 CREATE INDEX idx_billing_events_user ON billing_events(user_id);
 CREATE INDEX idx_billing_events_type ON billing_events(event_type);
 CREATE INDEX idx_billing_events_created ON billing_events(created_at);
-
 -- ============================================
 -- 6. USER NOTIFICATION PREFERENCES
 -- ============================================
@@ -250,7 +239,6 @@ CREATE TABLE IF NOT EXISTS user_notification_settings (
   
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- ============================================
 -- 7. USER SETTINGS (Extended)
 -- ============================================
@@ -277,85 +265,67 @@ CREATE TABLE IF NOT EXISTS user_settings (
   
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- ============================================
 -- RLS POLICIES
 -- ============================================
 
 -- Quiz questions: Public read
 ALTER TABLE quiz_questions ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Quiz questions are public readable"
   ON quiz_questions FOR SELECT
   TO authenticated, anon
   USING (true);
-
 -- Strategies: Public can view public strategies
 ALTER TABLE strategies ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view public strategies"
   ON strategies FOR SELECT
   TO authenticated
   USING (is_public = true OR user_id = auth.uid());
-
 CREATE POLICY "Users can manage own strategies"
   ON strategies FOR ALL
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 -- Strategy followers: Users manage own follows
 ALTER TABLE strategy_followers ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own follows"
   ON strategy_followers FOR SELECT
   TO authenticated
   USING (follower_user_id = auth.uid());
-
 CREATE POLICY "Users can follow/unfollow strategies"
   ON strategy_followers FOR INSERT
   TO authenticated
   WITH CHECK (follower_user_id = auth.uid());
-
 CREATE POLICY "Users can update own follows"
   ON strategy_followers FOR UPDATE
   TO authenticated
   USING (follower_user_id = auth.uid());
-
 -- Referral tracking: Users view own referrals
 ALTER TABLE referral_tracking ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own referrals"
   ON referral_tracking FOR SELECT
   TO authenticated
   USING (referrer_user_id = auth.uid());
-
 -- Billing events: Users view own billing
 ALTER TABLE billing_events ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can view own billing events"
   ON billing_events FOR SELECT
   TO authenticated
   USING (user_id = auth.uid());
-
 -- Notification settings: Users manage own
 ALTER TABLE user_notification_settings ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can manage own notification settings"
   ON user_notification_settings FOR ALL
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 -- User settings: Users manage own
 ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Users can manage own settings"
   ON user_settings FOR ALL
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 -- ============================================
 -- VIEWS
 -- ============================================
@@ -378,7 +348,6 @@ SELECT
 FROM strategies s
 JOIN profiles p ON s.user_id = p.id
 WHERE s.is_public = true AND s.is_active = true;
-
 -- User referrals summary
 CREATE OR REPLACE VIEW user_referrals_summary AS
 SELECT 
@@ -390,7 +359,6 @@ SELECT
   SUM(rt.referrer_reward_months) as total_free_months
 FROM referral_tracking rt
 GROUP BY rt.referrer_user_id;
-
 -- Update entitlements view to include strategies
 CREATE OR REPLACE VIEW user_entitlements AS
 WITH quiz_status AS (
@@ -440,7 +408,6 @@ SELECT
 FROM profiles p
 LEFT JOIN quiz_status qs ON p.id = qs.user_id
 LEFT JOIN strategy_count sc ON p.id = sc.user_id;
-
 -- ============================================
 -- FUNCTIONS
 -- ============================================
@@ -464,7 +431,6 @@ BEGIN
   RETURN v_event_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Track referral click (anonymous allowed)
 CREATE OR REPLACE FUNCTION track_referral_click(
   p_referral_code TEXT,
@@ -501,7 +467,6 @@ BEGIN
   RETURN v_tracking_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Complete referral (when referred user signs up)
 CREATE OR REPLACE FUNCTION complete_referral(
   p_referral_code TEXT,
@@ -539,7 +504,6 @@ BEGIN
   RETURN true;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Get quiz with questions
 CREATE OR REPLACE FUNCTION get_quiz_with_questions(p_quiz_slug TEXT)
 RETURNS JSON AS $$
@@ -582,7 +546,6 @@ BEGIN
   RETURN result;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Submit quiz attempt
 CREATE OR REPLACE FUNCTION submit_quiz_attempt(
   p_user_id UUID,
@@ -661,7 +624,6 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -670,27 +632,21 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 CREATE TRIGGER update_strategies_updated_at
   BEFORE UPDATE ON strategies
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_strategy_followers_updated_at
   BEFORE UPDATE ON strategy_followers
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_referral_tracking_updated_at
   BEFORE UPDATE ON referral_tracking
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_user_notification_settings_updated_at
   BEFORE UPDATE ON user_notification_settings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 CREATE TRIGGER update_user_settings_updated_at
   BEFORE UPDATE ON user_settings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
 -- Initialize user settings on profile creation
 CREATE OR REPLACE FUNCTION initialize_user_settings()
 RETURNS TRIGGER AS $$
@@ -706,7 +662,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
 DROP TRIGGER IF EXISTS on_profile_created ON profiles;
 CREATE TRIGGER on_profile_created
   AFTER INSERT ON profiles
