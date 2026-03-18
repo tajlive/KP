@@ -53,6 +53,9 @@ test.describe('Smoke: Health Checks @smoke', () => {
       !e.includes('Source map') &&
       !e.includes('Manifest') &&
       !e.includes('analytics') &&
+      // Ignore blocked third-party analytics scripts in strict CSP environments
+      !e.includes("https://plausible.io/js/script.js") &&
+      !e.includes("https://static.cloudflareinsights.com/beacon.min.js") &&
       // Ignore Playwright dev-server WebSocket CSP warnings
       !e.includes("ws://127.0.0.1") &&
       !e.includes("connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://o4509555622608896.ingest.de.sentry.io")
