@@ -1,6 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 import { trackCriticalAction } from "@/lib/sentry";
+import { z } from "zod";
 
 // XP awards configuration
 const XP_AWARDS: Record<string, number> = {
@@ -15,25 +16,48 @@ const XP_AWARDS: Record<string, number> = {
   referral_used: 500,
 };
 
+const awardSchema = z.object({
+  action: z.enum([
+    "login",
+    "onboarding_complete",
+    "paper_trade_started",
+    "binance_connected",
+    "lav_risk_streak",
+    "first_trade",
+    "profitable_trade",
+    "course_completed",
+    "referral_used",
+  ]),
+});
+
 /**
  * POST /api/gamification/award
  * Awards XP to the current user
  * Uses database function award_xp() for atomic updates and level-up detection
  */
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { action } = body;
+    const supabase = createClient();
+    const body = await request.json();
+    const parsed = awardSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid action", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+    const { action } = parsed.data;
 
     // Handle login action specially (with streak calculation)
     if (action === "login") {
@@ -77,11 +101,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Handle other actions
     const xpToAward = XP_AWARDS[action];
-    if (!xpToAward) {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    }
 
     // Award XP using database function
     const { data: result, error } = await supabase.rpc("award_xp", {
@@ -137,18 +157,20 @@ export async function POST(req: Request) {
  * GET /api/gamification/award
  * Returns current gamification state for the user
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const supabase = createClient();
     const { data: gamification, error } = await supabase
       .from("user_gamification")
       .select(

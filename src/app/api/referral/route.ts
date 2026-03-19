@@ -1,30 +1,22 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import crypto from "crypto";
-import { NextResponse } from "next/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase-generated";
+import { NextRequest, NextResponse } from "next/server";
 
-// Response type for tickets
-interface GoldenTicket {
-  id: string;
-  referral_code: string;
-  referrer_user_id: string;
-  status: string | null;
-  created_at: string | null;
-  referred_user_id: string | null;
+function getAuthUser(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
+  return supabase.auth.getUser();
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient() as SupabaseClient<Database>;
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await getAuthUser(request);
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const supabase = createClient();
 
     // Fetch user's existing golden tickets from referral_tracking
     const { data: tickets, error: fetchError } = await supabase
@@ -61,17 +53,15 @@ export async function GET() {
   }
 }
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient() as SupabaseClient<Database>;
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await getAuthUser(request);
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const supabase = createClient();
 
     // Check if user has generated 3 tickets this month.
     const { count, error: countError } = await supabase

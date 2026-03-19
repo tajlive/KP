@@ -7,15 +7,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { sendTemplatedEmail, queueEmail } from '@/lib/email';
-import { createClient } from '@/lib/supabase/server';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/supabase-generated';
+import { createServerClient, createClient } from '@/lib/supabase/server';
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    const supabase = await createClient() as SupabaseClient<Database>;
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(req, response);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
     
     if (authError || !user) {
       return NextResponse.json(
@@ -24,7 +22,7 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Check if user is admin or service role
+    const supabase = createClient();
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('role')

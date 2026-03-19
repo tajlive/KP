@@ -1,42 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+
+const createSessionSchema = z.object({
+  trading_pair: z.string().min(1, "Trading pair er påkrevd"),
+  strategy_id: z.string().optional(),
+  starting_capital_nok: z.number().min(1000).max(100000).optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
 
-    // Sjekk autentisering
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Ikke autentisert" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Ikke autentisert" }, { status: 401 });
     }
 
-    // Parse body
+    const supabase = createClient();
+
     const body = await request.json();
-    const { trading_pair, strategy_id, starting_capital_nok } = body;
-
-    // Validering
-    if (!trading_pair || typeof trading_pair !== "string") {
+    const parsed = createSessionSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Trading pair er påkrevd" },
-        { status: 400 }
+        { error: "Validation failed", details: parsed.error.flatten() },
+        { status: 400 },
       );
     }
 
-    const capital = starting_capital_nok || 100000;
-    if (capital < 1000 || capital > 100000) {
-      return NextResponse.json(
-        { error: "Startkapital må være mellom 1 000 og 100 000 kr" },
-        { status: 400 }
-      );
-    }
+    const { trading_pair, strategy_id } = parsed.data;
+    const capital = parsed.data.starting_capital_nok || 100000;
 
     const now = new Date().toISOString();
 
@@ -59,7 +57,7 @@ export async function POST(request: NextRequest) {
       })
       .select()
       .single();
-    
+
     const session = result.data as { id: string } | null;
     const insertError = result.error;
 
@@ -67,7 +65,7 @@ export async function POST(request: NextRequest) {
       console.error("Failed to create trading session:", insertError);
       return NextResponse.json(
         { error: "Kunne ikke opprette trading session" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -90,9 +88,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Unexpected error in create trading session:", error);
-    return NextResponse.json(
-      { error: "Uventet feil" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Uventet feil" }, { status: 500 });
   }
 }

@@ -3,7 +3,7 @@
  * Generates tax reports compatible with Norwegian Tax Administration (Skatteetaten)
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 // Mapped trade type from auto_trades table
@@ -75,15 +75,18 @@ export async function GET(request: NextRequest) {
     );
     const format = searchParams.get("format") || "json"; // json, csv, pdf, html
 
-    const supabase = createClient();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const supabase = createClient();
 
     // Get user email
     const { data: userData } = await supabase

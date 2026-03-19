@@ -20,13 +20,14 @@ interface BotWizardProps {
   tier: string;
 }
 
-const TIER_ORDER = ["student", "bachelor", "master", "phd"];
+const TIER_ORDER = ["student", "bachelor", "master", "phd", "professor"];
 
 const TIER_COIN_LIMIT: Record<string, number> = {
   student: 3,
   bachelor: 5,
   master: 10,
   phd: 10,
+  professor: 10,
 };
 
 const COINS = [
@@ -43,10 +44,17 @@ const COINS = [
 ];
 
 function tierMeetsRequirement(userTier: string, requiredTier: string) {
-  return TIER_ORDER.indexOf(userTier) >= TIER_ORDER.indexOf(requiredTier);
+  const normalizedUser = userTier.toLowerCase();
+  const normalizedRequired = requiredTier.toLowerCase();
+  const userIdx = TIER_ORDER.indexOf(normalizedUser);
+  const requiredIdx = TIER_ORDER.indexOf(normalizedRequired);
+  if (userIdx === -1) return false;
+  if (requiredIdx === -1) return true;
+  return userIdx >= requiredIdx;
 }
 
-export function BotWizard({ userId, locale, tier }: BotWizardProps) {
+export function BotWizard({ userId, locale, tier: rawTier }: BotWizardProps) {
+  const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
   const [strategy, setStrategy] = useState("dca");
   const [riskLevel, setRiskLevel] = useState<"low" | "medium" | "high">("low");

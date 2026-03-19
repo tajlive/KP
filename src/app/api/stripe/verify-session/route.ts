@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getErrorMessage } from '@/lib/utils/error';
 import { stripe } from '@/lib/stripe/config';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient, createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,12 +18,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ verified: false, error: 'Payment not completed' }, { status: 400 });
     }
 
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
+    const { data: { user } } = await supabaseAuth.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const supabase = createClient();
 
     // Grant course access
     const courseId = session.metadata?.courseId;

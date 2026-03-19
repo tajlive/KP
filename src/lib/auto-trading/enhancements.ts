@@ -224,17 +224,32 @@ export async function checkEducationStatus(
 ): Promise<EducationStatus> {
   const supabase = createClient();
 
-  // Fetch completed courses
-  const { data: completedCourses } = await supabase
-    .from("course_progress")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("completed", true);
+  // Fetch completed courses via lesson progress + module slugs
+  const { data: modules } = await supabase
+    .from("course_modules")
+    .select("id, slug")
+    .eq("is_published", true);
 
-  const completedSlugs =
-    ((completedCourses as { course_slug?: string }[] | null)
-      ?.map((c) => c.course_slug)
-      .filter(Boolean) as string[]) || [];
+  const completedSlugs: string[] = [];
+  if (modules) {
+    for (const mod of modules) {
+      const { data: lessons } = await supabase
+        .from("course_lessons")
+        .select("id")
+        .eq("module_id", mod.id)
+        .eq("is_published", true);
+      if (!lessons || lessons.length === 0) continue;
+      const { data: completed } = await supabase
+        .from("user_lesson_progress")
+        .select("lesson_id")
+        .eq("user_id", userId)
+        .eq("status", "completed")
+        .in("lesson_id", lessons.map((l) => l.id));
+      if (completed && completed.length === lessons.length) {
+        completedSlugs.push(mod.slug);
+      }
+    }
+  }
 
   // Fetch session data
   const { data: session } = await supabase

@@ -1,15 +1,17 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
-  const authClient = createClient();
-  const { data: { user } } = await authClient.auth.getUser();
+export async function POST(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabaseAuth = createServerClient(request, response);
+  const { data: { user } } = await supabaseAuth.auth.getUser();
 
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: profile } = await authClient
+  const supabase = createClient();
+  const { data: profile } = await supabase
     .from("user_profiles").select("role").eq("id", user.id).single();
 
   const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
