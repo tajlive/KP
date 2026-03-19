@@ -79,12 +79,12 @@ export default async function DashboardPage({
       supabase
         .from("trades")
         .select(
-          "id, trading_pair, side, quantity, price, total_value, status, mode, created_at",
+          "id, trading_pair, side, quantity, price, total_value, status, mode, created_at, executed_at",
         )
         .eq("user_id", user.id)
         .eq("mode", "paper")
         .order("created_at", { ascending: false })
-        .limit(20),
+        .limit(50),
       supabase
         .from("trading_sessions")
         .select(

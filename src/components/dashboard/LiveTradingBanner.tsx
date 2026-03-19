@@ -17,7 +17,7 @@ export function LiveTradingBanner() {
   const [showConnectModal, setShowConnectModal] = useState(false);
 
   const tierSlug = subscription?.tier_slug ?? 'student';
-  const hasLiveTrading = ['master', 'phd', 'professor'].includes(tierSlug);
+  const hasLiveTrading = ['bachelor', 'master', 'phd', 'professor'].includes(tierSlug);
 
   // Don't show if already in live mode
   if (mode === 'live') return null;

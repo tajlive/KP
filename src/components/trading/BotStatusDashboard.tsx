@@ -17,14 +17,18 @@ import {
   Activity,
   ArrowRight,
   BarChart3,
+  Bot,
   CheckCircle2,
   Clock,
+  Grid3X3,
   History,
   LayoutDashboard,
   Pause,
   Play,
   Settings2,
+  Shield,
   ShoppingBag,
+  Target,
   Zap,
   TrendingUp,
   TrendingDown,
@@ -40,6 +44,7 @@ import {
 } from "@/lib/bot-status-helpers";
 import AdvancedStatsModal from "./AdvancedStatsModal";
 import AIDecisionPanel from "@/components/ai/AIDecisionPanel";
+import { TABLE } from "@/lib/design/tokens";
 
 interface BotStatusDashboardProps {
   portfolio: Portfolio | null;
@@ -50,12 +55,13 @@ interface BotStatusDashboardProps {
   userId?: string;
 }
 
-const STRATEGY_ICONS: Record<string, string> = {
-  dca_trygg: "🛡️",
-  trend_balansert: "📈",
-  multisignal_aktiv: "⚡",
-  grid_bot: "🔲",
-  ai_copy: "🤖",
+/** Lucide-ikoner for strategier (premium fintech – ikke emojis) */
+const STRATEGY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  dca_trygg: Shield,
+  trend_balansert: TrendingUp,
+  multisignal_aktiv: Zap,
+  grid_bot: Grid3X3,
+  ai_copy: Bot,
 };
 
 interface RealtimeUpdate {
@@ -268,7 +274,7 @@ export default function BotStatusDashboard({
           className={cn(
             "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
             currentView === "ai"
-              ? "bg-purple-600 text-white"
+              ? "bg-[#0052FF] text-white"
               : "text-slate-400 hover:text-white"
           )}
         >
@@ -343,8 +349,11 @@ export default function BotStatusDashboard({
                 className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between group hover:border-slate-700 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="text-3xl bg-slate-800 w-12 h-12 rounded-xl flex items-center justify-center">
-                    {STRATEGY_ICONS[s.strategy_id] || "🔥"}
+                  <div className="bg-slate-800 w-12 h-12 rounded-xl flex items-center justify-center text-slate-300">
+                    {(() => {
+                      const Icon = STRATEGY_ICONS[s.strategy_id] ?? Zap;
+                      return <Icon className="w-6 h-6" />;
+                    })()}
                   </div>
                   <div>
                     <h4 className="font-bold text-white capitalize">
@@ -403,7 +412,7 @@ export default function BotStatusDashboard({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
-                {recentTrades.slice(0, 5).map((t) => (
+                {recentTrades.slice(0, 15).map((t) => (
                   <tr
                     key={t.id}
                     className="hover:bg-slate-800/30 transition-colors"
@@ -446,7 +455,7 @@ export default function BotStatusDashboard({
                       )}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-500 text-xs">
-                      {new Date(t.executed_at).toLocaleTimeString(lang === "en" ? "en-US" : "no-NO", {
+                      {new Date(t.executed_at || t.created_at).toLocaleTimeString(lang === "en" ? "en-US" : "no-NO", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
@@ -667,7 +676,7 @@ function NarrativeView({
 
           <p className="text-lg text-slate-400 max-w-lg text-center md:text-left leading-relaxed">
             {isBotActive && mainStrategy
-              ? `${lang === "en" ? "Your bot is running" : "Ditt bot kjører"} ${STRATEGY_ICONS[mainStrategy.strategy_id] || "🤖"} ${mainStrategy.strategy_id.replace("_", " ")} ${lang === "en" ? "on" : "på"} ${mainStrategy.trading_pair}.`
+              ? `${lang === "en" ? "Your bot is running" : "Ditt bot kjører"} ${mainStrategy.strategy_id.replace(/_/g, " ")} ${lang === "en" ? "on" : "på"} ${mainStrategy.trading_pair}.`
               : lang === "en"
                 ? "You have no active strategies right now. Start a strategy to begin automated trading."
                 : "Du har ingen aktive strategier akkurat nå. Start en strategi for å begynne automatisert handel."}
@@ -953,10 +962,10 @@ function AIView({ userId, strategyId, lang }: AIViewProps) {
       className="space-y-6"
     >
       {/* AI Professor Header */}
-      <div className="bg-linear-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-2xl p-6">
+      <div className="bg-linear-to-r from-[#0052FF]/10 to-blue-900/20 border border-[#0052FF]/20 rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-            <Brain className="w-6 h-6 text-purple-400" />
+          <div className="w-12 h-12 rounded-xl bg-[#0052FF]/20 flex items-center justify-center">
+            <Brain className="w-6 h-6 text-[#0052FF]" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">
