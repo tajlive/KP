@@ -1,8 +1,8 @@
 /**
  * KLA-137: Paper Trading Trade API
- * 
- * PHYSICALLY SEPARATED from live trading.
- * Uses executePaperTrade from safety layer.
+ *
+ * DEPRECATED: Use POST /api/paper-trading/execute with { symbol, side, quantity, price } instead.
+ * Kept for backward compatibility. Uses executePaperTrade from safety layer.
  */
 
 import { executePaperTrade } from "@/lib/trading/safety";

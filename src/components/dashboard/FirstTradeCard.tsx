@@ -51,7 +51,7 @@ export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProp
               {no ? 'Gratulerer! Du eier nå Bitcoin!' : 'Congratulations! You now own Bitcoin!'}
             </p>
             <a
-              href={`/${locale}/trade`}
+              href={`/${locale}/paper-trading`}
               className={`${BRAND.link} text-sm font-medium mt-2 inline-block hover:underline`}
             >
               {no ? 'Utforsk flere coins →' : 'Explore more coins →'}

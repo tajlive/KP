@@ -53,7 +53,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
 
     setLoading(true);
     try {
-      const response = await fetch('/api/paper-trading/trade', {
+      const response = await fetch('/api/paper-trading/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -61,7 +61,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           side,
           quantity: qty,
           price: currentPrice,
-        }),
+        } as { symbol: string; side: 'buy' | 'sell'; quantity: number; price: number }),
       });
 
       if (!response.ok) {
