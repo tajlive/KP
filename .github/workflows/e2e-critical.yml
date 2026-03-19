@@ -106,9 +106,12 @@ jobs:
     needs: e2e-critical
     if: failure() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     
     steps:
       - name: Slack Notification
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1
         with:
           payload: |

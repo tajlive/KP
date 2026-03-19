@@ -8,6 +8,10 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+concurrency:
+  group: auto-label-${{ github.head_ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pull-requests: write
@@ -15,6 +19,7 @@ permissions:
 jobs:
   label:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Label PR by changed files
         uses: actions/labeler@v5

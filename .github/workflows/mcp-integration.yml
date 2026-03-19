@@ -14,10 +14,15 @@ on:
       - '.mcp/**'
       - 'scripts/mcp*.sh'
 
+concurrency:
+  group: mcp-integration-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   mcp-config-validation:
     name: Validate MCP Configuration
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     steps:
     - name: Checkout code
