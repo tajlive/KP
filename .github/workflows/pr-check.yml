@@ -18,6 +18,31 @@ permissions:
   pull-requests: write  # For PR-kommentar ved feil
 
 jobs:
+  paths:
+    runs-on: ubuntu-latest
+    outputs:
+      migrations: ${{ steps.filter.outputs.migrations }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            migrations:
+              - 'supabase/migrations/**'
+
+  validate-migrations:
+    runs-on: ubuntu-latest
+    needs: paths
+    if: needs.paths.outputs.migrations == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-migrations.mjs
+        name: Valider migrasjonsfiler
+
   quick-check:
     runs-on: ubuntu-latest
     timeout-minutes: 8

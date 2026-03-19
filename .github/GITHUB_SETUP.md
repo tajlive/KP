@@ -117,6 +117,8 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 | **MCP Integration**  | `mcp-integration.yml`  | Push/PR med MCP-config-endringer            | Validerer MCP-konfigurasjon                                              |
 | **Schema Dump**      | `schema-dump.yml`      | Push til `main` (migrasjoner), daglig 05:00 | Dumper DB-skjema til docs                                                |
 | **DB Push**          | `db-push.yml`          | Manuell                                     | Kjører `supabase db push`                                                |
+| **Auto-create PR**   | `auto-create-pr.yml`   | Push til `cursor/**`, `feat/**`, `fix/**`, `chore/**` | Oppretter draft PR mot main hvis ingen finnes                            |
+| **DB Push on merge** | `db-push-on-merge.yml` | Push til `main` (når `supabase/**` endres)  | Kjører `supabase db push` automatisk etter merge                         |
 
 ### Deaktiverte workflows (`workflows-disabled/`)
 
