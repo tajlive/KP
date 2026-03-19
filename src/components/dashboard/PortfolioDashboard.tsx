@@ -59,6 +59,32 @@ interface PortfolioDashboardProps {
   trialEndsAt?: string | null;
 }
 
+function normalizeTradeSymbol(trade: Trade): string {
+  if (typeof trade.symbol === 'string' && trade.symbol.length > 0) {
+    return trade.symbol;
+  }
+  if (typeof trade.trading_pair === 'string' && trade.trading_pair.length > 0) {
+    return trade.trading_pair.replace('/', '');
+  }
+  return '';
+}
+
+function normalizeTradeQty(trade: Trade): number {
+  if (typeof trade.qty === 'number') return trade.qty;
+  if (typeof trade.quantity === 'number') return trade.quantity;
+  return 0;
+}
+
+function normalizeTradeAmount(trade: Trade): number {
+  if (typeof trade.amount === 'number') return trade.amount;
+  if (typeof trade.total_value === 'number') return trade.total_value;
+  return 0;
+}
+
+function isBuyTrade(trade: Trade): boolean {
+  return String(trade.side).toUpperCase() === 'BUY';
+}
+
 function formatNOK(n: number) {
   return new Intl.NumberFormat('no-NO', {
     style: 'currency',
@@ -102,19 +128,20 @@ export default function PortfolioDashboard({
   const { coins: liveCoins, loading: pricesLoading, error: pricesError } = useRealtimePrices(DASHBOARD_SYMBOLS);
 
   const pnl = trades.reduce((sum: number, t: Trade) => {
-    const val = t.side === 'BUY' ? -(t.amount ?? 0) : (t.amount ?? 0);
+    const tradeAmount = normalizeTradeAmount(t);
+    const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
     return sum + val;
   }, 0);
   const pnlPercent = paperBalance > 0 ? (pnl / paperBalance) * 100 : 0;
 
   type Position = { symbol: string; qty: number; value: number };
   const positions = trades.reduce((acc: Record<string, Position>, t: Trade) => {
-    const sym = (t.symbol ?? (t.trading_pair && t.trading_pair.replace('/', ''))) ?? '';
+    const sym = normalizeTradeSymbol(t);
     if (!sym) return acc;
     if (!acc[sym]) acc[sym] = { symbol: sym, qty: 0, value: 0 };
-    const sign = t.side === 'BUY' ? 1 : -1;
-    acc[sym].qty += sign * (t.qty ?? 0);
-    acc[sym].value += sign * (t.amount ?? 0);
+    const sign = isBuyTrade(t) ? 1 : -1;
+    acc[sym].qty += sign * normalizeTradeQty(t);
+    acc[sym].value += sign * normalizeTradeAmount(t);
     return acc;
   }, {} as Record<string, Position>);
   const positionList = Object.values(positions).filter((p: Position) => p.qty > 0);
@@ -313,20 +340,20 @@ export default function PortfolioDashboard({
                 <li key={i} className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      t.side === 'BUY'
+                      isBuyTrade(t)
                         ? 'bg-[#16A34A]/10 text-[#16A34A]'
                         : 'bg-[#DC2626]/10 text-[#DC2626]'
                     }`}
                   >
-                    {t.side === 'BUY' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
+                    {isBuyTrade(t) ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#1A1D26]">
-                      {t.side === 'BUY' ? (no ? 'Kjøpte' : 'Bought') : (no ? 'Solgte' : 'Sold')}{' '}
-                      {t.symbol}
+                      {isBuyTrade(t) ? (no ? 'Kjøpte' : 'Bought') : (no ? 'Solgte' : 'Sold')}{' '}
+                      {normalizeTradeSymbol(t).replace('USDT', '')}
                     </p>
                     <p className="text-xs text-[#8E95A9]">
-                      {t.qty?.toFixed(4)} · {formatNOK(t.amount ?? 0)}
+                      {normalizeTradeQty(t).toFixed(4)} · {formatNOK(normalizeTradeAmount(t))}
                     </p>
                   </div>
                   <span className="text-xs text-[#8E95A9]">
