@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Medal, Bot, BookOpen, Zap, ArrowUp, ArrowDown } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Medal, Bot, BookOpen, Zap, ArrowUp, ArrowDown, TrendingUp, Activity } from 'lucide-react';
 import { CARD, BRAND } from '@/lib/design/tokens';
 import { useRealtimePrices } from '@/lib/hooks/useRealtimePrices';
+import { createClient } from '@/lib/supabase/client';
 import ReverseTrial from './ReverseTrial';
 import { SocialProof } from './SocialProof';
 import { StreakBadge } from './StreakBadge';
@@ -43,6 +45,7 @@ interface ActiveSession {
   starting_capital_nok: number;
   total_pnl: number;
   total_trades: number;
+  winning_trades?: number;
   created_at: string;
   name?: string;
   pnl?: number;
@@ -127,7 +130,49 @@ export default function PortfolioDashboard({
   const no = locale === 'no';
   const { coins: liveCoins, loading: pricesLoading, error: pricesError } = useRealtimePrices(DASHBOARD_SYMBOLS);
 
-  const pnl = trades.reduce((sum: number, t: Trade) => {
+  // Live trades: start with server data, append new trades via realtime
+  const [liveTrades, setLiveTrades] = useState<Trade[]>(trades);
+  useEffect(() => {
+    setLiveTrades(trades);
+  }, [trades]);
+  useEffect(() => {
+    if (!userId) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`dashboard-trades-${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'trades',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          if (row?.mode !== 'paper') return;
+          const t: Trade = {
+            id: String(row.id),
+            trading_pair: String(row.trading_pair ?? ''),
+            side: String(row.side ?? ''),
+            quantity: Number(row.quantity ?? 0),
+            price: Number(row.price ?? 0),
+            total_value: Number(row.total_value ?? (Number(row.price ?? 0) * Number(row.quantity ?? 0))),
+            status: String(row.status ?? ''),
+            mode: String(row.mode ?? 'paper'),
+            created_at: String(row.created_at ?? new Date().toISOString()),
+          };
+          setLiveTrades((prev) => [t, ...prev].slice(0, 30));
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
+
+  const displayTrades = liveTrades;
+  const pnl = displayTrades.reduce((sum: number, t: Trade) => {
     const tradeAmount = normalizeTradeAmount(t);
     const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
     return sum + val;
@@ -135,7 +180,7 @@ export default function PortfolioDashboard({
   const pnlPercent = paperBalance > 0 ? (pnl / paperBalance) * 100 : 0;
 
   type Position = { symbol: string; qty: number; value: number };
-  const positions = trades.reduce((acc: Record<string, Position>, t: Trade) => {
+  const positions = displayTrades.reduce((acc: Record<string, Position>, t: Trade) => {
     const sym = normalizeTradeSymbol(t);
     if (!sym) return acc;
     if (!acc[sym]) acc[sym] = { symbol: sym, qty: 0, value: 0 };
@@ -155,7 +200,17 @@ export default function PortfolioDashboard({
     return COIN_GRADIENTS[key] ?? 'from-gray-400 to-gray-500';
   };
 
-  const recentTrades = trades.slice(-3).reverse();
+  const recentTrades = displayTrades.slice(0, 6);
+  const hasRecentActivity = recentTrades.some(
+    (t) => t.created_at && Date.now() - new Date(t.created_at).getTime() < 3600000
+  );
+  const winRate =
+    activeSession &&
+    typeof activeSession.winning_trades === 'number' &&
+    (activeSession.total_trades ?? 0) > 0
+      ? Math.round((activeSession.winning_trades / activeSession.total_trades) * 100)
+      : null;
+  const totalTradesFromSession = activeSession?.total_trades ?? displayTrades.length;
 
   return (
     <div className="space-y-4">
@@ -250,6 +305,82 @@ export default function PortfolioDashboard({
         </p>
       )}
 
+      {/* Performance Card — som konkurrenter (win rate, handler, P&L) */}
+      {(totalTradesFromSession > 0 || trades.length > 0) && (
+        <div className={`${cardBase} animate-fade-in-up stagger-2`}>
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-5 h-5 text-[#0052FF]" />
+            <h3 className="text-lg font-semibold text-[#1A1D26]">
+              {no ? 'Dine resultater' : 'Your performance'}
+            </h3>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <p className="text-xs text-[#8E95A9] uppercase tracking-wider font-medium">
+                {no ? 'Handler' : 'Trades'}
+              </p>
+              <p className="text-xl font-bold text-[#1A1D26] tabular-nums">
+                {totalTradesFromSession}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8E95A9] uppercase tracking-wider font-medium">
+                {no ? 'Win rate' : 'Win rate'}
+              </p>
+              <p
+                className={`text-xl font-bold tabular-nums ${
+                  winRate != null
+                    ? winRate >= 50
+                      ? 'text-[#16A34A]'
+                      : 'text-[#DC2626]'
+                    : 'text-[#1A1D26]'
+                }`}
+              >
+                {winRate != null ? `${winRate}%` : '—'}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-[#8E95A9] uppercase tracking-wider font-medium">
+                {no ? 'P&L' : 'P&L'}
+              </p>
+              <p
+                className={`text-xl font-bold tabular-nums ${
+                  pnlPercent >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'
+                }`}
+              >
+                {pnlPercent >= 0 ? '+' : ''}
+                {pnlPercent.toFixed(1)}%
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CTA: Se full oversikt med grafer og signaler (for brukere med aktivitet) */}
+      {(trades.length > 0 || activeSession) && (
+        <Link
+          href={`/${locale}/paper-trading`}
+          className={`flex items-center justify-between ${cardBase} group animate-fade-in-up stagger-2 border-2 border-[#0052FF]/20 hover:border-[#0052FF]/40`}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center group-hover:bg-[#0052FF]/20 transition-colors">
+              <Activity className="w-5 h-5 text-[#0052FF]" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-[#1A1D26] group-hover:text-[#0052FF] transition-colors">
+                {no ? 'Grafer, signaler og full oversikt' : 'Charts, signals & full overview'}
+              </p>
+              <p className="text-xs text-[#8E95A9]">
+                {no ? 'Se porteføljegraf, live handelsfeed og bot-status' : 'View portfolio chart, live trade feed and bot status'}
+              </p>
+            </div>
+          </div>
+          <span className="text-[#0052FF] text-sm font-medium group-hover:underline">
+            {no ? 'Åpne' : 'Open'} →
+          </span>
+        </Link>
+      )}
+
       <SocialProof locale={locale} />
 
       {/* Widget 3 + 4: Positions & Recent Trades (2-col on desktop) */}
@@ -318,9 +449,17 @@ export default function PortfolioDashboard({
         {/* Widget 4: Recent Trades */}
         <div className={cardBase}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-[#1A1D26]">
-              {no ? 'Siste handler' : 'Recent trades'}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-[#1A1D26]">
+                {no ? 'Siste handler' : 'Recent trades'}
+              </h3>
+              {hasRecentActivity && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-[#16A34A]/15 text-[#16A34A] px-2 py-0.5 rounded-md border border-[#16A34A]/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
+                  {no ? 'Live' : 'Live'}
+                </span>
+              )}
+            </div>
             <Link
               href={`/${locale}/handelshistorikk`}
               className={`text-sm font-medium ${BRAND.link}`}
@@ -439,7 +578,7 @@ export default function PortfolioDashboard({
       {/* Widget 8: Bot Status */}
       {activeSession ? (
         <div className={`${cardBase} animate-fade-in-up stagger-6`}>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#16A34A]/10 flex items-center justify-center">
                 <Zap className="w-5 h-5 text-[#16A34A]" />
@@ -452,21 +591,37 @@ export default function PortfolioDashboard({
                   <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
                   {no ? 'Aktiv' : 'Active'}
                 </span>
+                {(activeSession.total_trades ?? 0) > 0 && (
+                  <p className="text-xs text-[#5E6478] mt-0.5">
+                    {(activeSession.total_trades ?? 0)} {no ? 'handler' : 'trades'}
+                    {winRate != null && ` · ${winRate}% ${no ? 'win rate' : 'win rate'}`}
+                  </p>
+                )}
               </div>
             </div>
-            <div className="text-right">
-              <p
-                className="text-sm font-semibold text-[#1A1D26]"
-                style={{ fontVariantNumeric: 'tabular-nums' }}
-              >
-                {formatNOK(activeSession.pnl ?? 0)}
-              </p>
-              <Link
-                href={`/${locale}/dashboard/bot/${activeSession.id}`}
-                className={`text-xs font-medium ${BRAND.link}`}
-              >
-                {no ? 'Se detaljer' : 'See details'}
-              </Link>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="text-right">
+                <p
+                  className="text-sm font-semibold text-[#1A1D26] tabular-nums"
+                >
+                  {formatNOK(activeSession.total_pnl ?? activeSession.pnl ?? 0)}
+                </p>
+                <p className="text-[10px] text-[#8E95A9]">{no ? 'P&L sesjon' : 'Session P&L'}</p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Link
+                  href={`/${locale}/paper-trading`}
+                  className={`text-xs font-medium ${BRAND.link}`}
+                >
+                  {no ? 'Grafer & signaler' : 'Charts & signals'}
+                </Link>
+                <Link
+                  href={`/${locale}/dashboard/bot/${activeSession.id}`}
+                  className={`text-xs font-medium text-[#5E6478] hover:text-[#0052FF]`}
+                >
+                  {no ? 'Bot-detaljer' : 'Bot details'}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
