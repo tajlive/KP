@@ -37,10 +37,10 @@ echo "  KLARPAKKE AUTOMASJONSVERIFIKASJON (MCP/CLI/API/CI)"
 echo "  $(date '+%Y-%m-%d %H:%M:%S')"
 echo "══════════════════════════════════════════════════════════════"
 
-run "Lint" "npm run lint"
-run "Type-check" "npm run type-check"
-run "Unit-tester" "npm run test:unit"
-run "Prod-verify (domener, health, paths)" "npm run verify"
+run "Lint" "npm run lint" || true
+run "Type-check" "npm run type-check" || true
+run "Unit-tester" "npm run test:unit" || true
+run "Prod-verify (domener, health, paths)" "npm run verify" || true
 
 if [[ "$SKIP_MCP" != "true" ]] && [[ -f "scripts/test-mcp-connections.sh" ]]; then
   echo ""
