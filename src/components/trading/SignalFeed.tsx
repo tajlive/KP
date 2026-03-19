@@ -14,6 +14,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -36,6 +37,7 @@ interface TradingSignal {
 const REFRESH_INTERVAL_MS = 15_000; // Oppdater oftere så nye signaler vises raskt
 
 export function SignalFeed() {
+  const locale = useLocale();
   const [signals, setSignals] = useState<TradingSignal[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -290,7 +292,7 @@ export function SignalFeed() {
               </p>
             </div>
             <Link
-              href="/no/priser"
+              href={`/${locale}/priser`}
               className="shrink-0 text-[10px] font-bold text-blue-400 hover:text-blue-300 uppercase tracking-wide transition-colors"
             >
               Oppgrader →
