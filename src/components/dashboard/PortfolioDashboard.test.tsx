@@ -34,6 +34,24 @@ vi.mock("./FirstTradeCard", () => ({
   default: () => null,
 }));
 
+vi.mock("./DashboardSignalPreview", () => ({
+  DashboardSignalPreview: () => null,
+}));
+
+const mockChannel = {
+  on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }),
+};
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    channel: () => mockChannel,
+    removeChannel: () => {},
+  }),
+  getSupabaseClient: () => ({
+    channel: () => mockChannel,
+    removeChannel: () => {},
+  }),
+}));
+
 describe("PortfolioDashboard", () => {
   it("renders a position from dashboard trade rows", () => {
     render(
