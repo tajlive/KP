@@ -30,16 +30,17 @@ Vercel tilbyr **remote MCP** med OAuth – ingen token i repo.
 
 Full liste: [Vercel MCP Tools](https://vercel.com/docs/agent-resources/vercel-mcp/tools).
 
-### Prosjektspesifikk URL (valgfritt)
+### Prosjektspesifikk URL (anbefalt)
 
-For automatisk kontekst (team + prosjekt) kan du bruke:
+For automatisk kontekst (team + prosjekt) bruk:
 
 ```
 https://mcp.vercel.com/<team-slug>/<project-slug>
 ```
 
-Eksempel: `https://mcp.vercel.com/tom-jensens-projects/klarpakke`.  
-Team/project slug finner du i Vercel Dashboard (Settings → General) eller via `vercel projects ls`.
+**Klarpakke:** `https://mcp.vercel.com/klarpakke/klarpakke`
+
+Team/project slug finner du via `vercel link` + `cat .vercel/project.json`, eller i Vercel Dashboard (Settings → General).
 
 ---
 
@@ -95,7 +96,7 @@ Dokumentert i **docs/vercel-build-notes.md** §6b.
 
 | Del | Løsning |
 |-----|---------|
-| **MCP** | Offisiell remote MCP: `url: https://mcp.vercel.com` i `.cursor/mcp.json` (og tilsvarende i `.mcp/mcp_config.json`). OAuth, ingen token i config. |
+| **MCP** | Offisiell remote MCP: `url: https://mcp.vercel.com/klarpakke/klarpakke` i `.cursor/mcp.json`. OAuth, ingen token i config. Full sjekkliste: **docs/VERCEL-SETTINGS.md**. |
 | **CLI** | `scripts/vercel-api.mjs` + `npm run vercel` / `vercel:test`. Krever `VERCEL_TOKEN` i `.env.local`. |
 | **Node** | `22.x` i engines og `.nvmrc` – optimalt for Vercel uten nedgradering. |
 | **Dokumentasjon** | Denne filen + **docs/vercel-build-notes.md** + **docs/MCP-CLI-CI-API.md**. |

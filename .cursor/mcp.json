@@ -57,7 +57,7 @@
       "args": ["scripts/run-vipps-mcp.mjs"]
     },
     "vercel": {
-      "url": "https://mcp.vercel.com"
+      "url": "https://mcp.vercel.com/klarpakke/klarpakke"
     },
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp"

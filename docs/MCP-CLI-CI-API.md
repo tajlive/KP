@@ -84,7 +84,7 @@ npm run vercel:env    # npx vercel env pull .env.local
 npm run deploy:prod   # npx vercel --prod
 ```
 
-MCP: I Cursor brukes offisiell Vercel MCP (`https://mcp.vercel.com`). Ved første bruk: klikk «Needs login» og autoriser. **Vercel env:** Agenten har tilgang til Vercel env via MCP og via `npm run vercel:env` (pull til .env.local). Full oversikt: **docs/VERCEL-MCP-CLI.md**.
+MCP: I Cursor brukes offisiell Vercel MCP (`https://mcp.vercel.com/klarpakke/klarpakke`). Ved første bruk: klikk «Needs login» og autoriser. **Vercel env:** Agenten har tilgang til Vercel env via MCP og via `npm run vercel:env` (pull til .env.local). Full oversikt: **docs/VERCEL-MCP-CLI.md**. Dashboard-sjekkliste: **docs/VERCEL-SETTINGS.md**.
 
 ### Cloudflare
 

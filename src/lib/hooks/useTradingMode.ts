@@ -47,8 +47,19 @@ export function useTradingMode() {
           .eq("id", user.id)
           .maybeSingle();
 
-        const liveTiers = ["master", "phd", "professor"];
-        const canSwitchToLive = liveTiers.includes(profile?.tier || "");
+        // Bachelor+ har live trading per TIERS; canSwitchToLive krever også binance_connected
+        const { canAccessLiveAutoTrading } = await import("@/types/subscription");
+        const tier = (profile?.tier || "student") as import("@/lib/pricing/tiers").TierSlug;
+        const hasLiveTier = canAccessLiveAutoTrading(tier);
+
+        // Sjekk om Binance er koblet (trengs for live)
+        const { data: profileFull } = await supabase
+          .from("user_profiles")
+          .select("binance_connected")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        const canSwitchToLive = hasLiveTier && Boolean(profileFull?.binance_connected);
 
         setState((prev) => ({
           ...prev,
