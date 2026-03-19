@@ -194,8 +194,8 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
       {/* Sidetittel + oppdater + info om Binance */}
       <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate">
-            {sessions.length === 0 ? t("noSessions") : t("title")}
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate" data-testid="sessions-heading">
+            {sessions.length === 0 ? t("noSessions") : t("mySessions")}
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
             {t("description")}

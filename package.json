@@ -31,6 +31,7 @@
     "test:full": "bash scripts/full-e2e.sh",
     "test:e2e:smoke": "playwright test --project=smoke-chromium",
     "test:e2e:critical": "playwright test --project=critical-chromium --project=critical-firefox",
+    "test:e2e:critical:chromium": "playwright test --project=critical-chromium",
     "test:e2e:regression": "playwright test --project=regression-chromium",
     "test:e2e:mobile": "playwright test --project=mobile-safari --project=mobile-chrome",
     "test:e2e:ui": "playwright test --ui",
