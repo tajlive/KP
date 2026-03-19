@@ -19,8 +19,9 @@ jobs:
   dump-schema:
     name: Dump Supabase Schema
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
-      contents: write # Nødvendig for å committe tilbake
+      contents: write
 
     steps:
       - name: Checkout

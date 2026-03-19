@@ -1,41 +1,32 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient, createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-// KLA-108: Admin-guard
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) {
-    return { error: 'Ikke autentisert', status: 401 };
-  }
-
-  const { data: profile } = await supabase
-    .from('user_profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (profile?.role !== 'admin') {
-    return { error: 'Ingen tilgang', status: 403 };
-  }
-
-  return { user };
-}
-
 export async function POST(req: NextRequest) {
   try {
-    // KLA-108: Sjekk admin
-    const auth = await requireAdmin();
-    if ('error' in auth) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(req, response);
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Ikke autentisert' }, { status: 401 });
+    }
+
+    const supabase = createClient();
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Ingen tilgang' }, { status: 403 });
     }
 
     const { createClient: createServiceClient } = await import('@supabase/supabase-js');
-    const supabase = createServiceClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+    const supabaseService = createServiceClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
@@ -99,8 +90,7 @@ export async function POST(req: NextRequest) {
     const results = [];
     for (const sql of statements) {
       try {
-        // Try to execute via RPC if available
-        const { data, error } = await supabase.rpc('exec_sql', { sql });
+        const { data, error } = await supabaseService.rpc('exec_sql', { sql });
         if (error) {
           results.push({ success: false, error: error.message, sql: sql.substring(0, 50) });
         } else {
