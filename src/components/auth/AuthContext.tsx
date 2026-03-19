@@ -247,13 +247,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (refreshTimeoutRef.current) {
           clearTimeout(refreshTimeoutRef.current);
         }
-        queryClient.removeQueries({ queryKey: queryKeys.all });
+        // Cache invalidation moved to AuthQueryInvalidator (inside QueryProvider in dashboard)
       } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        queryClient.invalidateQueries({ queryKey: queryKeys.profile(null) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.tier(null) });
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tradingSessions(null),
-        });
+        // Cache invalidation: dashboard has QueryProvider; profile/tier hooks refetch on mount
       }
 
       setSession(session);
