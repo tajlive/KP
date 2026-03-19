@@ -151,7 +151,6 @@ export default function PortfolioDashboard({
         },
         (payload) => {
           const row = payload.new as Record<string, unknown>;
-          if (row?.mode !== 'paper') return;
           const t: Trade = {
             id: String(row.id),
             trading_pair: String(row.trading_pair ?? ''),

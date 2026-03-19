@@ -180,11 +180,24 @@ export default function ClientAutoTradeDashboard() {
       const { data, error } = await supabase
         .from('trades')
         .select('*')
-        .order('opened_at', { ascending: false })
-        .limit(20);
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       if (error) throw error;
-      const typedTrades = (data as unknown as Trade[]) || [];
+      const raw = (data as Record<string, unknown>[]) || [];
+      const typedTrades: Trade[] = raw.map((r) => ({
+        id: String(r.id),
+        symbol: String(r.trading_pair ?? r.symbol ?? ''),
+        side: (String(r.side ?? '').toUpperCase() === 'BUY' ? 'BUY' : 'SELL') as 'BUY' | 'SELL',
+        entry_price: Number(r.price ?? 0),
+        exit_price: r.exit_price != null ? Number(r.exit_price) : undefined,
+        executed_at: r.executed_at ? String(r.executed_at) : null,
+        pnl: (r.realized_pnl ?? r.pnl) != null ? Number(r.realized_pnl ?? r.pnl) : null,
+        pnl_usdt: (r.realized_pnl ?? r.pnl) != null ? Number(r.realized_pnl ?? r.pnl) : undefined,
+        trading_mode: (r.mode === 'live' ? 'live' : 'paper') as 'paper' | 'live',
+        opened_at: String(r.created_at ?? r.opened_at ?? new Date().toISOString()),
+        closed_at: r.executed_at ? String(r.executed_at) : undefined,
+      }));
       setTrades(typedTrades);
       
       // Calculate win rate
