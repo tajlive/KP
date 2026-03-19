@@ -157,9 +157,23 @@ Når **PR Check** (eller andre workflows) feiler på en PR:
 
 7. **Auto-fix for lint:** Hvis **kun** Lint-feilet, prøver CI å kjøre `npm run lint -- --fix` og pushe en commit til PR-branchen. Da starter en ny kjøring automatisk. Hvis feilen var type-check eller build, skjer ingen auto-push.
 
+8. **Cursor Cloud Agent:** Skriv `@cursor` i en PR-kommentar for å be Cursor Cloud Agent fikse. Se [CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md) for full veiledning.
+
 ---
 
-## 8. Hurtigsjekkliste
+## 8. Cursor Cloud PR Autofix
+
+Med Cursor-abonnement inkl. Cloud Agents kan du sette opp automatisk feilretting på PR-er.
+
+Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for:
+
+- Oppsett av automations (CI failure, PR opened, Push to branch)
+- Manuell bruk: `@cursor Fiks alle CI-feil`, `@cursor autofix on/off`
+- Krav: Cursor-abonnement med Cloud Agents
+
+---
+
+## 9. Hurtigsjekkliste
 
 - [ ] Description og topics satt på repo
 - [ ] Default branch er `main`
