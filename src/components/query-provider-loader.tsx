@@ -13,7 +13,7 @@ interface Props {
  */
 export function QueryProviderLoader({ children }: Props) {
   const [Provider, setProvider] = useState<
-    ((props: { children: ReactNode }) => JSX.Element) | null
+    ((props: { children: ReactNode }) => React.ReactElement) | null
   >(null);
   const [err, setErr] = useState<unknown>(null);
 
