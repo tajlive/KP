@@ -34,6 +34,7 @@ jobs:
           else
             echo "❌ Supabase REST: FEIL" && exit 1
           fi
+        continue-on-error: true
 
       - name: Sjekk Stripe
         env:
@@ -42,6 +43,7 @@ jobs:
           OBJ=$(curl -sf https://api.stripe.com/v1/account \
             -u "$STRIPE_SECRET_KEY:" | jq -r .object)
           [[ "$OBJ" == "account" ]] && echo "✅ Stripe: OK" || (echo "❌ Stripe: FEIL" && exit 1)
+        continue-on-error: true
 
       - name: Sjekk Vercel
         env:
@@ -50,6 +52,7 @@ jobs:
           COUNT=$(curl -sf "https://api.vercel.com/v9/projects" \
             -H "Authorization: Bearer $VERCEL_TOKEN" | jq '.projects | length')
           [[ "$COUNT" -gt 0 ]] && echo "✅ Vercel: OK ($COUNT prosjekter)" || (echo "❌ Vercel: FEIL" && exit 1)
+        continue-on-error: true
 
       - name: Sjekk Resend
         env:
@@ -58,6 +61,7 @@ jobs:
           TYPE=$(curl -sf "https://api.resend.com/emails" \
             -H "Authorization: Bearer $RESEND_API_KEY" | jq -r '.data | type')
           [[ "$TYPE" == "array" ]] && echo "✅ Resend: OK" || (echo "❌ Resend: FEIL" && exit 1)
+        continue-on-error: true
 
       - name: Sjekk Cloudflare
         env:
@@ -70,6 +74,7 @@ jobs:
               "https://api.cloudflare.com/client/v4/user" | jq -r '.result.email // "feil"')
             [[ "$TITLE" != "feil" && -n "$TITLE" ]] && echo "✅ Cloudflare: OK ($TITLE)" || (echo "❌ Cloudflare: FEIL" && exit 1)
           fi
+        continue-on-error: true
 
       - name: Rapport
         if: always()

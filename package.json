@@ -16,6 +16,7 @@
     "pre-commit": "npm run check:secrets-staged && npm run lint && npm run type-check",
     "check:secrets-staged": "./scripts/check-secrets-staged.sh",
     "verify": "node scripts/verify-production.mjs",
+    "verify:automation": "bash scripts/verify-automation.sh",
     "release": "npm run lint && npm run type-check && npm run build",
     "launch": "bash scripts/launch-week2.sh",
     "deploy": "gcloud run deploy klarpakke --source . --region us-central1 --project klarpakke-universitet --allow-unauthenticated",
