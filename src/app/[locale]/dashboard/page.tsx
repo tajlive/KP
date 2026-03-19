@@ -82,7 +82,6 @@ export default async function DashboardPage({
           "id, trading_pair, side, quantity, price, total_value, status, mode, created_at, executed_at",
         )
         .eq("user_id", user.id)
-        .eq("mode", "paper")
         .order("created_at", { ascending: false })
         .limit(50),
       supabase
