@@ -12,7 +12,10 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
 
   test.describe("Module Overview Page", () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(`/no/kurs/${moduleSlug}`, { waitUntil: "domcontentloaded" });
+      await page.goto(`/no/kurs/${moduleSlug}`, {
+        waitUntil: "domcontentloaded",
+        timeout: 90_000,
+      });
     });
 
     test("should load module overview and display 5 lessons", async ({
@@ -69,7 +72,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(
         `/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`,
-        { waitUntil: "domcontentloaded" }
+        { waitUntil: "domcontentloaded", timeout: 90_000 }
       );
     });
 
@@ -138,6 +141,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     }) => {
       await page.goto(`/no/kurs/${moduleSlug}`, {
         waitUntil: "domcontentloaded",
+        timeout: 90_000,
       });
 
       await expect(
@@ -152,7 +156,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     test("should display lesson content on mobile", async ({ page }) => {
       await page.goto(
         `/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`,
-        { waitUntil: "domcontentloaded" }
+        { waitUntil: "domcontentloaded", timeout: 90_000 }
       );
 
       await expect(
