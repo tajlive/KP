@@ -21,6 +21,7 @@ import { createClient } from "@/lib/utils";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
 import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
+import { QueryProvider } from "@/components/query-provider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SentryInit } from "@/components/providers/SentryInit";
 import { Analytics } from "@vercel/analytics/react";
@@ -52,8 +53,9 @@ export default function DashboardClientLayout({
     <>
       <CorruptTokenCleanup />
       <ClientSideProviders>
-        <ErrorBoundary>
-          <AuthProvider>
+        <QueryProvider>
+          <ErrorBoundary>
+            <AuthProvider>
               <ToastProvider>
                 <TradingModeProvider>
                   <ProtectedRoute>
@@ -80,8 +82,9 @@ export default function DashboardClientLayout({
                   <SpeedInsights />
                 </TradingModeProvider>
               </ToastProvider>
-          </AuthProvider>
-        </ErrorBoundary>
+            </AuthProvider>
+          </ErrorBoundary>
+        </QueryProvider>
       </ClientSideProviders>
     </>
   );

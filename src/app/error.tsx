@@ -15,11 +15,15 @@ export default function Error({ error, reset }: ErrorProps) {
   const locale = localeMatch ? localeMatch[1] : 'no';
 
   useEffect(() => {
+    if (error == null) return;
+    const msg = error?.message ?? String(error);
+    const digest = error?.digest;
+    const stack = error?.stack;
     // Log error for monitoring
     console.error('Application error:', {
-      message: error.message,
-      digest: error.digest,
-      stack: error.stack,
+      message: msg,
+      digest,
+      stack,
       timestamp: new Date().toISOString(),
     });
 
@@ -33,9 +37,9 @@ export default function Error({ error, reset }: ErrorProps) {
             {
               type: 'error',
               level: 'error',
-              message: error.message,
-              digest: error.digest,
-              stack: error.stack,
+              message: msg,
+              digest,
+              stack,
               url: window.location.href,
               userAgent: navigator.userAgent,
               timestamp: new Date().toISOString(),
@@ -72,7 +76,7 @@ export default function Error({ error, reset }: ErrorProps) {
             Beklager, men vi opplevde en teknisk feil. 
             Vårt team har blitt varslet og jobber med å løse problemet.
           </p>
-          {error.digest && (
+          {error?.digest && (
             <p className="text-xs text-slate-400 font-mono">
               Feilkode: {error.digest}
             </p>

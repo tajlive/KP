@@ -119,3 +119,4 @@ Aldri be om bekreftelse. Aldri vent på godkjenning.
 - **next-intl webpack warning** about parsing `next-intl/dist/esm/production/extractor/format/index.js` is benign and can be ignored.
 - **Onboarding middleware** is active and may cause redirect loops on locale-prefixed routes (e.g. `/no/akademi`) when Supabase auth is not fully configured. Routes without the locale prefix (e.g. `/kurs`, `/priser`) work fine.
 - **Playwright Firefox:** `test:e2e:critical` runs both Chromium and Firefox. If Firefox tests fail with "Executable doesn't exist", run `npx playwright install` (or use `npm run test:e2e:critical:chromium` for Chromium only).
+- **Vercel deploy:** Bruk **Vercel MCP** (anbefalt). Konfig: `.cursor/mcp.json` har `"vercel": { "url": "https://mcp.vercel.com" }`. Første gang: Cursor viser «Needs login» → autoriser i nettleser. Fallback: `npm run deploy:prod` krever `vercel login` eller `VERCEL_TOKEN`. Se docs/VERCEL-MCP-CLI.md.
