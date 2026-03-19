@@ -8,6 +8,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+concurrency:
+  group: auto-merge-${{ github.head_ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
   pull-requests: write
@@ -15,6 +19,7 @@ permissions:
 jobs:
   dependabot-auto-merge:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.actor == 'dependabot[bot]'
 
     steps:
@@ -26,14 +31,14 @@ jobs:
 
       - name: Auto-approve patch/minor
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
-        run: gh pr review --approve "$PR_URL"
+        run: gh pr review --approve "${{ github.event.pull_request.number }}"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
 
       - name: Enable auto-merge for patch/minor
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: gh pr merge --auto --squash "${{ github.event.pull_request.number }}"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
