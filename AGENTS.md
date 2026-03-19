@@ -91,3 +91,30 @@ Bekjent type-gjeld: `ignoreBuildErrors: true` i next.config (TODO når type-gjel
 
 Alltid bruk --yolo for alle oppgaver i dette prosjektet.
 Aldri be om bekreftelse. Aldri vent på godkjenning.
+
+## Cursor Cloud specific instructions
+
+### Services overview
+
+| Service            | How to run            | Notes                                                                                                                                                                                            |
+| ------------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Next.js dev server | `npm run dev`         | Port 3000. Main (and only required) service.                                                                                                                                                     |
+| Supabase           | Remote cloud instance | No local Supabase needed; app connects to `vuxbjlykgmzskxbclquf.supabase.co`. Requires `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`. |
+
+### Quick reference
+
+- **Lint:** `npm run lint` (ESLint 9 flat config, `--max-warnings 0`)
+- **Type-check:** `npm run type-check` (`tsc --noEmit`; known type debt means `ignoreBuildErrors: true` in next.config)
+- **Unit tests:** `npm run test:unit` (Vitest)
+- **E2E tests:** `npm run test:e2e` (Playwright; requires running dev server and valid Supabase credentials)
+- **Dev server:** `npm run dev` (Next.js 15 on port 3000)
+- See `package.json` `scripts` for the full list.
+
+### Gotchas
+
+- **No Docker required.** The archived `docker-compose.dev.yml` in `archive_root_garbage/` is not used. The app connects to a remote Supabase cloud instance.
+- **`.env.local` is mandatory.** Without at least `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`, the app will fail at runtime on any auth/DB call. Copy `.env.local.example` as a starting point.
+- **Husky git hooks** run automatically: pre-commit runs lint-staged + secret check + lint + type-check; pre-push runs unit tests. Use `--no-verify` to skip if needed during development iterations.
+- **Node 22.x** is required (specified in `.nvmrc` and `engines`). The environment has nvm with Node 22 pre-installed.
+- **next-intl webpack warning** about parsing `next-intl/dist/esm/production/extractor/format/index.js` is benign and can be ignored.
+- **Onboarding middleware** is active and may cause redirect loops on locale-prefixed routes (e.g. `/no/akademi`) when Supabase auth is not fully configured. Routes without the locale prefix (e.g. `/kurs`, `/priser`) work fine.
