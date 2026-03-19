@@ -393,11 +393,26 @@
       "confirmDelete": "Er du sikker på at du vil slette denne strategien?"
     },
     "strategyTypes": {
-      "dca_trygg": { "name": "DCA Trygg", "description": "Ukentlig dollar-cost averaging" },
-      "trend_balansert": { "name": "Trend Balansert", "description": "MA-crossover med RSI-filter" },
-      "multisignal_aktiv": { "name": "Multi-Signal Aktiv", "description": "RSI + momentum på 4h" },
-      "grid_bot": { "name": "Grid Bot", "description": "Automatisk grid trading" },
-      "ai_copy": { "name": "AI Copy", "description": "Kopier AI-genererte signaler" }
+      "dca_trygg": {
+        "name": "DCA Trygg",
+        "description": "Ukentlig dollar-cost averaging"
+      },
+      "trend_balansert": {
+        "name": "Trend Balansert",
+        "description": "MA-crossover med RSI-filter"
+      },
+      "multisignal_aktiv": {
+        "name": "Multi-Signal Aktiv",
+        "description": "RSI + momentum på 4h"
+      },
+      "grid_bot": {
+        "name": "Grid Bot",
+        "description": "Automatisk grid trading"
+      },
+      "ai_copy": {
+        "name": "AI Copy",
+        "description": "Kopier AI-genererte signaler"
+      }
     }
   },
   "autoTrading": {
@@ -1336,8 +1351,8 @@
         "a": "Du kan kansellere når som helst fra kontoinnstillingene dine. Du beholder tilgangen til slutten av den betalte perioden. Det er ingen bindingstid – du bestemmer selv hvor lenge du vil være med."
       },
       {
-"q": "Hvordan starter jeg med lekepenger?",
-      "a": "Registrer deg gratis, så får du automatisk 100 000 kr i lekepenger. Gå til Lekepenger-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
+        "q": "Hvordan starter jeg med lekepenger?",
+        "a": "Registrer deg gratis, så får du automatisk 100 000 kr i lekepenger. Gå til Lekepenger-siden, velg en kryptovaluta, og trykk kjøp for å gjøre din første trade. Det er helt risikofritt!"
       },
       {
         "q": "Hva lærer jeg i kursene?",
@@ -2194,6 +2209,52 @@
       }
     ]
   },
+  "strategyMarketplace": {
+    "browse": {
+      "title": "Strategier",
+      "subtitle": "Offentlige og egne strategier (RLS: synlige rader fra Supabase).",
+      "listHeading": "Dine synlige strategier",
+      "loading": "Laster strategier…",
+      "empty": "Ingen strategier å vise ennå.",
+      "loadError": "Kunne ikke laste strategier. Sjekk nettverk eller innlogging.",
+      "retry": "Prøv igjen",
+      "openAutoTrade": "Gå til auto-trade",
+      "metadataSectionTitle": "Metadata (demo-skjema)",
+      "metadataSectionHint": "Kobles til listing/opprettelse i KLA-91. Lagrer ikke til DB i denne demoen.",
+      "demoSaved": "Lagret lokalt (demo): {title}"
+    },
+    "metadata": {
+      "sectionTitle": "Markedsplass-metadata",
+      "title": "Tittel",
+      "titlePlaceholder": "F.eks. Balansert DCA BTC",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "Kort pitch til kjøpere",
+      "category": "Kategori",
+      "category_dca": "DCA",
+      "category_trend": "Trend",
+      "category_grid": "Grid",
+      "category_ai": "AI / signal",
+      "category_other": "Annet",
+      "riskLevel": "Risikonivå",
+      "risk_low": "Lav",
+      "risk_medium": "Middels",
+      "risk_high": "Høy",
+      "priceModel": "Prismodell",
+      "priceModel_free": "Gratis",
+      "priceModel_subscription": "Abonnement (mnd)",
+      "priceModel_one_time": "Engangskjøp",
+      "priceNok": "Pris (NOK)",
+      "isPublic": "Synlig for andre autentiserte brukere",
+      "submit": "Lagre metadata",
+      "saveDraft": "Lagre utkast",
+      "validation_titleMin": "Tittel må ha minst 3 tegn",
+      "validation_titleMax": "Tittel er for lang",
+      "validation_descriptionMax": "Beskrivelse er for lang",
+      "validation_priceMin": "Pris kan ikke være negativ",
+      "validation_priceMax": "Pris er for høy",
+      "validation_priceRequired": "Oppgi pris for valgt prismodell"
+    }
+  },
   "settings": {
     "title": "Innstillinger",
     "subtitle": "Administrer din konto og preferanser",
@@ -2596,11 +2657,26 @@
     "liveTradingInfo": "Live Trading Mode",
     "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
     "strategies": {
-      "dca_trygg": { "name": "DCA Trygg", "description": "Kjøper BTC/ETH automatisk hver uke. Dobler ved store dip." },
-      "trend_balansert": { "name": "Trend Balansert", "description": "Følger MA50/MA200 crossover med RSI-filter." },
-      "multisignal_aktiv": { "name": "Multi-Signal Aktiv", "description": "RSI + MACD + Bollinger gir hyppigere handler." },
-      "grid_bot": { "name": "Grid Bot", "description": "Kjøper lavt, selger høyt i prisgitter." },
-      "ai_copy": { "name": "AI Copy", "description": "Kopierer topp-tradere filtrert av AI." }
+      "dca_trygg": {
+        "name": "DCA Trygg",
+        "description": "Kjøper BTC/ETH automatisk hver uke. Dobler ved store dip."
+      },
+      "trend_balansert": {
+        "name": "Trend Balansert",
+        "description": "Følger MA50/MA200 crossover med RSI-filter."
+      },
+      "multisignal_aktiv": {
+        "name": "Multi-Signal Aktiv",
+        "description": "RSI + MACD + Bollinger gir hyppigere handler."
+      },
+      "grid_bot": {
+        "name": "Grid Bot",
+        "description": "Kjøper lavt, selger høyt i prisgitter."
+      },
+      "ai_copy": {
+        "name": "AI Copy",
+        "description": "Kopierer topp-tradere filtrert av AI."
+      }
     },
     "balance": "Saldo",
     "available": "Tilgjengelig",
