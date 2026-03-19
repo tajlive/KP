@@ -1,0 +1,69 @@
+# Label configuration for actions/labeler@v5
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/components/**'
+          - 'src/app/**/*.tsx'
+          - '**/*.css'
+          - '**/*.scss'
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/app/api/**'
+          - 'src/lib/**'
+          - 'supabase/**'
+
+trading:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/lib/trading/**'
+          - 'src/lib/auto-trading/**'
+          - 'src/components/auto-trade/**'
+          - 'src/components/trading/**'
+          - 'src/app/api/trading/**'
+          - 'src/app/api/auto-trading/**'
+
+auth:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/lib/auth*'
+          - 'src/lib/supabase/**'
+          - 'src/middleware/**'
+          - 'src/middleware.ts'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - '.husky/**'
+          - 'scripts/**'
+
+database:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'supabase/migrations/**'
+          - 'supabase/seed*.sql'
+
+i18n:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'messages/**'
+          - 'src/i18n/**'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '**/*.md'
+          - '!.github/**'
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'tests/**'
+          - '**/*.test.*'
+          - '**/*.spec.*'
+          - 'playwright.config.*'
+          - 'vitest.config.*'

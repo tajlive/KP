@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { encrypt } from '@/lib/crypto';
 
 /**
@@ -15,8 +15,9 @@ import { encrypt } from '@/lib/crypto';
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json(
