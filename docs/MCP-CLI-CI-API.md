@@ -142,6 +142,7 @@ npm run test:unit     # vitest
 npm run test:e2e:smoke
 npm run verify        # node scripts/verify-production.mjs
 npm run verify:prod   # smoke mot prod-URL
+npm run verify:automation  # lint + type-check + test:unit + verify + test:mcp (samlet MCP/CLI/API/CI)
 ```
 
 ---
