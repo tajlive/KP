@@ -45,9 +45,11 @@ export function CoursePreview() {
         
         <div className="grid md:grid-cols-3 gap-6">
           {courses.map((course, idx) => (
-            <div 
+            <Link
               key={idx}
-              className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-teal-500/50 transition-colors group cursor-pointer"
+              href={`/${locale}/kurs`}
+              aria-label={`${t('seeAllCourses')}: ${course.title}`}
+              className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-teal-500/50 transition-colors group cursor-pointer block"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center">
@@ -70,7 +72,7 @@ export function CoursePreview() {
               <div className="mt-4 h-1 bg-slate-700 rounded-full overflow-hidden">
                 <div className="h-full w-0 bg-teal-500 rounded-full" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
         

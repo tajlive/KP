@@ -41,8 +41,15 @@ export function HeaderTicker() {
   }, []);
 
   return (
-    <div className="hidden lg:flex items-center gap-4 text-sm text-[#5E6478] min-w-0 flex-1 justify-center">
+    <div
+      className="flex items-center gap-4 text-sm text-[#5E6478] min-w-0 flex-1 justify-center"
+      aria-label={t("liveMarkets")}
+    >
       <div className="flex items-center gap-4 shrink-0">
+        <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-[#8E95A9]">
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+          {t("liveMarkets")}
+        </span>
         {PAIRS.map((pair) => (
           <span
             key={pair}

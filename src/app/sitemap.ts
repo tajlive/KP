@@ -1,42 +1,39 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
 
-const baseUrl = 'https://www.klarpakke.no';
+const baseUrl = "https://www.klarpakke.no";
 
 // Norwegian routes (default - no prefix)
 const noRoutes = [
-  '',
-  '/paper-trading',
-  '/kurs',
-  '/kalkulator',
-  '/leaderboard',
-  '/leagues',
+  "",
+  "/paper-trading",
+  "/kurs",
+  "/kalkulator",
+  "/leaderboard",
+  "/leagues",
   // REMOVED: '/om-oss',
-  '/kontakt',
-  '/personvern',
-  '/vilkar',
-  '/priser',
+  "/kontakt",
+  "/personvern",
+  "/vilkar",
+  "/priser",
 ];
 
-// English routes (/en/ prefix)
+// English routes (/en/ prefix) – bruk samme path-navn som norsk (docs/ANALYSE-RUTER-DESIGN-SIGNALER-2026.md)
 const enRoutes = [
-  '/en',
-  '/en/paper-trading',
-  '/en/courses',
-  '/en/calculator',
-  '/en/leaderboard',
-  '/en/leagues',
-  '/en/about',
-  '/en/contact',
-  '/en/privacy',
-  '/en/terms',
-  '/en/pricing',
+  "/en",
+  "/en/paper-trading",
+  "/en/kurs",
+  "/en/kalkulator",
+  "/en/leaderboard",
+  "/en/leagues",
+  "/en/om-oss",
+  "/en/kontakt",
+  "/en/personvern",
+  "/en/vilkar",
+  "/en/priser",
 ];
 
 // Static pages (lower priority)
-const staticRoutes = [
-  '/hjelp',
-  '/en/help',
-];
+const staticRoutes = ["/hjelp", "/en/help"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const sitemap: MetadataRoute.Sitemap = [];
@@ -44,22 +41,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Norwegian routes (default locale, no prefix)
   noRoutes.forEach((route) => {
-    const isHome = route === '';
+    const isHome = route === "";
     sitemap.push({
       url: `${baseUrl}${route}`,
       lastModified: now,
-      changeFrequency: isHome ? 'daily' : 'weekly',
+      changeFrequency: isHome ? "daily" : "weekly",
       priority: isHome ? 1.0 : 0.8,
     });
   });
 
   // English routes
   enRoutes.forEach((route) => {
-    const isHome = route === '/en';
+    const isHome = route === "/en";
     sitemap.push({
       url: `${baseUrl}${route}`,
       lastModified: now,
-      changeFrequency: isHome ? 'daily' : 'weekly',
+      changeFrequency: isHome ? "daily" : "weekly",
       priority: isHome ? 0.9 : 0.7,
     });
   });
@@ -69,7 +66,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     sitemap.push({
       url: `${baseUrl}${route}`,
       lastModified: now,
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.5,
     });
   });

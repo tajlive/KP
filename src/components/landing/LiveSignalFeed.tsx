@@ -4,7 +4,9 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { formatDistanceToNow } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 
 interface LandingSignal {
   id: string;
@@ -51,6 +53,7 @@ const FALLBACK_SIGNALS: LandingSignal[] = [
 ];
 
 export function LiveSignalFeed() {
+  const locale = useLocale();
   const [signals, setSignals] = useState<LandingSignal[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -151,9 +154,12 @@ export function LiveSignalFeed() {
       </div>
 
       <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
-        <button className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-tight">
+        <Link
+          href={`/${locale}/dashboard/trading`}
+          className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-tight transition-colors"
+        >
           Se alle historiske signaler →
-        </button>
+        </Link>
       </div>
     </div>
   );

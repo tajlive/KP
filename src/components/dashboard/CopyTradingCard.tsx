@@ -195,7 +195,7 @@ export function CopyTradingCard() {
                       </p>
                     </div>
                     <Button asChild size="sm" variant="outline">
-                      <Link href="/dashboard?connect=binance">
+                      <Link href={`/${locale}/dashboard?connect=binance`}>
                         Gå Live
                         <ChevronRight className="w-4 h-4 ml-1" />
                       </Link>
@@ -263,7 +263,7 @@ export function CopyTradingCard() {
               )}
 
               <Button asChild className="w-full">
-                <Link href="/copy-trading">
+                <Link href={`/${locale}/copy-trading`}>
                   <Users className="w-4 h-4 mr-2" />
                   {activeSessions && activeSessions.length > 0
                     ? "Administrer kopiering"

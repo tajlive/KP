@@ -31,5 +31,6 @@
   "navTrade": "模拟",
   "navBots": "机器人",
   "navPricing": "价格",
-  "freeBalance": "10万免费"
+  "liveMarkets": "Live markets",
+  "freeBalance": "Demo: 100,000 NOK starting balance"
 }

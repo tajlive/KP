@@ -8,7 +8,7 @@ import {
   DollarSign,
   ShoppingCart,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 
 export interface PulseEventFeedProps {
@@ -17,6 +17,7 @@ export interface PulseEventFeedProps {
 
 export function PulseEventFeed({ events }: PulseEventFeedProps) {
   const t = useTranslations("dashboard.pulse");
+  const locale = useLocale();
 
   const getEventIcon = (type: PulseEvent["type"]) => {
     switch (type) {
@@ -88,7 +89,7 @@ export function PulseEventFeed({ events }: PulseEventFeedProps) {
 
               {event.courseModuleSlug && (
                 <Link
-                  href={`/kurs/${event.courseModuleSlug}`}
+                  href={`/${locale}/kurs/${event.courseModuleSlug}`}
                   className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-[10px] font-bold transition-colors border border-blue-500/10"
                 >
                   <BookOpen className="w-3 h-3" />

@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
@@ -21,31 +20,6 @@ const DemoWidget = dynamic(
   },
 );
 
-const EmailCapture = dynamic(
-  () =>
-    import("@/components/landing/EmailCapture").then((mod) => ({
-      default: mod.EmailCapture,
-    })),
-  {
-    loading: () => (
-      <div className="h-48 animate-pulse bg-slate-100 rounded-xl" />
-    ),
-  },
-);
-
-// Lazy load ikke-kritiske komponenter for bedre LCP
-const LottoComparison = dynamic(
-  () =>
-    import("@/components/landing/LottoComparison").then((mod) => ({
-      default: mod.LottoComparison,
-    })),
-  {
-    loading: () => (
-      <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
-    ),
-  },
-);
-
 const ThreeSteps = dynamic(
   () =>
     import("@/components/landing/ThreeSteps").then((mod) => ({
@@ -56,14 +30,6 @@ const ThreeSteps = dynamic(
       <div className="h-64 animate-pulse bg-slate-100 rounded-xl" />
     ),
   },
-);
-
-const Testimonials = dynamic(
-  () =>
-    import("@/components/landing/Testimonials").then((mod) => ({
-      default: mod.Testimonials,
-    })),
-  { ssr: true },
 );
 
 const CoursePreview = dynamic(
@@ -176,19 +142,6 @@ export default async function HomePage({
         <CoursePreview />
       </Suspense>
 
-      {/* Lotto Comparison Calculator - Shows what users can achieve */}
-      <section id="lottocalc" className="py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <Suspense
-            fallback={
-              <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
-            }
-          >
-            <LottoComparison />
-          </Suspense>
-        </div>
-      </section>
-
       {/* Three Steps - Lazy loaded */}
       <section className="max-w-6xl mx-auto px-4">
         <Suspense
@@ -199,24 +152,6 @@ export default async function HomePage({
           <ThreeSteps />
         </Suspense>
       </section>
-
-      {/* Testimonials - Social proof for signup */}
-      <Suspense
-        fallback={
-          <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
-        }
-      >
-        <Testimonials language={locale === "no" ? "no" : "en"} />
-      </Suspense>
-
-      {/* Email Lead Capture */}
-      <Suspense
-        fallback={
-          <div className="h-48 animate-pulse bg-slate-100 rounded-xl" />
-        }
-      >
-        <EmailCapture />
-      </Suspense>
 
       {/* Final CTA - sterk konvertering før footer */}
       <Suspense

@@ -30,6 +30,10 @@ export function MarketingNavigation() {
   return (
     <nav className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4">
+        <div className="hidden xl:flex h-9 items-center justify-center border-b border-black/[0.05]">
+          <HeaderTicker />
+        </div>
+
         <div className="flex justify-between items-center h-14 gap-2 min-w-0">
           <Link
             href={l("/")}
@@ -50,14 +54,10 @@ export function MarketingNavigation() {
             <span className="text-xl font-bold text-[#1A1D26] sm:hidden truncate">
               Klarpakke
             </span>
-            <span className="ml-1.5 text-sm font-medium text-[#5E6478] truncate hidden 2xl:inline shrink-0">
+            <span className="ml-1.5 text-sm font-medium text-[#5E6478] truncate hidden xl:inline shrink-0">
               — {t("tagline")}
             </span>
           </Link>
-
-          <div className="hidden 2xl:flex flex-1 justify-center min-w-0 max-w-xl mx-2">
-            <HeaderTicker />
-          </div>
 
           <div className="hidden md:flex items-center gap-4 lg:gap-6 shrink-0">
             {mainLinks.map((link) => (
