@@ -6,7 +6,7 @@
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
-// Mapped trade type from auto_trades table
+// Unified trade type (from trades or auto_trades)
 interface Trade {
   id: string;
   symbol: string;
@@ -17,6 +17,43 @@ interface Trade {
   executed_at: string | null;
   commission: number | null;
   realized_pnl: number | null;
+}
+
+function normalizeTradesRow(
+  row: Record<string, unknown>,
+  source: "trades" | "auto_trades",
+): Trade {
+  if (source === "trades") {
+    const symbol = String(row.trading_pair ?? row.symbol ?? "")
+      .toUpperCase()
+      .replace("/", "");
+    const price = Number(row.price ?? 0);
+    const qty = Number(row.quantity ?? 0);
+    const execAt = row.executed_at ?? row.created_at;
+    return {
+      id: String(row.id),
+      symbol,
+      side: String(row.side ?? "").toLowerCase(),
+      quantity: qty,
+      entry_price: price,
+      exit_price: price,
+      executed_at: execAt ? String(execAt) : null,
+      commission: Number(row.fee ?? 0),
+      realized_pnl: row.realized_pnl != null ? Number(row.realized_pnl) : null,
+    };
+  }
+  return {
+    id: String(row.id),
+    symbol: String(row.symbol ?? "").toUpperCase(),
+    side: String(row.side ?? "").toLowerCase(),
+    quantity: row.quantity != null ? Number(row.quantity) : null,
+    entry_price: row.entry_price != null ? Number(row.entry_price) : null,
+    exit_price: row.exit_price != null ? Number(row.exit_price) : null,
+    executed_at: row.executed_at ? String(row.executed_at) : null,
+    commission: row.commission != null ? Number(row.commission) : null,
+    realized_pnl:
+      row.realized_pnl != null ? Number(row.realized_pnl) : null,
+  };
 }
 
 // Helper to get price/total/fees from database trade
@@ -95,29 +132,55 @@ export async function GET(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    // Fetch trades for the year
+    // Fetch trades from BOTH trades (manual) and auto_trades
     const startDate = `${year}-01-01`;
-    const endDate = `${year}-12-31`;
+    const endDate = `${year}-12-31T23:59:59.999Z`;
 
-    const { data: trades, error: tradesError } = await supabase
-      .from("auto_trades")
-      .select("*")
-      .eq("user_id", user.id)
-      .gte("executed_at", startDate)
-      .lte("executed_at", endDate)
-      .order("executed_at", { ascending: true });
+    const [manualRes, autoRes] = await Promise.all([
+      supabase
+        .from("trades")
+        .select("id, trading_pair, side, quantity, price, total_value, fee, realized_pnl, executed_at, created_at")
+        .eq("user_id", user.id)
+        .gte("created_at", startDate)
+        .lte("created_at", endDate)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("auto_trades")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("executed_at", startDate)
+        .lte("executed_at", endDate)
+        .order("executed_at", { ascending: true }),
+    ]);
 
-    if (tradesError) {
-      console.error("Error fetching trades:", tradesError);
-      return NextResponse.json(
-        { error: "Failed to fetch trades" },
-        { status: 500 },
-      );
+    if (manualRes.error) {
+      console.error("Error fetching manual trades:", manualRes.error);
     }
+    if (autoRes.error) {
+      console.error("Error fetching auto_trades:", autoRes.error);
+    }
+
+    const manualRows = (manualRes.data ?? []) as Record<string, unknown>[];
+    const autoRows = (autoRes.data ?? []) as Record<string, unknown>[];
+
+    const allTrades: Trade[] = [
+      ...manualRows.map((r) => normalizeTradesRow(r, "trades")),
+      ...autoRows.map((r) => normalizeTradesRow(r, "auto_trades")),
+    ]
+      .filter((t) => {
+        const d = t.executed_at ?? null;
+        if (!d) return false;
+        return d >= startDate && d <= endDate;
+      })
+      .sort((a, b) => {
+        const da = a.executed_at ?? "";
+        const db = b.executed_at ?? "";
+        return da.localeCompare(db);
+      });
 
     // Calculate tax report data
     const report = calculateTaxReport(
-      (trades || []) as unknown as Trade[],
+      allTrades,
       year,
       user?.id ?? "",
       userData?.email ?? undefined,
@@ -125,7 +188,7 @@ export async function GET(request: NextRequest) {
 
     // Return in requested format
     if (format === "csv") {
-      const csv = generateCSV(report, (trades || []) as unknown as Trade[]);
+      const csv = generateCSV(report, allTrades);
       return new NextResponse(csv, {
         headers: {
           "Content-Type": "text/csv; charset=utf-8",
@@ -135,7 +198,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (format === "html") {
-      const html = generateHTML(report, (trades || []) as unknown as Trade[]);
+      const html = generateHTML(report, allTrades);
       return new NextResponse(html, {
         headers: {
           "Content-Type": "text/html; charset=utf-8",
@@ -146,10 +209,7 @@ export async function GET(request: NextRequest) {
 
     if (format === "pdf") {
       // Generate HTML and return with PDF header for browser print-to-PDF
-      const html = generatePrintableHTML(
-        report,
-        (trades || []) as unknown as Trade[],
-      );
+      const html = generatePrintableHTML(report, allTrades);
       return new NextResponse(html, {
         headers: {
           "Content-Type": "text/html; charset=utf-8",

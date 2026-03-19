@@ -9,11 +9,21 @@ import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-const bodySchema = z.object({
+const schemaAmountNok = z.object({
   pair: z.string().min(1).max(20),
   side: z.enum(["buy", "sell"]),
   amount_nok: z.number().positive(),
 });
+
+const schemaQtyPrice = z.object({
+  symbol: z.string().min(1).max(20),
+  side: z.enum(["buy", "sell"]),
+  quantity: z.number().positive(),
+  price: z.number().positive(),
+  botId: z.string().uuid().optional(),
+});
+
+const bodySchema = z.union([schemaAmountNok, schemaQtyPrice]);
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,10 +47,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { pair, side, amount_nok } = parsed.data;
-    const symbol = pair.toUpperCase().replace("/", "");
+    const { side } = parsed.data;
+    let symbol: string;
+    let quantity: number;
+    let price: number;
 
-    const [priceRes, rate] = await Promise.all([
+    if ("amount_nok" in parsed.data) {
+      const { pair, amount_nok } = parsed.data;
+      symbol = pair.toUpperCase().replace("/", "");
+
+      const [priceRes, rate] = await Promise.all([
       fetch(
         `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`,
         { signal: AbortSignal.timeout(5000) },
