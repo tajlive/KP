@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import { useLocale } from "next-intl";
+import Link from "next/link";
 
 export function MinimalFooter() {
+  const locale = useLocale();
   const currentYear = new Date().getFullYear();
+  const path = (p: string) => (locale === "no" ? p : `/${locale}${p}`);
 
   return (
     <footer className="border-t border-slate-800 py-8">
@@ -13,26 +16,27 @@ export function MinimalFooter() {
           {/* Company info */}
           <div>
             <p className="font-lexend text-slate-400 text-sm">
-              <strong className="text-slate-200">Klarpakke AS</strong> · Org.nr 929003292
+              <strong className="text-slate-200">Klarpakke AS</strong> · Org.nr
+              929003292
             </p>
           </div>
 
           {/* Legal links */}
           <div className="flex items-center justify-center gap-6">
-            <Link 
-              href="/personvern" 
+            <Link
+              href={path("/personvern")}
               className="font-lexend text-slate-400 hover:text-slate-200 text-sm transition-colors"
             >
               Personvern
             </Link>
-            <Link 
-              href="/vilkar" 
+            <Link
+              href={path("/vilkar")}
               className="font-lexend text-slate-400 hover:text-slate-200 text-sm transition-colors"
             >
               Vilkår
             </Link>
-            <a 
-              href="mailto:support@klarpakke.no" 
+            <a
+              href="mailto:support@klarpakke.no"
               className="font-lexend text-slate-400 hover:text-slate-200 text-sm transition-colors"
             >
               support@klarpakke.no
@@ -50,7 +54,8 @@ export function MinimalFooter() {
         {/* Single disclaimer line */}
         <div className="mt-6 pt-6 border-t border-slate-800/50 text-center">
           <p className="font-lexend text-slate-500 text-xs">
-            Klarpakke gir ikke finansiell rådgivning. Krypto er risikabelt. Du kan tape hele investeringen.
+            Klarpakke gir ikke finansiell rådgivning. Krypto er risikabelt. Du
+            kan tape hele investeringen.
           </p>
         </div>
       </div>
