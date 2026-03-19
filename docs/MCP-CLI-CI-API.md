@@ -225,7 +225,22 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 
 ---
 
-## 8. Hurtigreferanse
+## 8. Release-flow (push → deploy)
+
+**Automatisert:** Push til `main` trigger Deploy-workflow → build → Vercel prod. Ingen manuell deploy nødvendig.
+
+| Steg | Kommando | Beskrivelse |
+|------|----------|-------------|
+| 1. Valider før push | `npm run release` | Lint + type-check + build (samme som CI) |
+| 2. Commit & push | `git add -A && git commit -m "..." && git push -u origin main` | Trigger Deploy workflow |
+| 3. Følg deploy | `gh run watch` (valgfritt) | Venter på at Deploy fullfører |
+| 4. Verifiser prod | `npm run verify` | Tester domener, /api/health, kritiske paths |
+
+**Manuell Vercel-deploy (CLI):** `npm run deploy:prod` — nyttig hvis CI ikke brukes.
+
+---
+
+## 9. Hurtigreferanse
 
 | Ønske              | Handling                                                                                     |
 | ------------------ | -------------------------------------------------------------------------------------------- |
@@ -233,5 +248,7 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 | Linear uten MCP    | `npm run linear issues` / `create` / `update`                                                |
 | Sentry prod        | Sett `NEXT_PUBLIC_SENTRY_DSN` i Vercel prod → **docs/SENTRY-PROD.md**                        |
 | Bygg raskere i CI  | Allerede satt: SKIP_LINT_IN_BUILD + cache (§8 vercel-build-notes)                            |
+| Release til prod   | `npm run release` → `git push origin main` → Deploy workflow                                 |
 | API-dokumentasjon  | **docs/api-routes.md**                                                                       |
 | Alle secrets / ENV | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md**, **docs/ENV-MCP-CLI-API-AUDIT.md** |
+| Release-flow       | `npm run release` → `git push origin main` → Deploy workflow kjører automatisk → Vercel prod. Se **.github/GITHUB_SETUP.md** |
