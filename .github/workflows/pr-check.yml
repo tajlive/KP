@@ -116,7 +116,9 @@ jobs:
             npm run build
             \`\`\`
 
-            **Tips:** Last ned **typecheck**-artifactet fra denne kjøringen for full type-check-output. Se [Feilretting når CI feiler](https://github.com/${{ github.repository }}/blob/main/.github/GITHUB_SETUP.md#7-feilretting-når-ci-feiler) i GITHUB_SETUP.md.`;
+            **Tips:** Last ned **typecheck**-artifactet fra denne kjøringen for full type-check-output. Se [Feilretting når CI feiler](https://github.com/${{ github.repository }}/blob/main/.github/GITHUB_SETUP.md#7-feilretting-når-ci-feiler) i GITHUB_SETUP.md.
+
+            **Eller skriv \`@cursor\` i en kommentar for å be Cursor Cloud Agent fikse.** Se [CURSOR-CLOUD-PR-AUTOFIX.md](https://github.com/${{ github.repository }}/blob/main/docs/CURSOR-CLOUD-PR-AUTOFIX.md).`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
