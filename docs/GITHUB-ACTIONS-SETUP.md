@@ -1,7 +1,10 @@
 # 🤖 GitHub Actions Oppsett
 
-> **Status**: Workflows klare for aktivering
-> **Siste oppdatering**: 2026-01-31
+> **⚠️ Primær referanse:** Se [.github/GITHUB_SETUP.md](../.github/GITHUB_SETUP.md) for oppdatert oppsett (mars 2026).
+> **Feilsøking:** Se [docs/GITHUB-ACTIONS-TROUBLESHOOTING.md](./GITHUB-ACTIONS-TROUBLESHOOTING.md).
+
+**Status**: Workflows klare for aktivering
+**Siste oppdatering**: 2026-01-31
 
 ---
 
