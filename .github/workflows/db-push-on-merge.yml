@@ -36,7 +36,9 @@ jobs:
 
       - name: 🗄️ Supabase link & push
         run: |
-          npx supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+          REF="${{ secrets.SUPABASE_PROJECT_REF || secrets.SUPABASE_PROJECT_ID }}"
+          if [ -z "$REF" ]; then echo "::error::Mangler SUPABASE_PROJECT_REF eller SUPABASE_PROJECT_ID"; exit 1; fi
+          npx supabase link --project-ref "$REF"
           npx supabase db push
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
