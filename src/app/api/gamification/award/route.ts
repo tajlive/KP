@@ -1,6 +1,7 @@
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { trackCriticalAction } from "@/lib/sentry";
+import { z } from "zod";
 
 // XP awards configuration
 const XP_AWARDS: Record<string, number> = {
@@ -14,6 +15,20 @@ const XP_AWARDS: Record<string, number> = {
   course_completed: 200,
   referral_used: 500,
 };
+
+const awardSchema = z.object({
+  action: z.enum([
+    "login",
+    "onboarding_complete",
+    "paper_trade_started",
+    "binance_connected",
+    "lav_risk_streak",
+    "first_trade",
+    "profitable_trade",
+    "course_completed",
+    "referral_used",
+  ]),
+});
 
 /**
  * POST /api/gamification/award
@@ -35,7 +50,14 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
     const body = await request.json();
-    const { action } = body;
+    const parsed = awardSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid action", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+    const { action } = parsed.data;
 
     // Handle login action specially (with streak calculation)
     if (action === "login") {
@@ -79,11 +101,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Handle other actions
     const xpToAward = XP_AWARDS[action];
-    if (!xpToAward) {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    }
 
     // Award XP using database function
     const { data: result, error } = await supabase.rpc("award_xp", {
