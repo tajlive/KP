@@ -88,7 +88,7 @@ export default async function DashboardPage({
       supabase
         .from("trading_sessions")
         .select(
-          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, created_at",
+          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades, created_at",
         )
         .eq("user_id", user.id)
         .eq("status", "active")
