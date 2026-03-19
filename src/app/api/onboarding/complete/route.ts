@@ -1,5 +1,5 @@
-import type { NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import {
   jsonSuccess,
   unauthorized,
@@ -18,12 +18,12 @@ import { trackCriticalAction } from "@/lib/sentry";
 export async function POST(request: NextRequest) {
   const requestId = getOrCreateRequestId(request);
   try {
-    const supabase = await createClient();
-
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (authError || !user) {
       return unauthorized("Ikke autentisert");
@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
 
     const ctx = getRequestContext(request, user.id);
 
+    const supabase = createClient();
     const { data: profile, error: profileError } = await supabase
       .from("user_profiles")
       .select("id, onboarding_step, onboarding_completed, paper_balance")
