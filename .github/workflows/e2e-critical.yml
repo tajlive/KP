@@ -3,8 +3,8 @@ name: E2E Critical Tests
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  # Kun push til main (ikke PR) – reduserer flaky failures på hver PR-push
+  # E2E kjører etter merge; for PR validering bruk pr-check
   schedule:
     # Run daily at 06:00 UTC (early morning to avoid peak hours)
     - cron: '0 6 * * *'
