@@ -393,11 +393,26 @@
       "confirmDelete": "Are you sure you want to delete this strategy?"
     },
     "strategyTypes": {
-      "dca_trygg": { "name": "DCA Safe", "description": "Weekly dollar-cost averaging" },
-      "trend_balansert": { "name": "Trend Balanced", "description": "MA crossover with RSI filter" },
-      "multisignal_aktiv": { "name": "Multi-Signal Active", "description": "RSI + momentum on 4h" },
-      "grid_bot": { "name": "Grid Bot", "description": "Automatic grid trading" },
-      "ai_copy": { "name": "AI Copy", "description": "Copy AI-generated signals" }
+      "dca_trygg": {
+        "name": "DCA Safe",
+        "description": "Weekly dollar-cost averaging"
+      },
+      "trend_balansert": {
+        "name": "Trend Balanced",
+        "description": "MA crossover with RSI filter"
+      },
+      "multisignal_aktiv": {
+        "name": "Multi-Signal Active",
+        "description": "RSI + momentum on 4h"
+      },
+      "grid_bot": {
+        "name": "Grid Bot",
+        "description": "Automatic grid trading"
+      },
+      "ai_copy": {
+        "name": "AI Copy",
+        "description": "Copy AI-generated signals"
+      }
     }
   },
   "autoTrading": {
@@ -2194,6 +2209,52 @@
       }
     ]
   },
+  "strategyMarketplace": {
+    "browse": {
+      "title": "Strategies",
+      "subtitle": "Public and own strategies (RLS: rows visible per Supabase policies).",
+      "listHeading": "Your visible strategies",
+      "loading": "Loading strategies…",
+      "empty": "No strategies to show yet.",
+      "loadError": "Could not load strategies. Check network or sign-in.",
+      "retry": "Retry",
+      "openAutoTrade": "Open auto-trade",
+      "metadataSectionTitle": "Metadata (demo form)",
+      "metadataSectionHint": "Wires to listing creation in KLA-91. This demo does not persist to the database.",
+      "demoSaved": "Saved locally (demo): {title}"
+    },
+    "metadata": {
+      "sectionTitle": "Marketplace metadata",
+      "title": "Title",
+      "titlePlaceholder": "e.g. Balanced DCA BTC",
+      "description": "Description",
+      "descriptionPlaceholder": "Short pitch for buyers",
+      "category": "Category",
+      "category_dca": "DCA",
+      "category_trend": "Trend",
+      "category_grid": "Grid",
+      "category_ai": "AI / signals",
+      "category_other": "Other",
+      "riskLevel": "Risk level",
+      "risk_low": "Low",
+      "risk_medium": "Medium",
+      "risk_high": "High",
+      "priceModel": "Pricing model",
+      "priceModel_free": "Free",
+      "priceModel_subscription": "Subscription (monthly)",
+      "priceModel_one_time": "One-time",
+      "priceNok": "Price (NOK)",
+      "isPublic": "Visible to other signed-in users",
+      "submit": "Save metadata",
+      "saveDraft": "Save draft",
+      "validation_titleMin": "Title must be at least 3 characters",
+      "validation_titleMax": "Title is too long",
+      "validation_descriptionMax": "Description is too long",
+      "validation_priceMin": "Price cannot be negative",
+      "validation_priceMax": "Price is too high",
+      "validation_priceRequired": "Enter a price for the selected pricing model"
+    }
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account and preferences",
@@ -2612,11 +2673,26 @@
     "realizedPnL": "Realized P&L",
     "closePosition": "Close Position",
     "strategies": {
-      "dca_trygg": { "name": "DCA Safe", "description": "Buys BTC/ETH automatically every week. Doubles on large dips." },
-      "trend_balansert": { "name": "Trend Balanced", "description": "Follows MA50/MA200 crossover with RSI filter." },
-      "multisignal_aktiv": { "name": "Multi-Signal Active", "description": "RSI + MACD + Bollinger for more frequent trades." },
-      "grid_bot": { "name": "Grid Bot", "description": "Buys low, sells high in a price grid." },
-      "ai_copy": { "name": "AI Copy", "description": "Copies top traders filtered by AI." }
+      "dca_trygg": {
+        "name": "DCA Safe",
+        "description": "Buys BTC/ETH automatically every week. Doubles on large dips."
+      },
+      "trend_balansert": {
+        "name": "Trend Balanced",
+        "description": "Follows MA50/MA200 crossover with RSI filter."
+      },
+      "multisignal_aktiv": {
+        "name": "Multi-Signal Active",
+        "description": "RSI + MACD + Bollinger for more frequent trades."
+      },
+      "grid_bot": {
+        "name": "Grid Bot",
+        "description": "Buys low, sells high in a price grid."
+      },
+      "ai_copy": {
+        "name": "AI Copy",
+        "description": "Copies top traders filtered by AI."
+      }
     }
   },
   "wallet": {

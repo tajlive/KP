@@ -1542,6 +1542,52 @@
       }
     ]
   },
+  "strategyMarketplace": {
+    "browse": {
+      "title": "Strategies",
+      "subtitle": "Public and own strategies (RLS).",
+      "listHeading": "Your visible strategies",
+      "loading": "Loading strategies…",
+      "empty": "No strategies to show yet.",
+      "loadError": "Could not load strategies.",
+      "retry": "Retry",
+      "openAutoTrade": "Open auto-trade",
+      "metadataSectionTitle": "Metadata (demo)",
+      "metadataSectionHint": "KLA-91 wiring; demo does not save to DB.",
+      "demoSaved": "Saved (demo): {title}"
+    },
+    "metadata": {
+      "sectionTitle": "Marketplace metadata",
+      "title": "Title",
+      "titlePlaceholder": "Strategy title",
+      "description": "Description",
+      "descriptionPlaceholder": "Short pitch",
+      "category": "Category",
+      "category_dca": "DCA",
+      "category_trend": "Trend",
+      "category_grid": "Grid",
+      "category_ai": "AI / signals",
+      "category_other": "Other",
+      "riskLevel": "Risk level",
+      "risk_low": "Low",
+      "risk_medium": "Medium",
+      "risk_high": "High",
+      "priceModel": "Pricing model",
+      "priceModel_free": "Free",
+      "priceModel_subscription": "Subscription",
+      "priceModel_one_time": "One-time",
+      "priceNok": "Price (NOK)",
+      "isPublic": "Public to signed-in users",
+      "submit": "Save",
+      "saveDraft": "Save draft",
+      "validation_titleMin": "Title too short",
+      "validation_titleMax": "Title too long",
+      "validation_descriptionMax": "Description too long",
+      "validation_priceMin": "Invalid price",
+      "validation_priceMax": "Price too high",
+      "validation_priceRequired": "Price required for this model"
+    }
+  },
   "settings": {
     "title": "Innstillinger",
     "subtitle": "Administrer din konto og preferanser",
@@ -1969,57 +2015,57 @@
     "selectExchange": "Velg børs",
     "addExchange": "Legg til børs",
     "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Binance. Du kan senere koble kontoen din hit for å se alt på ett sted.",
-  "trustBar": {
-    "withCount": "加入{count}名挪威人安全学习加密货币",
-    "fallback": "挪威最安全的学习加密货币的地方",
-    "trust1": "BankID安全",
-    "trust2": "挪威语课程",
-    "trust3": "无风险"
-  },
-  "coursePreview": {
-    "sectionTitle": "不到一小时即可开始",
-    "sectionSubtitle": "免费开始 — 按自己的节奏完成",
-    "freeBadge": "免费",
-    "seeAllCourses": "查看所有课程 →",
-    "course1": {
-      "title": "什么是比特币？",
-      "level": "初学者",
-      "time": "15 分钟"
+    "trustBar": {
+      "withCount": "加入{count}名挪威人安全学习加密货币",
+      "fallback": "挪威最安全的学习加密货币的地方",
+      "trust1": "BankID安全",
+      "trust2": "挪威语课程",
+      "trust3": "无风险"
     },
-    "course2": {
-      "title": "如何阅读图表",
-      "level": "初学者",
-      "time": "20 分钟"
+    "coursePreview": {
+      "sectionTitle": "不到一小时即可开始",
+      "sectionSubtitle": "免费开始 — 按自己的节奏完成",
+      "freeBadge": "免费",
+      "seeAllCourses": "查看所有课程 →",
+      "course1": {
+        "title": "什么是比特币？",
+        "level": "初学者",
+        "time": "15 分钟"
+      },
+      "course2": {
+        "title": "如何阅读图表",
+        "level": "初学者",
+        "time": "20 分钟"
+      },
+      "course3": {
+        "title": "您的第一笔模拟交易",
+        "level": "初学者",
+        "time": "10 分钟"
+      }
     },
-    "course3": {
-      "title": "您的第一笔模拟交易",
-      "level": "初学者",
-      "time": "10 分钟"
-    }
-  },
-  "threeSteps": {
-    "sectionTitle": "4个简单步骤开始",
-    "sectionSubtitle": "无需先前知识。我们从第一步就指导您。",
-    "step1": {
-      "title": "免费注册",
-      "description": "使用BankID创建账户。无需信用卡。2分钟内开始。"
+    "threeSteps": {
+      "sectionTitle": "4个简单步骤开始",
+      "sectionSubtitle": "无需先前知识。我们从第一步就指导您。",
+      "step1": {
+        "title": "免费注册",
+        "description": "使用BankID创建账户。无需信用卡。2分钟内开始。"
+      },
+      "step2": {
+        "title": "参加第一门课程",
+        "description": "从挪威语初学者课程中选择。按自己的节奏学习。"
+      },
+      "step3": {
+        "title": "练习模拟交易",
+        "description": "使用10,000挪威克朗虚拟货币。无风险测试策略。"
+      },
+      "step4": {
+        "title": "使用机器人自动化",
+        "description": "准备好后让AI为您交易。您决定何时开始。",
+        "badge": "可选 · 专业功能"
+      },
+      "ctaButton": "今天免费开始",
+      "ctaSubtext": "无需信用卡 · 随时取消"
     },
-    "step2": {
-      "title": "参加第一门课程",
-      "description": "从挪威语初学者课程中选择。按自己的节奏学习。"
-    },
-    "step3": {
-      "title": "练习模拟交易",
-      "description": "使用10,000挪威克朗虚拟货币。无风险测试策略。"
-    },
-    "step4": {
-      "title": "使用机器人自动化",
-      "description": "准备好后让AI为您交易。您决定何时开始。",
-      "badge": "可选 · 专业功能"
-    },
-    "ctaButton": "今天免费开始",
-    "ctaSubtext": "无需信用卡 · 随时取消"
-  },
     "security": {
       "title": "Sikkerhet først",
       "readOnly": "Vi ber kun om <strong>read-only</strong> API-nøkler. Dette betyr at vi kan lese saldo og transaksjoner, men <strong>ALDRI</strong> gjøre kjøp/salg eller uttak.",

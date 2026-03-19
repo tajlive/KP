@@ -128,10 +128,11 @@ export async function GET(
         );
       }
 
-      // Map fallback data to MarketplaceListing format
+      // Map fallback data to MarketplaceListing format (alltid array — unngå .map på ikke-array)
+      const fallbackRows = Array.isArray(fallbackData) ? fallbackData : [];
 
-      const listings: MarketplaceListing[] =
-        (fallbackData as unknown[])?.map((value: unknown) => {
+      const listings: MarketplaceListing[] = fallbackRows.map(
+        (value: unknown) => {
           const item = value as Record<string, unknown>;
           const profiles = item.profiles as
             | { display_name: string; avatar_url: string | null }
@@ -160,7 +161,8 @@ export async function GET(
             winRate: 0,
             pnl30d: 0,
           };
-        }) || [];
+        },
+      );
 
       return NextResponse.json({
         listings,
