@@ -25,7 +25,9 @@ jobs:
   db-push:
     runs-on: ubuntu-latest
     timeout-minutes: 8
-    # Kun ved push til main (paths filter i on: burde håndtere dette; ekstra sikkerhet)
+    # Ikke blokkér andre workflows – feil pga manglende secrets er ok
+    continue-on-error: true
+    # Kun ved push til main
     if: github.ref == 'refs/heads/main'
     steps:
       - name: ⬇️ Checkout

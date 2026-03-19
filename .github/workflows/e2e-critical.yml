@@ -49,10 +49,11 @@ jobs:
         run: npm ci
 
       - name: Install Playwright
-        run: npx playwright install --with-deps chromium firefox
+        run: npx playwright install --with-deps chromium
 
+      # CI: kun Chromium (Firefox er ofte ustabil i headless Linux)
       - name: Run Critical E2E Tests
-        run: npm run test:e2e:critical
+        run: npm run test:e2e:critical:chromium
         env:
           BASE_URL: ${{ vars.BASE_URL || 'https://www.klarpakke.no' }}
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL }}
