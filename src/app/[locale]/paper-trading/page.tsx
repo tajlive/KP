@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PaperTradingPageClient } from "@/components/paper-trading/PaperTradingPageClient";
@@ -109,7 +109,7 @@ export default async function PaperTradingPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "paperTrading" });
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
