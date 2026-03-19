@@ -3,14 +3,16 @@
 import { useTradingMode } from "@/context/TradingModeContext";
 import type { TradingMode } from "@/types/trading";
 import { AnimatePresence, motion } from "framer-motion";
+import { FileText, Wallet } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MODES: { value: TradingMode; label: string; icon: string }[] = [
-  { value: "paper", label: "Paper", icon: "📄" },
-  { value: "live", label: "Live", icon: "💰" },
+const MODES: { value: TradingMode; label: string; Icon: LucideIcon }[] = [
+  { value: "paper", label: "Paper", Icon: FileText },
+  { value: "live", label: "Live", Icon: Wallet },
 ];
 
 const SPRING = { type: "spring", stiffness: 500, damping: 30 } as const;
@@ -68,7 +70,7 @@ export default function TradingModeToggle() {
 
         {/* ── Labels ── */}
         <span className="relative z-10 flex items-center justify-between h-full px-3 pointer-events-none">
-          {MODES.map(({ value, label, icon }) => {
+          {MODES.map(({ value, label, Icon }) => {
             const active = mode === value;
             return (
               <motion.span
@@ -80,7 +82,7 @@ export default function TradingModeToggle() {
                 }}
                 transition={{ duration: 0.25 }}
               >
-                <span>{icon}</span>
+                <Icon className="size-4 shrink-0" aria-hidden />
                 <span className="hidden sm:inline">{label}</span>
               </motion.span>
             );
