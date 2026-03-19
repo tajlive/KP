@@ -119,12 +119,6 @@ jobs:
           path: typecheck.log
           retention-days: 3
 
-      - name: Notify Vercel
-        if: always()
-        uses: vercel/repository-dispatch/actions/status@v1
-        with:
-          name: Vercel - klarpakke: lint
-
   # Kommenter på PR ved feil med "Slik fikser du" og oppdater eksisterende kommentar
   pr-comment-on-failure:
     runs-on: ubuntu-latest
