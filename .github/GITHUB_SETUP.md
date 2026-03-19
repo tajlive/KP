@@ -185,7 +185,7 @@ Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for
 | ----------------- | ----------- | ------- |
 | **Deploy**        | `Project names cannot contain ---` (400) | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` (se §3). |
 | **Deploy**        | Build feiler | Sjekk at `NEXT_PUBLIC_SUPABASE_*` er satt. |
-| **Auto-create PR** | `fatal: not a git repository` | Workflow har checkout – sjekk at Actions har `contents: read`. |
+| **Auto-create PR** | `GitHub Actions is not permitted to create or approve pull requests` | Gå til **Settings → Actions → General → Workflow permissions** → velg **Read and write permissions**. Lagre. |
 | **DB Push on merge** | `Mangler SUPABASE_PROJECT_REF` | Legg til `SUPABASE_PROJECT_REF` eller `SUPABASE_PROJECT_ID` (begge støttes). |
 | **E2E Critical**  | Tester feiler (auth/timeout) | Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for innloggede flows. |
 
@@ -194,6 +194,7 @@ Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for
 - [ ] Description og topics satt på repo
 - [ ] Default branch er `main`
 - [ ] Branch protection på `main` med status checks
+- [ ] **Workflow permissions:** Settings → Actions → General → **Read and write permissions** (påkrevd for Auto-create PR)
 - [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `SENTRY_AUTH_TOKEN`, `SUPABASE_PROJECT_REF`
 - [ ] CODEOWNERS aktiv hvis du vil bruke review-krav
 - [ ] Squash merge eller merge strategy valgt
