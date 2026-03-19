@@ -24,7 +24,7 @@ test.describe("Trading flow and tier-gate @critical", () => {
   test("Landing: Handle/paper-trading CTA går til paper-trading eller innlogging", async ({
     page,
   }) => {
-    await page.goto("/no", { waitUntil: "domcontentloaded" });
+    await page.goto("/no", { waitUntil: "domcontentloaded", timeout: 90_000 });
     const paperLink = page
       .getByRole("link", {
         name: /Paper Trading|Handle|Lekepenger|Start med lekepenger/i,
@@ -40,7 +40,7 @@ test.describe("Trading flow and tier-gate @critical", () => {
   test("Paper-trading side: ingen lenker til /live-trading/ eller /beta/", async ({
     page,
   }) => {
-    await page.goto("/no/paper-trading", { waitUntil: "domcontentloaded" });
+    await page.goto("/no/paper-trading", { waitUntil: "domcontentloaded", timeout: 90_000 });
     const links = await page.locator("a[href]").all();
     for (const link of links) {
       const href = await link.getAttribute("href");

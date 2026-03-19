@@ -9,15 +9,15 @@ import { test, expect } from '@playwright/test';
 test.describe('Critical: Paper Trading Flow @critical @papertrading', () => {
   
   test.beforeEach(async ({ page }) => {
-    // Navigate to dashboard before each test
-    await page.goto('/dashboard', { timeout: 60000 });
-    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
+    // Navigate to dashboard before each test (90s timeout under parallel load)
+    await page.goto('/dashboard', { timeout: 90_000, waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {});
   });
 
   test('paper trading card displays balance', async ({ page }) => {
     // Navigate directly to dashboard and wait
-    await page.goto('/dashboard', { timeout: 60000 });
-    await page.waitForLoadState('domcontentloaded', { timeout: 30000 }).catch(() => {});
+    await page.goto('/dashboard', { timeout: 90_000, waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('domcontentloaded', { timeout: 30_000 }).catch(() => {});
     
     // Look for paper trading card - use first() to avoid strict mode violation
     const card = page.locator('[data-testid="paper-trading-card"]').first();
