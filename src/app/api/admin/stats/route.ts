@@ -184,8 +184,8 @@ export async function GET() {
       if (!clickError) {
         clickCount = clicks || 0;
       }
-    } catch {
-      // Table might not exist
+    } catch (error) {
+      console.warn("[admin/stats] campaign_clicks table query failed:", error);
     }
 
     // Calculate conversion rate
@@ -250,8 +250,8 @@ export async function GET() {
           };
         });
       }
-    } catch {
-      // Funnel table might not exist
+    } catch (error) {
+      console.warn("[admin/stats] signup_funnel table query failed:", error);
     }
 
     const totalUsersCount = totalUsers || 0;

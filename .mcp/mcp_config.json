@@ -22,11 +22,9 @@
         "vuxbjlykgmzskxbclquf"
       ]
     },
-    "vercel": {
-      "url": "https://mcp.vercel.com"
-    },
-    "cloudflare": {
-      "url": "https://mcp.cloudflare.com/mcp"
+    "supabase-db": {
+      "command": "node",
+      "args": ["scripts/run-supabase-mcp.mjs"]
     },
     "stripe": {
       "command": "npx",
@@ -57,6 +55,12 @@
     "vipps": {
       "command": "node",
       "args": ["scripts/run-vipps-mcp.mjs"]
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com"
+    },
+    "cloudflare": {
+      "url": "https://mcp.cloudflare.com/mcp"
     }
   }
 }

@@ -14,6 +14,7 @@ jobs:
   mcp-health:
     name: Sjekk MCP-tilkoblinger
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -21,7 +22,7 @@ jobs:
 
       - name: Sjekk Supabase REST
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           STATUS=$(curl -sf \

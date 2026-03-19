@@ -61,9 +61,13 @@ jobs:
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD }}
           TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
           TEST_USER_B_PASSWORD: ${{ secrets.TEST_USER_B_PASSWORD }}
+          # Fallback for fork/manglende secrets – E2E auth feiler da, men jobben kjører
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjbG91ZC1wbGFjZWhvbGRlciJ9.c2VjcmV0' }}
 
       - name: Upload Playwright Report
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -72,6 +76,7 @@ jobs:
 
       - name: Upload Test Results
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: test-results
@@ -106,9 +111,12 @@ jobs:
     needs: e2e-critical
     if: failure() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     
     steps:
       - name: Slack Notification
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1
         with:
           payload: |

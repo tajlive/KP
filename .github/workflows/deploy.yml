@@ -1,0 +1,107 @@
+# ============================================================================
+# DEPLOY — Automatisk ved merge til main + manuell trigger
+# ============================================================================
+
+name: 🚀 Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy til'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+
+concurrency:
+  group: deploy-${{ github.event.inputs.environment || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      IS_PRODUCTION: ${{ github.event_name == 'push' || github.event.inputs.environment == 'production' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
+          restore-keys: next-${{ runner.os }}-
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Supabase migrations (kun production)
+        if: env.IS_PRODUCTION == 'true'
+        run: |
+          npx supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+          npx supabase db push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        continue-on-error: true
+
+      - name: Build
+        run: npm run build
+        env:
+          SKIP_LINT_IN_BUILD: 'true'
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-ci-build' }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Deploy to Vercel
+        run: |
+          if [ "$IS_PRODUCTION" == "true" ]; then
+            npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+          else
+            npx vercel --token ${{ secrets.VERCEL_TOKEN }} --yes
+          fi
+
+      - name: Verify production
+        if: env.IS_PRODUCTION == 'true'
+        run: npm run verify
+        continue-on-error: true
+
+      - name: Purge Cloudflare cache
+        if: env.IS_PRODUCTION == 'true' && success()
+        run: |
+          curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' || true
+
+      - name: Deploy summary
+        if: always()
+        run: |
+          echo "## 🚀 Deploy Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$IS_PRODUCTION" == "true" ]; then
+            echo "**Environment:** Production" >> $GITHUB_STEP_SUMMARY
+            echo "**URL:** https://www.klarpakke.no" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Environment:** Preview" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
