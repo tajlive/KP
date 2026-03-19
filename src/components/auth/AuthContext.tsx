@@ -9,14 +9,12 @@ import {
   useCallback,
   useRef,
 } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/utils";
 import { Session, User, AuthError } from "@supabase/supabase-js";
 import {
   clearAllSupabaseStorage,
   clearCorruptSupabaseKeysSync,
 } from "@/lib/supabase/safe-storage";
-import { queryKeys } from "@/lib/query-keys";
 
 interface AuthContextType {
   user: User | null;
@@ -52,7 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // KRITISK: Rydd korrupte sb-*-nøkler FØR Supabase-klient opprettes (forhindrer "Invalid UTF-8 sequence")
   clearCorruptSupabaseKeysSync();
 
-  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);

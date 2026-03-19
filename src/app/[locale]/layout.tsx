@@ -8,7 +8,6 @@ import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { MarketingProviders } from "@/components/providers/MarketingProviders";
-import { QueryProvider } from "@/components/query-provider";
 import { PlausibleScript } from "@/components/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -252,17 +251,15 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <SessionCleanup />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <MarketingProviders>
-            <QueryProvider>
-              <ErrorBoundary>
-                <AuthProvider>
-                  <div className="relative min-h-screen flex flex-col">
-                    <MarketingNavigation />
-                    <main className="flex-1">{children}</main>
-                    <ConditionalFooter />
-                  </div>
-                </AuthProvider>
-              </ErrorBoundary>
-            </QueryProvider>
+            <ErrorBoundary>
+              <AuthProvider>
+                <div className="relative min-h-screen flex flex-col">
+                  <MarketingNavigation />
+                  <main className="flex-1">{children}</main>
+                  <ConditionalFooter />
+                </div>
+              </AuthProvider>
+            </ErrorBoundary>
           </MarketingProviders>
         </NextIntlClientProvider>
         <PlausibleScript />
