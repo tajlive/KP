@@ -27,4 +27,4 @@ Lim inn i GitHub Pull Request-beskrivelse (eller bruk som Cursor / Composer-prom
 
 ## Arkitektur-referanse
 
-Se `docs/architecture/KLA-91-strategy-marketplace.md` og `.cursor/rules/klarpakke-chief-architect.mdc`.
+Se `docs/architecture/KLA-91-strategy-marketplace.md`, `docs/architecture/KLA-91-ROADMAP-CURSOR.md` og `.cursor/rules/klarpakke-chief-architect.mdc`.

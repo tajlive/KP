@@ -1,8 +1,8 @@
-# KLA-91 — Strategy Marketplace (Chief Architect / delegasjon til Kimi)
+# KLA-91 — Strategy Marketplace (Chief Architect / delegasjon til Cursor)
 
 **Mål:** Brukere publiserer strategier (navn, beskrivelse, nøkkeltall, performance); andre blar, filtrerer (return %, risiko), **kopierer** til egen bruk; data i **Supabase** med **realtime**; **RLS** så kun eier kan endre egne strategier.
 
-**Eksisterende repo-grunnlag:** `marketplace_listings`, `marketplace_subscriptions`, `user_strategies`, `strategies` (se `supabase/migrations/20260302000000_dashboard_and_copy_trading.sql` + `20260201150000_mvp_extensions_strategies_referrals_billing.sql`). Kimi skal **utvide/konsolidere**, ikke duplisere tabeller uten behov.
+**Eksisterende repo-grunnlag:** `marketplace_listings`, `marketplace_subscriptions`, `user_strategies`, `strategies` (se `supabase/migrations/20260302000000_dashboard_and_copy_trading.sql` + `20260201150000_mvp_extensions_strategies_referrals_billing.sql`). **Cursor** (med agenter) skal **utvide/konsolidere**, ikke duplisere tabeller uten behov.
 
 ---
 
@@ -20,7 +20,7 @@
 | `strategies`                                 | Evt. «master»-rad per creator (legacy/copy-flow); hold synk med RLS i eksisterende migrasjoner                                                                               |
 | `strategy_copy_events` _(valgfri, audit)_    | `user_id`, `listing_id`, `created_user_strategy_id`, `created_at` — analytics + misbruk                                                                                      |
 
-### 1.2 Migrasjon — pseudokode SQL (Kimi fyller ut typer, defaults, FK)
+### 1.2 Migrasjon — pseudokode SQL (implementasjon i repo; juster typer/defaults/FK ved behov)
 
 ```sql
 -- A) Utvid marketplace_listings med felter for søk/filter (hvis ikke allerede dekket)
@@ -72,7 +72,7 @@ CREATE INDEX IF NOT EXISTS idx_listing_stats_risk_return
 
 ## 2. TypeScript types (`src/types/strategy.ts`)
 
-**Fil opprettes av Kimi.** Innhold = rene typer + DTO-er; **ingen** forretningslogikk.
+**Fil opprettes i Cursor** (f.eks. `src/types/strategy.ts`). Innhold = rene typer + DTO-er; **ingen** forretningslogikk.
 
 ```ts
 // Pseudostruktur — importer Database-rader der mulig:
@@ -201,7 +201,7 @@ export type CopyStrategyResponse = {
 
 ---
 
-## Leveranse til Kimi (rekkefølge)
+## Leveranserekkefølge (Cursor)
 
 1. Migrasjon: `marketplace_listing_stats` + RLS + indekser + `user_strategies.copied_from_listing_id`.
 2. `src/types/strategy.ts` + Zod i `src/lib/strategies/*.ts` (eller marketplace).
