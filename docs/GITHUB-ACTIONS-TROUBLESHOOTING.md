@@ -9,6 +9,7 @@
 | Workflow | Feil | Løsning |
 |----------|------|---------|
 | **🚀 Deploy** | `Project names cannot contain ---` (400) | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` i Settings → Secrets. Finn i Vercel Dashboard: Org ID under Team Settings → General; Project ID under Project Settings. |
+| **🚀 Deploy** | `Project not found` | Feil `VERCEL_ORG_ID` eller `VERCEL_PROJECT_ID`. Kjør `vercel link` lokalt, sjekk `cat .vercel/project.json` for riktige verdier. Sjekk at VERCEL_TOKEN tilhører samme team. Oppdater secrets. |
 | **📋 Auto-create PR** | `GitHub Actions is not permitted to create or approve pull requests (createPullRequest)` | Gå til **Settings → Actions → General → Workflow permissions** → velg **Read and write permissions** (ikke bare Read). Lagre. |
 | **🗄️ DB push on merge** | `Mangler SUPABASE_PROJECT_REF` | Legg til `SUPABASE_PROJECT_REF` (eller `SUPABASE_PROJECT_ID`) og `SUPABASE_ACCESS_TOKEN`. Verdi: `vuxbjlykgmzskxbclquf` (fra Supabase URL). |
 | **E2E Critical** | Tester feiler / mangler auth | Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for innloggede tester. Uten disse skippes auth-avhengige tester. |
