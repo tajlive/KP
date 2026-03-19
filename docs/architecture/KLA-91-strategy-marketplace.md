@@ -1,6 +1,9 @@
 # KLA-91 — Strategy Marketplace (arkitekturskisse)
 
-**Status:** Skisse for implementasjon. **Kilde i kode:** `src/app/api/marketplace/listings/route.ts`, `src/app/api/marketplace/subscribe/route.ts`, migrasjon `20260302000000_dashboard_and_copy_trading.sql`.
+**ADR (beslutning logget):** `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`  
+**Roadmap Cursor/KIMI:** `docs/architecture/KLA-91-ROADMAP-CURSOR-KIMI.md`
+
+**Status:** Skisse for implementasjon. **Kilde i kode:** `src/app/api/marketplace/listings/route.ts`, `src/app/api/marketplace/subscribe/route.ts`, migrasjon `20260302000000_dashboard_and_copy_trading.sql` + `20260320000000_kla91_marketplace_listing_stats.sql`.
 
 ## Mål
 

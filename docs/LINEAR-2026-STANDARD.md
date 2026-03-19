@@ -15,6 +15,13 @@
 2. **Unified notifications** — view `unified_notifications_with_email` (migrasjon i repo; kjør mot remote ved behov).
 3. **TYPE_DEBT / KLA-228** — `ignoreBuildErrors` av når gjeld er nedkjempet.
 4. **EPIC KLA-170** — forbedringsplan (AI, gamification, PWA, vekst) _etter_ at punkt 1–3 ikke blokkerer drift.
+5. **KLA-91 Strategy Marketplace** — arkitektur **Accepted** i ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`; implementasjon følger `docs/architecture/KLA-91-ROADMAP-CURSOR-KIMI.md`. Linear: **KLA-91** (Backlog etter arkitektur-logg).
+
+## Ukentlig sync (anbefalt)
+
+- **P0 / P1 / P2:** Kort status på **KLA-231** eller relevante issues (markedsplass = KLA-91).
+- **KIMI / PR:** Velocity + lenke til PR som følger `docs/architecture/KLA-91-PR-TEMPLATE.md`.
+- **Deploy:** mandag prod etter grønn CI + verify (se AGENTS.md).
 
 ## Regler som ikke skal brytes i nye issues
 
