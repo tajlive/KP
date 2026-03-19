@@ -1,6 +1,6 @@
 // Minimal bootstrap script: oppretter GitLab project vars, trigger pipeline, init Vercel project via CLI
 // Kjør med: node scripts/bootstrap.js --gitlab-token $GITLAB_TOKEN --project-name klarpakke
-const fetch = require('node-fetch')
+const fetch = globalThis.fetch
 const { execSync } = require('child_process')
 const args = require('minimist')(process.argv.slice(2))
 

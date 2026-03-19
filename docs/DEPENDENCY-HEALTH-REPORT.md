@@ -11,9 +11,16 @@
 |----------|-------|----------|
 | **Vulnerabilities** | 5 (1 moderate, 4 low) | Next.js moderate addressed by patch |
 | **Outdated (patch/minor)** | 30+ | Safe to batch-update |
-| **Deprecated / maintenance** | 2 | node-fetch, react-is |
+| **Deprecated / maintenance** | 0 | Resolved: node-fetch removed, react-is→19 |
 
 **Recommended first step:** Upgrade `next` to `15.5.13` (patch) to fix HTTP request smuggling.
+
+### Completed (2026-03-19)
+
+- Next.js → 15.5.13 (HTTP request smuggling fix)
+- npm update (patch/minor for all in-range deps)
+- react-is → 19.2.4 (React 19 alignment)
+- node-fetch fjernet; scripts bruker native fetch (Node 22+)
 
 ---
 
@@ -166,7 +173,16 @@ Phase 1 and 2 align with this policy. Phase 3 (removing node-fetch) and Phase 4 
 
 ---
 
-## 7. Commands Reference
+## 7. Completed Updates (2026-03-19)
+
+- **next**: 15.5.12 → 15.5.13 (security: HTTP request smuggling fix)
+- **node-fetch**: Removed; scripts now use native `fetch` (Node 22+)
+- **react-is**: 18.3.1 → 19.2.4 (React 19 compatibility)
+- **Batch**: `npm update` applied for all in-range patch/minor updates
+
+---
+
+## 8. Commands Reference
 
 ```bash
 # Check vulnerabilities
