@@ -40,12 +40,13 @@ export async function POST(req: NextRequest) {
           { email, source: "landing_email_capture" },
           { onConflict: "email" },
         );
-    } catch {
-      // DB insert is best-effort — don't fail the request
+    } catch (error) {
+      console.warn("[leads] DB upsert failed (best-effort):", error);
     }
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
+    console.error("[leads] Request parsing error:", error);
     return NextResponse.json({ error: "Bad request" }, { status: 400 });
   }
 }
