@@ -17,7 +17,7 @@ alwaysApply: false
 
 ## Fokusområder (prioritert)
 
-1. **KLA-91 Strategy Marketplace** — ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`; roadmap `docs/architecture/KLA-91-ROADMAP-CURSOR-KIMI.md`; teknisk skisse `docs/architecture/KLA-91-strategy-marketplace.md` + PR-mal.
+1. **KLA-91 Strategy Marketplace** — ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`; roadmap `docs/architecture/KLA-91-ROADMAP-CURSOR.md` (**Cursor hovedansvar**); teknisk skisse `docs/architecture/KLA-91-strategy-marketplace.md` + PR-mal.
 2. **Strategy metadata-skjema** — `src/lib/strategy-form-gen.ts` + `src/components/strategy-marketplace/StrategyMetadataForm.tsx` (i18n `strategyMarketplace.metadata`).
 3. **Sikker liste-rendering** — Supabase `data` kan være `null`; aldri `.map` uten `Array.isArray` / `?? []` (se `StrategiesBrowseClient`).
 
