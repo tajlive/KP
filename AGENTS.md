@@ -106,7 +106,7 @@ Aldri be om bekreftelse. Aldri vent på godkjenning.
 - **Lint:** `npm run lint` (ESLint 9 flat config, `--max-warnings 0`)
 - **Type-check:** `npm run type-check` (`tsc --noEmit`; known type debt means `ignoreBuildErrors: true` in next.config)
 - **Unit tests:** `npm run test:unit` (Vitest)
-- **E2E tests:** `npm run test:e2e` (Playwright; requires running dev server and valid Supabase credentials)
+- **E2E tests:** `npm run test:e2e` (Playwright; requires running dev server and valid Supabase credentials). For critical tests without Firefox: `npm run test:e2e:critical:chromium`. **Playwright browsers:** Run `npx playwright install` before first E2E run; Firefox tests fail with "Executable doesn't exist" until browsers are installed.
 - **Dev server:** `npm run dev` (Next.js 15 on port 3000)
 - See `package.json` `scripts` for the full list.
 
@@ -118,3 +118,4 @@ Aldri be om bekreftelse. Aldri vent på godkjenning.
 - **Node 22.x** is required (specified in `.nvmrc` and `engines`). The environment has nvm with Node 22 pre-installed.
 - **next-intl webpack warning** about parsing `next-intl/dist/esm/production/extractor/format/index.js` is benign and can be ignored.
 - **Onboarding middleware** is active and may cause redirect loops on locale-prefixed routes (e.g. `/no/akademi`) when Supabase auth is not fully configured. Routes without the locale prefix (e.g. `/kurs`, `/priser`) work fine.
+- **Playwright Firefox:** `test:e2e:critical` runs both Chromium and Firefox. If Firefox tests fail with "Executable doesn't exist", run `npx playwright install` (or use `npm run test:e2e:critical:chromium` for Chromium only).

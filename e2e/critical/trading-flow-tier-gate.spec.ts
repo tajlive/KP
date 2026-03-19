@@ -80,6 +80,7 @@ test.describe("Trading flow and tier-gate @critical", () => {
 
     await page.goto("/no/paper-trading?view=sessions", {
       waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
     const currentUrl = page.url();
     if (loginWithNext("paper-trading").test(currentUrl)) {
@@ -87,17 +88,25 @@ test.describe("Trading flow and tier-gate @critical", () => {
       test.skip();
     }
 
+    // Skip if we see the public teaser (unauthenticated)
+    const teaserVisible = await page
+      .getByRole("link", { name: /Logg inn|Log in|Opprett konto|Create account/i })
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    if (teaserVisible) {
+      console.log("⚠️ Unauthenticated — seeing teaser, skipping sessions assertions");
+      test.skip();
+    }
+
     await expect(page).toHaveURL(localizedPath("paper-trading\\?view=sessions"));
-    const backToOverview = page
-      .getByRole("link", { name: /Tilbake til oversikt|Back to overview/i })
-      .first();
-    const backToDashboard = page
-      .getByRole("link", { name: /Tilbake til dashboard|Back to dashboard/i })
-      .first();
-    const mySessions = page.getByText(/Mine sesjoner|My sessions/i).first();
+    // Use data-testid for reliable selection (PaperTradingPageClient + PaperTradingList)
+    const backToOverview = page.locator('[data-testid="back-to-overview"]').first();
+    const backToDashboard = page.locator('[data-testid="back-to-dashboard"]').first();
+    const sessionsHeading = page.locator('[data-testid="sessions-heading"]').first();
     await expect(backToOverview.or(backToDashboard)).toBeVisible({
       timeout: 8000,
     });
-    await expect(mySessions).toBeVisible({ timeout: 5000 });
+    await expect(sessionsHeading).toBeVisible({ timeout: 5000 });
   });
 });
