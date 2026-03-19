@@ -100,6 +100,7 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 | Workflow | Trigger | Formål |
 |----------|---------|--------|
 | **PR Check** | PR mot `main` | Lint, type-check, unit tests, build |
+| **Auto-create PR** | Push til `cursor/**`, `feat/**`, `fix/**`, `chore/**` | Oppretter PR mot main automatisk hvis ingen finnes |
 | **Manual Deploy** | Manuell | Deploy til preview eller production |
 | **Security Audit** | Ukentlig + manuell | npm audit, secret-scan, valgfritt Snyk |
 | **Dependency Check** | Månedlig + manuell | depcheck, knip |
