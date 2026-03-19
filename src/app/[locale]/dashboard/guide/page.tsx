@@ -49,7 +49,7 @@ export default function GuidePage() {
           {t("cta.description")}
         </p>
         <Link
-          href={`/${locale}/dashboard/trading`}
+          href={`/${locale}/paper-trading`}
           className="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-white transition-colors"
         >
           {t("cta.button")}

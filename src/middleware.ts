@@ -26,6 +26,15 @@ const PROTECTED_PATHS = [
   "/quiz",
 ];
 
+// Sider som kun gjelder uinnloggede — innloggede omdirigeres til dashboard
+const AUTH_PATHS = [
+  "/innlogging",
+  "/signup",
+  "/registrer",
+  "/login",
+  "/glemt-passord",
+];
+
 export async function middleware(request: NextRequest) {
   const host = request.headers.get("host") || "";
 
@@ -56,6 +65,27 @@ export async function middleware(request: NextRequest) {
       url.pathname = `/${locale}/dashboard`;
     }
     return NextResponse.redirect(url, 308);
+  }
+
+  // Kanoniske redirects: alias/dødslenker → én side (sletter unødvendige page-filer)
+  const CANONICAL_REDIRECTS: Record<string, string> = {
+    "/dashboard/activity": "/handelshistorikk",
+    "/dashboard/trading": "/paper-trading",
+    "/dashboard/innstillinger": "/dashboard/settings",
+    "/trade": "/paper-trading",
+    "/auto-trading": "/dashboard/auto-trade",
+    "/auto-trading-ai": "/dashboard/auto-trade",
+    "/login": "/innlogging",
+    "/registrer": "/signup",
+  };
+  for (const [from, to] of Object.entries(CANONICAL_REDIRECTS)) {
+    if (strippedPath === from || strippedPath.startsWith(from + "/")) {
+      const dest = to.startsWith("/") ? to : `/${to}`;
+      return NextResponse.redirect(
+        new URL(`/${locale}${dest}`, request.url),
+        308
+      );
+    }
   }
 
   // Do NOT redirect / to /no — next-intl with localePrefix: 'as-needed' serves
@@ -96,6 +126,17 @@ export async function middleware(request: NextRequest) {
 
   // 3. Auth-guard
   const isProtected = PROTECTED_PATHS.some((p) => strippedPath.startsWith(p));
+  const isAuthPage = AUTH_PATHS.some(
+    (p) => strippedPath === p || strippedPath.startsWith(`${p}/`)
+  );
+
+  // Innloggede brukere som går til innlogging/registrering → dashboard (ikke vise login/registrer)
+  if (user && isAuthPage) {
+    return NextResponse.redirect(
+      new URL(`/${locale}/dashboard`, request.url),
+      302
+    );
+  }
 
   if (isProtected && !user) {
     const loginUrl = new URL(`/${locale}/innlogging`, request.url);

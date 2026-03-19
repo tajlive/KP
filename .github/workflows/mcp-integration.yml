@@ -24,6 +24,10 @@ concurrency:
   group: mcp-integration-${{ github.ref }}
   cancel-in-progress: true
 
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   mcp-config-validation:
     name: Validate MCP Configuration

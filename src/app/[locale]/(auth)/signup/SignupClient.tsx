@@ -31,9 +31,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { useAuth } from "@/components/auth/AuthContext";
 
 function SignupContent() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -45,14 +47,20 @@ function SignupContent() {
   const [mounted, setMounted] = useState(false);
 
   const searchParams = useSearchParams();
-  const redirectTo = searchParams?.get("redirectTo");
+  const redirectTo = searchParams?.get("redirectTo") || searchParams?.get("redirect");
   const plan = searchParams?.get("plan");
   const locale = useLocale();
   const t = useTranslations("auth");
+  const redirectDest = redirectTo || `/${locale}/dashboard`;
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Innlogget bruker som besøker signup → dashboard (backup for middleware)
+  useEffect(() => {
+    if (mounted && !loading && user) router.replace(redirectDest);
+  }, [mounted, loading, user, router, redirectDest]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
