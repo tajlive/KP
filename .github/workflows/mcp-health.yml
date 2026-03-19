@@ -10,6 +10,10 @@ concurrency:
   group: mcp-health
   cancel-in-progress: true
 
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   mcp-health:
     name: Sjekk MCP-tilkoblinger

@@ -31,6 +31,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import { useAuth } from "@/components/auth/AuthContext";
 
 /**
  * Saniterer redirect-destinasjon til en sikker relativ sti.
@@ -57,6 +58,7 @@ function sanitizeClientRedirect(value: string | null, locale: string): string {
 // Inner component that uses useSearchParams - must be wrapped in Suspense
 function InnloggingForm() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -98,6 +100,11 @@ function InnloggingForm() {
   const next = searchParams?.get("next") as string | null;
   const rawRedirect = next || searchParams?.get("redirectTo") || null;
   const safeRedirectTo = sanitizeClientRedirect(rawRedirect, locale);
+
+  // Innlogget bruker som besøker innlogging → dashboard (backup for middleware)
+  useEffect(() => {
+    if (!loading && user) router.replace(safeRedirectTo);
+  }, [loading, user, router, safeRedirectTo]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

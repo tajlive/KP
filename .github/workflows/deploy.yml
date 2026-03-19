@@ -22,6 +22,10 @@ concurrency:
   group: deploy-${{ github.event.inputs.environment || 'production' }}
   cancel-in-progress: false
 
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
