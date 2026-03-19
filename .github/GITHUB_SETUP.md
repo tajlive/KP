@@ -47,8 +47,12 @@ Denne filen beskriver anbefalt oppsett i GitHub-websiden for å få full optimal
 | ------------------------------- | -------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Build + Preview/Production             |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Build + Preview/Production             |
-| `VERCEL_TOKEN`                  | Manual Deploy (og ev. Vercel CLI i CI) |
+| `VERCEL_TOKEN`                  | Deploy til Vercel (CI + manuell)       |
+| `VERCEL_ORG_ID`                 | **Påkrevd for Deploy** – unngår Vercel 400 "Project names cannot contain ---". Finn i Vercel Dashboard → Settings → General |
+| `VERCEL_PROJECT_ID`             | **Påkrevd for Deploy** – brukes sammen med VERCEL_ORG_ID. Finn i Vercel Dashboard → Project Settings |
 | `SENTRY_AUTH_TOKEN`             | Build (source maps til Sentry)         |
+| `SUPABASE_PROJECT_REF`          | DB Push on merge – Supabase-projekt-ID (f.eks. `vuxbjlykgmzskxbclquf`). Alternativ: `SUPABASE_PROJECT_ID` |
+| `SUPABASE_ACCESS_TOKEN`         | DB Push on merge – Supabase Personal Access Token fra Dashboard |
 
 **Slik setter du SENTRY_AUTH_TOKEN (manuelt):**  
 Sentry MCP støtter ikke token-oppretting. Prosjektet **klarpakke-production** ligger i org **elbatt-chatbot**.
@@ -175,12 +179,23 @@ Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for
 
 ---
 
-## 9. Hurtigsjekkliste
+## 9. Feilsøking per workflow
+
+| Workflow          | Vanlig feil | Løsning |
+| ----------------- | ----------- | ------- |
+| **Deploy**        | `Project names cannot contain ---` (400) | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` (se §3). |
+| **Deploy**        | Build feiler | Sjekk at `NEXT_PUBLIC_SUPABASE_*` er satt. |
+| **Auto-create PR** | `GitHub Actions is not permitted to create or approve pull requests` | Gå til **Settings → Actions → General → Workflow permissions** → velg **Read and write permissions**. Lagre. |
+| **DB Push on merge** | `Mangler SUPABASE_PROJECT_REF` | Legg til `SUPABASE_PROJECT_REF` eller `SUPABASE_PROJECT_ID` (begge støttes). |
+| **E2E Critical**  | Tester feiler (auth/timeout) | Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for innloggede flows. |
+
+## 10. Hurtigsjekkliste
 
 - [ ] Description og topics satt på repo
 - [ ] Default branch er `main`
 - [ ] Branch protection på `main` med status checks
-- [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `VERCEL_TOKEN`, `SENTRY_AUTH_TOKEN`
+- [ ] **Workflow permissions:** Settings → Actions → General → **Read and write permissions** (påkrevd for Auto-create PR)
+- [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `SENTRY_AUTH_TOKEN`, `SUPABASE_PROJECT_REF`
 - [ ] CODEOWNERS aktiv hvis du vil bruke review-krav
 - [ ] Squash merge eller merge strategy valgt
 - [ ] Automatisk sletting av head branches (valgfritt)

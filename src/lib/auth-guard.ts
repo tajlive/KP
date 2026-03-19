@@ -1,7 +1,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-export async function requireAuth(locale: string = "no") {
+export async function requireAuth(locale: string = "no", nextPath?: string) {
   const supabase = await createServerClient();
   const {
     data: { user },
@@ -9,7 +9,8 @@ export async function requireAuth(locale: string = "no") {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    redirect(`/${locale}/innlogging`);
+    const loginUrl = `/${locale}/innlogging${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`;
+    redirect(loginUrl);
   }
 
   return { supabase, user };
