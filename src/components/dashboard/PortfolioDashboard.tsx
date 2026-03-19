@@ -10,6 +10,7 @@ import ReverseTrial from './ReverseTrial';
 import { SocialProof } from './SocialProof';
 import { StreakBadge } from './StreakBadge';
 import FirstTradeCard from './FirstTradeCard';
+import { DashboardSignalPreview } from './DashboardSignalPreview';
 
 const DASHBOARD_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'];
 
@@ -210,7 +211,11 @@ export default function PortfolioDashboard({
     (activeSession.total_trades ?? 0) > 0
       ? Math.round((activeSession.winning_trades / activeSession.total_trades) * 100)
       : null;
-  const totalTradesFromSession = activeSession?.total_trades ?? displayTrades.length;
+  // Alltid vis minst antall handler vi faktisk har (sesjon kan være 0 for ny bot)
+  const totalTradesFromSession = Math.max(
+    activeSession?.total_trades ?? 0,
+    displayTrades.length
+  );
 
   return (
     <div className="space-y-4">
@@ -380,6 +385,9 @@ export default function PortfolioDashboard({
           </span>
         </Link>
       )}
+
+      {/* Siste signaler — synlig på dashboard slik at brukere ser aktivitet */}
+      <DashboardSignalPreview locale={locale} no={no} />
 
       <SocialProof locale={locale} />
 

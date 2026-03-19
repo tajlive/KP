@@ -94,7 +94,6 @@
     "pr:create": "./scripts/create-pr.sh",
     "linear": "node scripts/linear-api.mjs",
     "linear:test": "bash scripts/linear-test.sh",
-    "pr": "./scripts/create-pr.sh",
     "stripe": "node scripts/stripe-api.mjs",
     "stripe:test": "node scripts/stripe-api.mjs test",
     "vipps": "node scripts/vipps-api.mjs",

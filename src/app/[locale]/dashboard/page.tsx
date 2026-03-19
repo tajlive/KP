@@ -68,7 +68,7 @@ export default async function DashboardPage({
   const { locale } = await params;
 
   try {
-    const { supabase, user } = await requireAuth(locale);
+    const { supabase, user } = await requireAuth(locale, `/${locale}/dashboard`);
 
     const [profileRes, tradesRes, sessionRes] = await Promise.all([
       supabase

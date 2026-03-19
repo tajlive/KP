@@ -142,9 +142,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(null);
             setUser(null);
 
-            // Redirect to login with expired session param
+            // Redirect to login with expired session param (preserve locale)
             if (typeof window !== "undefined") {
-              window.location.href = "/innlogging?session=expired";
+              const locale = window.location.pathname.split("/")[1] || "no";
+              const safeLocale = ["no", "en", "th", "zh"].includes(locale)
+                ? locale
+                : "no";
+              window.location.href = `/${safeLocale}/innlogging?session=expired`;
             }
             return;
           }
@@ -247,9 +251,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (refreshTimeoutRef.current) {
           clearTimeout(refreshTimeoutRef.current);
         }
-        // Cache invalidation moved to AuthQueryInvalidator (inside QueryProvider in dashboard)
+        // Query cache cleared by components that use QueryClient (dashboard has its own provider)
       } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        // Cache invalidation: dashboard has QueryProvider; profile/tier hooks refetch on mount
+        // React Query invalidate moved to dashboard components; AuthProvider is QueryClient-independent
       }
 
       setSession(session);
