@@ -19,6 +19,7 @@ import ReverseTrial from "./ReverseTrial";
 import { SocialProof } from "./SocialProof";
 import { StreakBadge } from "./StreakBadge";
 import FirstTradeCard from "./FirstTradeCard";
+import { winRateFromRealizedTrades } from "@/lib/trading/win-rate-from-trades";
 import { DashboardSignalPreview } from "./DashboardSignalPreview";
 
 const DASHBOARD_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
@@ -40,6 +41,7 @@ interface Trade {
   status: string;
   mode: string;
   created_at: string;
+  realized_pnl?: number | null;
   amount?: number;
   qty?: number;
   symbol?: string;
@@ -176,6 +178,8 @@ export default function PortfolioDashboard({
             status: String(row.status ?? ""),
             mode: String(row.mode ?? "paper"),
             created_at: String(row.created_at ?? new Date().toISOString()),
+            realized_pnl:
+              row.realized_pnl != null ? Number(row.realized_pnl) : null,
           };
           setLiveTrades((prev) => [t, ...prev].slice(0, 30));
         },
@@ -225,14 +229,17 @@ export default function PortfolioDashboard({
     (t) =>
       t.created_at && Date.now() - new Date(t.created_at).getTime() < 3600000,
   );
-  const winRate =
+  const winRateFromSession =
     activeSession &&
     typeof activeSession.winning_trades === "number" &&
-    (activeSession.total_trades ?? 0) > 0
+    typeof activeSession.total_trades === "number" &&
+    activeSession.total_trades > 0
       ? Math.round(
           (activeSession.winning_trades / activeSession.total_trades) * 100,
         )
       : null;
+  const winRateFromTrades = winRateFromRealizedTrades(displayTrades);
+  const winRate = winRateFromSession ?? winRateFromTrades;
   // Alltid vis minst antall handler vi faktisk har (sesjon kan være 0 for ny bot)
   const totalTradesFromSession = Math.max(
     activeSession?.total_trades ?? 0,
@@ -389,6 +396,7 @@ export default function PortfolioDashboard({
                 {no ? "Win rate" : "Win rate"}
               </p>
               <p
+                data-testid="dashboard-win-rate-pct"
                 className={`text-xl font-bold tabular-nums ${
                   winRate != null
                     ? winRate >= 50
@@ -447,7 +455,7 @@ export default function PortfolioDashboard({
       )}
 
       {/* Siste signaler — synlig på dashboard slik at brukere ser aktivitet */}
-      <DashboardSignalPreview locale={locale} no={no} />
+      <DashboardSignalPreview />
 
       <SocialProof locale={locale} />
 

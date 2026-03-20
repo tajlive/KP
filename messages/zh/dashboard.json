@@ -202,5 +202,15 @@
     "done": "已完成",
     "yourBadges": "你的徽章",
     "goToAcademy": "前往学院"
+  },
+  "signalPreview": {
+    "title": "最新信号",
+    "seeAll": "查看全部",
+    "liveBadge": "实时",
+    "demoBadge": "示例",
+    "empty": "暂无信号。启用策略后即可查看。",
+    "buy": "买入",
+    "sell": "卖出",
+    "confidence": "置信度"
   }
 }

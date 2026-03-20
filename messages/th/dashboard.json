@@ -45,6 +45,16 @@
   "totalProfit": "กำไรรวม",
   "dailyChange": "การเปลี่ยนแปลงรายวัน",
   "activeSignals": "สัญญาณที่ใช้งานอยู่",
+  "signalPreview": {
+    "title": "สัญญาณล่าสุด",
+    "seeAll": "ดูทั้งหมด",
+    "liveBadge": "สด",
+    "demoBadge": "ตัวอย่าง",
+    "empty": "ยังไม่มีสัญญาณ เปิดใช้กลยุทธ์เพื่อดูสัญญาณ",
+    "buy": "ซื้อ",
+    "sell": "ขาย",
+    "confidence": "ความมั่นใจ"
+  },
   "newToday": "ใหม่วันนี้",
   "recentActivity": "กิจกรรมล่าสุด",
   "portfolioComingSoon": "ฟังก์ชันพอร์ตโฟลิโอเร็วๆ นี้!",

@@ -76,6 +76,16 @@
   "totalProfit": "Total Profit",
   "dailyChange": "Dagens Endring",
   "activeSignals": "Aktive Signaler",
+  "signalPreview": {
+    "title": "Siste signaler",
+    "seeAll": "Se alle",
+    "liveBadge": "Live",
+    "demoBadge": "Eksempel",
+    "empty": "Ingen signaler ennå. Aktiver en strategi for å se signaler.",
+    "buy": "Kjøp",
+    "sell": "Salg",
+    "confidence": "konfidens"
+  },
   "newToday": "nye i dag",
   "recentActivity": "Nylig Aktivitet",
   "portfolioComingSoon": "Portefølje-funksjonalitet kommer snart!",

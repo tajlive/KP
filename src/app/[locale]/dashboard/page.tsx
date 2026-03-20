@@ -82,7 +82,7 @@ export default async function DashboardPage({
       supabase
         .from("trades")
         .select(
-          "id, trading_pair, side, quantity, price, total_value, status, mode, created_at, executed_at",
+          "id, trading_pair, side, quantity, price, total_value, status, mode, created_at, executed_at, realized_pnl",
         )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })

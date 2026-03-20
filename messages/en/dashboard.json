@@ -69,6 +69,16 @@
   "totalProfit": "Total Profit",
   "dailyChange": "Daily Change",
   "activeSignals": "Active Signals",
+  "signalPreview": {
+    "title": "Latest signals",
+    "seeAll": "See all",
+    "liveBadge": "Live",
+    "demoBadge": "Sample",
+    "empty": "No signals yet. Enable a strategy to see signals.",
+    "buy": "Buy",
+    "sell": "Sell",
+    "confidence": "confidence"
+  },
   "newToday": "new today",
   "recentActivity": "Recent Activity",
   "portfolioComingSoon": "Portfolio functionality coming soon!",
