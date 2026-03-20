@@ -3,9 +3,9 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { 
+import {
   validateTradeAgainstRiskProfile,
-  type TradeRequest 
+  type TradeRequest,
 } from "../risk-validator";
 
 // Mock Supabase client
@@ -179,24 +179,29 @@ describe("KLA-137 Trading Safety Core", () => {
 
   describe("Fail Closed", () => {
     it("should reject trade on unexpected error", async () => {
-      mockSupabase.from.mockImplementation(() => {
-        throw new Error("Database connection failed");
-      });
+      const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      try {
+        mockSupabase.from.mockImplementation(() => {
+          throw new Error("Database connection failed");
+        });
 
-      const trade: TradeRequest = {
-        userId: "user-1",
-        sessionId: "session-1",
-        symbol: "BTCUSDT",
-        side: "buy",
-        quantity: 0.1,
-        price: 50000,
-        orderType: "market",
-        tradingMode: "paper",
-      };
+        const trade: TradeRequest = {
+          userId: "user-1",
+          sessionId: "session-1",
+          symbol: "BTCUSDT",
+          side: "buy",
+          quantity: 0.1,
+          price: 50000,
+          orderType: "market",
+          tradingMode: "paper",
+        };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+        const result = await validateTradeAgainstRiskProfile(trade);
 
-      expect(result.allowed).toBe(false);
+        expect(result.allowed).toBe(false);
+      } finally {
+        errSpy.mockRestore();
+      }
     });
   });
 });

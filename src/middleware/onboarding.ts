@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { createSupabaseClient, redirectWithCookies } from "./auth-guard";
+import { parseLocalePath } from "./locale-path";
 
 const PROTECTED_PATHS = [
   "/dashboard",
@@ -25,8 +26,7 @@ export async function handleOnboarding(
   response: NextResponse,
 ): Promise<NextResponse | null> {
   const { pathname } = request.nextUrl;
-  const locale = pathname.split("/")[1] || "no";
-  const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
+  const { locale, strippedPath: pathWithoutLocale } = parseLocalePath(pathname);
 
   const isOnboardingPage = pathWithoutLocale.startsWith("/onboarding");
 
@@ -85,7 +85,8 @@ export async function handleOnboarding(
     }
   }
 
-  if (isOnboardingPage) {
+  // Fullført onboarding: ikke la brukeren henge i veiviseren
+  if (isOnboardingPage && onboardingCompleted) {
     return redirectWithCookies(
       new URL(`/${locale}/dashboard`, request.url),
       request,

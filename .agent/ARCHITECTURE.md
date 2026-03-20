@@ -210,10 +210,10 @@ skill-name/
 
 ### Enhanced Skills (with scripts/references)
 
-| Skill               | Files | Coverage                            |
-| ------------------- | ----- | ----------------------------------- |
-| `ui-ux-pro-max`     | 27    | 50 styles, 21 palettes, 50 fonts    |
-| `app-builder`       | 20    | Full-stack scaffolding              |
+| Skill           | Files | Coverage                         |
+| --------------- | ----- | -------------------------------- |
+| `ui-ux-pro-max` | 27    | 50 styles, 21 palettes, 50 fonts |
+| `app-builder`   | 20    | Full-stack scaffolding           |
 
 ---
 
@@ -286,3 +286,20 @@ For details, see [scripts/README.md](scripts/README.md)
 | Testing  | `test-engineer`       | testing-patterns, webapp-testing      |
 | Debug    | `debugger`            | systematic-debugging                  |
 | Plan     | `project-planner`     | brainstorming, plan-writing           |
+
+---
+
+## Klarpakke — utvidelser (repo)
+
+I tillegg til tabellen over har Klarpakke **dedikerte agenter** for produktopplevelse, tilgjengelighet, modernisering og orkestrert automatisering:
+
+| Agent                               | Fil                                           |
+| ----------------------------------- | --------------------------------------------- |
+| `klarpakke-experience-architect`    | `agents/klarpakke-experience-architect.md`    |
+| `klarpakke-accessibility-lead`      | `agents/klarpakke-accessibility-lead.md`      |
+| `klarpakke-modernization-lead`      | `agents/klarpakke-modernization-lead.md`      |
+| `klarpakke-automation-orchestrator` | `agents/klarpakke-automation-orchestrator.md` |
+
+**Roster + workflows:** `KLARPAKKE-AGENT-ROSTER.md`, `workflows/klarpakke-experience-modernization.md`.
+
+**Merk:** Statistikken over (20 agenter / 11 workflows) reflekterer Antigravity Kit-basen; Klarpakke-filer er **tillegg** uten at baseline-tall er oppdatert.

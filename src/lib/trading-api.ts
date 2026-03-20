@@ -1,6 +1,7 @@
 "use client";
 import { createBrowserClient } from "@supabase/ssr";
 import { safeStorage } from "@/lib/supabase/safe-storage";
+import type { Database } from "@/types/supabase-generated";
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,8 +10,10 @@ const supabase = createBrowserClient(
     auth: {
       storage: safeStorage,
     },
-  }
+  },
 );
+
+type TradesRow = Database["public"]["Tables"]["trades"]["Row"];
 
 export type TradingMode = "paper" | "live";
 export type StrategyType =
@@ -36,6 +39,65 @@ export interface Trade {
   strategy_signal?: Record<string, unknown>;
   executed_at: string;
   created_at: string;
+}
+
+/** Synkroniserer JWT med Realtime slik at RLS-filterte postgres_changes faktisk leveres (ellers tom strøm). */
+async function syncRealtimeJwt(): Promise<void> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  await supabase.realtime.setAuth(session?.access_token ?? null);
+}
+
+export function mapDbTradeRowToTrade(row: TradesRow): Trade {
+  const sideLower = String(row.side).toLowerCase();
+  const side: Trade["side"] = sideLower === "sell" ? "sell" : "buy";
+  const st = String(row.status).toLowerCase();
+  const status: Trade["status"] =
+    st === "filled" ||
+    st === "pending" ||
+    st === "partially_filled" ||
+    st === "cancelled" ||
+    st === "failed"
+      ? st
+      : "filled";
+
+  return {
+    id: row.id,
+    session_id: row.session_id,
+    symbol: row.trading_pair,
+    side,
+    quantity: row.quantity,
+    price: row.price,
+    total_value: row.total_value,
+    fee: row.fee,
+    realized_pnl: row.realized_pnl,
+    status,
+    mode: row.mode as TradingMode,
+    is_copy: row.is_copy,
+    strategy_signal:
+      row.strategy_signal !== null &&
+      typeof row.strategy_signal === "object" &&
+      !Array.isArray(row.strategy_signal)
+        ? (row.strategy_signal as Record<string, unknown>)
+        : undefined,
+    executed_at: row.executed_at,
+    created_at: row.created_at,
+  };
+}
+
+export function mergeTradeIntoList(
+  prev: Trade[],
+  incoming: Trade,
+  maxLen = 50,
+): Trade[] {
+  const i = prev.findIndex((t) => t.id === incoming.id);
+  if (i === -1) {
+    return [incoming, ...prev].slice(0, maxLen);
+  }
+  const next = [...prev];
+  next[i] = incoming;
+  return next;
 }
 
 export interface Portfolio {
@@ -119,7 +181,8 @@ export async function getRecentTrades(
     .eq("mode", mode)
     .order("executed_at", { ascending: false })
     .limit(limit);
-  return data || [];
+  if (!data?.length) return [];
+  return data.map((row) => mapDbTradeRowToTrade(row as TradesRow));
 }
 
 export async function getActiveStrategies(
@@ -256,29 +319,69 @@ export async function stopStrategy(
     .eq("status", "active");
 }
 
+export type TradeRealtimeKind = "INSERT" | "UPDATE";
+
+/**
+ * Abonnerer på egne rader i `trades`. Kaller `realtime.setAuth` + lytter på token-refresh,
+ * ellers mottar ikke klienten events under RLS (klassisk årsak til «må refreshe»).
+ * Lytter på INSERT og UPDATE (ordre som går pending → filled kommer ofte som UPDATE).
+ */
 export function subscribeToTrades(
   mode: TradingMode,
   userId: string,
-  onNewTrade: (trade: Trade) => void,
-) {
-  const channel = supabase
-    .channel(`trades-${mode}-${userId}`)
-    .on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "trades",
-        filter: `user_id=eq.${userId}`,
-      },
-      (payload) => {
-        const trade = payload.new as Trade;
-        if (trade.mode === mode) onNewTrade(trade);
-      },
-    )
-    .subscribe();
+  onTrade: (trade: Trade, kind: TradeRealtimeKind) => void,
+): () => void {
+  let channel: ReturnType<typeof supabase.channel> | null = null;
+  let cancelled = false;
+
+  const {
+    data: { subscription: authSubscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    void supabase.realtime.setAuth(session?.access_token ?? null);
+  });
+
+  const handler =
+    (kind: TradeRealtimeKind) =>
+    (payload: { new: Record<string, unknown> }) => {
+      const trade = mapDbTradeRowToTrade(payload.new as TradesRow);
+      if (trade.mode !== mode) return;
+      onTrade(trade, kind);
+    };
+
+  void (async () => {
+    await syncRealtimeJwt();
+    if (cancelled) return;
+    channel = supabase
+      .channel(`trades-${mode}-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "trades",
+          filter: `user_id=eq.${userId}`,
+        },
+        handler("INSERT"),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "trades",
+          filter: `user_id=eq.${userId}`,
+        },
+        handler("UPDATE"),
+      )
+      .subscribe();
+  })();
+
   return () => {
-    supabase.removeChannel(channel);
+    cancelled = true;
+    authSubscription.unsubscribe();
+    if (channel) {
+      void supabase.removeChannel(channel);
+    }
   };
 }
 
@@ -318,5 +421,5 @@ export async function createPaperTrade(
     .single();
 
   if (error) throw error;
-  return data;
+  return mapDbTradeRowToTrade(data as TradesRow);
 }

@@ -38,6 +38,7 @@ import {
   formatTimeUntil,
   BotStatusMessage,
 } from "@/lib/bot-status-helpers";
+import { getStrategyIconComponent } from "@/lib/trading/strategy-icons";
 import AdvancedStatsModal from "./AdvancedStatsModal";
 import AIDecisionPanel from "@/components/ai/AIDecisionPanel";
 
@@ -50,18 +51,36 @@ interface BotStatusDashboardProps {
   userId?: string;
 }
 
-const STRATEGY_ICONS: Record<string, string> = {
-  dca_trygg: "🛡️",
-  trend_balansert: "📈",
-  multisignal_aktiv: "⚡",
-  grid_bot: "🔲",
-  ai_copy: "🤖",
-};
-
 interface RealtimeUpdate {
   lastAnalysisDetails: Record<string, unknown> | null;
   nextExpectedActionAt: string | null;
   lastStatusMessage: string | null;
+}
+
+function mapUserStrategiesPayload(
+  raw: Record<string, unknown>,
+): RealtimeUpdate {
+  const lastAnalysis = raw.last_analysis_details ?? raw.lastAnalysisDetails;
+  const nextAt = raw.next_expected_action_at ?? raw.nextExpectedActionAt;
+  const lastMsg = raw.last_status_message ?? raw.lastStatusMessage;
+  return {
+    lastAnalysisDetails:
+      lastAnalysis !== undefined && lastAnalysis !== null
+        ? (lastAnalysis as Record<string, unknown>)
+        : null,
+    nextExpectedActionAt:
+      typeof nextAt === "string"
+        ? nextAt
+        : nextAt != null
+          ? String(nextAt)
+          : null,
+    lastStatusMessage:
+      typeof lastMsg === "string"
+        ? lastMsg
+        : lastMsg != null
+          ? String(lastMsg)
+          : null,
+  };
 }
 
 // TESTPLAN KLA-100: Tab-fane for å bytte mellom narrativ, avansert og AI visning
@@ -89,7 +108,11 @@ export default function BotStatusDashboard({
 
   // KLA-100: Generer bot-status melding med hjelpefunksjoner
   useEffect(() => {
-    const status = generateBotStatusMessage(lastTrade, mainStrategy || null, lang);
+    const status = generateBotStatusMessage(
+      lastTrade,
+      mainStrategy || null,
+      lang,
+    );
     setBotStatus(status);
   }, [lastTrade, mainStrategy, lang]);
 
@@ -147,7 +170,9 @@ export default function BotStatusDashboard({
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          const newData = payload.new as RealtimeUpdate;
+          const newData = mapUserStrategiesPayload(
+            payload.new as Record<string, unknown>,
+          );
           setRealtimeData(newData);
 
           // Update next check time
@@ -183,25 +208,40 @@ export default function BotStatusDashboard({
   const maxDrawdown = -12.5; // Mock - should calculate from equity curve
 
   // Determine risk level
-  const getRiskLevel = (strategyId: string): { label: string; color: string } => {
+  const getRiskLevel = (
+    strategyId: string,
+  ): { label: string; color: string } => {
     if (strategyId.includes("dca") || strategyId.includes("trygg")) {
       return { label: lang === "en" ? "Low" : "Lav", color: "text-green-400" };
     }
     if (strategyId.includes("trend") || strategyId.includes("balansert")) {
-      return { label: lang === "en" ? "Balanced" : "Balansert", color: "text-blue-400" };
+      return {
+        label: lang === "en" ? "Balanced" : "Balansert",
+        color: "text-blue-400",
+      };
     }
     if (strategyId.includes("multi") || strategyId.includes("aktiv")) {
-      return { label: lang === "en" ? "High" : "Høy", color: "text-orange-400" };
+      return {
+        label: lang === "en" ? "High" : "Høy",
+        color: "text-orange-400",
+      };
     }
-    return { label: lang === "en" ? "Balanced" : "Balansert", color: "text-yellow-400" };
+    return {
+      label: lang === "en" ? "Balanced" : "Balansert",
+      color: "text-yellow-400",
+    };
   };
 
-  const risk = mainStrategy ? getRiskLevel(mainStrategy.strategy_id) : { label: "-", color: "text-slate-400" };
+  const risk = mainStrategy
+    ? getRiskLevel(mainStrategy.strategy_id)
+    : { label: "-", color: "text-slate-400" };
 
   // Formater tid til neste sjekk
   const nextCheckFormatted = botStatus?.nextActionTime
     ? formatTimeUntil(botStatus.nextActionTime, lang)
-    : lang === "en" ? "Soon" : "Snart";
+    : lang === "en"
+      ? "Soon"
+      : "Snart";
 
   if (isLoading) {
     return (
@@ -231,13 +271,15 @@ export default function BotStatusDashboard({
           href={`/${locale}/copy-trading`}
           className="p-3 px-6 text-slate-400 hover:text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-colors"
         >
-          <BarChart3 className="w-4 h-4" /> {lang === "en" ? "Leaderboard" : "Ledertavle"}
+          <BarChart3 className="w-4 h-4" />{" "}
+          {lang === "en" ? "Leaderboard" : "Ledertavle"}
         </Link>
         <Link
           href={`/${locale}/marketplace`}
           className="p-3 px-6 text-slate-400 hover:text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-colors"
         >
-          <ShoppingBag className="w-4 h-4" /> {lang === "en" ? "Market" : "Marked"}
+          <ShoppingBag className="w-4 h-4" />{" "}
+          {lang === "en" ? "Market" : "Marked"}
         </Link>
         <div className="w-px h-6 bg-slate-800 mx-1" />
         {/* KLA-100: Tab-basert navigasjon: Narrativ, Avansert, AI */}
@@ -247,10 +289,11 @@ export default function BotStatusDashboard({
             "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
             currentView === "narrative"
               ? "bg-blue-600 text-white"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-white",
           )}
         >
-          <LayoutDashboard className="w-4 h-4" /> {lang === "en" ? "Overview" : "Oversikt"}
+          <LayoutDashboard className="w-4 h-4" />{" "}
+          {lang === "en" ? "Overview" : "Oversikt"}
         </button>
         <button
           onClick={() => setCurrentView("advanced")}
@@ -258,10 +301,11 @@ export default function BotStatusDashboard({
             "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
             currentView === "advanced"
               ? "bg-emerald-600 text-white"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-white",
           )}
         >
-          <Settings2 className="w-4 h-4" /> {lang === "en" ? "Advanced" : "Avansert"}
+          <Settings2 className="w-4 h-4" />{" "}
+          {lang === "en" ? "Advanced" : "Avansert"}
         </button>
         <button
           onClick={() => setCurrentView("ai")}
@@ -269,7 +313,7 @@ export default function BotStatusDashboard({
             "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
             currentView === "ai"
               ? "bg-purple-600 text-white"
-              : "text-slate-400 hover:text-white"
+              : "text-slate-400 hover:text-white",
           )}
         >
           <Brain className="w-4 h-4" /> AI
@@ -334,43 +378,50 @@ export default function BotStatusDashboard({
               </p>
             </div>
           ) : (
-            activeStrategies.map((s, idx) => (
-              <motion.div
-                key={s.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between group hover:border-slate-700 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="text-3xl bg-slate-800 w-12 h-12 rounded-xl flex items-center justify-center">
-                    {STRATEGY_ICONS[s.strategy_id] || "🔥"}
+            activeStrategies.map((s, idx) => {
+              const StrategyIcon = getStrategyIconComponent(s.strategy_id);
+              return (
+                <motion.div
+                  key={s.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between group hover:border-slate-700 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="bg-slate-800 w-12 h-12 rounded-xl flex items-center justify-center">
+                      <StrategyIcon
+                        className="h-6 w-6 text-[#0052FF]"
+                        aria-hidden
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white capitalize">
+                        {s.strategy_id.replace("_", " ")}
+                      </h4>
+                      <p className="text-xs text-slate-500 tracking-wide uppercase">
+                        {s.trading_pair} •{" "}
+                        {s.mode === "paper" ? "PAPER" : "LIVE"}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-white capitalize">
-                      {s.strategy_id.replace("_", " ")}
-                    </h4>
-                    <p className="text-xs text-slate-500 tracking-wide uppercase">
-                      {s.trading_pair} • {s.mode === "paper" ? "PAPER" : "LIVE"}
-                    </p>
+                  <div className="text-right">
+                    <div
+                      className={cn(
+                        "font-bold text-lg",
+                        s.total_pnl >= 0 ? "text-green-400" : "text-red-400",
+                      )}
+                    >
+                      {s.total_pnl >= 0 ? "+" : ""}
+                      {formatNOK(s.total_pnl)}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {lang === "en" ? "P&L Total" : "P&L Totalt"}
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div
-                    className={cn(
-                      "font-bold text-lg",
-                      s.total_pnl >= 0 ? "text-green-400" : "text-red-400",
-                    )}
-                  >
-                    {s.total_pnl >= 0 ? "+" : ""}
-                    {formatNOK(s.total_pnl)}
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    {lang === "en" ? "P&L Total" : "P&L Totalt"}
-                  </div>
-                </div>
-              </motion.div>
-            ))
+                </motion.div>
+              );
+            })
           )}
         </div>
 
@@ -387,19 +438,30 @@ export default function BotStatusDashboard({
               variant="ghost"
               className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 h-8"
             >
-              {lang === "en" ? "See all" : "Se alle"} <ArrowRight className="ml-2 w-4 h-4" />
+              {lang === "en" ? "See all" : "Se alle"}{" "}
+              <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-950/50 text-slate-500 uppercase text-[10px] font-black tracking-widest">
-                  <th className="px-6 py-4">{lang === "en" ? "Action" : "Handling"}</th>
-                  <th className="px-6 py-4">{lang === "en" ? "Symbol" : "Symbol"}</th>
-                  <th className="px-6 py-4 text-right">{lang === "en" ? "Price" : "Pris"}</th>
-                  <th className="px-6 py-4 text-right">{lang === "en" ? "Value" : "Verdi"}</th>
+                  <th className="px-6 py-4">
+                    {lang === "en" ? "Action" : "Handling"}
+                  </th>
+                  <th className="px-6 py-4">
+                    {lang === "en" ? "Symbol" : "Symbol"}
+                  </th>
+                  <th className="px-6 py-4 text-right">
+                    {lang === "en" ? "Price" : "Pris"}
+                  </th>
+                  <th className="px-6 py-4 text-right">
+                    {lang === "en" ? "Value" : "Verdi"}
+                  </th>
                   <th className="px-6 py-4 text-right">P&L</th>
-                  <th className="px-6 py-4 text-right">{lang === "en" ? "Time" : "Tid"}</th>
+                  <th className="px-6 py-4 text-right">
+                    {lang === "en" ? "Time" : "Tid"}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -421,7 +483,8 @@ export default function BotStatusDashboard({
                       </span>
                     </td>
                     <td className="px-6 py-4 font-bold text-white">
-                      {(t as unknown as { trading_pair?: string }).trading_pair || t.symbol}
+                      {(t as unknown as { trading_pair?: string })
+                        .trading_pair || t.symbol}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-300">
                       {formatNOK(t.price)}
@@ -446,10 +509,13 @@ export default function BotStatusDashboard({
                       )}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-500 text-xs">
-                      {new Date(t.executed_at).toLocaleTimeString(lang === "en" ? "en-US" : "no-NO", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {new Date(t.executed_at).toLocaleTimeString(
+                        lang === "en" ? "en-US" : "no-NO",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        },
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -477,7 +543,8 @@ export default function BotStatusDashboard({
         <Card className="bg-slate-900 border-slate-800 rounded-3xl overflow-hidden shadow-xl">
           <CardHeader className="bg-slate-950/50 border-b border-slate-800 py-4 px-6 flex flex-row items-center justify-between">
             <CardTitle className="text-white text-sm flex items-center gap-2">
-              <LayoutDashboard className="w-4 h-4 text-blue-400" /> {lang === "en" ? "Overview" : "Oversikt"}
+              <LayoutDashboard className="w-4 h-4 text-blue-400" />{" "}
+              {lang === "en" ? "Overview" : "Oversikt"}
             </CardTitle>
             <Badge className="bg-blue-600/20 text-blue-400 border-blue-500/30 text-[10px]">
               TOTAL
@@ -544,7 +611,11 @@ export default function BotStatusDashboard({
             </div>
 
             <div className="pt-4 border-t border-slate-800 space-y-4">
-              <p className="text-xs text-slate-500">{lang === "en" ? "Average Win Rate" : "Gjennomsnittlig Win Rate"}</p>
+              <p className="text-xs text-slate-500">
+                {lang === "en"
+                  ? "Average Win Rate"
+                  : "Gjennomsnittlig Win Rate"}
+              </p>
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
                   <div
@@ -575,9 +646,13 @@ export default function BotStatusDashboard({
             >
               <Zap className="w-5 h-5 mr-3 text-yellow-500 group-hover:scale-110 transition-transform" />
               <div className="text-left">
-                <div className="font-bold text-sm">{lang === "en" ? "New Strategy" : "Ny Strategi"}</div>
+                <div className="font-bold text-sm">
+                  {lang === "en" ? "New Strategy" : "Ny Strategi"}
+                </div>
                 <div className="text-[10px] text-slate-500">
-                  {lang === "en" ? "Explore marketplace" : "Utforsk markedsplassen"}
+                  {lang === "en"
+                    ? "Explore marketplace"
+                    : "Utforsk markedsplassen"}
                 </div>
               </div>
             </Button>
@@ -588,7 +663,9 @@ export default function BotStatusDashboard({
             >
               <Pause className="w-5 h-5 mr-3 text-red-500 group-hover:scale-110 transition-transform" />
               <div className="text-left">
-                <div className="font-bold text-sm">{lang === "en" ? "Stop All" : "Stopp Alt"}</div>
+                <div className="font-bold text-sm">
+                  {lang === "en" ? "Stop All" : "Stopp Alt"}
+                </div>
                 <div className="text-[10px] text-slate-500">Emergency stop</div>
               </div>
             </Button>
@@ -599,9 +676,13 @@ export default function BotStatusDashboard({
               >
                 <BarChart3 className="w-5 h-5 mr-3 text-blue-500 group-hover:scale-110 transition-transform" />
                 <div className="text-left">
-                  <div className="font-bold text-sm">{lang === "en" ? "Copy Trading" : "Kopier Trading"}</div>
+                  <div className="font-bold text-sm">
+                    {lang === "en" ? "Copy Trading" : "Kopier Trading"}
+                  </div>
                   <div className="text-[10px] text-slate-500">
-                    {lang === "en" ? "Follow successful traders" : "Følg suksessfulle tradere"}
+                    {lang === "en"
+                      ? "Follow successful traders"
+                      : "Følg suksessfulle tradere"}
                   </div>
                 </div>
               </Button>
@@ -653,21 +734,23 @@ function NarrativeView({
             <div
               className={cn(
                 "w-3 h-3 rounded-full",
-                isBotActive
-                  ? "bg-green-500 animate-pulse"
-                  : "bg-yellow-500",
+                isBotActive ? "bg-green-500 animate-pulse" : "bg-yellow-500",
               )}
             />
             <h1 className="text-3xl lg:text-4xl font-black text-white">
               {isBotActive
-                ? lang === "en" ? "Bot is working" : "Boten jobber"
-                : lang === "en" ? "Waiting for you" : "Venter på deg"}
+                ? lang === "en"
+                  ? "Bot is working"
+                  : "Boten jobber"
+                : lang === "en"
+                  ? "Waiting for you"
+                  : "Venter på deg"}
             </h1>
           </div>
 
           <p className="text-lg text-slate-400 max-w-lg text-center md:text-left leading-relaxed">
             {isBotActive && mainStrategy
-              ? `${lang === "en" ? "Your bot is running" : "Ditt bot kjører"} ${STRATEGY_ICONS[mainStrategy.strategy_id] || "🤖"} ${mainStrategy.strategy_id.replace("_", " ")} ${lang === "en" ? "on" : "på"} ${mainStrategy.trading_pair}.`
+              ? `${lang === "en" ? "Your bot is running" : "Ditt bot kjører"} ${mainStrategy.strategy_id.replace(/_/g, " ")} ${lang === "en" ? "on" : "på"} ${mainStrategy.trading_pair}.`
               : lang === "en"
                 ? "You have no active strategies right now. Start a strategy to begin automated trading."
                 : "Du har ingen aktive strategier akkurat nå. Start en strategi for å begynne automatisert handel."}
@@ -713,7 +796,8 @@ function NarrativeView({
                 variant="outline"
                 className="bg-slate-800 hover:bg-slate-700 border-slate-700 text-white min-w-[160px]"
               >
-                <Pause className="w-4 h-4 mr-2" /> {lang === "en" ? "Pause Bot" : "Pause Bot"}
+                <Pause className="w-4 h-4 mr-2" />{" "}
+                {lang === "en" ? "Pause Bot" : "Pause Bot"}
               </Button>
             </>
           ) : (
@@ -721,7 +805,8 @@ function NarrativeView({
               onClick={() => onAction("start_new")}
               className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-8 rounded-2xl text-lg font-bold shadow-lg shadow-blue-500/20"
             >
-              <Play className="w-5 h-5 mr-2 fill-current" /> {lang === "en" ? "Start Now" : "Begynn nå"}
+              <Play className="w-5 h-5 mr-2 fill-current" />{" "}
+              {lang === "en" ? "Start Now" : "Begynn nå"}
             </Button>
           )}
         </div>
@@ -734,11 +819,14 @@ function NarrativeView({
           <div className="bg-slate-800/30 rounded-2xl p-4 border border-slate-700/30">
             <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
-              {lang === "en" ? "Last Completed Action" : "Siste Fullførte Handling"}
+              {lang === "en"
+                ? "Last Completed Action"
+                : "Siste Fullførte Handling"}
             </div>
             <div className="space-y-2">
               <p className="text-white font-medium text-lg">
-                {botStatus?.lastActionText || (lang === "en" ? "No trades yet" : "Ingen handler ennå")}
+                {botStatus?.lastActionText ||
+                  (lang === "en" ? "No trades yet" : "Ingen handler ennå")}
               </p>
               {botStatus?.statusExplanation && (
                 <p className="text-sm text-slate-400">
@@ -759,15 +847,22 @@ function NarrativeView({
             </div>
             <div className="space-y-2">
               <p className="text-white font-medium text-lg">
-                {botStatus?.nextActionText || (lang === "en" ? "Scanning market..." : "Scanner markedet...")}
+                {botStatus?.nextActionText ||
+                  (lang === "en"
+                    ? "Scanning market..."
+                    : "Scanner markedet...")}
               </p>
               <p className="text-sm text-slate-400 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping" />
-                {botStatus?.statusExplanation || (lang === "en" ? "Monitoring price movements" : "Overvåker prisbevegelser")}
+                {botStatus?.statusExplanation ||
+                  (lang === "en"
+                    ? "Monitoring price movements"
+                    : "Overvåker prisbevegelser")}
               </p>
               {botStatus?.nextActionTime && (
                 <p className="text-xs text-blue-400 mt-1">
-                  {lang === "en" ? "Next check" : "Neste sjekk"}: {nextCheckFormatted}
+                  {lang === "en" ? "Next check" : "Neste sjekk"}:{" "}
+                  {nextCheckFormatted}
                 </p>
               )}
             </div>
@@ -804,13 +899,18 @@ function AdvancedView({
   formatNOK: (v: number) => string;
   lang: string;
 }) {
-  const totalTrades = activeStrategies.reduce((sum, s) => sum + s.total_trades, 0);
+  const totalTrades = activeStrategies.reduce(
+    (sum, s) => sum + s.total_trades,
+    0,
+  );
   const totalPnl = activeStrategies.reduce((sum, s) => sum + s.total_pnl, 0);
-  
+
   // Beregn gjennomsnittlig trade størrelse
-  const avgTradeValue = recentTrades.length > 0
-    ? recentTrades.reduce((sum, t) => sum + t.total_value, 0) / recentTrades.length
-    : 0;
+  const avgTradeValue =
+    recentTrades.length > 0
+      ? recentTrades.reduce((sum, t) => sum + t.total_value, 0) /
+        recentTrades.length
+      : 0;
 
   return (
     <motion.div
@@ -829,7 +929,9 @@ function AdvancedView({
               {lang === "en" ? "Advanced Statistics" : "Avansert Statistikk"}
             </h2>
             <p className="text-slate-400 text-sm mt-1">
-              {lang === "en" ? "Detailed performance metrics" : "Detaljerte ytelsesmålinger"}
+              {lang === "en"
+                ? "Detailed performance metrics"
+                : "Detaljerte ytelsesmålinger"}
             </p>
           </div>
         </div>
@@ -842,16 +944,26 @@ function AdvancedView({
               <TrendingUp className="w-4 h-4" />
               Sharpe Ratio
             </div>
-            <div className={cn(
-              "text-2xl font-black",
-              sharpeRatio >= 1 ? "text-green-400" : sharpeRatio >= 0 ? "text-yellow-400" : "text-red-400"
-            )}>
+            <div
+              className={cn(
+                "text-2xl font-black",
+                sharpeRatio >= 1
+                  ? "text-green-400"
+                  : sharpeRatio >= 0
+                    ? "text-yellow-400"
+                    : "text-red-400",
+              )}
+            >
               {sharpeRatio.toFixed(2)}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {sharpeRatio >= 1 
-                ? (lang === "en" ? "Good risk-adjusted returns" : "God risikojustert avkastning")
-                : (lang === "en" ? "Below optimal" : "Under optimalt")}
+              {sharpeRatio >= 1
+                ? lang === "en"
+                  ? "Good risk-adjusted returns"
+                  : "God risikojustert avkastning"
+                : lang === "en"
+                  ? "Below optimal"
+                  : "Under optimalt"}
             </p>
           </div>
 
@@ -861,16 +973,26 @@ function AdvancedView({
               <TrendingDown className="w-4 h-4" />
               {lang === "en" ? "Max Drawdown" : "Maks Drawdown"}
             </div>
-            <div className={cn(
-              "text-2xl font-black",
-              maxDrawdown > -10 ? "text-green-400" : maxDrawdown > -20 ? "text-yellow-400" : "text-red-400"
-            )}>
+            <div
+              className={cn(
+                "text-2xl font-black",
+                maxDrawdown > -10
+                  ? "text-green-400"
+                  : maxDrawdown > -20
+                    ? "text-yellow-400"
+                    : "text-red-400",
+              )}
+            >
               {maxDrawdown.toFixed(1)}%
             </div>
             <p className="text-xs text-slate-500 mt-1">
               {maxDrawdown > -10
-                ? (lang === "en" ? "Low risk" : "Lav risiko")
-                : (lang === "en" ? "Higher risk" : "Høyere risiko")}
+                ? lang === "en"
+                  ? "Low risk"
+                  : "Lav risiko"
+                : lang === "en"
+                  ? "Higher risk"
+                  : "Høyere risiko"}
             </p>
           </div>
 
@@ -880,10 +1002,16 @@ function AdvancedView({
               <CheckCircle2 className="w-4 h-4" />
               {lang === "en" ? "Win Rate" : "Win Rate"}
             </div>
-            <div className={cn(
-              "text-2xl font-black",
-              winRate >= 60 ? "text-green-400" : winRate >= 50 ? "text-yellow-400" : "text-red-400"
-            )}>
+            <div
+              className={cn(
+                "text-2xl font-black",
+                winRate >= 60
+                  ? "text-green-400"
+                  : winRate >= 50
+                    ? "text-yellow-400"
+                    : "text-red-400",
+              )}
+            >
               {winRate.toFixed(1)}%
             </div>
             <p className="text-xs text-slate-500 mt-1">
@@ -914,19 +1042,48 @@ function AdvancedView({
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: lang === "en" ? "Today" : "I dag", value: pnlToday },
-              { label: lang === "en" ? "This Week" : "Denne uken", value: pnlWeek },
-              { label: lang === "en" ? "This Month" : "Denne måneden", value: pnlMonth },
-              { label: lang === "en" ? "Total P&L" : "Totalt P&L", value: totalPnl },
-              { label: lang === "en" ? "Best Trade" : "Beste Trade", value: Math.max(...recentTrades.map(t => t.realized_pnl || 0), 0) },
-              { label: lang === "en" ? "Worst Trade" : "Verste Trade", value: Math.min(...recentTrades.map(t => t.realized_pnl || 0), 0) },
+              {
+                label: lang === "en" ? "This Week" : "Denne uken",
+                value: pnlWeek,
+              },
+              {
+                label: lang === "en" ? "This Month" : "Denne måneden",
+                value: pnlMonth,
+              },
+              {
+                label: lang === "en" ? "Total P&L" : "Totalt P&L",
+                value: totalPnl,
+              },
+              {
+                label: lang === "en" ? "Best Trade" : "Beste Trade",
+                value: Math.max(
+                  ...recentTrades.map((t) => t.realized_pnl || 0),
+                  0,
+                ),
+              },
+              {
+                label: lang === "en" ? "Worst Trade" : "Verste Trade",
+                value: Math.min(
+                  ...recentTrades.map((t) => t.realized_pnl || 0),
+                  0,
+                ),
+              },
             ].map((item, i) => (
-              <div key={i} className="text-center p-3 rounded-xl bg-slate-800/50">
-                <p className="text-xs text-slate-500 uppercase mb-1">{item.label}</p>
-                <p className={cn(
-                  "text-lg font-bold",
-                  item.value >= 0 ? "text-green-400" : "text-red-400"
-                )}>
-                  {item.value >= 0 ? "+" : ""}{formatNOK(item.value)}
+              <div
+                key={i}
+                className="text-center p-3 rounded-xl bg-slate-800/50"
+              >
+                <p className="text-xs text-slate-500 uppercase mb-1">
+                  {item.label}
+                </p>
+                <p
+                  className={cn(
+                    "text-lg font-bold",
+                    item.value >= 0 ? "text-green-400" : "text-red-400",
+                  )}
+                >
+                  {item.value >= 0 ? "+" : ""}
+                  {formatNOK(item.value)}
                 </p>
               </div>
             ))}
@@ -963,8 +1120,8 @@ function AIView({ userId, strategyId, lang }: AIViewProps) {
               {lang === "en" ? "Krypto Professor" : "Krypto Professor"}
             </h2>
             <p className="text-slate-400 text-sm">
-              {lang === "en" 
-                ? "Smart trading insights and market analysis" 
+              {lang === "en"
+                ? "Smart trading insights and market analysis"
                 : "Smarte tradinginnsikter og markedsanalyse"}
             </p>
           </div>
@@ -972,11 +1129,7 @@ function AIView({ userId, strategyId, lang }: AIViewProps) {
       </div>
 
       {/* AI Decision Panel */}
-      <AIDecisionPanel 
-        userId={userId} 
-        strategyId={strategyId} 
-        locale={lang} 
-      />
+      <AIDecisionPanel userId={userId} strategyId={strategyId} locale={lang} />
     </motion.div>
   );
 }

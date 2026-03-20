@@ -19,15 +19,15 @@ Designet er solid for en fintech-plattform i 2026: mørkt tema, tydelig hierarki
 
 ## Svakheter / forbedringspotensial
 
-### 1. Hero-gradienten er veldig vanlig
+### 1. Hero-gradient og tittel-accent
 
-- **Nå**: `from-blue-600 via-indigo-600 to-emerald-700` – samme blå/lilla/grønn-stil som mange SaaS-/AI-sider.
-- **Forslag**: Én sterk merke-farge (f.eks. #0052FF) med nøktern gradient eller subtil mesh; eller mer nordisk/minimal med hvite/lysere accenter på mørk bakgrunn.
+- **Nå (2026-03):** Seksjonsgradient styres av `HERO.gradient` i [`tokens.ts`](../src/lib/design/tokens.ts) (`#0052FF` → slate); tittel del 2 bruker `HERO.titleAccent` (merke-justerbar tekst-gradient).
+- **Videre forbedring:** Jevn bruk av tokens på alle landing-underseksjoner; unngå nye hardkodede gradienter utenom tokens.
 
-### 2. Priser: emojis som tier-ikoner
+### 2. Priser: tier-ikoner
 
-- **Nå**: 🎓 📈 🏆 🎯 (og Crown for professor) – føles uformelt for fintech.
-- **Forslag**: Erstatt med enkle Lucide-ikoner (GraduationCap, TrendingUp, Award, Target) eller små illustrasjoner for mer «premium»-følelse.
+- **Status (2026-03):** Landing `PricingSection` og `/priser` bruker **Lucide** (GraduationCap, TrendingUp, Award, Target, Crown) — se [`src/components/landing/PricingSection.tsx`](../src/components/landing/PricingSection.tsx).
+- **Gjenstår:** E-postmaler og enkelte admin-/beta-komponenter kan fortsatt bruke emoji — vurder gradvis utbedring.
 
 ### 3. Fargebruk ikke overalt via tokens
 
@@ -48,13 +48,13 @@ Designet er solid for en fintech-plattform i 2026: mørkt tema, tydelig hierarki
 
 ## Anbefalt prioritering
 
-| Prioritet | Tiltak | Effekt |
-|-----------|--------|--------|
-| Høy | Erstatt emoji-ikoner på priser med Lucide-ikoner | Mer profesjonell, fintech-klang |
-| Høy | Én hero-variant med merke-farge (#0052FF) og mindre «AI-gradient» | Mer særegent uttrykk |
-| Medium | Bruk design-tokens konsekvent (farger, skygger) | Enklere vedlikehold og konsistens |
-| Medium | Tabell-forbedringer (tabular-nums, row hover) | Bedre lesbarhet på data |
-| Lav | Systematisert glass/skygge-nivå på kort | Mer moderne dybde og hierarki |
+| Prioritet | Tiltak                                                            | Effekt                            |
+| --------- | ----------------------------------------------------------------- | --------------------------------- |
+| Høy       | Erstatt emoji-ikoner på priser med Lucide-ikoner                  | Mer profesjonell, fintech-klang   |
+| Høy       | Én hero-variant med merke-farge (#0052FF) og mindre «AI-gradient» | Mer særegent uttrykk              |
+| Medium    | Bruk design-tokens konsekvent (farger, skygger)                   | Enklere vedlikehold og konsistens |
+| Medium    | Tabell-forbedringer (tabular-nums, row hover)                     | Bedre lesbarhet på data           |
+| Lav       | Systematisert glass/skygge-nivå på kort                           | Mer moderne dybde og hierarki     |
 
 ---
 

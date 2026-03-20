@@ -34,6 +34,16 @@ END;
 
 **Full produksjon:** Appen kjører i prod (www.klarpakke.no). Alle P0-oppgaver er lukket; verify-scriptet passerer (domener, /api/health, kritiske paths, security headers). Videre Linear-oppgaver er for forbedringer og ny funksjonalitet, ikke for å «åpne» prod.
 
+**AI-agenter (UX/UI/UA, modernisering, automatisering):** Se `docs/agents/KLARPAKKE-ROSTER.md` og `.agent/KLARPAKKE-AGENT-ROSTER.md`.
+
+**Maksimal automasjon (MCP/CLI/CI/API):** `docs/FULL-AUTOMATION-PLAYBOOK.md` — kjør `npm run auto:preflight` (evt. `auto:preflight:full`) etter `.env.local`.
+
+**Målgrunnlag (småsparere, mobil, krypto-nivå):** `docs/TARGET-AUDIENCE.md` og `docs/product-principles-2026.md`.
+
+**IA / kanoniske ruter:** `docs/architecture/ROUTE-INVENTORY-2026.md` · **Mobil/UA-sweep:** `docs/MOBILE-UA-SWEEP-2026.md` · **Type-gjeld:** `docs/TYPE-DEBT-ROADMAP-2026.md` + `src/lib/supabase/TYPE_DEBT.md` · **Microcopy / i18n / observabilitet:** `docs/MICROCOPY-I18N-OBSERVABILITY-2026.md`.
+
+**Siste kodeanalyse (feil + backlog):** `docs/ANALYSE-KODEBASE-2026-03.md` (Linear: KLA-232).
+
 | Område                                           | Status                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Brukeropprettelse Admin API                      | ✅ Fungerer — alle 9 tabeller opprettes                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -85,7 +95,7 @@ END;
 | Tailwind      | 4.x                                                                                                                    |
 | Testing       | Vitest 4, Playwright 2                                                                                                 |
 
-Bekjent type-gjeld: `ignoreBuildErrors: true` i next.config (TODO når type-gjelden er redusert).
+TypeScript: `typescript.ignoreBuildErrors: false` i `next.config.mjs` — bygg feiler på TS-feil. Ved ny gjeld: `npm run type-check` og `docs/TYPE-DEBT-ROADMAP-2026.md`.
 
 ## Standard kjøremodus
 

@@ -88,11 +88,11 @@ export function LiveSignalFeed() {
     action?.toUpperCase() === "BUY" || action?.toUpperCase() === "LONG";
 
   return (
-    <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-200/60 overflow-hidden relative">
+    <div className="bg-slate-900/60 backdrop-blur-sm rounded-2xl p-4 border border-slate-700/50 overflow-hidden relative">
       <div className="flex items-center gap-2 mb-4 px-2">
-        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">
-          <Zap className="h-3 w-3 text-blue-500" /> Siste Real-Time Signaler
+        <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+          <Zap className="h-3 w-3 text-[#0052FF]" /> Siste Real-Time Signaler
         </span>
       </div>
 
@@ -115,17 +115,17 @@ export function LiveSignalFeed() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-blue-200 transition-colors"
+              className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-slate-600/80 transition-all duration-200"
             >
               <div className="flex items-center gap-3">
-                <div className="font-bold text-sm text-slate-900">
+                <div className="font-bold text-sm text-white tabular-nums">
                   {sig.symbol}
                 </div>
                 <div
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
                     buy
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
+                      ? "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30"
+                      : "bg-red-500/20 text-red-400 ring-1 ring-red-500/30"
                   }`}
                 >
                   {buy ? (
@@ -138,13 +138,15 @@ export function LiveSignalFeed() {
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="text-xs text-slate-500">{price}</div>
+                <div className="text-xs text-slate-400 tabular-nums">
+                  {price}
+                </div>
                 {confidencePct && (
-                  <div className="flex items-center gap-1 text-sm font-bold text-green-600">
+                  <div className="flex items-center gap-1 text-sm font-bold text-emerald-400 tabular-nums">
                     {confidencePct}
                   </div>
                 )}
-                <div className="text-[10px] text-slate-400 w-20 text-right">
+                <div className="text-[10px] text-slate-500 w-20 text-right">
                   {age}
                 </div>
               </div>
@@ -153,10 +155,10 @@ export function LiveSignalFeed() {
         })}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
+      <div className="mt-4 pt-3 border-t border-slate-700/50 flex justify-center">
         <Link
-          href={`/${locale}/dashboard/trading`}
-          className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-tight transition-colors"
+          href={`/${locale}/paper-trading`}
+          className="text-[10px] font-bold text-[#0052FF] hover:text-[#3d7aff] uppercase tracking-tight transition-colors"
         >
           Se alle historiske signaler →
         </Link>

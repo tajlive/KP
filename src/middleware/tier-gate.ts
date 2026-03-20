@@ -6,6 +6,7 @@ import {
   getCookieDomain,
   redirectWithCookies,
 } from "./auth-guard";
+import { parseLocalePath } from "./locale-path";
 
 /** Én trading-side: live gated via /paper-trading?mode=live */
 const TIER_GATED_ROUTES: Array<
@@ -41,7 +42,7 @@ export function checkTierAccess(
   tier: string,
   searchParams?: URLSearchParams,
 ): boolean {
-  const strippedPath = pathname.replace(/^\/(no|en|th|zh)/, "") || "/";
+  const { strippedPath } = parseLocalePath(pathname);
   const params = searchParams ?? new URLSearchParams();
   const route = TIER_GATED_ROUTES.find((r) =>
     routeMatches(r, strippedPath, params),
@@ -59,8 +60,7 @@ export async function handleTierGate(
   userId: string,
 ): Promise<NextResponse | null> {
   const { pathname, searchParams } = request.nextUrl;
-  const locale = pathname.split("/")[1] || "no";
-  const strippedPath = pathname.replace(/^\/(no|en|th|zh)/, "") || "/";
+  const { locale, strippedPath } = parseLocalePath(pathname);
 
   const gatedRoute = TIER_GATED_ROUTES.find((r) =>
     routeMatches(r, strippedPath, searchParams),

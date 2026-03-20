@@ -10,7 +10,7 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 ## 2. next-intl / webpack cache (Parsing failed at 'import(t)')
 
 - **Årsak:** `next-intl` sin `extractor/format/index.js` bruker dynamisk `import(t)`. Webpack kan ikke parse det statisk, så «Build dependencies behind this expression are ignored and might cause incorrect cache invalidation» vises.
-- **Fiks:** I `next.config.mjs` er `transpilePackages: ["next-intl"]` satt. I tillegg settes **`config.infrastructureLogging = { level: "error" }`** i production build slik at disse webpack-advarselene ikke fyller build-loggen. Cache oppfører seg fortsatt korrekt; dette er kun loggstøy.
+- **Fiks:** I `next.config.mjs` er `transpilePackages: ["next-intl"]` satt. I tillegg settes **`config.infrastructureLogging = { level: "error" }`** i production build slik at disse webpack-advarselene ikke fyller build-loggen. Ved **Playwright webServer** settes `PLAYWRIGHT_WEBPACK_QUIET=1` slik at samme demping gjelder `npm run dev` under E2E. Cache oppfører seg fortsatt korrekt; dette er kun loggstøy.
 
 ## 3. «Serializing big strings … consider using Buffer»
 
@@ -25,10 +25,10 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 ## 5. npm audit (38 vulnerabilities)
 
 - **Årsak:** Mange sårbarheter sitter i **dev-only**-pakker: `vercel` (CLI), `@lhci/cli`, `lighthouse`, `inquirer`, `tmp`, osv. Noen krever `npm audit fix --force` (breaking).
-- **Fiks:**  
-  - `vercel` er fjernet fra prosjektet; bruk `npx vercel` ved deploy. Dev-only-pakker inngår ikke i produksjonsbundle.  
-  - Kjør `npm audit fix` jevnlig for trygge oppdateringer.  
-  - Unngå `npm audit fix --force` uten plan – det kan brekke build.  
+- **Fiks:**
+  - `vercel` er fjernet fra prosjektet; bruk `npx vercel` ved deploy. Dev-only-pakker inngår ikke i produksjonsbundle.
+  - Kjør `npm audit fix` jevnlig for trygge oppdateringer.
+  - Unngå `npm audit fix --force` uten plan – det kan brekke build.
   - Gjenværende vulns er akseptert som dev-only (dokumentert i `docs/forbedringsforslag-2026.md`).
 
 ## 6. «The Next.js plugin was not detected in your ESLint configuration»
@@ -45,12 +45,12 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 
 ## 6c. npm deprecated (rimraf, plausible-tracker, @vercel/kv, glob, inflight, boolean)
 
-- **Fiks gjort:**  
-  - **plausible-tracker** er fjernet. Plausible lastes nå via offisielt script (`PlausibleScript.tsx`); custom events bruker `window.plausible()` (src/lib/analytics.ts).  
-  - **rimraf:** `overrides` i package.json tvinger rimraf til ^4.0.0 for å fjerne deprecation.  
+- **Fiks gjort:**
+  - **plausible-tracker** er fjernet. Plausible lastes nå via offisielt script (`PlausibleScript.tsx`); custom events bruker `window.plausible()` (src/lib/analytics.ts).
+  - **rimraf:** `overrides` i package.json tvinger rimraf til ^4.0.0 for å fjerne deprecation.
   - **.nvmrc** med `22` for konsistent Node-versjon (samsvar med engines.node 22.x).
-- **Bevisst beholdt inntil videre:**  
-  - **@vercel/kv** er deprecated til fordel for Upstash Redis. Brukes i health, rate-limit og cache. Migrering krever eget oppsett (Vercel Marketplace / Upstash).  
+- **Bevisst beholdt inntil videre:**
+  - **@vercel/kv** er deprecated til fordel for Upstash Redis. Brukes i health, rate-limit og cache. Migrering krever eget oppsett (Vercel Marketplace / Upstash).
   - **glob**, **inflight**, **boolean** kommer som transitive avhengigheter; oppdatering kan gjøres gradvis ved oppgradering av avhengigheter.
 
 ## 7. Tester før produksjon
@@ -84,7 +84,7 @@ I GitHub Actions: se **Actions → workflow run → Build-jobben** for tidsforde
 ### Identifisert tidsbruk
 
 - **next build:** Kompilering, webpack, ESLint (når ikke skippet), statisk generering. Største bidrag.
-- **Type-check:** Kjører ikke under `next build` fordi `typescript.ignoreBuildErrors: true` (beholdt inntil type-gjeld er nedkjempet). I CI kjører vi `npm run type-check` separat.
+- **Type-check:** Kjører under `next build` når `typescript.ignoreBuildErrors: false` (nåværende). I CI kjører vi også `npm run type-check` separat i PR/deploy-flyter.
 - **Lint:** Under `next build` når `SKIP_LINT_IN_BUILD` ikke er satt. I CI som kjører lint før build unngår vi dobbel lint (se under).
 - **E2E:** Kjører i egne jobs etter build; er ikke del av den kritiske build-paden på Vercel.
 
@@ -94,12 +94,12 @@ I GitHub Actions: se **Actions → workflow run → Build-jobben** for tidsforde
    I `next.config.mjs` er `eslint.ignoreDuringBuilds` satt til `process.env.SKIP_LINT_IN_BUILD === "true"`.  
    I GitHub Actions (manual-deploy, pr-check, test) settes `SKIP_LINT_IN_BUILD=true` før `npm run build`. Lint kjører én gang (eksplisitt lint-steg); build skipper da ESLint og sparer tid. På **Vercel** settes ikke denne variabelen, så lint kjører som før under `next build`.
 
-2. **Next.js / webpack cache**  
-   - I `next.config.mjs`: `config.cache = { type: 'filesystem', compression: 'gzip' }` er satt. Vercel cacher automatisk `.next/cache` mellom deploys.  
+2. **Next.js / webpack cache**
+   - I `next.config.mjs`: `config.cache = { type: 'filesystem', compression: 'gzip' }` er satt. Vercel cacher automatisk `.next/cache` mellom deploys.
    - I GitHub Actions er **actions/cache@v4** lagt inn for `.next/cache` med nøkkel basert på `package-lock.json` og kildefiler, slik at gjenbygg blir raskere.
 
 3. **Type-check under build**  
-   `typescript.ignoreBuildErrors` er fortsatt `true` (dokumentert i config). Ingen ekstra type-check under `next build`; type-check skjer kun der vi eksplisitt kjører `npm run type-check` (f.eks. i PR-check).
+   `typescript.ignoreBuildErrors` er `false` — `next build` feiler på TypeScript-feil. PR-check kjører fortsatt `npm run type-check` eksplisitt.
 
 4. **Vercel build- og install-kommandoer**  
    `vercel.json`: `buildCommand: "next build"`, `installCommand: "npm install"`. Vi bruker ikke `npm run build` på Vercel (da ville prebuild/validate-i18n kjørt), så kun install + next build. Ingen endring i kommandoer; eksisterende oppsett er beholdt.

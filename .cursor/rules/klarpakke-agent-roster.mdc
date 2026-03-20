@@ -1,0 +1,24 @@
+---
+description: Klarpakke AI-agent roster — UX/UI/UA, modernisering, automatisering
+globs:
+alwaysApply: false
+---
+
+# Klarpakke — agenter for optimalisering
+
+Ved oppgaver som gjelder **design**, **tilgjengelighet**, **brukerflyt**, **modernisering** eller **full automatisering**:
+
+1. Les **`docs/agents/KLARPAKKE-ROSTER.md`** (hurtigvalg).
+2. Full oversikt + forslag til nye roller: **`.agent/KLARPAKKE-AGENT-ROSTER.md`**.
+3. Kombinert flyt: **`.agent/workflows/klarpakke-experience-modernization.md`**.
+
+**Klarpakke-spesifikke agenter** (under `.agent/agents/`):
+
+- `klarpakke-experience-architect.md` — UX + UI + IA + flyter
+- `klarpakke-accessibility-lead.md` — WCAG / UA
+- `klarpakke-modernization-lead.md` — stack / gjeld
+- `klarpakke-automation-orchestrator.md` — CI, MCP, Linear, verify
+
+**Design:** `ux-saas-lead.md`, `ui-ux-designer.md` (Klarpakke tokens), `.cursor/rules/design-ux-premium.md`, `src/lib/design/tokens.ts`.
+
+**Automatisering:** `docs/CURSOR-AUTOMATION-PROMPT.md`, `docs/CRON-SOURCE-OF-TRUTH.md`, `automation-expert.md`.

@@ -11,6 +11,7 @@ import {
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/utils";
+import { CONFIG_ERROR_MSG } from "@/lib/supabase/client";
 import { Session, User, AuthError } from "@supabase/supabase-js";
 import {
   clearAllSupabaseStorage,
@@ -48,6 +49,22 @@ function getSupabaseClient() {
 const MAX_REFRESH_ATTEMPTS = 3;
 const BACKOFF_DELAYS = [5000, 15000, 60000]; // 5s, 15s, 60s
 
+/** Sjekk synkront om Supabase-env er satt — unngår at barn kaller createClient() før vi har fanget feil */
+function checkSupabaseEnv(): boolean {
+  if (typeof window === "undefined") return true; // Server: bruk server-klient
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  return !!(
+    url &&
+    key &&
+    typeof url === "string" &&
+    typeof key === "string" &&
+    url.length >= 10 &&
+    !url.includes("your-project") &&
+    !key.includes("your_")
+  );
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   // KRITISK: Rydd korrupte sb-*-nøkler FØR Supabase-klient opprettes (forhindrer "Invalid UTF-8 sequence")
   clearCorruptSupabaseKeysSync();
@@ -56,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [configError, setConfigError] = useState<string | null>(null);
 
   // Refs for managing refresh state without triggering re-renders
   const refreshAttempts = useRef(0);
@@ -193,7 +211,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
-    const supabase = getSupabaseClient();
+    let supabase: ReturnType<typeof createClient>;
+    try {
+      supabase = getSupabaseClient();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const isConfigError =
+        msg === CONFIG_ERROR_MSG ||
+        msg.includes("URL and API key") ||
+        msg.includes("required to create a Supabase client");
+      if (isConfigError) {
+        setConfigError(CONFIG_ERROR_MSG);
+        setLoading(false);
+        return;
+      }
+      throw err;
+    }
 
     // Check existing session on mount with corrupt token handling
     const initAuth = async () => {
@@ -331,6 +364,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     refreshSession,
   };
+
+  if (configError || !checkSupabaseEnv()) {
+    return (
+      <div
+        role="alert"
+        className="flex min-h-[200px] flex-col items-center justify-center gap-4 bg-zinc-950 p-6 text-center text-zinc-300"
+      >
+        <h2 className="text-lg font-semibold text-zinc-100">
+          Konfigurasjonsfeil
+        </h2>
+        <p className="max-w-md text-sm">{configError ?? CONFIG_ERROR_MSG}</p>
+        <p className="text-xs text-zinc-500">
+          Lokalt: sjekk .env.local. Vercel: Project Settings → Environment
+          Variables. Variablene må være tilgjengelige ved byggetid.
+        </p>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

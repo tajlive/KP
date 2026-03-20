@@ -4,6 +4,12 @@ import { createServerClient } from "@supabase/ssr";
 import { routing } from "./i18n/routing";
 import { handleOnboarding } from "./middleware/onboarding";
 import { handleTierGate } from "./middleware/tier-gate";
+import { redirectWithCookies } from "./middleware/auth-guard";
+import {
+  isGuestAuthRoute,
+  parseLocalePath,
+  sanitizePostAuthRedirect,
+} from "./middleware/locale-path";
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -39,8 +45,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
-  const locale = pathname.split("/")[1] || "no";
-  const strippedPath = pathname.replace(/^\/(no|en|th|zh)/, "") || "/";
+  const { locale, strippedPath } = parseLocalePath(pathname);
 
   // Beta fjernes: omdiriger alle /beta-henvisninger til ordinær flyt
   if (strippedPath === "/beta" || strippedPath.startsWith("/beta/")) {
@@ -74,25 +79,39 @@ export async function middleware(request: NextRequest) {
   }
 
   // 2. Supabase session refresh (writes updated cookies to response)
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookieEncoding: "raw",
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value);
-            response.cookies.set(name, value, options);
-          });
-        },
+  // Guard: Edge Runtime may not have access to env vars in some contexts (fresh dev start, CI)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn(
+      "[middleware] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY missing — skipping session refresh. Check .env.local and Vercel env vars.",
+    );
+    return response;
+  }
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookieEncoding: "raw",
+    cookies: {
+      getAll: () => request.cookies.getAll(),
+      setAll: (cookiesToSet) => {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          request.cookies.set(name, value);
+          response.cookies.set(name, value, options);
+        });
       },
     },
-  );
+  });
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Innloggede skal ikke se logg inn / registrer (unntak: admin-login e.l.)
+  if (user && isGuestAuthRoute(strippedPath)) {
+    const nextParam = request.nextUrl.searchParams.get("next");
+    const target = sanitizePostAuthRedirect(nextParam, locale);
+    const dest = new URL(target, request.url);
+    return redirectWithCookies(dest, request, response);
+  }
 
   // 3. Auth-guard
   const isProtected = PROTECTED_PATHS.some((p) => strippedPath.startsWith(p));

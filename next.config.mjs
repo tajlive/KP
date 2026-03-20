@@ -7,6 +7,13 @@ const withNextIntl = createNextIntlPlugin({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Explicitly pass Supabase env to client (NEXT_PUBLIC_* inlined at build time).
+  // Helps when .env loading order or Edge/build context differs.
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  },
+
   // distDir removed to let Vercel handle output correctly
   // output removed - use default for Vercel App Router
 
@@ -31,9 +38,7 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.SKIP_LINT_IN_BUILD === "true",
   },
   typescript: {
-    // TODO 2026: Fjern ignoreBuildErrors når type-gjelden er nedkjempet (Supabase-typer + as unknown).
-    // Se docs/forbedringsforslag-2026.md og LAUNCH_TYPE_DEBT.md.
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   // Production optimizations
@@ -161,7 +166,11 @@ const nextConfig = {
     // Reduce Vercel build log noise: next-intl extractor uses dynamic import(t)
     // which webpack cannot statically parse (cache invalidation warning).
     // Serializing big strings warning is from webpack cache; we use gzip.
-    if (process.env.NODE_ENV === "production" && !dev) {
+    // Prod build + lokal dev under Playwright (PLAYWRIGHT_WEBPACK_QUIET=1 fra playwright.config)
+    if (
+      (process.env.NODE_ENV === "production" && !dev) ||
+      (dev && process.env.PLAYWRIGHT_WEBPACK_QUIET === "1")
+    ) {
       config.infrastructureLogging = { level: "error" };
     }
 

@@ -14,35 +14,63 @@
  * import { getSupabaseClient } from '@/lib/supabase/client'
  * const supabase = getSupabaseClient()
  */
-import { createBrowserClient } from '@supabase/ssr'
-import type { Database } from '../../types/supabase-generated'
+import { createBrowserClient } from "@supabase/ssr";
+import type { Database } from "../../types/supabase-generated";
 
-type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>
+type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>;
 
 // Module-level singleton — survives HMR and React re-renders
-let _client: SupabaseClient | null = null
+let _client: SupabaseClient | null = null;
+
+/** Message thrown when Supabase env vars are missing. Check with: err.message.startsWith('Supabase er ikke konfigurert') */
+export const CONFIG_ERROR_MSG =
+  "Supabase er ikke konfigurert. Sjekk at NEXT_PUBLIC_SUPABASE_URL og NEXT_PUBLIC_SUPABASE_ANON_KEY er satt: Lokalt i .env.local eller .env; på Vercel i Project Settings → Environment Variables. Variablene må være tilgjengelige ved byggetid (NEXT_PUBLIC_* inlines i klienten).";
 
 /**
  * Get the singleton Supabase browser client.
  * Creates the client on first call, returns cached instance thereafter.
  */
 export function getSupabaseClient(): SupabaseClient {
-  if (_client) return _client
+  if (_client) return _client;
 
-  _client = createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookieEncoding: 'raw',
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const isPlaceholder =
+    !url ||
+    !key ||
+    typeof url !== "string" ||
+    typeof key !== "string" ||
+    url.length < 10 ||
+    url.includes("your-project") ||
+    key.includes("your_") ||
+    key === "placeholder";
+  if (isPlaceholder) {
+    throw new Error(CONFIG_ERROR_MSG);
+  }
+
+  try {
+    _client = createBrowserClient<Database>(url, key, {
+      cookieEncoding: "raw",
       global: {
         headers: {
-          'x-client-info': 'klarpakke/1.0',
+          "x-client-info": "klarpakke/1.0",
         },
       },
+    });
+  } catch (err) {
+    // @supabase/ssr throws when url/key invalid; convert to our config error
+    if (
+      err instanceof Error &&
+      /required.*create a Supabase client|URL and API key are required/i.test(
+        err.message,
+      )
+    ) {
+      throw new Error(CONFIG_ERROR_MSG);
     }
-  )
+    throw err;
+  }
 
-  return _client
+  return _client;
 }
 
 /**
@@ -50,12 +78,12 @@ export function getSupabaseClient(): SupabaseClient {
  * @deprecated Use getSupabaseClient() instead for clarity.
  */
 export function createClient(): SupabaseClient {
-  return getSupabaseClient()
+  return getSupabaseClient();
 }
 
 // Type-safe helpers
 export type Tables<T extends keyof Database["public"]["Tables"]> =
-  Database["public"]["Tables"][T]["Row"]
+  Database["public"]["Tables"][T]["Row"];
 
 export type Enums<T extends keyof Database["public"]["Enums"]> =
-  Database["public"]["Enums"][T]
+  Database["public"]["Enums"][T];
