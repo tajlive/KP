@@ -41,6 +41,10 @@
     "switchedToLive": "Byttet til live-handel"
   },
   "welcomeBack": "Velkommen tilbake 👋",
+  "homeOverview": {
+    "title": "Hjem — porteføljeoversikt",
+    "subtitle": "Saldo, live priser, markedsdesk med signaler og siste handler. For grafer og ordre: øvingshandel."
+  },
   "loading": "Laster dashboard...",
   "klt": {
     "title": "Klarpakke Token (KLT)",
@@ -224,6 +228,8 @@
     "profile": "Profil"
   },
   "sidebar": {
+    "language": "Språk",
+    "displayCurrency": "Visningsvaluta",
     "overview": "Oversikt",
     "portfolio": "Portefølje",
     "trading": "Handel",

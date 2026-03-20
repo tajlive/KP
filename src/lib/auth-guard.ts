@@ -1,4 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server";
+import { localizedPathname } from "@/middleware/locale-path";
 import { redirect } from "next/navigation";
 
 export async function requireAuth(locale: string = "no", nextPath?: string) {
@@ -9,7 +10,8 @@ export async function requireAuth(locale: string = "no", nextPath?: string) {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    const loginUrl = `/${locale}/innlogging${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`;
+    const base = localizedPathname(locale, "/innlogging");
+    const loginUrl = `${base}${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`;
     redirect(loginUrl);
   }
 
@@ -23,7 +25,7 @@ export async function requireGuest(locale: string = "no") {
   } = await supabase.auth.getUser();
 
   if (user) {
-    redirect(`/${locale}/dashboard`);
+    redirect(localizedPathname(locale, "/dashboard"));
   }
 
   return { supabase };

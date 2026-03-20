@@ -34,6 +34,10 @@
     }
   },
   "welcomeBack": "ยินดีต้อนรับกลับ! นี่คือสถานะเรียลไทม์ของคุณ",
+  "homeOverview": {
+    "title": "หน้าแรก — ภาพรวมพอร์ต",
+    "subtitle": "ยอดเงิน ราคาสด โต๊ะทำงานตลาดพร้อมสัญญาณและเทรดล่าสุด สำหรับกราฟและคำสั่ง: เทรดจำลอง"
+  },
   "loading": "กำลังโหลดแดชบอร์ด...",
   "overview": "ภาพรวม",
   "portfolio": "พอร์ตโฟลิโอ",
@@ -254,6 +258,8 @@
     "profile": "โปรไฟล์"
   },
   "sidebar": {
+    "language": "Language",
+    "displayCurrency": "Display currency",
     "overview": "ภาพรวม",
     "portfolio": "พอร์ตโฟลิโอ",
     "trading": "เทรด",

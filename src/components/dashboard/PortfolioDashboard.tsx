@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -19,11 +20,56 @@ import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
 import { createClient } from "@/lib/supabase/client";
 import ReverseTrial from "./ReverseTrial";
-import { SocialProof } from "./SocialProof";
 import { StreakBadge } from "./StreakBadge";
-import FirstTradeCard from "./FirstTradeCard";
 import { winRateFromRealizedTrades } from "@/lib/trading/win-rate-from-trades";
-import { DashboardSignalPreview } from "./DashboardSignalPreview";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
+
+/** Code-split: PremiumSignalRow + framer-motion + signal-fetch */
+function MarketDeskSignalSkeleton() {
+  return (
+    <div
+      className="min-h-[120px] rounded-xl animate-pulse bg-slate-800/40 border border-slate-700/40"
+      aria-hidden
+    />
+  );
+}
+
+const DashboardSignalPreview = dynamic(
+  () =>
+    import("@/components/dashboard/DashboardSignalPreview").then((m) => ({
+      default: m.DashboardSignalPreview,
+    })),
+  { loading: () => <MarketDeskSignalSkeleton /> },
+);
+
+function SocialProofRowSkeleton() {
+  return (
+    <div
+      className="h-[52px] w-full rounded-xl animate-pulse bg-white border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+      aria-hidden
+    />
+  );
+}
+
+const SocialProof = dynamic(
+  () =>
+    import("@/components/dashboard/SocialProof").then((m) => ({
+      default: m.SocialProof,
+    })),
+  { loading: () => <SocialProofRowSkeleton /> },
+);
+
+const FirstTradeCard = dynamic(
+  () => import("@/components/dashboard/FirstTradeCard"),
+  {
+    loading: () => (
+      <div
+        className="h-24 w-full rounded-xl animate-pulse bg-[#F1F3F9] border border-[#E2E5EC]"
+        aria-hidden
+      />
+    ),
+  },
+);
 
 const DASHBOARD_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
 
@@ -252,6 +298,18 @@ export default function PortfolioDashboard({
         hasTrades={trades.length > 0}
       />
 
+      <div
+        className="rounded-xl border border-[#E2E5EC] dark:border-slate-700/80 bg-[#F8FAFF] dark:bg-slate-900/40 px-4 py-3"
+        data-testid="dashboard-home-overview"
+      >
+        <p className="text-sm font-semibold text-[#1A1D26] dark:text-slate-100">
+          {t("homeOverview.title")}
+        </p>
+        <p className="text-xs text-[#5E6478] dark:text-slate-400 mt-1">
+          {t("homeOverview.subtitle")}
+        </p>
+      </div>
+
       {/* Widget 1: Portfolio Card — her ser du hvordan det går med lekepengene */}
       <div
         className={`${BRAND.gradient} rounded-2xl p-6 text-white shadow-[0_8px_32px_rgba(0,82,255,0.15)] animate-fade-in-up stagger-1`}
@@ -420,7 +478,7 @@ export default function PortfolioDashboard({
       {/* CTA: Se full oversikt med grafer og signaler (for brukere med aktivitet) */}
       {(trades.length > 0 || activeSession) && (
         <Link
-          href={`/${locale}/paper-trading`}
+          href={hrefWithLocale(locale, "/paper-trading")}
           className={`flex items-center justify-between ${cardBase} group animate-fade-in-up stagger-2 border-2 border-[#0052FF]/20 hover:border-[#0052FF]/40`}
         >
           <div className="flex items-center gap-3">
@@ -466,7 +524,7 @@ export default function PortfolioDashboard({
                   {t("marketDesk.myPositions")}
                 </h3>
                 <Link
-                  href={`/${locale}/handelshistorikk`}
+                  href={hrefWithLocale(locale, "/handelshistorikk")}
                   className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
                 >
                   {t("marketDesk.seeAll")}
@@ -540,7 +598,7 @@ export default function PortfolioDashboard({
                   )}
                 </div>
                 <Link
-                  href={`/${locale}/handelshistorikk`}
+                  href={hrefWithLocale(locale, "/handelshistorikk")}
                   className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
                 >
                   {t("marketDesk.seeAll")}
@@ -643,7 +701,10 @@ export default function PortfolioDashboard({
       {/* Widget 6 + 7: Lesson & Leaderboard (2-col on desktop) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up stagger-5">
         {/* Widget 6: Next Lesson */}
-        <Link href={`/${locale}/kurs`} className={`${cardBase} block group`}>
+        <Link
+          href={hrefWithLocale(locale, "/kurs")}
+          className={`${cardBase} block group`}
+        >
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center flex-shrink-0">
               <BookOpen className="w-5 h-5 text-[#0052FF]" />
@@ -739,13 +800,16 @@ export default function PortfolioDashboard({
               </div>
               <div className="flex flex-col gap-1">
                 <Link
-                  href={`/${locale}/paper-trading`}
+                  href={hrefWithLocale(locale, "/paper-trading")}
                   className={`text-xs font-medium ${BRAND.link}`}
                 >
                   {no ? "Grafer & signaler" : "Charts & signals"}
                 </Link>
                 <Link
-                  href={`/${locale}/dashboard/bot/${activeSession.id}`}
+                  href={hrefWithLocale(
+                    locale,
+                    `/dashboard/bot/${activeSession.id}`,
+                  )}
                   className={`text-xs font-medium text-[#5E6478] hover:text-[#0052FF]`}
                 >
                   {no ? "Bot-detaljer" : "Bot details"}
@@ -756,7 +820,7 @@ export default function PortfolioDashboard({
         </div>
       ) : (
         <Link
-          href={`/${locale}/dashboard/bot/new`}
+          href={hrefWithLocale(locale, "/dashboard/bot/new")}
           className="block rounded-xl border-2 border-dashed border-[#E2E5EC] p-5 text-center hover:border-[#0052FF]/40 hover:bg-[#0052FF]/[0.02] transition-all group animate-fade-in-up stagger-6"
         >
           <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center mx-auto">

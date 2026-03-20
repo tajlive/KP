@@ -1,5 +1,6 @@
 "use client";
 
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { Menu, X } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
@@ -10,7 +11,7 @@ export function MobileMenu() {
   const locale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
 
-  const l = (path: string) => `/${locale}${path === "/" ? "" : path}`;
+  const l = (path: string) => hrefWithLocale(locale, path === "/" ? "/" : path);
 
   const menuItems = [
     { href: l("/signup"), label: t("signup") },
@@ -24,7 +25,7 @@ export function MobileMenu() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-4 right-4 z-50 p-3 bg-black/80 backdrop-blur-sm rounded-full border border-white/10"
-        aria-label={isOpen ? t('closeMenu') : t('openMenu')}
+        aria-label={isOpen ? t("closeMenu") : t("openMenu")}
       >
         {isOpen ? (
           <X className="w-6 h-6 text-white" />

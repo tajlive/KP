@@ -47,11 +47,11 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 
 - **Fiks gjort:**
   - **plausible-tracker** er fjernet. Plausible lastes nå via offisielt script (`PlausibleScript.tsx`); custom events bruker `window.plausible()` (src/lib/analytics.ts).
-  - **rimraf:** `overrides` i package.json tvinger rimraf til ^4.0.0 for å fjerne deprecation.
+  - **rimraf + glob:** `overrides` tvinger **rimraf ^5** og **glob ^13** under bl.a. Lighthouse CLI-kjeden (unngår deprecated glob 9/10).
+  - **global-agent:** `overrides` til **^4.1.3** for å unngå transitive **boolean** (snyk).
+  - **@vercel/kv** erstattet av **@upstash/redis** (`src/lib/redis-client.ts`); env: `UPSTASH_REDIS_REST_*` med fallback til legacy `KV_REST_*`.
   - **.nvmrc** med `24` for konsistent Node-versjon (samsvar med engines.node 24.x).
-- **Bevisst beholdt inntil videre:**
-  - **@vercel/kv** er deprecated til fordel for Upstash Redis. Brukes i health, rate-limit og cache. Migrering krever eget oppsett (Vercel Marketplace / Upstash).
-  - **glob**, **inflight**, **boolean** kommer som transitive avhengigheter; oppdatering kan gjøres gradvis ved oppgradering av avhengigheter.
+- **inflight** kan fortsatt finnes transitivt hos eldre pakker — sjekk med `npm ls inflight` ved behov.
 
 ## 7. Tester før produksjon
 

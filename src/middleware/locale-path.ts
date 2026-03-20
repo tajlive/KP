@@ -5,6 +5,21 @@
 
 const LOCALE_RE = /^(no|en|th|zh)$/;
 
+/**
+ * Path for redirects with next-intl `localePrefix: 'as-needed'`: default locale (no)
+ * has no `/no` prefix; other locales use `/{locale}/...`.
+ */
+export function localizedPathname(
+  locale: string,
+  strippedPath: string,
+): string {
+  const path = strippedPath.startsWith("/") ? strippedPath : `/${strippedPath}`;
+  if (locale === "no") {
+    return path;
+  }
+  return `/${locale}${path}`;
+}
+
 export function parseLocalePath(pathname: string): {
   locale: string;
   strippedPath: string;
@@ -29,7 +44,7 @@ export function sanitizePostAuthRedirect(
   rawNext: string | null,
   locale: string,
 ): string {
-  const fallback = `/${locale}/dashboard`;
+  const fallback = localizedPathname(locale, "/dashboard");
   if (rawNext == null || rawNext.trim() === "") return fallback;
 
   let pathPart = rawNext.trim();

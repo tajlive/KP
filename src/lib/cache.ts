@@ -1,4 +1,4 @@
-import { kv } from "@vercel/kv";
+import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
 
 /**
  * Cache Provider Interface
@@ -11,7 +11,7 @@ interface CacheProvider {
 }
 
 /**
- * In-memory cache for development or when KV is not available
+ * In-memory cache for development or when Redis is not available
  */
 class MemoryCache implements CacheProvider {
   private cache: Map<string, { data: unknown; expires: number }> = new Map();
@@ -50,16 +50,18 @@ class MemoryCache implements CacheProvider {
 }
 
 /**
- * Vercel KV (Redis) implementation for global production caching
+ * Upstash Redis (REST) for global production caching
  */
-class VercelKVCache implements CacheProvider {
+class UpstashRedisCache implements CacheProvider {
   private readonly DEFAULT_TTL_SEC = 60;
 
   async get<T>(key: string): Promise<T | null> {
+    const redis = getRedisRest();
+    if (!redis) return null;
     try {
-      return await kv.get<T>(key);
+      return await redis.get<T>(key);
     } catch (error) {
-      console.error("KV Cache Get Error:", error);
+      console.error("Redis cache get error:", error);
       return null;
     }
   }
@@ -69,36 +71,40 @@ class VercelKVCache implements CacheProvider {
     data: T,
     ttlMs: number = this.DEFAULT_TTL_SEC * 1000,
   ): Promise<void> {
+    const redis = getRedisRest();
+    if (!redis) return;
     try {
-      await kv.set(key, data, { ex: Math.ceil(ttlMs / 1000) });
+      await redis.set(key, data, {
+        ex: Math.ceil(ttlMs / 1000),
+      });
     } catch (error) {
-      console.error("KV Cache Set Error:", error);
+      console.error("Redis cache set error:", error);
     }
   }
 
   async delete(key: string): Promise<void> {
+    const redis = getRedisRest();
+    if (!redis) return;
     try {
-      await kv.del(key);
+      await redis.del(key);
     } catch (error) {
-      console.error("KV Cache Delete Error:", error);
+      console.error("Redis cache delete error:", error);
     }
   }
 
   async clear(): Promise<void> {
-    // Dangerous in production Redis, but available for testing
+    const redis = getRedisRest();
+    if (!redis) return;
     try {
-      await kv.flushall();
+      await redis.flushall();
     } catch (error) {
-      console.error("KV Cache Clear Error:", error);
+      console.error("Redis cache clear error:", error);
     }
   }
 }
 
-// Singleton instance with auto-selection
-const isKVEnabled =
-  process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN;
-export const cache: CacheProvider = isKVEnabled
-  ? new VercelKVCache()
+export const cache: CacheProvider = isRedisRestConfigured()
+  ? new UpstashRedisCache()
   : new MemoryCache();
 
 // Predefined cache TTLs (in milliseconds)

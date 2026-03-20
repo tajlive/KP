@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { kv } from "@vercel/kv";
+import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -29,8 +29,11 @@ async function checkDatabase(): Promise<CheckResult> {
   const start = Date.now();
   try {
     const supabase = createClient();
-    const { error } = await supabase.from("user_profiles").select("id").limit(1);
-    
+    const { error } = await supabase
+      .from("user_profiles")
+      .select("id")
+      .limit(1);
+
     if (error) {
       return {
         status: "error",
@@ -38,7 +41,7 @@ async function checkDatabase(): Promise<CheckResult> {
         message: error.message,
       };
     }
-    
+
     return {
       status: "ok",
       latency: Date.now() - start,
@@ -54,24 +57,31 @@ async function checkDatabase(): Promise<CheckResult> {
 
 async function checkKV(): Promise<CheckResult> {
   const start = Date.now();
-  
-  // Check if KV is configured
-  const isKVEnabled =
-    process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN;
-    
-  if (!isKVEnabled) {
+
+  if (!isRedisRestConfigured()) {
     return {
       status: "warning",
-      message: "KV not configured (optional)",
+      message:
+        "Redis REST not configured (optional; UPSTASH_REDIS_REST_* or KV_REST_*)",
     };
   }
-  
-  try {
-    await kv.set("health:check", Date.now(), { ex: 60 });
-    const value = await kv.get("health:check");
-    
+
+  const redis = getRedisRest();
+  if (!redis) {
     return {
-      status: value ? "ok" : "error",
+      status: "warning",
+      message: "Redis REST client unavailable",
+    };
+  }
+
+  try {
+    const probe = Date.now();
+    await redis.set("health:check", probe, { ex: 60 });
+    const value = await redis.get<number>("health:check");
+
+    const ok = value != null && Number(value) === probe;
+    return {
+      status: ok ? "ok" : "error",
       latency: Date.now() - start,
     };
   } catch (err) {
@@ -89,16 +99,16 @@ function checkEnvironment(): CheckResult {
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
   ];
-  
+
   const missing = requiredVars.filter((v) => !process.env[v]);
-  
+
   if (missing.length > 0) {
     return {
       status: "error",
       message: `Missing env vars: ${missing.join(", ")}`,
     };
   }
-  
+
   return { status: "ok" };
 }
 
@@ -108,13 +118,13 @@ export async function GET() {
     kv: await checkKV(),
     environment: checkEnvironment(),
   };
-  
+
   // Determine overall status
   const hasError = Object.values(checks).some((c) => c.status === "error");
   const hasWarning = Object.values(checks).some((c) => c.status === "warning");
-  
+
   const status = hasError ? "unhealthy" : hasWarning ? "degraded" : "healthy";
-  
+
   const health: HealthCheck = {
     status,
     timestamp: new Date().toISOString(),
@@ -122,9 +132,9 @@ export async function GET() {
     checks,
     uptime: Math.floor((Date.now() - startTime) / 1000),
   };
-  
+
   const statusCode = status === "unhealthy" ? 503 : 200;
-  
+
   return NextResponse.json(health, {
     status: statusCode,
     headers: {

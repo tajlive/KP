@@ -1,35 +1,44 @@
 "use client";
 
+import { useId } from "react";
 import { CURRENCIES, CURRENCY_LABELS, type Currency } from "@/lib/currency";
 import { useCurrency } from "@/hooks/useCurrency";
-import { motion } from "framer-motion";
+import { SlidingSegmentedControl } from "@/components/ui/SlidingSegmentedControl";
+import { cn } from "@/lib/utils";
 
-export function CurrencySwitcher() {
+interface CurrencySwitcherProps {
+  variant?: "light" | "dark";
+  /** Unik på sider med flere valutakontroller */
+  layoutId?: string;
+  className?: string;
+  "aria-label"?: string;
+}
+
+export function CurrencySwitcher({
+  variant = "dark",
+  layoutId,
+  className,
+  "aria-label": ariaLabel,
+}: CurrencySwitcherProps) {
   const { currency, setCurrency } = useCurrency();
+  const reactId = useId();
+  const resolvedLayoutId =
+    layoutId ?? `currency-segment-${reactId.replace(/:/g, "")}`;
+
+  const options = CURRENCIES.map((c: Currency) => ({
+    value: c,
+    label: CURRENCY_LABELS[c],
+  }));
 
   return (
-    <div className="flex h-8 items-center rounded-full bg-slate-800 p-0.5 text-xs font-medium">
-      {CURRENCIES.map((c: Currency) => (
-        <button
-          key={c}
-          onClick={() => setCurrency(c)}
-          className="relative z-10 h-7 rounded-full px-3 transition-colors"
-          aria-pressed={currency === c}
-        >
-          {currency === c && (
-            <motion.span
-              layoutId="currency-pill"
-              className="absolute inset-0 rounded-full bg-blue-600"
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
-          )}
-          <span
-            className={`relative z-10 ${currency === c ? "text-white" : "text-slate-400 hover:text-slate-200"}`}
-          >
-            {CURRENCY_LABELS[c]}
-          </span>
-        </button>
-      ))}
-    </div>
+    <SlidingSegmentedControl
+      options={options}
+      value={currency}
+      onChange={setCurrency}
+      layoutId={resolvedLayoutId}
+      variant={variant}
+      className={cn(variant === "dark" && "h-8 min-h-8", className)}
+      aria-label={ariaLabel ?? "Display currency"}
+    />
   );
 }

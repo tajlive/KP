@@ -9,6 +9,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { MARKET_DESK } from "@/lib/design/market-desk";
 import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { getFallbackTradingSignals } from "@/lib/trading/fallback-signals";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 interface TradingSignal {
   id: string;
@@ -48,7 +49,18 @@ export function DashboardSignalPreview({
     let mounted = true;
     const supabase = getSupabaseClient();
 
+    const mapFallback = (): TradingSignal[] =>
+      getFallbackTradingSignals(3).map((s) => ({
+        id: s.id,
+        symbol: s.symbol,
+        action: s.action,
+        confidence: s.confidence,
+        entry_price: s.entry_price,
+        created_at: s.created_at,
+      }));
+
     const fetchSignals = async () => {
+      let nextSignals: TradingSignal[] = [];
       try {
         const { data, error } = await supabase
           .from("trading_signals")
@@ -56,35 +68,18 @@ export function DashboardSignalPreview({
           .order("created_at", { ascending: false })
           .limit(3);
 
-        if (!mounted) return;
-
         if (error || !data || data.length === 0) {
-          const fb = getFallbackTradingSignals(3).map((s) => ({
-            id: s.id,
-            symbol: s.symbol,
-            action: s.action,
-            confidence: s.confidence,
-            entry_price: s.entry_price,
-            created_at: s.created_at,
-          }));
-          setSignals(fb);
+          nextSignals = mapFallback();
         } else {
-          setSignals((data as TradingSignal[]) ?? []);
+          nextSignals = (data as TradingSignal[]) ?? [];
         }
       } catch {
-        if (mounted) {
-          const fb = getFallbackTradingSignals(3).map((s) => ({
-            id: s.id,
-            symbol: s.symbol,
-            action: s.action,
-            confidence: s.confidence,
-            entry_price: s.entry_price,
-            created_at: s.created_at,
-          }));
-          setSignals(fb);
-        }
+        nextSignals = mapFallback();
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setSignals(nextSignals);
+          setLoading(false);
+        }
       }
     };
 
@@ -185,7 +180,7 @@ export function DashboardSignalPreview({
           </span>
         </div>
         <Link
-          href={`/${locale}/paper-trading`}
+          href={hrefWithLocale(locale, "/paper-trading")}
           className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
         >
           {t("signalPreview.seeAll")}
@@ -197,7 +192,7 @@ export function DashboardSignalPreview({
           {t("signalPreview.empty")}
         </p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2" data-testid="dashboard-signal-preview-rows">
           {signals.map((s, i) => (
             <PremiumSignalRow
               key={s.id}

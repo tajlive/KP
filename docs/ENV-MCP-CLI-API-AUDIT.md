@@ -39,11 +39,11 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 
 ### Vercel / KV / Cache
 
-| Variabel                               | Bruk                                      |
-| -------------------------------------- | ----------------------------------------- |
-| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | @vercel/kv (cache.ts, rate-limit, health) |
-| `VERCEL`, `NEXT_PUBLIC_VERCEL_URL`     | Layout Analytics, getAppUrl fallback      |
-| `VERCEL_GIT_COMMIT_SHA`                | /api/health version                       |
+| Variabel                                                                                                   | Bruk                                          |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (eller legacy `KV_REST_API_URL`, `KV_REST_API_TOKEN`) | @upstash/redis (cache.ts, rate-limit, health) |
+| `VERCEL`, `NEXT_PUBLIC_VERCEL_URL`                                                                         | Layout Analytics, getAppUrl fallback          |
+| `VERCEL_GIT_COMMIT_SHA`                                                                                    | /api/health version                           |
 
 ### App-URL og Sentry
 

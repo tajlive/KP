@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/utils";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -39,9 +40,8 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
       !(pathname ?? "/").includes("/auth/callback")
     ) {
       const locale = (pathname ?? "/").startsWith("/en") ? "en" : "no";
-      router.push(
-        `/${locale}/innlogging?redirectTo=${encodeURIComponent(pathname ?? "/")}`,
-      );
+      const login = hrefWithLocale(locale, "/innlogging");
+      router.push(`${login}?redirectTo=${encodeURIComponent(pathname ?? "/")}`);
     }
   }, [isAuthenticated, pathname, router]);
 

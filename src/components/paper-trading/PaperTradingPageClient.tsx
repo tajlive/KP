@@ -9,6 +9,7 @@ import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboar
 import { SURFACE } from "@/lib/design/tokens";
 import type { TradingMode } from "@/lib/trading-api";
 import { useTranslations } from "next-intl";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 type SessionRow = {
   id: string;
@@ -93,7 +94,7 @@ export function PaperTradingPageClient({
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <Link
-              href={`/${locale}/paper-trading`}
+              href={hrefWithLocale(locale, "/paper-trading")}
               className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium"
               data-testid="back-to-overview"
             >
@@ -101,7 +102,7 @@ export function PaperTradingPageClient({
               {t("backToOverview")}
             </Link>
             <Link
-              href={`/${locale}/dashboard`}
+              href={hrefWithLocale(locale, "/dashboard")}
               className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium"
               data-testid="back-to-dashboard"
             >
@@ -117,7 +118,20 @@ export function PaperTradingPageClient({
           />
         </main>
       ) : (
-        <UnifiedTradingDashboard initialMode={initialMode} />
+        <>
+          <div
+            className="border-b border-slate-200/80 dark:border-slate-800 bg-gradient-to-r from-[#0052FF]/[0.06] to-transparent dark:from-[#0052FF]/10 px-4 py-4"
+            data-testid="paper-trading-workspace-header"
+          >
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
+              {t("workspaceHeader.title")}
+            </p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+              {t("workspaceHeader.subtitle")}
+            </p>
+          </div>
+          <UnifiedTradingDashboard initialMode={initialMode} />
+        </>
       )}
     </div>
   );

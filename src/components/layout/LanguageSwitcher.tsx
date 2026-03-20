@@ -2,69 +2,80 @@
 
 import { usePathname, useRouter } from "@/i18n/routing";
 import { useLocale } from "next-intl";
-import { useTransition } from "react";
+import { useId, useTransition } from "react";
 import { locales, localeLabels, type Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
+import { SlidingSegmentedControl } from "@/components/ui/SlidingSegmentedControl";
 
 interface LanguageSwitcherProps {
-  variant?: "buttons" | "select";
+  /** @deprecated Bruk slide-kontroll; beholdt for bakoverkompatibilitet */
+  variant?: "slide" | "select";
   className?: string;
+  /** Unik layoutId hvis flere instanser på samme view */
+  layoutId?: string;
+  "aria-label"?: string;
 }
 
-export function LanguageSwitcher({ variant = "buttons", className }: LanguageSwitcherProps) {
+export function LanguageSwitcher({
+  variant = "slide",
+  className,
+  layoutId,
+  "aria-label": ariaLabel,
+}: LanguageSwitcherProps) {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const reactId = useId();
+  const resolvedLayoutId =
+    layoutId ?? `lang-segment-${reactId.replace(/:/g, "")}`;
 
   const changeLocale = (newLocale: Locale) => {
     if (newLocale === locale) return;
     startTransition(() => {
       router.replace(pathname, { locale: newLocale });
+      router.refresh();
     });
   };
 
   const visibleLocales = locales.filter((l) => !localeLabels[l].hidden);
 
-  if (variant === "buttons") {
+  if (variant === "select") {
     return (
-      <div className={cn("flex gap-1", className)} role="group" aria-label="Switch language">
+      <select
+        value={locale}
+        onChange={(e) => changeLocale(e.target.value as Locale)}
+        disabled={isPending}
+        className={cn(
+          "w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm px-3 py-2",
+          className,
+        )}
+        aria-label={ariaLabel ?? "Switch language"}
+      >
         {visibleLocales.map((l) => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => changeLocale(l)}
-            disabled={isPending}
-            className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-medium transition-colors",
-              l === locale
-                ? "bg-[#0052FF] text-white"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            )}
-          >
-            {l.toUpperCase()}
-          </button>
+          <option key={l} value={l}>
+            {localeLabels[l].label}
+          </option>
         ))}
-      </div>
+      </select>
     );
   }
 
+  const options = visibleLocales.map((l) => ({
+    value: l,
+    label: l.toUpperCase(),
+  }));
+
   return (
-    <select
+    <SlidingSegmentedControl
+      options={options}
       value={locale}
-      onChange={(e) => changeLocale(e.target.value as Locale)}
+      onChange={changeLocale}
+      layoutId={resolvedLayoutId}
+      variant="light"
       disabled={isPending}
-      className={cn(
-        "rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm px-2 py-1",
-        className
-      )}
-      aria-label="Switch language"
-    >
-      {visibleLocales.map((l) => (
-        <option key={l} value={l}>
-          {localeLabels[l].label}
-        </option>
-      ))}
-    </select>
+      className={className}
+      aria-label={ariaLabel ?? "Switch language"}
+    />
   );
 }

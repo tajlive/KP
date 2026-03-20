@@ -38,7 +38,7 @@ vi.mock("./ReverseTrial", () => ({
   default: () => null,
 }));
 
-vi.mock("./SocialProof", () => ({
+vi.mock("@/components/dashboard/SocialProof", () => ({
   SocialProof: () => null,
 }));
 
@@ -46,11 +46,11 @@ vi.mock("./StreakBadge", () => ({
   StreakBadge: () => null,
 }));
 
-vi.mock("./FirstTradeCard", () => ({
+vi.mock("@/components/dashboard/FirstTradeCard", () => ({
   default: () => null,
 }));
 
-vi.mock("./DashboardSignalPreview", () => ({
+vi.mock("@/components/dashboard/DashboardSignalPreview", () => ({
   DashboardSignalPreview: () => null,
 }));
 

@@ -15,11 +15,13 @@ import {
   User,
   X,
 } from "lucide-react";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { CurrencySwitcher } from "@/components/trading/CurrencySwitcher";
 import { TradingModeToggle } from "@/components/dashboard/TradingModeToggle";
 
 export function DashboardSidebar() {
@@ -55,9 +57,10 @@ export function DashboardSidebar() {
   }, [fetchUserData]);
 
   const isActive = (path: string, exact?: boolean) => {
-    const fullPath = `/${locale}${path}`;
-    if (exact) return pathname === fullPath;
-    return (pathname ?? "/").startsWith(fullPath);
+    const fullPath = hrefWithLocale(locale, path);
+    const p = pathname ?? "/";
+    if (exact) return p === fullPath;
+    return p === fullPath || p.startsWith(`${fullPath}/`);
   };
 
   const links = [
@@ -105,10 +108,10 @@ export function DashboardSidebar() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.refresh();
-    router.push(`/${locale}/innlogging`);
+    router.push(hrefWithLocale(locale, "/innlogging"));
   };
 
-  const l = (path: string) => `/${locale}${path}`;
+  const l = (path: string) => hrefWithLocale(locale, path);
 
   const renderLink = (link: {
     href: string;
@@ -117,7 +120,7 @@ export function DashboardSidebar() {
     exact?: boolean;
     admin?: boolean;
   }) => {
-    const fullPath = `/${locale}${link.href}`;
+    const fullPath = hrefWithLocale(locale, link.href);
     const active = isActive(link.href, link.exact);
 
     return (
@@ -203,11 +206,26 @@ export function DashboardSidebar() {
           >
             {!collapsed && (
               <>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    {locale === "no" ? "Språk" : "Language"}
+                <div className="space-y-2">
+                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wider block">
+                    {t("language")}
                   </span>
-                  <LanguageSwitcher variant="buttons" className="shrink-0" />
+                  <LanguageSwitcher
+                    layoutId="dashboard-sidebar-lang"
+                    className="w-full max-w-[220px]"
+                    aria-label={t("language")}
+                  />
+                </div>
+                <div className="space-y-2 pt-2 border-t border-slate-200">
+                  <span className="text-xs font-medium text-slate-500 uppercase tracking-wider block">
+                    {t("displayCurrency")}
+                  </span>
+                  <CurrencySwitcher
+                    variant="light"
+                    layoutId="dashboard-sidebar-currency"
+                    className="w-full max-w-[260px]"
+                    aria-label={t("displayCurrency")}
+                  />
                 </div>
                 <div className="pt-1 border-t border-slate-200">
                   <span className="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">

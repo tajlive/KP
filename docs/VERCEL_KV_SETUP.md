@@ -1,8 +1,17 @@
-# 🚀 Vercel KV (Redis) Setup Guide
+# 🚀 Redis / cache (Upstash REST) – oppsett
+
+**App-kode:** Klarpakke bruker **`@upstash/redis`** (`src/lib/redis-client.ts`, `cache.ts`, rate-limit, health).  
+Sett **`UPSTASH_REDIS_REST_URL`** og **`UPSTASH_REDIS_REST_TOKEN`** (Vercel → Upstash-integrasjon).  
+Eksisterende **`KV_REST_API_URL`** / **`KV_REST_API_TOKEN`** fungerer fortsatt som fallback (samme REST-mønster etter Vercel KV → Upstash-migrering).
+
+---
+
+# Historikk: Vercel KV (Redis)
 
 ## Hva er Vercel KV?
 
 Vercel KV er en managed Redis-tjeneste som gir:
+
 - ⚡ Lynrask caching (< 1ms)
 - 🌍 Global distribusjon
 - 💰 Gratis nivå: 250MB lagring, 500k kommandoer/mnd
@@ -23,6 +32,7 @@ Vercel KV er en managed Redis-tjeneste som gir:
 ### Steg 2: Koble til prosjektet
 
 Etter opprettelse:
+
 1. Velg **"Connect Project"**
 2. Velg **klarpakke** fra dropdown
 3. Klikk **"Connect"**
@@ -62,23 +72,23 @@ import { cache, CACHE_TTL, withCache } from "@/lib/cache";
 const data = await withCache(
   "my-key",
   () => fetchData(),
-  CACHE_TTL.MARKET_DATA  // 10 sekunder
+  CACHE_TTL.MARKET_DATA, // 10 sekunder
 );
 
 // Manuell cache
-await cache.set("key", data, 60000);  // 1 minutt
+await cache.set("key", data, 60000); // 1 minutt
 const cached = await cache.get("key");
 ```
 
 ## Cache TTL-anbefalinger
 
-| Data type | TTL | Begrunnelse |
-|-----------|-----|-------------|
-| Markedsdata | 10s | Høy volatilitet |
-| Leaderboard | 1min | Ofte oppdatert |
+| Data type    | TTL  | Begrunnelse     |
+| ------------ | ---- | --------------- |
+| Markedsdata  | 10s  | Høy volatilitet |
+| Leaderboard  | 1min | Ofte oppdatert  |
 | Brukerprofil | 5min | Sjeldent endret |
-| Kursinnhold | 1t | Statisk |
-| Statisk data | 24t | Rarer endres |
+| Kursinnhold  | 1t   | Statisk         |
+| Statisk data | 24t  | Rarer endres    |
 
 ## Testing
 
@@ -101,6 +111,7 @@ curl https://www.klarpakke.no/api/demo/cache-example?symbol=BTCUSDT
 ## Overvåkning
 
 I Vercel Dashboard:
+
 1. Gå til **Storage** → **KV Database**
 2. Se **Metrics** for:
    - Kommandoer per sekund
@@ -109,22 +120,25 @@ I Vercel Dashboard:
 
 ## Kostnader
 
-| Nivå | Lagring | Kommandoer | Pris |
-|------|---------|------------|------|
-| Hobby (gratis) | 250MB | 500k/mnd | $0 |
-| Pro | 1GB | 10M/mnd | $9/mnd |
+| Nivå           | Lagring | Kommandoer | Pris   |
+| -------------- | ------- | ---------- | ------ |
+| Hobby (gratis) | 250MB   | 500k/mnd   | $0     |
+| Pro            | 1GB     | 10M/mnd    | $9/mnd |
 
 For Klarpakke: Hobby-nivå er trolig tilstrekkelig i starten.
 
 ## Feilsøking
 
 ### Problem: "KV Cache Get Error"
+
 **Løsning:** Sjekk at miljøvariabler er satt i Vercel Dashboard
 
 ### Problem: Lokal utvikling fungerer ikke
+
 **Løsning:** Uten KV-tilkobling brukes memory cache automatisk (se `cache.ts`)
 
 ### Problem: "Rate limit exceeded"
+
 **Løsning:** Du har nådd 500k kommandoer/mnd. Oppgrader til Pro eller reduser caching.
 
 ## Nyttige kommandoer
