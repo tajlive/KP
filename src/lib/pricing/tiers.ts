@@ -4,6 +4,11 @@
  * Designet for rask revenue-generering
  */
 
+import type { TierSlug } from "./tier-level";
+
+export type { TierSlug } from "./tier-level";
+export { getTierLevel, normalizeTier, VALID_TIER_SLUGS } from "./tier-level";
+
 export const TIERS = {
   student: {
     slug: "student" as const,
@@ -165,38 +170,13 @@ export const TIERS = {
   },
 } as const;
 
-export type TierSlug = keyof typeof TIERS;
 export type Tier = (typeof TIERS)[TierSlug];
 
-/** Kun disse slug-ene er gyldige – én kilde til sannhet for tier */
-export const VALID_TIER_SLUGS: readonly TierSlug[] = [
-  "student",
-  "bachelor",
-  "master",
-  "phd",
-  "professor",
-] as const;
-
-/** Nivå for tier-gate (0=student, 1=bachelor, 2=master, 3=phd, 4=professor) */
-const TIER_LEVEL_ORDER: Record<TierSlug, number> = {
-  student: 0,
-  bachelor: 1,
-  master: 2,
-  phd: 3,
-  professor: 4,
-};
-
-export function getTierLevel(slug: string): number {
-  if (VALID_TIER_SLUGS.includes(slug as TierSlug)) {
-    return TIER_LEVEL_ORDER[slug as TierSlug];
-  }
-  return 0; // ukjent/gammel tier → student-nivå
-}
-
-/** Normaliserer DB/string tier til gyldig TierSlug (ukjente → student) */
-export function normalizeTier(tier: string | null | undefined): TierSlug {
-  if (tier && VALID_TIER_SLUGS.includes(tier as TierSlug)) {
-    return tier as TierSlug;
-  }
-  return "student";
-}
+/** Sikrer at TIERS og tier-level.TierSlug holder seg i synk */
+type _TierKeys = keyof typeof TIERS;
+const _tierKeysAlign: TierSlug extends _TierKeys
+  ? _TierKeys extends TierSlug
+    ? true
+    : never
+  : never = true;
+void _tierKeysAlign;

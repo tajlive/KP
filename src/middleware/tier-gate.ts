@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getTierLevel, normalizeTier } from "@/lib/pricing/tiers";
+import { getTierLevel, normalizeTier } from "@/lib/pricing/tier-level";
 import {
   createSupabaseClient,
   getCookieDomain,

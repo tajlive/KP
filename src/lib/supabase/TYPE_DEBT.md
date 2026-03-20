@@ -15,17 +15,11 @@ Klarpakke is **production-ready** for Monday's launch. All critical paths are ty
 ✅ **Auth flow** - 100% type-safe  
 ✅ **Dashboard** - 100% type-safe  
 ✅ **API routes** - 100% type-safe  
-✅ **Build** - SUCCESS with `ignoreBuildErrors: true`
+✅ **Build** — `typescript.ignoreBuildErrors: false` i `next.config.mjs`; `npm run type-check` skal være grønn før merge.
 
-### Why `ignoreBuildErrors: true` is SAFE for launch:
+### Historisk (pre-launch): `ignoreBuildErrors: true`
 
-1. All runtime-critical paths are type-safe (auth, dashboard, API)
-2. Remaining errors are:
-   - Type inference issues with Supabase generated types
-   - Missing relationship types (SelectQueryError)
-   - None cause runtime failures
-3. Build completes successfully
-4. All features tested and functional
+Tidligere ble feil ignorert under `next build` for å sikre deploy; det er **fjernet**. Ved nye TS-feil: fiks eller dokumenter midlertidig unntak i `docs/TYPE-DEBT-ROADMAP-2026.md` — ikke skru flagget på igjen uten beslutning.
 
 ---
 
@@ -93,11 +87,11 @@ These are **non-blocking**:
 
 ```bash
 # Tasks:
-- [ ] Set ignoreBuildErrors: false
-- [ ] Fix any remaining errors
-- [ ] Run full type check
-- [ ] Verify build still passes
-- [ ] Update CI to enforce type checking
+- [x] Set ignoreBuildErrors: false (gjort i `next.config.mjs`)
+- [ ] Fix any remaining errors (løpende)
+- [x] Run full type check (`npm run type-check`)
+- [x] Verify build still passes (`next build`)
+- [x] CI håndhever type checking (PR/deploy-flyter)
 ```
 
 ---
@@ -158,19 +152,13 @@ async function getUser(id) {
 
 ## Decision Log
 
-### 2026-03-07: Accept `ignoreBuildErrors: true`
+### 2026-03-07: Accept `ignoreBuildErrors: true` (historisk)
 
-**Decision:** Enable `ignoreBuildErrors: true` for launch  
-**Rationale:**
+**Decision (supersedert):** Midlertidig `ignoreBuildErrors: true` for launch. **Etter KLA-228:** `ignoreBuildErrors: false` — bygg/type-check feiler på TS-feil.
 
-- 229 → 0 critical type errors fixed
-- All user-facing paths are type-safe
-- Remaining errors are in non-critical background jobs
-- Build passes and deploys successfully
-- Post-launch plan documented
+**Rationale (historisk):** 229 → 0 kritiske feil; launch-sikkerhet.
 
-**Risk:** Low  
-**Mitigation:** Comprehensive monitoring + 3-week cleanup plan
+**Risk:** Lav → mitigert ved å slå av flagget når `tsc` er rent.
 
 ---
 

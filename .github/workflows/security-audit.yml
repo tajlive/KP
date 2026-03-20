@@ -24,10 +24,10 @@ jobs:
     
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
@@ -49,8 +49,14 @@ jobs:
           fi
         continue-on-error: true
 
-      - name: 📊 Snyk test (hvis token finnes)
-        run: npx snyk test || echo "Snyk token ikke konfigurert"
+      # Snyk er ikke i package.json — unngår deprecated transitive (global-agent/boolean) i npm ci på Vercel
+      - name: 📊 Snyk test (npx, hvis SNYK_TOKEN finnes)
+        run: |
+          if [ -z "${SNYK_TOKEN}" ]; then
+            echo "ℹ️ SNYK_TOKEN mangler — hopper over Snyk (sett secret i repo for ukentlig sjekk)"
+            exit 0
+          fi
+          npx --yes snyk@latest test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true

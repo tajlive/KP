@@ -24,10 +24,10 @@ jobs:
     
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
@@ -40,6 +40,13 @@ jobs:
 
       - name: 📊 knip
         run: npx knip --no-exit-code
+
+      # Patch/minor innenfor semver i package.json (^) — fanger brudd før Dependabot-PR
+      - name: 🔄 npm update (lock innenfor ranges)
+        run: npm update
+
+      - name: ✅ Verifiser etter update
+        run: npm run deps:verify
 
       - name: 📁 Upload resultater
         uses: actions/upload-artifact@v4

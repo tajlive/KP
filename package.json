@@ -82,6 +82,9 @@
     "db:status": "supabase migration list --linked",
     "db:diff": "supabase db diff --linked",
     "db:lint": "supabase db lint --linked",
+    "db:gen-types": "npx supabase gen types typescript --project-id vuxbjlykgmzskxbclquf > src/types/supabase-generated.ts",
+    "deps:update-lockfile": "npm update",
+    "deps:verify": "npm run type-check && npm run lint",
     "db:realtime": "./scripts/run-realtime-migration.sh",
     "db:apply-admin-rls": "./scripts/sql.sh file supabase/migrations/20260317190000_admin_read_all_user_profiles.sql",
     "db:migrate-tier": "./scripts/sql.sh file supabase/migrations/20260318120000_tier_slug_single_source.sql",
@@ -123,7 +126,7 @@
     "cursor:agent": "agent",
     "cursor:agent-ls": "agent ls",
     "cursor:agent-resume": "agent resume",
-    "prepare": "husky"
+    "prepare": "node scripts/husky-prepare.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.39",
@@ -262,7 +265,6 @@
     "lighthouse": "^13.0.3",
     "lint-staged": "^16.4.0",
     "postcss": "^8.5.8",
-    "snyk": "^1.1303.1",
     "tailwindcss": "^4.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
