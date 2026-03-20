@@ -31,11 +31,11 @@ De fleste innstillinger kan nå konfigureres automatisk via CLI/API:
 
 ## Prosjektinfo (fra MCP / kodebase)
 
-| Tjeneste | Prosjekt / Org | ID / Slug | Region |
-| --- | --- | --- | --- |
-| **Supabase** | klarpakke-prod | `vuxbjlykgmzskxbclquf` | eu-central-1 |
-| **Sentry** | Org: elbatt-chatbot, Prosjekt: klarpakke-production | — | <https://de.sentry.io> |
-| **Vercel** | klarpakke | (fra Vercel dashboard) | — |
+| Tjeneste     | Prosjekt / Org                                      | ID / Slug              | Region                 |
+| ------------ | --------------------------------------------------- | ---------------------- | ---------------------- |
+| **Supabase** | klarpakke-prod                                      | `vuxbjlykgmzskxbclquf` | eu-central-1           |
+| **Sentry**   | Org: elbatt-chatbot, Prosjekt: klarpakke-production | —                      | <https://de.sentry.io> |
+| **Vercel**   | klarpakke                                           | (fra Vercel dashboard) | —                      |
 
 ---
 
@@ -49,7 +49,7 @@ De fleste innstillinger kan nå konfigureres automatisk via CLI/API:
 - **Build Command:** `next build` (default) – ikke overstyr med `vercel build` med mindre nødvendig
 - **Output Directory:** (tom / default)
 - **Install Command:** `npm install` eller `npm ci` for CI
-- **Node.js Version:** 22.x (samsvar med `engines` / CI)
+- **Node.js Version:** 24.x (samsvar med `engines` / CI)
 
 ### Vercel – Environment Variables
 
@@ -82,7 +82,7 @@ De fleste innstillinger kan nå konfigureres automatisk via CLI/API:
 ### Vercel – Domains
 
 - **Production:** `www.klarpakke.no` (og evt. `klarpakke.no` → redirect til www)
-- **Preview:** Auto *-klarpakke.vercel.app
+- **Preview:** Auto \*-klarpakke.vercel.app
 
 ---
 
@@ -169,7 +169,7 @@ De fleste innstillinger kan nå konfigureres automatisk via CLI/API:
 
 Kjør `./scripts/optimize-services.sh` for automatisk konfigurasjon, eller verifiser manuelt:
 
-- [x] **Vercel:** Node 22.x, Framework nextjs, env synkronisert til Preview
+- [x] **Vercel:** Node 24.x, Framework nextjs, env synkronisert til Preview
 - [x] **Supabase:** Site URL = `https://www.klarpakke.no`, Redirect URLs inkluderer preview
 - [x] **Sentry:** klarpakke-production, tracesSampleRate 0.1 (server) / 0.05 (edge)
 - [ ] **Sentry Alerts:** Manuelt – sett opp varsler i dashboard
@@ -179,11 +179,11 @@ Kjør `./scripts/optimize-services.sh` for automatisk konfigurasjon, eller verif
 
 ## 5. Automatiseringsmetoder
 
-| Tjeneste | CLI | API | MCP Plugin |
-| --- | --- | --- | --- |
-| **Vercel** | `vercel env` | ✅ REST API | mcp__claude_ai_Vercel__* |
-| **Supabase** | `supabase config push` | ✅ Management API | mcp__claude_ai_Supabase__* |
-| **Sentry** | `sentry-cli` | ✅ REST API | mcp__claude_ai_Sentry__* |
+| Tjeneste     | CLI                    | API               | MCP Plugin                  |
+| ------------ | ---------------------- | ----------------- | --------------------------- |
+| **Vercel**   | `vercel env`           | ✅ REST API       | mcp**claude_ai_Vercel**\*   |
+| **Supabase** | `supabase config push` | ✅ Management API | mcp**claude_ai_Supabase**\* |
+| **Sentry**   | `sentry-cli`           | ✅ REST API       | mcp**claude_ai_Sentry**\*   |
 
 **Tokens som kreves:**
 
@@ -195,4 +195,4 @@ Se `.github/GITHUB_SETUP.md` og `.github/SETUP_SECRETS.md` for oppsett.
 
 ---
 
-*Sist oppdatert: 15. mars 2026. Automatisert via `scripts/optimize-services.sh`.*
+_Sist oppdatert: 15. mars 2026. Automatisert via `scripts/optimize-services.sh`._

@@ -94,7 +94,7 @@ These stay within semver and are safe to apply immediately.
 | **next**                   | 15.5.12 | 16.2.0 | Major: React 19 compat, routing changes, turbopack default. Needed for GHSA-3x4c-7xq6-9pq8. |
 | **eslint**                 | 9.39.x  | 10.0.3 | Major: flat config changes, new rules.                                                      |
 | **node-fetch**             | 2.7.0   | 3.3.2  | Major: ESM-only, different API. Node 22 has native `fetch`.                                 |
-| **@types/node**            | 20.19.x | 25.5.0 | Major: Node 25 types; project uses Node 22.                                                 |
+| **@types/node**            | 20.19.x | 25.5.0 | Major: Node 25 types; runtime mål er Node 24.x (`engines`).                                 |
 | **@vercel/analytics**      | 1.6.1   | 2.0.1  | Major: check migration guide.                                                               |
 | **@vercel/speed-insights** | 1.3.1   | 2.0.0  | Major: check migration guide.                                                               |
 | **@vitejs/plugin-react**   | 5.1.4   | 6.0.1  | Major: Vitest 6.x ecosystem.                                                                |
