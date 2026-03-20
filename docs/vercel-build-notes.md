@@ -113,6 +113,15 @@ I GitHub Actions: se **Actions → workflow run → Build-jobben** for tidsforde
 - Vurder færre statiske sider eller økt `staticPageGenerationTimeout` kun ved reell timeout.
 - Vurder å flytte tunge avhengigheter til dynamisk import der det er trygt.
 
+## 8. CLI-deploy: «Too many requests» / stor opplasting
+
+- **Årsak:** `npx vercel --prod` kan laste opp svært mange små filer (rate limit på free tier) eller treffe upload-kvoter.
+- **Fiks i repo:**
+  - **`--archive=tgz`:** `deploy:prod`, `deploy:preview` og `vercel:deploy` bruker `npx vercel … --archive=tgz` (én arkivfil i stedet for tusenvis av requests).
+  - **`.vercelignore`:** utvidet med `e2e`, `playwright-report`, `test-results`, `coverage`, `allure-*`, `.cursor`, og kun **`/supabase`** (rotmappen — migrasjoner/functions). **Viktig:** ikke bruk mønsteret `supabase` uten ledende `/`; da ekskluderes også `src/lib/supabase/` og bygget feiler. Eksisterende `scripts/`-ignore beholdes — `vercel.json` bruker `buildCommand: next build`, så `npm prebuild` (validate-i18n) kjører **ikke** på Vercel (kjør `npm run build` lokalt før push hvis du vil validere i18n).
+- **Alternativ:** Push til **`main`** og la **Git-integrasjon** bygge (anbefalt for prod).
+- **Prebuilt:** `npm run deploy:prebuilt` etter `vercel pull --yes` (krever `VERCEL_TOKEN` / innlogget CLI) — færre filer til remote build.
+
 ## Sjekkliste ved nye Vercel-advarsler
 
 1. Er det en **ny** advarsel? Sjekk om den allerede er beskrevet her.
