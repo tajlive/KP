@@ -11,8 +11,13 @@ const mockCreateServerClient = vi.fn(() => ({
   from: mockFrom,
 }));
 
+const mockCreateClient = vi.fn(() => ({
+  from: mockFrom,
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createServerClient: (...args: unknown[]) => mockCreateServerClient(...args),
+  createClient: () => mockCreateClient(),
 }));
 
 function createJsonRequest(payload: unknown): NextRequest {
@@ -71,7 +76,9 @@ describe("POST /api/auto-trading/paper", () => {
     const insert = vi.fn(() => ({ select: selectAfterInsert }));
     const insertQuery = { insert };
 
-    mockFrom.mockReturnValueOnce(existingQuery).mockReturnValueOnce(insertQuery);
+    mockFrom
+      .mockReturnValueOnce(existingQuery)
+      .mockReturnValueOnce(insertQuery);
 
     const response = await POST(
       createJsonRequest({
@@ -90,7 +97,10 @@ describe("POST /api/auto-trading/paper", () => {
         user_id: "user-123",
         mode: "paper",
         strategy_id: "trend",
-        strategy_config: { risk_level: "medium", pairs: ["ETHUSDT", "BTCUSDT"] },
+        strategy_config: {
+          risk_level: "medium",
+          pairs: ["ETHUSDT", "BTCUSDT"],
+        },
         starting_capital_nok: 250000,
         current_capital_nok: 250000,
         trading_pair: "ETHUSDT",
