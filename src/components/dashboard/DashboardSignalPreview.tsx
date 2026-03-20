@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Radio, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { getFallbackTradingSignals } from "@/lib/trading/fallback-signals";
 import { CARD, BRAND } from "@/lib/design/tokens";
 
 interface TradingSignal {
@@ -14,15 +16,13 @@ interface TradingSignal {
   created_at: string | null;
 }
 
-interface DashboardSignalPreviewProps {
-  locale: string;
-  no: boolean;
+function isFallbackId(id: string) {
+  return id.startsWith("fallback-");
 }
 
-export function DashboardSignalPreview({
-  locale,
-  no,
-}: DashboardSignalPreviewProps) {
+export function DashboardSignalPreview() {
+  const locale = useLocale();
+  const t = useTranslations("dashboard");
   const [signals, setSignals] = useState<TradingSignal[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,19 +32,43 @@ export function DashboardSignalPreview({
 
     const fetchSignals = async () => {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("trading_signals")
           .select("id, symbol, action, confidence, created_at")
           .order("created_at", { ascending: false })
           .limit(3);
 
-        if (mounted) setSignals((data as TradingSignal[]) ?? []);
+        if (!mounted) return;
+
+        if (error || !data || data.length === 0) {
+          const fb = getFallbackTradingSignals(3).map((s) => ({
+            id: s.id,
+            symbol: s.symbol,
+            action: s.action,
+            confidence: s.confidence,
+            created_at: s.created_at,
+          }));
+          setSignals(fb);
+        } else {
+          setSignals((data as TradingSignal[]) ?? []);
+        }
+      } catch {
+        if (mounted) {
+          const fb = getFallbackTradingSignals(3).map((s) => ({
+            id: s.id,
+            symbol: s.symbol,
+            action: s.action,
+            confidence: s.confidence,
+            created_at: s.created_at,
+          }));
+          setSignals(fb);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
     };
 
-    fetchSignals();
+    void fetchSignals();
 
     const channel = supabase
       .channel("dashboard-signal-preview")
@@ -52,7 +76,7 @@ export function DashboardSignalPreview({
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "trading_signals" },
         () => {
-          if (mounted) fetchSignals();
+          if (mounted) void fetchSignals();
         },
       )
       .subscribe();
@@ -77,6 +101,8 @@ export function DashboardSignalPreview({
   }
 
   const cardBase = CARD.hover.replace("p-6", "p-5");
+  const usingFallback =
+    signals.length > 0 && signals.every((s) => isFallbackId(s.id));
 
   return (
     <div className={`${cardBase} animate-fade-in-up stagger-2`}>
@@ -84,11 +110,19 @@ export function DashboardSignalPreview({
         <div className="flex items-center gap-2">
           <Radio className="w-4 h-4 text-[#16A34A]" />
           <h3 className="text-lg font-semibold text-[#1A1D26]">
-            {no ? "Siste signaler" : "Latest signals"}
+            {t("signalPreview.title")}
           </h3>
           {signals.length > 0 && (
-            <span className="text-[10px] bg-[#16A34A]/10 text-[#16A34A] px-2 py-0.5 rounded-full font-medium">
-              Live
+            <span
+              className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                usingFallback
+                  ? "bg-[#8E95A9]/15 text-[#5C6378]"
+                  : "bg-[#16A34A]/10 text-[#16A34A]"
+              }`}
+            >
+              {usingFallback
+                ? t("signalPreview.demoBadge")
+                : t("signalPreview.liveBadge")}
             </span>
           )}
         </div>
@@ -96,15 +130,13 @@ export function DashboardSignalPreview({
           href={`/${locale}/paper-trading`}
           className={`text-sm font-medium ${BRAND.link}`}
         >
-          {no ? "Se alle" : "See all"}
+          {t("signalPreview.seeAll")}
         </Link>
       </div>
 
       {signals.length === 0 ? (
         <p className="text-sm text-[#8E95A9] py-2">
-          {no
-            ? "Ingen signaler ennå. Aktiver en strategi for å se signaler."
-            : "No signals yet. Enable a strategy to see signals."}
+          {t("signalPreview.empty")}
         </p>
       ) : (
         <ul className="space-y-2">
@@ -134,11 +166,11 @@ export function DashboardSignalPreview({
                   <div>
                     <p className="text-sm font-medium text-[#1A1D26]">
                       {s.symbol} ·{" "}
-                      {isBuy ? (no ? "Kjøp" : "Buy") : no ? "Salg" : "Sell"}
+                      {isBuy ? t("signalPreview.buy") : t("signalPreview.sell")}
                     </p>
                     {s.confidence != null && (
                       <p className="text-xs text-[#8E95A9]">
-                        {s.confidence}% {no ? "konfidens" : "confidence"}
+                        {s.confidence}% {t("signalPreview.confidence")}
                       </p>
                     )}
                   </div>

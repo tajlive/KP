@@ -85,4 +85,57 @@ describe("PortfolioDashboard", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText(/Kjøpte BTC/)).toBeInTheDocument();
   });
+
+  it("derives win rate from realized_pnl when session has no winning_trades", () => {
+    render(
+      <PortfolioDashboard
+        userId="user-1"
+        locale="no"
+        paperBalance={100000}
+        tier="student"
+        trialEndsAt={null}
+        activeSession={{
+          id: "s1",
+          mode: "paper",
+          status: "active",
+          strategy_id: "x",
+          current_capital_nok: 100000,
+          starting_capital_nok: 100000,
+          total_pnl: 0,
+          total_trades: 2,
+          created_at: "2026-03-18T10:00:00.000Z",
+        }}
+        trades={[
+          {
+            id: "t1",
+            trading_pair: "BTC/USDT",
+            side: "SELL",
+            quantity: 1,
+            price: 100,
+            total_value: 100,
+            status: "filled",
+            mode: "paper",
+            created_at: "2026-03-18T11:00:00.000Z",
+            realized_pnl: 10,
+          },
+          {
+            id: "t2",
+            trading_pair: "ETH/USDT",
+            side: "SELL",
+            quantity: 1,
+            price: 100,
+            total_value: 100,
+            status: "filled",
+            mode: "paper",
+            created_at: "2026-03-18T12:00:00.000Z",
+            realized_pnl: -5,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByTestId("dashboard-win-rate-pct")).toHaveTextContent(
+      "50%",
+    );
+  });
 });

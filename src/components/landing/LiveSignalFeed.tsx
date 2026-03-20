@@ -1,6 +1,7 @@
 "use client";
 
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { getFallbackTradingSignals } from "@/lib/trading/fallback-signals";
 import { formatDistanceToNow } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
@@ -17,41 +18,6 @@ interface LandingSignal {
   created_at: string | null;
 }
 
-const FALLBACK_SIGNALS: LandingSignal[] = [
-  {
-    id: "fallback-1",
-    symbol: "BTC/USDT",
-    action: "BUY",
-    confidence: 87,
-    entry_price: 42450,
-    created_at: new Date(Date.now() - 2 * 3600_000).toISOString(),
-  },
-  {
-    id: "fallback-2",
-    symbol: "ETH/USDT",
-    action: "SELL",
-    confidence: 74,
-    entry_price: 2280,
-    created_at: new Date(Date.now() - 5 * 3600_000).toISOString(),
-  },
-  {
-    id: "fallback-3",
-    symbol: "SOL/USDT",
-    action: "BUY",
-    confidence: 91,
-    entry_price: 98.2,
-    created_at: new Date(Date.now() - 12 * 3600_000).toISOString(),
-  },
-  {
-    id: "fallback-4",
-    symbol: "BNB/USDT",
-    action: "BUY",
-    confidence: 68,
-    entry_price: 312,
-    created_at: new Date(Date.now() - 18 * 3600_000).toISOString(),
-  },
-];
-
 export function LiveSignalFeed() {
   const locale = useLocale();
   const [signals, setSignals] = useState<LandingSignal[]>([]);
@@ -67,12 +33,12 @@ export function LiveSignalFeed() {
         .limit(4);
 
       if (error || !data || data.length === 0) {
-        setSignals(FALLBACK_SIGNALS);
+        setSignals(getFallbackTradingSignals(4) as LandingSignal[]);
       } else {
         setSignals(data as LandingSignal[]);
       }
     } catch {
-      setSignals(FALLBACK_SIGNALS);
+      setSignals(getFallbackTradingSignals(4) as LandingSignal[]);
     } finally {
       setLoaded(true);
     }
@@ -82,7 +48,9 @@ export function LiveSignalFeed() {
     fetchSignals();
   }, [fetchSignals]);
 
-  const displaySignals = loaded ? signals : FALLBACK_SIGNALS;
+  const displaySignals = loaded
+    ? signals
+    : (getFallbackTradingSignals(4) as LandingSignal[]);
 
   const isBuy = (action: string | null) =>
     action?.toUpperCase() === "BUY" || action?.toUpperCase() === "LONG";
