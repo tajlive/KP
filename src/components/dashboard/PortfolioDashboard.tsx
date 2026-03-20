@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Medal,
   Bot,
@@ -13,6 +14,8 @@ import {
   Activity,
 } from "lucide-react";
 import { CARD, BRAND } from "@/lib/design/tokens";
+import { MARKET_DESK } from "@/lib/design/market-desk";
+import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
 import { createClient } from "@/lib/supabase/client";
 import ReverseTrial from "./ReverseTrial";
@@ -108,18 +111,6 @@ function formatNOK(n: number) {
   }).format(n);
 }
 
-function relativeTime(date: Date, locale: string) {
-  const diff = Date.now() - date.getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return locale === "no" ? "Nå" : "Just now";
-  if (minutes < 60)
-    return locale === "no" ? `${minutes}m siden` : `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return locale === "no" ? `${hours}t siden` : `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return locale === "no" ? `${days}d siden` : `${days}d ago`;
-}
-
 const LEADERBOARD = [
   { rank: 1, name: "KryptoKonge", pct: "+14.2%" },
   { rank: 2, name: "SatoshiFansen", pct: "+11.8%" },
@@ -139,6 +130,7 @@ export default function PortfolioDashboard({
   activeSession,
 }: PortfolioDashboardProps) {
   const no = locale === "no";
+  const t = useTranslations("dashboard");
   const {
     coins: liveCoins,
     loading: pricesLoading,
@@ -454,150 +446,179 @@ export default function PortfolioDashboard({
         </Link>
       )}
 
-      {/* Siste signaler — synlig på dashboard slik at brukere ser aktivitet */}
-      <DashboardSignalPreview />
-
-      <SocialProof locale={locale} />
-
-      {/* Widget 3 + 4: Positions & Recent Trades (2-col on desktop) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in-up stagger-3">
-        {/* Widget 3: Positions */}
-        <div className={cardBase}>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-[#1A1D26]">
-              {no ? "Mine posisjoner" : "My positions"}
-            </h3>
-            <Link
-              href={`/${locale}/handelshistorikk`}
-              className={`text-sm font-medium ${BRAND.link}`}
-            >
-              {no ? "Se alle" : "See all"}
-            </Link>
+      {/* Live markedsdesk: signaler + posisjoner + handler (samme premium uttrykk) */}
+      <div className={`${MARKET_DESK.panel} animate-fade-in-up stagger-2`}>
+        <div className={MARKET_DESK.headerBar}>
+          <div>
+            <p className={`${MARKET_DESK.title} text-slate-200`}>
+              {t("marketDesk.title")}
+            </p>
+            <p className={MARKET_DESK.subtitle}>{t("marketDesk.subtitle")}</p>
           </div>
-          {positionList.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-[#8E95A9] text-sm">
-                {no
-                  ? "Ingen posisjoner ennå. Kjøp din første coin!"
-                  : "No positions yet. Buy your first coin!"}
-              </p>
-            </div>
-          ) : (
-            <ul className="space-y-3">
-              {positionList.map((pos: Position) => {
-                const price = priceForSymbol(pos.symbol);
-                const pnlPct =
-                  pos.value !== 0
-                    ? ((pos.qty * price - pos.value) / pos.value) * 100
-                    : 0;
-                const shortSym = pos.symbol.replace("USDT", "");
-                return (
-                  <li key={pos.symbol} className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-full bg-gradient-to-br ${gradientForSymbol(pos.symbol)} flex items-center justify-center text-white text-xs font-bold`}
-                    >
-                      {shortSym[0]}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[#1A1D26]">
-                        {shortSym}
-                      </p>
-                      <p className="text-xs text-[#8E95A9]">
-                        {pos.qty.toFixed(4)} {shortSym}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p
-                        className="text-sm font-medium text-[#1A1D26]"
-                        style={{ fontVariantNumeric: "tabular-nums" }}
-                      >
-                        {formatNOK(pos.qty * price)}
-                      </p>
-                      <p
-                        className={`text-xs font-medium tabular-nums ${pnlPct >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}
-                      >
-                        {pnlPct >= 0 ? "+" : ""}
-                        {pnlPct.toFixed(1)}%
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
         </div>
+        <div className={MARKET_DESK.section}>
+          <DashboardSignalPreview tier={tier} />
 
-        {/* Widget 4: Recent Trades */}
-        <div className={cardBase}>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-semibold text-[#1A1D26]">
-                {no ? "Siste handler" : "Recent trades"}
-              </h3>
-              {hasRecentActivity && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-[#16A34A]/15 text-[#16A34A] px-2 py-0.5 rounded-md border border-[#16A34A]/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
-                  {no ? "Live" : "Live"}
-                </span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className={MARKET_DESK.innerCard}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-semibold text-slate-100 tracking-tight">
+                  {t("marketDesk.myPositions")}
+                </h3>
+                <Link
+                  href={`/${locale}/handelshistorikk`}
+                  className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
+                >
+                  {t("marketDesk.seeAll")}
+                </Link>
+              </div>
+              {positionList.length === 0 ? (
+                <div className="py-8 text-center">
+                  <p className="text-slate-500 text-sm">
+                    {t("marketDesk.noPositions")}
+                  </p>
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {positionList.map((pos: Position) => {
+                    const price = priceForSymbol(pos.symbol);
+                    const pnlPct =
+                      pos.value !== 0
+                        ? ((pos.qty * price - pos.value) / pos.value) * 100
+                        : 0;
+                    const shortSym = pos.symbol.replace("USDT", "");
+                    return (
+                      <li
+                        key={pos.symbol}
+                        className={`${MARKET_DESK.row} flex items-center gap-3`}
+                      >
+                        <div
+                          className={`w-9 h-9 rounded-full bg-gradient-to-br ${gradientForSymbol(pos.symbol)} flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-inner`}
+                        >
+                          {shortSym[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-100">
+                            {shortSym}
+                          </p>
+                          <p className="text-xs text-slate-500 tabular-nums">
+                            {pos.qty.toFixed(4)} {shortSym}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p
+                            className="text-sm font-medium text-slate-100 tabular-nums"
+                            style={{ fontVariantNumeric: "tabular-nums" }}
+                          >
+                            {formatNOK(pos.qty * price)}
+                          </p>
+                          <p
+                            className={`text-xs font-semibold tabular-nums ${pnlPct >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                          >
+                            {pnlPct >= 0 ? "+" : ""}
+                            {pnlPct.toFixed(1)}%
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
             </div>
-            <Link
-              href={`/${locale}/handelshistorikk`}
-              className={`text-sm font-medium ${BRAND.link}`}
-            >
-              {no ? "Se alle" : "See all"}
-            </Link>
-          </div>
-          {recentTrades.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-[#8E95A9] text-sm">
-                {no ? "Ingen handler ennå" : "No trades yet"}
-              </p>
+
+            <div className={MARKET_DESK.innerCard}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-semibold text-slate-100 tracking-tight">
+                    {t("marketDesk.recentTrades")}
+                  </h3>
+                  {hasRecentActivity && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/25">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {t("signalPreview.liveBadge")}
+                    </span>
+                  )}
+                </div>
+                <Link
+                  href={`/${locale}/handelshistorikk`}
+                  className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
+                >
+                  {t("marketDesk.seeAll")}
+                </Link>
+              </div>
+              {recentTrades.length === 0 ? (
+                <div className="py-8 text-center">
+                  <p className="text-slate-500 text-sm">
+                    {t("marketDesk.noTrades")}
+                  </p>
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {recentTrades.map((trade: Trade, i: number) => (
+                    <li
+                      key={`${trade.id}-${i}`}
+                      className={`${MARKET_DESK.row} flex items-center gap-3`}
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                          isBuyTrade(trade)
+                            ? "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20"
+                            : "bg-red-500/15 text-red-400 ring-1 ring-red-500/20"
+                        }`}
+                      >
+                        {isBuyTrade(trade) ? (
+                          <ArrowUp className="w-4 h-4" />
+                        ) : (
+                          <ArrowDown className="w-4 h-4" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-100">
+                          {isBuyTrade(trade)
+                            ? no
+                              ? "Kjøpte"
+                              : "Bought"
+                            : no
+                              ? "Solgte"
+                              : "Sold"}{" "}
+                          {normalizeTradeSymbol(trade).replace("USDT", "")}
+                        </p>
+                        <p className="text-xs text-slate-500 tabular-nums">
+                          {normalizeTradeQty(trade).toFixed(4)} ·{" "}
+                          {formatNOK(normalizeTradeAmount(trade))}
+                          {trade.realized_pnl != null &&
+                            Number.isFinite(Number(trade.realized_pnl)) && (
+                              <span
+                                className={
+                                  Number(trade.realized_pnl) >= 0
+                                    ? " text-emerald-400/90"
+                                    : " text-red-400/90"
+                                }
+                              >
+                                {" "}
+                                · {formatNOK(Number(trade.realized_pnl))}
+                              </span>
+                            )}
+                        </p>
+                      </div>
+                      <span className="text-[10px] text-slate-500 tabular-nums shrink-0 text-right min-w-[3.5rem]">
+                        {trade.created_at
+                          ? formatRelativeTimeShort(
+                              new Date(trade.created_at),
+                              locale,
+                            )
+                          : "—"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          ) : (
-            <ul className="space-y-3">
-              {recentTrades.map((t: Trade, i: number) => (
-                <li key={i} className="flex items-center gap-3">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      isBuyTrade(t)
-                        ? "bg-[#16A34A]/10 text-[#16A34A]"
-                        : "bg-[#DC2626]/10 text-[#DC2626]"
-                    }`}
-                  >
-                    {isBuyTrade(t) ? (
-                      <ArrowUp className="w-4 h-4" />
-                    ) : (
-                      <ArrowDown className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#1A1D26]">
-                      {isBuyTrade(t)
-                        ? no
-                          ? "Kjøpte"
-                          : "Bought"
-                        : no
-                          ? "Solgte"
-                          : "Sold"}{" "}
-                      {normalizeTradeSymbol(t).replace("USDT", "")}
-                    </p>
-                    <p className="text-xs text-[#8E95A9]">
-                      {normalizeTradeQty(t).toFixed(4)} ·{" "}
-                      {formatNOK(normalizeTradeAmount(t))}
-                    </p>
-                  </div>
-                  <span className="text-xs text-[#8E95A9]">
-                    {t.created_at
-                      ? relativeTime(new Date(t.created_at), locale)
-                      : "—"}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+          </div>
         </div>
       </div>
+
+      <SocialProof locale={locale} />
 
       {/* Widget 5: AI Market Brief */}
       <div className={`${cardBase} animate-fade-in-up stagger-4`}>

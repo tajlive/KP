@@ -2,6 +2,22 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import PortfolioDashboard from "./PortfolioDashboard";
 
+const dashboardT: Record<string, string> = {
+  "marketDesk.title": "Live markedsdesk",
+  "marketDesk.subtitle": "Undertekst",
+  "marketDesk.myPositions": "Mine posisjoner",
+  "marketDesk.recentTrades": "Siste handler",
+  "marketDesk.noPositions": "Ingen posisjoner",
+  "marketDesk.noTrades": "Ingen handler",
+  "marketDesk.seeAll": "Se alle",
+  "signalPreview.liveBadge": "Live",
+};
+
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => dashboardT[key] ?? key,
+  useLocale: () => "no",
+}));
+
 vi.mock("@/lib/hooks/useRealtimePrices", () => ({
   useRealtimePrices: () => ({
     coins: [

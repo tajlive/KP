@@ -45,6 +45,22 @@
   "totalProfit": "กำไรรวม",
   "dailyChange": "การเปลี่ยนแปลงรายวัน",
   "activeSignals": "สัญญาณที่ใช้งานอยู่",
+  "marketDesk": {
+    "title": "โต๊ะตลาดสด",
+    "subtitle": "สัญญาณ ตำแหน่ง และรายการล่าสุด",
+    "myPositions": "ตำแหน่งของฉัน",
+    "recentTrades": "การเทรดล่าสุด",
+    "noPositions": "ยังไม่มีตำแหน่ง เริ่มจากเทรดจำลอง!",
+    "noTrades": "ยังไม่มีการเทรด",
+    "seeAll": "ดูทั้งหมด"
+  },
+  "tierLabels": {
+    "student": "Student",
+    "bachelor": "Bachelor",
+    "master": "Master",
+    "phd": "PhD",
+    "professor": "Professor"
+  },
   "signalPreview": {
     "title": "สัญญาณล่าสุด",
     "seeAll": "ดูทั้งหมด",
@@ -53,7 +69,11 @@
     "empty": "ยังไม่มีสัญญาณ เปิดใช้กลยุทธ์เพื่อดูสัญญาณ",
     "buy": "ซื้อ",
     "sell": "ขาย",
-    "confidence": "ความมั่นใจ"
+    "confidence": "ความมั่นใจ",
+    "directionBuy": "ซื้อ",
+    "directionSell": "ขาย",
+    "planChip": "แพ็กเกจ: {tier}",
+    "curated": "ฟีดคัดสรร"
   },
   "newToday": "ใหม่วันนี้",
   "recentActivity": "กิจกรรมล่าสุด",

@@ -134,6 +134,12 @@
     "overlay": "注册以使用真实数据交易",
     "overlayCta": "免费开始"
   },
+  "liveSignalFeed": {
+    "title": "最新实时信号",
+    "seeAll": "查看全部信号与历史 →",
+    "directionBuy": "买入",
+    "directionSell": "卖出"
+  },
   "emailCapture": {
     "badge": "免费课程",
     "title": "获取免费加密货币课程",

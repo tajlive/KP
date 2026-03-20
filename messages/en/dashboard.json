@@ -69,6 +69,22 @@
   "totalProfit": "Total Profit",
   "dailyChange": "Daily Change",
   "activeSignals": "Active Signals",
+  "marketDesk": {
+    "title": "Live market desk",
+    "subtitle": "Signals, positions and recent fills — curated overview.",
+    "myPositions": "My positions",
+    "recentTrades": "Recent trades",
+    "noPositions": "No positions yet. Start with paper trading!",
+    "noTrades": "No trades yet",
+    "seeAll": "See all"
+  },
+  "tierLabels": {
+    "student": "Student",
+    "bachelor": "Bachelor",
+    "master": "Master",
+    "phd": "PhD",
+    "professor": "Professor"
+  },
   "signalPreview": {
     "title": "Latest signals",
     "seeAll": "See all",
@@ -77,7 +93,11 @@
     "empty": "No signals yet. Enable a strategy to see signals.",
     "buy": "Buy",
     "sell": "Sell",
-    "confidence": "confidence"
+    "confidence": "confidence",
+    "directionBuy": "BUY",
+    "directionSell": "SELL",
+    "planChip": "Plan: {tier}",
+    "curated": "Curated feed"
   },
   "newToday": "new today",
   "recentActivity": "Recent Activity",

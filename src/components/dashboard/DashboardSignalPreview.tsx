@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Radio, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Radio, Zap } from "lucide-react";
+import { PremiumSignalRow } from "@/components/trading/PremiumSignalRow";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { MARKET_DESK } from "@/lib/design/market-desk";
+import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { getFallbackTradingSignals } from "@/lib/trading/fallback-signals";
-import { CARD, BRAND } from "@/lib/design/tokens";
 
 interface TradingSignal {
   id: string;
   symbol: string;
   action: string | null;
   confidence: number | null;
+  entry_price: number | null;
   created_at: string | null;
 }
 
@@ -20,11 +23,26 @@ function isFallbackId(id: string) {
   return id.startsWith("fallback-");
 }
 
-export function DashboardSignalPreview() {
+function tierLabelKey(
+  tier: string,
+): "student" | "bachelor" | "master" | "phd" | "professor" {
+  const t = tier.toLowerCase();
+  if (t === "bachelor" || t === "master" || t === "phd" || t === "professor")
+    return t;
+  return "student";
+}
+
+export function DashboardSignalPreview({
+  tier = "student",
+}: {
+  tier?: string;
+}) {
   const locale = useLocale();
   const t = useTranslations("dashboard");
   const [signals, setSignals] = useState<TradingSignal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [flashId, setFlashId] = useState<string | null>(null);
+  const prevTopIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -34,7 +52,7 @@ export function DashboardSignalPreview() {
       try {
         const { data, error } = await supabase
           .from("trading_signals")
-          .select("id, symbol, action, confidence, created_at")
+          .select("id, symbol, action, confidence, entry_price, created_at")
           .order("created_at", { ascending: false })
           .limit(3);
 
@@ -46,6 +64,7 @@ export function DashboardSignalPreview() {
             symbol: s.symbol,
             action: s.action,
             confidence: s.confidence,
+            entry_price: s.entry_price,
             created_at: s.created_at,
           }));
           setSignals(fb);
@@ -59,6 +78,7 @@ export function DashboardSignalPreview() {
             symbol: s.symbol,
             action: s.action,
             confidence: s.confidence,
+            entry_price: s.entry_price,
             created_at: s.created_at,
           }));
           setSignals(fb);
@@ -87,37 +107,66 @@ export function DashboardSignalPreview() {
     };
   }, []);
 
+  useEffect(() => {
+    if (signals.length === 0) return;
+    const top = signals[0]?.id;
+    if (!top) return;
+    const prev = prevTopIdRef.current;
+    if (
+      prev != null &&
+      top !== prev &&
+      !isFallbackId(top) &&
+      !signals.every((s) => isFallbackId(s.id))
+    ) {
+      setFlashId(top);
+      const timer = setTimeout(() => setFlashId(null), 2200);
+      prevTopIdRef.current = top;
+      return () => clearTimeout(timer);
+    }
+    prevTopIdRef.current = top;
+  }, [signals]);
+
   if (loading) {
     return (
-      <div className={`${CARD.hover.replace("p-6", "p-5")} animate-pulse`}>
-        <div className="h-5 w-32 bg-[#E2E5EC] rounded mb-3" />
+      <div className="space-y-3 animate-pulse border-b border-slate-700/40 pb-5 mb-2">
+        <div className="h-4 w-48 bg-slate-700/50 rounded" />
         <div className="space-y-2">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-12 bg-[#E2E5EC]/60 rounded-lg" />
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-16 bg-slate-800/40 rounded-xl border border-slate-700/30"
+            />
           ))}
         </div>
       </div>
     );
   }
 
-  const cardBase = CARD.hover.replace("p-6", "p-5");
   const usingFallback =
     signals.length > 0 && signals.every((s) => isFallbackId(s.id));
+  const tierKey = tierLabelKey(tier);
+  const planName = t(`tierLabels.${tierKey}`);
 
   return (
-    <div className={`${cardBase} animate-fade-in-up stagger-2`}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Radio className="w-4 h-4 text-[#16A34A]" />
-          <h3 className="text-lg font-semibold text-[#1A1D26]">
+    <div className="border-b border-slate-700/40 pb-5 mb-1">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative">
+            <Radio className="w-4 h-4 text-emerald-400" />
+            <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          </div>
+          <h3
+            className={`${MARKET_DESK.title} !tracking-[0.14em] text-slate-200`}
+          >
+            <Zap className="h-3.5 w-3.5 text-[#0052FF]" aria-hidden />
             {t("signalPreview.title")}
           </h3>
           {signals.length > 0 && (
             <span
-              className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+              className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                 usingFallback
-                  ? "bg-[#8E95A9]/15 text-[#5C6378]"
-                  : "bg-[#16A34A]/10 text-[#16A34A]"
+                  ? "bg-slate-600/25 text-slate-400 border border-dashed border-slate-500/40"
+                  : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
               }`}
             >
               {usingFallback
@@ -125,60 +174,54 @@ export function DashboardSignalPreview() {
                 : t("signalPreview.liveBadge")}
             </span>
           )}
+          <span className="text-[10px] text-slate-500 font-medium hidden sm:inline">
+            · {t("signalPreview.curated")}
+          </span>
+          <span
+            className="text-[10px] px-2 py-0.5 rounded-md bg-[#0052FF]/10 text-[#3d7aff] border border-[#0052FF]/20 font-semibold"
+            title={t("signalPreview.planChip", { tier: planName })}
+          >
+            {t("signalPreview.planChip", { tier: planName })}
+          </span>
         </div>
         <Link
           href={`/${locale}/paper-trading`}
-          className={`text-sm font-medium ${BRAND.link}`}
+          className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
         >
           {t("signalPreview.seeAll")}
         </Link>
       </div>
 
       {signals.length === 0 ? (
-        <p className="text-sm text-[#8E95A9] py-2">
+        <p className="text-sm text-slate-500 py-2">
           {t("signalPreview.empty")}
         </p>
       ) : (
-        <ul className="space-y-2">
-          {signals.map((s) => {
-            const isBuy =
-              s.action?.toUpperCase() === "BUY" ||
-              s.action?.toUpperCase() === "LONG";
-            return (
-              <li
-                key={s.id}
-                className="flex items-center justify-between py-2 border-b border-[#E2E5EC]/50 last:border-0"
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      isBuy
-                        ? "bg-[#16A34A]/10 text-[#16A34A]"
-                        : "bg-[#DC2626]/10 text-[#DC2626]"
-                    }`}
-                  >
-                    {isBuy ? (
-                      <ArrowUpRight className="w-4 h-4" />
-                    ) : (
-                      <ArrowDownRight className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-[#1A1D26]">
-                      {s.symbol} ·{" "}
-                      {isBuy ? t("signalPreview.buy") : t("signalPreview.sell")}
-                    </p>
-                    {s.confidence != null && (
-                      <p className="text-xs text-[#8E95A9]">
-                        {s.confidence}% {t("signalPreview.confidence")}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="space-y-2">
+          {signals.map((s, i) => (
+            <PremiumSignalRow
+              key={s.id}
+              symbol={s.symbol}
+              action={s.action}
+              confidence={s.confidence}
+              entry_price={s.entry_price}
+              created_at={s.created_at}
+              staggerIndex={i}
+              highlight={flashId === s.id}
+              isDemo={isFallbackId(s.id)}
+              showEntryPrice
+              ageLabel={
+                s.created_at
+                  ? formatRelativeTimeShort(new Date(s.created_at), locale)
+                  : "—"
+              }
+              labels={{
+                buy: t("signalPreview.directionBuy"),
+                sell: t("signalPreview.directionSell"),
+              }}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
