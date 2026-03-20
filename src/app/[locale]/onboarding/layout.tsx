@@ -26,7 +26,9 @@ export default async function OnboardingLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/${locale}/login?next=/onboarding`);
+    redirect(
+      `/${locale}/innlogging?next=${encodeURIComponent(`/${locale}/onboarding`)}`,
+    );
   }
 
   // Hent onboarding-status

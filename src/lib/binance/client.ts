@@ -1,9 +1,9 @@
 /**
  * Binance API Client for Klarpakke
- * 
+ *
  * VIKTIG: Dette er den AUTORITATIVE måten å kalle Binance API på.
  * Alle trading-relaterte kall MÅ gå gjennom denne klienten.
- * 
+ *
  * Sikkerhetsregler:
  * 1. ALLTID sjekk trading_risk_config før trading
  * 2. ALDRI logg API keys
@@ -11,12 +11,15 @@
  * 4. Bruk testnet for utvikling
  */
 
-import Binance from 'binance-api-node';
+import Binance from "binance-api-node";
 
-// Environment variables (MÅ settes i .env.local)
-const BINANCE_API_KEY = process.env.BINANCE_API_KEY || '';
-const BINANCE_API_SECRET = process.env.BINANCE_API_SECRET || '';
-const USE_TESTNET = process.env.NODE_ENV === 'development' || process.env.BINANCE_USE_TESTNET === 'true';
+/** Binance testnet (dev eller BINANCE_USE_TESTNET) — ikke «use*»-navn (unngår react-hooks/rules-of-hooks i ESLint). */
+function isBinanceTestnet(): boolean {
+  return (
+    process.env.NODE_ENV === "development" ||
+    process.env.BINANCE_USE_TESTNET === "true"
+  );
+}
 
 // Rate limiter
 class RateLimiter {
@@ -26,22 +29,24 @@ class RateLimiter {
 
   async checkLimit(requestWeight: number = 1): Promise<void> {
     const now = Date.now();
-    
+
     // Reset counter if window has passed
     if (now > this.resetTime) {
       this.weight = 0;
       this.resetTime = now + 60000;
     }
-    
+
     // Check if we're approaching limit
     if (this.weight + requestWeight > this.maxWeight) {
       const waitTime = this.resetTime - now;
-      console.warn(`[Binance] Rate limit approaching. Waiting ${waitTime}ms...`);
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      console.warn(
+        `[Binance] Rate limit approaching. Waiting ${waitTime}ms...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
       this.weight = 0;
       this.resetTime = Date.now() + 60000;
     }
-    
+
     this.weight += requestWeight;
   }
 }
@@ -53,28 +58,33 @@ let client: ReturnType<typeof Binance> | null = null;
 
 export function getBinanceClient(): ReturnType<typeof Binance> {
   if (!client) {
-    if (!BINANCE_API_KEY || !BINANCE_API_SECRET) {
+    const apiKey = process.env.BINANCE_API_KEY || "";
+    const apiSecret = process.env.BINANCE_API_SECRET || "";
+    if (!apiKey || !apiSecret) {
       throw new Error(
-        'Binance API keys not configured. ' +
-        'Set BINANCE_API_KEY and BINANCE_API_SECRET in .env.local'
+        "Binance API keys not configured. " +
+          "Set BINANCE_API_KEY and BINANCE_API_SECRET in .env.local",
       );
     }
-    
+
+    const testnet = isBinanceTestnet();
+
     client = Binance({
-      apiKey: BINANCE_API_KEY,
-      apiSecret: BINANCE_API_SECRET,
-      // Use testnet in development
-      ...(USE_TESTNET && {
-        httpBase: 'https://testnet.binance.vision',
-        httpFutures: 'https://testnet.binancefuture.com',
-        wsBase: 'wss://testnet.binance.vision/ws',
-        wsFutures: 'wss://stream.binancefuture.com/ws',
+      apiKey,
+      apiSecret,
+      ...(testnet && {
+        httpBase: "https://testnet.binance.vision",
+        httpFutures: "https://testnet.binancefuture.com",
+        wsBase: "wss://testnet.binance.vision/ws",
+        wsFutures: "wss://stream.binancefuture.com/ws",
       }),
     });
-    
-    console.info(`[Binance] Client initialized (${USE_TESTNET ? 'TESTNET' : 'PRODUCTION'})`);
+
+    console.info(
+      `[Binance] Client initialized (${testnet ? "TESTNET" : "PRODUCTION"})`,
+    );
   }
-  
+
   return client;
 }
 
@@ -92,13 +102,15 @@ export async function getAccountInfo() {
  */
 export async function getBalances(coins?: string[]) {
   const account = await getAccountInfo();
-  
+
   if (!coins) {
-    return account.balances.filter(b => parseFloat(b.free) > 0 || parseFloat(b.locked) > 0);
+    return account.balances.filter(
+      (b) => parseFloat(b.free) > 0 || parseFloat(b.locked) > 0,
+    );
   }
-  
-  return account.balances.filter(b => 
-    coins.includes(b.asset) || coins.includes(b.asset + 'USDT')
+
+  return account.balances.filter(
+    (b) => coins.includes(b.asset) || coins.includes(b.asset + "USDT"),
   );
 }
 
@@ -112,14 +124,14 @@ const CACHE_TTL = 5000; // 5 seconds
 export async function getPrice(symbol: string): Promise<string | undefined> {
   const cacheKey = symbol.toUpperCase();
   const cached = priceCache.get(cacheKey);
-  
+
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.price;
   }
-  
+
   await rateLimiter.checkLimit(2); // Price has weight 2
   const client = getBinanceClient();
-  const prices = await client.prices() as unknown as Record<string, string>;
+  const prices = (await client.prices()) as unknown as Record<string, string>;
   const price = prices[cacheKey];
   priceCache.set(cacheKey, { price, timestamp: Date.now() });
   return price;
@@ -136,45 +148,45 @@ export async function get24hTicker(symbol: string) {
 
 /**
  * PLACE ORDER - KUN ETTER RISK VALIDATION
- * 
+ *
  * VIKTIG: Denne funksjonen skal KUN kalles etter at:
  * 1. trading_risk_config er hentet og validert
  * 2. Position size er beregnet basert på risk level
  * 3. Max leverage er sjekket
- * 
+ *
  * @see validateRiskConfig i src/lib/trading/risk.ts
  */
 export async function placeOrder(params: {
   symbol: string;
-  side: 'BUY' | 'SELL';
-  type: 'MARKET' | 'LIMIT';
+  side: "BUY" | "SELL";
+  type: "MARKET" | "LIMIT";
   quantity: number;
   price?: number; // Kun for LIMIT
   stopPrice?: number; // For STOP_LOSS/TAKE_PROFIT
-  timeInForce?: 'GTC' | 'IOC' | 'FOK';
+  timeInForce?: "GTC" | "IOC" | "FOK";
 }) {
   // Extra safety: Log all orders
-  console.info('[Binance] Placing order:', {
+  console.info("[Binance] Placing order:", {
     symbol: params.symbol,
     side: params.side,
     type: params.type,
     quantity: params.quantity,
     timestamp: new Date().toISOString(),
   });
-  
+
   await rateLimiter.checkLimit(1); // Order placement has weight 1
   const client = getBinanceClient();
-  
+
   try {
     // Build order parameters
     const orderParams: {
       symbol: string;
-      side: 'BUY' | 'SELL';
-      type: 'MARKET' | 'LIMIT';
+      side: "BUY" | "SELL";
+      type: "MARKET" | "LIMIT";
       quantity: string;
       price?: string;
       stopPrice?: string;
-      timeInForce?: 'GTC' | 'IOC' | 'FOK';
+      timeInForce?: "GTC" | "IOC" | "FOK";
     } = {
       symbol: params.symbol.toUpperCase(),
       side: params.side,
@@ -182,20 +194,20 @@ export async function placeOrder(params: {
       quantity: params.quantity.toString(),
       ...(params.price && { price: params.price.toString() }),
       ...(params.stopPrice && { stopPrice: params.stopPrice.toString() }),
-      timeInForce: params.timeInForce || 'GTC',
+      timeInForce: params.timeInForce || "GTC",
     };
-    
+
     // @ts-expect-error - Binance SDK types are incorrect
     const order = await client.order(orderParams);
-    
-    console.info('[Binance] Order placed successfully:', {
+
+    console.info("[Binance] Order placed successfully:", {
       orderId: order.orderId,
       status: order.status,
     });
-    
+
     return order;
   } catch (error) {
-    console.error('[Binance] Order failed:', error);
+    console.error("[Binance] Order failed:", error);
     throw error;
   }
 }
@@ -246,19 +258,19 @@ export async function checkBinanceConnection(): Promise<{
   try {
     const client = getBinanceClient();
     const time = await client.time();
-    
+
     return {
       connected: true,
-      testnet: USE_TESTNET,
+      testnet: isBinanceTestnet(),
       timestamp: new Date().toISOString(),
       serverTime: (time as { serverTime: number }).serverTime,
     };
   } catch (error) {
     return {
       connected: false,
-      testnet: USE_TESTNET,
+      testnet: isBinanceTestnet(),
       timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }

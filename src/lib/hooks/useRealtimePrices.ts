@@ -21,8 +21,6 @@ const COIN_NAMES: Record<string, string> = {
   DOGEUSDT: "Dogecoin",
 };
 
-const supabase = createClient();
-
 /**
  * Hook for å hente sanntidspriser fra Binance via Supabase Edge Function
  */
@@ -38,6 +36,7 @@ export function useRealtimePrices(
 
   const fetchPrices = useCallback(async () => {
     try {
+      const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -66,7 +65,8 @@ export function useRealtimePrices(
         .split(",")
         .map((symbol) => {
           const priceData = prices.find(
-            (p: unknown) => (p as { symbol?: string }).symbol === symbol.toUpperCase(),
+            (p: unknown) =>
+              (p as { symbol?: string }).symbol === symbol.toUpperCase(),
           ) || { price: 0, change24h: 0 };
           return {
             symbol,

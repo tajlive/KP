@@ -3,6 +3,8 @@
 > Én plass for tilgang (MCP/CLI), pipelines (CI) og app-API.  
 > Oppdatert: 2026-03-15
 
+**Full automasjon (forhåndsoppsett):** [FULL-AUTOMATION-PLAYBOOK.md](./FULL-AUTOMATION-PLAYBOOK.md) — MCP/CLI/CI/API, `CRON_SECRET`, GitHub secrets, `npm run auto:preflight`.
+
 ---
 
 ## 1. MCP (Cursor / AI-verktøy)
@@ -34,9 +36,26 @@
 
 **Merk:** Cursor er selv MCP-klient; prosjektets MCP-er står i `.cursor/mcp.json`. Full oversikt for Cursor (MCP-oppsett, CLI, API): **docs/CURSOR-MCP-CLI-API.md**.
 
+### Pre-prod (én kommando)
+
+```bash
+npm run preprod:gate
+```
+
+Kjører: **lint** → **type-check** → **Vitest med coverage** → **`verify`** (prod-sjekk) → **build** (`SKIP_LINT_IN_BUILD`) → **Lighthouse CI** mot `www.klarpakke.no` (/, priser, innlogging) → **full Playwright** → **Allure-rapport** (`allure-report/`).
+
+Krever: nettverk, Playwright-browsere (`npm run playwright:install`), `.env.local` for E2E mot localhost der det trengs, og ev. `.auth/user.json` fra setup for innloggede prosjekter.
+
+### Playwright (lokal E2E)
+
+- **Nettlesere:** Første gang etter `npm ci` / oppgradering: `npm run playwright:install` (eller `npx playwright install chromium` for kun smoke).
+- **Supabase + Next:** Middleware og klient krever **`NEXT_PUBLIC_SUPABASE_URL`** og **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**. `vercel env pull` kan gi `SUPABASE_URL` uten `NEXT_PUBLIC_*` — da feiler `next dev` under Playwright. Synk fra Vercel/Dashboard eller bruk Supabase MCP **get_project_url** + **get_publishable_keys** (legacy `anon` JWT) og legg inn i `.env.local` (se `.env.local.example`).
+
 ### Verifisere MCP
 
 ```bash
+npm run auto:preflight      # Cloud readiness (agent) — start her for «alt på plass»
+npm run auto:preflight:full # + test:mcp + linear:test
 npm run cloud:bootstrap # Fyller kritiske cloud-keys i .env.local automatisk
 npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Vercel)
 npm run cloud:ready:deploy # Sjekk deploy-krav (Vercel) + auto-resolve av ORG_ID

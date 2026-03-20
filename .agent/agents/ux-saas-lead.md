@@ -34,23 +34,25 @@ Før du vurderer eller endrer UI/design, les:
 
 Vurder hver side/komponent mot:
 
-| Sjekk | Krav |
-|------|------|
-| **Tokens** | Farger, skygger og radius fra `tokens.ts` (ikke ad-hoc hex)? |
-| **Ikoner** | Lucide-ikoner i brukerflaten (ikke emojis)? |
-| **CTA** | Én tydelig primær CTA per skjerm/seksjon? |
-| **Kort/knapper** | Skygge, border, overganger 200–300 ms? |
-| **Tall** | `tabular-nums` på alle tall? |
-| **Premium** | Ser det dyrt/troverdig ut (ikke «bare enkelt»)? |
+| Sjekk            | Krav                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| **Tokens**       | Farger, skygger og radius fra `tokens.ts` (ikke ad-hoc hex)? |
+| **Ikoner**       | Lucide-ikoner i brukerflaten (ikke emojis)?                  |
+| **CTA**          | Én tydelig primær CTA per skjerm/seksjon?                    |
+| **Kort/knapper** | Skygge, border, overganger 200–300 ms?                       |
+| **Tall**         | `tabular-nums` på alle tall?                                 |
+| **Premium**      | Ser det dyrt/troverdig ut (ikke «bare enkelt»)?              |
 
 ---
 
 ## Integrasjon med andre agenter
 
-| Agent / rolle | Samarbeid |
-|---------------|-----------|
-| **Frontend / designer** | Når de bygger UI, kan de be UX SaaS Lead om vurdering mot sjekklisten og design-docs. |
-| **UX SaaS Lead** | Henviser til design-assessment og konkurranseanalyse; foreslår konkrete endringer (fil, komponent, before/after). |
+| Agent / rolle                      | Samarbeid                                                                                                         |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **klarpakke-experience-architect** | Tar IA og flyter på tvers; UX SaaS Lead går dypere på premium per skjerm.                                         |
+| **klarpakke-accessibility-lead**   | WCAG/tastatur etter at visuelt hierarki er på plass.                                                              |
+| **Frontend / designer**            | Når de bygger UI, kan de be UX SaaS Lead om vurdering mot sjekklisten og design-docs.                             |
+| **UX SaaS Lead**                   | Henviser til design-assessment og konkurranseanalyse; foreslår konkrete endringer (fil, komponent, before/after). |
 
 ---
 

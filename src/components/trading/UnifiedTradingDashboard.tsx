@@ -11,6 +11,7 @@ import {
   getActiveStrategies,
   getPortfolio,
   getRecentTrades,
+  mergeTradeIntoList,
   startStrategy,
   stopStrategy,
   subscribeToTrades,
@@ -28,6 +29,7 @@ import {
   ChevronDown,
   ChevronUp,
   DollarSign,
+  FileText,
   Grid3X3,
   Play,
   Square,
@@ -37,7 +39,7 @@ import {
   Wallet,
   Bot,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCurrency } from "@/hooks/useCurrency";
 import { CurrencySwitcher } from "./CurrencySwitcher";
@@ -149,6 +151,8 @@ export default function UnifiedTradingDashboard({
   const { error: showError } = useI18nToast();
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
   const { success: showSuccess, error: showToastError } = useI18nToast();
+  const showSuccessRef = useRef(showSuccess);
+  showSuccessRef.current = showSuccess;
   const tTrading = useTranslations("trading");
   const { format: formatNOK } = useCurrency();
 
@@ -233,16 +237,18 @@ export default function UnifiedTradingDashboard({
       return;
     }
 
-    const unsubscribe = subscribeToTrades(mode, userId, (newTrade) => {
-      setTrades((prev) => [newTrade, ...prev]);
-      showSuccess("trading.tradeExecuted", {
-        symbol: newTrade.symbol,
-        side: newTrade.side.toUpperCase(),
-      });
+    const unsubscribe = subscribeToTrades(mode, userId, (newTrade, kind) => {
+      setTrades((prev) => mergeTradeIntoList(prev, newTrade));
+      if (kind === "INSERT") {
+        showSuccessRef.current("trading.tradeExecuted", {
+          symbol: newTrade.symbol,
+          side: newTrade.side.toUpperCase(),
+        });
+      }
     });
 
     return () => unsubscribe();
-  }, [mode, userId, showSuccess]);
+  }, [mode, userId]);
 
   const handleStartStrategy = async (strategyType: StrategyType) => {
     try {
@@ -346,8 +352,20 @@ export default function UnifiedTradingDashboard({
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className={`text-2xl font-bold ${SURFACE.TEXT}`}>
-              {mode === "paper" ? "📄 Lekepenger" : "💰 Live Handel"}
+            <h1
+              className={`text-2xl font-bold ${SURFACE.TEXT} flex items-center gap-2`}
+            >
+              {mode === "paper" ? (
+                <>
+                  <FileText className="w-6 h-6 text-slate-400" />
+                  Lekepenger
+                </>
+              ) : (
+                <>
+                  <Wallet className="w-6 h-6 text-emerald-400" />
+                  Live Handel
+                </>
+              )}
             </h1>
             <p className={`${SURFACE.TEXT_MUTED} text-sm mt-1`}>
               {mode === "paper"
@@ -386,7 +404,7 @@ export default function UnifiedTradingDashboard({
           <div className="bg-red-500/10 border border-red-500/30 p-4 flex items-center gap-3 rounded-xl">
             <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
             <p className="text-red-400 text-sm">
-              ⚠️ Du handler med ekte midler. Vær forsiktig.
+              Du handler med ekte midler. Vær forsiktig.
             </p>
           </div>
         )}

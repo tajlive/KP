@@ -55,6 +55,8 @@ jobs:
         run: npm run test:e2e:critical
         env:
           BASE_URL: ${{ vars.BASE_URL || 'https://www.klarpakke.no' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL }}

@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "klarpakke": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/klarpakke-mcp/mcp", "--header", "Authorization: Bearer ee155af9957f4ce160802da2c87a1197"]
-    },
-    "linear
-

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Gamepad2, Info } from "lucide-react";
@@ -15,6 +15,7 @@ import {
 
 export default function OnboardingStep3() {
   const t = useTranslations("onboarding.step3");
+  const locale = useLocale();
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
@@ -40,16 +41,16 @@ export default function OnboardingStep3() {
         .single();
 
       if (profile?.onboarding_completed) {
-        router.push("/dashboard");
+        router.push(`/${locale}/dashboard`);
         return;
       }
 
       // Redirect hvis brukeren er på feil steg
       if (!profile?.onboarding_step || profile.onboarding_step < 2) {
         const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step2-experience",
-          "/onboarding/step3-trading-mode",
+          `/${locale}/onboarding/step1-welcome`,
+          `/${locale}/onboarding/step2-experience`,
+          `/${locale}/onboarding/step3-trading-mode`,
         ];
         router.push(steps[profile?.onboarding_step || 0]);
         return;
@@ -57,11 +58,11 @@ export default function OnboardingStep3() {
 
       if (profile.onboarding_step > 2) {
         const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step2-experience",
-          "/onboarding/step3-trading-mode",
-          "/onboarding/step4-binance",
-          "/onboarding/step5-complete",
+          `/${locale}/onboarding/step1-welcome`,
+          `/${locale}/onboarding/step2-experience`,
+          `/${locale}/onboarding/step3-trading-mode`,
+          `/${locale}/onboarding/step4-binance`,
+          `/${locale}/onboarding/step5-complete`,
         ];
         router.push(steps[profile.onboarding_step]);
         return;
@@ -76,7 +77,7 @@ export default function OnboardingStep3() {
     };
 
     checkStatus();
-  }, [router, supabase]);
+  }, [router, supabase, locale]);
 
   const handleContinue = async () => {
     setLoading(true);
@@ -98,7 +99,7 @@ export default function OnboardingStep3() {
 
       if (error) throw error;
 
-      router.push("/onboarding/step4-binance");
+      router.push(`/${locale}/onboarding/step4-binance`);
     } catch (err) {
       console.error("Failed to save:", err);
       setLoading(false);

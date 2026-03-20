@@ -12,9 +12,11 @@ import { Progress } from "@/components/ui/progress";
 import {
   BookOpen,
   Award,
+  BarChart3,
   TrendingUp,
   ChevronRight,
   GraduationCap,
+  Shield,
   Star,
   Target,
   Zap,
@@ -82,7 +84,13 @@ const BADGE_ICONS: Record<string, React.ReactNode> = {
 
 function ShieldIcon() {
   return (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg
+      className="w-4 h-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   );
@@ -99,22 +107,32 @@ export default function DashboardLearningSidebar({
   const t = useTranslations("dashboard.learningPath");
 
   // Beregn total progresjon på tvers av alle tracks
-  const totalLessons = LEARNING_TRACKS.reduce((sum, track) => sum + track.lessons.length, 0);
+  const totalLessons = LEARNING_TRACKS.reduce(
+    (sum, track) => sum + track.lessons.length,
+    0,
+  );
   const totalCompleted = completedLessonIds.length;
   const totalProgress = Math.round((totalCompleted / totalLessons) * 100);
 
   // Finn nåværende track
   const currentTrack = getTrackById(currentTrackId) || LEARNING_TRACKS[0];
-  const trackProgress = calculateTrackProgress(currentTrackId, completedLessonIds);
+  const trackProgress = calculateTrackProgress(
+    currentTrackId,
+    completedLessonIds,
+  );
 
   // Finn neste anbefalte leksjon
-  const nextLesson = getFirstIncompleteLesson(currentTrackId, completedLessonIds);
+  const nextLesson = getFirstIncompleteLesson(
+    currentTrackId,
+    completedLessonIds,
+  );
 
   // Beregn nivå basert på fullførte leksjoner
   const currentLevel = getCurrentLevel(totalCompleted, totalLessons);
   // Defensive coding: fallback to 'no' if locale not found
-  const localeNames = LEVEL_NAMES[lang] || LEVEL_NAMES['no'];
-  const levelName = localeNames[currentLevel] || localeNames['beginner'] || "Student";
+  const localeNames = LEVEL_NAMES[lang] || LEVEL_NAMES["no"];
+  const levelName =
+    localeNames[currentLevel] || localeNames["beginner"] || "Student";
 
   // Sorter tracks etter nivå
   const sortedTracks = [...LEARNING_TRACKS].sort((a, b) => {
@@ -136,9 +154,7 @@ export default function DashboardLearningSidebar({
               <GraduationCap className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <h3 className="font-bold text-white">
-                {t("title")}
-              </h3>
+              <h3 className="font-bold text-white">{t("title")}</h3>
               <p className="text-xs text-slate-400">
                 {t("level")}: {levelName}
               </p>
@@ -152,7 +168,9 @@ export default function DashboardLearningSidebar({
         {/* Total progresjonsbar */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-slate-400">
-            <span>{totalCompleted} / {totalLessons} {t("lessons")}</span>
+            <span>
+              {totalCompleted} / {totalLessons} {t("lessons")}
+            </span>
             <span>{totalProgress}%</span>
           </div>
           <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -216,7 +234,7 @@ export default function DashboardLearningSidebar({
                     isActive
                       ? "bg-slate-800 border-indigo-500/30"
                       : "bg-slate-900/50 border-slate-800 hover:border-slate-700",
-                    isCompleted && "border-green-500/30"
+                    isCompleted && "border-green-500/30",
                   )}
                 >
                   <div className="flex items-start justify-between mb-3">
@@ -224,13 +242,15 @@ export default function DashboardLearningSidebar({
                       <div
                         className={cn(
                           "w-10 h-10 rounded-xl flex items-center justify-center text-lg",
-                          track.color.replace("bg-", "bg-opacity-20 bg-")
+                          track.color.replace("bg-", "bg-opacity-20 bg-"),
                         )}
                       >
                         {getTrackIcon(track.id)}
                       </div>
                       <div>
-                        <h5 className="font-bold text-white text-sm">{track.title}</h5>
+                        <h5 className="font-bold text-white text-sm">
+                          {track.title}
+                        </h5>
                         <p className="text-xs text-slate-500">
                           {progress.completed} / {progress.total} {t("lessons")}
                         </p>
@@ -247,10 +267,7 @@ export default function DashboardLearningSidebar({
                   {/* Progresjonsbar for track */}
                   <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                     <motion.div
-                      className={cn(
-                        "h-full rounded-full",
-                        track.color
-                      )}
+                      className={cn("h-full rounded-full", track.color)}
                       initial={{ width: 0 }}
                       animate={{ width: `${progress.percentage}%` }}
                       transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
@@ -288,7 +305,9 @@ export default function DashboardLearningSidebar({
                 className="group relative"
               >
                 <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 flex items-center justify-center cursor-pointer hover:border-yellow-400 transition-colors">
-                  {BADGE_ICONS[badge.id] || <Star className="w-5 h-5 text-yellow-400" />}
+                  {BADGE_ICONS[badge.id] || (
+                    <Star className="w-5 h-5 text-yellow-400" />
+                  )}
                 </div>
                 {/* Tooltip */}
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
@@ -344,14 +363,19 @@ function getLessonIcon(type: string): React.ReactNode {
 }
 
 function getTrackIcon(trackId: string): React.ReactNode {
+  const className = "w-5 h-5 shrink-0";
   switch (trackId) {
     case "grunnkurs-krypto":
-      return "📚";
+      return <BookOpen className={`${className} text-blue-400`} aria-hidden />;
     case "risikostyring":
-      return "🛡️";
+      return <Shield className={`${className} text-amber-400`} aria-hidden />;
     case "teknisk-analyse":
-      return "📊";
+      return (
+        <BarChart3 className={`${className} text-emerald-400`} aria-hidden />
+      );
     default:
-      return "🎓";
+      return (
+        <GraduationCap className={`${className} text-slate-400`} aria-hidden />
+      );
   }
 }

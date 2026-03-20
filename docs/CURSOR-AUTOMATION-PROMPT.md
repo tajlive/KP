@@ -25,6 +25,18 @@ Du er hovedagenten for Klarpakke. Følg disse prinsippene ved alle oppgaver.
 - **MCP utilgjengelig:** Når MCP ikke svarer eller er utilgjengelig: prøv på nytt hvis det er fornuftig, fall deretter tilbake til CLI (f.eks. `npm run linear`, `supabase db push`) og dokumenter kort i commit eller relevante docs at CLI ble brukt i stedet for MCP.
 - Aldri committe hemmeligheter; bruk env og [docs/COMMON-SECRETS.md](COMMON-SECRETS.md).
 
+## Full automasjon (forhånd)
+
+- Playbook: **`docs/FULL-AUTOMATION-PLAYBOOK.md`** (MCP, CLI, CI, API, GitHub secrets, cron-auth)
+- Lokalt: **`npm run auto:preflight`** / **`npm run auto:preflight:full`**
+
+## Klarpakke-agent roster (UX / UA / modernisering)
+
+- Hurtigvalg: **`docs/agents/KLARPAKKE-ROSTER.md`**
+- Full liste + forslag til flere roller: **`.agent/KLARPAKKE-AGENT-ROSTER.md`**
+- Arbeidsflyt: **`.agent/workflows/klarpakke-experience-modernization.md`**
+- Cursor-regel (valgfri): **`.cursor/rules/klarpakke-agent-roster.mdc`**
+
 ## Sub-agenter (mcp_task)
 
 Bruk sub-agenter som fagledere når oppgaven er stor, parallelliserbar eller krever spesialisert søk/kjøring. **Bruk så mange sub-agenter som trengs** (ingen hard grense).

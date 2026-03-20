@@ -2255,6 +2255,23 @@
       "validation_priceRequired": "Enter a price for the selected pricing model"
     }
   },
+  "copyStrategy": {
+    "capitalLabel": "Capital (NOK)",
+    "riskLabel": "Risk level",
+    "riskConservative": "Conservative",
+    "riskBalanced": "Balanced",
+    "riskAggressive": "Aggressive",
+    "autoStopLossLabel": "Auto stop-loss",
+    "stopLossPercentLabel": "Stop-loss (%)",
+    "submit": "Copy strategy",
+    "submitting": "Copying…",
+    "successToast": "Strategy copied to paper trading.",
+    "errorGeneric": "Something went wrong. Try again.",
+    "errorNotSignedIn": "Sign in to copy this strategy.",
+    "validation_capitalMin": "Minimum 1,000 NOK",
+    "validation_capitalMax": "Maximum 50,000 NOK",
+    "validation_stopLossRequired": "Enter stop-loss percent"
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account and preferences",

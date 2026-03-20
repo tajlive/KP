@@ -66,9 +66,7 @@ export default async function HeroSection({ locale = "no" }: HeroSectionProps) {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
               {t("titlePart1")}
               <br />
-              <span className="bg-linear-to-r from-blue-200 via-sky-200 to-blue-100 bg-clip-text text-transparent">
-                {t("titlePart2")}
-              </span>
+              <span className={HERO.titleAccent}>{t("titlePart2")}</span>
             </h1>
 
             {/* H2 - Clearer value prop */}
