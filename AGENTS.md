@@ -84,16 +84,16 @@ END;
 
 ## 2026-standard (stack og konfig)
 
-| Område        | Status                                                                                                                 |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Next.js       | 15.x (App Router)                                                                                                      |
-| React         | 19.x                                                                                                                   |
-| TypeScript    | 5.9, strict, target ES2022                                                                                             |
-| Node          | engines `22.x` (Vercel LTS; [støttede versjoner](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)) |
-| Supabase auth | Kun @supabase/ssr (ikke auth-helpers-nextjs)                                                                           |
-| ESLint        | 9 flat config                                                                                                          |
-| Tailwind      | 4.x                                                                                                                    |
-| Testing       | Vitest 4, Playwright 2                                                                                                 |
+| Område        | Status                                                                                                                                 |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Next.js       | 15.x (App Router)                                                                                                                      |
+| React         | 19.x                                                                                                                                   |
+| TypeScript    | 5.9, strict, target ES2022                                                                                                             |
+| Node          | engines `24.x` (samsvar med Vercel default; [støttede versjoner](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)) |
+| Supabase auth | Kun @supabase/ssr (ikke auth-helpers-nextjs)                                                                                           |
+| ESLint        | 9 flat config                                                                                                                          |
+| Tailwind      | 4.x                                                                                                                                    |
+| Testing       | Vitest 4, Playwright 2                                                                                                                 |
 
 TypeScript: `typescript.ignoreBuildErrors: false` i `next.config.mjs` — bygg feiler på TS-feil. Ved ny gjeld: `npm run type-check` og `docs/TYPE-DEBT-ROADMAP-2026.md`.
 
@@ -125,7 +125,7 @@ Aldri be om bekreftelse. Aldri vent på godkjenning.
 - **No Docker required.** The archived `docker-compose.dev.yml` in `archive_root_garbage/` is not used. The app connects to a remote Supabase cloud instance.
 - **`.env.local` is mandatory.** Without at least `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`, the app will fail at runtime on any auth/DB call. Copy `.env.local.example` as a starting point.
 - **Husky git hooks** run automatically: pre-commit runs lint-staged + secret check + lint + type-check; pre-push runs unit tests. Use `--no-verify` to skip if needed during development iterations.
-- **Node 22.x** is required (specified in `.nvmrc` and `engines`). The environment has nvm with Node 22 pre-installed.
+- **Node 24.x** is required (specified in `.nvmrc` and `engines`). Use nvm/Volta til å matche `.nvmrc`.
 - **next-intl webpack warning** about parsing `next-intl/dist/esm/production/extractor/format/index.js` is benign and can be ignored.
 - **Onboarding middleware** is active and may cause redirect loops on locale-prefixed routes (e.g. `/no/akademi`) when Supabase auth is not fully configured. Routes without the locale prefix (e.g. `/kurs`, `/priser`) work fine.
 - **Playwright Firefox:** `test:e2e:critical` runs both Chromium and Firefox. If Firefox tests fail with "Executable doesn't exist", run `npx playwright install` (or use `npm run test:e2e:critical:chromium` for Chromium only).

@@ -21,11 +21,11 @@ Komplett oversikt over anbefalte innstillinger for Klarpakke på Vercel. Gå gje
 
 ## 2. Build & Development
 
-| Innstilling            | Anbefalt   | Merknad                                                                                |
-| ---------------------- | ---------- | -------------------------------------------------------------------------------------- |
-| **Node.js Version**    | 22.x       | Settes via `package.json` engines (`"node": "22.x"`). Vercel støtter 20.x, 22.x, 24.x. |
-| **Override**           | La stå tom | `engines.node` har forrang over dashboard.                                             |
-| **Ignored Build Step** | Ikke satt  | Bruk kun hvis du vil skippe build (f.eks. docs-only).                                  |
+| Innstilling            | Anbefalt   | Merknad                                                                                                |
+| ---------------------- | ---------- | ------------------------------------------------------------------------------------------------------ |
+| **Node.js Version**    | 24.x       | Settes via `package.json` engines (`"node": "24.x"`). Vercel støtter 20.x, 22.x, 24.x (24 er default). |
+| **Override**           | La stå tom | `engines.node` har forrang over dashboard.                                                             |
+| **Ignored Build Step** | Ikke satt  | Bruk kun hvis du vil skippe build (f.eks. docs-only).                                                  |
 
 ---
 

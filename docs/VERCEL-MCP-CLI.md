@@ -77,7 +77,7 @@ CLI-scriptet: `scripts/vercel-api.mjs`; leser `.env.local`.
 
 ### Node-versjon (optimalt for Vercel)
 
-- **Engines:** `package.json` → `"engines": { "node": "22.x" }`.
+- **Engines:** `package.json` → `"engines": { "node": "24.x" }`.
 - **Lokal/Vercel:** `.nvmrc` med `22` – samme major som engines.
 - **Vercel støtte:** 20.x, 22.x, 24.x (default 24.x). Vi bruker 22.x (LTS, forutsigbar).
 - **Viktig:** Unngå `>=20` i engines; da bruker Vercel 24.x og viser advarsel. Bruk eksplisitt `20.x`/`22.x`/`24.x`.
@@ -98,5 +98,5 @@ Dokumentert i **docs/vercel-build-notes.md** §6b.
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **MCP**           | Offisiell remote MCP: `url: https://mcp.vercel.com/klarpakke/klarpakke` i `.cursor/mcp.json`. OAuth, ingen token i config. Full sjekkliste: **docs/VERCEL-SETTINGS.md**. |
 | **CLI**           | `scripts/vercel-api.mjs` + `npm run vercel` / `vercel:test`. Krever `VERCEL_TOKEN` i `.env.local`.                                                                       |
-| **Node**          | `22.x` i engines og `.nvmrc` – optimalt for Vercel uten nedgradering.                                                                                                    |
+| **Node**          | `24.x` i engines og `.nvmrc` – samsvar med Vercel default.                                                                                                               |
 | **Dokumentasjon** | Denne filen + **docs/vercel-build-notes.md** + **docs/MCP-CLI-CI-API.md**.                                                                                               |
