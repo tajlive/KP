@@ -76,6 +76,22 @@
   "totalProfit": "Total Profit",
   "dailyChange": "Dagens Endring",
   "activeSignals": "Aktive Signaler",
+  "marketDesk": {
+    "title": "Live markedsdesk",
+    "subtitle": "Signaler, posisjoner og siste handler — kuratert oversikt.",
+    "myPositions": "Mine posisjoner",
+    "recentTrades": "Siste handler",
+    "noPositions": "Ingen posisjoner ennå. Start med paper trading!",
+    "noTrades": "Ingen handler ennå",
+    "seeAll": "Se alle"
+  },
+  "tierLabels": {
+    "student": "Student",
+    "bachelor": "Bachelor",
+    "master": "Master",
+    "phd": "PhD",
+    "professor": "Professor"
+  },
   "signalPreview": {
     "title": "Siste signaler",
     "seeAll": "Se alle",
@@ -84,7 +100,11 @@
     "empty": "Ingen signaler ennå. Aktiver en strategi for å se signaler.",
     "buy": "Kjøp",
     "sell": "Salg",
-    "confidence": "konfidens"
+    "confidence": "konfidens",
+    "directionBuy": "KJØP",
+    "directionSell": "SALG",
+    "planChip": "Plan: {tier}",
+    "curated": "Kuratert feed"
   },
   "newToday": "nye i dag",
   "recentActivity": "Nylig Aktivitet",

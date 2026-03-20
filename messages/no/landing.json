@@ -156,6 +156,12 @@
     "title": "Hva våre brukere sier",
     "subtitle": "Se hva andre sier om å lære trading med Klarpakke"
   },
+  "liveSignalFeed": {
+    "title": "Sanntidssignaler",
+    "seeAll": "Se alle signaler og historikk →",
+    "directionBuy": "KJØP",
+    "directionSell": "SALG"
+  },
   "emailCapture": {
     "badge": "Gratis kurs",
     "title": "Få gratis krypto-kurs",

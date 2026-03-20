@@ -203,6 +203,22 @@
     "yourBadges": "你的徽章",
     "goToAcademy": "前往学院"
   },
+  "marketDesk": {
+    "title": "实时交易台",
+    "subtitle": "信号、持仓与最新成交",
+    "myPositions": "我的持仓",
+    "recentTrades": "最近成交",
+    "noPositions": "暂无持仓。从模拟交易开始！",
+    "noTrades": "暂无成交",
+    "seeAll": "查看全部"
+  },
+  "tierLabels": {
+    "student": "Student",
+    "bachelor": "Bachelor",
+    "master": "Master",
+    "phd": "PhD",
+    "professor": "Professor"
+  },
   "signalPreview": {
     "title": "最新信号",
     "seeAll": "查看全部",
@@ -211,6 +227,10 @@
     "empty": "暂无信号。启用策略后即可查看。",
     "buy": "买入",
     "sell": "卖出",
-    "confidence": "置信度"
+    "confidence": "置信度",
+    "directionBuy": "买入",
+    "directionSell": "卖出",
+    "planChip": "方案：{tier}",
+    "curated": "精选信息流"
   }
 }

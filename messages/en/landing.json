@@ -177,6 +177,12 @@
     "title": "What our users say",
     "subtitle": "See what others are saying about learning to trade with Klarpakke"
   },
+  "liveSignalFeed": {
+    "title": "Latest real-time signals",
+    "seeAll": "View all signals & history →",
+    "directionBuy": "BUY",
+    "directionSell": "SELL"
+  },
   "emailCapture": {
     "badge": "Free course",
     "title": "Get a free crypto course",

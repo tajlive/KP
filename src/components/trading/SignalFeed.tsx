@@ -1,6 +1,8 @@
 "use client";
 
+import { ConfidenceMeter } from "@/components/trading/PremiumSignalRow";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { MARKET_DESK } from "@/lib/design/market-desk";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import { formatDistanceToNow } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -139,7 +141,7 @@ export function SignalFeed() {
     action?.toUpperCase() === "BUY" || action?.toUpperCase() === "LONG";
 
   return (
-    <div className="bg-slate-800/60 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
+    <div className={`${MARKET_DESK.panel} overflow-hidden`}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/50">
         <div className="flex items-center gap-2.5">
@@ -237,7 +239,13 @@ export function SignalFeed() {
                     {/* Right: confidence + age */}
                     <div className="text-right shrink-0">
                       {signal.confidence != null && (
-                        <ConfidenceBadge value={signal.confidence} />
+                        <>
+                          <ConfidenceBadge value={signal.confidence} />
+                          <ConfidenceMeter
+                            value={signal.confidence}
+                            className="mt-1.5 ml-auto max-w-[72px]"
+                          />
+                        </>
                       )}
                       <p className="text-[10px] text-slate-500 mt-0.5">{age}</p>
                     </div>

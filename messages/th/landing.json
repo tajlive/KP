@@ -144,6 +144,12 @@
     "overlay": "สมัครเพื่อเทรดด้วยข้อมูลจริง",
     "overlayCta": "เริ่มฟรี"
   },
+  "liveSignalFeed": {
+    "title": "สัญญาณเรียลไทม์ล่าสุด",
+    "seeAll": "ดูสัญญาณและประวัติทั้งหมด →",
+    "directionBuy": "ซื้อ",
+    "directionSell": "ขาย"
+  },
   "emailCapture": {
     "badge": "คอร์สฟรี",
     "title": "รับคอร์สคริปโตฟรี",
