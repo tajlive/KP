@@ -229,6 +229,16 @@ Etter bygg skrives rapporter til:
 2. Verifiser at alle root-elementer finnes i Webflow
 3. Sjekk at contract.json er korrekt
 
+### `gh run watch`: «exit code 1» men run er `success`
+
+- **Supabase migrations** i `deploy.yml` har `continue-on-error: true` (valgfritt steg). Hvis `db push` feiler, logges **exit 1**, men hele **Deploy**-jobben kan fortsatt bli **grønn** hvis resten passerer.
+- Sjekk alltid: `gh run view <id> --json conclusion,jobs` — feltet **`conclusion`** (`success` / `failure`) er det som gjelder.
+- **Verify production** feiler nå **hele** jobben hvis `npm run verify` feiler (ingen `continue-on-error`).
+
+### Playwright: «Fast Refresh had to perform a full reload»
+
+Ufarlig støy fra **Next dev-server** under e2e: en full reload kan skje når HMR ikke kan patche. Testene kan fortsatt være grønne. Ved behov: ignorer i logg eller kjør smoke mot `next start` (prod-lignende) i stedet for `dev`.
+
 ## Kontakt
 
 For spørsmål, opprett en issue eller kontakt team-lederen.

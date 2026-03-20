@@ -104,10 +104,10 @@ jobs:
           echo "::error::Production health did not become ready in time"
           exit 1
 
+      # Ingen continue-on-error: feilet verify skal feile jobben (tydelig signal i gh / Slack).
       - name: Verify production
         if: env.IS_PRODUCTION == 'true'
         run: npm run verify
-        continue-on-error: true
 
       - name: Purge Cloudflare cache
         if: env.IS_PRODUCTION == 'true' && success()
