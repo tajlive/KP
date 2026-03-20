@@ -13,9 +13,10 @@
 
 1. **KLA-226 → KLA-230** — tier i prod, DB-lint, typer, `profiles`/`user_profiles` (som i AGENTS.md-tabellen).
 2. **Unified notifications** — view `unified_notifications_with_email` (migrasjon i repo; kjør mot remote ved behov).
-3. **TYPE_DEBT / KLA-228** — `ignoreBuildErrors` av når gjeld er nedkjempet.
-4. **EPIC KLA-170** — forbedringsplan (AI, gamification, PWA, vekst) _etter_ at punkt 1–3 ikke blokkerer drift.
-5. **KLA-91 Strategy Marketplace** — arkitektur **Accepted** i ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`; implementasjon følger `docs/architecture/KLA-91-ROADMAP-CURSOR.md` (**Cursor** med agenter har hovedansvaret). Linear: **KLA-91** (Backlog etter arkitektur-logg).
+3. **TYPE_DEBT** — **KLA-228** er **Done** (`ignoreBuildErrors` av i repo). Videre arbeid: **KLA-229** (TYPE_DEBT-roadmap + CI).
+4. **KLA-232** — dashboard live-signaler / win rate / IA-duplikater (relatert til **KLA-170** fase 1).
+5. **EPIC KLA-170** — forbedringsplan (AI, gamification, PWA, vekst) _etter_ at punkt 1–4 ikke blokkerer drift.
+6. **KLA-91 Strategy Marketplace** — arkitektur **Accepted** i ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`; implementasjon følger `docs/architecture/KLA-91-ROADMAP-CURSOR.md` (**Cursor** med agenter har hovedansvaret). Linear: **KLA-91** med underoppgaver **KLA-233 → KLA-234 → KLA-235** (migrasjon/typer → API/hooks → UI+E2E).
 
 ## Ukentlig sync (anbefalt)
 
