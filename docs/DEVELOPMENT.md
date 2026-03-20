@@ -231,9 +231,10 @@ Etter bygg skrives rapporter til:
 
 ### `gh run watch`: «exit code 1» men run er `success`
 
-- **Supabase migrations** i `deploy.yml` har `continue-on-error: true` (valgfritt steg). Hvis `db push` feiler, logges **exit 1**, men hele **Deploy**-jobben kan fortsatt bli **grønn** hvis resten passerer.
+- **Deploy-workflow** bruker **actions/checkout, setup-node, cache @v5** (Node 24-runtime) for å dempe GitHub-advarselen om Node 20 i actions.
+- **Supabase migrations** er ikke-blokkerende men avslutter steget med **exit 0**; ved feil logges **`::warning::`** i stedet for rød «exit code 1»-annotasjon.
 - Sjekk alltid: `gh run view <id> --json conclusion,jobs` — feltet **`conclusion`** (`success` / `failure`) er det som gjelder.
-- **Verify production** feiler nå **hele** jobben hvis `npm run verify` feiler (ingen `continue-on-error`).
+- **Verify production** feiler **hele** jobben hvis `npm run verify` feiler.
 
 ### Playwright: «Fast Refresh had to perform a full reload»
 

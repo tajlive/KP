@@ -37,10 +37,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
@@ -49,7 +49,7 @@ jobs:
         run: npm ci --prefer-offline
 
       - name: Restore Next.js build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .next/cache
           key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
@@ -58,14 +58,24 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Alltid exit 0: unngår «Process completed with exit code 1»-annotasjon når push feiler men deploy skal fortsette.
       - name: Supabase migrations (kun production)
         if: env.IS_PRODUCTION == 'true'
         run: |
+          set +e
           npx supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+          LINK_EXIT=$?
           npx supabase db push
+          PUSH_EXIT=$?
+          set -e
+          if [ "$LINK_EXIT" -ne 0 ] || [ "$PUSH_EXIT" -ne 0 ]; then
+            echo "::warning::Supabase link/db push ikke OK (link=$LINK_EXIT push=$PUSH_EXIT). Deploy fortsetter — sjekk migrasjoner manuelt ved behov."
+          else
+            echo "Supabase migrations OK"
+          fi
+          exit 0
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        continue-on-error: true
 
       - name: Build
         run: npm run build
