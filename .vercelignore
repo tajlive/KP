@@ -11,3 +11,14 @@ tests
 scripts
 reports
 audit
+# E2E / test artifacts (store upload requests — Vercel build bruker next build, ikke npm prebuild)
+e2e
+playwright-report
+test-results
+coverage
+.nyc_output
+allure-results
+allure-report
+.cursor
+# Kun repo-roten /supabase (migrasjoner, edge functions). IKKE «supabase» som del av src/lib/supabase.
+/supabase
