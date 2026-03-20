@@ -1,5 +1,9 @@
 name: 🗄️ Auto Schema Dump
 
+# Opt into Node.js 24 for JS actions (checkout etc.) — deprecation fix
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     branches: [main]
@@ -19,8 +23,9 @@ jobs:
   dump-schema:
     name: Dump Supabase Schema
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
-      contents: write # Nødvendig for å committe tilbake
+      contents: write
 
     steps:
       - name: Checkout

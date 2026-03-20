@@ -1,16 +1,24 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
-  const authClient = createClient();
-  const { data: { user } } = await authClient.auth.getUser();
+export async function POST(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabaseAuth = createServerClient(request, response);
+  const {
+    data: { user },
+  } = await supabaseAuth.auth.getUser();
 
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: profile } = await authClient
-    .from("user_profiles").select("role").eq("id", user.id).single();
+  const supabase = createClient();
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
 
   const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
   if (!ADMIN_EMAILS.includes(user.email ?? "") && profile?.role !== "admin") {
@@ -18,13 +26,19 @@ export async function POST() {
   }
 
   const secret = process.env.CRON_SECRET?.trim();
-  if (!secret) return NextResponse.json({ error: "CRON_SECRET not set" }, { status: 500 });
+  if (!secret)
+    return NextResponse.json({ error: "CRON_SECRET not set" }, { status: 500 });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.klarpakke.no";
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.klarpakke.no";
   const res = await fetch(`${siteUrl}/api/cron/tick`, {
     headers: { Authorization: `Bearer ${secret}` },
   });
 
   const body = await res.json();
-  return NextResponse.json({ triggered: true, result: body, status: res.status });
+  return NextResponse.json({
+    triggered: true,
+    result: body,
+    status: res.status,
+  });
 }

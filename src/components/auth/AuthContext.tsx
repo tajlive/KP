@@ -9,7 +9,6 @@ import {
   useCallback,
   useRef,
 } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/utils";
 import { CONFIG_ERROR_MSG } from "@/lib/supabase/client";
 import { Session, User, AuthError } from "@supabase/supabase-js";
@@ -17,7 +16,6 @@ import {
   clearAllSupabaseStorage,
   clearCorruptSupabaseKeysSync,
 } from "@/lib/supabase/safe-storage";
-import { queryKeys } from "@/lib/query-keys";
 
 interface AuthContextType {
   user: User | null;
@@ -69,7 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // KRITISK: Rydd korrupte sb-*-nøkler FØR Supabase-klient opprettes (forhindrer "Invalid UTF-8 sequence")
   clearCorruptSupabaseKeysSync();
 
-  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -163,9 +160,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(null);
             setUser(null);
 
-            // Redirect to login with expired session param
+            // Redirect to login with expired session param (preserve locale)
             if (typeof window !== "undefined") {
-              window.location.href = "/innlogging?session=expired";
+              const locale = window.location.pathname.split("/")[1] || "no";
+              const safeLocale = ["no", "en", "th", "zh"].includes(locale)
+                ? locale
+                : "no";
+              window.location.href = `/${safeLocale}/innlogging?session=expired`;
             }
             return;
           }
@@ -283,13 +284,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (refreshTimeoutRef.current) {
           clearTimeout(refreshTimeoutRef.current);
         }
-        queryClient.removeQueries({ queryKey: queryKeys.all });
+        // Query cache cleared by components that use QueryClient (dashboard has its own provider)
       } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        queryClient.invalidateQueries({ queryKey: queryKeys.profile(null) });
-        queryClient.invalidateQueries({ queryKey: queryKeys.tier(null) });
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tradingSessions(null),
-        });
+        // React Query invalidate moved to dashboard components; AuthProvider is QueryClient-independent
       }
 
       setSession(session);

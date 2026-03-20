@@ -1,14 +1,15 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import { getErrorMessage } from "@/lib/utils/error";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient();
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(req, response);
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,6 +18,7 @@ export async function POST(req: NextRequest) {
     const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
     const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
 
+    const supabase = createClient();
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("role")

@@ -25,6 +25,7 @@ import {
   Play,
   Settings2,
   ShoppingBag,
+  Target,
   Zap,
   TrendingUp,
   TrendingDown,
@@ -41,6 +42,7 @@ import {
 import { getStrategyIconComponent } from "@/lib/trading/strategy-icons";
 import AdvancedStatsModal from "./AdvancedStatsModal";
 import AIDecisionPanel from "@/components/ai/AIDecisionPanel";
+import { TABLE } from "@/lib/design/tokens";
 
 interface BotStatusDashboardProps {
   portfolio: Portfolio | null;
@@ -312,7 +314,7 @@ export default function BotStatusDashboard({
           className={cn(
             "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
             currentView === "ai"
-              ? "bg-purple-600 text-white"
+              ? "bg-[#0052FF] text-white"
               : "text-slate-400 hover:text-white",
           )}
         >
@@ -465,7 +467,7 @@ export default function BotStatusDashboard({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
-                {recentTrades.slice(0, 5).map((t) => (
+                {recentTrades.slice(0, 15).map((t) => (
                   <tr
                     key={t.id}
                     className="hover:bg-slate-800/30 transition-colors"
@@ -509,13 +511,12 @@ export default function BotStatusDashboard({
                       )}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-500 text-xs">
-                      {new Date(t.executed_at).toLocaleTimeString(
-                        lang === "en" ? "en-US" : "no-NO",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        },
-                      )}
+                      {new Date(
+                        t.executed_at || t.created_at,
+                      ).toLocaleTimeString(lang === "en" ? "en-US" : "no-NO", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </td>
                   </tr>
                 ))}
@@ -1110,10 +1111,10 @@ function AIView({ userId, strategyId, lang }: AIViewProps) {
       className="space-y-6"
     >
       {/* AI Professor Header */}
-      <div className="bg-linear-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-2xl p-6">
+      <div className="bg-linear-to-r from-[#0052FF]/10 to-blue-900/20 border border-[#0052FF]/20 rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-            <Brain className="w-6 h-6 text-purple-400" />
+          <div className="w-12 h-12 rounded-xl bg-[#0052FF]/20 flex items-center justify-center">
+            <Brain className="w-6 h-6 text-[#0052FF]" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">

@@ -7,17 +7,32 @@ on:
       - '.cursor/mcp.json'
       - '.mcp/**'
       - 'scripts/mcp*.sh'
+      - 'scripts/run-*-mcp.mjs'
+      - 'scripts/test-mcp*.sh'
+      - 'scripts/verify-automation.sh'
   pull_request:
     branches: [ main ]
     paths:
       - '.cursor/mcp.json'
       - '.mcp/**'
       - 'scripts/mcp*.sh'
+      - 'scripts/run-*-mcp.mjs'
+      - 'scripts/test-mcp*.sh'
+      - 'scripts/verify-automation.sh'
+
+concurrency:
+  group: mcp-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   mcp-config-validation:
     name: Validate MCP Configuration
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     steps:
     - name: Checkout code
@@ -53,6 +68,20 @@ jobs:
             console.log('  ✅', server);
           });
         "
+
+    - name: Sync check .cursor vs .mcp
+      run: |
+        echo "🔗 Checking .cursor/mcp.json and .mcp/mcp_config.json are in sync..."
+        CURSOR=$(node -e "const c=JSON.parse(require('fs').readFileSync('.cursor/mcp.json','utf8')); console.log(JSON.stringify(Object.keys(c.mcpServers||{}).sort()))")
+        MCP=$(node -e "const c=JSON.parse(require('fs').readFileSync('.mcp/mcp_config.json','utf8')); console.log(JSON.stringify(Object.keys(c.mcpServers||{}).sort()))")
+        if [[ "$CURSOR" == "$MCP" ]]; then
+          echo "✅ MCP configs in sync"
+        else
+          echo "::error::MCP configs out of sync!"
+          echo "  .cursor: $CURSOR"
+          echo "  .mcp:    $MCP"
+          exit 1
+        fi
 
   mcp-security-check:
     name: MCP Security Check

@@ -2,7 +2,7 @@
 
 Hva som allerede er automatisert, og hva du må gjøre for full automatisering.
 
-**Varig løsning (anbefaling):** Se **docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md** for å få migrasjoner helt automatisk og unngå migrasjonshistorikk-mismatch. Kort fortalt: bruk **Supabase GitHub-integrasjon** med «Deploy to production» som eneste kanal for db push mot prod, eller én dedikert CI-job på `main`.
+**Varig løsning (anbefaling):** Se **docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md** for å få migrasjoner helt automatisk og unngå migrasjonshistorikk-mismatch. **Konkret oppsett:** Se **docs/SUPABASE-GITHUB-INTEGRATION-OPPSETT.md** – steg-for-steg slik du aktiverer Supabase GitHub-integrasjon (mest automatisk, ingen CI-secrets).
 
 ---
 
@@ -10,7 +10,9 @@ Hva som allerede er automatisert, og hva du må gjøre for full automatisering.
 
 | Del                               | Hvor                                                             | Merk                                                                                                                                                                                         |
 | --------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **db push automatisk ved merge**  | `.github/workflows/db-push-on-merge.yml`                         | **Varig løsning.** Kjører `supabase db push` automatisk ved push til `main` når `supabase/` endres. Krever: `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`.                                 |
 | **db push ved production-deploy** | `.github/workflows/manual-deploy.yml`                            | Når du velger "production" og kjører Manual Deploy, kjøres `supabase link` + `supabase db push` før build og Vercel-deploy. Krever secrets: `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`. |
+| **Migrasjonsvalidering på PR**    | `pr-check.yml` → `validate-migrations`                           | Validerer migrasjonsfiler (unike versjoner, filnavn) når `supabase/migrations/` endres. Lokalt: `npm run db:validate-migrations`.                                                            |
 | **Type-check**                    | `pr-check.yml`                                                   | `npm run type-check` kjører på hver PR.                                                                                                                                                      |
 | **Tier-migrering som migrasjon**  | `supabase/migrations/20260318120000_tier_slug_single_source.sql` | Tier-oppdateringen er en vanlig Supabase-migrasjon. Den kjører automatisk når `db push` kjører – du trenger **ikke** `DATABASE_URL` eller `npm run db:migrate-tier` i CI.                    |
 
@@ -72,15 +74,17 @@ Workflow-filen **`.github/workflows/db-push.yml`** (opprettet under) kan trigges
 
 ## 4. Oppsummering
 
-| Oppgave                                        | Automatisert? | Hvordan                                                 |
-| ---------------------------------------------- | ------------- | ------------------------------------------------------- |
-| Migrasjoner (inkl. tier) ved production-deploy | Ja            | Manual Deploy → production → db push kjører.            |
-| Migrasjoner uten deploy                        | Valgfritt     | Kjør workflow «DB push» eller `npm run db:push` lokalt. |
-| Fikse divergert migrasjonshistorikk            | Nei (én gang) | Manuell repair eller pull (se §2.1).                    |
-| Type-check                                     | Ja            | pr-check på PR.                                         |
-| Linear-oppgaver                                | Nei           | Opprettes manuelt eller via MCP/CLI.                    |
+| Oppgave                                        | Automatisert? | Hvordan                                                                         |
+| ---------------------------------------------- | ------------- | ------------------------------------------------------------------------------- |
+| **Migrasjoner ved merge til main**             | **Ja**        | `db-push-on-merge.yml` kjører `supabase db push` automatisk.                    |
+| Migrasjoner (inkl. tier) ved production-deploy | Ja            | Manual Deploy → production → db push kjører.                                    |
+| Migrasjoner uten deploy                        | Valgfritt     | Kjør workflow «DB push» eller `npm run db:push` lokalt.                         |
+| Validering av migrasjonsfiler på PR            | Ja            | `validate-migrations` job i pr-check; lokalt: `npm run db:validate-migrations`. |
+| Fikse divergert migrasjonshistorikk            | Nei (én gang) | Manuell repair eller pull (se §2.1).                                            |
+| Type-check                                     | Ja            | pr-check på PR.                                                                 |
+| Linear-oppgaver                                | Nei           | Opprettes manuelt eller via MCP/CLI.                                            |
 
-Etter at migrasjonshistorikk er reparert én gang, er resten automatisert ved å bruke Manual Deploy → production, eller den dedikerte db-push-workflowen.
+**Varig løsning:** Etter merge til main kjøres migrasjoner automatisk via `db-push-on-merge.yml`. Du trenger ikke lenger å manuelt trigge DB push.
 
 ---
 

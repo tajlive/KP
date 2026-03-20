@@ -31,6 +31,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import { useAuth } from "@/components/auth/AuthContext";
 
 /**
  * Saniterer redirect-destinasjon til en sikker relativ sti.
@@ -57,6 +58,7 @@ function sanitizeClientRedirect(value: string | null, locale: string): string {
 // Inner component that uses useSearchParams - must be wrapped in Suspense
 function InnloggingForm() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -99,6 +101,11 @@ function InnloggingForm() {
   const rawRedirect = next || searchParams?.get("redirectTo") || null;
   const safeRedirectTo = sanitizeClientRedirect(rawRedirect, locale);
 
+  // Innlogget bruker som besøker innlogging → dashboard (backup for middleware)
+  useEffect(() => {
+    if (!loading && user) router.replace(safeRedirectTo);
+  }, [loading, user, router, safeRedirectTo]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -139,7 +146,10 @@ function InnloggingForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6" data-testid="login-page">
+    <div
+      className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6"
+      data-testid="login-page"
+    >
       <div className="max-w-md mx-auto">
         <div className="flex justify-center mb-8">
           <Link href={`/${locale}`}>
@@ -155,7 +165,9 @@ function InnloggingForm() {
           </Link>
         </div>
 
-        <Card className={`bg-white dark:bg-slate-900 ${RADIUS.card} border border-slate-200 dark:border-slate-800 ${SHADOW.card}`}>
+        <Card
+          className={`bg-white dark:bg-slate-900 ${RADIUS.card} border border-slate-200 dark:border-slate-800 ${SHADOW.card}`}
+        >
           <CardHeader className="space-y-1 pb-2">
             <CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-slate-100">
               {t("signIn")}
@@ -172,7 +184,11 @@ function InnloggingForm() {
               </div>
             )}
 
-            <section aria-label={locale === "no" ? "Logg inn med e-post" : "Sign in with email"}>
+            <section
+              aria-label={
+                locale === "no" ? "Logg inn med e-post" : "Sign in with email"
+              }
+            >
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
                 {locale === "no" ? "E-post" : "Email"}
               </p>
@@ -223,7 +239,15 @@ function InnloggingForm() {
                       tabIndex={0}
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded-lg"
-                      aria-label={showPassword ? (locale === "no" ? "Skjul passord" : "Hide password") : (locale === "no" ? "Vis passord" : "Show password")}
+                      aria-label={
+                        showPassword
+                          ? locale === "no"
+                            ? "Skjul passord"
+                            : "Hide password"
+                          : locale === "no"
+                            ? "Vis passord"
+                            : "Show password"
+                      }
                     >
                       {showPassword ? (
                         <EyeOff className="w-5 h-5" />
@@ -317,7 +341,10 @@ function InnloggingForm() {
 // Loading fallback - matches InnloggingForm styling
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6" data-testid="login-page-loading">
+    <div
+      className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6"
+      data-testid="login-page-loading"
+    >
       <div className="max-w-md mx-auto">
         <div className="flex justify-center mb-8">
           <div className="h-10 w-40 bg-gray-200 rounded animate-pulse" />

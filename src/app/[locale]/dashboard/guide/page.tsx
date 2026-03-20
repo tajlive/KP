@@ -12,12 +12,8 @@ export default function GuidePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">
-          {t("title")}
-        </h1>
-        <p className="text-gray-400">
-          {t("subtitle")}
-        </p>
+        <h1 className="text-3xl font-bold text-white mb-2">{t("title")}</h1>
+        <p className="text-gray-400">{t("subtitle")}</p>
       </div>
 
       <div className="space-y-6">
@@ -33,9 +29,7 @@ export default function GuidePage() {
               <h3 className="text-lg font-semibold text-white mb-2">
                 {t(`steps.${step}.title`)}
               </h3>
-              <p className="text-gray-400">
-                {t(`steps.${step}.description`)}
-              </p>
+              <p className="text-gray-400">{t(`steps.${step}.description`)}</p>
             </div>
           </div>
         ))}
@@ -45,11 +39,9 @@ export default function GuidePage() {
         <h3 className="text-lg font-semibold text-white mb-2">
           {t("cta.title")}
         </h3>
-        <p className="text-gray-300 mb-4">
-          {t("cta.description")}
-        </p>
+        <p className="text-gray-300 mb-4">{t("cta.description")}</p>
         <Link
-          href={`/${locale}/dashboard/trading`}
+          href={`/${locale}/paper-trading`}
           className="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-white transition-colors"
         >
           {t("cta.button")}
@@ -62,28 +54,16 @@ export default function GuidePage() {
         </h3>
         <div className="space-y-4">
           <div>
-            <h4 className="font-medium text-white">
-              {t("faq.q1.question")}
-            </h4>
-            <p className="text-gray-400 text-sm mt-1">
-              {t("faq.q1.answer")}
-            </p>
+            <h4 className="font-medium text-white">{t("faq.q1.question")}</h4>
+            <p className="text-gray-400 text-sm mt-1">{t("faq.q1.answer")}</p>
           </div>
           <div>
-            <h4 className="font-medium text-white">
-              {t("faq.q2.question")}
-            </h4>
-            <p className="text-gray-400 text-sm mt-1">
-              {t("faq.q2.answer")}
-            </p>
+            <h4 className="font-medium text-white">{t("faq.q2.question")}</h4>
+            <p className="text-gray-400 text-sm mt-1">{t("faq.q2.answer")}</p>
           </div>
           <div>
-            <h4 className="font-medium text-white">
-              {t("faq.q3.question")}
-            </h4>
-            <p className="text-gray-400 text-sm mt-1">
-              {t("faq.q3.answer")}
-            </p>
+            <h4 className="font-medium text-white">{t("faq.q3.question")}</h4>
+            <p className="text-gray-400 text-sm mt-1">{t("faq.q3.answer")}</p>
           </div>
         </div>
       </div>

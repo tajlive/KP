@@ -1,0 +1,65 @@
+# ============================================================================
+# AUTO CREATE PR – Opprett PR automatisk ved push til feature-branch
+# ============================================================================
+# Varig løsning: Når du pusher til cursor/*, feat/*, fix/* eller chore/*,
+# opprettes PR mot main automatisk hvis ingen finnes fra før.
+#
+# Brukes av: Cursor Cloud, lokale utviklere, CI. Reduserer manuelle steg.
+# Krever: GITHUB_TOKEN (automatisk)
+# ============================================================================
+
+name: 📋 Auto-create PR
+
+on:
+  push:
+    # Kun disse branch-mønstrene – main, dependabot, renovate ekskludert implisitt
+    branches:
+      - 'cursor/**'
+      - 'feat/**'
+      - 'fix/**'
+      - 'chore/**'
+
+# Unngå flere kjøringer samtidig for samme branch
+concurrency:
+  group: auto-pr-${{ github.ref }}
+  cancel-in-progress: false
+
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: ⬇️ Checkout (gh CLI trenger git-kontekst)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Check if PR exists
+        id: check
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          COUNT=$(gh pr list --head "$BRANCH" --base main --state open --json number --jq 'length')
+          echo "exists=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: Create PR if not exists
+        if: steps.check.outputs.exists == '0'
+        run: |
+          BRANCH="${{ steps.check.outputs.branch }}"
+          # Generer lesbar tittel fra branch (feat/foo-bar → Feat foo bar)
+          TITLE=$(echo "$BRANCH" | sed 's/^[^\/]*\///' | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
+          BODY="Automatisk opprettet PR fra branch \`$BRANCH\`."
+          BODY+=$'\n\n'
+          if [ -f .github/pull_request_template.md ]; then
+            BODY+=$(cat .github/pull_request_template.md)
+          fi
+          gh pr create --base main --head "$BRANCH" --title "$TITLE" --body "$BODY" --draft
+          echo "✅ PR opprettet for $BRANCH"

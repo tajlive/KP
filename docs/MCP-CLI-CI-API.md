@@ -107,7 +107,7 @@ npm run vercel:env    # npx vercel env pull .env.local
 npm run deploy:prod   # npx vercel --prod
 ```
 
-MCP: I Cursor brukes offisiell Vercel MCP (`https://mcp.vercel.com`). Ved første bruk: klikk «Needs login» og autoriser. **Vercel env:** Agenten har tilgang til Vercel env via MCP og via `npm run vercel:env` (pull til .env.local). Full oversikt: **docs/VERCEL-MCP-CLI.md**.
+MCP: I Cursor brukes offisiell Vercel MCP (`https://mcp.vercel.com/klarpakke/klarpakke`). Ved første bruk: klikk «Needs login» og autoriser. **Vercel env:** Agenten har tilgang til Vercel env via MCP og via `npm run vercel:env` (pull til .env.local). Full oversikt: **docs/VERCEL-MCP-CLI.md**. Dashboard-sjekkliste: **docs/VERCEL-SETTINGS.md**.
 
 ### Cloudflare
 
@@ -165,6 +165,7 @@ npm run test:unit     # vitest
 npm run test:e2e:smoke
 npm run verify        # node scripts/verify-production.mjs
 npm run verify:prod   # smoke mot prod-URL
+npm run verify:automation  # lint + type-check + test:unit + verify + test:mcp (samlet MCP/CLI/API/CI)
 ```
 
 ---
@@ -250,13 +251,30 @@ Se **docs/MCP-SUPABASE-DB.md** for supabase-db MCP. Full audit: **docs/ENV-MCP-C
 
 ---
 
-## 8. Hurtigreferanse
+## 8. Release-flow (push → deploy)
 
-| Ønske              | Handling                                                                                     |
-| ------------------ | -------------------------------------------------------------------------------------------- |
-| Linear i Cursor    | `.env.local` med `LINEAR_API_KEY` → omstart Cursor → `npm run linear:test`                   |
-| Linear uten MCP    | `npm run linear issues` / `create` / `update`                                                |
-| Sentry prod        | Sett `NEXT_PUBLIC_SENTRY_DSN` i Vercel prod → **docs/SENTRY-PROD.md**                        |
-| Bygg raskere i CI  | Allerede satt: SKIP_LINT_IN_BUILD + cache (§8 vercel-build-notes)                            |
-| API-dokumentasjon  | **docs/api-routes.md**                                                                       |
-| Alle secrets / ENV | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md**, **docs/ENV-MCP-CLI-API-AUDIT.md** |
+**Automatisert:** Push til `main` trigger Deploy-workflow → build → Vercel prod. Ingen manuell deploy nødvendig.
+
+| Steg                | Kommando                                                       | Beskrivelse                                 |
+| ------------------- | -------------------------------------------------------------- | ------------------------------------------- |
+| 1. Valider før push | `npm run release`                                              | Lint + type-check + build (samme som CI)    |
+| 2. Commit & push    | `git add -A && git commit -m "..." && git push -u origin main` | Trigger Deploy workflow                     |
+| 3. Følg deploy      | `gh run watch` (valgfritt)                                     | Venter på at Deploy fullfører               |
+| 4. Verifiser prod   | `npm run verify`                                               | Tester domener, /api/health, kritiske paths |
+
+**Manuell Vercel-deploy (CLI):** `npm run deploy:prod` — nyttig hvis CI ikke brukes.
+
+---
+
+## 9. Hurtigreferanse
+
+| Ønske              | Handling                                                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Linear i Cursor    | `.env.local` med `LINEAR_API_KEY` → omstart Cursor → `npm run linear:test`                                                   |
+| Linear uten MCP    | `npm run linear issues` / `create` / `update`                                                                                |
+| Sentry prod        | Sett `NEXT_PUBLIC_SENTRY_DSN` i Vercel prod → **docs/SENTRY-PROD.md**                                                        |
+| Bygg raskere i CI  | Allerede satt: SKIP_LINT_IN_BUILD + cache (§8 vercel-build-notes)                                                            |
+| Release til prod   | `npm run release` → `git push origin main` → Deploy workflow                                                                 |
+| API-dokumentasjon  | **docs/api-routes.md**                                                                                                       |
+| Alle secrets / ENV | **docs/COMMON-SECRETS.md**, **docs/MCP-SECRETS-SETUP.md**, **docs/ENV-MCP-CLI-API-AUDIT.md**                                 |
+| Release-flow       | `npm run release` → `git push origin main` → Deploy workflow kjører automatisk → Vercel prod. Se **.github/GITHUB_SETUP.md** |

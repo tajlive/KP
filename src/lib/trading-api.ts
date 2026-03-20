@@ -171,15 +171,16 @@ export async function getPortfolio(
 
 export async function getRecentTrades(
   mode: TradingMode,
-  limit = 20,
+  limit = 50,
 ): Promise<Trade[]> {
   const user = await getUser();
+  // Bruk created_at (alltid satt) – executed_at kan være null for noen trades
   const { data } = await supabase
     .from("trades")
     .select("*")
     .eq("user_id", user.id)
     .eq("mode", mode)
-    .order("executed_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(limit);
   if (!data?.length) return [];
   return data.map((row) => mapDbTradeRowToTrade(row as TradesRow));

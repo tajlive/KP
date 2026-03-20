@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { BRAND } from '@/lib/design/tokens';
+import { useState } from "react";
+import { BRAND } from "@/lib/design/tokens";
 
 interface FirstTradeCardProps {
   userId: string;
@@ -9,23 +9,26 @@ interface FirstTradeCardProps {
   hasTrades: boolean;
 }
 
-export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProps) {
+export default function FirstTradeCard({
+  locale,
+  hasTrades,
+}: FirstTradeCardProps) {
   const [loading, setLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const no = locale === 'no';
+  const no = locale === "no";
 
   if (hasTrades) return null;
 
   const handleFirstTrade = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/paper-trading/execute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/paper-trading/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          pair: 'BTCUSDT',
-          side: 'buy',
+          pair: "BTCUSDT",
+          side: "buy",
           amount_nok: 1000,
         }),
       });
@@ -48,13 +51,15 @@ export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProp
           <div className="text-center py-4">
             <p className="text-3xl mb-2">🎊</p>
             <p className="text-lg font-semibold text-[#1A1D26]">
-              {no ? 'Gratulerer! Du eier nå Bitcoin!' : 'Congratulations! You now own Bitcoin!'}
+              {no
+                ? "Gratulerer! Du eier nå Bitcoin!"
+                : "Congratulations! You now own Bitcoin!"}
             </p>
             <a
-              href={`/${locale}/trade`}
+              href={`/${locale}/paper-trading`}
               className={`${BRAND.link} text-sm font-medium mt-2 inline-block hover:underline`}
             >
-              {no ? 'Utforsk flere coins →' : 'Explore more coins →'}
+              {no ? "Utforsk flere coins →" : "Explore more coins →"}
             </a>
           </div>
         ) : (
@@ -62,13 +67,15 @@ export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProp
             <div className="flex items-center gap-2 mb-2">
               <span className="text-2xl">🎉</span>
               <h3 className="text-lg font-semibold text-[#1A1D26]">
-                {no ? 'Velkommen! Gjør din første handel' : 'Welcome! Make your first trade'}
+                {no
+                  ? "Velkommen! Gjør din første handel"
+                  : "Welcome! Make your first trade"}
               </h3>
             </div>
             <p className="text-[#5E6478] text-sm mb-4">
               {no
-                ? 'Prøv å kjøpe Bitcoin for kr 1 000 med lekepenger. Helt risikofritt!'
-                : 'Try buying Bitcoin for kr 1,000 with virtual money. Completely risk-free!'}
+                ? "Prøv å kjøpe Bitcoin for kr 1 000 med lekepenger. Helt risikofritt!"
+                : "Try buying Bitcoin for kr 1,000 with virtual money. Completely risk-free!"}
             </p>
             <button
               onClick={handleFirstTrade}
@@ -76,8 +83,12 @@ export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProp
               className={`${BRAND.primary} font-semibold rounded-xl px-6 py-3 transition-all hover:shadow-[0_4px_12px_rgba(0,82,255,0.3)] disabled:opacity-50`}
             >
               {loading
-                ? (no ? 'Kjøper...' : 'Buying...')
-                : (no ? '⚡ Kjøp BTC for kr 1 000' : '⚡ Buy BTC for kr 1,000')}
+                ? no
+                  ? "Kjøper..."
+                  : "Buying..."
+                : no
+                  ? "⚡ Kjøp BTC for kr 1 000"
+                  : "⚡ Buy BTC for kr 1,000"}
             </button>
           </div>
         )}
@@ -95,12 +106,16 @@ export default function FirstTradeCard({ locale, hasTrades }: FirstTradeCardProp
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 2}s`,
                 animationDuration: `${2 + Math.random() * 3}s`,
-                backgroundColor: ['#0052FF', '#16A34A', '#F59E0B', '#DC2626', '#8B5CF6'][
-                  Math.floor(Math.random() * 5)
-                ],
+                backgroundColor: [
+                  "#0052FF",
+                  "#16A34A",
+                  "#F59E0B",
+                  "#DC2626",
+                  "#8B5CF6",
+                ][Math.floor(Math.random() * 5)],
                 width: `${6 + Math.random() * 8}px`,
                 height: `${6 + Math.random() * 8}px`,
-                borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                borderRadius: Math.random() > 0.5 ? "50%" : "2px",
               }}
             />
           ))}

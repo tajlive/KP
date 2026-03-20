@@ -1,27 +1,44 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+const paperTradeSchema = z.object({
+  strategy: z.enum(["dca", "trend", "grid", "multi", "ai-copy"]).default("dca"),
+  risk_level: z.enum(["low", "medium", "high"]).default("medium"),
+  pairs: z.array(z.string()).default(["BTCUSDT"]),
+  starting_capital_nok: z.number().min(10000).max(1000000).default(100000),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const authResponse = NextResponse.next();
-    const supabase = createServerClient(request, authResponse);
+    const response = NextResponse.next();
+    const supabaseAuth = createServerClient(request, response);
 
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const strategy = body.strategy || "dca";
-    const risk_level = body.risk_level || "moderat";
-    const pairs: string[] = body.pairs || ["BTCUSDT"];
-    const startingCapital =
-      typeof body.starting_capital_nok === "number" && body.starting_capital_nok >= 10000
-        ? Math.min(1_000_000, body.starting_capital_nok)
-        : 100000;
+    const parsed = paperTradeSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+
+    const {
+      strategy,
+      risk_level,
+      pairs,
+      starting_capital_nok: startingCapital,
+    } = parsed.data;
+
+    const supabase = createClient();
 
     const { data: existing } = await supabase
       .from("trading_sessions")

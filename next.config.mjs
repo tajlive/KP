@@ -26,8 +26,8 @@ const nextConfig = {
   // Cloudflare Pages compatibility
   trailingSlash: false,
 
-  // Transpile next-intl to avoid webpack cache warnings with dynamic imports
-  transpilePackages: ["next-intl"],
+  // Transpile next-intl and @tanstack/react-query to avoid webpack "reading 'call'" issues
+  transpilePackages: ["next-intl", "@tanstack/react-query"],
 
   // Use Node.js runtime (Cloudflare Pages supports this via next-on-pages)
   // Individual API routes can opt into edge runtime if needed

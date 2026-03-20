@@ -1,20 +1,26 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+function getAuthUser(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
+  return supabase.auth.getUser();
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient();
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await getAuthUser(request);
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const supabase = createClient();
     const mode = request.nextUrl.searchParams.get("mode");
     const statusFilter = request.nextUrl.searchParams.get("status");
 
@@ -52,15 +58,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createClient();
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await getAuthUser(request);
 
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const supabase = createClient();
 
   const body = await request.json();
   const {
@@ -74,7 +81,10 @@ export async function POST(request: NextRequest) {
   // Trigger handle_new_user() creates this on signup, but may be missing for older accounts
   const { error: profileErr } = await supabase
     .from("user_profiles")
-    .upsert({ id: user.id, user_id: user.id }, { onConflict: "id", ignoreDuplicates: true });
+    .upsert(
+      { id: user.id, user_id: user.id },
+      { onConflict: "id", ignoreDuplicates: true },
+    );
   if (profileErr) {
     console.error(
       "[POST /api/trading/sessions] user_profiles upsert error:",
@@ -133,15 +143,16 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const supabase = createClient();
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await getAuthUser(request);
 
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const supabase = createClient();
 
   const body = await request.json();
   const { session_id, action } = body;

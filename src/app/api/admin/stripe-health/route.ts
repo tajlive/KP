@@ -1,23 +1,24 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const start = performance.now();
 
   try {
-    // Sjekk admin-tilgang
-    const supabase = await createClient();
+    const authResponse = NextResponse.next();
+    const supabaseAuth = createServerClient(request, authResponse);
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (!user) {
       return NextResponse.json(
         { status: "error", message: "Ikke autentisert", latencyMs: 0 },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
+    const supabase = createClient();
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("role")
@@ -27,7 +28,7 @@ export async function GET() {
     if (profile?.role !== "admin") {
       return NextResponse.json(
         { status: "error", message: "Krever admin-tilgang", latencyMs: 0 },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -40,7 +41,7 @@ export async function GET() {
           message: "STRIPE_SECRET_KEY mangler",
           latencyMs: Math.round(performance.now() - start),
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -58,7 +59,7 @@ export async function GET() {
           message: `Stripe API feil: ${response.status}`,
           latencyMs: Math.round(performance.now() - start),
         },
-        { status: 502 }
+        { status: 502 },
       );
     }
 
@@ -71,14 +72,14 @@ export async function GET() {
         headers: {
           Authorization: `Bearer ${stripeKey}`,
         },
-      }
+      },
     );
 
     let webhookStatus = "ukjent";
     if (webhooksResponse.ok) {
       const webhooks = await webhooksResponse.json();
       const activeWebhooks = webhooks.data?.filter(
-        (wh: { status: string }) => wh.status === "enabled"
+        (wh: { status: string }) => wh.status === "enabled",
       );
       webhookStatus = `${activeWebhooks?.length || 0} aktive`;
     }
@@ -100,7 +101,7 @@ export async function GET() {
         message: error instanceof Error ? error.message : "Ukjent feil",
         latencyMs: Math.round(performance.now() - start),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

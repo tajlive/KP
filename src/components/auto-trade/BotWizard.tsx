@@ -20,13 +20,14 @@ interface BotWizardProps {
   tier: string;
 }
 
-const TIER_ORDER = ["student", "bachelor", "master", "phd"];
+const TIER_ORDER = ["student", "bachelor", "master", "phd", "professor"];
 
 const TIER_COIN_LIMIT: Record<string, number> = {
   student: 3,
   bachelor: 5,
   master: 10,
   phd: 10,
+  professor: 10,
 };
 
 const COINS = [
@@ -43,10 +44,17 @@ const COINS = [
 ];
 
 function tierMeetsRequirement(userTier: string, requiredTier: string) {
-  return TIER_ORDER.indexOf(userTier) >= TIER_ORDER.indexOf(requiredTier);
+  const normalizedUser = userTier.toLowerCase();
+  const normalizedRequired = requiredTier.toLowerCase();
+  const userIdx = TIER_ORDER.indexOf(normalizedUser);
+  const requiredIdx = TIER_ORDER.indexOf(normalizedRequired);
+  if (userIdx === -1) return false;
+  if (requiredIdx === -1) return true;
+  return userIdx >= requiredIdx;
 }
 
-export function BotWizard({ userId, locale, tier }: BotWizardProps) {
+export function BotWizard({ userId, locale, tier: rawTier }: BotWizardProps) {
+  const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
   const [strategy, setStrategy] = useState("dca");
   const [riskLevel, setRiskLevel] = useState<"low" | "medium" | "high">("low");
@@ -175,7 +183,7 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
   const selectedStrategy = STRATEGIES.find((s) => s.id === strategy);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 py-8 pb-28">
       <h1 className="text-2xl font-bold text-[#1A1D26] mb-4">
         {isNo ? "Start trading-bot" : "Start trading bot"}
       </h1>
@@ -250,9 +258,18 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
       {/* Step 1: Strategy */}
       {step === 1 && (
         <div className="relative z-10">
-          <h2 className="text-lg font-semibold text-[#1A1D26] mb-4">
+          <h2 className="text-lg font-semibold text-[#1A1D26] mb-1">
             {isNo ? "Velg strategi" : "Choose strategy"}
           </h2>
+          <p className="text-sm text-[#5E6478] mb-4">
+            {selectedStrategy
+              ? isNo
+                ? `${selectedStrategy.name} er valgt — trykk Neste for å fortsette`
+                : `${selectedStrategy.name} selected — tap Next to continue`
+              : isNo
+                ? "Klikk på en strategi for å velge"
+                : "Tap a strategy to select"}
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {STRATEGIES.map((s) => {
               const locked = !tierMeetsRequirement(tier, s.tier);
@@ -284,8 +301,15 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
                     </span>
                   )}
                   {locked && (
-                    <span className="absolute top-3 right-3 flex items-center gap-1 text-[#9CA3AF] text-[10px] font-medium">
-                      <Lock className="w-3 h-3" />
+                    <span
+                      className="absolute top-3 right-3 flex items-center gap-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-[11px] font-semibold px-2 py-1 rounded-md"
+                      title={
+                        isNo
+                          ? `Oppgrader til ${s.tier} for å bruke denne strategien`
+                          : `Upgrade to ${s.tier} to use this strategy`
+                      }
+                    >
+                      <Lock className="w-3.5 h-3.5 shrink-0" />
                       {isNo ? "Krever" : "Requires"}{" "}
                       {s.tier.charAt(0).toUpperCase() + s.tier.slice(1)}
                     </span>
@@ -492,13 +516,13 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
         </div>
       )}
 
-      {/* Navigation */}
-      <div className="flex justify-between mt-8 gap-4">
+      {/* Navigation — fixed at viewport bottom, z-[60] above ChatWidget (z-50) so Neste is clickable */}
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 px-4 py-4 pr-20 bg-[#FAFBFC] dark:bg-[#0D0F12] border-t border-[#E2E5EC] dark:border-slate-800 z-[60] flex justify-between gap-4">
         {step > 1 ? (
           <button
             type="button"
             onClick={() => setStep(step - 1)}
-            className={`border border-[#E2E5EC] text-[#5E6478] rounded-xl px-6 py-3 font-semibold transition-colors hover:bg-[#F7F8FA]`}
+            className="border border-[#E2E5EC] text-[#5E6478] rounded-xl px-6 py-3 font-semibold transition-colors hover:bg-[#F7F8FA] min-h-[48px] touch-manipulation cursor-pointer"
           >
             {isNo ? "Tilbake" : "Back"}
           </button>
@@ -508,8 +532,9 @@ export function BotWizard({ userId, locale, tier }: BotWizardProps) {
         {step < 3 ? (
           <button
             type="button"
+            data-testid="bot-wizard-next"
             onClick={() => setStep(step + 1)}
-            className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-colors"
+            className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-colors min-h-[48px] touch-manipulation cursor-pointer active:scale-[0.98]"
           >
             {isNo ? "Neste" : "Next"}
           </button>

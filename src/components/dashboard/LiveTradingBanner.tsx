@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useTradingMode } from '@/lib/hooks/useTradingMode';
-import { useSubscription } from '@/lib/hooks/useSubscription';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { ConnectBinanceModal } from '@/components/modals/ConnectBinanceModal';
-import { Rocket, TrendingUp, Shield, ChevronRight, Lock } from 'lucide-react';
-import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { useState } from "react";
+import { useTradingMode } from "@/lib/hooks/useTradingMode";
+import { useSubscription } from "@/lib/hooks/useSubscription";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { ConnectBinanceModal } from "@/components/modals/ConnectBinanceModal";
+import { Rocket, TrendingUp, Shield, ChevronRight, Lock } from "lucide-react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
 
 export function LiveTradingBanner() {
   const { mode, canSwitchToLive } = useTradingMode();
@@ -16,11 +16,13 @@ export function LiveTradingBanner() {
   const locale = useLocale();
   const [showConnectModal, setShowConnectModal] = useState(false);
 
-  const tierSlug = subscription?.tier_slug ?? 'student';
-  const hasLiveTrading = ['master', 'phd', 'professor'].includes(tierSlug);
+  const tierSlug = subscription?.tier_slug ?? "student";
+  const hasLiveTrading = ["bachelor", "master", "phd", "professor"].includes(
+    tierSlug,
+  );
 
   // Don't show if already in live mode
-  if (mode === 'live') return null;
+  if (mode === "live") return null;
 
   // If user doesn't have live trading tier — show upgrade prompt
   if (!hasLiveTrading) {
@@ -33,7 +35,9 @@ export function LiveTradingBanner() {
           </AlertTitle>
           <AlertDescription className="text-amber-700 mt-2">
             <p className="mb-3">
-              Du må oppgradere til <strong>Master</strong>, <strong>PhD</strong> eller <strong>Professor</strong> for å handle med ekte crypto på Binance.
+              Du må oppgradere til <strong>Master</strong>, <strong>PhD</strong>{" "}
+              eller <strong>Professor</strong> for å handle med ekte crypto på
+              Binance.
             </p>
             <Button asChild className="bg-amber-600 hover:bg-amber-700">
               <Link href={`/${locale}/priser`}>
@@ -59,10 +63,11 @@ export function LiveTradingBanner() {
             </AlertTitle>
             <AlertDescription className="text-blue-700 mt-2">
               <p className="mb-3">
-                Du har øvd med lekepenger. Koble til Binance-kontoen din for å handle 
-                med ekte crypto og få tilgang til avanserte funksjoner som copy trading.
+                Du har øvd med lekepenger. Koble til Binance-kontoen din for å
+                handle med ekte crypto og få tilgang til avanserte funksjoner
+                som copy trading.
               </p>
-              
+
               <div className="flex flex-wrap gap-4 text-sm mb-4">
                 <div className="flex items-center gap-1">
                   <TrendingUp className="w-4 h-4 text-green-500" />
@@ -74,7 +79,7 @@ export function LiveTradingBanner() {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 onClick={() => setShowConnectModal(true)}
                 className="bg-blue-600 hover:bg-blue-700"
               >
@@ -85,9 +90,9 @@ export function LiveTradingBanner() {
           </div>
         </Alert>
 
-        <ConnectBinanceModal 
-          isOpen={showConnectModal} 
-          onClose={() => setShowConnectModal(false)} 
+        <ConnectBinanceModal
+          isOpen={showConnectModal}
+          onClose={() => setShowConnectModal(false)}
         />
       </>
     );
