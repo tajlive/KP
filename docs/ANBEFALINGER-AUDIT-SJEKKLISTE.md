@@ -50,14 +50,14 @@ Dokumentet samler anbefalingene fra den eksterne vurderingen (svakheter og forbe
 
 ### 4.4 Type-gjeld og bygg
 
-**Problem:** AGENTS.md nevner `ignoreBuildErrors: true` i next.config pga type-gjeld.
+**Problem (historisk):** Tidligere `ignoreBuildErrors: true`. **Nå:** `false` — se `next.config.mjs` og AGENTS.md.
 
 **Anbefaling:** Gradvis fjerne: start med kritiske paths (auth, checkout, trading); deretter admin og resten. Bruk supabase-generated og ev. TYPE_DEBT.md som referanse.
 
 | Status | Handling                                                                                                            |
 | ------ | ------------------------------------------------------------------------------------------------------------------- |
 | 🟡     | Redusere type-feil gradvis (auth, checkout, trading). Nye moduler (api-response, query-keys, hooks) er fullt typet. |
-| ⬜     | Sette `ignoreBuildErrors: false` når bygget er rent (krever videre arbeid).                                         |
+| ✅     | `ignoreBuildErrors: false` i `next.config.mjs` (hold `npm run type-check` grønn).                                   |
 | ✅     | Dokumentert i forbedringsforslag-2026.md og next.config.                                                            |
 
 ---
@@ -91,13 +91,13 @@ Dokumentet samler anbefalingene fra den eksterne vurderingen (svakheter og forbe
 
 ## 5. Anbefalte prioriteringer
 
-| Prioritet  | Tema                                                                                                      | Status                                                           |
-| ---------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **Høy**    | Samle tier-definisjon og mapping (én modul, samme slug overalt; oppdater middleware og SubscriptionGate). | ✅ Se 4.1                                                        |
-| **Høy**    | Utvide bruk av TanStack Query for bruker/tier og viktige lister; invalider ved auth og webhooks.          | ✅ Se 4.2                                                        |
-| **Medium** | Felles API-response/error-format og Zod-validering på viktige POST/PUT-ruter.                             | ✅ Se 4.3                                                        |
-| **Medium** | CI: sikre at E2E kjører med installerte browsers og tilgjengelig app (webServer eller env URL).           | ✅ Se 4.5                                                        |
-| **Lav**    | Redusere type-gjeld; request-id og valgfri metrikk på kritiske ruter.                                     | ✅ 4.6 implementert; 4.4 gradvis (ignoreBuildErrors fortsatt på) |
+| Prioritet  | Tema                                                                                                      | Status                                                                       |
+| ---------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Høy**    | Samle tier-definisjon og mapping (én modul, samme slug overalt; oppdater middleware og SubscriptionGate). | ✅ Se 4.1                                                                    |
+| **Høy**    | Utvide bruk av TanStack Query for bruker/tier og viktige lister; invalider ved auth og webhooks.          | ✅ Se 4.2                                                                    |
+| **Medium** | Felles API-response/error-format og Zod-validering på viktige POST/PUT-ruter.                             | ✅ Se 4.3                                                                    |
+| **Medium** | CI: sikre at E2E kjører med installerte browsers og tilgjengelig app (webServer eller env URL).           | ✅ Se 4.5                                                                    |
+| **Lav**    | Redusere type-gjeld; request-id og valgfri metrikk på kritiske ruter.                                     | ✅ 4.6 implementert; `ignoreBuildErrors` av — videre rydding i `as any` e.l. |
 
 ---
 

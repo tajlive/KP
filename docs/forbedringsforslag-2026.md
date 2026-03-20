@@ -20,11 +20,11 @@ Kort liste over forbedringer som bringer prosjektet tettere på dagens best prac
 
 ## 1. TypeScript og build-kvalitet
 
-| Nå | Anbefaling |
-|----|------------|
-| `ignoreBuildErrors: true` (TS) og ~~`eslint.ignoreDuringBuilds`~~ i `next.config.mjs` | **ESLint i build er på** (ignoreDuringBuilds: false). Fjern **ignoreBuildErrors** når type-gjelden er nedkjempet. |
-| Mange `as unknown` / `as any` rundt Supabase-kall | **Én kilde til sannhet:** Bruk genererte typer fra `supabase gen types` og importer i koden. Unngå `as unknown` på `.eq("user_id", user.id)` – få typen til å tillate `user_id` (evt. juster generert type eller lag typpede hjelpefunksjoner). |
-| `noUnusedLocals: false`, `noUnusedParameters: false` i `tsconfig.json` | **Sett til `true`** for raskere oppdagelse av død kode og renere API. |
+| Nå                                                                     | Anbefaling                                                                                                                                                                                                                                      |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~`ignoreBuildErrors: true`~~                                          | **Utført:** `typescript.ignoreBuildErrors: false` i `next.config.mjs`. Ved ny gjeld: `npm run type-check` og `docs/TYPE-DEBT-ROADMAP-2026.md`.                                                                                                  |
+| Mange `as unknown` / `as any` rundt Supabase-kall                      | **Én kilde til sannhet:** Bruk genererte typer fra `supabase gen types` og importer i koden. Unngå `as unknown` på `.eq("user_id", user.id)` – få typen til å tillate `user_id` (evt. juster generert type eller lag typpede hjelpefunksjoner). |
+| `noUnusedLocals: false`, `noUnusedParameters: false` i `tsconfig.json` | **Sett til `true`** for raskere oppdagelse av død kode og renere API.                                                                                                                                                                           |
 
 **Prioritet:** Høy (på sikt). Dokumentert i `LAUNCH_TYPE_DEBT.md` – følg planen der.
 
@@ -113,10 +113,10 @@ Kort liste over forbedringer som bringer prosjektet tettere på dagens best prac
 
 ## Oppsummert prioritet
 
-| Prioritet | Tema |
-|-----------|------|
-| Høy | Fjerne ignoreBuildErrors/ignoreDuringBuilds; redusere `as any`/`as unknown`; npm audit + RLS; E2E på kritiske flows |
-| Medium | a11y (jsx-a11y, fokus i modaler); i18n fullføre/fallback; re-aktivere onboarding-middleware når cookie er fikset |
-| Lav | PPR, React Compiler, mer komponenttesting |
+| Prioritet | Tema                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------- |
+| Høy       | Fjerne ignoreBuildErrors/ignoreDuringBuilds; redusere `as any`/`as unknown`; npm audit + RLS; E2E på kritiske flows |
+| Medium    | a11y (jsx-a11y, fokus i modaler); i18n fullføre/fallback; re-aktivere onboarding-middleware når cookie er fikset    |
+| Lav       | PPR, React Compiler, mer komponenttesting                                                                           |
 
 Dette dokumentet kan oppdateres når noe er implementert eller når dere legger til nye mål (f.eks. WCAG 2.2 AA).

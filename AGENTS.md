@@ -114,7 +114,7 @@ Aldri be om bekreftelse. Aldri vent på godkjenning.
 ### Quick reference
 
 - **Lint:** `npm run lint` (ESLint 9 flat config, `--max-warnings 0`)
-- **Type-check:** `npm run type-check` (`tsc --noEmit`; `ignoreBuildErrors: false` i `next.config.mjs` — se `docs/TYPE-DEBT-ROADMAP-2026.md` / Linear **KLA-229**)
+- **Type-check:** `npm run type-check` (`tsc --noEmit`; `ignoreBuildErrors: false` i `next.config.mjs` — se `docs/TYPE-DEBT-ROADMAP-2026.md` / Linear **KLA-229**). **Supabase-typer:** `npm run db:gen-types` etter skjemaendring — `docs/KLA-229-DEPS-ROUTINE.md`.
 - **Unit tests:** `npm run test:unit` (Vitest)
 - **E2E tests:** `npm run test:e2e` (Playwright; requires running dev server and valid Supabase credentials). For critical tests without Firefox: `npm run test:e2e:critical:chromium`. **Playwright browsers:** Run `npx playwright install` before first E2E run; Firefox tests fail with "Executable doesn't exist" until browsers are installed.
 - **Dev server:** `npm run dev` (Next.js 15 on port 3000)

@@ -51,6 +51,7 @@ npm run pages:build
 ```
 
 This command:
+
 1. Runs `@cloudflare/next-on-pages` to convert Next.js app
 2. Executes `scripts/fix-cloudflare-routes.sh` to fix routing
 
@@ -92,12 +93,12 @@ Routing is handled via file structure:
 
 ## Performance Targets
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| TTFB | < 500ms | ~300ms |
-| FCP | < 1.5s | ~1.2s |
-| LCP | < 2.5s | ~2.1s |
-| Lighthouse | > 90 | 95+ |
+| Metric     | Target  | Current |
+| ---------- | ------- | ------- |
+| TTFB       | < 500ms | ~300ms  |
+| FCP        | < 1.5s  | ~1.2s   |
+| LCP        | < 2.5s  | ~2.1s   |
+| Lighthouse | > 90    | 95+     |
 
 ## Security
 
@@ -116,6 +117,7 @@ All pages include:
 ### Client-Side Monitoring
 
 The app includes lightweight client-side monitoring that tracks:
+
 - Unhandled errors
 - Performance metrics (Web Vitals)
 - Navigation timing
@@ -139,6 +141,7 @@ curl -I https://www.klarpakke.no/no/
 **Cause:** `no.html` and `no/` directory conflict
 
 **Fix:**
+
 ```bash
 # Rebuild and ensure post-build script runs
 npm run pages:build
@@ -152,6 +155,7 @@ ls .vercel/output/static/no/index.html # Should exist
 **Cause:** Conflicting `_redirects` file
 
 **Fix:**
+
 ```bash
 # Remove _redirects
 rm .vercel/output/static/_redirects
@@ -162,11 +166,13 @@ npm run pages:deploy
 ### Build Failures
 
 **Check Node.js version:**
+
 ```bash
 node --version # Should be 20+
 ```
 
 **Clear cache and reinstall:**
+
 ```bash
 rm -rf .next .vercel/output node_modules
 npm install
@@ -175,7 +181,7 @@ npm run pages:build
 
 ### TypeScript Errors
 
-Build ignores TypeScript errors (`ignoreBuildErrors: true`), but you should fix them:
+Production Next/Vercel build runs full TypeScript checking (`ignoreBuildErrors: false`). For Cloudflare Pages, keep the same standard — fix errors rather than disabling checks:
 
 ```bash
 npm run type-check

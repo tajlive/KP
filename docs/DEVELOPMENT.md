@@ -240,6 +240,12 @@ Etter bygg skrives rapporter til:
 
 Ufarlig støy fra **Next dev-server** under e2e: en full reload kan skje når HMR ikke kan patche. Testene kan fortsatt være grønne. Ved behov: ignorer i logg eller kjør smoke mot `next start` (prod-lignende) i stedet for `dev`.
 
+### Avhengigheter, typer og Snyk
+
+- **Supabase-typer:** `npm run db:gen-types` (etter skjemaendring) — se [KLA-229-DEPS-ROUTINE.md](./KLA-229-DEPS-ROUTINE.md).
+- **Patch/minor:** Dependabot månedlig + lokalt `npm run deps:update-lockfile` og `npm run deps:verify`.
+- **Snyk:** Ikke i `package.json`; ukentlig via GitHub Actions med `SNYK_TOKEN` (ingen `boolean`-støy fra Snyk i Vercel `npm ci`).
+
 ## Kontakt
 
 For spørsmål, opprett en issue eller kontakt team-lederen.

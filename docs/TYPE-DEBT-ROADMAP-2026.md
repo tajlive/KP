@@ -17,11 +17,11 @@
 
 ## Fase 2 — Modulvis utbedring
 
-| Prioritet | Område                   | Tiltak                                                                          |
-| --------- | ------------------------ | ------------------------------------------------------------------------------- |
-| 1         | Supabase genererte typer | Regenerer typer etter `db pull`; reduser `as unknown`                           |
-| 2         | API routes               | Streng Zod + typed responses (allerede mønster flere steder)                    |
-| 3         | Komplekse moduler        | `mistake-analyzer`, `binance-historical-data` — del opp eller eksplisitte typer |
+| Prioritet | Område                   | Tiltak                                                                                                                   |
+| --------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| 1         | Supabase genererte typer | `npm run db:gen-types` etter skjemaendring; reduser `as unknown` — se [KLA-229-DEPS-ROUTINE.md](KLA-229-DEPS-ROUTINE.md) |
+| 2         | API routes               | Streng Zod + typed responses (allerede mønster flere steder)                                                             |
+| 3         | Komplekse moduler        | `mistake-analyzer`, `binance-historical-data` — del opp eller eksplisitte typer                                          |
 
 ## Fase 3 — `ignoreBuildErrors` (fullført)
 

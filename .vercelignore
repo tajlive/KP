@@ -1,6 +1,8 @@
 archive
 archive-docs
 archive_root_files
+archive_root_garbage
+/archive/dashboard-components
 .npm
 .agent
 .vscode
@@ -22,3 +24,12 @@ allure-report
 .cursor
 # Kun repo-roten /supabase (migrasjoner, edge functions). IKKE «supabase» som del av src/lib/supabase.
 /supabase
+
+# Rot-støy (påvirker ikke next build; mindre upload til Vercel)
+*.log
+baseline-*.txt
+build-*.txt
+build-*.log
+changed-files.txt
+imports.txt
+ai-analysis-report.md

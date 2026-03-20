@@ -1,7 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { routing } from "./i18n/routing";
+import { routing } from "./i18n/routing.config";
 import { handleOnboarding } from "./middleware/onboarding";
 import { handleTierGate } from "./middleware/tier-gate";
 import { redirectWithCookies } from "./middleware/auth-guard";

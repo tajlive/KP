@@ -48,10 +48,23 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 - **Fiks gjort:**
   - **plausible-tracker** er fjernet. Plausible lastes nå via offisielt script (`PlausibleScript.tsx`); custom events bruker `window.plausible()` (src/lib/analytics.ts).
   - **rimraf + glob:** `overrides` tvinger **rimraf ^5** og **glob ^13** under bl.a. Lighthouse CLI-kjeden (unngår deprecated glob 9/10).
-  - **global-agent:** `overrides` til **^4.1.3** for å unngå transitive **boolean** (snyk).
+  - **global-agent / boolean:** `overrides` for global-agent er **fjernet** (unngår CI-feil «Cannot find module global-agent/bootstrap»). **`snyk` er fjernet fra `package.json`** — Snyk kjøres kun i CI via `npx snyk@latest` (se `.github/workflows/security-audit.md`), så Vercel `npm ci` slipper `snyk → global-agent → boolean`-advarselen.
   - **@vercel/kv** erstattet av **@upstash/redis** (`src/lib/redis-client.ts`); env: `UPSTASH_REDIS_REST_*` med fallback til legacy `KV_REST_*`.
   - **.nvmrc** med `24` for konsistent Node-versjon (samsvar med engines.node 24.x).
 - **inflight** kan fortsatt finnes transitivt hos eldre pakker — sjekk med `npm ls inflight` ved behov.
+
+## 6d. Edge middleware – bundle-størrelse
+
+- **Problem:** Én import av `routing` fra `i18n/routing.ts` dro med **`next-intl/navigation`** (`createNavigation`) inn i edge-middleware. I tillegg trakk `tier-gate` inn hele **`TIERS`** (store feature-tekster) bare for `getTierLevel` / `normalizeTier` → unødig stor middleware (ordre ~260 kB rapportert i build-logg).
+- **Fiks:**
+  - **`src/i18n/routing.config.ts`** — kun `defineRouting`; middleware importerer denne, ikke `routing.ts`.
+  - **`src/lib/pricing/tier-level.ts`** — minimalt slug/nivå-API; `tier-gate` importerer den. `tiers.ts` re-eksporterer `TierSlug`, `getTierLevel`, `normalizeTier`, `VALID_TIER_SLUGS` for resten av kodebasen.
+- **Verifikasjon:** Se linjen **ƒ Middleware** i output fra `next build` (forventet vesentlig lavere enn før optimalisering).
+
+## 6e. `.vercelignore` og mindre deploy-upload
+
+- **Mål:** Færre filer i Vercel-upload (hjelper tid/kvoter; build-cache domineres fortsatt av `node_modules` + `.next`).
+- **Utvidelser:** bl.a. `archive_root_garbage`, `/archive/dashboard-components`, rot-`*.log` og rapport-`.txt` som ikke trengs til `next build`. Se `.vercelignore` for full liste.
 
 ## 7. Tester før produksjon
 
@@ -113,7 +126,12 @@ I GitHub Actions: se **Actions → workflow run → Build-jobben** for tidsforde
 - Vurder færre statiske sider eller økt `staticPageGenerationTimeout` kun ved reell timeout.
 - Vurder å flytte tunge avhengigheter til dynamisk import der det er trygt.
 
-## 8. CLI-deploy: «Too many requests» / stor opplasting
+## 9. Husky under `npm ci` / «.git can't be found»
+
+- **Årsak:** `prepare`-scriptet kjørte `husky` på alle installasjoner. Vercel (og lignende) pakker ikke med `.git`, så Husky skriver advarsel i loggen.
+- **Fiks:** `prepare` bruker `node scripts/husky-prepare.mjs` som **hopper over** Husky når `.git` mangler. Lokalt med vanlig klon kjører Husky som før.
+
+## 10. CLI-deploy: «Too many requests» / stor opplasting
 
 - **Årsak:** `npx vercel --prod` kan laste opp svært mange små filer (rate limit på free tier) eller treffe upload-kvoter.
 - **Fiks i repo:**
