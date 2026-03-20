@@ -29,7 +29,8 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Build + Vercel upload kan bruke >15 min (særlig med kald cache)
+    timeout-minutes: 30
 
     env:
       IS_PRODUCTION: ${{ github.event_name == 'push' || github.event.inputs.environment == 'production' }}
