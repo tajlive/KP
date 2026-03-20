@@ -6,6 +6,8 @@ Anbefalinger basert på [Supabase Docs](https://supabase.com/docs/guides/deploym
 
 ## 1. Anbefalt: Supabase GitHub-integrasjon (native)
 
+**Steg-for-steg oppsett:** Se **docs/SUPABASE-GITHUB-INTEGRATION-OPPSETT.md** for full checklist.
+
 **Hvor:** Supabase Dashboard → Project Settings → [Integrations](https://supabase.com/dashboard/project/_/settings/integrations).
 
 **Hva det gir:**
@@ -85,14 +87,18 @@ Dere har allerede type-check og lint i PR. Et naturlig neste steg er å enten ko
 
 ## 5. Oppsummering for Klarpakke
 
-| Mål                            | Anbefaling                                                                                                                                                                                        |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Varig automatisk migrasjon** | Slå på **Supabase GitHub-integrasjon** med **Deploy to production** på `main`, og la migrasjoner i `supabase/migrations/` være den eneste kilden. Reduser eller fjern manuell `db push` mot prod. |
-| **Unngå history mismatch**     | Kun én kanal pusher til prod (Integrasjon eller én CI-job). Ingen schema-endringer i Dashboard uten å ta dem inn i repo. Unike migrasjonsversjoner.                                               |
-| **Verifisere før merge**       | Aktiver **required check** for Supabase-integrasjonen, eller legg til CI-steg som kjører migrasjoner (lokal/staging).                                                                             |
-| **Når det likevel divergerer** | Bruk `npm run db:repair-history` (eller kommandoene CLI foreslår), deretter `npm run db:push:all` én gang; deretter la kun integrasjonen/CI kjøre push.                                           |
+| Mål                            | Implementert / Anbefaling                                                                                                                                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Varig automatisk migrasjon** | **Implementert:** `db-push-on-merge.yml` kjører `supabase db push` ved push til `main` når `supabase/` endres. Alternativ: Supabase GitHub-integrasjon.                                    |
+| **Validering før merge**       | **Implementert:** `pr-check.yml` → `validate-migrations` validerer migrasjonsfiler (unike versjoner, filnavn) når `supabase/migrations/` endres. Lokalt: `npm run db:validate-migrations`. |
+| **Unngå history mismatch**     | Kun CI eller Supabase-integrasjon pusher til prod. Ingen schema-endringer i Dashboard uten å ta dem inn i repo. Unike migrasjonsversjoner.                                                 |
+| **Når det likevel divergerer** | Bruk `npm run db:repair-history` (eller kommandoene CLI foreslår), deretter `npm run db:push:all` én gang; deretter la kun CI kjøre push.                                                  |
 
-Kort sagt: **Varig løsning = Supabase GitHub-integrasjon som eneste som deployer migrasjoner til prod, med required check og ingen manuell prod-push fra lokale maskiner.** Alternativet er én dedikert GitHub Actions-workflow på `main` som alltid kjører `supabase db push` og som er den eneste som har lov til å endre prod-migrasjonshistorikk.
+**Implementert varig løsning (mars 2026):**
+
+- `.github/workflows/db-push-on-merge.yml` — automatisk db push ved merge til main
+- `scripts/validate-migrations.mjs` — validering av migrasjonsfiler (PR og lokalt)
+- `npm run db:validate-migrations` — lokalt
 
 ---
 

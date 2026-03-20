@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { normalizeTier } from "@/lib/pricing/tiers";
 import { Metadata } from "next";
 import { BotWizard } from "@/components/auto-trade/BotWizard";
 
@@ -33,11 +34,7 @@ export default async function AutoTradePage({
     .eq("id", user.id)
     .single();
 
-  return (
-    <BotWizard
-      userId={user.id}
-      locale={locale}
-      tier={profile?.tier ?? "student"}
-    />
-  );
+  const tier = normalizeTier(profile?.tier);
+
+  return <BotWizard userId={user.id} locale={locale} tier={tier} />;
 }

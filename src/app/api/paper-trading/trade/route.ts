@@ -1,8 +1,8 @@
 /**
  * KLA-137: Paper Trading Trade API
- * 
- * PHYSICALLY SEPARATED from live trading.
- * Uses executePaperTrade from safety layer.
+ *
+ * DEPRECATED: Use POST /api/paper-trading/execute with { symbol, side, quantity, price } instead.
+ * Kept for backward compatibility. Uses executePaperTrade from safety layer.
  */
 
 import { executePaperTrade } from "@/lib/trading/safety";
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   try {
     // Create response for cookie handling
     const response = NextResponse.next();
-    
+
     // Get authenticated user using SSR client with cookies
     const supabase = createServerClient(request, response);
     const {
@@ -61,12 +61,15 @@ export async function POST(request: NextRequest) {
 
     if (!result.success) {
       // Return 200 with rejection info (trade was blocked by safety)
-      return NextResponse.json({
-        success: false,
-        error: result.error,
-        rejectionReason: result.rejectionReason,
-        type: "TRADE_REJECTED",
-      }, { status: 200 }); // 200 because the request was valid, trade was just blocked
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error,
+          rejectionReason: result.rejectionReason,
+          type: "TRADE_REJECTED",
+        },
+        { status: 200 },
+      ); // 200 because the request was valid, trade was just blocked
     }
 
     return NextResponse.json({

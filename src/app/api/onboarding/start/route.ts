@@ -1,16 +1,18 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase-generated";
+import { createServerClient, createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST() {
-  const supabase = await createClient() as SupabaseClient<Database>;
-  const { data: { user } } = await supabase.auth.getUser();
+export async function POST(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabaseAuth = createServerClient(request, response);
+  const {
+    data: { user },
+  } = await supabaseAuth.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const supabase = createClient();
   const { error } = await supabase
     .from("user_profiles")
     .update({

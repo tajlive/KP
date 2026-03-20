@@ -14,8 +14,13 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      // Ingen globale terskler: repo-dekning er ~33 %; feilende 70 %-terskel blokkerte «full» test-kjøring.
-      // Øk trinnvis per modul (se docs/TYPE-DEBT-ROADMAP-2026.md).
+      // Terskel ~25 % — økes gradvis (AGENTS.md / TYPE-DEBT-ROADMAP-2026).
+      thresholds: {
+        lines: 25,
+        functions: 25,
+        branches: 25,
+        statements: 25,
+      },
       exclude: [
         "node_modules/",
         "src/test/",

@@ -1,19 +1,21 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 // POST /api/trading/trigger
 // Manually triggers the strategy runner (for immediate feedback when user starts a strategy)
-export async function POST(_: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const res = NextResponse.next();
+    const supabaseAuth = createServerClient(request, res);
 
-    // Check auth
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const supabase = createClient();
 
     const { data: sessions, error: sessError } = await supabase
       .from("trading_sessions")

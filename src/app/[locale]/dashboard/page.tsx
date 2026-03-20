@@ -68,7 +68,10 @@ export default async function DashboardPage({
   const { locale } = await params;
 
   try {
-    const { supabase, user } = await requireAuth(locale);
+    const { supabase, user } = await requireAuth(
+      locale,
+      `/${locale}/dashboard`,
+    );
 
     const [profileRes, tradesRes, sessionRes] = await Promise.all([
       supabase
@@ -79,16 +82,15 @@ export default async function DashboardPage({
       supabase
         .from("trades")
         .select(
-          "id, trading_pair, side, quantity, price, total_value, status, mode, created_at",
+          "id, trading_pair, side, quantity, price, total_value, status, mode, created_at, executed_at",
         )
         .eq("user_id", user.id)
-        .eq("mode", "paper")
         .order("created_at", { ascending: false })
-        .limit(20),
+        .limit(50),
       supabase
         .from("trading_sessions")
         .select(
-          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, created_at",
+          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades, created_at",
         )
         .eq("user_id", user.id)
         .eq("status", "active")

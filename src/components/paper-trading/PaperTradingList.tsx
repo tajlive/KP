@@ -23,7 +23,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, ArrowRight, TrendingUp, TrendingDown, Wallet, Banknote, RefreshCw, Info } from "lucide-react";
+import {
+  Plus,
+  ArrowRight,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  Banknote,
+  RefreshCw,
+  Info,
+} from "lucide-react";
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
 
 /** Kort med skygge og 200ms overgang (tokens) */
@@ -57,7 +66,12 @@ const TRADING_PAIRS = [
   { value: "SOL/USDT", label: "SOL/USDT" },
 ];
 
-export function PaperTradingList({ sessions, balance, locale, userId }: PaperTradingListProps) {
+export function PaperTradingList({
+  sessions,
+  balance,
+  locale,
+  userId,
+}: PaperTradingListProps) {
   const t = useTranslations("paperTrading");
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,7 +112,9 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
       const aActive = a.status === "active" ? 1 : 0;
       const bActive = b.status === "active" ? 1 : 0;
       if (bActive !== aActive) return bActive - aActive;
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     });
   }, [sessions]);
 
@@ -149,15 +165,33 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
     const baseClass = "text-xs font-semibold truncate max-w-[5rem]";
     switch (status) {
       case "active":
-        return <Badge className={`bg-green-500 ${baseClass}`}>{t("active")}</Badge>;
+        return (
+          <Badge className={`bg-green-500 ${baseClass}`}>{t("active")}</Badge>
+        );
       case "paused":
-        return <Badge variant="secondary" className={baseClass}>{t("paused")}</Badge>;
+        return (
+          <Badge variant="secondary" className={baseClass}>
+            {t("paused")}
+          </Badge>
+        );
       case "stopped":
-        return <Badge variant="outline" className={baseClass}>{t("stopped")}</Badge>;
+        return (
+          <Badge variant="outline" className={baseClass}>
+            {t("stopped")}
+          </Badge>
+        );
       case "crashed":
-        return <Badge variant="destructive" className={baseClass}>{t("crashed")}</Badge>;
+        return (
+          <Badge variant="destructive" className={baseClass}>
+            {t("crashed")}
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className={baseClass}>{status}</Badge>;
+        return (
+          <Badge variant="outline" className={baseClass}>
+            {status}
+          </Badge>
+        );
     }
   };
 
@@ -194,8 +228,11 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
       {/* Sidetittel + oppdater + info om Binance */}
       <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate">
-            {sessions.length === 0 ? t("noSessions") : t("title")}
+          <h2
+            className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate"
+            data-testid="sessions-heading"
+          >
+            {sessions.length === 0 ? t("noSessions") : t("mySessions")}
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">
             {t("description")}
@@ -205,7 +242,11 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
           <div className="flex items-center gap-3 shrink-0">
             {lastUpdated && (
               <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                {t("lastUpdated")}: {lastUpdated.toLocaleTimeString(locale === "no" ? "nb-NO" : "en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                {t("lastUpdated")}:{" "}
+                {lastUpdated.toLocaleTimeString(
+                  locale === "no" ? "nb-NO" : "en-GB",
+                  { hour: "2-digit", minute: "2-digit", second: "2-digit" },
+                )}
               </span>
             )}
             <Button
@@ -215,13 +256,19 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
               disabled={isRefreshing}
               className="gap-2"
             >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden />
+              <RefreshCw
+                className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+                aria-hidden
+              />
               {t("refreshList")}
             </Button>
           </div>
         )}
       </div>
-      <p className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1" title={t("binanceUpdateInfo")}>
+      <p
+        className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1"
+        title={t("binanceUpdateInfo")}
+      >
         <Info className="w-3.5 h-3.5 shrink-0" aria-hidden />
         {t("binanceUpdateInfo")}
       </p>
@@ -281,7 +328,9 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
 
       {/* Liste over sesjoner */}
       {sessions.length === 0 ? (
-        <Card className={`border-2 border-dashed border-slate-200 dark:border-slate-600 overflow-hidden ${cardBase}`}>
+        <Card
+          className={`border-2 border-dashed border-slate-200 dark:border-slate-600 overflow-hidden ${cardBase}`}
+        >
           <CardContent className="p-10 text-center">
             <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-5">
               <Wallet className="w-8 h-8 text-slate-500 dark:text-slate-400" />
@@ -319,11 +368,16 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
                 key={session.id}
                 href={href}
                 className={`block ${cardBase} p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300 dark:hover:border-slate-600 ${BRAND.focusRing} ${RADIUS.card} relative overflow-hidden ${
-                  isActive ? "border-l-4 border-l-green-500 dark:border-l-green-400 shadow-[0_0_0_1px_rgba(34,197,94,0.08)] dark:shadow-[0_0_0_1px_rgba(34,197,94,0.15)]" : ""
+                  isActive
+                    ? "border-l-4 border-l-green-500 dark:border-l-green-400 shadow-[0_0_0_1px_rgba(34,197,94,0.08)] dark:shadow-[0_0_0_1px_rgba(34,197,94,0.15)]"
+                    : ""
                 }`}
               >
                 {isActive && (
-                  <span className="absolute top-3 right-3 flex h-2 w-2" aria-hidden>
+                  <span
+                    className="absolute top-3 right-3 flex h-2 w-2"
+                    aria-hidden
+                  >
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
                   </span>
@@ -359,7 +413,9 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
                     <div className="min-w-0">
                       <p
                         className={`text-sm font-bold tabular-nums truncate ${
-                          isProfitable ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                          isProfitable
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
                         }`}
                       >
                         {isProfitable ? "+" : ""}
@@ -367,14 +423,19 @@ export function PaperTradingList({ sessions, balance, locale, userId }: PaperTra
                       </p>
                       <p
                         className={`text-sm tabular-nums truncate ${
-                          isProfitable ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                          isProfitable
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
                         }`}
                       >
                         {isProfitable ? "+" : ""}
                         {pnlPercent.toFixed(1)}%
                       </p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-slate-400 shrink-0" aria-hidden />
+                    <ArrowRight
+                      className="w-5 h-5 text-slate-400 shrink-0"
+                      aria-hidden
+                    />
                   </div>
                 </div>
               </Link>

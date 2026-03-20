@@ -1,5 +1,5 @@
 # ============================================================================
-# PR CHECK - Kun ved PR til main (ikke på hver push)
+# PR CHECK - Ved PR til main OG ved push til main (Vercel trenger checks på merge)
 # ============================================================================
 
 name: ✅ PR Check
@@ -8,6 +8,9 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize] # Kun ved ny PR eller endringer
+  push:
+    branches: [main]
+    # Kjører på hver merge til main – gir check som Vercel kan kreve før production
 
 concurrency:
   group: pr-check-${{ github.ref }}
@@ -17,7 +20,36 @@ permissions:
   contents: read
   pull-requests: write  # For PR-kommentar ved feil
 
+# Node 24 opt-in for JS actions (checkout, setup-node, cache) — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
+  paths:
+    runs-on: ubuntu-latest
+    outputs:
+      migrations: ${{ steps.filter.outputs.migrations }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            migrations:
+              - 'supabase/migrations/**'
+
+  validate-migrations:
+    runs-on: ubuntu-latest
+    needs: paths
+    if: needs.paths.outputs.migrations == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-migrations.mjs
+        name: Valider migrasjonsfiler
+
   quick-check:
     runs-on: ubuntu-latest
     timeout-minutes: 8
@@ -61,8 +93,9 @@ jobs:
         id: build
         env:
           SKIP_LINT_IN_BUILD: "true"
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Fallback for fork/nytt repo der secrets mangler – build for å verifisere kompilering
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjbG91ZC1wbGFjZWhvbGRlciJ9.c2VjcmV0' }}
         timeout-minutes: 10
 
       - name: 📋 Failure summary
@@ -113,9 +146,12 @@ jobs:
             npm run type-check
             npm run test:unit
             npm run build
+            # Eller: npm run verify:automation  # lint + type-check + unit + prod-verify + MCP
             \`\`\`
 
-            **Tips:** Last ned **typecheck**-artifactet fra denne kjøringen for full type-check-output. Se [Feilretting når CI feiler](https://github.com/${{ github.repository }}/blob/main/.github/GITHUB_SETUP.md#7-feilretting-når-ci-feiler) i GITHUB_SETUP.md.`;
+            **Tips:** Last ned **typecheck**-artifactet fra denne kjøringen for full type-check-output. Se [Feilretting når CI feiler](https://github.com/${{ github.repository }}/blob/main/.github/GITHUB_SETUP.md#7-feilretting-når-ci-feiler) i GITHUB_SETUP.md.
+
+            **Eller skriv \`@cursor\` i en kommentar for å be Cursor Cloud Agent fikse.** Se [CURSOR-CLOUD-PR-AUTOFIX.md](https://github.com/${{ github.repository }}/blob/main/docs/CURSOR-CLOUD-PR-AUTOFIX.md).`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,

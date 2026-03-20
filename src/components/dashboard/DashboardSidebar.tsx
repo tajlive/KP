@@ -6,10 +6,12 @@ import {
   Bot,
   ChevronLeft,
   ChevronRight,
+  History,
   LayoutDashboard,
   LogOut,
   Settings,
   Shield,
+  TrendingUp,
   User,
   X,
 } from "lucide-react";
@@ -66,6 +68,16 @@ export function DashboardSidebar() {
       exact: true,
     },
     { href: "/kurs", label: locale === "no" ? "Lær" : "Learn", icon: BookOpen },
+    {
+      href: "/paper-trading",
+      label: locale === "no" ? "Handle" : "Trade",
+      icon: TrendingUp,
+    },
+    {
+      href: "/handelshistorikk",
+      label: locale === "no" ? "Historikk" : "History",
+      icon: History,
+    },
     {
       href: "/dashboard/auto-trade",
       label: locale === "no" ? "Auto-trade" : "Auto-trade",

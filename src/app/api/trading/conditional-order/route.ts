@@ -10,7 +10,7 @@
  * For live trading: Orders are submitted to Binance as OCO orders
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -24,34 +24,28 @@ const ConditionalOrderSchema = z.object({
   side: z.enum(["buy", "sell"]),
   quantity: z.number().positive(),
   trigger_price: z.number().positive(),
-  limit_price: z.number().positive().optional(), // Optional limit price for limit orders
-  trailing_percent: z.number().positive().optional(), // For trailing stop
+  limit_price: z.number().positive().optional(),
+  trailing_percent: z.number().positive().optional(),
 });
 
 type ConditionalOrderType = "stop_loss" | "take_profit" | "trailing_stop";
 
-interface ConditionalOrderRequest {
-  session_id: string;
-  symbol: string;
-  type: ConditionalOrderType;
-  side: "buy" | "sell";
-  quantity: number;
-  trigger_price: number;
-  limit_price?: number;
-  trailing_percent?: number;
+function getAuthUser(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
+  return supabase.auth.getUser();
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = createClient();
-
-  // Auth check
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await getAuthUser(request);
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const supabase = createClient();
 
   try {
     // Parse and validate request
@@ -224,15 +218,15 @@ export async function POST(request: NextRequest) {
 
 // GET - List user's conditional orders
 export async function GET(request: NextRequest) {
-  const supabase = createClient();
-
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await getAuthUser(request);
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const supabase = createClient();
 
   const { searchParams } = new URL(request.url);
   const session_id = searchParams.get("session_id");
@@ -274,15 +268,15 @@ export async function GET(request: NextRequest) {
 
 // DELETE - Cancel a conditional order
 export async function DELETE(request: NextRequest) {
-  const supabase = createClient();
-
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await getAuthUser(request);
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const supabase = createClient();
 
   const { searchParams } = new URL(request.url);
   const order_id = searchParams.get("order_id");

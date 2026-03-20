@@ -9,6 +9,10 @@ name: 🗄️ DB push
 on:
   workflow_dispatch:
 
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   db-push:
     runs-on: ubuntu-latest

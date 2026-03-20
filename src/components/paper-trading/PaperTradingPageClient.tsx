@@ -95,6 +95,7 @@ export function PaperTradingPageClient({
             <Link
               href={`/${locale}/paper-trading`}
               className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium"
+              data-testid="back-to-overview"
             >
               <ArrowLeft className="w-4 h-4" />
               {t("backToOverview")}
@@ -102,6 +103,7 @@ export function PaperTradingPageClient({
             <Link
               href={`/${locale}/dashboard`}
               className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium"
+              data-testid="back-to-dashboard"
             >
               <LayoutDashboard className="w-4 h-4" />
               {t("backToDashboard")}

@@ -21,6 +21,7 @@ import { createClient } from "@/lib/utils";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
 import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
+import { QueryProvider } from "@/components/query-provider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SentryInit } from "@/components/providers/SentryInit";
 import { Analytics } from "@vercel/analytics/react";
@@ -35,8 +36,13 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (user?.id) {
       const supabase = createClient();
-      supabase.from("user_profiles").update({ onboarding_completed: true }).eq("id", user.id).then();
-      document.cookie = "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
+      supabase
+        .from("user_profiles")
+        .update({ onboarding_completed: true })
+        .eq("id", user.id)
+        .then();
+      document.cookie =
+        "kp_onboarding_status=completed; path=/; max-age=31536000; SameSite=Lax";
     }
   }, [user?.id]);
 
@@ -52,8 +58,9 @@ export default function DashboardClientLayout({
     <>
       <CorruptTokenCleanup />
       <ClientSideProviders>
-        <ErrorBoundary>
-          <AuthProvider>
+        <QueryProvider>
+          <ErrorBoundary>
+            <AuthProvider>
               <ToastProvider>
                 <TradingModeProvider>
                   <ProtectedRoute>
@@ -80,8 +87,9 @@ export default function DashboardClientLayout({
                   <SpeedInsights />
                 </TradingModeProvider>
               </ToastProvider>
-          </AuthProvider>
-        </ErrorBoundary>
+            </AuthProvider>
+          </ErrorBoundary>
+        </QueryProvider>
       </ClientSideProviders>
     </>
   );

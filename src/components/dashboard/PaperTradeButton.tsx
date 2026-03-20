@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from 'sonner';
-import { ArrowUp, ArrowDown, DollarSign } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import { ArrowUp, ArrowDown, DollarSign } from "lucide-react";
 
 interface Props {
   symbol: string;
@@ -16,19 +22,19 @@ interface Props {
 
 export function PaperTradeButton({ symbol, currentPrice }: Props) {
   const [open, setOpen] = useState(false);
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
 
   const fetchBalance = async () => {
     try {
-      const response = await fetch('/api/paper-trading/balance');
+      const response = await fetch("/api/paper-trading/balance");
       if (response.ok) {
         const data = await response.json();
         setBalance(data.balance.current);
       }
     } catch (error) {
-      console.error('Failed to fetch balance:', error);
+      console.error("Failed to fetch balance:", error);
     }
   };
 
@@ -37,63 +43,68 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
     setOpen(true);
   };
 
-  const executeTrade = async (side: 'buy' | 'sell') => {
+  const executeTrade = async (side: "buy" | "sell") => {
     const qty = parseFloat(quantity);
     if (!qty || qty <= 0) {
-      toast.error('Vennligst angi en gyldig mengde');
+      toast.error("Vennligst angi en gyldig mengde");
       return;
     }
 
     const totalValue = qty * currentPrice;
-    
-    if (side === 'buy' && balance !== null && totalValue > balance) {
-      toast.error('Ikke nok saldo for denne handelen');
+
+    if (side === "buy" && balance !== null && totalValue > balance) {
+      toast.error("Ikke nok saldo for denne handelen");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch('/api/paper-trading/trade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/paper-trading/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           symbol,
           side,
           quantity: qty,
           price: currentPrice,
+        } as {
+          symbol: string;
+          side: "buy" | "sell";
+          quantity: number;
+          price: number;
         }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Handel feilet');
+        throw new Error(error.error || "Handel feilet");
       }
 
       const data = await response.json();
-      
+
       toast.success(
-        `${side === 'buy' ? 'Kjøpt' : 'Solgt'} ${qty} ${symbol} for kr ${totalValue.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}`,
+        `${side === "buy" ? "Kjøpt" : "Solgt"} ${qty} ${symbol} for kr ${totalValue.toLocaleString("nb-NO", { minimumFractionDigits: 2 })}`,
         {
-          description: `Ny saldo: kr ${data.new_balance.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}`,
-        }
+          description: `Ny saldo: kr ${data.new_balance.toLocaleString("nb-NO", { minimumFractionDigits: 2 })}`,
+        },
       );
-      
+
       setOpen(false);
-      setQuantity('');
+      setQuantity("");
     } catch (error: unknown) {
-      toast.error((error as Error).message || 'Kunne ikke utføre handel');
+      toast.error((error as Error).message || "Kunne ikke utføre handel");
     } finally {
       setLoading(false);
     }
   };
 
-  const totalValue = parseFloat(quantity || '0') * currentPrice;
+  const totalValue = parseFloat(quantity || "0") * currentPrice;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           onClick={handleOpen}
           className="bg-teal-600 hover:bg-teal-700 text-white font-medium"
         >
@@ -113,7 +124,10 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
             <span className="text-slate-400">Gjeldende pris</span>
             <span className="text-xl font-semibold text-white">
-              kr {currentPrice.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+              kr{" "}
+              {currentPrice.toLocaleString("nb-NO", {
+                minimumFractionDigits: 2,
+              })}
             </span>
           </div>
 
@@ -122,14 +136,17 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
             <div className="flex justify-between items-center text-sm">
               <span className="text-slate-400">Tilgjengelig saldo</span>
               <span className="text-slate-300">
-                kr {balance.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+                kr{" "}
+                {balance.toLocaleString("nb-NO", { minimumFractionDigits: 2 })}
               </span>
             </div>
           )}
 
           {/* Quantity Input */}
           <div className="space-y-2">
-            <Label htmlFor="quantity" className="text-slate-300">Mengde</Label>
+            <Label htmlFor="quantity" className="text-slate-300">
+              Mengde
+            </Label>
             <Input
               id="quantity"
               type="number"
@@ -147,7 +164,10 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
             <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
               <span className="text-slate-400">Total verdi</span>
               <span className="text-lg font-semibold text-white">
-                kr {totalValue.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+                kr{" "}
+                {totalValue.toLocaleString("nb-NO", {
+                  minimumFractionDigits: 2,
+                })}
               </span>
             </div>
           )}
@@ -155,20 +175,20 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           {/* Buy/Sell Buttons */}
           <div className="flex gap-3 pt-2">
             <Button
-              onClick={() => executeTrade('buy')}
+              onClick={() => executeTrade("buy")}
               disabled={loading || !quantity || totalValue <= 0}
               className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowUp className="w-4 h-4 mr-2" />
-              {loading ? 'Kjøper...' : 'Kjøp'}
+              {loading ? "Kjøper..." : "Kjøp"}
             </Button>
             <Button
-              onClick={() => executeTrade('sell')}
+              onClick={() => executeTrade("sell")}
               disabled={loading || !quantity || totalValue <= 0}
               className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowDown className="w-4 h-4 mr-2" />
-              {loading ? 'Selger...' : 'Selg'}
+              {loading ? "Selger..." : "Selg"}
             </Button>
           </div>
         </div>

@@ -31,9 +31,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { useAuth } from "@/components/auth/AuthContext";
 
 function SignupContent() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -45,14 +47,21 @@ function SignupContent() {
   const [mounted, setMounted] = useState(false);
 
   const searchParams = useSearchParams();
-  const redirectTo = searchParams?.get("redirectTo");
+  const redirectTo =
+    searchParams?.get("redirectTo") || searchParams?.get("redirect");
   const plan = searchParams?.get("plan");
   const locale = useLocale();
   const t = useTranslations("auth");
+  const redirectDest = redirectTo || `/${locale}/dashboard`;
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Innlogget bruker som besøker signup → dashboard (backup for middleware)
+  useEffect(() => {
+    if (mounted && !loading && user) router.replace(redirectDest);
+  }, [mounted, loading, user, router, redirectDest]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,7 +131,7 @@ function SignupContent() {
               total_earned: 500,
               updated_at: new Date().toISOString(),
             });
-          
+
           if (!kltError) {
             // Record the transaction (type must be reward|spend|bonus|founder per DB constraint)
             await supabase.from("klt_transactions").insert({
@@ -211,7 +220,10 @@ function SignupContent() {
 
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="signup-fullname" className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
+              <label
+                htmlFor="signup-fullname"
+                className="text-sm font-bold text-[#1A1D26] flex items-center gap-2"
+              >
                 <User className="w-4 h-4 text-blue-600" />
                 Navn
               </label>
@@ -227,7 +239,10 @@ function SignupContent() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="signup-email" className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
+              <label
+                htmlFor="signup-email"
+                className="text-sm font-bold text-[#1A1D26] flex items-center gap-2"
+              >
                 <Mail className="w-4 h-4 text-blue-600" />
                 {t("email")}
               </label>
@@ -243,7 +258,10 @@ function SignupContent() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="signup-password" className="text-sm font-bold text-[#1A1D26] flex items-center gap-2">
+              <label
+                htmlFor="signup-password"
+                className="text-sm font-bold text-[#1A1D26] flex items-center gap-2"
+              >
                 <Lock className="w-4 h-4 text-blue-600" />
                 {t("password")}
               </label>

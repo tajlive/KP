@@ -2,19 +2,14 @@
   "mcpServers": {
     "github": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
       }
     },
     "linear": {
       "command": "node",
-      "args": [
-        "scripts/run-linear-mcp.mjs"
-      ]
+      "args": ["scripts/run-linear-mcp.mjs"]
     },
     "supabase": {
       "command": "npx",
@@ -31,19 +26,28 @@
       "command": "node",
       "args": ["scripts/run-supabase-mcp.mjs"]
     },
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/agent-toolkit@latest"],
+      "env": {
+        "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
+      }
+    },
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@sentry/mcp-server@latest"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
+        "SENTRY_ORG": "${SENTRY_ORG}"
+      }
+    },
     "playwright": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest"
-      ]
+      "args": ["-y", "@playwright/mcp@latest"]
     },
     "resend": {
       "command": "npx",
-      "args": [
-        "-y",
-        "resend-mcp@latest"
-      ],
+      "args": ["-y", "resend-mcp@latest"],
       "env": {
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
@@ -53,7 +57,7 @@
       "args": ["scripts/run-vipps-mcp.mjs"]
     },
     "vercel": {
-      "url": "https://mcp.vercel.com"
+      "url": "https://mcp.vercel.com/klarpakke/klarpakke"
     },
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp"

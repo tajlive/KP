@@ -8,17 +8,17 @@ Denne filen beskriver anbefalt oppsett i GitHub-websiden for å få full optimal
 
 ## 1. Repo-innstillinger (Settings → General)
 
-| Innstilling | Anbefalt verdi |
-|-------------|----------------|
-| **Repository name** | `KP` (eller beholde nåværende) |
-| **Description** | `Norges første krypto-trading skole. Next.js, Supabase, Vercel.` |
-| **Website** | `https://www.klarpakke.no` |
-| **Topics** | `nextjs`, `supabase`, `vercel`, `crypto`, `trading`, `norway`, `typescript` |
-| **Default branch** | `main` |
-| **Allow merge commits** | Valgfritt (squash anbefales for ren historikk) |
-| **Allow squash merging** | ✅ Anbefalt |
-| **Allow rebase merging** | ✅ Valgfritt |
-| **Automatically delete head branches** | ✅ Anbefalt (ryddigere repo) |
+| Innstilling                            | Anbefalt verdi                                                              |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| **Repository name**                    | `KP` (eller beholde nåværende)                                              |
+| **Description**                        | `Norges første krypto-trading skole. Next.js, Supabase, Vercel.`            |
+| **Website**                            | `https://www.klarpakke.no`                                                  |
+| **Topics**                             | `nextjs`, `supabase`, `vercel`, `crypto`, `trading`, `norway`, `typescript` |
+| **Default branch**                     | `main`                                                                      |
+| **Allow merge commits**                | Valgfritt (squash anbefales for ren historikk)                              |
+| **Allow squash merging**               | ✅ Anbefalt                                                                 |
+| **Allow rebase merging**               | ✅ Valgfritt                                                                |
+| **Automatically delete head branches** | ✅ Anbefalt (ryddigere repo)                                                |
 
 ---
 
@@ -43,12 +43,16 @@ Denne filen beskriver anbefalt oppsett i GitHub-websiden for å få full optimal
 
 ### Nødvendige secrets
 
-| Secret | Bruk |
-|--------|------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Build + Preview/Production |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Build + Preview/Production |
-| `VERCEL_TOKEN` | Manual Deploy (og ev. Vercel CLI i CI) |
-| `SENTRY_AUTH_TOKEN` | Build (source maps til Sentry) |
+| Secret                          | Bruk                                                                                                                        |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Build + Preview/Production                                                                                                  |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Build + Preview/Production                                                                                                  |
+| `VERCEL_TOKEN`                  | Deploy til Vercel (CI + manuell)                                                                                            |
+| `VERCEL_ORG_ID`                 | **Påkrevd for Deploy** – unngår Vercel 400 "Project names cannot contain ---". Finn i Vercel Dashboard → Settings → General |
+| `VERCEL_PROJECT_ID`             | **Påkrevd for Deploy** – brukes sammen med VERCEL_ORG_ID. Finn i Vercel Dashboard → Project Settings                        |
+| `SENTRY_AUTH_TOKEN`             | Build (source maps til Sentry)                                                                                              |
+| `SUPABASE_PROJECT_REF`          | DB Push on merge – Supabase-projekt-ID (f.eks. `vuxbjlykgmzskxbclquf`). Alternativ: `SUPABASE_PROJECT_ID`                   |
+| `SUPABASE_ACCESS_TOKEN`         | DB Push on merge – Supabase Personal Access Token fra Dashboard                                                             |
 
 **Slik setter du SENTRY_AUTH_TOKEN (manuelt):**  
 Sentry MCP støtter ikke token-oppretting. Prosjektet **klarpakke-production** ligger i org **elbatt-chatbot**.
@@ -61,16 +65,16 @@ Sentry MCP støtter ikke token-oppretting. Prosjektet **klarpakke-production** l
 
 ### Valgfrie secrets
 
-| Secret | Bruk |
-|--------|------|
-| `SNYK_TOKEN` | Security Audit workflow (Snyk) |
-| `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | E2E-tester mot innlogging |
-| `LHCI_GITHUB_APP_TOKEN` | Lighthouse CI (hvis brukt) |
+| Secret                                 | Bruk                           |
+| -------------------------------------- | ------------------------------ |
+| `SNYK_TOKEN`                           | Security Audit workflow (Snyk) |
+| `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | E2E-tester mot innlogging      |
+| `LHCI_GITHUB_APP_TOKEN`                | Lighthouse CI (hvis brukt)     |
 
 ### Variables (Settings → Secrets and variables → Variables)
 
-| Variable | Bruk |
-|----------|------|
+| Variable      | Bruk                                                               |
+| ------------- | ------------------------------------------------------------------ |
 | `PREVIEW_URL` | Valgfritt: base URL for E2E/Lighthouse (f.eks. Vercel preview-URL) |
 
 ---
@@ -95,19 +99,50 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 
 ---
 
-## 6. Workflows (Actions)
+## 6. Workflows (Actions) — konsolidert mars 2026
 
-| Workflow | Trigger | Formål |
-|----------|---------|--------|
-| **PR Check** | PR mot `main` | Lint, type-check, unit tests, build |
-| **Manual Deploy** | Manuell | Deploy til preview eller production |
-| **Security Audit** | Ukentlig + manuell | npm audit, secret-scan, valgfritt Snyk |
-| **Dependency Check** | Månedlig + manuell | depcheck, knip |
-| **E2E Critical Flows** | Schedule + PR (paths) + manuell | Playwright kritiske flows |
-| **TypeScript Check** | Push/PR mot `develop` | type-check, lint, build (ikke for main – dekkes av PR Check) |
-| **MCP Health / Integration** | Etter behov | MCP-tjenester |
+### Kjerne-workflows (alltid aktive)
 
-Detaljer og kostnad: se [.github/workflows/README.md](workflows/README.md).
+| Workflow       | Fil              | Trigger                                   | Formål                                                                                                                                |
+| -------------- | ---------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **PR Check**   | `pr-check.yml`   | PR mot `main`                             | Lint, type-check, unit tests, build. Auto-fix lint + PR-kommentar ved feil. **Required status check.**                                |
+| **Deploy**     | `deploy.yml`     | Push til `main` (auto) + manuell dispatch | Lint, build, Vercel deploy, verify, Cloudflare purge. Erstatter `manual-deploy.yml` + deploy-jobs fra `test.yml`.                     |
+| **Auto-merge** | `auto-merge.yml` | Dependabot PR                             | Auto-approve + squash-merge patch/minor Dependabot PRs etter CI passerer.                                                             |
+| **Auto-label** | `auto-label.yml` | PR opened/sync                            | Labels PR basert på endrede filer (frontend, backend, trading, auth, ci, database, i18n, docs, tests). Config: `.github/labeler.yml`. |
+
+### Støtte-workflows
+
+| Workflow             | Fil                    | Trigger                                               | Formål                                                                   |
+| -------------------- | ---------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
+| **E2E Critical**     | `e2e-critical.yml`     | Push/PR til `main`, daglig 06:00, manuell             | Playwright kritiske flows (Chromium + Firefox). Slack-varsling ved feil. |
+| **Security Audit**   | `security-audit.yml`   | Mandager 09:00, manuell                               | npm audit, secret-scan, valgfritt Snyk                                   |
+| **Dependency Check** | `dependency-check.yml` | 1. i måneden, manuell                                 | depcheck, knip                                                           |
+| **MCP Health**       | `mcp-health.yml`       | Hverdager 06:00, manuell                              | Sjekker Supabase, Stripe, Vercel, Resend, Cloudflare                     |
+| **MCP Integration**  | `mcp-integration.yml`  | Push/PR med MCP-config-endringer                      | Validerer MCP-konfigurasjon                                              |
+| **Schema Dump**      | `schema-dump.yml`      | Push til `main` (migrasjoner), daglig 05:00           | Dumper DB-skjema til docs                                                |
+| **DB Push**          | `db-push.yml`          | Manuell                                               | Kjører `supabase db push`                                                |
+| **Auto-create PR**   | `auto-create-pr.yml`   | Push til `cursor/**`, `feat/**`, `fix/**`, `chore/**` | Oppretter draft PR mot main hvis ingen finnes                            |
+| **DB Push on merge** | `db-push-on-merge.yml` | Push til `main` (når `supabase/**` endres)            | Kjører `supabase db push` automatisk etter merge                         |
+
+### Deaktiverte workflows (`workflows-disabled/`)
+
+Gamle/overlappende workflows beholdes som referanse: `test.yml`, `manual-deploy.yml`, `e2e-tests.yml`, `typescript-check.yml`, m.fl.
+
+### PR-flyt (komplett)
+
+```
+PR opprettet → auto-label → pr-check (lint, type-check, test, build)
+                                ↓ feil?
+                         auto-fix lint + PR-kommentar
+                                ↓ OK?
+                         merge til main → deploy (auto) → verify → Cloudflare purge
+```
+
+### Dependabot-flyt
+
+```
+Dependabot PR → auto-merge (approve + squash) → pr-check → merge → deploy
+```
 
 ---
 
@@ -128,18 +163,43 @@ Når **PR Check** (eller andre workflows) feiler på en PR:
 
 7. **Auto-fix for lint:** Hvis **kun** Lint-feilet, prøver CI å kjøre `npm run lint -- --fix` og pushe en commit til PR-branchen. Da starter en ny kjøring automatisk. Hvis feilen var type-check eller build, skjer ingen auto-push.
 
+8. **Cursor Cloud Agent:** Skriv `@cursor` i en PR-kommentar for å be Cursor Cloud Agent fikse. Se [CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md) for full veiledning.
+
 ---
 
-## 8. Hurtigsjekkliste
+## 8. Cursor Cloud PR Autofix
+
+Med Cursor-abonnement inkl. Cloud Agents kan du sette opp automatisk feilretting på PR-er.
+
+Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for:
+
+- Oppsett av automations (CI failure, PR opened, Push to branch)
+- Manuell bruk: `@cursor Fiks alle CI-feil`, `@cursor autofix on/off`
+- Krav: Cursor-abonnement med Cloud Agents
+
+---
+
+## 9. Feilsøking per workflow
+
+| Workflow             | Vanlig feil                                                          | Løsning                                                                                                      |
+| -------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Deploy**           | `Project names cannot contain ---` (400)                             | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` (se §3).                                                     |
+| **Deploy**           | Build feiler                                                         | Sjekk at `NEXT_PUBLIC_SUPABASE_*` er satt.                                                                   |
+| **Auto-create PR**   | `GitHub Actions is not permitted to create or approve pull requests` | Gå til **Settings → Actions → General → Workflow permissions** → velg **Read and write permissions**. Lagre. |
+| **DB Push on merge** | `Mangler SUPABASE_PROJECT_REF`                                       | Legg til `SUPABASE_PROJECT_REF` eller `SUPABASE_PROJECT_ID` (begge støttes).                                 |
+| **E2E Critical**     | Tester feiler (auth/timeout)                                         | Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for innloggede flows.                                           |
+
+## 10. Hurtigsjekkliste
 
 - [ ] Description og topics satt på repo
 - [ ] Default branch er `main`
 - [ ] Branch protection på `main` med status checks
-- [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `VERCEL_TOKEN`, `SENTRY_AUTH_TOKEN`
+- [ ] **Workflow permissions:** Settings → Actions → General → **Read and write permissions** (påkrevd for Auto-create PR)
+- [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `SENTRY_AUTH_TOKEN`, `SUPABASE_PROJECT_REF`
 - [ ] CODEOWNERS aktiv hvis du vil bruke review-krav
 - [ ] Squash merge eller merge strategy valgt
 - [ ] Automatisk sletting av head branches (valgfritt)
 
 ---
 
-*Sist oppdatert: mars 2026*
+_Sist oppdatert: mars 2026_
