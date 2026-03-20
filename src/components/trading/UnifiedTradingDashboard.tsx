@@ -386,7 +386,7 @@ export default function UnifiedTradingDashboard({
             >
               {tTrading("mySessions")}
             </a>
-            <CurrencySwitcher />
+            <CurrencySwitcher layoutId="unified-trading-currency" />
             <TradingModeToggle
               mode={mode}
               setMode={setMode}

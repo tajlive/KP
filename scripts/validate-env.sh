@@ -26,8 +26,6 @@ REQUIRED_DEPLOYMENT_VARS=(
 OPTIONAL_VARS=(
   "SENTRY_DSN"
   "SENTRY_AUTH_TOKEN"
-  "KV_REST_API_URL"
-  "KV_REST_API_TOKEN"
 )
 
 # Color codes
@@ -71,6 +69,16 @@ fi
 # Check optional variables
 echo ""
 echo "📋 Optional Variables:"
+echo ""
+echo "Redis REST (cache, rate-limit, health) — sett UPSTASH_REDIS_REST_* eller legacy KV_REST_*:"
+if { [ -n "${UPSTASH_REDIS_REST_URL:-}" ] && [ -n "${UPSTASH_REDIS_REST_TOKEN:-}" ]; } ||
+   { [ -n "${KV_REST_API_URL:-}" ] && [ -n "${KV_REST_API_TOKEN:-}" ]; }; then
+  echo -e "${GREEN}✅ Redis REST: URL + token satt${NC}"
+else
+  echo -e "${YELLOW}⚠️  Redis REST ikke konfigurert (valgfritt)${NC}"
+  MISSING_OPTIONAL=$((MISSING_OPTIONAL + 1))
+fi
+echo ""
 for var in "${OPTIONAL_VARS[@]}"; do
   if [ -z "${!var}" ]; then
     echo -e "${YELLOW}⚠️  NOT SET: $var (optional)${NC}"

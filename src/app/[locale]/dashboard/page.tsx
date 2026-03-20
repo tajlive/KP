@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
+import { localizedPathname } from "@/middleware/locale-path";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import PortfolioDashboard from "@/components/dashboard/PortfolioDashboard";
@@ -70,7 +71,7 @@ export default async function DashboardPage({
   try {
     const { supabase, user } = await requireAuth(
       locale,
-      `/${locale}/dashboard`,
+      localizedPathname(locale, "/dashboard"),
     );
 
     const [profileRes, tradesRes, sessionRes] = await Promise.all([

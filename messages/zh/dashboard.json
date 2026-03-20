@@ -35,6 +35,10 @@
   },
   "welcome": "Velkommen til Klarpakke",
   "welcomeBack": "Velkommen tilbake 👋",
+  "homeOverview": {
+    "title": "首页 — 投资组合概览",
+    "subtitle": "余额、实时价格、含信号与最近交易的市场工作台。图表与下单请使用模拟交易。"
+  },
   "tabs": {
     "home": "首页",
     "learn": "学习",
@@ -43,6 +47,8 @@
     "profile": "个人资料"
   },
   "sidebar": {
+    "language": "语言",
+    "displayCurrency": "显示货币",
     "overview": "Oversikt",
     "portfolio": "Portefølje",
     "trading": "Trading",

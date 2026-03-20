@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { HeaderTicker } from "@/components/landing/HeaderTicker";
 import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +19,7 @@ export function MarketingNavigation() {
   const router = useRouter();
   const t = useTranslations("navigation");
 
-  const l = (path: string) => `/${locale}${path === "/" ? "" : path}`;
+  const l = (path: string) => hrefWithLocale(locale, path === "/" ? "/" : path);
 
   const mainLinks = [
     { path: "/kurs", label: t("navLearn") },
@@ -28,7 +29,11 @@ export function MarketingNavigation() {
   ];
 
   return (
-    <nav className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50">
+    <nav
+      data-testid="site-navigation"
+      aria-label={t("siteNavAria")}
+      className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50"
+    >
       <div className="max-w-6xl mx-auto px-4">
         <div className="hidden xl:flex h-9 items-center justify-center border-b border-black/[0.05]">
           <HeaderTicker />

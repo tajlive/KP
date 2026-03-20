@@ -34,6 +34,10 @@
     }
   },
   "welcomeBack": "Welcome back! Here is your real-time status.",
+  "homeOverview": {
+    "title": "Home — portfolio overview",
+    "subtitle": "Balance, live prices, market desk with signals and recent trades. For charts and orders: paper trading."
+  },
   "loading": "Loading dashboard...",
   "klt": {
     "title": "Klarpakke Token (KLT)",
@@ -315,6 +319,8 @@
     "profile": "Profile"
   },
   "sidebar": {
+    "language": "Language",
+    "displayCurrency": "Display currency",
     "overview": "Overview",
     "portfolio": "Portfolio",
     "trading": "Trading",

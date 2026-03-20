@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 export interface NavItem {
   id: string;
@@ -26,10 +27,10 @@ export function DashboardTabs() {
   const pathname = usePathname() ?? "/";
 
   const isActive = (href: string) => {
-    const full = `/${locale}${href}`;
+    const full = hrefWithLocale(locale, href);
     return href === "/dashboard"
       ? pathname === full
-      : pathname.startsWith(full);
+      : pathname === full || pathname.startsWith(`${full}/`);
   };
 
   return (
@@ -42,7 +43,7 @@ export function DashboardTabs() {
           return (
             <Link
               key={item.id}
-              href={`/${locale}${item.href}`}
+              href={hrefWithLocale(locale, item.href)}
               className={cn(
                 "flex flex-col items-center gap-1 py-3 px-4 transition-colors",
                 active ? "text-[#0052FF]" : "text-[#8E95A9]",

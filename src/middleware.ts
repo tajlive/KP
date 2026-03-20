@@ -7,6 +7,7 @@ import { handleTierGate } from "./middleware/tier-gate";
 import { redirectWithCookies } from "./middleware/auth-guard";
 import {
   isGuestAuthRoute,
+  localizedPathname,
   parseLocalePath,
   sanitizePostAuthRedirect,
 } from "./middleware/locale-path";
@@ -60,16 +61,29 @@ export async function middleware(request: NextRequest) {
   if (strippedPath === "/beta" || strippedPath.startsWith("/beta/")) {
     const url = request.nextUrl.clone();
     if (strippedPath.includes("live-trading")) {
-      url.pathname = `/${locale}/paper-trading`;
+      url.pathname = localizedPathname(locale, "/paper-trading");
       url.searchParams.set("mode", "live");
     } else if (strippedPath.includes("auto-trade")) {
-      url.pathname = `/${locale}/dashboard/auto-trade`;
+      url.pathname = localizedPathname(locale, "/dashboard/auto-trade");
     } else if (strippedPath.includes("connect-exchange")) {
-      url.pathname = `/${locale}/dashboard`;
+      url.pathname = localizedPathname(locale, "/dashboard");
     } else {
-      url.pathname = `/${locale}/dashboard`;
+      url.pathname = localizedPathname(locale, "/dashboard");
     }
     return NextResponse.redirect(url, 308);
+  }
+
+  // Engelsk alias /settings → innstillinger (før next-intl; unngår redirect-kø mot prod)
+  if (strippedPath === "/settings" || strippedPath.startsWith("/settings/")) {
+    const tail =
+      strippedPath === "/settings"
+        ? ""
+        : strippedPath.slice("/settings".length);
+    const target = `/innstillinger${tail}`;
+    return NextResponse.redirect(
+      new URL(localizedPathname(locale, target), request.url),
+      308,
+    );
   }
 
   // Kanoniske redirects: alias/dødslenker → én side (sletter unødvendige page-filer)
@@ -87,7 +101,7 @@ export async function middleware(request: NextRequest) {
     if (strippedPath === from || strippedPath.startsWith(from + "/")) {
       const dest = to.startsWith("/") ? to : `/${to}`;
       return NextResponse.redirect(
-        new URL(`/${locale}${dest}`, request.url),
+        new URL(localizedPathname(locale, dest), request.url),
         308,
       );
     }
@@ -152,13 +166,16 @@ export async function middleware(request: NextRequest) {
   // Innloggede brukere som går til innlogging/registrering → dashboard (ikke vise login/registrer)
   if (user && isAuthPage) {
     return NextResponse.redirect(
-      new URL(`/${locale}/dashboard`, request.url),
+      new URL(localizedPathname(locale, "/dashboard"), request.url),
       302,
     );
   }
 
   if (isProtected && !user) {
-    const loginUrl = new URL(`/${locale}/innlogging`, request.url);
+    const loginUrl = new URL(
+      localizedPathname(locale, "/innlogging"),
+      request.url,
+    );
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }

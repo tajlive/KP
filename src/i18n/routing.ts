@@ -5,7 +5,10 @@ export const routing = defineRouting({
   locales: ["no", "en"],
   defaultLocale: "no",
   localePrefix: "as-needed",
-  localeDetection: true,
+  // Viktig: ikke bruk Accept-Language til å omdirigere /dashboard → /en/dashboard.
+  // Da «velger» brukeren NO, men neste request/middleware sender dem tilbake til engelsk.
+  // Standardlocale er norsk; engelsk bruker /en/... eksplisitt i URL.
+  localeDetection: false,
 });
 
 export const { Link, redirect, usePathname, useRouter, getPathname } =

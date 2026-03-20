@@ -3,18 +3,21 @@
 ## Oppsett
 
 ### 1. Klon repository og installer dependencies
+
 ```bash
 cd ~/klarpakke
 npm install
 ```
 
 ### 2. Sett opp miljøvariabler
+
 ```bash
 cp .env.local.example .env.local
 # Rediger .env.local med dine Supabase-nøkler
 ```
 
 ### 3. Start utviklingsserver
+
 ```bash
 npm run dev
 ```
@@ -62,7 +65,10 @@ React-komponenter monteres automatisk på disse root-elementene i Webflow:
 Legg til denne linjen i Webflow `<head>`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js" async></script>
+<script
+  src="https://cdn.jsdelivr.net/gh/tajlive/KP@main/web/klarpakke-site.js"
+  async
+></script>
 ```
 
 ## Supabase Integration
@@ -78,6 +84,7 @@ Databasen har følgende tabeller:
 ### Authentication
 
 Supabase Authentication håndterer:
+
 - Email/password login
 - Session management
 - Password reset
@@ -114,6 +121,7 @@ npm run webflow:full-check
 3. **Hotfixes**: `hotfix/description`
 
 Commit messages på norsk eller engelsk:
+
 ```
 feat: Legg til login-komponent
 fix: Rett opp feil i dashboard
@@ -130,6 +138,7 @@ Workflows kjører automatisk:
 ## Deployment
 
 ### Production
+
 ```bash
 # Build
 npm run build
@@ -139,43 +148,83 @@ npm start
 ```
 
 ### Webflow CDN
+
 Push to `main` branch → jsDelivr CDN updates automatically
 
 ## Tips og Best Practices
 
 ### TypeScript
+
 - Bruk strict mode
 - Definer types for props og state
 - Unngå `any` type
 
 ### Components
+
 - Bruk `'use client'` for browser-komponenter
 - Unngå direkte database-kall i components
 - Implementer error handling
 
 ### Styling
+
 - Bruk Tailwind CSS for styling
 - Hold konsistent med designsystem
 - Test responsive design
 
 ### Supabase
+
 - Bruk Row Level Security (RLS) for sikkerhet
 - Implementer proper error handling
 - Cache data når mulig
 
 ## Feilsøking
 
+### `npm error ENOENT ... open '/Users/.../package.json'`
+
+**Årsak:** Du kjører `npm run …` eller `npx playwright …` fra **hjemmemappen** (`~`) i stedet for prosjektmappa.
+
+**Løsning:**
+
+```bash
+cd ~/klarpakke   # riktig stavemåte: klarpakke — ikke f.eks. klarpakkw
+npm run playwright:install   # ved behov
+npm run test:e2e:smoke       # eller npm run test:ci:blocking
+```
+
+Alle `npm`-script som `preprod:gate`, `allure:generate` og `analyze:bundle` må kjøres **fra repo-roten** (der `package.json` ligger).
+
+### Playwright: `Error: EPERM: operation not permitted, scandir '.../.Trash'`
+
+Oppstår ofte når kommandoen **ikke** kjøres fra prosjektet, eller når et verktøy traverserer kataloger den ikke skal. Kjør Playwright fra `~/klarpakke` som over. Hvis det vedvarer: ikke kjør Playwright fra `~` med glob-mønstre som treffer hele disken.
+
+### `/settings` → `innstillinger` (smoke)
+
+`launch-critical` sjekker **første redirect** med `request.get(..., { maxRedirects: 0 })` mot prod. Middleware sender `/settings` og `/en/settings` til kanonisk `innstillinger`-sti (uten `/no/` for standardlocale) for å unngå redirect-kø med `next-intl`.
+
+### Bundle-analyse (`npm run analyze:bundle`)
+
+Etter bygg skrives rapporter til:
+
+- `.next/analyze/client.html` — **start her** (browser bundle)
+- `.next/analyze/nodejs.html`
+- `.next/analyze/edge.html`
+
+Åpne `client.html` i nettleser for å se treemap. **Store ruter** (fra `next build`-tabellen) er blant annet `paper-trading` (~47 kB side / ~409 kB First Load JS), `dashboard/strategies`, `marketplace`, `profile` — gode kandidater for `dynamic()` og code-splitting.
+
 ### Login fungerer ikke
+
 1. Sjekk NEXT_PUBLIC_SUPABASE_URL og NEXT_PUBLIC_SUPABASE_ANON_KEY
 2. Verifiser at bruker finnes i Supabase
 3. Sjekk browser-konsollen for errors
 
 ### Dashboard viser ingen data
+
 1. Sjekk at tabellen `signals` finnes
 2. Verifiser Row Level Security-regler
 3. Sjekk database-permissions
 
 ### Webflow validering feiler
+
 1. Sjekk WEBFLOW_API_TOKEN og WEBFLOW_SITE_ID
 2. Verifiser at alle root-elementer finnes i Webflow
 3. Sjekk at contract.json er korrekt
