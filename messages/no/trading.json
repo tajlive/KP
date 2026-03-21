@@ -1,4 +1,8 @@
 {
+  "unifiedHubTitle": "Handelsdesk",
+  "unifiedHubSubtitle": "Samme skjermflate og tallformat for øving og live. Bytt modus med bryteren — merk at live bruker ekte midler.",
+  "toggleAria": "Bytt mellom øvings- og live-modus",
+  "liveRiskBanner": "Du handler med ekte midler. Tap kan skje. Følg egen risiko.",
   "paperMode": "Paper Trading",
   "paperModeShort": "Paper",
   "liveMode": "Live Trading",
@@ -137,7 +141,21 @@
     },
     "ai_copy": {
       "name": "AI Copy-trade",
-      "description": "Kopierer AI-anbefalte handler automatisk. Varierende risiko."
+      "description": "Signal-fusjon (flere indikatorer) inntil dedikert copy-motor er på plass. Høy aktivitet — egen risiko."
     }
+  },
+  "robotBrain": {
+    "ariaLabel": "Bot status og analyse",
+    "badge": "Kjernelogikk aktiv",
+    "disclaimer": "Visuell simulering av overvåkning — ikke kjøpsanbefaling eller garantert avkastning.",
+    "line1": "Synkroniserer candlesticks mot Binance …",
+    "line2": "Kryssjekker RSI og MACD mot risikoprofil …",
+    "line3": "Vurderer posisjonsstørrelse innenfor daglige grenser …",
+    "line4": "Leser volatilitet og spread for handelspar …",
+    "line5": "Oppdaterer trailing og delvis take-profit-nivåer …",
+    "line6": "Venter på neste tillatte handelsvindu …",
+    "chip_scan": "Scan",
+    "chip_risk": "Risiko OK",
+    "chip_signal": "Signal"
   }
 }

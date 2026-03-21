@@ -1,28 +1,12 @@
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabaseAuth = createServerClient(request, response);
-  const {
-    data: { user },
-  } = await supabaseAuth.auth.getUser();
-
-  if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const supabase = createClient();
-  const { data: profile } = await supabase
-    .from("user_profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
-  if (!ADMIN_EMAILS.includes(user.email ?? "") && profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
 
   const secret = process.env.CRON_SECRET?.trim();

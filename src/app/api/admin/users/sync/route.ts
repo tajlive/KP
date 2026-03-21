@@ -5,11 +5,9 @@
  * får opprettet profil slik at de vises i admin-brukerlisten.
  */
 
+import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient } from "@supabase/supabase-js";
-import { createClient as createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-
-const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
 
 function getSupabaseAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -20,34 +18,12 @@ function getSupabaseAdminClient() {
   });
 }
 
-async function verifyAdmin(request: NextRequest) {
-  const authClient = await createServerClient();
-  const {
-    data: { user },
-  } = await authClient.auth.getUser();
-  if (!user)
-    return { isAdmin: false as const, error: "Unauthorized", status: 401 };
-  const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
-  const { data: profile } = await authClient
-    .from("user_profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-  if (!isWhitelisted && profile?.role !== "admin")
-    return {
-      isAdmin: false as const,
-      error: "Forbidden: Admin required",
-      status: 403,
-    };
-  return { isAdmin: true as const, user };
-}
-
 /**
  * POST: Sync auth.users → user_profiles for alle som mangler profil
  */
 export async function POST(request: NextRequest) {
-  const adminCheck = await verifyAdmin(request);
-  if (!adminCheck.isAdmin) {
+  const adminCheck = await verifyAdminAccess();
+  if (!adminCheck.ok) {
     return NextResponse.json(
       { error: adminCheck.error },
       { status: adminCheck.status },

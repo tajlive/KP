@@ -4,12 +4,14 @@ import { createClient } from "@/lib/utils";
 import {
   Bell,
   CheckCircle2,
+  CreditCard,
   Loader2,
   Lock,
   Mail,
   Trophy,
   Zap,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -65,7 +67,8 @@ function EmailPrefsSection() {
           gamification_emails: data.gamification_emails ?? true,
           trading_alerts: data.trading_alerts ?? true,
           transaction_emails: data.transaction_emails ?? true,
-          digest_emails: (data.digest_emails as "daily" | "weekly" | "never") ?? "weekly",
+          digest_emails:
+            (data.digest_emails as "daily" | "weekly" | "never") ?? "weekly",
           marketing_emails: data.marketing_emails ?? false,
         });
       }
@@ -84,10 +87,16 @@ function EmailPrefsSection() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase.from("email_preferences").upsert(
-        { user_id: user.id, ...newPrefs, updated_at: new Date().toISOString() },
-        { onConflict: "user_id" },
-      );
+      const { error } = await supabase
+        .from("email_preferences")
+        .upsert(
+          {
+            user_id: user.id,
+            ...newPrefs,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id" },
+        );
       if (error) throw error;
 
       setPrefs(newPrefs);
@@ -162,7 +171,9 @@ function EmailPrefsSection() {
               <p className="text-sm font-medium text-slate-200">{label}</p>
               <p className="text-xs text-slate-500">{desc}</p>
               {always && (
-                <p className="text-xs text-slate-600 mt-0.5">Kan ikke slås av</p>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Kan ikke slås av
+                </p>
               )}
             </div>
           </div>
@@ -191,7 +202,11 @@ function EmailPrefsSection() {
                   : "bg-slate-800 text-slate-400 hover:bg-slate-700"
               }`}
             >
-              {val === "daily" ? "Daglig" : val === "weekly" ? "Ukentlig" : "Aldri"}
+              {val === "daily"
+                ? "Daglig"
+                : val === "weekly"
+                  ? "Ukentlig"
+                  : "Aldri"}
             </button>
           ))}
         </div>
@@ -259,7 +274,75 @@ function PasswordSection() {
   );
 }
 
+function BillingPortalSection() {
+  const t = useTranslations("settings.billing");
+  const locale = useLocale();
+  const [loading, setLoading] = useState(false);
+
+  const openPortal = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/stripe/customer-portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ locale }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok) {
+        toast.error(data.error || t("error"));
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      toast.error(t("error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <p className="text-sm font-medium text-slate-200">{t("title")}</p>
+        <p className="text-xs text-slate-500 mt-1 max-w-md leading-relaxed">
+          {t("description")}
+        </p>
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={openPortal}
+        disabled={loading}
+        className="border-slate-700 text-slate-200 hover:bg-slate-800 shrink-0"
+      >
+        {loading ? (
+          <Loader2 className="w-4 h-4 animate-spin mr-2" aria-hidden />
+        ) : (
+          <CreditCard className="w-4 h-4 mr-2" aria-hidden />
+        )}
+        {loading ? t("loading") : t("cta")}
+      </Button>
+    </div>
+  );
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
+
+function InnstillingerBillingCard() {
+  const t = useTranslations("settings.billing");
+  return (
+    <Section
+      icon={<CreditCard className="w-5 h-5 text-violet-400" />}
+      title={t("sectionTitle")}
+    >
+      <BillingPortalSection />
+    </Section>
+  );
+}
 
 export default function InnstillingerClient() {
   return (
@@ -272,18 +355,29 @@ export default function InnstillingerClient() {
           </p>
         </div>
 
+        <InnstillingerBillingCard />
+
         {/* E-post */}
-        <Section icon={<Mail className="w-5 h-5 text-blue-400" />} title="E-postvarsler">
+        <Section
+          icon={<Mail className="w-5 h-5 text-blue-400" />}
+          title="E-postvarsler"
+        >
           <EmailPrefsSection />
         </Section>
 
         {/* Push */}
-        <Section icon={<Bell className="w-5 h-5 text-blue-400" />} title="Push-varsler">
+        <Section
+          icon={<Bell className="w-5 h-5 text-blue-400" />}
+          title="Push-varsler"
+        >
           <NotificationSettings />
         </Section>
 
         {/* Sikkerhet */}
-        <Section icon={<Lock className="w-5 h-5 text-green-400" />} title="Sikkerhet">
+        <Section
+          icon={<Lock className="w-5 h-5 text-green-400" />}
+          title="Sikkerhet"
+        >
           <PasswordSection />
         </Section>
       </div>

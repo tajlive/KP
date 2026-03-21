@@ -1,86 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Check, HelpCircle, Sparkles, GraduationCap, BookOpen, Award } from "lucide-react";
+import { Check, HelpCircle, Coins } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { PaymentTrustLogos } from "@/components/landing/PaymentTrustLogos";
+import { useVippsMarket } from "@/components/providers/VippsMarketProvider";
+import { getPriserPlans } from "./priser-plans";
 
-const plans = [
-  {
-    key: "student",
-    icon: Sparkles,
-    popular: true,
-    price: "0",
-    periodNo: "for alltid",
-    periodEn: "forever",
-    badgeNo: "Gratis for alltid",
-    badgeEn: "Free forever",
-  },
-  {
-    key: "bachelor",
-    icon: BookOpen,
-    popular: false,
-    price: "249",
-    periodNo: "/måned",
-    periodEn: "/month",
-    badgeNo: null,
-    badgeEn: null,
-  },
-  {
-    key: "master",
-    icon: GraduationCap,
-    popular: false,
-    price: "499",
-    periodNo: "/måned",
-    periodEn: "/month",
-    badgeNo: null,
-    badgeEn: null,
-  },
-  {
-    key: "phd",
-    icon: Award,
-    popular: false,
-    price: "999",
-    periodNo: "/måned",
-    periodEn: "/month",
-    badgeNo: null,
-    badgeEn: null,
-  },
-];
-
-const features = {
-  student: [
-    "100 000 kr lekepenger",
-    "5 basis-moduler",
-    "Community-tilgang",
-    "E-post support",
-  ],
-  bachelor: [
-    "Alt fra Student",
-    "15+ moduler",
-    "Lekepenger med avanserte strategier",
-    "Discord VIP-kanal",
-    "Prioritet support",
-  ],
-  master: [
-    "Alt fra Bachelor",
-    "30+ moduler",
-    "AI-trading assistent",
-    "Auto-trading bot (paper)",
-    "Skatterapport",
-    "1-on-1 månedlig review",
-  ],
-  phd: [
-    "Alt fra Master",
-    "Alle kurs (50+ moduler)",
-    "Ukentlig 1-on-1 mentoring",
-    "Eksklusive strategier",
-    "API-tilgang",
-    "White-glove support",
-  ],
-};
-
-const faqs = [
+const legacyFaqs = [
   {
     q: "Kan jeg bytte plan senere?",
     a: "Ja, du kan oppgradere eller nedgradere når som helst. Endringer trer i kraft ved neste faktureringsperiode.",
@@ -99,9 +28,27 @@ const faqs = [
   },
 ];
 
+function getTierFeatures(
+  tStudy: ReturnType<typeof useTranslations<"studieprogram">>,
+  slug: string,
+): string[] {
+  try {
+    return tStudy.raw(`tiers.${slug}.features`) as string[];
+  } catch {
+    return [];
+  }
+}
+
 export default function PriserClient() {
   const t = useTranslations("pricing");
+  const tFoot = useTranslations("footer");
+  const tStudy = useTranslations("studieprogram");
+  const { showVipps } = useVippsMarket();
   const locale = useLocale();
+  const plans = getPriserPlans();
+
+  const kltFaq = { q: t("faqKlt.q"), a: t("faqKlt.a") };
+  const faqs = [kltFaq, ...legacyFaqs];
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -114,32 +61,61 @@ export default function PriserClient() {
           {t("hero.subtitle")}
         </p>
         <p className="text-sm text-slate-500 mt-4">
-          {locale === 'no' ? 'Priser i NOK. For English: Prices in EUR/USD at checkout.' : 'Prices in EUR for international customers'}
+          {locale === "no"
+            ? "Listepris i NOK. I kassen kan du velge NOK, EUR eller USD."
+            : "Prices shown in NOK. At checkout you can pay in NOK, EUR, or USD."}
         </p>
+      </div>
+
+      {/* KLT — tydeliggjør at det er belønningspoeng, ikke krypto */}
+      <div className="bg-slate-900 text-slate-100 border-b border-slate-800">
+        <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col sm:flex-row gap-4 sm:items-start sm:justify-between">
+          <div className="flex gap-3">
+            <div className="shrink-0 mt-0.5 rounded-lg bg-amber-500/15 p-2 text-amber-400">
+              <Coins className="w-5 h-5" aria-hidden />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-white tracking-tight">
+                {t("klt.title")}
+              </h2>
+              <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+                {t("klt.body")}
+              </p>
+            </div>
+          </div>
+          <Link
+            href={hrefWithLocale(locale, "/leaderboard")}
+            className="shrink-0 text-sm font-medium text-[#6FA3FF] hover:text-white underline-offset-4 hover:underline self-start sm:self-center"
+          >
+            {t("klt.linkLeaderboard")}
+          </Link>
+        </div>
       </div>
 
       {/* Progress Arrow */}
       <div className="bg-blue-600 py-4">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 text-white text-sm font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-white text-xs sm:text-sm font-medium px-2">
             <span>Student</span>
-            <span>→</span>
+            <span aria-hidden>→</span>
             <span>Bachelor</span>
-            <span>→</span>
+            <span aria-hidden>→</span>
             <span>Master</span>
-            <span>→</span>
+            <span aria-hidden>→</span>
             <span>PhD</span>
+            <span aria-hidden>→</span>
+            <span>Professor</span>
           </div>
         </div>
       </div>
 
       {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {plans.map((plan) => (
             <Link
               key={plan.key}
-              href={`/${locale}/checkout?plan=${plan.key}`}
+              href={`${hrefWithLocale(locale, "/checkout")}?plan=${plan.key}`}
               className={`bg-white rounded-2xl p-6 border-2 relative flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 ${
                 plan.popular
                   ? "border-blue-600 shadow-xl shadow-blue-600/10"
@@ -157,29 +133,42 @@ export default function PriserClient() {
               <div className="text-center mb-6">
                 <div
                   className={`w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 ${
-                    plan.popular ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"
+                    plan.popular
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-100 text-slate-600"
                   }`}
                 >
                   <plan.icon className="w-7 h-7" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1 capitalize">
-                  {plan.key}
+                <h3 className="text-lg font-bold text-slate-900 mb-1">
+                  {tStudy(`tiers.${plan.key}.name`)}
                 </h3>
                 <p className="text-slate-500 text-sm">
                   {t(`plans.${plan.key}.description`)}
                 </p>
-                <div className="flex items-baseline justify-center gap-1 mt-4">
-                  <span className="text-3xl font-bold text-slate-900">
-                    {plan.price === "0" ? t("free") : `${plan.price} kr`}
+                <div className="flex items-baseline justify-center gap-1 mt-4 flex-wrap">
+                  <span className="text-3xl font-bold text-slate-900 tabular-nums">
+                    {plan.price === "0"
+                      ? t("free")
+                      : locale === "no"
+                        ? `${plan.price} kr`
+                        : `${plan.price} NOK`}
                   </span>
                   {plan.price !== "0" && (
-                    <span className="text-slate-500 text-sm">{locale === "no" ? plan.periodNo : plan.periodEn}</span>
+                    <span className="text-slate-500 text-sm">
+                      {locale === "no" ? plan.periodNo : plan.periodEn}
+                    </span>
+                  )}
+                  {plan.price === "0" && (
+                    <span className="text-slate-500 text-sm">
+                      {locale === "no" ? "for alltid" : "forever"}
+                    </span>
                   )}
                 </div>
               </div>
 
               <ul className="space-y-3 mb-6 flex-1">
-                {features[plan.key as keyof typeof features].map((feature, i) => (
+                {getTierFeatures(tStudy, plan.key).map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <Check className="w-5 h-5 text-green-500 shrink-0" />
                     <span className="text-slate-600 text-sm">{feature}</span>
@@ -212,29 +201,112 @@ export default function PriserClient() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200">
-                  <th className="text-left py-3 px-4 font-semibold">{t("comparison.feature")}</th>
-                  <th className="text-center py-3 px-4">Student</th>
-                  <th className="text-center py-3 px-4">Bachelor</th>
-                  <th className="text-center py-3 px-4">Master</th>
-                  <th className="text-center py-3 px-4">PhD</th>
+                  <th className="text-left py-3 px-4 font-semibold">
+                    {t("comparison.feature")}
+                  </th>
+                  <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
+                    Student
+                  </th>
+                  <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
+                    Bachelor
+                  </th>
+                  <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
+                    Master
+                  </th>
+                  <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
+                    PhD
+                  </th>
+                  <th className="text-center py-3 px-2 sm:px-4 text-xs sm:text-sm">
+                    Professor
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  { name: "Lekepenger", student: "✓", bachelor: "✓", master: "✓", phd: "✓" },
-                  { name: "Moduler", student: "5", bachelor: "15+", master: "30+", phd: "50+" },
-                  { name: "AI Assistent", student: "—", bachelor: "—", master: "✓", phd: "✓" },
-                  { name: "Auto-trading", student: "—", bachelor: "—", master: "Lekepenger", phd: "Lekepenger + Live" },
-                  { name: "Support", student: "E-post", bachelor: "Prioritet", master: "1-on-1 mnd", phd: "Ukentlig" },
-                  { name: "Discord", student: "Community", bachelor: "VIP", master: "VIP", phd: "VIP + Mentor" },
-                  { name: "Skatterapport", student: "—", bachelor: "—", master: "✓", phd: "✓" },
+                  {
+                    name: t("comparison.rowPaper"),
+                    student: "✓",
+                    bachelor: "✓",
+                    master: "✓",
+                    phd: "✓",
+                    professor: "✓",
+                  },
+                  {
+                    name: t("comparison.kltLabel"),
+                    student: t("comparison.kltStudent"),
+                    bachelor: t("comparison.kltBachelor"),
+                    master: t("comparison.kltMaster"),
+                    phd: t("comparison.kltPhd"),
+                    professor: t("comparison.kltProfessor"),
+                  },
+                  {
+                    name: t("comparison.rowModules"),
+                    student: "5",
+                    bachelor: "15+",
+                    master: "30+",
+                    phd: "50+",
+                    professor: "50+",
+                  },
+                  {
+                    name: t("comparison.rowAi"),
+                    student: "—",
+                    bachelor: "✓",
+                    master: "✓",
+                    phd: "✓",
+                    professor: "✓",
+                  },
+                  {
+                    name: t("comparison.rowAutoTrading"),
+                    student: t("comparison.autoStudent"),
+                    bachelor: t("comparison.autoBachelor"),
+                    master: t("comparison.autoMaster"),
+                    phd: t("comparison.autoPhd"),
+                    professor: t("comparison.autoProfessor"),
+                  },
+                  {
+                    name: t("comparison.rowTax"),
+                    student: "—",
+                    bachelor: "✓",
+                    master: "✓",
+                    phd: "✓",
+                    professor: "✓",
+                  },
+                  {
+                    name: t("comparison.rowSupport"),
+                    student: t("comparison.supportStudent"),
+                    bachelor: t("comparison.supportBachelor"),
+                    master: t("comparison.supportMaster"),
+                    phd: t("comparison.supportPhd"),
+                    professor: t("comparison.supportProfessor"),
+                  },
+                  {
+                    name: t("comparison.rowDiscord"),
+                    student: t("comparison.discordStudent"),
+                    bachelor: t("comparison.discordBachelor"),
+                    master: t("comparison.discordMaster"),
+                    phd: t("comparison.discordPhd"),
+                    professor: t("comparison.discordProfessor"),
+                  },
                 ].map((row, i) => (
                   <tr key={i} className="border-b border-slate-100">
-                    <td className="py-3 px-4 font-medium">{row.name}</td>
-                    <td className="py-3 px-4 text-center">{row.student}</td>
-                    <td className="py-3 px-4 text-center text-blue-600">{row.bachelor}</td>
-                    <td className="py-3 px-4 text-center">{row.master}</td>
-                    <td className="py-3 px-4 text-center">{row.phd}</td>
+                    <td className="py-3 px-2 sm:px-4 font-medium text-xs sm:text-sm max-w-[140px] sm:max-w-none">
+                      {row.name}
+                    </td>
+                    <td className="py-3 px-2 sm:px-4 text-center text-xs sm:text-sm">
+                      {row.student}
+                    </td>
+                    <td className="py-3 px-2 sm:px-4 text-center text-xs sm:text-sm text-blue-600">
+                      {row.bachelor}
+                    </td>
+                    <td className="py-3 px-2 sm:px-4 text-center text-xs sm:text-sm">
+                      {row.master}
+                    </td>
+                    <td className="py-3 px-2 sm:px-4 text-center text-xs sm:text-sm">
+                      {row.phd}
+                    </td>
+                    <td className="py-3 px-2 sm:px-4 text-center text-xs sm:text-sm">
+                      {row.professor}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -250,7 +322,10 @@ export default function PriserClient() {
         </h2>
         <div className="space-y-4">
           {faqs.map((faq, i) => (
-            <div key={i} className="bg-white p-6 rounded-xl border border-slate-100">
+            <div
+              key={i}
+              className="bg-white p-6 rounded-xl border border-slate-100"
+            >
               <h3 className="font-semibold text-slate-900 mb-2 flex items-start gap-3">
                 <HelpCircle className="w-5 h-5 text-blue-600 shrink-0" />
                 {faq.q}
@@ -261,27 +336,20 @@ export default function PriserClient() {
         </div>
       </div>
 
-      {/* Trust Badges */}
+      {/* Trust Badges — samme merker som footer (Vipps + Stripe-kort/PayPal) */}
       <div className="bg-slate-100 py-12">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-slate-600 mb-4">{t("trust.title")}</p>
-          <div className="flex items-center justify-center gap-6">
-            <div className="bg-white px-4 py-2 rounded-lg shadow-sm text-sm font-medium">Vipps</div>
-            <div className="bg-white px-4 py-3 rounded-lg shadow-sm flex items-center">
-              <svg viewBox="0 0 780 500" className="h-6 w-auto" aria-label="Visa">
-                <path d="M293.2 348.7l33.4-195.8h53.4l-33.4 195.8h-53.4zM540.7 158.1c-10.6-4-27.2-8.3-47.9-8.3-52.8 0-90 26.6-90.3 64.6-.3 28.1 26.5 43.8 46.7 53.2 20.8 9.6 27.8 15.7 27.7 24.3-.1 13.1-16.6 19.1-31.9 19.1-21.4 0-32.7-3-50.3-10.2l-6.9-3.1-7.5 43.8c12.5 5.5 35.6 10.2 59.6 10.5 56.2 0 92.6-26.3 93-67 .2-22.3-14.1-39.3-45-53.3-18.7-9.1-30.2-15.1-30.1-24.3 0-8.1 9.7-16.8 30.7-16.8 17.5-.3 30.2 3.5 40.1 7.5l4.8 2.3 7.3-42.3zM648.1 152.9h-41.3c-12.8 0-22.4 3.5-28 16.3l-79.3 179.5h56.1s9.2-24.1 11.2-29.4c6.1 0 60.6.1 68.4.1 1.6 6.9 6.5 29.3 6.5 29.3h49.6l-43.2-195.8zm-65.9 126.3c4.4-11.3 21.3-54.7 21.3-54.7-.3.5 4.4-11.3 7.1-18.7l3.6 16.9s10.2 46.8 12.4 56.5h-44.4zM233.8 152.9l-52.3 133.5-5.6-27.1c-9.7-31.2-40-65.1-73.9-82l47.8 170.9 56.6-.1 84.2-195.3h-56.8z" fill="#1A1F71" />
-                <path d="M146.9 152.9H59.6l-.7 3.8c67.1 16.2 111.5 55.4 129.9 102.5l-18.7-90.1c-3.2-12.4-12.8-15.8-23.2-16.2z" fill="#F7A600" />
-              </svg>
-            </div>
-            <div className="bg-white px-4 py-3 rounded-lg shadow-sm flex items-center">
-              <svg viewBox="0 0 780 500" className="h-6 w-auto" aria-label="Mastercard">
-                <circle cx="330" cy="250" r="170" fill="#EB001B" />
-                <circle cx="450" cy="250" r="170" fill="#F79E1B" />
-                <path d="M390 120.8c-40.5 32-66.5 80.6-66.5 135.2s26 103.2 66.5 135.2c40.5-32 66.5-80.6 66.5-135.2S430.5 152.8 390 120.8z" fill="#FF5F00" />
-              </svg>
-            </div>
-            <div className="bg-white px-4 py-2 rounded-lg shadow-sm text-sm font-medium">Stripe</div>
-          </div>
+          <PaymentTrustLogos
+            variant="light"
+            showVipps={showVipps}
+            stripeBadgeAriaLabel={tFoot("stripeBadgeAria")}
+          />
+          <p className="text-xs text-slate-500 mt-3 max-w-lg mx-auto">
+            {showVipps
+              ? tFoot("paymentSubtitle")
+              : tFoot("paymentSubtitleNoVipps")}
+          </p>
         </div>
       </div>
 
@@ -290,8 +358,11 @@ export default function PriserClient() {
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">{t("cta.title")}</h2>
           <p className="text-xl text-blue-100 mb-8">{t("cta.subtitle")}</p>
-          <Link href={`/${locale}/innlogging`}>
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold">
+          <Link href={hrefWithLocale(locale, "/innlogging")}>
+            <Button
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
+            >
               {t("cta.button")}
             </Button>
           </Link>

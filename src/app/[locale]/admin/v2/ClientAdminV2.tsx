@@ -1,26 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { createClient } from '@/lib/utils';
-import { Loader2, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
-import { BRAND } from '@/lib/design/tokens';
-
-// Admin emails whitelist
-const ADMIN_EMAILS = [
-  'tomarnejensen@gmail.com',
-  'post@klarpakke.no',
-  'tom@klarpakke.no',
-];
+import { isEmailInAdminFallbackList } from "@/lib/admin/admin-allowlist.shared";
+import { BRAND } from "@/lib/design/tokens";
+import { createClient } from "@/lib/utils";
+import { AlertCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ClientAdminV2() {
   const router = useRouter();
   const params = useParams();
-  const locale = (params?.locale as string) || 'no';
+  const locale = (params?.locale as string) || "no";
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     checkAdminAccess();
@@ -29,17 +23,16 @@ export default function ClientAdminV2() {
   const checkAdminAccess = async () => {
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         router.push(`/${locale}/innlogging?redirect=/${locale}/admin/v2`);
         return;
       }
 
-      // Sjekk whitelist
-      const userEmail = user.email?.toLowerCase() || '';
-      
-      if (ADMIN_EMAILS.includes(userEmail)) {
+      if (isEmailInAdminFallbackList(user.email)) {
         setIsAdmin(true);
         setLoading(false);
         return;
@@ -47,21 +40,21 @@ export default function ClientAdminV2() {
 
       // Sjekk profiles
       const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('role')
-        .eq('id', user.id)
+        .from("user_profiles")
+        .select("role")
+        .eq("id", user.id)
         .single();
 
-      if (profile?.role === 'admin') {
+      if (profile?.role === "admin") {
         setIsAdmin(true);
         setLoading(false);
         return;
       }
 
-      setError('Du har ikke admin-tilgang');
+      setError("Du har ikke admin-tilgang");
       setLoading(false);
     } catch (_err) {
-      setError('Kunne ikke verifisere admin-tilgang');
+      setError("Kunne ikke verifisere admin-tilgang");
       setLoading(false);
     }
   };

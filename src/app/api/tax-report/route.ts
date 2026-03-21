@@ -4,6 +4,7 @@
  */
 
 import { createServerClient, createClient } from "@/lib/supabase/server";
+import { getTierLevel, normalizeTier } from "@/lib/pricing/tier-level";
 import { NextRequest, NextResponse } from "next/server";
 
 // Unified trade type (from trades or auto_trades)
@@ -124,12 +125,25 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient();
 
-    // Get user email
     const { data: userData } = await supabase
       .from("user_profiles")
-      .select("email")
+      .select("email, tier")
       .eq("id", user.id)
       .single();
+
+    const userTier = normalizeTier(
+      (userData as { tier?: string } | null)?.tier ?? undefined,
+    );
+    if (getTierLevel(userTier) < 1) {
+      return NextResponse.json(
+        {
+          error: "tax_report_requires_paid_tier",
+          message:
+            "Skatterapport krever betalt plan (Bachelor eller høyere). Oppgrader under Priser.",
+        },
+        { status: 403 },
+      );
+    }
 
     // Fetch trades from BOTH trades (manual) and auto_trades
     const startDate = `${year}-01-01`;

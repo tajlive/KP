@@ -45,13 +45,13 @@ Kort liste over forbedringer som bringer prosjektet tettere på dagens best prac
 
 ## 3. i18n
 
-- **Nå:** next-intl med no/en/th/zh; validering viser manglende/ekstra nøkler for th/zh.
-- **Beslutning (2026):** TH og ZH er **bevisst ufullstendige** for å spare tid. Kun NO og EN er aktive (`locales` i `src/i18n/config.ts`). Fyll ut th/zh når marked eller krav tilsier det; next-intl fallback til defaultLocale for manglende nøkler.
+- **Nå:** next-intl med **no** og **en** i routing; **th/zh** finnes i eldre `messages/*` og middleware-URL-støtte, men er **ikke** aktiv SoT.
+- **Beslutning (2026, dokumentert):** [`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`](./i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md) — **alle** brukerrettede oversettelser skal vedlikeholdes i **no + en**; **th/zh avvent** (ingen release-krav på å oppdatere dem).
 - **Anbefaling (ved behov):**
-  - Fullfør nøkler for th/zh der sidene er aktive, eller **automatiser fallback** (f.eks. til `en`) i valideringsskriptet så build ikke bryter.
+  - Valideringsskript: ikke krev paritet for th/zh mot no/en inntil policy endres.
   - Bruk **namespace-filer** konsekvent (som `messages/no/onboarding.json`) og unngå duplisering i store `no.json`/`en.json`.
 
-**Prioritet:** Medium (avhengig av målgruppe for th/zh).
+**Prioritet:** Lav for th/zh (avvent); høy for no/en-konsistens ved nye features.
 
 ---
 

@@ -47,18 +47,21 @@ export function getLocaleFromPathname(pathname: string): {
     if (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`) {
       return {
         locale,
-        withoutLocale: pathname === `/${locale}` 
-          ? "/" 
-          : pathname.slice(`/${locale}`.length),
+        withoutLocale:
+          pathname === `/${locale}` ? "/" : pathname.slice(`/${locale}`.length),
       };
     }
   }
-  
+
   // Default locale (no prefix)
-  if (!SUPPORTED_LOCALES.some(l => l !== DEFAULT_LOCALE && pathname.startsWith(`/${l}/`))) {
+  if (
+    !SUPPORTED_LOCALES.some(
+      (l) => l !== DEFAULT_LOCALE && pathname.startsWith(`/${l}/`),
+    )
+  ) {
     return { locale: DEFAULT_LOCALE, withoutLocale: pathname };
   }
-  
+
   return null;
 }
 
@@ -81,7 +84,9 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
   // Debug logging for production troubleshooting
   const acceptLanguage = request.headers.get("accept-language");
   const preferredLocale = getPreferredLocale(acceptLanguage);
-  console.log(`[i18n middleware] path: ${pathname}, accept-lang: ${acceptLanguage}, preferred: ${preferredLocale}`);
+  console.log(
+    `[i18n middleware] path: ${pathname}, accept-lang: ${acceptLanguage}, preferred: ${preferredLocale}`,
+  );
 
   // Check if user is accessing old /no/* URLs -> redirect to /*
   if (pathname.startsWith("/no/")) {
@@ -90,7 +95,7 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
     redirectUrl.search = request.nextUrl.search;
     return NextResponse.redirect(redirectUrl, { status: 301 });
   }
-  
+
   // Handle /no (root) -> redirect to /
   if (pathname === "/no") {
     const redirectUrl = new URL("/", request.url);
@@ -100,7 +105,9 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
 
   // Check for explicit non-default locale prefix (/en/, /th/, /zh/)
   const hasNonDefaultLocale = SUPPORTED_LOCALES.some(
-    (locale) => locale !== DEFAULT_LOCALE && (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`)
+    (locale) =>
+      locale !== DEFAULT_LOCALE &&
+      (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`),
   );
 
   // If has non-default locale prefix, let it through
@@ -110,8 +117,10 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
 
   // If preferred locale is NOT Norwegian, redirect to appropriate locale path
   if (preferredLocale !== DEFAULT_LOCALE) {
-    // Map unsupported locales to English (th/zh have limited translations)
-    const targetLocale = ["th", "zh"].includes(preferredLocale) ? "en" : preferredLocale;
+    // Map th/zh preference to en — th/zh are not active i18n SoT (docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md)
+    const targetLocale = ["th", "zh"].includes(preferredLocale)
+      ? "en"
+      : preferredLocale;
 
     const redirectUrl = new URL(`/${targetLocale}${pathname}`, request.url);
     redirectUrl.search = request.nextUrl.search;
@@ -129,14 +138,18 @@ export function handleI18nRedirect(request: NextRequest): NextResponse | null {
  * - Norwegian (default): /path (no prefix)
  * - English: /en/path (with prefix)
  */
-export function getLocaleHref(currentPath: string, targetLocale: SupportedLocale): string {
+export function getLocaleHref(
+  currentPath: string,
+  targetLocale: SupportedLocale,
+): string {
   const currentLocaleInfo = getLocaleFromPathname(currentPath);
-  const currentPathWithoutLocale = currentLocaleInfo?.withoutLocale || currentPath;
-  
+  const currentPathWithoutLocale =
+    currentLocaleInfo?.withoutLocale || currentPath;
+
   if (targetLocale === DEFAULT_LOCALE) {
     return currentPathWithoutLocale || "/";
   }
-  
+
   const path = currentPathWithoutLocale === "/" ? "" : currentPathWithoutLocale;
   return `/${targetLocale}${path}`;
 }

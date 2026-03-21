@@ -81,6 +81,8 @@ export const HERO = {
   /** Tittel-accent (h1 del 2) — merke-spesifikk, mindre «generisk AI-gradient» */
   titleAccent:
     "bg-gradient-to-r from-sky-100 via-white to-blue-100 bg-clip-text text-transparent",
+  /** Svakere ledd i h1 linje 2 (f.eks. «for at» / «penger») — lavere kontrast mot gradient */
+  titleMuted: "text-blue-100/45 font-black",
   badge:
     "bg-[#0052FF]/20 backdrop-blur-sm text-white border border-[#0052FF]/40 rounded-full",
   ctaPrimary:

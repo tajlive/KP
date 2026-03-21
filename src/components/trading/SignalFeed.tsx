@@ -4,12 +4,15 @@ import { ConfidenceMeter } from "@/components/trading/PremiumSignalRow";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { MARKET_DESK } from "@/lib/design/market-desk";
 import { useSubscription } from "@/lib/hooks/useSubscription";
-import { formatDistanceToNow } from "@/lib/utils";
+import { formatSignalDateTime } from "@/lib/format-signal-datetime";
 import { AnimatePresence, motion } from "framer-motion";
+import { formatDistanceToNow } from "date-fns";
+import { enGB, nb } from "date-fns/locale";
 import {
-  ArrowDownRight,
-  ArrowUpRight,
+  ArrowDown,
+  ArrowUp,
   Lock,
+  Minus,
   Radio,
   RefreshCw,
   ShieldAlert,
@@ -37,6 +40,20 @@ interface TradingSignal {
 }
 
 const REFRESH_INTERVAL_MS = 15_000; // Oppdater oftere så nye signaler vises raskt
+
+type SignalSide = "buy" | "sell" | "hold";
+
+function classifySignalAction(action: string | null): SignalSide {
+  const u = action?.toUpperCase() ?? "";
+  if (u === "BUY" || u === "LONG") return "buy";
+  if (u === "SELL" || u === "SHORT") return "sell";
+  return "hold";
+}
+
+function relativeAgo(locale: string, date: Date): string {
+  const loc = locale === "no" ? nb : enGB;
+  return formatDistanceToNow(date, { addSuffix: true, locale: loc });
+}
 
 export function SignalFeed() {
   const locale = useLocale();
@@ -76,11 +93,9 @@ export function SignalFeed() {
         if (fromRealtime && next.length > 0) {
           setLiveIndicator(true);
           const newest = next[0];
+          const side = classifySignalAction(newest.action);
           const dir =
-            newest.action?.toUpperCase() === "BUY" ||
-            newest.action?.toUpperCase() === "LONG"
-              ? "Kjøp"
-              : "Salg";
+            side === "buy" ? "Kjøp" : side === "sell" ? "Salg" : "Hold";
           toast.success(`Nytt signal: ${newest.symbol} ${dir}`, {
             description:
               newest.entry_price != null
@@ -108,21 +123,40 @@ export function SignalFeed() {
     };
   }, [fetchSignals]);
 
-  // Realtime: nye signaler dukker opp med en gang (hvis tabell er i realtime-publikasjon)
+  // Realtime: JWT må synkes med Realtime ellers leverer ikke RLS postgres_changes (samme mønster som trading-api).
   useEffect(() => {
     const supabase = getSupabaseClient();
-    const channel = supabase
-      .channel("signal-feed-realtime")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "trading_signals" },
-        () => {
-          fetchSignals(false, true);
-        },
-      )
-      .subscribe();
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    const {
+      data: { subscription: authSub },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      void supabase.realtime.setAuth(session?.access_token ?? null);
+    });
+
+    void (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      await supabase.realtime.setAuth(session?.access_token ?? null);
+      if (cancelled) return;
+      channel = supabase
+        .channel("signal-feed-realtime")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "trading_signals" },
+          () => {
+            fetchSignals(false, true);
+          },
+        )
+        .subscribe();
+    })();
+
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      authSub.unsubscribe();
+      if (channel) void supabase.removeChannel(channel);
     };
   }, [fetchSignals]);
 
@@ -136,9 +170,6 @@ export function SignalFeed() {
       </div>
     );
   }
-
-  const isBuy = (action: string | null) =>
-    action?.toUpperCase() === "BUY" || action?.toUpperCase() === "LONG";
 
   return (
     <div className={`${MARKET_DESK.panel} overflow-hidden`}>
@@ -192,11 +223,27 @@ export function SignalFeed() {
         ) : (
           <AnimatePresence initial={false}>
             {signals.map((signal, i) => {
-              const buy = isBuy(signal.action);
-              const directionLabel = buy ? "BUY" : "SELL";
-              const age = signal.created_at
-                ? formatDistanceToNow(new Date(signal.created_at))
-                : "";
+              const side = classifySignalAction(signal.action);
+              const directionLabel =
+                side === "buy" ? "BUY" : side === "sell" ? "SELL" : "HOLD";
+              const created = signal.created_at
+                ? new Date(signal.created_at)
+                : null;
+              const absolute =
+                created && !Number.isNaN(created.getTime())
+                  ? formatSignalDateTime(locale, signal.created_at)
+                  : "—";
+              const age =
+                created && !Number.isNaN(created.getTime())
+                  ? relativeAgo(locale, created)
+                  : "";
+
+              const chipClass =
+                side === "buy"
+                  ? "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20"
+                  : side === "sell"
+                    ? "bg-red-500/15 text-red-400 ring-1 ring-red-500/20"
+                    : "bg-slate-600/25 text-slate-300 ring-1 ring-slate-500/30";
 
               return (
                 <motion.div
@@ -211,16 +258,18 @@ export function SignalFeed() {
                     {/* Left: symbol + direction badge */}
                     <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className={`shrink-0 flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${
-                          buy
-                            ? "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20"
-                            : "bg-red-500/15 text-red-400 ring-1 ring-red-500/20"
-                        }`}
+                        className={`shrink-0 flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${chipClass}`}
+                        title={absolute}
                       >
-                        {buy ? (
-                          <ArrowUpRight className="h-3 w-3" />
+                        {side === "buy" ? (
+                          <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
+                        ) : side === "sell" ? (
+                          <ArrowDown
+                            className="h-3.5 w-3.5"
+                            strokeWidth={2.5}
+                          />
                         ) : (
-                          <ArrowDownRight className="h-3 w-3" />
+                          <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
                         )}
                         {directionLabel}
                       </div>
@@ -228,6 +277,14 @@ export function SignalFeed() {
                         <p className="font-semibold text-white text-sm truncate">
                           {signal.symbol}
                         </p>
+                        {signal.created_at ? (
+                          <p className="text-[11px] text-slate-300 tabular-nums mt-0.5">
+                            <time dateTime={signal.created_at}>{absolute}</time>
+                            {age ? (
+                              <span className="text-slate-500"> · {age}</span>
+                            ) : null}
+                          </p>
+                        ) : null}
                         {signal.signal_type && (
                           <p className="text-[10px] text-slate-500 truncate">
                             {signal.signal_type}
@@ -247,7 +304,11 @@ export function SignalFeed() {
                           />
                         </>
                       )}
-                      <p className="text-[10px] text-slate-500 mt-0.5">{age}</p>
+                      {signal.created_at ? (
+                        <p className="text-[10px] text-slate-500 mt-0.5 tabular-nums sm:hidden">
+                          {absolute}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 

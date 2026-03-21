@@ -889,13 +889,6 @@
     "popular": "Mest populære",
     "duration": "Varighet"
   },
-  "trustBar": {
-    "withCount": "Bli med {count} nordmenn som lærer krypto trygt",
-    "fallback": "Norges tryggeste sted å lære krypto",
-    "trust1": "BankID-sikker",
-    "trust2": "Norske kurs",
-    "trust3": "Ingen risiko"
-  },
   "threeSteps": {
     "sectionTitle": "Kom i gang på 4 enkle steg",
     "sectionSubtitle": "Ingen forkunnskaper nødvendig. Vi guider deg fra første øyeblikk.",
@@ -1522,9 +1515,11 @@
     "modernHero": {
       "badge": "For småsparere som vil lære – uten å være tech-nerd",
       "titlePart1": "Vi bruker de riktige verktøyene",
-      "titlePart2": "for at du skal tjene penger.",
+      "titlePart2MutedPrefix": "for at ",
+      "titlePart2Emphasis": "du skal tjene ",
+      "titlePart2MutedSuffix": "penger.",
       "subtitle": "Våre roboter jobber 24 timer hver dag for at du skal tjene penger. Du bestemmer selv risiko.",
-      "bullets": "Roboter jobber 24/7 • Du bestemmer risiko • 100 000 kr lekepenger • Ingen kredittkort",
+      "bullets": "Du sover, våre Roboter jobber 24/7 • Du bestemmer risiko • 100 000 kr lekepenger",
       "ctaPrimary": "Kom i gang gratis",
       "ctaSecondary": "Se hvordan det fungerer",
       "trust1": "Roboter 24/7",
@@ -2104,7 +2099,7 @@
       "chargedQ": "Blir jeg belastet?",
       "chargedA": "Nei, du blir kun belastet når betalingen er fullført. Ingen skjulte gebyrer.",
       "trialQ": "Kan jeg prøve gratis først?",
-      "trialA": "Ja! Alle betalte planer har 7 dagers gratis prøveperiode. Du kan kansellere når som helst.",
+      "trialA": "Master, PhD og Professor har 14 dagers gratis prøveperiode. Bachelor starter uten prøveperiode. Du kan kansellere når som helst.",
       "tryAgain": "Prøv igjen",
       "backHome": "Tilbake til forsiden",
       "needHelp": "Trenger du hjelp? Kontakt oss på"
@@ -2608,14 +2603,23 @@
     "filterPaper": "Kun papir",
     "filterLive": "Kun live",
     "totalPnl": "Total P&L",
+    "totalRealizedPnl": "Realisert P&L (sum)",
     "winRate": "Vinnrate",
-    "totalTrades": "Antall handler"
+    "winRateRealizedHint": "Kun handler med realisert P&L i databasen",
+    "totalTrades": "Antall handler",
+    "wins": "Vinn",
+    "losses": "Tap",
+    "breakeven": "Uavgjort",
+    "noRealizedPnl": "Uten realisert P&L",
+    "noRealizedPnlShort": "—",
+    "noRealizedPnlExplainer": "Ofte kjøp/salg uten at systemet har lagret lukket gevinst/tap på denne raden."
   },
   "trading": {
     "paperMode": "Lekepenger",
     "paperModeShort": "Paper",
     "liveMode": "Live Trading",
     "liveModeShort": "Live",
+    "recentTradesMixedModesHint": "Inkl. paper og live — porteføljen over følger valgt modus.",
     "paperModeDescription": "Øv med lekepenger",
     "liveModeDescription": "Handel med ekte penger",
     "switchToLiveTitle": "Bytt til Live Trading?",

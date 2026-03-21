@@ -76,7 +76,7 @@ export const PRESET_PROFILES: Record<PresetProfileId, PresetProfile> = {
       "ADAUSDT",
       "DOGEUSDT",
       "AVAXUSDT",
-      "MATICUSDT",
+      "POLUSDT",
       "DOTUSDT",
     ],
     strategies: ["dca", "trend"],

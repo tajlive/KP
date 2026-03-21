@@ -1,6 +1,17 @@
 {
   "loading": "Loading...",
   "backToPricing": "Back to pricing",
+  "billingCurrency": "Billing currency",
+  "currency": {
+    "NOK": "NOK",
+    "EUR": "EUR",
+    "USD": "USD"
+  },
+  "currencyHelp": "Amounts are shown in the currency you select. Stripe charges in that currency; your bank may convert if needed.",
+  "perMonthSuffix": "per month",
+  "bachelorNoTrialTitle": "No trial on Bachelor",
+  "bachelorNoTrialDescription": "You are charged for the first billing period when you complete payment in Stripe.",
+  "totalDueToday": "Due now",
   "yourOrder": "Your order",
   "trialPeriod": "14-day free trial",
   "trialDescription": "You won't be charged until the trial period ends.",

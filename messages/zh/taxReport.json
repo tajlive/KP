@@ -1,5 +1,8 @@
 {
   "title": "Skatterapport",
+  "upgradeTitle": "Skatterapport krever betalt plan",
+  "upgradeDescription": "Eksporter handler til CSV/HTML for Skatteetaten er inkludert fra Bachelor og oppover.",
+  "upgradeCta": "Se priser og planer",
   "description": "Generer skatterapport for krypto-handel. Kompatibel med Skatteetaten RF-1189.",
   "selectYear": "Velg skatteår",
   "downloadCSV": "Last ned CSV",

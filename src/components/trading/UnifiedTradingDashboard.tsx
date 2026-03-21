@@ -29,7 +29,6 @@ import {
   ChevronDown,
   ChevronUp,
   DollarSign,
-  FileText,
   Grid3X3,
   Play,
   Square,
@@ -48,6 +47,11 @@ import BotStatusDashboard from "./BotStatusDashboard";
 import { SignalFeed } from "./SignalFeed";
 import { MonthlyCompetitionBanner } from "@/components/gamification/MonthlyCompetitionBanner";
 import { SURFACE, RADIUS } from "@/lib/design/tokens";
+import {
+  STRATEGY_DEFS_FOR_DASHBOARD,
+  getDefaultStrategyDashboardConfigs,
+} from "@/lib/auto-trading/strategy-catalog";
+import { RobotThinkingStrip } from "@/components/trading/RobotThinkingStrip";
 
 const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
   dca_trygg: <Shield className="w-5 h-5" />,
@@ -57,16 +61,7 @@ const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
   ai_copy: <Bot className="w-5 h-5" />,
 };
 
-const STRATEGY_DEFS: {
-  type: StrategyType;
-  risk: number;
-}[] = [
-  { type: "dca_trygg", risk: 1 },
-  { type: "trend_balansert", risk: 3 },
-  { type: "multisignal_aktiv", risk: 4 },
-  { type: "grid_bot", risk: 3 },
-  { type: "ai_copy", risk: 5 },
-];
+const STRATEGY_DEFS = STRATEGY_DEFS_FOR_DASHBOARD;
 
 const RISK_COLORS: Record<number, string> = {
   1: "text-green-400",
@@ -135,18 +130,13 @@ export default function UnifiedTradingDashboard({
   );
   const [strategyConfigs, setStrategyConfigs] = useState<
     Record<StrategyType, Record<string, unknown>>
-  >({
-    dca_trygg: { weeklyAmount: 1000, btcAllocation: 70 },
-    trend_balansert: { riskPerTrade: 2, stopLoss: 10 },
-    multisignal_aktiv: { aggressiveness: "normal" },
-    grid_bot: {
-      upperPrice: 70000,
-      lowerPrice: 50000,
-      levels: 10,
-      capital: 5000,
-    },
-    ai_copy: { maxPerTrade: 1000, maxLoss: 500 },
-  });
+  >(
+    () =>
+      getDefaultStrategyDashboardConfigs() as Record<
+        StrategyType,
+        Record<string, unknown>
+      >,
+  );
 
   const { error: showError } = useI18nToast();
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
@@ -168,7 +158,7 @@ export default function UnifiedTradingDashboard({
       setLoading(true);
       const [port, trd, active] = await Promise.all([
         getPortfolio(mode),
-        getRecentTrades(mode, 20),
+        getRecentTrades({ limit: 20 }),
         getActiveStrategies(mode),
       ]);
       setPortfolio(port);
@@ -237,7 +227,7 @@ export default function UnifiedTradingDashboard({
       return;
     }
 
-    const unsubscribe = subscribeToTrades(mode, userId, (newTrade, kind) => {
+    const unsubscribe = subscribeToTrades(null, userId, (newTrade, kind) => {
       setTrades((prev) => mergeTradeIntoList(prev, newTrade));
       if (kind === "INSERT") {
         showSuccessRef.current("trading.tradeExecuted", {
@@ -248,7 +238,7 @@ export default function UnifiedTradingDashboard({
     });
 
     return () => unsubscribe();
-  }, [mode, userId]);
+  }, [userId]);
 
   const handleStartStrategy = async (strategyType: StrategyType) => {
     try {
@@ -355,22 +345,11 @@ export default function UnifiedTradingDashboard({
             <h1
               className={`text-2xl font-bold ${SURFACE.TEXT} flex items-center gap-2`}
             >
-              {mode === "paper" ? (
-                <>
-                  <FileText className="w-6 h-6 text-slate-400" />
-                  Lekepenger
-                </>
-              ) : (
-                <>
-                  <Wallet className="w-6 h-6 text-emerald-400" />
-                  Live Handel
-                </>
-              )}
+              <BarChart3 className="w-6 h-6 text-[#3d7aff]" aria-hidden />
+              {tTrading("unifiedHubTitle")}
             </h1>
-            <p className={`${SURFACE.TEXT_MUTED} text-sm mt-1`}>
-              {mode === "paper"
-                ? "Øv med lekepenger — 100 000 NOK"
-                : "Handel med ekte midler"}
+            <p className={`${SURFACE.TEXT_MUTED} text-sm mt-1 max-w-xl`}>
+              {tTrading("unifiedHubSubtitle")}
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
@@ -392,6 +371,7 @@ export default function UnifiedTradingDashboard({
               setMode={setMode}
               paperLabel={tTrading("paperModeShort")}
               liveLabel={tTrading("liveModeShort")}
+              toggleAria={tTrading("toggleAria")}
             />
           </div>
         </div>
@@ -399,13 +379,13 @@ export default function UnifiedTradingDashboard({
         {/* 50k KLT monthly prize – synlig på dashboard */}
         <MonthlyCompetitionBanner />
 
+        <RobotThinkingStrip />
+
         {/* Mode Warning */}
         {mode === "live" && (
           <div className="bg-red-500/10 border border-red-500/30 p-4 flex items-center gap-3 rounded-xl">
             <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
-            <p className="text-red-400 text-sm">
-              Du handler med ekte midler. Vær forsiktig.
-            </p>
+            <p className="text-red-400 text-sm">{tTrading("liveRiskBanner")}</p>
           </div>
         )}
 
@@ -466,11 +446,13 @@ function TradingModeToggle({
   setMode,
   paperLabel,
   liveLabel,
+  toggleAria,
 }: {
   mode: TradingMode;
   setMode: (m: TradingMode) => void;
   paperLabel: string;
   liveLabel: string;
+  toggleAria: string;
 }) {
   return (
     <div
@@ -484,16 +466,10 @@ function TradingModeToggle({
           setMode(mode === "paper" ? "live" : "paper");
         }
       }}
-      aria-label={
-        mode === "paper" ? "Bytt til live trading" : "Bytt til lekepenger"
-      }
+      aria-label={toggleAria}
     >
       <motion.div
-        className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full ${
-          mode === "live"
-            ? "bg-linear-to-r from-red-500 to-red-600"
-            : "bg-linear-to-r from-[#0052FF] to-[#0047E0]"
-        }`}
+        className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-linear-to-r from-[#0052FF] to-[#0047E0]"
         animate={{ x: mode === "live" ? "100%" : "0%" }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
         style={{ left: 4 }}
@@ -670,6 +646,8 @@ function RecentTradesSection({
   trades: Trade[];
   formatNOK: (v: number) => string;
 }) {
+  const t = useTranslations("trading");
+
   if (trades.length === 0) {
     return (
       <div className="bg-slate-800 rounded-xl p-6">
@@ -681,9 +659,20 @@ function RecentTradesSection({
     );
   }
 
+  const hasMixedModes =
+    trades.some((x) => x.mode === "paper") &&
+    trades.some((x) => x.mode === "live");
+
   return (
     <div className="bg-slate-800 rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-white mb-4">Siste handler</h2>
+      <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+        <h2 className="text-lg font-semibold text-white">Siste handler</h2>
+        {hasMixedModes ? (
+          <p className="text-slate-500 text-xs">
+            {t("recentTradesMixedModesHint")}
+          </p>
+        ) : null}
+      </div>
       <div className="space-y-2 max-h-80 overflow-y-auto">
         <AnimatePresence>
           {trades.map((trade) => {
@@ -703,7 +692,14 @@ function RecentTradesSection({
                     {trade.side === "buy" ? "KJØP" : "SALG"}
                   </div>
                   <div>
-                    <p className="font-medium text-white">{trade.symbol}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-medium text-white">{trade.symbol}</p>
+                      <span className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-slate-500/35 bg-slate-700/50 text-slate-200">
+                        {trade.mode === "live"
+                          ? t("liveModeShort")
+                          : t("paperModeShort")}
+                      </span>
+                    </div>
                     <p className="text-slate-400 text-xs">
                       {(trade.strategy_signal?.strategy_type as string) ||
                         "Unknown"}

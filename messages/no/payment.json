@@ -6,7 +6,8 @@
   "cardDescription": "Visa, Mastercard, etc.",
   "or": "eller",
   "payWithCard": "Betal med kort",
-  "securePayment": "Sikker betaling. Vipps for norske kunder, kort for internasjonale.",
+  "securePayment": "Sikker betaling med Vipps og Stripe — bl.a. Visa, Mastercard og PayPal.",
+  "securePaymentNoVipps": "Sikker betaling via Stripe — bl.a. Visa, Mastercard og PayPal.",
   "back": "Tilbake",
   "loading": "Laster...",
   "errors": {

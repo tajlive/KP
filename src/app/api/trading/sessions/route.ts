@@ -1,5 +1,13 @@
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import type { Json } from "@/types/supabase-generated";
+import {
+  enrichStrategyConfigForSession,
+  parseInitialCapitalFromConfig,
+  parseTradingPairFromConfig,
+  getDbRiskLevelEnum,
+  resolveProductStrategyId,
+} from "@/lib/auto-trading/strategy-catalog";
 
 export const dynamic = "force-dynamic";
 
@@ -72,10 +80,28 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const {
     mode = "paper",
-    strategy_id = "dca",
-    trading_pair = "BTCUSDT",
-    initial_capital = 100000,
+    strategy_id = "dca_trygg",
+    trading_pair: bodyPair,
+    initial_capital: bodyCapital,
+    strategy_config: bodyStrategyConfig = {},
   } = body;
+
+  const productId = resolveProductStrategyId(strategy_id);
+
+  const mergedConfig: Record<string, unknown> = {
+    ...(typeof bodyStrategyConfig === "object" && bodyStrategyConfig !== null
+      ? (bodyStrategyConfig as Record<string, unknown>)
+      : {}),
+    ...(bodyPair != null ? { trading_pair: bodyPair } : {}),
+    ...(bodyCapital != null ? { initial_capital: bodyCapital } : {}),
+  };
+
+  const trading_pair = parseTradingPairFromConfig(productId, mergedConfig);
+  const initial_capital = parseInitialCapitalFromConfig(mergedConfig);
+  const strategy_config = enrichStrategyConfigForSession(
+    productId,
+    mergedConfig,
+  );
 
   // Ensure user_profiles row exists — trading_sessions.user_id FK references user_profiles(id)
   // Trigger handle_new_user() creates this on signup, but may be missing for older accounts
@@ -112,10 +138,13 @@ export async function POST(request: NextRequest) {
     .insert({
       user_id: user.id,
       mode,
-      strategy_id,
-      strategy_config: { initial_capital },
+      strategy_id: productId,
+      strategy_config: strategy_config as unknown as Json,
       trading_pair,
+      risk_level: getDbRiskLevelEnum(productId),
       status: "active",
+      current_capital: initial_capital,
+      initial_capital,
       current_capital_nok: initial_capital,
       starting_capital_nok: initial_capital,
       started_at: new Date().toISOString(),

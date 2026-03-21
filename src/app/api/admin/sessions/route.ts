@@ -1,40 +1,18 @@
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // 1. Authenticate user using cookie-based client
-    const authClient = createServerClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await authClient.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
-    // 2. Verify admin role
-    const { data: profile } = await authClient
-      .from("user_profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || profile.role !== "admin") {
-      return NextResponse.json(
-        { error: "Require Admin Role" },
-        { status: 403 },
-      );
-    }
-
-    // 3. Create service role client to bypass RLS for sessions
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 4. Fetch all trading sessions
     const { data: sessions, error } = await serviceClient
       .from("trading_sessions")
       .select(
@@ -69,26 +47,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const authClient = createServerClient();
-    const {
-      data: { user },
-    } = await authClient.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { data: profile } = await authClient
-      .from("user_profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || profile.role !== "admin") {
-      return NextResponse.json(
-        { error: "Require Admin Role" },
-        { status: 403 },
-      );
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const { sessionId, action } = await request.json();
@@ -106,7 +67,7 @@ export async function POST(request: NextRequest) {
         ? { status: "stopped", stopped_at: new Date().toISOString() }
         : action === "pause"
           ? { status: "paused" }
-          : { status: "active" }; // resume
+          : { status: "active" };
 
     const { error } = await serviceClient
       .from("trading_sessions")

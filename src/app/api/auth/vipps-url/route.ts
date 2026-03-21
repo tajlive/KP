@@ -1,4 +1,5 @@
 import { getCallbackUrl } from "@/lib/auth/config";
+import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
 
@@ -24,13 +25,23 @@ export async function GET(request: NextRequest) {
   const locale = url.searchParams.get("locale") || "no";
   const next = url.searchParams.get("next") || "";
 
+  if (!shouldShowVippsForRequest(request.headers)) {
+    return NextResponse.json(
+      {
+        error:
+          "Vipps is only available in Norway, Sweden, Denmark, and Finland.",
+      },
+      { status: 403 },
+    );
+  }
+
   const clientId = process.env.VIPPS_CLIENT_ID;
   const baseUrl = process.env.VIPPS_BASE_URL || "https://api.vipps.no";
 
   if (!clientId) {
     return NextResponse.json(
       { error: "VIPPS_CLIENT_ID not configured" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -38,16 +49,20 @@ export async function GET(request: NextRequest) {
 
   const codeVerifier = base64UrlEncode(randomBytes(32));
   const codeChallenge = base64UrlEncode(
-    createHash("sha256").update(codeVerifier).digest()
+    createHash("sha256").update(codeVerifier).digest(),
   );
 
   const statePayload = {
     next: next || `/${locale}/dashboard`,
     nonce: base64UrlEncode(randomBytes(16)),
   };
-  const state = VIPPS_STATE_PREFIX + base64UrlEncode(Buffer.from(JSON.stringify(statePayload), "utf8"));
+  const state =
+    VIPPS_STATE_PREFIX +
+    base64UrlEncode(Buffer.from(JSON.stringify(statePayload), "utf8"));
 
-  const authUrl = new URL(`${baseUrl}/access-management-1.0/access/oauth2/auth`);
+  const authUrl = new URL(
+    `${baseUrl}/access-management-1.0/access/oauth2/auth`,
+  );
   authUrl.searchParams.set("client_id", clientId);
   authUrl.searchParams.set("response_type", "code");
   authUrl.searchParams.set("scope", "openid name phoneNumber email");

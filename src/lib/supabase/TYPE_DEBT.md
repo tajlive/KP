@@ -52,6 +52,12 @@ These are **non-blocking**:
 
 ---
 
+### Admin audit-tabell (mars 2026)
+
+- `admin_audit_log` insert i `log-admin-audit.ts` bruker midlertidig `(db as any).from(...)` til **`npm run db:gen-types`** er kjørt mot migrasjon `20260321120000_admin_audit_log.sql`.
+
+---
+
 ## Post-Launch Cleanup Roadmap
 
 ### Week 1 (March 10-17): KLA-160

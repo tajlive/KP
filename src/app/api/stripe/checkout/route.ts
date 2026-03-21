@@ -5,14 +5,21 @@
 
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
-import { TRIAL_DAYS } from "@/lib/pricing.config";
+import {
+  findTierBySubscriptionPriceId,
+  getResolvedSubscriptionPriceId,
+  getStripeCheckoutTrialDays,
+  isPriceIdAllowedForTier,
+  parseCheckoutCurrency,
+  planParamToTier,
+  type CurrencyCode,
+} from "@/lib/pricing.config";
 import { jsonSuccess, badRequest, internalError } from "@/lib/api-response";
 import { trackCriticalAction } from "@/lib/sentry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Stripe client
 const getStripe = () => {
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("STRIPE_SECRET_KEY ikke satt");
@@ -22,7 +29,6 @@ const getStripe = () => {
   });
 };
 
-// Supabase admin client
 const getSupabase = () => {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,46 +36,88 @@ const getSupabase = () => {
   );
 };
 
-// Price IDs fra env
-const getPriceIds = () => ({
-  bachelor: process.env.NEXT_PUBLIC_STRIPE_PRICE_BACHELOR || "",
-  master: process.env.NEXT_PUBLIC_STRIPE_PRICE_MASTER || "",
-  phd: process.env.NEXT_PUBLIC_STRIPE_PRICE_PHD || "",
-  professor: process.env.NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR || "",
-});
+function isPlaceholderPriceId(id: string): boolean {
+  return !id || id.includes("placeholder");
+}
 
 export async function POST(request: Request) {
   try {
-    const {
-      tier,
-      priceId: directPriceId,
-      userId,
-      userEmail,
-    } = await request.json();
+    const body = (await request.json()) as Record<string, unknown>;
+    const tierRaw = body.tier;
+    const directPriceId = body.priceId;
+    const currencyIn = parseCheckoutCurrency(body.currency) as CurrencyCode;
+    const userId = body.userId;
+    const userEmail = body.userEmail;
 
-    let priceId: string;
+    const hasExplicitCurrency =
+      body.currency != null && String(body.currency).trim() !== "";
 
-    // Støtt både direkte priceId (fra dynamisk API) eller tier (fra env)
-    if (directPriceId && directPriceId.startsWith("price_")) {
-      priceId = directPriceId;
-    } else if (tier) {
-      const priceIds = getPriceIds();
-      priceId = priceIds[tier as keyof typeof priceIds];
-      if (!priceId || priceId.startsWith("price_placeholder")) {
-        return internalError(`Price ID ikke konfigurert for ${tier}`);
+    if (typeof userId !== "string" || !userId) {
+      return badRequest("Mangler userId");
+    }
+    if (typeof userEmail !== "string" || !userEmail) {
+      return badRequest("Mangler userEmail");
+    }
+
+    let priceId = "";
+    let tierMeta: string;
+
+    const tierSlug =
+      typeof tierRaw === "string" && tierRaw.length > 0
+        ? planParamToTier(tierRaw)
+        : null;
+
+    if (tierSlug && tierSlug !== "student") {
+      tierMeta = tierSlug;
+      if (hasExplicitCurrency) {
+        priceId = getResolvedSubscriptionPriceId(
+          tierSlug,
+          "monthly",
+          currencyIn,
+        );
+      } else if (
+        directPriceId &&
+        typeof directPriceId === "string" &&
+        directPriceId.startsWith("price_") &&
+        !isPlaceholderPriceId(directPriceId) &&
+        isPriceIdAllowedForTier(tierSlug, directPriceId)
+      ) {
+        priceId = directPriceId;
+      } else {
+        priceId = getResolvedSubscriptionPriceId(tierSlug, "monthly", "NOK");
       }
+    } else if (
+      directPriceId &&
+      typeof directPriceId === "string" &&
+      directPriceId.startsWith("price_")
+    ) {
+      if (isPlaceholderPriceId(directPriceId)) {
+        return internalError("Ugyldig price ID");
+      }
+      const inferred = findTierBySubscriptionPriceId(directPriceId);
+      if (!inferred) {
+        return badRequest("Ukjent priceId");
+      }
+      priceId = directPriceId;
+      tierMeta = inferred;
+    } else if (tierSlug === "student") {
+      return badRequest("Student krever ikke Stripe-checkout");
     } else {
       return badRequest("Mangler tier eller priceId");
+    }
+
+    if (!priceId || isPlaceholderPriceId(priceId)) {
+      return internalError(
+        `Price ID ikke konfigurert for ${tierMeta} (${currencyIn})`,
+      );
     }
 
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL || "https://www.klarpakke.no";
 
-    // Opprett Stripe customer hvis ikke eksisterer
     const supabase = getSupabase();
     let customerId: string | null = null;
 
-    // Sjekk om bruker allerede har Stripe customer ID
     const { data: existingSub } = await supabase
       .from("subscriptions")
       .select("stripe_customer_id")
@@ -79,14 +127,12 @@ export async function POST(request: Request) {
     if (existingSub?.stripe_customer_id) {
       customerId = existingSub.stripe_customer_id;
     } else {
-      // Opprett ny Stripe customer
       const customer = await getStripe().customers.create({
         email: userEmail,
         metadata: { supabaseUserId: userId },
       });
       customerId = customer.id;
 
-      // Lagre customer ID i databasen
       await supabase.from("subscriptions").upsert({
         user_id: userId,
         stripe_customer_id: customerId,
@@ -94,26 +140,35 @@ export async function POST(request: Request) {
       });
     }
 
-    // Opprett checkout session
+    const tierResolved = planParamToTier(tierMeta);
+    const trialDays = getStripeCheckoutTrialDays(tierResolved);
+
+    const subscriptionData: Stripe.Checkout.SessionCreateParams.SubscriptionData =
+      {
+        metadata: {
+          tier: tierMeta,
+          userId,
+          currency: currencyIn,
+        },
+      };
+    if (trialDays != null && trialDays > 0) {
+      subscriptionData.trial_period_days = trialDays;
+    }
+
     const session = await getStripe().checkout.sessions.create({
       customer: customerId || undefined,
-      line_items: [{ price: priceId as string, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
-      success_url: `${baseUrl}/no/dashboard?session_id={CHECKOUT_SESSION_ID}&tier=${tier}&welcome=true`,
+      success_url: `${baseUrl}/no/dashboard?session_id={CHECKOUT_SESSION_ID}&tier=${encodeURIComponent(tierMeta)}&welcome=true`,
       cancel_url: `${baseUrl}/no/priser?canceled=true`,
       allow_promotion_codes: true,
       billing_address_collection: "required",
       automatic_tax: { enabled: true },
-      subscription_data: {
-        trial_period_days: TRIAL_DAYS,
-        metadata: {
-          tier,
-          userId,
-        },
-      },
+      subscription_data: subscriptionData,
       metadata: {
-        tier,
+        tier: tierMeta,
         userId,
+        currency: currencyIn,
         source: "klarpakke_checkout",
       },
     });

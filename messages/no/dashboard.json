@@ -43,7 +43,12 @@
   "welcomeBack": "Velkommen tilbake 👋",
   "homeOverview": {
     "title": "Hjem — porteføljeoversikt",
-    "subtitle": "Saldo, live priser, markedsdesk med signaler og siste handler. For grafer og ordre: øvingshandel."
+    "subtitle": "Saldo, live priser, markedsdesk med signaler og siste handler. Samme tallvisning for øving og live når du har aktiv økt — full oversikt under Resultater og Handel."
+  },
+  "portfolioHero": {
+    "balanceLabel": "Porteføljesaldo (NOK)",
+    "pnlHint": "Resultat (NOK og %)",
+    "footerHint": "Kapital hentes fra aktiv handelsøkt når den finnes — ellers profilens øvingssaldo. Posisjoner og handler vises under."
   },
   "loading": "Laster dashboard...",
   "klt": {

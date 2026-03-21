@@ -29,8 +29,8 @@
   "tagline": "Learn crypto safely",
   "navLearn": "课程",
   "navTrade": "模拟",
-  "navBots": "机器人",
+  "navBots": "自动交易",
   "navPricing": "价格",
-  "liveMarkets": "Live markets",
-  "freeBalance": "Demo: 100,000 NOK starting balance"
+  "liveMarkets": "实时行情",
+  "freeBalance": "演示：100,000 NOK 起始资金"
 }

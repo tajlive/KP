@@ -87,7 +87,7 @@ export default function ClientStudentsPage() {
         toast.error(result.message);
       }
     } catch (err) {
-      console.error('Grant founder error:', getErrorMessage(err));
+      console.error("Grant founder error:", getErrorMessage(err));
       toast.error("Feil ved tildeling av Founder status");
     } finally {
       setShowConfirmModal(false);
@@ -113,7 +113,7 @@ export default function ClientStudentsPage() {
         toast.error(result.message);
       }
     } catch (err) {
-      console.error('Ban user error:', getErrorMessage(err));
+      console.error("Ban user error:", getErrorMessage(err));
       toast.error("Feil ved banning av bruker");
     } finally {
       setShowConfirmModal(false);
@@ -210,15 +210,15 @@ export default function ClientStudentsPage() {
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          aria-label="Filtrer på rolle"
+          aria-label={t("usersPage.students.ariaFilterRole")}
           className="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
         >
-          <option value="all">Alle roller</option>
-          <option value="admin">Administrator</option>
-          <option value="founder">Founder</option>
-          <option value="analyst">Analytiker</option>
-          <option value="trader">Trader</option>
-          <option value="student">Student</option>
+          <option value="all">{t("usersPage.students.filterAllRoles")}</option>
+          <option value="admin">{t("usersPage.roles.admin")}</option>
+          <option value="founder">{t("usersPage.roles.founder")}</option>
+          <option value="analyst">{t("usersPage.roles.analyst")}</option>
+          <option value="trader">{t("usersPage.roles.trader")}</option>
+          <option value="student">{t("usersPage.roles.student")}</option>
         </select>
       </div>
 

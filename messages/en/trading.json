@@ -1,4 +1,8 @@
 {
+  "unifiedHubTitle": "Trading desk",
+  "unifiedHubSubtitle": "Same layout and number format for practice and live. Use the toggle to switch — live uses real funds.",
+  "toggleAria": "Switch between practice and live mode",
+  "liveRiskBanner": "You are trading with real money. Losses are possible. Manage your own risk.",
   "paperMode": "Paper Trading",
   "paperModeShort": "Paper",
   "liveMode": "Live Trading",
@@ -137,7 +141,21 @@
     },
     "ai_copy": {
       "name": "AI Copy-trade",
-      "description": "Automatically copies AI-recommended trades. Varying risk."
+      "description": "Signal fusion (multiple indicators) until a dedicated copy engine ships. High activity — your risk."
     }
+  },
+  "robotBrain": {
+    "ariaLabel": "Bot status and analysis",
+    "badge": "Core logic active",
+    "disclaimer": "Visual monitoring simulation — not buy advice or guaranteed returns.",
+    "line1": "Syncing candlesticks with Binance …",
+    "line2": "Cross-checking RSI and MACD against risk profile …",
+    "line3": "Sizing positions within daily limits …",
+    "line4": "Reading volatility and spread for the trading pair …",
+    "line5": "Updating trailing and partial take-profit levels …",
+    "line6": "Waiting for the next allowed trading window …",
+    "chip_scan": "Scan",
+    "chip_risk": "Risk OK",
+    "chip_signal": "Signal"
   }
 }

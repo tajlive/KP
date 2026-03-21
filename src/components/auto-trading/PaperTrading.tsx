@@ -4,65 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bot, History, Loader2, PlayCircle, Square } from "lucide-react";
 import { useEffect, useState } from "react";
+import { STRATEGY_CATALOG_PAPER } from "@/lib/auto-trading/strategy-catalog";
 
-// Hardkodede strategier - erstatter legacy auto_trading_strategies tabell
-const DEFAULT_STRATEGIES = [
-  {
-    id: "dca_trygg",
-    name: "DCA Trygg",
-    symbol: "BTC/USDT",
-    risk_level: 1,
-    is_active: true,
-    description: "Kjøper BTC/ETH automatisk hver uke. Dobler ved store dip.",
-    indicators: ["DCA", "Auto-buy"],
-    stopLoss: 5,
-    takeProfit: 20,
-  },
-  {
-    id: "trend_balansert",
-    name: "Trend Balansert",
-    symbol: "BTC/USDT",
-    risk_level: 3,
-    is_active: true,
-    description: "Følger MA50/MA200 crossover med RSI-filter.",
-    indicators: ["MA50", "MA200", "RSI"],
-    stopLoss: 10,
-    takeProfit: 30,
-  },
-  {
-    id: "multisignal_aktiv",
-    name: "Multi-Signal Aktiv",
-    symbol: "BTC/USDT",
-    risk_level: 4,
-    is_active: true,
-    description: "RSI + MACD + Bollinger gir hyppigere handler.",
-    indicators: ["RSI", "MACD", "Bollinger"],
-    stopLoss: 8,
-    takeProfit: 25,
-  },
-  {
-    id: "grid_bot",
-    name: "Grid Bot",
-    symbol: "BTC/USDT",
-    risk_level: 3,
-    is_active: true,
-    description: "Kjøper lavt, selger høyt i prisgitter.",
-    indicators: ["Grid", "Range"],
-    stopLoss: 15,
-    takeProfit: 40,
-  },
-  {
-    id: "ai_copy",
-    name: "AI Copy",
-    symbol: "BTC/USDT",
-    risk_level: 5,
-    is_active: true,
-    description: "Kopierer topp-tradere filtrert av AI.",
-    indicators: ["AI", "Copy-trading"],
-    stopLoss: 10,
-    takeProfit: 50,
-  },
-];
+const DEFAULT_STRATEGIES = [...STRATEGY_CATALOG_PAPER];
 
 // Types
 interface Strategy {
@@ -284,7 +228,10 @@ export default function PaperTrading({
 
         {!isRunning && (
           <div>
-            <label htmlFor="paper-trading-capital" className="block text-sm font-medium text-slate-300 mb-2">
+            <label
+              htmlFor="paper-trading-capital"
+              className="block text-sm font-medium text-slate-300 mb-2"
+            >
               Startkapital (NOK)
             </label>
             <Input
