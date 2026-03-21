@@ -89,6 +89,14 @@
     "sessions": "Aktive økter",
     "signOutAll": "Logg ut alle enheter"
   },
+  "billing": {
+    "sectionTitle": "Subscription",
+    "title": "Subscription & billing",
+    "description": "Update your card, view invoices, or cancel via Stripe’s secure portal.",
+    "cta": "Open billing portal",
+    "loading": "Opening…",
+    "error": "Could not open the portal. Try again or contact support."
+  },
   "preferences": {
     "title": "Preferanser",
     "language": "Språk",

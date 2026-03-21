@@ -889,13 +889,6 @@
     "popular": "Most popular",
     "duration": "Duration"
   },
-  "trustBar": {
-    "withCount": "Join {count} Norwegians learning crypto safely",
-    "fallback": "Norway's safest place to learn crypto",
-    "trust1": "BankID secure",
-    "trust2": "Norwegian courses",
-    "trust3": "No risk"
-  },
   "threeSteps": {
     "sectionTitle": "Get started in 4 simple steps",
     "sectionSubtitle": "No prior knowledge needed. We guide you from the first moment.",
@@ -1522,9 +1515,11 @@
     "modernHero": {
       "badge": "For small savers who want to learn – no tech skills required",
       "titlePart1": "We use the right tools",
-      "titlePart2": "so you can earn money.",
+      "titlePart2MutedPrefix": "so ",
+      "titlePart2Emphasis": "you can earn ",
+      "titlePart2MutedSuffix": "money.",
       "subtitle": "Our bots work 24 hours a day so you can earn. You decide the risk.",
-      "bullets": "Bots 24/7 • You set risk • 100,000 NOK paper trading • No credit card",
+      "bullets": "While you sleep, our bots work 24/7 · You set risk · 100,000 NOK paper funds",
       "ctaPrimary": "Get started free",
       "ctaSecondary": "See how it works",
       "trust1": "Bots 24/7",
@@ -2104,7 +2099,7 @@
       "chargedQ": "Will I be charged?",
       "chargedA": "No, you are only charged when payment is completed. No hidden fees.",
       "trialQ": "Can I try for free first?",
-      "trialA": "Yes! All paid plans include a 7-day free trial. You can cancel anytime.",
+      "trialA": "Master, PhD, and Professor include a 14-day free trial. Bachelor starts without a trial. You can cancel anytime.",
       "tryAgain": "Try Again",
       "backHome": "Back to Home",
       "needHelp": "Need help? Contact us at"
@@ -2608,14 +2603,23 @@
     "filterPaper": "Paper only",
     "filterLive": "Live only",
     "totalPnl": "Total P&L",
+    "totalRealizedPnl": "Realized P&L (sum)",
     "winRate": "Win Rate",
-    "totalTrades": "Total Trades"
+    "winRateRealizedHint": "Only trades with realized P&L stored",
+    "totalTrades": "Total Trades",
+    "wins": "Wins",
+    "losses": "Losses",
+    "breakeven": "Breakeven",
+    "noRealizedPnl": "No realized P&L",
+    "noRealizedPnlShort": "—",
+    "noRealizedPnlExplainer": "Often buy/sell rows where closed profit/loss is not stored on this row yet."
   },
   "trading": {
     "paperMode": "Paper Trading",
     "paperModeShort": "Paper",
     "liveMode": "Live Trading",
     "liveModeShort": "Live",
+    "recentTradesMixedModesHint": "Includes paper and live — the portfolio above follows your selected mode.",
     "paperModeDescription": "Practice with virtual capital",
     "liveModeDescription": "Trade with real money",
     "switchToLiveTitle": "Switch to Live Trading?",

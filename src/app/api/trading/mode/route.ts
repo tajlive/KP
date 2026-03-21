@@ -6,7 +6,26 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
+import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
 import { z } from "zod";
+
+async function userMayUseLiveTrading(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  userId: string,
+  tier: TierSlug,
+): Promise<boolean> {
+  if (!canAccessLiveAutoTrading(tier)) return false;
+  const { data: entitlements, error } = await supabase.rpc(
+    "get_user_entitlements",
+    { p_user_id: userId },
+  );
+  if (!error && entitlements?.length) {
+    const row = entitlements[0] as { auto_trade_allow_live?: boolean };
+    return Boolean(row.auto_trade_allow_live);
+  }
+  return canAccessLiveAutoTrading(tier);
+}
 
 const tradingModeSchema = z.object({
   mode: z.enum(["paper", "live"]),
@@ -37,11 +56,9 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient();
 
-    // Hent brukerprofil med trading info (kolonner kan mangle i generert type)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: profileRow, error } = await (supabase as any)
+    const { data: profileRow, error } = await supabase
       .from("user_profiles")
-      .select("trading_mode, binance_api_key_encrypted, paper_trades_count")
+      .select("preferred_trading_mode, binance_connected, tier")
       .eq("id", user.id)
       .single();
 
@@ -53,17 +70,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const profile = profileRow as {
-      trading_mode?: string;
-      binance_api_key_encrypted?: string;
-      paper_trades_count?: number;
-    } | null;
+    const tier = (profileRow?.tier ?? "student") as TierSlug;
+    const binanceConnected = Boolean(profileRow?.binance_connected);
+    const allowLiveTier = await userMayUseLiveTrading(supabase, user.id, tier);
+    const canSwitchToLive = binanceConnected && allowLiveTier;
+
+    const stored = profileRow?.preferred_trading_mode;
+    const mode = stored === "live" || stored === "paper" ? stored : "paper";
+
     return NextResponse.json({
       success: true,
-      mode: profile?.trading_mode || "paper",
-      canSwitchToLive: !!profile?.binance_api_key_encrypted,
-      binanceConnected: !!profile?.binance_api_key_encrypted,
-      paperTradesCount: profile?.paper_trades_count || 0,
+      mode,
+      canSwitchToLive,
+      binanceConnected,
+      paperTradesCount: 0,
     });
   } catch (error) {
     console.error("Error in GET /api/trading/mode:", error);
@@ -163,13 +183,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Logg hendelsen
-    await supabase.from("audit_logs").insert({
+    const { error: auditErr } = await supabase.from("audit_logs").insert({
       user_id: user.id,
       action: "TRADING_MODE_CHANGED",
       details: { new_mode: mode },
       created_at: new Date().toISOString(),
     });
+    if (auditErr) {
+      console.warn(
+        "[trading/mode] audit_logs insert skipped:",
+        auditErr.message,
+      );
+    }
 
     return NextResponse.json({
       success: true,

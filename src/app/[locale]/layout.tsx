@@ -1,6 +1,9 @@
 import { Metadata } from "next";
+import { headers } from "next/headers";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
+import { VippsMarketProvider } from "@/components/providers/VippsMarketProvider";
 import { AuthProvider } from "@/components/auth/AuthContext";
 import { SessionCleanup } from "@/components/SessionCleanup";
 import { MarketingNavigation } from "@/components/layout/MarketingNavigation";
@@ -155,6 +158,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     messages = await import(`../../../messages/en.json`).then((m) => m.default);
   }
 
+  const hdrs = await headers();
+  const showVippsMarket = shouldShowVippsForRequest(hdrs);
+
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
@@ -250,17 +256,19 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       >
         <SessionCleanup />
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <MarketingProviders>
-            <ErrorBoundary>
-              <AuthProvider>
-                <div className="relative min-h-screen flex flex-col">
-                  <MarketingNavigation />
-                  <main className="flex-1">{children}</main>
-                  <ConditionalFooter />
-                </div>
-              </AuthProvider>
-            </ErrorBoundary>
-          </MarketingProviders>
+          <VippsMarketProvider showVippsMarket={showVippsMarket}>
+            <MarketingProviders>
+              <ErrorBoundary>
+                <AuthProvider>
+                  <div className="relative min-h-screen flex flex-col">
+                    <MarketingNavigation />
+                    <main className="flex-1">{children}</main>
+                    <ConditionalFooter />
+                  </div>
+                </AuthProvider>
+              </ErrorBoundary>
+            </MarketingProviders>
+          </VippsMarketProvider>
         </NextIntlClientProvider>
         <PlausibleScript />
         {process.env.VERCEL && (

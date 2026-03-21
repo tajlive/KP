@@ -2,7 +2,6 @@
 
 import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
-import { HeaderTicker } from "@/components/landing/HeaderTicker";
 import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
@@ -35,10 +34,6 @@ export function MarketingNavigation() {
       className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50"
     >
       <div className="max-w-6xl mx-auto px-4">
-        <div className="hidden xl:flex h-9 items-center justify-center border-b border-black/[0.05]">
-          <HeaderTicker />
-        </div>
-
         <div className="flex justify-between items-center h-14 gap-2 min-w-0">
           <Link
             href={l("/")}

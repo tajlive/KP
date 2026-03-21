@@ -1,6 +1,17 @@
 {
   "loading": "Laster...",
   "backToPricing": "Tilbake til priser",
+  "billingCurrency": "Betalingsvaluta",
+  "currency": {
+    "NOK": "NOK",
+    "EUR": "EUR",
+    "USD": "USD"
+  },
+  "currencyHelp": "Beløpet vises i valgt valuta. Stripe belaster i samme valuta; banken din kan veksle ved behov.",
+  "perMonthSuffix": "per måned",
+  "bachelorNoTrialTitle": "Ingen prøveperiode på Bachelor",
+  "bachelorNoTrialDescription": "Du belastes for første periode når du fullfører betalingen i Stripe.",
+  "totalDueToday": "Forfall nå",
   "yourOrder": "Din bestilling",
   "trialPeriod": "14 dagers gratis prøveperiode",
   "trialDescription": "Du vil ikke bli belastet før prøveperioden er over.",

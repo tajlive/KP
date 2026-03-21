@@ -4,6 +4,9 @@
   "legal": "法律",
   "tagline": "挪威加密教育。无风险学习。",
   "paymentLabel": "安全支付：",
+  "paymentSubtitle": "Vipps，以及 Stripe 支持 Visa、Mastercard 与 PayPal。",
+  "paymentSubtitleNoVipps": "通过 Stripe 支付：Visa、Mastercard、PayPal 等。",
+  "stripeBadgeAria": "Powered by Stripe — 在新标签页打开 stripe.com",
   "copyright": "© {year} Klarpakke AS。保留所有权利。",
   "disclaimer": "交易加密货币涉及风险。Klarpakke是一个教育平台，不提供财务建议。所有投资决策都是您自己的责任。过去的结果不能保证未来的回报。永远不要投资超过您能承受的损失。",
   "links": {

@@ -5,7 +5,8 @@
   "chooseMethod": "选择支付方式",
   "or": "或",
   "payWithCard": "使用银行卡支付",
-  "securePayment": "安全加密支付",
-  "vipps": "银行卡/Apple Pay",
-  "vippsDescription": "使用银行卡或Apple Pay快速便捷支付"
+  "securePayment": "通过 Vipps 与 Stripe 安全支付，支持 Visa、Mastercard、PayPal 等。",
+  "securePaymentNoVipps": "通过 Stripe 安全支付，支持 Visa、Mastercard、PayPal 等。",
+  "vipps": "Vipps",
+  "vippsDescription": "挪威用户常用；国际用户可用 Stripe（银行卡、PayPal 等）"
 }

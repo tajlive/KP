@@ -38,5 +38,46 @@
   "savePercent": "节省 {percent}%",
   "perMonth": "每月",
   "getStarted": "开始使用",
-  "mostPopular": "最受欢迎"
+  "mostPopular": "最受欢迎",
+  "klt": {
+    "title": "什么是 KLT？",
+    "body": "KLT 是 Klarpakke 应用内的奖励积分。完成课程可获得，可用于竞赛与排行榜——包括每月 50,000 KLT 的奖品。KLT 不是加密货币，不能在 Klarpakke 外买卖，也没有现金价值。",
+    "linkLeaderboard": "查看排行榜"
+  },
+  "comparison": {
+    "title": "方案对比",
+    "feature": "功能",
+    "kltLabel": "KLT 奖励",
+    "kltStudent": "注册赠送 500",
+    "kltBachelor": "每月 1,000",
+    "kltMaster": "每月 2,500",
+    "kltPhd": "每月 5,000",
+    "kltProfessor": "每月 10,000",
+    "rowPaper": "模拟交易",
+    "rowModules": "课程模块",
+    "rowAi": "AI 助手",
+    "rowAutoTrading": "自动交易（实盘）",
+    "rowTax": "税务报告（挪威）",
+    "rowSupport": "支持",
+    "rowDiscord": "Discord / 社区",
+    "autoStudent": "试用 + 1 策略",
+    "autoBachelor": "3 个策略",
+    "autoMaster": "7 个策略",
+    "autoPhd": "不限",
+    "autoProfessor": "不限",
+    "supportStudent": "邮件",
+    "supportBachelor": "优先",
+    "supportMaster": "1:1（月）",
+    "supportPhd": "24/7 优先",
+    "supportProfessor": "White-glove",
+    "discordStudent": "社区",
+    "discordBachelor": "VIP",
+    "discordMaster": "VIP",
+    "discordPhd": "VIP + 导师",
+    "discordProfessor": "创始人 + VIP"
+  },
+  "faqKlt": {
+    "q": "KLT 是加密货币或钱吗？",
+    "a": "不是。KLT 是 Klarpakke 内的学习/活动积分，用于游戏、竞赛和未来平台权益——不能当作应用外的钱使用。"
+  }
 }

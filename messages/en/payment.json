@@ -6,7 +6,8 @@
   "cardDescription": "Visa, Mastercard, etc.",
   "or": "or",
   "payWithCard": "Pay with card",
-  "securePayment": "Secure payment. Vipps for Norwegian customers, card for international.",
+  "securePayment": "Secure payment with Vipps and Stripe — including Visa, Mastercard, and PayPal.",
+  "securePaymentNoVipps": "Secure payment with Stripe — including Visa, Mastercard, and PayPal.",
   "back": "Back",
   "loading": "Loading...",
   "errors": {

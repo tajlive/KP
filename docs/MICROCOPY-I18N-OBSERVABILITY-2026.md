@@ -19,15 +19,16 @@
 
 ---
 
-## 2. i18n — `th` / `zh` paritet
+## 2. i18n — aktiv SoT: `no` + `en` (`th` / `zh` avvent)
 
-| Steg | Handling                                                                                                                                            |
-| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| 1    | Ved nye nøkler i `messages/no.json` og `messages/en.json`, legg til placeholder i `th.json` / `zh.json` (eller eksplisitt «TODO» i PR-beskrivelse). |
-| 2    | Kvartalsvis: sammenlign nøkkelantall `jq 'keys                                                                                                      | length'` per fil. |
-| 3    | Prioriter synlige flyter: landing, priser, innlogging, checkout.                                                                                    |
+**Kanonisk policy:** [`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`](./i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md).
 
-**Linear:** Knytt store i18n-løft til egne issues (epic etter behov).
+| Krav        | Handling                                                                                                                                                                                                    |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **no + en** | Alle nye eller endrede brukerstrenger skal finnes i **begge** (`messages/no/*`, `messages/en/*`) før merge der tekst er del av leveransen.                                                                  |
+| **th / zh** | **Ikke** krav om paritet eller oppdatering ved release. Eksisterende `messages/th/*` og `messages/zh/*` kan ligge ufullstendige; ingen kvartalsvis «må fylles ut»-forpliktelse inntil locale-policy endres. |
+
+**Linear:** Store i18n-løft for **no/en** knyttes til issues etter behov. Eventuell gjenåpning av **th/zh** bør eget issue + oppdatering av locale-SoT.
 
 ---
 

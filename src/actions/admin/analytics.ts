@@ -1,5 +1,6 @@
 "use server";
 
+import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient } from "@/lib/supabase/server";
 
 export interface DashboardMetrics {
@@ -20,24 +21,12 @@ export async function getDashboardMetrics(
   _timeRange: string = "7d",
 ): Promise<{ success: boolean; data?: DashboardMetrics; error?: string }> {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return { success: false, error: "Unauthorized" };
-
-    const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
-    const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single<{ role: string | null }>();
-    if (!isWhitelisted && profile?.role !== "admin") {
-      return { success: false, error: "Forbidden: Admin access required" };
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) {
+      return { success: false, error: auth.error };
     }
+
+    const supabase = createClient();
 
     // 1. Get User Counts
     const { count: totalUsers } = await supabase
@@ -120,24 +109,12 @@ export async function getDashboardMetrics(
  */
 export async function getSignupTrend(days: number = 30) {
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return { success: false, error: "Unauthorized" };
-
-    const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
-    const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
-
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single<{ role: string | null }>();
-    if (!isWhitelisted && profile?.role !== "admin") {
-      return { success: false, error: "Forbidden: Admin access required" };
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) {
+      return { success: false, error: auth.error };
     }
+
+    const supabase = createClient();
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);

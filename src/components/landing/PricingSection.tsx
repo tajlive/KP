@@ -11,6 +11,7 @@ import {
   Crown,
   Trophy,
 } from "lucide-react";
+import { useVippsMarket } from "@/components/providers/VippsMarketProvider";
 import { TIERS } from "@/lib/pricing/tiers";
 import {
   BRAND,
@@ -56,6 +57,7 @@ const getDisplayPlans = () => {
 export default function PricingSection() {
   const router = useRouter();
   const locale = useLocale();
+  const { showVipps } = useVippsMarket();
   const plans = getDisplayPlans();
 
   return (
@@ -182,8 +184,9 @@ export default function PricingSection() {
 
         <div className="mt-8 text-center">
           <p className={`text-sm ${SURFACE.TEXT_SUBTLE}`}>
-            Sikker betaling med Stripe. Prisene er i norske kroner og inkluderer
-            MVA.
+            {showVipps
+              ? "Vipps og betaling via Stripe (Visa, Mastercard, PayPal m.m.). Prisene er i norske kroner og inkluderer MVA."
+              : "Betaling via Stripe (Visa, Mastercard, PayPal m.m.). Prisene er i norske kroner og inkluderer MVA."}
           </p>
         </div>
       </div>

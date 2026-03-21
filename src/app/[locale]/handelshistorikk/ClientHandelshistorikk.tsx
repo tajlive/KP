@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
+import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregates";
 import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 
 interface Trade {
@@ -23,19 +24,31 @@ interface Trade {
 
 type ModeFilter = "all" | "paper" | "live";
 
+const POLL_MS = 20_000;
+
 export default function ClientHandelshistorikk() {
   const t = useTranslations("tradeHistory");
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ModeFilter>("all");
 
-  const fetchTrades = useCallback(async () => {
+  const fetchTrades = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setTrades([]);
+      if (!silent) setLoading(false);
+      return;
+    }
     const { data, error } = await supabase
       .from("trades")
       .select(
         "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at",
       )
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(200);
 
@@ -45,17 +58,35 @@ export default function ClientHandelshistorikk() {
     } else {
       setTrades((data as Trade[]) ?? []);
     }
-    setLoading(false);
+    if (!silent) setLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchTrades();
+    void fetchTrades(false);
   }, [fetchTrades]);
 
-  const filteredTrades = trades.filter((trade) => {
-    if (filter === "all") return true;
-    return trade.mode === filter;
-  });
+  /** Nye live/paper-rader uten manuell refresh (Realtime krever JWT; polling er robust på denne siden). */
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      void fetchTrades(true);
+    }, POLL_MS);
+    return () => clearInterval(id);
+  }, [fetchTrades]);
+
+  const filteredTrades = useMemo(
+    () =>
+      trades.filter((trade) => {
+        if (filter === "all") return true;
+        return trade.mode === filter;
+      }),
+    [trades, filter],
+  );
+
+  const stats = useMemo(
+    () => aggregateTradeHistoryStats(filteredTrades),
+    [filteredTrades],
+  );
 
   const formatNOK = (n: number) =>
     new Intl.NumberFormat("no-NO", {
@@ -72,19 +103,6 @@ export default function ClientHandelshistorikk() {
       timeStyle: "short",
     });
   };
-
-  const totalPnl = filteredTrades.reduce(
-    (sum, t) => sum + (t.realized_pnl ?? 0),
-    0,
-  );
-  const closedCount = filteredTrades.filter(
-    (t) => t.executed_at || t.status === "CLOSED",
-  ).length;
-  const winCount = filteredTrades.filter(
-    (t) => (t.realized_pnl ?? 0) > 0,
-  ).length;
-  const winRate =
-    closedCount > 0 ? Math.round((winCount / closedCount) * 100) : 0;
 
   return (
     <div className={`min-h-screen ${SURFACE.BG_LIGHT} p-4 sm:p-8`}>
@@ -118,15 +136,58 @@ export default function ClientHandelshistorikk() {
             ))}
           </div>
           {filteredTrades.length > 0 && (
-            <div className="flex gap-6 text-sm text-gray-600">
+            <div
+              className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-1 text-sm text-gray-600"
+              data-testid="trade-history-aggregates"
+            >
               <span>
-                {t("totalTrades")}: {filteredTrades.length}
+                {t("totalTrades")}:{" "}
+                <strong className="text-[#0A0B0D]">{stats.rowCount}</strong>
               </span>
               <span>
-                {t("totalPnl")}: {formatNOK(totalPnl)}
+                {t("wins")}:{" "}
+                <strong className="text-green-700">{stats.winCount}</strong>
               </span>
               <span>
-                {t("winRate")}: {winRate}%
+                {t("losses")}:{" "}
+                <strong className="text-red-700">{stats.lossCount}</strong>
+              </span>
+              {stats.breakevenCount > 0 ? (
+                <span>
+                  {t("breakeven")}:{" "}
+                  <strong className="text-gray-700">
+                    {stats.breakevenCount}
+                  </strong>
+                </span>
+              ) : null}
+              {stats.noRealizedPnlCount > 0 ? (
+                <span title={t("noRealizedPnlExplainer")}>
+                  {t("noRealizedPnl")}:{" "}
+                  <strong className="text-gray-500">
+                    {stats.noRealizedPnlCount}
+                  </strong>
+                </span>
+              ) : null}
+              <span>
+                {t("totalRealizedPnl")}:{" "}
+                <strong
+                  className={
+                    stats.totalRealizedPnl >= 0
+                      ? "text-green-700"
+                      : "text-red-700"
+                  }
+                >
+                  {stats.totalRealizedPnl >= 0 ? "+" : ""}
+                  {formatNOK(stats.totalRealizedPnl)}
+                </strong>
+              </span>
+              <span title={t("winRateRealizedHint")}>
+                {t("winRate")}:{" "}
+                <strong className="text-[#0A0B0D]">
+                  {stats.winRateRealizedPct != null
+                    ? `${stats.winRateRealizedPct}%`
+                    : "—"}
+                </strong>
               </span>
             </div>
           )}
@@ -174,7 +235,10 @@ export default function ClientHandelshistorikk() {
                   {filteredTrades.map((trade) => {
                     const isBuy = String(trade.side).toUpperCase() === "BUY";
                     const pair = (trade.trading_pair ?? "").replace("USDT", "");
-                    const pnl = trade.realized_pnl ?? 0;
+                    const hasRealized =
+                      trade.realized_pnl != null &&
+                      Number.isFinite(Number(trade.realized_pnl));
+                    const pnl = hasRealized ? Number(trade.realized_pnl) : null;
                     return (
                       <tr
                         key={trade.id}
@@ -209,19 +273,26 @@ export default function ClientHandelshistorikk() {
                           {formatNOK(trade.price)}
                         </td>
                         <td className="px-4 py-3">
-                          {trade.executed_at || trade.status === "CLOSED" ? (
+                          {hasRealized && pnl != null ? (
                             <span
                               className={
-                                pnl >= 0
+                                pnl > 0
                                   ? "text-green-600 font-medium"
-                                  : "text-red-600 font-medium"
+                                  : pnl < 0
+                                    ? "text-red-600 font-medium"
+                                    : "text-gray-600 font-medium"
                               }
                             >
-                              {pnl >= 0 ? "+" : ""}
+                              {pnl > 0 ? "+" : ""}
                               {formatNOK(pnl)}
                             </span>
                           ) : (
-                            <span className="text-gray-400">—</span>
+                            <span
+                              className="text-gray-400"
+                              title={t("noRealizedPnlExplainer")}
+                            >
+                              {t("noRealizedPnlShort")}
+                            </span>
                           )}
                         </td>
                         <td className="px-4 py-3">

@@ -9,7 +9,7 @@ Dette prosjektet er en Next.js 15 (App Router) applikasjon for kryptovaluta-hand
 - **Database/Auth**: Supabase (PostgreSQL + Auth SSR)
 - **State Management**: Zustand
 - **API**: Binance API (Spot/Futures), Stripe (Betaling)
-- **i18n**: next-intl (støtter no, en, th, zh)
+- **i18n**: next-intl — **aktiv SoT: no + en** for all brukertekst; **th/zh avvent** (`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`)
 
 ## Kodestil og Konvensjoner
 - **Modulær Struktur**: Følg eksisterende struktur i `src/components`, `src/app`, og `src/lib`.
@@ -22,6 +22,7 @@ Dette prosjektet er en Next.js 15 (App Router) applikasjon for kryptovaluta-hand
 
 ## i18n Regler
 - Alle bruker-facing tekster skal gå gjennom `next-intl`.
+- **Vedlikeholdskrav:** **no** og **en** skal alltid holdes i sync for produkttekst. **th** og **zh** er ikke del av aktiv leveranse-SoT (se `docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`).
 - Bruk `useTranslations` hook i Client Components og `getTranslations` i Server Components.
 - Oversettelser finnes i `messages/[locale].json`.
 

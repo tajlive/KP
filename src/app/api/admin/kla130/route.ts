@@ -1,30 +1,14 @@
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { NextRequest, NextResponse } from "next/server";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
-    const response = NextResponse.next();
-    const supabaseAuth = createServerClient(req, response);
-    const {
-      data: { user },
-    } = await supabaseAuth.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Ikke autentisert" }, { status: 401 });
-    }
-
-    const supabase = createClient();
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "admin") {
-      return NextResponse.json({ error: "Ingen tilgang" }, { status: 403 });
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const { createClient: createServiceClient } =

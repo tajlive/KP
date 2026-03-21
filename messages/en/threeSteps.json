@@ -19,5 +19,7 @@
     "badge": "Optional · Pro feature"
   },
   "ctaButton": "Start free today",
-  "ctaSubtext": "No credit card required · Cancel anytime"
+  "ctaSubtext": "No credit card required · Cancel anytime",
+  "ctaButtonLoggedIn": "Go to my dashboard",
+  "ctaSubtextLoggedIn": "Your account is ready — continue with courses or paper trading."
 }

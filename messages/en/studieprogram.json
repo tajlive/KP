@@ -20,81 +20,80 @@
       "cta": "Start free",
       "requirement": "No prior knowledge required",
       "features": [
-        "Full crypto introduction",
-        "100,000 NOK Paper Trading",
-        "Access to Community",
-        "Market updates",
-        "500 KLT tokens on signup"
+        "Unlimited paper trading (100,000 NOK virtual)",
+        "14-day full auto-trading trial",
+        "Then 1 auto-trading strategy on Student",
+        "AI learning assistant and real-time market data",
+        "Community and market updates",
+        "500 KLT on signup"
       ]
     },
     "bachelor": {
       "name": "Bachelor",
       "price": "249",
       "period": "/mo",
-      "description": "Build a solid foundation for the future",
+      "description": "Live trading, tax export, and structured learning",
       "badge": "📈",
       "cta": "Choose Bachelor",
       "requirement": "Recommended: Student completed",
       "features": [
         "Everything in Student",
-        "Technical Analysis Masterclass",
-        "AI Teacher (Crypto-Professor)",
-        "Weekly Live Webinars",
-        "1,000 KLT tokens/mo"
+        "Live trading on Binance",
+        "3 live auto-trading strategies",
+        "Tax report (CSV/HTML for Norwegian filing)",
+        "Copy top traders in paper mode",
+        "Technical analysis + weekly webinars · 1,000 KLT/mo"
       ]
     },
     "master": {
       "name": "Master",
       "price": "499",
       "period": "/mo",
-      "description": "Accelerate your growth with autotrading",
+      "description": "Signals, live copy-trading, and advanced tools",
       "badge": "🏆",
       "cta": "Choose Master",
       "requirement": "Recommended: Bachelor completed",
       "features": [
         "Everything in Bachelor",
-        "Automated Trading (3 strategies)",
-        "Live Trading on Binance",
-        "Copy top traders",
-        "Bachelor certificate upon exam completion",
-        "2,500 KLT tokens/mo"
+        "7 live auto-trading strategies",
+        "Copy top traders in live mode",
+        "VIP signals and AI portfolio optimization",
+        "Unlimited backtesting · tax report included",
+        "Bachelor certificate · 2,500 KLT/mo"
       ]
     },
     "phd": {
       "name": "PhD",
       "price": "999",
       "period": "/mo",
-      "description": "For serious traders with advanced strategies",
+      "description": "Unlimited strategies and a dedicated advisor",
       "badge": "🎯",
       "cta": "Choose PhD",
       "requirement": "Recommended: Master completed",
       "features": [
         "Everything in Master",
-        "Unlimited autotrading strategies",
-        "Portfolio optimization",
-        "Dedicated advisor",
-        "Master certificate upon exam completion",
-        "5,000 KLT tokens/mo",
-        "Exclusive PhD content"
+        "Unlimited live auto-trading",
+        "Dedicated advisor and private alpha signals",
+        "Advanced portfolio AI and 24/7 priority support",
+        "Tax report included",
+        "Master certificate · 5,000 KLT/mo"
       ]
     },
     "professor": {
       "name": "Professor",
       "price": "1999",
       "period": "/mo",
-      "description": "The ultimate program for professional traders",
+      "description": "1:1 coaching and white-glove for professionals",
       "badge": "👑",
       "cta": "Become Professor",
       "requirement": "Recommended: PhD completed",
       "features": [
         "Everything in PhD",
-        "1:1 coaching with Tom Jensen",
-        "VIP access to all features",
-        "Private trading strategy",
-        "Professor certificate",
-        "Alpha group (early access)",
-        "10,000 KLT tokens/mo",
-        "Early access to new features"
+        "Weekly 1:1 coaching with Tom Jensen",
+        "Exclusive strategies and tailored setups",
+        "VIP founder group and white-glove support",
+        "Tax report included",
+        "Professor certificate · 10,000 KLT/mo · early access"
       ]
     }
   }

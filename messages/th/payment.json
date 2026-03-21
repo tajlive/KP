@@ -6,7 +6,8 @@
   "cardDescription": "Visa, Mastercard, ฯลฯ",
   "or": "หรือ",
   "payWithCard": "ชำระด้วยบัตร",
-  "securePayment": "การชำระเงินที่ปลอดภัย Vipps สำหรับลูกค้านอร์เวย์ บัตรสำหรับต่างชาติ",
+  "securePayment": "ชำระเงินปลอดภัยด้วย Vipps และ Stripe — Visa, Mastercard, PayPal",
+  "securePaymentNoVipps": "ชำระเงินปลอดภัยผ่าน Stripe — Visa, Mastercard, PayPal",
   "back": "กลับ",
   "loading": "กำลังโหลด...",
   "errors": {
