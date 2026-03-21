@@ -13,7 +13,8 @@
   "intervalHint": "Auto-oppdatering hvert 5. minutt · priser synkroniseres på server (Supabase cron).",
   "errorLoad": "Kunne ikke laste analyser",
   "kpi": {
-    "totalPnl": "Realisert P&L",
+    "totalPnl": "Netto handelsresultat",
+    "totalPnlHint": "Bruker realisert P&L fra databasen når den finnes; ellers signert handelsbeløp (kjøp −, salg +) i NOK.",
     "winRate": "Vinnrate (kjent P&L)",
     "trades": "Handler i utvalg",
     "bestDay": "Sterkeste dag"
@@ -33,7 +34,7 @@
   },
   "charts": {
     "cumulativeTitle": "Kumulativ P&L over tid",
-    "cumulativeHint": "Løpende sum av realisert P&L per hendelse (nedsamplet ved mange punkter).",
+    "cumulativeHint": "Løpende sum per handel: realisert P&L når satt, ellers signert notional (kjøp −, salg +) i NOK (nedsamplet ved mange punkter).",
     "cumulativeSeries": "Kumulativ",
     "outcomeTitle": "Vinn vs tap",
     "outcomeHint": "Fordeling blant handler med kjent realisert P&L.",

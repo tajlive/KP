@@ -1,4 +1,7 @@
-import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregates";
+import {
+  aggregateTradeHistoryStats,
+  type TradeHistoryAggregates,
+} from "@/lib/trading/trade-history-aggregates";
 
 export type TradeAnalyticsInput = {
   id: string;
@@ -10,6 +13,36 @@ export type TradeAnalyticsInput = {
   executed_at: string | null;
   total_value: number | null;
 };
+
+/** Aggregates from closed-position P&L plus net settlement flow for fills without realized_pnl. */
+export type TradingAnalyticsAggregates = TradeHistoryAggregates & {
+  totalEffectivePnl: number;
+};
+
+function normalizeSide(side: string): "buy" | "sell" | "other" {
+  const s = side.trim().toLowerCase();
+  if (s === "buy" || s === "long" || s === "b") return "buy";
+  if (s === "sell" || s === "short" || s === "s") return "sell";
+  return "other";
+}
+
+/**
+ * Per-trade contribution for charts and headline totals.
+ * Prefer DB `realized_pnl` when set; otherwise approximate with signed notional
+ * (buy = cash out, sell = cash in) so paper fills without closed-loop P&L still move charts.
+ */
+export function effectivePnlDelta(row: TradeAnalyticsInput): number {
+  if (row.realized_pnl != null && Number.isFinite(Number(row.realized_pnl))) {
+    return Number(row.realized_pnl);
+  }
+  const tv = row.total_value;
+  if (tv == null || !Number.isFinite(Number(tv))) return 0;
+  const abs = Math.abs(Number(tv));
+  const leg = normalizeSide(row.side);
+  if (leg === "buy") return -abs;
+  if (leg === "sell") return abs;
+  return 0;
+}
 
 function tradeMillis(t: TradeAnalyticsInput): number {
   const s = t.executed_at ?? t.created_at;
@@ -26,7 +59,7 @@ function dayKeyUtc(iso: string): string {
 export type TradingAnalyticsPayload = {
   generatedAt: string;
   tradeCount: number;
-  aggregates: ReturnType<typeof aggregateTradeHistoryStats>;
+  aggregates: TradingAnalyticsAggregates;
   cumulativePnl: { t: string; label: string; cumulative: number }[];
   dailyPnl: { day: string; pnl: number }[];
   modeSplit: { mode: string; pnl: number; trades: number }[];
@@ -54,8 +87,7 @@ export function buildTradingAnalytics(
   let run = 0;
   const cumulativePnl: TradingAnalyticsPayload["cumulativePnl"] = [];
   for (const row of sorted) {
-    const p = row.realized_pnl;
-    const delta = p != null && Number.isFinite(Number(p)) ? Number(p) : 0;
+    const delta = effectivePnlDelta(row);
     run += delta;
     const ts = row.executed_at ?? row.created_at;
     const d = new Date(ts);
@@ -74,8 +106,7 @@ export function buildTradingAnalytics(
     const ts = row.executed_at ?? row.created_at;
     const day = dayKeyUtc(ts);
     if (!day) continue;
-    const p = row.realized_pnl;
-    const delta = p != null && Number.isFinite(Number(p)) ? Number(p) : 0;
+    const delta = effectivePnlDelta(row);
     dailyMap.set(day, (dailyMap.get(day) ?? 0) + delta);
   }
   const dailyPnl = [...dailyMap.entries()]
@@ -88,8 +119,7 @@ export function buildTradingAnalytics(
   const modeMap = new Map<string, { pnl: number; trades: number }>();
   for (const row of sorted) {
     const mode = (row.mode ?? "unknown").toLowerCase();
-    const p = row.realized_pnl;
-    const delta = p != null && Number.isFinite(Number(p)) ? Number(p) : 0;
+    const delta = effectivePnlDelta(row);
     const cur = modeMap.get(mode) ?? { pnl: 0, trades: 0 };
     cur.pnl += delta;
     cur.trades += 1;
@@ -104,8 +134,7 @@ export function buildTradingAnalytics(
   const pairMap = new Map<string, { pnl: number; trades: number }>();
   for (const row of sorted) {
     const pair = row.trading_pair || "—";
-    const p = row.realized_pnl;
-    const delta = p != null && Number.isFinite(Number(p)) ? Number(p) : 0;
+    const delta = effectivePnlDelta(row);
     const cur = pairMap.get(pair) ?? { pnl: 0, trades: 0 };
     cur.pnl += delta;
     cur.trades += 1;
@@ -120,7 +149,15 @@ export function buildTradingAnalytics(
     .sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl))
     .slice(0, 8);
 
-  const aggregates = aggregateTradeHistoryStats(sorted);
+  const baseAggregates = aggregateTradeHistoryStats(sorted);
+  const totalEffectivePnl = sorted.reduce(
+    (s, row) => s + effectivePnlDelta(row),
+    0,
+  );
+  const aggregates: TradingAnalyticsAggregates = {
+    ...baseAggregates,
+    totalEffectivePnl: Math.round(totalEffectivePnl * 100) / 100,
+  };
 
   const winLossSlices = [
     { key: "win" as const, value: aggregates.winCount, fill: WIN_COLOR },
