@@ -13,7 +13,8 @@
   "intervalHint": "Auto-refresh every 5 minutes · market prices synced on the server (Supabase cron).",
   "errorLoad": "Could not load analytics",
   "kpi": {
-    "totalPnl": "Realized P&L",
+    "totalPnl": "Net trading result",
+    "totalPnlHint": "Uses realized P&L from the database when present; otherwise signed trade amounts (NOK notional from fills).",
     "winRate": "Win rate (known P&L)",
     "trades": "Trades in sample",
     "bestDay": "Best day"
@@ -33,7 +34,7 @@
   },
   "charts": {
     "cumulativeTitle": "Cumulative P&L over time",
-    "cumulativeHint": "Running sum of realized P&L per event (downsampled when busy).",
+    "cumulativeHint": "Running sum per trade: realized P&L when set, else signed notional (buy −, sell +) in NOK (downsampled when busy).",
     "cumulativeSeries": "Cumulative",
     "outcomeTitle": "Wins vs losses",
     "outcomeHint": "Split among trades with known realized P&L.",

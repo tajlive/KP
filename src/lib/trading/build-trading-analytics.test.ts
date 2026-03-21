@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildTradingAnalytics } from "./build-trading-analytics";
+import {
+  buildTradingAnalytics,
+  effectivePnlDelta,
+} from "./build-trading-analytics";
 
 describe("buildTradingAnalytics", () => {
   it("computes cumulative P&L in chronological order", () => {
@@ -31,6 +34,7 @@ describe("buildTradingAnalytics", () => {
 
     expect(payload.tradeCount).toBe(2);
     expect(payload.aggregates.totalRealizedPnl).toBe(7);
+    expect(payload.aggregates.totalEffectivePnl).toBe(7);
     expect(payload.cumulativePnl).toHaveLength(2);
     expect(payload.cumulativePnl[1]?.cumulative).toBe(7);
     expect(payload.dailyPnl).toHaveLength(2);
@@ -62,5 +66,62 @@ describe("buildTradingAnalytics", () => {
 
     expect(payload.cumulativePnl[0]?.cumulative).toBe(5);
     expect(payload.cumulativePnl[1]?.cumulative).toBe(6);
+  });
+
+  it("effectivePnlDelta prefers realized_pnl then signed notional", () => {
+    const base = {
+      id: "x",
+      trading_pair: "X",
+      mode: "paper" as const,
+      created_at: "2026-01-01T00:00:00.000Z",
+      executed_at: "2026-01-01T00:00:00.000Z",
+    };
+    expect(
+      effectivePnlDelta({
+        ...base,
+        side: "buy",
+        realized_pnl: null,
+        total_value: 100,
+      }),
+    ).toBe(-100);
+    expect(
+      effectivePnlDelta({
+        ...base,
+        side: "sell",
+        realized_pnl: 7,
+        total_value: 999,
+      }),
+    ).toBe(7);
+  });
+
+  it("uses signed total_value when realized_pnl is null (paper fills)", () => {
+    const payload = buildTradingAnalytics([
+      {
+        id: "a",
+        trading_pair: "BTCUSDT",
+        side: "buy",
+        realized_pnl: null,
+        mode: "paper",
+        created_at: "2026-03-02T10:00:00.000Z",
+        executed_at: "2026-03-02T10:00:00.000Z",
+        total_value: 5000,
+      },
+      {
+        id: "b",
+        trading_pair: "BTCUSDT",
+        side: "sell",
+        realized_pnl: null,
+        mode: "paper",
+        created_at: "2026-03-02T11:00:00.000Z",
+        executed_at: "2026-03-02T11:00:00.000Z",
+        total_value: 5200,
+      },
+    ]);
+
+    expect(payload.aggregates.totalRealizedPnl).toBe(0);
+    expect(payload.aggregates.noRealizedPnlCount).toBe(2);
+    expect(payload.aggregates.totalEffectivePnl).toBe(200);
+    expect(payload.cumulativePnl[1]?.cumulative).toBe(200);
+    expect(payload.dailyPnl).toEqual([{ day: "2026-03-02", pnl: 200 }]);
   });
 });

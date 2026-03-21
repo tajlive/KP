@@ -29,6 +29,7 @@ const responseSchema = z.object({
     breakevenCount: z.number(),
     noRealizedPnlCount: z.number(),
     totalRealizedPnl: z.number(),
+    totalEffectivePnl: z.number(),
     winRateRealizedPct: z.number().nullable(),
   }),
   cumulativePnl: z.array(

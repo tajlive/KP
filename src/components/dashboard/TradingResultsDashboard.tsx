@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import type { ComponentProps, ComponentType } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCurrency } from "@/hooks/useCurrency";
 import {
   Area,
   AreaChart,
@@ -48,6 +49,7 @@ type AnalyticsPayload = {
     breakevenCount: number;
     noRealizedPnlCount: number;
     totalRealizedPnl: number;
+    totalEffectivePnl: number;
     winRateRealizedPct: number | null;
   };
   cumulativePnl: { t: string; label: string; cumulative: number }[];
@@ -78,14 +80,6 @@ function downsampleCumulative(
   return out;
 }
 
-function formatMoney(locale: string, n: number) {
-  return new Intl.NumberFormat(locale === "no" ? "no-NO" : "en-GB", {
-    style: "currency",
-    currency: "NOK",
-    maximumFractionDigits: n % 1 === 0 ? 0 : 2,
-  }).format(n);
-}
-
 const tooltipStyle = {
   backgroundColor: "#0f172a",
   border: "1px solid #334155",
@@ -95,6 +89,7 @@ const tooltipStyle = {
 export default function TradingResultsDashboard() {
   const t = useTranslations("tradingResults");
   const locale = useLocale();
+  const { format: formatDisplay } = useCurrency();
   const [data, setData] = useState<AnalyticsPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -184,7 +179,7 @@ export default function TradingResultsDashboard() {
     [t],
   );
 
-  const totalPnl = data?.aggregates.totalRealizedPnl ?? 0;
+  const totalPnl = data?.aggregates.totalEffectivePnl ?? 0;
   const pnlPositive = totalPnl >= 0;
 
   return (
@@ -265,7 +260,7 @@ export default function TradingResultsDashboard() {
             <KpiCard
               icon={pnlPositive ? TrendingUp : TrendingDown}
               label={t("kpi.totalPnl")}
-              value={formatMoney(locale, totalPnl)}
+              value={formatDisplay(totalPnl)}
               positive={pnlPositive}
             />
             <KpiCard
@@ -293,12 +288,20 @@ export default function TradingResultsDashboard() {
               label={t("kpi.bestDay")}
               value={
                 data.bestDay
-                  ? `${data.bestDay.day} · ${formatMoney(locale, data.bestDay.pnl)}`
+                  ? `${data.bestDay.day} · ${formatDisplay(data.bestDay.pnl)}`
                   : "—"
               }
               positive
             />
           </section>
+
+          {data.tradeCount > 0 &&
+          data.aggregates.totalRealizedPnl === 0 &&
+          data.aggregates.noRealizedPnlCount > 0 ? (
+            <p className="text-xs text-slate-500 -mt-4 max-w-3xl">
+              {t("kpi.totalPnlHint")}
+            </p>
+          ) : null}
 
           <div className="grid gap-6 lg:grid-cols-3">
             <div
@@ -341,14 +344,14 @@ export default function TradingResultsDashboard() {
                       />
                       <YAxis
                         tick={{ fill: "#64748b", fontSize: 10 }}
-                        tickFormatter={(v) => formatMoney(locale, Number(v))}
+                        tickFormatter={(v) => formatDisplay(Number(v))}
                       />
                       <Tooltip
                         contentStyle={tooltipStyle}
                         labelStyle={{ color: "#94a3b8" }}
                         formatter={
                           ((v: unknown) => [
-                            formatMoney(locale, Number(v)),
+                            formatDisplay(Number(v)),
                             t("charts.cumulativeSeries"),
                           ]) as unknown as NonNullable<
                             ComponentProps<typeof Tooltip>["formatter"]
@@ -425,7 +428,7 @@ export default function TradingResultsDashboard() {
                   <ArrowDownRight className="h-3.5 w-3.5 text-rose-400" />
                   {t("worstDay", {
                     day: data.worstDay.day,
-                    amount: formatMoney(locale, data.worstDay.pnl),
+                    amount: formatDisplay(data.worstDay.pnl),
                   })}
                 </span>
               ) : null}
@@ -451,13 +454,13 @@ export default function TradingResultsDashboard() {
                     />
                     <YAxis
                       tick={{ fill: "#64748b", fontSize: 10 }}
-                      tickFormatter={(v) => formatMoney(locale, Number(v))}
+                      tickFormatter={(v) => formatDisplay(Number(v))}
                     />
                     <Tooltip
                       contentStyle={tooltipStyle}
                       formatter={
                         ((v: unknown) => [
-                          formatMoney(locale, Number(v)),
+                          formatDisplay(Number(v)),
                           t("charts.dailySeries"),
                         ]) as unknown as NonNullable<
                           ComponentProps<typeof Tooltip>["formatter"]
@@ -504,7 +507,7 @@ export default function TradingResultsDashboard() {
                       <XAxis
                         type="number"
                         tick={{ fill: "#64748b", fontSize: 10 }}
-                        tickFormatter={(v) => formatMoney(locale, Number(v))}
+                        tickFormatter={(v) => formatDisplay(Number(v))}
                       />
                       <YAxis
                         type="category"
@@ -516,7 +519,7 @@ export default function TradingResultsDashboard() {
                         contentStyle={tooltipStyle}
                         formatter={
                           ((v: unknown) => [
-                            formatMoney(locale, Number(v)),
+                            formatDisplay(Number(v)),
                             t("charts.pairPnl"),
                           ]) as unknown as NonNullable<
                             ComponentProps<typeof Tooltip>["formatter"]
@@ -566,7 +569,7 @@ export default function TradingResultsDashboard() {
                             m.pnl >= 0 ? "text-emerald-400" : "text-rose-400"
                           }
                         >
-                          {formatMoney(locale, m.pnl)}
+                          {formatDisplay(m.pnl)}
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-slate-500">
