@@ -40,8 +40,31 @@
   },
   "portfolioHero": {
     "balanceLabel": "Portfolio balance (NOK)",
-    "pnlHint": "P&L (NOK and %)",
-    "footerHint": "Capital comes from your active trading session when present — otherwise your practice balance from profile. Positions and trades are below."
+    "pnlHint": "Period result (NOK and %)",
+    "footerHint": "Capital comes from your active trading session when present — otherwise your practice balance from profile. P&L follows the period you select.",
+    "periodLabel": "Period"
+  },
+  "modeBar": {
+    "paper": "Practice",
+    "live": "Live",
+    "paperDesc": "Virtual NOK — no real money at risk.",
+    "liveDesc": "Session tied to your account — real capital at risk.",
+    "noSessionDesc": "Practice mode. Open paper trading to run a session and track capital."
+  },
+  "pnlPeriod": {
+    "24h": "24h",
+    "7d": "7d",
+    "30d": "30d",
+    "all": "All"
+  },
+  "dataSource": {
+    "prices": "Spot quotes via Binance public API, refreshed about every 5 seconds. Shown in NOK.",
+    "pricesEducational": "For learning only — not investment advice."
+  },
+  "riskNote": {
+    "title": "Safety & transparency",
+    "body": "Paper trades are simulated in NOK. Live trading uses your exchange connection and carries real risk. Risk checks may reject orders that exceed your profile limits.",
+    "settingsCta": "Connection & settings"
   },
   "loading": "Loading dashboard...",
   "klt": {
@@ -85,7 +108,9 @@
     "recentTrades": "Recent trades",
     "noPositions": "No positions yet. Start with paper trading!",
     "noTrades": "No trades yet",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "modeLabel": "Mode",
+    "livePricesHeading": "Live quotes"
   },
   "tierLabels": {
     "student": "Student",

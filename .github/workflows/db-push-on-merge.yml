@@ -8,7 +8,7 @@
 # Krever: SUPABASE_PROJECT_REF, SUPABASE_ACCESS_TOKEN
 # ============================================================================
 
-name: 🗄️ DB push (auto on merge)
+name: DB push (auto on merge)
 
 on:
   push:
@@ -29,10 +29,6 @@ jobs:
   db-push:
     runs-on: ubuntu-latest
     timeout-minutes: 8
-    # Ikke blokkér andre workflows – feil pga manglende secrets er ok
-    continue-on-error: true
-    # Kun ved push til main
-    if: github.ref == 'refs/heads/main'
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
@@ -42,14 +38,18 @@ jobs:
         with:
           node-version: '24'
 
-      - name: 🗄️ Supabase link & push
-        run: |
-          REF="${{ secrets.SUPABASE_PROJECT_REF || secrets.SUPABASE_PROJECT_ID }}"
-          if [ -z "$REF" ]; then echo "::error::Mangler SUPABASE_PROJECT_REF eller SUPABASE_PROJECT_ID"; exit 1; fi
-          npx supabase link --project-ref "$REF"
-          npx supabase db push
+      - name: Supabase link and push
+        continue-on-error: true
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          REF="${SUPABASE_PROJECT_REF:-$SUPABASE_PROJECT_ID}"
+          if [ -z "$REF" ]; then echo "::warning::Mangler SUPABASE_PROJECT_REF/SUPABASE_PROJECT_ID — hopper over db push"; exit 0; fi
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then echo "::warning::Mangler SUPABASE_ACCESS_TOKEN — hopper over db push"; exit 0; fi
+          npx supabase link --project-ref "$REF"
+          npx supabase db push
 
-      - name: ✅ Migrasjoner applisert
-        run: echo "Migrasjoner kjørt mot prod. Ved feil: se docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md §6."
+      - name: Note
+        run: echo "Se docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md ved manuell oppfølging."

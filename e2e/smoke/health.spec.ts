@@ -73,7 +73,7 @@ test.describe("Smoke: Health Checks @smoke", () => {
       waitUntil: "domcontentloaded",
       timeout: 90_000,
     });
-    await expect(page.getByTestId("login-page")).toBeVisible({
+    await expect(page.getByTestId("login-page").first()).toBeVisible({
       timeout: 25_000,
     });
   });

@@ -67,6 +67,12 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 - **Utvidelser:** bl.a. `archive_root_garbage`, `/archive/dashboard-components`, rot-`*.log` og rapport-`.txt` som ikke trengs til `next build`. Se `.vercelignore` for full liste.
 - **Merk:** Hele `scripts/` kan ikke utelates — `npm ci` kjører `prepare` → `node scripts/husky-prepare.mjs`. `.vercelignore` bruker `scripts/*` med unntak for `husky-prepare.mjs` (og `validate-i18n.js` hvis build senere bruker `npm run build` / `prebuild`).
 
+## 6f. Sentry webpack-plugin / lokalt `next build` (ENOTEMPTY)
+
+- **Årsak:** `@sentry/nextjs` sin bundler-plugin bruker temp-mapper under upload; på macOS kan `rmdir` feile med `ENOTEMPTY` (race).
+- **Fiks:** I `next.config.mjs` kjøres **source map-upload og release** bare når **`VERCEL=1`** (Vercel sitt byggemiljø), eller når du eksplisitt setter **`SENTRY_UPLOAD_SOURCE_MAPS=true`**. Lokalt og på GitHub Actions (pre-build før `vercel deploy`) settes ikke `VERCEL`, så upload hoppes over. Prod source maps kommer fra **Vercel-buildet** der `VERCEL=1` og `SENTRY_AUTH_TOKEN` er satt.
+- **Overstyring:** `SENTRY_UPLOAD_SOURCE_MAPS=false` slår av upload også på Vercel (kun feilsøking).
+
 ## 7. Tester før produksjon
 
 Kjør før deploy til prod for å fange feil:

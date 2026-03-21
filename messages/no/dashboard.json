@@ -47,8 +47,31 @@
   },
   "portfolioHero": {
     "balanceLabel": "Porteføljesaldo (NOK)",
-    "pnlHint": "Resultat (NOK og %)",
-    "footerHint": "Kapital hentes fra aktiv handelsøkt når den finnes — ellers profilens øvingssaldo. Posisjoner og handler vises under."
+    "pnlHint": "Resultat i perioden (NOK og %)",
+    "footerHint": "Kapital hentes fra aktiv handelsøkt når den finnes — ellers profilens øvingssaldo. Resultat følger perioden du velger.",
+    "periodLabel": "Periode"
+  },
+  "modeBar": {
+    "paper": "Øving",
+    "live": "Live",
+    "paperDesc": "Virtuelle NOK — ingen ekte penger i risiko.",
+    "liveDesc": "Økt knyttet til kontoen din — ekte kapital i risiko.",
+    "noSessionDesc": "Øvingsmodus. Åpne paper trading for å kjøre en økt og følge kapital."
+  },
+  "pnlPeriod": {
+    "24h": "24 t",
+    "7d": "7 d",
+    "30d": "30 d",
+    "all": "Alt"
+  },
+  "dataSource": {
+    "prices": "Spotkurser via Binance sitt offentlige API, ca. hvert 5. sekund. Vist i NOK.",
+    "pricesEducational": "Kun til læring — ikke investeringsråd."
+  },
+  "riskNote": {
+    "title": "Trygghet og åpenhet",
+    "body": "Paper-handler er simulert i NOK. Live-handel bruker børstilkobling og medfører reell risiko. Risikokontroll kan avvise ordrer utenfor profilens grenser.",
+    "settingsCta": "Tilkobling og innstillinger"
   },
   "loading": "Laster dashboard...",
   "klt": {
@@ -92,7 +115,9 @@
     "recentTrades": "Siste handler",
     "noPositions": "Ingen posisjoner ennå. Start med paper trading!",
     "noTrades": "Ingen handler ennå",
-    "seeAll": "Se alle"
+    "seeAll": "Se alle",
+    "modeLabel": "Modus",
+    "livePricesHeading": "Live priser"
   },
   "tierLabels": {
     "student": "Student",

@@ -107,5 +107,17 @@
   "sessions": {
     "maxActiveReached": "You already have the maximum active sessions for this mode. Opening your existing session.",
     "maxActiveStudent": "As a student you can have one active practice session at a time (paper + auto in one flow). Stop the session before creating a new one, or continue in the open session."
+  },
+  "publicTeaser": {
+    "title": "Practice trading with 100,000 kr in virtual money",
+    "subtitle": "No real money. Full access to BTC, ETH, SOL and more. Log in to get started.",
+    "login": "Log in",
+    "signup": "Create account"
+  },
+  "fetchErrorPage": {
+    "title": "Could not load practice balance",
+    "body": "Something went wrong while loading your trading sessions. Please try again.",
+    "retry": "Reload page",
+    "dashboard": "Back to dashboard"
   }
 }

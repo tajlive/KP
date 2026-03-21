@@ -106,5 +106,17 @@
   "sessions": {
     "maxActiveReached": "Du har allerede maks antall aktive økter i denne modusen. Åpner eksisterende økt.",
     "maxActiveStudent": "Som student har du én aktiv øvingsøkt om gangen (paper + auto i samme flyt). Stopp økten før du oppretter en ny, eller fortsett i den åpne."
+  },
+  "publicTeaser": {
+    "title": "Øv trading med 100 000 kr lekepenger",
+    "subtitle": "Ingen ekte penger. Full tilgang til BTC, ETH, SOL og mer. Logg inn for å starte.",
+    "login": "Logg inn",
+    "signup": "Opprett konto"
+  },
+  "fetchErrorPage": {
+    "title": "Kunne ikke laste lekepenger",
+    "body": "Det oppstod en feil ved lasting av dine trading-økter. Vennligst prøv igjen.",
+    "retry": "Last inn på nytt",
+    "dashboard": "Tilbake til dashboard"
   }
 }

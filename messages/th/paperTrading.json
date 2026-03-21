@@ -69,5 +69,17 @@
     "text": "Opprett en gratis konto for å delta i konkurransen",
     "button": "Logg inn / Registrer deg"
   },
-  "saving": "Lagrer..."
+  "saving": "Lagrer...",
+  "publicTeaser": {
+    "title": "Practice trading with 100,000 kr in virtual money",
+    "subtitle": "No real money. Full access to BTC, ETH, SOL and more. Log in to get started.",
+    "login": "Log in",
+    "signup": "Create account"
+  },
+  "fetchErrorPage": {
+    "title": "Could not load practice balance",
+    "body": "Something went wrong while loading your trading sessions. Please try again.",
+    "retry": "Reload page",
+    "dashboard": "Back to dashboard"
+  }
 }

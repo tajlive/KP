@@ -37,8 +37,8 @@ serve(async (req: Request) => {
     // Parse symbols (comma-separated)
     const symbolList = symbols.split(",").map((s) => s.trim().toUpperCase());
 
-    // Fetch prices from Binance - only for requested symbols to save bandwidth
-    const binanceSymbols = JSON.stringify(symbolList);
+    // Fetch prices from Binance — symbols må URL-kodes (JSON-array i query)
+    const binanceSymbols = encodeURIComponent(JSON.stringify(symbolList));
     const response = await fetch(
       `${BINANCE_API_URL}/api/v3/ticker/24hr?symbols=${binanceSymbols}`,
     );

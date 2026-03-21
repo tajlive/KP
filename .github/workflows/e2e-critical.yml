@@ -36,9 +36,7 @@ jobs:
     name: Critical E2E Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
-    environment: ${{ github.event.inputs.environment || 'production' }}
-    
+    # Ikke bruk GitHub "Environment" her — kan blokkere job-opprettelse (0 jobs) ved gate/approval.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,7 +58,8 @@ jobs:
         run: npm run test:e2e:critical:chromium
         env:
           BASE_URL: ${{ vars.BASE_URL || 'https://www.klarpakke.no' }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          # Én kilde per nøkkel (duplikate YAML-nøkler kan gi workflow-feil uten jobs).
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD }}
@@ -68,9 +67,6 @@ jobs:
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD }}
           TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
           TEST_USER_B_PASSWORD: ${{ secrets.TEST_USER_B_PASSWORD }}
-          # Fallback for fork/manglende secrets – E2E auth feiler da, men jobben kjører
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjbG91ZC1wbGFjZWhvbGRlciJ9.c2VjcmV0' }}
 
       - name: Upload Playwright Report
         if: always()
@@ -119,10 +115,12 @@ jobs:
     if: failure() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
     steps:
       - name: Slack Notification
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         continue-on-error: true
         uses: slackapi/slack-github-action@v1
         with:

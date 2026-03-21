@@ -31,9 +31,11 @@
 
 ## Siste verifisering (oppdateres av agent)
 
-| Dato       | Utført av      | Kommandoer / lenker                                                                                                |
-| ---------- | -------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 2026-03-20 | Cursor (agent) | `npm run verify` → ALL TESTS PASSED; handelshistorikk: polling 20s for live liste — se `USER-TRADES-LIVE-PROOF.md` |
+| Dato       | Utført av      | Kommandoer / lenker                                                                                                                                                                                                                                            |
+| ---------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-03-21 | Cursor (agent) | Vercel/Sentry: `next.config.mjs` — Sentry source map-upload kun når `VERCEL=1` eller `SENTRY_UPLOAD_SOURCE_MAPS=true`; lokalt/CI pre-build uten `ENOTEMPTY`. `npm run build:local` OK. MCP Vercel: krever OAuth i Cursor (se `docs/VERCEL-SETTINGS.md` §9–11). |
+| 2026-03-21 | Cursor (agent) | Dashboard: `subscribeToTrades` (JWT) erstatter rå realtime uten `setAuth`; saldo utledes fra økt + `session_id`; `npm run test:unit` (PortfolioDashboard), `npm run type-check` OK                                                                             |
+| 2026-03-20 | Cursor (agent) | `npm run verify` → ALL TESTS PASSED; handelshistorikk: polling 20s for live liste — se `USER-TRADES-LIVE-PROOF.md`                                                                                                                                             |
 
 ## Relatert dokumentasjon
 
