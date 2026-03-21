@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { BRAND } from "@/lib/design/tokens";
 
 interface FirstTradeCardProps {
@@ -13,6 +14,7 @@ export default function FirstTradeCard({
   locale,
   hasTrades,
 }: FirstTradeCardProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -34,6 +36,7 @@ export default function FirstTradeCard({
       });
       const data = await res.json();
       if (data.success) {
+        router.refresh();
         setShowConfetti(true);
         setCompleted(true);
         setTimeout(() => setShowConfetti(false), 4000);

@@ -50,14 +50,16 @@ Når MCP ikke brukes (f.eks. CI eller skript), bruk **VERCEL_TOKEN** og CLI/API.
 
 ### npm-scripts
 
-| Script                               | Beskrivelse                               |
-| ------------------------------------ | ----------------------------------------- |
-| `npm run vercel:test`                | Tester Vercel API (bruker fra .env.local) |
-| `npm run vercel projects`            | Lister prosjekter                         |
-| `npm run vercel deployments [limit]` | Lister deployments (default 10)           |
-| `npm run vercel project [id]`        | Detaljer for ett prosjekt                 |
-| `npm run vercel:env`                 | `npx vercel env pull .env.local`          |
-| `npm run deploy:prod`                | `npx vercel --prod`                       |
+| Script                               | Beskrivelse                                                      |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `npm run vercel:test`                | Tester Vercel API (bruker fra .env.local)                        |
+| `npm run vercel projects`            | Lister prosjekter                                                |
+| `npm run vercel deployments [limit]` | Lister deployments (default 10)                                  |
+| `npm run vercel project [id]`        | Detaljer for ett prosjekt                                        |
+| `npm run vercel:env`                 | `env pull` fra **Production** (tryggere default enn Development) |
+| `npm run vercel:env:preview`         | Pull fra Preview                                                 |
+| `npm run vercel:env:development`     | Pull fra Development (sjelden — ofte mangler Supabase)           |
+| `npm run deploy:prod`                | `npx vercel --prod`                                              |
 
 ### Miljøvariabler
 
@@ -78,9 +80,9 @@ CLI-scriptet: `scripts/vercel-api.mjs`; leser `.env.local`.
 ### Node-versjon (optimalt for Vercel)
 
 - **Engines:** `package.json` → `"engines": { "node": "24.x" }`.
-- **Lokal/Vercel:** `.nvmrc` med `22` – samme major som engines.
-- **Vercel støtte:** 20.x, 22.x, 24.x (default 24.x). Vi bruker 22.x (LTS, forutsigbar).
-- **Viktig:** Unngå `>=20` i engines; da bruker Vercel 24.x og viser advarsel. Bruk eksplisitt `20.x`/`22.x`/`24.x`.
+- **Lokal/Vercel:** `.nvmrc` med `24` — samsvar med engines og Vercel default.
+- **Vercel støtte:** 20.x, 22.x, 24.x (default 24.x).
+- **Viktig:** Unngå `>=20` i engines; da velger Vercel siste 24.x og du får versjonsadvarsler. Bruk eksplisitt `20.x` / `22.x` / `24.x`.
 
 Dokumentert i **docs/vercel-build-notes.md** §6b.
 
@@ -94,9 +96,9 @@ Dokumentert i **docs/vercel-build-notes.md** §6b.
 
 ## 4. Oppsummering
 
-| Del               | Løsning                                                                                                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **MCP**           | Offisiell remote MCP: `url: https://mcp.vercel.com/klarpakke/klarpakke` i `.cursor/mcp.json`. OAuth, ingen token i config. Full sjekkliste: **docs/VERCEL-SETTINGS.md**. |
-| **CLI**           | `scripts/vercel-api.mjs` + `npm run vercel` / `vercel:test`. Krever `VERCEL_TOKEN` i `.env.local`.                                                                       |
-| **Node**          | `24.x` i engines og `.nvmrc` – samsvar med Vercel default.                                                                                                               |
-| **Dokumentasjon** | Denne filen + **docs/vercel-build-notes.md** + **docs/MCP-CLI-CI-API.md**.                                                                                               |
+| Del               | Løsning                                                                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **MCP**           | Offisiell remote MCP: `url: https://mcp.vercel.com/klarpakke/klarpakke` i `.cursor/mcp.json`. OAuth, ingen token i config. Sjekkliste + MCP-optimaliseringsflyt: **docs/VERCEL-SETTINGS.md** (§9–§11). |
+| **CLI**           | `scripts/vercel-api.mjs` + `npm run vercel` / `vercel:test`. Krever `VERCEL_TOKEN` i `.env.local`.                                                                                                     |
+| **Node**          | `24.x` i engines og `.nvmrc` – samsvar med Vercel default.                                                                                                                                             |
+| **Dokumentasjon** | Denne filen + **docs/vercel-build-notes.md** + **docs/MCP-CLI-CI-API.md**.                                                                                                                             |

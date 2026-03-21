@@ -57,18 +57,8 @@ vi.mock("@/components/dashboard/DashboardSignalPreview", () => ({
   DashboardSignalPreview: () => null,
 }));
 
-const mockChannel = {
-  on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }),
-};
-vi.mock("@/lib/supabase/client", () => ({
-  createClient: () => ({
-    channel: () => mockChannel,
-    removeChannel: () => {},
-  }),
-  getSupabaseClient: () => ({
-    channel: () => mockChannel,
-    removeChannel: () => {},
-  }),
+vi.mock("@/lib/trading-api", () => ({
+  subscribeToTrades: () => () => {},
 }));
 
 describe("PortfolioDashboard", () => {

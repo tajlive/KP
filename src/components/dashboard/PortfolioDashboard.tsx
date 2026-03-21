@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Medal,
@@ -13,12 +13,14 @@ import {
   ArrowDown,
   TrendingUp,
   Activity,
+  Shield,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { CARD, BRAND } from "@/lib/design/tokens";
 import { MARKET_DESK } from "@/lib/design/market-desk";
 import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
-import { createClient } from "@/lib/supabase/client";
+import { subscribeToTrades, type Trade as ApiTrade } from "@/lib/trading-api";
 import ReverseTrial from "./ReverseTrial";
 import { StreakBadge } from "./StreakBadge";
 import { winRateFromRealizedTrades } from "@/lib/trading/win-rate-from-trades";
@@ -82,6 +84,7 @@ const COIN_GRADIENTS: Record<string, string> = {
 
 interface Trade {
   id: string;
+  session_id?: string;
   trading_pair: string;
   side: string;
   quantity: number;
@@ -149,12 +152,43 @@ function isBuyTrade(trade: Trade): boolean {
   return String(trade.side).toUpperCase() === "BUY";
 }
 
+function apiTradeToDashboardTrade(t: ApiTrade): Trade {
+  return {
+    id: t.id,
+    session_id: t.session_id,
+    trading_pair: t.symbol,
+    side: t.side,
+    quantity: t.quantity,
+    price: t.price,
+    total_value: t.total_value,
+    status: t.status,
+    mode: t.mode,
+    created_at: t.created_at,
+    realized_pnl: t.realized_pnl,
+  };
+}
+
 function formatNOK(locale: string, n: number) {
   return new Intl.NumberFormat(locale === "no" ? "no-NO" : "en-GB", {
     style: "currency",
     currency: "NOK",
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+type PnlPeriod = "24h" | "7d" | "30d" | "all";
+
+const PNL_PERIOD_ORDER: PnlPeriod[] = ["24h", "7d", "30d", "all"];
+
+function periodCutoff(period: PnlPeriod): Date | null {
+  if (period === "all") return null;
+  const ms =
+    period === "24h"
+      ? 86400000
+      : period === "7d"
+        ? 7 * 86400000
+        : 30 * 86400000;
+  return new Date(Date.now() - ms);
 }
 
 const LEADERBOARD = [
@@ -181,59 +215,56 @@ export default function PortfolioDashboard({
     coins: liveCoins,
     loading: pricesLoading,
     error: pricesError,
+    refresh: refreshPrices,
   } = useRealtimePrices(DASHBOARD_SYMBOLS);
 
-  // Live trades: start with server data, append new trades via realtime
+  // Live trades: server snapshot + realtime (JWT via subscribeToTrades — RLS krever setAuth)
   const [liveTrades, setLiveTrades] = useState<Trade[]>(trades);
   useEffect(() => {
     setLiveTrades(trades);
   }, [trades]);
   useEffect(() => {
     if (!userId) return;
-    const supabase = createClient();
-    const channel = supabase
-      .channel(`dashboard-trades-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "trades",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          const t: Trade = {
-            id: String(row.id),
-            trading_pair: String(row.trading_pair ?? ""),
-            side: String(row.side ?? ""),
-            quantity: Number(row.quantity ?? 0),
-            price: Number(row.price ?? 0),
-            total_value: Number(
-              row.total_value ??
-                Number(row.price ?? 0) * Number(row.quantity ?? 0),
-            ),
-            status: String(row.status ?? ""),
-            mode: String(row.mode ?? "paper"),
-            created_at: String(row.created_at ?? new Date().toISOString()),
-            realized_pnl:
-              row.realized_pnl != null ? Number(row.realized_pnl) : null,
-          };
-          setLiveTrades((prev) => [t, ...prev].slice(0, 30));
-        },
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return subscribeToTrades(null, userId, (incoming, _kind) => {
+      const row = apiTradeToDashboardTrade(incoming);
+      setLiveTrades((prev) => {
+        const i = prev.findIndex((x) => x.id === row.id);
+        if (i === -1) {
+          return [row, ...prev].slice(0, 50);
+        }
+        const next = [...prev];
+        next[i] = row;
+        return next;
+      });
+    });
   }, [userId]);
 
   const displayTrades = liveTrades;
-  const tradeFlowPnl = displayTrades.reduce((sum: number, t: Trade) => {
-    const tradeAmount = normalizeTradeAmount(t);
-    const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
-    return sum + val;
-  }, 0);
+
+  const [pnlPeriod, setPnlPeriod] = useState<PnlPeriod>("all");
+
+  const periodTrades = useMemo(() => {
+    const cut = periodCutoff(pnlPeriod);
+    const filtered = cut
+      ? displayTrades.filter(
+          (t) => new Date(t.created_at).getTime() >= cut.getTime(),
+        )
+      : [...displayTrades];
+    return filtered.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+  }, [displayTrades, pnlPeriod]);
+
+  const periodFlowPnl = useMemo(
+    () =>
+      periodTrades.reduce((sum: number, t: Trade) => {
+        const tradeAmount = normalizeTradeAmount(t);
+        const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
+        return sum + val;
+      }, 0),
+    [periodTrades],
+  );
 
   const sessionStarting =
     activeSession != null
@@ -247,13 +278,34 @@ export default function PortfolioDashboard({
             paperBalance,
         )
       : null;
-  const displayBalance = sessionCapital ?? paperBalance;
-  const sessionPnl =
-    activeSession != null ? Number(activeSession.total_pnl ?? 0) : null;
-  const pnl = sessionPnl != null ? sessionPnl : tradeFlowPnl;
-  const pnlDenominator =
+
+  const sessionScopedTrades =
+    activeSession != null
+      ? displayTrades.filter((t) => t.session_id === activeSession.id)
+      : [];
+  const cashFlowFromScoped = sessionScopedTrades.reduce(
+    (sum: number, t: Trade) => {
+      const tradeAmount = normalizeTradeAmount(t);
+      const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
+      return sum + val;
+    },
+    0,
+  );
+  const derivedSessionBalance =
+    activeSession != null && sessionScopedTrades.length > 0
+      ? sessionStarting + cashFlowFromScoped
+      : null;
+
+  const displayBalance =
+    activeSession != null
+      ? (derivedSessionBalance ?? sessionCapital ?? sessionStarting)
+      : paperBalance;
+  const periodPnlDenominator =
     sessionStarting > 0 ? sessionStarting : paperBalance > 0 ? paperBalance : 1;
-  const pnlPercent = (pnl / pnlDenominator) * 100;
+  const periodPnlPercent = (periodFlowPnl / periodPnlDenominator) * 100;
+
+  const effectiveMode: "paper" | "live" =
+    activeSession?.mode === "live" ? "live" : "paper";
 
   const tradingDeskPath =
     activeSession?.mode === "live"
@@ -301,12 +353,15 @@ export default function PortfolioDashboard({
         )
       : null;
   const winRateFromTrades = winRateFromRealizedTrades(displayTrades);
-  const winRate = winRateFromSession ?? winRateFromTrades;
-  // Alltid vis minst antall handler vi faktisk har (sesjon kan være 0 for ny bot)
-  const totalTradesFromSession = Math.max(
-    activeSession?.total_trades ?? 0,
-    displayTrades.length,
-  );
+  const winRateOverall = winRateFromSession ?? winRateFromTrades;
+  const winRatePeriod =
+    winRateFromRealizedTrades(periodTrades) ??
+    (pnlPeriod === "all" ? winRateOverall : null);
+
+  const tradeCountDisplay =
+    pnlPeriod === "all"
+      ? Math.max(activeSession?.total_trades ?? 0, periodTrades.length)
+      : periodTrades.length;
 
   return (
     <div className="space-y-4">
@@ -319,7 +374,7 @@ export default function PortfolioDashboard({
       <FirstTradeCard
         userId={userId}
         locale={locale}
-        hasTrades={trades.length > 0}
+        hasTrades={liveTrades.length > 0}
       />
 
       <div
@@ -334,10 +389,53 @@ export default function PortfolioDashboard({
         </p>
       </div>
 
-      {/* Porteføljekort — samme uttrykk for paper og live (kapital fra aktiv økt når den finnes) */}
+      <div className="rounded-xl border border-[#E2E5EC] dark:border-slate-700/80 bg-white dark:bg-slate-900/60 px-4 py-3 flex flex-col sm:flex-row sm:items-start gap-3 shadow-sm">
+        <div className="mt-0.5 p-1.5 rounded-lg bg-[#0052FF]/10 shrink-0">
+          <Shield className="w-4 h-4 text-[#0052FF]" aria-hidden />
+        </div>
+        <div className="flex-1 min-w-0 space-y-1">
+          <p className="text-sm font-semibold text-[#1A1D26] dark:text-slate-100">
+            {t("riskNote.title")}
+          </p>
+          <p className="text-xs text-[#5E6478] dark:text-slate-400 leading-relaxed">
+            {t("riskNote.body")}
+          </p>
+          <Link
+            href={hrefWithLocale(locale, "/dashboard/settings")}
+            className="text-xs font-medium text-[#0052FF] hover:underline inline-flex"
+          >
+            {t("riskNote.settingsCta")}
+          </Link>
+        </div>
+      </div>
+
+      {/* Porteføljekort — modus, saldo, P&L per periode */}
       <div
         className={`${BRAND.gradient} rounded-2xl p-6 text-white shadow-[0_8px_32px_rgba(0,82,255,0.15)] animate-fade-in-up stagger-1`}
       >
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={cn(
+                "text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-0.5 border",
+                effectiveMode === "live"
+                  ? "bg-amber-500/20 border-amber-400/40 text-amber-100"
+                  : "bg-white/15 border-white/30 text-white",
+              )}
+            >
+              {effectiveMode === "live"
+                ? t("modeBar.live")
+                : t("modeBar.paper")}
+            </span>
+            <p className="text-xs text-white/75 max-w-md leading-snug">
+              {activeSession == null
+                ? t("modeBar.noSessionDesc")
+                : effectiveMode === "live"
+                  ? t("modeBar.liveDesc")
+                  : t("modeBar.paperDesc")}
+            </p>
+          </div>
+        </div>
         <p className="text-sm font-medium text-white/70 uppercase tracking-wider">
           {t("portfolioHero.balanceLabel")}
         </p>
@@ -350,16 +448,44 @@ export default function PortfolioDashboard({
         >
           {formatNOK(locale, displayBalance)}
         </p>
-        <div className="flex items-center gap-2 mt-2">
+        <div className="mt-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/50 mb-1.5">
+            {t("portfolioHero.periodLabel")}
+          </p>
+          <div
+            className="flex flex-wrap gap-1.5"
+            role="tablist"
+            aria-label={t("portfolioHero.periodLabel")}
+          >
+            {PNL_PERIOD_ORDER.map((p) => (
+              <button
+                key={p}
+                type="button"
+                role="tab"
+                aria-selected={pnlPeriod === p}
+                onClick={() => setPnlPeriod(p)}
+                className={cn(
+                  "text-xs font-medium rounded-full px-3 py-1 border transition-colors",
+                  pnlPeriod === p
+                    ? "bg-white/20 border-white/50 text-white"
+                    : "bg-white/5 border-white/15 text-white/70 hover:bg-white/10",
+                )}
+              >
+                {t(`pnlPeriod.${p}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 mt-3">
           <span
             className={
-              pnl >= 0
+              periodFlowPnl >= 0
                 ? "text-green-300 font-medium"
                 : "text-red-300 font-medium"
             }
           >
-            {pnl >= 0 ? "+" : ""}
-            {formatNOK(locale, pnl)} ({pnlPercent.toFixed(1)}%)
+            {periodFlowPnl >= 0 ? "+" : ""}
+            {formatNOK(locale, periodFlowPnl)} ({periodPnlPercent.toFixed(1)}%)
           </span>
           <span className="text-white/50 text-sm">
             {t("portfolioHero.pnlHint")}
@@ -378,7 +504,7 @@ export default function PortfolioDashboard({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16A34A] opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#16A34A]" />
             </span>
-            {no ? "Live priser" : "Live prices"}
+            {t("marketDesk.livePricesHeading")}
           </span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-1 lg:grid lg:grid-cols-3 lg:overflow-visible">
@@ -391,11 +517,18 @@ export default function PortfolioDashboard({
             ))
           ) : pricesError ? (
             <div
-              className={`${cardBase} min-w-[200px] lg:col-span-3 p-4 text-[#8E95A9] text-sm`}
+              className={`${cardBase} min-w-[200px] lg:col-span-3 p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`}
             >
-              {no
-                ? "Kunne ikke hente priser. Prøv igjen senere."
-                : "Could not load prices. Try again later."}
+              <p className="text-[#8E95A9] text-sm">
+                {t("errors.connectionError")}
+              </p>
+              <button
+                type="button"
+                onClick={() => void refreshPrices()}
+                className="text-sm font-medium text-[#0052FF] hover:underline self-start sm:self-auto"
+              >
+                {t("errors.retry")}
+              </button>
             </div>
           ) : (
             liveCoins.map((coin) => (
@@ -437,16 +570,17 @@ export default function PortfolioDashboard({
           )}
         </div>
       </div>
-      {liveCoins.length > 0 && (
-        <p className="text-[10px] text-[#8E95A9] animate-fade-in-up stagger-2 -mt-1">
-          {no
-            ? "Priser fra Binance, oppdatert ca. hvert 10. sekund."
-            : "Prices from Binance, updated approximately every 10 seconds."}
+      {(liveCoins.length > 0 || !pricesError) && (
+        <p className="text-[10px] text-[#8E95A9] animate-fade-in-up stagger-2 -mt-1 leading-relaxed">
+          {t("dataSource.prices")}{" "}
+          <span className="text-[#8E95A9]/80">
+            {t("dataSource.pricesEducational")}
+          </span>
         </p>
       )}
 
       {/* Performance Card — som konkurrenter (win rate, handler, P&L) */}
-      {(totalTradesFromSession > 0 || trades.length > 0) && (
+      {(tradeCountDisplay > 0 || liveTrades.length > 0 || activeSession) && (
         <div className={`${cardBase} animate-fade-in-up stagger-2`}>
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="w-5 h-5 text-[#0052FF]" />
@@ -460,7 +594,7 @@ export default function PortfolioDashboard({
                 {no ? "Handler" : "Trades"}
               </p>
               <p className="text-xl font-bold text-[#1A1D26] tabular-nums">
-                {totalTradesFromSession}
+                {tradeCountDisplay}
               </p>
             </div>
             <div>
@@ -470,14 +604,14 @@ export default function PortfolioDashboard({
               <p
                 data-testid="dashboard-win-rate-pct"
                 className={`text-xl font-bold tabular-nums ${
-                  winRate != null
-                    ? winRate >= 50
+                  winRatePeriod != null
+                    ? winRatePeriod >= 50
                       ? "text-[#16A34A]"
                       : "text-[#DC2626]"
                     : "text-[#1A1D26]"
                 }`}
               >
-                {winRate != null ? `${winRate}%` : "—"}
+                {winRatePeriod != null ? `${winRatePeriod}%` : "—"}
               </p>
             </div>
             <div>
@@ -486,11 +620,11 @@ export default function PortfolioDashboard({
               </p>
               <p
                 className={`text-xl font-bold tabular-nums ${
-                  pnlPercent >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"
+                  periodPnlPercent >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"
                 }`}
               >
-                {pnlPercent >= 0 ? "+" : ""}
-                {pnlPercent.toFixed(1)}%
+                {periodPnlPercent >= 0 ? "+" : ""}
+                {periodPnlPercent.toFixed(1)}%
               </p>
             </div>
           </div>
@@ -498,7 +632,7 @@ export default function PortfolioDashboard({
       )}
 
       {/* CTA: Se full oversikt med grafer og signaler (for brukere med aktivitet) */}
-      {(trades.length > 0 || activeSession) && (
+      {(liveTrades.length > 0 || activeSession) && (
         <Link
           href={hrefWithLocale(locale, tradingDeskPath)}
           className={`flex items-center justify-between ${cardBase} group animate-fade-in-up stagger-2 border-2 border-[#0052FF]/20 hover:border-[#0052FF]/40`}
@@ -653,15 +787,29 @@ export default function PortfolioDashboard({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-100">
-                          {isBuyTrade(trade)
-                            ? no
-                              ? "Kjøpte"
-                              : "Bought"
-                            : no
-                              ? "Solgte"
-                              : "Sold"}{" "}
-                          {normalizeTradeSymbol(trade).replace("USDT", "")}
+                        <p className="text-sm font-medium text-slate-100 flex flex-wrap items-center gap-2">
+                          <span>
+                            {isBuyTrade(trade)
+                              ? no
+                                ? "Kjøpte"
+                                : "Bought"
+                              : no
+                                ? "Solgte"
+                                : "Sold"}{" "}
+                            {normalizeTradeSymbol(trade).replace("USDT", "")}
+                          </span>
+                          <span
+                            className={cn(
+                              "text-[9px] font-bold uppercase tracking-wide rounded px-1.5 py-0.5 border shrink-0",
+                              String(trade.mode).toLowerCase() === "live"
+                                ? "border-amber-500/35 text-amber-300/95 bg-amber-500/10"
+                                : "border-slate-500/40 text-slate-400 bg-slate-800/60",
+                            )}
+                          >
+                            {String(trade.mode).toLowerCase() === "live"
+                              ? t("positions.live")
+                              : t("positions.paper")}
+                          </span>
                         </p>
                         <p className="text-xs text-slate-500 tabular-nums">
                           {normalizeTradeQty(trade).toFixed(4)} ·{" "}
@@ -806,8 +954,8 @@ export default function PortfolioDashboard({
                   <p className="text-xs text-[#5E6478] mt-0.5">
                     {activeSession.total_trades ?? 0}{" "}
                     {no ? "handler" : "trades"}
-                    {winRate != null &&
-                      ` · ${winRate}% ${no ? "win rate" : "win rate"}`}
+                    {winRateOverall != null &&
+                      ` · ${winRateOverall}% ${no ? "win rate" : "win rate"}`}
                   </p>
                 )}
               </div>

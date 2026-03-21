@@ -279,13 +279,22 @@ const nextConfig = {
   },
 };
 
+// Sentry bundler-plugin: source map upload + release mot temp-mapper (ENOTEMPTY på macOS).
+// Kjør upload kun på Vercel (VERCEL=1) der bygg er kanonisk for prod.
+// GitHub Actions kjører `npm run build` uten VERCEL — da hoppes upload over (samme som lokal `next build`).
+// Tving av/på: SENTRY_UPLOAD_SOURCE_MAPS=true|false
+const sentryShouldUpload =
+  process.env.SENTRY_UPLOAD_SOURCE_MAPS !== "false" &&
+  (process.env.VERCEL === "1" ||
+    process.env.SENTRY_UPLOAD_SOURCE_MAPS === "true");
+
 const sentryWebpackPluginOptions = {
   silent: true,
   org: "elbatt-chatbot",
   project: "klarpakke-production",
-  sourcemaps: { disable: false },
-  release: { create: true, finalize: true },
-  deploy: { env: true },
+  sourcemaps: { disable: !sentryShouldUpload },
+  release: { create: sentryShouldUpload, finalize: sentryShouldUpload },
+  deploy: { env: sentryShouldUpload },
   telemetry: false,
   tunnelRoute: "/api/sentry",
   hideSourceMaps: true,

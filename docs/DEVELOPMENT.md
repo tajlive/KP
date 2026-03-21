@@ -24,6 +24,15 @@ npm run dev
 
 Appen kjører på `http://localhost:3000`
 
+### Git: jobb på `main` (anbefalt)
+
+- **Standard:** `git checkout main` og `git pull` — hold `main` synket med `origin/main`.
+- **Cursor worktrees:** Hvis du får `fatal: 'main' is already used by worktree at '…'`, er `main` sjekket ut i en annen mappe. Frigjør den der, f.eks.  
+  `cd /sti/til/worktree && git switch -c wip/lokal-fri`  
+  (bytt til en annen branch), deretter `git checkout main` i `~/klarpakke`.
+- **Slettede fjern-brancher:** Hvis `git pull` klager på en `cursor/…`-branch som ikke finnes på `origin`, kjør  
+  `git branch --set-upstream-to=origin/main` (på gjeldende branch) eller bytt til `main` som over.
+
 ## Struktur
 
 ```
