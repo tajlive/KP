@@ -1,13 +1,31 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+const repoRoot = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Fill missing keys from optional env files (typical: Supabase URL/anon live in
+ * `.env.production.local` while `next dev` only reads `.env*.local` for development).
+ * Never apply `NODE_ENV` from those files — it would break `next dev` / Edge middleware.
+ */
+function mergeEnvFile(rel: string, opts: { skipNodeEnv?: boolean } = {}) {
+  const full = path.resolve(repoRoot, rel);
+  if (!fs.existsSync(full)) return;
+  const parsed = dotenv.parse(fs.readFileSync(full, "utf8"));
+  for (const [key, value] of Object.entries(parsed)) {
+    if (opts.skipNodeEnv && key === "NODE_ENV") continue;
+    if (process.env[key] === undefined) process.env[key] = value;
+  }
+}
+
+mergeEnvFile(".env.production.local", { skipNodeEnv: true });
+mergeEnvFile(".env.development.local", { skipNodeEnv: true });
 dotenv.config({
-  path: path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    ".env.local",
-  ),
+  path: path.resolve(repoRoot, ".env.local"),
+  override: true,
 });
 
 /**

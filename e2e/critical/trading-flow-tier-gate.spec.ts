@@ -26,8 +26,10 @@ test.describe("Trading flow and tier-gate @critical", () => {
     page,
   }) => {
     await page.goto("/no", { waitUntil: "domcontentloaded", timeout: 90_000 });
-    // Nav + hero bruker i18n (navigation.navTrade = «Handel»). Stabil: href til paper-trading.
-    const paperLink = page.locator('a[href="/no/paper-trading"]').first();
+    // `localePrefix: 'as-needed'`: default locale (no) bruker `/paper-trading`, ikke `/no/paper-trading`.
+    const paperLink = page
+      .locator('a[href="/paper-trading"], a[href="/no/paper-trading"]')
+      .first();
     await expect(paperLink).toBeVisible({ timeout: 15000 });
     await paperLink.click();
     await expect(page).toHaveURL(
