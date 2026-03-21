@@ -5,11 +5,6 @@ import tsParser from "@typescript-eslint/parser";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Globale variabler for både Browser og Node.js
 const commonGlobals = {
@@ -76,8 +71,6 @@ const commonGlobals = {
   RequestInit: "readonly",
   // Streams
   BufferSource: "readonly",
-  Event: "readonly",
-  CustomEvent: "readonly",
   DOMRect: "readonly",
   DOMTokenList: "readonly",
   CSSStyleDeclaration: "readonly",
@@ -143,7 +136,11 @@ const eslintConfig = [
       "**/coverage/**",
       "**/*.d.ts",
       "**/*.config.js",
-      "**/*.config.mjs",
+      // Ikke ignorer eslint.config.mjs: Next.js build (runLintCheck) bruker
+      // calculateConfigForFile på den filen; hvis den er ignorert, ser den ikke @next/next og viser advarsel.
+      "**/next.config.mjs",
+      "**/postcss.config.mjs",
+      "**/tailwind.config.mjs",
       "**/src/index.js",
       "**/functions/**",
       "**/archive/**",
