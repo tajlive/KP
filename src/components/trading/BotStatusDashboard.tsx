@@ -43,6 +43,7 @@ import { getStrategyIconComponent } from "@/lib/trading/strategy-icons";
 import AdvancedStatsModal from "./AdvancedStatsModal";
 import AIDecisionPanel from "@/components/ai/AIDecisionPanel";
 import { TABLE } from "@/lib/design/tokens";
+import { RobotThinkingStrip } from "@/components/trading/RobotThinkingStrip";
 
 interface BotStatusDashboardProps {
   portfolio: Portfolio | null;
@@ -728,6 +729,12 @@ function NarrativeView({
     >
       {/* Decorative radial gradient */}
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      {isBotActive && (
+        <div className="relative z-10 mb-6">
+          <RobotThinkingStrip compact />
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-8 relative z-10">
         <div className="flex flex-col items-center md:items-start gap-4">

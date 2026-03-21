@@ -4,6 +4,9 @@
   "legal": "กฎหมาย",
   "tagline": "การศึกษาคริปโตนอร์เวย์ เรียนโดยไม่มีความเสี่ยง",
   "paymentLabel": "การชำระเงินที่ปลอดภัยด้วย:",
+  "paymentSubtitle": "Vipps และ Stripe รองรับ Visa, Mastercard และ PayPal",
+  "paymentSubtitleNoVipps": "ชำระผ่าน Stripe — Visa, Mastercard, PayPal",
+  "stripeBadgeAria": "Powered by Stripe — เปิด stripe.com ในแท็บใหม่",
   "copyright": "© {year} Klarpakke AS สงวนลิขสิทธิ์",
   "disclaimer": "การซื้อขาย cryptocurrency มีความเสี่ยง Klarpakke เป็นแพลตฟอร์มการศึกษาและไม่ให้คำแนะนำทางการเงิน การตัดสินใจลงทุนทั้งหมดเป็นความรับผิดชอบของคุณเอง ผลลัพธ์ที่ผ่านมาไม่ใช่การรับประกันผลตอบแทนในอนาคต อย่าลงทุนมากกว่าที่คุณสามารถสูญเสียได้",
   "links": {

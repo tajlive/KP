@@ -74,10 +74,10 @@ export default async function DashboardPage({
       localizedPathname(locale, "/dashboard"),
     );
 
-    const [profileRes, tradesRes, sessionRes] = await Promise.all([
+    const [profileRes, tradesRes, sessionsRes] = await Promise.all([
       supabase
         .from("user_profiles")
-        .select("paper_balance, tier")
+        .select("paper_balance, tier, preferred_trading_mode")
         .eq("id", user.id)
         .single(),
       supabase
@@ -91,18 +91,20 @@ export default async function DashboardPage({
       supabase
         .from("trading_sessions")
         .select(
-          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades, created_at",
+          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades, created_at, updated_at",
         )
         .eq("user_id", user.id)
         .eq("status", "active")
-        .eq("mode", "paper")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
+        .order("updated_at", { ascending: false })
+        .limit(8),
     ]);
 
     const profile = profileRes.data;
-    const session = sessionRes.data;
+    const pref = profile?.preferred_trading_mode === "live" ? "live" : "paper";
+    const activeList = sessionsRes.data ?? [];
+    const picked =
+      activeList.find((s) => s.mode === pref) ?? activeList[0] ?? null;
+    const session = picked;
     const activeSession =
       session != null
         ? {

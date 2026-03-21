@@ -6,6 +6,19 @@
     "backToHome": "返回首页"
   },
   "overview": "概览",
+  "nav": {
+    "sectionOverview": "Overview",
+    "sectionUsers": "Users",
+    "sectionProduct": "Product",
+    "sectionSystem": "System",
+    "analytics": "Analytics",
+    "campaign": "Campaign",
+    "monetization": "Monetization",
+    "abTests": "A/B tests",
+    "autoTrading": "Auto-trading",
+    "tradingSessions": "Trading sessions",
+    "adminV2": "Admin v2"
+  },
   "users": "用户",
   "students": "学生",
   "tradeSync": "交易同步",
@@ -46,5 +59,61 @@
   },
   "search": {
     "placeholder": "搜索用户..."
+  },
+  "searchUsers": "Search users",
+  "selectTier": "Select tier",
+  "usersPage": {
+    "filterAllRoles": "All roles",
+    "filterAllTiers": "All tiers",
+    "filterAllSources": "All sources",
+    "ariaFilterRole": "Filter by role",
+    "ariaFilterTier": "Filter by subscription tier",
+    "ariaFilterSource": "Filter by source",
+    "ariaSelectAllUsers": "Select all users",
+    "roles": {
+      "user": "User",
+      "beta": "Beta",
+      "premium": "Premium",
+      "master": "Master",
+      "phd": "PhD",
+      "professor": "Professor",
+      "admin": "Admin",
+      "founder": "Founder",
+      "analyst": "Analyst",
+      "trader": "Trader",
+      "student": "Student"
+    },
+    "tiers": {
+      "free": "Free",
+      "student": "Student",
+      "bachelor": "Bachelor",
+      "master": "Master",
+      "phd": "PhD",
+      "professor": "Professor"
+    },
+    "sources": {
+      "organic": "Organic",
+      "google_ads": "Google Ads",
+      "referral": "Referral",
+      "social": "Social",
+      "partner": "Partner",
+      "beta_invite": "Beta invite"
+    },
+    "students": {
+      "filterAllRoles": "All roles",
+      "ariaFilterRole": "Filter by role"
+    },
+    "paperBalance": "Play money",
+    "setPaper": "Set balance",
+    "paperModalTitle": "Update play money",
+    "paperModalHint": "Updates user_profiles.paper_balance and optionally active paper sessions.",
+    "balanceKr": "Balance (NOK)",
+    "syncSessions": "Sync active paper sessions",
+    "resetBaseline": "Reset starting capital and P&L on sessions",
+    "savePaper": "Save",
+    "paperSaved": "Play money updated",
+    "paperError": "Could not update play money",
+    "tierUpdated": "Tier updated",
+    "tierError": "Could not update tier"
   }
 }

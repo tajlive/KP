@@ -6,6 +6,7 @@
  */
 
 import { RiskConfig, RiskManager } from "@/lib/auto-trading/risk-manager";
+import { resolveTickStrategyEngineKey } from "@/lib/trading/strategy-id-aliases";
 import { div, mul } from "@/lib/decimal";
 import { createClient } from "@/lib/supabase/server";
 import type { TradeSide, TradingSession } from "@/types/trading";
@@ -252,9 +253,16 @@ class GridBotEngine implements StrategyEngine {
   evaluate(input: StrategyInput): StrategySignal {
     const { candles, session, config } = input;
     const currentPrice = candles[candles.length - 1].close;
-    const upper = (config.upper_price as number) ?? currentPrice * 1.1;
-    const lower = (config.lower_price as number) ?? currentPrice * 0.9;
-    const levels = (config.grid_levels as number) ?? 10;
+    const upper =
+      (config.upper_price as number) ??
+      (config.upperPrice as number) ??
+      currentPrice * 1.1;
+    const lower =
+      (config.lower_price as number) ??
+      (config.lowerPrice as number) ??
+      currentPrice * 0.9;
+    const levels =
+      (config.grid_levels as number) ?? (config.levels as number) ?? 10;
     const gridSize = (upper - lower) / levels;
 
     if (currentPrice > upper || currentPrice < lower) {
@@ -341,7 +349,8 @@ async function processSession(
   db: SupabaseClient<Database>,
   session: TradingSession,
 ): Promise<TickResult> {
-  const strategy = strategies[session.strategy_id];
+  const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
+  const strategy = engineKey ? strategies[engineKey] : undefined;
   if (!strategy) {
     return {
       session_id: session.id,
@@ -652,7 +661,7 @@ export async function GET(req: NextRequest) {
   }
 
   const startTime = Date.now();
-  const db = await createClient() as SupabaseClient<Database>;
+  const db = (await createClient()) as SupabaseClient<Database>;
 
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)

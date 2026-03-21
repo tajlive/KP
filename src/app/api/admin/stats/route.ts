@@ -1,5 +1,5 @@
+import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { CAMPAIGN_CONFIG } from "@/lib/campaign-config";
-import { createClient as createServerClient } from "@/lib/supabase/server";
 import { getErrorMessage } from "@/lib/utils/error";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
@@ -32,30 +32,9 @@ function getSupabaseClient() {
 }
 
 export async function GET() {
-  // 1. Authenticate user via server client
-  const authClient = createServerClient();
-  const {
-    data: { user },
-  } = await authClient.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
-  const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
-
-  const { data: profile } = await authClient
-    .from("user_profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (!isWhitelisted && profile?.role !== "admin") {
-    return NextResponse.json(
-      { error: "Forbidden: Admin access required" },
-      { status: 403 },
-    );
+  const auth = await verifyAdminAccess();
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
 
   const supabase = getSupabaseClient();

@@ -7,6 +7,47 @@
     "title": "Velg din læringsreise",
     "subtitle": "Fra nybegynner til ekspert. Start gratis og oppgrader når du er klar."
   },
+  "klt": {
+    "title": "Hva er KLT?",
+    "body": "KLT er Klarpakkes belønningspoeng i appen. Du tjener dem ved å fullføre kurs og kan bruke dem til konkurranser og leaderboard — for eksempel månedspremien på 50 000 KLT. KLT er ikke kryptovaluta, kan ikke kjøpes eller selges utenfor Klarpakke, og har ingen kontantverdi.",
+    "linkLeaderboard": "Se leaderboard"
+  },
+  "comparison": {
+    "title": "Sammenlign planer",
+    "feature": "Funksjon",
+    "kltLabel": "KLT-belønning",
+    "kltStudent": "500 ved registrering",
+    "kltBachelor": "1 000/mnd",
+    "kltMaster": "2 500/mnd",
+    "kltPhd": "5 000/mnd",
+    "kltProfessor": "10 000/mnd",
+    "rowPaper": "Paper trading",
+    "rowModules": "Kursmoduler",
+    "rowAi": "AI-assistent",
+    "rowAutoTrading": "Auto-trading (live)",
+    "rowTax": "Skatterapport (Norge)",
+    "rowSupport": "Support",
+    "rowDiscord": "Discord / community",
+    "autoStudent": "Prøve + 1 strategi",
+    "autoBachelor": "3 strategier",
+    "autoMaster": "7 strategier",
+    "autoPhd": "Ubegrenset",
+    "autoProfessor": "Ubegrenset",
+    "supportStudent": "E-post",
+    "supportBachelor": "Prioritet",
+    "supportMaster": "1:1 (mnd)",
+    "supportPhd": "24/7 prioritet",
+    "supportProfessor": "White-glove",
+    "discordStudent": "Community",
+    "discordBachelor": "VIP",
+    "discordMaster": "VIP",
+    "discordPhd": "VIP + mentor",
+    "discordProfessor": "Founder + VIP"
+  },
+  "faqKlt": {
+    "q": "Er KLT kryptovaluta eller penger?",
+    "a": "Nei. KLT er poeng i Klarpakke som belønner læring og aktivitet. De brukes til spill, konkurranser og fremtidige fordeler i plattformen — ikke som betalingsmiddel utenfor appen."
+  },
   "plans": {
     "student": {
       "description": "Perfekt for å komme i gang"
@@ -18,16 +59,15 @@
       "description": "Avanserte verktøy"
     },
     "phd": {
-      "description": "Full tilgang"
+      "description": "Ubegrenset strategier og rådgiver"
+    },
+    "professor": {
+      "description": "1:1-coaching og founder-tilgang"
     }
   },
   "free": "Gratis",
   "startFree": "Start gratis",
   "startTrial": "Start prøveperiode",
-  "comparison": {
-    "title": "Sammenlign planer",
-    "feature": "Funksjon"
-  },
   "faq": {
     "title": "Ofte stilte spørsmål"
   },
@@ -67,7 +107,7 @@
     "chargedQ": "Blir jeg belastet?",
     "chargedA": "Nei, du blir kun belastet når betalingen er fullført. Ingen skjulte gebyrer.",
     "trialQ": "Kan jeg prøve gratis først?",
-    "trialA": "Ja! Alle betalte planer har 7 dagers gratis prøveperiode. Du kan kansellere når som helst.",
+    "trialA": "Master, PhD og Professor har 14 dagers gratis prøveperiode. Bachelor starter uten prøveperiode. Du kan kansellere når som helst.",
     "tryAgain": "Prøv igjen",
     "backHome": "Tilbake til forsiden",
     "needHelp": "Trenger du hjelp? Kontakt oss på"

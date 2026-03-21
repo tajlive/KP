@@ -1,13 +1,22 @@
 "use client";
 
-import { UserPlus, BookOpen, Gamepad2, Rocket } from "lucide-react";
+import {
+  UserPlus,
+  BookOpen,
+  Gamepad2,
+  Rocket,
+  LayoutDashboard,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useAuth } from "@/components/auth/AuthContext";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 export function ThreeSteps() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("threeSteps");
+  const { user } = useAuth();
 
   const steps = [
     {
@@ -15,7 +24,7 @@ export function ThreeSteps() {
       number: "01",
       title: t("step1.title"),
       description: t("step1.description"),
-      color: "bg-teal-500",
+      color: "bg-[#0052FF]",
     },
     {
       icon: BookOpen,
@@ -99,14 +108,21 @@ export function ThreeSteps() {
       {/* CTA */}
       <div className="text-center mt-12">
         <button
-          onClick={() => router.push(`/${locale}/signup`)}
+          type="button"
+          onClick={() =>
+            router.push(hrefWithLocale(locale, user ? "/dashboard" : "/signup"))
+          }
           className="bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
         >
-          <UserPlus className="w-5 h-5" />
-          {t("ctaButton")}
+          {user ? (
+            <LayoutDashboard className="w-5 h-5" aria-hidden />
+          ) : (
+            <UserPlus className="w-5 h-5" aria-hidden />
+          )}
+          {user ? t("ctaButtonLoggedIn") : t("ctaButton")}
         </button>
         <p className="font-lexend text-slate-500 text-sm mt-4">
-          {t("ctaSubtext")}
+          {user ? t("ctaSubtextLoggedIn") : t("ctaSubtext")}
         </p>
       </div>
     </div>

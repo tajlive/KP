@@ -1,0 +1,22 @@
+---
+description: Auto-trade strategier — dyp gjennomgang, tuning, forum/data-innsikt; se .agent/agents/klarpakke-auto-trade-strategy-research-agent.md
+globs:
+  - src/lib/auto-trading/**/*
+  - src/lib/paper-trading/**/*
+  - src/lib/config/optimized-risk-profiles.ts
+  - src/lib/ai/auto-trading-engine.ts
+  - src/components/auto-trading/**/*
+  - src/components/trading/UnifiedTradingDashboard.tsx
+  - docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md
+alwaysApply: false
+---
+
+# Auto-Trade Strategy Research
+
+Ved oppgaver som berører **strategityper**, **presets**, **risikonivå**, **auto-trading motor** eller **Binance auto-executor**:
+
+1. Les **`.agent/agents/klarpakke-auto-trade-strategy-research-agent.md`**.
+2. Følg **`.agent/workflows/auto-trade-strategy-research.md`**.
+3. Oppdater **`docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md`** (§ Siste kjøring) etter fullført runde.
+
+**Ramme:** ingen garantier om profitt; forbedringer skal begrunnes (kilde + mekanisme + risiko). Ved endring i live/paper **handler** eller RLS, koordiner med Live Trading & Trades-agent og `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`.

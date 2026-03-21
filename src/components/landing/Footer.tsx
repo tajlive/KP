@@ -3,12 +3,15 @@
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
+import { PaymentTrustLogos } from "@/components/landing/PaymentTrustLogos";
+import { useVippsMarket } from "@/components/providers/VippsMarketProvider";
 import { useEffect, useState } from "react";
 
 export function Footer() {
   const [currentYear, setCurrentYear] = useState(2026);
   const locale = useLocale();
   const t = useTranslations("footer");
+  const { showVipps } = useVippsMarket();
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -28,9 +31,7 @@ export function Footer() {
       { href: canonicalPath("/paper-trading"), label: t("links.paperTrading") },
       { href: canonicalPath("/priser"), label: t("links.pricing") },
     ],
-    company: [
-      { href: canonicalPath("/kontakt"), label: t("links.contact") },
-    ],
+    company: [{ href: canonicalPath("/kontakt"), label: t("links.contact") }],
     legal: [
       { href: canonicalPath("/personvern"), label: t("links.privacy") },
       { href: canonicalPath("/vilkar"), label: t("links.terms") },
@@ -204,44 +205,20 @@ export function Footer() {
 
         {/* Payment Methods */}
         <div className="mt-8 py-6 border-t border-white/10">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <span className="text-white/60 text-xs">{t("paymentLabel")}</span>
-            <div className="flex items-center gap-4">
-              {/* Card icons */}
-              <div className="flex items-center gap-1 text-white/50">
-                <svg
-                  className="w-6 h-4"
-                  viewBox="0 0 48 32"
-                  fill="currentColor"
-                >
-                  <rect width="48" height="32" rx="4" fill="#1A1F71" />
-                  <path
-                    d="M19.5 21.5L21 10.5H24L22.5 21.5H19.5Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M32.5 10.7C32 10.5 31.2 10.3 30.2 10.3C27.5 10.3 25.5 11.8 25.5 13.9C25.5 15.5 26.8 16.4 27.8 16.9C28.8 17.4 29.2 17.8 29.2 18.3C29.2 19.1 28.2 19.5 27.2 19.5C26 19.5 25.3 19.3 24.5 18.9L24 18.7L23.5 21.4C24.2 21.7 25.5 22 27 22C30 22 32 20.5 32 18.2C32 16.9 31.2 16 29.5 15.2C28.5 14.7 27.9 14.3 27.9 13.8C27.9 13.3 28.5 12.8 29.7 12.8C30.7 12.8 31.4 13 32 13.2L32.4 13.4L32.5 10.7Z"
-                    fill="white"
-                  />
-                </svg>
-                <svg
-                  className="w-6 h-4"
-                  viewBox="0 0 48 32"
-                  fill="currentColor"
-                >
-                  <rect width="48" height="32" rx="4" fill="#EB001B" />
-                  <circle cx="19" cy="16" r="10" fill="#EB001B" />
-                  <circle cx="29" cy="16" r="10" fill="#F79E1B" />
-                  <path
-                    d="M24 8.5C26.5 10.5 28 13 28 16C28 19 26.5 21.5 24 23.5C21.5 21.5 20 19 20 16C20 13 21.5 10.5 24 8.5Z"
-                    fill="#FF5F00"
-                  />
-                </svg>
-              </div>
-              <span className="text-white/30">|</span>
-              {/* Stripe */}
-              <span className="text-xs text-white/50">Stripe</span>
+          <div className="flex flex-col items-center justify-center gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5">
+              <span className="text-white/60 text-xs shrink-0 text-center sm:text-left">
+                {t("paymentLabel")}
+              </span>
+              <PaymentTrustLogos
+                variant="dark"
+                showVipps={showVipps}
+                stripeBadgeAriaLabel={t("stripeBadgeAria")}
+              />
             </div>
+            <p className="text-white/45 text-[11px] text-center max-w-md leading-relaxed">
+              {showVipps ? t("paymentSubtitle") : t("paymentSubtitleNoVipps")}
+            </p>
           </div>
         </div>
 

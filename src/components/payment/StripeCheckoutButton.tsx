@@ -1,14 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getAppUrl } from "@/lib/auth/config";
 import { createClient } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import type { CurrencyCode } from "@/lib/pricing.config";
 
 interface StripeCheckoutButtonProps {
+  /** Brukes kun som fallback / validering; server løser priceId fra tier + currency */
   planId: string;
+  /** Tier-slug for metadata og webhook (bachelor | master | phd | professor) */
+  tierSlug: string;
+  /** Betalingsvaluta (Stripe Price må finnes for kombinasjonen) */
+  currency?: CurrencyCode;
   planName: string;
   children: React.ReactNode;
   className?: string;
@@ -17,7 +22,9 @@ interface StripeCheckoutButtonProps {
 
 export function StripeCheckoutButton({
   planId,
+  tierSlug,
   planName,
+  currency = "NOK",
   children,
   className,
   variant = "default",
@@ -45,22 +52,19 @@ export function StripeCheckoutButton({
         return;
       }
 
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-
       const currentLocale = window.location.pathname.split("/")[1] || "no";
 
-      // Kall Next.js API route
       const response = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          price_id: planId,
-          success_url: `${getAppUrl()}/${currentLocale}/priser/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${getAppUrl()}/${currentLocale}/priser`,
-          user_id: user.id,
-          user_email: user.email,
+          tier: tierSlug,
+          currency,
+          priceId: planId?.startsWith("price_") ? planId : undefined,
+          userId: user.id,
+          userEmail: user.email,
         }),
       });
 
@@ -101,6 +105,7 @@ export function StripeCheckoutButton({
         variant={variant}
         className={className}
         size="lg"
+        aria-label={planName}
       >
         {loading ? (
           <>

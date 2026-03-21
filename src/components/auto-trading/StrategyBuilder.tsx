@@ -15,50 +15,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
+import { STRATEGY_CATALOG_BUILDER } from "@/lib/auto-trading/strategy-catalog";
 
-// Hardkodede strategier - erstatter legacy auto_trading_strategies tabell
-const DEFAULT_STRATEGIES = [
-  {
-    id: "dca_trygg",
-    name: "DCA Trygg",
-    risk_level: 1,
-    is_active: true,
-    allowed_symbols: ["BTCUSDT", "ETHUSDT"],
-    description: "Dollar-cost averaging med lav risiko",
-  },
-  {
-    id: "trend_balansert",
-    name: "Trend Balansert",
-    risk_level: 3,
-    is_active: true,
-    allowed_symbols: ["BTCUSDT"],
-    description: "Trend-following med middels risiko",
-  },
-  {
-    id: "multisignal_aktiv",
-    name: "Multi-Signal Aktiv",
-    risk_level: 4,
-    is_active: true,
-    allowed_symbols: ["BTCUSDT", "ETHUSDT", "SOLUSDT"],
-    description: "Multi-indikator strategi med høy aktivitet",
-  },
-  {
-    id: "grid_bot",
-    name: "Grid Bot",
-    risk_level: 3,
-    is_active: true,
-    allowed_symbols: ["BTCUSDT"],
-    description: "Grid trading i definerte prisområder",
-  },
-  {
-    id: "ai_copy",
-    name: "AI Copy Trading",
-    risk_level: 5,
-    is_active: true,
-    allowed_symbols: ["BTCUSDT", "ETHUSDT"],
-    description: "Kopierer topp-tradere med AI-filtrering",
-  },
-];
+const DEFAULT_STRATEGIES = STRATEGY_CATALOG_BUILDER.map((s) => ({ ...s }));
 
 interface StrategyBuilderProps {
   maxStrategies?: number;
@@ -318,7 +277,10 @@ export default function StrategyBuilder({
             </div>
 
             <div>
-              <label htmlFor="strategy-builder-start-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="strategy-builder-start-date"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Start Dato
               </label>
               <div className="relative">
@@ -334,7 +296,10 @@ export default function StrategyBuilder({
             </div>
 
             <div>
-              <label htmlFor="strategy-builder-end-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label
+                htmlFor="strategy-builder-end-date"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
                 Slutt Dato
               </label>
               <div className="relative">
@@ -455,7 +420,10 @@ export default function StrategyBuilder({
           {activeTab === "risk" && (
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="strategy-stop-loss" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="strategy-stop-loss"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Stop Loss (%)
                 </label>
                 <Input
@@ -475,7 +443,10 @@ export default function StrategyBuilder({
               </div>
 
               <div>
-                <label htmlFor="strategy-take-profit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="strategy-take-profit"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Take Profit (%)
                 </label>
                 <Input
@@ -495,7 +466,10 @@ export default function StrategyBuilder({
               </div>
 
               <div>
-                <label htmlFor="strategy-position-size" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="strategy-position-size"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Posisjonsstørrelse (%)
                 </label>
                 <Input
@@ -515,7 +489,10 @@ export default function StrategyBuilder({
               </div>
 
               <div>
-                <label htmlFor="strategy-max-positions" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="strategy-max-positions"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Maks antall posisjoner
                 </label>
                 <Input

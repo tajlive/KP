@@ -104,10 +104,15 @@ function PaperTradingPublicTeaser({ locale }: { locale: string }) {
 
 export default async function PaperTradingPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ mode?: string }>;
 }) {
   const { locale } = await params;
+  const sp = await searchParams;
+  const sessionListMode =
+    sp?.mode === "live" ? ("live" as const) : ("paper" as const);
   const t = await getTranslations({ locale, namespace: "paperTrading" });
   const supabase = await createServerClient();
   const {
@@ -125,7 +130,7 @@ export default async function PaperTradingPage({
         "id, mode, status, trading_pair, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, winning_trades, total_trades, created_at",
       )
       .eq("user_id", user.id)
-      .eq("mode", "paper")
+      .eq("mode", sessionListMode)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -134,11 +139,14 @@ export default async function PaperTradingPage({
 
     const { data: profile } = await supabase
       .from("user_profiles")
-      .select("paper_balance")
+      .select("paper_balance, real_balance")
       .eq("id", user.id)
       .single();
 
-    const balance = profile?.paper_balance ?? 100_000;
+    const balance =
+      sessionListMode === "live"
+        ? (profile?.real_balance ?? 0)
+        : (profile?.paper_balance ?? 100_000);
     const contextBannerText = t("contextBanner");
 
     return (
@@ -147,6 +155,7 @@ export default async function PaperTradingPage({
         balance={balance}
         locale={locale}
         userId={user.id}
+        listMode={sessionListMode}
         contextBannerText={contextBannerText}
       />
     );

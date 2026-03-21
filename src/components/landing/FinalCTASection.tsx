@@ -2,37 +2,31 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle, Clock, Sparkles } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-import { BRAND, BRAND_COLOR } from "@/lib/design/tokens";
+import { useAuth } from "@/components/auth/AuthContext";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { BRAND, BRAND_COLOR, SURFACE } from "@/lib/design/tokens";
 
-interface FinalCTASectionProps {
-  language?: "no" | "en";
-}
-
-export default function FinalCTASection({
-  language = "no",
-}: FinalCTASectionProps) {
+export default function FinalCTASection() {
   const locale = useLocale();
+  const t = useTranslations("landing.finalCta");
+  const { user } = useAuth();
+  const signupHref = hrefWithLocale(locale, "/signup");
+  const dashboardHref = hrefWithLocale(locale, "/dashboard");
 
-  const guarantees =
-    language === "no"
-      ? [
-          "Ingen binding — avslutt når som helst",
-          "Ingen kredittkort nødvendig for å prøve",
-          "Risikofri lekepenger",
-          "Alt innhold tilgjengelig umiddelbart",
-        ]
-      : [
-          "No commitment — cancel anytime",
-          "No credit card required to try",
-          "Risk-free paper trading",
-          "All content available immediately",
-        ];
+  const guarantees = [
+    t("guarantee1"),
+    t("guarantee2"),
+    t("guarantee3"),
+    t("guarantee4"),
+  ];
 
   return (
-    <section className="relative py-32 overflow-hidden bg-[#050510]">
-      {/* Background decoration */}
+    <section
+      className={`relative py-32 overflow-hidden ${SURFACE.BG}`}
+      aria-labelledby="final-cta-heading"
+    >
       <div className="absolute inset-0 z-0 opacity-20">
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full blur-[150px]"
@@ -47,7 +41,6 @@ export default function FinalCTASection({
           viewport={{ once: true }}
           className="bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[3rem] p-12 sm:p-24 relative overflow-hidden shadow-2xl"
         >
-          {/* Pulsing internal glow */}
           <motion.div
             animate={{
               opacity: [0.2, 0.4, 0.2],
@@ -71,23 +64,22 @@ export default function FinalCTASection({
                 boxShadow: `0 0 50px ${BRAND_COLOR.DEFAULT}66`,
               }}
             >
-              <Sparkles className="w-10 h-10 text-white" />
+              <Sparkles className="w-10 h-10 text-white" aria-hidden />
             </motion.div>
 
-            <h2 className="text-4xl sm:text-7xl font-black text-white mb-8 tracking-tighter leading-tight">
-              {language === "no"
-                ? "Start din trading-reise"
-                : "Start your trading journey"}
+            <h2
+              id="final-cta-heading"
+              className="text-4xl sm:text-7xl font-black text-white mb-8 tracking-tighter leading-tight"
+            >
+              {user ? t("loggedInTitleLine1") : t("titleLine1")}
               <br />
               <span className={BRAND.link}>
-                {language === "no" ? "i dag" : "today"}
+                {user ? t("loggedInTitleAccent") : t("titleAccent")}
               </span>
             </h2>
 
             <p className="text-xl sm:text-2xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-              {language === "no"
-                ? "Bli med over 1,200 andre nordmenn som lærer trading på den smarte måten."
-                : "Join over 1,200 other Norwegians learning to trade the smart way."}
+              {user ? t("loggedInSubtitle") : t("subtitle")}
             </p>
 
             <div className="flex justify-center items-center mb-16">
@@ -97,12 +89,15 @@ export default function FinalCTASection({
                 className="w-full sm:w-auto"
               >
                 <Link
-                  href={`/${locale}/signup`}
+                  href={user ? dashboardHref : signupHref}
                   className={`group relative ${BRAND.primary} px-12 py-6 rounded-2xl text-xl font-black text-white transition-all flex items-center gap-3 w-full sm:w-auto justify-center`}
                   style={{ boxShadow: `0 0 40px ${BRAND_COLOR.DEFAULT}66` }}
                 >
-                  {language === "no" ? "Start gratis nå" : "Start for free now"}
-                  <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                  {user ? t("loggedInCta") : t("cta")}
+                  <ArrowRight
+                    className="w-6 h-6 group-hover:translate-x-1 transition-transform"
+                    aria-hidden
+                  />
                   <span
                     className="absolute inset-0 rounded-2xl animate-pulse blur-xl pointer-events-none opacity-20"
                     style={{ backgroundColor: BRAND_COLOR.DEFAULT }}
@@ -112,13 +107,16 @@ export default function FinalCTASection({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-              {guarantees.map((guarantee, idx) => (
+              {guarantees.map((guarantee) => (
                 <div
-                  key={idx}
+                  key={guarantee}
                   className="flex items-center gap-3 text-slate-400 bg-white/5 p-4 rounded-xl border border-white/5"
                 >
-                  <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-sm font-bold tracking-tight">
+                  <CheckCircle
+                    className="w-5 h-5 text-emerald-400 shrink-0"
+                    aria-hidden
+                  />
+                  <span className="text-sm font-bold tracking-tight text-left">
                     {guarantee}
                   </span>
                 </div>
@@ -128,18 +126,16 @@ export default function FinalCTASection({
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
-              className="mt-16 inline-flex items-center gap-3 px-6 py-3 backdrop-blur-sm rounded-full border"
+              className="mt-16 inline-flex items-center gap-3 px-6 py-3 backdrop-blur-sm rounded-full border tabular-nums"
               style={{
                 backgroundColor: `${BRAND_COLOR.DEFAULT}1A`,
                 borderColor: `${BRAND_COLOR.DEFAULT}33`,
                 color: BRAND_COLOR.LIGHT,
               }}
             >
-              <Clock className="w-5 h-5" />
+              <Clock className="w-5 h-5 shrink-0" aria-hidden />
               <span className="text-sm font-black uppercase tracking-widest">
-                {language === "no"
-                  ? "Student gratis · Bachelor fra 249 kr/mnd"
-                  : "Student free · Bachelor from 249 NOK/mo"}
+                {t("pricingNote")}
               </span>
             </motion.div>
           </div>

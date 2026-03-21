@@ -149,8 +149,8 @@ function isBuyTrade(trade: Trade): boolean {
   return String(trade.side).toUpperCase() === "BUY";
 }
 
-function formatNOK(n: number) {
-  return new Intl.NumberFormat("no-NO", {
+function formatNOK(locale: string, n: number) {
+  return new Intl.NumberFormat(locale === "no" ? "no-NO" : "en-GB", {
     style: "currency",
     currency: "NOK",
     maximumFractionDigits: 0,
@@ -229,12 +229,36 @@ export default function PortfolioDashboard({
   }, [userId]);
 
   const displayTrades = liveTrades;
-  const pnl = displayTrades.reduce((sum: number, t: Trade) => {
+  const tradeFlowPnl = displayTrades.reduce((sum: number, t: Trade) => {
     const tradeAmount = normalizeTradeAmount(t);
     const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
     return sum + val;
   }, 0);
-  const pnlPercent = paperBalance > 0 ? (pnl / paperBalance) * 100 : 0;
+
+  const sessionStarting =
+    activeSession != null
+      ? Number(activeSession.starting_capital_nok ?? paperBalance)
+      : paperBalance;
+  const sessionCapital =
+    activeSession != null
+      ? Number(
+          activeSession.current_capital_nok ??
+            activeSession.starting_capital_nok ??
+            paperBalance,
+        )
+      : null;
+  const displayBalance = sessionCapital ?? paperBalance;
+  const sessionPnl =
+    activeSession != null ? Number(activeSession.total_pnl ?? 0) : null;
+  const pnl = sessionPnl != null ? sessionPnl : tradeFlowPnl;
+  const pnlDenominator =
+    sessionStarting > 0 ? sessionStarting : paperBalance > 0 ? paperBalance : 1;
+  const pnlPercent = (pnl / pnlDenominator) * 100;
+
+  const tradingDeskPath =
+    activeSession?.mode === "live"
+      ? "/paper-trading?mode=live"
+      : "/paper-trading";
 
   type Position = { symbol: string; qty: number; value: number };
   const positions = displayTrades.reduce(
@@ -310,12 +334,12 @@ export default function PortfolioDashboard({
         </p>
       </div>
 
-      {/* Widget 1: Portfolio Card — her ser du hvordan det går med lekepengene */}
+      {/* Porteføljekort — samme uttrykk for paper og live (kapital fra aktiv økt når den finnes) */}
       <div
         className={`${BRAND.gradient} rounded-2xl p-6 text-white shadow-[0_8px_32px_rgba(0,82,255,0.15)] animate-fade-in-up stagger-1`}
       >
         <p className="text-sm font-medium text-white/70 uppercase tracking-wider">
-          {no ? "Lekepenger" : "Virtual money"}
+          {t("portfolioHero.balanceLabel")}
         </p>
         <p
           className="text-3xl sm:text-4xl font-bold mt-1"
@@ -324,7 +348,7 @@ export default function PortfolioDashboard({
             letterSpacing: "-0.02em",
           }}
         >
-          {formatNOK(paperBalance)}
+          {formatNOK(locale, displayBalance)}
         </p>
         <div className="flex items-center gap-2 mt-2">
           <span
@@ -335,16 +359,14 @@ export default function PortfolioDashboard({
             }
           >
             {pnl >= 0 ? "+" : ""}
-            {formatNOK(pnl)} ({pnlPercent.toFixed(1)}%)
+            {formatNOK(locale, pnl)} ({pnlPercent.toFixed(1)}%)
           </span>
           <span className="text-white/50 text-sm">
-            {no ? "Gevinst/tap totalt" : "Total P&L"}
+            {t("portfolioHero.pnlHint")}
           </span>
         </div>
         <p className="text-white/60 text-xs mt-3">
-          {no
-            ? "Posisjoner og handler vises under."
-            : "Positions and trades shown below."}
+          {t("portfolioHero.footerHint")}
         </p>
       </div>
 
@@ -401,7 +423,7 @@ export default function PortfolioDashboard({
                     className="text-base font-semibold text-[#1A1D26]"
                     style={{ fontVariantNumeric: "tabular-nums" }}
                   >
-                    {formatNOK(coin.price)}
+                    {formatNOK(locale, coin.price)}
                   </p>
                   <span
                     className={`text-sm font-medium tabular-nums ${coin.change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}
@@ -478,7 +500,7 @@ export default function PortfolioDashboard({
       {/* CTA: Se full oversikt med grafer og signaler (for brukere med aktivitet) */}
       {(trades.length > 0 || activeSession) && (
         <Link
-          href={hrefWithLocale(locale, "/paper-trading")}
+          href={hrefWithLocale(locale, tradingDeskPath)}
           className={`flex items-center justify-between ${cardBase} group animate-fade-in-up stagger-2 border-2 border-[#0052FF]/20 hover:border-[#0052FF]/40`}
         >
           <div className="flex items-center gap-3">
@@ -568,7 +590,7 @@ export default function PortfolioDashboard({
                             className="text-sm font-medium text-slate-100 tabular-nums"
                             style={{ fontVariantNumeric: "tabular-nums" }}
                           >
-                            {formatNOK(pos.qty * price)}
+                            {formatNOK(locale, pos.qty * price)}
                           </p>
                           <p
                             className={`text-xs font-semibold tabular-nums ${pnlPct >= 0 ? "text-emerald-400" : "text-red-400"}`}
@@ -643,7 +665,7 @@ export default function PortfolioDashboard({
                         </p>
                         <p className="text-xs text-slate-500 tabular-nums">
                           {normalizeTradeQty(trade).toFixed(4)} ·{" "}
-                          {formatNOK(normalizeTradeAmount(trade))}
+                          {formatNOK(locale, normalizeTradeAmount(trade))}
                           {trade.realized_pnl != null &&
                             Number.isFinite(Number(trade.realized_pnl)) && (
                               <span
@@ -654,7 +676,8 @@ export default function PortfolioDashboard({
                                 }
                               >
                                 {" "}
-                                · {formatNOK(Number(trade.realized_pnl))}
+                                ·{" "}
+                                {formatNOK(locale, Number(trade.realized_pnl))}
                               </span>
                             )}
                         </p>
@@ -792,7 +815,10 @@ export default function PortfolioDashboard({
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="text-right">
                 <p className="text-sm font-semibold text-[#1A1D26] tabular-nums">
-                  {formatNOK(activeSession.total_pnl ?? activeSession.pnl ?? 0)}
+                  {formatNOK(
+                    locale,
+                    activeSession.total_pnl ?? activeSession.pnl ?? 0,
+                  )}
                 </p>
                 <p className="text-[10px] text-[#8E95A9]">
                   {no ? "P&L sesjon" : "Session P&L"}
@@ -800,7 +826,7 @@ export default function PortfolioDashboard({
               </div>
               <div className="flex flex-col gap-1">
                 <Link
-                  href={hrefWithLocale(locale, "/paper-trading")}
+                  href={hrefWithLocale(locale, tradingDeskPath)}
                   className={`text-xs font-medium ${BRAND.link}`}
                 >
                   {no ? "Grafer & signaler" : "Charts & signals"}

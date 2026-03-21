@@ -89,6 +89,14 @@
     "sessions": "Aktive økter",
     "signOutAll": "Logg ut alle enheter"
   },
+  "billing": {
+    "sectionTitle": "Abonnement",
+    "title": "Abonnement og faktura",
+    "description": "Bytt betalingskort, se fakturaer eller si opp abonnementet via Stripe.",
+    "cta": "Åpne faktureringsportal",
+    "loading": "Åpner…",
+    "error": "Kunne ikke åpne portalen. Prøv igjen eller kontakt support."
+  },
   "preferences": {
     "title": "Preferanser",
     "language": "Språk",

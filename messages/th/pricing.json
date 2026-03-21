@@ -38,5 +38,46 @@
   "savePercent": "ประหยัด {percent}%",
   "perMonth": "ต่อเดือน",
   "getStarted": "เริ่มต้น",
-  "mostPopular": "ยอดนิยมที่สุด"
+  "mostPopular": "ยอดนิยมที่สุด",
+  "klt": {
+    "title": "KLT คืออะไร?",
+    "body": "KLT คือแต้มรางวัลในแอป Klarpakke คุณได้รับจากการเรียนจบบทเรียน และใช้แข่งบนลีดเดอร์บอร์ด — รวมถึงรางวัลรายเดือน 50,000 KLT KLT ไม่ใช่คริปโต ซื้อขายนอก Klarpakke ไม่ได้ และไม่มีมูลค่าเป็นเงินสด",
+    "linkLeaderboard": "ดูลีดเดอร์บอร์ด"
+  },
+  "comparison": {
+    "title": "เปรียบเทียบแผน",
+    "feature": "ฟีเจอร์",
+    "kltLabel": "รางวัล KLT",
+    "kltStudent": "500 เมื่อสมัคร",
+    "kltBachelor": "1,000/เดือน",
+    "kltMaster": "2,500/เดือน",
+    "kltPhd": "5,000/เดือน",
+    "kltProfessor": "10,000/เดือน",
+    "rowPaper": "Paper trading",
+    "rowModules": "โมดูลคอร์ส",
+    "rowAi": "ผู้ช่วย AI",
+    "rowAutoTrading": "Auto-trading (live)",
+    "rowTax": "รายงานภาษี (นอร์เวย์)",
+    "rowSupport": "ซัพพอร์ต",
+    "rowDiscord": "Discord / ชุมชน",
+    "autoStudent": "ทดลอง + 1 กลยุทธ์",
+    "autoBachelor": "3 กลยุทธ์",
+    "autoMaster": "7 กลยุทธ์",
+    "autoPhd": "ไม่จำกัด",
+    "autoProfessor": "ไม่จำกัด",
+    "supportStudent": "อีเมล",
+    "supportBachelor": "ลำดับความสำคัญ",
+    "supportMaster": "1:1 (ด.)",
+    "supportPhd": "24/7 ลำดับแรก",
+    "supportProfessor": "White-glove",
+    "discordStudent": "Community",
+    "discordBachelor": "VIP",
+    "discordMaster": "VIP",
+    "discordPhd": "VIP + mentor",
+    "discordProfessor": "Founder + VIP"
+  },
+  "faqKlt": {
+    "q": "KLT เป็นคริปโตหรือเงินไหม?",
+    "a": "ไม่ใช่ KLT เป็นแต้มใน Klarpakke สำหรับการเรียนและกิจกรรม ใช้ในเกม การแข่งขัน และสิทธิประโยชน์ในแพลตฟอร์ม — ไม่ใช่เงินนอกแอป"
+  }
 }

@@ -1,0 +1,27 @@
+---
+description: Klarpakke UX UI Agent — premium fintech UI/UX, tokens, i18n, sjekklister (aktiver ved UI/UX/design)
+globs:
+  - src/components/**/*
+  - src/app/**/*
+alwaysApply: false
+---
+
+# UX UI Agent (Klarpakke)
+
+Ved **UI-, layout-, design- eller brukerflytoppgaver** i dette repoet: opptrå som **Klarpakke UX UI Agent**.
+
+## Full definisjon
+
+Les og følg: **`.agent/agents/klarpakke-ux-ui-agent.md`** (rolle, flyt, i18n, unngå-liste).
+
+## Hurtigkrav
+
+- **Tokens:** `src/lib/design/tokens.ts` — ikke tilfeldige hex-farger.
+- **Premium:** `.cursor/rules/design-ux-premium.md` + `docs/design-assessment-2026.md` + `docs/design-konkurranse-analyse-2026.md`.
+- **Tekst:** `next-intl` — `messages/` for bruker-synlig copy.
+- **Ikoner:** Lucide (ikke emojis som UI-ikoner).
+- **Fordypning:** `ux-saas-lead.md`, `ui-ux-designer.md`, `klarpakke-experience-architect.md`, `klarpakke-accessibility-lead.md` under `.agent/agents/`.
+
+## Audit på tvers av sider
+
+`.agent/workflows/premium-design-audit.md`

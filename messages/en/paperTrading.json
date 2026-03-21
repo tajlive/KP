@@ -103,5 +103,9 @@
   "crashed": "Paper trading session crashed. Please refresh and try again.",
   "mySessions": "My sessions",
   "backToOverview": "Back to overview",
-  "backToDashboard": "Back to dashboard"
+  "backToDashboard": "Back to dashboard",
+  "sessions": {
+    "maxActiveReached": "You already have the maximum active sessions for this mode. Opening your existing session.",
+    "maxActiveStudent": "As a student you can have one active practice session at a time (paper + auto in one flow). Stop the session before creating a new one, or continue in the open session."
+  }
 }
