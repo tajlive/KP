@@ -102,5 +102,9 @@
   "binanceUpdateInfo": "Priser fra Binance oppdateres sanntid (WebSocket) eller ca. hvert 10. sekund. Listen oppdateres ved innlasting eller når du trykker Oppdater.",
   "mySessions": "Mine sesjoner",
   "backToOverview": "Tilbake til oversikt",
-  "backToDashboard": "Tilbake til dashboard"
+  "backToDashboard": "Tilbake til dashboard",
+  "sessions": {
+    "maxActiveReached": "Du har allerede maks antall aktive økter i denne modusen. Åpner eksisterende økt.",
+    "maxActiveStudent": "Som student har du én aktiv øvingsøkt om gangen (paper + auto i samme flyt). Stopp økten før du oppretter en ny, eller fortsett i den åpne."
+  }
 }

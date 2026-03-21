@@ -4,23 +4,30 @@
 
 ## Hurtigvalg
 
-| Mål                            | Agent (`.agent/agents/`)               |
-| ------------------------------ | -------------------------------------- |
-| Brukerflyt, IA, premium helhet | `klarpakke-experience-architect.md`    |
-| WCAG, tastatur, UA             | `klarpakke-accessibility-lead.md`      |
-| Premium per side               | `ux-saas-lead.md`                      |
-| Visuell UI (tokens)            | `ui-ux-designer.md`                    |
-| Teknisk gjeld / Next / TS      | `klarpakke-modernization-lead.md`      |
-| CI, MCP, Linear, verify        | `klarpakke-automation-orchestrator.md` |
-| Cron, webhooks                 | `automation-expert.md`                 |
+| Mål                                                     | Agent (`.agent/agents/`)                              |
+| ------------------------------------------------------- | ----------------------------------------------------- |
+| **UX+UI (standard inngang)**                            | **`klarpakke-ux-ui-agent.md`**                        |
+| Brukerflyt, IA, premium helhet                          | `klarpakke-experience-architect.md`                   |
+| WCAG, tastatur, UA                                      | `klarpakke-accessibility-lead.md`                     |
+| Premium per side                                        | `ux-saas-lead.md`                                     |
+| Visuell UI (tokens)                                     | `ui-ux-designer.md`                                   |
+| Teknisk gjeld / Next / TS                               | `klarpakke-modernization-lead.md`                     |
+| CI, MCP, Linear, verify                                 | `klarpakke-automation-orchestrator.md`                |
+| **Live trading + handler + bevis + ansvar**             | **`klarpakke-live-trading-trades-agent.md`**          |
+| **Auto-trade strategier (forskning/tuning/forum+data)** | **`klarpakke-auto-trade-strategy-research-agent.md`** |
+| Cron, webhooks                                          | `automation-expert.md`                                |
 
 ## Arbeidsflyt
 
 - `.agent/workflows/klarpakke-experience-modernization.md` — kombinert UX/UI/UA + modernisering + automatisering.
 - `.agent/workflows/premium-design-audit.md` — designgjennomgang på tvers av sider.
+- `.agent/workflows/auto-trade-strategy-research.md` — auto-trade strategier og presets.
 
 ## Cursor
 
+- **UX/UI-regel (valgfri):** `.cursor/rules/klarpakke-ux-ui-agent.mdc` — matcher `src/components/**`, `src/app/**`
+- **Live trading / trades:** `.cursor/rules/klarpakke-live-trading-trades-agent.mdc` — se `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`
+- **Auto-trade strategi:** `.cursor/rules/klarpakke-auto-trade-strategy-research-agent.mdc` — `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md`
 - Hovedinstruksjoner: `docs/CURSOR-AUTOMATION-PROMPT.md`
 - Regel: `.cursor/rules/klarpakke-agent-roster.mdc` (peker hit)
 - Full automasjon (forhånd): `docs/FULL-AUTOMATION-PLAYBOOK.md` — `npm run auto:preflight`

@@ -10,9 +10,12 @@ archive_root_garbage
 .github
 docs
 tests
-scripts
 reports
 audit
+# scripts/ er stor — ignorer alt unntatt det npm lifecycle trenger på Vercel (prepare + prebuild).
+scripts/*
+!scripts/husky-prepare.mjs
+!scripts/validate-i18n.js
 # E2E / test artifacts (store upload requests — Vercel build bruker next build, ikke npm prebuild)
 e2e
 playwright-report

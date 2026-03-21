@@ -19,6 +19,10 @@ Ved oppgaver som gjelder **design**, **tilgjengelighet**, **brukerflyt**, **mode
 - `klarpakke-modernization-lead.md` — stack / gjeld
 - `klarpakke-automation-orchestrator.md` — CI, MCP, Linear, verify
 
-**Design:** `ux-saas-lead.md`, `ui-ux-designer.md` (Klarpakke tokens), `.cursor/rules/design-ux-premium.md`, `src/lib/design/tokens.ts`.
+**Design (start her):** `klarpakke-ux-ui-agent.md` — så `ux-saas-lead.md` / `ui-ux-designer.md`. Regel: **`klarpakke-ux-ui-agent.mdc`**. Les også `.cursor/rules/design-ux-premium.md`, `src/lib/design/tokens.ts`.
 
 **Automatisering:** `docs/CURSOR-AUTOMATION-PROMPT.md`, `docs/CRON-SOURCE-OF-TRUTH.md`, `automation-expert.md`.
+
+**Live trading & handler (integritet + bevis):** `klarpakke-live-trading-trades-agent.md` + regel **`klarpakke-live-trading-trades-agent.mdc`** + `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`.
+
+**Auto-trade strategi (tuning + forum/data-hypoteser):** `klarpakke-auto-trade-strategy-research-agent.md` + **`klarpakke-auto-trade-strategy-research-agent.mdc`** + `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md` + workflow `auto-trade-strategy-research.md`.

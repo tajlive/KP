@@ -3,6 +3,9 @@ import { render, screen } from "@testing-library/react";
 import PortfolioDashboard from "./PortfolioDashboard";
 
 const dashboardT: Record<string, string> = {
+  "portfolioHero.balanceLabel": "Porteføljesaldo (NOK)",
+  "portfolioHero.pnlHint": "Resultat",
+  "portfolioHero.footerHint": "Under: posisjoner og handler.",
   "marketDesk.title": "Live markedsdesk",
   "marketDesk.subtitle": "Undertekst",
   "marketDesk.myPositions": "Mine posisjoner",

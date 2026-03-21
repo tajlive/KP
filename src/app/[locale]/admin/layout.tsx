@@ -1,14 +1,21 @@
 "use client";
 
+import { isEmailInAdminFallbackList } from "@/lib/admin/admin-allowlist.shared";
 import { createClient } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
 import {
   Activity,
-  LayoutDashboard,
+  BarChart3,
+  Bot,
+  DollarSign,
+  FlaskConical,
   LogOut,
+  Megaphone,
   Menu,
   RefreshCw,
   Server,
-  Shield,
+  Settings,
+  Sparkles,
   UserCog,
   Users,
   X,
@@ -35,7 +42,11 @@ export default function AdminLayout({
 
   // useLocale() from next-intl — pathname with as-needed has no prefix for default (no), so parsing pathname would give "admin" as first segment
   const rawLocale = useLocale();
-  const locale = SUPPORTED_LOCALES.includes(rawLocale as (typeof SUPPORTED_LOCALES)[number]) ? rawLocale : "no";
+  const locale = SUPPORTED_LOCALES.includes(
+    rawLocale as (typeof SUPPORTED_LOCALES)[number],
+  )
+    ? rawLocale
+    : "no";
 
   useEffect(() => {
     const checkAdmin = async (retryCount = 0) => {
@@ -86,11 +97,8 @@ export default function AdminLayout({
         console.info("[Admin Layout] User found:", user.email);
         setUserEmail(user.email || "");
 
-        // ADMIN EMAIL WHITELIST - Backup if database check fails
-        const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
-
-        // Check if user is in whitelist
-        const isWhitelisted = ADMIN_EMAILS.includes(user.email || "");
+        // Fallback allowlist (synk med server: env ADMIN_EMAIL_ALLOWLIST + verify-admin-access)
+        const isWhitelisted = isEmailInAdminFallbackList(user.email);
 
         // Check role in public.profiles
         const { data: userData, error } = await supabase
@@ -158,22 +166,90 @@ export default function AdminLayout({
 
   if (!isAdmin) return null;
 
-  const navItems = [
-    { href: `/${locale}/admin`, label: t("overview"), icon: LayoutDashboard },
-    { href: `/${locale}/admin/users`, label: t("users"), icon: UserCog },
-    { href: `/${locale}/admin/students`, label: t("students"), icon: Users },
+  const navSections: {
+    title: string;
+    items: { href: string; label: string; icon: LucideIcon }[];
+  }[] = [
     {
-      href: `/${locale}/admin/sync-status`,
-      label: t("tradeSync"),
-      icon: RefreshCw,
+      title: t("nav.sectionOverview"),
+      items: [
+        {
+          href: `/${locale}/admin/analytics`,
+          label: t("nav.analytics"),
+          icon: BarChart3,
+        },
+        {
+          href: `/${locale}/admin/campaign`,
+          label: t("nav.campaign"),
+          icon: Megaphone,
+        },
+        {
+          href: `/${locale}/admin/monetization`,
+          label: t("nav.monetization"),
+          icon: DollarSign,
+        },
+      ],
     },
     {
-      href: `/${locale}/admin/auto-trading/sessions`,
-      label: "Trading Bots",
-      icon: Activity,
+      title: t("nav.sectionUsers"),
+      items: [
+        {
+          href: `/${locale}/admin/users`,
+          label: t("users"),
+          icon: UserCog,
+        },
+        {
+          href: `/${locale}/admin/students`,
+          label: t("students"),
+          icon: Users,
+        },
+      ],
     },
-    { href: `/${locale}/admin/system`, label: t("system"), icon: Server },
-    { href: `/${locale}/admin/settings`, label: t("settings"), icon: Shield },
+    {
+      title: t("nav.sectionProduct"),
+      items: [
+        {
+          href: `/${locale}/admin/ab-tests`,
+          label: t("nav.abTests"),
+          icon: FlaskConical,
+        },
+        {
+          href: `/${locale}/admin/auto-trading`,
+          label: t("nav.autoTrading"),
+          icon: Bot,
+        },
+        {
+          href: `/${locale}/admin/auto-trading/sessions`,
+          label: t("nav.tradingSessions"),
+          icon: Activity,
+        },
+        {
+          href: `/${locale}/admin/sync-status`,
+          label: t("tradeSync"),
+          icon: RefreshCw,
+        },
+      ],
+    },
+    {
+      title: t("nav.sectionSystem"),
+      items: [
+        {
+          href: `/${locale}/admin/system`,
+          label: t("system"),
+          icon: Server,
+        },
+        {
+          href: `/${locale}/admin/settings`,
+          label: t("settings"),
+          icon: Settings,
+        },
+        {
+          href: `/${locale}/admin/v2`,
+          label: t("nav.adminV2"),
+          icon: Sparkles,
+        },
+      ],
+    },
   ];
 
   return (
@@ -206,27 +282,38 @@ export default function AdminLayout({
           </h1>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const pathWithoutLocale = (pathname ?? "").replace(/^\/(no|en|th|zh)/, "") || "/";
-            const hrefWithoutLocale = item.href.replace(/^\/(no|en|th|zh)/, "") || "/";
-            const isActive = pathWithoutLocale === hrefWithoutLocale;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
-                  isActive
-                    ? "bg-blue-600/10 text-blue-400"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800"
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                {item.label}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 p-4 space-y-4 overflow-y-auto">
+          {navSections.map((section) => (
+            <div key={section.title}>
+              <p className="px-4 pb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+                {section.title}
+              </p>
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const pathWithoutLocale =
+                    (pathname ?? "").replace(/^\/(no|en|th|zh)/, "") || "/";
+                  const hrefWithoutLocale =
+                    item.href.replace(/^\/(no|en|th|zh)/, "") || "/";
+                  const isActive = pathWithoutLocale === hrefWithoutLocale;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
+                        isActive
+                          ? "bg-blue-600/10 text-blue-400"
+                          : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* Logg ut - nederst i sidebar */}

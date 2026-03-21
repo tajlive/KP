@@ -65,6 +65,7 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 
 - **Mål:** Færre filer i Vercel-upload (hjelper tid/kvoter; build-cache domineres fortsatt av `node_modules` + `.next`).
 - **Utvidelser:** bl.a. `archive_root_garbage`, `/archive/dashboard-components`, rot-`*.log` og rapport-`.txt` som ikke trengs til `next build`. Se `.vercelignore` for full liste.
+- **Merk:** Hele `scripts/` kan ikke utelates — `npm ci` kjører `prepare` → `node scripts/husky-prepare.mjs`. `.vercelignore` bruker `scripts/*` med unntak for `husky-prepare.mjs` (og `validate-i18n.js` hvis build senere bruker `npm run build` / `prebuild`).
 
 ## 7. Tester før produksjon
 
@@ -136,7 +137,7 @@ I GitHub Actions: se **Actions → workflow run → Build-jobben** for tidsforde
 - **Årsak:** `npx vercel --prod` kan laste opp svært mange små filer (rate limit på free tier) eller treffe upload-kvoter.
 - **Fiks i repo:**
   - **`--archive=tgz`:** `deploy:prod`, `deploy:preview` og `vercel:deploy` bruker `npx vercel … --archive=tgz` (én arkivfil i stedet for tusenvis av requests).
-  - **`.vercelignore`:** utvidet med `e2e`, `playwright-report`, `test-results`, `coverage`, `allure-*`, `.cursor`, og kun **`/supabase`** (rotmappen — migrasjoner/functions). **Viktig:** ikke bruk mønsteret `supabase` uten ledende `/`; da ekskluderes også `src/lib/supabase/` og bygget feiler. Eksisterende `scripts/`-ignore beholdes — `vercel.json` bruker `buildCommand: next build`, så `npm prebuild` (validate-i18n) kjører **ikke** på Vercel (kjør `npm run build` lokalt før push hvis du vil validere i18n).
+  - **`.vercelignore`:** utvidet med `e2e`, `playwright-report`, `test-results`, `coverage`, `allure-*`, `.cursor`, og kun **`/supabase`** (rotmappen — migrasjoner/functions). **Viktig:** ikke bruk mønsteret `supabase` uten ledende `/`; da ekskluderes også `src/lib/supabase/` og bygget feiler. **`scripts/`** er stort sett ignorert, men **`scripts/husky-prepare.mjs` må være med** (ellers `MODULE_NOT_FOUND` under `npm ci` → `prepare`). `vercel.json` bruker `buildCommand: next build`, så `npm prebuild` (validate-i18n) kjører **ikke** på Vercel med nåværende oppsett; `validate-i18n.js` er likevel whitelista for konsistens.
 - **Alternativ:** Push til **`main`** og la **Git-integrasjon** bygge (anbefalt for prod).
 - **Prebuilt:** `npm run deploy:prebuilt` etter `vercel pull --yes` (krever `VERCEL_TOKEN` / innlogget CLI) — færre filer til remote build.
 

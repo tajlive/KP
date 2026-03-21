@@ -4,6 +4,9 @@
   "legal": "Legal",
   "tagline": "Norwegian crypto education. Learn without risk.",
   "paymentLabel": "Secure payment with:",
+  "paymentSubtitle": "Vipps, plus Stripe with Visa, Mastercard, and PayPal.",
+  "paymentSubtitleNoVipps": "Pay with Stripe — Visa, Mastercard, and PayPal.",
+  "stripeBadgeAria": "Powered by Stripe — opens stripe.com in a new tab",
   "copyright": "© {year} Klarpakke AS. Org.no: 934 123 456. All rights reserved.",
   "disclaimer": "Trading cryptocurrency involves risk. Klarpakke is an educational platform and does not provide financial advice. All investment decisions are your own responsibility. Past results are no guarantee of future returns. Never invest more than you can afford to lose.",
   "links": {

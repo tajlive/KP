@@ -1,11 +1,16 @@
 {
   "metadata": {
     "title": "Pricing - Klarpakke University",
-    "description": "Choose the plan that suits you. Start for free with Student, or upgrade to Bachelor, Master or PhD for more advanced features."
+    "description": "Plans: Student (free), Bachelor, Master, PhD, or Professor. All paid plans include Norwegian tax export. Pay with Stripe."
   },
   "hero": {
     "title": "Choose Your Learning Journey",
     "subtitle": "From beginner to expert. Start for free and upgrade when you're ready."
+  },
+  "klt": {
+    "title": "What is KLT?",
+    "body": "KLT is Klarpakke’s in-app reward points. You earn them by completing lessons and can use them for competitions and the leaderboard — including the monthly 50,000 KLT prize. KLT is not cryptocurrency, cannot be bought or sold outside Klarpakke, and has no cash value.",
+    "linkLeaderboard": "View leaderboard"
   },
   "plans": {
     "student": {
@@ -18,7 +23,10 @@
       "description": "Advanced tools"
     },
     "phd": {
-      "description": "Full access"
+      "description": "Unlimited strategies and advisor"
+    },
+    "professor": {
+      "description": "1:1 coaching and founder access"
     }
   },
   "free": "Free",
@@ -26,7 +34,39 @@
   "startTrial": "Start trial",
   "comparison": {
     "title": "Compare Plans",
-    "feature": "Feature"
+    "feature": "Feature",
+    "kltLabel": "KLT rewards",
+    "kltStudent": "500 on signup",
+    "kltBachelor": "1,000/mo",
+    "kltMaster": "2,500/mo",
+    "kltPhd": "5,000/mo",
+    "kltProfessor": "10,000/mo",
+    "rowPaper": "Paper trading",
+    "rowModules": "Course modules",
+    "rowAi": "AI assistant",
+    "rowAutoTrading": "Auto-trading (live)",
+    "rowTax": "Tax report (Norway)",
+    "rowSupport": "Support",
+    "rowDiscord": "Discord / community",
+    "autoStudent": "Trial + 1 strategy",
+    "autoBachelor": "3 strategies",
+    "autoMaster": "7 strategies",
+    "autoPhd": "Unlimited",
+    "autoProfessor": "Unlimited",
+    "supportStudent": "Email",
+    "supportBachelor": "Priority",
+    "supportMaster": "1:1 (mo)",
+    "supportPhd": "24/7 priority",
+    "supportProfessor": "White-glove",
+    "discordStudent": "Community",
+    "discordBachelor": "VIP",
+    "discordMaster": "VIP",
+    "discordPhd": "VIP + mentor",
+    "discordProfessor": "Founder + VIP"
+  },
+  "faqKlt": {
+    "q": "Is KLT crypto or money?",
+    "a": "No. KLT are points inside Klarpakke that reward learning and activity. They’re used for games, competitions, and future in-platform perks — not as money outside the app."
   },
   "faq": {
     "title": "Frequently Asked Questions"
@@ -67,7 +107,7 @@
     "chargedQ": "Will I be charged?",
     "chargedA": "No, you are only charged when payment is completed. No hidden fees.",
     "trialQ": "Can I try for free first?",
-    "trialA": "Yes! All paid plans include a 7-day free trial. You can cancel anytime.",
+    "trialA": "Master, PhD, and Professor include a 14-day free trial. Bachelor starts without a trial. You can cancel anytime.",
     "tryAgain": "Try Again",
     "backHome": "Back to Home",
     "needHelp": "Need help? Contact us at"

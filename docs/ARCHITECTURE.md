@@ -1,6 +1,6 @@
 # 🏗️ Klarpakke Systemarkitektur
 
-> **Sist oppdatert:** 20. Februar 2026  
+> **Sist oppdatert:** 21. mars 2026  
 > **Status:** Auto Trade i produksjon
 
 ---
@@ -12,7 +12,7 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
 1. **Frontend**: Next.js 15 (App Router) hostet på **Vercel**
 2. **Backend**: Supabase Edge Functions + Next.js API Routes
 3. **Database**: PostgreSQL med Row Level Security (RLS)
-4. **Scheduler**: Cloud Scheduler + pg_cron for trading-jobs
+4. **Scheduler**: **Supabase** (pg_cron / Supabase scheduler) som kilde for tidsplan — se [`docs/CRON-SOURCE-OF-TRUTH.md`](CRON-SOURCE-OF-TRUTH.md). App-ruter under `/api/cron/*` kalles med `CRON_SECRET`; Vercel Cron er ikke måltilstand som «motor» for grid/strategi.
 
 ---
 
@@ -98,15 +98,11 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
 │  └─────────────────────┴─────────────┴────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
                                        ▲
-                                       │ HTTP (hvert 30. sekund)
+                                       │ HTTP (Bearer CRON_SECRET)
 ┌──────────────────────────────────────┴──────────────────────────────────────┐
-│                            VERCEL CRON                                       │
-│                                                                              │
-│  Job: klarpakke-grid-bot-realtime                                            │
-│  - Schedule: */30 * * * * * (hvert 30. sekund)                               │
-│  - Target: Supabase Edge Function (strategy-runner)                          │
-│  - Payload: {"strategy": "grid_bot"}                                          │
-│                                                                              │
+│  Tidsplan (SoT): Supabase pg_cron / scheduler → kaller Next `/api/cron/*`    │
+│  Viktig: Ikke dokumenter Vercel Cron som primær motor for strategi/grid.     │
+│  Detaljer: docs/CRON-SOURCE-OF-TRUTH.md                                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -120,7 +116,7 @@ Klarpakke er en tre-lags webapplikasjon for kryptovaluta-læring og algoritmisk 
 
 ```
 src/app/
-├── [locale]/                    # i18n routing (no/en/th/zh)
+├── [locale]/                    # i18n routing (next-intl: no/en; se docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md)
 │   ├── (auth)/                  # Auth-gruppert layout
 │   │   ├── innlogging/          # Login page
 │   │   ├── signup/              # Signup page
@@ -130,7 +126,7 @@ src/app/
 │   │   ├── auto-trade/          # Auto Trade dashboard
 │   │   ├── paper-trading/       # Paper trading
 │   │   └── settings/            # Brukerinnstillinger
-│   ├── admin-dashboard/         # Admin-panel
+│   ├── admin/                   # Admin-panel (f.eks. /no/admin/analytics, /no/admin/users)
 │   └── api/                     # API routes
 │       ├── binance/             # Binance API proxy
 │       ├── webhooks/            # Stripe webhooks
@@ -140,7 +136,7 @@ src/app/
 #### Viktige Konfigurasjoner
 
 - **Output**: `standalone` (påkrevd for Cloud Run)
-- **i18n**: Egen implementasjon med middleware
+- **i18n**: next-intl + middleware; aktiv oversettelses-SoT **no + en** (`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`)
 - **Auth**: Supabase SSR med `getUser()`; session i cookies med `cookieEncoding: 'raw'`. Client: `createClient` fra `@/lib/utils`; server: `createServerClient` fra `@/lib/supabase/server`. Detaljer: [docs/auth-storage.md](auth-storage.md)
 
 ---
@@ -158,12 +154,12 @@ src/app/
 
 #### Supabase Edge Functions
 
-| Funksjon           | Formål                              | Trigger           |
-| ------------------ | ----------------------------------- | ----------------- |
-| `get-entitlements` | Hent brukertilganger basert på tier | HTTP/Edge         |
-| `strategy-runner`  | Kjør trading-strategier             | Scheduler/pg_cron |
+| Funksjon           | Formål                              | Trigger                                                                             |
+| ------------------ | ----------------------------------- | ----------------------------------------------------------------------------------- |
+| `get-entitlements` | Hent brukertilganger basert på tier | HTTP/Edge                                                                           |
+| `strategy-runner`  | Kjør trading-strategier             | Scheduler/pg_cron                                                                   |
 | `signal-engine`    | Generer trading-signaler (Binance)  | pg_cron (hver time); skriver til `bot_signals` + `trading_signals` (dashboard-feed) |
-| `binance-connect`  | Valider og test Binance API         | HTTP              |
+| `binance-connect`  | Valider og test Binance API         | HTTP                                                                                |
 
 ---
 
@@ -324,24 +320,24 @@ src/app/
 
 - Alle handlinger logges
 - strategy_logs for trading
-- audit_logs for admin-handlinger
+- **`admin_audit_log`** for utvalgte admin-mutasjoner (service role insert fra API)
 
 ---
 
 ## Teknologistack
 
-| Komponent   | Teknologi                                   |
-| ----------- | ------------------------------------------- |
-| Frontend    | Next.js 15, React, TypeScript, Tailwind CSS |
-| Runtime     | Node.js 20                                  |
-| Backend     | Supabase Edge Functions (Deno)              |
-| Database    | PostgreSQL 15 (Supabase)                    |
-| Auth        | Supabase Auth                               |
-| Betaling    | Stripe                                      |
-| Hosting     | Vercel                                      |
-| Scheduler   | Vercel Cron + pg_cron                       |
-| Trading API | Binance API                                 |
-| CI/CD       | GitHub Actions (sekundær)                   |
+| Komponent   | Teknologi                                                                          |
+| ----------- | ---------------------------------------------------------------------------------- |
+| Frontend    | Next.js 15, React, TypeScript, Tailwind CSS                                        |
+| Runtime     | Node.js 24.x (jfr. `engines` / Vercel)                                             |
+| Backend     | Supabase Edge Functions (Deno)                                                     |
+| Database    | PostgreSQL 15 (Supabase)                                                           |
+| Auth        | Supabase Auth                                                                      |
+| Betaling    | Stripe                                                                             |
+| Hosting     | Vercel                                                                             |
+| Scheduler   | Supabase pg_cron / scheduler → `/api/cron/*` (SoT: `docs/CRON-SOURCE-OF-TRUTH.md`) |
+| Trading API | Binance API                                                                        |
+| CI/CD       | GitHub Actions (sekundær)                                                          |
 
 ---
 
@@ -352,7 +348,7 @@ src/app/
 - **Cloud Run**: Auto-scale 1-100 instanser
 - **Database**: Single instance (tilstrekkelig for <10k brukere)
 - **Rate Limiting**: In-memory per instans
-- **Scheduler**: Vercel Cron + pg_cron
+- **Scheduler**: Supabase → `/api/cron/*` (se `docs/CRON-SOURCE-OF-TRUTH.md`)
 
 ### Fremtidig (ved behov)
 
@@ -365,6 +361,9 @@ src/app/
 
 ## Kilder
 
+- [docs/admin/ADMIN-AUTH-SOURCE-OF-TRUTH.md](./admin/ADMIN-AUTH-SOURCE-OF-TRUTH.md) — sentral admin-auth
+- [docs/admin/PAPER-BALANCE-SOURCE-OF-TRUTH.md](./admin/PAPER-BALANCE-SOURCE-OF-TRUTH.md) — lekepenger SoT
+- [docs/CRON-SOURCE-OF-TRUTH.md](./CRON-SOURCE-OF-TRUTH.md) — tidsplanlegging
 - [.kimi/MASTER_PROMPT.md](../.kimi/MASTER_PROMPT.md) — AI-agent instruksjoner
 - [auto-trade.md](./auto-trade.md) — Auto Trade-detaljer
 - [infra-gcp.md](./infra-gcp.md) — GCP-infrastruktur

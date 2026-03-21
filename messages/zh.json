@@ -1044,7 +1044,7 @@
       "titlePart1": "Learn Trading",
       "titlePart2": "Step by Step",
       "subtitle": "From beginner to independent trader with structured learning and risk-free practice",
-      "bullets": "Interactive courses • $100k paper trading • 24/7 AI coach • No credit card required",
+      "bullets": "你休息，机器人 24/7 运转 · 风险由你决定 · 100,000 NOK 模拟资金",
       "ctaPrimary": "Try Paper Trading Free",
       "ctaSecondary": "View Courses",
       "trust1": "100% transparent",
@@ -2032,13 +2032,6 @@
     "selectExchange": "Velg børs",
     "addExchange": "Legg til børs",
     "exchangeHelp": "Hvis du ikke har børskonto ennå, anbefaler vi Binance. Du kan senere koble kontoen din hit for å se alt på ett sted.",
-    "trustBar": {
-      "withCount": "加入{count}名挪威人安全学习加密货币",
-      "fallback": "挪威最安全的学习加密货币的地方",
-      "trust1": "BankID安全",
-      "trust2": "挪威语课程",
-      "trust3": "无风险"
-    },
     "coursePreview": {
       "sectionTitle": "不到一小时即可开始",
       "sectionSubtitle": "免费开始 — 按自己的节奏完成",

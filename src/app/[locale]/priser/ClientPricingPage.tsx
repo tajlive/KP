@@ -42,9 +42,9 @@ const tierIcons: Record<string, React.ReactNode> = {
 // Default priser mens vi venter på API (riktige priser fra nettsiden)
 const DEFAULT_PRICES: Record<string, number> = {
   student: 0,
-  bachelor: 24900,   // 249 kr/mnd
-  master: 49900,     // 499 kr/mnd
-  phd: 99900,        // 999 kr/mnd
+  bachelor: 24900, // 249 kr/mnd
+  master: 49900, // 499 kr/mnd
+  phd: 99900, // 999 kr/mnd
   professor: 199900, // 1999 kr/mnd
 };
 
@@ -63,13 +63,13 @@ export function ClientPricingPage() {
   useEffect(() => {
     async function fetchPricing() {
       try {
-        const res = await fetch('/api/pricing');
+        const res = await fetch("/api/pricing");
         const data = await res.json();
         if (data.success && data.products) {
           setProducts(data.products);
         }
       } catch (err) {
-        console.error('Failed to fetch pricing:', err);
+        console.error("Failed to fetch pricing:", err);
       } finally {
         setLoadingProducts(false);
       }
@@ -79,13 +79,13 @@ export function ClientPricingPage() {
 
   // Hjelpefunksjon for å finne priceId fra API eller fallback
   function getPriceId(tierSlug: string): string {
-    const product = products.find(p => p.tier === tierSlug);
-    return product?.priceId || '';
+    const product = products.find((p) => p.tier === tierSlug);
+    return product?.priceId || "";
   }
 
   // Hjelpefunksjon for å finne pris
   function getPrice(tierSlug: string): number {
-    const product = products.find(p => p.tier === tierSlug);
+    const product = products.find((p) => p.tier === tierSlug);
     return product?.price || DEFAULT_PRICES[tierSlug] || 0;
   }
 
@@ -99,11 +99,11 @@ export function ClientPricingPage() {
   }
 
   const plans = [
-    { slug: 'student', popular: false },
-    { slug: 'bachelor', popular: false },
-    { slug: 'master', popular: true },
-    { slug: 'phd', popular: false },
-    { slug: 'professor', popular: false },
+    { slug: "student", popular: false },
+    { slug: "bachelor", popular: false },
+    { slug: "master", popular: true },
+    { slug: "phd", popular: false },
+    { slug: "professor", popular: false },
   ].map(({ slug, popular }) => ({
     slug,
     name: t(`tiers.${slug}.name`),
@@ -121,13 +121,13 @@ export function ClientPricingPage() {
 
   const handleCheckout = async (tierSlug: string) => {
     const priceId = getPriceId(tierSlug);
-    
-    if (!priceId && tierSlug !== 'student') {
+
+    if (!priceId && tierSlug !== "student") {
       toast.error("Pris ikke tilgjengelig. Prøv igjen om et øyeblikk.");
       return;
     }
 
-    if (tierSlug === 'student' || !priceId) {
+    if (tierSlug === "student" || !priceId) {
       // Gratis plan - redirect til signup
       router.push(`/${locale}/signup?plan=${tierSlug}`);
       return;
@@ -137,8 +137,10 @@ export function ClientPricingPage() {
 
     try {
       // Sjekk om bruker er logget inn
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         toast.error("Du må være logget inn for å abonnere");
         router.push(`/${locale}/innlogging?redirect=/priser`);
@@ -146,11 +148,13 @@ export function ClientPricingPage() {
       }
 
       // Stripe - via vår API
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          priceId,
+          tier: tierSlug,
+          currency: "NOK",
+          priceId: priceId || undefined,
           userId: user.id,
           userEmail: user.email,
         }),
@@ -159,7 +163,7 @@ export function ClientPricingPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Kunne ikke opprette Stripe checkout');
+        throw new Error(data.error || "Kunne ikke opprette Stripe checkout");
       }
 
       if (data.url) {
@@ -167,7 +171,7 @@ export function ClientPricingPage() {
       }
     } catch (error: unknown) {
       toast.error(getErrorMessage(error) || "Kunne ikke starte checkout");
-      console.error('Checkout error:', error);
+      console.error("Checkout error:", error);
     } finally {
       setLoadingTier(null);
     }
@@ -176,13 +180,17 @@ export function ClientPricingPage() {
   return (
     <div className={`min-h-screen ${SURFACE.BG} font-sans ${SURFACE.TEXT}`}>
       {/* HERO - samme stil som landing: merke #0052FF */}
-      <section className={`relative pt-24 pb-20 px-4 overflow-hidden ${SURFACE.BG} border-b ${SURFACE.BORDER}`}>
+      <section
+        className={`relative pt-24 pb-20 px-4 overflow-hidden ${SURFACE.BG} border-b ${SURFACE.BORDER}`}
+      >
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#0052FF]/10 rounded-full blur-3xl opacity-60" />
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className={`inline-flex items-center gap-2 px-3 py-1 ${RADIUS.badge} bg-[#0052FF]/10 border border-[#0052FF]/20 text-[#6FA3FF] text-sm font-medium mb-8`}>
+          <div
+            className={`inline-flex items-center gap-2 px-3 py-1 ${RADIUS.badge} bg-[#0052FF]/10 border border-[#0052FF]/20 text-[#6FA3FF] text-sm font-medium mb-8`}
+          >
             <GraduationCap className="w-4 h-4" />
             {t("title")}
           </div>
@@ -216,13 +224,17 @@ export function ClientPricingPage() {
                   )}
                 >
                   {plan.popular && (
-                    <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 ${RADIUS.badge} bg-[#0052FF] text-white text-xs font-bold uppercase tracking-wide shadow-sm`}>
+                    <div
+                      className={`absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 ${RADIUS.badge} bg-[#0052FF] text-white text-xs font-bold uppercase tracking-wide shadow-sm`}
+                    >
                       {tPricing("mostPopular")}
                     </div>
                   )}
 
                   <div className="mb-8">
-                    <div className={`w-12 h-12 ${RADIUS.button} ${SURFACE.BG} flex items-center justify-center mb-6 border ${SURFACE.BORDER}`}>
+                    <div
+                      className={`w-12 h-12 ${RADIUS.button} ${SURFACE.BG} flex items-center justify-center mb-6 border ${SURFACE.BORDER}`}
+                    >
                       {plan.icon}
                     </div>
                     <h3 className="text-lg font-bold text-white mb-2">
@@ -239,7 +251,9 @@ export function ClientPricingPage() {
                         {plan.period}
                       </span>
                     </div>
-                    <p className={`${SURFACE.TEXT_SUBTLE} text-sm border-b ${SURFACE.BORDER} pb-6`}>
+                    <p
+                      className={`${SURFACE.TEXT_SUBTLE} text-sm border-b ${SURFACE.BORDER} pb-6`}
+                    >
                       {plan.description}
                     </p>
                   </div>
@@ -264,7 +278,10 @@ export function ClientPricingPage() {
                   {/* Stripe-knapp - tokens */}
                   <Button
                     onClick={() => handleCheckout(plan.slug)}
-                    disabled={loadingTier === plan.slug || (!plan.priceId && plan.slug !== 'student')}
+                    disabled={
+                      loadingTier === plan.slug ||
+                      (!plan.priceId && plan.slug !== "student")
+                    }
                     className={cn(
                       "w-full h-12 text-base font-semibold transition-all duration-200",
                       RADIUS.button,
@@ -282,12 +299,12 @@ export function ClientPricingPage() {
                       <>
                         <CreditCard className="w-4 h-4 mr-2" />
                         {plan.cta}
-                        {plan.popular && <ArrowRight className="w-4 h-4 ml-2" />}
+                        {plan.popular && (
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        )}
                       </>
                     )}
                   </Button>
-
-
                 </div>
               ))}
             </div>

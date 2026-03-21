@@ -1,7 +1,14 @@
 "use client";
 import { createBrowserClient } from "@supabase/ssr";
 import { safeStorage } from "@/lib/supabase/safe-storage";
-import type { Database } from "@/types/supabase-generated";
+import type { Database, Json } from "@/types/supabase-generated";
+import {
+  enrichStrategyConfigForSession,
+  parseInitialCapitalFromConfig,
+  parseTradingPairFromConfig,
+  getDbRiskLevelEnum,
+} from "@/lib/auto-trading/strategy-catalog";
+import type { ProductStrategyId } from "@/lib/trading/strategy-id-aliases";
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -169,19 +176,26 @@ export async function getPortfolio(
   };
 }
 
-export async function getRecentTrades(
-  mode: TradingMode,
-  limit = 50,
-): Promise<Trade[]> {
+/**
+ * Siste handler for innlogget bruker.
+ * Uten `mode`: paper + live (unified dashboard skal ikke «skjule» gårsdagens handler ved modusbytte).
+ */
+export async function getRecentTrades(params?: {
+  mode?: TradingMode;
+  limit?: number;
+}): Promise<Trade[]> {
+  const limit = params?.limit ?? 50;
   const user = await getUser();
-  // Bruk created_at (alltid satt) – executed_at kan være null for noen trades
-  const { data } = await supabase
+  let q = supabase
     .from("trades")
     .select("*")
     .eq("user_id", user.id)
-    .eq("mode", mode)
     .order("created_at", { ascending: false })
     .limit(limit);
+  if (params?.mode) {
+    q = q.eq("mode", params.mode);
+  }
+  const { data } = await q;
   if (!data?.length) return [];
   return data.map((row) => mapDbTradeRowToTrade(row as TradesRow));
 }
@@ -254,6 +268,11 @@ export async function startStrategy(
 ): Promise<UserStrategy> {
   const user = await getUser();
 
+  const productId = strategyType as ProductStrategyId;
+  const tradingPair = parseTradingPairFromConfig(productId, config);
+  const initialCapital = parseInitialCapitalFromConfig(config);
+  const strategy_config = enrichStrategyConfigForSession(productId, config);
+
   // First, deactivate any existing active session for this mode
   await supabase
     .from("trading_sessions")
@@ -270,10 +289,11 @@ export async function startStrategy(
       mode,
       status: "active",
       strategy_id: strategyType,
-      strategy_config: config,
-      trading_pair: "BTC/USDT",
-      current_capital: 100000.0,
-      initial_capital: 100000.0,
+      strategy_config: strategy_config as unknown as Json,
+      trading_pair: tradingPair,
+      risk_level: getDbRiskLevelEnum(productId),
+      current_capital: initialCapital,
+      initial_capital: initialCapital,
       total_trades: 0,
       winning_trades: 0,
       losing_trades: 0,
@@ -326,9 +346,10 @@ export type TradeRealtimeKind = "INSERT" | "UPDATE";
  * Abonnerer på egne rader i `trades`. Kaller `realtime.setAuth` + lytter på token-refresh,
  * ellers mottar ikke klienten events under RLS (klassisk årsak til «må refreshe»).
  * Lytter på INSERT og UPDATE (ordre som går pending → filled kommer ofte som UPDATE).
+ * `mode === null`: alle moduser (samme som getRecentTrades uten mode-filter).
  */
 export function subscribeToTrades(
-  mode: TradingMode,
+  mode: TradingMode | null,
   userId: string,
   onTrade: (trade: Trade, kind: TradeRealtimeKind) => void,
 ): () => void {
@@ -345,15 +366,16 @@ export function subscribeToTrades(
     (kind: TradeRealtimeKind) =>
     (payload: { new: Record<string, unknown> }) => {
       const trade = mapDbTradeRowToTrade(payload.new as TradesRow);
-      if (trade.mode !== mode) return;
+      if (mode !== null && trade.mode !== mode) return;
       onTrade(trade, kind);
     };
 
   void (async () => {
     await syncRealtimeJwt();
     if (cancelled) return;
+    const channelSuffix = mode ?? "all";
     channel = supabase
-      .channel(`trades-${mode}-${userId}`)
+      .channel(`trades-${channelSuffix}-${userId}`)
       .on(
         "postgres_changes",
         {

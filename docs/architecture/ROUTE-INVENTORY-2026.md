@@ -8,12 +8,12 @@
 
 ## Navigasjon — kilder i kode (ikke én sentral config ennå)
 
-| Kontekst                  | Fil                                                                                                    | Innhold                                                                                   |
-| ------------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| **Gjest (landing)**       | [`src/components/landing/MobileMenu.tsx`](../../src/components/landing/MobileMenu.tsx)                 | `signup`, `priser`, `innlogging`                                                          |
-| **Innlogget (dashboard)** | [`src/components/dashboard/DashboardSidebar.tsx`](../../src/components/dashboard/DashboardSidebar.tsx) | `dashboard`, `kurs`, `dashboard/auto-trade`, `profile`, `dashboard/settings`, ev. `admin` |
-| **Middleware**            | [`src/middleware.ts`](../../src/middleware.ts)                                                         | `PROTECTED_PATHS`, beta→dashboard, tier-gate                                              |
-| **Globale lenker**        | Diverse landing-komponenter                                                                            | CTA til `signup` / `innlogging`                                                           |
+| Kontekst                  | Fil                                                                                                    | Innhold                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Gjest (landing)**       | [`src/components/landing/MobileMenu.tsx`](../../src/components/landing/MobileMenu.tsx)                 | `signup`, `priser`, `innlogging`                                                                                                      |
+| **Innlogget (dashboard)** | [`src/components/dashboard/DashboardSidebar.tsx`](../../src/components/dashboard/DashboardSidebar.tsx) | `dashboard`, `kurs`, `handelshistorikk`, `dashboard/resultater`, `dashboard/auto-trade`, `profile`, `dashboard/settings`, ev. `admin` |
+| **Middleware**            | [`src/middleware.ts`](../../src/middleware.ts)                                                         | `PROTECTED_PATHS`, beta→dashboard, tier-gate                                                                                          |
+| **Globale lenker**        | Diverse landing-komponenter                                                                            | CTA til `signup` / `innlogging`                                                                                                       |
 
 **Mål (roadmap):** Vurder én `nav-config` (f.eks. `src/lib/navigation/config.ts`) med roller `guest` | `auth` | `admin` — unngå divergens mellom `MobileMenu` og fremtidig innlogget mobil-header.
 

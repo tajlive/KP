@@ -33,6 +33,7 @@ import {
   RefreshCw,
   Info,
 } from "lucide-react";
+import { toast } from "sonner";
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
 
 /** Kort med skygge og 200ms overgang (tokens) */
@@ -56,6 +57,8 @@ interface PaperTradingListProps {
   sessions: TradingSession[];
   balance: number;
   locale: string;
+  /** Paper eller live — styrer POST /api/trading-sessions/create */
+  sessionMode?: "paper" | "live";
   /** Optional: when set, subscribe to Supabase realtime for trading_sessions so list updates without manual refresh */
   userId?: string;
 }
@@ -70,6 +73,7 @@ export function PaperTradingList({
   sessions,
   balance,
   locale,
+  sessionMode = "paper",
   userId,
 }: PaperTradingListProps) {
   const t = useTranslations("paperTrading");
@@ -134,17 +138,34 @@ export function PaperTradingList({
         body: JSON.stringify({
           trading_pair: tradingPair,
           starting_capital_nok: parseInt(startCapital, 10),
+          mode: sessionMode,
         }),
       });
 
-      if (!response.ok) {
+      const data = (await response.json()) as {
+        session_id?: string;
+        code?: string;
+        tier?: string;
+      };
+
+      if (response.status === 409 && data?.code === "MAX_ACTIVE_SESSIONS") {
+        if (data.session_id) {
+          toast.info(t("sessions.maxActiveReached"));
+          router.push(`/${locale}/paper-trading/${data.session_id}`);
+        } else {
+          toast.error(t("sessions.maxActiveStudent"));
+        }
+        return;
+      }
+
+      if (!response.ok || !data.session_id) {
         throw new Error("Failed to create session");
       }
 
-      const data = await response.json();
       router.push(`/${locale}/paper-trading/${data.session_id}`);
     } catch (err) {
       console.error("Failed to create session:", err);
+    } finally {
       setIsLoading(false);
     }
   };

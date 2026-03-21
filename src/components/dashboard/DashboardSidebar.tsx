@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/utils";
 import {
+  BarChart3,
   BookOpen,
   Bot,
   ChevronLeft,
@@ -80,6 +81,11 @@ export function DashboardSidebar() {
       href: "/handelshistorikk",
       label: locale === "no" ? "Historikk" : "History",
       icon: History,
+    },
+    {
+      href: "/dashboard/resultater",
+      label: locale === "no" ? "Resultater" : "Results",
+      icon: BarChart3,
     },
     {
       href: "/dashboard/auto-trade",

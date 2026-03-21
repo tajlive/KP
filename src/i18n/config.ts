@@ -20,3 +20,4 @@ export const localeLabels: Record<
 // TODO: Re-enable Thai and Chinese when translations are complete
 // th: { label: "ไทย", flag: "🇹🇭", hidden: true },
 // zh: { label: "中文", flag: "🇨🇳", hidden: true },
+// i18n SoT: th/zh avvent for alt brukervendt innhold — se docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md

@@ -1,5 +1,6 @@
 "use server";
 
+import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
@@ -10,26 +11,11 @@ import { revalidatePath } from "next/cache";
  * - Logs the transaction
  */
 export async function grantFounderStatus(userId: string) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
-    // 1. Verify Admin Access
-    const {
-      data: { user: adminUser },
-    } = await supabase.auth.getUser();
-    if (!adminUser) throw new Error("Unauthorized");
-
-    const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
-    const isWhitelisted = ADMIN_EMAILS.includes(adminUser.email || "");
-
-    const { data: adminProfile } = await supabase
-      .from("user_profiles")
-      .select("role")
-      .eq("id", adminUser.id)
-      .single();
-    if (!isWhitelisted && adminProfile?.role !== "admin") {
-      throw new Error("Forbidden: Admin access required");
-    }
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) throw new Error(auth.error);
 
     // 2. Get target user info
     const { data: user, error: userError } = await supabase
@@ -60,11 +46,13 @@ export async function grantFounderStatus(userId: string) {
     const currentBalance = balance?.balance || 0;
     const newBalance = currentBalance + 10000;
 
-    const { error: tokenError } = await supabase.from("user_klt_balances").upsert({
-      user_id: userId,
-      balance: newBalance,
-      updated_at: new Date().toISOString(),
-    });
+    const { error: tokenError } = await supabase
+      .from("user_klt_balances")
+      .upsert({
+        user_id: userId,
+        balance: newBalance,
+        updated_at: new Date().toISOString(),
+      });
 
     if (tokenError) throw tokenError;
 
@@ -98,26 +86,11 @@ export async function grantFounderStatus(userId: string) {
  * - Sets banned_at and ban_reason
  */
 export async function banUser(userId: string, reason: string) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
-    // 1. Verify Admin Access
-    const {
-      data: { user: adminUser },
-    } = await supabase.auth.getUser();
-    if (!adminUser) throw new Error("Unauthorized");
-
-    const ADMIN_EMAILS = ["tomarnejensen@gmail.com", "admin@klarpakke.no"];
-    const isWhitelisted = ADMIN_EMAILS.includes(adminUser.email || "");
-
-    const { data: adminProfile } = await supabase
-      .from("user_profiles")
-      .select("role")
-      .eq("id", adminUser.id)
-      .single();
-    if (!isWhitelisted && adminProfile?.role !== "admin") {
-      throw new Error("Forbidden: Admin access required");
-    }
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) throw new Error(auth.error);
 
     // 2. Update status
     const { error } = await supabase
@@ -147,9 +120,14 @@ export async function banUser(userId: string, reason: string) {
  * - Fetches profile, balance, and signup data
  */
 export async function getUserDetails(userId: string) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   try {
+    const auth = await verifyAdminAccess();
+    if (!auth.ok) {
+      return { success: false, error: auth.error };
+    }
+
     const { data, error } = await supabase
       .from("user_profiles")
       .select("*, user_klt_balances(balance), beta_signups(*)")

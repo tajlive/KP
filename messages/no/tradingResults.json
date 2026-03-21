@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "Resultater og analyse",
+    "description": "Live oversikt over P&L, vinn/tap og ytelse — oppdatert automatisk."
+  },
+  "eyebrow": "Ytelse",
+  "title": "Dine resultater",
+  "subtitle": "Samlet bilde av realisert P&L, daglige svingninger og fordeling mellom par og moduser. Siden henter tall på nytt hvert femte minutt og når du kommer tilbake til fanen.",
+  "refresh": "Oppdater nå",
+  "openHistory": "Handelshistorikk",
+  "lastUpdated": "Sist oppdatert: {time}",
+  "notYetLoaded": "Laster data …",
+  "intervalHint": "Auto-oppdatering hvert 5. minutt · priser synkroniseres på server (Supabase cron).",
+  "errorLoad": "Kunne ikke laste analyser",
+  "kpi": {
+    "totalPnl": "Realisert P&L",
+    "winRate": "Vinnrate (kjent P&L)",
+    "trades": "Handler i utvalg",
+    "bestDay": "Sterkeste dag"
+  },
+  "worstDay": "Tøffeste dag: {day} ({amount})",
+  "modeTrades": "{count} handler",
+  "mode": {
+    "paper": "Øving",
+    "live": "Live",
+    "unknown": "Ukjent"
+  },
+  "outcome": {
+    "win": "Vinn",
+    "loss": "Tap",
+    "breakeven": "Uavgjort",
+    "unknown": "Ukjent P&L"
+  },
+  "charts": {
+    "cumulativeTitle": "Kumulativ P&L over tid",
+    "cumulativeHint": "Løpende sum av realisert P&L per hendelse (nedsamplet ved mange punkter).",
+    "cumulativeSeries": "Kumulativ",
+    "outcomeTitle": "Vinn vs tap",
+    "outcomeHint": "Fordeling blant handler med kjent realisert P&L.",
+    "dailyTitle": "Daglig P&L",
+    "dailyHint": "Siste opptil 42 dager med handler. Grønn = pluss, rød = minus.",
+    "dailySeries": "Dag",
+    "pairsTitle": "Topp par etter P&L",
+    "pairsHint": "Par med størst bidrag (positivt eller negativt).",
+    "pairPnl": "P&L",
+    "modeTitle": "Etter modus",
+    "modeHint": "Paper vs live (eller annen modus lagret på handler)."
+  },
+  "empty": {
+    "needTrades": "Du trenger minst to datapunkter for kurven. Ta noen handler eller vent på lukkede posisjoner med P&L.",
+    "noOutcomes": "Ingen kategoriserte utfall ennå.",
+    "needDaily": "Ingen daglige summer ennå.",
+    "needPairs": "Ingen par å vise.",
+    "needModes": "Ingen modus-data ennå."
+  }
+}

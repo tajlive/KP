@@ -8,7 +8,7 @@ Korte, prioriterte anbefalinger etter «én trading-side» og design/routing-sje
 
 ### 1. i18n for trading-UI
 
-- **«Mine sesjoner»** og «Tilbake til oversikt» er hardkodet i `PaperTradingPageClient` og `UnifiedTradingDashboard`. Legg i `paperTrading` eller `trading`-namespace og bruk `useTranslations`/`getTranslations` slik at norsk/engelsk (og ev. th/zh) er konsistente.
+- **«Mine sesjoner»** og «Tilbake til oversikt» er hardkodet i `PaperTradingPageClient` og `UnifiedTradingDashboard`. Legg i `paperTrading` eller `trading`-namespace og bruk `useTranslations`/`getTranslations` slik at **no** og **en** (aktiv i18n-SoT) er konsistente.
 - Ev. egne nøkler for «Øving» / «Live» hvis de brukes flere steder.
 
 ### 2. Realtime for session-listen

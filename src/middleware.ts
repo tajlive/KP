@@ -57,6 +57,15 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const { locale, strippedPath } = parseLocalePath(pathname);
 
+  // PKCE: Supabase (eller e-postmal) kan sende bruker til Site URL med ?code= på rot
+  // (f.eks. https://www.klarpakke.no/?code=...). Uten redirect byttes aldri koden — brukeren
+  // blir stående på forsiden som gjest. Send til faktisk callback-rute med samme query.
+  if (strippedPath === "/" && request.nextUrl.searchParams.has("code")) {
+    const url = request.nextUrl.clone();
+    url.pathname = localizedPathname(locale, "/auth/callback");
+    return NextResponse.redirect(url, 302);
+  }
+
   // Beta fjernes: omdiriger alle /beta-henvisninger til ordinær flyt
   if (strippedPath === "/beta" || strippedPath.startsWith("/beta/")) {
     const url = request.nextUrl.clone();

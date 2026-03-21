@@ -1,57 +1,15 @@
 import { Metadata } from "next";
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
 
-// Deferred load for LiveTicker - not critical for LCP
 import { SURFACE } from "@/lib/design/tokens";
-import { DeferredLiveTicker } from "@/components/landing/DeferredLiveTicker";
 import HeroSection from "@/components/landing/HeroSection";
-import { TrustBar } from "@/components/landing/TrustBar";
-
-const DemoWidget = dynamic(
-  () =>
-    import("@/components/landing/DemoWidget").then((mod) => ({
-      default: mod.DemoWidget,
-    })),
-  {
-    loading: () => (
-      <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
-    ),
-  },
-);
-
-const ThreeSteps = dynamic(
-  () =>
-    import("@/components/landing/ThreeSteps").then((mod) => ({
-      default: mod.ThreeSteps,
-    })),
-  {
-    loading: () => (
-      <div className="h-64 animate-pulse bg-slate-100 rounded-xl" />
-    ),
-  },
-);
-
-const CoursePreview = dynamic(
-  () =>
-    import("@/components/landing/CoursePreview").then((mod) => ({
-      default: mod.CoursePreview,
-    })),
-  {
-    loading: () => (
-      <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
-    ),
-  },
-);
-
-const FinalCTASection = dynamic(
-  () => import("@/components/landing/FinalCTASection"),
-  {
-    loading: () => (
-      <div className="h-64 animate-pulse bg-slate-200 dark:bg-slate-800 rounded-xl" />
-    ),
-  },
-);
+import { DemoWidget } from "@/components/landing/DemoWidget";
+import { ThreeSteps } from "@/components/landing/ThreeSteps";
+import { CoursePreview } from "@/components/landing/CoursePreview";
+import FinalCTASection from "@/components/landing/FinalCTASection";
+import {
+  LandingTransparencySection,
+  LandingTransparencyStrip,
+} from "@/components/landing/LandingTransparency";
 
 // ISR: Regenerate page every hour
 export const revalidate = 3600;
@@ -69,8 +27,8 @@ export async function generateMetadata({
       ? "Klarpakke — Lær crypto trygt fra dag én"
       : "Klarpakke — Learn crypto safely from day one",
     description: isNorwegian
-      ? "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 100 000 i øvingspenger — ingen kredittkort."
-      : "Norway's only platform with courses, paper trading and autotrading. Start free with kr 100,000 in virtual money — no credit card.",
+      ? "Kurs, papirhandel og auto-handel på norsk. Start gratis med 100 000 kr i lekepenger — uten kredittkort."
+      : "Courses, paper trading and auto-trading in one place. Start free with 100,000 NOK in practice funds — no credit card.",
     keywords: isNorwegian
       ? [
           "lær trading",
@@ -104,8 +62,8 @@ export async function generateMetadata({
         ? "Klarpakke — Lær crypto trygt fra dag én"
         : "Klarpakke — Learn crypto safely from day one",
       description: isNorwegian
-        ? "Norges eneste plattform med kurs, papirhandel og autotrading."
-        : "Norway's only platform with courses, paper trading and autotrading.",
+        ? "Kurs, papirhandel og auto-handel — i ett sted."
+        : "Courses, paper trading and auto-trading in one place.",
     },
   };
 }
@@ -121,46 +79,19 @@ export default async function HomePage({
     <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
       <HeroSection locale={locale} />
 
-      {/* Live Price Ticker - right under hero, light mode */}
-      <DeferredLiveTicker />
+      <DemoWidget />
 
-      <TrustBar locale={locale} />
+      <CoursePreview />
 
-      <Suspense
-        fallback={
-          <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
-        }
-      >
-        <DemoWidget />
-      </Suspense>
-
-      <Suspense
-        fallback={
-          <div className="h-96 animate-pulse bg-slate-100 rounded-xl" />
-        }
-      >
-        <CoursePreview />
-      </Suspense>
-
-      {/* Three Steps - Lazy loaded */}
-      <section className="max-w-6xl mx-auto px-4">
-        <Suspense
-          fallback={
-            <div className="h-64 animate-pulse bg-slate-100 rounded-xl" />
-          }
-        >
-          <ThreeSteps />
-        </Suspense>
+      {/* Tre steg — anker #land-steg for støtte/dok (ikke tredje hero-chip) */}
+      <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
+        <ThreeSteps />
       </section>
 
+      <LandingTransparencySection locale={locale} />
+
       {/* Final CTA - sterk konvertering før footer */}
-      <Suspense
-        fallback={
-          <div className="h-64 animate-pulse bg-slate-200 dark:bg-slate-800 rounded-xl" />
-        }
-      >
-        <FinalCTASection language={locale === "no" ? "no" : "en"} />
-      </Suspense>
+      <FinalCTASection />
     </main>
   );
 }

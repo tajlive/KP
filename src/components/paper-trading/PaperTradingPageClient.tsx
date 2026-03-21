@@ -30,6 +30,8 @@ interface PaperTradingPageClientProps {
   balance: number;
   locale: string;
   userId: string;
+  /** Server-liste filtrert på denne modusen (paper | live) */
+  listMode: "paper" | "live";
   contextBannerText: string;
 }
 
@@ -42,6 +44,7 @@ export function PaperTradingPageClient({
   balance,
   locale,
   userId,
+  listMode,
   contextBannerText,
 }: PaperTradingPageClientProps) {
   const t = useTranslations("paperTrading");
@@ -115,6 +118,7 @@ export function PaperTradingPageClient({
             balance={balance}
             locale={locale}
             userId={userId}
+            sessionMode={listMode}
           />
         </main>
       ) : (

@@ -1,5 +1,8 @@
 {
   "title": "Tax Report",
+  "upgradeTitle": "Tax report requires a paid plan",
+  "upgradeDescription": "CSV/HTML export for the Norwegian tax return is included from Bachelor upward. Upgrade to unlock.",
+  "upgradeCta": "View pricing",
   "description": "Generate tax report for crypto trading. Compatible with Norwegian Tax Administration.",
   "selectYear": "Select tax year",
   "downloadCSV": "Download CSV",

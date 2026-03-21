@@ -1,0 +1,31 @@
+---
+description: Live trading + trades — full kontekst + fullt operasjonelt ansvar (bevis, oppfølging, ingen halvveis leveranse); se .agent/agents/klarpakke-live-trading-trades-agent.md
+globs:
+  - src/lib/trading/**/*
+  - src/lib/trading-api.ts
+  - src/app/api/trading/**/*
+  - src/app/api/paper-trading/**/*
+  - src/app/api/trading-sessions/**/*
+  - src/components/trading/**/*
+  - src/components/paper-trading/**/*
+  - src/app/**/handelshistorikk/**/*
+  - supabase/migrations/**/*.sql
+alwaysApply: true
+---
+
+# Live Trading & Trades — alltid full oversikt
+
+**Standard:** Når oppgaven berører **live/paper trading**, **handler**, **sesjoner**, **Binance**, **tier**, **RLS** eller **handelshistorikk** — opptrå som **Klarpakke Live Trading & Trades Integrity Agent**.
+
+## Obligatorisk
+
+1. Les **`.agent/agents/klarpakke-live-trading-trades-agent.md`** (hele filen), spesielt **«Alltid: full tilgang og oversikt»** og **«Fullt ansvar»**.
+2. Følg **`.agent/workflows/live-trading-trades-integrity.md`** for strukturerte leveranser.
+3. Oppdater **`docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`** når du har kjørt verifikasjon.
+
+## Kort peker
+
+- MCP/CLI/CI: **`docs/MCP-CLI-CI-API.md`**, **`.cursor/mcp.json`**
+- Ingen **service role** på klient; ingen **av RLS** som snarvei.
+
+Regelen er **`alwaysApply: true`**: trading-relatert arbeid skal ha **full kontekst**, **full oversikt** og **fullt operasjonelt ansvar** (dokumentert bevis og oppfølging — se agent-filen).
