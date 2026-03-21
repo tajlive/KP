@@ -6,8 +6,7 @@ import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { VippsMarketProvider } from "@/components/providers/VippsMarketProvider";
 import { AuthProvider } from "@/components/auth/AuthContext";
 import { SessionCleanup } from "@/components/SessionCleanup";
-import { MarketingNavigation } from "@/components/layout/MarketingNavigation";
-import { ConditionalFooter } from "@/components/landing/ConditionalFooter";
+import { LocaleMarketingShell } from "@/components/layout/LocaleMarketingShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { MarketingProviders } from "@/components/providers/MarketingProviders";
@@ -34,10 +33,8 @@ import "../globals.css";
  * 4. REMOVED ToastProvider - Not critical for marketing
  *    (available in app areas)
  *
- * 5. REPLACED Navigation with MarketingNavigation
- *    - No auth dependency
- *    - No TradingModeToggle
- *    - Smaller bundle, faster hydration
+ * 5. MarketingNavigation + ConditionalFooter via LocaleMarketingShell
+ *    - Skjules på app-ruter (/dashboard, /copy-trading, …) for å unngå dobbelt chrome
  *
  * 6. REPLACED ClientSideProviders with MarketingProviders
  *    - No ChatWidget (deferred to dashboard)
@@ -260,11 +257,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <MarketingProviders>
               <ErrorBoundary>
                 <AuthProvider>
-                  <div className="relative min-h-screen flex flex-col">
-                    <MarketingNavigation />
-                    <main className="flex-1">{children}</main>
-                    <ConditionalFooter />
-                  </div>
+                  <LocaleMarketingShell>{children}</LocaleMarketingShell>
                 </AuthProvider>
               </ErrorBoundary>
             </MarketingProviders>
