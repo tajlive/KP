@@ -19,7 +19,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { BRAND } from "@/lib/design/tokens";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -57,6 +58,7 @@ function relativeAgo(locale: string, date: Date): string {
 
 export function SignalFeed() {
   const locale = useLocale();
+  const t = useTranslations("trading.signalFeed");
   const [signals, setSignals] = useState<TradingSignal[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -86,7 +88,6 @@ export function SignalFeed() {
           return;
         }
         const next = (data as TradingSignal[]) ?? [];
-        const prevCount = prevCountRef.current;
         prevCountRef.current = next.length;
         setSignals(next);
         setLastUpdated(new Date());
@@ -94,14 +95,26 @@ export function SignalFeed() {
           setLiveIndicator(true);
           const newest = next[0];
           const side = classifySignalAction(newest.action);
-          const dir =
-            side === "buy" ? "Kjøp" : side === "sell" ? "Salg" : "Hold";
-          toast.success(`Nytt signal: ${newest.symbol} ${dir}`, {
-            description:
-              newest.entry_price != null
-                ? `Inngang ca. $${newest.entry_price.toLocaleString()}`
-                : undefined,
-          });
+          const dirKey =
+            side === "buy"
+              ? "toastDirBuy"
+              : side === "sell"
+                ? "toastDirSell"
+                : "toastDirHold";
+          toast.success(
+            t("toastNew", {
+              symbol: newest.symbol,
+              direction: t(dirKey),
+            }),
+            {
+              description:
+                newest.entry_price != null
+                  ? t("toastEntry", {
+                      price: `$${newest.entry_price.toLocaleString("en-US")}`,
+                    })
+                  : undefined,
+            },
+          );
           setTimeout(() => setLiveIndicator(false), 2000);
         }
       } finally {
@@ -109,7 +122,7 @@ export function SignalFeed() {
         setRefreshing(false);
       }
     },
-    [],
+    [t],
   );
 
   useEffect(() => {
@@ -183,22 +196,26 @@ export function SignalFeed() {
             />
           </div>
           <h2 className="text-sm font-semibold text-white tracking-wide uppercase">
-            Trading Signaler
+            {t("title")}
           </h2>
-          <span className="text-[10px] text-slate-500 tabular-nums">
-            {signals.length} aktive
+          <span className="text-[10px] text-slate-400 tabular-nums">
+            {t("activeCount", { count: signals.length })}
           </span>
           {lastUpdated && (
-            <span className="text-[10px] text-slate-500">
-              · Oppdatert {formatDistanceToNow(lastUpdated)}
+            <span className="text-[10px] text-slate-400">
+              · {t("updatedPrefix")}{" "}
+              {formatDistanceToNow(lastUpdated, {
+                addSuffix: true,
+                locale: locale === "no" ? nb : enGB,
+              })}
             </span>
           )}
         </div>
         <button
           onClick={() => fetchSignals(true)}
           disabled={refreshing}
-          className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors disabled:opacity-40"
-          aria-label="Oppdater signaler"
+          className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition-colors disabled:opacity-40"
+          aria-label={t("refreshAria")}
         >
           <RefreshCw
             className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`}
@@ -211,13 +228,14 @@ export function SignalFeed() {
         {signals.length === 0 ? (
           <div className="p-8 text-center">
             <TrendingUp className="h-8 w-8 text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400 text-sm">Ingen signaler akkurat nå</p>
-            <p className="text-slate-500 text-xs mt-1 max-w-[260px] mx-auto">
-              Signaler fra Binance kommer flere ganger i timen. Aktiver en
-              strategi for å se flere signaler.
+            <p className="text-slate-200 text-sm font-medium">
+              {t("emptyTitle")}
             </p>
-            <p className="text-slate-600 text-[10px] mt-2">
-              Live-oppdatering · også hvert 15. sek
+            <p className="text-slate-400 text-xs mt-1 max-w-[280px] mx-auto leading-relaxed">
+              {t("emptyBody")}
+            </p>
+            <p className="text-slate-500 text-[10px] mt-2">
+              {t("emptyFooter")}
             </p>
           </div>
         ) : (
@@ -225,7 +243,11 @@ export function SignalFeed() {
             {signals.map((signal, i) => {
               const side = classifySignalAction(signal.action);
               const directionLabel =
-                side === "buy" ? "BUY" : side === "sell" ? "SELL" : "HOLD";
+                side === "buy"
+                  ? t("directionBuy")
+                  : side === "sell"
+                    ? t("directionSell")
+                    : t("directionHold");
               const created = signal.created_at
                 ? new Date(signal.created_at)
                 : null;
@@ -315,25 +337,28 @@ export function SignalFeed() {
                   {/* Price details row */}
                   <div className="mt-2.5 grid grid-cols-3 gap-2">
                     <PriceCell
-                      label="Inngang"
+                      label={t("priceEntry")}
                       value={signal.entry_price}
                       visible
+                      lockedLabel={t("locked")}
                     />
                     <PriceCell
-                      label="Stop Loss"
+                      label={t("priceStop")}
                       value={signal.stop_loss}
                       visible={canSeeFullDetails}
+                      lockedLabel={t("locked")}
                     />
                     <PriceCell
-                      label="Take Profit"
+                      label={t("priceTarget")}
                       value={signal.target_price}
                       visible={canSeeFullDetails}
+                      lockedLabel={t("locked")}
                     />
                   </div>
 
                   {/* Reasoning (only for paid users) */}
                   {canSeeFullDetails && signal.reasoning && (
-                    <p className="mt-2 text-[11px] text-slate-400 leading-relaxed line-clamp-2">
+                    <p className="mt-2 text-[11px] text-slate-300 leading-relaxed line-clamp-2">
                       {signal.reasoning}
                     </p>
                   )}
@@ -346,25 +371,24 @@ export function SignalFeed() {
 
       {/* Upgrade banner for free/bachelor users */}
       {!canSeeFullDetails && signals.length > 0 && (
-        <div className="px-5 py-3.5 border-t border-slate-700/50 bg-linear-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10">
+        <div className="px-5 py-3.5 border-t border-slate-700/50 bg-linear-to-r from-brand-500/12 to-transparent">
           <div className="flex items-center gap-3">
-            <div className="shrink-0 p-2 rounded-lg bg-blue-500/15">
-              <Lock className="h-4 w-4 text-blue-400" />
+            <div className="shrink-0 p-2 rounded-lg bg-brand-500/15 ring-1 ring-brand-500/25">
+              <Lock className="h-4 w-4 text-brand-400" aria-hidden />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-medium text-white">
-                Oppgrader for å se alle detaljer
+                {t("upgradeTitle")}
               </p>
-              <p className="text-[10px] text-slate-400 mt-0.5">
-                Stop Loss, Take Profit og AI-begrunnelse krever Master eller
-                høyere
+              <p className="text-[10px] text-slate-300 mt-0.5 leading-snug">
+                {t("upgradeBody")}
               </p>
             </div>
             <Link
               href={`/${locale}/priser`}
-              className="shrink-0 text-[10px] font-bold text-blue-400 hover:text-blue-300 uppercase tracking-wide transition-colors"
+              className={`shrink-0 text-[10px] font-bold ${BRAND.link} transition-colors`}
             >
-              Oppgrader →
+              {t("upgradeCta")}
             </Link>
           </div>
         </div>
@@ -391,14 +415,16 @@ function PriceCell({
   label,
   value,
   visible,
+  lockedLabel,
 }: {
   label: string;
   value: number | null;
   visible: boolean;
+  lockedLabel: string;
 }) {
   return (
     <div className="bg-slate-900/50 rounded-md px-2.5 py-1.5">
-      <p className="text-[9px] text-slate-500 uppercase tracking-wider">
+      <p className="text-[9px] text-slate-400 uppercase tracking-wider">
         {label}
       </p>
       {visible ? (
@@ -407,8 +433,8 @@ function PriceCell({
         </p>
       ) : (
         <div className="flex items-center gap-1 mt-0.5">
-          <ShieldAlert className="h-3 w-3 text-slate-600" />
-          <span className="text-[10px] text-slate-600">Låst</span>
+          <ShieldAlert className="h-3 w-3 text-slate-500" aria-hidden />
+          <span className="text-[10px] text-slate-400">{lockedLabel}</span>
         </div>
       )}
     </div>

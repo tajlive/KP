@@ -31,7 +31,7 @@ export function MarketingNavigation() {
     <nav
       data-testid="site-navigation"
       aria-label={t("siteNavAria")}
-      className="bg-white/80 backdrop-blur-xl border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50"
+      className="bg-white/80 backdrop-blur-xl border-b border-black/6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sticky top-0 z-50"
     >
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-14 gap-2 min-w-0">
@@ -78,7 +78,7 @@ export function MarketingNavigation() {
                 <Link href={l("/dashboard")}>
                   <Button
                     size="sm"
-                    className={`gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                    className={`gap-2 ${BRAND.primary} shadow-md shadow-blue-500/20`}
                   >
                     <LayoutDashboard className="w-4 h-4" />
                     {t("myPage")}
@@ -114,7 +114,7 @@ export function MarketingNavigation() {
                 <Link href={l("/signup")}>
                   <Button
                     size="sm"
-                    className={`${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                    className={`${BRAND.primary} shadow-md shadow-blue-500/20`}
                     aria-disabled={loading}
                   >
                     {t("signup")}
@@ -166,7 +166,7 @@ export function MarketingNavigation() {
                   >
                     <Button
                       size="sm"
-                      className={`w-full gap-2 ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                      className={`w-full gap-2 ${BRAND.primary} shadow-md shadow-blue-500/20`}
                     >
                       <LayoutDashboard className="w-4 h-4" />
                       {t("myPage")}
@@ -210,7 +210,7 @@ export function MarketingNavigation() {
                   >
                     <Button
                       size="sm"
-                      className={`w-full ${BRAND.primary} shadow-md shadow-[#0052FF]/20`}
+                      className={`w-full ${BRAND.primary} shadow-md shadow-blue-500/20`}
                     >
                       {t("signup")}
                     </Button>

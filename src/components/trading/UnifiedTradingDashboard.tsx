@@ -37,6 +37,8 @@ import {
   TrendingUp,
   Wallet,
   Bot,
+  Lightbulb,
+  Star,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -46,7 +48,7 @@ import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWiza
 import BotStatusDashboard from "./BotStatusDashboard";
 import { SignalFeed } from "./SignalFeed";
 import { MonthlyCompetitionBanner } from "@/components/gamification/MonthlyCompetitionBanner";
-import { SURFACE, RADIUS } from "@/lib/design/tokens";
+import { BRAND, SURFACE, RADIUS } from "@/lib/design/tokens";
 import {
   STRATEGY_DEFS_FOR_DASHBOARD,
   getDefaultStrategyDashboardConfigs,
@@ -94,6 +96,9 @@ export default function UnifiedTradingDashboard({
   initialMode = "paper",
 }: DashboardProps = {}) {
   const [mode, setMode] = useState<TradingMode>(initialMode);
+  /** Synk med realtime trade-handler — brukes for å vite om portefølje skal hentes på nytt */
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
   const router = useRouter();
   const pathname = usePathname() ?? "";
 
@@ -203,6 +208,32 @@ export default function UnifiedTradingDashboard({
     loadData();
   }, [loadData]);
 
+  /** Etter nye/oppdaterte trades må sesjonsaggregater hentes på nytt — ellers forblir P&L/saldo «frosset». */
+  const portfolioRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const schedulePortfolioSyncAfterTrade = useCallback(() => {
+    if (portfolioRefreshTimerRef.current) {
+      clearTimeout(portfolioRefreshTimerRef.current);
+    }
+    portfolioRefreshTimerRef.current = setTimeout(() => {
+      portfolioRefreshTimerRef.current = null;
+      void (async () => {
+        try {
+          const m = modeRef.current;
+          const [port, active] = await Promise.all([
+            getPortfolio(m),
+            getActiveStrategies(m),
+          ]);
+          setPortfolio(port);
+          setActiveStrategies(active);
+        } catch (e) {
+          console.error("Portfolio sync after trade failed:", e);
+        }
+      })();
+    }, 400);
+  }, []);
+
   // Fixed: useI18nToast må kalles før useEffect som bruker showSuccess
   useEffect(() => {
     if (!userId) {
@@ -229,6 +260,9 @@ export default function UnifiedTradingDashboard({
 
     const unsubscribe = subscribeToTrades(null, userId, (newTrade, kind) => {
       setTrades((prev) => mergeTradeIntoList(prev, newTrade));
+      if (newTrade.mode === modeRef.current) {
+        schedulePortfolioSyncAfterTrade();
+      }
       if (kind === "INSERT") {
         showSuccessRef.current("trading.tradeExecuted", {
           symbol: newTrade.symbol,
@@ -237,8 +271,14 @@ export default function UnifiedTradingDashboard({
       }
     });
 
-    return () => unsubscribe();
-  }, [userId]);
+    return () => {
+      if (portfolioRefreshTimerRef.current) {
+        clearTimeout(portfolioRefreshTimerRef.current);
+        portfolioRefreshTimerRef.current = null;
+      }
+      unsubscribe();
+    };
+  }, [userId, schedulePortfolioSyncAfterTrade]);
 
   const handleStartStrategy = async (strategyType: StrategyType) => {
     try {
@@ -489,13 +529,19 @@ function TradingModeToggle({
 }
 
 import dynamic from "next/dynamic";
+
+function ChartLoadingFallback() {
+  const t = useTranslations("trading.desk");
+  return (
+    <div className="w-full h-[400px] bg-slate-800/50 rounded-xl animate-pulse flex items-center justify-center border border-slate-700/40">
+      <span className="text-slate-400 text-sm">{t("chartLoading")}</span>
+    </div>
+  );
+}
+
 const ProfessionalChart = dynamic(() => import("./ProfessionalChart"), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-[400px] bg-gray-800/50 rounded-xl animate-pulse flex items-center justify-center">
-      <span className="text-gray-500 text-sm">Laster graf...</span>
-    </div>
-  ),
+  loading: () => <ChartLoadingFallback />,
 });
 
 function PortfolioSection({
@@ -505,12 +551,11 @@ function PortfolioSection({
   portfolio: Portfolio | null;
   formatNOK: (v: number) => string;
 }) {
+  const t = useTranslations("trading.desk");
   if (!portfolio) {
     return (
       <div className="bg-slate-800 rounded-xl p-6 text-center">
-        <p className="text-slate-400">
-          Velkommen! Start en strategi for å begynne.
-        </p>
+        <p className="text-slate-300">{t("welcomeEmpty")}</p>
       </div>
     );
   }
@@ -521,9 +566,9 @@ function PortfolioSection({
     <div className="space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-slate-800 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-            <Wallet className="w-4 h-4" />
-            <span>Total verdi</span>
+          <div className="flex items-center gap-2 text-slate-300 text-sm mb-1">
+            <Wallet className="w-4 h-4 shrink-0" aria-hidden />
+            <span>{t("totalValue")}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-white">
             {formatNOK(portfolio.total_value)}
@@ -531,9 +576,9 @@ function PortfolioSection({
         </div>
 
         <div className="bg-slate-800 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-            <DollarSign className="w-4 h-4" />
-            <span>Cash</span>
+          <div className="flex items-center gap-2 text-slate-300 text-sm mb-1">
+            <DollarSign className="w-4 h-4 shrink-0" aria-hidden />
+            <span>{t("cash")}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-white">
             {formatNOK(portfolio.cash_balance)}
@@ -541,9 +586,9 @@ function PortfolioSection({
         </div>
 
         <div className="bg-slate-800 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-            <BarChart3 className="w-4 h-4" />
-            <span>P&L</span>
+          <div className="flex items-center gap-2 text-slate-300 text-sm mb-1">
+            <BarChart3 className="w-4 h-4 shrink-0" aria-hidden />
+            <span>{t("pnl")}</span>
           </div>
           <p
             className={`text-xl sm:text-2xl font-bold ${isProfit ? "text-green-400" : "text-red-400"}`}
@@ -554,9 +599,9 @@ function PortfolioSection({
         </div>
 
         <div className="bg-slate-800 rounded-xl p-4">
-          <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
-            <TrendingUp className="w-4 h-4" />
-            <span>Win Rate</span>
+          <div className="flex items-center gap-2 text-slate-300 text-sm mb-1">
+            <TrendingUp className="w-4 h-4 shrink-0" aria-hidden />
+            <span>{t("winRate")}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-white">
             {(portfolio.win_rate ?? 0).toFixed(1)}%
@@ -588,24 +633,19 @@ function ActiveStrategiesSection({
     description: string;
   }[];
 }) {
+  const t = useTranslations("trading.activeStrategiesPanel");
   if (activeStrategies.length === 0) {
     return (
       <div className="bg-slate-800 rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-2">
-          Aktive strategier
-        </h2>
-        <p className="text-slate-400 text-sm">
-          Ingen aktive strategier. Velg en strategi nedenfor for å starte.
-        </p>
+        <h2 className="text-lg font-semibold text-white mb-2">{t("title")}</h2>
+        <p className="text-slate-300 text-sm">{t("emptyHint")}</p>
       </div>
     );
   }
 
   return (
     <div className="bg-slate-800 rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-white mb-4">
-        Aktive strategier
-      </h2>
+      <h2 className="text-lg font-semibold text-white mb-4">{t("title")}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {activeStrategies.map((strategy) => {
           const info = STRATEGIES.find((s) => s.type === strategy.strategy_id);
@@ -620,16 +660,19 @@ function ActiveStrategiesSection({
                   <span className="font-medium text-white">{info?.name}</span>
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 </div>
-                <p className="text-slate-400 text-sm mt-1">
-                  P&L: {formatNOK(strategy.total_pnl)} • {strategy.total_trades}{" "}
-                  handler
+                <p className="text-slate-300 text-sm mt-1">
+                  {t("pnlLine", {
+                    pnl: formatNOK(strategy.total_pnl),
+                    count: strategy.total_trades,
+                  })}
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => onStop(strategy.strategy_id)}
-                className="px-4 py-2 min-h-[44px] bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition text-sm"
+                className="px-4 py-2 min-h-[44px] bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition text-sm font-medium"
               >
-                Stopp
+                {t("stop")}
               </button>
             </div>
           );
@@ -646,15 +689,14 @@ function RecentTradesSection({
   trades: Trade[];
   formatNOK: (v: number) => string;
 }) {
-  const t = useTranslations("trading");
+  const t = useTranslations("trading.recentTradesPanel");
+  const tTrading = useTranslations("trading");
 
   if (trades.length === 0) {
     return (
       <div className="bg-slate-800 rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-2">Siste handler</h2>
-        <p className="text-slate-400 text-sm">
-          Ingen handler ennå — start din første strategi →
-        </p>
+        <h2 className="text-lg font-semibold text-white mb-2">{t("title")}</h2>
+        <p className="text-slate-300 text-sm">{t("empty")}</p>
       </div>
     );
   }
@@ -666,10 +708,10 @@ function RecentTradesSection({
   return (
     <div className="bg-slate-800 rounded-xl p-6">
       <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-        <h2 className="text-lg font-semibold text-white">Siste handler</h2>
+        <h2 className="text-lg font-semibold text-white">{t("title")}</h2>
         {hasMixedModes ? (
-          <p className="text-slate-500 text-xs">
-            {t("recentTradesMixedModesHint")}
+          <p className="text-slate-400 text-xs max-w-md text-right">
+            {tTrading("recentTradesMixedModesHint")}
           </p>
         ) : null}
       </div>
@@ -689,31 +731,31 @@ function RecentTradesSection({
                   <div
                     className={`w-8 h-8 rounded flex items-center justify-center text-xs font-bold ${trade.side === "buy" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}
                   >
-                    {trade.side === "buy" ? "KJØP" : "SALG"}
+                    {trade.side === "buy" ? t("sideBuy") : t("sideSell")}
                   </div>
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium text-white">{trade.symbol}</p>
                       <span className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border border-slate-500/35 bg-slate-700/50 text-slate-200">
                         {trade.mode === "live"
-                          ? t("liveModeShort")
-                          : t("paperModeShort")}
+                          ? tTrading("liveModeShort")
+                          : tTrading("paperModeShort")}
                       </span>
                     </div>
-                    <p className="text-slate-400 text-xs">
+                    <p className="text-slate-300 text-xs">
                       {(trade.strategy_signal?.strategy_type as string) ||
-                        "Unknown"}
+                        t("unknownStrategy")}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p
-                    className={`font-medium ${isProfit ? "text-green-400" : "text-red-400"}`}
+                    className={`font-medium tabular-nums ${isProfit ? "text-green-400" : "text-red-400"}`}
                   >
                     {isProfit ? "+" : ""}
                     {formatNOK(trade.realized_pnl || 0)}
                   </p>
-                  <p className="text-slate-400 text-xs">
+                  <p className="text-slate-400 text-xs tabular-nums">
                     {formatNOK(trade.total_value)}
                   </p>
                 </div>
@@ -760,13 +802,16 @@ function StrategySelectorSection({
   const isActive = (type: StrategyType) =>
     activeStrategies.some((s) => s.strategy_id === type);
 
+  const t = useTranslations("trading.strategyPicker");
+
   return (
     <div className="bg-slate-800 rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-white mb-4">Velg strategi</h2>
+      <h2 className="text-lg font-semibold text-white mb-4">{t("title")}</h2>
 
       {mode === "paper" && (
-        <p className="text-blue-400 text-sm mb-4">
-          💡 Paper mode — ingen ekte penger
+        <p className={`mb-4 flex items-center gap-2 text-sm ${BRAND.link}`}>
+          <Lightbulb className="h-4 w-4 shrink-0" aria-hidden />
+          <span>{t("paperHint")}</span>
         </p>
       )}
 
@@ -795,7 +840,9 @@ function StrategySelectorSection({
                 }}
                 aria-expanded={expanded}
                 aria-label={
-                  expanded ? "Lukk strategi" : `Velg ${strategy.name}`
+                  expanded
+                    ? t("ariaClose")
+                    : t("ariaSelect", { name: strategy.name })
                 }
               >
                 <div className="flex items-center gap-3 text-slate-300">
@@ -805,22 +852,23 @@ function StrategySelectorSection({
                       <span className="font-medium text-white">
                         {strategy.name}
                       </span>
-                      <div className="flex">
+                      <div className="flex" aria-hidden>
                         {[...Array(5)].map((_, i) => (
-                          <span
+                          <Star
                             key={i}
-                            className={
+                            className={`h-3.5 w-3.5 ${
                               i < strategy.risk
                                 ? RISK_COLORS[strategy.risk]
                                 : "text-slate-600"
-                            }
-                          >
-                            ★
-                          </span>
+                            }`}
+                            fill={i < strategy.risk ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          />
                         ))}
                       </div>
                     </div>
-                    <p className="text-slate-400 text-sm truncate">
+                    <p className="text-slate-300 text-sm truncate">
                       {strategy.description}
                     </p>
                   </div>
@@ -829,10 +877,12 @@ function StrategySelectorSection({
                   {active ? (
                     <span className="flex items-center gap-1 text-green-400 text-sm">
                       <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                      Aktiv
+                      {t("statusActive")}
                     </span>
                   ) : (
-                    <span className="text-slate-500 text-sm">Ikke startet</span>
+                    <span className="text-slate-400 text-sm">
+                      {t("statusIdle")}
+                    </span>
                   )}
                   {expanded ? (
                     <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -864,27 +914,29 @@ function StrategySelectorSection({
                       <div className="flex gap-3 mt-4">
                         {active ? (
                           <button
+                            type="button"
                             onClick={() => onStop(strategy.type)}
-                            className="h-full bg-linear-to-r from-blue-500 to-indigo-600 rounded-full flex-1 py-3 min-h-[44px] hover:bg-red-500/30 transition flex items-center justify-center gap-2"
+                            className="h-full flex-1 py-3 min-h-[44px] rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition flex items-center justify-center gap-2 font-semibold border border-red-500/25"
                           >
-                            <Square className="w-4 h-4" />
-                            Stopp strategi
+                            <Square className="w-4 h-4" aria-hidden />
+                            {t("stopStrategy")}
                           </button>
                         ) : (
                           <button
+                            type="button"
                             onClick={() => onStart(strategy.type)}
                             disabled={isStarting === strategy.type}
-                            className="flex-1 py-3 min-h-[44px] bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="flex-1 py-3 min-h-[44px] bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition flex items-center justify-center gap-2 disabled:opacity-50 font-medium"
                           >
                             {isStarting === strategy.type ? (
                               <>
                                 <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-                                Starter...
+                                {t("starting")}
                               </>
                             ) : (
                               <>
-                                <Play className="w-4 h-4" />
-                                Start strategi
+                                <Play className="w-4 h-4" aria-hidden />
+                                {t("startStrategy")}
                               </>
                             )}
                           </button>

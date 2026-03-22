@@ -26,6 +26,7 @@ import {
   Shield,
   User,
 } from "lucide-react";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,7 +53,7 @@ function SignupContent() {
   const plan = searchParams?.get("plan");
   const locale = useLocale();
   const t = useTranslations("auth");
-  const redirectDest = redirectTo || `/${locale}/dashboard`;
+  const redirectDest = redirectTo || hrefWithLocale(locale, "/dashboard");
 
   useEffect(() => {
     setMounted(true);
@@ -205,7 +206,9 @@ function SignupContent() {
         </CardHeader>
         <CardContent className="p-8 pt-4">
           <div className="mb-6">
-            <AuthButtons redirectPath={redirectTo || `/${locale}/dashboard`} />
+            <AuthButtons
+              redirectPath={redirectTo || hrefWithLocale(locale, "/dashboard")}
+            />
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-[#E2E5EC]" />

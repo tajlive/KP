@@ -13,7 +13,7 @@ export const BRAND_COLOR = {
 /** Dark/light theme bakgrunn/border – konsistent på landing, priser, dashboard */
 export const SURFACE = {
   BG: "bg-slate-950", // #0f172a
-  BG_LIGHT: "bg-[#F7F8FA]", // lys landing/dashboard
+  BG_LIGHT: "bg-kp-bg-secondary", // #F7F8FA — theme, ikke arbitrary hex
   BG_ELEVATED: "bg-slate-900", // kort
   BG_CARD: "bg-slate-900/80", // kort med subtil transparens
   BORDER: "border-slate-800",
@@ -24,15 +24,15 @@ export const SURFACE = {
 } as const;
 
 export const BRAND = {
-  primary: "bg-[#0052FF] hover:bg-[#0047E0] text-white",
+  primary: "bg-brand-500 hover:bg-brand-600 text-white",
   primaryOutline:
-    "border-2 border-[#0052FF] text-[#0052FF] hover:bg-[#0052FF]/10 dark:hover:bg-[#0052FF]/10",
-  link: "text-[#0052FF] hover:text-[#0047E0] transition-colors",
+    "border-2 border-brand-500 text-brand-500 hover:bg-brand-500/10 dark:hover:bg-brand-500/10",
+  link: "text-brand-500 hover:text-brand-600 transition-colors",
   focusRing:
-    "focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:ring-offset-2",
+    "focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
   /** For Radix Switch etc. */
-  dataChecked: "data-[state=checked]:bg-[#0052FF]",
-  gradient: "bg-gradient-to-br from-[#0052FF] to-[#0047E0]",
+  dataChecked: "data-[state=checked]:bg-brand-500",
+  gradient: "bg-gradient-to-br from-brand-500 to-brand-600",
   secondary:
     "bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white",
   danger: "bg-red-600 hover:bg-red-700 text-white",
@@ -54,7 +54,7 @@ export const RADIUS = {
 
 export const SHADOW = {
   card: "shadow-sm hover:shadow-md transition-shadow duration-200",
-  cardBrand: "shadow-lg shadow-[#0052FF]/10",
+  cardBrand: "shadow-lg shadow-brand-500/10",
   button: "shadow-sm active:shadow-none",
   modal: "shadow-2xl",
 } as const;
@@ -77,18 +77,18 @@ export const CARD = {
 
 /** Hero/landing – gradient og CTA (samme merke #0052FF) */
 export const HERO = {
-  gradient: "from-[#0052FF] via-[#0041CC] to-slate-900",
+  gradient: "from-brand-500 via-brand-600 to-slate-900",
   /** Tittel-accent (h1 del 2) — merke-spesifikk, mindre «generisk AI-gradient» */
   titleAccent:
     "bg-gradient-to-r from-sky-100 via-white to-blue-100 bg-clip-text text-transparent",
   /** Svakere ledd i h1 linje 2 (f.eks. «for at» / «penger») — lavere kontrast mot gradient */
   titleMuted: "text-blue-100/45 font-black",
   badge:
-    "bg-[#0052FF]/20 backdrop-blur-sm text-white border border-[#0052FF]/40 rounded-full",
+    "bg-brand-500/20 backdrop-blur-sm text-white border border-brand-500/40 rounded-full",
   ctaPrimary:
-    "px-8 py-4 bg-[#0052FF] hover:bg-[#0041CC] text-white rounded-xl font-bold text-lg shadow-2xl shadow-[#0052FF]/30 hover:shadow-[#0052FF]/40 hover:scale-[1.02] transition-all duration-200",
+    "px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-lg shadow-2xl shadow-brand-500/30 hover:shadow-brand-500/40 hover:scale-[1.02] transition-all duration-200",
   ctaSecondary:
-    "px-8 py-4 bg-white text-[#0052FF] rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-200",
+    "px-8 py-4 bg-white text-brand-500 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-200",
 } as const;
 
 /** Tabeller: tall alltid tabular-nums, rader med hover */

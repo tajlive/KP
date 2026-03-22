@@ -10,12 +10,12 @@
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
-  
+
   // TypeScript
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
-  
+
   // Files
   "files.exclude": {
     "**/node_modules": true,
@@ -33,7 +33,7 @@
     "**/.next": true,
     "**/package-lock.json": true
   },
-  
+
   // Eslint
   "eslint.workingDirectories": ["."],
   "eslint.validate": [
@@ -42,8 +42,10 @@
     "typescript",
     "typescriptreact"
   ],
-  
+
   // Tailwind CSS
+  // Merke-/design-hex (#0052FF, kp-tekst, krypto-graderinger) er bevisst; canonical-hint spammer ~100+ varsler.
+  "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
   "tailwindCSS.includeLanguages": {
     "typescript": "javascript",
     "typescriptreact": "javascript"
@@ -52,22 +54,22 @@
     ["cva\\(([^)]*)\\)", "[^'\"]`([^'\"]+)[^'\"]"],
     ["cx\\(([^)]*)\\)", "[^'\"]`([^'\"]+)[^'\"]"]
   ],
-  
+
   // i18n
   "i18n-ally.localesPaths": ["messages"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sourceLanguage": "no",
   "i18n-ally.displayLanguage": "no",
   "i18n-ally.enabledFrameworks": ["next-intl"],
-  
+
   // Git
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
-  
+
   // Terminal
   "terminal.integrated.defaultProfile.osx": "bash",
   "terminal.integrated.cwd": "${workspaceFolder}",
-  
+
   // Extension recommendations
   "extensions.ignoreRecommendations": true
 }
