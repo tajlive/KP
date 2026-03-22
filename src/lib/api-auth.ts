@@ -14,8 +14,9 @@
  * ```
  */
 
-import { type NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@/lib/supabase/server";
 
 export interface AuthenticatedRequest extends NextRequest {
   user: {
@@ -27,38 +28,72 @@ export interface AuthenticatedRequest extends NextRequest {
 
 export type AuthenticatedHandler = (
   request: NextRequest,
-  context: { user: AuthenticatedRequest['user'] }
+  context: { user: AuthenticatedRequest["user"] },
 ) => Promise<Response> | Response;
 
-/**
- * Extract and validate JWT token from request headers
- */
-async function validateToken(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+type AuthUser = {
+  id: string;
+  email?: string;
+  role?: string;
+};
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
+function forwardSessionCookies(from: NextResponse, to: NextResponse): void {
+  const list = from.headers.getSetCookie?.() ?? [];
+  for (const cookie of list) {
+    to.headers.append("Set-Cookie", cookie);
+  }
+}
+
+/**
+ * Bearer JWT (mobil/CLI) eller Supabase-cookies (nettleser / same-origin fetch).
+ * Ved cookie-bruk returneres en sidecar-respons som må flettes inn i API-svaret
+ * slik at session refresh (Set-Cookie) ikke mistes.
+ */
+async function getRequestUser(
+  request: NextRequest,
+): Promise<{ user: AuthUser; cookieSidecar: NextResponse | null } | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  const authHeader = request.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.replace("Bearer ", "");
+    const supabase = createClient(url, anon);
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      return null;
+    }
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.user_metadata?.role || user.app_metadata?.role,
+      },
+      cookieSidecar: null,
+    };
   }
 
-  const token = authHeader.replace('Bearer ', '');
-
-  // Create Supabase client for token validation
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  // Verify token and get user
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-
+  const cookieSidecar = NextResponse.next({
+    request: { headers: request.headers },
+  });
+  const supabase = createServerClient(request, cookieSidecar);
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error || !user) {
     return null;
   }
-
   return {
-    id: user.id,
-    email: user.email,
-    role: user.user_metadata?.role || user.app_metadata?.role
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.user_metadata?.role || user.app_metadata?.role,
+    },
+    cookieSidecar,
   };
 }
 
@@ -71,32 +106,40 @@ async function validateToken(request: NextRequest) {
 export function withAuth(handler: AuthenticatedHandler) {
   return async (request: NextRequest, context?: unknown) => {
     // Validate environment variables
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error('Missing Supabase environment variables');
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ) {
+      console.error("Missing Supabase environment variables");
       return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
+        { error: "Server configuration error" },
+        { status: 500 },
       );
     }
 
-    // Validate token
-    const user = await validateToken(request);
+    const auth = await getRequestUser(request);
 
-    if (!user) {
+    if (!auth) {
       return NextResponse.json(
-        { error: 'Unauthorized. Please provide a valid authentication token.' },
-        { status: 401 }
+        {
+          error:
+            "Unauthorized. Sign in or send Authorization: Bearer <access_token>.",
+        },
+        { status: 401 },
       );
     }
 
-    // Call handler with authenticated user
     try {
-      return await handler(request, { user });
+      const res = await handler(request, { user: auth.user });
+      if (auth.cookieSidecar && res instanceof NextResponse) {
+        forwardSessionCookies(auth.cookieSidecar, res);
+      }
+      return res;
     } catch (error) {
-      console.error('API handler error:', error);
+      console.error("API handler error:", error);
       return NextResponse.json(
-        { error: 'Internal server error' },
-        { status: 500 }
+        { error: "Internal server error" },
+        { status: 500 },
       );
     }
   };
@@ -109,12 +152,15 @@ export function withAuth(handler: AuthenticatedHandler) {
  * @param handler - The API route handler
  * @returns Protected API route handler with RBAC
  */
-export function withRole(allowedRoles: string[], handler: AuthenticatedHandler) {
+export function withRole(
+  allowedRoles: string[],
+  handler: AuthenticatedHandler,
+) {
   return withAuth(async (request, { user }) => {
     if (!user.role || !allowedRoles.includes(user.role)) {
       return NextResponse.json(
-        { error: 'Forbidden. Insufficient permissions.' },
-        { status: 403 }
+        { error: "Forbidden. Insufficient permissions." },
+        { status: 403 },
       );
     }
 
@@ -130,19 +176,15 @@ export function getServiceRoleClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!serviceRoleKey) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not configured');
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured");
   }
 
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    serviceRoleKey,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  );
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
 
 /**
@@ -154,7 +196,7 @@ const requestCounts = new Map<string, { count: number; resetTime: number }>();
 export function rateLimit(
   identifier: string,
   maxRequests: number = 100,
-  windowMs: number = 60000
+  windowMs: number = 60000,
 ): boolean {
   const now = Date.now();
   const record = requestCounts.get(identifier);
@@ -167,7 +209,7 @@ export function rateLimit(
   // Get or create record
   const current = requestCounts.get(identifier) || {
     count: 0,
-    resetTime: now + windowMs
+    resetTime: now + windowMs,
   };
 
   // Check limit
@@ -193,15 +235,18 @@ export function rateLimit(
 export function withRateLimit(
   maxRequests: number = 100,
   windowMs: number = 60000,
-  handler: AuthenticatedHandler
+  handler: AuthenticatedHandler,
 ) {
   return withAuth(async (request, context) => {
     const identifier = context.user.id;
 
     if (!rateLimit(identifier, maxRequests, windowMs)) {
       return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: { 'Retry-After': String(Math.ceil(windowMs / 1000)) } }
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(Math.ceil(windowMs / 1000)) },
+        },
       );
     }
 
