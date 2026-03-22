@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Opprett testbruker (tom@klarpakke.no) og kjør E2E-tester med innlogging
-# Krever: .env.local med NEXT_PUBLIC_SUPABASE_URL og SUPABASE_SERVICE_ROLE_KEY
+# Krever: NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY i .env / .env.local / …
+#         (lastes automatisk av scripts/create-test-users.js — samme filer som Next)
+# Sjekk: npm run test:e2e:check-env
 #
 # Enklere alternativ (starter server automatisk): npm run test:full
 #
@@ -10,7 +12,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-echo "📋 1. Oppretter testbruker i Supabase..."
+echo "📋 1. Oppretter / synker testbrukere i Supabase (standard-E2E + valgfrie A/B)..."
 node scripts/create-test-users.js
 echo ""
 

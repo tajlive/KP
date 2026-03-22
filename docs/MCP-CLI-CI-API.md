@@ -44,7 +44,9 @@ npm run preprod:gate
 
 Kjører: **lint** → **type-check** → **Vitest med coverage** → **`verify`** (prod-sjekk) → **build** (`SKIP_LINT_IN_BUILD`) → **Lighthouse CI** mot `www.klarpakke.no` (/, priser, innlogging) → **full Playwright** → **Allure-rapport** (`allure-report/`).
 
-Krever: nettverk, Playwright-browsere (`npm run playwright:install`), `.env.local` for E2E mot localhost der det trengs, og ev. `.auth/user.json` fra setup for innloggede prosjekter.
+Krever: nettverk, Playwright-browsere (`npm run playwright:install`), Supabase/Next-nøkler i `.env` / `.env.local` / `.env.*.local` for E2E mot localhost der det trengs, og ev. `.auth/user.json` fra setup for innloggede prosjekter.
+
+- **E2E testbruker (Admin API):** `npm run test:e2e:check-env` (masket sjekk av URL + `SUPABASE_SERVICE_ROLE_KEY`) → `npm run test:e2e:provision:primary`. Scriptet laster env fra samme filrekke som over (fyller ikke over eksisterende shell-variabler).
 
 ### Playwright (lokal E2E)
 

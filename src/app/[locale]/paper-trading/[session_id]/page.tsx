@@ -111,11 +111,11 @@ export default async function PaperTradingSessionPage({
     const { data: trades, error: tradesError } = await supabase
       .from("trades")
       .select(
-        "id, side, quantity, price, realized_pnl, created_at, total_value",
+        "id, side, quantity, price, realized_pnl, created_at, total_value, executed_at",
       )
       .eq("session_id", session_id)
-      .order("created_at", { ascending: false })
-      .limit(20);
+      .order("executed_at", { ascending: false })
+      .limit(50);
 
     if (tradesError) {
       console.error("Failed to fetch trades:", tradesError);

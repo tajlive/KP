@@ -52,6 +52,26 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
 
+      # Sikrer at GitHub secrets-matcher finnes i Supabase (Admin API). Krever SUPABASE_SERVICE_ROLE_KEY + E2E_USER_*.
+      - name: Provision E2E test user (Supabase Admin)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::notice title=E2E provision::SUPABASE_SERVICE_ROLE_KEY mangler — hopper over automatisk opprettelse. Brukeren må finnes i Supabase."
+            exit 0
+          fi
+          if [ -z "$E2E_USER_EMAIL" ] || [ -z "$E2E_USER_PASSWORD" ]; then
+            echo "::notice title=E2E provision::E2E_USER_EMAIL / E2E_USER_PASSWORD mangler — hopper over provision."
+            exit 0
+          fi
+          node scripts/create-test-users.js --from-env
+
       # CI: kun Chromium (Firefox er ofte ustabil i headless Linux)
       - name: Run Critical E2E Tests
         run: npm run test:e2e:critical:chromium

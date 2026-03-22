@@ -4,7 +4,8 @@
 #
 # Bruk: npm run test:full   eller   bash scripts/full-e2e.sh
 #
-# Krever: .env.local med NEXT_PUBLIC_SUPABASE_URL og SUPABASE_SERVICE_ROLE_KEY
+# Krever: Supabase URL + SUPABASE_SERVICE_ROLE_KEY i .env / .env.local / … (auto-last av create-test-users.js)
+# Sjekk: npm run test:e2e:check-env
 set -e
 cd "$(dirname "$0")/.."
 
