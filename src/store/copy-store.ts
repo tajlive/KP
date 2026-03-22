@@ -45,6 +45,7 @@ interface CopyStore {
   totalCopyPnl: number;
   isLoading: boolean;
   error: string | null;
+  lastFetchSource: "api" | "supabase" | null;
 
   fetchFollowing: () => Promise<void>;
   follow: (leaderId: string, config: CopyConfig) => Promise<void>;
@@ -56,146 +57,271 @@ interface CopyStore {
   fetchActiveCopies: () => Promise<void>;
 }
 
-export const useCopyStore = create<CopyStore>()(
-  (set, get) => ({
-    following: [],
-    activeCopies: [],
-    totalCopyPnl: 0,
-    isLoading: false,
-    error: null,
+type FollowingApiRow = {
+  id: string;
+  leaderId: string;
+  leaderName: string;
+  leaderAvatar: string | null;
+  maxAllocationNok: number;
+  sizingMode: "fixed" | "proportional";
+  maxLeverage: number;
+  autoStopDrawdownPct: number;
+  isActive: boolean;
+  pnlNok: number;
+  activeCopies: number;
+  followedAt: string;
+};
 
-    fetchFollowing: async () => {
-      set({ isLoading: true, error: null });
-      try {
-        const supabase = createClient();
-        const { data, error } = (await supabase
-          .from("copy_trading_follows")
-          .select("*")
-          .order("created_at", { ascending: false }));
+async function fetchFollowingViaApi(): Promise<{
+  following: FollowedTrader[];
+  ok: boolean;
+}> {
+  const res = await fetch("/api/copy-trading/following", {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    return { following: [], ok: false };
+  }
+  const body = (await res.json()) as { following: FollowingApiRow[] };
+  const following: FollowedTrader[] = (body.following ?? []).map((f) => ({
+    id: f.id,
+    leaderId: f.leaderId,
+    leaderName: f.leaderName,
+    leaderAvatar: f.leaderAvatar,
+    maxAllocationNok: f.maxAllocationNok,
+    sizingMode: f.sizingMode,
+    maxLeverage: f.maxLeverage,
+    autoStopDrawdownPct: f.autoStopDrawdownPct,
+    isActive: f.isActive,
+    pnlNok: f.pnlNok,
+    activeCopies: f.activeCopies,
+    followedAt: f.followedAt,
+  }));
+  return { following, ok: true };
+}
 
-        if (error) throw error;
+function mapFollowRowsFromSupabase(
+  rows: Record<string, unknown>[],
+  profiles: Map<
+    string,
+    { display_name: string | null; avatar_url: string | null }
+  >,
+): FollowedTrader[] {
+  return rows.map((row) => {
+    const leaderAuthId = String(row.leader_id ?? "");
+    const prof = profiles.get(leaderAuthId);
+    const maxRaw = row.max_trade_amount;
+    const maxNok =
+      typeof maxRaw === "number"
+        ? maxRaw
+        : maxRaw != null
+          ? Number(maxRaw)
+          : 10_000;
+    const alloc = Number(row.allocation_percent ?? 0);
+    const scale = Number(row.scale_factor ?? 0);
+    const proportional = alloc > 0 && scale > 0;
 
-        type CopyFollowRow = {
-          id?: string;
-          leader_id?: string;
-          leader_name?: string;
-          leader_avatar?: string;
-          max_allocation_nok?: number;
-          sizing_mode?: string;
-          max_leverage?: number;
-          auto_stop_drawdown_pct?: number;
-          is_active?: boolean;
-          created_at?: string;
-        };
-        const following: FollowedTrader[] = (data || []).map((cfg: Record<string, unknown>) => ({
-          id: (cfg.id as string) ?? "",
-          leaderId: (cfg.leader_id as string) ?? "",
-          leaderName: (cfg.leader_name as string) ?? "Unknown Trader",
-          leaderAvatar: (cfg.leader_avatar as string | null) ?? null,
-          maxAllocationNok: (cfg.max_allocation_nok as number) ?? 10000,
-          sizingMode: (cfg.sizing_mode as "fixed" | "proportional") ?? "proportional",
-          maxLeverage: (cfg.max_leverage as number) ?? 5,
-          autoStopDrawdownPct: (cfg.auto_stop_drawdown_pct as number) ?? 20,
-          isActive: (cfg.is_active as boolean) ?? true,
-          pnlNok: 0,
-          activeCopies: 0,
-          followedAt: (cfg.created_at as string) ?? "",
-        }));
+    return {
+      id: String(row.id ?? ""),
+      leaderId: leaderAuthId,
+      leaderName: prof?.display_name?.trim() || "Trader",
+      leaderAvatar: prof?.avatar_url ?? null,
+      maxAllocationNok: Number.isFinite(maxNok) ? maxNok : 10_000,
+      sizingMode: proportional ? "proportional" : "fixed",
+      maxLeverage: 5,
+      autoStopDrawdownPct: 20,
+      isActive: row.is_active !== false,
+      pnlNok: 0,
+      activeCopies: 0,
+      followedAt: String(row.created_at ?? ""),
+    };
+  });
+}
 
-        const totalPnl = following.reduce((sum, f) => sum + f.pnlNok, 0);
-        set({ following, totalCopyPnl: totalPnl, isLoading: false });
-      } catch (err) {
-        set({ error: (err as Error).message, isLoading: false });
-      }
-    },
+export const useCopyStore = create<CopyStore>()((set, get) => ({
+  following: [],
+  activeCopies: [],
+  totalCopyPnl: 0,
+  isLoading: false,
+  error: null,
+  lastFetchSource: null,
 
-    follow: async (leaderId: string, config: CopyConfig) => {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("copy_trading_follows")
-        .insert({
-          follower_id: (await supabase.auth.getUser()).data.user?.id ?? "",
-          leader_id: leaderId,
-          max_trade_amount: config.maxAllocationNok,
-          scale_factor: config.sizingMode === "proportional" ? 1 : null,
-          allocation_percent: config.sizingMode === "proportional" ? 100 : 0,
-          is_active: true,
-        });
-
-      if (!error) {
-        await get().fetchFollowing();
-      }
-    },
-
-    unfollow: async (leaderId: string) => {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("copy_trading_follows")
-        .update({ is_active: false })
-        .eq("leader_id", leaderId);
-
-      if (!error) {
-        set((state) => ({
-          following: state.following.map((f) =>
-            f.leaderId === leaderId ? { ...f, isActive: false } : f,
-          ),
-        }));
-      }
-    },
-
-    updateConfig: async (leaderId, config) => {
-      const supabase = createClient();
-      const updates: Record<string, unknown> = {};
-      if (config.maxAllocationNok !== undefined)
-        updates.max_allocation_nok = config.maxAllocationNok;
-      if (config.sizingMode !== undefined)
-        updates.sizing_mode = config.sizingMode;
-      if (config.maxLeverage !== undefined)
-        updates.max_leverage = config.maxLeverage;
-      if (config.autoStopDrawdownPct !== undefined)
-        updates.auto_stop_drawdown_pct = config.autoStopDrawdownPct;
-      updates.updated_at = new Date().toISOString();
-
-      await supabase
-        .from("copy_trading_follows")
-        .update(updates)
-        .eq("leader_id", leaderId);
-
-      await get().fetchFollowing();
-    },
-
-    fetchActiveCopies: async () => {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("copy_trade_queue")
-        .select("*")
-        .eq("status", "executed")
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (data) {
-        const copies: CopiedPosition[] = data.map(
-          (log: Record<string, unknown>) => ({
-            id: log.id as string,
-            leaderId: (log.config_id as string) || "",
-            originalTradeId: (log.original_trade_id as string) || "",
-            symbol: (log.symbol as string) || "",
-            side: "LONG" as const,
-            entryPrice: (log.copy_price as number) || 0,
-            currentPrice: (log.copy_price as number) || 0,
-            quantity: 0,
-            pnlNok: 0,
-            pnlPct: 0,
-            latencyMs: (log.latency_ms as number) || 0,
-            status: "active" as const,
-            openedAt: log.created_at as string,
-          }),
+  fetchFollowing: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const apiResult = await fetchFollowingViaApi();
+      if (apiResult.ok) {
+        const totalPnl = apiResult.following.reduce(
+          (sum, f) => sum + f.pnlNok,
+          0,
         );
-
-        set({ activeCopies: copies });
+        set({
+          following: apiResult.following,
+          totalCopyPnl: totalPnl,
+          isLoading: false,
+          lastFetchSource: "api",
+        });
+        return;
       }
-    },
-  }),
-);
+
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("copy_trading_follows")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const rows = (data ?? []) as Record<string, unknown>[];
+      const leaderIds = [
+        ...new Set(rows.map((r) => String(r.leader_id ?? "")).filter(Boolean)),
+      ];
+      const profiles = new Map<
+        string,
+        { display_name: string | null; avatar_url: string | null }
+      >();
+
+      if (leaderIds.length > 0) {
+        const { data: profs } = await supabase
+          .from("user_profiles")
+          .select("user_id, display_name")
+          .in("user_id", leaderIds);
+
+        for (const p of profs ?? []) {
+          if (p.user_id) {
+            profiles.set(p.user_id, {
+              display_name: p.display_name,
+              avatar_url: null,
+            });
+          }
+        }
+      }
+
+      const following = mapFollowRowsFromSupabase(rows, profiles);
+      const totalPnl = following.reduce((sum, f) => sum + f.pnlNok, 0);
+      set({
+        following,
+        totalCopyPnl: totalPnl,
+        isLoading: false,
+        lastFetchSource: "supabase",
+      });
+    } catch (err) {
+      set({
+        error: (err as Error).message,
+        isLoading: false,
+        lastFetchSource: null,
+      });
+    }
+  },
+
+  follow: async (leaderId: string, config: CopyConfig) => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.id) {
+      set({ error: "Ikke innlogget" });
+      return;
+    }
+
+    const { error } = await supabase.from("copy_trading_follows").insert({
+      follower_id: user.id,
+      leader_id: leaderId,
+      max_trade_amount: config.maxAllocationNok,
+      scale_factor: config.sizingMode === "proportional" ? 1 : null,
+      allocation_percent: config.sizingMode === "proportional" ? 100 : 10,
+      is_active: true,
+    });
+
+    if (!error) {
+      await get().fetchFollowing();
+    } else {
+      set({ error: error.message });
+    }
+  },
+
+  unfollow: async (leaderId: string) => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.id) return;
+
+    const { error } = await supabase
+      .from("copy_trading_follows")
+      .update({ is_active: false })
+      .eq("leader_id", leaderId)
+      .eq("follower_id", user.id);
+
+    if (!error) {
+      set((state) => ({
+        following: state.following.map((f) =>
+          f.leaderId === leaderId ? { ...f, isActive: false } : f,
+        ),
+      }));
+      await get().fetchFollowing();
+    }
+  },
+
+  updateConfig: async (leaderId, config) => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.id) return;
+
+    const updates: Record<string, unknown> = {};
+    if (config.maxAllocationNok !== undefined) {
+      updates.max_trade_amount = config.maxAllocationNok;
+    }
+    if (config.sizingMode !== undefined) {
+      updates.scale_factor = config.sizingMode === "proportional" ? 1 : null;
+      updates.allocation_percent =
+        config.sizingMode === "proportional" ? 100 : 10;
+    }
+
+    if (Object.keys(updates).length === 0) return;
+
+    await supabase
+      .from("copy_trading_follows")
+      .update(updates)
+      .eq("leader_id", leaderId)
+      .eq("follower_id", user.id);
+
+    await get().fetchFollowing();
+  },
+
+  fetchActiveCopies: async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("copy_trade_queue")
+      .select("*")
+      .eq("status", "executed")
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (data) {
+      const copies: CopiedPosition[] = data.map(
+        (log: Record<string, unknown>) => ({
+          id: log.id as string,
+          leaderId: (log.config_id as string) || "",
+          originalTradeId: (log.original_trade_id as string) || "",
+          symbol: (log.symbol as string) || "",
+          side: "LONG" as const,
+          entryPrice: (log.copy_price as number) || 0,
+          currentPrice: (log.copy_price as number) || 0,
+          quantity: 0,
+          pnlNok: 0,
+          pnlPct: 0,
+          latencyMs: (log.latency_ms as number) || 0,
+          status: "active" as const,
+          openedAt: log.created_at as string,
+        }),
+      );
+
+      set({ activeCopies: copies });
+    }
+  },
+}));
 
 export type { CopiedPosition, CopyConfig, FollowedTrader };
