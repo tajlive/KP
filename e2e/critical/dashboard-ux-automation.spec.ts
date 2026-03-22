@@ -35,11 +35,11 @@ test.describe("Critical: dashboard UX @critical", () => {
 });
 
 test.describe("Critical: auto-trade wizard mobil @critical", () => {
-  test.use({ ...devices["iPhone 13"] });
-
   test("steg 2: beløp-felt synlig; steg 3: Start bot synlig", async ({
     page,
   }) => {
+    const mob = devices["iPhone 13"];
+    await page.setViewportSize(mob.viewport);
     await page.goto(AUTO_TRADE_NO, {
       waitUntil: "domcontentloaded",
       timeout: 60_000,
