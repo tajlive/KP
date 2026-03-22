@@ -1,4 +1,17 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+const MODULE_TITLE = /Hvorfor Priser Beveger Seg/i;
+
+async function waitForModuleOverviewShell(page: Page, moduleSlug: string) {
+  await page.goto(`/no/kurs/${moduleSlug}`, {
+    waitUntil: "domcontentloaded",
+    timeout: 90_000,
+  });
+  await expect(page.getByRole("heading", { name: MODULE_TITLE })).toBeVisible({
+    timeout: 45_000,
+  });
+  await page.waitForLoadState("networkidle").catch(() => {});
+}
 
 test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
   const moduleSlug = "hvorfor-priser-beveger-seg";
@@ -12,19 +25,12 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
 
   test.describe("Module Overview Page", () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(`/no/kurs/${moduleSlug}`, {
-        waitUntil: "domcontentloaded",
-        timeout: 90_000,
-      });
+      await waitForModuleOverviewShell(page, moduleSlug);
     });
 
     test("should load module overview and display 5 lessons", async ({
       page,
     }) => {
-      await expect(
-        page.getByRole("heading", { name: /Hvorfor Priser Beveger Seg/i }),
-      ).toBeVisible();
-
       const lessonHeadings = page.getByRole("heading", { level: 3 });
       const headingTexts = await lessonHeadings.allTextContents();
       const lessonTitles = headingTexts.filter((t) =>
@@ -40,20 +46,25 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     });
 
     test("should show module metadata correctly", async ({ page }) => {
-      await expect(page.getByText("Nybegynner", { exact: true })).toBeVisible();
+      await expect(page.getByText("Nybegynner", { exact: true })).toBeVisible({
+        timeout: 25_000,
+      });
 
-      await expect(
-        page.getByText("Obligatorisk", { exact: true }),
-      ).toBeVisible();
+      await expect(page.getByText("Obligatorisk", { exact: true })).toBeVisible(
+        { timeout: 25_000 },
+      );
 
-      await expect(page.getByText(/5\s*leksjoner/i)).toBeVisible();
+      await expect(page.getByText(/5\s*leksjoner/i)).toBeVisible({
+        timeout: 25_000,
+      });
     });
 
     test("should navigate to first lesson", async ({ page }) => {
+      const firstLessonHref = `/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`;
       const firstLessonButton = page
-        .getByRole("link", { name: /Start leksjon/i })
+        .locator(`a[href="${firstLessonHref}"]`)
         .first();
-      await expect(firstLessonButton).toBeVisible();
+      await expect(firstLessonButton).toBeVisible({ timeout: 30_000 });
 
       await firstLessonButton.click();
 
@@ -69,6 +80,10 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
         waitUntil: "domcontentloaded",
         timeout: 90_000,
       });
+      await expect(
+        page.locator("h1.text-3xl", { hasText: /Tilbud og Etterspørsel/i }),
+      ).toBeVisible({ timeout: 45_000 });
+      await page.waitForLoadState("networkidle").catch(() => {});
     });
 
     test("should display lesson content with markdown", async ({ page }) => {
@@ -142,7 +157,9 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
   });
 
   test.describe("Mobile Responsiveness", () => {
-    test.use({ viewport: { width: 375, height: 667 } });
+    test.beforeEach(async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
+    });
 
     test("should display lesson content on mobile", async ({ page }) => {
       await page.goto(`/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`, {

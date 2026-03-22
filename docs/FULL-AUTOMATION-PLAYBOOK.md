@@ -32,6 +32,7 @@ npm run auto:preflight:full     # + MCP-tilkoblingstest + Linear-test
 - **Agent-profil** krever bl.a. Linear + Vercel (se `scripts/cloud-readiness.mjs`). Viser også **valgfri** E2E/Supabase Admin-status (`SUPABASE_SERVICE_ROLE_KEY` m.m.).
 - **Full** kjører `scripts/test-mcp-connections.sh` (feiler hvis en påkrevd tilkobling feiler — se rapport).
 - **E2E testbruker (Supabase Admin):** `npm run test:e2e:check-env` → `npm run test:e2e:prepare` (sjekk + `tom@klarpakke.no`). Deretter `npm run test:e2e:with-user` eller `test:full`.
+- **Lokal «test-robot» (deterministisk, ikke LLM):** `npm run test:robot` — kjører lint, type-check, Vitest, `test:e2e:prepare`, deretter Playwright `critical-chromium`. Tilsvarende «robot» i sky: GitHub Actions (`e2e-critical.yml`, `pr-check.yml`). En egen KI-agent som skriver/utfører tester ad hoc gir sjelden bedre sikkerhet enn Playwright + faste scripts; bruk agenter til å _endre_ testkode, ikke til å erstatte kjøringen.
 - **Supabase-nøkler inn i `.env.local` uten manuell liming:** `SUPABASE_ACCESS_TOKEN` (PAT) + URL eller `SUPABASE_PROJECT_REF` → `npm run env:sync:supabase` (Management API). Verifiser: `npm run env:sync:supabase:verify`. Har du alt i Vercel: `npm run vercel:env` (trekk production/preview/development etter behov).
 
 ---

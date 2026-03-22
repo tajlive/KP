@@ -60,6 +60,7 @@ npm run auto:preflight      # Cloud readiness (agent) — start her for «alt p�
 npm run auto:preflight:full # + test:mcp + linear:test
 npm run env:sync:supabase   # URL + anon + service_role → .env.local (SUPABASE_ACCESS_TOKEN)
 npm run env:sync:supabase:verify # + test:e2e:check-env
+npm run test:robot          # lint + type-check + unit + E2E prepare + critical-chromium
 npm run cloud:bootstrap # Fyller kritiske cloud-keys i .env.local automatisk
 npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Vercel)
 npm run cloud:ready:deploy # Sjekk deploy-krav (Vercel) + auto-resolve av ORG_ID
