@@ -27,6 +27,8 @@ export interface PaperTradeRequest {
 export interface PaperTradeResult {
   success: boolean;
   tradeId?: string;
+  /** Active paper session the trade was recorded under */
+  sessionId?: string;
   /** Present when success is true; can be 0 on error for convenience */
   newBalance?: number;
   rejectionReason?: string;
@@ -231,6 +233,7 @@ export async function executePaperTrade(
     return {
       success: true,
       tradeId: trade.id,
+      sessionId: session.id,
       newBalance: synced,
     };
   } catch (error) {

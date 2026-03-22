@@ -33,13 +33,28 @@ interface TradingSession {
   created_at: string;
 }
 
+/** DB / API shape (quantity + realized_pnl); legacy UI used amount/profit_loss */
 interface Trade {
   id: string;
   side: "buy" | "sell";
-  amount: number;
+  quantity?: number;
+  amount?: number;
   price: number;
-  profit_loss: number | null;
+  realized_pnl?: number | null;
+  profit_loss?: number | null;
+  total_value?: number | null;
   created_at: string;
+}
+
+function tradeQuantity(t: Trade): number {
+  const q = t.quantity ?? t.amount;
+  return typeof q === "number" && Number.isFinite(q) ? q : 0;
+}
+
+function tradePnl(t: Trade): number | null {
+  const v = t.realized_pnl ?? t.profit_loss;
+  if (v == null || !Number.isFinite(Number(v))) return null;
+  return Number(v);
 }
 
 interface PaperTradingSessionDetailProps {
@@ -88,7 +103,19 @@ export function PaperTradingSessionDetail({
           filter: `session_id=eq.${session.id}`,
         },
         (payload) => {
-          setTrades((prev) => [payload.new as Trade, ...prev]);
+          const row = payload.new as Record<string, unknown>;
+          const mapped: Trade = {
+            id: String(row.id),
+            side: row.side as "buy" | "sell",
+            quantity: Number(row.quantity),
+            price: Number(row.price),
+            realized_pnl:
+              row.realized_pnl != null ? Number(row.realized_pnl) : null,
+            total_value:
+              row.total_value != null ? Number(row.total_value) : undefined,
+            created_at: String(row.created_at ?? ""),
+          };
+          setTrades((prev) => [mapped, ...prev]);
         },
       )
       .on(
@@ -338,31 +365,49 @@ export function PaperTradingSessionDetail({
           ) : (
             <div className="space-y-2">
               {trades.map((trade) => {
-                const tradePnl = trade.profit_loss || 0;
-                const isTradeProfitable = tradePnl >= 0;
+                const qty = tradeQuantity(trade);
+                const pnl = tradePnl(trade);
+                const isTradeProfitable = pnl != null ? pnl >= 0 : true;
+                const baseSymbol = session.trading_pair.split("/")[0] ?? "";
+                const nok =
+                  trade.total_value != null &&
+                  Number.isFinite(trade.total_value)
+                    ? trade.total_value
+                    : null;
 
                 return (
                   <div
                     key={trade.id}
                     className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <Badge
                         variant={trade.side === "buy" ? "default" : "secondary"}
                       >
                         {trade.side === "buy" ? t("buy") : t("sell")}
                       </Badge>
                       <span className="text-slate-900 dark:text-white">
-                        {(trade.amount / trade.price).toFixed(6)}{" "}
-                        {session.trading_pair.split("/")[0]}
+                        {qty.toFixed(6)} {baseSymbol}
                       </span>
                       <span className="text-slate-500">@</span>
                       <span className="text-slate-900 dark:text-white">
-                        {trade.price.toLocaleString("nb-NO")} kr
+                        {trade.price.toLocaleString("nb-NO", {
+                          maximumFractionDigits: 2,
+                        })}{" "}
+                        USDT
                       </span>
+                      {nok != null && (
+                        <span className="text-slate-500 text-sm">
+                          (~
+                          {nok.toLocaleString("nb-NO", {
+                            maximumFractionDigits: 0,
+                          })}{" "}
+                          kr)
+                        </span>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      {trade.profit_loss !== null && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      {pnl != null && (
                         <span
                           className={`text-sm font-medium ${
                             isTradeProfitable
@@ -371,14 +416,15 @@ export function PaperTradingSessionDetail({
                           }`}
                         >
                           {isTradeProfitable ? "+" : ""}
-                          {tradePnl.toLocaleString("nb-NO")} kr
+                          {pnl.toLocaleString("nb-NO")} kr
                         </span>
                       )}
-                      {isTradeProfitable ? (
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-red-600" />
-                      )}
+                      {pnl != null &&
+                        (isTradeProfitable ? (
+                          <TrendingUp className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4 text-red-600" />
+                        ))}
                     </div>
                   </div>
                 );

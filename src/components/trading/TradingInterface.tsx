@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -48,13 +50,17 @@ export function TradingInterface({
   locale,
   paperBalance,
 }: TradingInterfaceProps) {
+  const router = useRouter();
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
   const [activeTab, setActiveTab] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [balance, setBalance] = useState(paperBalance);
-  const [orderbook, setOrderbook] = useState<{ asks: DepthRow[]; bids: DepthRow[] } | null>(null);
+  const [orderbook, setOrderbook] = useState<{
+    asks: DepthRow[];
+    bids: DepthRow[];
+  } | null>(null);
   const [orderbookLoading, setOrderbookLoading] = useState(false);
 
   const { coins, loading: pricesLoading } = useRealtimePrices(TRADE_SYMBOLS);
@@ -68,11 +74,17 @@ export function TradingInterface({
   const fetchDepth = useCallback(async (symbol: string) => {
     setOrderbookLoading(true);
     try {
-      const res = await fetch(`/api/trading/depth?symbol=${encodeURIComponent(symbol)}`);
+      const res = await fetch(
+        `/api/trading/depth?symbol=${encodeURIComponent(symbol)}`,
+      );
       const data = await res.json();
       if (data.bids && data.asks) {
         const toRow = (arr: [number, number][]): DepthRow[] =>
-          arr.map(([price, amount]) => ({ price, amount, total: price * amount }));
+          arr.map(([price, amount]) => ({
+            price,
+            amount,
+            total: price * amount,
+          }));
         setOrderbook({
           asks: toRow(data.asks.slice(0, 5)),
           bids: toRow(data.bids.slice(0, 5)),
@@ -107,18 +119,40 @@ export function TradingInterface({
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        setShowConfetti(true);
-        if (activeTab === "buy") {
-          setBalance((b) => b - amountNum);
-        } else {
-          setBalance((b) => b + amountNum);
-        }
-        setAmount("");
-        setTimeout(() => setShowConfetti(false), 3000);
+      if (!res.ok) {
+        toast.error(
+          data.error ||
+            (isNo ? "Kunne ikke utføre handel" : "Could not execute trade"),
+        );
+        return;
+      }
+      if (!data.success) {
+        toast.error(
+          data.error ||
+            data.rejectionReason ||
+            (isNo ? "Handelen ble avvist" : "Trade was rejected"),
+        );
+        return;
+      }
+      setShowConfetti(true);
+      if (
+        typeof data.new_balance === "number" &&
+        Number.isFinite(data.new_balance)
+      ) {
+        setBalance(data.new_balance);
+      } else if (activeTab === "buy") {
+        setBalance((b) => b - amountNum);
+      } else {
+        setBalance((b) => b + amountNum);
+      }
+      setAmount("");
+      setTimeout(() => setShowConfetti(false), 3000);
+      if (data.session_id) {
+        router.push(`/${locale}/paper-trading/${data.session_id}`);
       }
     } catch (err) {
       console.error(err);
+      toast.error(isNo ? "Noe gikk galt" : "Something went wrong");
     }
     setLoading(false);
   };
@@ -180,7 +214,8 @@ export function TradingInterface({
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-base font-semibold text-[#1A1D26]">
-                    {isNo ? "Prisutvikling" : "Price Chart"} {currentCoin.shortName}
+                    {isNo ? "Prisutvikling" : "Price Chart"}{" "}
+                    {currentCoin.shortName}
                   </h2>
                   {pricesLoading && !currentPrice ? (
                     <div className="h-8 w-32 bg-[#F1F3F9] rounded animate-pulse mt-1" />
@@ -191,17 +226,27 @@ export function TradingInterface({
                   )}
                 </div>
                 {currentPrice > 0 && (
-                  <div className={`flex items-center gap-1 text-sm font-medium ${change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}>
-                    {change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                  <div
+                    className={`flex items-center gap-1 text-sm font-medium ${change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}
+                  >
+                    {change24h >= 0 ? (
+                      <TrendingUp className="w-4 h-4" />
+                    ) : (
+                      <TrendingDown className="w-4 h-4" />
+                    )}
                     {change24h >= 0 ? "+" : ""}
                     {change24h.toFixed(2)}%
                   </div>
                 )}
               </div>
               <p className="text-[10px] text-[#8E95A9] mb-2">
-                {isNo ? "Priser fra Binance, oppdatert ca. hvert 10. sekund." : "Prices from Binance, updated approximately every 10 seconds."}
+                {isNo
+                  ? "Priser fra Binance, oppdatert ca. hvert 10. sekund."
+                  : "Prices from Binance, updated approximately every 10 seconds."}
               </p>
-              <div className={`h-[250px] ${SURFACE.BG_LIGHT} rounded-lg flex items-center justify-center border border-[#E2E5EC]`}>
+              <div
+                className={`h-[250px] ${SURFACE.BG_LIGHT} rounded-lg flex items-center justify-center border border-[#E2E5EC]`}
+              >
                 <p className="text-[#8E95A9] text-sm">
                   {isNo ? "Graf kommer snart" : "Chart coming soon"}
                 </p>
@@ -236,7 +281,9 @@ export function TradingInterface({
                       <>
                         {[...orderbook.asks].reverse().map((ask, i) => (
                           <tr key={`ask-${i}`} className="text-[#DC2626]">
-                            <td className="py-0.5 font-mono">{formatNOK(ask.price)}</td>
+                            <td className="py-0.5 font-mono">
+                              {formatNOK(ask.price)}
+                            </td>
                             <td className="py-0.5 text-right font-mono">
                               {ask.amount.toFixed(3)}
                             </td>
@@ -255,7 +302,9 @@ export function TradingInterface({
                         </tr>
                         {orderbook.bids.map((bid, i) => (
                           <tr key={`bid-${i}`} className="text-[#16A34A]">
-                            <td className="py-0.5 font-mono">{formatNOK(bid.price)}</td>
+                            <td className="py-0.5 font-mono">
+                              {formatNOK(bid.price)}
+                            </td>
                             <td className="py-0.5 text-right font-mono">
                               {bid.amount.toFixed(3)}
                             </td>
@@ -281,7 +330,9 @@ export function TradingInterface({
                               colSpan={3}
                               className="py-2 text-center text-[#8E95A9] text-xs"
                             >
-                              {isNo ? "Kunne ikke laste ordrebok" : "Could not load order book"}
+                              {isNo
+                                ? "Kunne ikke laste ordrebok"
+                                : "Could not load order book"}
                             </td>
                           </tr>
                         )}
@@ -334,7 +385,10 @@ export function TradingInterface({
 
               {/* Amount Input */}
               <div className="space-y-3">
-                <label htmlFor="amount-input" className="block text-xs font-medium text-[#5E6478]">
+                <label
+                  htmlFor="amount-input"
+                  className="block text-xs font-medium text-[#5E6478]"
+                >
                   {isNo ? "Beløp i NOK" : "Amount in NOK"}
                 </label>
                 <div className="relative">
@@ -371,7 +425,9 @@ export function TradingInterface({
 
               {/* Summary */}
               {amountNum > 0 && (
-                <div className={`mt-4 p-3 ${SURFACE.BG_LIGHT} rounded-lg border border-[#E2E5EC]`}>
+                <div
+                  className={`mt-4 p-3 ${SURFACE.BG_LIGHT} rounded-lg border border-[#E2E5EC]`}
+                >
                   <div className="flex justify-between text-sm">
                     <span className="text-[#5E6478]">
                       {isNo
@@ -396,7 +452,11 @@ export function TradingInterface({
               {/* CTA Button */}
               <button
                 onClick={handleTrade}
-                disabled={loading || amountNum <= 0 || (activeTab === "buy" && amountNum > balance)}
+                disabled={
+                  loading ||
+                  amountNum <= 0 ||
+                  (activeTab === "buy" && amountNum > balance)
+                }
                 className={`w-full mt-5 py-3.5 rounded-lg text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                   activeTab === "buy"
                     ? "bg-[#16A34A] hover:bg-[#15803d]"
@@ -435,7 +495,10 @@ export function TradingInterface({
                     kr {formatNOK(balance)}
                   </p>
                 </div>
-                <Wallet className="w-8 h-8 text-[#0052FF] opacity-20" aria-hidden />
+                <Wallet
+                  className="w-8 h-8 text-[#0052FF] opacity-20"
+                  aria-hidden
+                />
               </div>
               <Link
                 href={`/${locale}/dashboard`}

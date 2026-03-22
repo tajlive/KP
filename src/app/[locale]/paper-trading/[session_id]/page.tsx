@@ -1,5 +1,4 @@
 import { requireAuth } from "@/lib/auth-guard";
-import { createClient } from "@/lib/supabase/server";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -74,9 +73,7 @@ export default async function PaperTradingSessionPage({
 }) {
   try {
     const { locale, session_id } = await params;
-    const { user } = await requireAuth(locale);
-
-    const supabase = await createClient();
+    const { user, supabase } = await requireAuth(locale);
 
     // Hent trading session med eiersjekk
     const { data: session, error: sessionError } = await supabase
@@ -107,7 +104,9 @@ export default async function PaperTradingSessionPage({
     // Hent trades for denne session
     const { data: trades, error: tradesError } = await supabase
       .from("trades")
-      .select("id, side, quantity, price, realized_pnl, created_at")
+      .select(
+        "id, side, quantity, price, realized_pnl, created_at, total_value",
+      )
       .eq("session_id", session_id)
       .order("created_at", { ascending: false })
       .limit(20);
