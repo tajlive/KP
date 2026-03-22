@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import {
   Lock,
@@ -80,7 +80,27 @@ export function BotWizard({
     const base = Number.isFinite(raw) && raw > 0 ? raw : 100_000;
     return clampPaperCapital(base);
   });
+  /** Tillat tom/mellomtilstand i feltet uten at tall «forsvinner» visuelt */
+  const [capitalDraft, setCapitalDraft] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const capitalInputValue =
+    capitalDraft !== null ? capitalDraft : String(startingCapital);
+
+  const onCapitalInputChange = useCallback((raw: string) => {
+    setCapitalDraft(raw);
+    const cleaned = raw.replace(/\s/g, "");
+    if (cleaned === "" || cleaned === "-") return;
+    const v = Number(cleaned);
+    if (!Number.isNaN(v)) {
+      setStartingCapital(clampPaperCapital(v));
+    }
+  }, []);
+
+  const onCapitalInputBlur = useCallback(() => {
+    setCapitalDraft(null);
+    setStartingCapital((prev) => clampPaperCapital(prev));
+  }, []);
 
   const isNo = locale === "no";
   const coinLimit = TIER_COIN_LIMIT[tier] ?? 3;
@@ -203,8 +223,8 @@ export function BotWizard({
   const selectedStrategy = STRATEGIES.find((s) => s.id === strategy);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 pb-36 md:pb-28">
-      <h1 className="text-2xl font-bold text-[#1A1D26] mb-4">
+    <div className="max-w-3xl mx-auto px-4 py-8 pb-36 md:pb-28 relative z-10">
+      <h1 className="text-2xl font-bold text-[#1A1D26] dark:text-white mb-4">
         {isNo ? "Start trading-bot" : "Start trading bot"}
       </h1>
 
@@ -236,10 +256,7 @@ export function BotWizard({
             <div key={stepNum} className="flex items-center">
               {i > 0 && (
                 <div
-                  className="w-16 h-0.5 sm:w-24"
-                  style={{
-                    backgroundColor: isPast ? "#22C55E" : "#E2E5EC",
-                  }}
+                  className={`w-16 h-0.5 sm:w-24 ${isPast ? "bg-[#22C55E]" : "bg-[#E2E5EC] dark:bg-slate-600"}`}
                 />
               )}
               <div className="flex flex-col items-center gap-1.5">
@@ -278,10 +295,10 @@ export function BotWizard({
       {/* Step 1: Strategy */}
       {step === 1 && (
         <div className="relative z-10">
-          <h2 className="text-lg font-semibold text-[#1A1D26] mb-1">
+          <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-1">
             {isNo ? "Velg strategi" : "Choose strategy"}
           </h2>
-          <p className="text-sm text-[#5E6478] mb-4">
+          <p className="text-sm text-[#5E6478] dark:text-slate-400 mb-4">
             {selectedStrategy
               ? isNo
                 ? `${selectedStrategy.name} er valgt — trykk Neste for å fortsette`
@@ -305,14 +322,14 @@ export function BotWizard({
                     e.stopPropagation();
                     if (!locked) setStrategy(s.id);
                   }}
-                  className={`relative z-10 text-left bg-white rounded-xl p-5 transition-all touch-manipulation ${
+                  className={`relative z-10 text-left bg-white dark:bg-slate-900 rounded-xl p-5 transition-all touch-manipulation ${
                     locked
                       ? "opacity-60 cursor-not-allowed"
                       : "cursor-pointer hover:border-[#0052FF]/50"
                   } ${
                     selected
                       ? "ring-2 ring-[#0052FF] border border-[#0052FF]"
-                      : "border border-[#E2E5EC] hover:border-[#B4BFCE]"
+                      : "border border-[#E2E5EC] dark:border-slate-700 hover:border-[#B4BFCE] dark:hover:border-slate-600"
                   } shadow-[0_1px_3px_rgba(0,0,0,0.04)]`}
                 >
                   {s.recommended && (
@@ -337,10 +354,10 @@ export function BotWizard({
                   <span className="block mb-3 text-[#0052FF]">
                     <s.Icon className="w-8 h-8" />
                   </span>
-                  <span className="text-sm font-bold text-[#1A1D26] block mb-1">
+                  <span className="text-sm font-bold text-[#1A1D26] dark:text-white block mb-1">
                     {s.name}
                   </span>
-                  <span className="text-xs text-[#5E6478] leading-relaxed block">
+                  <span className="text-xs text-[#5E6478] dark:text-slate-400 leading-relaxed block">
                     {s.description}
                   </span>
                 </button>
@@ -354,7 +371,7 @@ export function BotWizard({
       {step === 2 && (
         <div className="space-y-8">
           <div>
-            <h2 className="text-lg font-semibold text-[#1A1D26] mb-4">
+            <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
               {isNo ? "Velg risikonivå" : "Choose risk level"}
             </h2>
             <div className="space-y-3">
@@ -365,18 +382,18 @@ export function BotWizard({
                     key={r.value}
                     type="button"
                     onClick={() => setRiskLevel(r.value)}
-                    className={`w-full text-left bg-white rounded-xl p-4 transition-all flex items-center gap-4 ${
+                    className={`w-full text-left bg-white dark:bg-slate-900 rounded-xl p-4 transition-all flex items-center gap-4 ${
                       selected
                         ? "ring-2 ring-[#0052FF] border border-[#0052FF]"
-                        : "border border-[#E2E5EC] hover:border-[#B4BFCE]"
+                        : "border border-[#E2E5EC] dark:border-slate-700 hover:border-[#B4BFCE] dark:hover:border-slate-600"
                     } shadow-[0_1px_3px_rgba(0,0,0,0.04)]`}
                     style={{ borderLeft: `4px solid ${r.color}` }}
                   >
                     <div className="flex-1">
-                      <span className="text-sm font-semibold text-[#1A1D26] block">
+                      <span className="text-sm font-semibold text-[#1A1D26] dark:text-white block">
                         {r.label}
                       </span>
-                      <span className="text-xs text-[#5E6478]">
+                      <span className="text-xs text-[#5E6478] dark:text-slate-400">
                         {r.description}
                       </span>
                     </div>
@@ -390,10 +407,10 @@ export function BotWizard({
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-[#1A1D26] mb-1">
+            <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-1">
               {isNo ? "Startkapital (lekepenger)" : "Starting capital (paper)"}
             </h2>
-            <p className="text-xs text-[#5E6478] mb-3">
+            <p className="text-xs text-[#5E6478] dark:text-slate-400 mb-3">
               {isNo
                 ? "Beløpet boten handler med i papirmodus."
                 : "Amount the bot trades with in paper mode."}
@@ -405,11 +422,14 @@ export function BotWizard({
                   <button
                     key={preset}
                     type="button"
-                    onClick={() => setStartingCapital(preset)}
+                    onClick={() => {
+                      setCapitalDraft(null);
+                      setStartingCapital(preset);
+                    }}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       selected
                         ? `${BRAND.primary}`
-                        : "bg-[#F1F3F9] text-[#5E6478] hover:bg-[#E2E5EC]"
+                        : "bg-[#F1F3F9] dark:bg-slate-800 text-[#5E6478] dark:text-slate-300 hover:bg-[#E2E5EC] dark:hover:bg-slate-700"
                     }`}
                   >
                     {preset >= 1_000_000 ? "1M" : `${preset / 1000}k`} kr
@@ -420,33 +440,31 @@ export function BotWizard({
             <div className="flex items-center gap-3 mb-6">
               <label
                 htmlFor="capital-input"
-                className="text-sm text-[#5E6478] shrink-0"
+                className="text-sm text-[#5E6478] dark:text-slate-400 shrink-0"
               >
                 {isNo ? "Eget beløp:" : "Custom amount:"}
               </label>
               <input
                 id="capital-input"
-                type="number"
-                min={10000}
-                max={1000000}
-                step={10000}
-                value={startingCapital}
-                onChange={(e) => {
-                  const v = Number(e.target.value);
-                  if (!Number.isNaN(v))
-                    setStartingCapital(Math.max(10000, Math.min(1_000_000, v)));
-                }}
-                className="w-32 px-3 py-2 rounded-lg border border-[#E2E5EC] text-[#1A1D26] font-medium"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                value={capitalInputValue}
+                onChange={(e) => onCapitalInputChange(e.target.value)}
+                onBlur={onCapitalInputBlur}
+                className="min-w-[9rem] max-w-[12rem] flex-1 px-3 py-2.5 rounded-lg border border-[#E2E5EC] dark:border-slate-600 bg-white dark:bg-slate-900 text-[#1A1D26] dark:text-white font-medium tabular-nums text-base shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
               />
-              <span className="text-sm text-[#5E6478]">kr</span>
+              <span className="text-sm text-[#5E6478] dark:text-slate-400">
+                kr
+              </span>
             </div>
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-[#1A1D26] mb-1">
+            <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-1">
               {isNo ? "Velg kryptovaluta" : "Select coins"}
             </h2>
-            <p className="text-xs text-[#5E6478] mb-4">
+            <p className="text-xs text-[#5E6478] dark:text-slate-400 mb-4">
               {isNo
                 ? `Maks ${coinLimit} valutaer for ${tier.charAt(0).toUpperCase() + tier.slice(1)}-nivå`
                 : `Max ${coinLimit} coins for ${tier.charAt(0).toUpperCase() + tier.slice(1)} tier`}
@@ -463,7 +481,7 @@ export function BotWizard({
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       selected
                         ? `${BRAND.primary}`
-                        : "bg-[#F1F3F9] text-[#5E6478] hover:bg-[#E2E5EC]"
+                        : "bg-[#F1F3F9] dark:bg-slate-800 text-[#5E6478] dark:text-slate-300 hover:bg-[#E2E5EC] dark:hover:bg-slate-700"
                     }`}
                   >
                     {symbol}
@@ -478,27 +496,27 @@ export function BotWizard({
       {/* Step 3: Review & Start */}
       {step === 3 && (
         <div>
-          <h2 className="text-lg font-semibold text-[#1A1D26] mb-4">
+          <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
             {isNo ? "Oppsummering" : "Summary"}
           </h2>
-          <div className="bg-white rounded-xl border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6 space-y-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-[#E2E5EC] dark:border-slate-800 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6 space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[#5E6478]">
+              <span className="text-sm text-[#5E6478] dark:text-slate-400">
                 {isNo ? "Strategi" : "Strategy"}
               </span>
-              <span className="text-sm font-semibold text-[#1A1D26]">
+              <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
                 {selectedStrategy?.Icon != null ? (
                   <selectedStrategy.Icon className="w-4 h-4 inline-block align-middle mr-1" />
                 ) : null}{" "}
                 {selectedStrategy?.name}
               </span>
             </div>
-            <div className="h-px bg-[#E2E5EC]" />
+            <div className="h-px bg-[#E2E5EC] dark:bg-slate-700" />
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[#5E6478]">
+              <span className="text-sm text-[#5E6478] dark:text-slate-400">
                 {isNo ? "Risikonivå" : "Risk level"}
               </span>
-              <span className="text-sm font-semibold text-[#1A1D26] capitalize">
+              <span className="text-sm font-semibold text-[#1A1D26] dark:text-white capitalize">
                 {riskLevel === "low"
                   ? isNo
                     ? "Lav"
@@ -512,31 +530,32 @@ export function BotWizard({
                       : "High"}
               </span>
             </div>
-            <div className="h-px bg-[#E2E5EC]" />
+            <div className="h-px bg-[#E2E5EC] dark:bg-slate-700" />
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[#5E6478]">
+              <span className="text-sm text-[#5E6478] dark:text-slate-400">
                 {isNo ? "Valutaer" : "Coins"}
               </span>
-              <span className="text-sm font-semibold text-[#1A1D26]">
+              <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
                 {selectedPairs.map((p) => p.replace("USDT", "")).join(", ")}
               </span>
             </div>
-            <div className="h-px bg-[#E2E5EC]" />
+            <div className="h-px bg-[#E2E5EC] dark:bg-slate-700" />
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[#5E6478]">
+              <span className="text-sm text-[#5E6478] dark:text-slate-400">
                 {isNo
                   ? "Startkapital (lekepenger)"
                   : "Starting capital (paper)"}
               </span>
-              <span className="text-sm font-semibold text-[#1A1D26]">
+              <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
                 {startingCapital.toLocaleString("nb-NO")} kr
               </span>
             </div>
           </div>
-          {/* Primær CTA i flytende layout — unngår at fixed footer havner utenfor/under tabs på mobil */}
-          <div className="mt-6 md:hidden">
+          {/* Primær CTA — alltid synlig (lys/mørk + over tabbar) */}
+          <div className="mt-6">
             <button
               type="button"
+              data-testid="bot-wizard-start-inline"
               onClick={handleStart}
               disabled={loading}
               className={`${BRAND.primary} w-full font-semibold rounded-xl px-6 py-3.5 min-h-[52px] touch-manipulation transition-colors disabled:opacity-60 shadow-sm`}
@@ -553,8 +572,8 @@ export function BotWizard({
         </div>
       )}
 
-      {/* Navigation — fixed at viewport bottom, z-[60] above ChatWidget (z-50) + DashboardTabs (z-50) */}
-      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] md:bottom-0 left-0 right-0 px-4 py-3 md:py-4 pr-4 md:pr-20 bg-[#FAFBFC] dark:bg-[#0D0F12] border-t border-[#E2E5EC] dark:border-slate-800 z-[60] flex items-center justify-between gap-3 max-w-full">
+      {/* Navigation — Start ligger i innhold på trinn 3; her kun Tilbake/Neste */}
+      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] md:bottom-0 left-0 right-0 px-4 py-3 md:py-4 pr-4 md:pr-20 bg-[#FAFBFC]/95 dark:bg-[#0D0F12]/95 backdrop-blur-sm border-t border-[#E2E5EC] dark:border-slate-800 z-[100] flex items-center justify-between gap-3 max-w-full">
         {step > 1 ? (
           <button
             type="button"
@@ -571,27 +590,11 @@ export function BotWizard({
             type="button"
             data-testid="bot-wizard-next"
             onClick={() => setStep(step + 1)}
-            className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-colors min-h-[48px] shrink-0 touch-manipulation cursor-pointer active:scale-[0.98]"
+            className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-colors min-h-[48px] shrink-0 touch-manipulation cursor-pointer active:scale-[0.98] ml-auto"
           >
             {isNo ? "Neste" : "Next"}
           </button>
-        ) : (
-          <button
-            type="button"
-            data-testid="bot-wizard-start"
-            onClick={handleStart}
-            disabled={loading}
-            className={`${BRAND.primary} hidden md:inline-flex items-center justify-center font-semibold rounded-xl px-6 py-3 min-h-[48px] shrink-0 min-w-[8.5rem] touch-manipulation transition-colors disabled:opacity-60 ml-auto`}
-          >
-            {loading
-              ? isNo
-                ? "Starter..."
-                : "Starting..."
-              : isNo
-                ? "Start bot"
-                : "Start bot"}
-          </button>
-        )}
+        ) : null}
       </div>
     </div>
   );

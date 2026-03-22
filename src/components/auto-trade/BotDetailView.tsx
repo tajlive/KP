@@ -12,17 +12,43 @@ import { BRAND, SURFACE, SHADOW, RADIUS } from "@/lib/design/tokens";
 
 interface Trade {
   id: string;
-  trading_pair: string;
+  trading_pair?: string;
   side: string;
-  quantity: number;
+  quantity?: number;
   price: number;
-  total_value: number;
+  total_value?: number;
+  realized_pnl?: number | null;
   pnl?: number;
   created_at: string;
   amount?: number;
   qty?: number;
   symbol?: string;
   [key: string]: unknown;
+}
+
+function tradePairLabel(t: Trade) {
+  const raw = t.trading_pair ?? t.symbol ?? "";
+  return String(raw).replace(/USDT$/i, "") || "—";
+}
+
+function tradeQty(t: Trade) {
+  const q = t.quantity ?? t.qty;
+  return typeof q === "number" && Number.isFinite(q) ? q : null;
+}
+
+function tradePnl(t: Trade) {
+  if (t.realized_pnl != null && Number.isFinite(Number(t.realized_pnl))) {
+    return Number(t.realized_pnl);
+  }
+  if (t.pnl != null && Number.isFinite(Number(t.pnl))) {
+    return Number(t.pnl);
+  }
+  return null;
+}
+
+function isBuySide(t: Trade) {
+  const s = String(t.side ?? "").toUpperCase();
+  return s === "BUY" || s === "LONG";
 }
 
 interface Session {
@@ -42,7 +68,34 @@ interface Session {
   risk_level?: string;
   pairs?: string[];
   symbol?: string;
+  trading_pair?: string;
   [key: string]: unknown;
+}
+
+function sessionPairsLine(s: Session) {
+  if (Array.isArray(s.pairs) && s.pairs.length > 0) {
+    return s.pairs.map((p) => String(p).replace(/USDT$/i, "")).join(", ");
+  }
+  const sc = s.strategy_config;
+  if (
+    sc &&
+    typeof sc === "object" &&
+    !Array.isArray(sc) &&
+    Array.isArray((sc as { pairs?: unknown }).pairs)
+  ) {
+    return (sc as { pairs: string[] }).pairs
+      .map((p) => String(p).replace(/USDT$/i, ""))
+      .join(", ");
+  }
+  const tp = s.trading_pair ?? s.symbol;
+  return tp ? String(tp).replace(/USDT$/i, "") : "—";
+}
+
+function sessionStrategyLabel(s: Session) {
+  if (s.strategy_id && String(s.strategy_id).length > 0) {
+    return String(s.strategy_id);
+  }
+  return s.strategy_type ?? s.strategy ?? "—";
 }
 
 interface BotDetailViewProps {
@@ -67,25 +120,33 @@ function formatDuration(startDate: string) {
   return `${hours}t`;
 }
 
-const cardBase = `bg-white ${RADIUS.card} border border-[#E2E5EC] ${SHADOW.card} p-5`;
+const cardBase = `bg-white dark:bg-slate-900 ${RADIUS.card} border border-[#E2E5EC] dark:border-slate-800 ${SHADOW.card} p-5`;
 
 export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
   const no = locale === "no";
 
   const totalPnl = trades.reduce((sum: number, t: Trade) => {
-    return sum + (t.pnl ?? 0);
+    const p = tradePnl(t);
+    return sum + (p ?? 0);
   }, 0);
 
   const totalVolume = trades.reduce((sum: number, t: Trade) => {
-    return sum + (t.amount ?? 0);
+    const tv = t.total_value;
+    if (typeof tv === "number" && Number.isFinite(tv)) return sum + tv;
+    const q = tradeQty(t);
+    const p = typeof t.price === "number" ? t.price : 0;
+    if (q != null && p) return sum + q * p;
+    return sum + (typeof t.amount === "number" ? t.amount : 0);
   }, 0);
 
-  const winningTrades = trades.filter((t: Trade) => (t.pnl ?? 0) > 0).length;
-  const closedTrades = trades.filter((t: Trade) => t.pnl != null).length;
+  const winningTrades = trades.filter((t: Trade) => {
+    const p = tradePnl(t);
+    return p != null && p > 0;
+  }).length;
+  const closedTrades = trades.filter((t: Trade) => tradePnl(t) != null).length;
   const winRate = closedTrades > 0 ? (winningTrades / closedTrades) * 100 : 0;
 
-  const pnlPercent =
-    totalVolume > 0 ? (totalPnl / totalVolume) * 100 : 0;
+  const pnlPercent = totalVolume > 0 ? (totalPnl / totalVolume) * 100 : 0;
 
   return (
     <div className="space-y-6">
@@ -98,10 +159,10 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold text-[#1A1D26]">
+        <h1 className="text-2xl font-bold text-[#1A1D26] dark:text-white">
           {session.name ?? "Trading Bot"}
         </h1>
-        <p className="text-sm text-[#8E95A9] mt-1">
+        <p className="text-sm text-[#8E95A9] dark:text-slate-400 mt-1">
           {session.mode === "paper"
             ? no
               ? "Paper trading"
@@ -113,7 +174,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           {no ? "Startet" : "Started"}{" "}
           {new Date(session.created_at).toLocaleDateString(
             locale === "no" ? "nb-NO" : "en-US",
-            { day: "numeric", month: "short", year: "numeric" }
+            { day: "numeric", month: "short", year: "numeric" },
           )}
         </p>
       </div>
@@ -126,7 +187,9 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
             ) : (
               <TrendingDown className="w-4 h-4 text-[#DC2626]" />
             )}
-            <span className="text-sm text-[#8E95A9]">Total P&L</span>
+            <span className="text-sm text-[#8E95A9] dark:text-slate-400">
+              Total P&L
+            </span>
           </div>
           <p
             className={`text-2xl lg:text-3xl font-bold ${totalPnl >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}
@@ -135,7 +198,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
             {totalPnl >= 0 ? "+" : ""}
             {formatNOK(totalPnl)}
           </p>
-          <p className="text-xs text-[#8E95A9] mt-1">
+          <p className="text-xs text-[#8E95A9] dark:text-slate-500 mt-1">
             {pnlPercent >= 0 ? "+" : ""}
             {pnlPercent.toFixed(1)}%
           </p>
@@ -144,17 +207,17 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         <div className={cardBase}>
           <div className="flex items-center gap-2 mb-2">
             <Activity className="w-4 h-4 text-[#0052FF]" />
-            <span className="text-sm text-[#8E95A9]">
+            <span className="text-sm text-[#8E95A9] dark:text-slate-400">
               {no ? "Handler" : "Trades"}
             </span>
           </div>
           <p
-            className="text-2xl lg:text-3xl font-bold text-[#1A1D26]"
+            className="text-2xl lg:text-3xl font-bold text-[#1A1D26] dark:text-white"
             style={{ fontVariantNumeric: "tabular-nums" }}
           >
             {trades.length}
           </p>
-          <p className="text-xs text-[#8E95A9] mt-1">
+          <p className="text-xs text-[#8E95A9] dark:text-slate-500 mt-1">
             {no ? "Totalt" : "Total"}
           </p>
         </div>
@@ -162,15 +225,17 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         <div className={cardBase}>
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-4 h-4 text-[#0052FF]" />
-            <span className="text-sm text-[#8E95A9]">Win rate</span>
+            <span className="text-sm text-[#8E95A9] dark:text-slate-400">
+              Win rate
+            </span>
           </div>
           <p
-            className="text-2xl lg:text-3xl font-bold text-[#1A1D26]"
+            className="text-2xl lg:text-3xl font-bold text-[#1A1D26] dark:text-white"
             style={{ fontVariantNumeric: "tabular-nums" }}
           >
             {winRate.toFixed(0)}%
           </p>
-          <p className="text-xs text-[#8E95A9] mt-1">
+          <p className="text-xs text-[#8E95A9] dark:text-slate-500 mt-1">
             {winningTrades}/{closedTrades} {no ? "handler" : "trades"}
           </p>
         </div>
@@ -178,17 +243,17 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         <div className={cardBase}>
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-[#0052FF]" />
-            <span className="text-sm text-[#8E95A9]">
+            <span className="text-sm text-[#8E95A9] dark:text-slate-400">
               {no ? "Kjøretid" : "Runtime"}
             </span>
           </div>
           <p
-            className="text-2xl lg:text-3xl font-bold text-[#1A1D26]"
+            className="text-2xl lg:text-3xl font-bold text-[#1A1D26] dark:text-white"
             style={{ fontVariantNumeric: "tabular-nums" }}
           >
             {formatDuration(session.created_at)}
           </p>
-          <p className="text-xs text-[#8E95A9] mt-1">
+          <p className="text-xs text-[#8E95A9] dark:text-slate-500 mt-1">
             {session.status === "active"
               ? no
                 ? "Kjører nå"
@@ -201,23 +266,25 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
       </div>
 
       <div className={cardBase}>
-        <h2 className="text-lg font-semibold text-[#1A1D26] mb-3">
+        <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-3">
           {no ? "Equity graf" : "Equity chart"}
         </h2>
-        <div className={`h-[200px] rounded-lg ${SURFACE.BG_LIGHT} flex items-center justify-center`}>
-          <p className="text-sm text-[#8E95A9]">
+        <div
+          className={`h-[200px] rounded-lg ${SURFACE.BG_LIGHT} dark:bg-slate-950 flex items-center justify-center border border-[#E2E5EC] dark:border-slate-800`}
+        >
+          <p className="text-sm text-[#8E95A9] dark:text-slate-400">
             {no ? "Graf kommer snart" : "Chart coming soon"}
           </p>
         </div>
       </div>
 
       <div className={cardBase}>
-        <h2 className="text-lg font-semibold text-[#1A1D26] mb-4">
+        <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
           {no ? "Handelshistorikk" : "Trade history"}
         </h2>
         {trades.length === 0 ? (
           <div className="py-8 text-center">
-            <p className="text-sm text-[#8E95A9]">
+            <p className="text-sm text-[#8E95A9] dark:text-slate-400">
               {no ? "Ingen handler ennå" : "No trades yet"}
             </p>
           </div>
@@ -225,89 +292,94 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           <div className="overflow-x-auto -mx-5">
             <table className="w-full min-w-[600px]">
               <thead>
-                <tr className="border-b border-[#E2E5EC]">
-                  <th className="text-left text-xs font-medium text-[#8E95A9] uppercase tracking-wider pb-3 px-5">
+                <tr className="border-b border-[#E2E5EC] dark:border-slate-700">
+                  <th className="text-left text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-5">
                     {no ? "Tid" : "Time"}
                   </th>
-                  <th className="text-left text-xs font-medium text-[#8E95A9] uppercase tracking-wider pb-3 px-3">
+                  <th className="text-left text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
                     {no ? "Par" : "Pair"}
                   </th>
-                  <th className="text-left text-xs font-medium text-[#8E95A9] uppercase tracking-wider pb-3 px-3">
+                  <th className="text-left text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
                     {no ? "Side" : "Side"}
                   </th>
-                  <th className="text-right text-xs font-medium text-[#8E95A9] uppercase tracking-wider pb-3 px-3">
+                  <th className="text-right text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
                     {no ? "Mengde" : "Quantity"}
                   </th>
-                  <th className="text-right text-xs font-medium text-[#8E95A9] uppercase tracking-wider pb-3 px-3">
+                  <th className="text-right text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
                     {no ? "Pris" : "Price"}
                   </th>
-                  <th className="text-right text-xs font-medium text-[#8E95A9] uppercase tracking-wider pb-3 px-5">
+                  <th className="text-right text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-5">
                     P&L
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E2E5EC]">
-                {trades.map((trade: Trade, i: number) => (
-                  <tr key={trade.id ?? i} className="hover:bg-slate-50 transition-colors duration-200">
-                    <td className="py-3 px-5 text-sm text-[#5E6478]" style={{ fontVariantNumeric: "tabular-nums" }}>
-                      {trade.created_at
-                        ? new Date(trade.created_at).toLocaleString(
-                            locale === "no" ? "nb-NO" : "en-US",
-                            {
-                              day: "2-digit",
-                              month: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )
-                        : "—"}
-                    </td>
-                    <td className="py-3 px-3 text-sm font-medium text-[#1A1D26]">
-                      {trade.symbol ?? "—"}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span
-                        className={`text-sm font-medium ${
-                          trade.side === "BUY"
-                            ? "text-[#16A34A]"
-                            : "text-[#DC2626]"
-                        }`}
+              <tbody className="divide-y divide-[#E2E5EC] dark:divide-slate-700">
+                {trades.map((trade: Trade, i: number) => {
+                  const buy = isBuySide(trade);
+                  const qty = tradeQty(trade);
+                  const pnl = tradePnl(trade);
+                  return (
+                    <tr
+                      key={trade.id ?? i}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                    >
+                      <td
+                        className="py-3 px-5 text-sm text-[#5E6478] dark:text-slate-400"
+                        style={{ fontVariantNumeric: "tabular-nums" }}
                       >
-                        {trade.side === "BUY"
-                          ? no
-                            ? "Kjøp"
-                            : "Buy"
-                          : no
-                            ? "Selg"
-                            : "Sell"}
-                      </span>
-                    </td>
-                    <td
-                      className="py-3 px-3 text-sm text-[#1A1D26] text-right"
-                      style={{ fontVariantNumeric: "tabular-nums" }}
-                    >
-                      {trade.qty?.toFixed(6) ?? "—"}
-                    </td>
-                    <td
-                      className="py-3 px-3 text-sm text-[#1A1D26] text-right"
-                      style={{ fontVariantNumeric: "tabular-nums" }}
-                    >
-                      {trade.price ? formatNOK(trade.price) : "—"}
-                    </td>
-                    <td
-                      className={`py-3 px-5 text-sm font-medium text-right ${
-                        (trade.pnl ?? 0) >= 0
-                          ? "text-[#16A34A]"
-                          : "text-[#DC2626]"
-                      }`}
-                      style={{ fontVariantNumeric: "tabular-nums" }}
-                    >
-                      {trade.pnl != null
-                        ? `${trade.pnl >= 0 ? "+" : ""}${formatNOK(trade.pnl)}`
-                        : "—"}
-                    </td>
-                  </tr>
-                ))}
+                        {trade.created_at
+                          ? new Date(trade.created_at).toLocaleString(
+                              locale === "no" ? "nb-NO" : "en-US",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )
+                          : "—"}
+                      </td>
+                      <td className="py-3 px-3 text-sm font-medium text-[#1A1D26] dark:text-white">
+                        {tradePairLabel(trade)}
+                      </td>
+                      <td className="py-3 px-3">
+                        <span
+                          className={`text-sm font-medium ${
+                            buy ? "text-[#16A34A]" : "text-[#DC2626]"
+                          }`}
+                        >
+                          {buy ? (no ? "Kjøp" : "Buy") : no ? "Selg" : "Sell"}
+                        </span>
+                      </td>
+                      <td
+                        className="py-3 px-3 text-sm text-[#1A1D26] dark:text-white text-right"
+                        style={{ fontVariantNumeric: "tabular-nums" }}
+                      >
+                        {qty != null ? qty.toFixed(6) : "—"}
+                      </td>
+                      <td
+                        className="py-3 px-3 text-sm text-[#1A1D26] dark:text-white text-right"
+                        style={{ fontVariantNumeric: "tabular-nums" }}
+                      >
+                        {trade.price ? formatNOK(trade.price) : "—"}
+                      </td>
+                      <td
+                        className={`py-3 px-5 text-sm font-medium text-right ${
+                          pnl != null && pnl >= 0
+                            ? "text-[#16A34A]"
+                            : pnl != null
+                              ? "text-[#DC2626]"
+                              : "text-[#8E95A9] dark:text-slate-500"
+                        }`}
+                        style={{ fontVariantNumeric: "tabular-nums" }}
+                      >
+                        {pnl != null
+                          ? `${pnl >= 0 ? "+" : ""}${formatNOK(pnl)}`
+                          : "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -315,44 +387,51 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
       </div>
 
       <div className={cardBase}>
-        <h2 className="text-lg font-semibold text-[#1A1D26] mb-4">
+        <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
           {no ? "Strategiinfo" : "Strategy info"}
         </h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
           <div>
-            <dt className="text-xs font-medium text-[#8E95A9] uppercase tracking-wider">
+            <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
               {no ? "Strategi" : "Strategy"}
             </dt>
-            <dd className="text-sm font-medium text-[#1A1D26] mt-1">
-              {session.strategy_type ?? session.strategy ?? "—"}
+            <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
+              {sessionStrategyLabel(session)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-[#8E95A9] uppercase tracking-wider">
+            <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
               {no ? "Risikonivå" : "Risk level"}
             </dt>
-            <dd className="text-sm font-medium text-[#1A1D26] mt-1">
-              {session.risk_level ?? "—"}
+            <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
+              {(() => {
+                const fromSession = session.risk_level;
+                if (fromSession) return fromSession;
+                const sc = session.strategy_config;
+                if (sc && typeof sc === "object" && !Array.isArray(sc)) {
+                  const rl = (sc as { risk_level?: string }).risk_level;
+                  if (rl) return rl;
+                }
+                return "—";
+              })()}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-[#8E95A9] uppercase tracking-wider">
+            <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
               {no ? "Aktive par" : "Active pairs"}
             </dt>
-            <dd className="text-sm font-medium text-[#1A1D26] mt-1">
-              {Array.isArray(session.pairs)
-                ? session.pairs.join(", ")
-                : session.symbol ?? "—"}
+            <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
+              {sessionPairsLine(session)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-[#8E95A9] uppercase tracking-wider">
+            <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
               {no ? "Startet" : "Started"}
             </dt>
-            <dd className="text-sm font-medium text-[#1A1D26] mt-1">
+            <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
               {new Date(session.created_at).toLocaleDateString(
                 locale === "no" ? "nb-NO" : "en-US",
-                { day: "numeric", month: "long", year: "numeric" }
+                { day: "numeric", month: "long", year: "numeric" },
               )}
             </dd>
           </div>
