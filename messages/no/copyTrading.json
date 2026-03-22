@@ -1,0 +1,49 @@
+{
+  "dashboard": {
+    "title": "Copy Trading",
+    "subtitleActive": "{count} aktive tradere",
+    "refresh": "Oppdater data",
+    "totalPnlLabel": "Total Copy P&L",
+    "mineTitle": "Mine traders",
+    "paused": "Pauset",
+    "sizingProportional": "Proporsjonal",
+    "sizingFixed": "Fast",
+    "recentCopies": "Siste kopierte trades",
+    "emptyTitle": "Ingen traders ennå",
+    "emptyBody": "Utforsk kuraterte paper-ledere og start trygt — eller vent til community vokser.",
+    "discoverCta": "Oppdag ledere",
+    "settingsAria": "Innstillinger for {name}",
+    "maxAlloc": "Maks {amount}",
+    "latency": "{ms} ms forsinkelse"
+  },
+  "discover": {
+    "title": "Oppdag ledere",
+    "subtitle": "Paper og demo fra Klarpakke — tydelig merket. Sammenlign resultat og risiko før du følger.",
+    "timeframe30": "30 d",
+    "timeframe90": "90 d",
+    "timeframe7": "7 d",
+    "riskLow": "Lavere risiko (forenklet)",
+    "riskMedium": "Middels risiko (forenklet)",
+    "riskHigh": "Høyere risiko (forenklet)",
+    "riskHint": "Risiko er en forenklet indikator fra Sharpe og vinnersrate — ikke investeringsråd.",
+    "paperBadge": "Paper / demo",
+    "comparisonCaption": "Relativ styrke 30d vs 90d (ikke tidslinje)",
+    "followers": "{count} følgere",
+    "winRate": "Win rate",
+    "sharpe": "Sharpe",
+    "fee": "Prestasjonsgebyr",
+    "viewProfile": "Se profil",
+    "following": "Følger",
+    "loadError": "Kunne ikke laste ledere",
+    "empty": "Ingen aktive ledere akkurat nå.",
+    "drawdown": "Drawdown 30d"
+  },
+  "nav": {
+    "mine": "Oversikt",
+    "discover": "Oppdag"
+  },
+  "profile": {
+    "trustPaper": "Dette er en Klarpakke paper/demo-profil. Resultat er ikke garantert fremover.",
+    "trustRisk": "Risikovurdering er forenklet og erstatter ikke egen research."
+  }
+}

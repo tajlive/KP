@@ -68,6 +68,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       meta,
       orderHistory,
       tradingResults,
+      copyTrading,
     ] = await Promise.all([
       import(`../messages/${validLocale}/base.json`)
         .then((m) => m.default)
@@ -312,6 +313,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
         .catch(() =>
           import("../messages/en/tradingResults.json").then((m) => m.default),
         ),
+      import(`../messages/${validLocale}/copyTrading.json`)
+        .then((m) => m.default)
+        .catch(() =>
+          import("../messages/en/copyTrading.json").then((m) => m.default),
+        ),
     ]);
 
     return {
@@ -370,6 +376,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         meta,
         orderHistory,
         tradingResults,
+        copyTrading,
       },
       // Error handling - don't crash on missing messages
       onError(error) {

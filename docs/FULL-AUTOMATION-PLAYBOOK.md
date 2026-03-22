@@ -3,7 +3,7 @@
 > **Mål:** Maksimal automatisering som er forsvarlig og repeterbar.  
 > **Sannhet:** «100 % uten mennesker» finnes ikke (første gangs OAuth, rotasjon av hemmeligheter, forretningsbeslutninger). Alt under er **forhåndsoppsett** slik at daglig arbeid, CI og agenter trenger minimal friksjon.
 
-**Oppdatert:** 2026-03-19
+**Oppdatert:** 2026-03-23
 
 ---
 
@@ -21,6 +21,8 @@
 ---
 
 ## 2. Forhåndssjekk (lokalt)
+
+**GitHub Actions-secrets fra `.env.local`:** `npm run secrets:sync:github:dry` deretter `npm run secrets:sync:github` (krever `gh auth login`). Detaljer: [.github/SETUP_SECRETS.md](../.github/SETUP_SECRETS.md).
 
 Kjør i rot av repo (krever `.env.local`):
 
@@ -59,13 +61,15 @@ Synk dette **én gang** (eller ved rotasjon). Full audit: [ENV-MCP-CLI-API-AUDIT
 
 ### Workflows som allerede automatiserer
 
-| Workflow                                                        | Trigger                         |
-| --------------------------------------------------------------- | ------------------------------- |
-| [mcp-health.yml](../.github/workflows/mcp-health.yml)           | Hverdager + `workflow_dispatch` |
-| [mcp-integration.yml](../.github/workflows/mcp-integration.yml) | Endringer i MCP-filer           |
-| [test.yml](../.github/workflows/test.yml)                       | Push/PR                         |
-| [manual-deploy.yml](../.github/workflows/manual-deploy.yml)     | Manuell deploy                  |
-| [db-push.yml](../.github/workflows/db-push.yml)                 | DB (se workflow for detaljer)   |
+| Workflow                                                          | Trigger                                                                                             |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [mcp-health.yml](../.github/workflows/mcp-health.yml)             | Hverdager + `workflow_dispatch`                                                                     |
+| [mcp-integration.yml](../.github/workflows/mcp-integration.yml)   | Endringer i MCP-filer                                                                               |
+| [test.yml](../.github/workflows/test.yml)                         | Push/PR                                                                                             |
+| [manual-deploy.yml](../.github/workflows/manual-deploy.yml)       | Manuell deploy                                                                                      |
+| [db-push.yml](../.github/workflows/db-push.yml)                   | DB (se workflow for detaljer)                                                                       |
+| [db-push-on-merge.yml](../.github/workflows/db-push-on-merge.yml) | Push til `main` + endring i `supabase/**` → `db push` + verifiser `supabase-generated.ts`           |
+| **Lokal / agent**                                                 | `npm run db:ship` — push + `db:gen-types` ([DB-SHIP-AUTO-OPS.md](./automation/DB-SHIP-AUTO-OPS.md)) |
 
 ---
 

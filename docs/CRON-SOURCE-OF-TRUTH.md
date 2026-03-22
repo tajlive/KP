@@ -19,3 +19,4 @@
 
 - Ved nye cron-behov: opprett pg_cron-job (eller tilsvarende) i Supabase som kaller `https://<APP_URL>/api/cron/<path>` med header `Authorization: Bearer <CRON_SECRET>`. Sett `CRON_SECRET` i Vercel env (eller der appen henter env).
 - Ikke legg nye oppføringer i `vercel.json` → `crons`.
+- **Skjema / migrasjoner (DDL)** er ikke en cron-oppgave: bruk GitHub Actions (`db-push-on-merge`) eller Supabase sin GitHub-integrasjon; se [automation/DB-SHIP-AUTO-OPS.md](./automation/DB-SHIP-AUTO-OPS.md) og `npm run db:ship`.
