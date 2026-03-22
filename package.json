@@ -288,7 +288,8 @@
   },
   "overrides": {
     "rimraf": "^5.0.10",
-    "glob": "^13.0.6"
+    "glob": "^13.0.6",
+    "tmp": "^0.2.4"
   },
   "browserslist": [
     "chrome >= 109",
