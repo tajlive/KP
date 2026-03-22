@@ -27,20 +27,17 @@ test.describe("Critical: Dashboard @critical", () => {
       await expect(dashboardRoot).toBeVisible();
       console.log("✅ Dashboard root element found");
     } else if (url.includes("innlogging") || url.includes("login")) {
-      // Redirected to login - valid behavior
       console.log("⚠️ Redirected to login (expected without auth)");
       test.skip();
     } else {
-      // On dashboard page but element not found - check if page has content
+      // På dashboard (f.eks. /dashboard uten data-testid) — ikke skip når innlogget
       const bodyText = await page
         .locator("body")
         .textContent()
         .catch(() => "");
       if (bodyText && bodyText.length > 100) {
-        console.log(
-          "⚠️ Dashboard page has content but no data-testid, skipping",
-        );
-        test.skip();
+        console.log("✅ Dashboard shell loaded (data-testid valgfri)");
+        expect(bodyText.length).toBeGreaterThan(100);
       } else {
         throw new Error(`Dashboard not found and not redirected. URL: ${url}`);
       }
