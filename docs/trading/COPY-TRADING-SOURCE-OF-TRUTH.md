@@ -1,0 +1,34 @@
+# Copy trading — source of truth (Klarpakke)
+
+**Formål:** Én felles sannhet for **kopier-trading** (følg leder, API, ID-er, listevisning, reserveløype) slik at endringer ikke divergerer mellom UI, RLS og tier-produkt.
+
+## Roller og filer
+
+| Rolle                                       | Hvor                                                                                                                 | Merknad                                                                                                                                                                                                     |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Produkt (hvem får kopiere)**              | [`src/lib/pricing/tiers.ts`](../../src/lib/pricing/tiers.ts) — `canCopyTraders` per plan                             | Må matche pris-/feature-fortelling; se også [`docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md`](../pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md)                                                                    |
+| **Maks aktive følg** (runtime)              | [`src/lib/copy-trading/max-follows.ts`](../../src/lib/copy-trading/max-follows.ts)                                   | Utledet fra `TIERS` + plan (student = 0, bachelor = 1, master = 3, phd/professor = høy grense)                                                                                                              |
+| **Kanonisk leder-nøkkel → `auth.users` id** | [`src/lib/copy-trading/resolve-leader.ts`](../../src/lib/copy-trading/resolve-leader.ts)                             | DB-rader i `copy_trading_follows` bruker **auth uid** for `leader_id` / `follower_id` (RLS: `auth.uid()`). URL kan være `user_profiles.id`, auth-id eller `leaderboard_bots.id` — alltid resolves på server |
+| **Følg (POST)**                             | [`src/app/api/copy-trading/follow/route.ts`](../../src/app/api/copy-trading/follow/route.ts)                         | Service role DB; tier-sjekk; `resolveLeaderAuthId`; best-effort `notification_queue`                                                                                                                        |
+| **Liste (GET, primær for UI)**              | [`src/app/api/copy-trading/following/route.ts`](../../src/app/api/copy-trading/following/route.ts)                   | Beriker med `display_name` uten å stole på at klient-RLS leser andres `user_profiles`                                                                                                                       |
+| **Resolve for profil-URL (GET)**            | [`src/app/api/copy-trading/resolve-trader/route.ts`](../../src/app/api/copy-trading/resolve-trader/route.ts)         | Brukes av trader-profil for følge-status m.m.                                                                                                                                                               |
+| **Klient: liste + fallback**                | [`src/store/copy-store.ts`](../../src/store/copy-store.ts)                                                           | **API først** (`credentials: "include"`); ved feil → direkte Supabase + begrenset berikning                                                                                                                 |
+| **Klient: profilside**                      | [`src/components/copy-trading/CreatorProfileClient.tsx`](../../src/components/copy-trading/CreatorProfileClient.tsx) | `leaderboard_bots` slås opp på **rad-`id`**; strategier på **kanonisk auth-bruker** etter profil lasting                                                                                                    |
+| **API-auth (nettleser + Bearer)**           | [`src/lib/api-auth.ts`](../../src/lib/api-auth.ts)                                                                   | `withAuth`: cookie-session **eller** Bearer; videresend `Set-Cookie` ved refresh                                                                                                                            |
+
+## Operasjonelle krav
+
+- Endringer i **plan-navn, copy-rettigheter eller antall følg**: oppdater **Linear** (under **KLA-91** markedsplass / sosialt eller **KLA-231** drift) **og** `tiers.ts` + denne filen + ev. pris-SoT.
+- **RLS / skjema** på `copy_trading_follows`: endres kun via migrasjon; etterpå verifiser at `resolve-leader` og API fortsatt matcher policy (auth uid i kolonner som policy forventer).
+- **E2E / smoke:** ved større endring, verifiser manuelt eller med test: innlogget `POST /api/copy-trading/follow` med cookie, `GET /api/copy-trading/following`, profilside `/copy-trading/traders/[id]`.
+
+## Linear (anbefalt)
+
+- **Loggfør** leveransen som egen sak eller underoppgave med lenke til commit/PR og til denne filen.
+- **Foreslått plassering:** barn av **KLA-91** (strategy marketplace / sosial) eller **KLA-231** (operativ standard), avhengig av om endringen er produkt (markedsplass) eller ren drift/integritet.
+
+## Endringslogg (repo)
+
+| Dato       | Endring                                                                                                        |
+| ---------- | -------------------------------------------------------------------------------------------------------------- |
+| 2026-03-22 | Første versjon: dokumenterer copy-trading SoT etter API/auth/resolve/following-leveranse (`16a395b2b` område). |

@@ -42,6 +42,8 @@ Slugs brukes i URL (`?plan=`), DB og Stripe-metadata.
 
 **Skatterapport (CSV/HTML, Skatteetaten):** fra **Bachelor** og oppover (`/api/tax-report` + dashboard). Student har ikke tilgang.
 
+**Copy trading (følg/kopier tradere):** styres av `TIERS[*].canCopyTraders` og runtime-grenser i `src/lib/copy-trading/max-follows.ts`. **Teknisk og API-SoT:** [`docs/trading/COPY-TRADING-SOURCE-OF-TRUTH.md`](../trading/COPY-TRADING-SOURCE-OF-TRUTH.md). Ved produktendring: oppdater `tiers.ts`, den filen, denne tabellen (om synlig i kommunikasjon) og **Linear** (f.eks. **KLA-91** / **KLA-231**).
+
 **Merk:** `/priser` viser alle fem planer med pris fra `TIERS` (`priser-plans.ts`).
 
 ---
@@ -102,3 +104,4 @@ Slugs brukes i URL (`?plan=`), DB og Stripe-metadata.
 | 2026-03-20 | Checkout: valg NOK/EUR/USD i UI; API løser `price_` fra `tier` + `currency` (env `NEXT_PUBLIC_STRIPE_PRICE_*_*`) — se `STRIPE-CHECKOUT-MULTI-CURRENCY.md`                         |
 | 2026-03-20 | Årlige Stripe-priser (live) + config; trial 14 d.; Customer Portal API + Innstillinger; webhooks-dok — se `STRIPE-WEBHOOKS-AND-PORTAL.md`                                         |
 | 2026-03-20 | Stripe Checkout: **ingen prøveperiode på Bachelor**; 14 d. trial for Master/PhD/Professor (`getStripeCheckoutTrialDays`)                                                          |
+| 2026-03-22 | **Copy trading:** peker til `docs/trading/COPY-TRADING-SOURCE-OF-TRUTH.md` (tier `canCopyTraders` + API/ID-SoT)                                                                   |
