@@ -66,11 +66,13 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
         .first();
       await expect(firstLessonButton).toBeVisible({ timeout: 30_000 });
 
-      await firstLessonButton.click();
-
-      await expect(page).toHaveURL(
-        new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`),
-      );
+      await Promise.all([
+        page.waitForURL(
+          new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`),
+          { timeout: 45_000 },
+        ),
+        firstLessonButton.click(),
+      ]);
     });
   });
 

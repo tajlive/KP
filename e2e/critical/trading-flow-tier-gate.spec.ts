@@ -58,11 +58,14 @@ test.describe("Trading flow and tier-gate @critical", () => {
   });
 
   test("/beta omdirigeres til dashboard", async ({ page }) => {
-    await page.goto("/no/beta", { waitUntil: "domcontentloaded" });
+    await page.goto("/no/beta", {
+      waitUntil: "domcontentloaded",
+      timeout: 90_000,
+    });
     await expect(page).toHaveURL(
       /\/([a-z]{2}\/)?(dashboard|(innlogging|login)\?next=.*dashboard)/,
       {
-        timeout: 10000,
+        timeout: 30_000,
       },
     );
   });

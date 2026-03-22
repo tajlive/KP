@@ -1,0 +1,18 @@
+---
+description: Når Playwright/Vitest feiler — les rapport og foreslå konkret fiks
+globs:
+  - e2e/**/*.ts
+  - scripts/full-e2e.sh
+  - scripts/test-robot.sh
+---
+
+# Test-feil → agent-handling
+
+1. Kjør `npm run test:e2e:agent-brief` etter feilet Playwright (leser `test-results.json`).
+2. Åpne `playwright-report/index.html` for skjermbilde/video per feil.
+3. Fiks kode eller test — ikke «skip» uten bevis på produktfeil vs testfeil.
+4. For lokal full kjede: `npm run test:full:deep` (kvalitet + smoke + critical + Firefox + regression).
+
+Cursor kjører ikke tester automatisk alene; bruk terminal eller `@`-filer + denne sjekklisten.
+
+**Lokal flak mot `next dev`:** Playwright bruker maks **2 workers** lokalt (override med `PW_WORKERS=1`). CI er uendret (`CI=2`).
