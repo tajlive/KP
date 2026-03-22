@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
-  Medal,
   Bot,
   BookOpen,
   Zap,
@@ -190,12 +189,6 @@ function periodCutoff(period: PnlPeriod): Date | null {
         : 30 * 86400000;
   return new Date(Date.now() - ms);
 }
-
-const LEADERBOARD = [
-  { rank: 1, name: "KryptoKonge", pct: "+14.2%" },
-  { rank: 2, name: "SatoshiFansen", pct: "+11.8%" },
-  { rank: 3, name: "HodlQueen", pct: "+9.4%" },
-];
 
 /** Kort med skygge og 200ms overgang (tokens CARD.hover med p-5) */
 const cardBase = `${CARD.hover.replace("p-6", "p-5")}`;
@@ -860,7 +853,9 @@ export default function PortfolioDashboard({
               {no ? "AI Markedsoversikt" : "AI Market Brief"}
             </h3>
             <p className="text-sm text-[#5E6478] mt-1 leading-relaxed">
-              BTC opp 2.1% — sterk momentum. ETH konsoliderer rundt $2 400.
+              {no
+                ? "Markedskommentarer hentes fra AI når tjenesten er tilgjengelig — ingen statiske eksempeltall her."
+                : "Market commentary is loaded from the AI service when available — no static demo numbers."}
             </p>
             <p className="text-xs text-[#8E95A9] mt-2">
               {no ? "Oppdateres daglig" : "Updated daily"}
@@ -884,52 +879,32 @@ export default function PortfolioDashboard({
               <h3 className="text-lg font-semibold text-[#1A1D26] group-hover:text-[#0052FF] transition-colors">
                 {no ? "Lær videre" : "Continue learning"}
               </h3>
-              <div className="mt-2">
-                <div className="w-full h-2 rounded-full bg-[#E2E5EC]">
-                  <div
-                    className="h-2 rounded-full bg-[#0052FF]"
-                    style={{ width: "40%" }}
-                  />
-                </div>
-                <p className="text-xs text-[#8E95A9] mt-1.5">
-                  40% · {no ? "Neste" : "Next"}: Stop-loss{" "}
-                  {no ? "strategier" : "strategies"}
-                </p>
-              </div>
+              <p className="text-xs text-[#8E95A9] mt-2">
+                {no
+                  ? "Fortsett der du slapp i akademiet."
+                  : "Pick up where you left off in the academy."}
+              </p>
             </div>
           </div>
         </Link>
 
-        {/* Widget 7: Leaderboard + Streak */}
         <div className="space-y-4">
-          <StreakBadge streak={3} locale={locale} />
+          <StreakBadge streak={0} locale={locale} />
           <div className={cardBase}>
-            <h3 className="text-lg font-semibold text-[#1A1D26] mb-3">
-              {no ? "Leaderboard denne uken" : "Leaderboard this week"}
+            <h3 className="text-lg font-semibold text-[#1A1D26] mb-2">
+              {no ? "Resultater og ranking" : "Results and ranking"}
             </h3>
-            <ul className="space-y-2.5">
-              {LEADERBOARD.map((entry) => (
-                <li key={entry.name} className="flex items-center gap-3">
-                  <span className="w-7 flex justify-center">
-                    <Medal
-                      className={`w-5 h-5 ${
-                        entry.rank === 1
-                          ? "text-amber-500"
-                          : entry.rank === 2
-                            ? "text-slate-400"
-                            : "text-amber-700"
-                      }`}
-                    />
-                  </span>
-                  <span className="flex-1 text-sm font-medium text-[#1A1D26]">
-                    {entry.name}
-                  </span>
-                  <span className="text-sm font-semibold text-[#16A34A] tabular-nums">
-                    {entry.pct}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <p className="text-sm text-[#5E6478] mb-4">
+              {no
+                ? "Se sanntids statistikk og grafer basert på dine faktiske handler."
+                : "View live statistics and charts from your real trades."}
+            </p>
+            <Link
+              href={hrefWithLocale(locale, "/dashboard/resultater")}
+              className={`inline-flex text-sm font-semibold ${BRAND.link}`}
+            >
+              {no ? "Åpne resultater" : "Open results"} →
+            </Link>
           </div>
         </div>
       </div>

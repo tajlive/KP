@@ -30,6 +30,9 @@ const responseSchema = z.object({
     noRealizedPnlCount: z.number(),
     totalRealizedPnl: z.number(),
     totalEffectivePnl: z.number(),
+    effectiveWinCount: z.number(),
+    effectiveLossCount: z.number(),
+    effectiveBreakevenCount: z.number(),
     winRateRealizedPct: z.number().nullable(),
   }),
   cumulativePnl: z.array(

@@ -163,7 +163,7 @@ export default function UnifiedTradingDashboard({
       setLoading(true);
       const [port, trd, active] = await Promise.all([
         getPortfolio(mode),
-        getRecentTrades({ limit: 20 }),
+        getRecentTrades({ limit: 100 }),
         getActiveStrategies(mode),
       ]);
       setPortfolio(port);
