@@ -31,38 +31,66 @@ export default function ClientHandelshistorikk() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ModeFilter>("all");
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
-  const fetchTrades = useCallback(async (silent = false) => {
-    if (!silent) setLoading(true);
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setTrades([]);
+  const fetchTrades = useCallback(
+    async (silent = false) => {
+      if (!silent) setLoading(true);
+      setFetchError(null);
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user ?? null;
+      setSignedIn(!!user);
+
+      if (!user) {
+        setTrades([]);
+        if (!silent) setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("trades")
+        .select(
+          "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at",
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      if (error) {
+        console.error("handelshistorikk fetch error:", error);
+        setFetchError(error.message || t("fetchError"));
+        setTrades([]);
+      } else {
+        setTrades((data as Trade[]) ?? []);
+      }
       if (!silent) setLoading(false);
-      return;
-    }
-    const { data, error } = await supabase
-      .from("trades")
-      .select(
-        "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at",
-      )
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(200);
-
-    if (error) {
-      console.error("handelshistorikk fetch error:", error);
-      setTrades([]);
-    } else {
-      setTrades((data as Trade[]) ?? []);
-    }
-    if (!silent) setLoading(false);
-  }, []);
+    },
+    [t],
+  );
 
   useEffect(() => {
     void fetchTrades(false);
+  }, [fetchTrades]);
+
+  /** Når JWT hydreres etter første render — ellers ser getUser() ofte tom ut og listen blir blank. */
+  useEffect(() => {
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
+        void fetchTrades(true);
+      }
+      if (event === "SIGNED_OUT") {
+        setTrades([]);
+        setSignedIn(false);
+      }
+    });
+    return () => subscription.unsubscribe();
   }, [fetchTrades]);
 
   /** Nye live/paper-rader uten manuell refresh (Realtime krever JWT; polling er robust på denne siden). */
@@ -198,8 +226,30 @@ export default function ClientHandelshistorikk() {
             <div className="py-24 flex justify-center">
               <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
             </div>
+          ) : fetchError ? (
+            <div className="text-center py-12 px-4 space-y-3">
+              <p className="text-red-600 text-sm">{fetchError}</p>
+              <Button
+                className={BRAND.primary}
+                onClick={() => void fetchTrades(false)}
+              >
+                {t("retry")}
+              </Button>
+            </div>
+          ) : signedIn === false ? (
+            <div className="text-center py-12 px-4 space-y-3">
+              <p className="text-gray-700">{t("notLoggedIn")}</p>
+              <Button variant="outline" onClick={() => void fetchTrades(false)}>
+                {t("retry")}
+              </Button>
+            </div>
           ) : filteredTrades.length === 0 ? (
-            <p className="text-center text-gray-500 py-12">{t("noTrades")}</p>
+            <div className="text-center py-12 px-4 space-y-2">
+              <p className="text-gray-600">{t("noTrades")}</p>
+              <p className="text-sm text-gray-500 max-w-md mx-auto">
+                {t("noTradesHint")}
+              </p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left">
@@ -233,7 +283,9 @@ export default function ClientHandelshistorikk() {
                 </thead>
                 <tbody>
                   {filteredTrades.map((trade) => {
-                    const isBuy = String(trade.side).toUpperCase() === "BUY";
+                    const isBuy =
+                      String(trade.side).toLowerCase() === "buy" ||
+                      String(trade.side).toUpperCase() === "LONG";
                     const pair = (trade.trading_pair ?? "").replace("USDT", "");
                     const hasRealized =
                       trade.realized_pnl != null &&
