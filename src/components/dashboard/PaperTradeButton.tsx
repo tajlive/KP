@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,17 +22,27 @@ interface Props {
 }
 
 export function PaperTradeButton({ symbol, currentPrice }: Props) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
+  const [paperSessionId, setPaperSessionId] = useState<string | null>(null);
 
   const fetchBalance = async () => {
     try {
       const response = await fetch("/api/paper-trading/balance");
       if (response.ok) {
-        const data = await response.json();
-        setBalance(data.balance.current);
+        const data = (await response.json()) as {
+          balance?: { current: number };
+          session_id?: string;
+        };
+        if (data.balance?.current != null) {
+          setBalance(data.balance.current);
+        }
+        setPaperSessionId(
+          typeof data.session_id === "string" ? data.session_id : null,
+        );
       }
     } catch (error) {
       console.error("Failed to fetch balance:", error);
@@ -67,11 +78,13 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           side,
           quantity: qty,
           price: currentPrice,
-        } as {
+          ...(paperSessionId ? { session_id: paperSessionId } : {}),
+        } satisfies {
           symbol: string;
           side: "buy" | "sell";
           quantity: number;
           price: number;
+          session_id?: string;
         }),
       });
 
@@ -93,6 +106,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
         },
       );
 
+      router.refresh();
       setOpen(false);
       setQuantity("");
     } catch (error: unknown) {

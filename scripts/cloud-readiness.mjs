@@ -26,8 +26,12 @@ function loadEnvFile(filePath) {
   return parsed;
 }
 
+/** Samme fil-rekke som Next / Playwright / create-test-users.js (senere fil overstyrer). */
 const envFromFiles = {
+  ...loadEnvFile(resolve(rootDir, ".env")),
   ...loadEnvFile(resolve(rootDir, ".env.local")),
+  ...loadEnvFile(resolve(rootDir, ".env.development.local")),
+  ...loadEnvFile(resolve(rootDir, ".env.production.local")),
   ...loadEnvFile(resolve(rootDir, ".env.vercel")),
 };
 
@@ -209,6 +213,17 @@ async function main() {
   }
 
   exportResolvedToGithubEnv();
+
+  const e2eUrl = getEnv("NEXT_PUBLIC_SUPABASE_URL") || getEnv("SUPABASE_URL");
+  const e2eSr = getEnv("SUPABASE_SERVICE_ROLE_KEY");
+  console.log("");
+  console.log("E2E provision (optional — Admin API / Playwright setup):");
+  console.log(
+    `  - NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL: ${e2eUrl ? `OK ${mask(e2eUrl)}` : "MISSING → npm run test:e2e:check-env"}`,
+  );
+  console.log(
+    `  - SUPABASE_SERVICE_ROLE_KEY: ${e2eSr ? `OK ${mask(e2eSr)}` : "MISSING → Dashboard → API → service_role"}`,
+  );
 
   console.log("");
   console.log("Readiness check passed.");

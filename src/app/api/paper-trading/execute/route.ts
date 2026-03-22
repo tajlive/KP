@@ -11,6 +11,10 @@ import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+const optionalPaperSession = z.object({
+  session_id: z.string().uuid().optional(),
+});
+
 const schemaAmountNok = z.object({
   pair: z.string().min(1).max(20),
   side: z.enum(["buy", "sell"]),
@@ -25,7 +29,10 @@ const schemaQtyPrice = z.object({
   botId: z.string().uuid().optional(),
 });
 
-const bodySchema = z.union([schemaAmountNok, schemaQtyPrice]);
+const bodySchema = z.union([
+  schemaAmountNok.merge(optionalPaperSession),
+  schemaQtyPrice.merge(optionalPaperSession),
+]);
 
 export async function POST(request: NextRequest) {
   try {
@@ -114,6 +121,7 @@ export async function POST(request: NextRequest) {
       price,
       orderType: "market",
       botId: "botId" in parsed.data ? parsed.data.botId : undefined,
+      sessionId: parsed.data.session_id,
     });
 
     if (!result.success) {

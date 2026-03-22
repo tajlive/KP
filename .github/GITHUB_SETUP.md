@@ -65,11 +65,12 @@ Sentry MCP støtter ikke token-oppretting. Prosjektet **klarpakke-production** l
 
 ### Valgfrie secrets
 
-| Secret                                 | Bruk                           |
-| -------------------------------------- | ------------------------------ |
-| `SNYK_TOKEN`                           | Security Audit workflow (Snyk) |
-| `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | E2E-tester mot innlogging      |
-| `LHCI_GITHUB_APP_TOKEN`                | Lighthouse CI (hvis brukt)     |
+| Secret                                 | Bruk                                                                                                                          |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `SNYK_TOKEN`                           | Security Audit workflow (Snyk)                                                                                                |
+| `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | E2E-tester mot innlogging (`e2e/auth.setup.ts`)                                                                               |
+| `SUPABASE_SERVICE_ROLE_KEY`            | Valgfritt for **E2E Critical**: `create-test-users.js --from-env` oppretter/synker brukeren fra secrets før Playwright kjører |
+| `LHCI_GITHUB_APP_TOKEN`                | Lighthouse CI (hvis brukt)                                                                                                    |
 
 ### Variables (Settings → Secrets and variables → Variables)
 

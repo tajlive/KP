@@ -5,6 +5,7 @@
  * This function can NEVER send orders to exchange.
  */
 
+import type { PostgrestError } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 import {
@@ -22,6 +23,8 @@ export interface PaperTradeRequest {
   price: number;
   orderType?: "market" | "limit";
   botId?: string;
+  /** Når satt: bruk denne aktive paper-sesjonen (eiersjekk i DB). Unngår at handler havner i «annen» aktiv sesjon. */
+  sessionId?: string;
 }
 
 export interface PaperTradeResult {
@@ -47,18 +50,62 @@ export async function executePaperTrade(
   const supabase = createClient();
 
   try {
-    // 1. Get or create paper trading session (én rad: .single() feiler ved flere aktive)
-    const { data: session, error: sessionError } = await supabase
-      .from("trading_sessions")
-      .select("id, user_id, current_capital_nok, current_capital, status, mode")
-      .eq("user_id", request.userId)
-      .eq("mode", "paper")
-      .eq("status", "active")
-      .order("updated_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // 1. Paper-sesjon: eksplisitt id (foretrukket) eller siste oppdaterte aktive
+    let session: {
+      id: string;
+      user_id: string;
+      current_capital_nok: number | null;
+      current_capital: number | null;
+      status: string;
+      mode: string;
+    } | null = null;
+    let sessionError: PostgrestError | null = null;
+
+    if (request.sessionId) {
+      const res = await supabase
+        .from("trading_sessions")
+        .select(
+          "id, user_id, current_capital_nok, current_capital, status, mode",
+        )
+        .eq("id", request.sessionId)
+        .eq("user_id", request.userId)
+        .eq("mode", "paper")
+        .eq("status", "active")
+        .maybeSingle();
+      session = res.data;
+      sessionError = res.error;
+      if (!session && !sessionError) {
+        return {
+          success: false,
+          error:
+            "Fant ikke aktiv paper-sesjon for denne ID-en (eller sesjonen tilhører ikke deg).",
+        };
+      }
+    } else {
+      const res = await supabase
+        .from("trading_sessions")
+        .select(
+          "id, user_id, current_capital_nok, current_capital, status, mode",
+        )
+        .eq("user_id", request.userId)
+        .eq("mode", "paper")
+        .eq("status", "active")
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      session = res.data;
+      sessionError = res.error;
+    }
 
     if (sessionError || !session) {
+      if (request.sessionId) {
+        return {
+          success: false,
+          error:
+            sessionError?.message ??
+            "Fant ikke aktiv paper-sesjon for denne ID-en (eller sesjonen tilhører ikke deg).",
+        };
+      }
       const now = new Date().toISOString();
       const capital = 100000;
       const { data: newSession, error: createError } = await supabase
@@ -159,6 +206,7 @@ export async function executePaperTrade(
         : currentBalance + orderValueNok;
 
     // 6. Record trade (total_value i NOK). status må være gyldig enum/text (filled).
+    const nowIso = new Date().toISOString();
     const { data: trade, error: tradeError } = await supabase
       .from("trades")
       .insert({
@@ -174,7 +222,8 @@ export async function executePaperTrade(
         mode: "paper",
         order_type: request.orderType ?? "market",
         idempotency_key: `${session.id}-${Date.now()}-${Math.random()}`,
-        executed_at: new Date().toISOString(),
+        executed_at: nowIso,
+        created_at: nowIso,
       })
       .select()
       .single();

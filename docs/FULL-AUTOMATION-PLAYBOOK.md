@@ -29,8 +29,9 @@ npm run auto:preflight          # Cloud readiness (agent-profil)
 npm run auto:preflight:full     # + MCP-tilkoblingstest + Linear-test
 ```
 
-- **Agent-profil** krever bl.a. Linear + Vercel (se `scripts/cloud-readiness.mjs`).
+- **Agent-profil** krever bl.a. Linear + Vercel (se `scripts/cloud-readiness.mjs`). Viser også **valgfri** E2E/Supabase Admin-status (`SUPABASE_SERVICE_ROLE_KEY` m.m.).
 - **Full** kjører `scripts/test-mcp-connections.sh` (feiler hvis en påkrevd tilkobling feiler — se rapport).
+- **E2E testbruker (Supabase Admin):** `npm run test:e2e:check-env` → `npm run test:e2e:prepare` (sjekk + `tom@klarpakke.no`). Deretter `npm run test:e2e:with-user` eller `test:full`.
 
 ---
 

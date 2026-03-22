@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -81,6 +81,48 @@ export function PaperTradingSessionDetail({
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
   const [loading, setLoading] = useState(false);
 
+  const refetchTrades = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("trades")
+      .select(
+        "id, side, quantity, price, realized_pnl, created_at, total_value, executed_at",
+      )
+      .eq("session_id", session.id)
+      .order("executed_at", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      console.error("[PaperTradingSessionDetail] trades refetch:", error);
+      return;
+    }
+    if (!data) return;
+
+    setTrades(
+      data.map((row) => ({
+        id: row.id,
+        side: row.side as "buy" | "sell",
+        quantity: Number(row.quantity),
+        price: Number(row.price),
+        realized_pnl: row.realized_pnl,
+        total_value: row.total_value ?? undefined,
+        created_at: row.executed_at ?? row.created_at,
+      })),
+    );
+  }, [session.id, supabase]);
+
+  /** Mot utdatert RSC-cache og manglende realtime: hent ferske handler ved mount + når fanen blir synlig. */
+  useEffect(() => {
+    void refetchTrades();
+  }, [refetchTrades]);
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === "visible") void refetchTrades();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [refetchTrades]);
+
   // Client-side tier-gate: live-session uten ?mode=live — redirect til priser hvis ikke tilgang
   useEffect(() => {
     if (initialSession.mode !== "live" || !userTier) return;
@@ -113,9 +155,12 @@ export function PaperTradingSessionDetail({
               row.realized_pnl != null ? Number(row.realized_pnl) : null,
             total_value:
               row.total_value != null ? Number(row.total_value) : undefined,
-            created_at: String(row.created_at ?? ""),
+            created_at: String(row.executed_at ?? row.created_at ?? ""),
           };
-          setTrades((prev) => [mapped, ...prev]);
+          setTrades((prev) => {
+            if (prev.some((t) => t.id === mapped.id)) return prev;
+            return [mapped, ...prev];
+          });
         },
       )
       .on(
