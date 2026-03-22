@@ -5,6 +5,7 @@
  */
 
 import { executePaperTrade } from "@/lib/trading/safety";
+import { paperExecuteSuccessResponseSchema } from "@/lib/trading/safety/paper-execute-success-response";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -127,12 +128,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
+    const successPayload = {
+      success: true as const,
       trade_id: result.tradeId,
       session_id: result.sessionId,
-      new_balance: result.newBalance,
-    });
+      new_balance: result.newBalance ?? 0,
+    };
+    const validated =
+      paperExecuteSuccessResponseSchema.safeParse(successPayload);
+    if (!validated.success) {
+      console.error(
+        "[PaperExecute] Success response contract violation:",
+        validated.error.flatten(),
+      );
+      return NextResponse.json(
+        { error: "Intern feil: ugyldig handlerespons" },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json(validated.data);
   } catch (err) {
     console.error("[PaperExecute] Unexpected error:", err);
     return NextResponse.json(

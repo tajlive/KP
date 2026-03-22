@@ -186,4 +186,67 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       test.skip();
     }
   });
+
+  /**
+   * Regresjon: suksess-respons skal alltid inneholde session_id + trade_id (Zod i API),
+   * og sesjonssiden skal vise minst én handelsrad (data-testid) etter utført kjøp.
+   */
+  test("paper execute returns session_id and trade row visible on session page", async ({
+    page,
+    request,
+  }) => {
+    const cookies = await page.context().cookies();
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+    if (!cookieHeader) {
+      console.log("⚠️ No auth cookies, skipping execute contract test");
+      test.skip();
+      return;
+    }
+
+    const exec = await request.post("/api/paper-trading/execute", {
+      headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
+      data: {
+        pair: "BTCUSDT",
+        side: "buy",
+        amount_nok: 100,
+      },
+    });
+
+    if (exec.status() === 401) {
+      test.skip();
+      return;
+    }
+
+    expect(exec.status()).toBe(200);
+    const body = await exec.json();
+
+    if (body.success !== true) {
+      console.log("⚠️ Paper execute rejected (balance/risk?):", body);
+      test.skip();
+      return;
+    }
+
+    expect(body.session_id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+    expect(body.trade_id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+    expect(typeof body.new_balance).toBe("number");
+
+    await page.goto(`/no/paper-trading/${body.session_id}`, {
+      waitUntil: "domcontentloaded",
+      timeout: 90_000,
+    });
+
+    if (page.url().includes("innlogging") || page.url().includes("login")) {
+      console.log("⚠️ Redirected to login on session page");
+      test.skip();
+      return;
+    }
+
+    await expect(
+      page.getByTestId("paper-session-trade-row").first(),
+    ).toBeVisible({ timeout: 20_000 });
+  });
 });
