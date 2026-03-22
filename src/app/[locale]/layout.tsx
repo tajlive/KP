@@ -9,7 +9,10 @@ import { SessionCleanup } from "@/components/SessionCleanup";
 import { LocaleMarketingShell } from "@/components/layout/LocaleMarketingShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OrganizationJsonLd } from "@/components/JsonLd";
-import { getEarlyMetaDescription } from "@/lib/seo/earlyMetaDescription";
+import {
+  getEarlyMetaDescription,
+  isEarlyMetaDescriptionPath,
+} from "@/lib/seo/earlyMetaDescription";
 import { MarketingProviders } from "@/components/providers/MarketingProviders";
 import { PlausibleScript } from "@/components/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
@@ -155,7 +158,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 
   const hdrs = await headers();
   const strippedPath = hdrs.get("x-kp-stripped-path") ?? "/";
-  const metaDescription = await getEarlyMetaDescription(locale, strippedPath);
+  const metaDescription = isEarlyMetaDescriptionPath(strippedPath)
+    ? await getEarlyMetaDescription(locale, strippedPath)
+    : null;
   const showVippsMarket = shouldShowVippsForRequest(hdrs);
 
   // Resource hints for external APIs (Task 5)
@@ -165,7 +170,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   return (
     <html lang={locale} className={inter.variable}>
       <head suppressHydrationWarning>
-        <meta name="description" content={metaDescription} />
+        {metaDescription != null ? (
+          <meta name="description" content={metaDescription} />
+        ) : null}
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
         <script
           dangerouslySetInnerHTML={{
