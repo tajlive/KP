@@ -33,7 +33,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import {
+  sumEffectivePnlSince,
+  winRateEffective,
+  effectiveDeltaForApiTrade,
+} from "@/lib/trading/trade-effective-pnl";
 import {
   generateBotStatusMessage,
   formatTimeUntil,
@@ -199,16 +204,34 @@ export default function BotStatusDashboard({
     };
   }, [userId, mainStrategy]);
 
-  // Calculate P&L periods (mock data - should come from API)
-  const pnlToday = portfolio?.total_pnl || 0;
-  const pnlWeek = portfolio?.total_pnl ? portfolio.total_pnl * 0.8 : 0;
-  const pnlMonth = portfolio?.total_pnl ? portfolio.total_pnl * 1.2 : 0;
+  const pnlToday = useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    return sumEffectivePnlSince(recentTrades, start.getTime());
+  }, [recentTrades]);
 
-  // Calculate advanced stats
+  const pnlWeek = useMemo(
+    () => sumEffectivePnlSince(recentTrades, Date.now() - 7 * 86400000),
+    [recentTrades],
+  );
+
+  const pnlMonth = useMemo(
+    () => sumEffectivePnlSince(recentTrades, Date.now() - 30 * 86400000),
+    [recentTrades],
+  );
+
   const totalValue = portfolio?.total_value || 0;
-  const winRate = portfolio?.win_rate || 65;
-  const sharpeRatio = 1.8; // Mock - should calculate from returns
-  const maxDrawdown = -12.5; // Mock - should calculate from equity curve
+  const winRateEffectiveVal = useMemo(
+    () => winRateEffective(recentTrades),
+    [recentTrades],
+  );
+  const winRate =
+    winRateEffectiveVal ??
+    (portfolio?.win_rate != null ? portfolio.win_rate : null);
+
+  /** Krever daglige avkastningsserier — ikke vis falske tall. */
+  const sharpeRatio: number | null = null;
+  const maxDrawdown: number | null = null;
 
   // Determine risk level
   const getRiskLevel = (
@@ -622,11 +645,13 @@ export default function BotStatusDashboard({
                 <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-blue-500 rounded-full"
-                    style={{ width: `${portfolio?.win_rate || 65}%` }}
+                    style={{
+                      width: `${winRate != null ? Math.min(100, Math.max(0, winRate)) : 0}%`,
+                    }}
                   />
                 </div>
                 <span className="text-lg font-black text-white">
-                  {portfolio?.win_rate?.toFixed(1) || "65.0"}%
+                  {winRate == null ? "—" : `${winRate.toFixed(1)}%`}
                 </span>
               </div>
             </div>
@@ -901,9 +926,9 @@ function AdvancedView({
   pnlToday: number;
   pnlWeek: number;
   pnlMonth: number;
-  sharpeRatio: number;
-  maxDrawdown: number;
-  winRate: number;
+  sharpeRatio: number | null;
+  maxDrawdown: number | null;
+  winRate: number | null;
   formatNOK: (v: number) => string;
   lang: string;
 }) {
@@ -955,23 +980,29 @@ function AdvancedView({
             <div
               className={cn(
                 "text-2xl font-black",
-                sharpeRatio >= 1
-                  ? "text-green-400"
-                  : sharpeRatio >= 0
-                    ? "text-yellow-400"
-                    : "text-red-400",
+                sharpeRatio == null
+                  ? "text-slate-500"
+                  : sharpeRatio >= 1
+                    ? "text-green-400"
+                    : sharpeRatio >= 0
+                      ? "text-yellow-400"
+                      : "text-red-400",
               )}
             >
-              {sharpeRatio.toFixed(2)}
+              {sharpeRatio == null ? "—" : sharpeRatio.toFixed(2)}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {sharpeRatio >= 1
+              {sharpeRatio == null
                 ? lang === "en"
-                  ? "Good risk-adjusted returns"
-                  : "God risikojustert avkastning"
-                : lang === "en"
-                  ? "Below optimal"
-                  : "Under optimalt"}
+                  ? "Needs daily return series"
+                  : "Krever daglig avkastningsserie"
+                : sharpeRatio >= 1
+                  ? lang === "en"
+                    ? "Good risk-adjusted returns"
+                    : "God risikojustert avkastning"
+                  : lang === "en"
+                    ? "Below optimal"
+                    : "Under optimalt"}
             </p>
           </div>
 
@@ -984,23 +1015,29 @@ function AdvancedView({
             <div
               className={cn(
                 "text-2xl font-black",
-                maxDrawdown > -10
-                  ? "text-green-400"
-                  : maxDrawdown > -20
-                    ? "text-yellow-400"
-                    : "text-red-400",
+                maxDrawdown == null
+                  ? "text-slate-500"
+                  : maxDrawdown > -10
+                    ? "text-green-400"
+                    : maxDrawdown > -20
+                      ? "text-yellow-400"
+                      : "text-red-400",
               )}
             >
-              {maxDrawdown.toFixed(1)}%
+              {maxDrawdown == null ? "—" : `${maxDrawdown.toFixed(1)}%`}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {maxDrawdown > -10
+              {maxDrawdown == null
                 ? lang === "en"
-                  ? "Low risk"
-                  : "Lav risiko"
-                : lang === "en"
-                  ? "Higher risk"
-                  : "Høyere risiko"}
+                  ? "Needs equity curve"
+                  : "Krever egenkapitalkurve"
+                : maxDrawdown > -10
+                  ? lang === "en"
+                    ? "Low risk"
+                    : "Lav risiko"
+                  : lang === "en"
+                    ? "Higher risk"
+                    : "Høyere risiko"}
             </p>
           </div>
 
@@ -1013,14 +1050,16 @@ function AdvancedView({
             <div
               className={cn(
                 "text-2xl font-black",
-                winRate >= 60
-                  ? "text-green-400"
-                  : winRate >= 50
-                    ? "text-yellow-400"
-                    : "text-red-400",
+                winRate == null
+                  ? "text-slate-500"
+                  : winRate >= 60
+                    ? "text-green-400"
+                    : winRate >= 50
+                      ? "text-yellow-400"
+                      : "text-red-400",
               )}
             >
-              {winRate.toFixed(1)}%
+              {winRate == null ? "—" : `${winRate.toFixed(1)}%`}
             </div>
             <p className="text-xs text-slate-500 mt-1">
               {totalTrades} {lang === "en" ? "trades" : "handler"}
@@ -1064,17 +1103,25 @@ function AdvancedView({
               },
               {
                 label: lang === "en" ? "Best Trade" : "Beste Trade",
-                value: Math.max(
-                  ...recentTrades.map((t) => t.realized_pnl || 0),
-                  0,
-                ),
+                value:
+                  recentTrades.length > 0
+                    ? Math.max(
+                        ...recentTrades.map((t) =>
+                          effectiveDeltaForApiTrade(t),
+                        ),
+                      )
+                    : 0,
               },
               {
                 label: lang === "en" ? "Worst Trade" : "Verste Trade",
-                value: Math.min(
-                  ...recentTrades.map((t) => t.realized_pnl || 0),
-                  0,
-                ),
+                value:
+                  recentTrades.length > 0
+                    ? Math.min(
+                        ...recentTrades.map((t) =>
+                          effectiveDeltaForApiTrade(t),
+                        ),
+                      )
+                    : 0,
               },
             ].map((item, i) => (
               <div

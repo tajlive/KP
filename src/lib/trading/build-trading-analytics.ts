@@ -17,6 +17,10 @@ export type TradeAnalyticsInput = {
 /** Aggregates from closed-position P&L plus net settlement flow for fills without realized_pnl. */
 export type TradingAnalyticsAggregates = TradeHistoryAggregates & {
   totalEffectivePnl: number;
+  /** Taps-/gevinst-rader etter effectivePnlDelta (handler uten realisert P&L inkludert). */
+  effectiveWinCount: number;
+  effectiveLossCount: number;
+  effectiveBreakevenCount: number;
 };
 
 function normalizeSide(side: string): "buy" | "sell" | "other" {
@@ -154,23 +158,33 @@ export function buildTradingAnalytics(
     (s, row) => s + effectivePnlDelta(row),
     0,
   );
+
+  let effectiveWinCount = 0;
+  let effectiveLossCount = 0;
+  let effectiveBreakevenCount = 0;
+  for (const row of sorted) {
+    const d = effectivePnlDelta(row);
+    if (d > 0) effectiveWinCount += 1;
+    else if (d < 0) effectiveLossCount += 1;
+    else effectiveBreakevenCount += 1;
+  }
+
   const aggregates: TradingAnalyticsAggregates = {
     ...baseAggregates,
     totalEffectivePnl: Math.round(totalEffectivePnl * 100) / 100,
+    effectiveWinCount,
+    effectiveLossCount,
+    effectiveBreakevenCount,
   };
 
+  /** Kake-diagram: effektiv P&L per rad (samme som kurver/total), ikke bare realisert_pnl. */
   const winLossSlices = [
-    { key: "win" as const, value: aggregates.winCount, fill: WIN_COLOR },
-    { key: "loss" as const, value: aggregates.lossCount, fill: LOSS_COLOR },
+    { key: "win" as const, value: effectiveWinCount, fill: WIN_COLOR },
+    { key: "loss" as const, value: effectiveLossCount, fill: LOSS_COLOR },
     {
       key: "breakeven" as const,
-      value: aggregates.breakevenCount,
+      value: effectiveBreakevenCount,
       fill: NEUTRAL_COLOR,
-    },
-    {
-      key: "unknown" as const,
-      value: aggregates.noRealizedPnlCount,
-      fill: UNKNOWN_COLOR,
     },
   ].filter((s) => s.value > 0);
 

@@ -258,6 +258,16 @@
     "profile": "Profil"
   },
   "sidebar": {
+    "home": "Hjem",
+    "learn": "Lær",
+    "trade": "Paper-handel",
+    "history": "Historikk",
+    "results": "Resultater",
+    "profile": "Profil",
+    "sectionTrading": "Handel",
+    "expandSidebar": "Utvid sidepanel",
+    "collapseSidebar": "Skjul sidepanel",
+    "mode": "Modus",
     "language": "Språk",
     "displayCurrency": "Visningsvaluta",
     "overview": "Oversikt",
@@ -271,7 +281,7 @@
     "admin": "Administrator",
     "logout": "Logg ut",
     "paperTrading": "Paper Trading",
-    "autoTrade": "Auto-trading",
+    "autoTrade": "Auto-trade",
     "guide": "Guide",
     "mainMenu": "Hovedmeny",
     "closeMenu": "Lukk meny"

@@ -64,49 +64,52 @@ export function DashboardSidebar() {
     return p === fullPath || p.startsWith(`${fullPath}/`);
   };
 
-  const links = [
+  const mainLinks = [
     {
       href: "/dashboard",
-      label: locale === "no" ? "Hjem" : "Home",
+      labelKey: "home" as const,
       icon: LayoutDashboard,
       exact: true,
     },
-    { href: "/kurs", label: locale === "no" ? "Lær" : "Learn", icon: BookOpen },
-    {
-      href: "/paper-trading",
-      label: locale === "no" ? "Handle" : "Trade",
-      icon: TrendingUp,
-    },
-    {
-      href: "/handelshistorikk",
-      label: locale === "no" ? "Historikk" : "History",
-      icon: History,
-    },
-    {
-      href: "/dashboard/resultater",
-      label: locale === "no" ? "Resultater" : "Results",
-      icon: BarChart3,
-    },
+    { href: "/kurs", labelKey: "learn" as const, icon: BookOpen },
+  ];
+
+  const tradingLinks = [
+    { href: "/paper-trading", labelKey: "trade" as const, icon: TrendingUp },
     {
       href: "/dashboard/auto-trade",
-      label: locale === "no" ? "Auto-trade" : "Auto-trade",
+      labelKey: "autoTrade" as const,
       icon: Bot,
     },
+    { href: "/handelshistorikk", labelKey: "history" as const, icon: History },
     {
-      href: "/profile",
-      label: locale === "no" ? "Profil" : "Profile",
-      icon: User,
+      href: "/dashboard/resultater",
+      labelKey: "results" as const,
+      icon: BarChart3,
     },
   ];
+
+  const profileLink = {
+    href: "/profile",
+    labelKey: "profile" as const,
+    icon: User,
+  };
 
   const secondaryLinks = [
     {
       href: "/dashboard/settings",
-      label: locale === "no" ? "Innstillinger" : "Settings",
+      labelKey: "settings" as const,
       icon: Settings,
     },
     ...(isAdmin
-      ? [{ href: "/admin", label: "Admin", icon: Shield, admin: true as const }]
+      ? [
+          {
+            href: "/admin",
+            labelKey: "admin" as const,
+            icon: Shield,
+            admin: true as const,
+          },
+        ]
       : []),
   ];
 
@@ -121,11 +124,21 @@ export function DashboardSidebar() {
 
   const renderLink = (link: {
     href: string;
-    label: string;
+    labelKey:
+      | "home"
+      | "learn"
+      | "trade"
+      | "history"
+      | "results"
+      | "autoTrade"
+      | "profile"
+      | "settings"
+      | "admin";
     icon: React.ComponentType<{ className?: string }>;
     exact?: boolean;
     admin?: boolean;
   }) => {
+    const label = t(link.labelKey);
     const fullPath = hrefWithLocale(locale, link.href);
     const active = isActive(link.href, link.exact);
 
@@ -134,7 +147,7 @@ export function DashboardSidebar() {
         key={link.href}
         href={fullPath}
         onClick={() => setMobileOpen(false)}
-        title={collapsed ? link.label : undefined}
+        title={collapsed ? label : undefined}
         className={`flex items-center gap-3 rounded-xl transition-all font-medium ${
           collapsed ? "justify-center px-2 py-3" : "px-3 py-2.5"
         } ${
@@ -158,7 +171,7 @@ export function DashboardSidebar() {
             }`}
           />
         )}
-        {!collapsed && <span className="truncate">{link.label}</span>}
+        {!collapsed && <span className="truncate">{label}</span>}
       </Link>
     );
   };
@@ -191,7 +204,7 @@ export function DashboardSidebar() {
             <button
               onClick={() => setCollapsed(!collapsed)}
               className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
-              aria-label={collapsed ? "Utvid sidepanel" : "Skjul sidepanel"}
+              aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
             >
               {collapsed ? (
                 <ChevronRight className="w-4 h-4" />
@@ -202,7 +215,18 @@ export function DashboardSidebar() {
           </div>
 
           <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-            {links.map(renderLink)}
+            {mainLinks.map(renderLink)}
+            {collapsed ? (
+              <div className="my-2 border-t border-[#E2E5EC]" aria-hidden />
+            ) : (
+              <div className="px-3 pt-3 pb-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  {t("sectionTrading")}
+                </span>
+              </div>
+            )}
+            {tradingLinks.map(renderLink)}
+            {renderLink(profileLink)}
             <div className="my-2 border-t border-[#E2E5EC]" />
             {secondaryLinks.map(renderLink)}
           </nav>
@@ -235,7 +259,7 @@ export function DashboardSidebar() {
                 </div>
                 <div className="pt-1 border-t border-slate-200">
                   <span className="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-2">
-                    {locale === "no" ? "Modus" : "Mode"}
+                    {t("mode")}
                   </span>
                   <TradingModeToggle />
                 </div>

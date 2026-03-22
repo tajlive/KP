@@ -148,27 +148,31 @@ export async function getPortfolio(
   const { data } = await supabase
     .from("trading_sessions")
     .select(
-      "id, current_capital, initial_capital, total_pnl, total_trades, winning_trades",
+      "id, current_capital, initial_capital, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades",
     )
     .eq("user_id", user.id)
     .eq("mode", mode)
     .eq("status", "active")
-    .order("created_at", { ascending: false })
+    .order("updated_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
   if (!data) return null;
 
-  // Calculate derived values
-  const investedValue = data.initial_capital - data.current_capital;
-  const totalValue = data.current_capital;
+  /** Papir/live bruker primært *_nok; legacy current_capital kan være desynket. */
+  const cash = Number(data.current_capital_nok ?? data.current_capital ?? 0);
+  const initial = Number(
+    data.starting_capital_nok ?? data.initial_capital ?? cash,
+  );
+  const investedValue = Math.max(0, initial - cash);
+  const totalValue = cash;
   const winRate =
     data.total_trades > 0 ? (data.winning_trades / data.total_trades) * 100 : 0;
 
   return {
     session_id: data.id,
     total_value: totalValue,
-    cash_balance: data.current_capital,
+    cash_balance: cash,
     invested_value: investedValue,
     total_pnl: data.total_pnl,
     total_trades: data.total_trades,
@@ -221,8 +225,12 @@ export async function getActiveStrategies(
     is_active: session.status === "active",
     mode: session.mode,
     trading_pair: session.trading_pair,
-    current_capital: session.current_capital,
-    initial_capital: session.initial_capital,
+    current_capital: Number(
+      session.current_capital_nok ?? session.current_capital ?? 0,
+    ),
+    initial_capital: Number(
+      session.starting_capital_nok ?? session.initial_capital ?? 0,
+    ),
     total_trades: session.total_trades,
     winning_trades: session.winning_trades,
     total_pnl: session.total_pnl,
@@ -251,8 +259,12 @@ export async function getAllStrategies(
     is_active: session.status === "active",
     mode: session.mode,
     trading_pair: session.trading_pair,
-    current_capital: session.current_capital,
-    initial_capital: session.initial_capital,
+    current_capital: Number(
+      session.current_capital_nok ?? session.current_capital ?? 0,
+    ),
+    initial_capital: Number(
+      session.starting_capital_nok ?? session.initial_capital ?? 0,
+    ),
     total_trades: session.total_trades,
     winning_trades: session.winning_trades,
     total_pnl: session.total_pnl,

@@ -349,6 +349,16 @@
     "profile": "Profile"
   },
   "sidebar": {
+    "home": "Home",
+    "learn": "Learn",
+    "trade": "Paper trading",
+    "history": "History",
+    "results": "Results",
+    "profile": "Profile",
+    "sectionTrading": "Trading",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "mode": "Mode",
     "language": "Language",
     "displayCurrency": "Display currency",
     "overview": "Overview",
@@ -362,7 +372,7 @@
     "admin": "Admin",
     "logout": "Log out",
     "paperTrading": "Paper Trading",
-    "autoTrade": "Auto-trading",
+    "autoTrade": "Auto-trade",
     "guide": "Guide",
     "mainMenu": "Main Menu",
     "closeMenu": "Close menu"

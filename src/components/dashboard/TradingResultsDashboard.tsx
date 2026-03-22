@@ -35,7 +35,7 @@ import {
   YAxis,
 } from "recharts";
 
-const REFRESH_MS = 5 * 60 * 1000;
+const REFRESH_MS = 45 * 1000;
 const MAX_CUMULATIVE_POINTS = 180;
 
 type AnalyticsPayload = {
@@ -50,6 +50,9 @@ type AnalyticsPayload = {
     noRealizedPnlCount: number;
     totalRealizedPnl: number;
     totalEffectivePnl: number;
+    effectiveWinCount: number;
+    effectiveLossCount: number;
+    effectiveBreakevenCount: number;
     winRateRealizedPct: number | null;
   };
   cumulativePnl: { t: string; label: string; cumulative: number }[];

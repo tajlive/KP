@@ -26,6 +26,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
+import { effectivePnlDelta } from "@/lib/trading/build-trading-analytics";
 
 interface AdvancedStatsModalProps {
   userId: string;
@@ -40,7 +41,7 @@ interface Stats {
   avgWin: number;
   avgLoss: number;
   profitFactor: number;
-  sharpeRatio: number;
+  sharpeRatio: number | null;
   maxDrawdown: number;
   bestTrade: number;
   worstTrade: number;
@@ -52,9 +53,9 @@ interface Stats {
 interface Signal {
   id: string;
   title: string;
-  direction: 'long' | 'short';
+  direction: "long" | "short";
   confidence: number;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   created_at: string;
   metadata: Record<string, unknown>;
 }
@@ -93,13 +94,13 @@ export default function AdvancedStatsModal({
     setLoading(true);
     try {
       const supabase = createClient();
-      
+
       // Fetch all trades for this strategy
       const { data: trades } = await supabase
         .from("trades")
         .select("*")
         .eq("session_id", strategy.id)
-        .eq("status", "filled")
+        .in("status", ["filled", "executed"])
         .order("executed_at", { ascending: true });
 
       if (!trades || trades.length === 0) {
@@ -111,7 +112,7 @@ export default function AdvancedStatsModal({
           avgWin: 0,
           avgLoss: 0,
           profitFactor: 0,
-          sharpeRatio: 0,
+          sharpeRatio: null,
           maxDrawdown: 0,
           bestTrade: 0,
           worstTrade: 0,
@@ -122,27 +123,37 @@ export default function AdvancedStatsModal({
         return;
       }
 
-      // Calculate statistics
-      const winningTrades = trades.filter((t) => (t.realized_pnl || 0) > 0);
-      const losingTrades = trades.filter((t) => (t.realized_pnl || 0) < 0);
-      
-      const wins = winningTrades.map((t) => t.realized_pnl || 0);
-      const losses = losingTrades.map((t) => t.realized_pnl || 0);
-      
-      const totalWin = wins.reduce((a, b) => a + b, 0);
-      const totalLoss = Math.abs(losses.reduce((a, b) => a + b, 0));
-      
-      const avgWin = wins.length > 0 ? totalWin / wins.length : 0;
-      const avgLoss = losses.length > 0 ? totalLoss / losses.length : 0;
-      
-      const winRate = trades.length > 0 ? (winningTrades.length / trades.length) * 100 : 0;
-      const profitFactor = totalLoss > 0 ? totalWin / totalLoss : totalWin > 0 ? Infinity : 0;
-      
-      const pnls = trades.map((t) => t.realized_pnl || 0);
-      const bestTrade = Math.max(...pnls);
-      const worstTrade = Math.min(...pnls);
-      
-      // Calculate max drawdown
+      const deltas = trades.map((t) =>
+        effectivePnlDelta({
+          id: t.id,
+          trading_pair: t.trading_pair,
+          side: String(t.side),
+          realized_pnl: t.realized_pnl,
+          mode: t.mode,
+          created_at: t.created_at,
+          executed_at: t.executed_at,
+          total_value: t.total_value,
+        }),
+      );
+
+      const winDeltas = deltas.filter((d) => d > 0);
+      const lossDeltas = deltas.filter((d) => d < 0);
+
+      const totalWin = winDeltas.reduce((a, b) => a + b, 0);
+      const totalLoss = Math.abs(lossDeltas.reduce((a, b) => a + b, 0));
+
+      const avgWin = winDeltas.length > 0 ? totalWin / winDeltas.length : 0;
+      const avgLoss = lossDeltas.length > 0 ? totalLoss / lossDeltas.length : 0;
+
+      const winRate =
+        trades.length > 0 ? (winDeltas.length / trades.length) * 100 : 0;
+      const profitFactor =
+        totalLoss > 0 ? totalWin / totalLoss : totalWin > 0 ? Infinity : 0;
+
+      const pnls = deltas;
+      const bestTrade = pnls.length ? Math.max(...pnls) : 0;
+      const worstTrade = pnls.length ? Math.min(...pnls) : 0;
+
       let maxDrawdown = 0;
       let peak = 0;
       let runningPnl = 0;
@@ -153,12 +164,11 @@ export default function AdvancedStatsModal({
         if (drawdown > maxDrawdown) maxDrawdown = drawdown;
       }
 
-      // Daily P&L
       const dailyMap = new Map<string, number>();
-      trades.forEach((t) => {
+      trades.forEach((t, i) => {
         const date = t.executed_at.split("T")[0];
         const current = dailyMap.get(date) || 0;
-        dailyMap.set(date, current + (t.realized_pnl || 0));
+        dailyMap.set(date, current + deltas[i]!);
       });
       const dailyPnl = Array.from(dailyMap.entries())
         .map(([date, pnl]) => ({ date, pnl }))
@@ -166,10 +176,10 @@ export default function AdvancedStatsModal({
 
       // Monthly P&L
       const monthlyMap = new Map<string, number>();
-      trades.forEach((t) => {
+      trades.forEach((t, i) => {
         const month = t.executed_at.slice(0, 7);
         const current = monthlyMap.get(month) || 0;
-        monthlyMap.set(month, current + (t.realized_pnl || 0));
+        monthlyMap.set(month, current + deltas[i]!);
       });
       const monthlyPnl = Array.from(monthlyMap.entries())
         .map(([month, pnl]) => ({ month, pnl }))
@@ -177,17 +187,17 @@ export default function AdvancedStatsModal({
 
       setStats({
         totalTrades: trades.length,
-        winningTrades: winningTrades.length,
-        losingTrades: losingTrades.length,
+        winningTrades: winDeltas.length,
+        losingTrades: lossDeltas.length,
         winRate,
         avgWin,
         avgLoss,
         profitFactor,
-        sharpeRatio: 1.5, // Simplified calculation
+        sharpeRatio: null,
         maxDrawdown,
         bestTrade,
         worstTrade,
-        avgTradeDuration: "2.3d",
+        avgTradeDuration: "—",
         dailyPnl,
         monthlyPnl,
       });
@@ -208,7 +218,7 @@ export default function AdvancedStatsModal({
         .limit(50);
 
       if (error) throw error;
-      setSignals(((data || []) as unknown) as Signal[]);
+      setSignals((data || []) as unknown as Signal[]);
     } catch (error) {
       console.error("Failed to fetch signals:", error);
     }
@@ -324,13 +334,17 @@ export default function AdvancedStatsModal({
                   title="Win Rate"
                   value={`${stats.winRate.toFixed(1)}%`}
                   icon={Percent}
-                  color={stats.winRate >= 50 ? "text-green-400" : "text-red-400"}
+                  color={
+                    stats.winRate >= 50 ? "text-green-400" : "text-red-400"
+                  }
                 />
                 <StatCard
                   title="Profit Factor"
                   value={stats.profitFactor.toFixed(2)}
                   icon={TrendingUp}
-                  color={stats.profitFactor >= 1 ? "text-green-400" : "text-red-400"}
+                  color={
+                    stats.profitFactor >= 1 ? "text-green-400" : "text-red-400"
+                  }
                 />
                 <StatCard
                   title="Max Drawdown"
@@ -357,13 +371,17 @@ export default function AdvancedStatsModal({
                     </p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm">Gjennomsnittlig vinst</p>
+                    <p className="text-slate-400 text-sm">
+                      Gjennomsnittlig vinst
+                    </p>
                     <p className="text-2xl font-bold text-green-400">
                       {formatNOK(stats.avgWin)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm">Gjennomsnittlig tap</p>
+                    <p className="text-slate-400 text-sm">
+                      Gjennomsnittlig tap
+                    </p>
                     <p className="text-2xl font-bold text-red-400">
                       {formatNOK(stats.avgLoss)}
                     </p>
@@ -387,7 +405,9 @@ export default function AdvancedStatsModal({
             <TabsContent value="performance" className="space-y-6">
               {/* P&L Charts */}
               <div className="bg-slate-800 rounded-xl p-6">
-                <h3 className="text-lg font-bold mb-4">Daglig P&L (siste 30 dager)</h3>
+                <h3 className="text-lg font-bold mb-4">
+                  Daglig P&L (siste 30 dager)
+                </h3>
                 {stats.dailyPnl.length > 0 ? (
                   <div className="space-y-2">
                     {stats.dailyPnl.map((day) => (
@@ -401,7 +421,7 @@ export default function AdvancedStatsModal({
                             style={{
                               width: `${Math.min(
                                 Math.abs(day.pnl) / 1000,
-                                100
+                                100,
                               )}%`,
                             }}
                           />
@@ -438,7 +458,7 @@ export default function AdvancedStatsModal({
                         <span className="text-slate-300">
                           {new Date(month.month + "-01").toLocaleDateString(
                             "no-NO",
-                            { month: "long", year: "numeric" }
+                            { month: "long", year: "numeric" },
                           )}
                         </span>
                         <span
@@ -468,7 +488,8 @@ export default function AdvancedStatsModal({
                     Live Handelssignaler
                   </h3>
                   <span className="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded-full">
-                    {signals.filter(s => s.status === 'pending').length} venter
+                    {signals.filter((s) => s.status === "pending").length}{" "}
+                    venter
                   </span>
                 </div>
 
@@ -479,15 +500,20 @@ export default function AdvancedStatsModal({
                         key={signal.id}
                         className="p-4 bg-slate-700 rounded-lg border-l-4 hover:bg-slate-600 transition-colors"
                         style={{
-                          borderLeftColor: signal.direction === 'long' ? '#22c55e' : '#ef4444'
+                          borderLeftColor:
+                            signal.direction === "long" ? "#22c55e" : "#ef4444",
                         }}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${
-                              signal.direction === 'long' ? 'bg-green-500/20' : 'bg-red-500/20'
-                            }`}>
-                              {signal.direction === 'long' ? (
+                            <div
+                              className={`p-2 rounded-lg ${
+                                signal.direction === "long"
+                                  ? "bg-green-500/20"
+                                  : "bg-red-500/20"
+                              }`}
+                            >
+                              {signal.direction === "long" ? (
                                 <TrendingUp className="w-5 h-5 text-green-400" />
                               ) : (
                                 <TrendingDown className="w-5 h-5 text-red-400" />
@@ -496,21 +522,34 @@ export default function AdvancedStatsModal({
                             <div>
                               <p className="font-bold">{signal.title}</p>
                               <p className="text-xs text-slate-400">
-                                {new Date(signal.created_at).toLocaleString('no-NO')}
+                                {new Date(signal.created_at).toLocaleString(
+                                  "no-NO",
+                                )}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                              signal.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
-                              signal.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                              'bg-red-500/20 text-red-400'
-                            }`}>
-                              {signal.status === 'pending' ? <Clock className="w-3 h-3" /> :
-                               signal.status === 'approved' ? <CheckCircle2 className="w-3 h-3" /> :
-                               <X className="w-3 h-3" />}
-                              {signal.status === 'pending' ? 'Venter' :
-                               signal.status === 'approved' ? 'Godkjent' : 'Avvist'}
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                                signal.status === "pending"
+                                  ? "bg-yellow-500/20 text-yellow-400"
+                                  : signal.status === "approved"
+                                    ? "bg-green-500/20 text-green-400"
+                                    : "bg-red-500/20 text-red-400"
+                              }`}
+                            >
+                              {signal.status === "pending" ? (
+                                <Clock className="w-3 h-3" />
+                              ) : signal.status === "approved" ? (
+                                <CheckCircle2 className="w-3 h-3" />
+                              ) : (
+                                <X className="w-3 h-3" />
+                              )}
+                              {signal.status === "pending"
+                                ? "Venter"
+                                : signal.status === "approved"
+                                  ? "Godkjent"
+                                  : "Avvist"}
                             </span>
                             <div className="mt-1 flex items-center gap-1 text-xs text-slate-400">
                               <Target className="w-3 h-3" />
@@ -568,7 +607,8 @@ export default function AdvancedStatsModal({
                       const totalReturn = result.total_return || 0;
                       const winRate = result.win_rate || 0;
                       const maxDrawdown = result.max_drawdown || 0;
-                      const finalCapital = result.final_capital || bt.initial_capital;
+                      const finalCapital =
+                        result.final_capital || bt.initial_capital;
 
                       return (
                         <div
@@ -579,31 +619,55 @@ export default function AdvancedStatsModal({
                             <div className="flex items-center gap-2">
                               <Calendar className="w-4 h-4 text-slate-400" />
                               <span className="text-sm text-slate-300">
-                                {new Date(bt.start_date).toLocaleDateString('no-NO')} - {new Date(bt.end_date).toLocaleDateString('no-NO')}
+                                {new Date(bt.start_date).toLocaleDateString(
+                                  "no-NO",
+                                )}{" "}
+                                -{" "}
+                                {new Date(bt.end_date).toLocaleDateString(
+                                  "no-NO",
+                                )}
                               </span>
                             </div>
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                              bt.recommendation === 'approve' ? 'bg-green-500/20 text-green-400' :
-                              bt.recommendation === 'review' ? 'bg-yellow-500/20 text-yellow-400' :
-                              'bg-red-500/20 text-red-400'
-                            }`}>
-                              {bt.recommendation === 'approve' ? <CheckCircle2 className="w-3 h-3" /> :
-                               bt.recommendation === 'review' ? <Activity className="w-3 h-3" /> :
-                               <X className="w-3 h-3" />}
-                              {bt.recommendation === 'approve' ? 'Godkjent' :
-                               bt.recommendation === 'review' ? 'Gjennomgå' : 'Avvist'}
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                                bt.recommendation === "approve"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : bt.recommendation === "review"
+                                    ? "bg-yellow-500/20 text-yellow-400"
+                                    : "bg-red-500/20 text-red-400"
+                              }`}
+                            >
+                              {bt.recommendation === "approve" ? (
+                                <CheckCircle2 className="w-3 h-3" />
+                              ) : bt.recommendation === "review" ? (
+                                <Activity className="w-3 h-3" />
+                              ) : (
+                                <X className="w-3 h-3" />
+                              )}
+                              {bt.recommendation === "approve"
+                                ? "Godkjent"
+                                : bt.recommendation === "review"
+                                  ? "Gjennomgå"
+                                  : "Avvist"}
                             </span>
                           </div>
 
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             <div className="bg-slate-800 rounded-lg p-3">
-                              <p className="text-xs text-slate-400">Avkastning</p>
-                              <p className={`text-lg font-bold ${totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                {totalReturn > 0 ? '+' : ''}{totalReturn.toFixed(1)}%
+                              <p className="text-xs text-slate-400">
+                                Avkastning
+                              </p>
+                              <p
+                                className={`text-lg font-bold ${totalReturn >= 0 ? "text-green-400" : "text-red-400"}`}
+                              >
+                                {totalReturn > 0 ? "+" : ""}
+                                {totalReturn.toFixed(1)}%
                               </p>
                             </div>
                             <div className="bg-slate-800 rounded-lg p-3">
-                              <p className="text-xs text-slate-400">Sluttkapital</p>
+                              <p className="text-xs text-slate-400">
+                                Sluttkapital
+                              </p>
                               <p className="text-lg font-bold text-white">
                                 {formatNOK(finalCapital)}
                               </p>
@@ -615,7 +679,9 @@ export default function AdvancedStatsModal({
                               </p>
                             </div>
                             <div className="bg-slate-800 rounded-lg p-3">
-                              <p className="text-xs text-slate-400">Max Drawdown</p>
+                              <p className="text-xs text-slate-400">
+                                Max Drawdown
+                              </p>
                               <p className="text-lg font-bold text-red-400">
                                 {maxDrawdown.toFixed(1)}%
                               </p>
@@ -624,17 +690,24 @@ export default function AdvancedStatsModal({
 
                           <div className="mt-3 pt-3 border-t border-slate-600">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-slate-400">Konfidens:</span>
+                              <span className="text-xs text-slate-400">
+                                Konfidens:
+                              </span>
                               <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
                                 <div
                                   className={`h-full ${
-                                    bt.confidence_score >= 70 ? 'bg-green-500' :
-                                    bt.confidence_score >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                                    bt.confidence_score >= 70
+                                      ? "bg-green-500"
+                                      : bt.confidence_score >= 40
+                                        ? "bg-yellow-500"
+                                        : "bg-red-500"
                                   }`}
                                   style={{ width: `${bt.confidence_score}%` }}
                                 />
                               </div>
-                              <span className="text-xs font-medium text-slate-300">{bt.confidence_score}%</span>
+                              <span className="text-xs font-medium text-slate-300">
+                                {bt.confidence_score}%
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -646,7 +719,8 @@ export default function AdvancedStatsModal({
                     <Activity className="w-12 h-12 text-slate-600 mx-auto mb-4" />
                     <p className="text-slate-400">Ingen backtester ennå</p>
                     <p className="text-sm text-slate-500 mb-4">
-                      Kjør en backtest for å se hvordan strategien ville ha prestert historisk
+                      Kjør en backtest for å se hvordan strategien ville ha
+                      prestert historisk
                     </p>
                     <Button
                       onClick={runBacktest}
@@ -660,7 +734,8 @@ export default function AdvancedStatsModal({
                         </>
                       ) : (
                         <>
-                          <History className="w-4 h-4 mr-2" /> Kjør første backtest
+                          <History className="w-4 h-4 mr-2" /> Kjør første
+                          backtest
                         </>
                       )}
                     </Button>
