@@ -144,6 +144,63 @@
       "description": "Signal-fusjon (flere indikatorer) inntil dedikert copy-motor er på plass. Høy aktivitet — egen risiko."
     }
   },
+  "recentTradesMixedModesHint": "Inkl. paper og live — porteføljen over følger valgt modus.",
+  "signalFeed": {
+    "title": "Handelssignaler",
+    "activeCount": "{count} aktive",
+    "updatedPrefix": "Oppdatert",
+    "refreshAria": "Oppdater signaler",
+    "emptyTitle": "Ingen signaler akkurat nå",
+    "emptyBody": "Signaler fra Binance kommer flere ganger i timen. Aktiver en strategi for å se flere signaler.",
+    "emptyFooter": "Sanntidsoppdatering · også hvert 15. sek",
+    "directionBuy": "KJØP",
+    "directionSell": "SALG",
+    "directionHold": "HOLD",
+    "priceEntry": "Inngang",
+    "priceStop": "Stop loss",
+    "priceTarget": "Take profit",
+    "locked": "Låst",
+    "toastNew": "Nytt signal: {symbol} {direction}",
+    "toastDirBuy": "Kjøp",
+    "toastDirSell": "Salg",
+    "toastDirHold": "Hold",
+    "toastEntry": "Inngang ca. {price}",
+    "upgradeTitle": "Oppgrader for å se alle detaljer",
+    "upgradeBody": "Stop Loss, Take Profit og AI-begrunnelse krever Master eller høyere",
+    "upgradeCta": "Se priser"
+  },
+  "desk": {
+    "welcomeEmpty": "Velkommen! Start en strategi for å begynne.",
+    "totalValue": "Total verdi",
+    "cash": "Cash",
+    "pnl": "P&L",
+    "winRate": "Win rate",
+    "chartLoading": "Laster graf…"
+  },
+  "activeStrategiesPanel": {
+    "title": "Aktive strategier",
+    "emptyHint": "Ingen aktive strategier. Velg en strategi nedenfor for å starte.",
+    "pnlLine": "P&L: {pnl} · {count} handler",
+    "stop": "Stopp"
+  },
+  "recentTradesPanel": {
+    "title": "Siste handler",
+    "empty": "Ingen handler ennå — start en strategi nedenfor.",
+    "sideBuy": "KJØP",
+    "sideSell": "SALG",
+    "unknownStrategy": "Ukjent"
+  },
+  "strategyPicker": {
+    "title": "Velg strategi",
+    "paperHint": "Øvingsmodus — ingen ekte penger.",
+    "ariaClose": "Lukk strategi",
+    "ariaSelect": "Velg {name}",
+    "statusActive": "Aktiv",
+    "statusIdle": "Ikke startet",
+    "stopStrategy": "Stopp strategi",
+    "startStrategy": "Start strategi",
+    "starting": "Starter…"
+  },
   "robotBrain": {
     "ariaLabel": "Bot status og analyse",
     "badge": "Kjernelogikk aktiv",

@@ -1,4 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server";
+import { localizedPathname } from "@/middleware/locale-path";
 import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -13,24 +14,34 @@ export async function GET(request: NextRequest) {
   const locale = localeMatch ? localeMatch[1] : "no";
 
   // Create response object first (for cookie handling)
-  const redirectUrl = new URL(`/${locale}/dashboard`, request.url);
+  const redirectUrl = new URL(
+    localizedPathname(locale, "/dashboard"),
+    request.url,
+  );
   const response = NextResponse.redirect(redirectUrl, { status: 302 });
 
   if (!code) {
     console.error("[Auth Callback] No code received");
     return NextResponse.redirect(
-      new URL(`/${locale}/innlogging?error=no_code`, request.url),
+      new URL(
+        `${localizedPathname(locale, "/innlogging")}?error=no_code`,
+        request.url,
+      ),
     );
   }
 
   // Use the route handler client that handles PKCE cookies properly
   const supabase = createServerClient(request, response);
-  const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code);
+  const { data: sessionData, error } =
+    await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     console.error("[Auth Callback] Exchange failed:", error.message);
     return NextResponse.redirect(
-      new URL(`/${locale}/innlogging?error=exchange_failed`, request.url),
+      new URL(
+        `${localizedPathname(locale, "/innlogging")}?error=exchange_failed`,
+        request.url,
+      ),
     );
   }
 
@@ -57,7 +68,10 @@ export async function GET(request: NextRequest) {
       .neq("referrer_user_id", userId); // kan ikke verve seg selv
 
     if (refError) {
-      console.error("[Auth Callback] Referral update failed:", refError.message);
+      console.error(
+        "[Auth Callback] Referral update failed:",
+        refError.message,
+      );
     }
 
     // Slett cookie etter bruk

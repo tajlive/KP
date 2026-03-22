@@ -3,6 +3,7 @@
 import { useAuth } from "@/components/auth/AuthContext";
 import { usePulseData } from "@/hooks/usePulseData";
 import { Activity, TrendingDown, TrendingUp } from "lucide-react";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ export function MiniPulseWidget() {
 
   return (
     <Link
-      href={`/${locale}/dashboard`}
+      href={hrefWithLocale(locale, "/dashboard")}
       className="group flex items-center gap-3 px-3 py-1.5 bg-slate-900/50 hover:bg-slate-800 rounded-2xl border border-white/5 transition-all duration-300 hover:border-white/10"
     >
       <div className="relative">

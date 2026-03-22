@@ -144,6 +144,63 @@
       "description": "Signal fusion (multiple indicators) until a dedicated copy engine ships. High activity — your risk."
     }
   },
+  "recentTradesMixedModesHint": "Includes paper and live — the portfolio above follows your selected mode.",
+  "signalFeed": {
+    "title": "Trading signals",
+    "activeCount": "{count} active",
+    "updatedPrefix": "Updated",
+    "refreshAria": "Refresh signals",
+    "emptyTitle": "No signals right now",
+    "emptyBody": "Signals from Binance arrive throughout the day. Activate a strategy to see more.",
+    "emptyFooter": "Live updates · also every 15s",
+    "directionBuy": "BUY",
+    "directionSell": "SELL",
+    "directionHold": "HOLD",
+    "priceEntry": "Entry",
+    "priceStop": "Stop loss",
+    "priceTarget": "Take profit",
+    "locked": "Locked",
+    "toastNew": "New signal: {symbol} {direction}",
+    "toastDirBuy": "Buy",
+    "toastDirSell": "Sell",
+    "toastDirHold": "Hold",
+    "toastEntry": "Entry ~{price}",
+    "upgradeTitle": "Upgrade to see full details",
+    "upgradeBody": "Stop loss, take profit and AI reasoning require Master or higher",
+    "upgradeCta": "View pricing"
+  },
+  "desk": {
+    "welcomeEmpty": "Welcome! Start a strategy to begin.",
+    "totalValue": "Total value",
+    "cash": "Cash",
+    "pnl": "P&L",
+    "winRate": "Win rate",
+    "chartLoading": "Loading chart…"
+  },
+  "activeStrategiesPanel": {
+    "title": "Active strategies",
+    "emptyHint": "No active strategies. Pick a strategy below to start.",
+    "pnlLine": "P&L: {pnl} · {count} trades",
+    "stop": "Stop"
+  },
+  "recentTradesPanel": {
+    "title": "Recent trades",
+    "empty": "No trades yet — start a strategy below.",
+    "sideBuy": "BUY",
+    "sideSell": "SELL",
+    "unknownStrategy": "Unknown"
+  },
+  "strategyPicker": {
+    "title": "Choose strategy",
+    "paperHint": "Practice mode — no real money.",
+    "ariaClose": "Close strategy",
+    "ariaSelect": "Select {name}",
+    "statusActive": "Active",
+    "statusIdle": "Not started",
+    "stopStrategy": "Stop strategy",
+    "startStrategy": "Start strategy",
+    "starting": "Starting…"
+  },
   "robotBrain": {
     "ariaLabel": "Bot status and analysis",
     "badge": "Core logic active",

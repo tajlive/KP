@@ -1,57 +1,61 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useLocale } from 'next-intl';
-import { AuthButtons } from './UnifiedAuthButton';
-import { EmailAuthForm } from './EmailAuthForm';
-import { TrendingUp, Shield, Zap, LineChart } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from "react";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { useLocale } from "next-intl";
+import { AuthButtons } from "./UnifiedAuthButton";
+import { EmailAuthForm } from "./EmailAuthForm";
+import { TrendingUp, Shield, Zap, LineChart } from "lucide-react";
+import Link from "next/link";
 
 interface AuthContainerProps {
   locale?: string;
-  defaultMode?: 'login' | 'register';
+  defaultMode?: "login" | "register";
   redirectPath?: string;
 }
 
 export function AuthContainer({
   locale: localeProp,
-  defaultMode = 'login',
+  defaultMode = "login",
   redirectPath: redirectPathProp,
 }: AuthContainerProps) {
   const detectedLocale = useLocale();
   const locale = localeProp || detectedLocale;
-  const redirectPath = redirectPathProp || `/${locale}/dashboard`;
-  const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
+  const redirectPath = redirectPathProp || hrefWithLocale(locale, "/dashboard");
+  const [mode, setMode] = useState<"login" | "register">(defaultMode);
   const [showEmailForm, setShowEmailForm] = useState(false);
 
   const toggleMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login');
+    setMode(mode === "login" ? "register" : "login");
   };
 
   const features = [
     {
       icon: Shield,
-      title: locale === 'no' ? '100% Risikofri' : '100% Risk-Free',
-      description: locale === 'no' 
-        ? 'Trade med lekepenger og lær uten å risikere egne midler'
-        : 'Trade with virtual money and learn without risking your own funds',
-      color: 'emerald',
+      title: locale === "no" ? "100% Risikofri" : "100% Risk-Free",
+      description:
+        locale === "no"
+          ? "Trade med lekepenger og lær uten å risikere egne midler"
+          : "Trade with virtual money and learn without risking your own funds",
+      color: "emerald",
     },
     {
       icon: LineChart,
-      title: locale === 'no' ? 'Ekte Markedsdata' : 'Real Market Data',
-      description: locale === 'no'
-        ? 'Sanntidspriser fra Binance API – akkurat som ekte trading'
-        : 'Real-time prices from Binance API – just like real trading',
-      color: 'cyan',
+      title: locale === "no" ? "Ekte Markedsdata" : "Real Market Data",
+      description:
+        locale === "no"
+          ? "Sanntidspriser fra Binance API – akkurat som ekte trading"
+          : "Real-time prices from Binance API – just like real trading",
+      color: "cyan",
     },
     {
       icon: Zap,
-      title: locale === 'no' ? 'Trading Coach' : 'Trading Coach',
-      description: locale === 'no'
-        ? 'Få personlige råd og strategier fra vår trading coach'
-        : 'Get personalized advice and strategies from our trading coach',
-      color: 'emerald',
+      title: locale === "no" ? "Trading Coach" : "Trading Coach",
+      description:
+        locale === "no"
+          ? "Få personlige råd og strategier fra vår trading coach"
+          : "Get personalized advice and strategies from our trading coach",
+      color: "emerald",
     },
   ];
 
@@ -66,16 +70,18 @@ export function AuthContainer({
               <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-400 to-cyan-400 flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
-              <span className="text-2xl font-bold gradient-text">Klarpakke</span>
+              <span className="text-2xl font-bold gradient-text">
+                Klarpakke
+              </span>
             </Link>
           </div>
 
           {/* OAuth Buttons */}
           {!showEmailForm && (
             <>
-              <AuthButtons 
-                locale={locale} 
-                providers={['GOOGLE', 'LINKEDIN']}
+              <AuthButtons
+                locale={locale}
+                providers={["GOOGLE", "LINKEDIN"]}
                 showMagicLink={true}
               />
 
@@ -86,7 +92,7 @@ export function AuthContainer({
                 </div>
                 <div className="relative flex justify-center">
                   <span className="bg-white px-4 text-sm text-slate-500">
-                    {locale === 'no' ? 'eller' : 'or'}
+                    {locale === "no" ? "eller" : "or"}
                   </span>
                 </div>
               </div>
@@ -96,10 +102,13 @@ export function AuthContainer({
                 onClick={() => setShowEmailForm(true)}
                 className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
               >
-                {mode === 'login'
-                  ? (locale === 'no' ? 'Logg inn med e-post' : 'Sign in with email')
-                  : (locale === 'no' ? 'Opprett konto med e-post' : 'Create account with email')
-                }
+                {mode === "login"
+                  ? locale === "no"
+                    ? "Logg inn med e-post"
+                    : "Sign in with email"
+                  : locale === "no"
+                    ? "Opprett konto med e-post"
+                    : "Create account with email"}
               </button>
             </>
           )}
@@ -112,12 +121,12 @@ export function AuthContainer({
                 locale={locale}
                 redirectPath={redirectPath}
               />
-              
+
               <button
                 onClick={() => setShowEmailForm(false)}
                 className="w-full text-sm text-slate-500 hover:text-slate-700"
               >
-                ← {locale === 'no' ? 'Tilbake' : 'Back'}
+                ← {locale === "no" ? "Tilbake" : "Back"}
               </button>
             </div>
           )}
@@ -125,28 +134,33 @@ export function AuthContainer({
           {/* Toggle mode */}
           <div className="text-center text-sm">
             <span className="text-slate-500">
-              {mode === 'login'
-                ? (locale === 'no' ? 'Har ikke konto? ' : "Don't have an account? ")
-                : (locale === 'no' ? 'Har allerede konto? ' : 'Already have an account? ')
-              }
+              {mode === "login"
+                ? locale === "no"
+                  ? "Har ikke konto? "
+                  : "Don't have an account? "
+                : locale === "no"
+                  ? "Har allerede konto? "
+                  : "Already have an account? "}
             </span>
             <button
               onClick={toggleMode}
               className="text-blue-600 hover:text-blue-800 font-medium"
             >
-              {mode === 'login'
-                ? (locale === 'no' ? 'Opprett en' : 'Create one')
-                : (locale === 'no' ? 'Logg inn' : 'Sign in')
-              }
+              {mode === "login"
+                ? locale === "no"
+                  ? "Opprett en"
+                  : "Create one"
+                : locale === "no"
+                  ? "Logg inn"
+                  : "Sign in"}
             </button>
           </div>
 
           {/* Terms */}
           <p className="text-xs text-slate-400 text-center">
-            {locale === 'no' 
-              ? 'Ved å fortsette godtar du våre vilkår og personvernerklæring'
-              : 'By continuing, you agree to our Terms and Privacy Policy'
-            }
+            {locale === "no"
+              ? "Ved å fortsette godtar du våre vilkår og personvernerklæring"
+              : "By continuing, you agree to our Terms and Privacy Policy"}
           </p>
         </div>
       </div>
@@ -162,29 +176,34 @@ export function AuthContainer({
           </div>
 
           <h2 className="text-3xl font-bold mb-6">
-            {locale === 'no' ? 'Lær å trade krypto' : 'Learn to trade crypto'}
+            {locale === "no" ? "Lær å trade krypto" : "Learn to trade crypto"}
             <br />
             <span className="gradient-text">
-              {locale === 'no' ? 'uten risiko' : 'without risk'}
+              {locale === "no" ? "uten risiko" : "without risk"}
             </span>
           </h2>
 
           <p className="text-muted-foreground mb-8">
-            {locale === 'no'
-              ? 'Øv deg på kryptotrading med papirpenger. Få 100 000 kr i lekepenger og lær å trade med ekte markedsdata fra Binance.'
-              : 'Practice crypto trading with paper money. Get 100,000 NOK in virtual money and learn to trade with real market data from Binance.'
-            }
+            {locale === "no"
+              ? "Øv deg på kryptotrading med papirpenger. Få 100 000 kr i lekepenger og lær å trade med ekte markedsdata fra Binance."
+              : "Practice crypto trading with paper money. Get 100,000 NOK in virtual money and learn to trade with real market data from Binance."}
           </p>
 
           <div className="space-y-4">
             {features.map((feature) => (
               <div key={feature.title} className="flex items-start gap-4">
-                <div className={`w-10 h-10 rounded-lg bg-${feature.color}-500/10 flex items-center justify-center shrink-0`}>
-                  <feature.icon className={`h-5 w-5 text-${feature.color}-400`} />
+                <div
+                  className={`w-10 h-10 rounded-lg bg-${feature.color}-500/10 flex items-center justify-center shrink-0`}
+                >
+                  <feature.icon
+                    className={`h-5 w-5 text-${feature.color}-400`}
+                  />
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {feature.description}
+                  </p>
                 </div>
               </div>
             ))}
@@ -192,13 +211,16 @@ export function AuthContainer({
 
           <div className="mt-8 pt-8 border-t border-white/10">
             <p className="text-sm text-muted-foreground">
-              "Klarpakke hjalp meg å forstå trading før jeg satte inn ekte penger. Nå er jeg en selvsikker trader!"
+              "Klarpakke hjalp meg å forstå trading før jeg satte inn ekte
+              penger. Nå er jeg en selvsikker trader!"
             </p>
             <div className="mt-3 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-linear-to-br from-emerald-400 to-cyan-400" />
               <div>
                 <p className="font-medium">Erik Hansen</p>
-                <p className="text-sm text-muted-foreground">{locale === 'no' ? 'Proff-medlem' : 'Pro Member'}</p>
+                <p className="text-sm text-muted-foreground">
+                  {locale === "no" ? "Proff-medlem" : "Pro Member"}
+                </p>
               </div>
             </div>
           </div>

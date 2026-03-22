@@ -24,7 +24,7 @@ export default function FinalCTASection() {
 
   return (
     <section
-      className={`relative py-32 overflow-hidden ${SURFACE.BG}`}
+      className={`relative py-32 overflow-x-hidden ${SURFACE.BG}`}
       aria-labelledby="final-cta-heading"
     >
       <div className="absolute inset-0 z-0 opacity-20">
@@ -39,21 +39,26 @@ export default function FinalCTASection() {
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[3rem] p-12 sm:p-24 relative overflow-hidden shadow-2xl"
+          className="isolate bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[3rem] relative shadow-2xl"
         >
-          <motion.div
-            animate={{
-              opacity: [0.2, 0.4, 0.2],
-              scale: [1, 1.05, 1],
-            }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 to-transparent pointer-events-none"
-            style={{
-              background: `linear-gradient(to bottom right, ${BRAND_COLOR.DEFAULT}1A, transparent)`,
-            }}
-          />
+          <div
+            className="pointer-events-none absolute inset-0 overflow-hidden rounded-[3rem]"
+            aria-hidden
+          >
+            <motion.div
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+                scale: [1, 1.05, 1],
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 to-transparent"
+              style={{
+                background: `linear-gradient(to bottom right, ${BRAND_COLOR.DEFAULT}1A, transparent)`,
+              }}
+            />
+          </div>
 
-          <div className="relative z-10">
+          <div className="relative z-10 p-10 sm:p-16 lg:p-24">
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -69,16 +74,18 @@ export default function FinalCTASection() {
 
             <h2
               id="final-cta-heading"
-              className="text-4xl sm:text-7xl font-black text-white mb-8 tracking-tighter leading-tight"
+              className="text-3xl sm:text-5xl lg:text-7xl font-black text-white mb-8 tracking-tighter leading-[1.1] break-words"
             >
               {user ? t("loggedInTitleLine1") : t("titleLine1")}
               <br />
-              <span className={BRAND.link}>
+              <span
+                className={`${BRAND.link} drop-shadow-[0_0_24px_rgba(0,82,255,0.35)]`}
+              >
                 {user ? t("loggedInTitleAccent") : t("titleAccent")}
               </span>
             </h2>
 
-            <p className="text-xl sm:text-2xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-200/95 mb-12 max-w-2xl mx-auto leading-relaxed">
               {user ? t("loggedInSubtitle") : t("subtitle")}
             </p>
 
@@ -90,33 +97,36 @@ export default function FinalCTASection() {
               >
                 <Link
                   href={user ? dashboardHref : signupHref}
-                  className={`group relative ${BRAND.primary} px-12 py-6 rounded-2xl text-xl font-black text-white transition-all flex items-center gap-3 w-full sm:w-auto justify-center`}
+                  className={`group relative ${BRAND.primary} px-10 py-5 sm:px-12 sm:py-6 rounded-2xl text-lg sm:text-xl font-black text-white transition-all flex items-center justify-center w-full sm:w-auto min-h-[3.25rem]`}
                   style={{ boxShadow: `0 0 40px ${BRAND_COLOR.DEFAULT}66` }}
                 >
-                  {user ? t("loggedInCta") : t("cta")}
-                  <ArrowRight
-                    className="w-6 h-6 group-hover:translate-x-1 transition-transform"
-                    aria-hidden
-                  />
+                  <span className="relative z-10 inline-flex items-center gap-3">
+                    {user ? t("loggedInCta") : t("cta")}
+                    <ArrowRight
+                      className="w-6 h-6 shrink-0 group-hover:translate-x-1 transition-transform"
+                      aria-hidden
+                    />
+                  </span>
                   <span
-                    className="absolute inset-0 rounded-2xl animate-pulse blur-xl pointer-events-none opacity-20"
+                    className="absolute inset-0 rounded-2xl animate-pulse blur-xl pointer-events-none opacity-20 z-0"
                     style={{ backgroundColor: BRAND_COLOR.DEFAULT }}
+                    aria-hidden
                   />
                 </Link>
               </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto">
               {guarantees.map((guarantee) => (
                 <div
                   key={guarantee}
-                  className="flex items-center gap-3 text-slate-400 bg-white/5 p-4 rounded-xl border border-white/5"
+                  className="flex items-start gap-3 text-slate-200/95 bg-white/[0.06] p-4 rounded-xl border border-white/10"
                 >
                   <CheckCircle
-                    className="w-5 h-5 text-emerald-400 shrink-0"
+                    className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5"
                     aria-hidden
                   />
-                  <span className="text-sm font-bold tracking-tight text-left">
+                  <span className="min-w-0 text-sm sm:text-base font-semibold leading-snug text-left">
                     {guarantee}
                   </span>
                 </div>
@@ -126,7 +136,7 @@ export default function FinalCTASection() {
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
-              className="mt-16 inline-flex items-center gap-3 px-6 py-3 backdrop-blur-sm rounded-full border tabular-nums"
+              className="mt-14 sm:mt-16 max-w-full inline-flex items-center gap-3 px-5 py-3.5 backdrop-blur-sm rounded-full border tabular-nums mx-auto"
               style={{
                 backgroundColor: `${BRAND_COLOR.DEFAULT}1A`,
                 borderColor: `${BRAND_COLOR.DEFAULT}33`,
@@ -134,7 +144,7 @@ export default function FinalCTASection() {
               }}
             >
               <Clock className="w-5 h-5 shrink-0" aria-hidden />
-              <span className="text-sm font-black uppercase tracking-widest">
+              <span className="text-xs sm:text-sm font-semibold tracking-wide text-center normal-case">
                 {t("pricingNote")}
               </span>
             </motion.div>

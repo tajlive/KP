@@ -26,6 +26,7 @@ import {
   Mail,
 } from "lucide-react";
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,7 +38,8 @@ import { useAuth } from "@/components/auth/AuthContext";
  * Saniterer redirect-destinasjon til en sikker relativ sti.
  */
 function sanitizeClientRedirect(value: string | null, locale: string): string {
-  const fallback = `/${locale}/dashboard`;
+  /** Kanonisk: norsk uten /no-prefix (as-needed), engelsk /en/dashboard */
+  const fallback = hrefWithLocale(locale, "/dashboard");
   if (!value) return fallback;
 
   try {
@@ -207,7 +209,7 @@ function InnloggingForm() {
                       placeholder={t("emailPlaceholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className={`pl-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF] transition-shadow duration-200`}
+                      className={`pl-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 transition-shadow duration-200`}
                       required
                       disabled={status === "logging_in"}
                       aria-invalid={!!loginError}
@@ -229,7 +231,7 @@ function InnloggingForm() {
                       placeholder={t("passwordPlaceholder")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className={`pl-10 pr-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-[#0052FF] focus:ring-[#0052FF] transition-shadow duration-200`}
+                      className={`pl-10 pr-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 transition-shadow duration-200`}
                       required
                       disabled={status === "logging_in"}
                       aria-invalid={!!loginError}
@@ -238,7 +240,7 @@ function InnloggingForm() {
                       type="button"
                       tabIndex={0}
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0052FF] rounded-lg"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
                       aria-label={
                         showPassword
                           ? locale === "no"

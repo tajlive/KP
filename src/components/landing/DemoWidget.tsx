@@ -107,7 +107,7 @@ export function DemoWidget() {
   return (
     <section
       id="land-demo"
-      className="relative scroll-mt-24 overflow-hidden bg-slate-950 py-16 md:py-28"
+      className="relative scroll-mt-24 overflow-x-hidden bg-slate-950 py-16 md:py-28"
     >
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,82,255,0.18),transparent)]"
@@ -125,7 +125,7 @@ export function DemoWidget() {
           <h2 className="mb-3 text-3xl font-black tracking-tight text-white sm:text-4xl">
             {t("title")}
           </h2>
-          <p className="mx-auto max-w-xl text-lg text-slate-400">
+          <p className="mx-auto max-w-xl text-lg text-slate-200/90 leading-relaxed">
             {t("subtitle")}
           </p>
         </div>
