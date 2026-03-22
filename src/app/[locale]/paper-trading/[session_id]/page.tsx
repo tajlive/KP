@@ -12,6 +12,12 @@ type SessionDetailProps = ComponentProps<typeof PaperTradingSessionDetail>;
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Bruk alltid requireAuth().supabase for brukerdata her — ikke createClient() fra
+ * @/lib/supabase/server (service role). Service role skjuler RLS-problemer og har
+ * tidligere gitt feil der handler ikke syntes for innlogget bruker.
+ */
+
 // Fallback UI for når datahenting feiler
 function SessionErrorFallback({ locale }: { locale: string }) {
   return (
