@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
+if [ -s "${HOME}/.nvm/nvm.sh" ]; then
+  # shellcheck source=/dev/null
+  . "${HOME}/.nvm/nvm.sh"
+  nvm use 2>/dev/null || true
+fi
+export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+
 npx lint-staged
 ./scripts/check-secrets-staged.sh
 npm run lint
