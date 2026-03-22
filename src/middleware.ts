@@ -1,5 +1,5 @@
 import createMiddleware from "next-intl/middleware";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { routing } from "./i18n/routing.config";
 import { handleOnboarding } from "./middleware/onboarding";
@@ -56,6 +56,11 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const { locale, strippedPath } = parseLocalePath(pathname);
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-kp-stripped-path", strippedPath);
+  requestHeaders.set("x-kp-locale", locale);
+  const requestWithPath = new NextRequest(request, { headers: requestHeaders });
 
   // PKCE: Supabase (eller e-postmal) kan sende bruker til Site URL med ?code= på rot
   // (f.eks. https://www.klarpakke.no/?code=...). Uten redirect byttes aldri koden — brukeren
@@ -120,7 +125,7 @@ export async function middleware(request: NextRequest) {
   // default locale at / and would redirect /no back to /, causing ERR_TOO_MANY_REDIRECTS.
 
   // 1. i18n routing
-  const response = handleI18nRouting(request);
+  const response = handleI18nRouting(requestWithPath);
 
   if (response.status !== 200) {
     return response;

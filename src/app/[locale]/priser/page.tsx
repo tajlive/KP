@@ -14,13 +14,14 @@ export async function generateMetadata({
 
   return {
     title,
-    description,
     openGraph: {
       title,
       description,
       type: "website",
       url: `https://www.klarpakke.no/${locale}/priser`,
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
+      images: [
+        { url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" },
+      ],
     },
     twitter: {
       card: "summary_large_image",
