@@ -36,7 +36,7 @@ END;
 
 **AI-agenter (UX/UI/UA, modernisering, automatisering):** Se `docs/agents/KLARPAKKE-ROSTER.md` og `.agent/KLARPAKKE-AGENT-ROSTER.md`. **UX+UI standard:** `.agent/agents/klarpakke-ux-ui-agent.md` · Cursor-regel: `.cursor/rules/klarpakke-ux-ui-agent.mdc`. **Live trading + handler + bevis (MCP/CLI/CI):** `.agent/agents/klarpakke-live-trading-trades-agent.md` · regel: `.cursor/rules/klarpakke-live-trading-trades-agent.mdc` (**alwaysApply** — full kontekst + **operasjonelt ansvar** for bevis/oppfølging) · SoT: `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`. **Auto-trade strategi (forskning, tuning, forum/data):** `.agent/agents/klarpakke-auto-trade-strategy-research-agent.md` · regel: `.cursor/rules/klarpakke-auto-trade-strategy-research-agent.mdc` · SoT: `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md`.
 
-**Maksimal automasjon (MCP/CLI/CI/API):** `docs/FULL-AUTOMATION-PLAYBOOK.md` — kjør `npm run auto:preflight` (evt. `auto:preflight:full`) etter `.env.local`.
+**Maksimal automasjon (MCP/CLI/CI/API):** `docs/FULL-AUTOMATION-PLAYBOOK.md` — kjør `npm run auto:preflight` (evt. `auto:preflight:full`) etter `.env.local`. **Supabase URL/anon/service i `.env.local`:** `npm run env:sync:supabase` (krever `SUPABASE_ACCESS_TOKEN` PAT) eller `npm run vercel:env` fra Vercel.
 
 **Målgrunnlag (småsparere, mobil, krypto-nivå):** `docs/TARGET-AUDIENCE.md` og `docs/product-principles-2026.md`.
 
