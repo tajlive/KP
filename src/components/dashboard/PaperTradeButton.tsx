@@ -75,12 +75,16 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
         }),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Handel feilet");
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Handel feilet");
+      }
+      if (!data.success) {
+        throw new Error(
+          data.error || data.rejectionReason || "Handel ble avvist",
+        );
+      }
 
       toast.success(
         `${side === "buy" ? "Kjøpt" : "Solgt"} ${qty} ${symbol} for kr ${totalValue.toLocaleString("nb-NO", { minimumFractionDigits: 2 })}`,

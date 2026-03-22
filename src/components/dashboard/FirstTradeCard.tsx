@@ -35,11 +35,16 @@ export default function FirstTradeCard({
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        router.refresh();
-        setShowConfetti(true);
-        setCompleted(true);
-        setTimeout(() => setShowConfetti(false), 4000);
+      if (!res.ok || !data.success) {
+        console.error("First trade failed:", data);
+        return;
+      }
+      router.refresh();
+      setShowConfetti(true);
+      setCompleted(true);
+      setTimeout(() => setShowConfetti(false), 4000);
+      if (typeof data.session_id === "string" && data.session_id) {
+        router.push(`/${locale}/paper-trading/${data.session_id}`);
       }
     } catch (err) {
       console.error(err);

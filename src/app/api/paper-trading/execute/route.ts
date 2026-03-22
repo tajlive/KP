@@ -130,6 +130,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       trade_id: result.tradeId,
+      session_id: result.sessionId,
       new_balance: result.newBalance,
     });
   } catch (err) {
