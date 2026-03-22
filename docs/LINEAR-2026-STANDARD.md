@@ -1,6 +1,6 @@
 # Linear og Klarpakke — operativ standard 2026
 
-**Kilde sannhet i repo:** `AGENTS.md`, `.cursorrules`, `docs/CRON-SOURCE-OF-TRUTH.md`, `docs/LINEAR-ACCESS.md`, **`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`** (alle oversettelser / brukertekst: **no + en** aktiv, **th/zh avvent**), **`docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md`** (prisplan + Linear **KLA-236**).
+**Kilde sannhet i repo:** `AGENTS.md`, `.cursorrules`, `docs/CRON-SOURCE-OF-TRUTH.md`, `docs/LINEAR-ACCESS.md`, **`docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`** (alle oversettelser / brukertekst: **no + en** aktiv, **th/zh avvent**), **`docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md`** (prisplan + Linear **KLA-236**), **`docs/trading/COPY-TRADING-SOURCE-OF-TRUTH.md`** (copy trading: API, ID-oppløsning, liste, tier-kobling).
 
 ## Status (mars 2026)
 
@@ -26,12 +26,13 @@
 
 ## Regler som ikke skal brytes i nye issues
 
-| Tema      | Regel                                                                                                             |
-| --------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Cron**  | Source of truth = **Supabase** (pg_cron / scheduler). Ikke nye Vercel Cron som sannhet.                           |
-| **Stack** | Next.js 15 App Router, React 19, TypeScript strict, Tailwind 4, Supabase SSR `@supabase/ssr`.                     |
-| **Tiers** | student \| bachelor \| master \| phd \| professor — **KLA-236** + `docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md`. |
-| **i18n**  | Bruker-tekst via `next-intl`; ikke hardkode norske strenger i nye features.                                       |
+| Tema             | Regel                                                                                                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Cron**         | Source of truth = **Supabase** (pg_cron / scheduler). Ikke nye Vercel Cron som sannhet.                                                                                              |
+| **Stack**        | Next.js 15 App Router, React 19, TypeScript strict, Tailwind 4, Supabase SSR `@supabase/ssr`.                                                                                        |
+| **Tiers**        | student \| bachelor \| master \| phd \| professor — **KLA-236** + `docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md`.                                                                    |
+| **Copy trading** | API, auth, kanoniske ID-er og liste-SoT — `docs/trading/COPY-TRADING-SOURCE-OF-TRUTH.md`; nye features/endringer loggføres i **Linear** (f.eks. under **KLA-91** eller **KLA-231**). |
+| **i18n**         | Bruker-tekst via `next-intl`; ikke hardkode norske strenger i nye features.                                                                                                          |
 
 ## Arkivering / kansellering i Linear
 
