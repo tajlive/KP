@@ -7,6 +7,15 @@ function normalizePath(strippedPath: string): string {
   return strippedPath.startsWith("/") ? strippedPath : `/${strippedPath}`;
 }
 
+/** Paths where streamed generateMetadata arrives too late for Lighthouse SEO audits */
+export function isEarlyMetaDescriptionPath(strippedPath: string): boolean {
+  const path = normalizePath(strippedPath);
+  if (path === "/") return true;
+  if (path === "/priser" || path.startsWith("/priser/")) return true;
+  if (path === "/innlogging" || path.startsWith("/innlogging/")) return true;
+  return false;
+}
+
 /**
  * Meta description emitted synchronously in <head> so crawlers and Lighthouse
  * see it before streaming RSC chunks (generateMetadata can arrive after <body>).
