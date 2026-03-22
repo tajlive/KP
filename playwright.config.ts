@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import fs from "fs";
+import os from "node:os";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -28,6 +29,16 @@ dotenv.config({
   override: true,
 });
 
+/** Unngå at mange parallelle tester overvelder `next dev` (API-timeouts / flaky goto). */
+function resolvePlaywrightWorkers(): number | undefined {
+  if (process.env.PW_WORKERS !== undefined) {
+    const n = parseInt(process.env.PW_WORKERS, 10);
+    return Number.isFinite(n) && n > 0 ? n : undefined;
+  }
+  if (process.env.CI) return 2;
+  return Math.min(2, Math.max(1, os.cpus().length));
+}
+
 /**
  * Enterprise-grade Playwright configuration for Klarpakke
  *
@@ -46,10 +57,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 2 : undefined,
+  workers: resolvePlaywrightWorkers(),
   timeout: 120_000,
   expect: {
-    timeout: 10_000,
+    timeout: process.env.CI ? 15_000 : 12_000,
   },
 
   reporter: [
