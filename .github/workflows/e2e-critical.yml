@@ -35,13 +35,16 @@ jobs:
     name: Critical E2E Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Gjør Node 24-opt-in eksplisitt per job (unngår deprecations-varsler på JS-actions).
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     # Ikke bruk GitHub "Environment" her — kan blokkere job-opprettelse (0 jobs) ved gate/approval.
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
@@ -87,22 +90,19 @@ jobs:
           TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
           TEST_USER_B_PASSWORD: ${{ secrets.TEST_USER_B_PASSWORD }}
 
-      - name: Upload Playwright Report
+      # HTML-rapport (playwright-report), JSON + GitHub summary (rot), blob/trace (test-results/) — kan mangle ved grønn kjøring.
+      - name: Upload Playwright artifacts
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
-
-      - name: Upload Test Results
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/
+          name: playwright-e2e
+          path: |
+            playwright-report
+            test-results.json
+            test-summary.md
+            test-results
+          if-no-files-found: ignore
           retention-days: 7
 
   notify-failure:
@@ -112,6 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
