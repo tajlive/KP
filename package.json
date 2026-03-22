@@ -95,6 +95,8 @@
     "db:apply-admin-rls": "./scripts/sql.sh file supabase/migrations/20260317190000_admin_read_all_user_profiles.sql",
     "db:migrate-tier": "./scripts/sql.sh file supabase/migrations/20260318120000_tier_slug_single_source.sql",
     "db:validate-migrations": "node scripts/validate-migrations.mjs",
+    "env:sync:supabase": "node scripts/sync-supabase-env.mjs",
+    "env:sync:supabase:verify": "node scripts/sync-supabase-env.mjs && node scripts/create-test-users.js --check-env",
     "vercel:env": "npx vercel env pull .env.local --environment=production --yes",
     "vercel:env:preview": "npx vercel env pull .env.local --environment=preview --yes",
     "vercel:env:development": "npx vercel env pull .env.local --environment=development --yes",

@@ -224,6 +224,13 @@ async function main() {
   console.log(
     `  - SUPABASE_SERVICE_ROLE_KEY: ${e2eSr ? `OK ${mask(e2eSr)}` : "MISSING → Dashboard → API → service_role"}`,
   );
+  const pat = getEnv("SUPABASE_ACCESS_TOKEN");
+  if (!e2eSr && pat) {
+    console.log("");
+    console.log(
+      "  Tip: PAT er satt — kjør `npm run env:sync:supabase` for å fylle .env.local automatisk.",
+    );
+  }
 
   console.log("");
   console.log("Readiness check passed.");

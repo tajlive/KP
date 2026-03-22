@@ -51,13 +51,15 @@ Krever: nettverk, Playwright-browsere (`npm run playwright:install`), Supabase/N
 ### Playwright (lokal E2E)
 
 - **Nettlesere:** Første gang etter `npm ci` / oppgradering: `npm run playwright:install` (eller `npx playwright install chromium` for kun smoke).
-- **Supabase + Next:** Middleware og klient krever **`NEXT_PUBLIC_SUPABASE_URL`** og **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**. `vercel env pull` kan gi `SUPABASE_URL` uten `NEXT_PUBLIC_*` — da feiler `next dev` under Playwright. Synk fra Vercel/Dashboard eller bruk Supabase MCP **get_project_url** + **get_publishable_keys** (legacy `anon` JWT) og legg inn i `.env.local` (se `.env.local.example`).
+- **Supabase + Next:** Middleware og klient krever **`NEXT_PUBLIC_SUPABASE_URL`** og **`NEXT_PUBLIC_SUPABASE_ANON_KEY`**. **Automatisk inn i `.env.local`:** `npm run env:sync:supabase` (PAT `SUPABASE_ACCESS_TOKEN` + ref fra URL eller `SUPABASE_PROJECT_REF`) — henter legacy anon + service*role via Management API. Alternativ: `npm run vercel:env` når nøkler allerede ligger i Vercel. `vercel env pull` kan gi `SUPABASE_URL` uten `NEXT_PUBLIC*\*`— da feiler`next dev`under Playwright. Se`.env.local.example`.
 
 ### Verifisere MCP
 
 ```bash
 npm run auto:preflight      # Cloud readiness (agent) — start her for «alt på plass»
 npm run auto:preflight:full # + test:mcp + linear:test
+npm run env:sync:supabase   # URL + anon + service_role → .env.local (SUPABASE_ACCESS_TOKEN)
+npm run env:sync:supabase:verify # + test:e2e:check-env
 npm run cloud:bootstrap # Fyller kritiske cloud-keys i .env.local automatisk
 npm run cloud:ready   # Sjekk kritiske cloud-env (Linear + Vercel)
 npm run cloud:ready:deploy # Sjekk deploy-krav (Vercel) + auto-resolve av ORG_ID
