@@ -8,4 +8,5 @@ export {
   ConnectBinanceSchema,
   RecoverSessionSchema,
   LeaderboardQuerySchema,
-} from './shared';
+  DiscoverQuerySchema,
+} from "./shared";

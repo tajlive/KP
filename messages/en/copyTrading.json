@@ -1,0 +1,49 @@
+{
+  "dashboard": {
+    "title": "Copy Trading",
+    "subtitleActive": "{count} active traders",
+    "refresh": "Refresh",
+    "totalPnlLabel": "Total copy P&L",
+    "mineTitle": "My traders",
+    "paused": "Paused",
+    "sizingProportional": "Proportional",
+    "sizingFixed": "Fixed",
+    "recentCopies": "Recent copied trades",
+    "emptyTitle": "No traders yet",
+    "emptyBody": "Explore curated paper leaders to start safely — or wait as the community grows.",
+    "discoverCta": "Discover leaders",
+    "settingsAria": "Settings for {name}",
+    "maxAlloc": "Max {amount}",
+    "latency": "{ms}ms latency"
+  },
+  "discover": {
+    "title": "Discover leaders",
+    "subtitle": "Paper and Klarpakke demos — clearly labeled. Compare performance and risk before you follow.",
+    "timeframe30": "30d",
+    "timeframe90": "90d",
+    "timeframe7": "7d",
+    "riskLow": "Lower risk (simplified)",
+    "riskMedium": "Medium risk (simplified)",
+    "riskHigh": "Higher risk (simplified)",
+    "riskHint": "Risk is a simplified signal from Sharpe and win rate — not investment advice.",
+    "paperBadge": "Paper / demo",
+    "comparisonCaption": "Relative strength 30d vs 90d (not a timeline)",
+    "followers": "{count} followers",
+    "winRate": "Win rate",
+    "sharpe": "Sharpe",
+    "fee": "Performance fee",
+    "viewProfile": "View profile",
+    "following": "Following",
+    "loadError": "Could not load leaders",
+    "empty": "No active leaders right now.",
+    "drawdown": "30d drawdown"
+  },
+  "nav": {
+    "mine": "Overview",
+    "discover": "Discover"
+  },
+  "profile": {
+    "trustPaper": "This is a Klarpakke paper/demo profile. Past results do not guarantee future returns.",
+    "trustRisk": "Risk labels are simplified and do not replace your own research."
+  }
+}

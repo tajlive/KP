@@ -90,6 +90,7 @@ Slugs brukes i URL (`?plan=`), DB og Stripe-metadata.
 
 - **KLA-226–KLA-230** — tier i prod, DB, typer (se `docs/LINEAR-2026-STANDARD.md`)
 - **KLA-236** — prisplan SoT (lukket; videre endringer = ny Linear-sak + oppdatering her)
+- **KLA-91** / **KLA-231** — copy trading og sosial/markedsplass-løype; teknisk SoT i [`docs/trading/COPY-TRADING-SOURCE-OF-TRUTH.md`](../trading/COPY-TRADING-SOURCE-OF-TRUTH.md)
 
 ---
 

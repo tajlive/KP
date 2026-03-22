@@ -6,6 +6,10 @@
 #
 # Kjører bare når supabase/ endres (sparer Actions-minutter).
 # Krever: SUPABASE_PROJECT_REF, SUPABASE_ACCESS_TOKEN
+#
+# Etter vellykket push: regenererer typer og feiler hvis src/types/supabase-generated.ts
+# ikke matcher remote (da må utvikler kjøre npm run db:ship og committe typer i samme PR).
+# Operasjonsplan: docs/automation/DB-SHIP-AUTO-OPS.md
 # ============================================================================
 
 name: DB push (auto on merge)
@@ -28,7 +32,7 @@ env:
 jobs:
   db-push:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
@@ -39,17 +43,35 @@ jobs:
           node-version: '24'
 
       - name: Supabase link and push
-        continue-on-error: true
+        id: dbpush
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
           SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
         run: |
           REF="${SUPABASE_PROJECT_REF:-$SUPABASE_PROJECT_ID}"
-          if [ -z "$REF" ]; then echo "::warning::Mangler SUPABASE_PROJECT_REF/SUPABASE_PROJECT_ID — hopper over db push"; exit 0; fi
-          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then echo "::warning::Mangler SUPABASE_ACCESS_TOKEN — hopper over db push"; exit 0; fi
+          if [ -z "$REF" ] || [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "ran=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Mangler SUPABASE_PROJECT_REF/ID eller SUPABASE_ACCESS_TOKEN — hopper over db push + types"
+            exit 0
+          fi
+          set -e
           npx supabase link --project-ref "$REF"
           npx supabase db push
+          echo "ran=true" >> "$GITHUB_OUTPUT"
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+
+      - name: Sync generated types with repo
+        if: steps.dbpush.outputs.ran == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          REF="${{ steps.dbpush.outputs.ref }}"
+          npx supabase gen types typescript --project-id "$REF" > src/types/supabase-generated.ts
+          git diff --exit-code src/types/supabase-generated.ts || (
+            echo "::error::Typer ute av synk med remote. Kjør npm run db:ship lokalt og commit src/types/supabase-generated.ts i samme PR som migrasjonen."
+            exit 1
+          )
 
       - name: Note
-        run: echo "Se docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md ved manuell oppfølging."
+        run: echo "Se docs/automation/DB-SHIP-AUTO-OPS.md og docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md ved manuell oppfølging."

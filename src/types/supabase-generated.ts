@@ -2822,15 +2822,18 @@ export type Database = {
         Row: {
           avatar_url: string | null;
           display_name: string;
+          featured: boolean;
           follower_count: number | null;
           id: string;
           is_active: boolean | null;
+          max_drawdown_30d: number | null;
           performance_fee_pct: number | null;
           pnl_30d: number | null;
           pnl_90d: number | null;
           pnl_all_time: number | null;
           rank: number | null;
           sharpe_ratio: number | null;
+          sort_order: number;
           strategy_type: string | null;
           updated_at: string | null;
           user_id: string;
@@ -2839,15 +2842,18 @@ export type Database = {
         Insert: {
           avatar_url?: string | null;
           display_name: string;
+          featured?: boolean;
           follower_count?: number | null;
           id?: string;
           is_active?: boolean | null;
+          max_drawdown_30d?: number | null;
           performance_fee_pct?: number | null;
           pnl_30d?: number | null;
           pnl_90d?: number | null;
           pnl_all_time?: number | null;
           rank?: number | null;
           sharpe_ratio?: number | null;
+          sort_order?: number;
           strategy_type?: string | null;
           updated_at?: string | null;
           user_id: string;
@@ -2856,15 +2862,18 @@ export type Database = {
         Update: {
           avatar_url?: string | null;
           display_name?: string;
+          featured?: boolean;
           follower_count?: number | null;
           id?: string;
           is_active?: boolean | null;
+          max_drawdown_30d?: number | null;
           performance_fee_pct?: number | null;
           pnl_30d?: number | null;
           pnl_90d?: number | null;
           pnl_all_time?: number | null;
           rank?: number | null;
           sharpe_ratio?: number | null;
+          sort_order?: number;
           strategy_type?: string | null;
           updated_at?: string | null;
           user_id?: string;

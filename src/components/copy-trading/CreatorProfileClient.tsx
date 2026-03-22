@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface TraderProfile {
   id: string;
@@ -36,6 +37,8 @@ interface TraderProfile {
   winRate: number;
   sharpeRatio: number;
   totalTrades: number;
+  /** True når profilen er hentet fra leaderboard_bots (paper/demo) */
+  isKlarpakkePaperDemo?: boolean;
 }
 
 interface PublicStrategy {
@@ -58,6 +61,7 @@ export default function CreatorProfileClient({
   traderId,
 }: CreatorProfileClientProps) {
   const { locale } = useParams();
+  const tProfile = useTranslations("copyTrading.profile");
   const [profile, setProfile] = useState<TraderProfile | null>(null);
   const [publicStrategies, setPublicStrategies] = useState<PublicStrategy[]>(
     [],
@@ -91,6 +95,7 @@ export default function CreatorProfileClient({
           winRate: botData.win_rate || 0,
           sharpeRatio: botData.sharpe_ratio || 0,
           totalTrades: 0,
+          isKlarpakkePaperDemo: true,
         });
         return botData.user_id;
       }
@@ -403,6 +408,12 @@ export default function CreatorProfileClient({
         animate={{ opacity: 1, y: 0 }}
         className="bg-slate-900 border border-slate-800 rounded-3xl p-8"
       >
+        {profile.isKlarpakkePaperDemo && (
+          <div className="mb-6 space-y-2 rounded-2xl border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-[13px] leading-relaxed text-amber-100/90">
+            <p>{tProfile("trustPaper")}</p>
+            <p className="text-amber-200/70">{tProfile("trustRisk")}</p>
+          </div>
+        )}
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           {/* Avatar */}
           <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-3xl shadow-xl">

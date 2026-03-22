@@ -2,6 +2,8 @@
 
 Anbefalinger basert på [Supabase Docs](https://supabase.com/docs/guides/deployment), [GitHub Integration](https://supabase.com/docs/guides/deployment/branching/github-integration), [Managing Environments](https://supabase.com/docs/guides/deployment/managing-environments) og community (forum, GitHub issues).
 
+**Operasjonsplan (push + type-sync, CI + lokalt):** [automation/DB-SHIP-AUTO-OPS.md](./automation/DB-SHIP-AUTO-OPS.md) · `npm run db:ship`.
+
 ---
 
 ## 1. Anbefalt: Supabase GitHub-integrasjon (native)
