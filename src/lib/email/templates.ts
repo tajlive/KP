@@ -1,15 +1,15 @@
 interface EmailTemplate {
-  subject: string
-  html: string
-  text: string
+  subject: string;
+  html: string;
+  text: string;
 }
 
 export function getTradingAlertEmail(data: {
-  userName: string
-  sessionId: string
-  strategy: string
-  message: string
-  timestamp: string
+  userName: string;
+  sessionId: string;
+  strategy: string;
+  message: string;
+  timestamp: string;
 }): EmailTemplate {
   return {
     subject: `⚠️ Klarpakke Trading Alert: ${data.strategy}`,
@@ -32,38 +32,65 @@ export function getTradingAlertEmail(data: {
       </div>
     `,
     text: `Trading Alert\n\nHei ${data.userName},\n\n${data.message}\n\nSesjon: ${data.sessionId}\nStrategi: ${data.strategy}\nTidspunkt: ${data.timestamp}\n\nGå til: https://www.klarpakke.no/no/auto-trading`,
-  }
+  };
 }
 
 export function getDailySummaryEmail(data: {
-  userName: string
-  tradesCount: number
-  pnl: number
-  activeSessions: number
-  date: string
+  userName: string;
+  tradesCount: number;
+  pnl: number;
+  /** Vinn % blant handler med avrealisert P&L (ikke-null) i perioden */
+  winRatePct: number;
+  activeSessions: number;
+  /** Sum NOK på aktive sesjoner (kun felt som er satt i DB; unngår rå USD-tall i mail) */
+  totalCapitalNok: number;
+  date: string;
+  periodNote: string;
 }): EmailTemplate {
-  const pnlFormatted = new Intl.NumberFormat('no-NO', {
-    style: 'currency',
-    currency: 'NOK',
-  }).format(data.pnl)
-  
+  const nok = new Intl.NumberFormat("no-NO", {
+    style: "currency",
+    currency: "NOK",
+  });
+  const pnlFormatted = nok.format(data.pnl);
+  const capitalFormatted =
+    data.totalCapitalNok > 0
+      ? nok.format(data.totalCapitalNok)
+      : "— (åpne dashboard for saldo)";
+
+  const pnlSign = data.pnl >= 0 ? "+" : "";
+
   return {
-    subject: `📊 Klarpakke Daglig Oppsummering - ${data.date}`,
+    subject: `📈 Din daglige oppsummering - ${data.date}`,
     html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Daglig Oppsummering</h2>
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin-bottom: 8px;">📈 Daglig Oppsummering</h2>
+        <p style="color: #64748b; font-size: 14px;">${data.date}</p>
         <p>Hei ${data.userName},</p>
-        <p>Her er ditt trading-sammendrag for ${data.date}:</p>
-        <ul>
-          <li><strong>Trades:</strong> ${data.tradesCount}</li>
-          <li><strong>PnL:</strong> ${pnlFormatted}</li>
-          <li><strong>Aktive sesjoner:</strong> ${data.activeSessions}</li>
-        </ul>
+        <p style="font-size: 13px; color: #64748b;">${data.periodNote}</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px;">
+          <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;"><strong>DAGENS P&amp;L</strong></td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${pnlSign}${pnlFormatted}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;"><strong>ANTALL HANDLER</strong></td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${data.tradesCount}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;"><strong>WIN RATE</strong></td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${data.winRatePct}%</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0;"><strong>TOTAL KAPITAL (NOK)</strong></td>
+            <td style="padding: 10px 0; text-align: right;">${capitalFormatted}</td>
+          </tr>
+        </table>
+        <p style="font-size: 13px; color: #64748b;">Aktive sesjoner: ${data.activeSessions}</p>
         <p>
-          <a href="https://www.klarpakke.no/no/dashboard">Se detaljer →</a>
+          <a href="https://www.klarpakke.no/no/dashboard" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600;">Åpne Dashboard</a>
         </p>
       </div>
     `,
-    text: `Daglig Oppsummering - ${data.date}\n\nHei ${data.userName},\n\nTrades: ${data.tradesCount}\nPnL: ${pnlFormatted}\nAktive sesjoner: ${data.activeSessions}\n\nSe detaljer: https://www.klarpakke.no/no/dashboard`,
-  }
+    text: `Daglig oppsummering — ${data.date}\n\nHei ${data.userName},\n\n${data.periodNote}\n\nDAGENS P&L: ${pnlSign}${pnlFormatted}\nANTALL HANDLER: ${data.tradesCount}\nWIN RATE: ${data.winRatePct}%\nTOTAL KAPITAL (NOK): ${capitalFormatted}\nAktive sesjoner: ${data.activeSessions}\n\nÅpne dashboard: https://www.klarpakke.no/no/dashboard`,
+  };
 }
