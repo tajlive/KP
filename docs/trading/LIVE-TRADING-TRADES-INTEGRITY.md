@@ -25,6 +25,8 @@
 
 ## Regresjonsbeskyttelse — paper handler synlig + API-kontrakt
 
+Linear (sporbarhet): **KLA-237** — https://linear.app/klarpakke/issue/KLA-237/paper-handler-synlig-regresjonslas-zode2e
+
 - **Zod:** `paperExecuteSuccessResponseSchema` (`src/lib/trading/safety/paper-execute-success-response.ts`) validerer JSON fra `POST /api/paper-trading/execute` når `success: true`. Mangler `session_id` / `trade_id` → **500** (deployes ikke stille med ødelagt kontrakt).
 - **Vitest:** `src/lib/trading/safety/__tests__/paper-execute-success-response.test.ts`.
 - **Playwright (critical):** `e2e/critical/paper-trading.spec.ts` — «paper execute returns session_id and trade row visible on session page» (krever gyldig `.auth/user.json` / E2E-bruker).
