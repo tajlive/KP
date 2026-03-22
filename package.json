@@ -106,6 +106,7 @@
     "test:security": "npm audit --audit-level=moderate",
     "test:performance": "echo 'Kjør: npx lighthouse https://www.klarpakke.no --preset=desktop'",
     "test:a11y": "playwright test e2e/accessibility.spec.ts",
+    "test:e2e:dashboard-ux": "playwright test e2e/critical/dashboard-ux-automation.spec.ts --project=critical-chromium",
     "analyze:bundle": "ANALYZE=true npm run build",
     "analyze:deps": "npx depcheck && npx knip",
     "security:full": "npm audit && grep -r \"sk-\\|pk_\\|ghp_\\|AKIA\" src/ --include=\"*.ts\" --include=\"*.tsx\" 2>/dev/null || echo 'Ingen hemmeligheter funnet'",
