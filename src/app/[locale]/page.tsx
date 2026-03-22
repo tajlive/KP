@@ -26,9 +26,6 @@ export async function generateMetadata({
     title: isNorwegian
       ? "Klarpakke — Lær crypto trygt fra dag én"
       : "Klarpakke — Learn crypto safely from day one",
-    description: isNorwegian
-      ? "Kurs, papirhandel og auto-handel på norsk. Start gratis med 100 000 kr i lekepenger — uten kredittkort."
-      : "Courses, paper trading and auto-trading in one place. Start free with 100,000 NOK in practice funds — no credit card.",
     keywords: isNorwegian
       ? [
           "lær trading",
