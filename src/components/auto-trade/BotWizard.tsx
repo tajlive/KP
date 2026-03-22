@@ -18,6 +18,12 @@ interface BotWizardProps {
   userId: string;
   locale: string;
   tier: string;
+  /** Saldo fra profil (lekepenger) — brukes som forslag til startkapital */
+  paperBalance?: number | string | null;
+}
+
+function clampPaperCapital(n: number) {
+  return Math.max(10_000, Math.min(1_000_000, Math.round(n)));
 }
 
 const TIER_ORDER = ["student", "bachelor", "master", "phd", "professor"];
@@ -53,13 +59,27 @@ function tierMeetsRequirement(userTier: string, requiredTier: string) {
   return userIdx >= requiredIdx;
 }
 
-export function BotWizard({ userId, locale, tier: rawTier }: BotWizardProps) {
+export function BotWizard({
+  userId: _userId,
+  locale,
+  tier: rawTier,
+  paperBalance,
+}: BotWizardProps) {
   const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
   const [strategy, setStrategy] = useState("dca");
   const [riskLevel, setRiskLevel] = useState<"low" | "medium" | "high">("low");
   const [selectedPairs, setSelectedPairs] = useState<string[]>(["BTCUSDT"]);
-  const [startingCapital, setStartingCapital] = useState(100_000);
+  const [startingCapital, setStartingCapital] = useState(() => {
+    const raw =
+      paperBalance === null || paperBalance === undefined
+        ? NaN
+        : typeof paperBalance === "number"
+          ? paperBalance
+          : Number(paperBalance);
+    const base = Number.isFinite(raw) && raw > 0 ? raw : 100_000;
+    return clampPaperCapital(base);
+  });
   const [loading, setLoading] = useState(false);
 
   const isNo = locale === "no";
@@ -183,7 +203,7 @@ export function BotWizard({ userId, locale, tier: rawTier }: BotWizardProps) {
   const selectedStrategy = STRATEGIES.find((s) => s.id === strategy);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 pb-28">
+    <div className="max-w-3xl mx-auto px-4 py-8 pb-36 md:pb-28">
       <h1 className="text-2xl font-bold text-[#1A1D26] mb-4">
         {isNo ? "Start trading-bot" : "Start trading bot"}
       </h1>
@@ -513,37 +533,55 @@ export function BotWizard({ userId, locale, tier: rawTier }: BotWizardProps) {
               </span>
             </div>
           </div>
+          {/* Primær CTA i flytende layout — unngår at fixed footer havner utenfor/under tabs på mobil */}
+          <div className="mt-6 md:hidden">
+            <button
+              type="button"
+              onClick={handleStart}
+              disabled={loading}
+              className={`${BRAND.primary} w-full font-semibold rounded-xl px-6 py-3.5 min-h-[52px] touch-manipulation transition-colors disabled:opacity-60 shadow-sm`}
+            >
+              {loading
+                ? isNo
+                  ? "Starter..."
+                  : "Starting..."
+                : isNo
+                  ? "Start bot"
+                  : "Start bot"}
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Navigation — fixed at viewport bottom, z-[60] above ChatWidget (z-50) so Neste is clickable */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 px-4 py-4 pr-20 bg-[#FAFBFC] dark:bg-[#0D0F12] border-t border-[#E2E5EC] dark:border-slate-800 z-[60] flex justify-between gap-4">
+      {/* Navigation — fixed at viewport bottom, z-[60] above ChatWidget (z-50) + DashboardTabs (z-50) */}
+      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] md:bottom-0 left-0 right-0 px-4 py-3 md:py-4 pr-4 md:pr-20 bg-[#FAFBFC] dark:bg-[#0D0F12] border-t border-[#E2E5EC] dark:border-slate-800 z-[60] flex items-center justify-between gap-3 max-w-full">
         {step > 1 ? (
           <button
             type="button"
             onClick={() => setStep(step - 1)}
-            className="border border-[#E2E5EC] text-[#5E6478] rounded-xl px-6 py-3 font-semibold transition-colors hover:bg-[#F7F8FA] min-h-[48px] touch-manipulation cursor-pointer"
+            className="border border-[#E2E5EC] dark:border-slate-600 text-[#5E6478] dark:text-slate-300 rounded-xl px-5 py-3 font-semibold transition-colors hover:bg-[#F7F8FA] dark:hover:bg-slate-800 min-h-[48px] shrink-0 touch-manipulation cursor-pointer"
           >
             {isNo ? "Tilbake" : "Back"}
           </button>
         ) : (
-          <div />
+          <span className="w-0 shrink-0" aria-hidden />
         )}
         {step < 3 ? (
           <button
             type="button"
             data-testid="bot-wizard-next"
             onClick={() => setStep(step + 1)}
-            className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-colors min-h-[48px] touch-manipulation cursor-pointer active:scale-[0.98]"
+            className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-colors min-h-[48px] shrink-0 touch-manipulation cursor-pointer active:scale-[0.98]"
           >
             {isNo ? "Neste" : "Next"}
           </button>
         ) : (
           <button
             type="button"
+            data-testid="bot-wizard-start"
             onClick={handleStart}
             disabled={loading}
-            className={`${BRAND.primary} font-semibold rounded-xl px-6 py-3 w-full transition-colors disabled:opacity-60`}
+            className={`${BRAND.primary} hidden md:inline-flex items-center justify-center font-semibold rounded-xl px-6 py-3 min-h-[48px] shrink-0 min-w-[8.5rem] touch-manipulation transition-colors disabled:opacity-60 ml-auto`}
           >
             {loading
               ? isNo

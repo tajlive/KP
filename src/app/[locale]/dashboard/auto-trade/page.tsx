@@ -36,5 +36,12 @@ export default async function AutoTradePage({
 
   const tier = normalizeTier(profile?.tier);
 
-  return <BotWizard userId={user.id} locale={locale} tier={tier} />;
+  return (
+    <BotWizard
+      userId={user.id}
+      locale={locale}
+      tier={tier}
+      paperBalance={profile?.paper_balance ?? null}
+    />
+  );
 }
