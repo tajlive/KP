@@ -11,15 +11,18 @@ export interface BotStatusMessage {
   nextActionText: string;
   nextActionTime: Date | null;
   statusExplanation: string;
-  explanation?: string;  // Optional explanation for AI decisions
+  explanation?: string; // Optional explanation for AI decisions
 }
 
 /**
  * Formaterer en timestamp til "for X minutter siden" format
  */
-export function formatTimeAgo(date: Date | string | null, locale: string = "no"): string {
+export function formatTimeAgo(
+  date: Date | string | null,
+  locale: string = "no",
+): string {
   if (!date) return "Ukjent tid";
-  
+
   const now = new Date();
   const then = new Date(date);
   const diffMs = now.getTime() - then.getTime();
@@ -30,29 +33,35 @@ export function formatTimeAgo(date: Date | string | null, locale: string = "no")
   if (locale === "en") {
     if (diffMins < 1) return "just now";
     if (diffMins < 60) return `${diffMins} min ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    if (diffHours < 24)
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   }
 
   // Norwegian (default)
   if (diffMins < 1) return "akkurat nå";
-  if (diffMins < 60) return `for ${diffMins} minutt${diffMins > 1 ? "er" : ""} siden`;
-  if (diffHours < 24) return `for ${diffHours} time${diffHours > 1 ? "r" : ""} siden`;
+  if (diffMins < 60)
+    return `for ${diffMins} minutt${diffMins > 1 ? "er" : ""} siden`;
+  if (diffHours < 24)
+    return `for ${diffHours} time${diffHours > 1 ? "r" : ""} siden`;
   return `for ${diffDays} dag${diffDays > 1 ? "er" : ""} siden`;
 }
 
 /**
  * Formaterer tid til fremtidig handling
  */
-export function formatTimeUntil(date: Date | string | null, locale: string = "no"): string {
+export function formatTimeUntil(
+  date: Date | string | null,
+  locale: string = "no",
+): string {
   if (!date) return "Ukjent";
-  
+
   const now = new Date();
   const then = new Date(date);
   const diffMs = then.getTime() - now.getTime();
-  
+
   if (diffMs <= 0) return locale === "en" ? "Any moment now" : "Når som helst";
-  
+
   const diffMins = Math.ceil(diffMs / 60000);
   const diffHours = Math.floor(diffMins / 60);
 
@@ -71,7 +80,7 @@ export function formatTimeUntil(date: Date | string | null, locale: string = "no
 function getSignalExplanation(
   signal: string | undefined,
   indicators: Record<string, unknown> | undefined,
-  locale: string = "no"
+  locale: string = "no",
 ): string {
   const explanations: Record<string, Record<string, string>> = {
     no: {
@@ -105,24 +114,58 @@ function getSignalExplanation(
   };
 
   const lang = locale === "en" ? "en" : "no";
-  
+
   // Sjekk signal først
   if (signal && explanations[lang][signal]) {
     return explanations[lang][signal];
   }
-  
+
   // Sjekk indicators
   if (indicators?.rsi !== undefined) {
     const rsi = Number(indicators.rsi);
     if (rsi < 30) return explanations[lang].rsi_oversold;
     if (rsi > 70) return explanations[lang].rsi_overbought;
   }
-  
+
   if (indicators?.dca_interval) {
     return explanations[lang].dca_trigger;
   }
-  
+
   return locale === "en" ? "Signal detected" : "Signal oppdaget";
+}
+
+/**
+ * Menneskelig forklaring fra `trades.strategy_signal` (JSON) til handelshistorikk / UI.
+ */
+export function explainStrategySignalJson(
+  raw: Record<string, unknown> | null | undefined,
+  locale: string = "no",
+): string {
+  if (!raw || typeof raw !== "object") {
+    return locale === "en"
+      ? "No strategy details stored for this trade."
+      : "Ingen strategidetaljer lagret for denne handelen.";
+  }
+  const exp = typeof raw.explanation === "string" ? raw.explanation.trim() : "";
+  if (exp.length > 0) return exp;
+  const reason = typeof raw.reason === "string" ? raw.reason.trim() : "";
+  if (reason.length > 0) return reason;
+
+  const nested = raw as {
+    signal?: string;
+    indicators?: Record<string, unknown>;
+    strategy_type?: string;
+  };
+  const sigPart = getSignalExplanation(
+    nested.signal,
+    nested.indicators,
+    locale,
+  );
+  if (nested.strategy_type && String(nested.strategy_type).length > 0) {
+    const label = String(nested.strategy_type).replace(/_/g, " ");
+    return `${label}: ${sigPart}`;
+  }
+  return sigPart;
 }
 
 /**
@@ -130,34 +173,47 @@ function getSignalExplanation(
  */
 export function generateLastActionText(
   lastTrade: Trade | null,
-  locale: string = "no"
+  locale: string = "no",
 ): { text: string; timestamp: Date | null; explanation: string } {
   if (!lastTrade) {
     return {
       text: locale === "en" ? "No trades yet" : "Ingen handler ennå",
       timestamp: null,
-      explanation: locale === "en" 
-        ? "Waiting for the first signal" 
-        : "Venter på første signal",
+      explanation:
+        locale === "en"
+          ? "Waiting for the first signal"
+          : "Venter på første signal",
     };
   }
 
-  const symbol = (lastTrade as unknown as { trading_pair?: string }).trading_pair || lastTrade.symbol;
-  const side = lastTrade.side === "buy" 
-    ? (locale === "en" ? "Bought" : "Kjøpte") 
-    : (locale === "en" ? "Sold" : "Solgte");
-  const amount = lastTrade.total_value 
+  const symbol =
+    (lastTrade as unknown as { trading_pair?: string }).trading_pair ||
+    lastTrade.symbol;
+  const side =
+    lastTrade.side === "buy"
+      ? locale === "en"
+        ? "Bought"
+        : "Kjøpte"
+      : locale === "en"
+        ? "Sold"
+        : "Solgte";
+  const amount = lastTrade.total_value
     ? `${Math.round(lastTrade.total_value).toLocaleString(locale === "en" ? "en-US" : "no-NO")} kr`
     : "";
-  
-  const signal = lastTrade.strategy_signal as { signal?: string; indicators?: Record<string, unknown> } | undefined;
+
+  const signal = lastTrade.strategy_signal as
+    | { signal?: string; indicators?: Record<string, unknown> }
+    | undefined;
   const explanation = getSignalExplanation(
     signal?.signal,
     signal?.indicators,
-    locale
+    locale,
   );
 
-  const timeAgo = formatTimeAgo(lastTrade.executed_at || lastTrade.created_at, locale);
+  const timeAgo = formatTimeAgo(
+    lastTrade.executed_at || lastTrade.created_at,
+    locale,
+  );
 
   return {
     text: `${side} ${symbol} ${amount ? `for ${amount}` : ""} – ${timeAgo}`,
@@ -172,18 +228,19 @@ export function generateLastActionText(
 export function generateNextActionText(
   strategy: UserStrategy | null,
   locale: string = "no",
-  marketCondition?: "normal" | "volatile" | "trending_up" | "trending_down"
+  marketCondition?: "normal" | "volatile" | "trending_up" | "trending_down",
 ): { text: string; nextCheckTime: Date; explanation: string } {
   const now = new Date();
-  
+
   if (!strategy) {
     const nextCheck = new Date(now.getTime() + 5 * 60000); // 5 min
     return {
       text: locale === "en" ? "Scanning market..." : "Scanner markedet...",
       nextCheckTime: nextCheck,
-      explanation: locale === "en" 
-        ? "Checking for opportunities every 5 minutes" 
-        : "Sjekker etter muligheter hvert 5. minutt",
+      explanation:
+        locale === "en"
+          ? "Checking for opportunities every 5 minutes"
+          : "Sjekker etter muligheter hvert 5. minutt",
     };
   }
 
@@ -195,7 +252,10 @@ export function generateNextActionText(
   const strategyId = strategy.strategy_id;
   const lang = locale === "en" ? "en" : "no";
 
-  const texts: Record<string, Record<string, { action: string; explanation: string }>> = {
+  const texts: Record<
+    string,
+    Record<string, { action: string; explanation: string }>
+  > = {
     no: {
       dca_trygg: {
         action: "Neste DCA-kjøp",
@@ -262,7 +322,10 @@ export function generateNextActionText(
 
   const strategyTexts = texts[lang][strategyId] || {
     action: lang === "en" ? "Scanning market" : "Scanner markedet",
-    explanation: lang === "en" ? "Analyzing market conditions" : "Analyserer markedsforhold",
+    explanation:
+      lang === "en"
+        ? "Analyzing market conditions"
+        : "Analyserer markedsforhold",
   };
 
   const nextCheck = new Date(now.getTime() + checkIntervalMinutes * 60000);
@@ -281,10 +344,14 @@ export function generateBotStatusMessage(
   lastTrade: Trade | null,
   activeStrategy: UserStrategy | null,
   locale: string = "no",
-  marketCondition?: "normal" | "volatile" | "trending_up" | "trending_down"
+  marketCondition?: "normal" | "volatile" | "trending_up" | "trending_down",
 ): BotStatusMessage {
   const lastAction = generateLastActionText(lastTrade, locale);
-  const nextAction = generateNextActionText(activeStrategy, locale, marketCondition);
+  const nextAction = generateNextActionText(
+    activeStrategy,
+    locale,
+    marketCondition,
+  );
 
   return {
     lastActionText: lastAction.text,
@@ -301,7 +368,7 @@ export function generateBotStatusMessage(
 export function isNewUser(
   trades: Trade[],
   activeStrategies: UserStrategy[],
-  onboardingCompleted?: boolean
+  onboardingCompleted?: boolean,
 ): boolean {
   if (onboardingCompleted === false) return true;
   if (activeStrategies.length === 0) return true;

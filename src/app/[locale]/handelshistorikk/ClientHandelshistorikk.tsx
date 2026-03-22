@@ -3,10 +3,12 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
 import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregates";
+import { explainStrategySignalJson } from "@/lib/bot-status-helpers";
 import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
+import type { Json } from "@/types/supabase-generated";
 
 interface Trade {
   id: string;
@@ -20,19 +22,77 @@ interface Trade {
   status: string;
   created_at: string;
   executed_at: string | null;
+  strategy_signal: Json | null;
+}
+
+interface TradeDecisionRow {
+  id: string;
+  decision_type: string;
+  trading_mode: string;
+  symbol: string;
+  side: string;
+  requested_quantity: number;
+  requested_price: number;
+  rejection_reason: string | null;
+  created_at: string;
 }
 
 type ModeFilter = "all" | "paper" | "live";
 
 const POLL_MS = 20_000;
 
+function parseStrategySignal(raw: Json | null): Record<string, unknown> | null {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw === "object" && !Array.isArray(raw)) {
+    return raw as Record<string, unknown>;
+  }
+  return null;
+}
+
 export default function ClientHandelshistorikk() {
   const t = useTranslations("tradeHistory");
+  const locale = useLocale();
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [decisions, setDecisions] = useState<TradeDecisionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ModeFilter>("all");
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  const formatRejectionReason = useCallback(
+    (code: string | null | undefined): string | null => {
+      if (!code) return null;
+      switch (code) {
+        case "NO_RISK_PROFILE":
+          return t("rejectReason.NO_RISK_PROFILE");
+        case "BOT_NOT_HEALTHY":
+          return t("rejectReason.BOT_NOT_HEALTHY");
+        case "LIVE_NOT_ALLOWED":
+          return t("rejectReason.LIVE_NOT_ALLOWED");
+        case "POSITION_LIMIT_EXCEEDED":
+          return t("rejectReason.POSITION_LIMIT_EXCEEDED");
+        case "EXPOSURE_LIMIT_EXCEEDED":
+          return t("rejectReason.EXPOSURE_LIMIT_EXCEEDED");
+        case "DAILY_LOSS_LIMIT_EXCEEDED":
+          return t("rejectReason.DAILY_LOSS_LIMIT_EXCEEDED");
+        case "DAILY_LOSS_CHECK_FAILED":
+          return t("rejectReason.DAILY_LOSS_CHECK_FAILED");
+        case "PAIR_NOT_ALLOWED":
+          return t("rejectReason.PAIR_NOT_ALLOWED");
+        case "LEVERAGE_NOT_ALLOWED":
+          return t("rejectReason.LEVERAGE_NOT_ALLOWED");
+        case "INSUFFICIENT_BALANCE":
+          return t("rejectReason.INSUFFICIENT_BALANCE");
+        case "SESSION_NOT_ACTIVE":
+          return t("rejectReason.SESSION_NOT_ACTIVE");
+        case "INVALID_TRADING_MODE":
+          return t("rejectReason.INVALID_TRADING_MODE");
+        default:
+          return code;
+      }
+    },
+    [t],
+  );
 
   const fetchTrades = useCallback(
     async (silent = false) => {
@@ -47,26 +107,45 @@ export default function ClientHandelshistorikk() {
 
       if (!user) {
         setTrades([]);
+        setDecisions([]);
         if (!silent) setLoading(false);
         return;
       }
 
-      const { data, error } = await supabase
-        .from("trades")
-        .select(
-          "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at",
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(200);
+      const [tradesRes, decisionsRes] = await Promise.all([
+        supabase
+          .from("trades")
+          .select(
+            "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at, strategy_signal",
+          )
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(200),
+        supabase
+          .from("trade_decisions")
+          .select(
+            "id, decision_type, trading_mode, symbol, side, requested_quantity, requested_price, rejection_reason, created_at",
+          )
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(50),
+      ]);
 
-      if (error) {
-        console.error("handelshistorikk fetch error:", error);
-        setFetchError(error.message || t("fetchError"));
+      if (tradesRes.error) {
+        console.error("handelshistorikk fetch error:", tradesRes.error);
+        setFetchError(tradesRes.error.message || t("fetchError"));
         setTrades([]);
       } else {
-        setTrades((data as Trade[]) ?? []);
+        setTrades((tradesRes.data as Trade[]) ?? []);
       }
+
+      if (decisionsRes.error) {
+        console.warn("trade_decisions fetch:", decisionsRes.error.message);
+        setDecisions([]);
+      } else {
+        setDecisions((decisionsRes.data as TradeDecisionRow[]) ?? []);
+      }
+
       if (!silent) setLoading(false);
     },
     [t],
@@ -87,6 +166,7 @@ export default function ClientHandelshistorikk() {
       }
       if (event === "SIGNED_OUT") {
         setTrades([]);
+        setDecisions([]);
         setSignedIn(false);
       }
     });
@@ -111,22 +191,33 @@ export default function ClientHandelshistorikk() {
     [trades, filter],
   );
 
+  const filteredDecisions = useMemo(
+    () =>
+      decisions.filter((d) => {
+        if (filter === "all") return true;
+        return d.trading_mode === filter;
+      }),
+    [decisions, filter],
+  );
+
   const stats = useMemo(
     () => aggregateTradeHistoryStats(filteredTrades),
     [filteredTrades],
   );
 
   const formatNOK = (n: number) =>
-    new Intl.NumberFormat("no-NO", {
+    new Intl.NumberFormat(locale === "en" ? "en-GB" : "no-NO", {
       style: "currency",
       currency: "NOK",
       maximumFractionDigits: 0,
       minimumFractionDigits: 0,
     }).format(n);
 
+  const dateLocale = locale === "en" ? "en-GB" : "no-NO";
+
   const formatDate = (s: string) => {
     const d = new Date(s);
-    return d.toLocaleString("no-NO", {
+    return d.toLocaleString(dateLocale, {
       dateStyle: "short",
       timeStyle: "short",
     });
@@ -221,6 +312,75 @@ export default function ClientHandelshistorikk() {
           )}
         </div>
 
+        {signedIn && !loading && !fetchError && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 space-y-3">
+            <div>
+              <h2 className="text-lg font-semibold text-[#0A0B0D]">
+                {t("decisionLogTitle")}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {t("decisionLogHint")}
+              </p>
+            </div>
+            {filteredDecisions.length === 0 ? (
+              <p className="text-sm text-gray-600">{t("decisionsEmpty")}</p>
+            ) : (
+              <ul className="divide-y divide-gray-100 max-h-72 overflow-y-auto">
+                {filteredDecisions.map((d) => {
+                  const allow = d.decision_type === "allow";
+                  const reject = d.decision_type === "reject";
+                  const modify = d.decision_type === "modify";
+                  const label = allow
+                    ? t("decisionAllow")
+                    : reject
+                      ? t("decisionReject")
+                      : modify
+                        ? t("decisionModify")
+                        : d.decision_type;
+                  const badgeClass = allow
+                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                    : reject
+                      ? "bg-red-50 text-red-800 border-red-200"
+                      : "bg-amber-50 text-amber-900 border-amber-200";
+                  const pair = (d.symbol ?? "").replace("USDT", "");
+                  const rr = formatRejectionReason(d.rejection_reason);
+                  return (
+                    <li
+                      key={d.id}
+                      className="py-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 text-sm"
+                    >
+                      <div className="text-gray-500 whitespace-nowrap">
+                        {formatDate(d.created_at)}
+                      </div>
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded text-xs font-medium border ${badgeClass}`}
+                          >
+                            {label}
+                          </span>
+                          <span className="font-medium text-[#0A0B0D]">
+                            {pair}
+                          </span>
+                          <span className="text-gray-600 uppercase">
+                            {d.side}
+                          </span>
+                          <span className="text-gray-500">
+                            {d.trading_mode === "live" ? t("live") : t("paper")}
+                          </span>
+                        </div>
+                        {reject && rr ? (
+                          <p className="text-gray-700 break-words">{rr}</p>
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        )}
+
         <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
           {loading ? (
             <div className="py-24 flex justify-center">
@@ -261,6 +421,9 @@ export default function ClientHandelshistorikk() {
                     <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
                       {t("pair")}
                     </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase max-w-[14rem]">
+                      {t("whyColumn")}
+                    </th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
                       {t("side")}
                     </th>
@@ -291,6 +454,10 @@ export default function ClientHandelshistorikk() {
                       trade.realized_pnl != null &&
                       Number.isFinite(Number(trade.realized_pnl));
                     const pnl = hasRealized ? Number(trade.realized_pnl) : null;
+                    const sig = parseStrategySignal(trade.strategy_signal);
+                    const whyText = sig
+                      ? explainStrategySignalJson(sig, locale)
+                      : t("whyMissing");
                     return (
                       <tr
                         key={trade.id}
@@ -301,6 +468,12 @@ export default function ClientHandelshistorikk() {
                         </td>
                         <td className="px-4 py-3 font-medium text-[#0A0B0D]">
                           {pair}
+                        </td>
+                        <td
+                          className="px-4 py-3 text-sm text-gray-700 max-w-[14rem]"
+                          title={whyText}
+                        >
+                          <span className="line-clamp-3">{whyText}</span>
                         </td>
                         <td className="px-4 py-3">
                           <span
