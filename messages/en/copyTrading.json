@@ -14,7 +14,10 @@
     "discoverCta": "Discover leaders",
     "settingsAria": "Settings for {name}",
     "maxAlloc": "Max {amount}",
-    "latency": "{ms}ms latency"
+    "latency": "{ms}ms latency",
+    "pnlPercentUnavailable": "–",
+    "fetchErrorTitle": "Could not load your traders",
+    "fetchErrorHint": "Try «Refresh». Are you signed in? If you just started copying, reload the page."
   },
   "discover": {
     "title": "Discover leaders",

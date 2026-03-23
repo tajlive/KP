@@ -75,12 +75,28 @@ type FollowingApiRow = {
 async function fetchFollowingViaApi(): Promise<{
   following: FollowedTrader[];
   ok: boolean;
+  apiError?: string;
+  apiStatus?: number;
 }> {
   const res = await fetch("/api/copy-trading/following", {
     credentials: "include",
   });
   if (!res.ok) {
-    return { following: [], ok: false };
+    let apiError = `HTTP ${res.status}`;
+    try {
+      const errBody = (await res.json()) as { error?: string };
+      if (typeof errBody?.error === "string" && errBody.error.trim()) {
+        apiError = errBody.error.trim();
+      }
+    } catch {
+      /* ignore */
+    }
+    return {
+      following: [],
+      ok: false,
+      apiError,
+      apiStatus: res.status,
+    };
   }
   const body = (await res.json()) as { following: FollowingApiRow[] };
   const following: FollowedTrader[] = (body.following ?? []).map((f) => ({
@@ -160,14 +176,33 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
           totalCopyPnl: totalPnl,
           isLoading: false,
           lastFetchSource: "api",
+          error: null,
         });
         return;
       }
 
       const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user?.id) {
+        set({
+          following: [],
+          totalCopyPnl: 0,
+          isLoading: false,
+          lastFetchSource: null,
+          error:
+            apiResult.apiStatus === 401
+              ? "Ikke innlogget — logg inn på nytt for å se copy trading."
+              : (apiResult.apiError ?? "Kunne ikke hente copy trading (API)."),
+        });
+        return;
+      }
+
       const { data, error } = await supabase
         .from("copy_trading_follows")
         .select("*")
+        .eq("follower_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -195,6 +230,24 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
             });
           }
         }
+
+        const { data: pubTraders } = await supabase
+          .from("trader_profiles")
+          .select("user_id, display_name")
+          .in("user_id", leaderIds)
+          .eq("is_public", true);
+
+        for (const p of pubTraders ?? []) {
+          if (!p.user_id) continue;
+          const existing = profiles.get(p.user_id);
+          const name = p.display_name?.trim();
+          if (name && !existing?.display_name?.trim()) {
+            profiles.set(p.user_id, {
+              display_name: p.display_name,
+              avatar_url: existing?.avatar_url ?? null,
+            });
+          }
+        }
       }
 
       const following = mapFollowRowsFromSupabase(rows, profiles);
@@ -204,6 +257,10 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
         totalCopyPnl: totalPnl,
         isLoading: false,
         lastFetchSource: "supabase",
+        error:
+          following.length === 0 && apiResult.apiError
+            ? apiResult.apiError
+            : null,
       });
     } catch (err) {
       set({

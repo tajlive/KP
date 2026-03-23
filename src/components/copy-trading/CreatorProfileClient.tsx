@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useCopyStore } from "@/store/copy-store";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -337,6 +338,7 @@ export default function CreatorProfileClient({
         body: JSON.stringify({
           leader_id: traderId,
           scale_factor: 1,
+          max_trade_size: 100_000,
         }),
       });
 
@@ -354,6 +356,7 @@ export default function CreatorProfileClient({
       }
 
       setIsFollowing(true);
+      void useCopyStore.getState().fetchFollowing();
       toast.success(`Du kopierer nå ${profile?.displayName}!`);
     } catch (error) {
       console.error("Error following trader:", error);
