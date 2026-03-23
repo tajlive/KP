@@ -1,12 +1,13 @@
 /**
  * KLA-137: Trading Safety Core - Risk Validator
- * 
+ *
  * Server-side risk validation for all trades.
  * FAIL CLOSED principle: if data missing or checks fail, trade is blocked.
  */
 
 import { createClient } from "../../supabase/server";
 import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
+import { logError } from "@/lib/sentry";
 
 export type RejectionReason =
   | "NO_RISK_PROFILE"
@@ -61,7 +62,7 @@ export interface RiskProfile {
  * FAIL CLOSED: Any error or missing data results in rejection
  */
 export async function validateTradeAgainstRiskProfile(
-  trade: TradeRequest
+  trade: TradeRequest,
 ): Promise<RiskValidationResult> {
   const supabase = createClient();
 
@@ -69,7 +70,9 @@ export async function validateTradeAgainstRiskProfile(
     // 1. Hent session info
     const { data: session, error: sessionError } = await supabase
       .from("trading_sessions")
-      .select("id, user_id, mode, status, current_capital_nok, starting_capital_nok")
+      .select(
+        "id, user_id, mode, status, current_capital_nok, starting_capital_nok",
+      )
       .eq("id", trade.sessionId)
       .eq("user_id", trade.userId)
       .single();
@@ -86,9 +89,9 @@ export async function validateTradeAgainstRiskProfile(
       return {
         allowed: false,
         rejectionReason: "SESSION_NOT_ACTIVE",
-        rejectionDetails: { 
+        rejectionDetails: {
           sessionStatus: session.status,
-          message: `Session is ${session.status}, cannot execute trades` 
+          message: `Session is ${session.status}, cannot execute trades`,
         },
       };
     }
@@ -108,7 +111,9 @@ export async function validateTradeAgainstRiskProfile(
     // 3. Hent aktiv risk profile
     const { data: riskProfile, error: riskError } = await supabase
       .from("risk_profiles")
-      .select("id, name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, leverage_allowed")
+      .select(
+        "id, name, max_position_pct, max_exposure_pct, max_daily_loss_pct, allowed_pairs, leverage_allowed",
+      )
       .eq("user_id", trade.userId)
       .eq("is_active", true)
       .single();
@@ -116,15 +121,17 @@ export async function validateTradeAgainstRiskProfile(
     if (riskError || !riskProfile) {
       // For paper trading: default til forsiktig hvis ingen profil
       if (trade.tradingMode === "paper") {
-        console.warn(`[RiskValidator] No active risk profile for user ${trade.userId}, using default conservative`);
+        console.warn(
+          `[RiskValidator] No active risk profile for user ${trade.userId}, using default conservative`,
+        );
         // Fortsett med default verdier
       } else {
         // For live trading: krev eksplisitt profil
         return {
           allowed: false,
           rejectionReason: "NO_RISK_PROFILE",
-          rejectionDetails: { 
-            message: "Live trading requires explicit risk profile selection" 
+          rejectionDetails: {
+            message: "Live trading requires explicit risk profile selection",
           },
         };
       }
@@ -154,7 +161,9 @@ export async function validateTradeAgainstRiskProfile(
     if (trade.botId) {
       const { data: botHealth } = await supabase
         .from("bot_health")
-        .select("status, last_heartbeat, consecutive_errors, max_consecutive_errors")
+        .select(
+          "status, last_heartbeat, consecutive_errors, max_consecutive_errors",
+        )
         .eq("id", trade.botId)
         .single();
 
@@ -170,34 +179,38 @@ export async function validateTradeAgainstRiskProfile(
         return {
           allowed: false,
           rejectionReason: "BOT_NOT_HEALTHY",
-          rejectionDetails: { 
+          rejectionDetails: {
             botStatus: botHealth.status,
-            message: `Bot status is ${botHealth.status}` 
+            message: `Bot status is ${botHealth.status}`,
           },
         };
       }
 
       // Sjekk heartbeat (maks 5 minutter gammel)
-      const heartbeatAge = Date.now() - new Date(botHealth.last_heartbeat ?? 0).getTime();
+      const heartbeatAge =
+        Date.now() - new Date(botHealth.last_heartbeat ?? 0).getTime();
       if (heartbeatAge > 5 * 60 * 1000) {
         return {
           allowed: false,
           rejectionReason: "BOT_NOT_HEALTHY",
-          rejectionDetails: { 
+          rejectionDetails: {
             lastHeartbeat: botHealth.last_heartbeat,
-            message: "Bot heartbeat stale (>5 min)" 
+            message: "Bot heartbeat stale (>5 min)",
           },
         };
       }
 
       // Sjekk consecutive errors
-      if ((botHealth.consecutive_errors ?? 0) >= (botHealth.max_consecutive_errors || 3)) {
+      if (
+        (botHealth.consecutive_errors ?? 0) >=
+        (botHealth.max_consecutive_errors || 3)
+      ) {
         return {
           allowed: false,
           rejectionReason: "BOT_NOT_HEALTHY",
-          rejectionDetails: { 
+          rejectionDetails: {
             consecutiveErrors: botHealth.consecutive_errors,
-            message: "Too many consecutive errors" 
+            message: "Too many consecutive errors",
           },
         };
       }
@@ -219,33 +232,46 @@ export async function validateTradeAgainstRiskProfile(
     // 6. Beregn nøkkeltall (for paper: kapital er NOK, priser fra Binance er USDT → konverter)
     const currentCapital = Number(session.current_capital_nok);
     const orderValueUsdt = trade.quantity * trade.price;
-    const usdtNokRate = trade.tradingMode === "paper" ? await getUsdtToNokRateAsync(supabase) : null;
-    const orderValue = trade.tradingMode === "paper"
-      ? usdtToNok(orderValueUsdt, usdtNokRate ?? undefined)
-      : orderValueUsdt;
+    const usdtNokRate =
+      trade.tradingMode === "paper"
+        ? await getUsdtToNokRateAsync(supabase)
+        : null;
+    const orderValue =
+      trade.tradingMode === "paper"
+        ? usdtToNok(orderValueUsdt, usdtNokRate ?? undefined)
+        : orderValueUsdt;
 
     const { data: positions } = await supabase
       .from("positions")
       .select("symbol, quantity, avg_entry_price")
       .eq("session_id", trade.sessionId);
 
-    type PositionRow = { symbol?: string; quantity?: number; avg_entry_price?: number };
+    type PositionRow = {
+      symbol?: string;
+      quantity?: number;
+      avg_entry_price?: number;
+    };
     const positionsList = (positions ?? []) as PositionRow[];
     const currentExposureUsdt = positionsList.reduce((sum, pos) => {
-      return sum + (Number(pos.quantity) * Number(pos.avg_entry_price));
+      return sum + Number(pos.quantity) * Number(pos.avg_entry_price);
     }, 0);
     const rate = usdtNokRate ?? undefined;
-    const currentExposure = trade.tradingMode === "paper"
-      ? usdtToNok(currentExposureUsdt, rate)
-      : currentExposureUsdt;
+    const currentExposure =
+      trade.tradingMode === "paper"
+        ? usdtToNok(currentExposureUsdt, rate)
+        : currentExposureUsdt;
 
-    const existingPosition = positionsList.find((p) => p.symbol === trade.symbol);
+    const existingPosition = positionsList.find(
+      (p) => p.symbol === trade.symbol,
+    );
     const existingPositionValueUsdt = existingPosition
-      ? Number(existingPosition.quantity) * Number(existingPosition.avg_entry_price)
+      ? Number(existingPosition.quantity) *
+        Number(existingPosition.avg_entry_price)
       : 0;
-    const existingPositionValue = trade.tradingMode === "paper"
-      ? usdtToNok(existingPositionValueUsdt, rate)
-      : existingPositionValueUsdt;
+    const existingPositionValue =
+      trade.tradingMode === "paper"
+        ? usdtToNok(existingPositionValueUsdt, rate)
+        : existingPositionValueUsdt;
 
     let postTradePositionValue: number;
     if (trade.side === "buy") {
@@ -254,12 +280,14 @@ export async function validateTradeAgainstRiskProfile(
       postTradePositionValue = Math.max(0, existingPositionValue - orderValue);
     }
 
-    const postTradeExposure = trade.side === "buy"
-      ? currentExposure + orderValue
-      : currentExposure - Math.min(orderValue, existingPositionValue);
+    const postTradeExposure =
+      trade.side === "buy"
+        ? currentExposure + orderValue
+        : currentExposure - Math.min(orderValue, existingPositionValue);
 
     const preTradePositionPct = (existingPositionValue / currentCapital) * 100;
-    const postTradePositionPct = (postTradePositionValue / currentCapital) * 100;
+    const postTradePositionPct =
+      (postTradePositionValue / currentCapital) * 100;
     const preTradeExposurePct = (currentExposure / currentCapital) * 100;
     const postTradeExposurePct = (postTradeExposure / currentCapital) * 100;
 
@@ -295,20 +323,44 @@ export async function validateTradeAgainstRiskProfile(
     }
 
     // 9. Sjekk daily loss limit
-    const { data: dailyLossResult, error: dailyLossError } = await supabase.rpc("calculate_daily_loss", {
-      p_user_id: trade.userId,
-      p_session_id: trade.sessionId,
-    });
+    const { data: dailyLossResult, error: dailyLossError } = await supabase.rpc(
+      "calculate_daily_loss",
+      {
+        p_user_id: trade.userId,
+        p_session_id: trade.sessionId,
+      },
+    );
 
     // FAIL CLOSED: Hvis daily loss check feiler, blokker trade
     if (dailyLossError) {
-      console.error("[RiskValidator] calculate_daily_loss RPC failed:", dailyLossError);
+      console.error(
+        "[RiskValidator] calculate_daily_loss RPC failed:",
+        dailyLossError,
+      );
+      const errMsg =
+        dailyLossError &&
+        typeof dailyLossError === "object" &&
+        "message" in dailyLossError
+          ? String((dailyLossError as { message?: string }).message)
+          : String(dailyLossError);
+      logError(
+        new Error(`calculate_daily_loss RPC failed: ${errMsg}`),
+        {
+          domain: "risk_validator",
+          rpc: "calculate_daily_loss",
+          rejectionReason: "DAILY_LOSS_CHECK_FAILED",
+          userId: trade.userId,
+          sessionId: trade.sessionId,
+        },
+        "error",
+      );
       return {
         allowed: false,
         rejectionReason: "DAILY_LOSS_CHECK_FAILED",
         rejectionDetails: {
           error: dailyLossError.message,
-          message: "Could not verify daily loss limit - trade blocked for safety",
+          message:
+            "Could not verify daily loss limit - trade blocked for safety",
         },
         riskProfileId: profile.id,
       };
@@ -316,12 +368,26 @@ export async function validateTradeAgainstRiskProfile(
 
     // FAIL CLOSED: Hvis resultat er null/undefined (f.eks. funksjonen finnes ikke), blokker trade
     if (dailyLossResult === null || dailyLossResult === undefined) {
-      console.error("[RiskValidator] calculate_daily_loss returned null/undefined");
+      console.error(
+        "[RiskValidator] calculate_daily_loss returned null/undefined",
+      );
+      logError(
+        "calculate_daily_loss returned null/undefined",
+        {
+          domain: "risk_validator",
+          rpc: "calculate_daily_loss",
+          rejectionReason: "DAILY_LOSS_CHECK_FAILED",
+          userId: trade.userId,
+          sessionId: trade.sessionId,
+        },
+        "warning",
+      );
       return {
         allowed: false,
         rejectionReason: "DAILY_LOSS_CHECK_FAILED",
         rejectionDetails: {
-          message: "Daily loss calculation unavailable - trade blocked for safety",
+          message:
+            "Daily loss calculation unavailable - trade blocked for safety",
         },
         riskProfileId: profile.id,
       };
@@ -334,7 +400,8 @@ export async function validateTradeAgainstRiskProfile(
     const estimatedSlippage = 0.001; // 0.1%
     const estimatedFees = 0.001; // 0.1%
     const estimatedLoss = orderValue * (estimatedSlippage + estimatedFees);
-    const projectedDailyLossPct = ((dailyLoss + estimatedLoss) / currentCapital) * 100;
+    const projectedDailyLossPct =
+      ((dailyLoss + estimatedLoss) / currentCapital) * 100;
 
     if (projectedDailyLossPct > profile.max_daily_loss_pct) {
       return {
@@ -372,15 +439,15 @@ export async function validateTradeAgainstRiskProfile(
       postTradeExposurePct,
       dailyLossPct,
     };
-
   } catch (error) {
     console.error("[RiskValidator] Unexpected error:", error);
     // FAIL CLOSED
     return {
       allowed: false,
       rejectionReason: "SESSION_NOT_ACTIVE",
-      rejectionDetails: { 
-        error: error instanceof Error ? error.message : "Unknown validation error" 
+      rejectionDetails: {
+        error:
+          error instanceof Error ? error.message : "Unknown validation error",
       },
     };
   }
@@ -391,7 +458,7 @@ export async function validateTradeAgainstRiskProfile(
  */
 export async function recordTradeRejection(
   trade: TradeRequest,
-  result: RiskValidationResult
+  result: RiskValidationResult,
 ): Promise<void> {
   if (result.allowed) return;
 
@@ -409,16 +476,20 @@ export async function recordTradeRejection(
       order_type: trade.orderType,
       trading_mode: trade.tradingMode,
       rejection_reason: result.rejectionReason,
-      rejection_details: (result.rejectionDetails as Record<string, unknown>) ?? {},
+      rejection_details:
+        (result.rejectionDetails as Record<string, unknown>) ?? {},
       risk_profile_id: result.riskProfileId ?? null,
       bot_id: trade.botId ?? null,
     });
 
-    console.warn(`[TradeRejection] ${result.rejectionReason} for user ${trade.userId}`, {
-      symbol: trade.symbol,
-      side: trade.side,
-      details: result.rejectionDetails,
-    });
+    console.warn(
+      `[TradeRejection] ${result.rejectionReason} for user ${trade.userId}`,
+      {
+        symbol: trade.symbol,
+        side: trade.side,
+        details: result.rejectionDetails,
+      },
+    );
   } catch (error) {
     // Logg men ikke kast - rejection er allerede skjedd
     console.error("[TradeRejection] Failed to record rejection:", error);
@@ -432,7 +503,7 @@ export async function recordTradeDecision(
   trade: TradeRequest,
   result: RiskValidationResult,
   executedQuantity?: number,
-  executedPrice?: number
+  executedPrice?: number,
 ): Promise<void> {
   const supabase = createClient();
 

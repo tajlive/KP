@@ -138,29 +138,35 @@ test.describe("Critical: API Endpoints @critical", () => {
     console.log("✅ Health API:", json.status);
   });
 
-  test("paper trading endpoints require auth", async ({ request }) => {
-    let initResponse;
-    let balanceResponse;
+  test("paper trading endpoints require auth", async ({
+    playwright,
+    baseURL,
+  }) => {
+    // Ikke bruk `request`-fixture: den arver storageState (innlogget) og gir 200.
+    const anon = await playwright.request.newContext({
+      baseURL,
+      storageState: { cookies: [], origins: [] },
+    });
     try {
-      initResponse = await request.post("/api/paper-trading/init", {
+      const initResponse = await anon.post("/api/paper-trading/init", {
         timeout: 15_000,
       });
-      balanceResponse = await request.get("/api/paper-trading/balance", {
+      const balanceResponse = await anon.get("/api/paper-trading/balance", {
         timeout: 15_000,
       });
+
+      expect([401, 500]).toContain(initResponse.status());
+      expect([401, 500]).toContain(balanceResponse.status());
+
+      console.log("✅ Paper trading endpoints correctly require auth");
     } catch (err) {
       console.log(
         "⚠️ Paper trading API timeout or error, skipping:",
         String(err),
       );
       test.skip();
-      return;
+    } finally {
+      await anon.dispose();
     }
-
-    // Both should require auth (accept 401 or 500 during dev)
-    expect([401, 500]).toContain(initResponse.status());
-    expect([401, 500]).toContain(balanceResponse.status());
-
-    console.log("✅ Paper trading endpoints correctly require auth");
   });
 });

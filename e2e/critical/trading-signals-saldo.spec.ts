@@ -1,4 +1,11 @@
 import { test, expect } from "@playwright/test";
+import { waitForDevHealth } from "../helpers/wait-for-dev-health";
+
+function isTransientRequestError(err: unknown) {
+  return /socket hang up|ECONNRESET|ECONNREFUSED|ETIMEDOUT|ECONNABORTED/i.test(
+    String(err),
+  );
+}
 
 /**
  * Critical: marked-data, live/paper-modus, signal-relatert bot-status, saldo (paper) + sesjoner.
@@ -36,17 +43,35 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
   });
 
   test("trading mode + sessions + bot-status krever innlogging", async ({
-    request,
+    playwright,
+    baseURL,
   }) => {
     const apiTimeout = { timeout: 60_000 };
-    const [modeRes, sessionsRes, botRes] = await Promise.all([
-      request.get("/api/trading/mode", apiTimeout),
-      request.get("/api/trading/sessions", apiTimeout),
-      request.get("/api/dashboard/bot-status", apiTimeout),
-    ]);
-    expect(modeRes.status()).toBe(401);
-    expect(sessionsRes.status()).toBe(401);
-    expect(botRes.status()).toBe(401);
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        await waitForDevHealth(playwright, baseURL);
+      }
+      const anon = await playwright.request.newContext({
+        baseURL,
+        storageState: { cookies: [], origins: [] },
+      });
+      try {
+        const [modeRes, sessionsRes, botRes] = await Promise.all([
+          anon.get("/api/trading/mode", apiTimeout),
+          anon.get("/api/trading/sessions", apiTimeout),
+          anon.get("/api/dashboard/bot-status", apiTimeout),
+        ]);
+        expect(modeRes.status()).toBe(401);
+        expect(sessionsRes.status()).toBe(401);
+        expect(botRes.status()).toBe(401);
+        return;
+      } catch (e) {
+        if (!isTransientRequestError(e) || attempt === 2) throw e;
+      } finally {
+        await anon.dispose();
+      }
+    }
   });
 
   test("innlogget: trading mode (paper/live) og sesjoner svarer strukturert", async ({
@@ -153,6 +178,8 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
   test("innlogget: paper saldo-API struktur når sesjon finnes", async ({
     page,
     request,
+    playwright,
+    baseURL,
   }) => {
     await page.goto("/no/dashboard", {
       waitUntil: "domcontentloaded",
@@ -168,10 +195,23 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
       test.skip();
     }
 
-    const balanceRes = await request.get("/api/paper-trading/balance", {
-      headers: { Cookie: cookieHeader },
-      timeout: 20_000,
-    });
+    await waitForDevHealth(playwright, baseURL);
+
+    let balanceRes: Awaited<ReturnType<typeof request.get>>;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        await waitForDevHealth(playwright, baseURL);
+      }
+      try {
+        balanceRes = await request.get("/api/paper-trading/balance", {
+          headers: { Cookie: cookieHeader },
+          timeout: 60_000,
+        });
+        break;
+      } catch (e) {
+        if (!isTransientRequestError(e) || attempt === 2) throw e;
+      }
+    }
 
     expect([200, 401, 404, 500]).toContain(balanceRes.status());
 

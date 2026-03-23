@@ -56,12 +56,12 @@ async function getModuleWithLessons(moduleSlug: string, userId?: string) {
       .eq("user_id", userId)
       .in(
         "lesson_id",
-        lessons.map((l) => l.id)
+        lessons.map((l) => l.id),
       );
-    progress = (userProgress || [])
-      .filter((p): p is { lesson_id: string; status: string } => 
-        p.lesson_id != null && p.status != null
-      );
+    progress = (userProgress || []).filter(
+      (p): p is { lesson_id: string; status: string } =>
+        p.lesson_id != null && p.status != null,
+    );
   }
 
   return { module, lessons, progress };
@@ -85,10 +85,12 @@ export default async function ModulePage({ params }: PageProps) {
   const progressMap = new Map(progress.map((p) => [p.lesson_id, p.status]));
 
   const completedCount = lessons.filter(
-    (l) => progressMap.get(l.id) === "completed"
+    (l) => progressMap.get(l.id) === "completed",
   ).length;
   const progressPercentage =
-    lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
+    lessons.length > 0
+      ? Math.round((completedCount / lessons.length) * 100)
+      : 0;
 
   const t = {
     backToCourses: locale === "no" ? "Tilbake til kurs" : "Back to courses",
@@ -156,7 +158,10 @@ export default async function ModulePage({ params }: PageProps) {
             <div className="flex items-center gap-2 mt-1">
               <Badge className={difficultyColor}>{difficultyLabel}</Badge>
               {module.is_required && (
-                <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                <Badge
+                  variant="secondary"
+                  className="bg-amber-100 text-amber-700"
+                >
                   <Lock className="w-3 h-3 mr-1" />
                   {t.required}
                 </Badge>
@@ -178,7 +183,8 @@ export default async function ModulePage({ params }: PageProps) {
               </div>
               <Progress value={progressPercentage} className="h-2" />
               <p className="text-sm text-muted-foreground mt-2">
-                {progressPercentage}% {locale === "no" ? "fullført" : "completed"}
+                {progressPercentage}%{" "}
+                {locale === "no" ? "fullført" : "completed"}
               </p>
             </CardContent>
           </Card>
@@ -196,7 +202,8 @@ export default async function ModulePage({ params }: PageProps) {
           const isCompleted = status === "completed";
           const isInProgress = status === "in_progress";
 
-          const lessonTitle = locale === "no" ? lesson.title_no : lesson.title_en;
+          const lessonTitle =
+            locale === "no" ? lesson.title_no : lesson.title_en;
 
           return (
             <Card
@@ -247,7 +254,9 @@ export default async function ModulePage({ params }: PageProps) {
                         </Badge>
                       )}
                     </div>
-                    <h3 className="font-semibold text-lg mb-1">{lessonTitle}</h3>
+                    <h3 className="font-semibold text-lg mb-1">
+                      {lessonTitle}
+                    </h3>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
@@ -284,7 +293,10 @@ export default async function ModulePage({ params }: PageProps) {
 
       {/* Login prompt for non-logged in users */}
       {!user && (
-        <Card className="mt-8 bg-muted/50">
+        <Card
+          className="mt-8 bg-muted/50"
+          data-testid="course-module-login-prompt"
+        >
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground mb-4">{t.loginRequired}</p>
             <Link href={`/${locale}/innlogging`}>

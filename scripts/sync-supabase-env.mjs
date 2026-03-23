@@ -19,15 +19,17 @@ import { resolve } from "node:path";
 const REPO_ROOT = process.cwd();
 const ENV_LOCAL = resolve(REPO_ROOT, ".env.local");
 
-const ENV_FILES = [
-  ".env",
-  ".env.local",
-  ".env.development.local",
-  ".env.production.local",
-];
-
+/** Samme prioritering som create-test-users.js / playwright.config (siste fil vinner). */
 function loadRepositoryEnv() {
-  for (const name of ENV_FILES) {
+  const fillMissingOnly = [".env.production.local"];
+  const overwriteChain = [
+    ".env",
+    ".env.development",
+    ".env.local",
+    ".env.development.local",
+  ];
+
+  for (const name of fillMissingOnly) {
     const full = resolve(REPO_ROOT, name);
     if (!existsSync(full)) continue;
     try {
@@ -37,6 +39,19 @@ function loadRepositoryEnv() {
         if (cur === undefined || cur === "") {
           process.env[key] = value;
         }
+      }
+    } catch (e) {
+      console.warn(`⚠️  Kunne ikke lese ${name}:`, e?.message ?? e);
+    }
+  }
+
+  for (const name of overwriteChain) {
+    const full = resolve(REPO_ROOT, name);
+    if (!existsSync(full)) continue;
+    try {
+      const parsed = dotenv.parse(readFileSync(full, "utf8"));
+      for (const [key, value] of Object.entries(parsed)) {
+        process.env[key] = value;
       }
     } catch (e) {
       console.warn(`⚠️  Kunne ikke lese ${name}:`, e?.message ?? e);
@@ -112,12 +127,32 @@ async function main() {
   }
 
   if (!token) {
-    console.error("❌ Mangler SUPABASE_ACCESS_TOKEN");
+    console.error("❌ Mangler SUPABASE_ACCESS_TOKEN (Supabase PAT)");
+    console.error("");
     console.error(
-      "   Opprett PAT: https://supabase.com/dashboard/account/tokens",
+      "   1) Opprett token: https://supabase.com/dashboard/account/tokens",
     );
     console.error(
-      "   Alternativt: synk fra Vercel med nøkler allerede lagret → npm run vercel:env",
+      "   2) Legg én linje i .env.local (gitignored, ikke commit):",
+    );
+    console.error("      SUPABASE_ACCESS_TOKEN=sbp_...");
+    console.error("");
+    console.error(
+      "   3) Kjør igjen: npm run env:sync:supabase:verify",
+    );
+    console.error("");
+    console.error(
+      "   Uten å lagre i fil (én gang):",
+    );
+    console.error(
+      "   SUPABASE_ACCESS_TOKEN=sbp_... npm run env:sync:supabase:verify",
+    );
+    console.error("");
+    console.error(
+      "   Uten PAT: kopier «anon public» manuelt fra Dashboard → Project Settings → API",
+    );
+    console.error(
+      "   (eller npm run vercel:env hvis Vercel allerede har riktige nøkler)",
     );
     process.exit(1);
   }

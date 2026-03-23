@@ -1,37 +1,54 @@
 import { test, expect } from "@playwright/test";
+import { waitForDevHealth } from "../helpers/wait-for-dev-health";
 
 /**
  * Admin: tilgangskontroll + smoke for allowlisted E2E-bruker.
  * Krever .auth/user.json fra setup (samme som øvrige critical-tester).
  */
 test.describe("Critical: Admin @critical @auth", () => {
-  test("uten innlogging sendes man bort fra /no/admin", async ({ browser }) => {
-    const context = await browser.newContext();
+  test.beforeEach(async ({ playwright, baseURL }) => {
+    await waitForDevHealth(playwright, baseURL);
+  });
+
+  test("uten innlogging sendes man bort fra /admin (default locale)", async ({
+    browser,
+  }) => {
+    // Eksplisitt tom storage: unngår at session fra annen kontekst (samme worker) lekker inn.
+    const context = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+    });
     const page = await context.newPage();
     try {
-      await page.goto("/no/admin/analytics", {
+      // defaultLocale=no + localePrefix=as-needed → kanonisk /admin/… (ikke /no/admin/… — unngår redirect-loop)
+      await page.goto("/admin/analytics", {
         waitUntil: "domcontentloaded",
         timeout: 60_000,
       });
-      await page.waitForTimeout(1500);
-      const url = page.url();
-      const onAdminShell = await page
-        .getByTestId("admin-shell")
-        .isVisible()
-        .catch(() => false);
-      expect(onAdminShell).toBe(false);
-      expect(
-        url.includes("innlogging") ||
-          url.includes("/login") ||
-          url.includes("admin/login"),
-      ).toBe(true);
+
+      // Middleware → innlogging, eller client layout → dashboard?error=not_admin (ikke-admin med sesjon)
+      await expect
+        .poll(
+          async () => {
+            const u = page.url();
+            return (
+              u.includes("innlogging") ||
+              u.includes("/login") ||
+              u.includes("admin/login") ||
+              u.includes("not_admin")
+            );
+          },
+          { timeout: 25_000, intervals: [100, 250, 500] },
+        )
+        .toBe(true);
+
+      await expect(page.getByTestId("admin-shell")).toHaveCount(0);
     } finally {
       await context.close();
     }
   });
 
   test("innlogget allowlisted bruker ser admin-analytics", async ({ page }) => {
-    await page.goto("/no/dashboard", {
+    await page.goto("/dashboard", {
       waitUntil: "domcontentloaded",
       timeout: 60_000,
     });
@@ -40,7 +57,7 @@ test.describe("Critical: Admin @critical @auth", () => {
       test.skip();
     }
 
-    await page.goto("/no/admin/analytics", {
+    await page.goto("/admin/analytics", {
       waitUntil: "domcontentloaded",
       timeout: 60_000,
     });
@@ -60,6 +77,6 @@ test.describe("Critical: Admin @critical @auth", () => {
     await expect(page.getByTestId("admin-shell")).toBeVisible({
       timeout: 30_000,
     });
-    await expect(page).toHaveURL(/\/no\/admin\/analytics/);
+    await expect(page).toHaveURL(/\/(en\/)?admin\/analytics/);
   });
 });

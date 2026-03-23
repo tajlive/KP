@@ -7,27 +7,57 @@ import { fileURLToPath } from "url";
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 
+/** Absolutt sti — unngår ENOENT i workers når CWD avviker fra config-katalog. */
+const e2eAuthStoragePath = path.join(repoRoot, ".auth", "user.json");
+
 /**
- * Fill missing keys from optional env files (typical: Supabase URL/anon live in
- * `.env.production.local` while `next dev` only reads `.env*.local` for development).
- * Never apply `NODE_ENV` from those files — it would break `next dev` / Edge middleware.
+ * Miljø lastes som Next.js `next dev` (lav → høy prioritet, siste vinner):
+ * `.env` → `.env.development` → `.env.local` → `.env.development.local`
+ * Først fylles bare hull fra `.env.production.local` (mal uten å overskrive dev).
+ * Aldri sett `NODE_ENV` fra filer.
  */
-function mergeEnvFile(rel: string, opts: { skipNodeEnv?: boolean } = {}) {
+function applyEnvFile(
+  rel: string,
+  opts: { skipNodeEnv?: boolean; fillMissingOnly?: boolean } = {},
+) {
   const full = path.resolve(repoRoot, rel);
   if (!fs.existsSync(full)) return;
   const parsed = dotenv.parse(fs.readFileSync(full, "utf8"));
   for (const [key, value] of Object.entries(parsed)) {
     if (opts.skipNodeEnv && key === "NODE_ENV") continue;
-    if (process.env[key] === undefined) process.env[key] = value;
+    if (opts.fillMissingOnly) {
+      if (process.env[key] === undefined || process.env[key] === "") {
+        process.env[key] = value;
+      }
+    } else {
+      process.env[key] = value;
+    }
   }
 }
 
-mergeEnvFile(".env.production.local", { skipNodeEnv: true });
-mergeEnvFile(".env.development.local", { skipNodeEnv: true });
-dotenv.config({
-  path: path.resolve(repoRoot, ".env.local"),
-  override: true,
+applyEnvFile(".env.production.local", {
+  skipNodeEnv: true,
+  fillMissingOnly: true,
 });
+applyEnvFile(".env", { skipNodeEnv: true });
+applyEnvFile(".env.development", { skipNodeEnv: true });
+applyEnvFile(".env.local", { skipNodeEnv: true });
+applyEnvFile(".env.development.local", { skipNodeEnv: true });
+
+/**
+ * `scripts/full-e2e.sh` eksporterer KLARPAKKE_E2E_FROM_PROVISION=1 etter create-test-users.js.
+ * Uten dette kan .env.local overskrive E2E_USER_PASSWORD med gammel verdi → setup logger aldri inn
+ * mens Supabase nettopp fikk TestPassword123! fra provision.
+ *
+ * Må matche TEST_USERS[0] i scripts/create-test-users.js (tom@klarpakke.no / TestPassword123!).
+ * Skru av: KLARPAKKE_E2E_FROM_PROVISION=0 npm run test:full
+ */
+if (process.env.KLARPAKKE_E2E_FROM_PROVISION === "1") {
+  process.env.E2E_USER_EMAIL = "tom@klarpakke.no";
+  process.env.E2E_USER_PASSWORD = "TestPassword123!";
+  process.env.TEST_USER_EMAIL = "tom@klarpakke.no";
+  process.env.TEST_USER_PASSWORD = "TestPassword123!";
+}
 
 /** Unngå at mange parallelle tester overvelder `next dev` (API-timeouts / flaky goto). */
 function resolvePlaywrightWorkers(): number | undefined {
@@ -124,10 +154,11 @@ export default defineConfig({
   },
 
   projects: [
-    // Setup: Cache auth state
+    // Setup: Cache auth state (lang flyt: flere UI-forsøk + passord-grant-fallback)
     {
       name: "setup",
       testMatch: /.*\.setup\.ts/,
+      timeout: 720_000,
       teardown: "cleanup",
     },
 
@@ -169,7 +200,7 @@ export default defineConfig({
       testMatch: /critical\/.*\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
-        storageState: ".auth/user.json",
+        storageState: e2eAuthStoragePath,
         viewport: { width: 1920, height: 1080 },
       },
       dependencies: ["setup"],
@@ -179,7 +210,7 @@ export default defineConfig({
       testMatch: /critical\/.*\.spec\.ts/,
       use: {
         ...devices["Desktop Firefox"],
-        storageState: ".auth/user.json",
+        storageState: e2eAuthStoragePath,
       },
       dependencies: ["setup"],
     },
@@ -192,7 +223,7 @@ export default defineConfig({
       testMatch: /regression\/.*\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
-        storageState: ".auth/user.json",
+        storageState: e2eAuthStoragePath,
         viewport: { width: 1920, height: 1080 },
       },
       dependencies: ["setup"],
@@ -206,7 +237,7 @@ export default defineConfig({
       testMatch: /mobile\/.*\.spec\.ts/,
       use: {
         ...devices["iPhone 13"],
-        storageState: ".auth/user.json",
+        storageState: e2eAuthStoragePath,
       },
       dependencies: ["setup"],
     },
@@ -215,7 +246,7 @@ export default defineConfig({
       testMatch: /mobile\/.*\.spec\.ts/,
       use: {
         ...devices["Pixel 5"],
-        storageState: ".auth/user.json",
+        storageState: e2eAuthStoragePath,
       },
       dependencies: ["setup"],
     },
@@ -243,6 +274,8 @@ export default defineConfig({
 
   // Local dev server (not used in CI or when testing against prod/external URL)
   webServer: (() => {
+    // full-e2e.sh starter og eier `next dev`; å spawne en til gir port-konflikt → «webServer exited early»
+    if (process.env.PLAYWRIGHT_SKIP_WEBSERVER === "1") return undefined;
     const base = process.env.PLAYWRIGHT_TEST_BASE_URL || process.env.BASE_URL;
     if (process.env.CI || process.env.TEST_AGAINST_PROD) return undefined;
     if (base && !base.includes("localhost")) return undefined;

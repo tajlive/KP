@@ -31,7 +31,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useId, useState, Suspense } from "react";
 import { useAuth } from "@/components/auth/AuthContext";
 
 /**
@@ -59,6 +59,8 @@ function sanitizeClientRedirect(value: string | null, locale: string): string {
 
 // Inner component that uses useSearchParams - must be wrapped in Suspense
 function InnloggingForm() {
+  const emailFieldId = useId();
+  const passwordFieldId = useId();
   const router = useRouter();
   const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
@@ -108,9 +110,8 @@ function InnloggingForm() {
     if (!loading && user) router.replace(safeRedirectTo);
   }, [loading, user, router, safeRedirectTo]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  /** Egen innsending (type="button") — unngår nativ POST til /innlogging som hopper over Supabase (Playwright så POST 200 uten /auth/v1/token). */
+  const submitEmailLogin = async () => {
     if (!isValidEmail(email)) {
       setLoginError(t("invalidEmail"));
       setStatus("login_error");
@@ -147,6 +148,11 @@ function InnloggingForm() {
     }
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void submitEmailLogin();
+  };
+
   return (
     <div
       className="min-h-screen bg-white dark:bg-slate-950 py-12 px-4 sm:px-6"
@@ -180,7 +186,10 @@ function InnloggingForm() {
           </CardHeader>
           <CardContent className="space-y-5 pt-2">
             {loginError && (
-              <div className="flex items-center gap-2 p-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800">
+              <div
+                data-testid="innlogging-error"
+                className="flex items-center gap-2 p-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800"
+              >
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span>{loginError}</span>
               </div>
@@ -194,15 +203,22 @@ function InnloggingForm() {
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
                 {locale === "no" ? "E-post" : "Email"}
               </p>
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form
+                data-testid="innlogging-password-form"
+                method="post"
+                action="#"
+                onSubmit={handleFormSubmit}
+                className="space-y-4"
+              >
                 <div className="space-y-2">
-                  <label htmlFor="innlogging-email" className="sr-only">
+                  <label htmlFor={emailFieldId} className="sr-only">
                     {t("emailPlaceholder")}
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
                     <Input
-                      id="innlogging-email"
+                      id={emailFieldId}
+                      data-testid="innlogging-email-input"
                       type="email"
                       name="email"
                       autoComplete="email"
@@ -218,13 +234,14 @@ function InnloggingForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="innlogging-password" className="sr-only">
+                  <label htmlFor={passwordFieldId} className="sr-only">
                     {t("passwordPlaceholder")}
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-slate-500 pointer-events-none" />
                     <Input
-                      id="innlogging-password"
+                      id={passwordFieldId}
+                      data-testid="innlogging-password-input"
                       type={showPassword ? "text" : "password"}
                       name="password"
                       autoComplete="current-password"
@@ -261,8 +278,12 @@ function InnloggingForm() {
                 </div>
 
                 <Button
-                  type="submit"
+                  type="button"
+                  data-testid="innlogging-submit"
                   disabled={status === "logging_in"}
+                  onClick={() => {
+                    void submitEmailLogin();
+                  }}
                   className={`w-full h-12 ${RADIUS.button} ${BRAND.primary} font-semibold shadow-sm transition-all duration-200 active:scale-[0.98]`}
                 >
                   {status === "logging_in" ? (
