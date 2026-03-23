@@ -71,6 +71,6 @@ git commit -m "beskrivelse"
 
 ## Linear
 
-Oppfølging og historikk: **KLA-239** (koblet til **KLA-231**).
+**KLA-239** er **Done** (kort beskrivelse + peker hit / `d06467bd1`). Gamle kommentarer på saken er fjernet.
 
 SoT: `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`.
