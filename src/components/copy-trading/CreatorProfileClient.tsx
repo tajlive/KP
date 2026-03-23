@@ -482,6 +482,7 @@ export default function CreatorProfileClient({
           {/* Follow Button */}
           <Button
             size="lg"
+            data-testid="copy-trading-follow-button"
             className={cn(
               "min-w-[160px]",
               isFollowing

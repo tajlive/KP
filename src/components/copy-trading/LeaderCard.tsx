@@ -50,6 +50,7 @@ export function LeaderCard({
 
   return (
     <motion.article
+      data-testid="copy-trading-leader-card"
       initial={reduceMotion ? false : { opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{

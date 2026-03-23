@@ -64,6 +64,9 @@ jobs:
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD }}
+          # Valgfri: annen bruker som får leaderboard_bots-rad (discover / copy-trading E2E).
+          E2E_LEADER_EMAIL: ${{ secrets.E2E_LEADER_EMAIL || secrets.TEST_USER_B_EMAIL }}
+          E2E_LEADER_PASSWORD: ${{ secrets.E2E_LEADER_PASSWORD || secrets.TEST_USER_B_PASSWORD }}
         run: |
           if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
             echo "::notice title=E2E provision::SUPABASE_SERVICE_ROLE_KEY mangler — hopper over automatisk opprettelse. Brukeren må finnes i Supabase."

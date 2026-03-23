@@ -190,6 +190,62 @@ async function updateUserPassword(userId, password) {
   return response.json();
 }
 
+/**
+ * Sikrer én aktiv rad i leaderboard_bots for gitt auth user (discover / copy-trading E2E).
+ */
+async function ensureLeaderboardBotForUser(userId, displayName) {
+  const headers = {
+    apikey: SERVICE_ROLE_KEY,
+    Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+  };
+  const check = await fetch(
+    `${SUPABASE_URL}/rest/v1/leaderboard_bots?user_id=eq.${userId}&select=id`,
+    { headers },
+  );
+  if (!check.ok) {
+    console.warn("⚠️  Kunne ikke sjekke leaderboard_bots:", check.status);
+    return;
+  }
+  const existing = await check.json();
+  if (Array.isArray(existing) && existing.length > 0) {
+    console.log(
+      `✅ leaderboard_bots finnes allerede for ${userId.slice(0, 8)}…`,
+    );
+    return;
+  }
+  const ins = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard_bots`, {
+    method: "POST",
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      display_name: displayName,
+      is_active: true,
+      featured: true,
+      sort_order: 1,
+      pnl_30d: 10.5,
+      pnl_90d: 14.2,
+      pnl_all_time: 38,
+      win_rate: 54,
+      sharpe_ratio: 1.05,
+      strategy_type: "Paper / demo",
+      rank: 1,
+      follower_count: 0,
+    }),
+  });
+  if (!ins.ok) {
+    const t = await ins.text();
+    console.warn("⚠️  leaderboard_bots insert feilet:", ins.status, t);
+    return;
+  }
+  console.log(
+    `✅ Opprettet leaderboard_bots for «${displayName}» (${userId.slice(0, 8)}…)`,
+  );
+}
+
 async function findUserByEmail(email) {
   const response = await fetch(
     `${SUPABASE_URL}/auth/v1/admin/users?per_page=1000`,
@@ -266,6 +322,35 @@ async function main() {
       console.error(error || "Ukjent feil");
       process.exit(1);
     }
+
+    const leaderEmail = process.env.E2E_LEADER_EMAIL?.trim();
+    const leaderPassword = process.env.E2E_LEADER_PASSWORD;
+    if (leaderEmail && leaderPassword) {
+      console.log("\n🔄 E2E copy-leader (E2E_LEADER_*) …");
+      const lr = await upsertTestUser({
+        email: leaderEmail,
+        password: leaderPassword,
+        options: {
+          data: {
+            display_name:
+              process.env.E2E_LEADER_DISPLAY_NAME?.trim() || "E2E paper leader",
+          },
+          email_confirm: true,
+        },
+      });
+      if (lr.ok) {
+        const lid = await findUserByEmail(leaderEmail);
+        if (lid) {
+          await ensureLeaderboardBotForUser(
+            lid,
+            process.env.E2E_LEADER_DISPLAY_NAME?.trim() || "E2E paper leader",
+          );
+        }
+      } else {
+        console.warn("⚠️  E2E-leader upsert feilet:", lr.error);
+      }
+    }
+
     console.log(
       "\n📋 Klar for Playwright: sett samme e-post/passord i E2E_USER_* / GitHub secrets.",
     );

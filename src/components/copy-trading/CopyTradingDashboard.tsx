@@ -215,10 +215,11 @@ export default function CopyTradingDashboard() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3" data-testid="copy-trading-following-list">
             {following.map((trader) => (
               <motion.div
                 key={trader.id}
+                data-testid="copy-trading-followed-row"
                 layout
                 className="flex items-center gap-3.5 p-4
                            bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl

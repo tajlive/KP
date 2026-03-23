@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { withAuth } from "@/lib/api-auth";
 import { DiscoverQuerySchema } from "@/lib/schemas";
 import { inferRiskTier } from "@/lib/copy-trading/risk-tier";
+import { traderProfilesToDiscoverLeaders } from "@/lib/copy-trading/discover-from-trader-profiles";
 import type { DiscoverLeaderDto } from "@/lib/copy-trading/discover-types";
 import type { Database } from "@/types/supabase-generated";
 
@@ -78,7 +79,7 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       (follows ?? []).map((f: { leader_id: string }) => f.leader_id),
     );
 
-    const leaders: DiscoverLeaderDto[] = sorted.map((row) => ({
+    let leaders: DiscoverLeaderDto[] = sorted.map((row) => ({
       id: row.id,
       traderHrefId: row.id,
       leaderAuthUserId: row.user_id,
@@ -96,7 +97,36 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       risk_tier: inferRiskTier(row.sharpe_ratio, row.win_rate),
     }));
 
-    return NextResponse.json({ leaders, timeframe });
+    if (leaders.length === 0) {
+      const { data: pubProfiles, error: pubErr } = await db
+        .from("trader_profiles")
+        .select("*")
+        .eq("is_public", true)
+        .order("follower_count", { ascending: false, nullsFirst: false })
+        .limit(limit);
+
+      if (pubErr) {
+        console.error(
+          "[copy-trading/discover] trader_profiles:",
+          pubErr.message,
+        );
+      } else {
+        leaders = traderProfilesToDiscoverLeaders(
+          (pubProfiles ??
+            []) as Database["public"]["Tables"]["trader_profiles"]["Row"][],
+          followed,
+        );
+      }
+    }
+
+    const discoverSource: "none" | "bots" | "trader_profiles" =
+      leaders.length === 0
+        ? "none"
+        : sorted.length > 0
+          ? "bots"
+          : "trader_profiles";
+
+    return NextResponse.json({ leaders, timeframe, source: discoverSource });
   } catch (e) {
     console.error("[copy-trading/discover]", e);
     return NextResponse.json(

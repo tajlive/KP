@@ -7,6 +7,10 @@ export function maxActiveCopyFollowsForTier(
   tierRaw: string | null | undefined,
 ): number {
   const slug: TierSlug = normalizeTier(tierRaw ?? undefined);
+  /** Student: paper copy-trading i discover (samme lekepenger-univers som resten). */
+  if (slug === "student") {
+    return 2;
+  }
   const config = TIERS[slug];
   if (!config.canCopyTraders) {
     return 0;

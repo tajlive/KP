@@ -19,6 +19,7 @@ export const TIERS = {
     popular: false,
     features: [
       "Ubegrenset Paper Trading (100 000 kr lekepenger)",
+      "Kopier inntil 2 paper-ledere i copy trading",
       "14 dagers full prøveperiode på auto-trading",
       "Deretter 1 auto-trade-strategi på Student",
       "Real-time markedsdata og AI-læringsassistent",
@@ -37,7 +38,7 @@ export const TIERS = {
     trialDays: 14, // 14-dagers full trial
 
     // Feature flags
-    canCopyTraders: false, // Kan ikke kopiere tradere
+    canCopyTraders: true, // Paper copy: inntil 2 ledere (se maxActiveCopyFollowsForTier)
     canBacktest: true, // Backtesting tillatt
     canUseLiveSignals: false, // Ingen VIP-signaler
     maxBacktestDays: 30, // 30 dagers historikk
