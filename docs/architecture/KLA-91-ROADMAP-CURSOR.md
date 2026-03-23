@@ -9,6 +9,11 @@
 
 **Ingen separat «KIMI»-bane** for KLA-91 — alt kjøres i Cursor med repo-regler, MCP (Supabase, Linear, Playwright, …) og under `.cursor/rules/`.
 
+## Enterprise 2026 — forutsetninger (handel trygg før markedsplass-UI)
+
+- [x] RPC `calculate_daily_loss` / `is_bot_healthy`: `SET search_path = public`, `public.trades` — migrasjon `supabase/migrations/20260324120000_kla137_security_definer_search_path.sql`
+- [x] SoT + migrasjonskrav: `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` (inkl. regressjons-Vitest for `DAILY_LOSS_CHECK_FAILED`)
+
 ## Fase 1 — Arkitektur logget
 
 - [x] ADR: `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`

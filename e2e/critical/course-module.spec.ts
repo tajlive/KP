@@ -54,7 +54,12 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
         { timeout: 25_000 },
       );
 
-      await expect(page.getByText(/5\s*leksjoner/i)).toBeVisible({
+      // Gjest: h2 «5 leksjoner». Innlogget: også span «0 av 5 leksjoner» — én stabil h2 unngår strict mode.
+      await expect(
+        page
+          .locator("h2.text-xl.font-semibold")
+          .filter({ hasText: /5\s+leksjoner/i }),
+      ).toBeVisible({
         timeout: 25_000,
       });
     });
@@ -145,16 +150,34 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
 
   test.describe("Progress Tracking", () => {
     test("should show login prompt for unauthenticated users", async ({
-      page,
+      browser,
     }) => {
-      await page.goto(`/no/kurs/${moduleSlug}`, {
-        waitUntil: "domcontentloaded",
-        timeout: 90_000,
+      const context = await browser.newContext({
+        storageState: { cookies: [], origins: [] },
       });
+      const page = await context.newPage();
+      try {
+        // as-needed: kanonisk /kurs/… (ikke /no/kurs/…)
+        await page.goto(`/kurs/${moduleSlug}`, {
+          waitUntil: "domcontentloaded",
+          timeout: 90_000,
+        });
+        await page.waitForLoadState("networkidle").catch(() => {});
 
-      await expect(
-        page.getByText(/Logg inn for å spore fremgang|Log in to track/i),
-      ).toBeVisible();
+        // Navbar ligger ofte inne i <main> — ikke bruk bred getByRole her (strict mode).
+        const prompt = page.getByTestId("course-module-login-prompt");
+        await expect(prompt).toBeVisible({ timeout: 20_000 });
+        await expect(
+          prompt.getByText(
+            /Logg inn for å spore fremgang|Log in to track progress/i,
+          ),
+        ).toBeVisible();
+        await expect(
+          prompt.getByRole("link", { name: /^Logg inn$|^Log in$/i }),
+        ).toBeVisible();
+      } finally {
+        await context.close();
+      }
     });
   });
 

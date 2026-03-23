@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { waitForDevHealth } from "../helpers/wait-for-dev-health";
 
 /**
  * Trading flow + tier-gate (ANBEFALINGER)
@@ -22,22 +23,30 @@ test.describe("Trading flow and tier-gate @critical", () => {
   );
   const canBootstrapAuthState = hasE2EAuthCredentials && hasSupabaseAuthConfig;
 
+  test.beforeEach(async ({ playwright, baseURL }) => {
+    await waitForDevHealth(playwright, baseURL);
+  });
+
   test("Landing: Handle/paper-trading CTA går til paper-trading eller innlogging", async ({
     page,
   }) => {
     await page.goto("/no", { waitUntil: "domcontentloaded", timeout: 90_000 });
-    // `localePrefix: 'as-needed'`: default locale (no) bruker `/paper-trading`, ikke `/no/paper-trading`.
+    // `localePrefix: 'as-needed'`: no → `/paper-trading`; eksplisitt `/no/…` eller `en` → prefixed.
     const paperLink = page
-      .locator('a[href="/paper-trading"], a[href="/no/paper-trading"]')
+      .locator(
+        'a[href="/paper-trading"], a[href="/no/paper-trading"], a[href="/en/paper-trading"]',
+      )
       .first();
-    await expect(paperLink).toBeVisible({ timeout: 15000 });
-    await paperLink.click();
-    await expect(page).toHaveURL(
-      /\/([a-z]{2}\/)?(paper-trading|innlogging|login|signup)/,
-      {
-        timeout: 15000,
-      },
-    );
+    await expect(paperLink).toBeVisible({ timeout: 20_000 });
+    const dest = /\/([a-z]{2}\/)?(paper-trading|innlogging|login|signup)/;
+    // Start URL-vent før klikk (Firefox + RSC): unngår racy rekkefølge der navigasjon er ferdig før listener.
+    await Promise.all([
+      page.waitForURL(dest, {
+        timeout: 90_000,
+        waitUntil: "domcontentloaded",
+      }),
+      paperLink.click({ noWaitAfter: true }),
+    ]);
   });
 
   test("Paper-trading side: ingen lenker til /live-trading/ eller /beta/", async ({
@@ -84,16 +93,37 @@ test.describe("Trading flow and tier-gate @critical", () => {
 
   test("Paper-trading med view=sessions: Mine sesjoner og Tilbake-lenker synlige", async ({
     page,
+    playwright,
+    baseURL,
   }) => {
     test.skip(
       !canBootstrapAuthState,
       "Requires E2E credentials and Supabase auth config for authenticated sessions assertions",
     );
 
-    await page.goto("/no/paper-trading?view=sessions", {
-      waitUntil: "domcontentloaded",
-      timeout: 60000,
-    });
+    const sessionsPath = "/no/paper-trading?view=sessions";
+    const isConnRefused = (e: unknown) => {
+      const msg = e instanceof Error ? e.message : String(e);
+      return (
+        msg.includes("CONNECTION_REFUSED") ||
+        msg.includes("NS_ERROR_CONNECTION_REFUSED") ||
+        msg.includes("ERR_CONNECTION_REFUSED")
+      );
+    };
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await page.goto(sessionsPath, {
+          waitUntil: "domcontentloaded",
+          timeout: 60_000,
+        });
+        break;
+      } catch (e) {
+        if (attempt >= 3 || !isConnRefused(e)) throw e;
+        await new Promise((r) => setTimeout(r, 2500));
+        await waitForDevHealth(playwright, baseURL);
+      }
+    }
     const currentUrl = page.url();
     if (loginWithNext("paper-trading").test(currentUrl)) {
       console.log("⚠️ Redirected to login (expected without auth credentials)");

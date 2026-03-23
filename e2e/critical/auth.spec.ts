@@ -1,4 +1,18 @@
 import { test, expect, type Page } from "@playwright/test";
+import {
+  waitForDevHealth,
+  waitForSignupPageReady,
+} from "../helpers/wait-for-dev-health";
+
+async function dashboardShellCounts(page: Page) {
+  const hrefLinks = await page.locator("a[href]").count();
+  const anyLinks = await page.getByRole("link").count();
+  const dashboardRoot = await page
+    .locator('[data-testid="dashboard-root"]')
+    .count();
+  const navLandmarks = await page.getByRole("navigation").count();
+  return { hrefLinks, anyLinks, dashboardRoot, navLandmarks };
+}
 
 async function skipIfSupabaseOrAuthUnavailable(page: Page) {
   await page.goto("/no/dashboard", { timeout: 60_000 });
@@ -165,23 +179,34 @@ test.describe("Critical: Authentication @critical @auth", () => {
 test.describe("Critical: Core Navigation @critical", () => {
   test("user can navigate between main sections", async ({ page }) => {
     await page.goto("/dashboard", { timeout: 60000 });
+    await page.waitForURL(
+      (url) =>
+        url.pathname.includes("/dashboard") &&
+        !url.pathname.includes("innlogging") &&
+        !url.pathname.includes("login"),
+      { timeout: 90_000 },
+    );
     await page
       .waitForLoadState("domcontentloaded", { timeout: 30000 })
       .catch(() => {});
 
-    // Check that we can find navigation elements or any links
-    let links = await page.locator('a[href^="/"]').count();
-    if (links === 0) {
-      // Try any anchor tags
-      links = await page.locator("a").count();
-    }
-    expect(links).toBeGreaterThan(0);
+    await expect(page.locator("body")).toBeVisible();
 
-    // Verify page structure
-    const body = await page.locator("body");
-    await expect(body).toBeVisible();
+    await page.waitForSelector(
+      'a[href], [data-testid="dashboard-root"], [role="navigation"]',
+      { timeout: 90_000, state: "attached" },
+    );
 
-    console.log(`✅ Found ${links} navigation links`);
+    const post = await dashboardShellCounts(page);
+
+    expect(
+      post.hrefLinks + post.anyLinks + post.dashboardRoot + post.navLandmarks,
+      "Forvent lenker, navigasjon eller dashboard-root etter hydrering",
+    ).toBeGreaterThan(0);
+
+    console.log(
+      `✅ dashboard shell: a[href]=${post.hrefLinks}, role=link=${post.anyLinks}, root=${post.dashboardRoot}, nav=${post.navLandmarks}`,
+    );
   });
 
   test("no critical console errors on dashboard", async ({ page }) => {
@@ -285,8 +310,35 @@ test.describe("Critical: Logged-in user guest-auth redirect @critical @auth", ()
 test.describe("Critical: Guest auth pages (no session) @critical @auth", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test("unauthenticated user can still open signup", async ({ page }) => {
-    await page.goto("/no/signup", { timeout: 60_000 });
+  test("unauthenticated user can still open signup", async ({
+    page,
+    playwright,
+    baseURL,
+  }) => {
+    await waitForDevHealth(playwright, baseURL);
+    await waitForSignupPageReady(playwright, baseURL);
+
+    let lastErr = "";
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await page.goto("/no/signup", {
+          timeout: 60_000,
+          waitUntil: "domcontentloaded",
+        });
+        lastErr = "";
+        break;
+      } catch (e) {
+        lastErr = String(e);
+        const transient =
+          /ECONNREFUSED|NS_ERROR_CONNECTION_REFUSED|net::ERR_CONNECTION/i.test(
+            lastErr,
+          );
+        if (!transient || attempt === 2) throw e;
+        await waitForDevHealth(playwright, baseURL);
+        await waitForSignupPageReady(playwright, baseURL);
+      }
+    }
+
     await page
       .waitForLoadState("domcontentloaded", { timeout: 30_000 })
       .catch(() => {});

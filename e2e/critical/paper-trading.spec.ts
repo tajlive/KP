@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { hasSupabaseSessionCookies } from "../helpers/supabase-cookies";
+import { waitForDevHealth } from "../helpers/wait-for-dev-health";
 
 /**
  * Critical: Paper Trading Flow
@@ -194,23 +196,46 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
   test("paper execute returns session_id and trade row visible on session page", async ({
     page,
     request,
+    playwright,
+    baseURL,
   }) => {
     const cookies = await page.context().cookies();
-    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
-    if (!cookieHeader) {
-      console.log("⚠️ No auth cookies, skipping execute contract test");
-      test.skip();
-      return;
-    }
+    test.skip(
+      !hasSupabaseSessionCookies(cookies),
+      "Ingen Supabase-innlogging i storageState (sb-*-auth-token). " +
+        "Legg E2E_USER_EMAIL og E2E_USER_PASSWORD i .env.local og kjør med Next på :3000 slik at setup faktisk logger inn — " +
+        "ellers skriver setup tom .auth/user.json på ~millisekunder.",
+    );
 
-    const exec = await request.post("/api/paper-trading/execute", {
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+
+    const transient = (err: unknown) =>
+      /socket hang up|ECONNRESET|ECONNREFUSED|ETIMEDOUT|ECONNABORTED/i.test(
+        String(err),
+      );
+
+    const postOpts = {
       headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
       data: {
         pair: "BTCUSDT",
         side: "buy",
         amount_nok: 100,
       },
-    });
+      timeout: 90_000,
+    } as const;
+
+    await waitForDevHealth(playwright, baseURL);
+
+    let exec: Awaited<ReturnType<typeof request.post>>;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        exec = await request.post("/api/paper-trading/execute", postOpts);
+        break;
+      } catch (e) {
+        if (!transient(e) || attempt === 2) throw e;
+        await waitForDevHealth(playwright, baseURL);
+      }
+    }
 
     if (exec.status() === 401) {
       test.skip();
