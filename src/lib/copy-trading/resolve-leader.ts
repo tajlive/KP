@@ -8,7 +8,7 @@ export type ResolvedLeader = {
 
 /**
  * Canonical leader key for copy_trading_follows (RLS: auth.uid() = leader_id | follower_id).
- * Accepts user_profiles.id, auth.users id (user_profiles.user_id), or leaderboard_bots.id.
+ * Accepts user_profiles.id, auth.users id (user_profiles.user_id), trader_profiles.id, or leaderboard_bots.id.
  */
 export async function resolveLeaderAuthId(
   db: SupabaseClient<Database>,
@@ -37,6 +37,19 @@ export async function resolveLeaderAuthId(
     return {
       authUserId: byAuthId.user_id,
       displayName: byAuthId.display_name ?? null,
+    };
+  }
+
+  const { data: traderProf } = await db
+    .from("trader_profiles")
+    .select("user_id, display_name")
+    .eq("id", rawLeaderKey)
+    .maybeSingle();
+
+  if (traderProf?.user_id) {
+    return {
+      authUserId: traderProf.user_id,
+      displayName: traderProf.display_name ?? null,
     };
   }
 

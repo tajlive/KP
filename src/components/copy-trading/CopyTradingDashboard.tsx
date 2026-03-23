@@ -44,6 +44,7 @@ export default function CopyTradingDashboard() {
     activeCopies,
     totalCopyPnl,
     isLoading,
+    error: followingError,
     fetchFollowing,
     fetchActiveCopies,
   } = useCopyStore();
@@ -67,6 +68,22 @@ export default function CopyTradingDashboard() {
 
   const isPositive = totalCopyPnl >= 0;
   const activeFollowing = following.filter((f) => f.isActive);
+
+  /** Grunnlag for P&L-%: sum tildelt kapital (maks per trader), ikke hardkodet beløp. */
+  const pnlPercentDenominatorNok = useMemo(() => {
+    const active = following.filter((f) => f.isActive);
+    const activeSum = active.reduce(
+      (s, f) => s + Math.max(0, f.maxAllocationNok),
+      0,
+    );
+    if (activeSum > 0) return activeSum;
+    return following.reduce((s, f) => s + Math.max(0, f.maxAllocationNok), 0);
+  }, [following]);
+
+  const pnlPercentVsAllocation =
+    pnlPercentDenominatorNok > 0
+      ? (totalCopyPnl / pnlPercentDenominatorNok) * 100
+      : null;
 
   return (
     <div className="space-y-6">
@@ -135,10 +152,17 @@ export default function CopyTradingDashboard() {
               <TrendingDown className="w-4 h-4 text-rose-500" />
             )}
             <span
-              className={`text-[15px] font-semibold ${isPositive ? "text-emerald-500" : "text-rose-500"}`}
+              className={`text-[15px] font-semibold ${
+                pnlPercentVsAllocation === null
+                  ? "text-gray-400 dark:text-gray-500"
+                  : isPositive
+                    ? "text-emerald-500"
+                    : "text-rose-500"
+              }`}
             >
-              {isPositive ? "+" : ""}
-              {((totalCopyPnl / 100000) * 100).toFixed(1)}%
+              {pnlPercentVsAllocation === null
+                ? t("pnlPercentUnavailable")
+                : `${isPositive ? "+" : ""}${pnlPercentVsAllocation.toFixed(1)}%`}
             </span>
           </div>
         </div>
@@ -149,6 +173,21 @@ export default function CopyTradingDashboard() {
         <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white mb-3 px-1">
           {t("mineTitle")}
         </h3>
+
+        {followingError && following.length === 0 && !isLoading ? (
+          <div
+            role="alert"
+            className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-[13px] text-amber-900 dark:text-amber-100"
+          >
+            <p className="font-semibold">{t("fetchErrorTitle")}</p>
+            <p className="mt-1 text-amber-800/90 dark:text-amber-200/90">
+              {followingError}
+            </p>
+            <p className="mt-2 text-amber-800/80 dark:text-amber-200/80">
+              {t("fetchErrorHint")}
+            </p>
+          </div>
+        ) : null}
 
         {isLoading && following.length === 0 ? (
           <div className="space-y-3">

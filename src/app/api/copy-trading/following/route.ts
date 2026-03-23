@@ -67,6 +67,45 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
           });
         }
       }
+
+      const { data: traderPub } = await db
+        .from("trader_profiles")
+        .select("user_id, display_name")
+        .in("user_id", leaderIds)
+        .eq("is_public", true);
+
+      for (const p of traderPub ?? []) {
+        if (!p.user_id) continue;
+        const cur = profileByAuthId.get(p.user_id);
+        const name = p.display_name?.trim();
+        if (name && !cur?.display_name?.trim()) {
+          profileByAuthId.set(p.user_id, {
+            display_name: p.display_name,
+            avatar_url: cur?.avatar_url ?? null,
+          });
+        }
+      }
+
+      const { data: bots } = await db
+        .from("leaderboard_bots")
+        .select("user_id, display_name")
+        .in("user_id", leaderIds);
+
+      for (const b of bots ?? []) {
+        if (!b.user_id) continue;
+        const bn = b.display_name?.trim();
+        if (!bn) continue;
+        const cur = profileByAuthId.get(b.user_id);
+        if (
+          !cur?.display_name?.trim() ||
+          cur.display_name.trim() === "Trader"
+        ) {
+          profileByAuthId.set(b.user_id, {
+            display_name: bn,
+            avatar_url: cur?.avatar_url ?? null,
+          });
+        }
+      }
     }
 
     const following: FollowingTraderDto[] = list.map((row) => {

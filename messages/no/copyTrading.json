@@ -14,7 +14,10 @@
     "discoverCta": "Oppdag ledere",
     "settingsAria": "Innstillinger for {name}",
     "maxAlloc": "Maks {amount}",
-    "latency": "{ms} ms forsinkelse"
+    "latency": "{ms} ms forsinkelse",
+    "pnlPercentUnavailable": "–",
+    "fetchErrorTitle": "Kunne ikke hente dine traders",
+    "fetchErrorHint": "Prøv «Oppdater data». Er du innlogget? Hvis du nettopp startet kopiering, last siden på nytt."
   },
   "discover": {
     "title": "Oppdag ledere",
