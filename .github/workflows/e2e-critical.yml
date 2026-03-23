@@ -55,7 +55,8 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
 
-      # Sikrer at GitHub secrets-matcher finnes i Supabase (Admin API). Krever SUPABASE_SERVICE_ROLE_KEY + E2E_USER_*.
+      # E2E-bruker + automatisk copy-leader (local+e2e-copy-leader@domain, samme passord) og leaderboard_bots.
+      # Overstyres med E2E_LEADER_* eller TEST_USER_B_* om satt. E2E_AUTO_COPY_LEADER=0 skrur av auto.
       - name: Provision E2E test user (Supabase Admin)
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}

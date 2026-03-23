@@ -4,7 +4,7 @@
  * Bruk:
  *   node scripts/create-test-users.js                    # alle forhåndsdefinerte brukere
  *   node scripts/create-test-users.js --primary-only   # kun tom@klarpakke.no (rask lokal)
- *   node scripts/create-test-users.js --from-env       # én bruker fra E2E_USER_* / TEST_USER_* (CI)
+ *   node scripts/create-test-users.js --from-env       # E2E_USER_* + automatisk copy-leader (se deriveE2eCopyLeaderEmail)
  *
  * Krever (etter env-lasting, se under):
  *   NEXT_PUBLIC_SUPABASE_URL eller SUPABASE_URL
@@ -17,6 +17,7 @@
 import dotenv from "dotenv";
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
+import { deriveE2eCopyLeaderEmail } from "./e2e-derive-copy-leader-email.mjs";
 
 const REPO_ROOT = process.cwd();
 const ENV_FILES = [
@@ -323,32 +324,53 @@ async function main() {
       process.exit(1);
     }
 
-    const leaderEmail = process.env.E2E_LEADER_EMAIL?.trim();
-    const leaderPassword = process.env.E2E_LEADER_PASSWORD;
-    if (leaderEmail && leaderPassword) {
-      console.log("\n🔄 E2E copy-leader (E2E_LEADER_*) …");
-      const lr = await upsertTestUser({
-        email: leaderEmail,
-        password: leaderPassword,
-        options: {
-          data: {
-            display_name:
-              process.env.E2E_LEADER_DISPLAY_NAME?.trim() || "E2E paper leader",
-          },
-          email_confirm: true,
-        },
-      });
-      if (lr.ok) {
-        const lid = await findUserByEmail(leaderEmail);
-        if (lid) {
-          await ensureLeaderboardBotForUser(
-            lid,
-            process.env.E2E_LEADER_DISPLAY_NAME?.trim() || "E2E paper leader",
-          );
-        }
-      } else {
-        console.warn("⚠️  E2E-leader upsert feilet:", lr.error);
+    const autoLeaderOff =
+      process.env.E2E_AUTO_COPY_LEADER === "0" ||
+      process.env.E2E_AUTO_COPY_LEADER === "false";
+
+    let leaderEmail = process.env.E2E_LEADER_EMAIL?.trim();
+    let leaderPassword = process.env.E2E_LEADER_PASSWORD || password;
+
+    if (!leaderEmail && !autoLeaderOff) {
+      leaderEmail = deriveE2eCopyLeaderEmail(email) ?? undefined;
+      if (leaderEmail) {
+        console.log(
+          `\n📎 Auto copy-leader e-post (ingen ekstra secret): ${leaderEmail}`,
+        );
       }
+    } else if (leaderEmail) {
+      console.log("\n🔄 E2E copy-leader (E2E_LEADER_* / TEST_USER_B) …");
+    }
+
+    if (leaderEmail && leaderPassword) {
+      if (leaderEmail.toLowerCase() === email.trim().toLowerCase()) {
+        console.warn(
+          "⚠️  Leder-e-post er lik E2E-bruker — hopper over leaderboard_bots-seed (kan ikke følge seg selv).",
+        );
+      } else {
+        const leaderDisplay =
+          process.env.E2E_LEADER_DISPLAY_NAME?.trim() || "E2E paper leader";
+        const lr = await upsertTestUser({
+          email: leaderEmail,
+          password: leaderPassword,
+          options: {
+            data: { display_name: leaderDisplay },
+            email_confirm: true,
+          },
+        });
+        if (lr.ok) {
+          const lid = await findUserByEmail(leaderEmail);
+          if (lid) {
+            await ensureLeaderboardBotForUser(lid, leaderDisplay);
+          }
+        } else {
+          console.warn("⚠️  E2E-leader upsert feilet:", lr.error);
+        }
+      }
+    } else if (!autoLeaderOff) {
+      console.warn(
+        "⚠️  Kunne ikke avlede copy-leader e-post (ugyldig E2E-e-post?). Sett E2E_LEADER_EMAIL eller bruk adresse med @ og local-part.",
+      );
     }
 
     console.log(
