@@ -47,7 +47,10 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
     baseURL,
   }) => {
     const apiTimeout = { timeout: 60_000 };
+    /** 401 forventet; 403 kan forekomme ved edge/WAF — begge betyr «ikke innlogget API-tilgang avvist». */
+    const unauthorizedStatuses = [401, 403];
 
+    await waitForDevHealth(playwright, baseURL);
     for (let attempt = 0; attempt < 3; attempt++) {
       if (attempt > 0) {
         await waitForDevHealth(playwright, baseURL);
@@ -62,9 +65,9 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
           anon.get("/api/trading/sessions", apiTimeout),
           anon.get("/api/dashboard/bot-status", apiTimeout),
         ]);
-        expect(modeRes.status()).toBe(401);
-        expect(sessionsRes.status()).toBe(401);
-        expect(botRes.status()).toBe(401);
+        expect(unauthorizedStatuses).toContain(modeRes.status());
+        expect(unauthorizedStatuses).toContain(sessionsRes.status());
+        expect(unauthorizedStatuses).toContain(botRes.status());
         return;
       } catch (e) {
         if (!isTransientRequestError(e) || attempt === 2) throw e;

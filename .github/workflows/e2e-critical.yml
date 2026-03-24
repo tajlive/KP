@@ -52,8 +52,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright
-        run: npx playwright install --with-deps chromium
+      # Playwright 1.58+ bruker chromium_headless_shell for headless; uten den feiler setup med
+      # «Executable doesn't exist … chromium_headless_shell-*/chrome-headless-shell».
+      - name: Install Playwright browsers
+        run: |
+          npx playwright install --with-deps chromium chromium-headless-shell
+          bash -euo pipefail -c '
+            shopt -s nullglob
+            for f in "$HOME"/.cache/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell; do
+              if [[ -x "$f" ]]; then echo "OK headless shell: $f"; exit 0; fi
+            done
+            echo "::error::chromium_headless_shell binary mangler etter install — sjekk Playwright-versjon vs cache"
+            ls -la "$HOME/.cache/ms-playwright" 2>/dev/null || true
+            exit 1
+          '
 
       # E2E-bruker + automatisk copy-leader (local+e2e-copy-leader@domain, samme passord) og leaderboard_bots.
       # Overstyres med E2E_LEADER_* eller TEST_USER_B_* om satt. E2E_AUTO_COPY_LEADER=0 skrur av auto.
