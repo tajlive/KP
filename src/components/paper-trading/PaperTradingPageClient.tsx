@@ -87,7 +87,9 @@ export function PaperTradingPageClient({
             }
           >
             {bannerVariant === "live"
-              ? "🔴 Live — Ekte penger. Handel med omhu."
+              ? locale === "no"
+                ? "Live — ekte penger. Handle med omhu."
+                : "Live — real money. Trade carefully."
               : contextBannerText}
           </p>
         </div>
@@ -95,6 +97,23 @@ export function PaperTradingPageClient({
 
       {showSessionsList ? (
         <main className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="mb-6 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50 p-5 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-[#001339]">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
+              {initialMode === "live"
+                ? locale === "no"
+                  ? "Live arbeidsflate"
+                  : "Live workspace"
+                : locale === "no"
+                  ? "Lekepenger arbeidsflate"
+                  : "Paper trading workspace"}
+            </p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              {t("mySessions")}
+            </h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              {t("workspaceHeader.subtitle")}
+            </p>
+          </div>
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <Link
               href={hrefWithLocale(locale, "/paper-trading")}
@@ -124,10 +143,13 @@ export function PaperTradingPageClient({
       ) : (
         <>
           <div
-            className="border-b border-slate-200/80 dark:border-slate-800 bg-gradient-to-r from-[#0052FF]/[0.06] to-transparent dark:from-[#0052FF]/10 px-4 py-4"
+            className="border-b border-slate-200/80 dark:border-slate-800 bg-gradient-to-r from-[#0052FF]/[0.06] via-white to-transparent dark:from-[#0052FF]/10 dark:via-slate-950 px-4 py-5"
             data-testid="paper-trading-workspace-header"
           >
-            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
+              {locale === "no" ? "Trading workspace" : "Trading workspace"}
+            </p>
+            <p className="text-base font-semibold text-slate-900 dark:text-slate-100 tracking-tight mt-1">
               {t("workspaceHeader.title")}
             </p>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">

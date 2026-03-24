@@ -7,6 +7,7 @@
   "title": "Your results",
   "subtitle": "Realized P&L, daily swings, and breakdown by pair and mode. This page refetches every five minutes and when you return to the tab.",
   "refresh": "Refresh now",
+  "exportCsv": "Export CSV",
   "openHistory": "Trade history",
   "lastUpdated": "Last updated: {time}",
   "notYetLoaded": "Loading data…",
@@ -22,7 +23,7 @@
   "worstDay": "Toughest day: {day} ({amount})",
   "modeTrades": "{count} trades",
   "mode": {
-    "paper": "Practice",
+    "paper": "Paper trading",
     "live": "Live",
     "unknown": "Unknown"
   },
@@ -45,7 +46,7 @@
     "pairsHint": "Pairs with the largest contribution (positive or negative).",
     "pairPnl": "P&L",
     "modeTitle": "By mode",
-    "modeHint": "Paper vs live (or other modes stored on trades)."
+    "modeHint": "Paper trading vs live (or other modes stored on trades)."
   },
   "empty": {
     "needTrades": "You need at least two points for the curve. Place trades or wait for closed positions with P&L.",

@@ -177,9 +177,10 @@ export function PaperTradingList({
     const diffDays = Math.floor(diffMs / 86400000);
     const diffHours = Math.floor(diffMs / 3600000);
 
-    if (diffDays > 0) return `${diffDays}d`;
-    if (diffHours > 0) return `${diffHours}t`;
-    return "Nå";
+    if (diffDays > 0) return locale === "no" ? `${diffDays}d` : `${diffDays}d`;
+    if (diffHours > 0)
+      return locale === "no" ? `${diffHours}t` : `${diffHours}h`;
+    return locale === "no" ? "Nå" : "Now";
   };
 
   const getStatusBadge = (status: string) => {
@@ -247,7 +248,7 @@ export function PaperTradingList({
       </Card>
 
       {/* Sidetittel + oppdater + info om Binance */}
-      <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-4 dark:border-slate-800/80 dark:bg-slate-900/60">
         <div>
           <h2
             className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate"
@@ -287,7 +288,7 @@ export function PaperTradingList({
         )}
       </div>
       <p
-        className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1"
+        className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 -mt-3"
         title={t("binanceUpdateInfo")}
       >
         <Info className="w-3.5 h-3.5 shrink-0" aria-hidden />
@@ -451,6 +452,9 @@ export function PaperTradingList({
                       >
                         {isProfitable ? "+" : ""}
                         {pnlPercent.toFixed(1)}%
+                      </p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                        {t("trades")}: {session.total_trades}
                       </p>
                     </div>
                     <ArrowRight
