@@ -9,6 +9,11 @@ import {
   Clock,
 } from "lucide-react";
 import { BRAND, SURFACE, SHADOW, RADIUS } from "@/lib/design/tokens";
+import {
+  PremiumPanel,
+  PremiumTradingHero,
+  PremiumTradingShell,
+} from "@/components/trading/PremiumTradingLayout";
 
 interface Trade {
   id: string;
@@ -149,7 +154,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
   const pnlPercent = totalVolume > 0 ? (totalPnl / totalVolume) * 100 : 0;
 
   return (
-    <div className="space-y-6">
+    <PremiumTradingShell>
       <Link
         href={`/${locale}/dashboard`}
         className={`inline-flex items-center gap-1.5 text-sm font-medium ${BRAND.link}`}
@@ -158,32 +163,20 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         {no ? "Tilbake" : "Back"}
       </Link>
 
-      <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50 p-5 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-[#001339]">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
-          {no ? "Bot-detaljer" : "Bot details"}
-        </p>
-        <h1 className="text-2xl font-bold text-[#1A1D26] dark:text-white">
-          {session.name ?? "Trading Bot"}
-        </h1>
-        <p className="text-sm text-[#8E95A9] dark:text-slate-400 mt-1">
-          {session.mode === "paper"
-            ? no
-              ? "Lekepenger"
-              : "Paper trading"
-            : no
-              ? "Live trading"
-              : "Live trading"}
-          {" · "}
-          {no ? "Startet" : "Started"}{" "}
-          {new Date(session.created_at).toLocaleDateString(
-            locale === "no" ? "nb-NO" : "en-US",
-            { day: "numeric", month: "short", year: "numeric" },
-          )}
-        </p>
-      </div>
+      <PremiumTradingHero
+        eyebrow={no ? "Bot-detaljer" : "Bot details"}
+        title={session.name ?? "Trading Bot"}
+        subtitle={`${session.mode === "paper" ? (no ? "Lekepenger" : "Paper trading") : "Live trading"} · ${no ? "Startet" : "Started"} ${new Date(
+          session.created_at,
+        ).toLocaleDateString(locale === "no" ? "nb-NO" : "en-US", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })}`}
+      />
 
       {session.status === "active" && trades.length === 0 && (
-        <div className={cardBase}>
+        <PremiumPanel>
           <p className="text-sm font-semibold text-[#1A1D26] dark:text-white">
             {no
               ? "Boten er aktiv, men venter på signal"
@@ -202,7 +195,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
               {no ? "Åpne handelshistorikk" : "Open trade history"} →
             </Link>
           </div>
-        </div>
+        </PremiumPanel>
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -291,7 +284,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         </div>
       </div>
 
-      <div className={cardBase}>
+      <PremiumPanel>
         <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-3">
           {no ? "Equity graf" : "Equity chart"}
         </h2>
@@ -309,9 +302,9 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
             </p>
           </div>
         </div>
-      </div>
+      </PremiumPanel>
 
-      <div className={cardBase}>
+      <PremiumPanel>
         <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
           {no ? "Handelshistorikk" : "Trade history"}
         </h2>
@@ -417,9 +410,9 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
             </table>
           </div>
         )}
-      </div>
+      </PremiumPanel>
 
-      <div className={cardBase}>
+      <PremiumPanel>
         <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
           {no ? "Strategiinfo" : "Strategy info"}
         </h2>
@@ -469,7 +462,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
             </dd>
           </div>
         </dl>
-      </div>
-    </div>
+      </PremiumPanel>
+    </PremiumTradingShell>
   );
 }
