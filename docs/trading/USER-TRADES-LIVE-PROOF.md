@@ -4,12 +4,12 @@ Denne guiden beskriver **hvor** du ser egne trades i appen, **hvordan** live opp
 
 ## 1. Hvor i appen (full oversikt)
 
-| Hva du vil se                                   | Hvor                                                                                           | Live oppdatering                                                            |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Alle dine handler** (paper + live, siste 200) | `/{locale}/handelshistorikk` — filter **Alle** / **Kun live** / **Kun papir**                  | **Ja** — siden poller hvert **20. sekund** når fanen er synlig (mars 2026). |
-| **Siste handler** (paper + live sammen)         | Handel-siden med **UnifiedTradingDashboard** (f.eks. `/no/paper-trading` med dashboard-widget) | **Ja** — `subscribeToTrades(null, userId, …)` (Realtime på `trades`).       |
-| **Kun én paper-sesjon**                         | `/no/paper-trading/{session_id}`                                                               | Realtime på `trades` filtrert `session_id`.                                 |
-| **Hoveddashboard**                              | `/no/dashboard` — portefølje-kort                                                              | Siste handler (begrenset antall, serverhentet).                             |
+| Hva du vil se                                   | Hvor                                                                                           | Live oppdatering                                                                                 |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Alle dine handler** (paper + live, siste 200) | `/{locale}/handelshistorikk` — filter **Alle** / **Kun live** / **Kun papir**                  | **Ja** — siden poller når fanen er synlig (`TRADING_INTEGRITY_SYNC.tradesPollIntervalMs`, ~28s). |
+| **Siste handler** (paper + live sammen)         | Handel-siden med **UnifiedTradingDashboard** (f.eks. `/no/paper-trading` med dashboard-widget) | **Ja** — `subscribeToTrades(null, userId, …)` (Realtime på `trades`).                            |
+| **Kun én paper-sesjon**                         | `/no/paper-trading/{session_id}`                                                               | Realtime på `trades` filtrert `session_id`.                                                      |
+| **Hoveddashboard**                              | `/no/dashboard` — portefølje-kort                                                              | Siste handler (begrenset antall, serverhentet).                                                  |
 
 **Live handler** lagres i `public.trades` med `mode = 'live'` etter vellykket kjøring — se `execute-live-trade.ts` (status `filled`, `executed_at`, `binance_order_id` når satt).
 
@@ -61,7 +61,7 @@ WHERE user_id = 'DIN_USER_UUID'::uuid AND mode = 'live';
 ### C) UI-bevis (manuelt)
 
 1. Logg inn → **Handelshistorikk** → filter **Kun live**.
-2. Vent inntil **20 s** etter en ny live trade (eller bytt fane frem/tilbake) — listen skal oppdatere uten full refresh.
+2. Vent inntil **~30 s** etter en ny live trade (eller bytt fane frem/tilbake) — listen skal oppdatere uten full refresh.
 3. Sammenlign **siste rad** med SQL-spørringen over (`id` eller `created_at`).
 
 ## 4. Vanlige avvik

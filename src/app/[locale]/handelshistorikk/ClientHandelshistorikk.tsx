@@ -9,6 +9,8 @@ import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregat
 import { explainStrategySignalJson } from "@/lib/bot-status-helpers";
 import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 import type { Json } from "@/types/supabase-generated";
+import { reportTradingIntegrityPollFailure } from "@/lib/sentry";
+import { tradesPollIntervalAfterFailures } from "@/lib/trading/trading-integrity-sync";
 
 interface Trade {
   id: string;
@@ -39,8 +41,6 @@ interface TradeDecisionRow {
 
 type ModeFilter = "all" | "paper" | "live";
 
-const POLL_MS = 20_000;
-
 function parseStrategySignal(raw: Json | null): Record<string, unknown> | null {
   if (raw === null || raw === undefined) return null;
   if (typeof raw === "object" && !Array.isArray(raw)) {
@@ -57,6 +57,12 @@ export default function ClientHandelshistorikk() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<ModeFilter>("all");
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [integrityPollWarning, setIntegrityPollWarning] = useState(false);
+  const [pollCycleFailures, setPollCycleFailures] = useState(0);
+  const pollIntervalMs = useMemo(
+    () => tradesPollIntervalAfterFailures(pollCycleFailures),
+    [pollCycleFailures],
+  );
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
   const formatRejectionReason = useCallback(
@@ -133,11 +139,19 @@ export default function ClientHandelshistorikk() {
 
       if (tradesRes.error) {
         console.error("handelshistorikk fetch error:", tradesRes.error);
-        setFetchError(tradesRes.error.message || t("fetchError"));
-        setTrades([]);
+        if (silent) {
+          setIntegrityPollWarning(true);
+          setPollCycleFailures((f) => f + 1);
+          reportTradingIntegrityPollFailure({ surface: "trade_history" });
+        } else {
+          setFetchError(tradesRes.error.message || t("fetchError"));
+          setTrades([]);
+        }
       } else {
         const rows = (tradesRes.data as Trade[]) ?? [];
         setTrades(rows);
+        setIntegrityPollWarning(false);
+        setPollCycleFailures(0);
       }
 
       if (decisionsRes.error) {
@@ -179,9 +193,9 @@ export default function ClientHandelshistorikk() {
     const id = setInterval(() => {
       if (typeof document !== "undefined" && document.hidden) return;
       void fetchTrades(true);
-    }, POLL_MS);
+    }, pollIntervalMs);
     return () => clearInterval(id);
-  }, [fetchTrades]);
+  }, [fetchTrades, pollIntervalMs]);
 
   const filteredTrades = useMemo(
     () =>
@@ -312,6 +326,16 @@ export default function ClientHandelshistorikk() {
             </div>
           )}
         </div>
+
+        {signedIn && integrityPollWarning && !fetchError && (
+          <p
+            className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950"
+            role="status"
+            data-testid="trade-history-integrity-poll-warning"
+          >
+            {t("integrityPollWarning")}
+          </p>
+        )}
 
         {signedIn && !loading && !fetchError && (
           <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 space-y-3">

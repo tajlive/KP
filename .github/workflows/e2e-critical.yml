@@ -84,6 +84,8 @@ jobs:
         run: npm run test:e2e:critical:chromium
         env:
           BASE_URL: ${{ vars.BASE_URL || 'https://www.klarpakke.no' }}
+          # Sett til 1 i repo Variables når integrity-sync-knappen er i prod — da feiler testen hvis knappen mangler.
+          E2E_REQUIRE_INTEGRITY_SYNC: ${{ vars.E2E_REQUIRE_INTEGRITY_SYNC || '0' }}
           # Én kilde per nøkkel (duplikate YAML-nøkler kan gi workflow-feil uten jobs).
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

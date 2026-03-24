@@ -34,6 +34,7 @@
   "noRealizedPnl": "Uten realisert P&L",
   "noRealizedPnlShort": "—",
   "noRealizedPnlExplainer": "Ofte kjøp/salg uten at systemet har lagret lukket gevinst/tap på denne raden.",
+  "integrityPollWarning": "Automatisk synk feilet midlertidig. Listen kan være utdatert — oppdater siden eller prøv igjen om litt.",
   "fetchError": "Kunne ikke laste handler. Sjekk nettverk og prøv igjen.",
   "notLoggedIn": "Du er ikke innlogget. Logg inn for å se dine handler.",
   "retry": "Prøv igjen",

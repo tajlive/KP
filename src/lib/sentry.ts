@@ -59,6 +59,61 @@ export function logMessage(
   });
 }
 
+/** Throttle: unngå Sentry-støy ved gjentatte poll-feil (hvert ~28s). */
+let lastTradingIntegrityPollFailureAt = 0;
+const TRADING_INTEGRITY_POLL_FAILURE_THROTTLE_MS = 5 * 60 * 1000;
+
+/**
+ * Dashboard / handelshistorikk: når `getRecentTrades`-poll feiler (Realtime stille, nettverk, RLS).
+ * Breadcrumb hver gang (i prod); `captureMessage` maks én gang per 5 min per nettleser-kontekst.
+ */
+export function reportTradingIntegrityPollFailure(
+  context?: Record<string, unknown>,
+) {
+  if (process.env.NODE_ENV !== "production") return;
+  try {
+    Sentry.addBreadcrumb({
+      category: "trading_integrity",
+      message: "trades_poll_failed",
+      level: "warning",
+      data: context,
+    });
+    const now = Date.now();
+    if (
+      now - lastTradingIntegrityPollFailureAt <
+      TRADING_INTEGRITY_POLL_FAILURE_THROTTLE_MS
+    ) {
+      return;
+    }
+    lastTradingIntegrityPollFailureAt = now;
+    const surface =
+      typeof context?.surface === "string" ? context.surface : "unknown";
+    logMessage(
+      `Trading integrity: trades poll failed (${surface})`,
+      "warning",
+      {
+        ...context,
+      },
+    );
+  } catch {
+    /* Sentry ikke tilgjengelig */
+  }
+}
+
+/** Bruker trykket manuell synk på dashboard (observabilitet, ikke PII). */
+export function reportTradingIntegrityManualSync() {
+  if (process.env.NODE_ENV !== "production") return;
+  try {
+    Sentry.addBreadcrumb({
+      category: "trading_integrity",
+      message: "manual_dashboard_sync",
+      level: "info",
+    });
+  } catch {
+    /* noop */
+  }
+}
+
 /**
  * Set user context for Sentry
  */
