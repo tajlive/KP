@@ -269,6 +269,11 @@ Deno.serve(async (req) => {
       if (healthErr) console.warn("bot_health upsert:", healthErr.message);
     };
 
+    // Tidlig heartbeat: cron/timeout kan stoppe kjøring før siste upsert — da er feed fortsatt «fersk» nok til diagnose.
+    await upsertHealth("warning", "Signal engine run started", {
+      phase: "start",
+    });
+
     // Støtter både cron-kall (uten body) og strategy-runner-kall (med strategy/user_id)
     let bodyStrategy: string | null = null;
     let bodyUserId: string | null = null;
