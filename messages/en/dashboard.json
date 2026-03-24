@@ -110,7 +110,9 @@
     "noTrades": "No trades yet",
     "seeAll": "See all",
     "modeLabel": "Mode",
-    "livePricesHeading": "Live quotes"
+    "livePricesHeading": "Live quotes",
+    "integrityPollWarning": "Background trade sync failed (network or temporary error). Realtime may still update — tap refresh or open trade history.",
+    "integritySyncAria": "Refresh balance, session and trades from server"
   },
   "tierLabels": {
     "student": "Student",

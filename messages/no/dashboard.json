@@ -117,7 +117,9 @@
     "noTrades": "Ingen handler ennå",
     "seeAll": "Se alle",
     "modeLabel": "Modus",
-    "livePricesHeading": "Live priser"
+    "livePricesHeading": "Live priser",
+    "integrityPollWarning": "Bakgrunnssynk av handler feilet (nettverk eller midlertidig feil). Sanntidsoppdateringer kan fortsatt fungere — trykk oppdater eller sjekk handelshistorikk.",
+    "integritySyncAria": "Oppdater saldo, sesjon og handler fra server"
   },
   "tierLabels": {
     "student": "Student",

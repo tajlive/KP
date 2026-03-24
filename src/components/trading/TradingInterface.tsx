@@ -147,8 +147,8 @@ export function TradingInterface({
       }
       setAmount("");
       setTimeout(() => setShowConfetti(false), 3000);
+      router.refresh();
       if (data.session_id) {
-        router.refresh();
         router.push(`/${locale}/paper-trading/${data.session_id}`);
       }
     } catch (err) {

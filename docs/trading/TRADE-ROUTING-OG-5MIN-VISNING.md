@@ -31,11 +31,11 @@ Ingen av disse blokkert av pathname-matcher for `api` (middleware matcher eksklu
 
 ## 3. Vise handler — tidsintervall
 
-| Flate                                    | Mekanisme                                   | Intervall                                                 | Bevis i kode                                                                      |
-| ---------------------------------------- | ------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| **Resultater** (`/dashboard/resultater`) | `fetch` → `GET /api/user/trading-analytics` | **5 minutter** + ved synlig fane                          | `REFRESH_MS = 5 * 60 * 1000` + `visibilitychange` i `TradingResultsDashboard.tsx` |
-| **Handelshistorikk**                     | Supabase `.from('trades').select(...)`      | **20 sekunder** når fanen er synlig (strengere enn 5 min) | `POLL_MS = 20_000` + `document.hidden`-sjekk i `ClientHandelshistorikk.tsx`       |
-| **Dashboard** (siste handler)            | Supabase Realtime `INSERT` på `trades`      | **Umiddelbart** ved ny rad                                | `PortfolioDashboard.tsx` — channel `dashboard-trades-${userId}`                   |
+| Flate                                    | Mekanisme                                   | Intervall                                           | Bevis i kode                                                                                           |
+| ---------------------------------------- | ------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Resultater** (`/dashboard/resultater`) | `fetch` → `GET /api/user/trading-analytics` | **5 minutter** + ved synlig fane                    | `REFRESH_MS = 5 * 60 * 1000` + `visibilitychange` i `TradingResultsDashboard.tsx`                      |
+| **Handelshistorikk**                     | Supabase `.from('trades').select(...)`      | **~28 s** når fanen er synlig (strengere enn 5 min) | `TRADING_INTEGRITY_SYNC.tradesPollIntervalMs` + `document.hidden`-sjekk i `ClientHandelshistorikk.tsx` |
+| **Dashboard** (siste handler)            | Supabase Realtime `INSERT` på `trades`      | **Umiddelbart** ved ny rad                          | `PortfolioDashboard.tsx` — channel `dashboard-trades-${userId}`                                        |
 
 **Konklusjon for kravet «vises hvert 5 minutt»:** Resultatsiden oppfyller det **eksakt**. Handelshistorikk og dashboard oppdaterer **ofte** (20 s / realtime), så brukeren ser endringer **innen** 5 minutter og vanligvis langt raskere.
 

@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/utils";
 import { TradingMode } from "@/types/trading";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // Matches actual DB: trading_sessions table columns:
@@ -117,10 +118,16 @@ function normalizeSession(s: Record<string, unknown>): TradingSession {
   } as TradingSession;
 }
 
+/**
+ * Unified trading state (paper/live) via REST + Supabase.
+ * **Aktiv UI:** `UnifiedTradingDashboard` bruker egen dataflyt; denne hooken er klar for
+ * konsolidert gjenbruk og matcher `/api/trading/*` + `trades`-tabellen.
+ */
 export function useUnifiedTrading(
   symbol: string = DEFAULT_SYMBOL,
 ): UnifiedTradingState {
   const { user } = useAuth();
+  const router = useRouter();
   const supabase = createClient();
 
   const [mode, setModeState] = useState<TradingMode>("paper");
@@ -280,6 +287,11 @@ export function useUnifiedTrading(
         const normalized = normalizeSession(data.session);
         setSession(normalized);
         await refreshSessions();
+        try {
+          router.refresh();
+        } catch {
+          /* noop */
+        }
         return normalized;
       } catch (err) {
         setError(
@@ -290,7 +302,7 @@ export function useUnifiedTrading(
         setIsLoading(false);
       }
     },
-    [refreshSessions],
+    [refreshSessions, router],
   );
 
   // Execute trade
@@ -327,6 +339,11 @@ export function useUnifiedTrading(
         }
 
         await Promise.all([refreshTrades(), refreshSessions()]);
+        try {
+          router.refresh();
+        } catch {
+          /* noop */
+        }
 
         return {
           success: true,
@@ -341,7 +358,7 @@ export function useUnifiedTrading(
         setIsLoading(false);
       }
     },
-    [session, symbol, refreshTrades, refreshSessions],
+    [session, symbol, refreshTrades, refreshSessions, router],
   );
 
   // Session controls
@@ -365,6 +382,11 @@ export function useUnifiedTrading(
         const data = await res.json();
         setSession(normalizeSession(data.session));
         await refreshSessions();
+        try {
+          router.refresh();
+        } catch {
+          /* noop */
+        }
         return true;
       } catch (err) {
         setError(err instanceof Error ? err.message : "Session update failed");
@@ -373,7 +395,7 @@ export function useUnifiedTrading(
         setIsLoading(false);
       }
     },
-    [session, refreshSessions],
+    [session, refreshSessions, router],
   );
 
   const pauseSession = useCallback(

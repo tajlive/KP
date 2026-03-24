@@ -34,6 +34,7 @@
   "noRealizedPnl": "No realized P&L",
   "noRealizedPnlShort": "—",
   "noRealizedPnlExplainer": "Often buy/sell rows where closed profit/loss is not stored on this row yet.",
+  "integrityPollWarning": "Automatic sync failed temporarily. The list may be outdated — refresh the page or try again shortly.",
   "fetchError": "Could not load trades. Check your connection and try again.",
   "notLoggedIn": "You are not signed in. Sign in to see your trades.",
   "retry": "Retry",

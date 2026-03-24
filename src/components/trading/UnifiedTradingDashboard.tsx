@@ -21,6 +21,7 @@ import {
   type TradingMode,
   type UserStrategy,
 } from "@/lib/trading-api";
+import { TRADING_INTEGRITY_SYNC } from "@/lib/trading/trading-integrity-sync";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import {
@@ -272,6 +273,62 @@ export default function UnifiedTradingDashboard({
       unsubscribe();
     };
   }, [userId, schedulePortfolioSyncAfterTrade]);
+
+  /** Poll + visibility: sikrer at handler og sesjons-PnL ikke «fryser» når Realtime mangler. */
+  useEffect(() => {
+    if (!userId) return;
+    let iv: ReturnType<typeof setInterval> | null = null;
+
+    const poll = async () => {
+      if (
+        typeof document !== "undefined" &&
+        document.visibilityState === "hidden"
+      ) {
+        return;
+      }
+      try {
+        const rows = await getRecentTrades({ limit: 50 });
+        setTrades(rows);
+        const m = modeRef.current;
+        const [port, active] = await Promise.all([
+          getPortfolio(m),
+          getActiveStrategies(m),
+        ]);
+        setPortfolio(port);
+        setActiveStrategies(active);
+      } catch (e) {
+        console.error("[UnifiedTradingDashboard] integrity poll:", e);
+      }
+    };
+
+    const start = () => {
+      if (iv) clearInterval(iv);
+      void poll();
+      iv = setInterval(
+        () => void poll(),
+        TRADING_INTEGRITY_SYNC.tradesPollIntervalMs,
+      );
+    };
+
+    const stop = () => {
+      if (iv) {
+        clearInterval(iv);
+        iv = null;
+      }
+    };
+
+    const onVis = () => {
+      if (document.visibilityState === "visible") start();
+      else stop();
+    };
+
+    start();
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      stop();
+    };
+  }, [userId]);
 
   const handleStartStrategy = async (strategyType: StrategyType) => {
     try {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Bot,
@@ -13,17 +13,20 @@ import {
   TrendingUp,
   Activity,
   Shield,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CARD, BRAND } from "@/lib/design/tokens";
 import { MARKET_DESK } from "@/lib/design/market-desk";
 import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
+import { useDashboardTradingIntegritySync } from "@/lib/hooks/useDashboardTradingIntegritySync";
 import { subscribeToTrades, type Trade as ApiTrade } from "@/lib/trading-api";
 import ReverseTrial from "./ReverseTrial";
 import { StreakBadge } from "./StreakBadge";
 import { winRateFromRealizedTrades } from "@/lib/trading/win-rate-from-trades";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { reportTradingIntegrityManualSync } from "@/lib/sentry";
 
 /** Code-split: PremiumSignalRow + framer-motion + signal-fetch */
 function MarketDeskSignalSkeleton() {
@@ -232,6 +235,28 @@ export default function PortfolioDashboard({
     });
   }, [userId]);
 
+  const applyTradesSnapshot = useCallback((rows: ApiTrade[]) => {
+    setLiveTrades(rows.map(apiTradeToDashboardTrade));
+  }, []);
+
+  const { refreshTradesNow, refreshServerProps, tradesPollFailed } =
+    useDashboardTradingIntegritySync({
+      userId,
+      onTradesSnapshot: applyTradesSnapshot,
+    });
+
+  const [manualIntegritySync, setManualIntegritySync] = useState(false);
+  const runManualIntegritySync = async () => {
+    reportTradingIntegrityManualSync();
+    setManualIntegritySync(true);
+    try {
+      await refreshTradesNow();
+      refreshServerProps();
+    } finally {
+      setManualIntegritySync(false);
+    }
+  };
+
   const displayTrades = liveTrades;
 
   const [pnlPeriod, setPnlPeriod] = useState<PnlPeriod>("all");
@@ -357,7 +382,7 @@ export default function PortfolioDashboard({
       : periodTrades.length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="dashboard-root">
       <ReverseTrial
         trialEndsAt={trialEndsAt ?? null}
         tier={tier}
@@ -734,8 +759,17 @@ export default function PortfolioDashboard({
             </div>
 
             <div className={MARKET_DESK.innerCard}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+              {tradesPollFailed && (
+                <p
+                  className="mb-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[12px] leading-snug text-amber-100/90"
+                  role="status"
+                  data-testid="dashboard-integrity-poll-warning"
+                >
+                  {t("marketDesk.integrityPollWarning")}
+                </p>
+              )}
+              <div className="flex items-center justify-between mb-4 gap-2">
+                <div className="flex items-center gap-2 min-w-0 flex-wrap">
                   <h3 className="text-base font-semibold text-slate-100 tracking-tight">
                     {t("marketDesk.recentTrades")}
                   </h3>
@@ -746,12 +780,33 @@ export default function PortfolioDashboard({
                     </span>
                   )}
                 </div>
-                <Link
-                  href={hrefWithLocale(locale, "/handelshistorikk")}
-                  className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
-                >
-                  {t("marketDesk.seeAll")}
-                </Link>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    data-testid="dashboard-integrity-sync"
+                    onClick={() => void runManualIntegritySync()}
+                    disabled={manualIntegritySync}
+                    className={cn(
+                      "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition-colors hover:border-indigo-500/35 hover:bg-indigo-500/10 hover:text-white disabled:opacity-50",
+                    )}
+                    aria-label={t("marketDesk.integritySyncAria")}
+                    title={t("marketDesk.integritySyncAria")}
+                  >
+                    <RefreshCw
+                      className={cn(
+                        "h-4 w-4",
+                        manualIntegritySync && "animate-spin",
+                      )}
+                      aria-hidden
+                    />
+                  </button>
+                  <Link
+                    href={hrefWithLocale(locale, "/handelshistorikk")}
+                    className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
+                  >
+                    {t("marketDesk.seeAll")}
+                  </Link>
+                </div>
               </div>
               {recentTrades.length === 0 ? (
                 <div className="py-8 text-center">

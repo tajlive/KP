@@ -10,6 +10,8 @@ const dashboardT: Record<string, string> = {
   "marketDesk.subtitle": "Undertekst",
   "marketDesk.myPositions": "Mine posisjoner",
   "marketDesk.recentTrades": "Siste handler",
+  "marketDesk.integritySyncAria": "Oppdater",
+  "marketDesk.integrityPollWarning": "Synk-feil",
   "marketDesk.noPositions": "Ingen posisjoner",
   "marketDesk.noTrades": "Ingen handler",
   "marketDesk.seeAll": "Se alle",
@@ -59,6 +61,15 @@ vi.mock("@/components/dashboard/DashboardSignalPreview", () => ({
 
 vi.mock("@/lib/trading-api", () => ({
   subscribeToTrades: () => () => {},
+  getRecentTrades: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock("@/lib/hooks/useDashboardTradingIntegritySync", () => ({
+  useDashboardTradingIntegritySync: () => ({
+    refreshTradesNow: vi.fn().mockResolvedValue(undefined),
+    refreshServerProps: vi.fn(),
+    tradesPollFailed: false,
+  }),
 }));
 
 describe("PortfolioDashboard", () => {
