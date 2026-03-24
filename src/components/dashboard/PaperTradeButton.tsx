@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { ArrowUp, ArrowDown, DollarSign } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Props {
   symbol: string;
@@ -23,6 +23,9 @@ interface Props {
 
 export function PaperTradeButton({ symbol, currentPrice }: Props) {
   const router = useRouter();
+  const locale = useLocale();
+  const isNo = locale === "no";
+  const tReject = useTranslations("tradeHistory.rejectReason");
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,17 +57,45 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
     setOpen(true);
   };
 
+  const mapRejectionReason = (code: unknown): string | null => {
+    if (typeof code !== "string" || !code) return null;
+    const known = [
+      "NO_RISK_PROFILE",
+      "BOT_NOT_HEALTHY",
+      "LIVE_NOT_ALLOWED",
+      "POSITION_LIMIT_EXCEEDED",
+      "EXPOSURE_LIMIT_EXCEEDED",
+      "DAILY_LOSS_LIMIT_EXCEEDED",
+      "DAILY_LOSS_CHECK_FAILED",
+      "PAIR_NOT_ALLOWED",
+      "LEVERAGE_NOT_ALLOWED",
+      "INSUFFICIENT_BALANCE",
+      "SESSION_NOT_ACTIVE",
+      "INVALID_TRADING_MODE",
+    ];
+    if (known.includes(code)) return tReject(code as never);
+    return code;
+  };
+
   const executeTrade = async (side: "buy" | "sell") => {
     const qty = parseFloat(quantity);
     if (!qty || qty <= 0) {
-      toast.error("Vennligst angi en gyldig mengde");
+      toast.error(
+        isNo
+          ? "Vennligst angi en gyldig mengde"
+          : "Please enter a valid amount",
+      );
       return;
     }
 
     const totalValue = qty * currentPrice;
 
     if (side === "buy" && balance !== null && totalValue > balance) {
-      toast.error("Ikke nok saldo for denne handelen");
+      toast.error(
+        isNo
+          ? "Ikke nok saldo for denne handelen"
+          : "Insufficient balance for this trade",
+      );
       return;
     }
 
@@ -91,18 +122,24 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Handel feilet");
+        throw new Error(
+          mapRejectionReason(data?.rejectionReason) ??
+            data.error ??
+            (isNo ? "Handel feilet" : "Trade failed"),
+        );
       }
       if (!data.success) {
         throw new Error(
-          data.error || data.rejectionReason || "Handel ble avvist",
+          mapRejectionReason(data?.rejectionReason) ??
+            data.error ??
+            (isNo ? "Handel ble avvist" : "Trade was rejected"),
         );
       }
 
       toast.success(
-        `${side === "buy" ? "Kjøpt" : "Solgt"} ${qty} ${symbol} for kr ${totalValue.toLocaleString("nb-NO", { minimumFractionDigits: 2 })}`,
+        `${side === "buy" ? (isNo ? "Kjøpt" : "Bought") : isNo ? "Solgt" : "Sold"} ${qty} ${symbol} ${isNo ? "for kr" : "for NOK"} ${totalValue.toLocaleString(isNo ? "nb-NO" : "en-US", { minimumFractionDigits: 2 })}`,
         {
-          description: `Ny saldo: kr ${data.new_balance.toLocaleString("nb-NO", { minimumFractionDigits: 2 })}`,
+          description: `${isNo ? "Ny saldo" : "New balance"}: ${isNo ? "kr" : "NOK"} ${data.new_balance.toLocaleString(isNo ? "nb-NO" : "en-US", { minimumFractionDigits: 2 })}`,
         },
       );
 
@@ -110,7 +147,10 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
       setOpen(false);
       setQuantity("");
     } catch (error: unknown) {
-      toast.error((error as Error).message || "Kunne ikke utføre handel");
+      toast.error(
+        (error as Error).message ||
+          (isNo ? "Kunne ikke utføre handel" : "Could not execute trade"),
+      );
     } finally {
       setLoading(false);
     }
@@ -126,21 +166,23 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           onClick={handleOpen}
           className="bg-teal-600 hover:bg-teal-700 text-white font-medium"
         >
-          Paper Trade
+          {isNo ? "Lekepenger-handel" : "Paper trade"}
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-slate-900 border-slate-800 text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-teal-500" />
-            Paper Trade: {symbol}
+            {isNo ? "Lekepenger-handel" : "Paper trade"}: {symbol}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Price Info */}
           <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
-            <span className="text-slate-400">Gjeldende pris</span>
+            <span className="text-slate-400">
+              {isNo ? "Gjeldende pris" : "Current price"}
+            </span>
             <span className="text-xl font-semibold text-white">
               kr{" "}
               {currentPrice.toLocaleString("nb-NO", {
@@ -152,7 +194,9 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           {/* Balance Info */}
           {balance !== null && (
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400">Tilgjengelig saldo</span>
+              <span className="text-slate-400">
+                {isNo ? "Tilgjengelig saldo" : "Available balance"}
+              </span>
               <span className="text-slate-300">
                 kr{" "}
                 {balance.toLocaleString("nb-NO", { minimumFractionDigits: 2 })}
@@ -163,7 +207,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           {/* Quantity Input */}
           <div className="space-y-2">
             <Label htmlFor="quantity" className="text-slate-300">
-              Mengde
+              {isNo ? "Mengde" : "Quantity"}
             </Label>
             <Input
               id="quantity"
@@ -180,7 +224,9 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           {/* Total Value */}
           {totalValue > 0 && (
             <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
-              <span className="text-slate-400">Total verdi</span>
+              <span className="text-slate-400">
+                {isNo ? "Total verdi" : "Total value"}
+              </span>
               <span className="text-lg font-semibold text-white">
                 kr{" "}
                 {totalValue.toLocaleString("nb-NO", {
@@ -198,7 +244,13 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
               className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowUp className="w-4 h-4 mr-2" />
-              {loading ? "Kjøper..." : "Kjøp"}
+              {loading
+                ? isNo
+                  ? "Kjøper..."
+                  : "Buying..."
+                : isNo
+                  ? "Kjøp"
+                  : "Buy"}
             </Button>
             <Button
               onClick={() => executeTrade("sell")}
@@ -206,7 +258,13 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
               className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowDown className="w-4 h-4 mr-2" />
-              {loading ? "Selger..." : "Selg"}
+              {loading
+                ? isNo
+                  ? "Selger..."
+                  : "Selling..."
+                : isNo
+                  ? "Selg"
+                  : "Sell"}
             </Button>
           </div>
         </div>

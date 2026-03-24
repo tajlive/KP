@@ -15,9 +15,9 @@
   },
   "paperBot": {
     "startedTitle": "Papir-bot er startet",
-    "startedDesc": "Startkapital er satt. Ingen ordre er kjøpt ennå — handler vises i handelshistorikk når de utføres.",
+    "startedDesc": "Startkapital er satt. Ingen ordre er plassert ennå. Følg bot-status på botsiden, og se utførte handler i handelshistorikk.",
     "alreadyActiveTitle": "Papir-bot kjører allerede",
-    "alreadyActiveDesc": "Du har en aktiv økt. Ingen ny handel ble opprettet nå.",
+    "alreadyActiveDesc": "Du har allerede en aktiv økt. Vi opprettet ikke en ny. Åpne bot-siden for status og handelshistorikk for utførte handler.",
     "startFailedTitle": "Kunne ikke starte papir-bot",
     "networkError": "Nettverksfeil — prøv igjen."
   }

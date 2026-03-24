@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { BRAND } from "@/lib/design/tokens";
+import { toast } from "sonner";
 
 interface FirstTradeCardProps {
   userId: string;
@@ -15,12 +17,33 @@ export default function FirstTradeCard({
   hasTrades,
 }: FirstTradeCardProps) {
   const router = useRouter();
+  const tReject = useTranslations("tradeHistory.rejectReason");
   const [loading, setLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [completed, setCompleted] = useState(false);
   const no = locale === "no";
 
   if (hasTrades) return null;
+
+  const mapRejectionReason = (code: unknown): string | null => {
+    if (typeof code !== "string" || !code) return null;
+    const known = [
+      "NO_RISK_PROFILE",
+      "BOT_NOT_HEALTHY",
+      "LIVE_NOT_ALLOWED",
+      "POSITION_LIMIT_EXCEEDED",
+      "EXPOSURE_LIMIT_EXCEEDED",
+      "DAILY_LOSS_LIMIT_EXCEEDED",
+      "DAILY_LOSS_CHECK_FAILED",
+      "PAIR_NOT_ALLOWED",
+      "LEVERAGE_NOT_ALLOWED",
+      "INSUFFICIENT_BALANCE",
+      "SESSION_NOT_ACTIVE",
+      "INVALID_TRADING_MODE",
+    ];
+    if (known.includes(code)) return tReject(code as never);
+    return code;
+  };
 
   const handleFirstTrade = async () => {
     setLoading(true);
@@ -37,6 +60,14 @@ export default function FirstTradeCard({
       const data = await res.json();
       if (!res.ok || !data.success) {
         console.error("First trade failed:", data);
+        toast.error(
+          no ? "Kunne ikke utføre handel" : "Could not execute trade",
+          {
+            description:
+              mapRejectionReason(data?.rejectionReason) ??
+              (typeof data?.error === "string" ? data.error : undefined),
+          },
+        );
         return;
       }
       router.refresh();

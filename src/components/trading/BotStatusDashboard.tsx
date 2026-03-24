@@ -427,7 +427,11 @@ export default function BotStatusDashboard({
                       </h4>
                       <p className="text-xs text-slate-500 tracking-wide uppercase">
                         {s.trading_pair} •{" "}
-                        {s.mode === "paper" ? "PAPER" : "LIVE"}
+                        {s.mode === "paper"
+                          ? lang === "en"
+                            ? "PAPER"
+                            : "LEKEPENGER"
+                          : "LIVE"}
                       </p>
                     </div>
                   </div>
@@ -693,7 +697,9 @@ export default function BotStatusDashboard({
                 <div className="font-bold text-sm">
                   {lang === "en" ? "Stop All" : "Stopp Alt"}
                 </div>
-                <div className="text-[10px] text-slate-500">Emergency stop</div>
+                <div className="text-[10px] text-slate-500">
+                  {lang === "en" ? "Emergency stop" : "Nødstopp"}
+                </div>
               </div>
             </Button>
             <Link href={`/${locale}/copy-trading`}>

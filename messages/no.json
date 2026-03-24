@@ -970,9 +970,9 @@
     },
     "welcome": "Velkommen til Klarpakke",
     "tradingMode": {
-      "paper": "Øvingshandel",
+      "paper": "Lekepenger",
       "live": "Live-handel",
-      "switchedToPaper": "Byttet til øvingshandel",
+      "switchedToPaper": "Byttet til lekepenger",
       "switchedToLive": "Byttet til live-handel"
     },
     "welcomeBack": "Velkommen tilbake 👋",
@@ -1174,12 +1174,12 @@
       "waitingForData": "Venter på data...",
       "readyToTrade": "Klar til å handle",
       "locked": "Låst",
-      "paperTradingFirst": "Start med øvingshandel først"
+      "paperTradingFirst": "Start med lekepenger først"
     },
     "actions": {
       "recommendedStart": "Anbefalt Start",
       "recommendedStartDesc": "Beste måte å komme i gang",
-      "simulatorTitle": "Øvingshandel-simulator",
+      "simulatorTitle": "Lekepenger-simulator",
       "simulatorDesc": "Øv uten risiko med lekepenger",
       "goToSimulator": "Start simulator",
       "goToCourses": "Gå til Kurs",
@@ -1197,7 +1197,7 @@
       "inProgress": "Pågående",
       "locked": "Låst",
       "notStarted": "Ikke startet",
-      "paperTrading": "Øvingshandel",
+      "paperTrading": "Lekepenger",
       "paperDesc": "Øv med lekepenger",
       "microAccount": "Mikrokonto (10-100 USD)",
       "microDesc": "Start med ekte penger, lav risiko",
@@ -1259,7 +1259,7 @@
       "active": "Aktiv",
       "paused": "Pauset",
       "stopped": "Stoppet",
-      "paperTrading": "Øvingshandel",
+      "paperTrading": "Lekepenger",
       "liveTrading": "Live-handel",
       "started": "Startet",
       "pause": "Pause",
@@ -1284,7 +1284,7 @@
     "disclaimer": "Trading med kryptovaluta innebærer risiko. Klarpakke er en læringsplattform og gir ikke finansiell rådgivning. Alle investeringsbeslutninger er ditt eget ansvar. Tidligere resultater er ingen garanti for fremtidige avkastninger. Invester aldri mer enn du har råd til å tape.",
     "links": {
       "courses": "Kurs",
-      "paperTrading": "Øvingshandel",
+      "paperTrading": "Lekepenger",
       "pricing": "Priser",
       "about": "Om oss",
       "contact": "Kontakt",

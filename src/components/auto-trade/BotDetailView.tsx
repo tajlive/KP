@@ -165,7 +165,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         <p className="text-sm text-[#8E95A9] dark:text-slate-400 mt-1">
           {session.mode === "paper"
             ? no
-              ? "Paper trading"
+              ? "Lekepenger"
               : "Paper trading"
             : no
               ? "Live trading"
@@ -178,6 +178,29 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           )}
         </p>
       </div>
+
+      {session.status === "active" && trades.length === 0 && (
+        <div className={cardBase}>
+          <p className="text-sm font-semibold text-[#1A1D26] dark:text-white">
+            {no
+              ? "Boten er aktiv, men venter på signal"
+              : "Bot is active, waiting for a signal"}
+          </p>
+          <p className="mt-1 text-sm text-[#5E6478] dark:text-slate-400">
+            {no
+              ? "Dette er normalt. Ingen ordre er utført ennå. Når første ordre kjøres, vises den automatisk i handelshistorikken."
+              : "This is normal. No order has been executed yet. When the first order is executed, it will appear automatically in trade history."}
+          </p>
+          <div className="mt-3">
+            <Link
+              href={`/${locale}/handelshistorikk`}
+              className={`inline-flex text-sm font-medium ${BRAND.link}`}
+            >
+              {no ? "Åpne handelshistorikk" : "Open trade history"} →
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className={cardBase}>
