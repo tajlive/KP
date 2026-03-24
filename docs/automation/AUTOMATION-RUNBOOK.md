@@ -3,7 +3,7 @@
 > **Formål:** Én oversikt over _hva_ som kjøres automatisk, _hvordan_ du verifiserer lokalt, og _hvor_ full dybde står.  
 > **Dypere kontekst:** [FULL-AUTOMATION-PLAYBOOK.md](../FULL-AUTOMATION-PLAYBOOK.md) · [MCP-CLI-CI-API.md](../MCP-CLI-CI-API.md)
 
-**Oppdatert:** 2026-03-23
+**Oppdatert:** 2026-03-24
 
 ---
 
@@ -81,3 +81,21 @@ Kjører Playwright `e2e/debug/paper-balance-trace.spec.ts` (dashboard, handelshi
 - **Preflight feiler:** Krever `LINEAR_API_KEY` i `.env.local`. **Vercel** er ikke påkrevd for `auto:preflight` — kjør `npm run cloud:ready` når du vil sjekke `VERCEL_*`.
 - **Supabase psql i test-mcp:** Ved feil (typisk transaction pooler) blir sjekken **skippet** med hint; `PSQL_CHECK_STRICT=1` gir hard fail.
 - **CI MCP Integration feiler:** Samme som validate — fiks lokalt med `npm run mcp:validate-config` før ny push.
+
+---
+
+## 7. Leveranse-logg (kort mal)
+
+Når en release er ferdig, logg dette i Linear:
+
+1. Commit SHA + branch
+2. Vercel deploy-id + URL + status
+3. `/api/health` status + version
+4. Lint / type-check / tests
+
+### Siste loggede leveranse (2026-03-24)
+
+- Commit: `0e76d5097` (`main`)
+- Deploy: `dpl_FQmHQtm4qF4k19Q6Vi8vfaaTU3rq` (`Ready`)
+- Health: `healthy`, version `0e76d50`
+- Gates: lint ✅, type-check ✅, unit ✅
