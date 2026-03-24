@@ -37,6 +37,7 @@ echo "  KLARPAKKE AUTOMASJONSVERIFIKASJON (MCP/CLI/API/CI)"
 echo "  $(date '+%Y-%m-%d %H:%M:%S')"
 echo "══════════════════════════════════════════════════════════════"
 
+run "MCP config (.cursor ↔ .mcp)" "npm run mcp:validate-config" || true
 run "Lint" "npm run lint" || true
 run "Type-check" "npm run type-check" || true
 run "Unit-tester" "npm run test:unit" || true

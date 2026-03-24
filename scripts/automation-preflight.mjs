@@ -26,8 +26,18 @@ function run(label, command, args, options = {}) {
 }
 
 const full = process.argv.includes("--full");
+/** `preflight` = Linear påkrevd; Vercel valgfri. Streng Vercel: `CLOUD_READINESS_PROFILE=agent` eller `npm run cloud:ready`. */
+const readinessProfile =
+  process.env.CLOUD_READINESS_PROFILE || "preflight";
 
-let code = run("Cloud readiness (agent)", "node", ["scripts/cloud-readiness.mjs", "--profile", "agent"]);
+let code = run(
+  `Cloud readiness (${readinessProfile})`,
+  "node",
+  ["scripts/cloud-readiness.mjs", "--profile", readinessProfile],
+);
+if (code !== 0) process.exit(code);
+
+code = run("MCP config (.cursor ↔ .mcp)", "node", ["scripts/validate-mcp-config.mjs"]);
 if (code !== 0) process.exit(code);
 
 if (full) {

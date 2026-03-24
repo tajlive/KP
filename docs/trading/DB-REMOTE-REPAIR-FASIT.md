@@ -67,7 +67,7 @@ git commit -m "beskrivelse"
 
 **Duplikat-migrasjoner:** To filer som begge definerer samme skjema med ulike versjons-prefiks (f.eks. `20260313_*.sql` og `20260313000001_*.sql`) gir rot i `migration list` og kan gjøre at `db push` feiler etter repair. Behold én tidsstemplet fil; slett/arkiver den andre, kjør ev. `migration repair --status reverted 20260313 --linked` om spøkelsesversjon `20260313` henger igjen på remote.
 
-**MCP Supabase i Cursor:** `SUPABASE_ACCESS_TOKEN` må være tilgjengelig for MCP-prosessen (se `docs/MCP-CLI-CI-API.md`); ellers `npm run db:apply:trading-core` fra terminal.
+**MCP Supabase i Cursor:** Legg **SUPABASE_ACCESS_TOKEN** i `.env.local`; `scripts/run-official-supabase-mcp.mjs` starter offisiell MCP (se `docs/MCP-CLI-CI-API.md`). Uten PAT: `npm run db:apply:trading-core` fra terminal.
 
 ## Linear
 

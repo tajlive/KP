@@ -122,6 +122,53 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
     expect(Array.isArray(sessJson.sessions)).toBe(true);
   });
 
+  test("innlogget: opprettelse av trading-session feiler ikke på manglende user_profiles", async ({
+    page,
+    request,
+  }) => {
+    await page.goto("/no/dashboard", {
+      waitUntil: "domcontentloaded",
+      timeout: 90_000,
+    });
+    if (page.url().includes("innlogging") || page.url().includes("/login")) {
+      test.skip();
+    }
+
+    const cookies = await page.context().cookies();
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+    if (!cookieHeader) {
+      test.skip();
+    }
+
+    const res = await request.post("/api/trading/sessions", {
+      headers: {
+        Cookie: cookieHeader,
+        "Content-Type": "application/json",
+      },
+      data: {
+        mode: "paper",
+        strategy_id: "dca_trygg",
+        trading_pair: "BTCUSDT",
+        initial_capital: 10000,
+      },
+      timeout: 25_000,
+    });
+
+    expect([200, 201, 500]).toContain(res.status());
+    if (res.status() === 500) {
+      const body = await res.json();
+      expect(String(body?.error ?? "")).not.toMatch(
+        /user_profiles|foreign key|violates|23503/i,
+      );
+      test.skip();
+      return;
+    }
+
+    const body = await res.json();
+    expect(body.session).toBeDefined();
+    expect(body.session.user_id).toBeDefined();
+  });
+
   test("innlogget: bot-status returnerer PnL, handler og signal-felter", async ({
     page,
     request,

@@ -1,0 +1,43 @@
+# Varsling når prod-helse feiler (DB, signal-pipeline, eller overall unhealthy).
+# Secret OPS_ALERT_WEBHOOK_URL → f.eks. Slack Incoming Webhook inn i #all-klarpakke (felles ops-kanal).
+# Uten webhook: feilet run synes under Actions; aktiver e-post for failed workflows i GitHub-innstillinger.
+name: Prod health alert
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: prod-health-alert
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prod health gate
+        run: node scripts/prod-health-gate.mjs
+        env:
+          HEALTH_URL: https://www.klarpakke.no/api/health
+          ALERT_STALE_SIGNALS: "1"
+
+      - name: Send alert webhook
+        if: failure()
+        env:
+          OPS_ALERT_WEBHOOK_URL: ${{ secrets.OPS_ALERT_WEBHOOK_URL }}
+          RUN_LINK: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$OPS_ALERT_WEBHOOK_URL" ]; then
+            echo "OPS_ALERT_WEBHOOK_URL ikke satt — ingen ekstern webhook. Se Actions-logg."
+            exit 0
+          fi
+          BODY=$(jq -n --arg url "$RUN_LINK" '{text: (":rotating_light: Klarpakke prod health failed\n" + $url)}')
+          curl -sS -X POST -H "Content-Type: application/json" -d "$BODY" "$OPS_ALERT_WEBHOOK_URL"

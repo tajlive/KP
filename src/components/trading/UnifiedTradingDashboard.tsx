@@ -146,8 +146,6 @@ export default function UnifiedTradingDashboard({
   const { error: showError } = useI18nToast();
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
   const { success: showSuccess, error: showToastError } = useI18nToast();
-  const showSuccessRef = useRef(showSuccess);
-  showSuccessRef.current = showSuccess;
   const tTrading = useTranslations("trading");
   const { format: formatNOK } = useCurrency();
 
@@ -234,7 +232,6 @@ export default function UnifiedTradingDashboard({
     }, 400);
   }, []);
 
-  // Fixed: useI18nToast må kalles før useEffect som bruker showSuccess
   useEffect(() => {
     if (!userId) {
       const getUser = async () => {
@@ -258,17 +255,13 @@ export default function UnifiedTradingDashboard({
       return;
     }
 
-    const unsubscribe = subscribeToTrades(null, userId, (newTrade, kind) => {
+    const unsubscribe = subscribeToTrades(null, userId, (newTrade, _kind) => {
       setTrades((prev) => mergeTradeIntoList(prev, newTrade));
       if (newTrade.mode === modeRef.current) {
         schedulePortfolioSyncAfterTrade();
       }
-      if (kind === "INSERT") {
-        showSuccessRef.current("trading.tradeExecuted", {
-          symbol: newTrade.symbol,
-          side: newTrade.side.toUpperCase(),
-        });
-      }
+      // Ikke toast ved Realtime INSERT: brukere tolker det som «min ordre ble utført».
+      // Bekreftelse skal komme fra handlingen (f.eks. /api/paper-trading/execute), ikke fra bakgrunnssynk.
     });
 
     return () => {

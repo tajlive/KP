@@ -65,6 +65,14 @@ SENTRY_AUTH_TOKEN=...
    - Alert Contacts: Your email
 3. Set up Slack webhook for alerts (optional)
 
+### 2b. GitHub Actions — prod health + beskjed ved feil
+
+Workflow **Prod health alert** (`.github/workflows/prod-health-alert.yml`) kjører hvert 15. minutt mot `https://www.klarpakke.no/api/health` via `scripts/prod-health-gate.mjs`. Den feiler ved `unhealthy`, database-feil, eller **gamle/manglende trading-signaler** (`tradingSignals` warning/error).
+
+- **Slack / annen webhook:** Legg repository secret `OPS_ALERT_WEBHOOK_URL` (f.eks. [Slack Incoming Webhook](https://api.slack.com/messaging/webhooks)). Ved feil POSTes en kort melding med lenke til Actions-run. **Anbefalt kanal:** `#all-klarpakke` (eller `#kp-ops`) slik at hele teamet ser samme alarm.
+- **Uten webhook:** Se **Actions** → feilet run; du kan slå på e-post for mislykkede workflows under GitHub-kontoens notifikasjoner.
+- **Lokalt:** `npm run all:klarpakke` = `health:prod:gate` + `verify` (API-helse, signaler, kritiske paths, headers). Enkeltledd: `npm run health:prod:gate` (valgfri `HEALTH_URL=`, `ALERT_STALE_SIGNALS=0` for kun hard feil).
+
 ### 3. Vercel Analytics
 
 Already enabled via @vercel/analytics package.

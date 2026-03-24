@@ -1,45 +1,29 @@
 {
   "mcpServers": {
-    "github": {
+    "chrome-devtools": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
-      }
+      "args": ["-y", "chrome-devtools-mcp@latest", "--no-usage-statistics"]
+    },
+    "cloudflare": {
+      "url": "https://mcp.cloudflare.com/mcp"
+    },
+    "github": {
+      "command": "node",
+      "args": ["scripts/run-github-mcp.mjs"]
+    },
+    "klarpakke-remote-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/klarpakke-mcp/mcp",
+        "--header",
+        "Authorization: Bearer ${KLARPAKKE_MCP_TOKEN}"
+      ]
     },
     "linear": {
       "command": "node",
       "args": ["scripts/run-linear-mcp.mjs"]
-    },
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--access-token",
-        "${SUPABASE_ACCESS_TOKEN}",
-        "--project-ref",
-        "vuxbjlykgmzskxbclquf"
-      ]
-    },
-    "supabase-db": {
-      "command": "node",
-      "args": ["scripts/run-supabase-mcp.mjs"]
-    },
-    "stripe": {
-      "command": "npx",
-      "args": ["-y", "@stripe/agent-toolkit@latest"],
-      "env": {
-        "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
-      }
-    },
-    "sentry": {
-      "command": "npx",
-      "args": ["-y", "@sentry/mcp-server@latest"],
-      "env": {
-        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
-        "SENTRY_ORG": "${SENTRY_ORG}"
-      }
     },
     "playwright": {
       "command": "npx",
@@ -52,15 +36,35 @@
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
     },
-    "vipps": {
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@sentry/mcp-server@latest"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
+        "SENTRY_ORG": "${SENTRY_ORG}"
+      }
+    },
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/agent-toolkit@latest"],
+      "env": {
+        "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
+      }
+    },
+    "supabase": {
       "command": "node",
-      "args": ["scripts/run-vipps-mcp.mjs"]
+      "args": ["scripts/run-official-supabase-mcp.mjs"]
+    },
+    "supabase-db": {
+      "command": "node",
+      "args": ["scripts/run-supabase-mcp.mjs"]
     },
     "vercel": {
       "url": "https://mcp.vercel.com/klarpakke/klarpakke"
     },
-    "cloudflare": {
-      "url": "https://mcp.cloudflare.com/mcp"
+    "vipps": {
+      "command": "node",
+      "args": ["scripts/run-vipps-mcp.mjs"]
     }
   }
 }

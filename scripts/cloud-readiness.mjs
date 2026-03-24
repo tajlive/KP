@@ -68,6 +68,24 @@ function setResolvedVar(name, value, source) {
 }
 
 const profiles = {
+  /**
+   * Daglig lokal / automation:check — Linear + MCP; Vercel valgfri (deploy skjer ofte via CI).
+   */
+  preflight: {
+    required: ["LINEAR_API_KEY"],
+    optional: [
+      "VERCEL_TOKEN",
+      "VERCEL_ORG_ID",
+      "VERCEL_PROJECT_ID",
+      "GITHUB_TOKEN",
+      "SUPABASE_ACCESS_TOKEN",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "CLOUDFLARE_API_TOKEN",
+      "RESEND_API_KEY",
+      "STRIPE_SECRET_KEY",
+      "SENTRY_AUTH_TOKEN",
+    ],
+  },
   agent: {
     required: ["LINEAR_API_KEY", "VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"],
     optional: [

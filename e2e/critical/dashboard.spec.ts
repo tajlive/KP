@@ -128,8 +128,8 @@ test.describe("Critical: API Endpoints @critical", () => {
       return;
     }
 
-    // Accept 200 or 500 (server may have issues during dev)
-    expect([200, 500]).toContain(response.status());
+    // 200 = healthy; 503 = degraded (DB/KV); 500 = hard error — alle betyr at ruten svarer.
+    expect([200, 500, 503]).toContain(response.status());
 
     const json = await response.json();
     expect(json.status).toBeDefined();

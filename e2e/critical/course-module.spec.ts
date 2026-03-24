@@ -1,9 +1,18 @@
 import { test, expect, type Page } from "@playwright/test";
 
-const MODULE_TITLE = /Hvorfor Priser Beveger Seg/i;
+// Innlogget setup kan ende på EN; as-needed bruker ofte /kurs/… uten /no/-prefiks.
+const MODULE_TITLE = /Hvorfor Priser Beveger Seg|Why Prices Move/i;
+const LESSON_1_HEADING = /Tilbud og Etterspørsel|Supply and Demand/i;
+
+/** Første leksjon kan ha duplisert h1 i DOM (strict mode) — alltid én match. */
+function firstLessonH1(page: Page) {
+  return page
+    .getByRole("heading", { level: 1, name: LESSON_1_HEADING })
+    .first();
+}
 
 async function waitForModuleOverviewShell(page: Page, moduleSlug: string) {
-  await page.goto(`/no/kurs/${moduleSlug}`, {
+  await page.goto(`/kurs/${moduleSlug}`, {
     waitUntil: "domcontentloaded",
     timeout: 90_000,
   });
@@ -65,9 +74,8 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     });
 
     test("should navigate to first lesson", async ({ page }) => {
-      const firstLessonHref = `/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`;
       const firstLessonButton = page
-        .locator(`a[href="${firstLessonHref}"]`)
+        .locator(`a[href$="/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}"]`)
         .first();
       await expect(firstLessonButton).toBeVisible({ timeout: 30_000 });
 
@@ -83,26 +91,24 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
 
   test.describe("Lesson Page", () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(`/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`, {
+      await page.goto(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`, {
         waitUntil: "domcontentloaded",
         timeout: 90_000,
       });
-      await expect(
-        page.locator("h1.text-3xl", { hasText: /Tilbud og Etterspørsel/i }),
-      ).toBeVisible({ timeout: 45_000 });
+      await expect(firstLessonH1(page)).toBeVisible({ timeout: 45_000 });
       await page.waitForLoadState("networkidle").catch(() => {});
     });
 
     test("should display lesson content with markdown", async ({ page }) => {
-      await expect(
-        page.locator("h1.text-3xl", { hasText: /Tilbud og Etterspørsel/i }),
-      ).toBeVisible();
+      await expect(firstLessonH1(page)).toBeVisible();
 
       await expect(
         page.getByText(/Bitcoin|halving|tilbud|supply/i).first(),
       ).toBeVisible();
 
-      await expect(page.getByText(/0 av 5 leksjoner/i)).toBeVisible();
+      await expect(
+        page.getByText(/0 av 5 leksjoner|0 of 5 lessons/i),
+      ).toBeVisible();
     });
 
     test("should display quiz section or login prompt", async ({ page }) => {
@@ -128,23 +134,32 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     });
 
     test("should navigate between lessons", async ({ page }) => {
-      const nextBtn = page.getByRole("link", { name: /Neste/i });
-      await expect(nextBtn).toBeVisible();
-      await nextBtn.click();
-
-      await expect(page).toHaveURL(
-        new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[1]}`),
+      // href-suffiks unngår å treffe annen «Neste»/«Forrige» på siden; Promise.all unngår rase mot client-navigasjon.
+      const nextToSecond = page.locator(
+        `a[href$="/kurs/${moduleSlug}/leksjon/${lessonSlugs[1]}"]`,
+      );
+      const prevToFirst = page.locator(
+        `a[href$="/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}"]`,
       );
 
-      await page.waitForLoadState("domcontentloaded");
-      const prevBtn = page.getByRole("link", { name: /Forrige/i });
+      await expect(nextToSecond).toBeVisible({ timeout: 15_000 });
+      await Promise.all([
+        page.waitForURL(
+          new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[1]}`),
+          { timeout: 45_000 },
+        ),
+        nextToSecond.click(),
+      ]);
 
-      if (await prevBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-        await prevBtn.click();
-        await expect(page).toHaveURL(
+      await page.waitForLoadState("domcontentloaded").catch(() => {});
+      await expect(prevToFirst).toBeVisible({ timeout: 15_000 });
+      await Promise.all([
+        page.waitForURL(
           new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`),
-        );
-      }
+          { timeout: 45_000 },
+        ),
+        prevToFirst.click(),
+      ]);
     });
   });
 
@@ -187,14 +202,12 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
     });
 
     test("should display lesson content on mobile", async ({ page }) => {
-      await page.goto(`/no/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`, {
+      await page.goto(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`, {
         waitUntil: "domcontentloaded",
         timeout: 90_000,
       });
 
-      await expect(
-        page.locator("h1.text-3xl", { hasText: /Tilbud og Etterspørsel/i }),
-      ).toBeVisible();
+      await expect(firstLessonH1(page)).toBeVisible();
 
       const content = page.locator("main");
       const box = await content.boundingBox();

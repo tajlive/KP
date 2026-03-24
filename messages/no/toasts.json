@@ -1,6 +1,24 @@
 {
   "general": {
     "error": "En feil oppstod",
-    "saved": "Endringer lagret"
+    "saved": "Endringer lagret",
+    "comingSoon": "Kommer snart"
+  },
+  "trading": {
+    "tradeExecuted": "Ny handel registrert ({side} {symbol})"
+  },
+  "strategy": {
+    "started": "Strategi startet",
+    "startFailed": "Kunne ikke starte strategi",
+    "stopped": "Strategi stoppet",
+    "stopFailed": "Kunne ikke stoppe strategi"
+  },
+  "paperBot": {
+    "startedTitle": "Papir-bot er startet",
+    "startedDesc": "Startkapital er satt. Ingen ordre er kjøpt ennå — handler vises i handelshistorikk når de utføres.",
+    "alreadyActiveTitle": "Papir-bot kjører allerede",
+    "alreadyActiveDesc": "Du har en aktiv økt. Ingen ny handel ble opprettet nå.",
+    "startFailedTitle": "Kunne ikke starte papir-bot",
+    "networkError": "Nettverksfeil — prøv igjen."
   }
 }
