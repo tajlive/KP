@@ -226,7 +226,12 @@
     "title": "Latest real-time signals",
     "seeAll": "View all signals & history →",
     "directionBuy": "BUY",
-    "directionSell": "SELL"
+    "directionSell": "SELL",
+    "stateLive": "Live",
+    "stateStale": "Stale",
+    "stateDemo": "Demo",
+    "stateEmpty": "Empty",
+    "stateError": "Error"
   },
   "emailCapture": {
     "badge": "Free course",

@@ -38,6 +38,31 @@ Ved skjemadrift: kjør `supabase db push` mot målmiljø (se `docs/SUPABASE-MIGR
 - **Enterprise synk (2026):** `TRADING_INTEGRITY_SYNC` + `useDashboardTradingIntegritySync` — periodisk poll av `getRecentTrades`, `router.refresh()` for RSC (saldo/`trading_sessions`), visibility/focus. Unified hub: tilsvarende poll av trades + portefølje. Supplerer Realtime når JWT/WebSocket feiler. **Backoff:** `tradesPollIntervalAfterFailures()` (28s → … → cap 120s) ved gjentatte feil. Handelshistorikk: samme backoff + banner `trade-history-integrity-poll-warning`. Flere synlige faner kan fortsatt polle parallelt; dedup med `navigator.locks` er mulig senere (ikke påkrevd).
 - **Observabilitet:** Ved `getRecentTrades`-feil settes UI-banner (`data-testid="dashboard-integrity-poll-warning"`) og `reportTradingIntegrityPollFailure()` i `src/lib/sentry.ts` (breadcrumb + throttled `warning`-melding i produksjon, maks 1/5 min).
 
+## Data source state-kontrakt (2026 SoT)
+
+Alle signalflater skal bruke samme kontrakt via `src/lib/trading/data-source-state.ts`:
+
+- `live`: ferske signalrader og ingen feil.
+- `stale`: signaler finnes, men siste rad eldre enn terskel (`staleMinutes`).
+- `demo`: fallback-signaler vises.
+- `empty`: ingen signalrader ennå.
+- `error`: fetch/pipeline-feil.
+
+Standard terskler:
+
+- `staleMinutes = 20`
+- `criticalMinutes = 40`
+- `incidentMinutes = 60`
+
+Health (`/api/health`) eksponerer:
+
+- `engineHeartbeatAgeMinutes`
+- `latestSignalAgeMinutes`
+- `feedStateHint`
+- terskelverdier i `details`.
+
+Dette er samme semantikk som UI (landing/dashboard/full feed) og drift (alerts/runbook).
+
 ## Regresjonsbeskyttelse — paper handler synlig + API-kontrakt
 
 Linear (sporbarhet): **KLA-237** — https://linear.app/klarpakke/issue/KLA-237/paper-handler-synlig-regresjonslas-zode2e
@@ -94,6 +119,8 @@ Eldre rader er fjernet her for lesbarhet; **full historikk** ligger i **git** (`
 - **`docs/trading/DB-REMOTE-REPAIR-FASIT.md`** — fasit: `npm run db:apply:trading-core` når `db push` er blokkert (drift)
 - **`docs/trading/USER-TRADES-LIVE-PROOF.md`** — brukerguide: hvor du ser handler, live, SQL-bevis, `verify`
 - **`docs/trading/SIGNAL-ENGINE-CRON-AUTH-CHECKLIST.md`** — SQL-checklist for permanent fix av `signal-engine-5min` auth/cron
+- **`docs/trading/SIGNAL-COPY-AUTOMATION-RUNBOOK.md`** — full automation-first drift (Supabase SoT + GitHub safety-net)
+- **`docs/trading/SIGNAL-COPY-SUPPORT-PLAYBOOK.md`** — support-beslutningstre live/stale/demo/error + discover-feil
 - **`docs/trading/COPY-TRADING-SOURCE-OF-TRUTH.md`** — copy trading, tier-grenser, API
 - **`docs/architecture/KLA-91-ROADMAP-CURSOR.md`** — strategy marketplace (KLA-91); ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`
 - **`docs/trade-consolidation-plan.md`** — legacy-tabeller vs `trades` (ingen nye lesere av `trade_history` uten migrasjon)

@@ -205,7 +205,12 @@
     "title": "Sanntidssignaler",
     "seeAll": "Se alle signaler og historikk →",
     "directionBuy": "KJØP",
-    "directionSell": "SALG"
+    "directionSell": "SALG",
+    "stateLive": "Live",
+    "stateStale": "Forsinket",
+    "stateDemo": "Demo",
+    "stateEmpty": "Tom",
+    "stateError": "Feil"
   },
   "emailCapture": {
     "badge": "Gratis kurs",

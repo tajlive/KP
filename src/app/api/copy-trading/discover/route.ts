@@ -9,6 +9,11 @@ import type { Database } from "@/types/supabase-generated";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+type DiscoverReason =
+  | "ok"
+  | "no_public_traders"
+  | "partial_data"
+  | "backend_error";
 
 type BotRow = Database["public"]["Tables"]["leaderboard_bots"]["Row"];
 type TraderProfileRow = Database["public"]["Tables"]["trader_profiles"]["Row"];
@@ -124,7 +129,7 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
     if (botsRes.error) {
       console.error("[copy-trading/discover]", botsRes.error.message);
       return NextResponse.json(
-        { error: "Kunne ikke hente ledere" },
+        { error: "Kunne ikke hente ledere", reason: "backend_error" },
         { status: 500 },
       );
     }
@@ -185,20 +190,30 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
       else discoverSource = "trader_profiles";
     }
 
+    const reason: DiscoverReason =
+      leaders.length === 0
+        ? "no_public_traders"
+        : profilesRes.error || followsRes.error
+          ? "partial_data"
+          : "ok";
+
     return NextResponse.json({
       leaders,
       timeframe,
+      reason,
       source: discoverSource,
       meta: {
         activeBotsConsidered: rawBots.length,
         publicProfilesConsidered: pubProfiles.length,
         profileOnlyAdded: profileOnly.length,
+        followsLookupFailed: Boolean(followsRes.error),
+        profilesLookupFailed: Boolean(profilesRes.error),
       },
     });
   } catch (e) {
     console.error("[copy-trading/discover]", e);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", reason: "backend_error" },
       { status: 500 },
     );
   }

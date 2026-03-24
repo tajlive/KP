@@ -41,3 +41,16 @@ jobs:
           fi
           BODY=$(jq -n --arg url "$RUN_LINK" '{text: (":rotating_light: Klarpakke prod health failed\n" + $url)}')
           curl -sS -X POST -H "Content-Type: application/json" -d "$BODY" "$OPS_ALERT_WEBHOOK_URL"
+
+      - name: Create Linear incident
+        if: failure()
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+          RUN_LINK: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          LINEAR_ISSUE_TITLE: "Prod health alert failed (auto)"
+          LINEAR_ISSUE_DESCRIPTION: |
+            Automated prod health alert failed.
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Health URL: https://www.klarpakke.no/api/health
+        run: node scripts/create-linear-incident.mjs

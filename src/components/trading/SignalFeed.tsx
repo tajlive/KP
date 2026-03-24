@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { BRAND } from "@/lib/design/tokens";
+import { getTradingFeedState } from "@/lib/trading/data-source-state";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -63,6 +64,7 @@ export function SignalFeed() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [fetchError, setFetchError] = useState(false);
   const [liveIndicator, setLiveIndicator] = useState(false);
   const { hasAccess, loading: subLoading } = useSubscription();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -74,6 +76,7 @@ export function SignalFeed() {
     async (showRefresh = false, fromRealtime = false) => {
       if (showRefresh) setRefreshing(true);
       try {
+        setFetchError(false);
         const supabase = getSupabaseClient();
         const { data, error } = await supabase
           .from("trading_signals")
@@ -84,6 +87,7 @@ export function SignalFeed() {
           .limit(20);
 
         if (error) {
+          setFetchError(true);
           console.error("Failed to fetch trading signals:", error);
           return;
         }
@@ -184,6 +188,16 @@ export function SignalFeed() {
     );
   }
 
+  const latestSignalAgeMinutes =
+    signals[0]?.created_at != null
+      ? (Date.now() - new Date(signals[0].created_at).getTime()) / 60000
+      : null;
+  const sourceState = getTradingFeedState({
+    hasError: fetchError,
+    usesFallback: false,
+    latestSignalAgeMinutes,
+  });
+
   return (
     <div className={`${MARKET_DESK.panel} overflow-hidden`}>
       {/* Header */}
@@ -200,6 +214,25 @@ export function SignalFeed() {
           </h2>
           <span className="text-[10px] text-slate-400 tabular-nums">
             {t("activeCount", { count: signals.length })}
+          </span>
+          <span
+            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+              sourceState === "live"
+                ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                : sourceState === "stale"
+                  ? "bg-amber-500/15 text-amber-200 border border-amber-500/30"
+                  : sourceState === "empty"
+                    ? "bg-slate-600/25 text-slate-300 border border-slate-500/40"
+                    : "bg-rose-500/15 text-rose-200 border border-rose-500/30"
+            }`}
+          >
+            {sourceState === "live"
+              ? t("statusLive")
+              : sourceState === "stale"
+                ? t("statusStale")
+                : sourceState === "empty"
+                  ? t("statusEmpty")
+                  : t("statusError")}
           </span>
           {lastUpdated && (
             <span className="text-[10px] text-slate-400">

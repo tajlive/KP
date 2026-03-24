@@ -9,6 +9,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { MARKET_DESK } from "@/lib/design/market-desk";
 import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { getFallbackTradingSignals } from "@/lib/trading/fallback-signals";
+import { getTradingFeedState } from "@/lib/trading/data-source-state";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 interface TradingSignal {
@@ -43,6 +44,7 @@ export function DashboardSignalPreview({
   const [signals, setSignals] = useState<TradingSignal[]>([]);
   const [loading, setLoading] = useState(true);
   const [flashId, setFlashId] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState(false);
   const prevTopIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -62,6 +64,7 @@ export function DashboardSignalPreview({
     const fetchSignals = async () => {
       let nextSignals: TradingSignal[] = [];
       try {
+        setFetchError(false);
         const { data, error } = await supabase
           .from("trading_signals")
           .select("id, symbol, action, confidence, entry_price, created_at")
@@ -69,11 +72,13 @@ export function DashboardSignalPreview({
           .limit(3);
 
         if (error || !data || data.length === 0) {
+          if (error) setFetchError(true);
           nextSignals = mapFallback();
         } else {
           nextSignals = (data as TradingSignal[]) ?? [];
         }
       } catch {
+        setFetchError(true);
         nextSignals = mapFallback();
       } finally {
         if (mounted) {
@@ -139,6 +144,15 @@ export function DashboardSignalPreview({
 
   const usingFallback =
     signals.length > 0 && signals.every((s) => isFallbackId(s.id));
+  const latestAgeMinutes =
+    signals[0]?.created_at != null
+      ? (Date.now() - new Date(signals[0].created_at).getTime()) / 60000
+      : null;
+  const sourceState = getTradingFeedState({
+    hasError: fetchError,
+    usesFallback: usingFallback,
+    latestSignalAgeMinutes: latestAgeMinutes,
+  });
   const tierKey = tierLabelKey(tier);
   const planName = t(`tierLabels.${tierKey}`);
 
@@ -159,14 +173,24 @@ export function DashboardSignalPreview({
           {signals.length > 0 && (
             <span
               className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                usingFallback
-                  ? "bg-slate-600/25 text-slate-400 border border-dashed border-slate-500/40"
-                  : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
+                sourceState === "live"
+                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
+                  : sourceState === "stale"
+                    ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                    : sourceState === "error"
+                      ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                      : "bg-slate-600/25 text-slate-400 border border-dashed border-slate-500/40"
               }`}
             >
-              {usingFallback
-                ? t("signalPreview.demoBadge")
-                : t("signalPreview.liveBadge")}
+              {sourceState === "live"
+                ? t("signalPreview.liveBadge")
+                : sourceState === "stale"
+                  ? t("signalPreview.staleBadge")
+                  : sourceState === "error"
+                    ? t("signalPreview.errorBadge")
+                    : sourceState === "empty"
+                      ? t("signalPreview.emptyBadge")
+                      : t("signalPreview.demoBadge")}
             </span>
           )}
           <span className="text-[10px] text-slate-500 font-medium hidden sm:inline">
