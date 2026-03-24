@@ -95,7 +95,20 @@ Når en release er ferdig, logg dette i Linear:
 
 ### Siste loggede leveranse (2026-03-24)
 
-- Commit: `0e76d5097` (`main`)
-- Deploy: `dpl_FQmHQtm4qF4k19Q6Vi8vfaaTU3rq` (`Ready`)
-- Health: `healthy`, version `0e76d50`
-- Gates: lint ✅, type-check ✅, unit ✅
+- Commit: `2924cf0e7` + `30970e741` (`main`)
+- Deploy/verify: `npm run verify` ✅
+- Health: `healthy`, version `30970e7`, tradingSignals `ok`
+- Gates: `automation:check` ✅, lint ✅, type-check ✅, unit ✅, critical E2E with user ✅ (47 pass / 3 skip)
+- Monitor: `prod-health-alert.yml` latest run `success`
+
+---
+
+## 8. Production+ gate (kort)
+
+Kjor disse fem stegene for siste sjekk for full produksjon+:
+
+1. `npm run automation:check`
+2. `npm run lint && npm run type-check && npm run test:unit`
+3. `npm run test:e2e:prepare && npm run test:e2e:critical:with-user`
+4. `curl -s https://www.klarpakke.no/api/health` (forvent `healthy`)
+5. Logg bevis i Linear (commit SHA + gate-resultater + health-status)

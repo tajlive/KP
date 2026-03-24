@@ -160,8 +160,30 @@ Bruk dette formatet i ops-logg / Linear når en automatisert leveranse er ferdig
 
 ### Siste kjøring (2026-03-24)
 
-- **Scope:** Premium UI pass for trading-undersider + konsistent NO/EN-copy (`Lekepenger`/`Paper trading`).
-- **Git:** `0e76d5097` på `main`.
-- **Deploy:** `dpl_FQmHQtm4qF4k19Q6Vi8vfaaTU3rq` → production `Ready`.
-- **Health:** `https://www.klarpakke.no/api/health` = `healthy`, version `0e76d50`.
-- **Quality gates:** `npm run lint` ✅, `npm run type-check` ✅, pre-push `vitest run` ✅.
+- **Scope:** Production+ gate-kjede kjørt end-to-end for trading/automation-sporet (preflight, quality, critical E2E, verify, health, CI health monitor).
+- **Git:** `2924cf0e7` (feature) + `30970e741` (automation docs) på `main`.
+- **Deploy/verify:** `npm run verify` ✅ (domener, kritiske paths, security headers).
+- **Health:** `https://www.klarpakke.no/api/health` = `healthy`, version `30970e7`, tradingSignals `ok`.
+- **Quality gates:** `npm run automation:check` ✅, `npm run lint` ✅, `npm run type-check` ✅, `npm run test:unit` ✅, `npm run test:e2e:critical:with-user` ✅ (47 pass / 3 skip).
+- **Monitor:** `prod-health-alert.yml` siste kjøring = `success` (2026-03-24T11:11:59Z).
+
+---
+
+## 11. Neste steg før full produksjon+
+
+Kjør denne sekvensen i rekkefolge for "production+" gate:
+
+1. **Preflight + kvalitet**
+   - `npm run automation:check`
+   - `npm run lint && npm run type-check && npm run test:unit`
+2. **Kritisk E2E (innlogget bruker)**
+   - `npm run test:e2e:prepare`
+   - `npm run test:e2e:critical:with-user`
+3. **Deploy-verifisering**
+   - verifiser at `main` er deployet
+   - `curl -s https://www.klarpakke.no/api/health`
+4. **Trading-integritet**
+   - bekreft at `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` har oppdatert rad i "Siste verifisering"
+5. **Sporbarhet**
+   - legg commit + gate-resultat i aktuell Linear-ticket (KLA-\*)
+   - sikre at ticketen er `Done` med bevis (kommandoer + resultat)
