@@ -86,7 +86,8 @@ const nextConfig = {
       "date-fns",
       "recharts",
       "lightweight-charts",
-      "zustand",
+      // zustand: behold utenfor optimize — transform kan trigge default-export-interop
+      // og [DEPRECATED] create-default-advarsel i prod-bundle (instrument-chunk).
       "@radix-ui/react-accordion",
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
