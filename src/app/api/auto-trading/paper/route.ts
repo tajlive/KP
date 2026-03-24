@@ -9,6 +9,22 @@ const paperTradeSchema = z.object({
   starting_capital_nok: z.number().min(10000).max(1000000).default(100000),
 });
 
+type StartPaperBotResponse = {
+  ok: boolean;
+  code:
+    | "PAPER_BOT_STARTED"
+    | "PAPER_BOT_ALREADY_ACTIVE"
+    | "UNAUTHORIZED"
+    | "VALIDATION_FAILED"
+    | "INTERNAL_ERROR";
+  message: string;
+  session_id?: string;
+  reused_session?: boolean;
+  next_step?: "open_bot_details" | "retry";
+  error?: string;
+  details?: unknown;
+};
+
 export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.next();
@@ -19,14 +35,30 @@ export async function POST(request: NextRequest) {
       error: authError,
     } = await supabaseAuth.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json<StartPaperBotResponse>(
+        {
+          ok: false,
+          code: "UNAUTHORIZED",
+          message: "Unauthorized",
+          error: "Unauthorized",
+          next_step: "retry",
+        },
+        { status: 401 },
+      );
     }
 
     const body = await request.json();
     const parsed = paperTradeSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Validation failed", details: parsed.error.flatten() },
+      return NextResponse.json<StartPaperBotResponse>(
+        {
+          ok: false,
+          code: "VALIDATION_FAILED",
+          message: "Validation failed",
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+          next_step: "retry",
+        },
         { status: 400 },
       );
     }
@@ -50,10 +82,13 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({
-        success: true,
+      return NextResponse.json<StartPaperBotResponse>({
+        ok: true,
+        code: "PAPER_BOT_ALREADY_ACTIVE",
+        message: "An active paper bot session already exists",
         session_id: existing.id,
         reused_session: true,
+        next_step: "open_bot_details",
       });
     }
 
@@ -81,15 +116,24 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({
-      success: true,
+    return NextResponse.json<StartPaperBotResponse>({
+      ok: true,
+      code: "PAPER_BOT_STARTED",
+      message: "Paper bot started successfully",
       session_id: data.id,
       reused_session: false,
+      next_step: "open_bot_details",
     });
   } catch (error) {
     console.error("[auto-trading/paper POST] Error:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
+    return NextResponse.json<StartPaperBotResponse>(
+      {
+        ok: false,
+        code: "INTERNAL_ERROR",
+        message: "Failed to start paper bot",
+        error: error instanceof Error ? error.message : "Unknown error",
+        next_step: "retry",
+      },
       { status: 500 },
     );
   }
