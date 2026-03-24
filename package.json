@@ -117,6 +117,7 @@
     "db:migrate-tier": "./scripts/sql.sh file supabase/migrations/20260318120000_tier_slug_single_source.sql",
     "db:validate-migrations": "node scripts/validate-migrations.mjs",
     "signals:health": "node scripts/check-signal-pipeline-health.mjs",
+    "signals:invoke": "node scripts/invoke-signal-engine.mjs",
     "diagnose:signals-traders": "node scripts/diagnose-signals-traders.mjs",
     "health:prod:gate": "node scripts/prod-health-gate.mjs",
     "all:klarpakke": "npm run health:prod:gate && npm run verify",
@@ -322,7 +323,8 @@
   "overrides": {
     "rimraf": "^5.0.10",
     "glob": "^13.0.6",
-    "tmp": "^0.2.4"
+    "tmp": "^0.2.4",
+    "import-in-the-middle": "3.0.0"
   },
   "browserslist": [
     "chrome >= 109",
