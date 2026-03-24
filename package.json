@@ -118,6 +118,7 @@
     "db:migrate-tier": "./scripts/sql.sh file supabase/migrations/20260318120000_tier_slug_single_source.sql",
     "db:validate-migrations": "node scripts/validate-migrations.mjs",
     "signals:health": "node scripts/check-signal-pipeline-health.mjs",
+    "signals:doctor": "node scripts/signals-cron-doctor.mjs",
     "signals:invoke": "node scripts/invoke-signal-engine.mjs",
     "signals:deploy:edge": "supabase functions deploy signal-engine --use-api --yes",
     "signals:deploy:pipeline": "npm run db:push:all:yes && npm run signals:deploy:edge && npm run signals:invoke && npm run signals:health",

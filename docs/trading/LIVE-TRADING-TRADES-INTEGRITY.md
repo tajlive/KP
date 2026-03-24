@@ -93,6 +93,7 @@ Eldre rader er fjernet her for lesbarhet; **full historikk** ligger i **git** (`
 
 - **`docs/trading/DB-REMOTE-REPAIR-FASIT.md`** — fasit: `npm run db:apply:trading-core` når `db push` er blokkert (drift)
 - **`docs/trading/USER-TRADES-LIVE-PROOF.md`** — brukerguide: hvor du ser handler, live, SQL-bevis, `verify`
+- **`docs/trading/SIGNAL-ENGINE-CRON-AUTH-CHECKLIST.md`** — SQL-checklist for permanent fix av `signal-engine-5min` auth/cron
 - **`docs/trading/COPY-TRADING-SOURCE-OF-TRUTH.md`** — copy trading, tier-grenser, API
 - **`docs/architecture/KLA-91-ROADMAP-CURSOR.md`** — strategy marketplace (KLA-91); ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md`
 - **`docs/trade-consolidation-plan.md`** — legacy-tabeller vs `trades` (ingen nye lesere av `trade_history` uten migrasjon)
