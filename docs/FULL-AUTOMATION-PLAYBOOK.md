@@ -3,7 +3,7 @@
 > **Mål:** Maksimal automatisering som er forsvarlig og repeterbar.  
 > **Sannhet:** «100 % uten mennesker» finnes ikke (første gangs OAuth, rotasjon av hemmeligheter, forretningsbeslutninger). Alt under er **forhåndsoppsett** slik at daglig arbeid, CI og agenter trenger minimal friksjon.
 
-**Oppdatert:** 2026-03-23
+**Oppdatert:** 2026-03-24
 
 ---
 
@@ -145,3 +145,23 @@ flowchart LR
 - [COMMON-SECRETS.md](./COMMON-SECRETS.md) (inkl. evt. `JWT_SECRET` for egendefinerte JWT)
 - [KLARPAKKE-ROSTER.md](./agents/KLARPAKKE-ROSTER.md) — agent `klarpakke-automation-orchestrator`
 - [TARGET-AUDIENCE.md](./TARGET-AUDIENCE.md) · [architecture/ROUTE-INVENTORY-2026.md](./architecture/ROUTE-INVENTORY-2026.md) · [TYPE-DEBT-ROADMAP-2026.md](./TYPE-DEBT-ROADMAP-2026.md) · [MICROCOPY-I18N-OBSERVABILITY-2026.md](./MICROCOPY-I18N-OBSERVABILITY-2026.md)
+
+---
+
+## 10. Siste leveransebevis (eksempel mal + siste kjøring)
+
+Bruk dette formatet i ops-logg / Linear når en automatisert leveranse er ferdig:
+
+- **Scope:** hva som ble endret (kode + docs)
+- **Git:** commit SHA + branch
+- **Deploy:** Vercel deploy-id + URL + status
+- **Health:** `GET /api/health` med `status` og `version`
+- **Quality gates:** lint / type-check / unit
+
+### Siste kjøring (2026-03-24)
+
+- **Scope:** Premium UI pass for trading-undersider + konsistent NO/EN-copy (`Lekepenger`/`Paper trading`).
+- **Git:** `0e76d5097` på `main`.
+- **Deploy:** `dpl_FQmHQtm4qF4k19Q6Vi8vfaaTU3rq` → production `Ready`.
+- **Health:** `https://www.klarpakke.no/api/health` = `healthy`, version `0e76d50`.
+- **Quality gates:** `npm run lint` ✅, `npm run type-check` ✅, pre-push `vitest run` ✅.
