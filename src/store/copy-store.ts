@@ -233,7 +233,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
 
         const { data: pubTraders } = await supabase
           .from("trader_profiles")
-          .select("user_id, display_name")
+          .select("user_id, display_name, avatar_url")
           .in("user_id", leaderIds)
           .eq("is_public", true);
 
@@ -241,10 +241,16 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
           if (!p.user_id) continue;
           const existing = profiles.get(p.user_id);
           const name = p.display_name?.trim();
+          const av = p.avatar_url?.trim() || null;
           if (name && !existing?.display_name?.trim()) {
             profiles.set(p.user_id, {
               display_name: p.display_name,
-              avatar_url: existing?.avatar_url ?? null,
+              avatar_url: existing?.avatar_url ?? av ?? null,
+            });
+          } else if (av && !existing?.avatar_url) {
+            profiles.set(p.user_id, {
+              display_name: existing?.display_name ?? p.display_name ?? null,
+              avatar_url: av,
             });
           }
         }

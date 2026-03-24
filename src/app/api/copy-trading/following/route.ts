@@ -70,7 +70,7 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
 
       const { data: traderPub } = await db
         .from("trader_profiles")
-        .select("user_id, display_name")
+        .select("user_id, display_name, avatar_url")
         .in("user_id", leaderIds)
         .eq("is_public", true);
 
@@ -78,31 +78,42 @@ export const GET = withAuth(async (_req: NextRequest, { user }) => {
         if (!p.user_id) continue;
         const cur = profileByAuthId.get(p.user_id);
         const name = p.display_name?.trim();
+        const av = p.avatar_url?.trim() || null;
         if (name && !cur?.display_name?.trim()) {
           profileByAuthId.set(p.user_id, {
             display_name: p.display_name,
-            avatar_url: cur?.avatar_url ?? null,
+            avatar_url: cur?.avatar_url ?? av ?? null,
+          });
+        } else if (av && !cur?.avatar_url) {
+          profileByAuthId.set(p.user_id, {
+            display_name: cur?.display_name ?? p.display_name ?? null,
+            avatar_url: av,
           });
         }
       }
 
       const { data: bots } = await db
         .from("leaderboard_bots")
-        .select("user_id, display_name")
+        .select("user_id, display_name, avatar_url")
         .in("user_id", leaderIds);
 
       for (const b of bots ?? []) {
         if (!b.user_id) continue;
         const bn = b.display_name?.trim();
-        if (!bn) continue;
+        const ba = b.avatar_url?.trim() || null;
         const cur = profileByAuthId.get(b.user_id);
         if (
-          !cur?.display_name?.trim() ||
-          cur.display_name.trim() === "Trader"
+          bn &&
+          (!cur?.display_name?.trim() || cur.display_name.trim() === "Trader")
         ) {
           profileByAuthId.set(b.user_id, {
             display_name: bn,
-            avatar_url: cur?.avatar_url ?? null,
+            avatar_url: cur?.avatar_url ?? ba ?? null,
+          });
+        } else if (ba && !cur?.avatar_url) {
+          profileByAuthId.set(b.user_id, {
+            display_name: cur?.display_name ?? b.display_name ?? null,
+            avatar_url: ba,
           });
         }
       }
