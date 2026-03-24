@@ -5,6 +5,12 @@ import { createClient } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useLocale, useTranslations } from "next-intl";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
+import {
+  PremiumPanel,
+  PremiumStatusBanner,
+  PremiumTradingHero,
+  PremiumTradingShell,
+} from "@/components/trading/PremiumTradingLayout";
 import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregates";
 import { explainStrategySignalJson } from "@/lib/bot-status-helpers";
 import { ArrowUp, ArrowDown, Loader2, Clock3, History } from "lucide-react";
@@ -240,31 +246,19 @@ export default function ClientHandelshistorikk() {
 
   return (
     <div className={`min-h-screen ${SURFACE.BG_LIGHT} p-4 sm:p-8`}>
-      <div className="max-w-7xl mx-auto space-y-8">
-        <header className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50 p-6 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-[#001339] md:p-8">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full border border-[#0052FF]/20"
-          />
-          <div className="flex items-start justify-between flex-wrap gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
-                {locale === "no" ? "Oversikt" : "Overview"}
-              </p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {t("title")}
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
-                {t("subtitle")}
-              </p>
-            </div>
+      <PremiumTradingShell className="max-w-7xl mx-auto">
+        <PremiumTradingHero
+          eyebrow={locale === "no" ? "Oversikt" : "Overview"}
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actions={
             <Button className={BRAND.primary} disabled>
               {t("exportCsv")}
             </Button>
-          </div>
-        </header>
+          }
+        />
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-sm text-slate-600 dark:border-slate-800/80 dark:bg-slate-900/60 dark:text-slate-400">
+        <PremiumStatusBanner>
           <div className="flex flex-wrap items-center gap-2">
             <Clock3 className="h-4 w-4 text-[#0052FF]" />
             <span>
@@ -273,10 +267,10 @@ export default function ClientHandelshistorikk() {
                 : "Data refreshes automatically in the background."}
             </span>
           </div>
-        </div>
+        </PremiumStatusBanner>
 
         {/* Filter + stats */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 dark:border-slate-800/80 dark:bg-slate-900/60">
+        <PremiumPanel className="p-4">
           <div className="flex flex-wrap items-center gap-4">
             <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-slate-700 dark:bg-slate-950/70">
               {(["all", "paper", "live"] as ModeFilter[]).map((f) => (
@@ -326,7 +320,7 @@ export default function ClientHandelshistorikk() {
               />
             </div>
           )}
-        </div>
+        </PremiumPanel>
 
         <div className="flex items-center justify-between flex-wrap gap-4">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -345,7 +339,7 @@ export default function ClientHandelshistorikk() {
         )}
 
         {signedIn && !loading && !fetchError && (
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 dark:border-slate-800/80 dark:bg-slate-900/60 space-y-3">
+          <PremiumPanel className="space-y-3 p-4 sm:p-6">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               {t("decisionLogHint")}
             </p>
@@ -409,10 +403,10 @@ export default function ClientHandelshistorikk() {
                 })}
               </ul>
             )}
-          </div>
+          </PremiumPanel>
         )}
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden dark:border-slate-800/80 dark:bg-slate-900/60">
+        <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden dark:border-slate-800/80 dark:bg-slate-900/60 shadow-sm">
           {loading ? (
             <div className="py-24 flex justify-center">
               <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
@@ -571,7 +565,7 @@ export default function ClientHandelshistorikk() {
             </div>
           )}
         </div>
-      </div>
+      </PremiumTradingShell>
     </div>
   );
 }

@@ -35,6 +35,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
+import {
+  PremiumPanel,
+  PremiumStatusBanner,
+} from "@/components/trading/PremiumTradingLayout";
 
 /** Kort med skygge og 200ms overgang (tokens) */
 const cardBase = `bg-white dark:bg-slate-800/50 ${RADIUS.card} border border-[#E2E5EC] dark:border-slate-700 ${SHADOW.card}`;
@@ -248,7 +252,7 @@ export function PaperTradingList({
       </Card>
 
       {/* Sidetittel + oppdater + info om Binance */}
-      <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-4 dark:border-slate-800/80 dark:bg-slate-900/60">
+      <PremiumPanel className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
         <div>
           <h2
             className="text-lg font-semibold text-slate-800 dark:text-slate-200 truncate"
@@ -286,14 +290,16 @@ export function PaperTradingList({
             </Button>
           </div>
         )}
-      </div>
-      <p
-        className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 -mt-3"
-        title={t("binanceUpdateInfo")}
-      >
-        <Info className="w-3.5 h-3.5 shrink-0" aria-hidden />
-        {t("binanceUpdateInfo")}
-      </p>
+      </PremiumPanel>
+      <PremiumStatusBanner>
+        <p
+          className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"
+          title={t("binanceUpdateInfo")}
+        >
+          <Info className="w-3.5 h-3.5 shrink-0" aria-hidden />
+          {t("binanceUpdateInfo")}
+        </p>
+      </PremiumStatusBanner>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>

@@ -49,6 +49,10 @@ import AdvancedStatsModal from "./AdvancedStatsModal";
 import AIDecisionPanel from "@/components/ai/AIDecisionPanel";
 import { TABLE } from "@/lib/design/tokens";
 import { RobotThinkingStrip } from "@/components/trading/RobotThinkingStrip";
+import {
+  PremiumStatusBanner,
+  PremiumTradingHero,
+} from "@/components/trading/PremiumTradingLayout";
 
 interface BotStatusDashboardProps {
   portfolio: Portfolio | null;
@@ -348,16 +352,16 @@ export default function BotStatusDashboard({
 
       {/* Main Content Area */}
       <div className="flex-1 space-y-6">
-        <div className="rounded-2xl border border-slate-800/80 bg-linear-to-r from-slate-900 via-slate-900 to-[#001339] p-4 md:p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#9CC4FF]">
+        <PremiumStatusBanner>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
             {lang === "en" ? "Bot control center" : "Bot-kontrollsenter"}
           </p>
-          <p className="mt-1 text-sm text-slate-300">
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
             {lang === "en"
               ? "Status, decisions and performance are synced continuously. Trades appear automatically when executed."
               : "Status, beslutninger og ytelse synkroniseres kontinuerlig. Handler vises automatisk når de utføres."}
           </p>
-        </div>
+        </PremiumStatusBanner>
         <AnimatePresence mode="wait">
           {currentView === "narrative" && (
             <NarrativeView

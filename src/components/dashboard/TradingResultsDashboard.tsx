@@ -2,6 +2,12 @@
 
 import { ChartWrapper } from "@/components/ui/chart-wrapper";
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
+import {
+  PremiumPanel,
+  PremiumStatusBanner,
+  PremiumTradingHero,
+  PremiumTradingShell,
+} from "@/components/trading/PremiumTradingLayout";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import {
   Activity,
@@ -224,46 +230,36 @@ export default function TradingResultsDashboard() {
   }, [data]);
 
   return (
-    <div className="relative space-y-8 pb-16">
+    <PremiumTradingShell className="relative pb-16">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-[#0052FF]/15 blur-3xl"
       />
-      <header className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900 to-[#001339] p-6 md:p-8">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full border border-[#0052FF]/25"
-        />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
-              {t("eyebrow")}
-            </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight text-white md:text-4xl">
-              {t("title")}
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-400">
-              {t("subtitle")}
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-              <span className="rounded-full border border-slate-700 bg-slate-900/70 px-2.5 py-1 text-slate-300">
-                {t("kpi.trades")}: {sampleTrades}
-              </span>
-              <span className="rounded-full border border-slate-700 bg-slate-900/70 px-2.5 py-1 text-slate-300">
-                {t("outcome.unknown")}:{" "}
-                {Math.max(0, sampleTrades - knownPnlCount)}
-              </span>
-              <span className="rounded-full border border-[#0052FF]/40 bg-[#0052FF]/10 px-2.5 py-1 text-[#9CC4FF]">
-                {t("intervalHint")}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
+      <PremiumTradingHero
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        subtitle={t("subtitle")}
+        chips={
+          <>
+            <span className="rounded-full border border-slate-300 bg-white/80 px-2.5 py-1 text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
+              {t("kpi.trades")}: {sampleTrades}
+            </span>
+            <span className="rounded-full border border-slate-300 bg-white/80 px-2.5 py-1 text-slate-700 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
+              {t("outcome.unknown")}:{" "}
+              {Math.max(0, sampleTrades - knownPnlCount)}
+            </span>
+            <span className="rounded-full border border-[#0052FF]/40 bg-[#0052FF]/10 px-2.5 py-1 text-[#0047E0] dark:text-[#9CC4FF]">
+              {t("intervalHint")}
+            </span>
+          </>
+        }
+        actions={
+          <>
             <button
               type="button"
               onClick={exportCsv}
               disabled={!data || data.tradeCount === 0}
-              className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 ${BRAND.focusRing}`}
+              className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-[#0052FF]/40 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
             >
               <Download className="h-4 w-4" />
               {t("exportCsv")}
@@ -271,7 +267,7 @@ export default function TradingResultsDashboard() {
             <button
               type="button"
               onClick={() => void load()}
-              className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 hover:bg-slate-800 ${BRAND.focusRing}`}
+              className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-[#0052FF]/40 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
             >
               <RefreshCw
                 className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
@@ -280,33 +276,35 @@ export default function TradingResultsDashboard() {
             </button>
             <Link
               href={hrefWithLocale(locale, "/handelshistorikk")}
-              className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 ${BRAND.focusRing}`}
+              className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-[#0052FF]/40 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 ${BRAND.focusRing}`}
             >
               <History className="h-4 w-4" />
               {t("openHistory")}
             </Link>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
-      <div
-        className={`flex flex-wrap items-center gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/50 px-4 py-3 text-sm text-slate-400 ${RADIUS.card}`}
-        role="status"
-        aria-live="polite"
-      >
-        <Clock className="h-4 w-4 text-[#0052FF]" />
-        <span>
-          {lastFetch
-            ? t("lastUpdated", {
-                time: lastFetch.toLocaleString(
-                  locale === "no" ? "no-NO" : "en-GB",
-                ),
-              })
-            : t("notYetLoaded")}
-        </span>
-        <span className="hidden sm:inline">·</span>
-        <span className="text-slate-500">{t("intervalHint")}</span>
-      </div>
+      <PremiumStatusBanner>
+        <div
+          className="flex flex-wrap items-center gap-4"
+          role="status"
+          aria-live="polite"
+        >
+          <Clock className="h-4 w-4 text-[#0052FF]" />
+          <span>
+            {lastFetch
+              ? t("lastUpdated", {
+                  time: lastFetch.toLocaleString(
+                    locale === "no" ? "no-NO" : "en-GB",
+                  ),
+                })
+              : t("notYetLoaded")}
+          </span>
+          <span className="hidden sm:inline">·</span>
+          <span className="text-slate-500">{t("intervalHint")}</span>
+        </div>
+      </PremiumStatusBanner>
 
       {error && (
         <div
@@ -378,9 +376,7 @@ export default function TradingResultsDashboard() {
           ) : null}
 
           <div className="grid gap-6 lg:grid-cols-3">
-            <div
-              className={`lg:col-span-2 border border-slate-800/80 bg-slate-900/60 p-5 ${RADIUS.card} ${SHADOW.cardBrand}`}
-            >
+            <PremiumPanel className="lg:col-span-2 border-slate-200/80 dark:border-slate-800/80 dark:bg-slate-900/60">
               <h2 className="text-lg font-semibold text-white">
                 {t("charts.cumulativeTitle")}
               </h2>
@@ -443,11 +439,9 @@ export default function TradingResultsDashboard() {
                   </ChartWrapper>
                 )}
               </div>
-            </div>
+            </PremiumPanel>
 
-            <div
-              className={`border border-slate-800/80 bg-slate-900/60 p-5 ${RADIUS.card} ${SHADOW.card}`}
-            >
+            <PremiumPanel className="border-slate-200/80 dark:border-slate-800/80 dark:bg-slate-900/60">
               <h2 className="text-lg font-semibold text-white">
                 {t("charts.outcomeTitle")}
               </h2>
@@ -487,7 +481,7 @@ export default function TradingResultsDashboard() {
                   </ResponsiveContainer>
                 )}
               </div>
-            </div>
+            </PremiumPanel>
           </div>
 
           <div
@@ -657,7 +651,7 @@ export default function TradingResultsDashboard() {
           </div>
         </>
       ) : null}
-    </div>
+    </PremiumTradingShell>
   );
 }
 

@@ -16,6 +16,11 @@ import {
   Bot,
 } from "lucide-react";
 import { BRAND, SURFACE } from "@/lib/design/tokens";
+import {
+  PremiumPanel,
+  PremiumTradingHero,
+  PremiumTradingShell,
+} from "@/components/trading/PremiumTradingLayout";
 
 interface BotWizardProps {
   userId: string;
@@ -271,20 +276,16 @@ export function BotWizard({
   const selectedStrategy = STRATEGIES.find((s) => s.id === strategy);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 pb-36 md:pb-28 relative z-10">
-      <div className="mb-6 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50 p-5 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-[#001339]">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
-          {isNo ? "Auto-trade" : "Auto-trade"}
-        </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#1A1D26] dark:text-white">
-          {isNo ? "Start trading-bot" : "Start trading bot"}
-        </h1>
-        <p className="mt-2 text-sm text-[#5E6478] dark:text-slate-400">
-          {isNo
-            ? "Sett strategi, risiko og kapital. Boten starter i lekepenger og viser handler fortløpende i historikken."
-            : "Set strategy, risk and capital. The bot starts in paper mode and updates trade history continuously."}
-        </p>
-      </div>
+    <PremiumTradingShell className="max-w-3xl mx-auto px-4 py-8 pb-36 md:pb-28 relative z-10">
+      <PremiumTradingHero
+        eyebrow="Auto-trade"
+        title={isNo ? "Start trading-bot" : "Start trading bot"}
+        subtitle={
+          isNo
+            ? "Sett strategi, risiko og kapital. Boten starter i Lekepenger og viser handler fortløpende i historikken."
+            : "Set strategy, risk and capital. The bot starts in Paper trading and updates trade history continuously."
+        }
+      />
 
       {tier === "student" && (
         <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-[#E8F0FE] dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 px-4 py-3">
@@ -557,7 +558,7 @@ export function BotWizard({
           <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
             {isNo ? "Oppsummering" : "Summary"}
           </h2>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-[#E2E5EC] dark:border-slate-800 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-6 space-y-4">
+          <PremiumPanel className="space-y-4 p-6">
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478] dark:text-slate-400">
                 {isNo ? "Strategi" : "Strategy"}
@@ -608,7 +609,7 @@ export function BotWizard({
                 {startingCapital.toLocaleString("nb-NO")} kr
               </span>
             </div>
-          </div>
+          </PremiumPanel>
           <p className="mt-3 text-xs text-[#5E6478] dark:text-slate-400">
             {isNo
               ? "Etter start: boten kan være aktiv uten handel i en periode mens den venter på signal. Dette er normalt."
@@ -659,6 +660,6 @@ export function BotWizard({
           </button>
         ) : null}
       </div>
-    </div>
+    </PremiumTradingShell>
   );
 }
