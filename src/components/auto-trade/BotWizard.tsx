@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import {
   Lock,
   CheckCircle2,
@@ -68,6 +69,7 @@ export function BotWizard({
   paperBalance,
 }: BotWizardProps) {
   const tToast = useTranslations("toasts");
+  const router = useRouter();
   const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
   const [strategy, setStrategy] = useState("dca");
@@ -207,8 +209,11 @@ export function BotWizard({
         }),
       });
       let data: {
-        success?: boolean;
+        ok?: boolean;
+        code?: string;
+        message?: string;
         error?: string;
+        session_id?: string;
         reused_session?: boolean;
       };
       try {
@@ -220,9 +225,14 @@ export function BotWizard({
         return;
       }
 
-      if (!res.ok || !data.success) {
+      if (!res.ok || !data.ok) {
         toast.error(tToast("paperBot.startFailedTitle"), {
-          description: typeof data.error === "string" ? data.error : undefined,
+          description:
+            typeof data.error === "string"
+              ? data.error
+              : typeof data.message === "string"
+                ? data.message
+                : undefined,
         });
         return;
       }
@@ -236,7 +246,11 @@ export function BotWizard({
           description: tToast("paperBot.startedDesc"),
         });
       }
-      window.location.href = `/${locale}/dashboard`;
+      if (data.session_id) {
+        router.push(`/${locale}/dashboard/bot/${data.session_id}`);
+        return;
+      }
+      router.push(`/${locale}/dashboard/auto-trade`);
     } catch (err) {
       console.error(err);
       toast.error(tToast("paperBot.startFailedTitle"), {

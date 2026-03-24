@@ -43,7 +43,12 @@ describe("POST /api/auto-trading/paper", () => {
     const body = await response.json();
 
     expect(response.status).toBe(401);
-    expect(body).toEqual({ error: "Unauthorized" });
+    expect(body).toMatchObject({
+      ok: false,
+      code: "UNAUTHORIZED",
+      error: "Unauthorized",
+      next_step: "retry",
+    });
     expect(mockCreateServerClient).toHaveBeenCalledTimes(1);
   });
 
@@ -92,9 +97,12 @@ describe("POST /api/auto-trading/paper", () => {
 
     expect(response.status).toBe(200);
     expect(body).toEqual({
-      success: true,
+      ok: true,
+      code: "PAPER_BOT_STARTED",
+      message: "Paper bot started successfully",
       session_id: "session-abc",
       reused_session: false,
+      next_step: "open_bot_details",
     });
     expect(insert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -110,5 +118,52 @@ describe("POST /api/auto-trading/paper", () => {
         trading_pair: "ETHUSDT",
       }),
     );
+  });
+
+  it("returns already-active response when paper session exists", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-123" } },
+      error: null,
+    });
+
+    const maybeSingle = vi.fn().mockResolvedValue({
+      data: { id: "session-existing" },
+      error: null,
+    });
+    const existingQuery = {
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              limit: vi.fn(() => ({
+                maybeSingle,
+              })),
+            })),
+          })),
+        })),
+      })),
+    };
+
+    mockFrom.mockReturnValueOnce(existingQuery);
+
+    const response = await POST(
+      createJsonRequest({
+        strategy: "dca",
+        risk_level: "low",
+        pairs: ["BTCUSDT"],
+        starting_capital_nok: 100000,
+      }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({
+      ok: true,
+      code: "PAPER_BOT_ALREADY_ACTIVE",
+      message: "An active paper bot session already exists",
+      session_id: "session-existing",
+      reused_session: true,
+      next_step: "open_bot_details",
+    });
   });
 });
