@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { getRedisRest, isRedisRestConfigured } from "@/lib/redis-client";
+import {
+  DATA_SOURCE_THRESHOLDS,
+  getTradingFeedState,
+} from "@/lib/trading/data-source-state";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +26,7 @@ interface CheckResult {
   status: "ok" | "error" | "warning";
   latency?: number;
   message?: string;
+  details?: Record<string, string | number | boolean | null>;
 }
 
 const startTime = Date.now();
@@ -63,9 +68,12 @@ async function checkDatabase(): Promise<CheckResult> {
  */
 async function checkTradingSignals(): Promise<CheckResult> {
   const start = Date.now();
-  const maxAgeMinutes = Number(
-    process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES ?? "20",
+  const staleMinutes = Number(
+    process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES ??
+      DATA_SOURCE_THRESHOLDS.staleMinutes,
   );
+  const criticalMinutes = DATA_SOURCE_THRESHOLDS.criticalMinutes;
+  const incidentMinutes = DATA_SOURCE_THRESHOLDS.incidentMinutes;
 
   try {
     const supabase = createClient();
@@ -90,11 +98,24 @@ async function checkTradingSignals(): Promise<CheckResult> {
         };
       }
 
-      if (hbAgeMin > maxAgeMinutes) {
+      if (hbAgeMin > staleMinutes) {
+        const feedStateHint = getTradingFeedState({
+          hasError: false,
+          usesFallback: false,
+          latestSignalAgeMinutes: null,
+        });
         return {
           status: "warning",
           latency: Date.now() - start,
           message: `Signal engine heartbeat stale (${Math.round(hbAgeMin)}m old)`,
+          details: {
+            feedStateHint,
+            engineHeartbeatAgeMinutes: Number(hbAgeMin.toFixed(2)),
+            latestSignalAgeMinutes: null,
+            staleThresholdMinutes: staleMinutes,
+            criticalThresholdMinutes: criticalMinutes,
+            incidentThresholdMinutes: incidentMinutes,
+          },
         };
       }
 
@@ -106,20 +127,39 @@ async function checkTradingSignals(): Promise<CheckResult> {
         .maybeSingle();
 
       let message: string | undefined;
+      let latestSignalAgeMinutes: number | null = null;
+      let holdLikely = false;
       if (feedRow?.created_at) {
         const feedAgeMin =
           (Date.now() - new Date(feedRow.created_at).getTime()) / 60000;
-        if (feedAgeMin > maxAgeMinutes) {
+        latestSignalAgeMinutes = Number(feedAgeMin.toFixed(2));
+        if (feedAgeMin > staleMinutes) {
+          holdLikely = true;
           message = `Engine OK; latest feed row ${Math.round(feedAgeMin)}m old (normal during HOLD)`;
         }
       } else {
         message = "Engine OK; no rows in trading_signals yet";
       }
 
+      const feedStateHint = getTradingFeedState({
+        hasError: false,
+        usesFallback: false,
+        latestSignalAgeMinutes,
+      });
+
       return {
         status: "ok",
         latency: Date.now() - start,
         message,
+        details: {
+          feedStateHint,
+          holdLikely,
+          engineHeartbeatAgeMinutes: Number(hbAgeMin.toFixed(2)),
+          latestSignalAgeMinutes,
+          staleThresholdMinutes: staleMinutes,
+          criticalThresholdMinutes: criticalMinutes,
+          incidentThresholdMinutes: incidentMinutes,
+        },
       };
     }
 
@@ -149,17 +189,42 @@ async function checkTradingSignals(): Promise<CheckResult> {
 
     const ageMinutes =
       (Date.now() - new Date(data.created_at).getTime()) / 60000;
-    if (ageMinutes > maxAgeMinutes) {
+    if (ageMinutes > staleMinutes) {
+      const roundedAge = Number(ageMinutes.toFixed(2));
       return {
         status: "warning",
         latency: Date.now() - start,
         message: `Latest signal is stale (${Math.round(ageMinutes)}m old); no bot_health for signal-engine`,
+        details: {
+          feedStateHint: getTradingFeedState({
+            hasError: false,
+            usesFallback: false,
+            latestSignalAgeMinutes: roundedAge,
+          }),
+          engineHeartbeatAgeMinutes: null,
+          latestSignalAgeMinutes: roundedAge,
+          staleThresholdMinutes: staleMinutes,
+          criticalThresholdMinutes: criticalMinutes,
+          incidentThresholdMinutes: incidentMinutes,
+        },
       };
     }
 
     return {
       status: "ok",
       latency: Date.now() - start,
+      details: {
+        feedStateHint: getTradingFeedState({
+          hasError: false,
+          usesFallback: false,
+          latestSignalAgeMinutes: Number(ageMinutes.toFixed(2)),
+        }),
+        engineHeartbeatAgeMinutes: null,
+        latestSignalAgeMinutes: Number(ageMinutes.toFixed(2)),
+        staleThresholdMinutes: staleMinutes,
+        criticalThresholdMinutes: criticalMinutes,
+        incidentThresholdMinutes: incidentMinutes,
+      },
     };
   } catch (err) {
     return {

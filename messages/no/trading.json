@@ -148,6 +148,10 @@
   "signalFeed": {
     "title": "Handelssignaler",
     "activeCount": "{count} aktive",
+    "statusLive": "Live",
+    "statusStale": "Forsinket",
+    "statusEmpty": "Tom",
+    "statusError": "Feil",
     "updatedPrefix": "Oppdatert",
     "refreshAria": "Oppdater signaler",
     "emptyTitle": "Ingen signaler akkurat nå",

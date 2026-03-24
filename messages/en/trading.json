@@ -148,6 +148,10 @@
   "signalFeed": {
     "title": "Trading signals",
     "activeCount": "{count} active",
+    "statusLive": "Live",
+    "statusStale": "Stale",
+    "statusEmpty": "Empty",
+    "statusError": "Error",
     "updatedPrefix": "Updated",
     "refreshAria": "Refresh signals",
     "emptyTitle": "No signals right now",

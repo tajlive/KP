@@ -15,11 +15,14 @@ type DiscoverApiMeta = {
   activeBotsConsidered: number;
   publicProfilesConsidered: number;
   profileOnlyAdded: number;
+  followsLookupFailed?: boolean;
+  profilesLookupFailed?: boolean;
 };
 
 type DiscoverApiBody = {
   leaders: DiscoverLeaderDto[];
   meta?: DiscoverApiMeta;
+  reason?: "ok" | "no_public_traders" | "partial_data" | "backend_error";
   source?: "none" | "bots" | "trader_profiles" | "mixed";
 };
 
@@ -37,6 +40,7 @@ export function CopyTradingDiscoverClient() {
   const [leaders, setLeaders] = useState<DiscoverLeaderDto[]>([]);
   const [meta, setMeta] = useState<DiscoverApiMeta | null>(null);
   const [source, setSource] = useState<DiscoverApiBody["source"] | null>(null);
+  const [reason, setReason] = useState<DiscoverApiBody["reason"] | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +61,11 @@ export function CopyTradingDiscoverClient() {
         if (!res.ok) {
           const body = (await res.json().catch(() => ({}))) as {
             error?: string;
+            reason?: string;
           };
+          if (res.status === 401) {
+            throw new Error("auth_required");
+          }
           throw new Error(
             typeof body.error === "string" ? body.error : "fetch",
           );
@@ -66,8 +74,14 @@ export function CopyTradingDiscoverClient() {
         setLeaders(data.leaders ?? []);
         setMeta(data.meta ?? null);
         setSource(data.source ?? null);
-      } catch {
-        setError(t("loadError"));
+        setReason(data.reason ?? null);
+      } catch (e) {
+        setReason("backend_error");
+        const msg =
+          e instanceof Error && e.message === "auth_required"
+            ? t("authRequired")
+            : t("loadError");
+        setError(msg);
         if (!hadRows) setLeaders([]);
       } finally {
         setLoading(false);
@@ -227,7 +241,13 @@ export function CopyTradingDiscoverClient() {
           </div>
         ) : filtered.length === 0 ? (
           <p className="rounded-2xl border border-white/10 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
-            {leaders.length === 0 ? t("empty") : t("filterFollowingEmpty")}
+            {leaders.length === 0
+              ? reason === "no_public_traders"
+                ? t("emptyNoPublic")
+                : reason === "backend_error"
+                  ? t("emptyBackend")
+                  : t("empty")
+              : t("filterFollowingEmpty")}
           </p>
         ) : (
           <>

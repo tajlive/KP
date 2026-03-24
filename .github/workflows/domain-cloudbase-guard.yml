@@ -1,0 +1,21 @@
+name: Domain cloudbase guard
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Cloudbase domain health
+        run: node scripts/domain-cloudbase-guard.mjs
+        env:
+          APP_DOMAIN: www.klarpakke.no
+          HEALTH_URL: https://www.klarpakke.no/api/health
+

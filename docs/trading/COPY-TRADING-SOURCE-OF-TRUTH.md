@@ -24,6 +24,24 @@
 - **RLS / skjema** på `copy_trading_follows`: endres kun via migrasjon; etterpå verifiser at `resolve-leader` og API fortsatt matcher policy (auth uid i kolonner som policy forventer).
 - **E2E / smoke:** ved større endring, verifiser manuelt eller med test: innlogget `POST /api/copy-trading/follow` med cookie, `GET /api/copy-trading/following`, profilside `/copy-trading/traders/[id]`.
 
+## Discover respons-kontrakt (operativ)
+
+`GET /api/copy-trading/discover` returnerer nå i tillegg:
+
+- `reason`:
+  - `ok`
+  - `no_public_traders`
+  - `partial_data`
+  - `backend_error`
+- `meta.followsLookupFailed`
+- `meta.profilesLookupFailed`
+
+UI skal vise tydelig årsak ved tom liste:
+
+- ikke innlogget (`401` fra `withAuth`)
+- ingen offentlige tradere
+- backend-feil.
+
 ## Linear (anbefalt)
 
 - **Loggfør** leveransen som egen sak eller underoppgave med lenke til commit/PR og til denne filen.
