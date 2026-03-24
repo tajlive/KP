@@ -4,7 +4,9 @@
 DROP TABLE IF EXISTS public.unified_trading_sessions CASCADE;
 DROP VIEW IF EXISTS public.unified_trading_sessions CASCADE;
 
-CREATE VIEW public.unified_trading_sessions AS
+CREATE VIEW public.unified_trading_sessions
+WITH (security_invoker = true)
+AS
 SELECT
   ts.id,
   ts.user_id,
@@ -45,4 +47,4 @@ SELECT
   0::INTEGER AS followers_count
 FROM public.trading_sessions ts;
 
-COMMENT ON VIEW public.unified_trading_sessions IS 'Unified view over trading_sessions for dashboard/RPC. Fixes 42P01 when functions query this name.';
+COMMENT ON VIEW public.unified_trading_sessions IS 'Unified view over trading_sessions for dashboard/RPC. security_invoker=true (Supabase linter). Fixes 42P01 when functions query this name.';

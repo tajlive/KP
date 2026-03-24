@@ -24,6 +24,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: MCP config (.cursor ↔ .mcp)
+        run: node scripts/validate-mcp-config.mjs
+
       - name: Sjekk cloud readiness (deploy)
         run: node scripts/cloud-readiness.mjs --profile deploy
         env:

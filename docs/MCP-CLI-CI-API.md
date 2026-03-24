@@ -18,21 +18,21 @@
 
 **Hemmeligheter:** Aldri committe tokens. Bruk miljøvariabler:
 
-- **Cursor:** Linear bruker `scripts/run-linear-mcp.mjs`, som leser `LINEAR_API_KEY` fra `.env.local`. For GitHub, Supabase, Vercel, Stripe, Sentry, Resend: sett variablene i Cursor / shell (f.eks. `GITHUB_TOKEN`, `SUPABASE_ACCESS_TOKEN`, `VERCEL_TOKEN`, osv.).
+- **Cursor:** Linear → `run-linear-mcp.mjs`; Supabase → `run-official-supabase-mcp.mjs`; GitHub → `run-github-mcp.mjs` (leser **GITHUB_TOKEN** eller **GH_PAT** fra `.env.local`). For Vercel, Stripe, Sentry, Resend: sett variabler i Cursor / shell (f.eks. `VERCEL_TOKEN`).
 - **Referanse:** `docs/COMMON-SECRETS.md`, `.env.local.example`, `docs/MCP-SECRETS-SETUP.md`
 
 ### Servere i `.cursor/mcp.json`
 
-| Server          | Kommando / notater                                                                                                                                                                                                                                                                                                                                                                                                     |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| github          | `npx -y @modelcontextprotocol/server-github` — env: `GITHUB_TOKEN`                                                                                                                                                                                                                                                                                                                                                     |
-| linear          | `node scripts/run-linear-mcp.mjs` — nøkkel fra `.env.local`                                                                                                                                                                                                                                                                                                                                                            |
-| supabase        | `npx -y @supabase/mcp-server-supabase@latest` — `SUPABASE_ACCESS_TOKEN`, project-ref i `.cursor/mcp.json`. **Cursor må kunne substituere `${SUPABASE_ACCESS_TOKEN}`** (sett variabelen i Cursor-miljø / shell som starter Cursor, ikke bare i `.env.local` — se `docs/MCP-SECRETS-SETUP.md`). For SQL mot linket prosjekt uten MCP: `npm run db:apply:trading-core` (Management API via `supabase db query --linked`). |
-| **supabase-db** | `node scripts/run-supabase-mcp.mjs` — **DATABASE_URL** fra `.env.local`; 100 % uten Management API-token. Se `docs/MCP-SUPABASE-DB.md`.                                                                                                                                                                                                                                                                                |
-| playwright      | `npx -y @playwright/mcp@latest`                                                                                                                                                                                                                                                                                                                                                                                        |
-| resend          | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY`                                                                                                                                                                                                                                                                                                                                                                     |
-| **vercel**      | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`.                                                                                                                                                                                                                                                                                                                    |
-| **cloudflare**  | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`.                                                                                                                                                                                                                                                                                                        |
+| Server          | Kommando / notater                                                                                                                                                                                                                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| github          | `node scripts/run-github-mcp.mjs` — **GITHUB_TOKEN** eller **GH_PAT** fra `.env.local` → `GITHUB_PERSONAL_ACCESS_TOKEN` for MCP-serveren                                                                                                                                                                                       |
+| linear          | `node scripts/run-linear-mcp.mjs` — nøkkel fra `.env.local`                                                                                                                                                                                                                                                                    |
+| supabase        | `node scripts/run-official-supabase-mcp.mjs` — leser **SUPABASE_ACCESS_TOKEN** fra `.env.local` (PAT) og **project-ref** fra `SUPABASE_PROJECT_REF` eller `NEXT_PUBLIC_SUPABASE_URL` (fallback: vuxbjlykgmzskxbclquf). Gir Management API: migrasjoner, advisors, edge functions, typer. For rå SQL uten PAT: **supabase-db**. |
+| **supabase-db** | `node scripts/run-supabase-mcp.mjs` — **DATABASE_URL** fra `.env.local`; 100 % uten Management API-token. Se `docs/MCP-SUPABASE-DB.md`.                                                                                                                                                                                        |
+| playwright      | `npx -y @playwright/mcp@latest`                                                                                                                                                                                                                                                                                                |
+| resend          | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY`                                                                                                                                                                                                                                                                             |
+| **vercel**      | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`.                                                                                                                                                                                                                            |
+| **cloudflare**  | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`.                                                                                                                                                                                                                |
 
 **Merk:** Cursor er selv MCP-klient; prosjektets MCP-er står i `.cursor/mcp.json`. Full oversikt for Cursor (MCP-oppsett, CLI, API): **docs/CURSOR-MCP-CLI-API.md**.
 
@@ -56,7 +56,9 @@ Krever: nettverk, Playwright-browsere (`npm run playwright:install`), Supabase/N
 ### Verifisere MCP
 
 ```bash
-npm run auto:preflight      # Cloud readiness (agent) — start her for «alt på plass»
+npm run automation:check    # mcp:validate-config && auto:preflight (anbefalt før push)
+npm run mcp:validate-config # Kun .cursor/mcp.json ↔ .mcp/mcp_config.json (også i CI / preflight)
+npm run auto:preflight      # Cloud readiness + MCP-validering (se scripts/automation-preflight.mjs)
 npm run auto:preflight:full # + test:mcp + linear:test
 npm run env:sync:supabase   # URL + anon + service_role → .env.local (SUPABASE_ACCESS_TOKEN)
 npm run env:sync:supabase:verify # + test:e2e:check-env
@@ -97,6 +99,7 @@ Detaljer: **docs/LINEAR-ACCESS.md**
 
 ```bash
 npm run db:push              # supabase db push --linked (krever synk migrasjonshistorikk)
+npm run db:lint:ci           # db lint mot linket prosjekt; exit 1 kun ved ERROR (CI / lokal paritet)
 npm run db:apply:trading-core # To idempotente SQL-filer: trades + calculate_daily_loss, deretter trading_sessions/trigger search_path — `supabase db query --linked` (token fra .env.local via scripts/supabase-query-linked.mjs). Fasit: docs/trading/DB-REMOTE-REPAIR-FASIT.md
 npm run db:status            # supabase migration list --linked
 npm run db:diff              # supabase db diff --linked

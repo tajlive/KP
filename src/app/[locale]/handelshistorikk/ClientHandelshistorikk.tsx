@@ -136,7 +136,8 @@ export default function ClientHandelshistorikk() {
         setFetchError(tradesRes.error.message || t("fetchError"));
         setTrades([]);
       } else {
-        setTrades((tradesRes.data as Trade[]) ?? []);
+        const rows = (tradesRes.data as Trade[]) ?? [];
+        setTrades(rows);
       }
 
       if (decisionsRes.error) {

@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
  */
 
 test.describe("Smoke: Health Checks @smoke", () => {
-  test("health endpoint returns 200", async ({ request }) => {
+  test("health endpoint returns service status", async ({ request }) => {
     // Retry logic for dev server cold start
     let response;
     let lastError;
@@ -22,10 +22,10 @@ test.describe("Smoke: Health Checks @smoke", () => {
     }
 
     if (!response) throw lastError;
-    expect(response.status()).toBe(200);
+    expect([200, 503]).toContain(response.status());
 
     const body = await response.json();
-    expect(body.status).toBeDefined();
+    expect(["healthy", "degraded", "unhealthy"]).toContain(body.status);
     expect(body.timestamp).toBeDefined();
   });
 

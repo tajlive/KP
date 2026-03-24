@@ -11,6 +11,7 @@ interface HealthCheck {
   version: string;
   checks: {
     database: CheckResult;
+    tradingSignals: CheckResult;
     kv: CheckResult;
     environment: CheckResult;
   };
@@ -39,6 +40,60 @@ async function checkDatabase(): Promise<CheckResult> {
         status: "error",
         latency: Date.now() - start,
         message: error.message,
+      };
+    }
+
+    return {
+      status: "ok",
+      latency: Date.now() - start,
+    };
+  } catch (err) {
+    return {
+      status: "error",
+      latency: Date.now() - start,
+      message: err instanceof Error ? err.message : "Unknown error",
+    };
+  }
+}
+
+async function checkTradingSignals(): Promise<CheckResult> {
+  const start = Date.now();
+  const maxAgeMinutes = Number(
+    process.env.SIGNAL_HEALTH_MAX_AGE_MINUTES ?? "20",
+  );
+
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("trading_signals")
+      .select("created_at")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      return {
+        status: "error",
+        latency: Date.now() - start,
+        message: error.message,
+      };
+    }
+
+    if (!data?.created_at) {
+      return {
+        status: "warning",
+        latency: Date.now() - start,
+        message: "No trading signals found",
+      };
+    }
+
+    const ageMinutes =
+      (Date.now() - new Date(data.created_at).getTime()) / 60000;
+    if (ageMinutes > maxAgeMinutes) {
+      return {
+        status: "warning",
+        latency: Date.now() - start,
+        message: `Latest signal is stale (${Math.round(ageMinutes)}m old)`,
       };
     }
 
@@ -115,6 +170,7 @@ function checkEnvironment(): CheckResult {
 export async function GET() {
   const checks = {
     database: await checkDatabase(),
+    tradingSignals: await checkTradingSignals(),
     kv: await checkKV(),
     environment: checkEnvironment(),
   };

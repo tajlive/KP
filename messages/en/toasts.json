@@ -1,6 +1,24 @@
 {
   "general": {
     "error": "An error occurred",
-    "saved": "Changes saved"
+    "saved": "Changes saved",
+    "comingSoon": "Coming soon"
+  },
+  "trading": {
+    "tradeExecuted": "New trade recorded ({side} {symbol})"
+  },
+  "strategy": {
+    "started": "Strategy started",
+    "startFailed": "Could not start strategy",
+    "stopped": "Strategy stopped",
+    "stopFailed": "Could not stop strategy"
+  },
+  "paperBot": {
+    "startedTitle": "Paper bot started",
+    "startedDesc": "Starting capital is set. No order was placed yet — trades will appear in trade history when executed.",
+    "alreadyActiveTitle": "Paper bot already running",
+    "alreadyActiveDesc": "You already have an active session. No new trade was created.",
+    "startFailedTitle": "Could not start paper bot",
+    "networkError": "Network error — please try again."
   }
 }

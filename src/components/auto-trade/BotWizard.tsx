@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   Lock,
   CheckCircle2,
@@ -65,6 +67,7 @@ export function BotWizard({
   tier: rawTier,
   paperBalance,
 }: BotWizardProps) {
+  const tToast = useTranslations("toasts");
   const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
   const [strategy, setStrategy] = useState("dca");
@@ -203,14 +206,45 @@ export function BotWizard({
           starting_capital_nok: startingCapital,
         }),
       });
-      const data = await res.json();
-      if (data.success) {
-        window.location.href = `/${locale}/dashboard`;
+      let data: {
+        success?: boolean;
+        error?: string;
+        reused_session?: boolean;
+      };
+      try {
+        data = (await res.json()) as typeof data;
+      } catch {
+        toast.error(tToast("paperBot.startFailedTitle"), {
+          description: tToast("paperBot.networkError"),
+        });
+        return;
       }
+
+      if (!res.ok || !data.success) {
+        toast.error(tToast("paperBot.startFailedTitle"), {
+          description: typeof data.error === "string" ? data.error : undefined,
+        });
+        return;
+      }
+
+      if (data.reused_session) {
+        toast.info(tToast("paperBot.alreadyActiveTitle"), {
+          description: tToast("paperBot.alreadyActiveDesc"),
+        });
+      } else {
+        toast.success(tToast("paperBot.startedTitle"), {
+          description: tToast("paperBot.startedDesc"),
+        });
+      }
+      window.location.href = `/${locale}/dashboard`;
     } catch (err) {
       console.error(err);
+      toast.error(tToast("paperBot.startFailedTitle"), {
+        description: tToast("paperBot.networkError"),
+      });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const stepLabels = [

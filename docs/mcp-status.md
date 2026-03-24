@@ -6,20 +6,22 @@
 
 ## 7/8 MCP-tilkoblinger ✅ — KLAR FOR PRODUKSJON
 
-| # | Tjeneste | Status | Brukes til | Token-type |
-|---|----------|--------|------------|------------|
-| 1 | **GitHub API** | ✅ OK | Kode, PR, issues, branches | PAT Classic (90d) |
-| 2 | **Supabase REST** | ✅ OK | DB-spørringer, auth, storage | Service Role Key |
-| 3 | **Supabase psql** | ✅ OK | Direkte SQL, migrasjoner, schema-dump | DATABASE_URL |
-| 4 | **Linear API** | ✅ OK | Issues, sprints, roadmap | Personal API Key |
-| 5 | **Vercel API** | ✅ OK | Deployments, env vars, previews | Access Token |
-| 6 | **Stripe API** | ✅ OK | Betalinger, subscriptions (live!) | Secret Key |
-| 7 | **Sentry** | ⚠️ CLI | Bygg, source maps, deploy | CLI Auth Token |
-| 8 | **Resend API** | ✅ OK | Transaksjonell e-post, templates | API Key |
-| 9 | **Plausible** | ✅ OK | GDPR-compliant analytics | Ingen nøkkel |
+| #   | Tjeneste          | Status | Brukes til                            | Token-type        |
+| --- | ----------------- | ------ | ------------------------------------- | ----------------- |
+| 1   | **GitHub API**    | ✅ OK  | Kode, PR, issues, branches            | PAT Classic (90d) |
+| 2   | **Supabase REST** | ✅ OK  | DB-spørringer, auth, storage          | Service Role Key  |
+| 3   | **Supabase psql** | ✅ OK  | Direkte SQL, migrasjoner, schema-dump | DATABASE_URL      |
+| 4   | **Linear API**    | ✅ OK  | Issues, sprints, roadmap              | Personal API Key  |
+| 5   | **Vercel API**    | ✅ OK  | Deployments, env vars, previews       | Access Token      |
+| 6   | **Stripe API**    | ✅ OK  | Betalinger, subscriptions (live!)     | Secret Key        |
+| 7   | **Sentry**        | ⚠️ CLI | Bygg, source maps, deploy             | CLI Auth Token    |
+| 8   | **Resend API**    | ✅ OK  | Transaksjonell e-post, templates      | API Key           |
+| 9   | **Plausible**     | ✅ OK  | GDPR-compliant analytics              | Ingen nøkkel      |
 
 ### Sentry-notis
+
 CLI auth-token (`sntrys_...`) fungerer for:
+
 - `sentry-cli` kommandoer
 - Next.js build-integrasjon
 - Source map uploads
@@ -53,15 +55,17 @@ Perplexity Pro (Chief Architect)
 ## Verktøykasse
 
 ### MCP-servere i `.cursor/mcp.json`
-- `github` — @modelcontextprotocol/server-github (env: GITHUB_TOKEN)
+
+- `github` — node scripts/run-github-mcp.mjs (GITHUB_TOKEN eller GH_PAT fra .env.local)
 - `linear` — node scripts/run-linear-mcp.mjs (nøkkel fra .env.local)
-- `supabase` — @supabase/mcp-server-supabase (SUPABASE_ACCESS_TOKEN, project-ref)
+- `supabase` — node scripts/run-official-supabase-mcp.mjs (PAT fra .env.local → @supabase/mcp-server-supabase)
 - `playwright` — @playwright/mcp
 - `resend` — resend-mcp (RESEND_API_KEY)
 
 `.mcp/mcp_config.json` bruker kun env-variabler (ingen hemmeligheter). Samlet oversikt: **docs/MCP-CLI-CI-API.md**.
 
 ### Scripts
+
 ```bash
 npm run linear:test     # Linear: tilkobling, teams, issues
 npm run test:mcp        # Verifiser MCP-tilkoblinger (Supabase, Stripe, Vercel, Resend)
@@ -71,6 +75,7 @@ npm run deploy:prod     # Deploy til Vercel
 ```
 
 ### Nyttige filer
+
 - `.cursor/mcp.json` — Cursor MCP (placeholders / env, safe to commit)
 - `.mcp/mcp_config.json` — Kun env-referanser (safe to commit)
 - `.env.local.example` — Mal for alle nøkler med dashbord-lenker

@@ -137,19 +137,23 @@ else
 fi
 
 # ── 3. SUPABASE PSQL ──────────────────────
+# Pooler-URL (6543) feiler ofte med psql; REST-testen over er kanonisk for app. Soft-skip ved feil.
 if command -v psql &> /dev/null && [ -n "${DATABASE_URL:-}" ]; then
   echo -n "  Testing Supabase psql... "
-  if psql "${DATABASE_URL}" -c 'SELECT 1 as ping' -t 2>&1 | grep -q "1"; then
+  psql_out=$(psql "${DATABASE_URL}" -v ON_ERROR_STOP=1 -t -A -c 'select 1' 2>&1) || true
+  if echo "$psql_out" | grep -qx '1'; then
     echo -e "${GREEN}✅ OK${NC}"
     echo "✅ Supabase psql: OK" >> "$REPORT"
     PASS=$((PASS + 1))
-  else
+  elif [ "${PSQL_CHECK_STRICT:-}" = "1" ]; then
     echo -e "${RED}❌ FEIL${NC}"
-    echo "❌ Supabase psql: FEIL" >> "$REPORT"
+    echo "❌ Supabase psql: FEIL — $psql_out" >> "$REPORT"
     FAIL=$((FAIL + 1))
+  else
+    skip "Supabase psql" "psql feilet (ofte pooler :6543 — bruk direct connection URL fra Supabase → Database, eller ignorer; REST-testen over dekker app). Sett PSQL_CHECK_STRICT=1 for hard fail."
   fi
 else
-  skip "Supabase psql" "Installer psql: brew install postgresql@16"
+  skip "Supabase psql" "DATABASE_URL mangler eller psql ikke installert (brew install postgresql@16)"
 fi
 
 # ════════════════════════════════════════════

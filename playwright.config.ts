@@ -43,6 +43,11 @@ applyEnvFile(".env", { skipNodeEnv: true });
 applyEnvFile(".env.development", { skipNodeEnv: true });
 applyEnvFile(".env.local", { skipNodeEnv: true });
 applyEnvFile(".env.development.local", { skipNodeEnv: true });
+/**
+ * Lokalt: `.env.local` har ofte kun Supabase — uten E2E_USER_* feiler auth.setup (fil finnes, ingen E2E-nøkler).
+ * Fyll kun hull fra repo-sporet `.env.example` (samme standard testbruker som create-test-users / AGENTS.md).
+ */
+applyEnvFile(".env.example", { skipNodeEnv: true, fillMissingOnly: true });
 
 /**
  * `scripts/full-e2e.sh` eksporterer KLARPAKKE_E2E_FROM_PROVISION=1 etter create-test-users.js.
@@ -198,6 +203,18 @@ export default defineConfig({
     {
       name: "critical-chromium",
       testMatch: /critical\/.*\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: e2eAuthStoragePath,
+        viewport: { width: 1920, height: 1080 },
+      },
+      dependencies: ["setup"],
+    },
+
+    /** Agent/debug: papir-saldo + historikk (samme auth som critical) */
+    {
+      name: "debug-chromium",
+      testMatch: /debug\/.*\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: e2eAuthStoragePath,

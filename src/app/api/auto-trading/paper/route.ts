@@ -50,7 +50,11 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({ success: true, session_id: existing.id });
+      return NextResponse.json({
+        success: true,
+        session_id: existing.id,
+        reused_session: true,
+      });
     }
 
     const { data, error } = await supabase
@@ -77,7 +81,11 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true, session_id: data.id });
+    return NextResponse.json({
+      success: true,
+      session_id: data.id,
+      reused_session: false,
+    });
   } catch (error) {
     console.error("[auto-trading/paper POST] Error:", error);
     return NextResponse.json(

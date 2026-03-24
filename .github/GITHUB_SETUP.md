@@ -52,7 +52,7 @@ Denne filen beskriver anbefalt oppsett i GitHub-websiden for å få full optimal
 | `VERCEL_PROJECT_ID`             | **Påkrevd for Deploy** – brukes sammen med VERCEL_ORG_ID. Finn i Vercel Dashboard → Project Settings                        |
 | `SENTRY_AUTH_TOKEN`             | Build (source maps til Sentry)                                                                                              |
 | `SUPABASE_PROJECT_REF`          | DB Push on merge – Supabase-projekt-ID (f.eks. `vuxbjlykgmzskxbclquf`). Alternativ: `SUPABASE_PROJECT_ID`                   |
-| `SUPABASE_ACCESS_TOKEN`         | DB Push on merge – Supabase Personal Access Token fra Dashboard                                                             |
+| `SUPABASE_ACCESS_TOKEN`         | DB Push on merge + **DB lint (PR)** – Supabase Personal Access Token fra Dashboard                                          |
 
 **Slik setter du SENTRY_AUTH_TOKEN (manuelt):**  
 Sentry MCP støtter ikke token-oppretting. Prosjektet **klarpakke-production** ligger i org **elbatt-chatbot**.
@@ -113,17 +113,18 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 
 ### Støtte-workflows
 
-| Workflow             | Fil                    | Trigger                                               | Formål                                                                   |
-| -------------------- | ---------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
-| **E2E Critical**     | `e2e-critical.yml`     | Push/PR til `main`, daglig 06:00, manuell             | Playwright kritiske flows (Chromium + Firefox). Slack-varsling ved feil. |
-| **Security Audit**   | `security-audit.yml`   | Mandager 09:00, manuell                               | npm audit, secret-scan, valgfritt Snyk                                   |
-| **Dependency Check** | `dependency-check.yml` | 1. i måneden, manuell                                 | depcheck, knip                                                           |
-| **MCP Health**       | `mcp-health.yml`       | Hverdager 06:00, manuell                              | Sjekker Supabase, Stripe, Vercel, Resend, Cloudflare                     |
-| **MCP Integration**  | `mcp-integration.yml`  | Push/PR med MCP-config-endringer                      | Validerer MCP-konfigurasjon                                              |
-| **Schema Dump**      | `schema-dump.yml`      | Push til `main` (migrasjoner), daglig 05:00           | Dumper DB-skjema til docs                                                |
-| **DB Push**          | `db-push.yml`          | Manuell                                               | Kjører `supabase db push`                                                |
-| **Auto-create PR**   | `auto-create-pr.yml`   | Push til `cursor/**`, `feat/**`, `fix/**`, `chore/**` | Oppretter draft PR mot main hvis ingen finnes                            |
-| **DB Push on merge** | `db-push-on-merge.yml` | Push til `main` (når `supabase/**` endres)            | Kjører `supabase db push` automatisk etter merge                         |
+| Workflow             | Fil                    | Trigger                                               | Formål                                                                                                                                                          |
+| -------------------- | ---------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **E2E Critical**     | `e2e-critical.yml`     | Push/PR til `main`, daglig 06:00, manuell             | Playwright kritiske flows (Chromium + Firefox). Slack-varsling ved feil.                                                                                        |
+| **Security Audit**   | `security-audit.yml`   | Mandager 09:00, manuell                               | npm audit, secret-scan, valgfritt Snyk                                                                                                                          |
+| **Dependency Check** | `dependency-check.yml` | 1. i måneden, manuell                                 | depcheck, knip                                                                                                                                                  |
+| **MCP Health**       | `mcp-health.yml`       | Hverdager 06:00, manuell                              | Sjekker Supabase, Stripe, Vercel, Resend, Cloudflare                                                                                                            |
+| **MCP Integration**  | `mcp-integration.yml`  | Push/PR med MCP-config-endringer                      | Validerer MCP-konfigurasjon                                                                                                                                     |
+| **Schema Dump**      | `schema-dump.yml`      | Push til `main` (migrasjoner), daglig 05:00           | Dumper DB-skjema til docs                                                                                                                                       |
+| **DB Push**          | `db-push.yml`          | Manuell                                               | Kjører `supabase db push`                                                                                                                                       |
+| **Auto-create PR**   | `auto-create-pr.yml`   | Push til `cursor/**`, `feat/**`, `fix/**`, `chore/**` | Oppretter draft PR mot main hvis ingen finnes                                                                                                                   |
+| **DB Push on merge** | `db-push-on-merge.yml` | Push til `main` (når `supabase/**` endres)            | Kjører `supabase db push` automatisk etter merge                                                                                                                |
+| **DB lint**          | `db-lint.yml`          | PR mot `main` (når `supabase/**` endres) + manuell    | `db lint --fail-on error`. Uten repo-var **DB_LINT_STRICT=true** er steget `continue-on-error` (gul ved backlog). Sett variabelen når lint skal blokkere merge. |
 
 ### Deaktiverte workflows (`workflows-disabled/`)
 

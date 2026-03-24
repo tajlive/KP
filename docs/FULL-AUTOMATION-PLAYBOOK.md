@@ -27,11 +27,14 @@
 Kjør i rot av repo (krever `.env.local`):
 
 ```bash
-npm run auto:preflight          # Cloud readiness (agent-profil)
+npm run automation:check        # MCP .cursor↔.mcp + cloud readiness (anbefalt før push)
+npm run auto:preflight          # Cloud readiness (agent-profil) — inkl. MCP-validering
 npm run auto:preflight:full     # + MCP-tilkoblingstest + Linear-test
+npm run mcp:validate-config     # Kun synk-sjekk .cursor/mcp.json ↔ .mcp/mcp_config.json
 ```
 
-- **Agent-profil** krever bl.a. Linear + Vercel (se `scripts/cloud-readiness.mjs`). Viser også **valgfri** E2E/Supabase Admin-status (`SUPABASE_SERVICE_ROLE_KEY` m.m.).
+- **Runbook (kort):** [docs/automation/AUTOMATION-RUNBOOK.md](./automation/AUTOMATION-RUNBOOK.md)
+- **Preflight-profil** (standard i `auto:preflight` / `automation:check`): **Linear** påkrevd; Vercel valgfri. **Agent-profil** (streng, m.m. deploy): `npm run cloud:ready` eller `CLOUD_READINESS_PROFILE=agent npm run auto:preflight`. Se `scripts/cloud-readiness.mjs`.
 - **Full** kjører `scripts/test-mcp-connections.sh` (feiler hvis en påkrevd tilkobling feiler — se rapport).
 - **E2E testbruker (Supabase Admin):** `npm run test:e2e:check-env` → `npm run test:e2e:prepare` (sjekk + `tom@klarpakke.no`). Deretter `npm run test:e2e:with-user` eller `test:full`.
 - **`test:full` (scripts/full-e2e.sh):** smoke + critical (Chromium + Firefox). **Utvidelser:** `npm run test:full:quality` (lint + tsc + Vitest først), `npm run test:full:deep` (+ regression-chromium), `npm run test:full:fast` (kun primærbruker, uten Firefox). Miljø: `KP_TEST_FULL_QUALITY`, `KP_TEST_FULL_DEEP`, `KP_TEST_FULL_NO_FIREFOX`, `KP_TEST_FULL_USERS=primary`. Etter feil: `npm run test:e2e:agent-brief` leser `test-results.json` og skriver en kort oppsummering til stdout (lim inn i Cursor). Full «auto-fiks uten menneske» finnes ikke innebygd — bruk agent + rapport/HTML.

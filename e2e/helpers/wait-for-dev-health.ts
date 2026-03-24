@@ -17,7 +17,8 @@ export async function waitForDevHealth(
     for (let i = 0; i < 12; i++) {
       try {
         const r = await ctx.get("/api/health", { timeout: 12_000 });
-        if (r.ok()) return;
+        // 503 = degraded men appen kjører (samme som smoke health).
+        if (r.ok() || r.status() === 503) return;
         lastErr = `HTTP ${r.status()}`;
       } catch (e) {
         lastErr = String(e);

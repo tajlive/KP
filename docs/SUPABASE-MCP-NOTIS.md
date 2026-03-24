@@ -16,8 +16,9 @@ Referanse når du bruker Supabase MCP (execute_sql, apply_migration, list_migrat
 
 ## Prosjekt
 
+- **Sjekk at PAT leses:** `npm run mcp:check-supabase-env` (bekrefter `SUPABASE_ACCESS_TOKEN` i `.env.local` uten å skrive ut verdien).
 - **Project ref:** `vuxbjlykgmzskxbclquf`.
-- **MCP:** Supabase-serveren er konfigurert i `.cursor/mcp.json` (access token + project-ref). Supabase-db (egen MCP) kjører via `scripts/run-supabase-mcp.mjs` og kan kreve `DATABASE_URL` i `.env.local`.
+- **MCP:** Offisiell Supabase-server startes med `scripts/run-official-supabase-mcp.mjs` (leser **SUPABASE_ACCESS_TOKEN** fra `.env.local`; project-ref fra URL eller `SUPABASE_PROJECT_REF`). **supabase-db** kjører via `scripts/run-supabase-mcp.mjs` og trenger **DATABASE_URL** i `.env.local`.
 
 ## PSQL / API i stedet for CLI
 

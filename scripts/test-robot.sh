@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # «Test-robot»: lint → type-check → unit → E2E provision → critical Playwright (Chromium).
 # Ikke en LLM — deterministisk CI-lignende kjede lokalt.
-set -euo pipefail
+set -eo pipefail
 cd "$(dirname "$0")/.."
 
 if [ -s "${HOME}/.nvm/nvm.sh" ]; then
@@ -9,6 +9,7 @@ if [ -s "${HOME}/.nvm/nvm.sh" ]; then
   . "${HOME}/.nvm/nvm.sh"
   nvm use 2>/dev/null || true
 fi
+set -u
 export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
 
 echo "🤖 test-robot: lint"

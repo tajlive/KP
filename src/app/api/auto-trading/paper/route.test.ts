@@ -91,7 +91,11 @@ describe("POST /api/auto-trading/paper", () => {
     const body = await response.json();
 
     expect(response.status).toBe(200);
-    expect(body).toEqual({ success: true, session_id: "session-abc" });
+    expect(body).toEqual({
+      success: true,
+      session_id: "session-abc",
+      reused_session: false,
+    });
     expect(insert).toHaveBeenCalledWith(
       expect.objectContaining({
         user_id: "user-123",
