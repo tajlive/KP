@@ -61,7 +61,7 @@ Linear (sporbarhet): **KLA-237** — https://linear.app/klarpakke/issue/KLA-237/
   - `select count(*) from auth.users u left join public.user_profiles up on up.id = u.id where up.id is null;`
   - `select count(*) from auth.users u left join public.user_profiles up on up.user_id = u.id where up.user_id is null;`
 - **Signal health CLI:** `npm run signals:health` — primært **`bot_health.last_heartbeat`** for `signal-engine` (oppdateres hver cron-kjøring). Siste rad i `trading_signals` kan være gammel uten feil når markedet er HOLD (ingen nye BUY/SELL-rader). Terskel: `SIGNAL_HEALTH_MAX_AGE_MINUTES` (default 20). Uten `bot_health`-rad faller CLI tilbake til kun `trading_signals`.
-- **Diagnose (signaler + tradere):** `npm run diagnose:signals-traders` — teller `trading_signals`, sjekker ferskhet, teller aktive `leaderboard_bots` og offentlige `trader_profiles` (service role fra `.env.local`).
+- **Diagnose (signaler + tradere):** `npm run diagnose:signals-traders` — teller `trading_signals`, sjekker ferskhet, teller aktive `leaderboard_bots` og offentlige `trader_profiles` (service role fra `.env.local`). **Heartbeat vs fallback:** `seed_signal_if_stale` (pg_cron) kan fylle `trading_signals` uten at Edge `signal-engine` kjører; migrasjon `20260324103000_seed_signal_touch_bot_health.sql` oppdaterer `bot_health` når fallback seeder. Edge bør fortsatt deployes og `pg_cron` `signal-engine-5min` må returnere 200 (sjekk `Authorization` / vault).
 - **Paper SoT:** nye sesjoner skal gå i `public.trading_sessions` med `mode='paper'`; `paper_trading_sessions` behandles som legacy og skal ikke være primær kilde for nye flater.
 
 ## Feilsøking: ingen tradere, ingen «live» signaler, stale i ukevis
