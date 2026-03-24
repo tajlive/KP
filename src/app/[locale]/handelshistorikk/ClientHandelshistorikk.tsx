@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
 import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregates";
 import { explainStrategySignalJson } from "@/lib/bot-status-helpers";
-import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
+import { ArrowUp, ArrowDown, Loader2, Clock3, History } from "lucide-react";
 import type { Json } from "@/types/supabase-generated";
 import { reportTradingIntegrityPollFailure } from "@/lib/sentry";
 import { tradesPollIntervalAfterFailures } from "@/lib/trading/trading-integrity-sync";
@@ -241,95 +241,102 @@ export default function ClientHandelshistorikk() {
   return (
     <div className={`min-h-screen ${SURFACE.BG_LIGHT} p-4 sm:p-8`}>
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <h1 className="text-3xl font-bold text-[#0A0B0D]">{t("title")}</h1>
-          <Button className={BRAND.primary} disabled>
-            {t("exportCsv")}
-          </Button>
+        <header className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50 p-6 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-[#001339] md:p-8">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full border border-[#0052FF]/20"
+          />
+          <div className="flex items-start justify-between flex-wrap gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
+                {locale === "no" ? "Oversikt" : "Overview"}
+              </p>
+              <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {t("title")}
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
+                {t("subtitle")}
+              </p>
+            </div>
+            <Button className={BRAND.primary} disabled>
+              {t("exportCsv")}
+            </Button>
+          </div>
+        </header>
+
+        <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-sm text-slate-600 dark:border-slate-800/80 dark:bg-slate-900/60 dark:text-slate-400">
+          <div className="flex flex-wrap items-center gap-2">
+            <Clock3 className="h-4 w-4 text-[#0052FF]" />
+            <span>
+              {locale === "no"
+                ? "Data oppdateres automatisk i bakgrunnen."
+                : "Data refreshes automatically in the background."}
+            </span>
+          </div>
         </div>
 
         {/* Filter + stats */}
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex bg-gray-100 rounded-lg p-1">
-            {(["all", "paper", "live"] as ModeFilter[]).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  filter === f
-                    ? "bg-white text-[#0A0B0D] shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                {f === "all"
-                  ? t("filterAll")
-                  : f === "paper"
-                    ? t("filterPaper")
-                    : t("filterLive")}
-              </button>
-            ))}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 dark:border-slate-800/80 dark:bg-slate-900/60">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-slate-700 dark:bg-slate-950/70">
+              {(["all", "paper", "live"] as ModeFilter[]).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                    filter === f
+                      ? "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white"
+                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                  }`}
+                >
+                  {f === "all"
+                    ? t("filterAll")
+                    : f === "paper"
+                      ? t("filterPaper")
+                      : t("filterLive")}
+                </button>
+              ))}
+            </div>
           </div>
+
           {filteredTrades.length > 0 && (
             <div
-              className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-1 text-sm text-gray-600"
+              className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
               data-testid="trade-history-aggregates"
             >
-              <span>
-                {t("totalTrades")}:{" "}
-                <strong className="text-[#0A0B0D]">{stats.rowCount}</strong>
-              </span>
-              <span>
-                {t("wins")}:{" "}
-                <strong className="text-green-700">{stats.winCount}</strong>
-              </span>
-              <span>
-                {t("losses")}:{" "}
-                <strong className="text-red-700">{stats.lossCount}</strong>
-              </span>
-              {stats.breakevenCount > 0 ? (
-                <span>
-                  {t("breakeven")}:{" "}
-                  <strong className="text-gray-700">
-                    {stats.breakevenCount}
-                  </strong>
-                </span>
-              ) : null}
-              {stats.noRealizedPnlCount > 0 ? (
-                <span title={t("noRealizedPnlExplainer")}>
-                  {t("noRealizedPnl")}:{" "}
-                  <strong className="text-gray-500">
-                    {stats.noRealizedPnlCount}
-                  </strong>
-                </span>
-              ) : null}
-              <span>
-                {t("totalRealizedPnl")}:{" "}
-                <strong
-                  className={
-                    stats.totalRealizedPnl >= 0
-                      ? "text-green-700"
-                      : "text-red-700"
-                  }
-                >
-                  {stats.totalRealizedPnl >= 0 ? "+" : ""}
-                  {formatNOK(stats.totalRealizedPnl)}
-                </strong>
-              </span>
-              <span title={t("winRateRealizedHint")}>
-                {t("winRate")}:{" "}
-                <strong className="text-[#0A0B0D]">
-                  {stats.winRateRealizedPct != null
-                    ? `${stats.winRateRealizedPct}%`
-                    : "—"}
-                </strong>
-              </span>
+              <StatCard
+                label={t("totalTrades")}
+                value={String(stats.rowCount)}
+                tone="neutral"
+              />
+              <StatCard
+                label={t("wins")}
+                value={String(stats.winCount)}
+                tone="positive"
+              />
+              <StatCard
+                label={t("losses")}
+                value={String(stats.lossCount)}
+                tone="negative"
+              />
+              <StatCard
+                label={t("totalRealizedPnl")}
+                value={`${stats.totalRealizedPnl >= 0 ? "+" : ""}${formatNOK(stats.totalRealizedPnl)}`}
+                tone={stats.totalRealizedPnl >= 0 ? "positive" : "negative"}
+              />
             </div>
           )}
         </div>
 
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {t("decisionLogTitle")}
+          </h2>
+        </div>
+
         {signedIn && integrityPollWarning && !fetchError && (
           <p
-            className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950"
+            className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950 dark:border-amber-600/30 dark:bg-amber-900/30 dark:text-amber-200"
             role="status"
             data-testid="trade-history-integrity-poll-warning"
           >
@@ -338,19 +345,16 @@ export default function ClientHandelshistorikk() {
         )}
 
         {signedIn && !loading && !fetchError && (
-          <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 space-y-3">
-            <div>
-              <h2 className="text-lg font-semibold text-[#0A0B0D]">
-                {t("decisionLogTitle")}
-              </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {t("decisionLogHint")}
-              </p>
-            </div>
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 dark:border-slate-800/80 dark:bg-slate-900/60 space-y-3">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              {t("decisionLogHint")}
+            </p>
             {filteredDecisions.length === 0 ? (
-              <p className="text-sm text-gray-600">{t("decisionsEmpty")}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                {t("decisionsEmpty")}
+              </p>
             ) : (
-              <ul className="divide-y divide-gray-100 max-h-72 overflow-y-auto">
+              <ul className="divide-y divide-slate-100 dark:divide-slate-800 max-h-72 overflow-y-auto">
                 {filteredDecisions.map((d) => {
                   const allow = d.decision_type === "allow";
                   const reject = d.decision_type === "reject";
@@ -363,10 +367,10 @@ export default function ClientHandelshistorikk() {
                         ? t("decisionModify")
                         : d.decision_type;
                   const badgeClass = allow
-                    ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                    ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/25 dark:text-emerald-200 dark:border-emerald-700/40"
                     : reject
-                      ? "bg-red-50 text-red-800 border-red-200"
-                      : "bg-amber-50 text-amber-900 border-amber-200";
+                      ? "bg-red-50 text-red-800 border-red-200 dark:bg-red-900/25 dark:text-red-200 dark:border-red-700/40"
+                      : "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-900/25 dark:text-amber-200 dark:border-amber-700/40";
                   const pair = (d.symbol ?? "").replace("USDT", "");
                   const rr = formatRejectionReason(d.rejection_reason);
                   return (
@@ -374,7 +378,7 @@ export default function ClientHandelshistorikk() {
                       key={d.id}
                       className="py-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 text-sm"
                     >
-                      <div className="text-gray-500 whitespace-nowrap">
+                      <div className="text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {formatDate(d.created_at)}
                       </div>
                       <div className="flex-1 min-w-0 space-y-1">
@@ -384,18 +388,20 @@ export default function ClientHandelshistorikk() {
                           >
                             {label}
                           </span>
-                          <span className="font-medium text-[#0A0B0D]">
+                          <span className="font-medium text-slate-900 dark:text-white">
                             {pair}
                           </span>
-                          <span className="text-gray-600 uppercase">
+                          <span className="text-slate-600 dark:text-slate-400 uppercase">
                             {d.side}
                           </span>
-                          <span className="text-gray-500">
+                          <span className="text-slate-500 dark:text-slate-400">
                             {d.trading_mode === "live" ? t("live") : t("paper")}
                           </span>
                         </div>
                         {reject && rr ? (
-                          <p className="text-gray-700 break-words">{rr}</p>
+                          <p className="text-slate-700 dark:text-slate-300 break-words">
+                            {rr}
+                          </p>
                         ) : null}
                       </div>
                     </li>
@@ -406,10 +412,10 @@ export default function ClientHandelshistorikk() {
           </div>
         )}
 
-        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden dark:border-slate-800/80 dark:bg-slate-900/60">
           {loading ? (
             <div className="py-24 flex justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+              <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
             </div>
           ) : fetchError ? (
             <div className="text-center py-12 px-4 space-y-3">
@@ -423,15 +429,19 @@ export default function ClientHandelshistorikk() {
             </div>
           ) : signedIn === false ? (
             <div className="text-center py-12 px-4 space-y-3">
-              <p className="text-gray-700">{t("notLoggedIn")}</p>
+              <p className="text-slate-700 dark:text-slate-300">
+                {t("notLoggedIn")}
+              </p>
               <Button variant="outline" onClick={() => void fetchTrades(false)}>
                 {t("retry")}
               </Button>
             </div>
           ) : filteredTrades.length === 0 ? (
             <div className="text-center py-12 px-4 space-y-2">
-              <p className="text-gray-600">{t("noTrades")}</p>
-              <p className="text-sm text-gray-500 max-w-md mx-auto">
+              <p className="text-slate-600 dark:text-slate-300">
+                {t("noTrades")}
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                 {t("noTradesHint")}
               </p>
             </div>
@@ -439,32 +449,32 @@ export default function ClientHandelshistorikk() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/80">
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/70">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("date")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("pair")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase max-w-[14rem]">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase max-w-[14rem]">
                       {t("whyColumn")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("side")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("quantity")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("entryPrice")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("pnl")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("mode")}
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">
                       {t("status")}
                     </th>
                   </tr>
@@ -486,16 +496,16 @@ export default function ClientHandelshistorikk() {
                     return (
                       <tr
                         key={trade.id}
-                        className="border-b border-gray-50 hover:bg-gray-50/50"
+                        className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                       >
-                        <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                        <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap">
                           {formatDate(trade.created_at)}
                         </td>
-                        <td className="px-4 py-3 font-medium text-[#0A0B0D]">
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
                           {pair}
                         </td>
                         <td
-                          className="px-4 py-3 text-sm text-gray-700 max-w-[14rem]"
+                          className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 max-w-[14rem]"
                           title={whyText}
                         >
                           <span className="line-clamp-3">{whyText}</span>
@@ -504,8 +514,8 @@ export default function ClientHandelshistorikk() {
                           <span
                             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
                               isBuy
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
                             }`}
                           >
                             {isBuy ? (
@@ -527,10 +537,10 @@ export default function ClientHandelshistorikk() {
                             <span
                               className={
                                 pnl > 0
-                                  ? "text-green-600 font-medium"
+                                  ? "text-green-600 dark:text-green-400 font-medium"
                                   : pnl < 0
-                                    ? "text-red-600 font-medium"
-                                    : "text-gray-600 font-medium"
+                                    ? "text-red-600 dark:text-red-400 font-medium"
+                                    : "text-slate-600 dark:text-slate-400 font-medium"
                               }
                             >
                               {pnl > 0 ? "+" : ""}
@@ -538,7 +548,7 @@ export default function ClientHandelshistorikk() {
                             </span>
                           ) : (
                             <span
-                              className="text-gray-400"
+                              className="text-slate-400 dark:text-slate-500"
                               title={t("noRealizedPnlExplainer")}
                             >
                               {t("noRealizedPnlShort")}
@@ -546,11 +556,11 @@ export default function ClientHandelshistorikk() {
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-xs text-gray-600">
+                          <span className="text-xs text-slate-600 dark:text-slate-400">
                             {trade.mode === "live" ? t("live") : t("paper")}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-xs text-gray-600">
+                        <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
                           {trade.status ?? "—"}
                         </td>
                       </tr>
@@ -562,6 +572,33 @@ export default function ClientHandelshistorikk() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "neutral" | "positive" | "negative";
+}) {
+  const valueClass =
+    tone === "positive"
+      ? "text-emerald-600 dark:text-emerald-400"
+      : tone === "negative"
+        ? "text-rose-600 dark:text-rose-400"
+        : "text-slate-900 dark:text-white";
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 dark:border-slate-700 dark:bg-slate-950/60">
+      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        {label}
+      </p>
+      <p className={`mt-1 text-base font-semibold tabular-nums ${valueClass}`}>
+        {value}
+      </p>
     </div>
   );
 }

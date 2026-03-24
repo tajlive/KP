@@ -272,9 +272,19 @@ export function BotWizard({
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 pb-36 md:pb-28 relative z-10">
-      <h1 className="text-2xl font-bold text-[#1A1D26] dark:text-white mb-4">
-        {isNo ? "Start trading-bot" : "Start trading bot"}
-      </h1>
+      <div className="mb-6 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50 p-5 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-[#001339]">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
+          {isNo ? "Auto-trade" : "Auto-trade"}
+        </p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#1A1D26] dark:text-white">
+          {isNo ? "Start trading-bot" : "Start trading bot"}
+        </h1>
+        <p className="mt-2 text-sm text-[#5E6478] dark:text-slate-400">
+          {isNo
+            ? "Sett strategi, risiko og kapital. Boten starter i lekepenger og viser handler fortløpende i historikken."
+            : "Set strategy, risk and capital. The bot starts in paper mode and updates trade history continuously."}
+        </p>
+      </div>
 
       {tier === "student" && (
         <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-[#E8F0FE] dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 px-4 py-3">
@@ -599,6 +609,11 @@ export function BotWizard({
               </span>
             </div>
           </div>
+          <p className="mt-3 text-xs text-[#5E6478] dark:text-slate-400">
+            {isNo
+              ? "Etter start: boten kan være aktiv uten handel i en periode mens den venter på signal. Dette er normalt."
+              : "After start: the bot can be active without trades for a period while waiting for a signal. This is normal."}
+          </p>
           {/* Primær CTA — alltid synlig (lys/mørk + over tabbar) */}
           <div className="mt-6">
             <button

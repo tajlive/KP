@@ -7,6 +7,7 @@
   "title": "Dine resultater",
   "subtitle": "Samlet bilde av realisert P&L, daglige svingninger og fordeling mellom par og moduser. Siden henter tall på nytt hvert femte minutt og når du kommer tilbake til fanen.",
   "refresh": "Oppdater nå",
+  "exportCsv": "Eksportér CSV",
   "openHistory": "Handelshistorikk",
   "lastUpdated": "Sist oppdatert: {time}",
   "notYetLoaded": "Laster data …",
@@ -22,7 +23,7 @@
   "worstDay": "Tøffeste dag: {day} ({amount})",
   "modeTrades": "{count} handler",
   "mode": {
-    "paper": "Øving",
+    "paper": "Lekepenger",
     "live": "Live",
     "unknown": "Ukjent"
   },
@@ -45,7 +46,7 @@
     "pairsHint": "Par med størst bidrag (positivt eller negativt).",
     "pairPnl": "P&L",
     "modeTitle": "Etter modus",
-    "modeHint": "Paper vs live (eller annen modus lagret på handler)."
+    "modeHint": "Lekepenger vs live (eller annen modus lagret på handler)."
   },
   "empty": {
     "needTrades": "Du trenger minst to datapunkter for kurven. Ta noen handler eller vent på lukkede posisjoner med P&L.",

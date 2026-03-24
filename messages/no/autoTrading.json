@@ -52,7 +52,7 @@
     },
     "step4": {
       "title": "Auto-Execution",
-      "description": "Paper trading (gratis øving)",
+      "description": "Lekepenger (gratis øving)",
       "detail": "Øv med virtuell kapital før live trading"
     },
     "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først i paper mode. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."

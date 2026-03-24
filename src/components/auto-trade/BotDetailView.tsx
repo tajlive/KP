@@ -158,7 +158,10 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         {no ? "Tilbake" : "Back"}
       </Link>
 
-      <div>
+      <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50 p-5 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-[#001339]">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
+          {no ? "Bot-detaljer" : "Bot details"}
+        </p>
         <h1 className="text-2xl font-bold text-[#1A1D26] dark:text-white">
           {session.name ?? "Trading Bot"}
         </h1>
@@ -295,9 +298,16 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         <div
           className={`h-[200px] rounded-lg ${SURFACE.BG_LIGHT} dark:bg-slate-950 flex items-center justify-center border border-[#E2E5EC] dark:border-slate-800`}
         >
-          <p className="text-sm text-[#8E95A9] dark:text-slate-400">
-            {no ? "Graf kommer snart" : "Chart coming soon"}
-          </p>
+          <div className="text-center px-6">
+            <p className="text-sm font-medium text-[#1A1D26] dark:text-slate-200">
+              {no ? "Equity-forhåndsvisning" : "Equity preview"}
+            </p>
+            <p className="mt-1 text-xs text-[#8E95A9] dark:text-slate-400">
+              {no
+                ? "Vises automatisk når boten har minst to utførte handler."
+                : "Automatically shown when the bot has at least two executed trades."}
+            </p>
+          </div>
         </div>
       </div>
 

@@ -286,23 +286,23 @@ export default function BotStatusDashboard({
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-6 bg-slate-950 min-h-screen text-slate-200 pb-24">
       {/* Navigation Layer */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900/80 backdrop-blur-2xl border border-slate-800 p-2 rounded-2xl flex items-center gap-1 shadow-2xl scale-90 md:scale-100">
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-[95vw] overflow-x-auto bg-slate-900/85 backdrop-blur-2xl border border-slate-800 p-1.5 rounded-2xl flex items-center gap-1 shadow-2xl">
         <Link
           href={`/${locale}/dashboard`}
-          className="p-3 px-6 bg-blue-600 text-white rounded-xl font-black text-sm flex items-center gap-2"
+          className="p-2.5 px-4 bg-blue-600 text-white rounded-xl font-black text-xs md:text-sm flex items-center gap-1.5 whitespace-nowrap"
         >
           <LayoutDashboard className="w-4 h-4" /> Bot Status
         </Link>
         <Link
           href={`/${locale}/copy-trading`}
-          className="p-3 px-6 text-slate-400 hover:text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-colors"
+          className="p-2.5 px-4 text-slate-400 hover:text-white rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 transition-colors whitespace-nowrap"
         >
           <BarChart3 className="w-4 h-4" />{" "}
           {lang === "en" ? "Leaderboard" : "Ledertavle"}
         </Link>
         <Link
           href={`/${locale}/marketplace`}
-          className="p-3 px-6 text-slate-400 hover:text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-colors"
+          className="p-2.5 px-4 text-slate-400 hover:text-white rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 transition-colors whitespace-nowrap"
         >
           <ShoppingBag className="w-4 h-4" />{" "}
           {lang === "en" ? "Market" : "Marked"}
@@ -312,7 +312,7 @@ export default function BotStatusDashboard({
         <button
           onClick={() => setCurrentView("narrative")}
           className={cn(
-            "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
+            "p-2.5 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 transition-colors whitespace-nowrap",
             currentView === "narrative"
               ? "bg-blue-600 text-white"
               : "text-slate-400 hover:text-white",
@@ -324,7 +324,7 @@ export default function BotStatusDashboard({
         <button
           onClick={() => setCurrentView("advanced")}
           className={cn(
-            "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
+            "p-2.5 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 transition-colors whitespace-nowrap",
             currentView === "advanced"
               ? "bg-emerald-600 text-white"
               : "text-slate-400 hover:text-white",
@@ -336,7 +336,7 @@ export default function BotStatusDashboard({
         <button
           onClick={() => setCurrentView("ai")}
           className={cn(
-            "p-3 px-4 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors",
+            "p-2.5 px-3 rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 transition-colors whitespace-nowrap",
             currentView === "ai"
               ? "bg-[#0052FF] text-white"
               : "text-slate-400 hover:text-white",
@@ -348,6 +348,16 @@ export default function BotStatusDashboard({
 
       {/* Main Content Area */}
       <div className="flex-1 space-y-6">
+        <div className="rounded-2xl border border-slate-800/80 bg-linear-to-r from-slate-900 via-slate-900 to-[#001339] p-4 md:p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#9CC4FF]">
+            {lang === "en" ? "Bot control center" : "Bot-kontrollsenter"}
+          </p>
+          <p className="mt-1 text-sm text-slate-300">
+            {lang === "en"
+              ? "Status, decisions and performance are synced continuously. Trades appear automatically when executed."
+              : "Status, beslutninger og ytelse synkroniseres kontinuerlig. Handler vises automatisk når de utføres."}
+          </p>
+        </div>
         <AnimatePresence mode="wait">
           {currentView === "narrative" && (
             <NarrativeView
@@ -710,7 +720,7 @@ export default function BotStatusDashboard({
                 <BarChart3 className="w-5 h-5 mr-3 text-blue-500 group-hover:scale-110 transition-transform" />
                 <div className="text-left">
                   <div className="font-bold text-sm">
-                    {lang === "en" ? "Copy Trading" : "Kopier Trading"}
+                    {lang === "en" ? "Copy Trading" : "Kopihandel"}
                   </div>
                   <div className="text-[10px] text-slate-500">
                     {lang === "en"
@@ -789,7 +799,7 @@ function NarrativeView({
 
           <p className="text-lg text-slate-400 max-w-lg text-center md:text-left leading-relaxed">
             {isBotActive && mainStrategy
-              ? `${lang === "en" ? "Your bot is running" : "Ditt bot kjører"} ${mainStrategy.strategy_id.replace(/_/g, " ")} ${lang === "en" ? "on" : "på"} ${mainStrategy.trading_pair}.`
+              ? `${lang === "en" ? "Your bot is running" : "Boten din kjører"} ${mainStrategy.strategy_id.replace(/_/g, " ")} ${lang === "en" ? "on" : "på"} ${mainStrategy.trading_pair}.`
               : lang === "en"
                 ? "You have no active strategies right now. Start a strategy to begin automated trading."
                 : "Du har ingen aktive strategier akkurat nå. Start en strategi for å begynne automatisert handel."}

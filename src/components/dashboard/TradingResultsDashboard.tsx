@@ -9,6 +9,7 @@ import {
   ArrowUpRight,
   BarChart3,
   Clock,
+  Download,
   History,
   RefreshCw,
   TrendingDown,
@@ -184,37 +185,107 @@ export default function TradingResultsDashboard() {
 
   const totalPnl = data?.aggregates.totalEffectivePnl ?? 0;
   const pnlPositive = totalPnl >= 0;
+  const sampleTrades = data?.tradeCount ?? 0;
+  const knownPnlCount =
+    (data?.aggregates.effectiveWinCount ?? 0) +
+    (data?.aggregates.effectiveLossCount ?? 0) +
+    (data?.aggregates.effectiveBreakevenCount ?? 0);
+
+  const exportCsv = useCallback(() => {
+    if (!data || data.tradeCount === 0) return;
+    const rows = [
+      [
+        "generated_at",
+        "trade_count",
+        "total_realized_pnl",
+        "total_effective_pnl",
+        "win_rate_realized_pct",
+      ],
+      [
+        data.generatedAt,
+        String(data.tradeCount),
+        String(data.aggregates.totalRealizedPnl),
+        String(data.aggregates.totalEffectivePnl),
+        data.aggregates.winRateRealizedPct == null
+          ? ""
+          : String(data.aggregates.winRateRealizedPct),
+      ],
+    ];
+    const csv = rows.map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `trading-results-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, [data]);
 
   return (
-    <div className="space-y-8 pb-16">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
-            {t("eyebrow")}
-          </p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-white md:text-4xl">
-            {t("title")}
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-400">
-            {t("subtitle")}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => void load()}
-            className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 hover:bg-slate-800 ${BRAND.focusRing}`}
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            {t("refresh")}
-          </button>
-          <Link
-            href={hrefWithLocale(locale, "/handelshistorikk")}
-            className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 ${BRAND.focusRing}`}
-          >
-            <History className="h-4 w-4" />
-            {t("openHistory")}
-          </Link>
+    <div className="relative space-y-8 pb-16">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 right-0 h-64 w-64 rounded-full bg-[#0052FF]/15 blur-3xl"
+      />
+      <header className="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-slate-950 via-slate-900 to-[#001339] p-6 md:p-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full border border-[#0052FF]/25"
+        />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#0052FF]">
+              {t("eyebrow")}
+            </p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight text-white md:text-4xl">
+              {t("title")}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-400">
+              {t("subtitle")}
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <span className="rounded-full border border-slate-700 bg-slate-900/70 px-2.5 py-1 text-slate-300">
+                {t("kpi.trades")}: {sampleTrades}
+              </span>
+              <span className="rounded-full border border-slate-700 bg-slate-900/70 px-2.5 py-1 text-slate-300">
+                {t("outcome.unknown")}:{" "}
+                {Math.max(0, sampleTrades - knownPnlCount)}
+              </span>
+              <span className="rounded-full border border-[#0052FF]/40 bg-[#0052FF]/10 px-2.5 py-1 text-[#9CC4FF]">
+                {t("intervalHint")}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={exportCsv}
+              disabled={!data || data.tradeCount === 0}
+              className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 ${BRAND.focusRing}`}
+            >
+              <Download className="h-4 w-4" />
+              {t("exportCsv")}
+            </button>
+            <button
+              type="button"
+              onClick={() => void load()}
+              className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 hover:bg-slate-800 ${BRAND.focusRing}`}
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+              />
+              {t("refresh")}
+            </button>
+            <Link
+              href={hrefWithLocale(locale, "/handelshistorikk")}
+              className={`inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-[#0052FF]/40 ${BRAND.focusRing}`}
+            >
+              <History className="h-4 w-4" />
+              {t("openHistory")}
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -603,8 +674,12 @@ function KpiCard({
 }) {
   return (
     <div
-      className={`border border-slate-800/80 bg-gradient-to-br from-slate-900/90 to-slate-950/90 p-5 ${RADIUS.card} ${SHADOW.card}`}
+      className={`relative overflow-hidden border border-slate-800/80 bg-gradient-to-br from-slate-900/90 to-slate-950/90 p-5 ${RADIUS.card} ${SHADOW.card}`}
     >
+      <div
+        aria-hidden
+        className={`absolute inset-x-0 top-0 h-0.5 ${positive ? "bg-emerald-400/80" : "bg-rose-400/80"}`}
+      />
       <div className="flex items-center gap-2 text-slate-500">
         <Icon
           className={`h-4 w-4 ${positive ? "text-emerald-400/90" : "text-rose-400/90"}`}
