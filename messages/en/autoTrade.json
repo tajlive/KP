@@ -11,26 +11,29 @@
     "pausedDescription": "Click to start AI auto-trading"
   },
   "stats": {
-    "totalDecisions": "Totale Beslutninger",
-    "buy": "Kjøp",
-    "sell": "Salg",
-    "hold": "Vent",
-    "avgConfidence": "Gj. Confidence",
-    "lastRun": "Siste analyse"
+    "totalDecisions": "Total decisions",
+    "buy": "Buy",
+    "sell": "Sell",
+    "hold": "Hold",
+    "avgConfidence": "Avg. confidence",
+    "lastRun": "Last analysis",
+    "positions": "Positions",
+    "totalPnL": "Total P&L",
+    "balance": "Balance"
   },
   "config": {
-    "title": "Konfigurasjon",
-    "riskLevel": "Risiko Nivå",
-    "safe": "Sikker",
-    "moderate": "Moderat",
-    "aggressive": "Aggressiv",
-    "symbols": "Symboler",
-    "minConfidence": "Minimum Confidence"
+    "title": "Configuration",
+    "riskLevel": "Risk level",
+    "safe": "Safe",
+    "moderate": "Moderate",
+    "aggressive": "Aggressive",
+    "symbols": "Symbols",
+    "minConfidence": "Minimum confidence"
   },
   "recentDecisions": {
-    "title": "Siste Beslutninger",
-    "empty": "Ingen beslutninger ennå",
-    "emptyDescription": "Start AI for å se analyser",
+    "title": "Recent Decisions",
+    "empty": "No decisions yet",
+    "emptyDescription": "Start AI to see analysis",
     "target": "Target",
     "stop": "Stop",
     "rsi": "RSI"
@@ -38,51 +41,40 @@
   "howItWorks": {
     "title": "How It Works",
     "step1": {
-      "title": "Markedsdata",
-      "description": "CoinLore API (gratis, 14,000+ coins)",
-      "detail": "Real-time priser og markedsinformasjon"
+      "title": "Market data",
+      "description": "CoinLore API (free, 14,000+ coins)",
+      "detail": "Real-time prices and market information"
     },
     "step2": {
-      "title": "Sentiment Analyse",
-      "description": "Hugging Face + Reddit (gratis)",
-      "detail": "Analyserer nyheter og sosiale medier"
+      "title": "Sentiment analysis",
+      "description": "Hugging Face + Reddit (free)",
+      "detail": "Analyzes news and social media"
     },
     "step3": {
-      "title": "AI Prediksjon",
-      "description": "Cloudflare Workers AI (10,000 req/dag gratis)",
-      "detail": "Kombinerer teknisk analyse med sentiment"
+      "title": "AI prediction",
+      "description": "Cloudflare Workers AI (10,000 req/day free)",
+      "detail": "Combines technical analysis with sentiment"
     },
     "step4": {
       "title": "Auto-Execution",
-      "description": "Paper trading (gratis øving)",
-      "detail": "Øv med virtuell kapital før live trading"
+      "description": "Paper trading (risk-free practice)",
+      "detail": "Practice with virtual capital before live trading"
     },
-    "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først i paper mode. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
+    "warning": "Important: This is free AI analysis. Trading starts in paper mode first. No paid APIs are used. Cloudflare Workers AI provides 10,000 free requests per day."
   },
   "actions": {
-    "runNow": "Kjør nå",
+    "runNow": "Run now",
     "start": "Start AI",
-    "stop": "Stopp AI"
+    "stop": "Stop AI"
   },
   "errors": {
-    "notAuthenticated": "Du må være logget inn for å bruke AI auto-trading"
+    "notAuthenticated": "You must be signed in to use AI auto-trading"
   },
   "selectRisk": "Select Risk Level",
   "loading": "Loading...",
   "startRobot": "Start Robot",
   "pauseRobot": "Pause Robot",
   "liveStatus": "Live Status",
-  "stats": {
-    "totalDecisions": "Total Decisions",
-    "buy": "Buy",
-    "sell": "Sell",
-    "hold": "Hold",
-    "avgConfidence": "Avg. Confidence",
-    "lastRun": "Last Run",
-    "positions": "Positions",
-    "totalPnL": "Total P&L",
-    "balance": "Balance"
-  },
   "risk": {
     "conservative": "Conservative",
     "balanced": "Balanced",

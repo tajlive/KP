@@ -16,7 +16,10 @@
     "sell": "Salg",
     "hold": "Vent",
     "avgConfidence": "Gj. Confidence",
-    "lastRun": "Siste analyse"
+    "lastRun": "Siste analyse",
+    "positions": "Posisjoner",
+    "totalPnL": "Total P&L",
+    "balance": "Balanse"
   },
   "config": {
     "title": "Konfigurasjon",
@@ -72,17 +75,6 @@
   "startRobot": "Start Robot",
   "pauseRobot": "Pause Robot",
   "liveStatus": "Live Status",
-  "stats": {
-    "totalDecisions": "Totale Beslutninger",
-    "buy": "Kjøp",
-    "sell": "Salg",
-    "hold": "Vent",
-    "avgConfidence": "Gj. Confidence",
-    "lastRun": "Siste analyse",
-    "positions": "Posisjoner",
-    "totalPnL": "Total P&L",
-    "balance": "Balans"
-  },
   "risk": {
     "conservative": "Konservativ",
     "balanced": "Balansert",

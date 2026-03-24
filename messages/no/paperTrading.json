@@ -1,5 +1,5 @@
 {
-  "title": "Øvingshandel",
+  "title": "Lekepenger",
   "description": "Øv deg på trading uten risiko",
   "balance": "Saldo",
   "newSession": "Ny trade",
@@ -15,7 +15,7 @@
   "subtitle": "Øv deg på trading med {amount} virtuelle penger",
   "contextBanner": "Øv deg på trading med 100 000 kr i lekepenger",
   "workspaceHeader": {
-    "title": "Øvingshandel — arbeidsflate",
+    "title": "Lekepenger — arbeidsflate",
     "subtitle": "Grafer, ordre og bot — ikke samme side som dashbord-hjemmet."
   },
   "help": {
@@ -106,7 +106,7 @@
   "backToDashboard": "Tilbake til dashboard",
   "sessions": {
     "maxActiveReached": "Du har allerede maks antall aktive økter i denne modusen. Åpner eksisterende økt.",
-    "maxActiveStudent": "Som student har du én aktiv øvingsøkt om gangen (paper + auto i samme flyt). Stopp økten før du oppretter en ny, eller fortsett i den åpne."
+    "maxActiveStudent": "Som student har du én aktiv lekepengeøkt om gangen (paper + auto i samme flyt). Stopp økten før du oppretter en ny, eller fortsett i den åpne."
   },
   "publicTeaser": {
     "title": "Øv trading med 100 000 kr lekepenger",
