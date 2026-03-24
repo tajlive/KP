@@ -30,6 +30,9 @@ function riskLabelKey(tier: DiscoverLeaderDto["risk_tier"]): string {
   return "riskMedium";
 }
 
+const STAGGER_CAP = 12;
+const STAGGER_STEP = 0.045;
+
 export function LeaderCard({
   leader,
   locale,
@@ -38,6 +41,11 @@ export function LeaderCard({
 }: LeaderCardProps) {
   const t = useTranslations("copyTrading.discover");
   const reduceMotion = useReducedMotion();
+  const staggerDelay = reduceMotion
+    ? 0
+    : Math.min(index, STAGGER_CAP - 1) * STAGGER_STEP;
+  const isCommunity =
+    leader.origin === "community" || leader.strategy_type === "Community";
   const pnl = pnlForTimeframe(leader, timeframe);
   const tfLabel =
     timeframe === "90d"
@@ -78,6 +86,8 @@ export function LeaderCard({
             <img
               src={leader.avatar_url}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
           ) : (
@@ -93,9 +103,13 @@ export function LeaderCard({
             </h3>
             <Badge
               variant="secondary"
-              className="border border-amber-500/30 bg-amber-500/10 text-[10px] font-semibold uppercase tracking-wide text-amber-200/90"
+              className={
+                isCommunity
+                  ? "border border-sky-500/35 bg-sky-500/10 text-[10px] font-semibold uppercase tracking-wide text-sky-200/90"
+                  : "border border-amber-500/30 bg-amber-500/10 text-[10px] font-semibold uppercase tracking-wide text-amber-200/90"
+              }
             >
-              {t("paperBadge")}
+              {isCommunity ? t("communityBadge") : t("paperBadge")}
             </Badge>
             {leader.is_following && (
               <Badge className="bg-emerald-500/15 text-[10px] text-emerald-300">

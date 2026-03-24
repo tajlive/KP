@@ -39,7 +39,18 @@
     "following": "Følger",
     "loadError": "Kunne ikke laste ledere",
     "empty": "Ingen aktive ledere akkurat nå.",
-    "drawdown": "Drawdown 30d"
+    "drawdown": "Drawdown 30d",
+    "communityBadge": "Community",
+    "filterAll": "Alle",
+    "filterFollowing": "Følger",
+    "filterFollowingEmpty": "Du følger ingen av de viste lederne i denne listen — bytt til «Alle» eller oppdag nye profiler.",
+    "refresh": "Oppdater",
+    "refreshing": "Oppdaterer…",
+    "loadMore": "Vis flere (opptil 100)",
+    "resultsLine": "{visible} vises · {total} hentet for valgt periode",
+    "resultsMeta": "I databasen: {bots} kuraterte bots vurdert · {profiles} offentlige profiler",
+    "ariaTimeframe": "Velg resultatperiode",
+    "ariaFilter": "Filtrer liste"
   },
   "nav": {
     "mine": "Oversikt",

@@ -61,7 +61,7 @@ test.describe("Smoke: Health Checks @smoke", () => {
         // Ignore Playwright dev-server WebSocket CSP warnings
         !e.includes("ws://127.0.0.1") &&
         !e.includes(
-          "connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://o4509555622608896.ingest.de.sentry.io",
+          "connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://plausible.io https://o4509555622608896.ingest.de.sentry.io",
         ),
     );
     expect(criticalErrors).toHaveLength(0);

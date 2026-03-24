@@ -16,4 +16,6 @@ export type DiscoverLeaderDto = {
   max_drawdown_30d: number | null;
   is_following: boolean;
   risk_tier: RiskTier;
+  /** Kuratert bot-rad vs. offentlig community-profil */
+  origin?: "curated" | "community";
 };

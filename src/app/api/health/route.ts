@@ -56,6 +56,11 @@ async function checkDatabase(): Promise<CheckResult> {
   }
 }
 
+/**
+ * Signal-feed health: prefer `bot_health` heartbeat for `signal-engine`.
+ * New rows in `trading_signals` are only inserted on BUY/SELL — long gaps are
+ * normal when strategies are HOLD. Cron still updates `last_heartbeat` each run.
+ */
 async function checkTradingSignals(): Promise<CheckResult> {
   const start = Date.now();
   const maxAgeMinutes = Number(
@@ -64,6 +69,61 @@ async function checkTradingSignals(): Promise<CheckResult> {
 
   try {
     const supabase = createClient();
+
+    const { data: botRow, error: botErr } = await supabase
+      .from("bot_health")
+      .select("last_heartbeat, updated_at, status, last_error")
+      .eq("bot_name", "signal-engine")
+      .maybeSingle();
+
+    const heartbeatAt = botRow?.last_heartbeat ?? botRow?.updated_at ?? null;
+
+    if (!botErr && botRow && heartbeatAt) {
+      const hbAgeMin = (Date.now() - new Date(heartbeatAt).getTime()) / 60000;
+
+      if (botRow.status === "error") {
+        return {
+          status: "error",
+          latency: Date.now() - start,
+          message:
+            botRow.last_error?.slice(0, 200) ?? "signal-engine status error",
+        };
+      }
+
+      if (hbAgeMin > maxAgeMinutes) {
+        return {
+          status: "warning",
+          latency: Date.now() - start,
+          message: `Signal engine heartbeat stale (${Math.round(hbAgeMin)}m old)`,
+        };
+      }
+
+      const { data: feedRow } = await supabase
+        .from("trading_signals")
+        .select("created_at")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      let message: string | undefined;
+      if (feedRow?.created_at) {
+        const feedAgeMin =
+          (Date.now() - new Date(feedRow.created_at).getTime()) / 60000;
+        if (feedAgeMin > maxAgeMinutes) {
+          message = `Engine OK; latest feed row ${Math.round(feedAgeMin)}m old (normal during HOLD)`;
+        }
+      } else {
+        message = "Engine OK; no rows in trading_signals yet";
+      }
+
+      return {
+        status: "ok",
+        latency: Date.now() - start,
+        message,
+      };
+    }
+
+    // Fallback: no bot_health row yet (legacy) — infer from trading_signals only
     const { data, error } = await supabase
       .from("trading_signals")
       .select("created_at")
@@ -83,7 +143,7 @@ async function checkTradingSignals(): Promise<CheckResult> {
       return {
         status: "warning",
         latency: Date.now() - start,
-        message: "No trading signals found",
+        message: "No trading signals and no signal-engine heartbeat",
       };
     }
 
@@ -93,7 +153,7 @@ async function checkTradingSignals(): Promise<CheckResult> {
       return {
         status: "warning",
         latency: Date.now() - start,
-        message: `Latest signal is stale (${Math.round(ageMinutes)}m old)`,
+        message: `Latest signal is stale (${Math.round(ageMinutes)}m old); no bot_health for signal-engine`,
       };
     }
 

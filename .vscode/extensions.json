@@ -5,7 +5,7 @@
     "esbenp.prettier-vscode",
     "yoavbls.pretty-ts-errors",
     "supabase.supabase-vscode",
-    "wallabyjs.console-ninja",
     "ms-playwright.playwright"
-  ]
+  ],
+  "unwantedRecommendations": ["wallabyjs.console-ninja"]
 }
