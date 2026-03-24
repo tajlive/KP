@@ -113,22 +113,21 @@ Sikkerhetsvarsler håndteres alltid av GitHub uavhengig av schedule.
 
 ### Støtte-workflows
 
-| Workflow             | Fil                    | Trigger                                               | Formål                                                                                                                                                          |
-| -------------------- | ---------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **E2E Critical**     | `e2e-critical.yml`     | Push/PR til `main`, daglig 06:00, manuell             | Playwright kritiske flows (Chromium + Firefox). Slack-varsling ved feil.                                                                                        |
-| **Security Audit**   | `security-audit.yml`   | Mandager 09:00, manuell                               | npm audit, secret-scan, valgfritt Snyk                                                                                                                          |
-| **Dependency Check** | `dependency-check.yml` | 1. i måneden, manuell                                 | depcheck, knip                                                                                                                                                  |
-| **MCP Health**       | `mcp-health.yml`       | Hverdager 06:00, manuell                              | Sjekker Supabase, Stripe, Vercel, Resend, Cloudflare                                                                                                            |
-| **MCP Integration**  | `mcp-integration.yml`  | Push/PR med MCP-config-endringer                      | Validerer MCP-konfigurasjon                                                                                                                                     |
-| **Schema Dump**      | `schema-dump.yml`      | Push til `main` (migrasjoner), daglig 05:00           | Dumper DB-skjema til docs                                                                                                                                       |
-| **DB Push**          | `db-push.yml`          | Manuell                                               | Kjører `supabase db push`                                                                                                                                       |
-| **Auto-create PR**   | `auto-create-pr.yml`   | Push til `cursor/**`, `feat/**`, `fix/**`, `chore/**` | Oppretter draft PR mot main hvis ingen finnes                                                                                                                   |
-| **DB Push on merge** | `db-push-on-merge.yml` | Push til `main` (når `supabase/**` endres)            | Kjører `supabase db push` automatisk etter merge                                                                                                                |
-| **DB lint**          | `db-lint.yml`          | PR mot `main` (når `supabase/**` endres) + manuell    | `db lint --fail-on error`. Uten repo-var **DB_LINT_STRICT=true** er steget `continue-on-error` (gul ved backlog). Sett variabelen når lint skal blokkere merge. |
+| Workflow             | Fil                    | Trigger                                            | Formål                                                                                                                                                          |
+| -------------------- | ---------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **E2E Critical**     | `e2e-critical.yml`     | Push/PR til `main`, daglig 06:00, manuell          | Playwright kritiske flows (Chromium + Firefox). Slack-varsling ved feil.                                                                                        |
+| **Security Audit**   | `security-audit.yml`   | Mandager 09:00, manuell                            | npm audit, secret-scan, valgfritt Snyk                                                                                                                          |
+| **Dependency Check** | `dependency-check.yml` | 1. i måneden, manuell                              | depcheck, knip                                                                                                                                                  |
+| **MCP Health**       | `mcp-health.yml`       | Hverdager 06:00, manuell                           | Sjekker Supabase, Stripe, Vercel, Resend, Cloudflare                                                                                                            |
+| **MCP Integration**  | `mcp-integration.yml`  | Push/PR med MCP-config-endringer                   | Validerer MCP-konfigurasjon                                                                                                                                     |
+| **Schema Dump**      | `schema-dump.yml`      | Push til `main` (migrasjoner), daglig 05:00        | Dumper DB-skjema til docs                                                                                                                                       |
+| **DB Push**          | `db-push.yml`          | Manuell                                            | Kjører `supabase db push`                                                                                                                                       |
+| **DB Push on merge** | `db-push-on-merge.yml` | Push til `main` (når `supabase/**` endres)         | Kjører `supabase db push` automatisk etter merge                                                                                                                |
+| **DB lint**          | `db-lint.yml`          | PR mot `main` (når `supabase/**` endres) + manuell | `db lint --fail-on error`. Uten repo-var **DB_LINT_STRICT=true** er steget `continue-on-error` (gul ved backlog). Sett variabelen når lint skal blokkere merge. |
 
 ### Deaktiverte workflows (`workflows-disabled/`)
 
-Gamle/overlappende workflows beholdes som referanse: `test.yml`, `manual-deploy.yml`, `e2e-tests.yml`, `typescript-check.yml`, m.fl.
+Gamle/overlappende workflows beholdes som referanse: `test.yml`, `manual-deploy.yml`, `e2e-tests.yml`, `typescript-check.yml`, `auto-create-pr.yml` (fjernet fra aktive workflows — GitHub tillot ikke `GITHUB_TOKEN` å opprette PR), m.fl.
 
 ### PR-flyt (komplett)
 
@@ -183,20 +182,19 @@ Se **[docs/CURSOR-CLOUD-PR-AUTOFIX.md](../docs/CURSOR-CLOUD-PR-AUTOFIX.md)** for
 
 ## 9. Feilsøking per workflow
 
-| Workflow             | Vanlig feil                                                          | Løsning                                                                                                      |
-| -------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Deploy**           | `Project names cannot contain ---` (400)                             | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` (se §3).                                                     |
-| **Deploy**           | Build feiler                                                         | Sjekk at `NEXT_PUBLIC_SUPABASE_*` er satt.                                                                   |
-| **Auto-create PR**   | `GitHub Actions is not permitted to create or approve pull requests` | Gå til **Settings → Actions → General → Workflow permissions** → velg **Read and write permissions**. Lagre. |
-| **DB Push on merge** | `Mangler SUPABASE_PROJECT_REF`                                       | Legg til `SUPABASE_PROJECT_REF` eller `SUPABASE_PROJECT_ID` (begge støttes).                                 |
-| **E2E Critical**     | Tester feiler (auth/timeout)                                         | Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for innloggede flows.                                           |
+| Workflow             | Vanlig feil                              | Løsning                                                                      |
+| -------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
+| **Deploy**           | `Project names cannot contain ---` (400) | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` (se §3).                     |
+| **Deploy**           | Build feiler                             | Sjekk at `NEXT_PUBLIC_SUPABASE_*` er satt.                                   |
+| **DB Push on merge** | `Mangler SUPABASE_PROJECT_REF`           | Legg til `SUPABASE_PROJECT_REF` eller `SUPABASE_PROJECT_ID` (begge støttes). |
+| **E2E Critical**     | Tester feiler (auth/timeout)             | Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for innloggede flows.           |
 
 ## 10. Hurtigsjekkliste
 
 - [ ] Description og topics satt på repo
 - [ ] Default branch er `main`
 - [ ] Branch protection på `main` med status checks
-- [ ] **Workflow permissions:** Settings → Actions → General → **Read and write permissions** (påkrevd for Auto-create PR)
+- [ ] **Workflow permissions:** Settings → Actions → General — **Read and write** hvis workflows skal pushe commits (f.eks. auto-fix lint); ellers etter behov
 - [ ] Secrets satt: `NEXT_PUBLIC_SUPABASE_*`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `SENTRY_AUTH_TOKEN`, `SUPABASE_PROJECT_REF`
 - [ ] CODEOWNERS aktiv hvis du vil bruke review-krav
 - [ ] Squash merge eller merge strategy valgt

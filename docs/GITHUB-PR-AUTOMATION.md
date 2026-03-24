@@ -1,26 +1,12 @@
 # GitHub PR-automatisering
 
-Varig løsning for å automatisere Pull Request-opprettelse og -oppdatering.
+Hvordan Pull Requests opprettes og oppdateres i dette repoet.
 
 ---
 
-## 1. Automatisk PR ved push (GitHub Action)
+## 1. Automatisk PR via GitHub Action (fjernet)
 
-**Workflow:** `.github/workflows/auto-create-pr.yml`
-
-**Trigger:** Push til branches som matcher:
-
-- `cursor/*`
-- `feat/*`
-- `fix/*`
-- `chore/*`
-
-**Hva skjer:** Hvis ingen PR finnes for branchen, opprettes en ny PR mot `main` med:
-
-- Tittel avledet fra branchenavn (f.eks. `cursor/auto-trade-fix` → «Auto trade fix»)
-- Body fra `.github/pull_request_template.md`
-
-**Krever:** Ingenting – bruker `GITHUB_TOKEN` som er tilgjengelig i alle Actions.
+Tidligere fantes `.github/workflows/auto-create-pr.yml`. Den er **fjernet** (arkivert under `.github/workflows-disabled/auto-create-pr.yml`) fordi **GitHub Actions** med standard `GITHUB_TOKEN` ofte **ikke har tillatelse** til å opprette PR (`createPullRequest`), noe som ga en permanent rød sjekk på hver push til `cursor/**`, `feat/**`, osv.
 
 ---
 
@@ -44,37 +30,17 @@ Oppretter eller oppdaterer PR for nåværende branch. Krever [GitHub CLI](https:
 
 ## 3. Cursor Cloud / AI-agenter
 
-Cursor Cloud-agenter bruker **ManagePullRequest**-verktøyet til å opprette og oppdatere PR-er. Kombinert med `auto-create-pr`-workflow:
-
-- Agent pusher til `cursor/feature-x`
-- Workflow oppretter PR automatisk (hvis ingen finnes)
-- Agent kan deretter oppdatere PR med ManagePullRequest
+Cursor Cloud-agenter bruker **ManagePullRequest** til å opprette og oppdatere PR-er etter push. Det er **ingen** separat Actions-workflow som må kjøre for det.
 
 ---
 
-## 4. Branch-navngivning
+## 4. Gjeninnføre auto-create (valgfritt)
 
-For at auto-create-pr skal kjøre, bruk ett av disse prefiksene:
-
-| Prefix    | Eksempel              |
-| --------- | --------------------- |
-| `cursor/` | cursor/auto-trade-fix |
-| `feat/`   | feat/add-dark-mode    |
-| `fix/`    | fix/login-redirect    |
-| `chore/`  | chore/update-deps     |
-
----
-
-## 5. Deaktivering
-
-For å slå av auto-opprettelse av PR:
-
-- I `.github/workflows/auto-create-pr.yml`: legg til `if: false` på jobben, eller
-- Slett/disable workflow-filen
+Hvis org/repo gir Actions full nok tilgang til å opprette PR, kan du flytte `workflows-disabled/auto-create-pr.yml` tilbake til `.github/workflows/`. Sjekk **Settings → Actions → General → Workflow permissions** og GitHub-dokumentasjon for `GITHUB_TOKEN` og pull requests.
 
 ---
 
 ## Se også
 
-- [GITHUB_SETUP.md](../.github/GITHUB_SETUP.md) – Full GitHub-oppsett
+- [.github/GITHUB_SETUP.md](../.github/GITHUB_SETUP.md) – full GitHub-oppsett
 - [pull_request_template.md](../.github/pull_request_template.md) – PR-mal

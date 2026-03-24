@@ -6,13 +6,12 @@
 
 ## Feilanalyse (mars 2026)
 
-| Workflow                | Feil                                                                                     | Løsning                                                                                                                                                                                       |
-| ----------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **🚀 Deploy**           | `Project names cannot contain ---` (400)                                                 | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` i Settings → Secrets. Finn i Vercel Dashboard: Org ID under Team Settings → General; Project ID under Project Settings.                       |
-| **🚀 Deploy**           | `Project not found`                                                                      | Feil `VERCEL_ORG_ID` eller `VERCEL_PROJECT_ID`. Kjør `vercel link` lokalt, sjekk `cat .vercel/project.json` for riktige verdier. Sjekk at VERCEL_TOKEN tilhører samme team. Oppdater secrets. |
-| **📋 Auto-create PR**   | `GitHub Actions is not permitted to create or approve pull requests (createPullRequest)` | Gå til **Settings → Actions → General → Workflow permissions** → velg **Read and write permissions** (ikke bare Read). Lagre.                                                                 |
-| **🗄️ DB push on merge** | `Mangler SUPABASE_PROJECT_REF`                                                           | Legg til `SUPABASE_PROJECT_REF` og `SUPABASE_ACCESS_TOKEN`. Kjører kun ved endring i `supabase/**` eller `db-push*.yml`. Bruker `continue-on-error` – feil blokkerer ikke andre workflows.    |
-| **E2E Critical**        | Firefox feil / timeouts                                                                  | Workflow bruker kun Chromium i CI (Firefox hoppes over). Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for auth-tester.                                                                        |
+| Workflow                | Feil                                     | Løsning                                                                                                                                                                                       |
+| ----------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **🚀 Deploy**           | `Project names cannot contain ---` (400) | Legg til `VERCEL_ORG_ID` og `VERCEL_PROJECT_ID` i Settings → Secrets. Finn i Vercel Dashboard: Org ID under Team Settings → General; Project ID under Project Settings.                       |
+| **🚀 Deploy**           | `Project not found`                      | Feil `VERCEL_ORG_ID` eller `VERCEL_PROJECT_ID`. Kjør `vercel link` lokalt, sjekk `cat .vercel/project.json` for riktige verdier. Sjekk at VERCEL_TOKEN tilhører samme team. Oppdater secrets. |
+| **🗄️ DB push on merge** | `Mangler SUPABASE_PROJECT_REF`           | Legg til `SUPABASE_PROJECT_REF` og `SUPABASE_ACCESS_TOKEN`. Kjører kun ved endring i `supabase/**` eller `db-push*.yml`. Bruker `continue-on-error` – feil blokkerer ikke andre workflows.    |
+| **E2E Critical**        | Firefox feil / timeouts                  | Workflow bruker kun Chromium i CI (Firefox hoppes over). Sett `E2E_USER_EMAIL` og `E2E_USER_PASSWORD` for auth-tester.                                                                        |
 
 ---
 
