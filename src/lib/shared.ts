@@ -179,7 +179,7 @@ export const LeaderboardQuerySchema = z.object({
 /** Query for GET /api/copy-trading/discover */
 export const DiscoverQuerySchema = z.object({
   timeframe: z.enum(["7d", "30d", "90d"]).default("30d"),
-  limit: z.number().int().min(1).max(50).default(24),
+  limit: z.number().int().min(1).max(100).default(50),
 });
 
 // ============================================================================

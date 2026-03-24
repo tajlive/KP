@@ -39,7 +39,18 @@
     "following": "Following",
     "loadError": "Could not load leaders",
     "empty": "No active leaders right now.",
-    "drawdown": "30d drawdown"
+    "drawdown": "30d drawdown",
+    "communityBadge": "Community",
+    "filterAll": "All",
+    "filterFollowing": "Following",
+    "filterFollowingEmpty": "You don't follow any leaders in this list — switch to «All» or explore new profiles.",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…",
+    "loadMore": "Show more (up to 100)",
+    "resultsLine": "{visible} shown · {total} loaded for this period",
+    "resultsMeta": "In database: {bots} curated bots considered · {profiles} public profiles",
+    "ariaTimeframe": "Choose performance period",
+    "ariaFilter": "Filter list"
   },
   "nav": {
     "mine": "Overview",
