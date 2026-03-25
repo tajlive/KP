@@ -25,6 +25,7 @@
 
 ## Cursor
 
+- **Hovedarkitekt:** Cursor Desktop orkestrerer agenter + MCP for optimalisering og leveranse (i tråd med `docs/FULL-AUTOMATION-OPERATING-STANDARD-2026-03.md`).
 - **UX/UI-regel (valgfri):** `.cursor/rules/klarpakke-ux-ui-agent.mdc` — matcher `src/components/**`, `src/app/**`
 - **Live trading / trades:** `.cursor/rules/klarpakke-live-trading-trades-agent.mdc` — se `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`
 - **Auto-trade strategi:** `.cursor/rules/klarpakke-auto-trade-strategy-research-agent.mdc` — `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md`
