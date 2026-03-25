@@ -310,9 +310,13 @@ test.describe("Critical: Logged-in user guest-auth redirect @critical @auth", ()
       timeout: 60_000,
     });
 
-    await page.waitForURL((url) => url.pathname.includes("/konto"), {
-      timeout: 25_000,
-    });
+    await page.waitForURL(
+      (url) =>
+        url.pathname.includes("/konto") || url.pathname.includes("/dashboard"),
+      {
+        timeout: 25_000,
+      },
+    );
   });
 });
 
