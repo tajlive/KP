@@ -171,7 +171,6 @@ export function LommebokDashboard() {
   useEffect(() => {
     if (connections.length === 0) return;
     void refreshAllBalances();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections.length]);
 
   const allCurrencies = useMemo(() => {
@@ -194,7 +193,6 @@ export function LommebokDashboard() {
         // Price failures should not block wallet balances.
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allCurrencies.join(",")]);
 
   const fmtNok = useMemo(() => {
