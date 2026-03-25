@@ -102,6 +102,12 @@
   "lastUpdated": "Sist oppdatert",
   "binanceUpdateInfo": "Priser fra Binance oppdateres sanntid (WebSocket) eller ca. hvert 10. sekund. Listen oppdateres ved innlasting eller når du trykker Oppdater.",
   "mySessions": "Mine sesjoner",
+  "sessionDetail": {
+    "backToHub": "Tilbake til sesjoner",
+    "eyebrowPaper": "Paper-sesjon",
+    "eyebrowLive": "Live-sesjon",
+    "startedOn": "Startet {date}"
+  },
   "backToOverview": "Tilbake til oversikt",
   "backToDashboard": "Tilbake til dashboard",
   "sessions": {

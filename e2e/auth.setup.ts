@@ -63,6 +63,27 @@ async function typeIntoControlledInput(locator: Locator, value: string) {
   await locator.pressSequentially(value, { delay: 12 });
 }
 
+/**
+ * Controlled `<Input value={email} onChange=…>`: verken pressSequentially (@ korrupt) eller fill()
+ * garanterer at React state oppdateres. Sett value + bubbles input (samme som brukertasting).
+ */
+async function fillEmailControlledInput(locator: Locator, value: string) {
+  await locator.click({ timeout: 15_000 });
+  await locator.clear();
+  if (value.length === 0) return;
+  await locator.evaluate((el, v: string) => {
+    const input = el as HTMLInputElement;
+    input.focus();
+    const setter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype,
+      "value",
+    )?.set;
+    setter?.call(input, v);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, value);
+}
+
 /** GoTrue passord-innlogging: POST mot …/auth/v1/token (uavhengig av query / host). */
 function isGoTruePasswordTokenResponse(res: Response): boolean {
   if (res.request().method() !== "POST") return false;
@@ -182,7 +203,7 @@ setup("authenticate via login", async ({ page, context, playwright }) => {
         const emailInput = page.getByTestId("innlogging-email-input").first();
         await emailInput.waitFor({ state: "visible", timeout: 45_000 });
 
-        await typeIntoControlledInput(emailInput, email);
+        await fillEmailControlledInput(emailInput, email);
         await expect(emailInput).toHaveValue(email, { timeout: 10_000 });
 
         const passwordInput = page

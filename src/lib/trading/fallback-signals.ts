@@ -1,4 +1,10 @@
 /**
+ * Fast anker for `created_at` i fallback-rader før data er hentet.
+ * Unngår hydration mismatch (server vs klient `Date.now()` etter millisekunder).
+ */
+export const LANDING_SIGNAL_FALLBACK_ANCHOR_MS = 1_735_689_600_000;
+
+/**
  * Demo / marketing fallback when `trading_signals` is empty or unavailable.
  * Keep in sync with landing `LiveSignalFeed` expectations (symbol format, actions).
  */

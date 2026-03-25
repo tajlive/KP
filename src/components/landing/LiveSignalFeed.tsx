@@ -4,7 +4,10 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { PremiumSignalRow } from "@/components/trading/PremiumSignalRow";
 import { MARKET_DESK } from "@/lib/design/market-desk";
 import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
-import { getFallbackTradingSignals } from "@/lib/trading/fallback-signals";
+import {
+  getFallbackTradingSignals,
+  LANDING_SIGNAL_FALLBACK_ANCHOR_MS,
+} from "@/lib/trading/fallback-signals";
 import { getTradingFeedState } from "@/lib/trading/data-source-state";
 import { Zap } from "lucide-react";
 import Link from "next/link";
@@ -57,7 +60,10 @@ export function LiveSignalFeed() {
 
   const displaySignals = loaded
     ? signals
-    : (getFallbackTradingSignals(4) as LandingSignal[]);
+    : (getFallbackTradingSignals(
+        4,
+        LANDING_SIGNAL_FALLBACK_ANCHOR_MS,
+      ) as LandingSignal[]);
 
   const isDemo =
     displaySignals.length > 0 &&

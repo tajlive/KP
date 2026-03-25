@@ -100,7 +100,7 @@ export function PaperTradingPageClient({
       )}
 
       {showSessionsList ? (
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <main className="container mx-auto px-4 py-8 pb-16 max-w-4xl space-y-6">
           <PremiumTradingHero
             eyebrow={
               initialMode === "live"
@@ -114,7 +114,7 @@ export function PaperTradingPageClient({
             title={t("mySessions")}
             subtitle={t("workspaceHeader.subtitle")}
           />
-          <div className="mb-4 flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               href={hrefWithLocale(locale, "/paper-trading")}
               className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium"
@@ -141,9 +141,9 @@ export function PaperTradingPageClient({
           />
         </main>
       ) : (
-        <>
+        <div className="space-y-6 pb-16">
           <div
-            className="px-4 py-5"
+            className="px-4 py-5 md:py-6"
             data-testid="paper-trading-workspace-header"
           >
             <PremiumStatusBanner>
@@ -159,7 +159,7 @@ export function PaperTradingPageClient({
             </PremiumStatusBanner>
           </div>
           <UnifiedTradingDashboard initialMode={initialMode} />
-        </>
+        </div>
       )}
     </div>
   );

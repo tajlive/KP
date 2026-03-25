@@ -9,14 +9,14 @@
 
 ## 1. Automasjonsflate (én oversikt)
 
-| flate                    | Hva                                                      | Auth / nøkkel                                                | Dokumentasjon                                                                          |
-| ------------------------ | -------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| **MCP**                  | Cursor-servere (GitHub, Linear, Supabase, Playwright, …) | PAT / API-nøkler i miljø (aldri i repo)                      | [MCP-CLI-CI-API.md](./MCP-CLI-CI-API.md), [.cursor/mcp.json](../.cursor/mcp.json)      |
-| **CLI**                  | `npm run linear`, `vercel`, `db:push`, `verify`          | `.env.local` / shell                                         | [MCP-CLI-CI-API.md §2](./MCP-CLI-CI-API.md)                                            |
-| **CI**                   | Lint, build, E2E, MCP health, deploy                     | GitHub **secrets** + **vars**                                | [.github/workflows/](../.github/workflows/)                                            |
-| **App-API**              | `/api/*`, webhooks, cron-endepunkter                     | Sesjon (Supabase), **CRON_SECRET**, service role der tillatt | [api-routes.md](./api-routes.md), [CRON-SOURCE-OF-TRUTH.md](./CRON-SOURCE-OF-TRUTH.md) |
-| **Maskin-til-maskin**    | Cron-kall, interne health                                | Bearer **`CRON_SECRET`** (ikke JWT; delt hemmelighet)        | [.env.local.example](../.env.local.example)                                            |
-| **JWT (der det brukes)** | Cloudflare Access-header, Supabase user JWT              | Verifisert av plattform / Supabase                           | `src/lib/auth.ts` (Access), Supabase docs                                              |
+| flate                    | Hva                                                                           | Auth / nøkkel                                                | Dokumentasjon                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **MCP**                  | Cursor-servere (GitHub, Linear, Supabase, Playwright, **Chrome DevTools**, …) | PAT / API-nøkler i miljø (aldri i repo)                      | [MCP-CLI-CI-API.md](./MCP-CLI-CI-API.md) §1.3 (nettleser-feilsøking), [.cursor/mcp.json](../.cursor/mcp.json) |
+| **CLI**                  | `npm run linear`, `vercel`, `db:push`, `verify`                               | `.env.local` / shell                                         | [MCP-CLI-CI-API.md §2](./MCP-CLI-CI-API.md)                                                                   |
+| **CI**                   | Lint, build, E2E, MCP health, deploy                                          | GitHub **secrets** + **vars**                                | [.github/workflows/](../.github/workflows/)                                                                   |
+| **App-API**              | `/api/*`, webhooks, cron-endepunkter                                          | Sesjon (Supabase), **CRON_SECRET**, service role der tillatt | [api-routes.md](./api-routes.md), [CRON-SOURCE-OF-TRUTH.md](./CRON-SOURCE-OF-TRUTH.md)                        |
+| **Maskin-til-maskin**    | Cron-kall, interne health                                                     | Bearer **`CRON_SECRET`** (ikke JWT; delt hemmelighet)        | [.env.local.example](../.env.local.example)                                                                   |
+| **JWT (der det brukes)** | Cloudflare Access-header, Supabase user JWT                                   | Verifisert av plattform / Supabase                           | `src/lib/auth.ts` (Access), Supabase docs                                                                     |
 
 ---
 

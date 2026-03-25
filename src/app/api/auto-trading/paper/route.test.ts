@@ -4,6 +4,7 @@ import { POST } from "./route";
 
 const mockGetUser = vi.fn();
 const mockFrom = vi.fn();
+
 const mockCreateServerClient = vi.fn(() => ({
   auth: {
     getUser: mockGetUser,
@@ -52,22 +53,28 @@ describe("POST /api/auto-trading/paper", () => {
     expect(mockCreateServerClient).toHaveBeenCalledTimes(1);
   });
 
-  it("creates a paper trading session for authenticated users", async () => {
+  it("creates a new paper trading session when under tier limit", async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: "user-123" } },
       error: null,
     });
 
-    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
-    const existingQuery = {
+    const profileQuery = {
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: { tier: "student" },
+            error: null,
+          }),
+        })),
+      })),
+    };
+
+    const countQuery = {
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           eq: vi.fn(() => ({
-            eq: vi.fn(() => ({
-              limit: vi.fn(() => ({
-                maybeSingle,
-              })),
-            })),
+            eq: vi.fn().mockResolvedValue({ count: 2, error: null }),
           })),
         })),
       })),
@@ -82,7 +89,8 @@ describe("POST /api/auto-trading/paper", () => {
     const insertQuery = { insert };
 
     mockFrom
-      .mockReturnValueOnce(existingQuery)
+      .mockReturnValueOnce(profileQuery)
+      .mockReturnValueOnce(countQuery)
       .mockReturnValueOnce(insertQuery);
 
     const response = await POST(
@@ -101,7 +109,6 @@ describe("POST /api/auto-trading/paper", () => {
       code: "PAPER_BOT_STARTED",
       message: "Paper bot started successfully",
       session_id: "session-abc",
-      reused_session: false,
       next_step: "open_bot_details",
     });
     expect(insert).toHaveBeenCalledWith(
@@ -116,35 +123,41 @@ describe("POST /api/auto-trading/paper", () => {
         starting_capital_nok: 250000,
         current_capital_nok: 250000,
         trading_pair: "ETHUSDT",
+        last_heartbeat: expect.any(String),
+        created_at: expect.any(String),
+        updated_at: expect.any(String),
       }),
     );
   });
 
-  it("returns already-active response when paper session exists", async () => {
+  it("returns 403 when active paper sessions reach tier maximum", async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: "user-123" } },
       error: null,
     });
 
-    const maybeSingle = vi.fn().mockResolvedValue({
-      data: { id: "session-existing" },
-      error: null,
-    });
-    const existingQuery = {
+    const profileQuery = {
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          maybeSingle: vi.fn().mockResolvedValue({
+            data: { tier: "student" },
+            error: null,
+          }),
+        })),
+      })),
+    };
+
+    const countQuery = {
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           eq: vi.fn(() => ({
-            eq: vi.fn(() => ({
-              limit: vi.fn(() => ({
-                maybeSingle,
-              })),
-            })),
+            eq: vi.fn().mockResolvedValue({ count: 999, error: null }),
           })),
         })),
       })),
     };
 
-    mockFrom.mockReturnValueOnce(existingQuery);
+    mockFrom.mockReturnValueOnce(profileQuery).mockReturnValueOnce(countQuery);
 
     const response = await POST(
       createJsonRequest({
@@ -156,14 +169,12 @@ describe("POST /api/auto-trading/paper", () => {
     );
     const body = await response.json();
 
-    expect(response.status).toBe(200);
-    expect(body).toEqual({
-      ok: true,
-      code: "PAPER_BOT_ALREADY_ACTIVE",
-      message: "An active paper bot session already exists",
-      session_id: "session-existing",
-      reused_session: true,
-      next_step: "open_bot_details",
+    expect(response.status).toBe(403);
+    expect(body).toMatchObject({
+      ok: false,
+      code: "PAPER_BOT_SESSION_LIMIT",
+      max_sessions: 999,
+      next_step: "retry",
     });
   });
 });

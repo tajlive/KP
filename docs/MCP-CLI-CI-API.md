@@ -1,7 +1,7 @@
 # MCP, CLI, CI og API — oversikt
 
 > Én plass for tilgang (MCP/CLI), pipelines (CI) og app-API.  
-> Oppdatert: 2026-03-23
+> Oppdatert: 2026-03-25
 
 **Full automasjon (forhåndsoppsett):** [FULL-AUTOMATION-PLAYBOOK.md](./FULL-AUTOMATION-PLAYBOOK.md) — MCP/CLI/CI/API, `CRON_SECRET`, GitHub secrets, `npm run auto:preflight`.
 
@@ -23,18 +23,38 @@
 
 ### Servere i `.cursor/mcp.json`
 
-| Server          | Kommando / notater                                                                                                                                                                                                                                                                                                             |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| github          | `node scripts/run-github-mcp.mjs` — **GITHUB_TOKEN** eller **GH_PAT** fra `.env.local` → `GITHUB_PERSONAL_ACCESS_TOKEN` for MCP-serveren                                                                                                                                                                                       |
-| linear          | `node scripts/run-linear-mcp.mjs` — nøkkel fra `.env.local`                                                                                                                                                                                                                                                                    |
-| supabase        | `node scripts/run-official-supabase-mcp.mjs` — leser **SUPABASE_ACCESS_TOKEN** fra `.env.local` (PAT) og **project-ref** fra `SUPABASE_PROJECT_REF` eller `NEXT_PUBLIC_SUPABASE_URL` (fallback: vuxbjlykgmzskxbclquf). Gir Management API: migrasjoner, advisors, edge functions, typer. For rå SQL uten PAT: **supabase-db**. |
-| **supabase-db** | `node scripts/run-supabase-mcp.mjs` — **DATABASE_URL** fra `.env.local`; 100 % uten Management API-token. Se `docs/MCP-SUPABASE-DB.md`.                                                                                                                                                                                        |
-| playwright      | `npx -y @playwright/mcp@latest`                                                                                                                                                                                                                                                                                                |
-| resend          | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY`                                                                                                                                                                                                                                                                             |
-| **vercel**      | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`.                                                                                                                                                                                                                            |
-| **cloudflare**  | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`.                                                                                                                                                                                                                |
+| Server              | Kommando / notater                                                                                                                                                                                                                                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| github              | `node scripts/run-github-mcp.mjs` — **GITHUB_TOKEN** eller **GH_PAT** fra `.env.local` → `GITHUB_PERSONAL_ACCESS_TOKEN` for MCP-serveren                                                                                                                                                                                       |
+| linear              | `node scripts/run-linear-mcp.mjs` — nøkkel fra `.env.local`                                                                                                                                                                                                                                                                    |
+| supabase            | `node scripts/run-official-supabase-mcp.mjs` — leser **SUPABASE_ACCESS_TOKEN** fra `.env.local` (PAT) og **project-ref** fra `SUPABASE_PROJECT_REF` eller `NEXT_PUBLIC_SUPABASE_URL` (fallback: vuxbjlykgmzskxbclquf). Gir Management API: migrasjoner, advisors, edge functions, typer. For rå SQL uten PAT: **supabase-db**. |
+| **supabase-db**     | `node scripts/run-supabase-mcp.mjs` — **DATABASE_URL** fra `.env.local`; 100 % uten Management API-token. Se `docs/MCP-SUPABASE-DB.md`.                                                                                                                                                                                        |
+| playwright          | `npx -y @playwright/mcp@latest` — E2E-paritet, flere nettlesere, CI-lignende flyt                                                                                                                                                                                                                                              |
+| **context7**        | `node scripts/run-context7-mcp.mjs` — [@upstash/context7-mcp](https://www.npmjs.com/package/@upstash/context7-mcp): versjonsspesifikk docs for biblioteker. Valgfri **`CONTEXT7_API_KEY`** i `.env.local` (høyere limits). I prompt: _«… use context7»_ eller regel i Cursor Settings → Rules for auto-oppslag.                |
+| **chrome-devtools** | `npx -y chrome-devtools-mcp@latest --no-usage-statistics` — **offisiell Google**-MCP: ekte Chrome + DevTools (konsoll, nettverk, performance trace, Lighthouse, minne). Krever **Chrome** installert. Se [§ Nettleser-feilsøking](#13-nettleser-feilsøking-chrome-devtools-mcp--alternativer).                                 |
+| resend              | `npx -y resend-mcp@latest` — env: `RESEND_API_KEY`                                                                                                                                                                                                                                                                             |
+| **vercel**          | `url: https://mcp.vercel.com` — offisiell remote MCP (OAuth i Cursor). Se `docs/VERCEL-MCP-CLI.md`.                                                                                                                                                                                                                            |
+| **cloudflare**      | `url: https://mcp.cloudflare.com/mcp` — offisiell remote MCP (OAuth i Cursor). Se `docs/CLOUDFLARE-MCP-CLI.md`.                                                                                                                                                                                                                |
 
 **Merk:** Cursor er selv MCP-klient; prosjektets MCP-er står i `.cursor/mcp.json`. Full oversikt for Cursor (MCP-oppsett, CLI, API): **docs/CURSOR-MCP-CLI-API.md**.
+
+### 1.3 Nettleser-feilsøking: Chrome DevTools MCP + alternativer
+
+**Du har allerede en DevTools MCP-server i repoet:** nøkkelen **`chrome-devtools`** i `.cursor/mcp.json` / `.mcp/mcp_config.json` starter [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) (Google). Det er **ikke nødvendig å «lage» en egen** for standard feilsøking — den gir Puppeteer-styrt Chrome med tilgang til bl.a. `list_console_messages`, `list_network_requests`, `performance_start_trace` / `performance_stop_trace`, `lighthouse_audit`, `take_snapshot` (a11y-tre), `evaluate_script`. Tool-referanse: [tool-reference.md](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/tool-reference.md).
+
+| Behov                                                        | Anbefaling                                                                                                 |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **Dyp frontend-debug** (konsoll, nettverk, CWV-trace, minne) | **chrome-devtools-mcp** — sterkest for «levende» Chrome med DevTools.                                      |
+| **Reproduserbar brukerreise / samme stack som CI**           | **@playwright/mcp** + `npm run dev` / Playwright `webServer`.                                              |
+| **Feil i produksjon** (stack traces, releases)               | **Sentry MCP** (`@sentry/mcp-server`) — komplementært, ikke erstatning.                                    |
+| **Deploy / runtime-logger**                                  | **Vercel MCP** (remote) — komplementært.                                                                   |
+| **Enkel side i Cursor**                                      | **Cursor Browser** (innebygd MCP der Cursor tilbyr det) — praktisk, færre verktøy enn chrome-devtools-mcp. |
+
+**Krav:** Node **≥ 20.19** (allerede i prosjektet), **Google Chrome** stabil. Finner ikke Chrome: sett `CHROME_PATH` til full sti til binæren (se [upstream troubleshooting](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/troubleshooting.md)).
+
+**Personvern / ytelse (valgfritt):** Standard kan sende performance-data til CrUX; skru av med CLI-flagget `--no-performance-crux`. Kun «enkle» verktøy: `--slim` (se upstream README).
+
+**Aktivering i Cursor:** Etter endring i `.cursor/mcp.json` — restart Cursor eller reload MCP. Første gang kan Chrome starte synlig; unngå å logge inn med sensitiv data i vinduet agenten styrer (se upstream _Disclaimers_).
 
 ### Pre-prod (én kommando)
 

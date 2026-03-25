@@ -1,4 +1,6 @@
 import { createServerClient, createClient } from "@/lib/supabase/server";
+import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
+import type { TierSlug } from "@/lib/pricing/tiers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -13,15 +15,15 @@ type StartPaperBotResponse = {
   ok: boolean;
   code:
     | "PAPER_BOT_STARTED"
-    | "PAPER_BOT_ALREADY_ACTIVE"
+    | "PAPER_BOT_SESSION_LIMIT"
     | "UNAUTHORIZED"
     | "VALIDATION_FAILED"
     | "INTERNAL_ERROR";
   message: string;
   session_id?: string;
-  reused_session?: boolean;
   next_step?: "open_bot_details" | "retry";
   error?: string;
+  max_sessions?: number;
   details?: unknown;
 };
 
@@ -72,25 +74,46 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
-    const { data: existing } = await supabase
-      .from("trading_sessions")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("mode", "paper")
-      .eq("status", "active")
-      .limit(1)
+    const { data: profRow, error: profErr } = await supabase
+      .from("user_profiles")
+      .select("tier")
+      .eq("id", user.id)
       .maybeSingle();
 
-    if (existing) {
-      return NextResponse.json<StartPaperBotResponse>({
-        ok: true,
-        code: "PAPER_BOT_ALREADY_ACTIVE",
-        message: "An active paper bot session already exists",
-        session_id: existing.id,
-        reused_session: true,
-        next_step: "open_bot_details",
-      });
+    if (profErr) {
+      console.error("[auto-trading/paper] profile:", profErr.message);
     }
+
+    const tier = (profRow?.tier ?? "student") as TierSlug;
+    const maxSessions = maxActiveTradingSessions(tier, "paper");
+
+    const { count: activeCount, error: countErr } = await supabase
+      .from("trading_sessions")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("mode", "paper")
+      .eq("status", "active");
+
+    if (countErr) {
+      console.error("[auto-trading/paper] count:", countErr.message);
+    }
+
+    const nActive = activeCount ?? 0;
+    if (nActive >= maxSessions) {
+      return NextResponse.json<StartPaperBotResponse>(
+        {
+          ok: false,
+          code: "PAPER_BOT_SESSION_LIMIT",
+          message: "Maximum number of active paper bot sessions reached",
+          error: "Maximum number of active paper bot sessions reached",
+          max_sessions: maxSessions,
+          next_step: "retry",
+        },
+        { status: 403 },
+      );
+    }
+
+    const now = new Date().toISOString();
 
     const { data, error } = await supabase
       .from("trading_sessions")
@@ -109,7 +132,10 @@ export async function POST(request: NextRequest) {
         winning_trades: 0,
         losing_trades: 0,
         total_pnl: 0,
-        started_at: new Date().toISOString(),
+        started_at: now,
+        last_heartbeat: now,
+        created_at: now,
+        updated_at: now,
       })
       .select("id")
       .single();
@@ -121,7 +147,6 @@ export async function POST(request: NextRequest) {
       code: "PAPER_BOT_STARTED",
       message: "Paper bot started successfully",
       session_id: data.id,
-      reused_session: false,
       next_step: "open_bot_details",
     });
   } catch (error) {

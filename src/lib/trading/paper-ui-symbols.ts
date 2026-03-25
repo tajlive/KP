@@ -1,5 +1,5 @@
 /**
- * Canonical symbols brukt i papir-handel UI (TradingInterface + BotWizard).
+ * Canonical symbols brukt i papir-handel UI (hub, BotWizard, handelsknapper).
  * Risk-validering for mode=paper unioner dette med brukerens risk_profiles.allowed_pairs
  * slik at demo-handler ikke blokkeres når UI tilbyr mynten.
  */

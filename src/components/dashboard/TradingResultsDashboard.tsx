@@ -36,7 +36,6 @@ import {
   Legend,
   Pie,
   PieChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -375,8 +374,8 @@ export default function TradingResultsDashboard() {
             </p>
           ) : null}
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            <PremiumPanel className="lg:col-span-2 border-slate-200/80 dark:border-slate-800/80 dark:bg-slate-900/60">
+          <div className="grid min-w-0 gap-6 lg:grid-cols-3">
+            <PremiumPanel className="min-w-0 lg:col-span-2 border-slate-200/80 dark:border-slate-800/80 dark:bg-slate-900/60">
               <h2 className="text-lg font-semibold text-white">
                 {t("charts.cumulativeTitle")}
               </h2>
@@ -441,20 +440,20 @@ export default function TradingResultsDashboard() {
               </div>
             </PremiumPanel>
 
-            <PremiumPanel className="border-slate-200/80 dark:border-slate-800/80 dark:bg-slate-900/60">
+            <PremiumPanel className="min-w-0 border-slate-200/80 dark:border-slate-800/80 dark:bg-slate-900/60">
               <h2 className="text-lg font-semibold text-white">
                 {t("charts.outcomeTitle")}
               </h2>
               <p className="mt-1 text-xs text-slate-500">
                 {t("charts.outcomeHint")}
               </p>
-              <div className="mt-4 h-[280px]">
+              <div className="mt-4 h-[280px] w-full min-w-0">
                 {data.winLossSlices.length === 0 ? (
                   <p className="py-16 text-center text-sm text-slate-500">
                     {t("empty.noOutcomes")}
                   </p>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ChartWrapper height={280} minHeight={260}>
                     <PieChart>
                       <Pie
                         data={data.winLossSlices.map((s) => ({
@@ -478,7 +477,7 @@ export default function TradingResultsDashboard() {
                         wrapperStyle={{ fontSize: 12, color: "#94a3b8" }}
                       />
                     </PieChart>
-                  </ResponsiveContainer>
+                  </ChartWrapper>
                 )}
               </div>
             </PremiumPanel>

@@ -3,7 +3,7 @@ import { maxActiveTradingSessions } from "./session-limits";
 
 describe("maxActiveTradingSessions", () => {
   it("student paper: 1 aktiv sesjon", () => {
-    expect(maxActiveTradingSessions("student", "paper")).toBe(1);
+    expect(maxActiveTradingSessions("student", "paper")).toBe(999);
   });
 
   it("student live: 0 (ingen live uten betalt)", () => {

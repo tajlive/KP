@@ -1,8 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { BRAND } from "@/lib/design/tokens";
+import {
+  PremiumTradingHero,
+  PremiumTradingShell,
+} from "@/components/trading/PremiumTradingLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -202,7 +209,7 @@ export function PaperTradingSessionDetail({
       setSession(data.session);
 
       if (newStatus === "stopped") {
-        router.push(`/${locale}/paper-trading`);
+        router.push(hrefWithLocale(locale, "/paper-trading"));
       }
     } catch (err) {
       console.error("Failed to change status:", err);
@@ -239,8 +246,32 @@ export function PaperTradingSessionDetail({
 
   const isLive = session.mode === "live";
 
+  const startedLabel = new Date(session.created_at).toLocaleDateString(
+    locale === "no" ? "nb-NO" : "en-US",
+    { day: "numeric", month: "short", year: "numeric" },
+  );
+
   return (
-    <div className="space-y-6">
+    <PremiumTradingShell>
+      <Link
+        href={`${hrefWithLocale(locale, "/paper-trading")}?view=sessions`}
+        className={`inline-flex items-center gap-1.5 text-sm font-medium ${BRAND.link}`}
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {t("sessionDetail.backToHub")}
+      </Link>
+
+      <PremiumTradingHero
+        eyebrow={
+          isLive
+            ? t("sessionDetail.eyebrowLive")
+            : t("sessionDetail.eyebrowPaper")
+        }
+        title={session.trading_pair}
+        subtitle={t("sessionDetail.startedOn", { date: startedLabel })}
+        chips={getStatusBadge(session.status)}
+      />
+
       {/* Tydelig UX: modus-banner (paper = merke #0052FF, live = rød) */}
       <div
         className={
@@ -265,28 +296,11 @@ export function PaperTradingSessionDetail({
           }
         >
           {isLive
-            ? "🔴 Live — Ekte penger. Handel med omhu."
+            ? locale === "no"
+              ? "🔴 Live — Ekte penger. Handel med omhu."
+              : "🔴 Live — Real money. Trade carefully."
             : t("contextBanner")}
         </p>
-      </div>
-
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push(`/${locale}/paper-trading`)}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          {t("title")}
-        </Button>
-        <div className="flex-1" />
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            {session.trading_pair}
-          </h1>
-          {getStatusBadge(session.status)}
-        </div>
       </div>
 
       {/* Stats Cards */}
@@ -479,6 +493,6 @@ export function PaperTradingSessionDetail({
           )}
         </CardContent>
       </Card>
-    </div>
+    </PremiumTradingShell>
   );
 }

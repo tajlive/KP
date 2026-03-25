@@ -7,6 +7,10 @@
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp"
     },
+    "context7": {
+      "command": "node",
+      "args": ["scripts/run-context7-mcp.mjs"]
+    },
     "github": {
       "command": "node",
       "args": ["scripts/run-github-mcp.mjs"]
@@ -60,7 +64,8 @@
       "args": ["scripts/run-supabase-mcp.mjs"]
     },
     "vercel": {
-      "url": "https://mcp.vercel.com/klarpakke/klarpakke"
+      "command": "node",
+      "args": ["scripts/run-vercel-mcp.mjs"]
     },
     "vipps": {
       "command": "node",

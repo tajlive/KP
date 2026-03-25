@@ -265,7 +265,7 @@
   "sidebar": {
     "home": "Hjem",
     "learn": "Lær",
-    "trade": "Lekepenger",
+    "trade": "Handel (paper)",
     "history": "Historikk",
     "results": "Resultater",
     "profile": "Profil",
@@ -286,10 +286,11 @@
     "admin": "Administrator",
     "logout": "Logg ut",
     "paperTrading": "Lekepenger",
-    "autoTrade": "Auto-trade",
+    "autoTrade": "Start bot",
     "guide": "Guide",
     "mainMenu": "Hovedmeny",
-    "closeMenu": "Lukk meny"
+    "closeMenu": "Lukk meny",
+    "breadcrumbYouAreHere": "Du er her"
   },
   "topBar": {
     "myOverview": "Min Oversikt",

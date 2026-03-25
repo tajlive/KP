@@ -22,6 +22,7 @@ import {
   PremiumTradingShell,
 } from "@/components/trading/PremiumTradingLayout";
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 interface BotWizardProps {
   userId: string;
@@ -64,6 +65,7 @@ export function BotWizard({
   paperBalance,
 }: BotWizardProps) {
   const tToast = useTranslations("toasts");
+  const tSidebar = useTranslations("dashboard.sidebar");
   const router = useRouter();
   const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
@@ -209,7 +211,7 @@ export function BotWizard({
         message?: string;
         error?: string;
         session_id?: string;
-        reused_session?: boolean;
+        max_sessions?: number;
       };
       try {
         data = (await res.json()) as typeof data;
@@ -221,6 +223,14 @@ export function BotWizard({
       }
 
       if (!res.ok || !data.ok) {
+        if (data.code === "PAPER_BOT_SESSION_LIMIT") {
+          toast.error(tToast("paperBot.sessionLimitTitle"), {
+            description: tToast("paperBot.sessionLimitDesc", {
+              max: data.max_sessions ?? 0,
+            }),
+          });
+          return;
+        }
         toast.error(tToast("paperBot.startFailedTitle"), {
           description:
             typeof data.error === "string"
@@ -234,21 +244,10 @@ export function BotWizard({
 
       if (data.session_id) {
         const botPath = `/${locale}/dashboard/bot/${data.session_id}`;
-        const alreadyActive =
-          data.reused_session === true ||
-          data.code === "PAPER_BOT_ALREADY_ACTIVE";
-        if (alreadyActive) {
-          // replace: unngå at «tilbake» sender brukeren tilbake til wizard i en loop
-          router.replace(botPath);
-          toast.info(tToast("paperBot.alreadyActiveTitle"), {
-            description: tToast("paperBot.alreadyActiveDesc"),
-          });
-        } else {
-          toast.success(tToast("paperBot.startedTitle"), {
-            description: tToast("paperBot.startedDesc"),
-          });
-          router.push(botPath);
-        }
+        toast.success(tToast("paperBot.startedTitle"), {
+          description: tToast("paperBot.startedDesc"),
+        });
+        router.push(botPath);
         return;
       }
       router.push(`/${locale}/dashboard/auto-trade`);
@@ -273,6 +272,31 @@ export function BotWizard({
 
   return (
     <PremiumTradingShell className="max-w-3xl mx-auto px-4 py-8 pb-36 md:pb-28 relative z-10">
+      <nav
+        aria-label={tSidebar("breadcrumbYouAreHere")}
+        className="text-sm text-slate-500 dark:text-slate-400"
+      >
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link
+              href={hrefWithLocale(locale, "/paper-trading")}
+              className={`font-medium ${BRAND.link}`}
+            >
+              {tSidebar("sectionTrading")}
+            </Link>
+          </li>
+          <li aria-hidden className="text-slate-400">
+            /
+          </li>
+          <li
+            className="text-slate-700 dark:text-slate-200 font-medium"
+            aria-current="page"
+          >
+            {tSidebar("autoTrade")}
+          </li>
+        </ol>
+      </nav>
+
       <PremiumTradingHero
         eyebrow="Auto-trade"
         title={isNo ? "Start trading-bot" : "Start trading bot"}
