@@ -29,8 +29,12 @@
 - **Live trading / trades:** `.cursor/rules/klarpakke-live-trading-trades-agent.mdc` — se `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`
 - **Auto-trade strategi:** `.cursor/rules/klarpakke-auto-trade-strategy-research-agent.mdc` — `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md`
 - Hovedinstruksjoner: `docs/CURSOR-AUTOMATION-PROMPT.md`
+- **Cursor Auto-oppsett (anbefalt):** `docs/agents/CURSOR-AUTO-AGENT-SETUP.md`
+- **Bruker- og innstillingspolicy (låst):** `docs/agents/USER-SETTINGS-POLICY.md`
+- **Cursor Auto-regel (valgfri):** `.cursor/rules/cursor-auto-agent-setup.mdc`
 - Regel: `.cursor/rules/klarpakke-agent-roster.mdc` (peker hit)
 - Full automasjon (forhånd): `docs/FULL-AUTOMATION-PLAYBOOK.md` — `npm run auto:preflight`
+- Full automasjon (operativ standard 2026-03): `docs/FULL-AUTOMATION-OPERATING-STANDARD-2026-03.md`
 
 ## Flere forslag (roadmap)
 
