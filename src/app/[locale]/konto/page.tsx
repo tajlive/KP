@@ -1,17 +1,17 @@
-import { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { LommebokDashboard } from './LommebokDashboard'
-import { AlertCircle } from 'lucide-react'
-import Link from 'next/link'
-import { BRAND } from '@/lib/design/tokens'
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { LommebokDashboard } from "./LommebokDashboard";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { BRAND } from "@/lib/design/tokens";
 
 export const metadata: Metadata = {
-  title: 'Lommebok - Klarpakke Universitet',
-  description: 'Din personlige lommebok for krypto-trading'
-}
+  title: "Lommebok - Klarpakke Universitet",
+  description: "Din personlige lommebok for krypto-trading",
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -45,24 +45,38 @@ function KontoErrorFallback({ locale }: { locale: string }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default async function LommebokPage({ params }: PageProps) {
   const { locale } = await params;
-  
+
   try {
     // Hent autentisert bruker
     const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       redirect(`/${locale}/innlogging?redirectTo=/${locale}/konto`);
     }
 
-    return <LommebokDashboard />
+    return <LommebokDashboard />;
   } catch (error) {
-    console.error('Konto page error:', error);
+    // Preserve Next.js redirect behavior; redirect() throws internally.
+    if (
+      error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      typeof (error as { digest?: unknown }).digest === "string" &&
+      (error as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
+
+    console.error("Konto page error:", error);
     // Return fallback UI istedenfor å krasje
     return <KontoErrorFallback locale={locale} />;
   }
