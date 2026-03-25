@@ -5,8 +5,11 @@
 name: 🚀 Deploy
 
 on:
-  push:
+  # Plan B (no branch protection): only deploy after green PR Check on main
+  workflow_run:
+    workflows: ["✅ PR Check"]
     branches: [main]
+    types: [completed]
   workflow_dispatch:
     inputs:
       environment:
@@ -19,7 +22,7 @@ on:
           - production
 
 concurrency:
-  group: deploy-${{ github.event.inputs.environment || 'production' }}
+  group: deploy-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'production' }}
   cancel-in-progress: false
 
 # Node 24 opt-in for JS actions — deprecation 2026
@@ -31,13 +34,28 @@ jobs:
     runs-on: ubuntu-latest
     # Build + Vercel upload kan bruke >15 min (særlig med kald cache)
     timeout-minutes: 30
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
 
     env:
-      IS_PRODUCTION: ${{ github.event_name == 'push' || github.event.inputs.environment == 'production' }}
+      IS_PRODUCTION: ${{ github.event_name == 'workflow_run' || github.event.inputs.environment == 'production' }}
 
     steps:
+      - name: Resolve deploy ref (Plan B)
+        id: ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "ref=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "ref=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.ref.outputs.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
