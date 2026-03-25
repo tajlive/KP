@@ -10,6 +10,7 @@
 Antigravity er Googles AI-utviklingsmiljø designet for store codebases og komplekse utviklingsoppgaver. Det er planlagt som fremtidig hoved-IDE for Klarpakke.
 
 **Nøkkel-features:**
+
 - Langt kontekst-vindu (millioner av tokens)
 - Multi-file editing
 - Plan-basert utvikling
@@ -85,8 +86,8 @@ Fil: `.agent/mcp_config.json`
 {
   "mcpServers": {
     "context7": {
-      "command": "npx",
-      "args": ["-y", "@context7/mcp-server"]
+      "command": "node",
+      "args": ["scripts/run-context7-mcp.mjs"]
     },
     "shadcn": {
       "command": "npx",
@@ -254,13 +255,13 @@ Claude: "Final review"
 
 ## Fordeler vs Nåværende Oppsett
 
-| Aspekt | Nåværende (KIMI/Claude) | Antigravity |
-|--------|------------------------|-------------|
-| Kontekst | ~100k tokens | Millioner av tokens |
-| Multi-file | Begrenset | Nåværende |
-| Planlegging | Manuelt | Integrert |
-| Kode-forståelse | God | Dyp (hele repoet) |
-| Deploy | Automatisk (KIMI) | Krever integrasjon |
+| Aspekt          | Nåværende (KIMI/Claude) | Antigravity         |
+| --------------- | ----------------------- | ------------------- |
+| Kontekst        | ~100k tokens            | Millioner av tokens |
+| Multi-file      | Begrenset               | Nåværende           |
+| Planlegging     | Manuelt                 | Integrert           |
+| Kode-forståelse | God                     | Dyp (hele repoet)   |
+| Deploy          | Automatisk (KIMI)       | Krever integrasjon  |
 
 ---
 

@@ -3,8 +3,8 @@
   "_masterPrompt": "Se .kimi/MASTER_PROMPT.md for fullstendig prosjektkontekst",
   "mcpServers": {
     "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp", "--api-key", "YOUR_CONTEXT7_API_KEY"]
+      "command": "node",
+      "args": ["scripts/run-context7-mcp.mjs"]
     },
     "shadcn": {
       "command": "npx",
@@ -12,7 +12,12 @@
     },
     "supabase": {
       "command": "npx",
-      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--access-token", "YOUR_SUPABASE_ACCESS_TOKEN"]
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "YOUR_SUPABASE_ACCESS_TOKEN"
+      ]
     },
     "github": {
       "command": "npx",

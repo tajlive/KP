@@ -6,14 +6,14 @@
 
 ---
 
-## Navigasjon — kilder i kode (ikke én sentral config ennå)
+## Navigasjon — kilder i kode
 
-| Kontekst                  | Fil                                                                                                    | Innhold                                                                                                                               |
-| ------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Gjest (landing)**       | [`src/components/landing/MobileMenu.tsx`](../../src/components/landing/MobileMenu.tsx)                 | `signup`, `priser`, `innlogging`                                                                                                      |
-| **Innlogget (dashboard)** | [`src/components/dashboard/DashboardSidebar.tsx`](../../src/components/dashboard/DashboardSidebar.tsx) | `dashboard`, `kurs`, `handelshistorikk`, `dashboard/resultater`, `dashboard/auto-trade`, `profile`, `dashboard/settings`, ev. `admin` |
-| **Middleware**            | [`src/middleware.ts`](../../src/middleware.ts)                                                         | `PROTECTED_PATHS`, beta→dashboard, tier-gate                                                                                          |
-| **Globale lenker**        | Diverse landing-komponenter                                                                            | CTA til `signup` / `innlogging`                                                                                                       |
+| Kontekst                  | Fil                                                                                                                                                                                                                                                 | Innhold                                                                                                                                                |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Gjest (landing)**       | [`src/components/landing/MobileMenu.tsx`](../../src/components/landing/MobileMenu.tsx)                                                                                                                                                              | `signup`, `priser`, `innlogging`                                                                                                                       |
+| **Innlogget (dashboard)** | [`src/lib/navigation/dashboard-links.ts`](../../src/lib/navigation/dashboard-links.ts) (URL-rekkefølge + aktiv tilstand, inkl. `dashboard/bot/*` under «Start bot») + [`DashboardSidebar.tsx`](../../src/components/dashboard/DashboardSidebar.tsx) | `dashboard`, `kurs`, `paper-trading`, `dashboard/auto-trade`, `handelshistorikk`, `dashboard/resultater`, `profile`, `dashboard/settings`, ev. `admin` |
+| **Middleware**            | [`src/middleware.ts`](../../src/middleware.ts)                                                                                                                                                                                                      | `PROTECTED_PATHS`, beta→dashboard, tier-gate                                                                                                           |
+| **Globale lenker**        | Diverse landing-komponenter                                                                                                                                                                                                                         | CTA til `signup` / `innlogging`                                                                                                                        |
 
 **Mål (roadmap):** Vurder én `nav-config` (f.eks. `src/lib/navigation/config.ts`) med roller `guest` | `auth` | `admin` — unngå divergens mellom `MobileMenu` og fremtidig innlogget mobil-header.
 
@@ -21,20 +21,21 @@
 
 ## Alias → kanonisk (server redirect)
 
-| Alias / gammel sti                  | Kanonisk                                                                              | Merknad                                                                     |
-| ----------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `/{locale}/login`                   | `/{locale}/innlogging`                                                                | [`login/page.tsx`](../../src/app/[locale]/login/page.tsx)                   |
-| `/{locale}/registrer`               | `/{locale}/signup`                                                                    | [`registrer/page.tsx`](../../src/app/[locale]/registrer/page.tsx)           |
-| `/{locale}/reset-password`          | `/{locale}/glemt-passord`                                                             | [`reset-password/page.tsx`](../../src/app/[locale]/reset-password/page.tsx) |
-| `/{locale}/dashboard/innstillinger` | `/{locale}/dashboard/settings`                                                        | Norsk URL → engelsk sti (Binance/API)                                       |
-| `/{locale}/varsler/innstillinger`   | `/{locale}/varsler`                                                                   |                                                                             |
-| `/{locale}/auto-trading`            | `/{locale}/dashboard/auto-trade`                                                      |                                                                             |
-| `/{locale}/auto-trading-ai`         | `/{locale}/dashboard/auto-trade`                                                      |                                                                             |
-| `/{locale}/dashboard/trading`       | `/{locale}/paper-trading`                                                             |                                                                             |
-| `/{locale}/live-trading`            | `/{locale}/paper-trading?mode=live`                                                   |                                                                             |
-| `/{locale}/checkout` (direkte)      | `/{locale}/priser`                                                                    | Uten spesialhåndtering                                                      |
-| `/{locale}/beta/*`                  | `/{locale}/dashboard` eller spesifikt (se [`middleware.ts`](../../src/middleware.ts)) | Beta fjernet                                                                |
-| `/{locale}/admin` (root)            | `/{locale}/admin/analytics`                                                           |                                                                             |
+| Alias / gammel sti                  | Kanonisk                                                                              | Merknad                                                                                                           |
+| ----------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `/{locale}/login`                   | `/{locale}/innlogging`                                                                | [`login/page.tsx`](../../src/app/[locale]/login/page.tsx)                                                         |
+| `/{locale}/registrer`               | `/{locale}/signup`                                                                    | [`registrer/page.tsx`](../../src/app/[locale]/registrer/page.tsx)                                                 |
+| `/{locale}/reset-password`          | `/{locale}/glemt-passord`                                                             | [`reset-password/page.tsx`](../../src/app/[locale]/reset-password/page.tsx)                                       |
+| `/{locale}/dashboard/innstillinger` | `/{locale}/dashboard/settings`                                                        | Norsk URL → engelsk sti (Binance/API)                                                                             |
+| `/{locale}/varsler/innstillinger`   | `/{locale}/varsler`                                                                   |                                                                                                                   |
+| `/{locale}/auto-trading`            | `/{locale}/dashboard/auto-trade`                                                      |                                                                                                                   |
+| `/{locale}/auto-trading-ai`         | `/{locale}/dashboard/auto-trade`                                                      |                                                                                                                   |
+| `/{locale}/dashboard/trading`       | `/{locale}/paper-trading`                                                             |                                                                                                                   |
+| `/{locale}/live-trading`            | `/{locale}/paper-trading?mode=live`                                                   |                                                                                                                   |
+| `/{locale}/checkout` (direkte)      | `/{locale}/priser`                                                                    | Uten spesialhåndtering                                                                                            |
+| `/{locale}/beta/*`                  | `/{locale}/dashboard` eller spesifikt (se [`middleware.ts`](../../src/middleware.ts)) | Beta fjernet                                                                                                      |
+| `/{locale}/admin` (root)            | `/{locale}/admin/analytics`                                                           |                                                                                                                   |
+| `/{locale}/trade` (og `/trade/*`)   | `/{locale}/paper-trading`                                                             | **308** i [`middleware.ts`](../../src/middleware.ts) `CANONICAL_REDIRECTS` — ingen `trade/page.tsx` i App Router. |
 
 ---
 
@@ -42,12 +43,15 @@
 
 ### Handel
 
-| Kanonisk                  | Formål                                                                                           | Beslutning                                                                                                                                                  |
-| ------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/{locale}/paper-trading` | Paper/live-modus (`?mode=live`), lister sesjoner                                                 | **Behold** — hovedinngang fra tier-gate og marketing.                                                                                                       |
-| `/{locale}/trade`         | `TradingInterface` med paper balance ([`trade/page.tsx`](../../src/app/[locale]/trade/page.tsx)) | **Behold inntil videre** — annen entry enn paper-trading; **IA:** vurder én tydelig «Handle»-inngang i nav på sikt for å unngå to parallelle handelsflater. |
+| Kanonisk                               | Formål                                                                                        | Beslutning                                                                                                                                  |
+| -------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/{locale}/paper-trading`              | Paper/live-hub (`?mode=live`), sesjonsliste, innebygd markedsdesk (`UnifiedTradingDashboard`) | **Kanonisk** manuell + oversikt; hovedinngang fra nav («Paper trading» / sidebar).                                                          |
+| `/{locale}/paper-trading/[session_id]` | Én økt: status, handler, kontroller                                                           | **Kanonisk** sesjondetalj.                                                                                                                  |
+| `/{locale}/dashboard/auto-trade`       | Oppstart av ny papir-bot (`BotWizard`)                                                        | **Kanonisk** «start bot».                                                                                                                   |
+| `/{locale}/dashboard/bot/[session_id]` | Bot-detalj etter oppstart                                                                     | **Kanonisk**; sidebar markerer «Start bot» aktiv under denne stien også.                                                                    |
+| `/{locale}/trade`                      | —                                                                                             | **Ikke rute** — redirect til `paper-trading`. Tidligere `TradingInterface` er fjernet; utførelse skjer via API + hub/dashboard-komponenter. |
 
-_Middleware:_ `live-trading` → `paper-trading?mode=live` (allerede).
+_Middleware:_ `live-trading` → `paper-trading?mode=live`; `/trade` → `paper-trading` (allerede).
 
 ### Læring
 

@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * Handels-UI layout-kontrakt (kort):
+ * - Bruk `PremiumTradingShell` som vertikal rytme (`space-y-6`) når hele siden er «produkt» (hub, sesjon, bot, resultater).
+ * - Topp: `PremiumTradingHero` eller kompakt `PremiumStatusBanner`; modus (paper/live) tydelig der det påvirker risiko.
+ * - Begrens innholdsbredden på `Shell` med `max-w-* mx-auto` + `px-4`; mobil: ekstra `pb` (f.eks. `pb-16`) så fast bunn-UI ikke overlapper.
+ */
+
 import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";

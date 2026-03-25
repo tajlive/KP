@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { ResponsiveContainer } from 'recharts'
+import { useEffect, useState } from "react";
+import { ResponsiveContainer } from "recharts";
 
 interface ChartWrapperProps {
-  height?: number
-  aspect?: number
-  minHeight?: number
-  children: React.ReactNode
-  className?: string
+  height?: number;
+  aspect?: number;
+  minHeight?: number;
+  children: React.ReactNode;
+  className?: string;
 }
 
 /**
@@ -23,13 +23,13 @@ export function ChartWrapper({
   aspect,
   minHeight = 250,
   children,
-  className = '',
+  className = "",
 }: ChartWrapperProps) {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
     return (
@@ -38,20 +38,17 @@ export function ChartWrapper({
         style={{ height, minHeight }}
         aria-hidden="true"
       />
-    )
+    );
   }
 
   return (
-    <div className={`w-full ${className}`} style={{ minHeight }}>
-      <ResponsiveContainer
-        width="100%"
-        {...(aspect ? { aspect } : { height })}
-      >
+    <div className={`w-full min-w-0 ${className}`} style={{ minHeight }}>
+      <ResponsiveContainer width="100%" {...(aspect ? { aspect } : { height })}>
         {children as React.ReactElement}
       </ResponsiveContainer>
     </div>
-  )
+  );
 }
 
 // Re-export for bakoverkompatibilitet
-export default ChartWrapper
+export default ChartWrapper;

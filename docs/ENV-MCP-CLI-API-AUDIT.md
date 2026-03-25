@@ -101,6 +101,7 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 | `CURSOR_API_KEY`                                | cursor-api.mjs (Cloud Agents API)                             |
 | `STRIPE_SECRET_KEY`                             | stripe-api.mjs, check-stripe-prices.mjs, test-mcp, mcp-health |
 | `RESEND_API_KEY`                                | test-mcp, mcp-health                                          |
+| `CONTEXT7_API_KEY`                              | Context7 MCP (valgfri; run-context7-mcp.mjs)                  |
 | `CLOUDFLARE_API_TOKEN`                          | cloudflare-api.mjs, test-mcp, mcp-health (valgfri)            |
 
 ### Dev / test
@@ -122,6 +123,7 @@ Variabler som **src/** og **scripts/** faktisk bruker, og hvor de settes.
 | Supabase (Management) | supabase    | npx @supabase/mcp-server-supabase       | SUPABASE_ACCESS_TOKEN       |
 | Supabase (DB/SQL)     | supabase-db | node scripts/run-supabase-mcp.mjs       | DATABASE_URL (.env.local)   |
 | Playwright            | playwright  | npx @playwright/mcp@latest              | —                           |
+| Context7 (docs)       | context7    | node scripts/run-context7-mcp.mjs       | CONTEXT7_API_KEY (valgfri)  |
 | Resend                | resend      | npx resend-mcp@latest                   | RESEND_API_KEY              |
 | Vipps                 | vipps       | node scripts/run-vipps-mcp.mjs          | (i wrapper)                 |
 | Vercel                | vercel      | url: https://mcp.vercel.com             | OAuth (ingen token i repo)  |

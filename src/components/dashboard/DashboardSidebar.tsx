@@ -24,6 +24,12 @@ import { useEffect, useState, useCallback } from "react";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { CurrencySwitcher } from "@/components/trading/CurrencySwitcher";
 import { TradingModeToggle } from "@/components/dashboard/TradingModeToggle";
+import {
+  DASHBOARD_MAIN_NAV,
+  DASHBOARD_TRADING_NAV,
+  isDashboardSidebarLinkActive,
+  type DashboardSidebarLabelKey,
+} from "@/lib/navigation/dashboard-links";
 
 export function DashboardSidebar() {
   const t = useTranslations("dashboard.sidebar");
@@ -57,37 +63,22 @@ export function DashboardSidebar() {
     fetchUserData();
   }, [fetchUserData]);
 
-  const isActive = (path: string, exact?: boolean) => {
-    const fullPath = hrefWithLocale(locale, path);
-    const p = pathname ?? "/";
-    if (exact) return p === fullPath;
-    return p === fullPath || p.startsWith(`${fullPath}/`);
-  };
+  const mainLinks = DASHBOARD_MAIN_NAV.map((item) => ({
+    ...item,
+    icon: item.labelKey === "home" ? LayoutDashboard : BookOpen,
+  }));
 
-  const mainLinks = [
-    {
-      href: "/dashboard",
-      labelKey: "home" as const,
-      icon: LayoutDashboard,
-      exact: true,
-    },
-    { href: "/kurs", labelKey: "learn" as const, icon: BookOpen },
-  ];
-
-  const tradingLinks = [
-    { href: "/paper-trading", labelKey: "trade" as const, icon: TrendingUp },
-    {
-      href: "/dashboard/auto-trade",
-      labelKey: "autoTrade" as const,
-      icon: Bot,
-    },
-    { href: "/handelshistorikk", labelKey: "history" as const, icon: History },
-    {
-      href: "/dashboard/resultater",
-      labelKey: "results" as const,
-      icon: BarChart3,
-    },
-  ];
+  const tradingLinks = DASHBOARD_TRADING_NAV.map((item) => ({
+    ...item,
+    icon:
+      item.href === "/paper-trading"
+        ? TrendingUp
+        : item.href === "/dashboard/auto-trade"
+          ? Bot
+          : item.href === "/handelshistorikk"
+            ? History
+            : BarChart3,
+  }));
 
   const profileLink = {
     href: "/profile",
@@ -124,23 +115,23 @@ export function DashboardSidebar() {
 
   const renderLink = (link: {
     href: string;
-    labelKey:
-      | "home"
-      | "learn"
-      | "trade"
-      | "history"
-      | "results"
-      | "autoTrade"
-      | "profile"
-      | "settings"
-      | "admin";
+    labelKey: DashboardSidebarLabelKey;
     icon: React.ComponentType<{ className?: string }>;
     exact?: boolean;
     admin?: boolean;
+    alsoActiveForPathPrefixes?: string[];
   }) => {
     const label = t(link.labelKey);
     const fullPath = hrefWithLocale(locale, link.href);
-    const active = isActive(link.href, link.exact);
+    const active = isDashboardSidebarLinkActive(
+      pathname ?? "/",
+      locale,
+      link.href,
+      {
+        exact: link.exact,
+        alsoActiveForPathPrefixes: link.alsoActiveForPathPrefixes,
+      },
+    );
 
     return (
       <Link

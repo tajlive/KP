@@ -16,8 +16,8 @@
   "paperBot": {
     "startedTitle": "Papir-bot er startet",
     "startedDesc": "Startkapital er satt. Ingen ordre er plassert ennå. Følg bot-status på botsiden, og se utførte handler i handelshistorikk.",
-    "alreadyActiveTitle": "Åpner din aktive papir-bot",
-    "alreadyActiveDesc": "Du har allerede en aktiv lekepenger-økt — vi opprettet ikke en ny. Du sendes til bot-siden for status, grafer og utførte handler (også under Handelshistorikk).",
+    "sessionLimitTitle": "Grense for papir-botter",
+    "sessionLimitDesc": "Du har allerede {max, number} aktive papir-botter (maks for planen din). Avslutt eller arkiver én på dashbordet før du starter en ny.",
     "startFailedTitle": "Kunne ikke starte papir-bot",
     "networkError": "Nettverksfeil — prøv igjen."
   }

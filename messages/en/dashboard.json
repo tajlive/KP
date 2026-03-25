@@ -356,7 +356,7 @@
   "sidebar": {
     "home": "Home",
     "learn": "Learn",
-    "trade": "Paper trading",
+    "trade": "Trading (paper)",
     "history": "History",
     "results": "Results",
     "profile": "Profile",
@@ -377,10 +377,11 @@
     "admin": "Admin",
     "logout": "Log out",
     "paperTrading": "Paper Trading",
-    "autoTrade": "Auto-trade",
+    "autoTrade": "Start bot",
     "guide": "Guide",
     "mainMenu": "Main Menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "breadcrumbYouAreHere": "You are here"
   },
   "bots": {
     "modeLive": "Live",

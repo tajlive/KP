@@ -10,17 +10,19 @@ Cursor bruker **Model Context Protocol** for å snakke med eksterne verktøy. Pr
 
 ### Konfigurasjon i dette prosjektet
 
-| Server      | Type  | Bruk                                                               |
-| ----------- | ----- | ------------------------------------------------------------------ |
-| github      | stdio | run-github-mcp.mjs → GITHUB_TOKEN eller GH_PAT i .env.local        |
-| linear      | stdio | run-linear-mcp.mjs → LINEAR_API_KEY                                |
-| supabase    | stdio | run-official-supabase-mcp.mjs → SUPABASE_ACCESS_TOKEN i .env.local |
-| supabase-db | stdio | run-supabase-mcp.mjs → DATABASE_URL                                |
-| playwright  | npx   | —                                                                  |
-| resend      | npx   | RESEND_API_KEY                                                     |
-| vipps       | stdio | run-vipps-mcp.mjs                                                  |
-| vercel      | url   | https://mcp.vercel.com (OAuth)                                     |
-| cloudflare  | url   | https://mcp.cloudflare.com/mcp (OAuth)                             |
+| Server          | Type  | Bruk                                                               |
+| --------------- | ----- | ------------------------------------------------------------------ |
+| github          | stdio | run-github-mcp.mjs → GITHUB_TOKEN eller GH_PAT i .env.local        |
+| linear          | stdio | run-linear-mcp.mjs → LINEAR_API_KEY                                |
+| supabase        | stdio | run-official-supabase-mcp.mjs → SUPABASE_ACCESS_TOKEN i .env.local |
+| supabase-db     | stdio | run-supabase-mcp.mjs → DATABASE_URL                                |
+| playwright      | npx   | @playwright/mcp — E2E / brukerreiser                               |
+| context7        | stdio | run-context7-mcp.mjs → valgfri CONTEXT7_API_KEY (.env.local)       |
+| chrome-devtools | npx   | chrome-devtools-mcp — konsoll, nettverk, performance, Lighthouse   |
+| resend          | npx   | RESEND_API_KEY                                                     |
+| vipps           | stdio | run-vipps-mcp.mjs                                                  |
+| vercel          | url   | https://mcp.vercel.com (OAuth)                                     |
+| cloudflare      | url   | https://mcp.cloudflare.com/mcp (OAuth)                             |
 
 Se **docs/MCP-CLI-CI-API.md** for full liste og **docs/VERCEL-MCP-CLI.md** / **docs/CLOUDFLARE-MCP-CLI.md** for Vercel og Cloudflare.
 

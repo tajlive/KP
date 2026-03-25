@@ -10,10 +10,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const INITIAL_BALANCE = 100_000;
 const BTC_START = 68_420;
 
-function generatePriceHistory(base: number, count: number): number[] {
+/** Deterministisk kurve — samme på server og ved første klient-render (unngår React hydration #418). */
+function buildDeterministicPriceHistory(base: number, count: number): number[] {
   const points: number[] = [base];
   for (let i = 1; i < count; i++) {
-    const drift = (Math.random() - 0.48) * base * 0.008;
+    const drift = Math.sin(i * 0.37) * base * 0.0015;
     points.push(Math.max(base * 0.9, points[i - 1] + drift));
   }
   return points;
@@ -31,7 +32,7 @@ export function DemoWidget() {
   const paperHref = hrefWithLocale(locale, "/paper-trading");
 
   const [prices, setPrices] = useState<number[]>(() =>
-    generatePriceHistory(BTC_START, 40),
+    buildDeterministicPriceHistory(BTC_START, 40),
   );
   const [balance, setBalance] = useState(INITIAL_BALANCE);
   const [position, setPosition] = useState(0);

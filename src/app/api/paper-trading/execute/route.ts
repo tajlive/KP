@@ -1,7 +1,7 @@
 /**
  * Paper trading execute.
  * Accepts either { pair, side, amount_nok } or { symbol, side, quantity, price }.
- * Used by TradingInterface, FirstTradeCard, and PaperTradeButton.
+ * Used by paper-trading UI (hub, session detail), FirstTradeCard, and PaperTradeButton.
  */
 
 import { executePaperTrade } from "@/lib/trading/safety";
