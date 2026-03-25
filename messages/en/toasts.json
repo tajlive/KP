@@ -16,8 +16,8 @@
   "paperBot": {
     "startedTitle": "Paper bot started",
     "startedDesc": "Starting capital is set. No order has been placed yet. Follow progress on the bot details page, and track executed trades in trade history.",
-    "alreadyActiveTitle": "Paper bot already running",
-    "alreadyActiveDesc": "You already have an active session. No new session was created. Open bot details for status and trade history for executed trades.",
+    "alreadyActiveTitle": "Opening your active paper bot",
+    "alreadyActiveDesc": "You already have a running paper session — we did not create a new one. Taking you to the bot page for status, charts, and executed trades (also in Trade history).",
     "startFailedTitle": "Could not start paper bot",
     "networkError": "Network error — please try again."
   }

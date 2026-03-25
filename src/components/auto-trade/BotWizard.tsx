@@ -21,6 +21,7 @@ import {
   PremiumTradingHero,
   PremiumTradingShell,
 } from "@/components/trading/PremiumTradingLayout";
+import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 
 interface BotWizardProps {
   userId: string;
@@ -44,18 +45,7 @@ const TIER_COIN_LIMIT: Record<string, number> = {
   professor: 10,
 };
 
-const COINS = [
-  "BTCUSDT",
-  "ETHUSDT",
-  "SOLUSDT",
-  "BNBUSDT",
-  "XRPUSDT",
-  "ADAUSDT",
-  "AVAXUSDT",
-  "DOTUSDT",
-  "LINKUSDT",
-  "DOGEUSDT",
-];
+const COINS = [...PAPER_TRADING_UI_SYMBOLS];
 
 function tierMeetsRequirement(userTier: string, requiredTier: string) {
   const normalizedUser = userTier.toLowerCase();
@@ -242,17 +232,23 @@ export function BotWizard({
         return;
       }
 
-      if (data.reused_session) {
-        toast.info(tToast("paperBot.alreadyActiveTitle"), {
-          description: tToast("paperBot.alreadyActiveDesc"),
-        });
-      } else {
-        toast.success(tToast("paperBot.startedTitle"), {
-          description: tToast("paperBot.startedDesc"),
-        });
-      }
       if (data.session_id) {
-        router.push(`/${locale}/dashboard/bot/${data.session_id}`);
+        const botPath = `/${locale}/dashboard/bot/${data.session_id}`;
+        const alreadyActive =
+          data.reused_session === true ||
+          data.code === "PAPER_BOT_ALREADY_ACTIVE";
+        if (alreadyActive) {
+          // replace: unngå at «tilbake» sender brukeren tilbake til wizard i en loop
+          router.replace(botPath);
+          toast.info(tToast("paperBot.alreadyActiveTitle"), {
+            description: tToast("paperBot.alreadyActiveDesc"),
+          });
+        } else {
+          toast.success(tToast("paperBot.startedTitle"), {
+            description: tToast("paperBot.startedDesc"),
+          });
+          router.push(botPath);
+        }
         return;
       }
       router.push(`/${locale}/dashboard/auto-trade`);
