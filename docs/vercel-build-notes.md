@@ -22,6 +22,12 @@ Dette dokumentet beskriver kjente advarsler i Vercel-build og hva som er gjort f
 - **Årsak:** `src/app/opengraph-image.tsx` og `src/app/[locale]/opengraph-image.tsx` bruker `export const runtime = 'edge'` fordi Next.js `ImageResponse` (OG-bilder) krever edge.
 - **Fiks:** Ingen endring – dette er forventet og **anbefalt** for dynamiske OG-bilder. Alternativet er statiske filer (f.eks. `opengraph-image.png`), men da forsvinner dynamisk generering. Kommentar er lagt inn i begge filer. Ikke fjern edge fra disse filene.
 
+### 4a. «Unable to find source file for page /opengraph-image/route» (Vercel)
+
+- **Årsak:** Under build leter Vercel etter en **Route Handler**-fil på formen `opengraph-image/route.{ts,tsx,js,jsx}`. Next.js bruker derimot **metadata-konvensjonen** [`opengraph-image.tsx`](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image) ved siden av `layout.tsx` / `page.tsx` — ikke en `route`-fil i en undermappe.
+- **Konsekvens:** Advarselen er **forventet og trygt å ignorere** her. `functions` i [`vercel.json`](../vercel.json) matcher bare `src/app/api/**/route.ts`, så `maxDuration` for API påvirkes ikke, og OG-bilder håndteres av Next som vanlig.
+- **Ikke gjør:** Ikke flytt implementasjonen til `opengraph-image/route.tsx`. Da tolker Next filen som API-route, og du får bl.a. typefeil («`Image` is not a valid Route export field»).
+
 ## 5. npm audit (38 vulnerabilities)
 
 - **Årsak:** Mange sårbarheter sitter i **dev-only**-pakker: `vercel` (CLI), `@lhci/cli`, `lighthouse`, `inquirer`, `tmp`, osv. Noen krever `npm audit fix --force` (breaking).
