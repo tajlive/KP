@@ -107,6 +107,16 @@ npm run db:diff              # supabase db diff --linked
 
 **Skjemadrift / `relation "trades" does not exist`:** Migrasjon `supabase/migrations/20260325080000_ensure_public_trades_and_risk_daily_loss.sql` + `npm run db:apply:trading-core`. SoT-tekst: `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md` («Når db push blokkeres …»). **Neste steg etter reparasjon:** `supabase migration repair` / `db pull` der remote har versjoner som ikke finnes lokalt, deretter vanlig `db push` så `schema_migrations` matcher.
 
+### Trading diagnose (signaler + brukerhandler)
+
+```bash
+node --env-file=.env.local scripts/diagnose-signals-traders.mjs   # alias: npm run diagnose:signals-traders
+npm run diagnose:user-trades -- --user-id=<uuid>
+npm run diagnose:user-trades -- --email=user@example.com
+```
+
+**Krever** `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` i `.env.local`. **Kanonisk app-API (JWT, ikke service role):** `GET /api/user/trades`, `GET /api/user/trading-diagnostics`. Triage og stopp-regel: **`docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`**.
+
 ### Vercel
 
 ```bash

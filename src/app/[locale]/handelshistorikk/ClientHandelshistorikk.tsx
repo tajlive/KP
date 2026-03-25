@@ -13,10 +13,26 @@ import {
 } from "@/components/trading/PremiumTradingLayout";
 import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregates";
 import { explainStrategySignalJson } from "@/lib/bot-status-helpers";
-import { ArrowUp, ArrowDown, Loader2, Clock3, History } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  Loader2,
+  Clock3,
+  ClipboardCopy,
+} from "lucide-react";
 import type { Json } from "@/types/supabase-generated";
-import { reportTradingIntegrityPollFailure } from "@/lib/sentry";
+import {
+  reportTradeHistoryEmptyWhileSignedIn,
+  reportTradingIntegrityPollFailure,
+} from "@/lib/sentry";
 import { tradesPollIntervalAfterFailures } from "@/lib/trading/trading-integrity-sync";
+import { meTradesSuccessSchema } from "@/lib/trading/me-trades-api";
+import {
+  matchesModeFilter,
+  tradeModeBucket,
+  type TradeHistoryModeFilter,
+} from "@/lib/trading/trade-history-mode";
+import { toast } from "sonner";
 
 interface Trade {
   id: string;
@@ -26,7 +42,7 @@ interface Trade {
   price: number;
   total_value: number;
   realized_pnl: number | null;
-  mode: string;
+  mode?: string | null;
   status: string;
   created_at: string;
   executed_at: string | null;
@@ -45,8 +61,6 @@ interface TradeDecisionRow {
   created_at: string;
 }
 
-type ModeFilter = "all" | "paper" | "live";
-
 function parseStrategySignal(raw: Json | null): Record<string, unknown> | null {
   if (raw === null || raw === undefined) return null;
   if (typeof raw === "object" && !Array.isArray(raw)) {
@@ -61,7 +75,7 @@ export default function ClientHandelshistorikk() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [decisions, setDecisions] = useState<TradeDecisionRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<ModeFilter>("all");
+  const [filter, setFilter] = useState<TradeHistoryModeFilter>("all");
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [integrityPollWarning, setIntegrityPollWarning] = useState(false);
   const [pollCycleFailures, setPollCycleFailures] = useState(0);
@@ -112,9 +126,8 @@ export default function ClientHandelshistorikk() {
       setFetchError(null);
       const supabase = createClient();
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const user = session?.user ?? null;
+        data: { user },
+      } = await supabase.auth.getUser();
       setSignedIn(!!user);
 
       if (!user) {
@@ -124,41 +137,96 @@ export default function ClientHandelshistorikk() {
         return;
       }
 
-      const [tradesRes, decisionsRes] = await Promise.all([
-        supabase
-          .from("trades")
-          .select(
-            "id, trading_pair, side, quantity, price, total_value, realized_pnl, mode, status, created_at, executed_at, strategy_signal",
-          )
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(200),
-        supabase
-          .from("trade_decisions")
-          .select(
-            "id, decision_type, trading_mode, symbol, side, requested_quantity, requested_price, rejection_reason, created_at",
-          )
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(50),
-      ]);
+      try {
+        const res = await fetch("/api/user/trades?limit=200", {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+        });
+        const json: unknown = await res.json();
 
-      if (tradesRes.error) {
-        console.error("handelshistorikk fetch error:", tradesRes.error);
+        if (res.status === 401) {
+          if (silent) {
+            setIntegrityPollWarning(true);
+            setPollCycleFailures((f) => f + 1);
+            reportTradingIntegrityPollFailure({
+              surface: "trade_history",
+              source: "me_trades_api",
+              status: 401,
+            });
+          } else {
+            setFetchError(t("notLoggedIn"));
+          }
+          setTrades([]);
+        } else if (!res.ok) {
+          const msg =
+            typeof json === "object" &&
+            json !== null &&
+            "error" in json &&
+            typeof (json as { error?: string }).error === "string"
+              ? (json as { error: string }).error
+              : t("fetchError");
+          if (silent) {
+            setIntegrityPollWarning(true);
+            setPollCycleFailures((f) => f + 1);
+            reportTradingIntegrityPollFailure({
+              surface: "trade_history",
+              source: "me_trades_api",
+              status: res.status,
+            });
+          } else {
+            setFetchError(msg);
+          }
+          setTrades([]);
+        } else {
+          const parsed = meTradesSuccessSchema.safeParse(json);
+          if (!parsed.success) {
+            if (silent) {
+              setIntegrityPollWarning(true);
+              setPollCycleFailures((f) => f + 1);
+              reportTradingIntegrityPollFailure({
+                surface: "trade_history",
+                source: "me_trades_schema",
+              });
+            } else {
+              setFetchError(t("fetchError"));
+            }
+            setTrades([]);
+          } else {
+            const rows: Trade[] = parsed.data.trades.map((row) => ({
+              ...row,
+              strategy_signal: row.strategy_signal as Json | null,
+            }));
+            setTrades(rows);
+            setIntegrityPollWarning(false);
+            setPollCycleFailures(0);
+            if (rows.length === 0) {
+              reportTradeHistoryEmptyWhileSignedIn({
+                diagnostic_id: parsed.data.diagnostic_id,
+                surface: "trade_history",
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.error("handelshistorikk /api/user/trades:", e);
         if (silent) {
           setIntegrityPollWarning(true);
           setPollCycleFailures((f) => f + 1);
           reportTradingIntegrityPollFailure({ surface: "trade_history" });
         } else {
-          setFetchError(tradesRes.error.message || t("fetchError"));
-          setTrades([]);
+          setFetchError(t("fetchError"));
         }
-      } else {
-        const rows = (tradesRes.data as Trade[]) ?? [];
-        setTrades(rows);
-        setIntegrityPollWarning(false);
-        setPollCycleFailures(0);
+        setTrades([]);
       }
+
+      const decisionsRes = await supabase
+        .from("trade_decisions")
+        .select(
+          "id, decision_type, trading_mode, symbol, side, requested_quantity, requested_price, rejection_reason, created_at",
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
 
       if (decisionsRes.error) {
         console.warn("trade_decisions fetch:", decisionsRes.error.message);
@@ -172,25 +240,43 @@ export default function ClientHandelshistorikk() {
     [t],
   );
 
-  useEffect(() => {
-    void fetchTrades(false);
-  }, [fetchTrades]);
+  const copyDiagnostics = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/trading-diagnostics", {
+        credentials: "same-origin",
+      });
+      const json: unknown = await res.json();
+      if (!res.ok) {
+        toast.error(t("diagnosticsCopyFailed"));
+        return;
+      }
+      await navigator.clipboard.writeText(JSON.stringify(json, null, 2));
+      toast.success(t("diagnosticsCopied"));
+    } catch {
+      toast.error(t("diagnosticsCopyFailed"));
+    }
+  }, [t]);
 
-  /** Når JWT hydreres etter første render — ellers ser getUser() ofte tom ut og listen blir blank. */
+  /**
+   * Én effekt: abonner først (INITIAL_SESSION kan fyres synkront når sesjon finnes),
+   * deretter første fetch — unngår at getSession() på første tick er tom mens JWT finnes.
+   */
   useEffect(() => {
     const supabase = createClient();
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
-        void fetchTrades(true);
-      }
       if (event === "SIGNED_OUT") {
         setTrades([]);
         setDecisions([]);
         setSignedIn(false);
+        return;
+      }
+      if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
+        void fetchTrades(true);
       }
     });
+    void fetchTrades(false);
     return () => subscription.unsubscribe();
   }, [fetchTrades]);
 
@@ -204,20 +290,12 @@ export default function ClientHandelshistorikk() {
   }, [fetchTrades, pollIntervalMs]);
 
   const filteredTrades = useMemo(
-    () =>
-      trades.filter((trade) => {
-        if (filter === "all") return true;
-        return trade.mode === filter;
-      }),
+    () => trades.filter((trade) => matchesModeFilter(trade.mode, filter)),
     [trades, filter],
   );
 
   const filteredDecisions = useMemo(
-    () =>
-      decisions.filter((d) => {
-        if (filter === "all") return true;
-        return d.trading_mode === filter;
-      }),
+    () => decisions.filter((d) => matchesModeFilter(d.trading_mode, filter)),
     [decisions, filter],
   );
 
@@ -252,9 +330,23 @@ export default function ClientHandelshistorikk() {
           title={t("title")}
           subtitle={t("subtitle")}
           actions={
-            <Button className={BRAND.primary} disabled>
-              {t("exportCsv")}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => void copyDiagnostics()}
+                disabled={signedIn !== true}
+                data-testid="trade-history-copy-diagnostics"
+              >
+                <ClipboardCopy className="h-4 w-4" />
+                {t("copyDiagnostics")}
+              </Button>
+              <Button className={BRAND.primary} disabled size="sm">
+                {t("exportCsv")}
+              </Button>
+            </div>
           }
         />
 
@@ -273,23 +365,25 @@ export default function ClientHandelshistorikk() {
         <PremiumPanel className="p-4">
           <div className="flex flex-wrap items-center gap-4">
             <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-slate-700 dark:bg-slate-950/70">
-              {(["all", "paper", "live"] as ModeFilter[]).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-                    filter === f
-                      ? "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white"
-                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                  }`}
-                >
-                  {f === "all"
-                    ? t("filterAll")
-                    : f === "paper"
-                      ? t("filterPaper")
-                      : t("filterLive")}
-                </button>
-              ))}
+              {(["all", "paper", "live"] as TradeHistoryModeFilter[]).map(
+                (f) => (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                      filter === f
+                        ? "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white"
+                        : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                    }`}
+                  >
+                    {f === "all"
+                      ? t("filterAll")
+                      : f === "paper"
+                        ? t("filterPaper")
+                        : t("filterLive")}
+                  </button>
+                ),
+              )}
             </div>
           </div>
 
@@ -389,7 +483,9 @@ export default function ClientHandelshistorikk() {
                             {d.side}
                           </span>
                           <span className="text-slate-500 dark:text-slate-400">
-                            {d.trading_mode === "live" ? t("live") : t("paper")}
+                            {tradeModeBucket(d.trading_mode) === "live"
+                              ? t("live")
+                              : t("paper")}
                           </span>
                         </div>
                         {reject && rr ? (
@@ -430,6 +526,15 @@ export default function ClientHandelshistorikk() {
                 {t("retry")}
               </Button>
             </div>
+          ) : trades.length > 0 && filteredTrades.length === 0 ? (
+            <div className="text-center py-12 px-4 space-y-2">
+              <p className="text-slate-600 dark:text-slate-300">
+                {t("noTradesFiltered")}
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                {t("noTradesFilteredHint")}
+              </p>
+            </div>
           ) : filteredTrades.length === 0 ? (
             <div className="text-center py-12 px-4 space-y-2">
               <p className="text-slate-600 dark:text-slate-300">
@@ -440,7 +545,7 @@ export default function ClientHandelshistorikk() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" data-testid="trade-history-table">
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/70">
@@ -490,6 +595,7 @@ export default function ClientHandelshistorikk() {
                     return (
                       <tr
                         key={trade.id}
+                        data-testid="trade-history-row"
                         className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/60 dark:hover:bg-slate-800/40"
                       >
                         <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap">
@@ -551,7 +657,9 @@ export default function ClientHandelshistorikk() {
                         </td>
                         <td className="px-4 py-3">
                           <span className="text-xs text-slate-600 dark:text-slate-400">
-                            {trade.mode === "live" ? t("live") : t("paper")}
+                            {tradeModeBucket(trade.mode) === "live"
+                              ? t("live")
+                              : t("paper")}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400">

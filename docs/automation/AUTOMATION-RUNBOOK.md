@@ -95,11 +95,9 @@ Når en release er ferdig, logg dette i Linear:
 
 ### Siste loggede leveranse (2026-03-24)
 
-- Commit: `2924cf0e7` + `30970e741` (`main`)
-- Deploy/verify: `npm run verify` ✅
-- Health: `healthy`, version `30970e7`, tradingSignals `ok`
-- Gates: `automation:check` ✅, lint ✅, type-check ✅, unit ✅, critical E2E with user ✅ (47 pass / 3 skip)
-- Monitor: `prod-health-alert.yml` latest run `success`
+- Commit: `48c582385` (arbeidskopi / `main` ved kjøring)
+- **test:robot** (testbruker `tom@klarpakke.no`): lint ✅, type-check ✅, Vitest **222 pass / 1 skip**, Playwright critical-chromium **46 pass / 3 skip**, **1 flaky** (pass på retry etter Next dev minne-restart). `PLAYWRIGHT_TEST_BASE_URL` tvinges til localhost av `scripts/test-robot.sh` når ikke satt.
+- Tidligere gate (samme dag): Commit `2924cf0e7` + `30970e741`; `npm run verify` ✅; health `30970e7`, tradingSignals `ok`; critical E2E with user **47 pass / 3 skip**; `prod-health-alert.yml` success.
 
 ---
 

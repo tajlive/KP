@@ -273,5 +273,36 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
     await expect(
       page.getByTestId("paper-session-trade-row").first(),
     ).toBeVisible({ timeout: 20_000 });
+
+    // Kanonisk API + handelshistorikk (syntetisk happy path — samme kjeden som support-triage).
+    // Bruk samme Cookie-header som execute: storageState kan ha domain=www.klarpakke.no mens baseURL er localhost;
+    // da sender ikke nettleserens fetch() sb-cookies til localhost, men APIRequestContext med eksplisitt header gjør det.
+    const meTradesRes = await request.get("/api/user/trades?limit=50", {
+      headers: cookieHeader
+        ? { Cookie: cookieHeader, Accept: "application/json" }
+        : { Accept: "application/json" },
+      timeout: 60_000,
+    });
+    expect(meTradesRes.status()).toBe(200);
+    const mt = (await meTradesRes.json()) as {
+      ok?: boolean;
+      trades?: unknown[];
+    };
+    expect(mt.ok).toBe(true);
+    expect(Array.isArray(mt.trades)).toBe(true);
+    expect(mt.trades!.length).toBeGreaterThanOrEqual(1);
+
+    await page.goto("/no/handelshistorikk", {
+      waitUntil: "domcontentloaded",
+      timeout: 90_000,
+    });
+    if (page.url().includes("innlogging") || page.url().includes("login")) {
+      console.log("⚠️ Redirected to login on trade history");
+      test.skip();
+      return;
+    }
+    await expect(page.getByTestId("trade-history-row").first()).toBeVisible({
+      timeout: 25_000,
+    });
   });
 });

@@ -100,6 +100,43 @@ export function reportTradingIntegrityPollFailure(
   }
 }
 
+let lastTradeHistoryEmptyReportAt = 0;
+const TRADE_HISTORY_EMPTY_THROTTLE_MS = 30 * 60 * 1000;
+
+/**
+ * Innlogget bruker, vellykket henting av handler via kanonisk API, men 0 rader (filter «Alle» er implisitt på serversiden).
+ * Throttlet for å unngå støy for nye brukere uten handler ennå.
+ */
+export function reportTradeHistoryEmptyWhileSignedIn(
+  context?: Record<string, unknown>,
+) {
+  if (process.env.NODE_ENV !== "production") return;
+  try {
+    Sentry.addBreadcrumb({
+      category: "trading_integrity",
+      message: "trade_history_empty_success",
+      level: "info",
+      data: context,
+    });
+    const now = Date.now();
+    if (now - lastTradeHistoryEmptyReportAt < TRADE_HISTORY_EMPTY_THROTTLE_MS) {
+      return;
+    }
+    lastTradeHistoryEmptyReportAt = now;
+    logMessage(
+      "Trading integrity: trade history empty (signed in, API OK)",
+      "info",
+      {
+        ...context,
+        trades_row_count: 0,
+        filter_effective: "all",
+      },
+    );
+  } catch {
+    /* noop */
+  }
+}
+
 /** Bruker trykket manuell synk på dashboard (observabilitet, ikke PII). */
 export function reportTradingIntegrityManualSync() {
   if (process.env.NODE_ENV !== "production") return;

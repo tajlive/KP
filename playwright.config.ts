@@ -299,7 +299,8 @@ export default defineConfig({
     return {
       command: "npm run dev",
       url: "http://localhost:3000",
-      reuseExistingServer: true,
+      // Gjenbruk kun når eksplisitt ønsket; ellers henger E2E på en gammel dev-server uten nye /api/*-ruter (404).
+      reuseExistingServer: process.env.PLAYWRIGHT_REUSE_EXISTING_SERVER === "1",
       timeout: 180_000,
       env: {
         ...process.env,
