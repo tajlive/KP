@@ -6,6 +6,10 @@ Dette dokumentet ligger ved siden av eksisterende playbooks og er operativ stand
 - sikker batch-kjoring i prod-naer flyt
 - Linear reset og sporbarhet
 
+## 0) AI-hovedarkitekt (Cursor Desktop)
+
+- **Cursor Desktop er hovedarkitekt** for prosjektet og orkestrerer **agenter + MCP** for å optimalisere leveransen (kode, sikkerhet, drift, QA, dokumentasjon) etter denne standarden.
+
 ## 1) Batch-rekkefolge (obligatorisk)
 
 1. **Preflight**
