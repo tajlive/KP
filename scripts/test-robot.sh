@@ -27,7 +27,11 @@ export TEST_USER_PASSWORD="${TEST_USER_PASSWORD:-$E2E_USER_PASSWORD}"
 echo "🤖 test-robot: E2E provision ($E2E_USER_EMAIL)"
 npm run test:e2e:prepare
 
-echo "🤖 test-robot: Playwright critical-chromium"
+# Playwright config leser BASE_URL fra .env.local (ofte https://www.klarpakke.no). test:robot skal treffe
+# next dev (webServer) — ellers feiler nye /api/*-ruter til de er deployet. Overstyr kun når ikke satt.
+export PLAYWRIGHT_TEST_BASE_URL="${PLAYWRIGHT_TEST_BASE_URL:-http://localhost:3000}"
+
+echo "🤖 test-robot: Playwright critical-chromium (PLAYWRIGHT_TEST_BASE_URL=$PLAYWRIGHT_TEST_BASE_URL)"
 npx playwright test --project=critical-chromium
 
 echo "✅ test-robot fullført."
