@@ -17,15 +17,21 @@ import {
 } from "lucide-react";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
 import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
+import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 
-const POPULAR_COINS = [
+const POPULAR_COINS_ALL = [
   { symbol: "BTCUSDT", name: "Bitcoin", shortName: "BTC" },
   { symbol: "ETHUSDT", name: "Ethereum", shortName: "ETH" },
   { symbol: "SOLUSDT", name: "Solana", shortName: "SOL" },
   { symbol: "BNBUSDT", name: "BNB", shortName: "BNB" },
   { symbol: "XRPUSDT", name: "XRP", shortName: "XRP" },
   { symbol: "DOGEUSDT", name: "Dogecoin", shortName: "DOGE" },
-];
+] as const;
+
+const allowedPaperSymbols = new Set(PAPER_TRADING_UI_SYMBOLS);
+const POPULAR_COINS = POPULAR_COINS_ALL.filter((c) =>
+  allowedPaperSymbols.has(c.symbol),
+);
 
 const TRADE_SYMBOLS = POPULAR_COINS.map((c) => c.symbol);
 
