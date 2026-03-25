@@ -1,0 +1,32 @@
+---
+description: Cursor Auto agent-oppsett for Klarpakke (routing og profiler)
+globs:
+alwaysApply: false
+---
+
+# Cursor Auto Agent Setup — Klarpakke
+
+Når en oppgave kommer inn, bruk routing-prinsippene fra:
+
+- `docs/agents/CURSOR-AUTO-AGENT-SETUP.md`
+- `docs/agents/KLARPAKKE-ROSTER.md`
+- `docs/agents/USER-SETTINGS-POLICY.md`
+
+## Profilvalg
+
+1. Trading-relatert (`trade`, `live`, `paper`, `RLS`, `binance`) -> Trading Integrity-profil.
+2. Strategi-relatert (`auto-trade`, `signal`, `preset`, `risk`) -> Strategy Research-profil.
+3. CI/deploy/MCP (`deploy`, `pipeline`, `verify`, `linear`, `mcp`) -> Release/Automation-profil.
+4. Alt annet produktarbeid -> Product Build-profil.
+
+## Prioritet
+
+- Sikkerhet og data-integritet først.
+- Deretter arkitektur og testbarhet.
+- UI/visual polish til slutt.
+
+## Policy guardrails
+
+- Ikke foreslå løsninger som bryter `docs/agents/USER-SETTINGS-POLICY.md`.
+- Ved konflikt: policy > preferanse i enkeltsvar.
+- Trading-endringer skal fortsatt følge strict integrity-prinsipper.

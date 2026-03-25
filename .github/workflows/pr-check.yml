@@ -78,7 +78,7 @@ jobs:
         run: touch typecheck.log
 
       - name: 🔍 Lint
-        run: npm run lint -- --quiet
+        run: npm run lint
 
       - name: ⌨️ Type Check
         run: npm run type-check 2>&1 | tee typecheck.log

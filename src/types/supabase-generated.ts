@@ -2663,6 +2663,7 @@ export type Database = {
           emergency_triggered_at: string | null;
           emergency_triggered_by: string | null;
           id: number;
+          usdt_nok_rate: string | null;
           updated_at: string | null;
         };
         Insert: {
@@ -2674,6 +2675,7 @@ export type Database = {
           emergency_triggered_at?: string | null;
           emergency_triggered_by?: string | null;
           id?: number;
+          usdt_nok_rate?: string | null;
           updated_at?: string | null;
         };
         Update: {
@@ -2685,6 +2687,7 @@ export type Database = {
           emergency_triggered_at?: string | null;
           emergency_triggered_by?: string | null;
           id?: number;
+          usdt_nok_rate?: string | null;
           updated_at?: string | null;
         };
         Relationships: [];
