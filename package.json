@@ -133,6 +133,8 @@
     "vercel:env": "npx vercel env pull .env.local --environment=production --yes",
     "vercel:env:preview": "npx vercel env pull .env.local --environment=preview --yes",
     "vercel:env:development": "npx vercel env pull .env.local --environment=development --yes",
+    "vercel:env:push": "node scripts/vercel-sync-env.mjs --env-file .env.local --target production --target preview",
+    "vercel:env:push:prod": "node scripts/vercel-sync-env.mjs --env-file .env.local --target production",
     "vercel:deploy": "npx vercel --prod --archive=tgz",
     "dev:full": "npm run vercel:env && npm run dev",
     "deploy:preview": "npx vercel --archive=tgz",
