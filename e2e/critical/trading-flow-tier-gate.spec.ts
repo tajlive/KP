@@ -79,12 +79,12 @@ test.describe("Trading flow and tier-gate @critical", () => {
     );
   });
 
-  test("/beta/live-trading omdirigeres til paper-trading?mode=live", async ({
+  test("/beta/live-trading omdirigeres til paper-trading, login eller upgrade", async ({
     page,
   }) => {
     await page.goto("/no/beta/live-trading", { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(
-      /\/([a-z]{2}\/)?(paper-trading\?mode=live|(innlogging|login)\?next=.*paper-trading.*mode=live)/,
+      /\/([a-z]{2}\/)?(paper-trading\?mode=live|(innlogging|login)\?next=.*paper-trading.*mode=live|priser\?upgrade=true)/,
       {
         timeout: 10000,
       },
