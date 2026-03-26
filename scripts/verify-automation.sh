@@ -3,7 +3,7 @@
 # verify-automation.sh — Samlet verifikasjon av MCP/CLI/API/CI
 # =============================================================================
 # Kjør: npm run verify:automation
-# Validerer: lint, type-check, unit-tester, prod-verify, MCP-tilkoblinger (valgfritt).
+# Validerer: i18n (no/en), lint, type-check, unit-tester, prod-verify, MCP-tilkoblinger (valgfritt).
 # =============================================================================
 
 set -euo pipefail
@@ -38,6 +38,7 @@ echo "  $(date '+%Y-%m-%d %H:%M:%S')"
 echo "══════════════════════════════════════════════════════════════"
 
 run "MCP config (.cursor ↔ .mcp)" "npm run mcp:validate-config" || true
+run "i18n (no/en)" "npm run i18n:validate" || true
 run "Lint" "npm run lint" || true
 run "Type-check" "npm run type-check" || true
 run "Unit-tester" "npm run test:unit" || true
