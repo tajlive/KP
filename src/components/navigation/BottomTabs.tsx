@@ -43,7 +43,7 @@ export function BottomTabs() {
             <li key={item.href}>
               <Link
                 href={hrefWithLocale(locale, item.href)}
-                className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 text-[11px] font-medium ${
+                className={`flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-lg py-2.5 text-[11px] font-medium touch-manipulation active:opacity-90 ${
                   active
                     ? "bg-[#0052FF]/10 text-[#0052FF]"
                     : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"

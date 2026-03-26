@@ -133,13 +133,12 @@ export function CoinbaseHome({
           <Button
             type="button"
             variant="secondary"
-            compact
             data-testid="dashboard-integrity-sync"
             onClick={() => void runManualIntegritySync()}
             disabled={manualIntegritySync || !userId}
             aria-label={tDash("marketDesk.integritySyncAria")}
             title={tDash("marketDesk.integritySyncAria")}
-            className="shrink-0"
+            className="h-11 w-11 shrink-0 p-0 touch-manipulation"
           >
             <RefreshCw
               className={`h-4 w-4 ${manualIntegritySync ? "animate-spin" : ""}`}
