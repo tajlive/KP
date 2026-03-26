@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { Card } from "@coinbase/cds-web/cards";
 import { Text } from "@coinbase/cds-web/typography";
@@ -10,6 +11,7 @@ import { HStack } from "@coinbase/cds-web/layout";
 import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
 import { usePrices } from "@/hooks/usePrices";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { useDashboardNumberLocale } from "@/i18n/use-dashboard-number-locale";
 
 const focusSymbols = [
   "BTCUSDT",
@@ -20,14 +22,15 @@ const focusSymbols = [
 ] as const;
 
 export function TradeHub({
-  locale,
   userId,
   initialMode,
 }: {
-  locale: string;
   userId: string;
   initialMode: "paper" | "live";
 }) {
+  const locale = useLocale();
+  const t = useTranslations("dashboard.coinbase");
+  const numberLocale = useDashboardNumberLocale();
   const { prices } = usePrices();
   const searchParams = useSearchParams();
   const mode = searchParams?.get("mode") === "live" ? "live" : initialMode;
@@ -49,7 +52,7 @@ export function TradeHub({
     <div className="space-y-6 pb-16">
       <header className="space-y-3">
         <h1 className="text-3xl font-bold text-slate-900">
-          {locale === "no" ? "Trade hub" : "Trade hub"}
+          {t("tradeHubTitle")}
         </h1>
         <HStack className="gap-2">
           <Button
@@ -58,7 +61,7 @@ export function TradeHub({
             variant={mode === "paper" ? "primary" : "secondary"}
             compact
           >
-            {locale === "no" ? "Paper" : "Paper"}
+            {t("paper")}
           </Button>
           <Button
             as={Link}
@@ -66,14 +69,14 @@ export function TradeHub({
             variant={mode === "live" ? "primary" : "secondary"}
             compact
           >
-            Live
+            {t("live")}
           </Button>
         </HStack>
       </header>
 
       <Card className="border border-slate-200 bg-white p-5 shadow-sm">
         <Text as="h2" className="text-base font-semibold text-slate-900">
-          {locale === "no" ? "Top movers" : "Top movers"}
+          {t("topMovers")}
         </Text>
         <div className="mt-3 grid gap-2 md:grid-cols-5">
           {topMovers.map((row) => {
@@ -87,12 +90,9 @@ export function TradeHub({
               >
                 <p className="text-sm font-semibold text-slate-900">{base}</p>
                 <p className="text-xs text-slate-500">
-                  {row.price.toLocaleString(
-                    locale === "no" ? "nb-NO" : "en-US",
-                    {
-                      maximumFractionDigits: 2,
-                    },
-                  )}
+                  {row.price.toLocaleString(numberLocale, {
+                    maximumFractionDigits: 2,
+                  })}
                 </p>
                 <p
                   className={`text-xs font-medium ${

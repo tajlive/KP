@@ -11,5 +11,5 @@ export default async function DashboardEarnPage({
 }) {
   const { locale } = await params;
   await requireAuth(locale, localizedPathname(locale, "/dashboard/earn"));
-  return <EarnHub locale={locale} />;
+  return <EarnHub />;
 }

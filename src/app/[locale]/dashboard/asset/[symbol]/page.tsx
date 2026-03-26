@@ -14,5 +14,5 @@ export default async function DashboardAssetPage({
     locale,
     localizedPathname(locale, `/dashboard/asset/${symbol}`),
   );
-  return <AssetDetailView locale={locale} symbol={symbol} />;
+  return <AssetDetailView symbol={symbol} />;
 }

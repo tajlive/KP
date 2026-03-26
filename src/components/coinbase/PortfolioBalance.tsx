@@ -2,24 +2,27 @@
 
 import { Card } from "@coinbase/cds-web/cards";
 import { Text } from "@coinbase/cds-web/typography";
+import { useTranslations } from "next-intl";
+import { useDashboardNumberLocale } from "@/i18n/use-dashboard-number-locale";
 
 export function PortfolioBalance({
   totalNok,
   deltaPercent,
-  locale,
 }: {
   totalNok: number;
   deltaPercent: number;
-  locale: string;
 }) {
+  const t = useTranslations("dashboard.coinbase");
+  const numberLocale = useDashboardNumberLocale();
   const positive = deltaPercent >= 0;
+
   return (
     <Card className="border border-slate-200 bg-white p-6 shadow-sm">
       <Text as="p" className="text-sm text-slate-500">
-        {locale === "no" ? "Total porteføljeverdi" : "Total portfolio value"}
+        {t("totalPortfolioValue")}
       </Text>
       <Text as="h1" className="mt-2 text-4xl font-bold text-slate-900">
-        {totalNok.toLocaleString(locale === "no" ? "nb-NO" : "en-US")} kr
+        {totalNok.toLocaleString(numberLocale)} kr
       </Text>
       <Text
         as="p"

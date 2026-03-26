@@ -85,7 +85,7 @@ export function TopNav() {
             compact
             start={<Bell className="h-4 w-4" />}
           >
-            <span className="hidden sm:inline">Alerts</span>
+            <span className="hidden sm:inline">{t("alerts")}</span>
           </Button>
           <Button
             as={Link}

@@ -2,14 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { Area, AreaChart, XAxis, YAxis } from "recharts";
+import { useTranslations } from "next-intl";
 import { Card } from "@coinbase/cds-web/cards";
 import { HStack } from "@coinbase/cds-web/layout";
 import { Button } from "@coinbase/cds-web/buttons";
 import { Text } from "@coinbase/cds-web/typography";
 import { ChartWrapper } from "@/components/ui/chart-wrapper";
 
-const ranges = ["24H", "7D", "1M", "3M", "1Y", "ALL"] as const;
-type Range = (typeof ranges)[number];
+const RANGE_CONFIG = [
+  { id: "24H", msgKey: "range24H" as const },
+  { id: "7D", msgKey: "range7D" as const },
+  { id: "1M", msgKey: "range1M" as const },
+  { id: "3M", msgKey: "range3M" as const },
+  { id: "1Y", msgKey: "range1Y" as const },
+  { id: "ALL", msgKey: "rangeALL" as const },
+] as const;
+
+type RangeId = (typeof RANGE_CONFIG)[number]["id"];
 
 function mockSeries(seedValue: number, points: number) {
   const out: Array<{ i: number; value: number }> = [];
@@ -22,14 +31,9 @@ function mockSeries(seedValue: number, points: number) {
   return out;
 }
 
-export function PortfolioChart({
-  baseValue,
-  locale,
-}: {
-  baseValue: number;
-  locale: string;
-}) {
-  const [range, setRange] = useState<Range>("7D");
+export function PortfolioChart({ baseValue }: { baseValue: number }) {
+  const t = useTranslations("dashboard.coinbase");
+  const [range, setRange] = useState<RangeId>("7D");
   const points = range === "24H" ? 24 : range === "7D" ? 30 : 60;
 
   const data = useMemo(
@@ -41,17 +45,17 @@ export function PortfolioChart({
     <Card className="border border-slate-200 bg-white p-6 shadow-sm">
       <HStack className="items-center justify-between">
         <Text as="h2" className="text-lg font-semibold text-slate-900">
-          {locale === "no" ? "Porteføljeutvikling" : "Portfolio performance"}
+          {t("portfolioPerformance")}
         </Text>
         <HStack className="gap-1">
-          {ranges.map((item) => (
+          {RANGE_CONFIG.map((item) => (
             <Button
-              key={item}
-              variant={item === range ? "primary" : "secondary"}
+              key={item.id}
+              variant={item.id === range ? "primary" : "secondary"}
               compact
-              onClick={() => setRange(item)}
+              onClick={() => setRange(item.id)}
             >
-              {item}
+              {t(item.msgKey)}
             </Button>
           ))}
         </HStack>

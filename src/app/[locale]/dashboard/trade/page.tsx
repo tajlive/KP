@@ -20,7 +20,5 @@ export default async function DashboardTradePage({
   );
 
   const initialMode = query?.mode === "live" ? "live" : "paper";
-  return (
-    <TradeHub locale={locale} userId={user.id} initialMode={initialMode} />
-  );
+  return <TradeHub userId={user.id} initialMode={initialMode} />;
 }
