@@ -103,9 +103,9 @@ export async function middleware(request: NextRequest) {
   // Kanoniske redirects: alias/dødslenker → én side (sletter unødvendige page-filer)
   const CANONICAL_REDIRECTS: Record<string, string> = {
     "/dashboard/activity": "/handelshistorikk",
-    "/dashboard/trading": "/paper-trading",
+    "/dashboard/trading": "/dashboard/trade",
     "/dashboard/innstillinger": "/dashboard/settings",
-    "/trade": "/paper-trading",
+    "/trade": "/dashboard/trade",
     "/auto-trading": "/dashboard/auto-trade",
     "/auto-trading-ai": "/dashboard/auto-trade",
     "/login": "/innlogging",

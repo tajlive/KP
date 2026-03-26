@@ -713,7 +713,7 @@ export default function OnboardingFlow() {
                   variant="outline"
                   className="w-full"
                   onClick={() =>
-                    router.push(`/${locale}/paper-trading?mode=live`)
+                    router.push(`/${locale}/dashboard/trade?mode=live`)
                   }
                 >
                   Prøv live trading

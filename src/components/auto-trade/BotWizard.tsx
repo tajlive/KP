@@ -279,7 +279,7 @@ export function BotWizard({
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
             <Link
-              href={hrefWithLocale(locale, "/paper-trading")}
+              href={hrefWithLocale(locale, "/dashboard/trade")}
               className={`font-medium ${BRAND.link}`}
             >
               {tSidebar("sectionTrading")}

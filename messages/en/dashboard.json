@@ -381,7 +381,10 @@
     "guide": "Guide",
     "mainMenu": "Main Menu",
     "closeMenu": "Close menu",
-    "breadcrumbYouAreHere": "You are here"
+    "breadcrumbYouAreHere": "You are here",
+    "ai": "AI",
+    "earn": "Learn",
+    "forYou": "For you"
   },
   "bots": {
     "modeLive": "Live",

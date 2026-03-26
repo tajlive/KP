@@ -12,10 +12,9 @@ const CorruptTokenCleanup = () => (
   />
 );
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
-import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { ScrollToTop } from "@/components/dashboard/ScrollToTop";
-import { NotificationTray } from "@/components/layout/NotificationTray";
+import { TopNav } from "@/components/navigation/TopNav";
+import { BottomTabs } from "@/components/navigation/BottomTabs";
 import { usePaperTradingInit } from "@/hooks/usePaperTradingInit";
 import { createClient } from "@/lib/utils";
 import { ToastProvider } from "@/providers/ToastProvider";
@@ -65,22 +64,19 @@ export default function DashboardClientLayout({
                 <TradingModeProvider>
                   <ProtectedRoute>
                     <SentryInit />
-                    <div className={`min-h-screen ${SURFACE.BG_LIGHT} flex`}>
+                    <div
+                      className={`min-h-screen ${SURFACE.BG_LIGHT} flex flex-col`}
+                    >
                       <ScrollToTop />
-                      <DashboardSidebar />
-                      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-                        <header className="absolute top-0 right-0 p-4 lg:p-8 z-10 flex items-center justify-end pointer-events-none">
-                          <div className="pointer-events-auto">
-                            <NotificationTray />
-                          </div>
-                        </header>
-                        <main className="flex-1 overflow-y-auto p-4 lg:p-8 pt-20 lg:pt-24 pb-24 md:pb-8">
-                          <div className="max-w-6xl mx-auto">
+                      <TopNav />
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <main className="h-full overflow-y-auto p-4 lg:p-8 pb-24 md:pb-8">
+                          <div className="mx-auto max-w-7xl">
                             <DashboardContent>{children}</DashboardContent>
                           </div>
                         </main>
                       </div>
-                      <DashboardTabs />
+                      <BottomTabs />
                     </div>
                   </ProtectedRoute>
                   <Analytics />

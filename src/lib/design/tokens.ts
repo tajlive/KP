@@ -10,6 +10,20 @@ export const BRAND_COLOR = {
   BORDER: "rgba(0, 82, 255, 0.2)",
 } as const;
 
+/**
+ * Mapping mellom Klarpakke tokens og CDS theme vars.
+ * Brukes når CDS-komponenter trenger eksplisitt fargebinding.
+ */
+export const CDS_THEME_MAP = {
+  primary: "var(--cds-colors-interactive)",
+  primaryHover: "var(--cds-colors-interactive-hovered)",
+  bgBase: "var(--cds-colors-background)",
+  bgRaised: "var(--cds-colors-background-elevated)",
+  textPrimary: "var(--cds-colors-foreground)",
+  textMuted: "var(--cds-colors-foreground-muted)",
+  borderDefault: "var(--cds-colors-line)",
+} as const;
+
 /** Dark/light theme bakgrunn/border – konsistent på landing, priser, dashboard */
 export const SURFACE = {
   BG: "bg-slate-950", // #0f172a

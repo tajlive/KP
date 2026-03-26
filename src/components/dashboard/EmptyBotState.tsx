@@ -12,7 +12,7 @@ export function EmptyBotState() {
   const locale = (useParams()?.locale as string) ?? "no";
 
   const handleStartPaperTrading = () => {
-    router.push(`/${locale}/paper-trading`);
+    router.push(`/${locale}/dashboard/trade`);
   };
 
   return (
