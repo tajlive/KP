@@ -117,7 +117,6 @@ export default async function DashboardPage({
 
     return (
       <CoinbaseHome
-        locale={locale}
         paperBalance={profile?.paper_balance ?? 100000}
         trades={tradesRes.data ?? []}
       />

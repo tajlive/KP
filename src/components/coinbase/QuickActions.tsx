@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@coinbase/cds-web/buttons";
 import { HStack } from "@coinbase/cds-web/layout";
 import { ArrowRightLeft, CircleDollarSign, SendHorizontal } from "lucide-react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 
-export function QuickActions({ locale }: { locale: string }) {
+export function QuickActions() {
+  const locale = useLocale();
+  const t = useTranslations("dashboard.coinbase");
+
   return (
     <HStack className="flex-wrap gap-2">
       <Button
@@ -15,7 +19,7 @@ export function QuickActions({ locale }: { locale: string }) {
         variant="primary"
         start={<CircleDollarSign className="h-4 w-4" />}
       >
-        {locale === "no" ? "Kjøp" : "Buy"}
+        {t("buy")}
       </Button>
       <Button
         as={Link}
@@ -23,7 +27,7 @@ export function QuickActions({ locale }: { locale: string }) {
         variant="secondary"
         start={<ArrowRightLeft className="h-4 w-4" />}
       >
-        {locale === "no" ? "Selg" : "Sell"}
+        {t("sell")}
       </Button>
       <Button
         as={Link}
@@ -31,7 +35,7 @@ export function QuickActions({ locale }: { locale: string }) {
         variant="secondary"
         start={<SendHorizontal className="h-4 w-4" />}
       >
-        {locale === "no" ? "Send" : "Send"}
+        {t("send")}
       </Button>
     </HStack>
   );

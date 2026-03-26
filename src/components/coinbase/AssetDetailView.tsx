@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { Area, AreaChart, XAxis, YAxis } from "recharts";
 import { Card } from "@coinbase/cds-web/cards";
 import { Text } from "@coinbase/cds-web/typography";
@@ -9,6 +10,7 @@ import { HStack } from "@coinbase/cds-web/layout";
 import { Button } from "@coinbase/cds-web/buttons";
 import { ChartWrapper } from "@/components/ui/chart-wrapper";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { useDashboardNumberLocale } from "@/i18n/use-dashboard-number-locale";
 
 type Ticker = {
   symbol: string;
@@ -16,13 +18,10 @@ type Ticker = {
   change24h: number;
 };
 
-export function AssetDetailView({
-  locale,
-  symbol,
-}: {
-  locale: string;
-  symbol: string;
-}) {
+export function AssetDetailView({ symbol }: { symbol: string }) {
+  const locale = useLocale();
+  const t = useTranslations("dashboard.coinbase");
+  const numberLocale = useDashboardNumberLocale();
   const pair = `${symbol.toUpperCase()}USDT`;
   const [ticker, setTicker] = useState<Ticker | null>(null);
   const [amountNok, setAmountNok] = useState("5000");
@@ -69,14 +68,11 @@ export function AssetDetailView({
       };
       setFeedback(
         data.success
-          ? locale === "no"
-            ? "Ordre sendt i paper-modus."
-            : "Order submitted in paper mode."
-          : (data.error ??
-              (locale === "no" ? "Handel feilet." : "Trade request failed.")),
+          ? t("orderSubmittedPaper")
+          : (data.error ?? t("tradeFailed")),
       );
     } catch {
-      setFeedback(locale === "no" ? "Nettverksfeil." : "Network error.");
+      setFeedback(t("networkError"));
     } finally {
       setBusy(false);
     }
@@ -91,15 +87,10 @@ export function AssetDetailView({
           </Text>
           <Text as="p" className="mt-1 text-sm text-slate-600">
             {ticker
-              ? `${ticker.price.toLocaleString(
-                  locale === "no" ? "nb-NO" : "en-US",
-                  {
-                    maximumFractionDigits: 2,
-                  },
-                )} USDT`
-              : locale === "no"
-                ? "Laster pris..."
-                : "Loading price..."}
+              ? `${ticker.price.toLocaleString(numberLocale, {
+                  maximumFractionDigits: 2,
+                })} USDT`
+              : t("loadingPrice")}
           </Text>
         </div>
         <Button
@@ -107,7 +98,7 @@ export function AssetDetailView({
           href={hrefWithLocale(locale, "/dashboard/trade")}
           variant="secondary"
         >
-          {locale === "no" ? "Tilbake til trade" : "Back to trade"}
+          {t("backToTrade")}
         </Button>
       </div>
 
@@ -147,19 +138,17 @@ export function AssetDetailView({
 
       <Card className="border border-slate-200 bg-white p-6 shadow-sm">
         <Text as="h2" className="text-lg font-semibold text-slate-900">
-          {locale === "no" ? "Kjøp/Selg (paper)" : "Buy/Sell (paper)"}
+          {t("buySellPaper")}
         </Text>
         <Text as="p" className="mt-2 text-sm text-slate-600">
-          {locale === "no"
-            ? "Bruk paper-modus for å teste strategier uten risiko."
-            : "Use paper mode to test strategies without risk."}
+          {t("buySellPaperDesc")}
         </Text>
         <div className="mt-4">
           <label
             htmlFor="asset-amount-nok"
             className="mb-2 block text-sm font-medium text-slate-700"
           >
-            {locale === "no" ? "Beløp i NOK" : "Amount in NOK"}
+            {t("amountNok")}
           </label>
           <input
             id="asset-amount-nok"
@@ -171,14 +160,14 @@ export function AssetDetailView({
         </div>
         <HStack className="mt-4 gap-2">
           <Button onClick={() => execute("buy")} disabled={busy}>
-            {locale === "no" ? "Kjøp" : "Buy"}
+            {t("buy")}
           </Button>
           <Button
             onClick={() => execute("sell")}
             variant="secondary"
             disabled={busy}
           >
-            {locale === "no" ? "Selg" : "Sell"}
+            {t("sell")}
           </Button>
         </HStack>
         {feedback ? (

@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Card } from "@coinbase/cds-web/cards";
 import { Text } from "@coinbase/cds-web/typography";
 import { usePrices } from "@/hooks/usePrices";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { useDashboardNumberLocale } from "@/i18n/use-dashboard-number-locale";
 
 type TradeRow = {
   trading_pair: string;
@@ -26,13 +28,10 @@ function asSymbol(pair: string) {
   return pair.replace("/", "").toUpperCase();
 }
 
-export function AssetList({
-  locale,
-  trades,
-}: {
-  locale: string;
-  trades: TradeRow[];
-}) {
+export function AssetList({ trades }: { trades: TradeRow[] }) {
+  const locale = useLocale();
+  const t = useTranslations("dashboard.coinbase");
+  const numberLocale = useDashboardNumberLocale();
   const { prices } = usePrices();
 
   const holdings = useMemo(() => {
@@ -52,7 +51,7 @@ export function AssetList({
     <Card className="border border-slate-200 bg-white p-0 shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4">
         <Text as="h2" className="text-lg font-semibold text-slate-900">
-          {locale === "no" ? "Dine assets" : "Your assets"}
+          {t("yourAssets")}
         </Text>
       </div>
       <div className="divide-y divide-slate-100">
@@ -80,11 +79,7 @@ export function AssetList({
                   {base}
                 </Text>
                 <Text as="p" className="text-xs text-slate-500">
-                  {qty > 0
-                    ? `${qty.toFixed(5)} ${base}`
-                    : locale === "no"
-                      ? "Ingen beholdning"
-                      : "No holdings"}
+                  {qty > 0 ? `${qty.toFixed(5)} ${base}` : t("noHoldings")}
                 </Text>
               </div>
 
@@ -97,7 +92,7 @@ export function AssetList({
                 </div>
                 <div className="text-right">
                   <Text as="p" className="text-sm font-semibold text-slate-900">
-                    {price.toLocaleString(locale === "no" ? "nb-NO" : "en-US", {
+                    {price.toLocaleString(numberLocale, {
                       maximumFractionDigits: 2,
                     })}
                   </Text>

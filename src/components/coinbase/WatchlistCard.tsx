@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { Card } from "@coinbase/cds-web/cards";
 import { Text } from "@coinbase/cds-web/typography";
 import { Button } from "@coinbase/cds-web/buttons";
@@ -8,11 +9,14 @@ import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 const watchlist = ["BTC", "ETH", "SOL", "BNB"];
 
-export function WatchlistCard({ locale }: { locale: string }) {
+export function WatchlistCard() {
+  const locale = useLocale();
+  const t = useTranslations("dashboard.coinbase");
+
   return (
     <Card className="border border-slate-200 bg-white p-5 shadow-sm">
       <Text as="h3" className="text-base font-semibold text-slate-900">
-        {locale === "no" ? "Watchlist" : "Watchlist"}
+        {t("watchlistTitle")}
       </Text>
       <ul className="mt-3 space-y-2">
         {watchlist.map((symbol) => (
@@ -28,7 +32,7 @@ export function WatchlistCard({ locale }: { locale: string }) {
         className="mt-4"
         block
       >
-        {locale === "no" ? "Se marked" : "View market"}
+        {t("viewMarket")}
       </Button>
     </Card>
   );

@@ -11,5 +11,5 @@ export default async function DashboardAiPage({
 }) {
   const { locale } = await params;
   await requireAuth(locale, localizedPathname(locale, "/dashboard/ai"));
-  return <AiHub locale={locale} />;
+  return <AiHub />;
 }

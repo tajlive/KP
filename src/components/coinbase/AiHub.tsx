@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { Card } from "@coinbase/cds-web/cards";
 import { Text } from "@coinbase/cds-web/typography";
 import { Button } from "@coinbase/cds-web/buttons";
@@ -9,7 +10,9 @@ import { HStack } from "@coinbase/cds-web/layout";
 import { Bot, Sparkles, TrendingUp } from "lucide-react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 
-export function AiHub({ locale }: { locale: string }) {
+export function AiHub() {
+  const locale = useLocale();
+  const t = useTranslations("dashboard.coinbase");
   const [brief, setBrief] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
@@ -20,11 +23,7 @@ export function AiHub({ locale }: { locale: string }) {
       const data = (await res.json()) as { brief?: string; summary?: string };
       setBrief(data.brief ?? data.summary ?? "");
     } catch {
-      setBrief(
-        locale === "no"
-          ? "Kunne ikke hente brief nå."
-          : "Could not load brief.",
-      );
+      setBrief(t("briefLoadError"));
     } finally {
       setLoading(false);
     }
@@ -34,12 +33,10 @@ export function AiHub({ locale }: { locale: string }) {
     <div className="space-y-6 pb-16">
       <header>
         <Text as="h1" className="text-3xl font-bold text-slate-900">
-          AI hub
+          {t("aiHubTitle")}
         </Text>
         <Text as="p" className="mt-2 text-sm text-slate-600">
-          {locale === "no"
-            ? "Market brief, strategiforklaring og bot-styring på ett sted."
-            : "Market brief, strategy explanations and bot control in one place."}
+          {t("aiHubSubtitle")}
         </Text>
       </header>
 
@@ -48,22 +45,14 @@ export function AiHub({ locale }: { locale: string }) {
           <HStack className="items-center gap-2">
             <TrendingUp className="h-4 w-4 text-[#0052FF]" />
             <Text as="h2" className="font-semibold text-slate-900">
-              Market Brief
+              {t("marketBrief")}
             </Text>
           </HStack>
           <Text as="p" className="mt-2 text-sm text-slate-600">
-            {locale === "no"
-              ? "Få en oppsummering av markedet i dag."
-              : "Get a concise summary of today's market."}
+            {t("marketBriefDesc")}
           </Text>
           <Button onClick={loadBrief} className="mt-4" variant="primary" block>
-            {loading
-              ? locale === "no"
-                ? "Laster..."
-                : "Loading..."
-              : locale === "no"
-                ? "Hent brief"
-                : "Get brief"}
+            {loading ? t("loading") : t("getBrief")}
           </Button>
         </Card>
 
@@ -71,13 +60,11 @@ export function AiHub({ locale }: { locale: string }) {
           <HStack className="items-center gap-2">
             <Sparkles className="h-4 w-4 text-[#0052FF]" />
             <Text as="h2" className="font-semibold text-slate-900">
-              Strategy Advisor
+              {t("strategyAdvisor")}
             </Text>
           </HStack>
           <Text as="p" className="mt-2 text-sm text-slate-600">
-            {locale === "no"
-              ? "Forklar strategier før du starter bot."
-              : "Explain strategy behavior before starting bots."}
+            {t("strategyAdvisorDesc")}
           </Text>
           <Button
             as={Link}
@@ -86,7 +73,7 @@ export function AiHub({ locale }: { locale: string }) {
             variant="secondary"
             block
           >
-            {locale === "no" ? "Åpne trade" : "Open trade"}
+            {t("openTrade")}
           </Button>
         </Card>
 
@@ -94,13 +81,11 @@ export function AiHub({ locale }: { locale: string }) {
           <HStack className="items-center gap-2">
             <Bot className="h-4 w-4 text-[#0052FF]" />
             <Text as="h2" className="font-semibold text-slate-900">
-              Auto-trade bot
+              {t("autoTradeBot")}
             </Text>
           </HStack>
           <Text as="p" className="mt-2 text-sm text-slate-600">
-            {locale === "no"
-              ? "Start eller følg aktive bots."
-              : "Start and monitor active bots."}
+            {t("autoTradeBotDesc")}
           </Text>
           <Button
             as={Link}
@@ -109,15 +94,15 @@ export function AiHub({ locale }: { locale: string }) {
             variant="secondary"
             block
           >
-            {locale === "no" ? "Start bot" : "Start bot"}
+            {t("startBot")}
           </Button>
         </Card>
       </div>
 
-      {brief && (
+      {brief ? (
         <Card className="border border-slate-200 bg-white p-6">
           <Text as="h3" className="text-lg font-semibold text-slate-900">
-            {locale === "no" ? "Siste brief" : "Latest brief"}
+            {t("latestBrief")}
           </Text>
           <Text
             as="p"
@@ -126,7 +111,7 @@ export function AiHub({ locale }: { locale: string }) {
             {brief}
           </Text>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 }
