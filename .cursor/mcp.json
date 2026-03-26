@@ -54,22 +54,6 @@
       "env": {
         "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
       }
-    },
-    "supabase": {
-      "command": "node",
-      "args": ["scripts/run-official-supabase-mcp.mjs"]
-    },
-    "supabase-db": {
-      "command": "node",
-      "args": ["scripts/run-supabase-mcp.mjs"]
-    },
-    "vercel": {
-      "command": "node",
-      "args": ["scripts/run-vercel-mcp.mjs"]
-    },
-    "vipps": {
-      "command": "node",
-      "args": ["scripts/run-vipps-mcp.mjs"]
     }
   }
 }

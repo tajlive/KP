@@ -19,6 +19,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter } from "next/font/google";
 import { SURFACE } from "@/lib/design/tokens";
+import { CdsProvider } from "@/app/providers/CdsProvider";
 import "../globals.css";
 
 /**
@@ -261,15 +262,17 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       >
         <SessionCleanup />
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <VippsMarketProvider showVippsMarket={showVippsMarket}>
-            <MarketingProviders>
-              <ErrorBoundary>
-                <AuthProvider>
-                  <LocaleMarketingShell>{children}</LocaleMarketingShell>
-                </AuthProvider>
-              </ErrorBoundary>
-            </MarketingProviders>
-          </VippsMarketProvider>
+          <CdsProvider>
+            <VippsMarketProvider showVippsMarket={showVippsMarket}>
+              <MarketingProviders>
+                <ErrorBoundary>
+                  <AuthProvider>
+                    <LocaleMarketingShell>{children}</LocaleMarketingShell>
+                  </AuthProvider>
+                </ErrorBoundary>
+              </MarketingProviders>
+            </VippsMarketProvider>
+          </CdsProvider>
         </NextIntlClientProvider>
         <PlausibleScript />
         {process.env.VERCEL && (

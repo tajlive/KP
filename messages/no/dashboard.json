@@ -290,7 +290,10 @@
     "guide": "Guide",
     "mainMenu": "Hovedmeny",
     "closeMenu": "Lukk meny",
-    "breadcrumbYouAreHere": "Du er her"
+    "breadcrumbYouAreHere": "Du er her",
+    "ai": "AI",
+    "earn": "Læring",
+    "forYou": "For deg"
   },
   "topBar": {
     "myOverview": "Min Oversikt",

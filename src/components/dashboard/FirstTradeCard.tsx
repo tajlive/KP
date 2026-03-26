@@ -75,7 +75,7 @@ export default function FirstTradeCard({
       setCompleted(true);
       setTimeout(() => setShowConfetti(false), 4000);
       if (typeof data.session_id === "string" && data.session_id) {
-        router.push(`/${locale}/paper-trading/${data.session_id}`);
+        router.push(`/${locale}/dashboard/trade/${data.session_id}`);
       }
     } catch (err) {
       console.error(err);

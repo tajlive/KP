@@ -8,6 +8,10 @@ export type DashboardSidebarLabelKey =
   | "history"
   | "results"
   | "autoTrade"
+  | "ai"
+  | "earn"
+  | "forYou"
+  | "portfolio"
   | "profile"
   | "settings"
   | "admin";
@@ -30,7 +34,7 @@ export const DASHBOARD_MAIN_NAV: readonly DashboardMainNavItem[] = [
 ];
 
 export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
-  { href: "/paper-trading", labelKey: "trade" },
+  { href: "/dashboard/trade", labelKey: "trade" },
   {
     href: "/dashboard/auto-trade",
     labelKey: "autoTrade",
@@ -38,6 +42,27 @@ export const DASHBOARD_TRADING_NAV: readonly DashboardTradingNavItem[] = [
   },
   { href: "/handelshistorikk", labelKey: "history" },
   { href: "/dashboard/resultater", labelKey: "results" },
+];
+
+export type CoinbaseNavItem = {
+  href: string;
+  labelKey: DashboardSidebarLabelKey;
+  exact?: boolean;
+};
+
+export const DASHBOARD_COINBASE_TOP_NAV: readonly CoinbaseNavItem[] = [
+  { href: "/dashboard", labelKey: "home", exact: true },
+  { href: "/dashboard/trade", labelKey: "trade" },
+  { href: "/dashboard/ai", labelKey: "ai" },
+  { href: "/dashboard/portfolio", labelKey: "portfolio" },
+  { href: "/dashboard/earn", labelKey: "earn" },
+];
+
+export const DASHBOARD_COINBASE_BOTTOM_NAV: readonly CoinbaseNavItem[] = [
+  { href: "/dashboard", labelKey: "home", exact: true },
+  { href: "/dashboard/trade", labelKey: "trade" },
+  { href: "/dashboard/ai", labelKey: "ai" },
+  { href: "/dashboard/portfolio", labelKey: "portfolio" },
 ];
 
 /**
