@@ -12,7 +12,7 @@ export function QuickActions() {
   const t = useTranslations("dashboard.coinbase");
 
   return (
-    <HStack className="flex-wrap gap-2">
+    <HStack className="w-full flex-wrap gap-2 [&>a]:min-w-0 [&>a]:flex-1 [&>a]:sm:flex-none sm:[&>a]:flex-initial">
       <Button
         as={Link}
         href={hrefWithLocale(locale, "/dashboard/trade")}

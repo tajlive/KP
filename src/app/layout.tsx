@@ -104,6 +104,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
+  /** iOS Safari / PWA: env(safe-area-inset-*) for dashboard nav */
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#0052FF" },
     { media: "(prefers-color-scheme: dark)", color: "#0A0B0D" },

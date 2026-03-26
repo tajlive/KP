@@ -24,7 +24,12 @@ export function BottomTabs() {
   const t = useTranslations("dashboard.sidebar");
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-2 py-2 backdrop-blur md:hidden">
+    <nav
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-2 pt-2 backdrop-blur md:hidden"
+      style={{
+        paddingBottom: "max(0.5rem, env(safe-area-inset-bottom, 0px))",
+      }}
+    >
       <ul className="mx-auto grid max-w-lg grid-cols-4 gap-1">
         {DASHBOARD_COINBASE_BOTTOM_NAV.map((item) => {
           const active = isDashboardSidebarLinkActive(

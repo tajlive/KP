@@ -65,14 +65,14 @@ export default function DashboardClientLayout({
                   <ProtectedRoute>
                     <SentryInit />
                     <div
-                      className={`min-h-screen ${SURFACE.BG_LIGHT} flex flex-col`}
+                      className={`min-h-screen min-h-dvh ${SURFACE.BG_LIGHT} flex flex-col overflow-x-hidden`}
                       data-testid="dashboard-root"
                     >
                       <ScrollToTop />
                       <TopNav />
-                      <div className="flex-1 min-w-0 overflow-hidden">
-                        <main className="h-full overflow-y-auto p-4 lg:p-8 pb-24 md:pb-8">
-                          <div className="mx-auto max-w-7xl">
+                      <div className="flex min-h-0 flex-1 min-w-0 flex-col overflow-hidden">
+                        <main className="h-full min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain px-3 pt-3 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:px-4 lg:px-8 lg:pt-4 md:pb-8">
+                          <div className="mx-auto w-full max-w-7xl">
                             <DashboardContent>{children}</DashboardContent>
                           </div>
                         </main>
