@@ -80,6 +80,9 @@ export function TopNav() {
             href={hrefWithLocale(locale, "/dashboard/settings")}
             variant="secondary"
             compact
+            aria-label={t("settings")}
+            title={t("settings")}
+            className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
             start={<Settings className="h-4 w-4" />}
           >
             <span className="hidden sm:inline">{t("settings")}</span>
@@ -89,6 +92,9 @@ export function TopNav() {
             href={hrefWithLocale(locale, "/varsler")}
             variant="secondary"
             compact
+            aria-label={t("alerts")}
+            title={t("alerts")}
+            className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
             start={<Bell className="h-4 w-4" />}
           >
             <span className="hidden sm:inline">{t("alerts")}</span>
@@ -98,6 +104,9 @@ export function TopNav() {
             href={hrefWithLocale(locale, "/profile")}
             variant="secondary"
             compact
+            aria-label={t("profile")}
+            title={t("profile")}
+            className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
             start={<User className="h-4 w-4" />}
           >
             <span className="hidden sm:inline">{t("profile")}</span>

@@ -359,6 +359,7 @@
     "buy": "Buy",
     "sell": "Sell",
     "send": "Send",
+    "quickActionsGroupAria": "Quick actions: buy, sell, and portfolio",
     "yourAssets": "Your assets",
     "noHoldings": "No holdings",
     "aiMarketBriefTitle": "AI Market Brief",
