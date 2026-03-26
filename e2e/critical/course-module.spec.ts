@@ -143,23 +143,19 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
       );
 
       await expect(nextToSecond).toBeVisible({ timeout: 15_000 });
-      await Promise.all([
-        page.waitForURL(
-          new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[1]}`),
-          { timeout: 45_000 },
-        ),
-        nextToSecond.click(),
-      ]);
+      await nextToSecond.click();
+      await page.waitForURL(
+        new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[1]}`),
+        { timeout: 45_000 },
+      );
 
       await page.waitForLoadState("domcontentloaded").catch(() => {});
       await expect(prevToFirst).toBeVisible({ timeout: 15_000 });
-      await Promise.all([
-        page.waitForURL(
-          new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`),
-          { timeout: 45_000 },
-        ),
-        prevToFirst.click(),
-      ]);
+      await prevToFirst.click();
+      await page.waitForURL(
+        new RegExp(`/kurs/${moduleSlug}/leksjon/${lessonSlugs[0]}`),
+        { timeout: 45_000 },
+      );
     });
   });
 
@@ -209,7 +205,7 @@ test.describe("Course Module - Hvorfor Priser Beveger Seg", () => {
 
       await expect(firstLessonH1(page)).toBeVisible();
 
-      const content = page.locator("main");
+      const content = page.locator("main").first();
       const box = await content.boundingBox();
       expect(box?.width).toBeLessThanOrEqual(375);
     });

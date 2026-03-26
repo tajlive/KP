@@ -66,6 +66,7 @@ export default function DashboardClientLayout({
                     <SentryInit />
                     <div
                       className={`min-h-screen ${SURFACE.BG_LIGHT} flex flex-col`}
+                      data-testid="dashboard-root"
                     >
                       <ScrollToTop />
                       <TopNav />
