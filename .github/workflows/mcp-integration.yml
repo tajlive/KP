@@ -6,6 +6,7 @@ on:
     paths:
       - '.cursor/mcp.json'
       - '.mcp/**'
+      - '.kimi/**'
       - 'scripts/mcp*.sh'
       - 'scripts/run-*-mcp.mjs'
       - 'scripts/test-mcp*.sh'
@@ -17,6 +18,7 @@ on:
     paths:
       - '.cursor/mcp.json'
       - '.mcp/**'
+      - '.kimi/**'
       - 'scripts/mcp*.sh'
       - 'scripts/run-*-mcp.mjs'
       - 'scripts/test-mcp*.sh'
@@ -42,7 +44,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Validate MCP config (JSON + .cursor ↔ .mcp)
+    - name: Validate MCP config (JSON + .cursor ↔ .mcp ↔ .kimi)
       run: node scripts/validate-mcp-config.mjs
 
     - name: List MCP servers (Cursor)
@@ -66,7 +68,7 @@ jobs:
         echo "🔒 Checking for exposed secrets in MCP config..."
         
         # Check for hardcoded tokens (basic check)
-        if grep -E "(sk_live|sk_test|lin_api_|sbp_|vcp_|sntryu_)" .cursor/mcp.json .mcp/mcp_config.json 2>/dev/null | grep -v "^\s*//"; then
+        if grep -E "(sk_live|sk_test|lin_api_|sbp_|vcp_|sntryu_)" .cursor/mcp.json .mcp/mcp_config.json .kimi/mcp-config.json 2>/dev/null | grep -v "^\s*//"; then
           echo "⚠️  Warning: Potential hardcoded secrets found in MCP config"
           echo "   Consider using environment variables instead"
         else
@@ -76,7 +78,7 @@ jobs:
         # Check for proper environment variable usage
         echo ""
         echo "📋 Environment variable usage:"
-        grep -o '\${[A-Z_]*}' .cursor/mcp.json .mcp/mcp_config.json 2>/dev/null | sort -u || echo "  No env vars found"
+        grep -o '\${[A-Z_]*}' .cursor/mcp.json .mcp/mcp_config.json .kimi/mcp-config.json 2>/dev/null | sort -u || echo "  No env vars found"
 
   mcp-readme:
     name: Update MCP Documentation
@@ -112,8 +114,9 @@ jobs:
         
         ## Configuration Files
         
-        - `.cursor/mcp.json` - Cursor IDE configuration
-        - `.mcp/mcp_config.json` - General MCP configuration
+        - `.cursor/mcp.json` - Master (Cursor IDE)
+        - `.mcp/mcp_config.json` - Synced copy (CI/tools)
+        - `.kimi/mcp-config.json` - Synced copy (Kimi CLI); use `npm run mcp:sync`
         
         ## Usage
         

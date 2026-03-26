@@ -1,7 +1,7 @@
 # MCP, CLI, CI og API — oversikt
 
 > Én plass for tilgang (MCP/CLI), pipelines (CI) og app-API.  
-> Oppdatert: 2026-03-25
+> Oppdatert: 2026-03-26
 
 **Full automasjon (forhåndsoppsett):** [FULL-AUTOMATION-PLAYBOOK.md](./FULL-AUTOMATION-PLAYBOOK.md) — MCP/CLI/CI/API, `CRON_SECRET`, GitHub secrets, `npm run auto:preflight`.
 
@@ -11,10 +11,11 @@
 
 ### Konfigurasjon
 
-| Fil                    | Bruk                                                              |
-| ---------------------- | ----------------------------------------------------------------- |
-| `.cursor/mcp.json`     | Cursor IDE: hvilke MCP-servere som startes og med hvilke args/env |
-| `.mcp/mcp_config.json` | Generell MCP-konfig (kun env-referanser, ingen hemmeligheter)     |
+| Fil                     | Bruk                                                                |
+| ----------------------- | ------------------------------------------------------------------- |
+| `.cursor/mcp.json`      | **Master** — Cursor IDE: hvilke MCP-servere som startes             |
+| `.mcp/mcp_config.json`  | Kopi av samme `mcpServers` (CI/verktøy; kun env-referanser)         |
+| `.kimi/mcp-config.json` | Kopi av samme `mcpServers` (Kimi CLI) — synk via `npm run mcp:sync` |
 
 **Hemmeligheter:** Aldri committe tokens. Bruk miljøvariabler:
 
@@ -40,7 +41,7 @@
 
 ### 1.3 Nettleser-feilsøking: Chrome DevTools MCP + alternativer
 
-**Du har allerede en DevTools MCP-server i repoet:** nøkkelen **`chrome-devtools`** i `.cursor/mcp.json` / `.mcp/mcp_config.json` starter [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) (Google). Det er **ikke nødvendig å «lage» en egen** for standard feilsøking — den gir Puppeteer-styrt Chrome med tilgang til bl.a. `list_console_messages`, `list_network_requests`, `performance_start_trace` / `performance_stop_trace`, `lighthouse_audit`, `take_snapshot` (a11y-tre), `evaluate_script`. Tool-referanse: [tool-reference.md](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/tool-reference.md).
+**Du har allerede en DevTools MCP-server i repoet:** nøkkelen **`chrome-devtools`** i `.cursor/mcp.json` (synket til `.mcp` / `.kimi`) starter [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) (Google). Det er **ikke nødvendig å «lage» en egen** for standard feilsøking — den gir Puppeteer-styrt Chrome med tilgang til bl.a. `list_console_messages`, `list_network_requests`, `performance_start_trace` / `performance_stop_trace`, `lighthouse_audit`, `take_snapshot` (a11y-tre), `evaluate_script`. Tool-referanse: [tool-reference.md](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/tool-reference.md).
 
 | Behov                                                        | Anbefaling                                                                                                 |
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
@@ -77,7 +78,7 @@ Krever: nettverk, Playwright-browsere (`npm run playwright:install`), Supabase/N
 
 ```bash
 npm run automation:check    # mcp:validate-config && auto:preflight (anbefalt før push)
-npm run mcp:validate-config # Kun .cursor/mcp.json ↔ .mcp/mcp_config.json (også i CI / preflight)
+npm run mcp:validate-config # .cursor ↔ .mcp ↔ .kimi (samme nøkler og innhold; også CI / preflight)
 npm run auto:preflight      # Cloud readiness + MCP-validering (se scripts/automation-preflight.mjs)
 npm run auto:preflight:full # + test:mcp + linear:test
 npm run env:sync:supabase   # URL + anon + service_role → .env.local (SUPABASE_ACCESS_TOKEN)
@@ -220,7 +221,7 @@ npm run verify:automation  # lint + type-check + test:unit + verify + test:mcp (
 | **test.yml**            | push/PR til main, develop        | Lint → type-check → i18n audit → build (SKIP_LINT_IN_BUILD) → E2E smoke           |
 | **pr-check.yml**        | PR mot main                      | Lint → build (SKIP_LINT_IN_BUILD) → artifact                                      |
 | **manual-deploy.yml**   | workflow_dispatch                | Build → deploy til Vercel → verify mot prod                                       |
-| **mcp-integration.yml** | push/PR ved endring av MCP-filer | Valider .cursor/mcp.json + .mcp/mcp_config.json (gyldig JSON), sikkerhetssjekk    |
+| **mcp-integration.yml** | push/PR ved endring av MCP-filer | `validate-mcp-config.mjs` (alle tre filer), sikkerhetssjekk                       |
 | **mcp-health.yml**      | Schedule + dispatch              | Sjekk Supabase REST, Stripe, Vercel, Resend, Cloudflare (valgfri; bruker secrets) |
 
 ### Nødvendige secrets (CI)

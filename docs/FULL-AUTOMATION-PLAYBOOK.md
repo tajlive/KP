@@ -3,7 +3,7 @@
 > **Mål:** Maksimal automatisering som er forsvarlig og repeterbar.  
 > **Sannhet:** «100 % uten mennesker» finnes ikke (første gangs OAuth, rotasjon av hemmeligheter, forretningsbeslutninger). Alt under er **forhåndsoppsett** slik at daglig arbeid, CI og agenter trenger minimal friksjon.
 
-**Oppdatert:** 2026-03-24
+**Oppdatert:** 2026-03-26
 
 ---
 
@@ -27,12 +27,14 @@
 Kjør i rot av repo (krever `.env.local`):
 
 ```bash
-npm run automation:check        # MCP .cursor↔.mcp + cloud readiness (anbefalt før push)
+npm run automation:check        # MCP-synk (tre filer) + cloud readiness (anbefalt før push)
 npm run auto:preflight          # Cloud readiness (agent-profil) — inkl. MCP-validering
 npm run auto:preflight:full     # + MCP-tilkoblingstest + Linear-test
-npm run mcp:validate-config     # Kun synk-sjekk .cursor/mcp.json ↔ .mcp/mcp_config.json
+npm run mcp:validate-config     # Synk-sjekk .cursor/mcp.json ↔ .mcp/mcp_config.json ↔ .kimi/mcp-config.json
+npm run mcp:sync                # Kopier master (.cursor/mcp.json) til .mcp og .kimi (etter manuell edit)
 ```
 
+- **TypeScript:** Kilde til sannhet er `npm run type-check` (og CI). Ikke stol på committede `tsc_errors.txt` eller andre gamle loggfiler — de kan være fra feil miljø (f.eks. uten `node_modules`).
 - **Runbook (kort):** [docs/automation/AUTOMATION-RUNBOOK.md](./automation/AUTOMATION-RUNBOOK.md)
 - **Preflight-profil** (standard i `auto:preflight` / `automation:check`): **Linear** påkrevd; Vercel valgfri. **Agent-profil** (streng, m.m. deploy): `npm run cloud:ready` eller `CLOUD_READINESS_PROFILE=agent npm run auto:preflight`. Se `scripts/cloud-readiness.mjs`.
 - **Full** kjører `scripts/test-mcp-connections.sh` (feiler hvis en påkrevd tilkobling feiler — se rapport).

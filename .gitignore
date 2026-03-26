@@ -12,6 +12,9 @@ yarn.lock
 # =============================================================================
 # TESTING
 # =============================================================================
+# Stale tsc output (kilde til sannhet: npm run type-check)
+tsc_errors.txt
+tsc_errors*.txt
 /coverage
 *.lcov
 .nyc_output

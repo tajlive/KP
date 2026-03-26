@@ -3,7 +3,7 @@
 > **Formål:** Én oversikt over _hva_ som kjøres automatisk, _hvordan_ du verifiserer lokalt, og _hvor_ full dybde står.  
 > **Dypere kontekst:** [FULL-AUTOMATION-PLAYBOOK.md](../FULL-AUTOMATION-PLAYBOOK.md) · [MCP-CLI-CI-API.md](../MCP-CLI-CI-API.md)
 
-**Oppdatert:** 2026-03-24
+**Oppdatert:** 2026-03-26
 
 ---
 
@@ -15,10 +15,10 @@ npm run automation:check
 
 Kjører i rekkefølge:
 
-| Steg | Script                | Hva                                                                                                      |
-| ---- | --------------------- | -------------------------------------------------------------------------------------------------------- |
-| 1    | `mcp:validate-config` | `.cursor/mcp.json` og `.mcp/mcp_config.json` — gyldig JSON, like server-nøkler, samme innhold per server |
-| 2    | `auto:preflight`      | `cloud-readiness.mjs` (**preflight**-profil: Linear påkrevd; Vercel valgfri)                             |
+| Steg | Script                | Hva                                                                                                                             |
+| ---- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | `mcp:validate-config` | `.cursor/mcp.json`, `.mcp/mcp_config.json`, `.kimi/mcp-config.json` — gyldig JSON, like server-nøkler, samme innhold per server |
+| 2    | `auto:preflight`      | `cloud-readiness.mjs` (**preflight**-profil: Linear påkrevd; Vercel valgfri)                                                    |
 
 **Utvidet (nettverk / API mot tjenester):**
 
@@ -31,12 +31,13 @@ npm run verify:automation     # lint, tsc, unit, verify, MCP-config, valgfri MCP
 
 ## 2. MCP-konfig (kilde + synk)
 
-| Fil                    | Rolle                                          |
-| ---------------------- | ---------------------------------------------- |
-| `.cursor/mcp.json`     | Cursor — kanonisk liste over MCP-servere       |
-| `.mcp/mcp_config.json` | Samme `mcpServers` som Cursor (CI krever synk) |
+| Fil                     | Rolle                                                    |
+| ----------------------- | -------------------------------------------------------- |
+| `.cursor/mcp.json`      | **Master** — kanonisk liste over MCP-servere (Cursor)    |
+| `.mcp/mcp_config.json`  | Kopi av samme `mcpServers` (verktøy/CI som leser `.mcp`) |
+| `.kimi/mcp-config.json` | Kopi av samme `mcpServers` (Kimi / annet CLI)            |
 
-**Regel:** Endre begge filene likt, eller kjør `npm run mcp:validate-config` før push.
+**Regel:** Etter endring i master: `npm run mcp:sync` (kopierer til `.mcp` og `.kimi`), eller rediger alle tre identisk. Valider med `npm run mcp:validate-config` før push.
 
 **CI:** [.github/workflows/mcp-integration.yml](../../.github/workflows/mcp-integration.yml) (push/PR på MCP-filer) + [.github/workflows/mcp-health.yml](../../.github/workflows/mcp-health.yml) (hverdags + manuell).
 
@@ -58,13 +59,14 @@ Kjører Playwright `e2e/debug/paper-balance-trace.spec.ts` (dashboard, handelshi
 
 ## 4. Hurtigreferanse npm
 
-| Script                                   | Bruk                                                  |
-| ---------------------------------------- | ----------------------------------------------------- |
-| `automation:check`                       | MCP-synk + cloud readiness (start her)                |
-| `mcp:validate-config`                    | Kun `.cursor` ↔ `.mcp`                                |
-| `auto:preflight` / `auto:preflight:full` | Preflight med/uten MCP API-tester                     |
-| `verify:automation`                      | Bred lokal gate (se `scripts/verify-automation.sh`)   |
-| `test:robot`                             | lint + tsc + unit + E2E prepare + critical Playwright |
+| Script                                   | Bruk                                                   |
+| ---------------------------------------- | ------------------------------------------------------ |
+| `automation:check`                       | MCP-synk + cloud readiness (start her)                 |
+| `mcp:validate-config`                    | `.cursor` ↔ `.mcp` ↔ `.kimi` (samme nøkler og innhold) |
+| `mcp:sync`                               | Kopier `.cursor/mcp.json` → `.mcp` + `.kimi`           |
+| `auto:preflight` / `auto:preflight:full` | Preflight med/uten MCP API-tester                      |
+| `verify:automation`                      | Bred lokal gate (se `scripts/verify-automation.sh`)    |
+| `test:robot`                             | lint + tsc + unit + E2E prepare + critical Playwright  |
 
 ---
 
@@ -77,7 +79,7 @@ Kjører Playwright `e2e/debug/paper-balance-trace.spec.ts` (dashboard, handelshi
 
 ## 6. Ved feil
 
-- **MCP validate feiler:** Sammenlign `mcpServers` i de to JSON-filene; keys og innhold må matche.
+- **MCP validate feiler:** Sammenlign `mcpServers` i alle tre JSON-filene; keys og innhold må matche. Bruk `npm run mcp:sync` fra oppdatert master.
 - **Preflight feiler:** Krever `LINEAR_API_KEY` i `.env.local`. **Vercel** er ikke påkrevd for `auto:preflight` — kjør `npm run cloud:ready` når du vil sjekke `VERCEL_*`.
 - **Supabase psql i test-mcp:** Ved feil (typisk transaction pooler) blir sjekken **skippet** med hint; `PSQL_CHECK_STRICT=1` gir hard fail.
 - **CI MCP Integration feiler:** Samme som validate — fiks lokalt med `npm run mcp:validate-config` før ny push.
@@ -93,8 +95,9 @@ Når en release er ferdig, logg dette i Linear:
 3. `/api/health` status + version
 4. Lint / type-check / tests
 
-### Siste loggede leveranse (2026-03-24)
+### Siste loggede leveranse (2026-03-26)
 
+- **Playbook / MCP-doc:** Tre kanoniske MCP-filer dokumentert (`.cursor`, `.mcp`, `.kimi`); TypeScript SoT = `npm run type-check` (ikke committed `tsc_errors.txt`). Se `docs/FULL-AUTOMATION-PLAYBOOK.md` §2.
 - Commit: `48c582385` (arbeidskopi / `main` ved kjøring)
 - **test:robot** (testbruker `tom@klarpakke.no`): lint ✅, type-check ✅, Vitest **222 pass / 1 skip**, Playwright critical-chromium **46 pass / 3 skip**, **1 flaky** (pass på retry etter Next dev minne-restart). `PLAYWRIGHT_TEST_BASE_URL` tvinges til localhost av `scripts/test-robot.sh` når ikke satt.
 - Tidligere gate (samme dag): Commit `2924cf0e7` + `30970e741`; `npm run verify` ✅; health `30970e7`, tradingSignals `ok`; critical E2E with user **47 pass / 3 skip**; `prod-health-alert.yml` success.
@@ -103,7 +106,7 @@ Når en release er ferdig, logg dette i Linear:
 
 ## 8. Production+ gate (kort)
 
-Kjor disse fem stegene for siste sjekk for full produksjon+:
+Kjør disse fem stegene for siste sjekk for full produksjon+:
 
 1. `npm run automation:check`
 2. `npm run lint && npm run type-check && npm run test:unit`
