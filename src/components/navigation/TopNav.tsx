@@ -42,11 +42,17 @@ export function TopNav() {
   const t = useTranslations("dashboard.sidebar");
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
-        <HStack className="items-center gap-2">
-          <Link href={hrefWithLocale(locale, "/dashboard")} className="mr-4">
-            <Text as="span" className="text-xl font-bold text-slate-900">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">
+        <HStack className="min-w-0 items-center gap-1 sm:gap-2">
+          <Link
+            href={hrefWithLocale(locale, "/dashboard")}
+            className="mr-1 shrink-0 sm:mr-4"
+          >
+            <Text
+              as="span"
+              className="text-lg font-bold text-slate-900 sm:text-xl"
+            >
               Klarpakke
             </Text>
           </Link>
@@ -68,7 +74,7 @@ export function TopNav() {
           </nav>
         </HStack>
 
-        <HStack className="items-center gap-2">
+        <HStack className="shrink-0 items-center gap-1 sm:gap-2">
           <Button
             as={Link}
             href={hrefWithLocale(locale, "/dashboard/settings")}

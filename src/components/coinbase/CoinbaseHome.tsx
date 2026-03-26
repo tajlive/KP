@@ -106,7 +106,7 @@ export function CoinbaseHome({
   }, [paperBalance, liveTrades]);
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-6 pb-2 md:pb-8">
       {tradesPollFailed ? (
         <p
           className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"

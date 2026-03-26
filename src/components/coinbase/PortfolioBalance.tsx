@@ -21,7 +21,10 @@ export function PortfolioBalance({
       <Text as="p" className="text-sm text-slate-500">
         {t("totalPortfolioValue")}
       </Text>
-      <Text as="h1" className="mt-2 text-4xl font-bold text-slate-900">
+      <Text
+        as="h1"
+        className="mt-2 break-words text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+      >
         {totalNok.toLocaleString(numberLocale)} kr
       </Text>
       <Text
