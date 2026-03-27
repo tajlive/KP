@@ -20,6 +20,7 @@ import { createClient } from "@/lib/utils";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
 import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
+import { ThemeProvider } from "@/components/theme";
 import { QueryProvider } from "@/components/query-provider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SentryInit } from "@/components/providers/SentryInit";
@@ -56,6 +57,12 @@ export default function DashboardClientLayout({
   return (
     <>
       <CorruptTokenCleanup />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange={false}
+      >
       <ClientSideProviders>
         <QueryProvider>
           <ErrorBoundary>
@@ -88,6 +95,7 @@ export default function DashboardClientLayout({
           </ErrorBoundary>
         </QueryProvider>
       </ClientSideProviders>
+      </ThemeProvider>
     </>
   );
 }

@@ -4,7 +4,9 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { PaymentTrustLogos } from "@/components/landing/PaymentTrustLogos";
+import { TrustBoxMini } from "@/components/trustpilot/TrustBoxMini";
 import { useVippsMarket } from "@/components/providers/VippsMarketProvider";
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 
 export function Footer() {
@@ -143,6 +145,11 @@ export function Footer() {
                 </a>
               ))}
             </div>
+
+            {/* Trustpilot Rating */}
+            <Suspense fallback={<div className="h-6 w-32 bg-white/10 rounded animate-pulse" />}>
+              <TrustBoxMini className="mt-4" variant="dark" />
+            </Suspense>
           </div>
 
           {/* Product */}

@@ -67,6 +67,7 @@ export function HeroPrimaryActions({
         <Link
           href={signupHref}
           aria-label={t("ctaPrimary")}
+          data-testid="hero-cta-signup"
           className={`group ${HERO.ctaPrimary} flex items-center justify-center gap-2`}
         >
           {t("ctaPrimary")}
@@ -88,6 +89,7 @@ export function HeroPrimaryActions({
         <Link
           href={paperHref}
           aria-label={t("ctaSecondary")}
+          data-testid="hero-cta-secondary"
           className={`${HERO.ctaSecondary} flex items-center justify-center gap-2`}
         >
           {t("ctaSecondary")}

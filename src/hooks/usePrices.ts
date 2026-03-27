@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * @deprecated Use useWebSocketPrice or useWebSocketPrices from @/hooks/useWebSocketPrice for new code.
+ * This hook is kept for backwards compatibility.
+ * 
+ * Migration:
+ *   - usePrices() → useWebSocketPrices(PRIORITY_SYMBOLS)
+ *   - useAnimatedPrice(symbol) → useWebSocketPrice(symbol)
+ */
+
 import { PriceWebSocket } from "@/lib/auto-trading/binance-websocket";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";

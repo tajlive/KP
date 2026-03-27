@@ -96,7 +96,9 @@ export default function FAQSection() {
               className="border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-all"
             >
               <button
+                type="button"
                 onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                aria-expanded={openIndex === idx}
                 className="w-full px-6 py-5 flex items-center justify-between text-left bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
               >
                 <span className="font-bold text-gray-900 dark:text-white pr-8 text-base">

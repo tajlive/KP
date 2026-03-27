@@ -77,13 +77,112 @@
   html {
     scroll-behavior: smooth;
   }
+  
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
     }
   }
+  
   body {
     @apply antialiased;
+  }
+  
+  /* ============================================
+     DARK MODE - CSS CUSTOM PROPERTIES
+     ============================================ */
+  
+  /* Light mode (default) */
+  :root {
+    /* Background colors */
+    --kp-bg-primary: #ffffff;
+    --kp-bg-secondary: #f7f8fa;
+    --kp-bg-tertiary: #eef1f6;
+    --kp-bg-card: #ffffff;
+    --kp-bg-hover: #f1f5f9;
+    --kp-bg-active: #e2e8f0;
+    
+    /* Text colors */
+    --kp-text-primary: #1a1d26;
+    --kp-text-secondary: #5e6478;
+    --kp-text-tertiary: #8e94a7;
+    --kp-text-muted: #64748b;
+    
+    /* Border colors */
+    --kp-border: #e2e5ec;
+    --kp-border-light: #f1f5f9;
+    --kp-border-dark: #cbd5e1;
+    
+    /* Surface colors */
+    --kp-surface: #ffffff;
+    --kp-surface-elevated: #ffffff;
+    
+    /* Navigation */
+    --kp-nav-bg: rgba(15, 23, 42, 0.5);
+    --kp-nav-text: #ffffff;
+    --kp-nav-text-muted: #94a3b8;
+    
+    /* Input colors */
+    --kp-input-bg: #ffffff;
+    --kp-input-border: #e2e5ec;
+    --kp-input-text: #1a1d26;
+    --kp-input-placeholder: #8e94a7;
+  }
+  
+  /* Dark mode */
+  .dark {
+    /* Background colors */
+    --kp-bg-primary: #0a0b0d;
+    --kp-bg-secondary: #111218;
+    --kp-bg-tertiary: #1a1c24;
+    --kp-bg-card: #171923;
+    --kp-bg-hover: #1e212b;
+    --kp-bg-active: #2a2d3a;
+    
+    /* Text colors */
+    --kp-text-primary: #f1f5f9;
+    --kp-text-secondary: #94a3b8;
+    --kp-text-tertiary: #64748b;
+    --kp-text-muted: #475569;
+    
+    /* Border colors */
+    --kp-border: #2a2d3a;
+    --kp-border-light: #1e212b;
+    --kp-border-dark: #374151;
+    
+    /* Surface colors */
+    --kp-surface: #171923;
+    --kp-surface-elevated: #1e212b;
+    
+    /* Navigation */
+    --kp-nav-bg: rgba(15, 23, 42, 0.8);
+    --kp-nav-text: #f1f5f9;
+    --kp-nav-text-muted: #94a3b8;
+    
+    /* Input colors */
+    --kp-input-bg: #1a1c24;
+    --kp-input-border: #2a2d3a;
+    --kp-input-text: #f1f5f9;
+    --kp-input-placeholder: #64748b;
+  }
+  
+  /* Smooth theme transitions - disabled for users who prefer reduced motion */
+  @media (prefers-reduced-motion: no-preference) {
+    *,
+    *::before,
+    *::after {
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 200ms;
+    }
+    
+    /* Exclude certain elements from transitions */
+    .no-transition,
+    .no-transition *,
+    .no-transition *::before,
+    .no-transition *::after {
+      transition-property: none !important;
+    }
   }
 }
 
@@ -138,19 +237,37 @@
   opacity: 0;
 }
 
+/* ============================================
+   DARK MODE - COMPONENT STYLES
+   ============================================ */
+
 .kp-card {
-  background: white;
+  background: var(--kp-bg-card);
   border-radius: 0.75rem;
-  border: 1px solid rgba(226, 229, 236, 0.8);
+  border: 1px solid var(--kp-border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 200ms, border-color 200ms;
 }
+
+.dark .kp-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
 .kp-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
+
+.dark .kp-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
 .kp-card-interactive:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
   transform: translateY(-1px);
+}
+
+.dark .kp-card-interactive:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .kp-gradient-text {
@@ -293,3 +410,25 @@ body {
 .scroll-smooth {
   -webkit-overflow-scrolling: touch;
 }
+
+/* ============================================
+   DARK MODE - UTILITY CLASSES
+   ============================================ */
+
+/* Background utilities using CSS variables */
+.bg-kp-primary { background-color: var(--kp-bg-primary); }
+.bg-kp-secondary { background-color: var(--kp-bg-secondary); }
+.bg-kp-tertiary { background-color: var(--kp-bg-tertiary); }
+.bg-kp-card { background-color: var(--kp-bg-card); }
+.bg-kp-surface { background-color: var(--kp-surface); }
+
+/* Text utilities using CSS variables */
+.text-kp-primary { color: var(--kp-text-primary); }
+.text-kp-secondary { color: var(--kp-text-secondary); }
+.text-kp-tertiary { color: var(--kp-text-tertiary); }
+.text-kp-muted { color: var(--kp-text-muted); }
+
+/* Border utilities using CSS variables */
+.border-kp { border-color: var(--kp-border); }
+.border-kp-light { border-color: var(--kp-border-light); }
+.border-kp-dark { border-color: var(--kp-border-dark); }

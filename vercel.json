@@ -62,6 +62,24 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/:locale((no|en))?",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/:locale((no|en))?/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+        }
+      ]
     }
   ],
   "crons": [
@@ -71,6 +89,14 @@
     },
     {
       "path": "/api/cron/update-usdt-nok",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/v1/cron/keepalive",
+      "schedule": "0 6 */5 * *"
+    },
+    {
+      "path": "/api/v1/cron/update-usdt-nok",
       "schedule": "0 6 * * *"
     }
   ]

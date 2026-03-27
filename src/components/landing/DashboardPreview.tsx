@@ -38,6 +38,7 @@ export function DashboardPreview() {
         </div>
         <div className="flex bg-slate-700 rounded-lg p-1">
           <button
+            type="button"
             onClick={() => setMode('paper')}
             className={`px-3 py-1.5 rounded-md text-sm font-lexend transition-colors ${
               mode === 'paper'
@@ -48,6 +49,7 @@ export function DashboardPreview() {
             Paper
           </button>
           <button
+            type="button"
             onClick={() => setMode('live')}
             className={`px-3 py-1.5 rounded-md text-sm font-lexend transition-colors ${
               mode === 'live'
@@ -135,6 +137,7 @@ export function DashboardPreview() {
       {/* CTA */}
       <div className="px-6 pb-6">
         <button 
+          type="button"
           onClick={() => router.push('/innlogging')}
           className="w-full py-3 bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium rounded-lg transition-colors min-h-[44px]"
         >

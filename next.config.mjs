@@ -157,6 +157,18 @@ const nextConfig = {
       { source: "/signals", destination: "/dashboard", permanent: true },
       { source: "/:locale/signals", destination: "/:locale/dashboard", permanent: true },
       { source: "/simulator", destination: "/paper-trading", permanent: true },
+      
+      // API v1 Consolidation (Script 04 - Phase 1)
+      // Trading APIs
+      { source: "/api/trading/:path*", destination: "/api/v1/trading/:path*", permanent: true },
+      { source: "/api/paper-trading/:path*", destination: "/api/v1/trading/:path*?mode=paper", permanent: true },
+      // Webhooks (except Stripe - keep original for signature verification)
+      { source: "/api/webhooks/resend/:path*", destination: "/api/v1/webhooks/resend/:path*", permanent: true },
+      { source: "/api/webhooks/github/:path*", destination: "/api/v1/webhooks/github/:path*", permanent: true },
+      // Cron jobs
+      { source: "/api/cron/:path*", destination: "/api/v1/cron/:path*", permanent: true },
+      // Notifications
+      { source: "/api/notifications/:path*", destination: "/api/v1/notifications/:path*", permanent: true },
       { source: "/:locale/simulator", destination: "/:locale/paper-trading", permanent: true },
       { source: "/:locale/settings", destination: "/:locale/innstillinger", permanent: true },
     ];
@@ -259,8 +271,32 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
           },
+          {
+            key: "X-DNS-Prefetch-Control",
+            value: "on",
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+          {
+            key: "Cross-Origin-Embedder-Policy",
+            value: "credentialless",
+          },
+          {
+            key: "Cross-Origin-Resource-Policy",
+            value: "cross-origin",
+          },
+          ...(process.env.NODE_ENV === "production"
+            ? [
+                {
+                  key: "Strict-Transport-Security",
+                  value: "max-age=63072000; includeSubDomains; preload",
+                },
+              ]
+            : []),
         ],
       },
       {

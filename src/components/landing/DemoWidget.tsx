@@ -108,6 +108,7 @@ export function DemoWidget() {
   return (
     <section
       id="land-demo"
+      data-testid="demo-widget"
       className="relative scroll-mt-24 overflow-x-hidden bg-slate-950 py-16 md:py-28"
     >
       <div
@@ -219,15 +220,21 @@ export function DemoWidget() {
             {/* Trade buttons */}
             <div className="grid grid-cols-2 gap-3">
               <button
+                type="button"
                 onClick={handleBuy}
                 disabled={position > 0}
+                aria-label={t("buy")}
+                data-testid="demo-widget-buy"
                 className="py-3.5 rounded-xl font-bold text-white transition-all duration-200 bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/20 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 {t("buy")}
               </button>
               <button
+                type="button"
                 onClick={handleSell}
                 disabled={position <= 0}
+                aria-label={t("sell")}
+                data-testid="demo-widget-sell"
                 className="py-3.5 rounded-xl font-bold text-white transition-all duration-200 bg-red-600 hover:bg-red-500 shadow-lg shadow-red-600/20 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 {t("sell")}
