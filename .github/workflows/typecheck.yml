@@ -37,6 +37,9 @@ jobs:
           echo "Node: $(node -v)"
           echo "npm: $(npm -v)"
 
+      - name: 🔒 Node-policy sjekk
+        run: npm run node:policy
+
       - name: Install dependencies
         run: npm ci --prefer-offline
 
