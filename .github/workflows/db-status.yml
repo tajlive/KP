@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # DB STATUS (PR) – Sjekker migrasjonsstatus mot linket Supabase-prosjekt
 # ============================================================================
@@ -39,12 +40,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
 
       - name: 🔗 Supabase link
         id: link

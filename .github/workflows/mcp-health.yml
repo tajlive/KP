@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 name: 🔌 MCP Health Check
 
 on:
@@ -22,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: MCP config (.cursor ↔ .mcp)
         run: node scripts/validate-mcp-config.mjs

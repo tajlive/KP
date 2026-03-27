@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # DB LINT (PR) – PL/pgSQL-linter mot linket Supabase-prosjekt
 # ============================================================================
@@ -39,12 +40,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
 
       - name: Link + db lint (fail on ERROR only)
         id: db_lint

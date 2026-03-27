@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # PR CHECK - Ved PR til main OG ved push til main (Vercel trenger checks på merge)
 # ============================================================================
@@ -30,8 +31,8 @@ jobs:
     outputs:
       migrations: ${{ steps.filter.outputs.migrations }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -43,10 +44,10 @@ jobs:
     needs: paths
     if: needs.paths.outputs.migrations == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version-file: '.nvmrc'
       - run: node scripts/validate-migrations.mjs
         name: Valider migrasjonsfiler
 
@@ -56,11 +57,11 @@ jobs:
     if: needs.paths.outputs.migrations == 'true'
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: "24"
-      - name: "\U0001F517 Supabase link"
+          node-version-file: '.nvmrc'
+      - name: "🔗 Supabase link"
         id: link
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -75,7 +76,7 @@ jobs:
           fi
           npx supabase link --project-ref "$REF"
           echo "skipped=false" >> "$GITHUB_OUTPUT"
-      - name: "\U0001F5C4\uFE0F DB status gate"
+      - name: "🗄️ DB status gate"
         if: steps.link.outputs.skipped != 'true'
         continue-on-error: ${{ vars.DB_STATUS_STRICT != 'true' }}
         env:
@@ -90,19 +91,24 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version-file: '.nvmrc'
           cache: "npm"
+
+      - name: 🖥️ Runtime-verifisering
+        run: |
+          echo "Node: $(node -v)"
+          echo "npm: $(npm -v)"
 
       - name: 📦 Install
         run: npm ci --prefer-offline
 
       - name: 📂 Restore Next.js build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .next/cache
           key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
@@ -218,15 +224,15 @@ jobs:
       pull-requests: read
     steps:
       - name: ⬇️ Checkout PR-branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version-file: '.nvmrc'
           cache: "npm"
 
       - name: 📦 Install

@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # AUTO-MERGE — Dependabot PRs merges automatisk etter CI passerer
 # ============================================================================
@@ -11,6 +12,10 @@ on:
 concurrency:
   group: auto-merge-${{ github.head_ref }}
   cancel-in-progress: true
+
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: write

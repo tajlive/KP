@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 name: E2E Critical Tests
 
 on:
@@ -46,8 +47,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
           cache: 'npm'
+
+      - name: 🖥️ Runtime-verifisering
+        run: |
+          echo "Node: $(node -v)"
+          echo "npm: $(npm -v)"
 
       - name: Install dependencies
         run: npm ci
@@ -100,7 +106,7 @@ jobs:
       - name: Upload Playwright artifacts
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-e2e
           path: |
@@ -125,7 +131,7 @@ jobs:
       - name: Slack Notification
         if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         continue-on-error: true
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {
