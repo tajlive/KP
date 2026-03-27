@@ -1,26 +1,37 @@
 #!/bin/sh
-# Supabase Column Guard - Pre-commit hook
-# Sjekker for .eq("bad_column") feil før commit
+# Klarpakke pre-commit gate — blokkerer commit ved TypeScript-feil
+# Kjøres automatisk av git før hver commit
 
 cd /Users/taj/klarpakke || exit 1
 
-echo "🔍 Sjekker for Supabase kolonne-feil..."
+echo "🔍 [1/3] Sjekker secrets i staged filer..."
+bash scripts/check-secrets-staged.sh || exit 1
 
-# Kjør guard-script
-node scripts/guard-supabase-columns.mjs
-
-EXIT_CODE=$?
-
-if [ $EXIT_CODE -ne 0 ]; then
-    echo ""
-    echo "❌ Pre-commit sjekk feilet!"
-    echo ""
-    echo "For å fikse automatisk, kjør:"
-    echo "  node scripts/guard-supabase-columns.mjs --fix"
-    echo ""
-    echo "Deretter stage endringene og commit på nytt."
-    exit 1
+echo "🔍 [2/3] TypeScript-sjekk (tsc --noEmit)..."
+npx tsc --noEmit 2>&1
+TSC_EXIT=$?
+if [ $TSC_EXIT -ne 0 ]; then
+  echo ""
+  echo "❌ TypeScript-feil funnet! Commit blokkert."
+  echo ""
+  echo "  Raskt fix for Supabase .eq()-feil:"
+  echo "    node scripts/guard-supabase-columns.mjs --fix"
+  echo ""
+  echo "  Generell TypeScript-feil:"
+  echo "    npx tsc --noEmit   → finn og fiks manuelt"
+  echo ""
+  exit 1
 fi
 
-echo "✅ Supabase kolonne-sjekk fullført!"
+echo "🔍 [3/3] Supabase kolonne-guard..."
+node scripts/guard-supabase-columns.mjs
+GUARD_EXIT=$?
+if [ $GUARD_EXIT -ne 0 ]; then
+  echo ""
+  echo "❌ Supabase kolonne-feil! Commit blokkert."
+  echo "   Kjør: node scripts/guard-supabase-columns.mjs --fix"
+  exit 1
+fi
+
+echo "✅ Pre-commit: Alt OK. Committer..."
 exit 0
