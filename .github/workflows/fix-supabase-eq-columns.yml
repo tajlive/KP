@@ -41,13 +41,20 @@ jobs:
       - name: Run TypeScript check
         id: typecheck
         run: |
-          npx tsc --noEmit 2>&1 | tee typecheck.log || true
-          EXIT_CODE=${PIPESTATUS[0]}
-          if [ $EXIT_CODE -eq 0 ]; then
+          set +e
+          npx tsc --noEmit 2>&1 | tee typecheck.log
+          TSC_EXIT=${PIPESTATUS[0]}
+          set -e
+          if [ $TSC_EXIT -eq 0 ]; then
             echo "passed=true" >> $GITHUB_OUTPUT
+            echo "✅ TypeScript OK"
           else
             echo "passed=false" >> $GITHUB_OUTPUT
+            echo "❌ TypeScript-feil funnet — forsøker auto-fix"
+            cat typecheck.log | head -30
           fi
+          # Ikke exit 1 her — la neste steg (auto-fix) forsøke å reparere
+          exit 0
 
       - name: Check for Supabase column errors
         id: check_errors
@@ -170,10 +177,13 @@ jobs:
           steps.check_errors.outputs.has_supabase_errors == 'true' &&
           steps.verify.outputs.fix_worked == 'false'
         run: |
-          echo "❌ Automatisk fiksing kunne ikke løse alle problemer"
+          echo "❌ Auto-fix klarte ikke å løse alle TypeScript-feil"
           echo ""
           echo "Gjenværende feil:"
-          npx tsc --noEmit 2>&1 | head -30
+          npx tsc --noEmit 2>&1 | head -50 || true
+          echo ""
+          echo "⚠️  MANUELL FIX KREVES — se feilene over"
+          echo "     Les .klarpakke-memory.md for kjente mønstre"
           exit 1
 
       - name: Success summary

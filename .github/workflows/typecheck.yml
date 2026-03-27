@@ -1,0 +1,43 @@
+name: TypeScript Check (Blocking)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Avbryt parallelle kjøringer på samme branch
+concurrency:
+  group: typecheck-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: tsc --noEmit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      # Kjør tsc — feiler hard ved TypeScript-feil (ingen || true)
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      # Ekstra: scan for kjente Supabase .eq()-mønstre
+      - name: Supabase column guard
+        run: node scripts/guard-supabase-columns.mjs
+        continue-on-error: false
+
+      - name: ✅ TypeScript OK
+        run: echo "Ingen TypeScript-feil funnet."
