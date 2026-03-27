@@ -223,5 +223,15 @@
     "successTitle": "Du er registrert!",
     "successDesc": "Sjekk innboksen din — første leksjon er på vei.",
     "privacy": "Vi deler aldri e-posten din med tredjepart. Avmeld når som helst."
+  },
+  "trustStrip": {
+    "label1": "Aktive brukere",
+    "description1": "og vokser",
+    "label2": "Trustpilot-vurdering",
+    "label3": "Startkapital",
+    "description3": "Gratis lekepenger for alle",
+    "label4": "Auto-trading",
+    "description4": "Boten sover aldri",
+    "paymentLabel": "Trygge betalingsmåter"
   }
 }
