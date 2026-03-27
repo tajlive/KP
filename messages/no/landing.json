@@ -156,7 +156,9 @@
     "mockupChartTimeframe": "Siste 24t",
     "mockupFloatBadge": "100 000 kr lekepenger",
     "mockupBtcQty": "0,025 BTC",
-    "mockupEthQty": "0,5 ETH"
+    "mockupEthQty": "0,5 ETH",
+    "mockupHigh": "Høy 24t",
+    "mockupLow": "Lav 24t"
   },
   "transparency": {
     "strip": "Vi viser ikke samlete «hele plattformen»-tall på forsiden — slik at du slipper å lure på om det er ekte eller pynt.",

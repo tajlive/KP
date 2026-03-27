@@ -333,6 +333,20 @@ export default defineConfig({
         viewport: { width: 1920, height: 1080 },
       },
     },
+
+    // ============================================
+    // VISUAL REGRESSION (CSS + i18n sanity)
+    // ============================================
+    {
+      name: "visual-regression",
+      testMatch: "**/visual/**/*.spec.ts",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1440, height: 900 },
+        // screenshot alltid på og på failure for diff
+        screenshot: "on",
+      },
+    },
   ],
 
   // Local dev server (not used in CI or when testing against prod/external URL)
