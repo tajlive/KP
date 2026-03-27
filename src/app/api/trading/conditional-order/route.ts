@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       const { data: position } = await supabase
         .from("positions")
         .select("quantity")
-        .eq("session_id", session_id)
+        .eq("user_id", user.id) // positions has no session_id column
         .eq("symbol", symbol)
         .single();
 
