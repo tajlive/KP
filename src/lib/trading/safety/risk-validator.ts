@@ -257,7 +257,7 @@ export async function validateTradeAgainstRiskProfile(
     const { data: positions } = await supabase
       .from("positions")
       .select("symbol, quantity, avg_entry_price")
-      .eq("session_id", trade.sessionId);
+      .eq("user_id", trade.userId);
 
     type PositionRow = {
       symbol?: string;

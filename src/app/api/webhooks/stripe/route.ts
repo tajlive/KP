@@ -174,7 +174,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         subscription_tier: planType,
         subscription_status: "active",
         stripe_customer_id: customerId,
-        stripe_subscription_id: subscriptionId,
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId);
