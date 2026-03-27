@@ -5654,6 +5654,7 @@ export type Database = {
       trading_sessions: {
         Row: {
           copied_from_listing_id: string | null;
+          copy_source_session_id: string | null;
           crash_count: number;
           created_at: string;
           current_capital: number;
@@ -5687,6 +5688,7 @@ export type Database = {
         };
         Insert: {
           copied_from_listing_id?: string | null;
+          copy_source_session_id?: string | null;
           crash_count?: number;
           created_at?: string;
           current_capital?: number;
@@ -5720,6 +5722,7 @@ export type Database = {
         };
         Update: {
           copied_from_listing_id?: string | null;
+          copy_source_session_id?: string | null;
           crash_count?: number;
           created_at?: string;
           current_capital?: number;
@@ -5757,6 +5760,20 @@ export type Database = {
             columns: ["copied_from_listing_id"];
             isOneToOne: false;
             referencedRelation: "marketplace_listings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trading_sessions_copy_source_session_id_fkey";
+            columns: ["copy_source_session_id"];
+            isOneToOne: false;
+            referencedRelation: "trading_sessions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trading_sessions_copy_source_session_id_fkey";
+            columns: ["copy_source_session_id"];
+            isOneToOne: false;
+            referencedRelation: "unified_trading_sessions";
             referencedColumns: ["id"];
           },
         ];
