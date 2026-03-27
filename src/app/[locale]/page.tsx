@@ -1,104 +1,95 @@
 import { Metadata } from "next";
-
+import dynamic from "next/dynamic";
 import { SURFACE } from "@/lib/design/tokens";
 import HeroSection from "@/components/landing/HeroSection";
 import { TrustStrip } from "@/components/landing/TrustStrip";
 import { StickyCTA } from "@/components/landing/StickyCTA";
-import { DemoWidget } from "@/components/landing/DemoWidget";
-import { ThreeSteps } from "@/components/landing/ThreeSteps";
-import { CoursePreview } from "@/components/landing/CoursePreview";
-import FinalCTASection from "@/components/landing/FinalCTASection";
 import {
-  LandingTransparencySection,
-} from "@/components/landing/LandingTransparency";
+  DemoWidgetSkeleton,
+  CoursePreviewSkeleton,
+  ThreeStepsSkeleton,
+  LandingTransparencySkeleton,
+  FinalCTASkeleton,
+} from "@/components/landing/skeletons/BelowFoldSkeletons";
 
-// ISR: Regenerate page every hour
+// Dynamic imports for below-fold components (Phase 3: Code Splitting)
+// Keeps initial bundle small for better LCP
+const DemoWidget = dynamic(
+  () => import("@/components/landing/DemoWidget").then((mod) => mod.DemoWidget),
+  {
+    loading: () => <DemoWidgetSkeleton />,
+    ssr: true,
+  }
+);
+
+const CoursePreview = dynamic(
+  () => import("@/components/landing/CoursePreview").then((mod) => mod.CoursePreview),
+  {
+    loading: () => <CoursePreviewSkeleton />,
+    ssr: true,
+  }
+);
+
+const ThreeSteps = dynamic(
+  () => import("@/components/landing/ThreeSteps").then((mod) => mod.ThreeSteps),
+  {
+    loading: () => <ThreeStepsSkeleton />,
+    ssr: true,
+  }
+);
+
+const LandingTransparencySection = dynamic(
+  () => import("@/components/landing/LandingTransparency").then((mod) => mod.LandingTransparencySection),
+  {
+    loading: () => <LandingTransparencySkeleton />,
+    ssr: true,
+  }
+);
+
+const FinalCTASection = dynamic(
+  () => import("@/components/landing/FinalCTASection"),
+  {
+    loading: () => <FinalCTASkeleton />,
+    ssr: true,
+  }
+);
+
+// ISR: Revalidate page every hour for fresh content
 export const revalidate = 3600;
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  const isNorwegian = locale === "no";
+export const metadata: Metadata = {
+  title: "Klarpakke - Bygg din økonomiske fremtid",
+  description:
+    "Lær å handle på kryptobørs med Klarpakkets kurs. Forstå markeder, risiko og strategier for å bygge din økonomiske fremtid.",
+};
 
-  return {
-    title: isNorwegian
-      ? "Klarpakke — Lær crypto trygt fra dag én"
-      : "Klarpakke — Learn crypto safely from day one",
-    keywords: isNorwegian
-      ? [
-          "lær trading",
-          "crypto kurs",
-          "paper trading",
-          "trading utdanning",
-          "krypto skole",
-        ]
-      : [
-          "learn trading",
-          "crypto course",
-          "paper trading",
-          "trading education",
-        ],
-    openGraph: {
-      title: isNorwegian
-        ? "Klarpakke — Lær crypto trygt fra dag én"
-        : "Klarpakke — Learn crypto safely from day one",
-      description: isNorwegian
-        ? "Norges eneste plattform med kurs, papirhandel og autotrading. Start gratis med kr 100 000 i øvingspenger."
-        : "Norway's only platform with courses, paper trading and autotrading. Start free with kr 100,000 in virtual money.",
-      type: "website",
-      url: "https://www.klarpakke.no",
-      images: [
-        { url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: isNorwegian
-        ? "Klarpakke — Lær crypto trygt fra dag én"
-        : "Klarpakke — Learn crypto safely from day one",
-      description: isNorwegian
-        ? "Kurs, papirhandel og auto-handel — i ett sted."
-        : "Courses, paper trading and auto-trading in one place.",
-    },
-  };
+interface HomePageProps {
+  params: Promise<{ locale: string }>;
 }
 
-export default async function HomePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
 
   return (
     <>
       <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
-        {/* Hero Section — Redesigned for mobile */}
+        {/* Above-fold: Synchronous for LCP */}
         <HeroSection locale={locale} />
+        <TrustStrip locale={locale} />
 
-        {/* NEW: Trust Strip — Immediately after hero */}
-        <TrustStrip />
-
-        {/* Existing sections */}
+        {/* Below-fold: Dynamic imports with skeleton fallbacks */}
         <DemoWidget />
-
         <CoursePreview />
 
-        {/* Tre steg — anker #land-steg for støtte/dok */}
         <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
           <ThreeSteps />
         </section>
 
         <LandingTransparencySection locale={locale} />
-
-        {/* Final CTA - sterk konvertering før footer */}
         <FinalCTASection />
       </main>
 
-      {/* NEW: Sticky CTA — Mobile only */}
+      {/* Mobile sticky CTA - always visible on mobile */}
       <StickyCTA />
     </>
   );

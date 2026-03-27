@@ -1,7 +1,7 @@
 'use client'
 
 import { Bell, BellOff } from 'lucide-react'
-import { usePushNotifications } from '@/lib/pwa'
+import { usePushNotifications } from '@/hooks/usePushNotifications'
 
 interface PushNotificationSettingsProps {
   userId: string | null

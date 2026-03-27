@@ -281,7 +281,53 @@ export default defineConfig({
     // ============================================
     {
       name: "a11y-chromium",
-      testMatch: /accessibility\.spec\.ts/,
+      testMatch: "**/accessibility/**/*.spec.ts",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: "a11y-mobile",
+      testMatch: "**/accessibility/**/*.spec.ts",
+      use: {
+        ...devices["iPhone 13"],
+      },
+    },
+
+    // ============================================
+    // USER FLOWS (Critical journeys)
+    // ============================================
+    {
+      name: "user-flows-chromium",
+      testMatch: "**/critical/user-flows.spec.ts",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1920, height: 1080 },
+        storageState: e2eAuthStoragePath,
+      },
+      dependencies: ["setup"],
+    },
+
+    // ============================================
+    // RESPONSIVE TESTING
+    // ============================================
+    {
+      name: "responsive-chromium",
+      testMatch: "**/responsive/**/*.spec.ts",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: e2eAuthStoragePath,
+      },
+      dependencies: ["setup"],
+    },
+
+    // ============================================
+    // PERFORMANCE TESTS
+    // ============================================
+    {
+      name: "performance-chromium",
+      testMatch: "**/performance/**/*.spec.ts",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1920, height: 1080 },

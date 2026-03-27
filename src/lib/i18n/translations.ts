@@ -289,6 +289,28 @@ export const translations = {
         help: "Hjelp",
       },
     },
+    trustpilot: {
+      reviews: "anmeldelser",
+      review: "anmeldelse",
+      verified: "Verifisert",
+      demo: "Demo",
+      demoData: "Demo-data",
+      trustScore: "TrustScore",
+      readAllReviews: "Les alle anmeldelser",
+      visitTrustpilot: "Besøk Trustpilot",
+      scrollLeft: "Bla til venstre",
+      scrollRight: "Bla til høyre",
+      goToReview: "Gå til anmeldelse {number}",
+      mini: {
+        ariaLabel: "{stars} av 5 stjerner basert på {count} anmeldelser",
+      },
+      section: {
+        badge: "Excellent på Trustpilot",
+        title: "Dette sier våre kunder",
+        subtitle: "Les hva norske tradere mener om Klarpakke",
+        cta: "Les alle anmeldelser på Trustpilot",
+      },
+    },
     errors: {
       404: {
         title: "Side ikke funnet",
@@ -595,6 +617,28 @@ export const translations = {
         terms: "Terms",
         contact: "Contact",
         help: "Help",
+      },
+    },
+    trustpilot: {
+      reviews: "reviews",
+      review: "review",
+      verified: "Verified",
+      demo: "Demo",
+      demoData: "Demo data",
+      trustScore: "TrustScore",
+      readAllReviews: "Read all reviews",
+      visitTrustpilot: "Visit Trustpilot",
+      scrollLeft: "Scroll left",
+      scrollRight: "Scroll right",
+      goToReview: "Go to review {number}",
+      mini: {
+        ariaLabel: "{stars} out of 5 stars based on {count} reviews",
+      },
+      section: {
+        badge: "Excellent on Trustpilot",
+        title: "What our customers say",
+        subtitle: "Read what Norwegian traders think about Klarpakke",
+        cta: "Read all reviews on Trustpilot",
       },
     },
     errors: {

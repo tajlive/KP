@@ -152,6 +152,7 @@ export default function PricingSection() {
                 </ul>
 
                 <button
+                  type="button"
                   onClick={() => router.push(`/${locale}/priser`)}
                   className={`w-full px-4 py-3 ${RADIUS.button} font-semibold text-sm transition-all ${
                     plan.popular

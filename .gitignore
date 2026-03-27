@@ -236,3 +236,6 @@ lighthouse-landing.html
 
 # Personal one-off SQL (manual Dashboard only; may contain user email)
 supabase/sql-scripts/grant-professor-tom-arne.sql
+
+# Storybook build output
+storybook-static

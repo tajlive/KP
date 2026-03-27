@@ -3,6 +3,7 @@
 import TradingModeToggle from "@/components/TradingModeToggle";
 import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme";
 import { BRAND } from "@/lib/design/tokens";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { motion } from "framer-motion";
@@ -58,8 +59,9 @@ export function LandingNavigation() {
             ))}
 
             <div className="h-6 w-px bg-white/10 mx-2" />
-            <TradingModeToggle />
+            <ThemeToggle size="sm" />
             <div className="h-6 w-px bg-white/10 mx-2" />
+            <TradingModeToggle />
 
             {!loading &&
               (user ? (
@@ -84,7 +86,9 @@ export function LandingNavigation() {
 
           <div className="md:hidden">
             <button
+              type="button"
               onClick={() => setIsOpen(!isOpen)}
+              aria-label={isOpen ? t("closeMenu") : t("openMenu")}
               className="text-white p-2 hover:bg-white/5 rounded-xl transition-colors"
             >
               {isOpen ? (
@@ -117,6 +121,7 @@ export function LandingNavigation() {
             </Link>
           ))}
           <div className="pt-6 border-t border-white/10 space-y-6">
+            <ThemeToggle variant="segmented" />
             <TradingModeToggle />
             {!loading && (
               <Link

@@ -106,6 +106,7 @@ export function LottoComparison() {
           <div className="flex gap-2">
             {[1, 3, 5, 10].map((y) => (
               <button
+                type="button"
                 key={y}
                 onClick={() => setYears(y)}
                 className={`flex-1 py-2 px-3 rounded-lg font-lexend text-sm transition-colors ${

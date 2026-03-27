@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { Bell, Settings, User } from "lucide-react";
+import { ThemeToggle } from "@/components/theme";
 import { HStack } from "@coinbase/cds-web/layout";
 import { Text } from "@coinbase/cds-web/typography";
 import { Button } from "@coinbase/cds-web/buttons";
@@ -27,8 +28,8 @@ function TopNavLink({
       href={href}
       className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
         active
-          ? "bg-[#0052FF]/10 text-[#0052FF]"
-          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+          ? "bg-[#0052FF]/10 text-[#0052FF] dark:bg-[#0052FF]/20 dark:text-[#6FA3FF]"
+          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
       }`}
     >
       {label}
@@ -42,7 +43,7 @@ export function TopNav() {
   const t = useTranslations("dashboard.sidebar");
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4 lg:px-8">
         <HStack className="min-w-0 items-center gap-1 sm:gap-2">
           <Link
@@ -51,7 +52,7 @@ export function TopNav() {
           >
             <Text
               as="span"
-              className="text-lg font-bold text-slate-900 sm:text-xl"
+              className="text-lg font-bold text-slate-900 sm:text-xl dark:text-white"
             >
               Klarpakke
             </Text>
@@ -75,6 +76,7 @@ export function TopNav() {
         </HStack>
 
         <HStack className="shrink-0 items-center gap-1 sm:gap-2">
+          <ThemeToggle size="sm" />
           <Button
             as={Link}
             href={hrefWithLocale(locale, "/dashboard/settings")}

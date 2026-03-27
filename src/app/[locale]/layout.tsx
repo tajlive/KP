@@ -14,6 +14,7 @@ import {
   isEarlyMetaDescriptionPath,
 } from "@/lib/seo/earlyMetaDescription";
 import { MarketingProviders } from "@/components/providers/MarketingProviders";
+import { ThemeProvider } from "@/components/theme";
 import { PlausibleScript } from "@/components/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -232,6 +233,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           }}
         />
         {/* Resource Hints for External APIs */}
+        {/* Preload critical above-fold assets */}
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+        
+        {/* Resource Hints for External APIs */}
         <link rel="dns-prefetch" href="https://api.binance.com" />
         <link
           rel="preconnect"
@@ -257,9 +262,15 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <OrganizationJsonLd />
       </head>
       <body
-        className={`${inter.className} font-sans antialiased ${SURFACE.BG_LIGHT} text-[#1A1D26] min-h-screen`}
+        className={`${inter.className} font-sans antialiased bg-kp-primary text-kp-primary min-h-screen`}
         suppressHydrationWarning
       >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
         <SessionCleanup />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <CdsProvider>
@@ -274,6 +285,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             </VippsMarketProvider>
           </CdsProvider>
         </NextIntlClientProvider>
+        </ThemeProvider>
         <PlausibleScript />
         {process.env.VERCEL && (
           <>

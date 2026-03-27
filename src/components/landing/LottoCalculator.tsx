@@ -103,6 +103,7 @@ export function LottoCalculator() {
           </div>
 
           <button
+            type="button"
             onClick={() => setShowResults(!showResults)}
             className="w-full mt-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
           >

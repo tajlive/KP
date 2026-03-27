@@ -1,254 +1,104 @@
-/**
- * BelowFoldSkeletons
- * 
- * Skeleton placeholder components for lazy-loaded below-fold sections.
- * These prevent layout shift (CLS) while the actual components load.
- * 
- * All skeletons use:
- * - animate-pulse for loading indication
- * - Realistic min-height matching the actual component
- * - bg-slate-800/50 for visual consistency
- * - Mobile-first responsive design
- * - No hardcoded text (visual placeholders only)
- * 
- * Usage:
- *   dynamic(() => import("..."), { loading: LottoCalculatorSkeleton })
- */
+"use client";
 
-/**
- * LottoCalculatorSkeleton
- * Approximate height: 400px (h-96 + padding)
- * Layout: Two-column grid on desktop, stacked on mobile
- */
-export function LottoCalculatorSkeleton() {
+import { Skeleton } from "@/components/ui/skeleton";
+
+function DemoWidgetSkeleton() {
   return (
-    <div className="min-h-[400px] py-16 md:py-24 animate-pulse">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Left column */}
-          <div className="space-y-6">
-            <div className="h-8 bg-slate-800/50 rounded w-3/4" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-            <div className="h-4 bg-slate-800/50 rounded w-5/6" />
-            <div className="h-12 bg-slate-800/50 rounded w-1/2" />
-          </div>
-          {/* Right column */}
+    <section className="py-16 sm:py-20 lg:py-24 bg-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="space-y-4">
-            <div className="h-20 bg-slate-800/50 rounded" />
-            <div className="h-20 bg-slate-800/50 rounded" />
-            <div className="h-20 bg-slate-800/50 rounded" />
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <div className="pt-4 space-y-3">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
           </div>
+          <Skeleton className="h-[300px] lg:h-[400px] rounded-2xl" />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-/**
- * SocialProofSectionSkeleton
- * Approximate height: 280px (h-64 + padding)
- * Layout: Centered content with testimonial cards
- */
-export function SocialProofSectionSkeleton() {
+function CoursePreviewSkeleton() {
   return (
-    <div className="min-h-[280px] py-16 animate-pulse">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-10">
-          <div className="h-8 bg-slate-800/50 rounded w-1/2 mx-auto" />
-          <div className="h-4 bg-slate-800/50 rounded w-1/3 mx-auto mt-4" />
+    <section className="py-16 sm:py-20 lg:py-24 bg-slate-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10 lg:mb-12">
+          <Skeleton className="h-8 w-64 mx-auto mb-4" />
+          <Skeleton className="h-4 w-96 mx-auto" />
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="h-32 bg-slate-800/50 rounded-xl" />
-          <div className="h-32 bg-slate-800/50 rounded-xl" />
-          <div className="h-32 bg-slate-800/50 rounded-xl" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * GamifiedLeaderboardSkeleton
- * Approximate height: 420px (h-96 + padding)
- * Layout: Table-like structure with rows
- */
-export function GamifiedLeaderboardSkeleton() {
-  return (
-    <div className="min-h-[420px] py-16 animate-pulse">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="h-8 bg-slate-800/50 rounded w-2/3 mx-auto mb-8" />
-        <div className="space-y-3">
-          {/* Header row */}
-          <div className="flex gap-4 pb-4 border-b border-slate-800">
-            <div className="h-6 bg-slate-800/50 rounded w-16" />
-            <div className="h-6 bg-slate-800/50 rounded flex-1" />
-            <div className="h-6 bg-slate-800/50 rounded w-24" />
-          </div>
-          {/* Data rows */}
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex gap-4 py-3">
-              <div className="h-8 bg-slate-800/50 rounded w-16" />
-              <div className="h-8 bg-slate-800/50 rounded flex-1" />
-              <div className="h-8 bg-slate-800/50 rounded w-24" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="h-40 w-full rounded-xl" />
+              <Skeleton className="h-5 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-/**
- * SafeBacktestWidgetSkeleton
- * Approximate height: 360px (h-80 + padding)
- * Layout: Chart area with stats below
- */
-export function SafeBacktestWidgetSkeleton() {
+function ThreeStepsSkeleton() {
   return (
-    <div className="min-h-[360px] py-16 animate-pulse">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="h-8 bg-slate-800/50 rounded w-3/4 mx-auto mb-8" />
-        {/* Chart area */}
-        <div className="h-48 bg-slate-800/50 rounded-xl mb-6" />
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="h-16 bg-slate-800/50 rounded" />
-          <div className="h-16 bg-slate-800/50 rounded" />
-          <div className="h-16 bg-slate-800/50 rounded" />
+    <section className="py-12 sm:py-16 lg:py-20 bg-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10 lg:mb-12">
+          <Skeleton className="h-8 w-48 mx-auto mb-4" />
         </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * ComparisonSectionSkeleton
- * Approximate height: 420px (h-96 + padding)
- * Layout: Feature comparison table
- */
-export function ComparisonSectionSkeleton() {
-  return (
-    <div className="min-h-[420px] py-16 animate-pulse">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="h-8 bg-slate-800/50 rounded w-2/3 mx-auto mb-10" />
-        <div className="space-y-4">
-          {/* Table header */}
-          <div className="grid grid-cols-4 gap-4 pb-4 border-b border-slate-800">
-            <div className="h-6 bg-slate-800/50 rounded" />
-            <div className="h-6 bg-slate-800/50 rounded" />
-            <div className="h-6 bg-slate-800/50 rounded" />
-            <div className="h-6 bg-slate-800/50 rounded" />
-          </div>
-          {/* Table rows */}
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="grid grid-cols-4 gap-4 py-3">
-              <div className="h-5 bg-slate-800/50 rounded" />
-              <div className="h-5 bg-slate-800/50 rounded" />
-              <div className="h-5 bg-slate-800/50 rounded" />
-              <div className="h-5 bg-slate-800/50 rounded" />
+        <div className="grid sm:grid-cols-3 gap-6 lg:gap-8">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="text-center space-y-3">
+              <Skeleton className="h-16 w-16 rounded-full mx-auto" />
+              <Skeleton className="h-5 w-32 mx-auto" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6 mx-auto" />
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-/**
- * PricingSectionSkeleton
- * Approximate height: 640px (h-[600px] + padding)
- * Layout: Three pricing cards
- */
-export function PricingSectionSkeleton() {
+function LandingTransparencySkeleton() {
   return (
-    <div className="min-h-[640px] py-16 md:py-24 animate-pulse">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <div className="h-8 bg-slate-800/50 rounded w-1/2 mx-auto" />
-          <div className="h-4 bg-slate-800/50 rounded w-1/3 mx-auto mt-4" />
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Pricing cards */}
-          <div className="h-96 bg-slate-800/50 rounded-2xl" />
-          <div className="h-96 bg-slate-800/50 rounded-2xl" />
-          <div className="h-96 bg-slate-800/50 rounded-2xl" />
-        </div>
+    <section className="py-16 sm:py-20 lg:py-24 bg-slate-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <Skeleton className="h-8 w-64 mx-auto mb-6" />
+        <Skeleton className="h-4 w-full mb-3" />
+        <Skeleton className="h-4 w-5/6 mx-auto mb-3" />
+        <Skeleton className="h-4 w-4/6 mx-auto mb-8" />
+        <Skeleton className="h-12 w-48 mx-auto" />
       </div>
-    </div>
+    </section>
   );
 }
 
-/**
- * FAQSectionSkeleton
- * Approximate height: 420px (h-96 + padding)
- * Layout: Accordion-style FAQ items
- */
-export function FAQSectionSkeleton() {
+function FinalCTASkeleton() {
   return (
-    <div className="min-h-[420px] py-16 animate-pulse">
-      <div className="max-w-3xl mx-auto px-4">
-        <div className="h-8 bg-slate-800/50 rounded w-1/3 mx-auto mb-10" />
-        <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-slate-800/50 rounded-xl" />
-          ))}
-        </div>
+    <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-blue-600 to-indigo-700">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <Skeleton className="h-10 w-3/4 mx-auto mb-6 bg-white/20" />
+        <Skeleton className="h-5 w-full max-w-lg mx-auto mb-4 bg-white/20" />
+        <Skeleton className="h-5 w-4/5 max-w-md mx-auto mb-8 bg-white/20" />
+        <Skeleton className="h-14 w-56 mx-auto bg-white/30" />
       </div>
-    </div>
+    </section>
   );
 }
 
-/**
- * FinalCTASectionSkeleton
- * Approximate height: 280px (h-64 + padding)
- * Layout: Centered CTA with button
- */
-export function FinalCTASectionSkeleton() {
-  return (
-    <div className="min-h-[280px] py-16 animate-pulse">
-      <div className="max-w-4xl mx-auto px-4 text-center">
-        <div className="h-8 bg-slate-800/50 rounded w-3/4 mx-auto mb-4" />
-        <div className="h-4 bg-slate-800/50 rounded w-1/2 mx-auto mb-8" />
-        <div className="h-14 bg-slate-800/50 rounded-xl w-48 mx-auto" />
-      </div>
-    </div>
-  );
-}
-
-/**
- * ConditionalFooterSkeleton
- * Approximate height: 200px (h-48 + padding)
- * Layout: Multi-column footer
- */
-export function ConditionalFooterSkeleton() {
-  return (
-    <div className="min-h-[200px] py-12 animate-pulse bg-slate-950">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid md:grid-cols-4 gap-8">
-          {/* Logo column */}
-          <div className="space-y-4">
-            <div className="h-8 bg-slate-800/50 rounded w-32" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-          </div>
-          {/* Link columns */}
-          <div className="space-y-3">
-            <div className="h-5 bg-slate-800/50 rounded w-24" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-          </div>
-          <div className="space-y-3">
-            <div className="h-5 bg-slate-800/50 rounded w-24" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-          </div>
-          <div className="space-y-3">
-            <div className="h-5 bg-slate-800/50 rounded w-24" />
-            <div className="h-4 bg-slate-800/50 rounded w-full" />
-            <div className="h-4 bg-slate-800/50 rounded w-2/3" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+export {
+  DemoWidgetSkeleton,
+  CoursePreviewSkeleton,
+  ThreeStepsSkeleton,
+  LandingTransparencySkeleton,
+  FinalCTASkeleton,
+};
