@@ -70,7 +70,7 @@ export const POST = withRateLimit(
       .from("trading_sessions")
       .select("id")
       .eq("strategy_id", id)
-      .eq("status", "ACTIVE")
+      .eq("status", "active")
       .single();
 
     const session = sessionResult.data;
@@ -83,7 +83,7 @@ export const POST = withRateLimit(
         updated_at: new Date().toISOString(),
       })
       .eq("strategy_id", id)
-      .eq("status", "ACTIVE");
+      .eq("status", "active");
 
     if (session?.id) {
       await db.from("strategy_logs").insert({
