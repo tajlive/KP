@@ -1,11 +1,11 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 // Types
 export interface Position {
   id: string;
   symbol: string;
-  side: 'long' | 'short';
+  side: "long" | "short";
   entryPrice: number;
   currentPrice: number;
   quantity: number;
@@ -20,8 +20,8 @@ export interface Position {
 export interface Trade {
   id: string;
   symbol: string;
-  type: 'buy' | 'sell';
-  side: 'open' | 'close';
+  type: "buy" | "sell";
+  side: "open" | "close";
   price: number;
   quantity: number;
   total: number;
@@ -54,7 +54,7 @@ export interface MarketData {
   lastUpdate: string;
 }
 
-type Timeframe = '1m' | '5m' | '15m' | '1h' | '4h' | '1d';
+type Timeframe = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
 
 export interface OpenPositionResult {
   success: boolean;
@@ -72,10 +72,15 @@ interface TradingState {
   selectedSymbol: string;
   selectedTimeframe: Timeframe;
   updateMarketData: (symbol: string, data: Partial<MarketData>) => void;
-  openPosition: (position: Omit<Position, 'id' | 'currentPrice' | 'pnl' | 'pnlPercent' | 'openedAt'>) => OpenPositionResult;
+  openPosition: (
+    position: Omit<
+      Position,
+      "id" | "currentPrice" | "pnl" | "pnlPercent" | "openedAt"
+    >,
+  ) => OpenPositionResult;
   closePosition: (positionId: string) => void;
   updatePosition: (positionId: string, currentPrice: number) => void;
-  addTrade: (trade: Omit<Trade, 'id' | 'timestamp'>) => void;
+  addTrade: (trade: Omit<Trade, "id" | "timestamp">) => void;
   setSelectedSymbol: (symbol: string) => void;
   setSelectedTimeframe: (timeframe: Timeframe) => void;
   resetPortfolio: () => void;
@@ -102,8 +107,8 @@ export const useTradingStore = create<TradingState>()(
       positions: [],
       trades: [],
       marketData: {},
-      selectedSymbol: 'BTCUSDT',
-      selectedTimeframe: '15m',
+      selectedSymbol: "BTCUSDT",
+      selectedTimeframe: "15m",
 
       updateMarketData: (symbol, data) =>
         set((state) => ({
@@ -123,18 +128,22 @@ export const useTradingStore = create<TradingState>()(
 
         // Valider leverage
         if (position.leverage > MAX_LEVERAGE) {
-          return { success: false, error: `Leverage kan ikke overstige ${MAX_LEVERAGE}x` };
+          return {
+            success: false,
+            error: `Leverage kan ikke overstige ${MAX_LEVERAGE}x`,
+          };
         }
 
         // Valider margin
         const cost = position.entryPrice * position.quantity;
         const marginRequired = cost / position.leverage;
         if (marginRequired > state.portfolio.marginAvailable) {
-          return { success: false, error: 'Utilstrekkelig margin' };
+          return { success: false, error: "Utilstrekkelig margin" };
         }
 
         const id = crypto.randomUUID();
-        const currentPrice = state.marketData[position.symbol]?.price || position.entryPrice;
+        const currentPrice =
+          state.marketData[position.symbol]?.price || position.entryPrice;
 
         const newPosition: Position = {
           ...position,
@@ -148,8 +157,8 @@ export const useTradingStore = create<TradingState>()(
         const newTrade: Trade = {
           id: crypto.randomUUID(),
           symbol: position.symbol,
-          type: 'buy',
-          side: 'open',
+          type: "buy",
+          side: "open",
           price: position.entryPrice,
           quantity: position.quantity,
           total: cost,
@@ -185,8 +194,8 @@ export const useTradingStore = create<TradingState>()(
           const closeTrade: Trade = {
             id: crypto.randomUUID(),
             symbol: position.symbol,
-            type: 'sell',
-            side: 'close',
+            type: "sell",
+            side: "close",
             price: closePrice,
             quantity: position.quantity,
             total: value,
@@ -217,9 +226,14 @@ export const useTradingStore = create<TradingState>()(
             if (position.id !== positionId) return position;
 
             const priceDiff = currentPrice - position.entryPrice;
-            const multiplier = position.side === 'long' ? 1 : -1;
-            const pnl = priceDiff * position.quantity * multiplier * position.leverage;
-            const pnlPercent = (priceDiff / position.entryPrice) * 100 * multiplier * position.leverage;
+            const multiplier = position.side === "long" ? 1 : -1;
+            const pnl =
+              priceDiff * position.quantity * multiplier * position.leverage;
+            const pnlPercent =
+              (priceDiff / position.entryPrice) *
+              100 *
+              multiplier *
+              position.leverage;
 
             return { ...position, currentPrice, pnl, pnlPercent };
           });
@@ -248,7 +262,8 @@ export const useTradingStore = create<TradingState>()(
         })),
 
       setSelectedSymbol: (symbol) => set({ selectedSymbol: symbol }),
-      setSelectedTimeframe: (timeframe) => set({ selectedTimeframe: timeframe }),
+      setSelectedTimeframe: (timeframe) =>
+        set({ selectedTimeframe: timeframe }),
       resetPortfolio: () =>
         set({
           portfolio: initialPortfolio,
@@ -257,12 +272,26 @@ export const useTradingStore = create<TradingState>()(
         }),
     }),
     {
-      name: 'klarpakke-trading-store',
+      name: "klarpakke-trading-store",
+      storage: createJSONStorage(() => {
+        // SSR- og test-safe: returner no-op storage hvis localStorage ikke er tilgjengelig
+        if (
+          typeof window !== "undefined" &&
+          typeof window.localStorage !== "undefined"
+        ) {
+          return window.localStorage;
+        }
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        };
+      }),
       partialize: (state) => ({
         portfolio: state.portfolio,
         positions: state.positions,
         trades: state.trades,
       }),
-    }
-  )
+    },
+  ),
 );
