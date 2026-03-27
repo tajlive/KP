@@ -1,0 +1,172 @@
+#!/usr/bin/env node
+/**
+ * SCRIPT 01: MOBILE-FIRST LANDING OPTIMIZATION
+ * Estimated time: 4 hours
+ * Impact: CRITICAL
+ * 
+ * GOAL: Achieve 90+ Lighthouse mobile performance
+ * Focus: LCP < 2.5s, CLS < 0.1, mobile UX excellence
+ */
+
+// ============================================================
+// PHASE 1: CRITICAL CSS & FONT OPTIMIZATION (1h)
+// ============================================================
+
+/**
+ * TASK 1.1: Implement next/font for optimal font loading
+ * FILE: src/app/layout.tsx
+ * 
+ * REQUIREMENTS:
+ * - Use next/font/google for Inter or system font stack
+ * - Enable font-display: swap
+ * - Preload critical font weights (400, 500, 600, 700)
+ * - Remove external font CDNs
+ * 
+ * BEFORE:
+ *   <link href="https://fonts.googleapis.com/..." />
+ * 
+ * AFTER:
+ *   import { Inter } from 'next/font/google'
+ *   const inter = Inter({ subsets: ['latin'], display: 'swap' })
+ */
+
+/**
+ * TASK 1.2: Inline critical CSS for above-the-fold
+ * FILE: src/app/globals.css (critical section)
+ * 
+ * REQUIREMENTS:
+ * - Inline first 14KB of critical CSS
+ * - Include: Hero styles, CTA buttons, trust strip
+ * - Defer non-critical CSS with media="print" onload trick
+ * - Add preload hints for critical resources
+ */
+
+// ============================================================
+// PHASE 2: IMAGE & ASSET OPTIMIZATION (1.5h)
+// ============================================================
+
+/**
+ * TASK 2.1: Optimize Hero image loading
+ * FILE: src/components/landing/HeroSection.tsx
+ * 
+ * REQUIREMENTS:
+ * - Add priority prop to above-fold images
+ * - Use next/image with proper sizes
+ * - Implement blur placeholder
+ * - Convert mockup to WebP with fallback
+ * 
+ * EXAMPLE:
+ *   <Image
+ *     src="/hero-mockup.webp"
+ *     priority
+ *     placeholder="blur"
+ *     sizes="(max-width: 768px) 100vw, 50vw"
+ *   />
+ */
+
+/**
+ * TASK 2.2: Implement responsive image srcset
+ * FILE: public/images/
+ * 
+ * REQUIREMENTS:
+ * - Generate 320w, 640w, 960w, 1280w variants
+ * - Use sharp or next/image optimization
+ * - Implement art direction for mobile/desktop
+ * - Lazy load below-fold images
+ */
+
+/**
+ * TASK 2.3: Preload critical resources
+ * FILE: src/app/layout.tsx (Head)
+ * 
+ * REQUIREMENTS:
+ *   <link rel="preload" href="/fonts/inter-var.woff2" as="font" crossorigin />
+ *   <link rel="preload" href="/hero-mockup.webp" as="image" />
+ *   <link rel="dns-prefetch" href="https://vuxbjlykgmzskxbclquf.supabase.co" />
+ */
+
+// ============================================================
+// PHASE 3: JAVASCRIPT & BUNDLE OPTIMIZATION (1h)
+// ============================================================
+
+/**
+ * TASK 3.1: Code split non-critical components
+ * FILE: src/app/[locale]/page.tsx
+ * 
+ * REQUIREMENTS:
+ * - Dynamic import for DemoWidget, CoursePreview
+ * - Keep HeroSection, TrustStrip, StickyCTA synchronous
+ * - Add loading skeletons for dynamic components
+ * 
+ * EXAMPLE:
+ *   const DemoWidget = dynamic(() => import('@/components/landing/DemoWidget'), {
+ *     loading: () => <Skeleton height={400} />
+ *   })
+ */
+
+/**
+ * TASK 3.2: Defer third-party scripts
+ * FILE: next.config.mjs & app/layout.tsx
+ * 
+ * REQUIREMENTS:
+ * - Defer: Analytics, Live Chat, Hotjar
+ * - Use next/script with strategy="lazyOnload"
+ * - Keep only critical scripts in <head>
+ */
+
+// ============================================================
+// PHASE 4: EDGE CACHING & ISR (30min)
+// ============================================================
+
+/**
+ * TASK 4.1: Implement aggressive edge caching
+ * FILE: src/app/[locale]/page.tsx
+ * 
+ * REQUIREMENTS:
+ *   export const revalidate = 3600 // 1 hour ISR
+ *   export const runtime = 'edge' // Edge runtime
+ * 
+ * ALSO: Add cache-control headers in vercel.json
+ */
+
+/**
+ * TASK 4.2: Configure Vercel Edge Network
+ * FILE: vercel.json
+ * 
+ * REQUIREMENTS:
+ *   {
+ *     "headers": [{
+ *       "source": "/(.*)",
+ *       "headers": [{
+ *         "key": "Cache-Control",
+ *         "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400"
+ *       }]
+ *     }]
+ *   }
+ */
+
+// ============================================================
+// VERIFICATION CHECKLIST
+// ============================================================
+
+const VERIFICATION = {
+  lighthouse: {
+    performance: '>= 90',
+    lcp: '< 2.5s',
+    cls: '< 0.1',
+    fcp: '< 1.8s'
+  },
+  build: {
+    noErrors: true,
+    noWarnings: true,
+    bundleSize: '< 200KB first load'
+  },
+  runtime: {
+    fontDisplaySwap: true,
+    imagesPriorityLoaded: true,
+    dynamicImportsWorking: true
+  }
+};
+
+// Run: npm run build && npm run lighthouse:mobile
+// Target URL: https://www.klarpakke.no/no

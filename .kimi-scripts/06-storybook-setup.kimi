@@ -1,0 +1,274 @@
+#!/usr/bin/env node
+/**
+ * SCRIPT 06: STORYBOOK SETUP & COMPONENT DOCUMENTATION
+ * Estimated time: 8 hours
+ * Impact: MEDIUM (DX, design consistency)
+ * 
+ * GOAL: Document all UI components in Storybook
+ * Reference: Atomic Design principles
+ */
+
+// ============================================================
+// PHASE 1: STORYBOOK INSTALLATION & CONFIG (1.5h)
+// ============================================================
+
+/**
+ * TASK 1.1: Install Storybook
+ * RUN: npx storybook@latest init
+ * 
+ * REQUIREMENTS:
+ * - Framework: Next.js
+ * - Builder: Webpack 5 or Vite
+ * - Styling: Tailwind CSS support
+ * - TypeScript: Full support
+ */
+
+/**
+ * TASK 1.2: Configure Storybook for Next.js
+ * FILE: .storybook/main.ts
+ * 
+ * REQUIREMENTS:
+ *   import type { StorybookConfig } from '@storybook/nextjs'
+ *   
+ *   const config: StorybookConfig = {
+ *     stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+ *     addons: [
+ *       '@storybook/addon-links',
+ *       '@storybook/addon-essentials',
+ *       '@storybook/addon-interactions',
+ *       '@storybook/addon-a11y', // Accessibility
+ *       '@storybook/addon-coverage', // Test coverage
+ *     ],
+ *     framework: {
+ *       name: '@storybook/nextjs',
+ *       options: {},
+ *     },
+ *     staticDirs: ['../public'],
+ *   }
+ */
+
+/**
+ * TASK 1.3: Configure Tailwind in Storybook
+ * FILE: .storybook/preview.ts
+ * 
+ * REQUIREMENTS:
+ *   import '../src/app/globals.css'
+ *   
+ *   export const parameters = {
+ *     actions: { argTypesRegex: '^on[A-Z].*' },
+ *     controls: {
+ *       matchers: {
+ *         color: /(background|color)$/i,
+ *         date: /Date$/,
+ *       },
+ *     },
+ *     viewport: {
+ *       viewports: {
+ *         mobile: { name: 'Mobile', styles: { width: '375px', height: '667px' } },
+ *         tablet: { name: 'Tablet', styles: { width: '768px', height: '1024px' } },
+ *         desktop: { name: 'Desktop', styles: { width: '1440px', height: '900px' } },
+ *       },
+ *     },
+ *   }
+ */
+
+// ============================================================
+// PHASE 2: ATOMIC DESIGN STRUCTURE (1h)
+// ============================================================
+
+/**
+ * TASK 2.1: Create folder structure
+ * CREATE:
+ *   src/components/
+ *   ├── atoms/           # Button, Input, Label, Icon
+ *   ├── molecules/       # FormField, SearchBar, Card
+ *   ├── organisms/       # Header, Footer, HeroSection
+ *   ├── templates/       # PageLayout, DashboardLayout
+ *   └── pages/           # Full page compositions
+ * 
+ * MOVE existing components to appropriate folders
+ * UPDATE all imports after moving
+ */
+
+/**
+ * TASK 2.2: Create component index
+ * FILE: src/components/index.ts
+ * 
+ * REQUIREMENTS:
+ *   export { Button } from './atoms/Button'
+ *   export { Input } from './atoms/Input'
+ *   export { Card } from './molecules/Card'
+ *   export { Header } from './organisms/Header'
+ *   // etc.
+ */
+
+// ============================================================
+// PHASE 3: DOCUMENT ATOMS (2h)
+// ============================================================
+
+/**
+ * TASK 3.1: Document Button component
+ * FILE: src/components/atoms/Button/Button.stories.tsx
+ * 
+ * EXAMPLE:
+ *   import type { Meta, StoryObj } from '@storybook/react'
+ *   import { Button } from './Button'
+ *   
+ *   const meta: Meta<typeof Button> = {
+ *     title: 'Atoms/Button',
+ *     component: Button,
+ *     tags: ['autodocs'],
+ *     argTypes: {
+ *       variant: { control: 'select', options: ['primary', 'secondary', 'ghost'] },
+ *       size: { control: 'select', options: ['sm', 'md', 'lg'] },
+ *     },
+ *   }
+ *   
+ *   export default meta
+ *   type Story = StoryObj<typeof Button>
+ *   
+ *   export const Primary: Story = { args: { variant: 'primary', children: 'Button' } }
+ *   export const Secondary: Story = { args: { variant: 'secondary', children: 'Button' } }
+ *   export const Loading: Story = { args: { loading: true, children: 'Loading...' } }
+ */
+
+/**
+ * TASK 3.2: Document all atoms
+ * COMPONENTS:
+ * - Button ✓
+ * - Input (text, password, email, number)
+ * - Label
+ * - Icon (all variants)
+ * - Badge
+ * - Avatar
+ * - Skeleton
+ * - Spinner/Loader
+ */
+
+// ============================================================
+// PHASE 4: DOCUMENT MOLECULES (2h)
+// ============================================================
+
+/**
+ * TASK 4.1: Document form components
+ * COMPONENTS:
+ * - FormField (Label + Input + Error)
+ * - SearchBar (Input + Button + Icon)
+ * - Dropdown/Select
+ * - CheckboxGroup
+ * - RadioGroup
+ * - ToggleSwitch
+ */
+
+/**
+ * TASK 4.2: Document data display
+ * COMPONENTS:
+ * - Card (with header, body, footer variants)
+ * - ListItem
+ * - TableRow
+ * - StatCard
+ * - PriceDisplay
+ * - PercentageChange
+ */
+
+// ============================================================
+// PHASE 5: DOCUMENT ORGANISMS (1h)
+// ============================================================
+
+/**
+ * TASK 5.1: Document layout organisms
+ * COMPONENTS:
+ * - Header (with navigation states)
+ * - Footer
+ * - Sidebar
+ * - HeroSection
+ * - FeatureGrid
+ * - PricingTable
+ * - TestimonialCard
+ */
+
+/**
+ * TASK 5.2: Document dashboard organisms
+ * COMPONENTS:
+ * - TradingChart
+ * - BalanceCard
+ * - PositionList
+ * - OrderBook
+ * - TradeHistory
+ * - BotStatusPanel
+ */
+
+// ============================================================
+// PHASE 6: CHROMATIC & CI/CD (30min)
+// ============================================================
+
+/**
+ * TASK 6.1: Setup Chromatic for visual testing
+ * RUN: npx chromatic --project-token=YOUR_TOKEN
+ * 
+ * REQUIREMENTS:
+ * - Visual regression testing
+ * - UI review workflow
+ * - Design system documentation
+ */
+
+/**
+ * TASK 6.2: Add Storybook to CI
+ * FILE: .github/workflows/storybook.yml
+ * 
+ * REQUIREMENTS:
+ *   - name: Build Storybook
+ *     run: npm run build-storybook
+ *   
+ *   - name: Deploy to Chromatic
+ *     run: npx chromatic --project-token=${{ secrets.CHROMATIC_TOKEN }}
+ *   
+ *   - name: Test Storybook
+ *     run: npm run test-storybook
+ */
+
+/**
+ * TASK 6.3: Add interaction testing
+ * FILE: src/components/atoms/Button/Button.stories.tsx
+ * 
+ * EXAMPLE:
+ *   import { userEvent, within } from '@storybook/testing-library'
+ *   import { expect } from '@storybook/jest'
+ *   
+ *   export const ClickInteraction: Story = {
+ *     play: async ({ canvasElement }) => {
+ *       const canvas = within(canvasElement)
+ *       const button = canvas.getByRole('button')
+ *       await userEvent.click(button)
+ *       await expect(button).toHaveFocus()
+ *     },
+ *   }
+ */
+
+// ============================================================
+// VERIFICATION CHECKLIST
+// ============================================================
+
+const VERIFICATION = {
+  coverage: {
+    atoms: '100% documented',
+    molecules: '100% documented',
+    organisms: '80% documented',
+    pages: 'key pages documented'
+  },
+  quality: {
+    allStoriesRender: true,
+    noConsoleErrors: true,
+    controlsWorking: true,
+    viewportsResponsive: true
+  },
+  ci: {
+    chromaticConnected: true,
+    visualTestsPassing: true,
+    autoDeployWorking: true
+  }
+};
+
+// Run: npm run storybook (dev)
+// Run: npm run build-storybook (production)
+// Deploy: npx chromatic

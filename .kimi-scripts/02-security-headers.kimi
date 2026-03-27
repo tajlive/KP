@@ -1,0 +1,145 @@
+#!/usr/bin/env node
+/**
+ * SCRIPT 02: SECURITY HEADERS HARDENING
+ * Estimated time: 2 hours
+ * Impact: HIGH (compliance, XSS protection)
+ * 
+ * GOAL: Implement security headers, CSP, and hardening
+ * Reference: OWASP Cheat Sheet Series
+ */
+
+// ============================================================
+// PHASE 1: CONTENT SECURITY POLICY (CSP) (45min)
+// ============================================================
+
+/**
+ * TASK 1.1: Implement strict CSP
+ * FILE: next.config.mjs (headers section) OR middleware.ts
+ * 
+ * REQUIREMENTS:
+ * - Default: 'self'
+ * - Scripts: allow inline for Next.js, hash nonces
+ * - Styles: 'unsafe-inline' (required for Tailwind)
+ * - Images: blob:, data:, self, supabase, coingecko
+ * - Connect: Supabase, Binance, Sentry
+ * - Frame: deny except vercel.live (preview)
+ * 
+ * CSP DIRECTIVES:
+ *   default-src 'self';
+ *   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.vercel-scripts.com;
+ *   style-src 'self' 'unsafe-inline';
+ *   img-src 'self' blob: data: https://vuxbjlykgmzskxbclquf.supabase.co https://*.coingecko.com;
+ *   connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com https://*.sentry.io;
+ *   font-src 'self';
+ *   frame-src https://vercel.live;
+ *   object-src 'none';
+ *   base-uri 'self';
+ *   form-action 'self';
+ *   frame-ancestors 'none';
+ *   upgrade-insecure-requests;
+ */
+
+/**
+ * TASK 1.2: Add CSP nonce for inline scripts
+ * FILE: middleware.ts
+ * 
+ * REQUIREMENTS:
+ * - Generate nonce per request
+ * - Apply to script-src directive
+ * - Pass nonce to Next.js via headers
+ */
+
+// ============================================================
+// PHASE 2: SECURITY HEADERS (30min)
+// ============================================================
+
+/**
+ * TASK 2.1: Add all security headers
+ * FILE: next.config.mjs or vercel.json
+ * 
+ * REQUIRED HEADERS:
+ *   X-DNS-Prefetch-Control: on
+ *   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+ *   X-Frame-Options: DENY
+ *   X-Content-Type-Options: nosniff
+ *   Referrer-Policy: strict-origin-when-cross-origin
+ *   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+ *   X-XSS-Protection: 1; mode=block (legacy browsers)
+ * 
+ * ALSO ADD:
+ *   Cross-Origin-Opener-Policy: same-origin
+ *   Cross-Origin-Embedder-Policy: require-corp
+ *   Cross-Origin-Resource-Policy: same-origin
+ */
+
+/**
+ * TASK 2.2: Configure CORS for API routes
+ * FILE: next.config.mjs AND src/app/api/\*/\route.ts
+ * 
+ * REQUIREMENTS:
+ * - API routes: strict origin validation
+ * - Preflight handling for OPTIONS
+ * - No wildcards in production
+ */
+
+// ============================================================
+// PHASE 3: ADDITIONAL HARDENING (30min)
+// ============================================================
+
+/**
+ * TASK 3.1: Implement rate limiting
+ * FILE: src/middleware.ts OR src/lib/rate-limit.ts
+ * 
+ * REQUIREMENTS:
+ * - API routes: 100 req/min per IP
+ * - Auth routes: 5 req/min per IP
+ * - Use Redis/Upstash for distributed rate limiting
+ */
+
+/**
+ * TASK 3.2: Secure cookies
+ * FILE: src/lib/auth/
+ * 
+ * REQUIREMENTS:
+ *   cookieOptions: {
+ *     httpOnly: true,
+ *     secure: process.env.NODE_ENV === 'production',
+ *     sameSite: 'strict',
+ *     maxAge: 60 * 60 * 24 * 7 // 7 days
+ *   }
+ */
+
+/**
+ * TASK 3.3: Hide server version/info
+ * FILE: next.config.mjs
+ * 
+ * REQUIREMENTS:
+ * - Remove X-Powered-By header
+ * - Disable source maps in production
+ * - No stack traces in error responses
+ */
+
+// ============================================================
+// VERIFICATION CHECKLIST
+// ============================================================
+
+const VERIFICATION = {
+  headers: {
+    allPresent: true,
+    cspValid: true,
+    hstsPreload: true
+  },
+  scan: {
+    securityHeadersGrade: 'A+', // securityheaders.com
+    observatory: '>= 100' // Mozilla Observatory
+  },
+  runtime: {
+    noConsoleErrors: true,
+    noCspViolations: true,
+    apiRateLimitingWorks: true
+  }
+};
+
+// Test: curl -I https://www.klarpakke.no/no
+// Scan: https://securityheaders.com/?q=klarpakke.no
+// Scan: https://observatory.mozilla.org/
