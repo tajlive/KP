@@ -73,13 +73,15 @@ supabase inspect db table-stats --db-url "$(node -p "encodeURIComponent(process.
 | `relation "user_profiles" does not exist`       | Samme: sjekk at tabellen finnes på remote og at lint kobler til riktig schema.                                                                                                         |
 | `type "subscription_tier" does not exist`       | Custom type fjernet eller endret – bruk `text`/tier-slug i stedet.                                                                                                                     |
 | `function digest(text, unknown) does not exist` | Mangler extension `pgcrypto` – enable med `CREATE EXTENSION IF NOT EXISTS pgcrypto;`                                                                                                   |
-| `extensions.index_advisor` / `hypopg_reset`     | Supabase-extension – kan ignoreres eller følge Supabase-versjon.                                                                                                                       |
+| `extensions.index_advisor` / `hypopg_reset`     | Supabase-extension-støy. Ignoreres eksplisitt av `scripts/db-lint-gate.mjs` (allowlist), men beholdes synlig i rå `npm run db:lint`.                                                   |
 
 For å bare telle feil: `npm run db:lint 2>/dev/null | grep -c '"level":"error"'`.
 
 ### Fikser for teknisk gjeld (mars 2026)
 
 - **Migrering `20260318140000_fix_db_lint_functions.sql`**: Fikser (1) pgcrypto for digest(), (2) `decrypt_binance_keys` – kolonnenavn kvalifisert med alias `ds.decrypted_secret`, (3) `can_follow_leader` – bruker `TEXT` for tier og inkluderer `student`.
+- **Migrering `20260327114000_deprecate_store_binance_keys_rpc.sql`**: Deprekerer/fjerner ubrukt RPC `store_binance_keys` som ga lint-permission-feil mot pgsodium i Supabase lint-kontekst.
+- **Ny lint-gate:** `npm run db:lint:gate` (lokal) og `npm run db:lint:ci` (strict) bruker `scripts/db-lint-gate.mjs` for å filtrere kun kjente extension-false-positives.
 - **profiles vs user_profiles**: Mange funksjoner refererer fortsatt til tabellen `profiles` som ikke finnes på linked DB (canonical er `user_profiles`). Løsning: enten VIEW `profiles` som mapper fra `user_profiles`, eller oppdatere hver funksjon til å bruke `user_profiles` og riktige kolonnenavn. Dokumentert som gjeld i dette avsnittet.
 
 ## Referanser

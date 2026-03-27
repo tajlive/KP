@@ -36,12 +36,16 @@ export function usePrices() {
 
   useEffect(() => {
     const supabase = getSupabaseClient();
+    const fromCoinPrices = supabase.from as unknown as (
+      table: "coin_prices",
+    ) => {
+      select: (columns: "*") => Promise<{ data: CoinPrice[] | null }>;
+    };
 
     const fetchPrices = async () => {
       setLoading(true);
-      // Using type assertion since coin_prices table may vary by environment
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data } = await (supabase as any).from("coin_prices").select("*");
+      // Using local adapter: table exists in remote schema but can drift in local generated types.
+      const { data } = await fromCoinPrices("coin_prices").select("*");
 
       const priceMap = ((data || []) as unknown as CoinPrice[]).reduce(
         (acc: Record<string, CoinPrice>, price) => {

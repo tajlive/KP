@@ -110,6 +110,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      admin_audit_log: {
+        Row: {
+          action: string;
+          admin_user_id: string;
+          created_at: string;
+          id: string;
+          payload: Json;
+          target_user_id: string | null;
+        };
+        Insert: {
+          action: string;
+          admin_user_id: string;
+          created_at?: string;
+          id?: string;
+          payload?: Json;
+          target_user_id?: string | null;
+        };
+        Update: {
+          action?: string;
+          admin_user_id?: string;
+          created_at?: string;
+          id?: string;
+          payload?: Json;
+          target_user_id?: string | null;
+        };
+        Relationships: [];
+      };
       admin_notifications: {
         Row: {
           created_at: string | null;
@@ -682,123 +709,6 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
-      };
-      auto_trades_legacy: {
-        Row: {
-          auto_trading_run_id: string | null;
-          client_order_id: string | null;
-          close_reason: string | null;
-          closed_at: string | null;
-          commission: number | null;
-          commission_asset: string | null;
-          created_at: string | null;
-          current_market_price: number | null;
-          entry_price: number | null;
-          error_code: string | null;
-          error_message: string | null;
-          executed_at: string | null;
-          exit_price: number | null;
-          id: string;
-          is_auto_trade: boolean | null;
-          max_position_percent_used: number | null;
-          metadata: Json | null;
-          order_id: string | null;
-          quantity: number | null;
-          quantity_filled: number | null;
-          realized_pnl: number | null;
-          retry_count: number | null;
-          risk_profile_used: string | null;
-          side: string;
-          signal_id: string | null;
-          status: string;
-          stop_loss: number | null;
-          symbol: string;
-          take_profit: number | null;
-          unrealized_pnl: number | null;
-          user_id: string;
-        };
-        Insert: {
-          auto_trading_run_id?: string | null;
-          client_order_id?: string | null;
-          close_reason?: string | null;
-          closed_at?: string | null;
-          commission?: number | null;
-          commission_asset?: string | null;
-          created_at?: string | null;
-          current_market_price?: number | null;
-          entry_price?: number | null;
-          error_code?: string | null;
-          error_message?: string | null;
-          executed_at?: string | null;
-          exit_price?: number | null;
-          id?: string;
-          is_auto_trade?: boolean | null;
-          max_position_percent_used?: number | null;
-          metadata?: Json | null;
-          order_id?: string | null;
-          quantity?: number | null;
-          quantity_filled?: number | null;
-          realized_pnl?: number | null;
-          retry_count?: number | null;
-          risk_profile_used?: string | null;
-          side: string;
-          signal_id?: string | null;
-          status?: string;
-          stop_loss?: number | null;
-          symbol: string;
-          take_profit?: number | null;
-          unrealized_pnl?: number | null;
-          user_id: string;
-        };
-        Update: {
-          auto_trading_run_id?: string | null;
-          client_order_id?: string | null;
-          close_reason?: string | null;
-          closed_at?: string | null;
-          commission?: number | null;
-          commission_asset?: string | null;
-          created_at?: string | null;
-          current_market_price?: number | null;
-          entry_price?: number | null;
-          error_code?: string | null;
-          error_message?: string | null;
-          executed_at?: string | null;
-          exit_price?: number | null;
-          id?: string;
-          is_auto_trade?: boolean | null;
-          max_position_percent_used?: number | null;
-          metadata?: Json | null;
-          order_id?: string | null;
-          quantity?: number | null;
-          quantity_filled?: number | null;
-          realized_pnl?: number | null;
-          retry_count?: number | null;
-          risk_profile_used?: string | null;
-          side?: string;
-          signal_id?: string | null;
-          status?: string;
-          stop_loss?: number | null;
-          symbol?: string;
-          take_profit?: number | null;
-          unrealized_pnl?: number | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "auto_trades_auto_trading_run_id_fkey";
-            columns: ["auto_trading_run_id"];
-            isOneToOne: false;
-            referencedRelation: "auto_trading_runs";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "auto_trades_signal_id_fkey";
-            columns: ["signal_id"];
-            isOneToOne: false;
-            referencedRelation: "signals";
-            referencedColumns: ["id"];
-          },
-        ];
       };
       auto_trading_backtests: {
         Row: {
@@ -1967,6 +1877,13 @@ export type Database = {
             referencedRelation: "trading_sessions";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "conditional_orders_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "unified_trading_sessions";
+            referencedColumns: ["id"];
+          },
         ];
       };
       copy_trade_queue: {
@@ -2663,8 +2580,8 @@ export type Database = {
           emergency_triggered_at: string | null;
           emergency_triggered_by: string | null;
           id: number;
-          usdt_nok_rate: string | null;
           updated_at: string | null;
+          usdt_nok_rate: number | null;
         };
         Insert: {
           emergency_reason?: string | null;
@@ -2675,8 +2592,8 @@ export type Database = {
           emergency_triggered_at?: string | null;
           emergency_triggered_by?: string | null;
           id?: number;
-          usdt_nok_rate?: string | null;
           updated_at?: string | null;
+          usdt_nok_rate?: number | null;
         };
         Update: {
           emergency_reason?: string | null;
@@ -2687,8 +2604,8 @@ export type Database = {
           emergency_triggered_at?: string | null;
           emergency_triggered_by?: string | null;
           id?: number;
-          usdt_nok_rate?: string | null;
           updated_at?: string | null;
+          usdt_nok_rate?: number | null;
         };
         Relationships: [];
       };
@@ -3115,72 +3032,6 @@ export type Database = {
           },
         ];
       };
-      live_trades_legacy: {
-        Row: {
-          amount: number;
-          binance_order_id: string;
-          closed_at: string | null;
-          created_at: string | null;
-          current_price: number | null;
-          entry_price: number;
-          id: string;
-          leverage: number | null;
-          opened_at: string | null;
-          pnl: number | null;
-          pnl_percentage: number | null;
-          side: string;
-          status: string | null;
-          stop_loss: number | null;
-          symbol: string;
-          take_profit: number | null;
-          type: string;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          amount: number;
-          binance_order_id: string;
-          closed_at?: string | null;
-          created_at?: string | null;
-          current_price?: number | null;
-          entry_price: number;
-          id?: string;
-          leverage?: number | null;
-          opened_at?: string | null;
-          pnl?: number | null;
-          pnl_percentage?: number | null;
-          side: string;
-          status?: string | null;
-          stop_loss?: number | null;
-          symbol: string;
-          take_profit?: number | null;
-          type: string;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          amount?: number;
-          binance_order_id?: string;
-          closed_at?: string | null;
-          created_at?: string | null;
-          current_price?: number | null;
-          entry_price?: number;
-          id?: string;
-          leverage?: number | null;
-          opened_at?: string | null;
-          pnl?: number | null;
-          pnl_percentage?: number | null;
-          side?: string;
-          status?: string | null;
-          stop_loss?: number | null;
-          symbol?: string;
-          take_profit?: number | null;
-          type?: string;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
       market_volatility: {
         Row: {
           last_updated: string | null;
@@ -3198,6 +3049,47 @@ export type Database = {
           volatility_24h?: number | null;
         };
         Relationships: [];
+      };
+      marketplace_listing_stats: {
+        Row: {
+          listing_id: string;
+          max_drawdown_pct: number | null;
+          return_30d_pct: number | null;
+          return_90d_pct: number | null;
+          risk_tier: string;
+          sharpe_ratio: number | null;
+          updated_at: string;
+          win_rate_pct: number | null;
+        };
+        Insert: {
+          listing_id: string;
+          max_drawdown_pct?: number | null;
+          return_30d_pct?: number | null;
+          return_90d_pct?: number | null;
+          risk_tier?: string;
+          sharpe_ratio?: number | null;
+          updated_at?: string;
+          win_rate_pct?: number | null;
+        };
+        Update: {
+          listing_id?: string;
+          max_drawdown_pct?: number | null;
+          return_30d_pct?: number | null;
+          return_90d_pct?: number | null;
+          risk_tier?: string;
+          sharpe_ratio?: number | null;
+          updated_at?: string;
+          win_rate_pct?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listing_stats_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: true;
+            referencedRelation: "marketplace_listings";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       marketplace_listings: {
         Row: {
@@ -5212,6 +5104,13 @@ export type Database = {
             referencedRelation: "trading_sessions";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "trade_decisions_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "unified_trading_sessions";
+            referencedColumns: ["id"];
+          },
         ];
       };
       trade_history: {
@@ -5250,60 +5149,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      trade_history_legacy: {
-        Row: {
-          closed_at: string | null;
-          entry_price: number;
-          exit_price: number | null;
-          exit_reason: string | null;
-          fee_usdt: number | null;
-          id: string;
-          opened_at: string | null;
-          pnl_pct: number | null;
-          pnl_usdt: number | null;
-          quantity: number;
-          side: string;
-          strategy_type: string;
-          symbol: string;
-          trading_mode: string;
-          user_id: string;
-        };
-        Insert: {
-          closed_at?: string | null;
-          entry_price: number;
-          exit_price?: number | null;
-          exit_reason?: string | null;
-          fee_usdt?: number | null;
-          id?: string;
-          opened_at?: string | null;
-          pnl_pct?: number | null;
-          pnl_usdt?: number | null;
-          quantity: number;
-          side: string;
-          strategy_type: string;
-          symbol: string;
-          trading_mode: string;
-          user_id: string;
-        };
-        Update: {
-          closed_at?: string | null;
-          entry_price?: number;
-          exit_price?: number | null;
-          exit_reason?: string | null;
-          fee_usdt?: number | null;
-          id?: string;
-          opened_at?: string | null;
-          pnl_pct?: number | null;
-          pnl_usdt?: number | null;
-          quantity?: number;
-          side?: string;
-          strategy_type?: string;
-          symbol?: string;
-          trading_mode?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
       trade_notes: {
         Row: {
           created_at: string | null;
@@ -5332,15 +5177,7 @@ export type Database = {
           updated_at?: string | null;
           user_id?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "trade_notes_trade_id_fkey";
-            columns: ["trade_id"];
-            isOneToOne: false;
-            referencedRelation: "auto_trades_legacy";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       trade_rejections: {
         Row: {
@@ -5404,6 +5241,13 @@ export type Database = {
             columns: ["session_id"];
             isOneToOne: false;
             referencedRelation: "trading_sessions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trade_rejections_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "unified_trading_sessions";
             referencedColumns: ["id"];
           },
         ];
@@ -5578,6 +5422,13 @@ export type Database = {
             columns: ["session_id"];
             isOneToOne: false;
             referencedRelation: "trading_sessions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trades_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "unified_trading_sessions";
             referencedColumns: ["id"];
           },
         ];
@@ -5802,6 +5653,7 @@ export type Database = {
       };
       trading_sessions: {
         Row: {
+          copied_from_listing_id: string | null;
           crash_count: number;
           created_at: string;
           current_capital: number;
@@ -5834,6 +5686,7 @@ export type Database = {
           winning_trades: number;
         };
         Insert: {
+          copied_from_listing_id?: string | null;
           crash_count?: number;
           created_at?: string;
           current_capital?: number;
@@ -5866,6 +5719,7 @@ export type Database = {
           winning_trades?: number;
         };
         Update: {
+          copied_from_listing_id?: string | null;
           crash_count?: number;
           created_at?: string;
           current_capital?: number;
@@ -5897,7 +5751,15 @@ export type Database = {
           user_id?: string;
           winning_trades?: number;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "trading_sessions_copied_from_listing_id_fkey";
+            columns: ["copied_from_listing_id"];
+            isOneToOne: false;
+            referencedRelation: "marketplace_listings";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       trading_signals: {
         Row: {
@@ -6020,15 +5882,7 @@ export type Database = {
           trigger_value?: string | null;
           user_id?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "unified_circuit_breaker_logs_session_id_fkey";
-            columns: ["session_id"];
-            isOneToOne: false;
-            referencedRelation: "unified_trading_sessions";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       unified_copy_follows: {
         Row: {
@@ -6073,22 +5927,7 @@ export type Database = {
           total_copied_trades?: number | null;
           total_pnl?: number | null;
         };
-        Relationships: [
-          {
-            foreignKeyName: "unified_copy_follows_follower_session_id_fkey";
-            columns: ["follower_session_id"];
-            isOneToOne: false;
-            referencedRelation: "unified_trading_sessions";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "unified_copy_follows_leader_session_id_fkey";
-            columns: ["leader_session_id"];
-            isOneToOne: false;
-            referencedRelation: "unified_trading_sessions";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       unified_daily_metrics: {
         Row: {
@@ -6148,15 +5987,7 @@ export type Database = {
           win_rate?: number | null;
           winning_trades?: number | null;
         };
-        Relationships: [
-          {
-            foreignKeyName: "unified_daily_metrics_session_id_fkey";
-            columns: ["session_id"];
-            isOneToOne: false;
-            referencedRelation: "unified_trading_sessions";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       unified_exchange_keys: {
         Row: {
@@ -6336,122 +6167,7 @@ export type Database = {
           take_profit?: number | null;
           user_id?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "unified_trades_session_id_fkey";
-            columns: ["session_id"];
-            isOneToOne: false;
-            referencedRelation: "unified_trading_sessions";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      unified_trading_sessions: {
-        Row: {
-          config: Json;
-          copy_of_session_id: string | null;
-          created_at: string | null;
-          currency: string | null;
-          current_capital: number;
-          daily_loss_limit_pct: number | null;
-          followers_count: number | null;
-          id: string;
-          initial_capital: number;
-          is_public: boolean | null;
-          last_heartbeat: string | null;
-          last_trade_at: string | null;
-          losing_trades: number | null;
-          max_drawdown_pct: number | null;
-          max_position_pct: number | null;
-          mode: Database["public"]["Enums"]["trading_mode_v2"];
-          started_at: string | null;
-          status: Database["public"]["Enums"]["session_status_v2"] | null;
-          stop_loss_pct: number | null;
-          stopped_at: string | null;
-          strategy: Database["public"]["Enums"]["strategy_type_v2"];
-          symbol: string;
-          take_profit_pct: number | null;
-          total_pnl: number | null;
-          total_pnl_pct: number | null;
-          total_trades: number | null;
-          updated_at: string | null;
-          user_id: string;
-          win_rate: number | null;
-          winning_trades: number | null;
-        };
-        Insert: {
-          config?: Json;
-          copy_of_session_id?: string | null;
-          created_at?: string | null;
-          currency?: string | null;
-          current_capital?: number;
-          daily_loss_limit_pct?: number | null;
-          followers_count?: number | null;
-          id?: string;
-          initial_capital?: number;
-          is_public?: boolean | null;
-          last_heartbeat?: string | null;
-          last_trade_at?: string | null;
-          losing_trades?: number | null;
-          max_drawdown_pct?: number | null;
-          max_position_pct?: number | null;
-          mode?: Database["public"]["Enums"]["trading_mode_v2"];
-          started_at?: string | null;
-          status?: Database["public"]["Enums"]["session_status_v2"] | null;
-          stop_loss_pct?: number | null;
-          stopped_at?: string | null;
-          strategy?: Database["public"]["Enums"]["strategy_type_v2"];
-          symbol?: string;
-          take_profit_pct?: number | null;
-          total_pnl?: number | null;
-          total_pnl_pct?: number | null;
-          total_trades?: number | null;
-          updated_at?: string | null;
-          user_id: string;
-          win_rate?: number | null;
-          winning_trades?: number | null;
-        };
-        Update: {
-          config?: Json;
-          copy_of_session_id?: string | null;
-          created_at?: string | null;
-          currency?: string | null;
-          current_capital?: number;
-          daily_loss_limit_pct?: number | null;
-          followers_count?: number | null;
-          id?: string;
-          initial_capital?: number;
-          is_public?: boolean | null;
-          last_heartbeat?: string | null;
-          last_trade_at?: string | null;
-          losing_trades?: number | null;
-          max_drawdown_pct?: number | null;
-          max_position_pct?: number | null;
-          mode?: Database["public"]["Enums"]["trading_mode_v2"];
-          started_at?: string | null;
-          status?: Database["public"]["Enums"]["session_status_v2"] | null;
-          stop_loss_pct?: number | null;
-          stopped_at?: string | null;
-          strategy?: Database["public"]["Enums"]["strategy_type_v2"];
-          symbol?: string;
-          take_profit_pct?: number | null;
-          total_pnl?: number | null;
-          total_pnl_pct?: number | null;
-          total_trades?: number | null;
-          updated_at?: string | null;
-          user_id?: string;
-          win_rate?: number | null;
-          winning_trades?: number | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "unified_trading_sessions_copy_of_session_id_fkey";
-            columns: ["copy_of_session_id"];
-            isOneToOne: false;
-            referencedRelation: "unified_trading_sessions";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       user_achievements: {
         Row: {
@@ -6925,6 +6641,7 @@ export type Database = {
           onboarding_started_at: string | null;
           onboarding_step: number | null;
           paper_balance: number;
+          paper_trades_count: number;
           preferred_trading_mode: string | null;
           provider: string | null;
           real_balance: number | null;
@@ -6933,6 +6650,8 @@ export type Database = {
           setup_completed_at: string | null;
           show_on_leaderboard: boolean | null;
           status: string | null;
+          subscription_status: string;
+          subscription_tier: string;
           tier: Database["public"]["Enums"]["subscription_tier"];
           trading_experience: string | null;
           updated_at: string;
@@ -6959,6 +6678,7 @@ export type Database = {
           onboarding_started_at?: string | null;
           onboarding_step?: number | null;
           paper_balance?: number;
+          paper_trades_count?: number;
           preferred_trading_mode?: string | null;
           provider?: string | null;
           real_balance?: number | null;
@@ -6967,6 +6687,8 @@ export type Database = {
           setup_completed_at?: string | null;
           show_on_leaderboard?: boolean | null;
           status?: string | null;
+          subscription_status?: string;
+          subscription_tier?: string;
           tier?: Database["public"]["Enums"]["subscription_tier"];
           trading_experience?: string | null;
           updated_at?: string;
@@ -6993,6 +6715,7 @@ export type Database = {
           onboarding_started_at?: string | null;
           onboarding_step?: number | null;
           paper_balance?: number;
+          paper_trades_count?: number;
           preferred_trading_mode?: string | null;
           provider?: string | null;
           real_balance?: number | null;
@@ -7001,6 +6724,8 @@ export type Database = {
           setup_completed_at?: string | null;
           show_on_leaderboard?: boolean | null;
           status?: string | null;
+          subscription_status?: string;
+          subscription_tier?: string;
           tier?: Database["public"]["Enums"]["subscription_tier"];
           trading_experience?: string | null;
           updated_at?: string;
@@ -7115,6 +6840,7 @@ export type Database = {
       user_strategies: {
         Row: {
           config: Json | null;
+          copied_from_listing_id: string | null;
           created_at: string | null;
           id: string;
           is_active: boolean | null;
@@ -7136,6 +6862,7 @@ export type Database = {
         };
         Insert: {
           config?: Json | null;
+          copied_from_listing_id?: string | null;
           created_at?: string | null;
           id?: string;
           is_active?: boolean | null;
@@ -7157,6 +6884,7 @@ export type Database = {
         };
         Update: {
           config?: Json | null;
+          copied_from_listing_id?: string | null;
           created_at?: string | null;
           id?: string;
           is_active?: boolean | null;
@@ -7176,7 +6904,15 @@ export type Database = {
           updated_at?: string | null;
           user_id?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "user_strategies_copied_from_listing_id_fkey";
+            columns: ["copied_from_listing_id"];
+            isOneToOne: false;
+            referencedRelation: "marketplace_listings";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       user_trading_config: {
         Row: {
@@ -7492,6 +7228,127 @@ export type Database = {
         };
         Relationships: [];
       };
+      unified_notifications_with_email: {
+        Row: {
+          body: string | null;
+          channel:
+            | Database["public"]["Enums"]["notification_channel_v2"]
+            | null;
+          created_at: string | null;
+          data: Json | null;
+          email: string | null;
+          id: string | null;
+          is_read: boolean | null;
+          is_sent: boolean | null;
+          sent_at: string | null;
+          title: string | null;
+          type: Database["public"]["Enums"]["notification_type_v2"] | null;
+          user_id: string | null;
+        };
+        Relationships: [];
+      };
+      unified_trading_sessions: {
+        Row: {
+          config: Json | null;
+          copy_of_session_id: string | null;
+          created_at: string | null;
+          currency: string | null;
+          current_capital: number | null;
+          daily_loss_limit_pct: number | null;
+          followers_count: number | null;
+          id: string | null;
+          initial_capital: number | null;
+          is_public: boolean | null;
+          last_heartbeat: string | null;
+          last_trade_at: string | null;
+          losing_trades: number | null;
+          max_drawdown_pct: number | null;
+          max_position_pct: number | null;
+          mode: string | null;
+          open_position: Json | null;
+          started_at: string | null;
+          status: string | null;
+          stop_loss_pct: number | null;
+          stopped_at: string | null;
+          strategy: string | null;
+          symbol: string | null;
+          take_profit_pct: number | null;
+          total_pnl: number | null;
+          total_pnl_pct: number | null;
+          total_trades: number | null;
+          updated_at: string | null;
+          user_id: string | null;
+          win_rate: number | null;
+          winning_trades: number | null;
+        };
+        Insert: {
+          config?: Json | null;
+          copy_of_session_id?: never;
+          created_at?: string | null;
+          currency?: never;
+          current_capital?: number | null;
+          daily_loss_limit_pct?: never;
+          followers_count?: never;
+          id?: string | null;
+          initial_capital?: number | null;
+          is_public?: never;
+          last_heartbeat?: string | null;
+          last_trade_at?: never;
+          losing_trades?: number | null;
+          max_drawdown_pct?: number | null;
+          max_position_pct?: never;
+          mode?: string | null;
+          open_position?: Json | null;
+          started_at?: string | null;
+          status?: string | null;
+          stop_loss_pct?: never;
+          stopped_at?: string | null;
+          strategy?: string | null;
+          symbol?: string | null;
+          take_profit_pct?: never;
+          total_pnl?: number | null;
+          total_pnl_pct?: never;
+          total_trades?: number | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+          win_rate?: never;
+          winning_trades?: number | null;
+        };
+        Update: {
+          config?: Json | null;
+          copy_of_session_id?: never;
+          created_at?: string | null;
+          currency?: never;
+          current_capital?: number | null;
+          daily_loss_limit_pct?: never;
+          followers_count?: never;
+          id?: string | null;
+          initial_capital?: number | null;
+          is_public?: never;
+          last_heartbeat?: string | null;
+          last_trade_at?: never;
+          losing_trades?: number | null;
+          max_drawdown_pct?: number | null;
+          max_position_pct?: never;
+          mode?: string | null;
+          open_position?: Json | null;
+          started_at?: string | null;
+          status?: string | null;
+          stop_loss_pct?: never;
+          stopped_at?: string | null;
+          strategy?: string | null;
+          symbol?: string | null;
+          take_profit_pct?: never;
+          total_pnl?: number | null;
+          total_pnl_pct?: never;
+          total_trades?: number | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+          win_rate?: never;
+          winning_trades?: number | null;
+        };
+        Relationships: [];
+      };
       user_referrals_summary: {
         Row: {
           converted_count: number | null;
@@ -7534,6 +7391,10 @@ export type Database = {
     Functions: {
       admin_change_role: {
         Args: { p_admin_id: string; p_new_role: string; p_user_id: string };
+        Returns: Json;
+      };
+      admin_upgrade_user: {
+        Args: { p_admin_id: string; p_new_tier: string; p_user_id: string };
         Returns: Json;
       };
       allocate_founder_tokens: {
@@ -7872,8 +7733,9 @@ export type Database = {
       get_rls_status: {
         Args: never;
         Returns: {
-          rls_enabled: boolean;
-          table_name: string;
+          enabled: number;
+          tables: Json;
+          total: number;
         }[];
       };
       get_rls_status_detailed: {
@@ -7985,7 +7847,9 @@ export type Database = {
         Returns: undefined;
       };
       is_admin: { Args: { user_uuid: string }; Returns: boolean };
+      is_admin_for_profiles: { Args: never; Returns: boolean };
       is_bot_healthy: { Args: { p_bot_id: string }; Returns: boolean };
+      is_service_role: { Args: never; Returns: boolean };
       is_trading_allowed: { Args: never; Returns: boolean };
       level_norsk: { Args: { lvl: string }; Returns: string };
       log_user_action: {
@@ -8053,6 +7917,10 @@ export type Database = {
       };
       refresh_leaderboard: { Args: never; Returns: undefined };
       remove_binance_keys: { Args: { p_user_id: string }; Returns: boolean };
+      seed_signal_if_stale: {
+        Args: { p_max_age_minutes?: number };
+        Returns: number;
+      };
       send_push_to_user: {
         Args: {
           notification_body: string;
@@ -8171,22 +8039,24 @@ export type Database = {
         | "copy_trade"
         | "system";
       order_type: "market" | "limit" | "stop_loss" | "take_profit";
+      risk_level: "conservative" | "balanced" | "aggressive";
       session_status: "active" | "paused" | "crashed" | "stopped";
       session_status_v2: "active" | "paused" | "stopped" | "crashed";
       strategy_type_v2: "dca" | "trend" | "multi_signal" | "grid";
       subscription_tier:
         | "free"
         | "student"
-        | "bachelor"
         | "master"
         | "phd"
-        | "professor";
+        | "professor"
+        | "bachelor";
       trade_side: "buy" | "sell";
       trade_side_v2: "buy" | "sell";
       trade_status: "pending" | "executed" | "failed";
       trade_status_v2: "pending" | "open" | "closed" | "cancelled" | "failed";
       trading_mode: "paper" | "live";
       trading_mode_v2: "paper" | "live";
+      trading_phase: "paper" | "micro" | "small" | "full";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -8344,16 +8214,17 @@ export const Constants = {
         "system",
       ],
       order_type: ["market", "limit", "stop_loss", "take_profit"],
+      risk_level: ["conservative", "balanced", "aggressive"],
       session_status: ["active", "paused", "crashed", "stopped"],
       session_status_v2: ["active", "paused", "stopped", "crashed"],
       strategy_type_v2: ["dca", "trend", "multi_signal", "grid"],
       subscription_tier: [
         "free",
         "student",
-        "bachelor",
         "master",
         "phd",
         "professor",
+        "bachelor",
       ],
       trade_side: ["buy", "sell"],
       trade_side_v2: ["buy", "sell"],
@@ -8361,6 +8232,7 @@ export const Constants = {
       trade_status_v2: ["pending", "open", "closed", "cancelled", "failed"],
       trading_mode: ["paper", "live"],
       trading_mode_v2: ["paper", "live"],
+      trading_phase: ["paper", "micro", "small", "full"],
     },
   },
 } as const;

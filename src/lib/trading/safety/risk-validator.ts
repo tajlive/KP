@@ -6,6 +6,7 @@
  */
 
 import { createClient } from "../../supabase/server";
+import type { Json } from "@/types/supabase-generated";
 import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 import {
   PAPER_DEMO_DEFAULT_MAX_DAILY_LOSS_PCT,
@@ -479,8 +480,7 @@ export async function recordTradeRejection(
   const supabase = createClient();
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from("trade_rejections").insert({
+    await supabase.from("trade_rejections").insert({
       user_id: trade.userId,
       session_id: trade.sessionId,
       symbol: trade.symbol,
@@ -489,9 +489,8 @@ export async function recordTradeRejection(
       price: trade.price,
       order_type: trade.orderType,
       trading_mode: trade.tradingMode,
-      rejection_reason: result.rejectionReason,
-      rejection_details:
-        (result.rejectionDetails as Record<string, unknown>) ?? {},
+      rejection_reason: result.rejectionReason!,
+      rejection_details: (result.rejectionDetails ?? {}) as Json,
       risk_profile_id: result.riskProfileId ?? null,
       bot_id: trade.botId ?? null,
     });

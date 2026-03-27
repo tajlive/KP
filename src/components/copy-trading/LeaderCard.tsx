@@ -2,7 +2,7 @@
 
 import type { DiscoverLeaderDto } from "@/lib/copy-trading/discover-types";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ export function LeaderCard({
   const riskKey = riskLabelKey(leader.risk_tier);
 
   return (
-    <motion.article
+    <m.article
       data-testid="copy-trading-leader-card"
       initial={reduceMotion ? false : { opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
@@ -186,6 +186,6 @@ export function LeaderCard({
           {t("viewProfile")}
         </Link>
       </Button>
-    </motion.article>
+    </m.article>
   );
 }

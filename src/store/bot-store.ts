@@ -1,6 +1,7 @@
 import { createClient } from "../lib/supabase/client";
 import { create } from "zustand";
 import type { Tables } from "../lib/supabase/client";
+import type { Database } from "../types/supabase-generated";
 
 type BotStatus = "active" | "paused" | "stopped" | "error";
 type BotStrategyType =
@@ -51,6 +52,9 @@ interface AggregatePnl {
 }
 
 type BotFilter = "all" | "active" | "paused" | "stopped";
+
+type UnifiedTradingSessionRow =
+  Database["public"]["Views"]["unified_trading_sessions"]["Row"];
 
 interface BotStore {
   bots: Bot[];
@@ -112,17 +116,13 @@ export const useBotStore = create<BotStore>()((set, get) => ({
         .select("*")
         .order("created_at", { ascending: false });
 
-      const sessionMap = new Map(
-        (sessions ?? []).map((s: Tables<"unified_trading_sessions">) => [
-          s.id,
-          s,
-        ]),
-      );
+      const sessionRows = (sessions ?? []) as UnifiedTradingSessionRow[];
+      const sessionMap = new Map(sessionRows.map((s) => [s.id ?? "", s]));
 
       const bots: Bot[] = (strategies ?? []).map(
         (strat: Tables<"bot_configs">) => {
           const session = sessionMap.get(strat.id) as
-            | Tables<"unified_trading_sessions">
+            | UnifiedTradingSessionRow
             | undefined;
 
           const stratRow = strat as Record<string, unknown>;
@@ -238,8 +238,7 @@ export const useBotStore = create<BotStore>()((set, get) => ({
     return bots.find((b) => b.id === selectedBotId) ?? null;
   },
 
-  activeBotCount: () =>
-    get().bots.filter((b) => b.status === "active").length,
+  activeBotCount: () => get().bots.filter((b) => b.status === "active").length,
 }));
 
 export type {

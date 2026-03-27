@@ -7,6 +7,44 @@ export const TRADING_FEE_PERCENT = 0.001;
 // Starting capital for paper trading
 export const STARTING_CAPITAL = 100000;
 
+type ExecuteTradeRpcParams = {
+  p_user_id: string;
+  p_symbol: string;
+  p_type: "buy" | "sell";
+  p_quantity: number;
+  p_price: number;
+};
+
+type TriggerPanicRpcParams = {
+  p_user_id: string;
+  p_reason: string;
+};
+
+type RpcError = { message: string } | null;
+type RpcResult<T> = Promise<{ data: T | null; error: RpcError }>;
+type ExecuteTradeRpc = (
+  fn: "execute_trade",
+  params: ExecuteTradeRpcParams,
+) => RpcResult<{ success?: boolean; message?: string; trade_id?: string }>;
+type TriggerPanicRpc = (
+  fn: "trigger_panic_button",
+  params: TriggerPanicRpcParams,
+) => RpcResult<{
+  success?: boolean;
+  positions_closed?: number;
+  total_value?: number;
+}>;
+type TradingStatsFromFn = (table: "trading_stats") => {
+  select: (columns: "*") => {
+    eq: (
+      column: "user_id",
+      value: string,
+    ) => {
+      single: () => Promise<{ data: TradingStats | null; error: RpcError }>;
+    };
+  };
+};
+
 // Execute a buy trade
 export const executeBuy = async (
   userId: string,
@@ -37,17 +75,14 @@ export const executeBuy = async (
     }
 
     // Execute trade via RPC
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: result, error: tradeError } = await (supabase.rpc as any)(
-      "execute_trade",
-      {
-        p_user_id: userId,
-        p_symbol: symbol,
-        p_type: "buy",
-        p_quantity: quantity,
-        p_price: price,
-      },
-    );
+    const rpc = supabase.rpc as unknown as ExecuteTradeRpc;
+    const { data: result, error: tradeError } = await rpc("execute_trade", {
+      p_user_id: userId,
+      p_symbol: symbol,
+      p_type: "buy",
+      p_quantity: quantity,
+      p_price: price,
+    });
 
     if (tradeError) {
       console.error("Trade execution error:", tradeError);
@@ -109,17 +144,14 @@ export const executeSell = async (
     }
 
     // Execute trade via RPC
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: result, error: tradeError } = await (supabase.rpc as any)(
-      "execute_trade",
-      {
-        p_user_id: userId,
-        p_symbol: symbol,
-        p_type: "sell",
-        p_quantity: quantity,
-        p_price: price,
-      },
-    );
+    const rpc = supabase.rpc as unknown as ExecuteTradeRpc;
+    const { data: result, error: tradeError } = await rpc("execute_trade", {
+      p_user_id: userId,
+      p_symbol: symbol,
+      p_type: "sell",
+      p_quantity: quantity,
+      p_price: price,
+    });
 
     if (tradeError) {
       console.error("Trade execution error:", tradeError);
@@ -221,9 +253,8 @@ export const getTrades = async (
 export const getTradingStats = async (
   userId: string,
 ): Promise<TradingStats | null> => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
-    .from("trading_stats")
+  const fromTradingStats = supabase.from as unknown as TradingStatsFromFn;
+  const { data, error } = await fromTradingStats("trading_stats")
     .select("*")
     .eq("user_id", userId)
     .single();
@@ -370,14 +401,11 @@ export const triggerPanicButton = async (
   error?: string;
 }> => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: result, error } = await (supabase.rpc as any)(
-      "trigger_panic_button",
-      {
-        p_user_id: userId,
-        p_reason: reason || "User triggered panic",
-      },
-    );
+    const rpc = supabase.rpc as unknown as TriggerPanicRpc;
+    const { data: result, error } = await rpc("trigger_panic_button", {
+      p_user_id: userId,
+      p_reason: reason || "User triggered panic",
+    });
 
     if (error) {
       console.error("Panic button error:", error);
@@ -389,16 +417,10 @@ export const triggerPanicButton = async (
       };
     }
 
-    const panicResult = result as {
-      success?: boolean;
-      positions_closed?: number;
-      total_value?: number;
-    } | null;
-
     return {
-      success: panicResult?.success || false,
-      positionsClosed: panicResult?.positions_closed || 0,
-      totalValue: panicResult?.total_value || 0,
+      success: result?.success || false,
+      positionsClosed: result?.positions_closed || 0,
+      totalValue: result?.total_value || 0,
     };
   } catch (error) {
     console.error("Panic button error:", error);

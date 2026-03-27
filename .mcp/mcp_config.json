@@ -2,7 +2,7 @@
   "mcpServers": {
     "chrome-devtools": {
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest", "--no-usage-statistics"]
+      "args": ["-y", "chrome-devtools-mcp@0.20.3", "--no-usage-statistics"]
     },
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp"
@@ -10,6 +10,10 @@
     "context7": {
       "command": "node",
       "args": ["scripts/run-context7-mcp.mjs"]
+    },
+    "filesystem": {
+      "command": "node",
+      "args": ["scripts/run-filesystem-mcp.mjs"]
     },
     "github": {
       "command": "node",
@@ -19,7 +23,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "mcp-remote",
+        "mcp-remote@0.1.38",
         "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/klarpakke-mcp/mcp",
         "--header",
         "Authorization: Bearer ${KLARPAKKE_MCP_TOKEN}"
@@ -29,20 +33,24 @@
       "command": "node",
       "args": ["scripts/run-linear-mcp.mjs"]
     },
+    "perplexity": {
+      "command": "node",
+      "args": ["scripts/run-perplexity-mcp.mjs"]
+    },
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
     },
     "resend": {
       "command": "npx",
-      "args": ["-y", "resend-mcp@latest"],
+      "args": ["-y", "resend-mcp@2.2.0"],
       "env": {
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
     },
     "sentry": {
       "command": "npx",
-      "args": ["-y", "@sentry/mcp-server@latest"],
+      "args": ["-y", "@sentry/mcp-server@0.30.0"],
       "env": {
         "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
         "SENTRY_ORG": "${SENTRY_ORG}"
@@ -50,7 +58,7 @@
     },
     "stripe": {
       "command": "npx",
-      "args": ["-y", "@stripe/agent-toolkit@latest"],
+      "args": ["-y", "@stripe/agent-toolkit@0.9.0"],
       "env": {
         "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
       }

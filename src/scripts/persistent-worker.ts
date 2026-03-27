@@ -3,6 +3,7 @@
  * Designed for 24/7 execution in a standalone environment.
  */
 import { runAutoTradingIteration } from "@/lib/auto-trading/binance-executor";
+import type { Database } from "@/types/supabase-generated";
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
 
@@ -21,7 +22,7 @@ async function main() {
     process.exit(1);
   }
 
-  const supabase = createClient(
+  const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
   );
@@ -34,8 +35,7 @@ async function main() {
       console.info(
         `[${new Date().toISOString()}] Running auto-trading iteration...`,
       );
-      // @ts-ignore - Temporary cast to handle complex Supabase client types in script context
-      await runAutoTradingIteration(supabase as unknown);
+      await runAutoTradingIteration(supabase);
     } catch (error) {
       console.error("❌ Iteration error:", error);
     }

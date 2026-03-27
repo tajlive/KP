@@ -3,13 +3,41 @@
 // LEADERBOARD: Top performers
 // ============================================================================
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { withAuth } from '@/lib/api-auth';
-import { LeaderboardQuerySchema } from '@/lib/schemas';
+import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
+import { withAuth } from "@/lib/api-auth";
+import { LeaderboardQuerySchema } from "@/lib/schemas";
+import type { Database } from "@/types/supabase-generated";
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+/** Materialized view `leaderboard` — row shape until view is in generated types */
+type LeaderboardViewRow = {
+  user_id?: string | null;
+  total_pnl?: number | null;
+  [key: string]: unknown;
+};
+
+type DbWithLeaderboardView = Database & {
+  public: Database["public"] & {
+    Tables: Database["public"]["Tables"] & {
+      leaderboard: {
+        Row: LeaderboardViewRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+    };
+  };
+};
+
+function fromLeaderboard(db: SupabaseClient<Database>) {
+  return (db as unknown as SupabaseClient<DbWithLeaderboardView>).from(
+    "leaderboard",
+  );
+}
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export const GET = withAuth(async (req: NextRequest, { user }) => {
   try {
@@ -20,41 +48,50 @@ export const GET = withAuth(async (req: NextRequest, { user }) => {
     });
 
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid query parameters" },
+        { status: 400 },
+      );
     }
 
     const db = createClient();
 
     // Use materialized view (refreshed every 60 seconds by pg_cron)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: leaders, error } = await (db as any)
-      .from('leaderboard')
-      .select('*')
-      .order('total_pnl', { ascending: false })
+    const { data: leaders, error } = await fromLeaderboard(db)
+      .select("*")
+      .order("total_pnl", { ascending: false })
       .limit(parsed.data.limit);
 
     if (error) {
-      console.error('Failed to fetch leaderboard:', error);
-      return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
+      console.error("Failed to fetch leaderboard:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch leaderboard" },
+        { status: 500 },
+      );
     }
 
     // Check which leaders the current user follows
     const { data: follows } = await db
-      .from('copy_trading_follows')
-      .select('leader_id')
-      .eq('follower_id', user.id)
-      .eq('is_active', true);
+      .from("copy_trading_follows")
+      .select("leader_id")
+      .eq("follower_id", user.id)
+      .eq("is_active", true);
 
-    type LeaderRow = { user_id?: string; [k: string]: unknown };
-    const followedLeaderIds = new Set(follows?.map((f: { leader_id: string }) => f.leader_id) ?? []);
+    type LeaderRow = { user_id?: string | null; [k: string]: unknown };
+    const followedLeaderIds = new Set(
+      follows?.map((f: { leader_id: string }) => f.leader_id) ?? [],
+    );
     const enrichedLeaders = (leaders ?? []).map((leader: LeaderRow) => ({
       ...leader,
-      is_following: followedLeaderIds.has(leader.user_id ?? ''),
+      is_following: followedLeaderIds.has(leader.user_id ?? ""),
     }));
 
     return NextResponse.json({ leaders: enrichedLeaders });
   } catch (err) {
-    console.error('Unexpected error in leaderboard:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Unexpected error in leaderboard:", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 });

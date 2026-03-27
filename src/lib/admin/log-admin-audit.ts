@@ -3,6 +3,26 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/types/supabase-generated";
 
+type AdminAuditLogInsert = {
+  admin_user_id: string;
+  action: string;
+  target_user_id?: string | null;
+  payload: Json;
+};
+
+type DbWithAdminAudit = Database & {
+  public: Database["public"] & {
+    Tables: Database["public"]["Tables"] & {
+      admin_audit_log: {
+        Row: AdminAuditLogInsert & { id?: string; created_at?: string | null };
+        Insert: AdminAuditLogInsert;
+        Update: Partial<AdminAuditLogInsert>;
+        Relationships: [];
+      };
+    };
+  };
+};
+
 export type AdminAuditAction = "user_paper_balance" | "user_tier" | string;
 
 /**
@@ -20,13 +40,14 @@ export async function logAdminAudit(
   },
 ): Promise<void> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- tabell legges til i genererte typer etter db:gen-types
-    const { error } = await (db as any).from("admin_audit_log").insert({
-      admin_user_id: row.admin_user_id,
-      action: row.action,
-      target_user_id: row.target_user_id ?? null,
-      payload: (row.payload ?? {}) as Json,
-    });
+    const { error } = await (db as unknown as SupabaseClient<DbWithAdminAudit>)
+      .from("admin_audit_log")
+      .insert({
+        admin_user_id: row.admin_user_id,
+        action: row.action,
+        target_user_id: row.target_user_id ?? null,
+        payload: (row.payload ?? {}) as Json,
+      });
     if (error) {
       console.warn("[logAdminAudit] insert failed:", error.message);
     }

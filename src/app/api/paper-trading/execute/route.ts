@@ -47,7 +47,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    // request.json() kan kaste (tom body / avbrutt stream) og krasjer ellers Next dev under load.
+    // Vi leser raw text og parser eksplisitt for å returnere 400 i stedet for 500.
+    const rawBody = await request.text();
+    if (!rawBody) {
+      return NextResponse.json(
+        { error: "Invalid request", details: { formErrors: ["Empty body"] } },
+        { status: 400 },
+      );
+    }
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody) as unknown;
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
+        { status: 400 },
+      );
+    }
     const parsed = bodySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(

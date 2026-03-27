@@ -30,15 +30,15 @@ export function AIChat({
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hei! Jeg er din Krypto-Professor. Hva kan jeg hjelpe deg med i dag?",
+      content:
+        "Hei! Jeg er din Krypto-Professor. Hva kan jeg hjelpe deg med i dag?",
     },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [activeProvider, setActiveProvider] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const textareaRef = useRef<any>(null);
+  const textareaRef = useRef<React.ComponentRef<"textarea">>(null);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -82,7 +82,7 @@ export function AIChat({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [...messages, { role: "user", content: userMessage }].map(
-            (m) => ({ role: m.role, content: m.content })
+            (m) => ({ role: m.role, content: m.content }),
           ),
           useCase,
         }),
@@ -113,7 +113,8 @@ export function AIChat({
         ...prev,
         {
           role: "assistant",
-          content: "Beklager, jeg kunne ikke behandle forespørselen din. Vennligst prøv igjen.",
+          content:
+            "Beklager, jeg kunne ikke behandle forespørselen din. Vennligst prøv igjen.",
         },
       ]);
     } finally {
@@ -132,7 +133,8 @@ export function AIChat({
     setMessages([
       {
         role: "assistant",
-        content: "Hei! Jeg er din Krypto-Professor. Hva kan jeg hjelpe deg med i dag?",
+        content:
+          "Hei! Jeg er din Krypto-Professor. Hva kan jeg hjelpe deg med i dag?",
       },
     ]);
   };
@@ -167,7 +169,7 @@ export function AIChat({
     <div
       className={cn(
         "flex flex-col h-[600px] bg-white dark:bg-gray-900 rounded-lg border shadow-sm",
-        className
+        className,
       )}
     >
       {/* Header */}
@@ -184,7 +186,7 @@ export function AIChat({
               <span
                 className={cn(
                   "text-xs px-2 py-0.5 rounded-full",
-                  getProviderColor(activeProvider)
+                  getProviderColor(activeProvider),
                 )}
               >
                 {getProviderLabel(activeProvider)}
@@ -210,7 +212,7 @@ export function AIChat({
             key={index}
             className={cn(
               "flex gap-3",
-              message.role === "user" ? "justify-end" : "justify-start"
+              message.role === "user" ? "justify-end" : "justify-start",
             )}
           >
             {message.role === "assistant" && (
@@ -223,7 +225,7 @@ export function AIChat({
                 "max-w-[80%] rounded-lg px-4 py-2",
                 message.role === "user"
                   ? "bg-teal-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100",
               )}
             >
               <div className="whitespace-pre-wrap">{message.content}</div>
@@ -296,7 +298,8 @@ export function AIChat({
           </Button>
         </form>
         <p className="text-xs text-gray-500 mt-2 text-center">
-          AI-en kan gjøre feil. Bekreft viktig informasjon. Ikke finansiell rådgivning.
+          AI-en kan gjøre feil. Bekreft viktig informasjon. Ikke finansiell
+          rådgivning.
         </p>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import type { DiscoverLeaderDto } from "@/lib/copy-trading/discover-types";
 import { LeaderCard } from "./LeaderCard";
 import { useLocale, useTranslations } from "next-intl";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -143,7 +143,7 @@ export function CopyTradingDiscoverClient() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
-      <motion.header
+      <m.header
         initial={reduceMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="space-y-4"
@@ -209,7 +209,7 @@ export function CopyTradingDiscoverClient() {
             ) : null}
           </p>
         )}
-      </motion.header>
+      </m.header>
 
       {error && (
         <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">

@@ -489,18 +489,19 @@ async function processSession(
 
   if (!riskCheck.allowed) {
     // Log risk block to database - using correct table schema
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (db as any).from("trading_logs").insert({
+    const riskLogDetails = {
+      reason: riskCheck.reason,
+      signal: signal.action,
+      requested_amount: tradeAmount,
+      current_capital: session.current_capital,
+      risk_config: { ...riskConfig },
+    } as Database["public"]["Tables"]["trading_logs"]["Insert"]["details"];
+
+    await db.from("trading_logs").insert({
       session_id: session.id,
       user_id: session.user_id,
       action: "risk_blocked",
-      details: {
-        reason: riskCheck.reason,
-        signal: signal.action,
-        requested_amount: tradeAmount,
-        current_capital: session.current_capital,
-        risk_config: riskConfig,
-      },
+      details: riskLogDetails,
     });
 
     console.warn("Trade blocked by risk manager:", {
@@ -608,8 +609,7 @@ async function mirrorTradeToFollowers(
 
       // Insert mirrored trade - matching actual trades table schema
       const tradeRecord = trade as Record<string, unknown>;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: mirrorError } = await (db as any).from("trades").insert({
+      const { error: mirrorError } = await db.from("trades").insert({
         session_id: followerSession.id,
         user_id: followerSession.user_id,
         idempotency_key: `copy-${tradeRecord.id as string}-${followerSession.id}-${Date.now()}`,

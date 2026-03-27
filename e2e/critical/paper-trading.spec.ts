@@ -9,6 +9,15 @@ import { waitForDevHealth } from "../helpers/wait-for-dev-health";
  */
 
 test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
+  async function isGuestTeaserVisible(page: import("@playwright/test").Page) {
+    const guestCta = page
+      .getByRole("link", {
+        name: /Logg inn|Log in|Opprett konto|Create account/i,
+      })
+      .first();
+    return guestCta.isVisible({ timeout: 4000 }).catch(() => false);
+  }
+
   test.beforeEach(async ({ page }) => {
     // Navigate to dashboard before each test (90s timeout under parallel load)
     await page.goto("/dashboard", {
@@ -21,8 +30,8 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
   });
 
   test("paper trading card displays balance", async ({ page }) => {
-    // Navigate directly to dashboard and wait
-    await page.goto("/dashboard", {
+    // Valider paper trading entrypoint direkte (dashboard-kort kan endres over tid).
+    await page.goto("/no/paper-trading", {
       timeout: 90_000,
       waitUntil: "domcontentloaded",
     });
@@ -30,19 +39,25 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       .waitForLoadState("domcontentloaded", { timeout: 30_000 })
       .catch(() => {});
 
-    // Look for paper trading card - use first() to avoid strict mode violation
     const card = page.locator('[data-testid="paper-trading-card"]').first();
-
-    // Card may not exist if user hasn't initialized paper trading
     const isVisible = await card
       .isVisible({ timeout: 3000 })
       .catch(() => false);
 
     if (!isVisible) {
-      console.log(
-        "⚠️ Paper trading card not visible (may need initialization)",
-      );
-      test.skip();
+      const workspaceHeaderVisible = await page
+        .locator('[data-testid="paper-trading-workspace-header"]')
+        .first()
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
+      if (workspaceHeaderVisible) {
+        console.log("✅ Paper trading workspace header visible");
+        return;
+      }
+      const teaserVisible = await isGuestTeaserVisible(page);
+      expect(teaserVisible).toBe(true);
+      console.log("✅ Guest teaser visible when trading workspace is gated");
+      return;
     }
 
     // Verify balance is displayed
@@ -56,8 +71,15 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       expect(balanceText).toMatch(/\d+/); // Should contain numbers
       console.log("✅ Paper trading balance:", balanceText);
     } else {
-      console.log("⚠️ Balance element not visible");
-      test.skip();
+      const workspaceHeaderVisible = await page
+        .locator('[data-testid="paper-trading-workspace-header"]')
+        .first()
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
+      expect(workspaceHeaderVisible).toBe(true);
+      console.log(
+        "✅ Paper trading workspace visible when card balance is absent",
+      );
     }
   });
 
@@ -122,6 +144,10 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
   });
 
   test("portfolio section displays metrics", async ({ page }) => {
+    await page.goto("/no/paper-trading", {
+      timeout: 90_000,
+      waitUntil: "domcontentloaded",
+    });
     // Check for portfolio section
     const portfolioSection = page.locator('[data-testid="portfolio-section"]');
 
@@ -131,8 +157,21 @@ test.describe("Critical: Paper Trading Flow @critical @papertrading", () => {
       .catch(() => false);
 
     if (!isVisible) {
-      console.log("⚠️ Portfolio section not visible");
-      test.skip();
+      const workspaceHeaderVisible = await page
+        .locator('[data-testid="paper-trading-workspace-header"]')
+        .first()
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
+      if (workspaceHeaderVisible) {
+        console.log(
+          "✅ Paper trading workspace header visible (portfolio section not rendered)",
+        );
+        return;
+      }
+      const teaserVisible = await isGuestTeaserVisible(page);
+      expect(teaserVisible).toBe(true);
+      console.log("✅ Guest teaser visible when portfolio section is hidden");
+      return;
     }
 
     // Verify key metrics exist

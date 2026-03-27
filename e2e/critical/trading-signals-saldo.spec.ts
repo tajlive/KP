@@ -2,8 +2,12 @@ import { test, expect } from "@playwright/test";
 import { waitForDevHealth } from "../helpers/wait-for-dev-health";
 
 function isTransientRequestError(err: unknown) {
-  return /socket hang up|ECONNRESET|ECONNREFUSED|ETIMEDOUT|ECONNABORTED/i.test(
-    String(err),
+  const s = String(err);
+  return (
+    /socket hang up|ECONNRESET|ECONNREFUSED|ETIMEDOUT|ECONNABORTED|timeout|timed out/i.test(
+      s,
+    ) ||
+    (err instanceof Error && /timeout/i.test(err.name))
   );
 }
 
@@ -46,7 +50,8 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
     playwright,
     baseURL,
   }) => {
-    const apiTimeout = { timeout: 60_000 };
+    /** Sekvensielt: tre parallelle GET mot `next dev` gir ofte timeout under E2E-belastning. */
+    const apiTimeout = { timeout: 90_000 };
 
     for (let attempt = 0; attempt < 3; attempt++) {
       if (attempt > 0) {
@@ -57,11 +62,9 @@ test.describe("Critical: Trading signals, live/paper, saldo @critical @papertrad
         storageState: { cookies: [], origins: [] },
       });
       try {
-        const [modeRes, sessionsRes, botRes] = await Promise.all([
-          anon.get("/api/trading/mode", apiTimeout),
-          anon.get("/api/trading/sessions", apiTimeout),
-          anon.get("/api/dashboard/bot-status", apiTimeout),
-        ]);
+        const modeRes = await anon.get("/api/trading/mode", apiTimeout);
+        const sessionsRes = await anon.get("/api/trading/sessions", apiTimeout);
+        const botRes = await anon.get("/api/dashboard/bot-status", apiTimeout);
         expect(modeRes.status()).toBe(401);
         expect(sessionsRes.status()).toBe(401);
         expect(botRes.status()).toBe(401);
