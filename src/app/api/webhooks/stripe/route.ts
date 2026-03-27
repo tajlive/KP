@@ -221,14 +221,22 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
       return;
     }
 
-    // Oppdater også profil
-    await supabase
-      .from("user_profiles")
-      .update({
-        subscription_status: "active",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("stripe_subscription_id", subscriptionId);
+    // Oppdater også profil (via user_id fra subscriptions)
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("user_id")
+      .eq("stripe_subscription_id", subscriptionId)
+      .single();
+
+    if (sub?.user_id) {
+      await supabase
+        .from("user_profiles")
+        .update({
+          subscription_status: "active",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", sub.user_id);
+    }
 
     console.info(
       `[Stripe Webhook] Betaling vellykket for subscription ${subscriptionId}`,
@@ -260,14 +268,22 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       return;
     }
 
-    // Oppdater profil
-    await supabase
-      .from("user_profiles")
-      .update({
-        subscription_status: "past_due",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("stripe_subscription_id", subscriptionId);
+    // Oppdater profil (via user_id fra subscriptions)
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("user_id")
+      .eq("stripe_subscription_id", subscriptionId)
+      .single();
+
+    if (sub?.user_id) {
+      await supabase
+        .from("user_profiles")
+        .update({
+          subscription_status: "past_due",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", sub.user_id);
+    }
 
     // Send påminnelse om betaling
     await sendPaymentFailedEmail(customerId, subscriptionId);
@@ -308,20 +324,28 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       return;
     }
 
-    // Oppdater profil hvis cancelled
+    // Oppdater profil hvis cancelled (via user_id fra subscriptions)
     if (
       subscription.status === "canceled" ||
       subscription.cancel_at_period_end
     ) {
-      await supabase
-        .from("user_profiles")
-        .update({
-          subscription_status: subscription.cancel_at_period_end
-            ? "active"
-            : "canceled",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("stripe_subscription_id", subscription.id);
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("user_id")
+        .eq("stripe_subscription_id", subscription.id)
+        .single();
+
+      if (sub?.user_id) {
+        await supabase
+          .from("user_profiles")
+          .update({
+            subscription_status: subscription.cancel_at_period_end
+              ? "active"
+              : "canceled",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", sub.user_id);
+      }
     }
 
     console.info(`[Stripe Webhook] Subscription ${subscription.id} oppdatert`);
