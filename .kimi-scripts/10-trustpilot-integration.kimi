@@ -1,0 +1,242 @@
+#!/usr/bin/env node
+/**
+ * SCRIPT 10: TRUSTPILOT INTEGRATION
+ * Estimated time: 3 hours
+ * Impact: MEDIUM (social proof, conversion)
+ * 
+ * GOAL: Integrate Trustpilot reviews and widgets
+ * Features: Review display, invitation system, SEO markup
+ */
+
+// ============================================================
+// PHASE 1: TRUSTPILOT SETUP (30min)
+// ============================================================
+
+/**
+ * TASK 1.1: Create Trustpilot business account
+ * URL: https://business.trustpilot.com
+ * 
+ * REQUIREMENTS:
+ * - Verify domain ownership
+ * - Setup automatic review invitations
+ * - Configure review display widgets
+ * - Get API key for integration
+ * 
+ * SAVE API KEY:
+ *   TRUSTPILOT_API_KEY=...
+ *   TRUSTPILOT_BUSINESS_UNIT_ID=...
+ */
+
+/**
+ * TASK 1.2: Install Trustbox widget
+ * FILE: src/components/trustpilot/Trustbox.tsx
+ * 
+ * REQUIREMENTS:
+ *   useEffect(() => {
+ *     const script = document.createElement('script')
+ *     script.src = '//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js'
+ *     script.async = true
+ *     document.body.appendChild(script)
+ *   }, [])
+ *   
+ *   return (
+ *     <div
+ *       className="trustpilot-widget"
+ *       data-locale="nb-NO"
+ *       data-template-id="..."
+ *       data-businessunit-id="..."
+ *       data-style-height="24px"
+ *       data-style-width="100%"
+ *     >
+ *       <a href="https://no.trustpilot.com/review/klarpakke.no" target="_blank">
+ *         Trustpilot
+ *       </a>
+ *     </div>
+ *   )
+ */
+
+// ============================================================
+// PHASE 2: REVIEW DISPLAY COMPONENTS (1h)
+// ============================================================
+
+/**
+ * TASK 2.1: Create Trustpilot badge
+ * FILE: src/components/trustpilot/TrustpilotBadge.tsx
+ * 
+ * REQUIREMENTS:
+ * - Display star rating (4.8/5)
+ * - Show review count
+ * - Link to Trustpilot profile
+ * - Mini widget for header/footer
+ * - Hover shows latest review
+ */
+
+/**
+ * TASK 2.2: Create review carousel
+ * FILE: src/components/trustpilot/ReviewCarousel.tsx
+ * 
+ * REQUIREMENTS:
+ * - Fetch reviews from Trustpilot API
+ * - Display 3-5 recent reviews
+ * - Show reviewer name, date, rating, content
+ * - Auto-rotate every 5 seconds
+ * - Manual navigation dots
+ * - Responsive (1 col mobile, 3 col desktop)
+ */
+
+/**
+ * TASK 2.3: Create review grid section
+ * FILE: src/components/landing/TrustpilotReviews.tsx
+ * 
+ * REQUIREMENTS:
+ * - Section on landing page
+ * - Grid of featured reviews
+ * - Filter by rating (4-5 stars only)
+ * - Highlight verified purchases
+ * - "Write a review" CTA
+ */
+
+// ============================================================
+// PHASE 3: AUTOMATED REVIEW INVITATIONS (1h)
+// ============================================================
+
+/**
+ * TASK 3.1: Setup invitation trigger
+ * FILE: src/lib/trustpilot/invitations.ts
+ * 
+ * REQUIREMENTS:
+ *   export async function sendReviewInvitation(userId: string) {
+ *     const user = await getUser(userId)
+ *     
+ *     // Trigger after positive interaction
+ *     await fetch('https://api.trustpilot.com/v1/private/business-units/.../invitations', {
+ *       method: 'POST',
+ *       headers: {
+ *         'Authorization': `Bearer ${process.env.TRUSTPILOT_API_KEY}`,
+ *         'Content-Type': 'application/json',
+ *       },
+ *       body: JSON.stringify({
+ *         consumerEmail: user.email,
+ *         consumerName: user.name,
+ *         locale: 'nb-NO',
+ *         templateId: '...',
+ *       }),
+ *     })
+ *   }
+ */
+
+/**
+ * TASK 3.2: Define invitation triggers
+ * FILE: src/lib/trustpilot/triggers.ts
+ * 
+ * TRIGGERS:
+ * - After successful paper trading completion (7 days)
+ * - After tier upgrade (3 days after)
+ * - After positive support interaction (immediate)
+ * - Quarterly for active users
+ * 
+ * REQUIREMENTS:
+ * - Max 1 invitation per user per 3 months
+ * - Only users with positive engagement
+ * - Unsubscribe option in email
+ */
+
+/**
+ * TASK 3.3: Create invitation API route
+ * FILE: src/app/api/trustpilot/invite/route.ts
+ * 
+ * REQUIREMENTS:
+ * - POST endpoint for manual invitations
+ * - Admin only authorization
+ * - Rate limited
+ * - Log all invitations
+ */
+
+// ============================================================
+// PHASE 4: SEO & RICH SNIPPETS (30min)
+// ============================================================
+
+/**
+ * TASK 4.1: Add structured data
+ * FILE: src/app/layout.tsx (JSON-LD)
+ * 
+ * REQUIREMENTS:
+ *   <Script id="trustpilot-schema" type="application/ld+json">
+ *     {JSON.stringify({
+ *       '@context': 'https://schema.org',
+ *       '@type': 'Organization',
+ *       name: 'Klarpakke',
+ *       url: 'https://www.klarpakke.no',
+ *       logo: 'https://www.klarpakke.no/logo.png',
+ *       aggregateRating: {
+ *         '@type': 'AggregateRating',
+ *         ratingValue: '4.8',
+ *         reviewCount: '1234',
+ *         bestRating: '5',
+ *         worstRating: '1',
+ *       },
+ *     })}
+ *   </Script>
+ */
+
+/**
+ * TASK 4.2: Update Open Graph images
+ * FILE: public/og-image-with-trustpilot.png
+ * 
+ * REQUIREMENTS:
+ * - Include Trustpilot badge on OG image
+ * - Show "4.8/5 stars" text
+ * - Professional design matching brand
+ */
+
+// ============================================================
+// PHASE 5: ADMIN DASHBOARD (30min)
+// ============================================================
+
+/**
+ * TASK 5.1: Create review monitoring
+ * FILE: src/app/admin/reviews/page.tsx
+ * 
+ * REQUIREMENTS:
+ * - Display recent reviews
+ * - Filter by rating
+ * - Respond to reviews (via Trustpilot API)
+ * - Flag inappropriate reviews
+ * - Export review data
+ */
+
+/**
+ * TASK 5.2: Review analytics
+ * FILE: src/lib/analytics/reviews.ts
+ * 
+ * REQUIREMENTS:
+ * - Track review invitation conversion rate
+ * - Monitor average rating over time
+ * - Alert on rating drops
+ * - Compare with competitors
+ */
+
+// ============================================================
+// VERIFICATION CHECKLIST
+// ============================================================
+
+const VERIFICATION = {
+  widgets: {
+    badgeDisplayed: true,
+    carouselWorking: true,
+    responsive: true
+  },
+  reviews: {
+    displayedCount: '>= 10',
+    averageRating: '>= 4.5',
+    seoMarkup: 'valid'
+  },
+  invitations: {
+    automatedTriggers: true,
+    rateLimitRespected: true,
+    unsubscribeWorks: true
+  }
+};
+
+// Test: Google Rich Results Test
+// Monitor: Trustpilot Business dashboard

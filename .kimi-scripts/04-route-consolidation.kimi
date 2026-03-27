@@ -1,0 +1,251 @@
+#!/usr/bin/env node
+/**
+ * SCRIPT 04: ROUTE CONSOLIDATION (30 → 12 routes)
+ * Estimated time: 6 hours
+ * Impact: CRITICAL (maintenance, performance)
+ * 
+ * GOAL: Consolidate 30 routes into 12 logical groups
+ * Reference: docs/architecture/ROUTE-INVENTORY-2026.md
+ */
+
+// ============================================================
+// PHASE 1: ROUTE ANALYSIS & AUDIT (1h)
+// ============================================================
+
+/**
+ * TASK 1.1: Generate current route inventory
+ * RUN: find src/app -name "page.tsx" -o -name "route.ts" | sort
+ * 
+ * DOCUMENT:
+ * - Route path
+ * - Usage frequency (analytics)
+ * - Dependencies
+ * - Consolidation candidate
+ */
+
+/**
+ * TASK 1.2: Identify consolidation opportunities
+ * ANALYSIS:
+ *   /dashboard/overview → /dashboard
+ *   /dashboard/trading → /dashboard/trading (keep)
+ *   /paper-trading/execute → /api/paper/execute
+ *   /settings/profile, /settings/security → /settings/[tab]
+ *   /learn/courses, /learn/guides → /academy/[slug]
+ */
+
+// ============================================================
+// PHASE 2: DYNAMIC ROUTE IMPLEMENTATION (2h)
+// ============================================================
+
+/**
+ * TASK 2.1: Create consolidated dashboard
+ * FROM:
+ *   /dashboard/page.tsx
+ *   /dashboard/overview/page.tsx
+ *   /dashboard/analytics/page.tsx
+ * 
+ * TO:
+ *   /dashboard/page.tsx (with tab param or query)
+ *   /dashboard/[[...tab]]/page.tsx
+ * 
+ * FILE: src/app/[locale]/dashboard/[[...tab]]/page.tsx
+ * 
+ * REQUIREMENTS:
+ * - Default tab: 'overview'
+ * - Valid tabs: ['overview', 'trading', 'analytics', 'history']
+ * - Invalid tabs: 404
+ * - Preserve SEO with canonical URLs
+ */
+
+/**
+ * TASK 2.2: Consolidate settings routes
+ * FROM:
+ *   /settings/profile/page.tsx
+ *   /settings/security/page.tsx
+ *   /settings/notifications/page.tsx
+ * 
+ * TO:
+ *   /settings/[tab]/page.tsx
+ * 
+ * VALID_TABS = ['profile', 'security', 'notifications', 'billing', 'api']
+ */
+
+/**
+ * TASK 2.3: Consolidate academy/learn routes
+ * FROM:
+ *   /learn/page.tsx
+ *   /learn/courses/page.tsx
+ *   /learn/guides/page.tsx
+ *   /academy/page.tsx (duplicate?)
+ * 
+ * TO:
+ *   /academy/page.tsx (landing)
+ *   /academy/[category]/page.tsx (courses, guides, videos)
+ *   /academy/[category]/[slug]/page.tsx (individual content)
+ */
+
+// ============================================================
+// PHASE 3: API ROUTE CONSOLIDATION (1.5h)
+// ============================================================
+
+/**
+ * TASK 3.1: Consolidate trading APIs
+ * FROM:
+ *   /api/trading/execute/route.ts
+ *   /api/trading/price/route.ts
+ *   /api/trading/depth/route.ts
+ *   /api/paper-trading/execute/route.ts
+ * 
+ * TO:
+ *   /api/v1/trading/[action]/route.ts
+ * 
+ * ACTIONS: ['execute', 'price', 'depth', 'cancel']
+ * MODES: 'live' | 'paper' (from body or header)
+ */
+
+/**
+ * TASK 3.2: Consolidate webhook handlers
+ * FROM:
+ *   /api/webhooks/stripe/route.ts
+ *   /api/webhooks/supabase/route.ts
+ *   /api/webhooks/resend/route.ts
+ * 
+ * TO:
+ *   /api/webhooks/[provider]/route.ts
+ * 
+ * VALID_PROVIDERS = ['stripe', 'supabase', 'resend', 'github']
+ * Each with signature verification
+ */
+
+/**
+ * TASK 3.3: Consolidate cron jobs
+ * FROM:
+ *   /api/cron/daily-summary/route.ts
+ *   /api/cron/sync-prices/route.ts
+ *   /api/cron/update-usdt-nok/route.ts
+ * 
+ * TO:
+ *   /api/cron/[job]/route.ts
+ * 
+ * WITH: Vercel Cron expressions in vercel.json
+ */
+
+// ============================================================
+// PHASE 4: REDIRECTS & BACKWARDS COMPATIBILITY (1h)
+// ============================================================
+
+/**
+ * TASK 4.1: Implement permanent redirects
+ * FILE: next.config.mjs (redirects section)
+ * 
+ * REQUIREMENTS:
+ *   redirects: [
+ *     { source: '/dashboard/overview', destination: '/dashboard', permanent: true },
+ *     { source: '/learn/:path*', destination: '/academy/:path*', permanent: true },
+ *     { source: '/settings', destination: '/settings/profile', permanent: false },
+ *   ]
+ */
+
+/**
+ * TASK 4.2: Update internal links
+ * FILE: src/\*/\*.tsx (grep for old routes)
+ * 
+ * REQUIREMENTS:
+ * - Update all <Link href="/old-route"> to new routes
+ * - Update navigation components
+ * - Update sitemap.ts
+ * - Update robots.ts
+ */
+
+/**
+ * TASK 4.3: Add route middleware for auth/tier gates
+ * FILE: src/middleware.ts
+ * 
+ * REQUIREMENTS:
+ * - Consolidate auth checks in one place
+ * - Route-based tier validation
+ * - Rate limiting per route group
+ */
+
+// ============================================================
+// PHASE 5: TESTING & VALIDATION (30min)
+// ============================================================
+
+/**
+ * TASK 5.1: Verify all redirects work
+ * RUN: 
+ *   curl -I https://www.klarpakke.no/dashboard/overview
+ *   # Should return 308 Permanent Redirect
+ */
+
+/**
+ * TASK 5.2: Run full E2E suite
+ * RUN: npm run test:e2e
+ * REQUIRE: All tests pass with new routes
+ */
+
+/**
+ * TASK 5.3: Update documentation
+ * FILE: docs/architecture/ROUTE-INVENTORY-2026.md
+ * 
+ * REQUIREMENTS:
+ * - Document new route structure
+ * - Migration guide for developers
+ * - API endpoint documentation
+ */
+
+// ============================================================
+// TARGET ROUTE STRUCTURE (12 groups)
+// ============================================================
+
+const TARGET_ROUTES = {
+  public: [
+    '/[locale]/page.tsx',              // Landing
+    '/[locale]/academy/[...slug]',     // Content
+    '/[locale]/pricing/page.tsx',      // Pricing
+    '/[locale]/about/page.tsx',        // About
+  ],
+  auth: [
+    '/[locale]/auth/[...action]',      // login, signup, callback
+  ],
+  dashboard: [
+    '/[locale]/dashboard/[[...tab]]',  // Main dashboard
+  ],
+  trading: [
+    '/[locale]/paper-trading/page.tsx',
+    '/[locale]/live-trading/page.tsx',
+  ],
+  settings: [
+    '/[locale]/settings/[tab]/page.tsx',
+  ],
+  api: [
+    '/api/v1/[resource]/[action]',     // Consolidated API
+    '/api/webhooks/[provider]',
+    '/api/cron/[job]',
+  ]
+};
+
+// ============================================================
+// VERIFICATION CHECKLIST
+// ============================================================
+
+const VERIFICATION = {
+  routes: {
+    totalCount: '<= 12 logical groups',
+    no404s: true,
+    allRedirectsWorking: true
+  },
+  seo: {
+    canonicalUrls: true,
+    sitemapUpdated: true,
+    noDuplicateContent: true
+  },
+  testing: {
+    e2ePassing: true,
+    noBrokenLinks: true,
+    middlewareWorking: true
+  }
+};
+
+// Test: npm run build && npm run test:e2e
+// Verify: curl -I on all old routes (should redirect)
