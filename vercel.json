@@ -64,7 +64,7 @@
       ]
     },
     {
-      "source": "/:locale((no|en))?",
+      "source": "/(no|en)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -73,7 +73,7 @@
       ]
     },
     {
-      "source": "/:locale((no|en))?/",
+      "source": "/(no|en)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
