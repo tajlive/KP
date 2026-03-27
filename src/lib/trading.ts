@@ -125,9 +125,9 @@ export const executeSell = async (
   price: number,
 ): Promise<{ success: boolean; trade?: Trade; error?: string }> => {
   try {
-    // Check portfolio
+    // Check position (portfolios table does not have symbol column)
     const { data: portfolioData, error: portfolioError } = await supabase
-      .from("portfolios")
+      .from("positions")
       .select("*")
       .eq("user_id", userId)
       .eq("symbol", symbol)
