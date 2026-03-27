@@ -1,10 +1,9 @@
+@config "../../tailwind.config.mjs";
 @import "tailwindcss" layer(base);
 @import "../styles/kp-tokens.css";
 @import "../styles/kp-components.css";
 
 @theme {
-  /* Reset alle farger først */
-  --color-*: initial;
   
   /* KUN nødvendige farger */
   --color-white: #ffffff;

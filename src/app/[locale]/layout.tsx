@@ -155,7 +155,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   try {
     messages = await getMessages();
   } catch {
-    messages = await import(`../../../messages/en.json`).then((m) => m.default);
+    messages = await import(`../../../messages/en/auth.json`).then((m) => m.default);
   }
 
   const hdrs = await headers();
@@ -262,7 +262,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <OrganizationJsonLd />
       </head>
       <body
-        className={`${inter.className} font-sans antialiased bg-kp-primary text-kp-primary min-h-screen`}
+        className={`${inter.className} font-sans antialiased bg-kp-bg-primary text-kp-text-primary min-h-screen`}
         suppressHydrationWarning
       >
         <ThemeProvider

@@ -160,7 +160,10 @@ function InnloggingForm() {
     >
       <div className="max-w-md mx-auto">
         <div className="flex justify-center mb-8">
-          <Link href={`/${locale}`}>
+          <Link
+            href={`/${locale}`}
+            aria-label={locale === "no" ? "Klarpakke – gå til forsiden" : "Klarpakke – go to homepage"}
+          >
             <Image
               src="/logo.svg"
               alt=""
@@ -228,7 +231,7 @@ function InnloggingForm() {
                       className={`pl-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 transition-shadow duration-200`}
                       required
                       disabled={status === "logging_in"}
-                      aria-invalid={!!loginError}
+                      aria-invalid={status === "login_error"}
                     />
                   </div>
                 </div>
@@ -251,7 +254,7 @@ function InnloggingForm() {
                       className={`pl-10 pr-10 h-12 ${RADIUS.input} border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-500 dark:placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500 transition-shadow duration-200`}
                       required
                       disabled={status === "logging_in"}
-                      aria-invalid={!!loginError}
+                      aria-invalid={status === "login_error"}
                     />
                     <button
                       type="button"

@@ -1,7 +1,5 @@
 "use client";
 
-import "@coinbase/cds-web/globalStyles";
-import "@coinbase/cds-web/defaultFontStyles";
 import { ReactNode, useMemo } from "react";
 import { MediaQueryProvider, ThemeProvider } from "@coinbase/cds-web/system";
 import { defaultTheme } from "@coinbase/cds-web/themes/defaultTheme";

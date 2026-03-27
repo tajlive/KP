@@ -244,5 +244,15 @@
     "successTitle": "You're signed up!",
     "successDesc": "Check your inbox — the first lesson is on its way.",
     "privacy": "We never share your email with third parties. Unsubscribe anytime."
+  },
+  "trustStrip": {
+    "label1": "Active users",
+    "description1": "and growing",
+    "label2": "Trustpilot rating",
+    "label3": "Starting capital",
+    "description3": "Free paper money for everyone",
+    "label4": "Auto-trading",
+    "description4": "Bot never sleeps",
+    "paymentLabel": "Secure payment methods"
   }
 }

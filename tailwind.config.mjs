@@ -47,7 +47,7 @@ const config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-dm-sans)', 'DM Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         serif: ['var(--font-instrument-serif)', 'Instrument Serif', 'Georgia', 'serif'],
         display: ['var(--font-instrument-serif)', 'Instrument Serif', 'Georgia', 'serif'],
       },
