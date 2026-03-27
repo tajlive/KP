@@ -63,7 +63,9 @@ export async function GET(
     const response = NextResponse.next();
 
     // Create authenticated Supabase client
-    const supabase = createServerClient(request, response) as ReturnType<typeof import("@supabase/ssr").createServerClient>;
+    const supabase = createServerClient(request, response) as ReturnType<
+      typeof import("@supabase/ssr").createServerClient
+    >;
 
     // Verify authentication
     const {
@@ -103,7 +105,7 @@ export async function GET(
               .from("strategies")
               .select("*")
               .eq("user_id", userId)
-              .eq("status", "active")
+              .eq("is_active", true)
               .order("created_at", { ascending: false })
               .limit(1)
               .single(),

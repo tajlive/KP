@@ -465,8 +465,10 @@ async function processSession(
 
   // ==========================================================================
   // CRITICAL: RISK MANAGEMENT CHECK
+  // Read risk config from strategy_config (not separate risk_config column)
   // ==========================================================================
-  const riskConfig: RiskConfig = session.risk_config || {
+  const stratCfg = (session.strategy_config as Record<string, unknown>) ?? {};
+  const DEFAULTS: RiskConfig = {
     maxPositionSizePercent: 2,
     stopLossPercent: 1,
     trailingStopLossPercent: 1.5,
@@ -475,6 +477,8 @@ async function processSession(
     maxDrawdownPercent: 15,
     maxLeverage: 1,
   };
+  const riskConfig: RiskConfig =
+    (stratCfg.risk_config as RiskConfig) || DEFAULTS;
 
   const riskManager = new RiskManager(riskConfig);
 
