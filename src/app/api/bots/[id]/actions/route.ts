@@ -5,12 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-/**
- * POST /api/bots/[id]/actions
- * Body: { action: 'pause' | 'resume' | 'stop' }
- * Auth: JWT required + ownership verified
- * Rate limit: 10 req/min per user
- */
 export const POST = withRateLimit(
   10,
   60_000,
@@ -35,21 +29,25 @@ export const POST = withRateLimit(
     const { action } = parsed.data;
     const db = createClient();
 
-    const statusMap: Record<string, string> = {
-      pause: "paused",
-      resume: "active",
-      stop: "stopped",
-    };
-    const newStatus = statusMap[action];
+    // strategies har is_active (boolean), ikke status-kolonne
+    const isActive = action === "resume";
+    const statusLabel =
+      action === "resume"
+        ? "active"
+        : action === "pause"
+          ? "paused"
+          : "stopped";
 
-    // Ownership check: only allow actions on own bots
-    const { data: strategy, error: stratError } = await db
+    const stratResult = await db
       .from("strategies")
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .update({ is_active: isActive, updated_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", user.id)
-      .select("id, status, strategy_type")
+      .select("id, strategy_type")
       .single();
+
+    const strategy = stratResult.data;
+    const stratError = stratResult.error;
 
     if (!strategy) {
       return NextResponse.json(
@@ -57,54 +55,48 @@ export const POST = withRateLimit(
         { status: 404 },
       );
     }
-
     if (stratError) {
-      return NextResponse.json({ error: (stratError as Error).message }, { status: 500 });
+      return NextResponse.json({ error: stratError.message }, { status: 500 });
     }
 
-    // Update corresponding session status
+    // trading_sessions: strategy_id er korrekt FK (config_id finnes ikke i schema)
     const sessionStatusMap: Record<string, string> = {
       pause: "PAUSED",
       resume: "ACTIVE",
       stop: "STOPPED",
     };
 
-    // Get session for logging
-    const { data: session } = await db
+    const sessionResult = await db
       .from("trading_sessions")
       .select("id")
-      .eq("config_id", id)
+      .eq("strategy_id", id)
       .eq("status", "ACTIVE")
       .single();
+
+    const session = sessionResult.data;
 
     await db
       .from("trading_sessions")
       .update({
         status: sessionStatusMap[action],
-        ...(action === "pause"
-          ? { paused_at: new Date().toISOString(), pause_reason: "User action" }
-          : {}),
-        ...(action === "stop"
-          ? { stopped_at: new Date().toISOString(), stop_reason: "User action" }
-          : {}),
+        ...(action === "stop" ? { stopped_at: new Date().toISOString() } : {}),
         updated_at: new Date().toISOString(),
       })
-      .eq("config_id", id)
+      .eq("strategy_id", id)
       .eq("status", "ACTIVE");
 
-    // Log the action (only if we have a session)
     if (session?.id) {
       await db.from("strategy_logs").insert({
         session_id: session.id,
         strategy_id: id,
-        strategy_type: (strategy as { strategy_type?: string }).strategy_type ?? "unknown",
+        strategy_type: strategy.strategy_type ?? "unknown",
         status: `bot_${action}`,
       });
     }
 
     return NextResponse.json({
       success: true,
-      strategy: { id, status: newStatus },
+      strategy: { id, status: statusLabel },
     });
   },
 );
