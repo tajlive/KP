@@ -11,48 +11,60 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
 export function loadEnvLocal() {
-  const envPath = resolve(root, ".env.local");
   const env = { ...process.env };
+  
+  // Les fra begge env-filer: .env.local (høyest prioritet) og .env.mcp.local
+  const envPaths = [
+    resolve(root, ".env.mcp.local"),  // Laves prioritet
+    resolve(root, ".env.local"),       // Høyest prioritet
+  ];
+  
+  let loadedTotal = 0;
+  
+  for (const envPath of envPaths) {
+    if (!existsSync(envPath)) {
+      continue;
+    }
 
-  if (!existsSync(envPath)) {
-    console.error("[load-env] .env.local ikke funnet");
-    return env;
-  }
-
-  try {
-    const content = readFileSync(envPath, "utf8");
-    let loaded = 0;
-    
-    for (const line of content.split("\n")) {
-      const trimmed = line.trim();
-      if (trimmed && !trimmed.startsWith("#")) {
-        const eq = trimmed.indexOf("=");
-        if (eq > 0) {
-          const key = trimmed.slice(0, eq).trim();
-          let value = trimmed.slice(eq + 1).trim();
-          
-          // Fjern quotes
-          if (value.startsWith('"') && value.endsWith('"')) {
-            value = value.slice(1, -1).replace(/\\"/g, '"');
-          } else if (value.startsWith("'") && value.endsWith("'")) {
-            value = value.slice(1, -1).replace(/\\'/g, "'");
-          }
-          
-          // Kun sett hvis ikke allerede definert (prioriter eksisterende env)
-          if (env[key] === undefined || env[key] === "") {
-            env[key] = value;
-            loaded++;
+    try {
+      const content = readFileSync(envPath, "utf8");
+      let loaded = 0;
+      const fileName = envPath.split('/').pop();
+      
+      for (const line of content.split("\n")) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith("#")) {
+          const eq = trimmed.indexOf("=");
+          if (eq > 0) {
+            const key = trimmed.slice(0, eq).trim();
+            let value = trimmed.slice(eq + 1).trim();
+            
+            // Fjern quotes
+            if (value.startsWith('"') && value.endsWith('"')) {
+              value = value.slice(1, -1).replace(/\\"/g, '"');
+            } else if (value.startsWith("'") && value.endsWith("'")) {
+              value = value.slice(1, -1).replace(/\\'/g, "'");
+            }
+            
+            // Kun sett hvis ikke allerede definert (prioriter eksisterende env)
+            // Siden .env.local kommer sist, vil den overstyre .env.mcp.local
+            if (env[key] === undefined || env[key] === "") {
+              env[key] = value;
+              loaded++;
+            }
           }
         }
       }
+      
+      console.error(`[load-env] Lastet ${loaded} variabler fra ${fileName}`);
+      loadedTotal += loaded;
+    } catch (e) {
+      console.error(`[load-env] Feil ved lesing av ${envPath}:`, e.message);
     }
-    
-    console.error(`[load-env] Lastet ${loaded} variabler fra .env.local`);
-    return env;
-  } catch (e) {
-    console.error("[load-env] Feil ved lesing:", e.message);
-    return env;
   }
+  
+  console.error(`[load-env] Totalt lastet: ${loadedTotal} variabler`);
+  return env;
 }
 
 // Hvis kjørt direkte, print alle keys (ikke verdier)
