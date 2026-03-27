@@ -110,6 +110,14 @@ jobs:
       - name: 📦 Install
         run: npm ci --prefer-offline
 
+      - name: 🌐 i18n Validering
+        run: npm run i18n:validate
+        id: i18n
+
+      - name: 🎨 CSS-klasse validering
+        run: node scripts/validate-css-classes.mjs
+        id: cssvalidate
+
       - name: 📂 Restore Next.js build cache
         uses: actions/cache@v5
         with:

@@ -155,7 +155,15 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   try {
     messages = await getMessages();
   } catch {
-    messages = await import(`../../../messages/en/auth.json`).then((m) => m.default);
+    // Fallback: last kritiske namespaces for å unngå blank side
+    // Bruker Promise.all for å laste parallelt og redusere TTFB ved feil
+    const [base, landing, navigation, auth] = await Promise.all([
+      import('../../../messages/en/base.json').then((m) => m.default).catch(() => ({})),
+      import('../../../messages/en/landing.json').then((m) => m.default).catch(() => ({})),
+      import('../../../messages/en/navigation.json').then((m) => m.default).catch(() => ({})),
+      import('../../../messages/en/auth.json').then((m) => m.default).catch(() => ({})),
+    ]);
+    messages = { base, landing, navigation, auth };
   }
 
   const hdrs = await headers();
