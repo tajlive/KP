@@ -1,26 +1,54 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { useTradingStore } from '@/store/tradingStore';
+import { describe, it, expect, beforeEach, beforeAll } from "vitest";
+import { useTradingStore } from "@/store/tradingStore";
 
-describe('Trading Store', () => {
+// Mock localStorage — zustand persist bruker det som default storage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => {
+      store[key] = String(value);
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    key: (i: number) => Object.keys(store)[i] ?? null,
+    get length() {
+      return Object.keys(store).length;
+    },
+  };
+})();
+
+beforeAll(() => {
+  Object.defineProperty(global, "localStorage", {
+    value: localStorageMock,
+    writable: true,
+  });
+});
+
+describe("Trading Store", () => {
   beforeEach(() => {
     // Reset store to initial state
     useTradingStore.getState().resetPortfolio();
   });
 
-  describe('Portfolio', () => {
-    it('should initialize with 1M NOK balance', () => {
+  describe("Portfolio", () => {
+    it("should initialize with 1M NOK balance", () => {
       const { portfolio } = useTradingStore.getState();
       expect(portfolio.balance).toBe(1_000_000);
       expect(portfolio.equity).toBe(1_000_000);
     });
 
-    it('should reset portfolio correctly', () => {
+    it("should reset portfolio correctly", () => {
       const store = useTradingStore.getState();
-      
+
       // Open a position first
       store.openPosition({
-        symbol: 'BTCUSDT',
-        side: 'long',
+        symbol: "BTCUSDT",
+        side: "long",
         entryPrice: 50000,
         quantity: 0.1,
         leverage: 2,
@@ -36,58 +64,58 @@ describe('Trading Store', () => {
     });
   });
 
-  describe('Market Data', () => {
-    it('should update market data for symbol', () => {
+  describe("Market Data", () => {
+    it("should update market data for symbol", () => {
       const store = useTradingStore.getState();
-      
-      store.updateMarketData('BTCUSDT', {
+
+      store.updateMarketData("BTCUSDT", {
         price: 51000,
         change24h: 1000,
         changePercent24h: 2,
       });
 
       const { marketData } = useTradingStore.getState();
-      expect(marketData['BTCUSDT'].price).toBe(51000);
-      expect(marketData['BTCUSDT'].change24h).toBe(1000);
-      expect(marketData['BTCUSDT'].changePercent24h).toBe(2);
+      expect(marketData["BTCUSDT"].price).toBe(51000);
+      expect(marketData["BTCUSDT"].change24h).toBe(1000);
+      expect(marketData["BTCUSDT"].changePercent24h).toBe(2);
     });
   });
 
-  describe('Positions', () => {
-    it('should calculate P&L correctly for long position', () => {
+  describe("Positions", () => {
+    it("should calculate P&L correctly for long position", () => {
       const store = useTradingStore.getState();
-      
+
       // Set market price
-      store.updateMarketData('BTCUSDT', { price: 50000 });
-      
+      store.updateMarketData("BTCUSDT", { price: 50000 });
+
       // Open position
       const result = store.openPosition({
-        symbol: 'BTCUSDT',
-        side: 'long',
+        symbol: "BTCUSDT",
+        side: "long",
         entryPrice: 50000,
         quantity: 0.1,
         leverage: 2,
       });
 
       expect(result.success).toBe(true);
-      
+
       // Update price up 10%
       store.updatePosition(result.position!.id, 55000);
-      
+
       const { positions } = useTradingStore.getState();
-      const position = positions.find(p => p.id === result.position!.id);
-      
+      const position = positions.find((p) => p.id === result.position!.id);
+
       // P&L should be positive (10% price increase * 2x leverage)
       expect(position!.pnl).toBeGreaterThan(0);
       expect(position!.pnlPercent).toBeCloseTo(20, 0); // 10% * 2x leverage
     });
 
-    it('should reject position with excessive leverage', async () => {
+    it("should reject position with excessive leverage", async () => {
       const store = useTradingStore.getState();
-      
+
       const result = await store.openPosition({
-        symbol: 'BTCUSDT',
-        side: 'long',
+        symbol: "BTCUSDT",
+        side: "long",
         entryPrice: 50000,
         quantity: 0.1,
         leverage: 150, // Max is 10
@@ -96,12 +124,12 @@ describe('Trading Store', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject position with insufficient margin', async () => {
+    it("should reject position with insufficient margin", async () => {
       const store = useTradingStore.getState();
-      
+
       const result = await store.openPosition({
-        symbol: 'BTCUSDT',
-        side: 'long',
+        symbol: "BTCUSDT",
+        side: "long",
         entryPrice: 50000,
         quantity: 1000, // Way too much
         leverage: 1,
@@ -111,23 +139,23 @@ describe('Trading Store', () => {
     });
   });
 
-  describe('Symbol Selection', () => {
-    it('should update selected symbol', () => {
+  describe("Symbol Selection", () => {
+    it("should update selected symbol", () => {
       const store = useTradingStore.getState();
-      
-      store.setSelectedSymbol('ETHUSDT');
-      
+
+      store.setSelectedSymbol("ETHUSDT");
+
       const { selectedSymbol } = useTradingStore.getState();
-      expect(selectedSymbol).toBe('ETHUSDT');
+      expect(selectedSymbol).toBe("ETHUSDT");
     });
 
-    it('should update selected timeframe', () => {
+    it("should update selected timeframe", () => {
       const store = useTradingStore.getState();
-      
-      store.setSelectedTimeframe('1h');
-      
+
+      store.setSelectedTimeframe("1h");
+
       const { selectedTimeframe } = useTradingStore.getState();
-      expect(selectedTimeframe).toBe('1h');
+      expect(selectedTimeframe).toBe("1h");
     });
   });
 });
