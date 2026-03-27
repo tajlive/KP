@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # DB PUSH – Kjør kun Supabase-migrasjoner (ingen build/Vercel-deploy)
 # ============================================================================
@@ -19,12 +20,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node (for npx supabase)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
 
       - name: 🔗 Supabase link & push
         run: |

@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # AUTO CREATE PR – Opprett PR automatisk ved push til feature-branch
 # ============================================================================
@@ -38,7 +39,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: ⬇️ Checkout (gh CLI trenger git-kontekst)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
 

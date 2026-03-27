@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # AUTO-LABEL — Legg til labels basert på filendringer
 # ============================================================================
@@ -15,6 +16,10 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
+
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   label:

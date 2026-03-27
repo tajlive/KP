@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # Varsling når prod-helse feiler (DB, signal-pipeline, eller overall unhealthy).
 # Secret OPS_ALERT_WEBHOOK_URL → f.eks. Slack Incoming Webhook inn i #all-klarpakke (felles ops-kanal).
 # Uten webhook: feilet run synes under Actions; aktiver e-post for failed workflows i GitHub-innstillinger.
@@ -21,7 +22,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Prod health gate
         run: node scripts/prod-health-gate.mjs

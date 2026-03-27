@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 name: Domain cloudbase guard
 
 on:
@@ -5,17 +6,20 @@ on:
     - cron: "17 3 * * *"
   workflow_dispatch:
 
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   guard:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Check Cloudbase domain health
         run: node scripts/domain-cloudbase-guard.mjs
         env:
           APP_DOMAIN: www.klarpakke.no
           HEALTH_URL: https://www.klarpakke.no/api/health
-

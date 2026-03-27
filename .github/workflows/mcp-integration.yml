@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 name: MCP Integration Tests
 
 on:
@@ -42,7 +43,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       
     - name: Validate MCP config (JSON + .cursor ↔ .mcp ↔ .kimi)
       run: node scripts/validate-mcp-config.mjs
@@ -61,7 +62,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       
     - name: Check for exposed secrets
       run: |
@@ -89,7 +90,7 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         

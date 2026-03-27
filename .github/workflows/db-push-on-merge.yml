@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 # ============================================================================
 # DB PUSH ON MERGE – Kjør migrasjoner automatisk ved push til main
 # ============================================================================
@@ -35,12 +36,12 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node (for npx supabase)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
 
       - name: Supabase link and push
         id: dbpush
