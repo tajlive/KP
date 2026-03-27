@@ -117,7 +117,6 @@ export async function GET(
       const { data: fallbackData, error: fallbackError } = await supabase
         .from("strategies")
         .select("*, profiles:user_id(display_name, avatar_url)")
-        .eq("is_marketplace_listed", true)
         .eq("is_public", true)
         .range(offset, offset + limit - 1);
 
