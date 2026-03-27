@@ -7,9 +7,8 @@
 import { createClient } from "@/lib/utils";
 
 // Cast for supabase.from('market_data') when table is not in generated types
-type SupabaseLike = {
-  from: (table: string) => ReturnType<ReturnType<typeof createClient>["from"]>;
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySupabase = any;
 
 export type MarketRegime =
   | "bull"
@@ -257,7 +256,7 @@ export async function analyzeCurrentMarket(
   const supabase = createClient();
 
   // Fetch latest market data from database (market_data table not in generated types)
-  const { data: marketData, error } = await (supabase as SupabaseLike)
+  const { data: marketData, error } = await (supabase as AnySupabase)
     .from("market_data")
     .select("*")
     .eq("symbol", symbol)
@@ -295,7 +294,7 @@ async function calculateIndicators(symbol: string): Promise<MarketIndicators> {
   const supabase = createClient();
 
   // Get last 200 days of price data
-  const res = await (supabase as SupabaseLike)
+  const res = await (supabase as AnySupabase)
     .from("market_data")
     .select("price, high, low, volume, timestamp")
     .eq("symbol", symbol)
