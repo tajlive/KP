@@ -14,6 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   ArrowLeft,
   Pause,
   Play,
@@ -21,7 +27,10 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
+  Trash2,
+  Info,
 } from "lucide-react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { canUseAutoTradingNow } from "@/types/subscription";
 import { normalizeTier } from "@/lib/pricing/tiers";
@@ -51,6 +60,11 @@ interface Trade {
   profit_loss?: number | null;
   total_value?: number | null;
   created_at: string;
+  strategy_signal?: string | null;
+  trading_pair?: string | null;
+  status?: string | null;
+  fee?: number | null;
+  order_type?: string | null;
 }
 
 function tradeQuantity(t: Trade): number {
@@ -87,12 +101,35 @@ export function PaperTradingSessionDetail({
   const [session, setSession] = useState<TradingSession>(initialSession);
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
   const [loading, setLoading] = useState(false);
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDeleteTrade = async (tradeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Slette denne traden? Dette kan ikke angres.")) return;
+    setDeletingId(tradeId);
+    try {
+      const res = await fetch(`/api/paper-trading/trades/${tradeId}`, { method: "DELETE" });
+      if (res.ok) {
+        setTrades((prev) => prev.filter((t) => t.id !== tradeId));
+        if (selectedTrade?.id === tradeId) setSelectedTrade(null);
+        toast.success("Trade slettet");
+      } else {
+        const d = await res.json();
+        toast.error(d?.error ?? "Kunne ikke slette traden");
+      }
+    } catch {
+      toast.error("Nettverksfeil — prøv igjen");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const refetchTrades = useCallback(async () => {
     const { data, error } = await supabase
       .from("trades")
       .select(
-        "id, side, quantity, price, realized_pnl, created_at, total_value, executed_at",
+        "id, side, quantity, price, realized_pnl, created_at, total_value, executed_at, strategy_signal, trading_pair, status, fee, order_type",
       )
       .eq("session_id", session.id)
       .order("executed_at", { ascending: false })
@@ -113,6 +150,11 @@ export function PaperTradingSessionDetail({
         realized_pnl: row.realized_pnl,
         total_value: row.total_value ?? undefined,
         created_at: row.executed_at ?? row.created_at,
+        strategy_signal: (row as Record<string, unknown>).strategy_signal as string | null,
+        trading_pair: (row as Record<string, unknown>).trading_pair as string | null,
+        status: (row as Record<string, unknown>).status as string | null,
+        fee: (row as Record<string, unknown>).fee as number | null,
+        order_type: (row as Record<string, unknown>).order_type as string | null,
       })),
     );
   }, [session.id, supabase]);
@@ -163,6 +205,11 @@ export function PaperTradingSessionDetail({
             total_value:
               row.total_value != null ? Number(row.total_value) : undefined,
             created_at: String(row.executed_at ?? row.created_at ?? ""),
+            strategy_signal: row.strategy_signal != null ? String(row.strategy_signal) : null,
+            trading_pair: row.trading_pair != null ? String(row.trading_pair) : null,
+            status: row.status != null ? String(row.status) : null,
+            fee: row.fee != null ? Number(row.fee) : null,
+            order_type: row.order_type != null ? String(row.order_type) : null,
           };
           setTrades((prev) => {
             if (prev.some((t) => t.id === mapped.id)) return prev;
@@ -414,7 +461,12 @@ export function PaperTradingSessionDetail({
       {/* Trades List */}
       <Card>
         <CardHeader>
-          <CardTitle>{t("trades")}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            {t("trades")}
+            <span className="text-xs font-normal text-slate-400 dark:text-slate-500 ml-1">
+              — klikk for detaljer
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {trades.length === 0 ? (
@@ -427,20 +479,22 @@ export function PaperTradingSessionDetail({
                 const qty = tradeQuantity(trade);
                 const pnl = tradePnl(trade);
                 const isTradeProfitable = pnl != null ? pnl >= 0 : true;
-                const baseSymbol = session.trading_pair.split("/")[0] ?? "";
+                const baseSymbol = (trade.trading_pair ?? session.trading_pair).split("/")[0] ?? "";
                 const nok =
                   trade.total_value != null &&
                   Number.isFinite(trade.total_value)
                     ? trade.total_value
                     : null;
+                const isDeleting = deletingId === trade.id;
 
                 return (
                   <div
                     key={trade.id}
                     data-testid="paper-session-trade-row"
-                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                    onClick={() => setSelectedTrade(trade)}
+                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/70 transition-colors"
                   >
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-3 flex-wrap min-w-0">
                       <Badge
                         variant={trade.side === "buy" ? "default" : "secondary"}
                       >
@@ -458,21 +512,20 @@ export function PaperTradingSessionDetail({
                       </span>
                       {nok != null && (
                         <span className="text-slate-500 text-sm">
-                          (~
-                          {nok.toLocaleString("nb-NO", {
-                            maximumFractionDigits: 0,
-                          })}{" "}
-                          kr)
+                          (~{nok.toLocaleString("nb-NO", { maximumFractionDigits: 0 })} kr)
                         </span>
                       )}
+                      {trade.strategy_signal ? (
+                        <span className="text-xs text-slate-500 dark:text-slate-400 italic truncate max-w-[160px]">
+                          {trade.strategy_signal}
+                        </span>
+                      ) : null}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {pnl != null && (
                         <span
                           className={`text-sm font-medium ${
-                            isTradeProfitable
-                              ? "text-green-600"
-                              : "text-red-600"
+                            isTradeProfitable ? "text-green-600" : "text-red-600"
                           }`}
                         >
                           {isTradeProfitable ? "+" : ""}
@@ -485,6 +538,21 @@ export function PaperTradingSessionDetail({
                         ) : (
                           <TrendingDown className="w-4 h-4 text-red-600" />
                         ))}
+                      <Info className="w-3.5 h-3.5 text-slate-400 ml-1" aria-hidden />
+                      {session.mode === "paper" && (
+                        <button
+                          onClick={(e) => handleDeleteTrade(trade.id, e)}
+                          disabled={isDeleting}
+                          title="Slett trade"
+                          className="ml-1 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-40"
+                        >
+                          {isDeleting ? (
+                            <span className="text-xs">...</span>
+                          ) : (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -493,6 +561,67 @@ export function PaperTradingSessionDetail({
           )}
         </CardContent>
       </Card>
+
+      {/* Trade detalj-modal */}
+      <Dialog open={!!selectedTrade} onOpenChange={(o) => { if (!o) setSelectedTrade(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Badge variant={selectedTrade?.side === "buy" ? "default" : "secondary"}>
+                {selectedTrade?.side === "buy" ? t("buy") : t("sell")}
+              </Badge>
+              Trade-detaljer
+            </DialogTitle>
+          </DialogHeader>
+          {selectedTrade && (() => {
+            const qty = tradeQuantity(selectedTrade);
+            const pnl = tradePnl(selectedTrade);
+            const pair = selectedTrade.trading_pair ?? session.trading_pair;
+            const rows: [string, string][] = [
+              ["Par", pair],
+              ["Retning", selectedTrade.side === "buy" ? "Kjøp" : "Salg"],
+              ["Ordretype", selectedTrade.order_type ?? "market"],
+              ["Antall", qty.toFixed(8)],
+              ["Pris", `${selectedTrade.price.toLocaleString("nb-NO", { maximumFractionDigits: 2 })} USDT`],
+              ["Verdi", selectedTrade.total_value != null ? `${Number(selectedTrade.total_value).toLocaleString("nb-NO", { maximumFractionDigits: 0 })} kr` : "—"],
+              ["Gebyr", selectedTrade.fee != null ? `${Number(selectedTrade.fee).toLocaleString("nb-NO")} kr` : "0 kr"],
+              ["P&L", pnl != null ? `${pnl >= 0 ? "+" : ""}${pnl.toLocaleString("nb-NO")} kr` : "—"],
+              ["Status", selectedTrade.status ?? "filled"],
+              ["Tidspunkt", new Date(selectedTrade.created_at).toLocaleString("nb-NO")],
+            ];
+            return (
+              <div className="space-y-3 pt-2">
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                  {rows.map(([label, value]) => (
+                    <>
+                      <dt key={`l-${label}`} className="text-slate-500 dark:text-slate-400">{label}</dt>
+                      <dd key={`v-${label}`} className="text-slate-900 dark:text-white font-medium text-right">{value}</dd>
+                    </>
+                  ))}
+                </dl>
+                {selectedTrade.strategy_signal && (
+                  <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Signal</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">{selectedTrade.strategy_signal}</p>
+                  </div>
+                )}
+                {session.mode === "paper" && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="w-full mt-2 gap-2"
+                    disabled={deletingId === selectedTrade.id}
+                    onClick={(e) => handleDeleteTrade(selectedTrade.id, e)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Slett trade
+                  </Button>
+                )}
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </PremiumTradingShell>
   );
 }

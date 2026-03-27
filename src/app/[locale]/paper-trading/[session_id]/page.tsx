@@ -111,7 +111,7 @@ export default async function PaperTradingSessionPage({
     const { data: trades, error: tradesError } = await supabase
       .from("trades")
       .select(
-        "id, side, quantity, price, realized_pnl, created_at, total_value, executed_at",
+        "id, side, quantity, price, realized_pnl, created_at, total_value, executed_at, strategy_signal, trading_pair, status, fee, order_type",
       )
       .eq("session_id", session_id)
       .order("executed_at", { ascending: false })
