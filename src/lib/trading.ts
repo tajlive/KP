@@ -236,7 +236,7 @@ export const getTrades = async (
     .range(offset, offset + limit - 1);
 
   if (symbol) {
-    query = query.eq("symbol", symbol);
+    query = query.eq("trading_pair", symbol);
   }
 
   const { data, error } = await query;
