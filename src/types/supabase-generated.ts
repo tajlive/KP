@@ -7942,18 +7942,6 @@ export type Database = {
         Args: { p_notification_type: string; p_user_id: string };
         Returns: boolean;
       };
-      store_binance_keys: {
-        Args: {
-          p_api_key: string;
-          p_api_secret: string;
-          p_is_testnet?: boolean;
-          p_user_id: string;
-        };
-        Returns: {
-          api_key_id: string;
-          api_secret_id: string;
-        }[];
-      };
       store_exchange_connection: {
         Args: {
           p_api_key: string;
