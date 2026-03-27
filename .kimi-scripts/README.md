@@ -9,7 +9,7 @@ Complete optimization suite for Klarpakke production readiness.
 | 01 | Mobile Landing Optimization | 4h | CRITICAL | P0 |
 | 02 | Security Headers | 2h | HIGH | P0 |
 | 03 | Performance Optimizations | 3h | HIGH | P1 |
-| 04 | Route Consolidation | 6h | HIGH | P1 |
+| 04 | Route Consolidation (Phase 1) | 6h | HIGH | P1 |
 | 05 | Accessibility Audit | 4h | MEDIUM | P2 |
 | 06 | Storybook Setup | 8h | MEDIUM | P2 |
 | 07 | E2E Test Expansion | 6h | HIGH | P1 |
