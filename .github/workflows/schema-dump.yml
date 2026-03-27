@@ -43,17 +43,27 @@ jobs:
           mkdir -p docs
           TIMESTAMP=$(date '+%Y-%m-%d %H:%M UTC')
 
+          if [ -z "$DATABASE_URL" ]; then
+            echo "⚠️  DATABASE_URL secret ikke satt — hopper over psql-dump"
+            cat > docs/database-schema.md << HEADER
+# Klarpakke Database Schema
+> Auto-generert: $TIMESTAMP
+> ⚠️ DATABASE_URL ikke konfigurert — legg til som GitHub Secret for full dump
+HEADER
+            exit 0
+          fi
+
           cat > docs/database-schema.md << HEADER
-          # Klarpakke Database Schema
-          > Auto-generert: $TIMESTAMP
-          > Prosjekt: vuxbjlykgmzskxbclquf
-          > IKKE rediger denne filen manuelt — overskrives ved neste push til main
-          >
-          > **Bruk**: Lim inn hele denne filen øverst i KIMI 2.5 / Claude for full DB-kontekst
+# Klarpakke Database Schema
+> Auto-generert: $TIMESTAMP
+> Prosjekt: vuxbjlykgmzskxbclquf
+> IKKE rediger denne filen manuelt — overskrives ved neste push til main
+>
+> **Bruk**: Lim inn hele denne filen øverst i KIMI 2.5 / Claude for full DB-kontekst
 
-          ---
+---
 
-          HEADER
+HEADER
 
           # Tabelloversikt med RLS-status
           echo '## Tabeller' >> docs/database-schema.md
