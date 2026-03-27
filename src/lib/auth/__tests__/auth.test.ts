@@ -21,12 +21,19 @@ const originalEnv = process.env;
 /** getAppUrl/getCallbackUrl bruker window først i jsdom — simuler SSR for env-baserte tester */
 async function withServerEnv<T>(fn: () => Promise<T> | T): Promise<T> {
   const prev = globalThis.window;
-  // @ts-expect-error — midlertidig Node/SSR for denne blokken
-  delete globalThis.window;
+  Reflect.deleteProperty(globalThis, "window");
   try {
     return await fn();
   } finally {
-    globalThis.window = prev;
+    if (prev === undefined) {
+      Reflect.deleteProperty(globalThis, "window");
+    } else {
+      Object.defineProperty(globalThis, "window", {
+        value: prev,
+        writable: true,
+        configurable: true,
+      });
+    }
   }
 }
 

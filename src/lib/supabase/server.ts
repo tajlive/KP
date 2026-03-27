@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Database } from "../../types/supabase-generated";
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 import {
@@ -7,6 +6,12 @@ import {
 } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
+
+type SupabaseCookie = {
+  name: string;
+  value: string;
+  options?: Parameters<NextResponse["cookies"]["set"]>[2];
+};
 
 /**
  * Creates a Supabase service-role client (elevated privileges, bypasses RLS).
@@ -32,7 +37,7 @@ export function createClient() {
  * - Route Handler (sync): createServerClient(request, response)
  * - Server Component (async): await createServerClient()
  */
- 
+
 export function createServerClient(
   request: NextRequest,
   response: NextResponse,
@@ -50,11 +55,11 @@ export function createServerClient(
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {
     return createSSRServerClient<Database>(url, key, {
-      cookieEncoding: 'raw',
+      cookieEncoding: "raw",
       cookies: {
         getAll: () => request.cookies.getAll(),
-        setAll: (cookiesToSet: any) => {
-          cookiesToSet.forEach((cookie: any) => {
+        setAll: (cookiesToSet: SupabaseCookie[]) => {
+          cookiesToSet.forEach((cookie) => {
             const { name, value, options } = cookie;
             response.cookies.set(name, value, options);
           });
@@ -68,14 +73,19 @@ export function createServerClient(
   return (async () => {
     const cookieStore = await cookies();
     return createSSRServerClient<Database>(url, key, {
-      cookieEncoding: 'raw',
+      cookieEncoding: "raw",
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cookiesToSet: any) => {
-          cookiesToSet.forEach((cookie: any) => {
-            const { name, value, options } = cookie;
-            cookieStore.set(name, value, options);
-          });
+        setAll: (cookiesToSet: SupabaseCookie[]) => {
+          try {
+            cookiesToSet.forEach((cookie) => {
+              const { name, value, options } = cookie;
+              cookieStore.set(name, value, options);
+            });
+          } catch {
+            // Next.js 15+: cookieStore.set er ikke tillatt i RSC — sesjonsoppdatering skjer i middleware/route.
+            // getUser() kan fortsatt trigge Supabase refresh-kall som forsøker setAll; ignorer her.
+          }
         },
       },
     });

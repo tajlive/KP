@@ -126,8 +126,13 @@ test.describe("Trading flow and tier-gate @critical", () => {
     }
     const currentUrl = page.url();
     if (loginWithNext("paper-trading").test(currentUrl)) {
-      console.log("⚠️ Redirected to login (expected without auth credentials)");
-      test.skip();
+      await expect(
+        page.getByRole("link", {
+          name: /Logg inn|Log in|Opprett konto|Create account/i,
+        }),
+      ).toBeVisible({ timeout: 10_000 });
+      console.log("✅ Redirected to login/guest path as expected");
+      return;
     }
 
     // Skip if we see the public teaser (unauthenticated)
@@ -139,10 +144,13 @@ test.describe("Trading flow and tier-gate @critical", () => {
       .isVisible({ timeout: 5000 })
       .catch(() => false);
     if (teaserVisible) {
-      console.log(
-        "⚠️ Unauthenticated — seeing teaser, skipping sessions assertions",
-      );
-      test.skip();
+      await expect(
+        page.getByRole("link", {
+          name: /Logg inn|Log in|Opprett konto|Create account/i,
+        }),
+      ).toBeVisible({ timeout: 10_000 });
+      console.log("✅ Guest teaser visible when sessions view is gated");
+      return;
     }
 
     await expect(page).toHaveURL(
@@ -173,10 +181,14 @@ test.describe("Trading flow and tier-gate @critical", () => {
       .isVisible({ timeout: 10000 })
       .catch(() => false);
     if (!backVisible) {
-      console.log(
-        "⚠️ Sessions view not loaded (auth may have failed); skipping",
-      );
-      test.skip();
+      // Hvis sessions ikke er synlig, valider at vi i stedet fikk en trygg guest-flate.
+      await expect(
+        page.getByRole("link", {
+          name: /Logg inn|Log in|Opprett konto|Create account/i,
+        }),
+      ).toBeVisible({ timeout: 10_000 });
+      console.log("✅ Sessions gated; guest CTA rendered");
+      return;
     }
     await expect(
       backToOverview.or(backToDashboard).or(backLinksFallback),

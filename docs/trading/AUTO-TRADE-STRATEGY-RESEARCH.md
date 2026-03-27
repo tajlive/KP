@@ -67,10 +67,11 @@ Systematisk gjennomgang av **alle auto-trade-strategier** og tilhørende risiko-
 
 ## Siste kjøring
 
-| Dato       | Scope                                                | Utfall                                                                                                                                                                       | PR / Linear                |
-| ---------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| 2026-03-20 | Alle produktstrategier + tick + presets + duplikater | P0/P1-rapport; **implementert** `strategy-id-aliases` + vitest; dokumentert mismatch `ai_copy`                                                                               | — (commit / KLA ved behov) |
-| 2026-03-21 | P1 katalog + session + UX                            | **strategy-catalog**, beriket `startStrategy` + `POST /api/trading/sessions`, grid `upperPrice`/`levels`-alias i tick, `RobotThinkingStrip` (no/en i18n), vitest for katalog | —                          |
+| Dato       | Scope                                                | Utfall                                                                                                                                                                                                                                                     | PR / Linear                |
+| ---------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| 2026-03-27 | Operasjonell verifikasjon + P1-awareness             | Verifisert at `ai_copy` fortsatt er fallback til `multi_signal` i tick (`resolveTickStrategyEngineKey`), mens UI/katalog fortsatt eksponerer `ai_copy` som egen strategi. Krever videre P1-c avklaring (dedikert motor vs. tydelig disable/kommunikasjon). | Linear: KLA-241 oppdatert  |
+| 2026-03-20 | Alle produktstrategier + tick + presets + duplikater | P0/P1-rapport; **implementert** `strategy-id-aliases` + vitest; dokumentert mismatch `ai_copy`                                                                                                                                                             | — (commit / KLA ved behov) |
+| 2026-03-21 | P1 katalog + session + UX                            | **strategy-catalog**, beriket `startStrategy` + `POST /api/trading/sessions`, grid `upperPrice`/`levels`-alias i tick, `RobotThinkingStrip` (no/en i18n), vitest for katalog                                                                               | —                          |
 
 ## Relatert
 

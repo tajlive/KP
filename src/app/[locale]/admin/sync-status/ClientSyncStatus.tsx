@@ -1,29 +1,52 @@
+"use client";
 
-
-
-
-'use client';
-
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  RefreshCw, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
+import { useState, useEffect } from "react";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  RefreshCw,
+  CheckCircle,
+  AlertCircle,
+  Clock,
   Users,
   TrendingUp,
   Activity,
-  Play
-} from 'lucide-react';
-import { toast } from 'sonner';
+  Play,
+} from "lucide-react";
+import { toast } from "sonner";
+import type { Database } from "@/types/supabase-generated";
+
+type DbWithAutoTradesLegacy = Database & {
+  public: Database["public"] & {
+    Tables: Database["public"]["Tables"] & {
+      auto_trades_legacy: {
+        Row: { id: string };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+    };
+  };
+};
+
+function fromAutoTradesLegacy(db: SupabaseClient<Database>) {
+  return (db as unknown as SupabaseClient<DbWithAutoTradesLegacy>).from(
+    "auto_trades_legacy",
+  );
+}
 
 interface SyncLog {
   id: string;
   user_id: string;
-  status: 'success' | 'error' | 'in_progress' | null;
+  status: "success" | "error" | "in_progress" | null;
   message: string | null;
   trades_fetched: number | null;
   trades_saved: number | null;
@@ -56,55 +79,57 @@ export default function SyncStatusPage() {
     try {
       // Get all sync logs
       const { data: logs, error: logsError } = await supabase
-        .from('trade_sync_log')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .from("trade_sync_log")
+        .select("*")
+        .order("created_at", { ascending: false })
         .limit(100);
 
       if (logsError) throw logsError;
 
       // Get user profiles for email lookup
       const { data: profiles } = await supabase
-        .from('user_profiles')
-        .select('id, email');
+        .from("user_profiles")
+        .select("id, email");
 
-      const emailMap = new Map(profiles?.map(p => [p.id, p.email]) || []);
+      const emailMap = new Map(profiles?.map((p) => [p.id, p.email]) || []);
 
       // Enrich logs with emails
-      const enrichedLogs = logs?.map(log => ({
-        ...log,
-        user_email: emailMap.get(log.user_id),
-      })) || [];
+      const enrichedLogs =
+        logs?.map((log) => ({
+          ...log,
+          user_email: emailMap.get(log.user_id),
+        })) || [];
 
       // Calculate stats
       const last24Hours = enrichedLogs.filter(
-        log => log.started_at && new Date(log.started_at).getTime() > Date.now() - 24 * 60 * 60 * 1000
+        (log) =>
+          log.started_at &&
+          new Date(log.started_at).getTime() > Date.now() - 24 * 60 * 60 * 1000,
       );
 
       // Get unique users with API keys
       const { count: apiKeyCount } = await supabase
-        .from('trading_api_keys')
-        .select('*', { count: 'exact', head: true });
+        .from("trading_api_keys")
+        .select("*", { count: "exact", head: true });
 
       // Get total trades
-      const { count: tradesCount } = await supabase
-        .from('auto_trades_legacy')
-        .select('*', { count: 'exact', head: true });
+      const { count: tradesCount } = await fromAutoTradesLegacy(
+        supabase,
+      ).select("*", { count: "exact", head: true });
 
       setStats({
         totalUsers: profiles?.length || 0,
         usersWithApiKeys: apiKeyCount || 0,
         last24Hours: {
           total: last24Hours.length,
-          successful: last24Hours.filter(l => l.status === 'success').length,
-          failed: last24Hours.filter(l => l.status === 'error').length,
+          successful: last24Hours.filter((l) => l.status === "success").length,
+          failed: last24Hours.filter((l) => l.status === "error").length,
         },
         totalTrades: tradesCount || 0,
         recentSyncs: enrichedLogs.slice(0, 20) as SyncLog[],
       });
-
     } catch (_error) {
-      toast.error('Failed to fetch sync stats');
+      toast.error("Failed to fetch sync stats");
     } finally {
       setLoading(false);
     }
@@ -113,31 +138,37 @@ export default function SyncStatusPage() {
   const triggerManualSync = async () => {
     setTriggering(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/auto-sync-trades`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Authorization': `Bearer ${session?.access_token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.access_token}`,
+            "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const result = await response.json();
-      
+
       if (result.success) {
-        toast.success(`Manual sync triggered! ${result.usersSuccess} users synced`);
+        toast.success(
+          `Manual sync triggered! ${result.usersSuccess} users synced`,
+        );
         fetchStats();
       } else {
-        toast.error(result.error || 'Sync failed');
+        toast.error(result.error || "Sync failed");
       }
     } catch (_error) {
-      toast.error('Failed to trigger sync');
+      toast.error("Failed to trigger sync");
     } finally {
       setTriggering(false);
     }
@@ -146,26 +177,32 @@ export default function SyncStatusPage() {
   useEffect(() => {
     fetchStats();
     const channel = supabase
-      .channel('admin-sync-status')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trade_sync_log' }, () => {
-        fetchStats();
-      })
+      .channel("admin-sync-status")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "trade_sync_log" },
+        () => {
+          fetchStats();
+        },
+      )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const formatTime = (date: string | null | undefined) => {
-    if (!date) return '—';
-    return new Date(date).toLocaleString('no-NO');
+    if (!date) return "—";
+    return new Date(date).toLocaleString("no-NO");
   };
 
   const getStatusIcon = (status: string | null | undefined) => {
     switch (status) {
-      case 'success':
+      case "success":
         return <CheckCircle className="w-5 h-5 text-green-400" />;
-      case 'error':
+      case "error":
         return <AlertCircle className="w-5 h-5 text-red-400" />;
-      case 'in_progress':
+      case "in_progress":
         return <RefreshCw className="w-5 h-5 text-blue-400 animate-spin" />;
       default:
         return <Clock className="w-5 h-5 text-slate-400" />;
@@ -187,8 +224,8 @@ export default function SyncStatusPage() {
           <h1 className="text-3xl font-bold text-white">Trade Sync Status</h1>
           <p className="text-slate-400">Monitor auto-sync for all users</p>
         </div>
-        <Button 
-          onClick={triggerManualSync} 
+        <Button
+          onClick={triggerManualSync}
           disabled={triggering}
           className="bg-blue-600 hover:bg-blue-700"
         >
@@ -237,9 +274,14 @@ export default function SyncStatusPage() {
               <div>
                 <p className="text-slate-400 text-sm">Success Rate</p>
                 <p className="text-2xl font-bold text-green-400">
-                  {stats?.last24Hours.total 
-                    ? Math.round((stats.last24Hours.successful / stats.last24Hours.total) * 100)
-                    : 0}%
+                  {stats?.last24Hours.total
+                    ? Math.round(
+                        (stats.last24Hours.successful /
+                          stats.last24Hours.total) *
+                          100,
+                      )
+                    : 0}
+                  %
                 </p>
               </div>
               <TrendingUp className="w-8 h-8 text-green-400" />
@@ -288,11 +330,15 @@ export default function SyncStatusPage() {
                     <td className="py-3">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(sync.status)}
-                        <span className={`text-sm capitalize ${
-                          sync.status === 'success' ? 'text-green-400' :
-                          sync.status === 'error' ? 'text-red-400' :
-                          'text-blue-400'
-                        }`}>
+                        <span
+                          className={`text-sm capitalize ${
+                            sync.status === "success"
+                              ? "text-green-400"
+                              : sync.status === "error"
+                                ? "text-red-400"
+                                : "text-blue-400"
+                          }`}
+                        >
                           {sync.status}
                         </span>
                       </div>
@@ -324,12 +370,18 @@ export default function SyncStatusPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-slate-400">
-            <p><strong className="text-white">Schedule:</strong> Every 15 minutes</p>
-            <p><strong className="text-white">Function:</strong> auto-sync-trades</p>
-            <p><strong className="text-white">Status:</strong> Active</p>
+            <p>
+              <strong className="text-white">Schedule:</strong> Every 15 minutes
+            </p>
+            <p>
+              <strong className="text-white">Function:</strong> auto-sync-trades
+            </p>
+            <p>
+              <strong className="text-white">Status:</strong> Active
+            </p>
             <p className="text-sm mt-4">
-              The auto-sync function runs automatically every 15 minutes to sync trades 
-              from Binance for all users with connected API keys.
+              The auto-sync function runs automatically every 15 minutes to sync
+              trades from Binance for all users with connected API keys.
             </p>
           </div>
         </CardContent>

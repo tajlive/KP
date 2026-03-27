@@ -56,6 +56,21 @@ const rateLimiter = new RateLimiter();
 // Create client
 let client: ReturnType<typeof Binance> | null = null;
 
+type BinanceOrderParams = {
+  symbol: string;
+  side: "BUY" | "SELL";
+  type: "MARKET" | "LIMIT";
+  quantity: string;
+  price?: string;
+  stopPrice?: string;
+  timeInForce?: "GTC" | "IOC" | "FOK";
+};
+
+type BinanceOrderResult = {
+  orderId?: number | string;
+  status?: string;
+};
+
 export function getBinanceClient(): ReturnType<typeof Binance> {
   if (!client) {
     const apiKey = process.env.BINANCE_API_KEY || "";
@@ -197,8 +212,10 @@ export async function placeOrder(params: {
       timeInForce: params.timeInForce || "GTC",
     };
 
-    // @ts-expect-error - Binance SDK types are incorrect
-    const order = await client.order(orderParams);
+    const orderClient = client as unknown as {
+      order: (params: BinanceOrderParams) => Promise<BinanceOrderResult>;
+    };
+    const order = await orderClient.order(orderParams);
 
     console.info("[Binance] Order placed successfully:", {
       orderId: order.orderId,

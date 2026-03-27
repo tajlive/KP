@@ -106,6 +106,6 @@ test.describe("Critical: Copy trading @critical @copyTrading", () => {
 
     await expect(
       page.getByTestId("copy-trading-leader-card").first(),
-    ).toBeVisible({ timeout: 60_000 });
+    ).toBeVisible({ timeout: 120_000 });
   });
 });

@@ -2,8 +2,14 @@
 
 import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
+import type { Database } from "@/types/supabase-generated";
 import { Profile } from "@/types/database";
 import { useEffect, useState } from "react";
+
+type UserProfilesInsert =
+  Database["public"]["Tables"]["user_profiles"]["Insert"];
+type UserProfilesUpdate =
+  Database["public"]["Tables"]["user_profiles"]["Update"];
 
 export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -50,15 +56,15 @@ export function useProfile() {
         setError("Ikke innlogget");
         return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error: upsertError } = await (supabase as any)
+      const upsertPayload = {
+        id: user.id,
+        user_id: user.id,
+        ...updates,
+        updated_at: new Date().toISOString(),
+      } as unknown as UserProfilesInsert;
+      const { data, error: upsertError } = await supabase
         .from("user_profiles")
-        .upsert({
-          id: user.id,
-          user_id: user.id,
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
+        .upsert(upsertPayload)
         .select()
         .single();
       if (upsertError) {
@@ -89,8 +95,7 @@ export function useProfile() {
         delete (payload as Record<string, unknown>).created_at;
       const { data, error: updateError } = await supabase
         .from("user_profiles")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Profile partial may include null; DB Update expects undefined
-        .update(payload as any)
+        .update(payload as unknown as UserProfilesUpdate)
         .eq("id", user.id)
         .select()
         .single();

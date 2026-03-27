@@ -8,7 +8,7 @@ import { createClient } from "@/lib/utils";
 import { getKlines } from "../binance";
 import {
   OPTIMIZED_PROFILES,
-  type RiskLevel,
+  type RiskLevel as OptimizedRiskLevel,
 } from "../config/optimized-risk-profiles";
 import { analyzeCurrentMarket } from "./market-regime";
 import { assessTradeRisk, calculateTradeFeatures } from "./ml-risk-assessment";
@@ -21,10 +21,13 @@ import {
   getEffectiveConsecutiveLossesForDrawdown,
 } from "./risk-management";
 import { copyTrade } from "./social-trading";
-import { createStrategy } from "./strategies";
+import { createStrategy, type StrategyCreationParams } from "./strategies";
 import type {
   AutoTradingStrategy,
   AutoTradingTrade,
+  RiskLevel,
+  StrategyType,
+  TradingPhase,
   TradingSignal,
   UserAutoTradingConfig,
 } from "./types";
@@ -140,6 +143,77 @@ interface UserAutoTradingConfigRow {
   last_trade_at: string | null;
 }
 
+function parseRiskLevel(raw: unknown): RiskLevel {
+  if (
+    raw === "conservative" ||
+    raw === "balanced" ||
+    raw === "aggressive" ||
+    raw === "custom" ||
+    raw === "dynamic"
+  ) {
+    return raw;
+  }
+  return "balanced";
+}
+
+function strategyParamsFromConfigRow(
+  configRow: UserAutoTradingConfigRow,
+): StrategyCreationParams {
+  const custom = configRow.custom_params ?? {};
+  const riskLevel = parseRiskLevel(custom.risk_level ?? custom.riskLevel);
+  const strategyTypeCandidate = (custom.strategyType ??
+    custom.strategy_type) as StrategyType | undefined;
+
+  const strategy: AutoTradingStrategy = {
+    id: configRow.strategy_id,
+    name: "auto-session",
+    risk_level: riskLevel,
+    description: "",
+    max_position_size_pct: 10,
+    stop_loss_pct: configRow.override_stop_loss_pct ?? 2,
+    daily_loss_limit_pct: configRow.override_daily_loss_limit_pct ?? 5,
+    max_trades_per_day: configRow.override_max_trades_per_day ?? 20,
+    allow_long: true,
+    allow_short: true,
+    max_leverage: 3,
+    allowed_symbols: (custom.allowed_symbols as string[] | undefined) ?? [],
+    is_active: configRow.is_enabled,
+  };
+
+  const userConfig: UserAutoTradingConfig = {
+    id: configRow.id,
+    user_id: configRow.user_id,
+    strategy_id: configRow.strategy_id,
+    is_enabled: configRow.is_enabled,
+    is_paper_trading: configRow.is_paper_trading,
+    trading_capital_nok: configRow.trading_capital_nok,
+    phase: configRow.phase as TradingPhase,
+    phase_started_at: configRow.phase_started_at,
+    phase_min_days: configRow.phase_min_days,
+    phase_profitable: configRow.phase_profitable,
+    allocated_capital_pct: configRow.allocated_capital_pct,
+    custom_params: configRow.custom_params ?? undefined,
+    override_stop_loss_pct: configRow.override_stop_loss_pct ?? undefined,
+    override_daily_loss_limit_pct:
+      configRow.override_daily_loss_limit_pct ?? undefined,
+    override_max_trades_per_day:
+      configRow.override_max_trades_per_day ?? undefined,
+    auto_extract_profit_enabled: configRow.auto_extract_profit_enabled,
+    auto_extract_profit_threshold_pct:
+      configRow.auto_extract_profit_threshold_pct,
+    auto_extract_profit_amount_pct: configRow.auto_extract_profit_amount_pct,
+    created_at: configRow.created_at,
+    updated_at: configRow.updated_at,
+    last_trade_at: configRow.last_trade_at ?? undefined,
+  };
+
+  return {
+    strategy,
+    config: userConfig,
+    strategyType: strategyTypeCandidate,
+  };
+}
+
 /**
  * Main trade execution engine
  * Combines all protection layers before executing
@@ -198,9 +272,7 @@ export async function executeTrade(
     // =========================================================================
     // LAYER 3: Circuit Breaker Check
     // =========================================================================
-    // TODO: trades table missing in types - needs migration
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: todaysTrades } = await (supabase as any)
+    const { data: todaysTrades } = await supabase
       .from("trades")
       .select("*")
       .eq("session_id", sessionId)
@@ -209,8 +281,7 @@ export async function executeTrade(
         new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: weeksTrades } = await (supabase as any)
+    const { data: weeksTrades } = await supabase
       .from("trades")
       .select("*")
       .eq("session_id", sessionId)
@@ -223,8 +294,10 @@ export async function executeTrade(
       CIRCUIT_BREAKER_DEFAULTS[config.risk_level || "balanced"];
 
     // Calculate consecutive losses and wins (for circuit breaker and drawdown recovery)
-    const todaysTradesRows = (todaysTrades || []) as AutoTradingTradeRow[];
-    const weeksTradesRows = (weeksTrades || []) as AutoTradingTradeRow[];
+    const todaysTradesRows = (todaysTrades ||
+      []) as unknown as AutoTradingTradeRow[];
+    const weeksTradesRows = (weeksTrades ||
+      []) as unknown as AutoTradingTradeRow[];
     const recentClosedTrades = [...todaysTradesRows, ...weeksTradesRows]
       .filter((t) => t.status === "CLOSED")
       .sort(
@@ -274,8 +347,8 @@ export async function executeTrade(
       config,
       circuitBreaker: circuitBreakerConfig,
       currentPortfolioValue: sessionRow.current_capital_nok,
-      todaysTrades: (todaysTrades || []) as AutoTradingTrade[],
-      weeksTrades: (weeksTrades || []) as AutoTradingTrade[],
+      todaysTrades: (todaysTrades || []) as unknown as AutoTradingTrade[],
+      weeksTrades: (weeksTrades || []) as unknown as AutoTradingTrade[],
       allTrades: [],
       consecutiveLosses,
       currentDrawdown,
@@ -311,7 +384,7 @@ export async function executeTrade(
     const tradeFeatures = calculateTradeFeatures(
       signal.symbol,
       signal,
-      (todaysTrades || []) as AutoTradingTrade[],
+      (todaysTrades || []) as unknown as AutoTradingTrade[],
     );
     const riskAssessment = assessTradeRisk(signal, tradeFeatures);
 
@@ -332,8 +405,7 @@ export async function executeTrade(
     // =========================================================================
     // LAYER 4.5: Correlation Check
     // =========================================================================
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: openPositions } = await (supabase as any)
+    const { data: openPositions } = await supabase
       .from("trades")
       .select("*")
       .eq("session_id", sessionId)
@@ -341,7 +413,7 @@ export async function executeTrade(
 
     const correlationCheck = checkNewTradeCorrelation(
       signal.symbol,
-      (openPositions || []) as AutoTradingTrade[],
+      (openPositions || []) as unknown as AutoTradingTrade[],
       config.risk_level || "balanced",
     );
 
@@ -356,15 +428,15 @@ export async function executeTrade(
     // =========================================================================
     // LAYER 5: Position Sizing (Kelly Criterion)
     // =========================================================================
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const historicalTrades = await (supabase as any)
+    const { data: historicalTradesData } = await supabase
       .from("trades")
       .select("*")
       .eq("session_id", sessionId)
       .eq("status", "CLOSED")
       .limit(50);
 
-    const closedTrades = (historicalTrades.data || []) as AutoTradingTrade[];
+    const closedTrades = (historicalTradesData ||
+      []) as unknown as AutoTradingTrade[];
     const winningTrades = closedTrades.filter((t) => (t.pnl_nok ?? 0) > 0);
 
     const winRate =
@@ -398,8 +470,9 @@ export async function executeTrade(
       marketRegime: marketAnalysis.regime,
       portfolioValue: sessionRow.current_capital_nok,
       riskTolerance:
-        OPTIMIZED_PROFILES[(config.risk_level as RiskLevel) || "moderate"]
-          ?.kellyFraction || 0.5,
+        OPTIMIZED_PROFILES[
+          (config.risk_level as OptimizedRiskLevel) || "moderate"
+        ]?.kellyFraction || 0.5,
     });
 
     // Apply position size limit from config
@@ -1271,8 +1344,7 @@ export async function runAutoTradingIteration(
       }
 
       // 4. Get strategy
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const strategy = createStrategy(configRow as any);
+      const strategy = createStrategy(strategyParamsFromConfigRow(configRow));
 
       // 5. Analyze each symbol
       const allowedSymbols = (configRow.custom_params?.allowed_symbols as

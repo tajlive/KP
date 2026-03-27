@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
+import { normalizeTier } from "@/lib/pricing/tiers";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
 import { z } from "zod";
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const tier = (profRow?.tier ?? "student") as TierSlug;
+    const tier = normalizeTier(profRow?.tier) as TierSlug;
 
     if (mode === "live") {
       if (!profRow?.binance_connected) {
@@ -167,9 +168,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Logg aktivitet
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from("activity_logs").insert({
+    // Logg aktivitet (activity_logs finnes ikke i genererte typer i alle miljøer)
+    const activityLogsFrom = supabase.from as unknown as (
+      table: "activity_logs",
+    ) => {
+      insert: (payload: {
+        user_id: string;
+        action: string;
+        details: Record<string, unknown>;
+      }) => Promise<{ error: { message: string } | null }>;
+    };
+    await activityLogsFrom("activity_logs").insert({
       user_id: user.id,
       action: "paper_trading_session_created",
       details: {

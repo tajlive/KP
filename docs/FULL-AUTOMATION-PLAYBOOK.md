@@ -160,6 +160,16 @@ Bruk dette formatet i ops-logg / Linear når en automatisert leveranse er ferdig
 - **Health:** `GET /api/health` med `status` og `version`
 - **Quality gates:** lint / type-check / unit
 
+### Siste kjøring (2026-03-27)
+
+- **Scope:** DB-migrasjonsstatus CI-gate + Supabase CLI-oppgradering. Ny `db-status`-workflow og `db-status-check`-jobb i `pr-check.yml`. Robust parser i `db-status-gate.mjs` (dual parser, binary autodetect, 60s timeout). 172 migrasjoner verifisert synket local = remote.
+- **Git:** `scripts/db-status-gate.mjs` + `.github/workflows/db-status.yml` + `.github/workflows/pr-check.yml` + `docs/MIGRATION-POLICY.md` + `supabase/migrations/999_fix_materialized_view.sql` (FROZEN header).
+- **DB gate:** `npm run db:status:gate` ✅ — `allowlisted=0 blocking=0 strict=false`.
+- **Supabase CLI:** Oppgradert `2.78.1 → 2.84.2` via `brew upgrade supabase`.
+- **Quality gates:** `node --check scripts/db-status-gate.mjs` ✅, `npm run db:status:gate` ✅.
+- **CI-workflows lagt til:** `db-status.yml` (standalone PR-gate), `db-status-check` i `pr-check.yml` (parallell med `quick-check`).
+- **Policy:** `docs/MIGRATION-POLICY.md` opprettet med allowlist-dokumentasjon og post-launch P2 rename-sekvens.
+
 ### Siste kjøring (2026-03-24)
 
 - **Scope:** Production+ gate-kjede kjørt end-to-end for trading/automation-sporet (preflight, quality, critical E2E, verify, health, CI health monitor).

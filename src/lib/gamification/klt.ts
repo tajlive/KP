@@ -1,9 +1,35 @@
 import { createClient as createBrowserClient } from "@/lib/utils";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase-generated";
 
-/** Supabase-like client for tables not in generated types (e.g. user_levels) */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnySupabase = any;
+type UserLevelsRow = {
+  user_id: string;
+  level?: number;
+  xp?: number;
+  xp_to_next?: number;
+  total_xp?: number;
+  rank?: string;
+  updated_at?: string;
+};
+
+type DbWithUserLevels = Database & {
+  public: Database["public"] & {
+    Tables: Database["public"]["Tables"] & {
+      user_levels: {
+        Row: UserLevelsRow;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+        Relationships: [];
+      };
+    };
+  };
+};
+
+function userLevelsFrom(db: SupabaseClient<Database>) {
+  return (db as unknown as SupabaseClient<DbWithUserLevels>).from(
+    "user_levels",
+  );
+}
 
 // KLT Rewards Configuration
 export const KLT_REWARDS = {
@@ -124,18 +150,11 @@ export async function awardXP(
     const supabase = createBrowserClient();
 
     // Get current level data
-    // user_levels not in generated types
-    const { data: currentLevel } = await (supabase as AnySupabase)
-      .from("user_levels")
+    const { data: currentLevel } = await userLevelsFrom(supabase)
       .select("*")
       .eq("user_id", userId)
       .single();
-    const cl = currentLevel as {
-      level?: number;
-      xp?: number;
-      xp_to_next?: number;
-      total_xp?: number;
-    } | null;
+    const cl = currentLevel as UserLevelsRow | null;
     let level = cl?.level ?? 1;
     let xp = (cl?.xp ?? 0) + amount;
     let xpToNext = cl?.xp_to_next ?? 100;
@@ -151,17 +170,15 @@ export async function awardXP(
     }
 
     // Update level
-    const { error } = await (supabase as AnySupabase)
-      .from("user_levels")
-      .upsert({
-        user_id: userId,
-        level,
-        xp,
-        xp_to_next: xpToNext,
-        total_xp: totalXP,
-        rank: getRankForLevel(level),
-        updated_at: new Date().toISOString(),
-      });
+    const { error } = await userLevelsFrom(supabase).upsert({
+      user_id: userId,
+      level,
+      xp,
+      xp_to_next: xpToNext,
+      total_xp: totalXP,
+      rank: getRankForLevel(level),
+      updated_at: new Date().toISOString(),
+    });
 
     if (error) throw error;
 

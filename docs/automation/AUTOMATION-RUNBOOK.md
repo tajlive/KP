@@ -3,7 +3,7 @@
 > **Formål:** Én oversikt over _hva_ som kjøres automatisk, _hvordan_ du verifiserer lokalt, og _hvor_ full dybde står.  
 > **Dypere kontekst:** [FULL-AUTOMATION-PLAYBOOK.md](../FULL-AUTOMATION-PLAYBOOK.md) · [MCP-CLI-CI-API.md](../MCP-CLI-CI-API.md)
 
-**Oppdatert:** 2026-03-26
+**Oppdatert:** 2026-03-27
 
 ---
 
@@ -101,6 +101,32 @@ Når en release er ferdig, logg dette i Linear:
 - Commit: `48c582385` (arbeidskopi / `main` ved kjøring)
 - **test:robot** (testbruker `tom@klarpakke.no`): lint ✅, type-check ✅, Vitest **222 pass / 1 skip**, Playwright critical-chromium **46 pass / 3 skip**, **1 flaky** (pass på retry etter Next dev minne-restart). `PLAYWRIGHT_TEST_BASE_URL` tvinges til localhost av `scripts/test-robot.sh` når ikke satt.
 - Tidligere gate (samme dag): Commit `2924cf0e7` + `30970e741`; `npm run verify` ✅; health `30970e7`, tradingSignals `ok`; critical E2E with user **47 pass / 3 skip**; `prod-health-alert.yml` success.
+
+### Operasjonell verifikasjon (2026-03-27)
+
+- Kjøring: `npm run automation:check` ✅, `npm run health:prod:gate` ✅, `npm run diagnose:signals-traders` ✅.
+- Resultat (prod): `/api/health` = `healthy`, `tradingSignals=ok`.
+- Signal/cron: heartbeat age ~15 min, feed ikke stale, `leaderboard_bots_active=4`, `trader_profiles_public=3`.
+- DB-status: `npm run db:status` viser fortsatt migrasjons-drift (lokal/remote mismatch med `999` + flere remote-only versjoner). Følg repair-rutinen i `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`.
+- DB-lint: `npm run db:lint` rapporterer feil i `extensions.index_advisor` (`hypopg_reset()` mangler) og `public.store_binance_keys` (crypto-permission). Skal ikke ignoreres før full produksjonsgate.
+- Types sync: `npm run db:gen-types` kjørt; etter adapter-fikser i admin/bot-store er `npm run type-check && npm run lint` grønn igjen.
+- P1-awareness: `ai_copy` bruker fortsatt dokumentert fallback til `multi_signal` i tick (`src/lib/trading/strategy-id-aliases.ts`).
+
+### Drift-oppfølging (2026-03-27, kveld)
+
+- Kjøring: `supabase migration repair --linked --status reverted 20260325084951 20260325085617 20260325090129` etterfulgt av `npm run db:push:drift`.
+- Resultat: tidligere remote-only drift på `20260325084951/617/129` fjernet, og lokale manglende migrasjoner ble applied (inkl. `20260327103000_fix_store_binance_keys_vault_permissions.sql`).
+- Ny `db:status`: lokal/remote matcher nå for alle migrasjoner, med unntak av historisk placeholder `999` (eksisterende legacy-markør i begge kolonner).
+- Tiltak implementert:
+  - `store_binance_keys` deprekert/fjernet via migrasjon `20260327114000_deprecate_store_binance_keys_rpc.sql` (ikke brukt i app-kode).
+  - Ny gate-script: `scripts/db-lint-gate.mjs` med eksplisitt allowlist for kjent Supabase extension-støy (`extensions.index_advisor` / `hypopg_reset`).
+  - `package.json`: `db:lint:gate` + `db:lint:ci` peker nå til gate-script (strict mode i CI).
+- Ny status:
+  - `npm run db:lint` viser kun extension-feilen i `extensions.index_advisor`.
+  - `npm run db:lint:gate` og `npm run db:lint:ci` er grønne (kun allowlistede findings ignoreres).
+- Operativ policy:
+  - Bruk `db:lint` for rå innsikt.
+  - Bruk `db:lint:ci` som blokkende gate i pipeline.
 
 ---
 

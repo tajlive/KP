@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@/lib/utils';
+import { useState, useEffect, useCallback } from "react";
+import { createClient } from "@/lib/utils";
 import {
   isPushSupported,
   requestNotificationPermission,
   subscribeToPush,
   unsubscribeFromPush,
   getPushSubscription,
-} from '@/lib/notifications/push';
+} from "@/lib/notifications/push";
 
 interface Notification {
   id: string;
@@ -28,21 +28,27 @@ interface NotificationPreferences {
 }
 
 export function useNotifications() {
-  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [permission, setPermission] =
+    useState<NotificationPermission>("default");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
+  const [preferences, setPreferences] =
+    useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const supabase = createClient();
+  type MarkNotificationsReadRpc = (
+    fn: "mark_notifications_read",
+    args: { p_notification_ids: string[] | null },
+  ) => Promise<{ error: { message: string } | null }>;
 
   // Initialize
   useEffect(() => {
     setIsSupported(isPushSupported());
-    
-    if (typeof window !== 'undefined' && 'Notification' in window) {
+
+    if (typeof window !== "undefined" && "Notification" in window) {
       setPermission(Notification.permission);
     }
 
@@ -54,7 +60,7 @@ export function useNotifications() {
   // Check push subscription status
   const checkSubscription = async () => {
     if (!isPushSupported()) return;
-    
+
     const subscription = await getPushSubscription();
     setIsSubscribed(!!subscription);
   };
@@ -63,20 +69,20 @@ export function useNotifications() {
   const fetchNotifications = async () => {
     try {
       const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .from("notifications")
+        .select("*")
+        .order("created_at", { ascending: false })
         .limit(50);
 
       if (error) throw error;
 
       setNotifications((data || []) as unknown as Notification[]);
-      
+
       // Calculate unread count
-      const unread = (data || []).filter(n => !n.is_read).length;
+      const unread = (data || []).filter((n) => !n.is_read).length;
       setUnreadCount(unread);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
     }
   };
 
@@ -84,20 +90,22 @@ export function useNotifications() {
   const fetchPreferences = async () => {
     try {
       const { data, error } = await supabase
-        .from('notification_preferences')
-        .select('*')
+        .from("notification_preferences")
+        .select("*")
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error && error.code !== "PGRST116") throw error;
 
-      setPreferences((data as NotificationPreferences | null) || {
-        price_alerts: true,
-        trade_executed: true,
-        course_reminder: true,
-        marketing_emails: false,
-      });
+      setPreferences(
+        (data as NotificationPreferences | null) || {
+          price_alerts: true,
+          trade_executed: true,
+          course_reminder: true,
+          marketing_emails: false,
+        },
+      );
     } catch (error) {
-      console.error('Error fetching preferences:', error);
+      console.error("Error fetching preferences:", error);
     } finally {
       setLoading(false);
     }
@@ -109,14 +117,14 @@ export function useNotifications() {
       const perm = await requestNotificationPermission();
       setPermission(perm);
 
-      if (perm === 'granted') {
+      if (perm === "granted") {
         const subscription = await subscribeToPush();
         setIsSubscribed(!!subscription);
         return true;
       }
       return false;
     } catch (error) {
-      console.error('Error subscribing:', error);
+      console.error("Error subscribing:", error);
       return false;
     }
   };
@@ -130,7 +138,7 @@ export function useNotifications() {
       }
       return success;
     } catch (error) {
-      console.error('Error unsubscribing:', error);
+      console.error("Error unsubscribing:", error);
       return false;
     }
   };
@@ -138,8 +146,8 @@ export function useNotifications() {
   // Mark notifications as read
   const markAsRead = async (notificationIds?: string[]) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any).rpc('mark_notifications_read', {
+      const rpc = supabase.rpc as unknown as MarkNotificationsReadRpc;
+      const { error } = await rpc("mark_notifications_read", {
         p_notification_ids: notificationIds || null,
       });
 
@@ -147,37 +155,50 @@ export function useNotifications() {
 
       // Update local state
       if (notificationIds) {
-        setNotifications(prev =>
-          prev.map(n =>
-            notificationIds.includes(n.id) ? { ...n, is_read: true } : n
-          )
+        setNotifications((prev) =>
+          prev.map((n) =>
+            notificationIds.includes(n.id) ? { ...n, is_read: true } : n,
+          ),
         );
-        setUnreadCount(prev => Math.max(0, prev - notificationIds.length));
+        setUnreadCount((prev) => Math.max(0, prev - notificationIds.length));
       } else {
-        setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+        setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
         setUnreadCount(0);
       }
     } catch (error) {
-      console.error('Error marking as read:', error);
+      console.error("Error marking as read:", error);
     }
   };
 
   // Update preferences
-  const updatePreferences = async (newPrefs: Partial<NotificationPreferences>) => {
+  const updatePreferences = async (
+    newPrefs: Partial<NotificationPreferences>,
+  ) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return false;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
-        .from('notification_preferences')
-        .upsert({ ...preferences, ...newPrefs, user_id: user.id } as Record<string, unknown>);
+      const notificationPreferencesFrom = supabase.from as unknown as (
+        table: "notification_preferences",
+      ) => {
+        upsert: (
+          payload: Record<string, unknown>,
+        ) => Promise<{ error: { message: string } | null }>;
+      };
+      const { error } = await notificationPreferencesFrom(
+        "notification_preferences",
+      ).upsert({ ...preferences, ...newPrefs, user_id: user.id } as Record<
+        string,
+        unknown
+      >);
 
       if (error) throw error;
 
-      setPreferences(prev => prev ? { ...prev, ...newPrefs } : null);
+      setPreferences((prev) => (prev ? { ...prev, ...newPrefs } : null));
       return true;
     } catch (error) {
-      console.error('Error updating preferences:', error);
+      console.error("Error updating preferences:", error);
       return false;
     }
   };
@@ -185,21 +206,21 @@ export function useNotifications() {
   // Real-time subscription for new notifications
   useEffect(() => {
     const subscription = supabase
-      .channel('notifications')
+      .channel("notifications")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
         },
         (payload) => {
           const newNotification = payload.new as Notification;
-          setNotifications(prev => [newNotification, ...prev]);
+          setNotifications((prev) => [newNotification, ...prev]);
           if (!newNotification.is_read) {
-            setUnreadCount(prev => prev + 1);
+            setUnreadCount((prev) => prev + 1);
           }
-        }
+        },
       )
       .subscribe();
 

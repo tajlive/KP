@@ -7,11 +7,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
+import { normalizeTier } from "@/lib/pricing/tiers";
+import type { Database } from "@/types/supabase-generated";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 async function userMayUseLiveTrading(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+  supabase: SupabaseClient<Database>,
   userId: string,
   tier: TierSlug,
 ): Promise<boolean> {
@@ -70,7 +72,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const tier = (profileRow?.tier ?? "student") as TierSlug;
+    const tier = normalizeTier(profileRow?.tier);
     const binanceConnected = Boolean(profileRow?.binance_connected);
     const allowLiveTier = await userMayUseLiveTrading(supabase, user.id, tier);
     const canSwitchToLive = binanceConnected && allowLiveTier;
@@ -126,8 +128,7 @@ export async function POST(request: NextRequest) {
 
     // Hvis bytte til live, sjekk at Binance er koblet til
     if (mode === "live") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: profileRow } = await (supabase as any)
+      const { data: profileRow } = await supabase
         .from("user_profiles")
         .select("binance_api_key_encrypted")
         .eq("id", user.id)

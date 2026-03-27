@@ -1,4 +1,11 @@
 -- ============================================================================
+-- LEGACY PLACEHOLDER: 999_fix_materialized_view.sql
+-- Status: FROZEN – applied on remote, do not rename or modify.
+-- Policy: Exempt from db:status gate via allowlist. See docs/MIGRATION-POLICY.md.
+-- Added: 2026-03-27
+-- ============================================================================
+
+-- ============================================================================
 -- MIGRATION: Fiks trading tables (idempotent - kan kjøres flere ganger)
 -- ============================================================================
 
