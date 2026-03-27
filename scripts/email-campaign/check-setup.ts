@@ -1,7 +1,7 @@
 /**
  * TEST AV E-POST KAMPANJE SYSTEM
  * 
- * Kjør: npx ts-node scripts/email-campaign/test.ts
+ * Kjør: node scripts/email-campaign/test.ts
  */
 
 import * as fs from 'fs';
@@ -63,8 +63,8 @@ if (allEnvOk) {
   console.log('\nNeste steg:');
   console.log('  1. Kjør SQL i Supabase: scripts/email-campaign/setup.sql');
   console.log('  2. Eksporter LinkedIn CSV');
-  console.log('  3. Kjør: npx ts-node scripts/email-campaign/index.ts --import linkedin.csv');
-  console.log('  4. Kjør: npx ts-node scripts/email-campaign/index.ts --send');
+  console.log('  3. Kjør: node scripts/email-campaign/index.ts --import linkedin.csv');
+  console.log('  4. Kjør: node scripts/email-campaign/index.ts --send');
 } else {
   console.log('❌ Mangler environment variables');
   console.log('\nLegg til i .env.local:');
