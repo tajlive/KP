@@ -138,7 +138,9 @@
     "mockupChartTimeframe": "近 24 小时",
     "mockupFloatBadge": "100,000 NOK 模拟资金",
     "mockupBtcQty": "0.025 BTC",
-    "mockupEthQty": "0.5 ETH"
+    "mockupEthQty": "0.5 ETH",
+    "mockupHigh": "24小时最高",
+    "mockupLow": "24小时最低"
   },
   "transparency": {
     "strip": "We don’t show aggregated “whole platform” stats on the homepage — so you never have to wonder if they’re real or vanity metrics.",
