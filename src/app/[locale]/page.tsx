@@ -2,13 +2,14 @@ import { Metadata } from "next";
 
 import { SURFACE } from "@/lib/design/tokens";
 import HeroSection from "@/components/landing/HeroSection";
+import { TrustStrip } from "@/components/landing/TrustStrip";
+import { StickyCTA } from "@/components/landing/StickyCTA";
 import { DemoWidget } from "@/components/landing/DemoWidget";
 import { ThreeSteps } from "@/components/landing/ThreeSteps";
 import { CoursePreview } from "@/components/landing/CoursePreview";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 import {
   LandingTransparencySection,
-  LandingTransparencyStrip,
 } from "@/components/landing/LandingTransparency";
 
 // ISR: Regenerate page every hour
@@ -73,22 +74,32 @@ export default async function HomePage({
   const { locale } = await params;
 
   return (
-    <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
-      <HeroSection locale={locale} />
+    <>
+      <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
+        {/* Hero Section — Redesigned for mobile */}
+        <HeroSection locale={locale} />
 
-      <DemoWidget />
+        {/* NEW: Trust Strip — Immediately after hero */}
+        <TrustStrip />
 
-      <CoursePreview />
+        {/* Existing sections */}
+        <DemoWidget />
 
-      {/* Tre steg — anker #land-steg for støtte/dok (ikke tredje hero-chip) */}
-      <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
-        <ThreeSteps />
-      </section>
+        <CoursePreview />
 
-      <LandingTransparencySection locale={locale} />
+        {/* Tre steg — anker #land-steg for støtte/dok */}
+        <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
+          <ThreeSteps />
+        </section>
 
-      {/* Final CTA - sterk konvertering før footer */}
-      <FinalCTASection />
-    </main>
+        <LandingTransparencySection locale={locale} />
+
+        {/* Final CTA - sterk konvertering før footer */}
+        <FinalCTASection />
+      </main>
+
+      {/* NEW: Sticky CTA — Mobile only */}
+      <StickyCTA />
+    </>
   );
 }
