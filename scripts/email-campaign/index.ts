@@ -3,9 +3,9 @@
  * 
  * Bruk:
  * 1. Eksporter LinkedIn-nettverk til CSV
- * 2. Kjør: npx ts-node scripts/email-campaign/index.ts --import linkedin.csv
- * 3. Kjør: npx ts-node scripts/email-campaign/index.ts --send
- * 4. Kjør: npx ts-node scripts/email-campaign/index.ts --followup
+ * 2. Kjør: node scripts/email-campaign/index.ts --import linkedin.csv
+ * 3. Kjør: node scripts/email-campaign/index.ts --send
+ * 4. Kjør: node scripts/email-campaign/index.ts --followup
  */
 
 import { Resend } from 'resend';
@@ -360,9 +360,9 @@ Bruk:
   --reset            Slett all kampanjedata
 
 Eksempel:
-  npx ts-node scripts/email-campaign/index.ts --import ~/Downloads/linkedin.csv
-  npx ts-node scripts/email-campaign/index.ts --send
-  npx ts-node scripts/email-campaign/index.ts --stats
+  node scripts/email-campaign/index.ts --import ~/Downloads/linkedin.csv
+  node scripts/email-campaign/index.ts --send
+  node scripts/email-campaign/index.ts --stats
       `);
   }
 }
