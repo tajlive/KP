@@ -156,7 +156,9 @@
     "mockupChartTimeframe": "Last 24h",
     "mockupFloatBadge": "100,000 NOK practice money",
     "mockupBtcQty": "0.025 BTC",
-    "mockupEthQty": "0.5 ETH"
+    "mockupEthQty": "0.5 ETH",
+    "mockupHigh": "24h High",
+    "mockupLow": "24h Low"
   },
   "transparency": {
     "strip": "We don’t show aggregated “whole platform” stats on the homepage — so you never have to wonder if they’re real or vanity metrics.",

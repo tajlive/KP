@@ -148,7 +148,9 @@
     "mockupChartTimeframe": "24 ชม. ล่าสุด",
     "mockupFloatBadge": "เงินจำลอง 100 000 NOK",
     "mockupBtcQty": "0.025 BTC",
-    "mockupEthQty": "0.5 ETH"
+    "mockupEthQty": "0.5 ETH",
+    "mockupHigh": "สูงสุด 24ชม.",
+    "mockupLow": "ต่ำสุด 24ชม."
   },
   "transparency": {
     "strip": "We don’t show aggregated “whole platform” stats on the homepage — so you never have to wonder if they’re real or vanity metrics.",
