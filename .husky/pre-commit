@@ -1,12 +1,26 @@
-#!/usr/bin/env sh
-if [ -s "${HOME}/.nvm/nvm.sh" ]; then
-  # shellcheck source=/dev/null
-  . "${HOME}/.nvm/nvm.sh"
-  nvm use 2>/dev/null || true
-fi
-export PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}"
+#!/bin/sh
+# Supabase Column Guard - Pre-commit hook
+# Sjekker for .eq("bad_column") feil før commit
 
-npx lint-staged
-./scripts/check-secrets-staged.sh
-npm run lint
-npm run type-check
+cd /Users/taj/klarpakke || exit 1
+
+echo "🔍 Sjekker for Supabase kolonne-feil..."
+
+# Kjør guard-script
+node scripts/guard-supabase-columns.mjs
+
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "❌ Pre-commit sjekk feilet!"
+    echo ""
+    echo "For å fikse automatisk, kjør:"
+    echo "  node scripts/guard-supabase-columns.mjs --fix"
+    echo ""
+    echo "Deretter stage endringene og commit på nytt."
+    exit 1
+fi
+
+echo "✅ Supabase kolonne-sjekk fullført!"
+exit 0
