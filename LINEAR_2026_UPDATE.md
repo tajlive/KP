@@ -1,9 +1,11 @@
 # Linear Issues Update - KIMI 2026 Standard Rapport
 
+> **📋 Se også:** [LINEAR_SCRIPTS_2026_UPDATE.md](./LINEAR_SCRIPTS_2026_UPDATE.md) for full oversikt over alle 11 Optimization Scripts (01-11)
+
 ## Sprint: Landing Page Conversion & Mobile-First
-**Dato:** 2026-03-12  
+**Dato:** 2026-03-12 (oppdatert 27. mars 2026)  
 **Assignee:** Kimi  
-**Status:** ✅ ALLE 10 OPPGAVER FULLFØRT
+**Status:** ✅ ALLE 10 OPPGAVER FULLFØRT + 10/11 SCRIPTS COMPLETE
 
 ---
 
