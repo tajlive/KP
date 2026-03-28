@@ -1,5 +1,6 @@
 /**
  * Regime Scan Unit Tests
+ * Updated: async cache API (Redis/Upstash-safe)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -7,8 +8,6 @@ import {
   regimeScan,
   regimeScanWithFallback,
   refreshRegime,
-  isRegimeCacheValid,
-  getRegimeCacheExpiry,
   clearRegimeCache,
   getCachedRegime,
   regimeToLabel,
@@ -38,10 +37,28 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
+// Mock @/lib/cache with an in-memory store so tests work without Redis
+const _cacheStore = new Map<string, unknown>();
+vi.mock('@/lib/cache', () => ({
+  cache: {
+    get: vi.fn(async (key: string) => _cacheStore.get(key) ?? null),
+    set: vi.fn(async (key: string, data: unknown) => {
+      _cacheStore.set(key, data);
+    }),
+    delete: vi.fn(async (key: string) => {
+      _cacheStore.delete(key);
+    }),
+    clear: vi.fn(async () => {
+      _cacheStore.clear();
+    }),
+  },
+}));
+
 describe('regimeScan', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     mockCallSonar.mockReset();
-    clearRegimeCache();
+    _cacheStore.clear();
+    await clearRegimeCache();
   });
 
   it('should return validated result on successful scan', async () => {
@@ -81,7 +98,7 @@ describe('regimeScan', () => {
     const result1 = await regimeScan();
     expect(mockCallSonar).toHaveBeenCalledTimes(1);
 
-    // Second call should use cache
+    // Second call should use cache (no new API call)
     const result2 = await regimeScan();
     expect(mockCallSonar).toHaveBeenCalledTimes(1); // Still 1
     expect(result2.regime).toBe(result1.regime);
@@ -171,9 +188,10 @@ describe('regimeScan', () => {
 });
 
 describe('regimeScanWithFallback', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     mockCallSonar.mockReset();
-    clearRegimeCache();
+    _cacheStore.clear();
+    await clearRegimeCache();
   });
 
   it('should return result on success', async () => {
@@ -205,80 +223,49 @@ describe('regimeScanWithFallback', () => {
 });
 
 describe('cache management', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     mockCallSonar.mockReset();
-    clearRegimeCache();
+    _cacheStore.clear();
+    await clearRegimeCache();
   });
 
-  it('should check if cache is valid', async () => {
-    expect(isRegimeCacheValid()).toBe(false);
-
-    const mockResponse = JSON.stringify({
-      regime: 'bull',
-      confidence: 0.8,
-      reasoning_excerpt: 'Test',
-      risk_flags: [],
-      sources: [],
-    });
-
-    mockCallSonar.mockResolvedValueOnce(mockResponse);
-    await regimeScan();
-
-    expect(isRegimeCacheValid()).toBe(true);
+  it('should return null from getCachedRegime when cache is empty', async () => {
+    const result = await getCachedRegime();
+    expect(result).toBeNull();
   });
 
-  it('should return null for expiry when cache is empty', () => {
-    expect(getRegimeCacheExpiry()).toBeNull();
-  });
-
-  it('should return expiry time when cache exists', async () => {
-    const mockResponse = JSON.stringify({
-      regime: 'bull',
-      confidence: 0.8,
-      reasoning_excerpt: 'Test',
-      risk_flags: [],
-      sources: [],
-    });
-
-    mockCallSonar.mockResolvedValueOnce(mockResponse);
-    await regimeScan();
-
-    const expiry = getRegimeCacheExpiry();
-    expect(expiry).toBeGreaterThan(0);
-    expect(expiry).toBeLessThanOrEqual(4 * 60 * 60 * 1000); // Max 4 hours
-  });
-
-  it('should return cached data', async () => {
+  it('should cache results and return them via getCachedRegime', async () => {
     const mockResponse = JSON.stringify({
       regime: 'bear',
       confidence: 0.9,
-      reasoning_excerpt: 'Test',
+      reasoning_excerpt: 'Downtrend',
       risk_flags: [],
       sources: [],
     });
-
     mockCallSonar.mockResolvedValueOnce(mockResponse);
+
     await regimeScan();
 
-    const cached = getCachedRegime();
+    const cached = await getCachedRegime();
     expect(cached?.regime).toBe('bear');
+    expect(cached?.confidence).toBe(0.9);
   });
 
-  it('should clear cache', async () => {
+  it('should clear cache with clearRegimeCache', async () => {
     const mockResponse = JSON.stringify({
       regime: 'bull',
-      confidence: 0.8,
-      reasoning_excerpt: 'Test',
+      confidence: 0.9,
+      reasoning_excerpt: 'Strong uptrend',
       risk_flags: [],
       sources: [],
     });
-
     mockCallSonar.mockResolvedValueOnce(mockResponse);
-    await regimeScan();
 
-    expect(isRegimeCacheValid()).toBe(true);
-    clearRegimeCache();
-    expect(isRegimeCacheValid()).toBe(false);
+    await regimeScan();
+    expect(await getCachedRegime()).not.toBeNull();
+
+    await clearRegimeCache();
+    expect(await getCachedRegime()).toBeNull();
   });
 
   it('should force refresh with refreshRegime', async () => {
@@ -311,10 +298,10 @@ describe('regime utilities', () => {
 
   describe('regimeToEmoji', () => {
     it('should return correct emojis', () => {
-      expect(regimeToEmoji('bull')).toBe('🐂');
-      expect(regimeToEmoji('bear')).toBe('🐻');
-      expect(regimeToEmoji('range')).toBe('↔️');
-      expect(regimeToEmoji('unclear')).toBe('❓');
+      expect(regimeToEmoji('bull')).toBe('\u{1F402}');
+      expect(regimeToEmoji('bear')).toBe('\u{1F43B}');
+      expect(regimeToEmoji('range')).toBe('\u{2194}\uFE0F');
+      expect(regimeToEmoji('unclear')).toBe('\u{2753}');
     });
   });
 

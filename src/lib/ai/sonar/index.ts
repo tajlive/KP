@@ -73,8 +73,6 @@ export {
   regimeScan,
   regimeScanWithFallback,
   refreshRegime,
-  isRegimeCacheValid,
-  getRegimeCacheExpiry,
   clearRegimeCache,
   getCachedRegime,
   regimeToLabel,

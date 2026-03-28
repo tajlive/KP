@@ -9,6 +9,9 @@ import { callSonar } from './client';
 import { PROMPT_TEMPLATES, DEFAULT_CACHE_CONFIG } from './config';
 import type { RegimeScanResult, MarketRegime } from './types';
 import { SonarValidationError, SonarError } from './types';
+import { cache } from '@/lib/cache';
+
+const REGIME_CACHE_KEY = 'sonar:regime:global';
 
 // ============================================================================
 // Zod Validation Schema
@@ -29,67 +32,40 @@ const RegimeScanResultSchema = z.object({
   sources: z.array(RegimeSourceSchema).max(10),
 });
 
-// ============================================================================
-// Cache Implementation
-// ============================================================================
+// =============================================================================
+// Cache helpers (Redis/Upstash i prod, MemoryCache i dev)
+// Erstatter in-memory RegimeCache som IKKE er serverless-safe.
+// =============================================================================
 
-interface CacheEntry<T> {
-  data: T;
-  expiresAt: number;
-}
-
-class RegimeCache {
-  private cache: Map<string, CacheEntry<RegimeScanResult>> = new Map();
-
-  private getKey(): string {
-    // Regime is global, so we use a fixed key
-    return 'global_market_regime';
-  }
-
-  get(): RegimeScanResult | null {
-    const key = this.getKey();
-    const entry = this.cache.get(key);
-
-    if (!entry) return null;
-
-    if (Date.now() > entry.expiresAt) {
-      this.cache.delete(key);
-      return null;
-    }
-
-    logger.debug('[RegimeScan] Cache hit');
-    return entry.data;
-  }
-
-  set(data: RegimeScanResult, ttlMs: number = DEFAULT_CACHE_CONFIG.regimeTtlMs): void {
-    const key = this.getKey();
-    this.cache.set(key, {
-      data,
-      expiresAt: Date.now() + ttlMs,
-    });
-    logger.debug(`[RegimeScan] Cached result for ${ttlMs}ms`);
-  }
-
-  clear(): void {
-    this.cache.clear();
-    logger.info('[RegimeScan] Cache cleared');
-  }
-
-  isValid(): boolean {
-    const entry = this.cache.get(this.getKey());
-    if (!entry) return false;
-    return Date.now() <= entry.expiresAt;
-  }
-
-  getExpiryTime(): number | null {
-    const entry = this.cache.get(this.getKey());
-    if (!entry) return null;
-    return Math.max(0, entry.expiresAt - Date.now());
+async function getCachedRegimeData(): Promise<RegimeScanResult | null> {
+  try {
+    return await cache.get<RegimeScanResult>(REGIME_CACHE_KEY);
+  } catch (err) {
+    logger.warn('[RegimeScan] Cache get feilet, hopper over cache:', err);
+    return null;
   }
 }
 
-// Global cache instance
-const regimeCache = new RegimeCache();
+async function setCachedRegimeData(
+  data: RegimeScanResult,
+  ttlMs: number
+): Promise<void> {
+  try {
+    await cache.set(REGIME_CACHE_KEY, data, ttlMs);
+    logger.debug(`[RegimeScan] Lagret i Redis/Memory for ${ttlMs}ms`);
+  } catch (err) {
+    logger.warn('[RegimeScan] Cache set feilet, fortsetter uten cache:', err);
+  }
+}
+
+async function deleteCachedRegimeData(): Promise<void> {
+  try {
+    await cache.delete(REGIME_CACHE_KEY);
+    logger.info('[RegimeScan] Cache tomt');
+  } catch (err) {
+    logger.warn('[RegimeScan] Cache delete feilet:', err);
+  }
+}
 
 // ============================================================================
 // Default / Fallback Values
@@ -166,10 +142,11 @@ export async function regimeScan(
     cacheTtlMs = DEFAULT_CACHE_CONFIG.regimeTtlMs,
   } = options;
 
-  // Check cache first
+  // Sjekk Redis/cache forst (serverless-safe)
   if (!skipCache) {
-    const cached = regimeCache.get();
+    const cached = await getCachedRegimeData();
     if (cached) {
+      logger.debug('[RegimeScan] Cache hit');
       return cached;
     }
   }
@@ -195,8 +172,8 @@ export async function regimeScan(
         `Regime: ${result.regime}, Confidence: ${result.confidence.toFixed(2)}`
     );
 
-    // Cache the result
-    regimeCache.set(result, cacheTtlMs);
+    // Lagre i Redis/cache (serverless-safe)
+    await setCachedRegimeData(result, cacheTtlMs);
 
     return result;
   } catch (error) {
@@ -259,31 +236,17 @@ export async function refreshRegime(
 }
 
 /**
- * Check if cached regime data is available and valid
+ * Clear regime cache (Redis/Memory)
  */
-export function isRegimeCacheValid(): boolean {
-  return regimeCache.isValid();
-}
-
-/**
- * Get time until cache expires (in ms)
- */
-export function getRegimeCacheExpiry(): number | null {
-  return regimeCache.getExpiryTime();
-}
-
-/**
- * Clear regime cache
- */
-export function clearRegimeCache(): void {
-  regimeCache.clear();
+export async function clearRegimeCache(): Promise<void> {
+  await deleteCachedRegimeData();
 }
 
 /**
  * Get cached regime data if available
  */
-export function getCachedRegime(): RegimeScanResult | null {
-  return regimeCache.get();
+export async function getCachedRegime(): Promise<RegimeScanResult | null> {
+  return getCachedRegimeData();
 }
 
 // ============================================================================

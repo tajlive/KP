@@ -11,6 +11,7 @@ import {
 } from '@/lib/trading/confluent-signal-engine';
 import { logger } from '@/lib/logger';
 import { logSignalGeneration } from '@/lib/ai/sonar/metrics';
+import { getMarketData } from '@/lib/ai/market-data';
 
 // Validation schema for query params
 const QuerySchema = z.object({
@@ -18,19 +19,38 @@ const QuerySchema = z.object({
   strategy: z.string().min(1).max(50).default('multisignal_aktiv'),
 });
 
-// Mock price fetcher - in production, this would fetch from your data provider
+/**
+ * Henter reelle priser fra CoinLore (gratis, sanntid).
+ * Bygger en 50-punkts prisserie forankret til faktisk markedspris.
+ * TODO P1: Erstatt med Binance Klines API for ekte OHLC-historikk.
+ */
 async function fetchPrices(symbol: string): Promise<number[]> {
-  // In a real implementation, fetch from Binance, CoinGecko, etc.
-  // For now, generate synthetic data for testing
-  const basePrice = symbol === 'BTC' ? 65000 : symbol === 'ETH' ? 3500 : 100;
+  const coins = await getMarketData([symbol.toUpperCase()]);
+  const coin = coins[0];
+
+  if (!coin || !coin.price_usd) {
+    throw new Error(`Ingen prisdata tilgjengelig for ${symbol}`);
+  }
+
+  const currentPrice = parseFloat(coin.price_usd);
+  const change24h = parseFloat(coin.percent_change_24h) / 100 || 0;
+
+  if (!isFinite(currentPrice) || currentPrice <= 0) {
+    throw new Error(`Ugyldig prisdata for ${symbol}: ${coin.price_usd}`);
+  }
+
+  // Bygg 50-punkts prisserie: fra pris 24t siden → nåværende pris
+  const price24hAgo = currentPrice / (1 + change24h);
   const prices: number[] = [];
-  let currentPrice = basePrice;
 
   for (let i = 0; i < 50; i++) {
-    const change = (Math.random() - 0.48) * 0.02; // Slight upward bias
-    currentPrice = currentPrice * (1 + change);
-    prices.push(currentPrice);
+    const t = i / 49;
+    const baseAtT = price24hAgo + (currentPrice - price24hAgo) * t;
+    // Svak støy < 0.05% per punkt
+    const noise = (Math.random() - 0.5) * baseAtT * 0.0005;
+    prices.push(Math.max(0, baseAtT + noise));
   }
+  prices[49] = currentPrice; // Siste punkt er alltid faktisk pris
 
   return prices;
 }
@@ -63,8 +83,27 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       `[Signal API] [${requestId}] Generating signal for ${symbol} (${strategy})`
     );
 
-    // Fetch price data
-    const prices = await fetchPrices(symbol);
+    // Hent reelle priser – returner 503 hvis prisfeeden er nede
+    let prices: number[];
+    try {
+      prices = await fetchPrices(symbol);
+    } catch (priceError) {
+      logger.error(
+        `[Signal API] [${requestId}] Price feed error for ${symbol}:`,
+        priceError
+      );
+      return NextResponse.json(
+        {
+          error: 'Prisdata ikke tilgjengelig',
+          message:
+            priceError instanceof Error
+              ? priceError.message
+              : 'Kunne ikke hente markedspriser',
+          requestId,
+        },
+        { status: 503 }
+      );
+    }
 
     // Generate confluent signal
     const signal = await generateConfluentSignal({
