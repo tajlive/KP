@@ -235,5 +235,8 @@
     "label4": "Auto-trading",
     "description4": "Boten sover aldri",
     "paymentLabel": "Trygge betalingsmåter"
+  },
+  "stickyCTA": {
+    "label": "Start gratis nå"
   }
 }

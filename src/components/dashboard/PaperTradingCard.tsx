@@ -1,302 +1,248 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RefreshCw, TrendingUp, TrendingDown, Wallet, RotateCcw, AlertCircle, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect, useRef, useState } from 'react';
+import * as Sentry from '@sentry/nextjs';
+import { useToast } from '@/hooks/use-toast';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 interface BalanceData {
-  starting: number;
-  current: number;
-  pnl: number;
-  pnlPercentage: number;
-  isPositive: boolean;
+  success: boolean;
+  session_id?: string;
+  balance?: {
+    starting: number;
+    current: number;
+    pnl: number;
+    pnlPercentage: number;
+    isPositive: boolean;
+  };
+  recentTrades?: Array<{
+    id: string;
+    symbol: string;
+    side: string;
+    quantity: number;
+    price: number;
+    total_value: number;
+    created_at: string;
+  }>;
+  error?: string;
+  message?: string;
 }
 
-type LoadingState = 'loading' | 'error' | 'empty' | 'ready';
-
 export function PaperTradingCard() {
-  const [balance, setBalance] = useState<BalanceData | null>(null);
-  const [state, setState] = useState<LoadingState>('loading');
-  const [resetting, setResetting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  
-  // Use ref to track polling state without causing re-renders
-  const hasSessionRef = useRef<boolean | null>(null);
+  const { toast } = useToast();
+  const [balance, setBalance] = useState<BalanceData['balance'] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasSession, setHasSession] = useState(true);
+  const [state, setState] = useState<'loading' | 'empty' | 'success' | 'error'>('loading');
+
+  // Polling management
   const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isMountedRef = useRef(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchBalance = useCallback(async () => {
-    if (!isMountedRef.current) return;
-    
-    try {
-      setState('loading');
-      setErrorMessage('');
-      
-      const response = await fetch('/api/paper-trading/balance');
-      
-      if (response.status === 401) {
-        setState('empty');
-        setErrorMessage('Du må være logget inn for å se lekepenger-saldo');
-        hasSessionRef.current = false;
-        return;
-      }
-      
-      // 404 = no session exists yet (valid state, not error)
-      // Stop polling to prevent repeated 404s
-      if (response.status === 404) {
-        setState('empty');
-        setErrorMessage('Ingen lekepenger-session funnet');
-        hasSessionRef.current = false;
-        return;
-      }
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Serverfeil: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Check success flag from API to distinguish no-session from errors
-      if (!data.success || !data.balance) {
-        setState('empty');
-        setErrorMessage(
-          data.message || 'Ingen lekepenger-session funnet. Start en ny sesjon.'
-        );
-        hasSessionRef.current = false;
-        return;
-      }
-      
-      setBalance(data.balance);
-      setState('ready');
-      hasSessionRef.current = true;
-    } catch (error) {
-      console.error('Failed to fetch balance:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Kunne ikke hente saldo';
-      setErrorMessage(errorMsg);
-      setState('error');
-      
-      // Only show toast on actual errors, not empty state
-      if (hasSessionRef.current !== false) {
-        toast.error(errorMsg);
-      }
-      
-      hasSessionRef.current = null; // Unknown state, will retry
-    }
-  }, []);
-  
-  // Polling with recursive setTimeout - allows us to stop after 404
-  const scheduleNextPoll = useCallback(() => {
-    if (!isMountedRef.current) return;
-    
-    // Only poll if we have a session or don't know yet
-    // Stop polling if we know there's no session (404)
-    if (hasSessionRef.current === false) {
-      return;
-    }
-    
-    pollingTimeoutRef.current = setTimeout(() => {
-      fetchBalance().then(() => {
-        // Schedule next poll only after current one completes
-        if (isMountedRef.current) {
-          scheduleNextPoll();
-        }
-      });
-    }, 30000); // 30 seconds
-  }, [fetchBalance]);
+  // Error throttling
+  const [lastErrorTime, setLastErrorTime] = useState<number>(0);
+  const [errorCount, setErrorCount] = useState(0);
+  const lastErrorMessageRef = useRef<string>('');
 
+  // Mobile detection
+  const isMobileRef = useRef<boolean>(false);
+  const POLL_INTERVAL_MS = 30000; // 30s desktop, 60s mobile (set below)
+  const FETCH_TIMEOUT_MS = 5000; // 5 second max fetch time
+  const ERROR_TOAST_THROTTLE_MS = 5000; // Only show error toast every 5s
+
+  // Detect mobile on mount
   useEffect(() => {
-    isMountedRef.current = true;
-    
-    // Initial fetch
-    fetchBalance().then(() => {
-      // Start polling after initial fetch
-      scheduleNextPoll();
+    isMobileRef.current = /iPhone|iPad|Android/i.test(navigator.userAgent);
+  }, []);
+
+  // Fetch with timeout protection
+  const fetchWithTimeout = async (signal: AbortSignal): Promise<BalanceData> => {
+    const timeoutController = new AbortController();
+    const timeoutId = setTimeout(() => timeoutController.abort(), FETCH_TIMEOUT_MS);
+
+    try {
+      const response = await fetch('/api/paper-trading/balance', {
+        signal: AbortSignal.any([signal, timeoutController.signal]),
+      });
+
+      if (!response.ok) {
+        // Log server-side errors to Sentry
+        if (response.status >= 500) {
+          Sentry.captureMessage(`Paper trading balance fetch failed: ${response.status}`, 'error');
+        }
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data: BalanceData = await response.json();
+      return data;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  };
+
+  // Throttled error toast
+  const showErrorToast = (message: string) => {
+    const now = Date.now();
+    const timeSinceLastError = now - lastErrorTime;
+
+    // Only show toast if 5+ seconds since last error OR error message is different
+    if (timeSinceLastError > ERROR_TOAST_THROTTLE_MS || message !== lastErrorMessageRef.current) {
+      lastErrorMessageRef.current = message;
+      setLastErrorTime(now);
+      setErrorCount(1);
+      toast({
+        title: 'Saldo hentes',
+        description: message,
+        variant: 'destructive',
+      });
+    } else {
+      // Count duplicate errors (for analytics)
+      setErrorCount((c) => c + 1);
+    }
+  };
+
+  const fetchBalance = async (signal: AbortSignal) => {
+    try {
+      const data = await fetchWithTimeout(signal);
+
+      // Check for success flag
+      if (!data.success || !data.balance) {
+        // No session found - valid state
+        setHasSession(false);
+        setState('empty');
+        setBalance(null);
+        return;
+      }
+
+      // Success case
+      setBalance(data.balance);
+      setHasSession(true);
+      setState('success');
+      setIsLoading(false);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        // Abort is expected (cleanup or timeout)
+        return;
+      }
+
+      const errorMsg =
+        error instanceof Error ? error.message : String(error);
+
+      // Send detailed error to Sentry
+      Sentry.captureException(error, {
+        tags: {
+          component: 'PaperTradingCard',
+          endpoint: 'paper-trading/balance',
+          errorType: errorMsg.includes('timeout') ? 'network_timeout' : 'network_error',
+        },
+        extra: {
+          isMobile: isMobileRef.current,
+          errorMessage: errorMsg,
+          errorCount: errorCount + 1,
+        },
+      });
+
+      // Show throttled error toast
+      showErrorToast(
+        errorMsg.includes('timeout')
+          ? 'Nettverket er tregt. Prøver igjen...'
+          : 'Kunne ikke hente saldo. Sjekk internettforbindelsen.'
+      );
+
+      setState('error');
+      setIsLoading(false);
+    }
+  };
+
+  const scheduleNextPoll = (signal: AbortSignal) => {
+    // Adjust interval for mobile
+    const interval = isMobileRef.current ? POLL_INTERVAL_MS * 2 : POLL_INTERVAL_MS;
+
+    pollingTimeoutRef.current = setTimeout(() => {
+      if (!signal.aborted) {
+        fetchBalance(signal);
+      }
+    }, interval);
+  };
+
+  // Initial fetch + polling setup
+  useEffect(() => {
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    // Fetch immediately
+    fetchBalance(controller.signal).then(() => {
+      // Schedule next poll
+      if (!controller.signal.aborted) {
+        scheduleNextPoll(controller.signal);
+      }
     });
-    
+
+    // Cleanup on unmount
     return () => {
-      isMountedRef.current = false;
+      controller.abort();
       if (pollingTimeoutRef.current) {
         clearTimeout(pollingTimeoutRef.current);
       }
     };
-  }, [fetchBalance, scheduleNextPoll]);
+  }, []);
 
-  const handleReset = async () => {
-    if (!confirm('Er du sikker på at du vil tilbakestille lekepenger? All historikk vil slettes.')) {
-      return;
-    }
-    
-    setResetting(true);
-    try {
-      const response = await fetch('/api/paper-trading/init', { method: 'POST' });
-      if (!response.ok) throw new Error('Failed to reset');
-      
-      // Reset session state and restart polling
-      hasSessionRef.current = null;
-      await fetchBalance();
-      scheduleNextPoll();
-      
-      toast.success('Paper trading tilbakestilt!');
-    } catch (error) {
-      toast.error('Kunne ikke tilbakestille');
-    } finally {
-      setResetting(false);
-    }
-  };
-
-  // Loading state
-  if (state === 'loading') {
-    return (
-      <Card className="bg-slate-900 border-slate-800">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-white flex items-center gap-2">
-            <Wallet className="w-5 h-5 text-blue-500" />
-            Lekepenger
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="animate-pulse space-y-2">
-            <div className="h-8 bg-slate-800 rounded" />
-            <div className="h-4 bg-slate-800 rounded w-2/3" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Error state
-  if (state === 'error') {
-    return (
-      <Card className="bg-slate-900 border-slate-800">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-white flex items-center gap-2">
-            <Wallet className="w-5 h-5 text-blue-500" />
-            Lekepenger
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-red-400 text-sm font-medium">Kunne ikke laste data</p>
-              <p className="text-slate-400 text-xs mt-1">{errorMessage}</p>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchBalance}
-            className="w-full border-slate-700 text-slate-300 hover:bg-slate-800"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Prøv igjen
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Empty state (no session or not logged in)
+  // Render states
   if (state === 'empty') {
     return (
-      <Card className="bg-slate-900 border-slate-800">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-white flex items-center gap-2">
-            <Wallet className="w-5 h-5 text-blue-500" />
-            Lekepenger
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
-            <Loader2 className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-slate-300 text-sm">{errorMessage || 'Ingen lekepenger-data tilgjengelig'}</p>
-              <p className="text-slate-500 text-xs mt-1">
-                Start en lekepenger-session for å se din saldo.
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchBalance}
-            className="w-full border-slate-700 text-slate-300 hover:bg-slate-800"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Sjekk på nytt
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="p-6 border border-slate-200 rounded-lg bg-slate-50">
+        <p className="text-slate-600">Ingen aktiv papirhandelssesjon. Start en ny for å se saldoen.</p>
+      </div>
     );
   }
 
-  // Ready state
+  if (state === 'error') {
+    return (
+      <div className="p-6 border border-red-200 rounded-lg bg-red-50 flex items-center gap-3">
+        <AlertCircle className="w-5 h-5 text-red-600" />
+        <p className="text-red-700">Kunne ikke hente saldo. Sjekk internettforbindelsen.</p>
+      </div>
+    );
+  }
+
+  if (state === 'loading' || !balance) {
+    return (
+      <div className="p-6 border border-slate-200 rounded-lg bg-slate-50 flex items-center gap-3">
+        <Loader2 className="w-5 h-5 text-slate-600 animate-spin" />
+        <p className="text-slate-600">Henter saldo...</p>
+      </div>
+    );
+  }
+
+  // Success render
   return (
-    <Card className="bg-slate-900 border-slate-800" data-testid="paper-trading-card">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg text-white flex items-center gap-2">
-          <Wallet className="w-5 h-5 text-blue-500" />
-          Lekepenger
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Current Balance */}
-        <div data-testid="paper-balance-container">
-          <p className="text-slate-400 text-sm">Nåværende saldo</p>
-          <p className="text-3xl font-bold text-white" data-testid="paper-balance">
-            kr {balance?.current.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+    <div className="p-6 border border-slate-200 rounded-lg bg-white">
+      <div className="space-y-4">
+        <div>
+          <p className="text-sm text-slate-600">Gjeldende saldo</p>
+          <p className="text-2xl font-bold text-slate-900">
+            {balance.current.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })}
           </p>
         </div>
-
-        {/* P&L */}
-        <div className="flex items-center justify-between">
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-slate-400 text-sm">Start saldo</p>
-            <p className="text-slate-300">
-              kr {balance?.starting.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
+            <p className="text-xs text-slate-600">Startkapital</p>
+            <p className="text-sm font-semibold text-slate-900">
+              {balance.starting.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })}
             </p>
           </div>
-          <div className="text-right" data-testid="paper-pnl-container">
-            <p className="text-slate-400 text-sm">Resultat</p>
-            <div className={`flex items-center gap-1 ${balance && balance.isPositive ? 'text-green-400' : 'text-red-400'}`} data-testid="paper-pnl">
-              {balance && balance.isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-              <span className="font-semibold">
-                {balance && balance.isPositive ? '+' : ''}{balance?.pnl.toLocaleString('nb-NO', { minimumFractionDigits: 2 })}
-              </span>
-              <span className="text-sm">
-                ({balance && balance.isPositive ? '+' : ''}{balance?.pnlPercentage.toFixed(2)}%)
-              </span>
-            </div>
+          <div>
+            <p className="text-xs text-slate-600">P&L</p>
+            <p className={`text-sm font-semibold ${
+              balance.isPositive ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {balance.isPositive ? '+' : ''}
+              {balance.pnl.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })}
+              ({balance.pnlPercentage.toFixed(2)}%)
+            </p>
           </div>
         </div>
-
-        {/* Actions */}
-        <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchBalance}
-            disabled={false}
-            className="flex-1 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Oppdater
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            disabled={resetting}
-            className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-red-400"
-          >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Reset
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
