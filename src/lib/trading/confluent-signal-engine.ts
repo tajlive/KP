@@ -1,0 +1,514 @@
+/**
+ * Confluent Signal Engine
+ * Integrerer tekniske indikatorer med Sonar AI-analyse
+ */
+
+import { logger } from '@/lib/logger';
+import {
+  narrativeScanWithFallback,
+  regimeScanWithFallback,
+  type NarrativeScanResult,
+  type RegimeScanResult,
+  type MarketRegime,
+  FALLBACK_VALUES,
+} from '@/lib/ai/sonar';
+import { isSonarIntegrationEnabled } from '@/lib/ai/sonar/feature-flags';
+import { generateSignal, type Signal } from './signal-generator';
+import type { ExplainSignalInput, ExplainSignalResult } from '@/lib/ai/sonar';
+import { explainSignalWithFallback } from '@/lib/ai/sonar';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface ConfluentSignalFactors {
+  trend: number;
+  volatility: number;
+  ai_signal: number;
+  narrative_sentiment?: number;
+  event_risk?: number;
+  market_regime?: MarketRegime;
+}
+
+export interface ConfluentSignal extends Signal {
+  score: number; // 0-100
+  riskLevel: 1 | 2 | 3 | 4 | 5;
+  factors: ConfluentSignalFactors;
+  explanationId?: string;
+  metadata: {
+    narrativeData?: NarrativeScanResult;
+    regimeData?: RegimeScanResult;
+    usedFallback: boolean;
+  };
+}
+
+export interface ConfluentSignalOptions {
+  symbol: string;
+  strategyType: string;
+  prices: number[];
+  includeNarrative?: boolean;
+  includeRegime?: boolean;
+  userRiskProfile?: 'conservative' | 'balanced' | 'aggressive';
+}
+
+// ============================================================================
+// Configuration
+// ============================================================================
+
+// Weights for different factors in final score calculation
+// These can be overridden via environment variables for easy tuning
+const FACTOR_WEIGHTS = {
+  technical: parseFloat(process.env.SIGNAL_WEIGHT_TECHNICAL || '0.5'),
+  narrative: parseFloat(process.env.SIGNAL_WEIGHT_NARRATIVE || '0.25'),
+  regime: parseFloat(process.env.SIGNAL_WEIGHT_REGIME || '0.25'),
+};
+
+// Ensure weights sum to 1
+const totalWeight = FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.narrative + FACTOR_WEIGHTS.regime;
+if (Math.abs(totalWeight - 1) > 0.01) {
+  logger.warn(
+    `[ConfluentSignalEngine] Factor weights do not sum to 1 (${totalWeight}). ` +
+      'Normalizing...'
+  );
+  FACTOR_WEIGHTS.technical /= totalWeight;
+  FACTOR_WEIGHTS.narrative /= totalWeight;
+  FACTOR_WEIGHTS.regime /= totalWeight;
+}
+
+// Risk thresholds
+const RISK_THRESHOLDS = {
+  LOW: 0.3,
+  MEDIUM: 0.5,
+  HIGH: 0.7,
+};
+
+// ============================================================================
+// Score Calculation
+// ============================================================================
+
+/**
+ * Calculate technical score from base signal generator
+ */
+function calculateTechnicalScore(baseSignal: Signal): number {
+  switch (baseSignal.action) {
+    case 'BUY':
+      return 65;
+    case 'SELL':
+      return 35;
+    case 'HOLD':
+    default:
+      return 50;
+  }
+}
+
+/**
+ * Calculate regime-adjusted score
+ */
+function calculateRegimeScore(
+  technicalScore: number,
+  regime: MarketRegime,
+  regimeConfidence: number
+): number {
+  const regimeAdjustments: Record<MarketRegime, number> = {
+    bull: 10,
+    bear: -10,
+    range: 0,
+    unclear: -5,
+  };
+
+  const adjustment = regimeAdjustments[regime] * regimeConfidence;
+  return Math.max(0, Math.min(100, technicalScore + adjustment));
+}
+
+/**
+ * Calculate narrative-adjusted score
+ */
+function calculateNarrativeScore(
+  currentScore: number,
+  sentiment: number,
+  eventRisk: number
+): number {
+  // Sentiment contribution: -10 to +10
+  const sentimentAdjustment = sentiment * 10;
+
+  // Event risk reduces score: -15 for high risk
+  const riskAdjustment = -eventRisk * 15;
+
+  return Math.max(0, Math.min(100, currentScore + sentimentAdjustment + riskAdjustment));
+}
+
+/**
+ * Calculate final composite score
+ */
+function calculateCompositeScore(
+  technicalScore: number,
+  narrativeScore: number,
+  regimeScore: number,
+  hasNarrative: boolean,
+  hasRegime: boolean
+): number {
+  if (!hasNarrative && !hasRegime) {
+    return technicalScore;
+  }
+
+  if (!hasNarrative) {
+    // Technical + Regime only
+    const techWeight = FACTOR_WEIGHTS.technical / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.regime);
+    const regimeWeight = FACTOR_WEIGHTS.regime / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.regime);
+    return technicalScore * techWeight + regimeScore * regimeWeight;
+  }
+
+  if (!hasRegime) {
+    // Technical + Narrative only
+    const techWeight = FACTOR_WEIGHTS.technical / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.narrative);
+    const narrativeWeight = FACTOR_WEIGHTS.narrative / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.narrative);
+    return technicalScore * techWeight + narrativeScore * narrativeWeight;
+  }
+
+  // All three factors
+  return (
+    technicalScore * FACTOR_WEIGHTS.technical +
+    narrativeScore * FACTOR_WEIGHTS.narrative +
+    regimeScore * FACTOR_WEIGHTS.regime
+  );
+}
+
+/**
+ * Determine risk level based on factors
+ */
+function calculateRiskLevel(
+  eventRisk: number,
+  regime: MarketRegime,
+  volatility: number
+): 1 | 2 | 3 | 4 | 5 {
+  let riskScore = 0;
+
+  // Event risk contribution (0-2)
+  if (eventRisk > 0.7) riskScore += 2;
+  else if (eventRisk > 0.4) riskScore += 1;
+
+  // Regime contribution (0-2)
+  if (regime === 'bear') riskScore += 2;
+  else if (regime === 'unclear') riskScore += 1;
+
+  // Volatility contribution (0-1)
+  if (volatility > 0.8) riskScore += 1;
+
+  return Math.min(5, Math.max(1, riskScore + 1)) as 1 | 2 | 3 | 4 | 5;
+}
+
+/**
+ * Convert score to decision
+ */
+function scoreToDecision(score: number): 'STRONG_BUY' | 'BUY' | 'HOLD' | 'SELL' | 'STRONG_SELL' {
+  if (score >= 80) return 'STRONG_BUY';
+  if (score >= 60) return 'BUY';
+  if (score >= 40) return 'HOLD';
+  if (score >= 20) return 'SELL';
+  return 'STRONG_SELL';
+}
+
+// ============================================================================
+// Main Engine
+// ============================================================================
+
+/**
+ * Generate a confluent signal combining technical, narrative, and regime analysis
+ *
+ * @param options - Signal generation options
+ * @returns ConfluentSignal with comprehensive analysis
+ */
+export async function generateConfluentSignal(
+  options: ConfluentSignalOptions
+): Promise<ConfluentSignal> {
+  const {
+    symbol,
+    strategyType,
+    prices,
+    includeNarrative = true,
+    includeRegime = true,
+  } = options;
+
+  // Check if Sonar integration is enabled
+  const sonarEnabled = isSonarIntegrationEnabled();
+  
+  logger.info(`[ConfluentSignalEngine] Generating signal for ${symbol} (Sonar: ${sonarEnabled ? 'enabled' : 'disabled'})`);
+  const startTime = Date.now();
+
+  // 1. Generate base technical signal
+  const baseSignal = generateSignal(strategyType, prices);
+
+  // 2. Fetch narrative data (with fallback) - only if Sonar is enabled
+  let narrativeResult: NarrativeScanResult | null = null;
+  let usedFallback = false;
+
+  if (includeNarrative && sonarEnabled) {
+    try {
+      narrativeResult = await narrativeScanWithFallback(symbol, {
+        tier: 'sonar',
+        mode: 'medium',
+      });
+      usedFallback =
+        narrativeResult.sentiment === FALLBACK_VALUES.narrative_sentiment &&
+        narrativeResult.event_risk === FALLBACK_VALUES.event_risk;
+    } catch (error) {
+      logger.error(`[ConfluentSignalEngine] Narrative scan failed for ${symbol}:`, error);
+      usedFallback = true;
+    }
+  } else if (includeNarrative && !sonarEnabled) {
+    logger.debug(`[ConfluentSignalEngine] Skipping narrative scan - Sonar disabled`);
+    usedFallback = true;
+  }
+
+  // 3. Fetch regime data (with fallback) - only if Sonar is enabled
+  let regimeResult: RegimeScanResult | null = null;
+
+  if (includeRegime && sonarEnabled) {
+    try {
+      regimeResult = await regimeScanWithFallback({
+        tier: 'sonar-pro',
+        mode: 'high',
+      });
+      usedFallback =
+        usedFallback || regimeResult.regime === FALLBACK_VALUES.market_regime;
+    } catch (error) {
+      logger.error('[ConfluentSignalEngine] Regime scan failed:', error);
+      usedFallback = true;
+    }
+  } else if (includeRegime && !sonarEnabled) {
+    logger.debug(`[ConfluentSignalEngine] Skipping regime scan - Sonar disabled`);
+    usedFallback = true;
+  }
+
+  // 4. Calculate scores
+  const technicalScore = calculateTechnicalScore(baseSignal);
+  const narrativeScore = narrativeResult
+    ? calculateNarrativeScore(
+        technicalScore,
+        narrativeResult.sentiment,
+        narrativeResult.event_risk
+      )
+    : technicalScore;
+  const regimeScore = regimeResult
+    ? calculateRegimeScore(technicalScore, regimeResult.regime, regimeResult.confidence)
+    : technicalScore;
+
+  // 5. Calculate composite score
+  const compositeScore = calculateCompositeScore(
+    technicalScore,
+    narrativeScore,
+    regimeScore,
+    narrativeResult !== null,
+    regimeResult !== null
+  );
+
+  // 6. Calculate risk level
+  const riskLevel = calculateRiskLevel(
+    narrativeResult?.event_risk ?? 0,
+    regimeResult?.regime ?? 'unclear',
+    0.5 // Default volatility if not calculated
+  );
+
+  // 7. Determine final action
+  const finalDecision = scoreToDecision(compositeScore);
+  const action =
+    finalDecision === 'STRONG_BUY' || finalDecision === 'BUY'
+      ? 'BUY'
+      : finalDecision === 'STRONG_SELL' || finalDecision === 'SELL'
+        ? 'SELL'
+        : 'HOLD';
+
+  // 8. Build enhanced reason
+  let enhancedReason = baseSignal.reason;
+  if (narrativeResult && narrativeResult.key_events.length > 0) {
+    const topEvent = narrativeResult.key_events[0];
+    enhancedReason += ` | Nyheter: ${topEvent.title} (${topEvent.impact})`;
+  }
+  if (regimeResult && regimeResult.regime !== 'unclear') {
+    enhancedReason += ` | Regime: ${regimeResult.regime}`;
+  }
+
+  const duration = Date.now() - startTime;
+  logger.info(
+    `[ConfluentSignalEngine] Generated signal for ${symbol} in ${duration}ms. ` +
+      `Score: ${compositeScore.toFixed(1)}, Action: ${action}, Risk: ${riskLevel}`
+  );
+
+  return {
+    action,
+    reason: enhancedReason,
+    score: Math.round(compositeScore),
+    riskLevel,
+    factors: {
+      trend: action === 'BUY' ? 0.7 : action === 'SELL' ? 0.3 : 0.5,
+      volatility: 0.5,
+      ai_signal: compositeScore / 100,
+      narrative_sentiment: narrativeResult?.sentiment,
+      event_risk: narrativeResult?.event_risk,
+      market_regime: regimeResult?.regime,
+    },
+    metadata: {
+      narrativeData: narrativeResult ?? undefined,
+      regimeData: regimeResult ?? undefined,
+      usedFallback,
+    },
+  };
+}
+
+// ============================================================================
+// Explanation
+// ============================================================================
+
+/**
+ * Generate explanation for a confluent signal
+ *
+ * @param signal - The signal to explain
+ * @param symbol - Trading symbol
+ * @param timeframe - Analysis timeframe
+ * @param userRiskProfile - User's risk tolerance
+ * @returns ExplainSignalResult with human-readable explanation
+ */
+export async function explainConfluentSignal(
+  signal: ConfluentSignal,
+  symbol: string,
+  timeframe: 'short' | 'medium' | 'long',
+  userRiskProfile: 'conservative' | 'balanced' | 'aggressive' = 'balanced'
+): Promise<ExplainSignalResult> {
+  const input: ExplainSignalInput = {
+    symbol,
+    timeframe,
+    decision: scoreToDecision(signal.score),
+    score: signal.score,
+    risk_level: signal.riskLevel,
+    factors: {
+      trend: signal.factors.trend,
+      volatility: signal.factors.volatility,
+      ai_signal: signal.factors.ai_signal,
+      ...(signal.factors.narrative_sentiment !== undefined && {
+        narrative_sentiment: signal.factors.narrative_sentiment,
+      }),
+      ...(signal.factors.event_risk !== undefined && {
+        event_risk: signal.factors.event_risk,
+      }),
+    },
+    userRiskProfile,
+    locale: 'nb-NO',
+  };
+
+  return explainSignalWithFallback(input, {
+    tier: 'sonar',
+    mode: 'medium',
+  });
+}
+
+// ============================================================================
+// Batch Processing
+// ============================================================================
+
+/**
+ * Generate signals for multiple symbols
+ *
+ * @param symbols - Array of symbols to analyze
+ * @param strategyType - Trading strategy type
+ * @param priceFetcher - Function to fetch prices for a symbol
+ * @returns Array of confluent signals
+ */
+export async function generateBatchSignals(
+  symbols: string[],
+  strategyType: string,
+  priceFetcher: (symbol: string) => Promise<number[]> | number[]
+): Promise<ConfluentSignal[]> {
+  logger.info(`[ConfluentSignalEngine] Generating batch signals for ${symbols.length} symbols`);
+
+  const results = await Promise.all(
+    symbols.map(async (symbol) => {
+      try {
+        const prices = await priceFetcher(symbol);
+        return await generateConfluentSignal({
+          symbol,
+          strategyType,
+          prices,
+        });
+      } catch (error) {
+        logger.error(`[ConfluentSignalEngine] Failed to generate signal for ${symbol}:`, error);
+        // Return a neutral signal on error
+        return {
+          action: 'HOLD' as const,
+          reason: 'Kunne ikke generere signal',
+          score: 50,
+          riskLevel: 3 as const,
+          factors: {
+            trend: 0.5,
+            volatility: 0.5,
+            ai_signal: 0.5,
+          },
+          metadata: {
+            usedFallback: true,
+          },
+        };
+      }
+    })
+  );
+
+  return results;
+}
+
+// ============================================================================
+// Health Check
+// ============================================================================
+
+/**
+ * Check if confluent signal engine is healthy
+ */
+export async function checkConfluentEngineHealth(): Promise<{
+  healthy: boolean;
+  factors: {
+    technical: boolean;
+    narrative: boolean;
+    regime: boolean;
+  };
+  sonarEnabled: boolean;
+}> {
+  const sonarEnabled = isSonarIntegrationEnabled();
+  
+  // Technical is always available (local calculation)
+  const technical = true;
+
+  // Check narrative by attempting a lightweight call - only if Sonar enabled
+  let narrative = false;
+  if (sonarEnabled) {
+    try {
+      const result = await narrativeScanWithFallback('BTC', {
+        tier: 'sonar',
+        mode: 'low',
+      });
+      narrative = result.symbol === 'BTC';
+    } catch {
+      narrative = false;
+    }
+  }
+
+  // Check regime - only if Sonar enabled
+  let regime = false;
+  if (sonarEnabled) {
+    try {
+      const result = await regimeScanWithFallback({
+        tier: 'sonar-pro',
+        mode: 'low',
+      });
+      regime = result.regime !== 'unclear' || result.confidence > 0;
+    } catch {
+      regime = false;
+    }
+  }
+
+  return {
+    healthy: technical && (!sonarEnabled || narrative || regime),
+    factors: {
+      technical,
+      narrative,
+      regime,
+    },
+    sonarEnabled,
+  };
+}
