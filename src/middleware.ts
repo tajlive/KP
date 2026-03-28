@@ -190,7 +190,7 @@ export async function middleware(request: NextRequest) {
       localizedPathname(locale, "/innlogging"),
       request.url,
     );
-    loginUrl.searchParams.set("next", pathname);
+    loginUrl.searchParams.set("next", localizedPathname(locale, strippedPath));
     return NextResponse.redirect(loginUrl);
   }
 
