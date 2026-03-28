@@ -1,0 +1,138 @@
+# KIMI PROD-READY SPRINT — 2026-03-28 23:45
+# Mål: 0 TS-feil, 0 test-feil, git push → Vercel deploy
+# Kjør alle steg i rekkefølge. Commit etter hvert steg.
+
+## STEG 1 — Rydd opp junk-filer fra tonight
+
+Kjør disse bash-kommandoene:
+```
+git checkout -- .claude/mcp.json .cursor/mcp.json .kimi/mcp_config.json .mcp/mcp_config.json .perplexity/mcp_config.json scripts/run-perplexity-mcp.mjs 2>/dev/null || true
+rm -f scripts/decrypt-chrome-cookies-v2.py scripts/decrypt-chrome-cookies.py scripts/fetch-perplexity-tokens.py scripts/get-perplexity-cookies.js scripts/get-perplexity-tokens.sh scripts/run-perplexity-pro-mcp.mjs scripts/setup-perplexity-pro.sh docs/PERPLEXITY-MCP-SETUP.md 2>/dev/null || true
+git status --short
+```
+
+Forventet: Ingen modified MCP-config-filer, ingen untracked Perplexity-scripts.
+
+---
+
+## STEG 2 — Fix checkSonarHealth test (P0 blokkerer prod)
+
+Filen: src/lib/ai/sonar/__tests__/client.test.ts
+
+Rotårsak: `checkSonarHealth()` returnerer healthy:false fordi PERPLEXITY_API_KEY
+ikke er satt i testmiljøet. Testen mangler `beforeEach` med mock av env-variabel.
+
+Fix: Legg til `process.env.PERPLEXITY_API_KEY` mock i `describe('checkSonarHealth')` blokken.
+
+Erstatt denne koden:
+```typescript
+describe('checkSonarHealth', () => {
+  it('should return healthy when configured', async () => {
+    const result = await checkSonarHealth();
+    expect(result.healthy).toBe(true);
+  });
+});
+```
+
+Med denne:
+```typescript
+describe('checkSonarHealth', () => {
+  beforeEach(() => {
+    process.env.PERPLEXITY_API_KEY = 'test-api-key-for-health-check';
+  });
+
+  afterEach(() => {
+    delete process.env.PERPLEXITY_API_KEY;
+  });
+
+  it('should return healthy when configured', async () => {
+    const result = await checkSonarHealth();
+    expect(result.healthy).toBe(true);
+  });
+
+  it('should return unhealthy when not configured', async () => {
+    delete process.env.PERPLEXITY_API_KEY;
+    const result = await checkSonarHealth();
+    expect(result.healthy).toBe(false);
+  });
+});
+```
+
+Validering etter fix:
+```
+npx vitest run src/lib/ai/sonar/__tests__/client.test.ts 2>&1 | tail -10
+```
+Forventet: alle 12 tester (eller flere) passerer.
+
+---
+
+## STEG 3 — Full test-kjøring
+
+```
+npm run test:unit -- --reporter=verbose 2>&1 | tail -15
+```
+
+Forventet: 0 failed, alle tester grønne.
+
+---
+
+## STEG 4 — TypeScript-sjekk
+
+```
+npx tsc --noEmit 2>&1 | head -20
+echo TS_EXIT:$?
+```
+
+Forventet: TS_EXIT:0
+
+---
+
+## STEG 5 — Next.js build-sjekk
+
+```
+npx next build 2>&1 | tail -20
+```
+
+Forventet: ✓ Compiled successfully, ingen kritiske feil.
+Advarsel: Noen ESLint-advarsler er OK, men BUILD FAILED er ikke OK.
+
+---
+
+## STEG 6 — Git commit og push
+
+Hvis alle steg over passerte:
+```
+git add -A
+git commit -m "fix(tests): sonar health check mock + cleanup perplexity junk scripts"
+git push
+```
+
+Forventet: Push til main → Vercel starter automatisk deploy.
+
+---
+
+## STEG 7 — Verifiser Vercel deploy
+
+Kjør:
+```
+curl -s https://www.klarpakke.no/api/health | head -5
+```
+
+Forventet: HTTP 200 med JSON-respons.
+
+---
+
+## SLUTTRAPPORT
+
+Når alt er ferdig, skriv en oppsummering i dette formatet:
+
+```
+STATUS: [OK/FEIL]
+- Steg 1 rydding: [OK/FEIL]
+- Steg 2 test-fix: [OK/FEIL] (antall tester: X)
+- Steg 3 alle tester: [X passed / Y failed]
+- Steg 4 TypeScript: [0 feil / X feil]
+- Steg 5 next build: [OK/FEIL]
+- Steg 6 git push: [commit-hash]
+- Steg 7 prod health: [HTTP status]
+```
