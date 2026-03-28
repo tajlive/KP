@@ -25,6 +25,27 @@ import {
 } from './types';
 
 // ============================================================================
+// Injectable delay — mockbar i tester
+// ============================================================================
+
+/**
+ * Delay-funksjon som kan overrides i tester via setSonarDelayFn()
+ * Standard: ekte setTimeout. I tester: vi.fn() eller no-op.
+ */
+let _delayFn: (ms: number) => Promise<void> =
+  (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Brukes kun i tester for a injisere fake delay */
+export function setSonarDelayFn(fn: (ms: number) => Promise<void>): void {
+  _delayFn = fn;
+}
+
+/** Tilbakestill til ekte setTimeout (kall i afterEach) */
+export function resetSonarDelayFn(): void {
+  _delayFn = (ms) => new Promise((r) => setTimeout(r, ms));
+}
+
+// ============================================================================
 // Token Bucket Rate Limiter (In-Memory)
 // ============================================================================
 
@@ -328,7 +349,7 @@ export async function callSonar(
           `[Sonar] Request failed (attempt ${attempt + 1}/${DEFAULT_RETRY_CONFIG.maxRetries + 1}), retrying in ${delay}ms: ${error.message}`
         );
 
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        await _delayFn(delay);
       } else {
         // Unexpected error type
         throw error;

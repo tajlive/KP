@@ -33,6 +33,20 @@ type ServerTradeRow = {
   realized_pnl: number | null;
 };
 
+type ActiveSession = {
+  id: string;
+  mode: string;
+  status: string;
+  strategy_id: string | null;
+  current_capital_nok: number;
+  starting_capital_nok: number;
+  total_pnl: number | null;
+  total_trades: number | null;
+  winning_trades: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+} | null;
+
 function serverRowToRow(row: ServerTradeRow): TradeRow {
   return {
     trading_pair: row.trading_pair,
@@ -54,9 +68,11 @@ function apiTradeToRow(t: Trade): TradeRow {
 export function CoinbaseHome({
   paperBalance,
   trades,
+  activeSession = null,
 }: {
   paperBalance: number;
   trades: ServerTradeRow[];
+  activeSession?: ActiveSession;
 }) {
   const locale = useLocale();
   const t = useTranslations("dashboard.coinbase");
@@ -149,6 +165,39 @@ export function CoinbaseHome({
       </Card>
 
       <PortfolioBalance totalNok={totals.total} deltaPercent={totals.pct} />
+
+      {activeSession && (
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+            Aktiv sesjon
+          </p>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <p className="text-xs text-slate-500">Kapital</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {activeSession.current_capital_nok.toLocaleString('nb-NO')} NOK
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">P&L</p>
+              <p className={`text-sm font-semibold ${
+                (activeSession.total_pnl ?? 0) >= 0
+                  ? 'text-green-600'
+                  : 'text-red-600'
+              }`}>
+                {((activeSession.total_pnl ?? 0) >= 0 ? '+' : '')}
+                {(activeSession.total_pnl ?? 0).toLocaleString('nb-NO')} NOK
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Handler</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {activeSession.total_trades ?? 0}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <QuickActions />
 

@@ -3,7 +3,14 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { callSonar, getSonarMetrics, resetSonarMetrics, checkSonarHealth } from '../client';
+import {
+  callSonar,
+  getSonarMetrics,
+  resetSonarMetrics,
+  checkSonarHealth,
+  setSonarDelayFn,
+  resetSonarDelayFn,
+} from '../client';
 import { SonarError } from '../types';
 
 // Mock fetch globally
@@ -41,13 +48,13 @@ vi.mock('../config', async (importOriginal) => {
 
 describe('callSonar', () => {
   beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
+    // Instant delay: eliminerer alle retry-ventetider i tester
+    setSonarDelayFn(() => Promise.resolve());
     mockFetch.mockReset();
     resetSonarMetrics();
   });
-
   afterEach(() => {
-    vi.useRealTimers();
+    resetSonarDelayFn();
     vi.clearAllMocks();
   });
 
