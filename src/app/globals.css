@@ -400,10 +400,10 @@ button,
 }
 
 /* OPTIMIZATION: Reduce layout shift (CLS) */
-html, 
-body {
+html {
   overflow-x: hidden;
 }
+/* NB: overflow-x: hidden på body dreper vertikal scroll på Safari/iOS */
 
 /* OPTIMIZATION: Smooth touch scrolling on iOS */
 .scroll-smooth {
