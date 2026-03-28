@@ -124,6 +124,34 @@ export async function middleware(request: NextRequest) {
   // Do NOT redirect / to /no — next-intl with localePrefix: 'as-needed' serves
   // default locale at / and would redirect /no back to /, causing ERR_TOO_MANY_REDIRECTS.
 
+  // 0. Pre-auth guard: sjekk PROTECTED_PATHS FØR i18n-routing
+  // (hindrer at /no/dashboard-redirect skjer uten auth-sjekk)
+  const isProtectedEarly = PROTECTED_PATHS.some((p) =>
+    strippedPath.startsWith(p)
+  );
+  if (isProtectedEarly) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (supabaseUrl && supabaseAnonKey) {
+      const earlySupabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookieEncoding: "raw",
+        cookies: {
+          getAll: () => request.cookies.getAll(),
+          setAll: () => {},
+        },
+      });
+      const { data: { user } } = await earlySupabase.auth.getUser();
+      if (!user) {
+        const loginUrl = new URL(
+          localizedPathname(locale, "/innlogging"),
+          request.url,
+        );
+        loginUrl.searchParams.set("next", localizedPathname(locale, strippedPath));
+        return NextResponse.redirect(loginUrl);
+      }
+    }
+  }
+
   // 1. i18n routing
   const response = handleI18nRouting(requestWithPath);
 
@@ -185,15 +213,7 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  if (isProtected && !user) {
-    const loginUrl = new URL(
-      localizedPathname(locale, "/innlogging"),
-      request.url,
-    );
-    loginUrl.searchParams.set("next", localizedPathname(locale, strippedPath));
-    return NextResponse.redirect(loginUrl);
-  }
-
+  // Pre-auth guard håndterer allerede !user for beskyttede ruter
   if (isProtected && user) {
     const onboardingResult = await handleOnboarding(request, response);
     if (onboardingResult) return onboardingResult;
