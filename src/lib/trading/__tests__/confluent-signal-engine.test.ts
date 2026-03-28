@@ -89,6 +89,53 @@ describe('generateConfluentSignal', () => {
     expect(signal.factors.event_risk).toBe(0.3);
     expect(signal.factors.market_regime).toBe('bull');
     expect(signal.metadata.usedFallback).toBe(false);
+    // Volatility and trend are now calculated from prices
+    expect(signal.factors.volatility).toBeGreaterThanOrEqual(0);
+    expect(signal.factors.volatility).toBeLessThanOrEqual(1);
+    expect(signal.factors.trend).toBeGreaterThanOrEqual(0);
+    expect(signal.factors.trend).toBeLessThanOrEqual(1);
+  });
+
+  it('beregner volatilitet fra prisdata', async () => {
+    // Priser med kjent volatilitet
+    const stablePrices = [100, 100.1, 99.9, 100.2, 100.0, 100.1, 99.9, 100.05, 100.0, 100.02, 100.0];
+    const volatilePrices = [100, 90, 110, 80, 120, 85, 115, 75, 125, 80, 120];
+    
+    mockIsSonarIntegrationEnabled.mockReturnValue(false);
+    
+    const signal1 = await generateConfluentSignal({
+      symbol: 'BTC', strategyType: 'momentum', prices: stablePrices,
+      includeNarrative: false, includeRegime: false,
+    });
+    const signal2 = await generateConfluentSignal({
+      symbol: 'BTC', strategyType: 'momentum', prices: volatilePrices,
+      includeNarrative: false, includeRegime: false,
+    });
+    
+    expect(signal1.factors.volatility).toBeLessThan(signal2.factors.volatility);
+    expect(signal1.factors.volatility).toBeGreaterThanOrEqual(0);
+    expect(signal1.factors.volatility).toBeLessThanOrEqual(1);
+    expect(signal2.factors.volatility).toBeGreaterThanOrEqual(0);
+    expect(signal2.factors.volatility).toBeLessThanOrEqual(1);
+  });
+
+  it('beregner trend fra prisslope', async () => {
+    const uptrend = [90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110];
+    const downtrend = [110, 108, 106, 104, 102, 100, 98, 96, 94, 92, 90];
+    
+    mockIsSonarIntegrationEnabled.mockReturnValue(false);
+    
+    const signalUp = await generateConfluentSignal({
+      symbol: 'ETH', strategyType: 'momentum', prices: uptrend,
+      includeNarrative: false, includeRegime: false,
+    });
+    const signalDown = await generateConfluentSignal({
+      symbol: 'ETH', strategyType: 'momentum', prices: downtrend,
+      includeNarrative: false, includeRegime: false,
+    });
+    
+    expect(signalUp.factors.trend).toBeGreaterThan(0.5);
+    expect(signalDown.factors.trend).toBeLessThan(0.5);
   });
 
   it('should use fallback when narrative scan fails', async () => {
