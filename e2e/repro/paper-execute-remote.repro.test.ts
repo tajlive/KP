@@ -1,8 +1,11 @@
 /**
- * Remote repro: krever .env.local med SUPABASE_SERVICE_ROLE_KEY.
- * Kjør: REPRO_PAPER_EXECUTE=1 npx vitest run src/lib/trading/safety/__tests__/paper-execute-remote.repro.test.ts
+ * INTEGRASJONSTEST — kjører mot live Supabase.
+ * Krever: REPRO_PAPER_EXECUTE=1 og .env.local med SUPABASE_SERVICE_ROLE_KEY
  *
- * laster env FØR executePaperTrade (service createClient).
+ * Kjør manuelt:
+ *   REPRO_PAPER_EXECUTE=1 npx vitest run e2e/repro/paper-execute-remote.repro.test.ts
+ *
+ * ALDRI inkludert i npm run test:unit eller CI-pipeline.
  */
 import { config as loadEnv } from "dotenv";
 import { resolve } from "node:path";
@@ -11,7 +14,7 @@ loadEnv({ path: resolve(process.cwd(), ".env.local") });
 
 import { beforeAll, describe, expect, it } from "vitest";
 import { createClient } from "@supabase/supabase-js";
-import { executePaperTrade } from "../execute-paper-trade";
+import { executePaperTrade } from "../../src/lib/trading/safety/execute-paper-trade";
 
 const run = process.env.REPRO_PAPER_EXECUTE === "1";
 

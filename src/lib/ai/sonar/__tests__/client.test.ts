@@ -41,11 +41,13 @@ vi.mock('../config', async (importOriginal) => {
 
 describe('callSonar', () => {
   beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     mockFetch.mockReset();
     resetSonarMetrics();
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 

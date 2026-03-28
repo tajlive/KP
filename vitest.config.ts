@@ -10,7 +10,7 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     // Inkluder kun unit/component-tester – Playwright e2e kjøres separat
     include: ["src/**/*.{test,spec}.{ts,tsx,js,jsx}"],
-    exclude: ["node_modules/**", "tests/e2e/**", "tests/smoke/**", "**/*.d.ts"],
+    exclude: ["node_modules/**", "tests/e2e/**", "tests/smoke/**", "e2e/**", "**/*.d.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
