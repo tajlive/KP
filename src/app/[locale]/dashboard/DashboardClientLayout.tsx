@@ -77,7 +77,7 @@ export default function DashboardClientLayout({
                     >
                       <ScrollToTop />
                       <TopNav />
-                      <div className="flex min-h-0 flex-1 min-w-0 flex-col overflow-hidden">
+                      <div className="flex min-h-0 flex-1 min-w-0 flex-col">
                         <main className="h-full min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain px-3 pt-3 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:px-4 lg:px-8 lg:pt-4 md:pb-8">
                           <div className="mx-auto w-full max-w-7xl">
                             <DashboardContent>{children}</DashboardContent>

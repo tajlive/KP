@@ -51,11 +51,12 @@ export function AutoTradingConfigCard() {
         is_enabled: boolean | null;
         is_paper_trading: boolean | null;
         trading_capital_nok: number | null;
+        risk_level: string | null;
       };
 
       const { data, error } = await supabase
         .from("user_auto_trading_configs")
-        .select("*")
+        .select("is_enabled, is_paper_trading, trading_capital_nok, risk_level")
         .eq("user_id", user.id)
         .maybeSingle()
         .returns<UserAutoTradingConfig>();
@@ -69,7 +70,7 @@ export function AutoTradingConfigCard() {
         setConfig({
           enabled: data.is_enabled ?? false,
           mode: data.is_paper_trading ? "paper" : "live",
-          risk_level: "medium", // Default value - not in DB schema
+          risk_level: (data.risk_level as RiskLevel) ?? "medium",
           max_trade_size_nok: data.trading_capital_nok ?? 10000,
         });
       }
@@ -102,6 +103,7 @@ export function AutoTradingConfigCard() {
             is_enabled: config.enabled,
             is_paper_trading: config.mode === "paper",
             trading_capital_nok: config.max_trade_size_nok,
+            risk_level: config.risk_level,
             updated_at: new Date().toISOString(),
           })
           .eq("id", existingConfig.id);
@@ -113,6 +115,7 @@ export function AutoTradingConfigCard() {
             is_enabled: config.enabled,
             is_paper_trading: config.mode === "paper",
             trading_capital_nok: config.max_trade_size_nok,
+            risk_level: config.risk_level,
           });
       }
 

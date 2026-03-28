@@ -2,6 +2,8 @@ import { requireAuth } from "@/lib/auth-guard";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { Metadata } from "next";
 import { BotWizard } from "@/components/auto-trade/BotWizard";
+import { RobotThinkingStrip } from "@/components/trading/RobotThinkingStrip";
+import { AutoTradingConfigCard } from "@/components/dashboard/AutoTradingConfigCard";
 
 export const dynamic = "force-dynamic";
 
@@ -37,11 +39,15 @@ export default async function AutoTradePage({
   const tier = normalizeTier(profile?.tier);
 
   return (
-    <BotWizard
-      userId={user.id}
-      locale={locale}
-      tier={tier}
-      paperBalance={profile?.paper_balance ?? null}
-    />
+    <div className="space-y-6">
+      <RobotThinkingStrip />
+      <AutoTradingConfigCard />
+      <BotWizard
+        userId={user.id}
+        locale={locale}
+        tier={tier}
+        paperBalance={profile?.paper_balance ?? null}
+      />
+    </div>
   );
 }
