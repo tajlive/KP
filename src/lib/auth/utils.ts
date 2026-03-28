@@ -313,6 +313,8 @@ export function getErrorMessage(
     "Password should be at least 6 characters":
       "Passordet må være minst 6 tegn",
     "Unable to validate email address: invalid format": "Ugyldig e-postadresse",
+    "Request rate limit reached": "For mange forsøk. Vent litt og prøv igjen.",
+    "User not found": "Ingen konto med denne e-postadressen.",
   };
 
   if (locale === "no") {
