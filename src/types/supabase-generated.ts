@@ -1116,6 +1116,63 @@ export type Database = {
           },
         ]
       }
+      auto_trading_trades: {
+        Row: {
+          binance_order_id: string | null
+          created_at: string | null
+          error_message: string | null
+          executed_at: string | null
+          fee: number | null
+          id: string
+          idempotency_key: string
+          pnl: number | null
+          price: number
+          quantity: number
+          side: string
+          status: string
+          strategy_id: string | null
+          symbol: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          binance_order_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          executed_at?: string | null
+          fee?: number | null
+          id?: string
+          idempotency_key: string
+          pnl?: number | null
+          price: number
+          quantity: number
+          side: string
+          status: string
+          strategy_id?: string | null
+          symbol: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          binance_order_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          executed_at?: string | null
+          fee?: number | null
+          id?: string
+          idempotency_key?: string
+          pnl?: number | null
+          price?: number
+          quantity?: number
+          side?: string
+          status?: string
+          strategy_id?: string | null
+          symbol?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       auto_trading_strategies: {
         Row: {
           allow_long: boolean | null

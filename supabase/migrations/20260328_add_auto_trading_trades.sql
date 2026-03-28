@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS auto_trading_trades (
 ALTER TABLE auto_trading_trades ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy: Users can only see their own trades
+DROP POLICY IF EXISTS "Users see own trades" ON auto_trading_trades;
 CREATE POLICY "Users see own trades" ON auto_trading_trades
   FOR ALL USING (auth.uid() = user_id);
 

@@ -1,3 +1,5 @@
+import { requireAuth } from "@/lib/auth-guard";
+import { localizedPathname } from "@/middleware/locale-path";
 import { ReferralDashboard } from "@/components/referral/ReferralDashboard";
 
 export const metadata = {
@@ -5,7 +7,15 @@ export const metadata = {
   description: "Tjen gratis Master-tier ved å invitere venner.",
 };
 
-export default function ReferralPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ReferralPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  await requireAuth(locale, localizedPathname(locale, "/dashboard/referral"));
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">

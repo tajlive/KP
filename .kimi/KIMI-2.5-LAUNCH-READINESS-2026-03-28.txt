@@ -1,0 +1,641 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  KIMI 2.5 — Klarpakke Launch Readiness                                      ║
+║  Dato: 2026-03-28  |  Prosjekt: /Users/taj/klarpakke                        ║
+║  Stack: Next.js 15 · Supabase · Tailwind v4 · Vitest · TypeScript strict    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Du er senior TypeScript/Next.js-arkitekt. Implementer ALLE 6 fixes i rekkefølge.
+Ikke endre noe annet enn det som er spesifisert. Kjør validering etter hvert steg.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 1 — P0: Kjør calculate_daily_loss SQL-fix i Supabase prod
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Supabase RPC calculate_daily_loss refererer til "trades" men tabellen
+  heter "auto_trading_trades". Alle live auto-trading-brukere blokkeres
+  av FAIL CLOSED-logikken i risk-validator.ts.
+
+  Bevis fra test-stderr:
+    [RiskValidator] calculate_daily_loss RPC failed:
+    { message: 'relation "trades" does not exist' }
+
+FIX:
+  Kjør i Supabase SQL Editor (supabase.com/dashboard -> SQL Editor):
+
+  -- FIX 1A: Oppdater RPC-funksjonen
+  CREATE OR REPLACE FUNCTION calculate_daily_loss(
+    p_user_id UUID,
+    p_strategy_id UUID DEFAULT NULL
+  )
+  RETURNS NUMERIC
+  LANGUAGE SQL
+  STABLE
+  SECURITY DEFINER
+  AS $
+    SELECT COALESCE(
+      SUM(ABS(COALESCE(pnl, 0))),
+      0
+    )
+    FROM auto_trading_trades
+    WHERE user_id = p_user_id
+      AND (p_strategy_id IS NULL OR strategy_id = p_strategy_id)
+      AND status = 'closed'
+      AND executed_at >= NOW() - INTERVAL '24 hours'
+      AND pnl < 0;
+  $;
+
+  GRANT EXECUTE ON FUNCTION calculate_daily_loss(UUID, UUID)
+    TO authenticated;
+
+  -- FIX 1B: Verifiser med test-UUID (skal returnere 0, ikke error)
+  SELECT calculate_daily_loss(
+    '00000000-0000-0000-0000-000000000000'::UUID
+  ) AS test_result;
+
+  -- Forventet resultat: 0
+  -- Hvis du ser error: sjekk at auto_trading_trades-tabellen eksisterer
+
+VALIDERING:
+  Kjor npx vitest run src/lib/trading/safety/__tests__/safety-core.test.ts
+  -- Forventet: INGEN stderr om 'relation "trades" does not exist'
+  -- Alle 11 tester gronne
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 2 — P0: Bytt trades -> auto_trading_trades i dashboard/page.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Fil: src/app/[locale]/dashboard/page.tsx
+  Sporringslogikken henter fra gammel "trades"-tabell:
+
+    const [profileRes, tradesRes, sessionsRes] = await Promise.all([
+      ...
+      supabase
+        .from("trades")           // <- FEIL TABELL
+        .select("id, session_id, trading_pair, side, quantity,
+                 price, total_value, status, mode, created_at,
+                 executed_at, realized_pnl")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      ...
+    ]);
+
+  Alle brukere ser tom trade-historikk pa dashboardet.
+
+FIX:
+  Fil: src/app/[locale]/dashboard/page.tsx
+
+  FINN:
+        .from("trades")
+        .select(
+          "id, session_id, trading_pair, side, quantity, price, total_value, status, mode, created_at, executed_at, realized_pnl",
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50),
+
+  ERSTATT MED:
+        .from("auto_trading_trades")
+        .select(
+          "id, session_id, symbol, side, quantity, price, notional_value, status, mode, created_at, executed_at, pnl",
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50),
+
+  MERK: Kolonnenavnene er forskjellige i auto_trading_trades:
+    trades.trading_pair      -> auto_trading_trades.symbol
+    trades.total_value       -> auto_trading_trades.notional_value
+    trades.realized_pnl      -> auto_trading_trades.pnl
+
+  Oppdater deretter CoinbaseHome-kallets prop-mapping like under:
+
+  FINN:
+    return (
+      <CoinbaseHome
+        paperBalance={profile?.paper_balance ?? 100000}
+        trades={tradesRes.data ?? []}
+      />
+    );
+
+  ERSTATT MED:
+    const trades = (tradesRes.data ?? []).map((t) => ({
+      trading_pair: t.symbol,
+      side: t.side,
+      quantity: t.quantity,
+      realized_pnl: t.pnl ?? null,
+    }));
+
+    return (
+      <CoinbaseHome
+        paperBalance={profile?.paper_balance ?? 100000}
+        trades={trades}
+      />
+    );
+
+VALIDERING:
+  npx tsc --noEmit
+  -- Forventet: 0 TypeScript-feil
+  Manuell test: Last /dashboard -> Se at handler vises i listen
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 3 — P1: Videresend activeSession til CoinbaseHome
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Fil: src/app/[locale]/dashboard/page.tsx
+  activeSession beregnes men sendes aldri til <CoinbaseHome />:
+
+    const activeSession =
+      session != null
+        ? {
+            ...session,
+            current_capital_nok: ...,
+            starting_capital_nok: ...,
+          }
+        : null;
+    // ← activeSession brukes IKKE
+
+    return (
+      <CoinbaseHome
+        paperBalance={profile?.paper_balance ?? 100000}
+        trades={trades}
+        // activeSession mangler her
+      />
+    );
+
+  Brukere ser aldri aktiv sesjon-informasjon (kapital, P&L, modus).
+
+FIX STEG A — Legg til prop i CoinbaseHome:
+  Fil: src/components/coinbase/CoinbaseHome.tsx
+
+  FINN typedefinisjonene ovenfor funksjonsdeklarasjonen. Legg til:
+
+  type ActiveSession = {
+    id: string;
+    mode: string;
+    status: string;
+    strategy_id: string | null;
+    current_capital_nok: number;
+    starting_capital_nok: number;
+    total_pnl: number | null;
+    total_trades: number | null;
+    winning_trades: number | null;
+    created_at: string | null;
+    updated_at: string | null;
+  } | null;
+
+  FINN CoinbaseHome-props-typen:
+    export function CoinbaseHome({
+      paperBalance,
+      trades,
+    }: {
+      paperBalance: number;
+      trades: ServerTradeRow[];
+    })
+
+  ERSTATT MED:
+    export function CoinbaseHome({
+      paperBalance,
+      trades,
+      activeSession = null,
+    }: {
+      paperBalance: number;
+      trades: ServerTradeRow[];
+      activeSession?: ActiveSession;
+    })
+
+  Legg til visning av sesjonsinfo under <PortfolioBalance .../>.
+  FINN:
+      <PortfolioBalance totalNok={totals.total} deltaPercent={totals.pct} />
+
+  LEGG TIL ETTER (ikke endre eksisterende):
+      {activeSession && (
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+            Aktiv sesjon
+          </p>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <p className="text-xs text-slate-500">Kapital</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {activeSession.current_capital_nok.toLocaleString('nb-NO')} NOK
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">P&L</p>
+              <p className={`text-sm font-semibold ${
+                (activeSession.total_pnl ?? 0) >= 0
+                  ? 'text-green-600'
+                  : 'text-red-600'
+              }`}>
+                {((activeSession.total_pnl ?? 0) >= 0 ? '+' : '')}
+                {(activeSession.total_pnl ?? 0).toLocaleString('nb-NO')} NOK
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Handler</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {activeSession.total_trades ?? 0}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+FIX STEG B — Send activeSession fra page.tsx:
+  Fil: src/app/[locale]/dashboard/page.tsx
+
+  FINN (etter FIX 2 er gjort):
+      <CoinbaseHome
+        paperBalance={profile?.paper_balance ?? 100000}
+        trades={trades}
+      />
+
+  ERSTATT MED:
+      <CoinbaseHome
+        paperBalance={profile?.paper_balance ?? 100000}
+        trades={trades}
+        activeSession={activeSession}
+      />
+
+VALIDERING:
+  npx tsc --noEmit
+  Manuell test: Logg inn med aktiv sesjon -> Se sesjonskortet pa dashboard
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 4 — P1: Ekstraher delay i sonar/client.ts for testbar retry-logikk
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Fil: src/lib/ai/sonar/client.ts
+  Retry-logikken bruker hardkodet setTimeout direkte i callSonar():
+
+    await new Promise((resolve) => setTimeout(resolve, delay));
+
+  Dette gjor at vi.useFakeTimers() ikke virker i testene fordi
+  setTimeout er innebygd i en inline Promise, ikke en eksporterbar funksjon.
+  Sonar-tester tar 13-15 sek per kjoring.
+
+FIX STEG A — Ekstraher delay-funksjon:
+  Fil: src/lib/ai/sonar/client.ts
+
+  FINN (like etter import-blokkene, for RateLimiter-klassen):
+    // ============================================================================
+    // Token Bucket Rate Limiter (In-Memory)
+    // ============================================================================
+
+  LEGG TIL FOR (ikke etter):
+    // ============================================================================
+    // Injectable delay — mockbar i tester
+    // ============================================================================
+
+    /**
+     * Delay-funksjon som kan overrides i tester via setSonarDelayFn()
+     * Standard: ekte setTimeout. I tester: vi.fn() eller no-op.
+     */
+    let _delayFn: (ms: number) => Promise<void> =
+      (ms) => new Promise((r) => setTimeout(r, ms));
+
+    /** Brukes kun i tester for a injisere fake delay */
+    export function setSonarDelayFn(fn: (ms: number) => Promise<void>): void {
+      _delayFn = fn;
+    }
+
+    /** Tilbakestill til ekte setTimeout (kall i afterEach) */
+    export function resetSonarDelayFn(): void {
+      _delayFn = (ms) => new Promise((r) => setTimeout(r, ms));
+    }
+
+FIX STEG B — Bruk _delayFn i retry-loopen:
+  Fil: src/lib/ai/sonar/client.ts
+
+  FINN i callSonar() retry-loopen:
+        await new Promise((resolve) => setTimeout(resolve, delay));
+
+  ERSTATT MED:
+        await _delayFn(delay);
+
+FIX STEG C — Oppdater testene til a bruke setSonarDelayFn:
+  Fil: src/lib/ai/sonar/__tests__/client.test.ts
+
+  FINN import-linjen:
+    import { callSonar, getSonarMetrics, resetSonarMetrics, checkSonarHealth } from '../client';
+
+  ERSTATT MED:
+    import {
+      callSonar,
+      getSonarMetrics,
+      resetSonarMetrics,
+      checkSonarHealth,
+      setSonarDelayFn,
+      resetSonarDelayFn,
+    } from '../client';
+
+  FINN beforeEach i describe('callSonar'):
+    beforeEach(() => {
+      mockFetch.mockReset();
+      resetSonarMetrics();
+    });
+    afterEach(() => {
+      vi.clearAllMocks();
+    });
+
+  ERSTATT MED:
+    beforeEach(() => {
+      // Instant delay: eliminerer alle retry-ventetider i tester
+      setSonarDelayFn(() => Promise.resolve());
+      mockFetch.mockReset();
+      resetSonarMetrics();
+    });
+    afterEach(() => {
+      resetSonarDelayFn();
+      vi.clearAllMocks();
+    });
+
+VALIDERING:
+  npx vitest run src/lib/ai/sonar/__tests__/client.test.ts
+  -- Forventet: alle 11 tester gronne
+  -- Forventet total tid: < 500ms (var 13-15 sek)
+  -- INGEN tester som endres i logikk, kun hastighet
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 5 — P1: Playwright E2E — Happy path (registrering -> paper-trade)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Det finnes ingen E2E-test for kjerneflyt. Uten denne kan vi ikke
+  verifisere at registrering -> innlogging -> paper-trade -> dashboard
+  fungerer fra ende til ende. Launch-risiko: stor.
+
+FIX — Opprett ny fil:
+  Fil: e2e/flows/happy-path.spec.ts
+
+  INNHOLD:
+  import { test, expect } from '@playwright/test';
+
+  /**
+   * Happy path E2E — Klarpakke
+   * Tester kjerneflyt: innlogging -> dashboard -> paper-trade
+   *
+   * Krever:
+   *   E2E_USER_EMAIL og E2E_USER_PASSWORD i .env.local
+   *   (Bruker: tom@klarpakke.no / TestPassword123!)
+   */
+
+  const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
+  const EMAIL = process.env.E2E_USER_EMAIL || 'tom@klarpakke.no';
+  const PASSWORD = process.env.E2E_USER_PASSWORD || 'TestPassword123!';
+
+  test.describe('Klarpakke Happy Path', () => {
+    test('innlogging og dashboard laster', async ({ page }) => {
+      // 1. Ga til innloggingssiden
+      await page.goto(`${BASE_URL}/no/auth/login`);
+      await expect(page).toHaveURL(/\/auth\/login/);
+
+      // 2. Fyll inn og send inn
+      await page.fill('input[type="email"]', EMAIL);
+      await page.fill('input[type="password"]', PASSWORD);
+      await page.click('button[type="submit"]');
+
+      // 3. Verifiser redirect til dashboard
+      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+
+      // 4. Dashboard er synlig
+      await expect(
+        page.getByTestId('dashboard-home-overview')
+      ).toBeVisible({ timeout: 5000 });
+    });
+
+    test('paper-trade side laster og viser konfig-kort', async ({ page }) => {
+      // 1. Logg inn
+      await page.goto(`${BASE_URL}/no/auth/login`);
+      await page.fill('input[type="email"]', EMAIL);
+      await page.fill('input[type="password"]', PASSWORD);
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+
+      // 2. Ga til paper-trade
+      await page.goto(`${BASE_URL}/no/dashboard/trade?mode=paper`);
+
+      // 3. Verifiser at TradeHub vises
+      await expect(
+        page.locator('text=Lekepenger').first()
+      ).toBeVisible({ timeout: 5000 });
+    });
+
+    test('auto-trade side: robot-strip og konfig-kort vises', async ({ page }) => {
+      // 1. Logg inn
+      await page.goto(`${BASE_URL}/no/auth/login`);
+      await page.fill('input[type="email"]', EMAIL);
+      await page.fill('input[type="password"]', PASSWORD);
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+
+      // 2. Ga til auto-trade
+      await page.goto(`${BASE_URL}/no/dashboard/auto-trade`);
+
+      // 3. AutoTradingConfigCard vises
+      await expect(
+        page.locator('text=Auto-Trading').first()
+      ).toBeVisible({ timeout: 5000 });
+
+      // 4. Risikoniva-velgeren vises
+      await expect(
+        page.getByText('Risikoniv\u00e5')
+      ).toBeVisible({ timeout: 5000 });
+
+      // 5. Lagre-knapp vises
+      await expect(
+        page.getByText('Lagre innstillinger')
+      ).toBeVisible({ timeout: 5000 });
+    });
+
+    test('scroll fungerer pa mobil (iOS-fix)', async ({ page }) => {
+      // Emulerer iPhone 14
+      await page.setViewportSize({ width: 390, height: 844 });
+
+      await page.goto(`${BASE_URL}/no/auth/login`);
+      await page.fill('input[type="email"]', EMAIL);
+      await page.fill('input[type="password"]', PASSWORD);
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+
+      // Scrollbar-test: body skal ikke ha overflow:hidden
+      const bodyOverflow = await page.evaluate(() => {
+        return window.getComputedStyle(document.body).overflow;
+      });
+      expect(bodyOverflow).not.toBe('hidden');
+    });
+  });
+
+FIX — Sjekk at playwright.config.ts eksisterer:
+  Fil: playwright.config.ts
+
+  Hvis filen ikke eksisterer, opprett den:
+
+  import { defineConfig, devices } from '@playwright/test';
+
+  export default defineConfig({
+    testDir: './e2e/flows',
+    fullyParallel: false,
+    retries: 1,
+    use: {
+      baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+      trace: 'on-first-retry',
+      screenshot: 'only-on-failure',
+    },
+    projects: [
+      { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+      { name: 'Mobile Safari', use: { ...devices['iPhone 14'] } },
+    ],
+  });
+
+  Legg til i package.json under scripts:
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
+
+VALIDERING:
+  # Start app forst:
+  npm run dev
+  # Kjor E2E i nytt terminal:
+  npx playwright test e2e/flows/happy-path.spec.ts --headed
+  -- Forventet: 4/4 tests passed
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 6 — P2: Sjekk og fiks earn/referral/tax-report sider
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Tre sider eksisterer men status er uklar:
+    - /dashboard/earn     -> EarnHub-komponent
+    - /dashboard/referral -> ReferralDashboard-komponent
+    - /dashboard/tax-report -> ukjent komponent
+
+  Disse sidene ma enten:
+  a) Fungere og se profesjonelle ut -> la sta
+  b) Vere stub/placeholder -> legg til 'coming-soon'-banner
+  c) Krasje -> fiks
+
+FIX STEG A — Sjekk EarnHub:
+  Fil: src/components/coinbase/EarnHub.tsx
+  Les filen og verifiser om den er ferdig implementert.
+  Hvis det er en stub (f.eks. returnerer bare <div>Coming soon</div>):
+
+  -- Legg til ComingSoonBanner:
+  Fil: src/components/ui/ComingSoonBanner.tsx
+
+  export function ComingSoonBanner({ feature }: { feature: string }) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <div className="text-6xl">🚀</div>
+        <h2 className="text-2xl font-bold text-white">{feature}</h2>
+        <p className="text-slate-400 text-center max-w-sm">
+          Denne funksjonen er under utvikling og lanseres snart.
+        </p>
+        <span className="px-4 py-1.5 rounded-full text-xs font-semibold
+          bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          Kommer snart
+        </span>
+      </div>
+    );
+  }
+
+  Bruk i earn/page.tsx hvis EarnHub er stub:
+    return <ComingSoonBanner feature="Earn" />;
+
+FIX STEG B — Sjekk ReferralDashboard:
+  Fil: src/components/referral/ReferralDashboard.tsx
+  Les filen og sjekk om 'Golden Ticket'-siden er ferdig.
+  referral/page.tsx mangler requireAuth() - legg til:
+
+  FINN:
+    export default function ReferralPage() {
+      return (
+
+  ERSTATT MED:
+    import { requireAuth } from "@/lib/auth-guard";
+    import { localizedPathname } from "@/middleware/locale-path";
+
+    export const dynamic = "force-dynamic";
+
+    export default async function ReferralPage({
+      params,
+    }: {
+      params: Promise<{ locale: string }>;
+    }) {
+      const { locale } = await params;
+      await requireAuth(locale, localizedPathname(locale, "/dashboard/referral"));
+      return (
+
+  Lukk med );
+  }
+
+FIX STEG C — Sjekk tax-report:
+  Fil: src/app/[locale]/dashboard/tax-report/page.tsx
+  Les og sjekk. Hvis stub: bruk ComingSoonBanner.
+
+VALIDERING:
+  npx tsc --noEmit
+  Manuell test: Besok /dashboard/earn, /referral, /tax-report
+  -- Ingen av sidene skal krasje
+  -- Stub-sider viser Coming Soon-banner
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLUTTVALIDERING — Kjor ETTER alle 6 fixes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 1. TypeScript — 0 feil:
+npx tsc --noEmit
+
+# 2. Unit tests:
+npm run test:unit
+-- Forventet: 45 testfiler gronne
+-- Forventet Sonar-tid: < 1 sek (var 14 sek)
+-- Forventet total: < 5 sek (var 15 sek)
+
+# 3. Supabase RPC-test:
+SELECT calculate_daily_loss('00000000-0000-0000-0000-000000000000'::UUID);
+-- Forventet: 0
+
+# 4. E2E (nar app kjorer pa localhost:3000):
+npx playwright test e2e/flows/happy-path.spec.ts
+-- Forventet: 4/4 passed
+
+# 5. Commit:
+git add -A
+git commit -m "feat(launch): fix trades table ref, activeSession dashboard, sonar delay injectable, E2E happy path, earn/referral/tax auth guards"
+git push
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FIX  PRIO  BESKRIVELSE
+──────────────────────────────────────────────────────────────────────────────
+ 1   P0    calculate_daily_loss SQL: trades -> auto_trading_trades
+           -> Live trading ublokkeres for alle brukere
+
+ 2   P0    dashboard/page.tsx: trades -> auto_trading_trades + kolonnenavn
+           -> Trade-historikk vises pa dashboard
+
+ 3   P1    CoinbaseHome: activeSession prop + sesjonsvisning
+           -> Aktiv sesjon vises til innloggede brukere
+
+ 4   P1    sonar/client.ts: ekstraher _delayFn for testbarhet
+           -> Sonar-tester: 14 sek -> < 500ms
+
+ 5   P1    Playwright E2E: 4 happy-path tester
+           -> Launch-confidence: verifisert kjerneflyt
+
+ 6   P2    earn/referral/tax-report: auth guard + coming-soon-banner
+           -> Ingen krasj pa sekundaere sider ved launch

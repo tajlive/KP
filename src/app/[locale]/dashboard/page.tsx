@@ -81,9 +81,9 @@ export default async function DashboardPage({
         .eq("id", user.id)
         .single(),
       supabase
-        .from("trades")
+        .from("auto_trading_trades")
         .select(
-          "id, session_id, trading_pair, side, quantity, price, total_value, status, mode, created_at, executed_at, realized_pnl",
+          "id, symbol, side, quantity, price, status, pnl, created_at, executed_at",
         )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
@@ -115,10 +115,18 @@ export default async function DashboardPage({
           }
         : null;
 
+    const trades = (tradesRes.data ?? []).map((t) => ({
+      trading_pair: t.symbol,
+      side: t.side,
+      quantity: t.quantity,
+      realized_pnl: t.pnl ?? null,
+    }));
+
     return (
       <CoinbaseHome
         paperBalance={profile?.paper_balance ?? 100000}
-        trades={tradesRes.data ?? []}
+        trades={trades}
+        activeSession={activeSession}
       />
     );
   } catch (error) {
