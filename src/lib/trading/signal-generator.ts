@@ -13,6 +13,7 @@ import {
 export interface Signal {
   action: "BUY" | "SELL" | "HOLD";
   reason: string;
+  confidence?: number; // 0.0 - 1.0, styrer dynamisk score
 }
 
 export function generateSignal(strategyType: string, prices: number[]): Signal {
