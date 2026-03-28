@@ -1,0 +1,552 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  KIMI 2.5 — Klarpakke Forbedringer                                         ║
+║  Dato: 2026-03-28  |  Prosjekt: /Users/taj/klarpakke                       ║
+║  Stack: Next.js 15 · Supabase · Tailwind v4 · Vitest · TypeScript strict   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Du er senior TypeScript/Next.js-arkitekt. Implementer ALLE 5 fixes nedenfor i
+nøyaktig den rekkefølge de er listet. Ikke endre noe annet enn det som er
+spesifisert. Kjør validering etter hvert steg.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 1 — P0: Fiks calculate_daily_loss RPC (risikostopp virker ikke i live)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Testen rapporterer:
+    [RiskValidator] calculate_daily_loss RPC failed:
+    { message: 'relation "trades" does not exist' }
+
+  Supabase-funksjonen calculate_daily_loss refererer til en tabell som heter
+  'trades', men applikasjonen bruker 'auto_trading_trades' (migrert 2026-03-28).
+  Konsekvens: alle live auto-trading brukere har INGEN daglig tap-stopp.
+  risk-validator.ts linje ~195 kaller: supabase.rpc('calculate_daily_loss', ...)
+  og FAIL CLOSED-logikken blokkerer alle live trades fordi RPC feiler.
+
+FIX:
+  Kjør dette i Supabase SQL Editor (dashboard.supabase.com → SQL Editor):
+
+  -- Oppdater calculate_daily_loss til å bruke riktig tabell
+  CREATE OR REPLACE FUNCTION calculate_daily_loss(
+    p_user_id UUID,
+    p_session_id UUID DEFAULT NULL
+  )
+  RETURNS NUMERIC
+  LANGUAGE SQL
+  STABLE
+  SECURITY DEFINER
+  AS $$
+    SELECT COALESCE(
+      SUM(ABS(COALESCE(pnl, 0))),
+      0
+    )
+    FROM auto_trading_trades
+    WHERE user_id = p_user_id
+      AND (p_session_id IS NULL OR session_id = p_session_id)
+      AND status = 'closed'
+      AND executed_at >= NOW() - INTERVAL '24 hours'
+      AND pnl < 0;
+  $$;
+
+  -- Gi execute-rettigheter til authenticated brukere
+  GRANT EXECUTE ON FUNCTION calculate_daily_loss(UUID, UUID)
+    TO authenticated;
+
+  -- Verifiser at funksjonen returnerer 0 (ikke error) for en test-UUID:
+  SELECT calculate_daily_loss('00000000-0000-0000-0000-000000000000'::UUID);
+  -- Forventet resultat: 0
+
+VALIDERING:
+  npx vitest run src/lib/trading/safety/__tests__/safety-core.test.ts
+  -- Forventet: INGEN 'relation "trades" does not exist' i stderr
+  -- Alle 11 tester grønne
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 2 — P1: Sonar-tester fra 13 sek → <100ms med vi.useFakeTimers()
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Fil: src/lib/ai/sonar/__tests__/client.test.ts
+  Disse testene tar 13001ms totalt:
+    ✓ should retry on retryable error and eventually succeed  1041ms
+    ✓ should throw SonarError after max retries  4470ms
+    ✓ should throw RATE_LIMIT error when rate limited  3601ms
+    ✓ should throw TIMEOUT error on abort  3878ms
+
+  Årsak: DEFAULT_RETRY_CONFIG.baseDelayMs=100 med eksponentiell backoff
+  bruker ekte setTimeout selv om fetch er mocket. Timer-delays er reelle.
+
+FIX:
+  Fil: src/lib/ai/sonar/__tests__/client.test.ts
+
+  FINN øverst i describe('callSonar') blokken:
+    beforeEach(() => {
+      mockFetch.mockReset();
+      resetSonarMetrics();
+    });
+    afterEach(() => {
+      vi.clearAllMocks();
+    });
+
+  ERSTATT med:
+    beforeEach(() => {
+      vi.useFakeTimers();
+      mockFetch.mockReset();
+      resetSonarMetrics();
+    });
+    afterEach(() => {
+      vi.runAllTimersAsync();
+      vi.useRealTimers();
+      vi.clearAllMocks();
+    });
+
+  OG: For retry-testene som bruker await — wrap dem med timer-advance.
+  FINN testen 'should retry on retryable error and eventually succeed':
+
+    it('should retry on retryable error and eventually succeed', async () => {
+      mockFetch
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+      const resultPromise = callSonar('Test prompt', {
+        tier: 'sonar',
+        mode: 'low',
+      });
+
+      await vi.runAllTimersAsync();
+      const result = await resultPromise;
+
+      expect(result).toBe('Success after retry');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+  FINN testen 'should throw SonarError after max retries':
+
+    it('should throw SonarError after max retries', async () => {
+      mockFetch.mockRejectedValue(new Error('Network error'));
+
+      const resultPromise = callSonar('Test prompt', {
+        tier: 'sonar',
+        mode: 'low',
+      });
+
+      await vi.runAllTimersAsync();
+
+      await expect(resultPromise).rejects.toThrow(SonarError);
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+      const metrics = getSonarMetrics();
+      expect(metrics.errorsTotal).toBe(1);
+    });
+
+  FINN testen 'should throw RATE_LIMIT error when rate limited':
+
+    it('should throw RATE_LIMIT error when rate limited', async () => {
+      mockFetch
+        .mockResolvedValueOnce({ ok: false, status: 429, text: () => Promise.resolve('Too many requests') })
+        .mockResolvedValueOnce({ ok: false, status: 429, text: () => Promise.resolve('Too many requests') })
+        .mockResolvedValueOnce({ ok: false, status: 429, text: () => Promise.resolve('Too many requests') });
+
+      const resultPromise = callSonar('Test prompt', { tier: 'sonar', mode: 'low' });
+      await vi.runAllTimersAsync();
+      await expect(resultPromise).rejects.toThrow('429');
+    });
+
+VALIDERING:
+  npx vitest run src/lib/ai/sonar/__tests__/client.test.ts
+  -- Forventet: alle 11 tester grønne
+  -- Forventet total kjøretid: < 500ms (var 13001ms)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 3 — P1: Test dynamisk confidence-score i confluent-signal-engine
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Commit fa5b550b6 la til dynamisk confidence-basert scoring:
+    BUY:  score = 50 + (confidence * 30)  → 50-80
+    SELL: score = 50 - (confidence * 30)  → 20-50
+    HOLD: score = 45 + (confidence * 10)  → 45-55
+
+  Ingen eksisterende tester verifiserer dette. Koden kan regressere.
+
+  Relevante typer:
+    Signal.confidence?: number  // 0.0 - 1.0
+    ConfluentSignal.score: number  // 0-100
+
+FIX:
+  Fil: src/lib/trading/__tests__/confluent-signal-engine.test.ts
+
+  FINN slutten av siste it()-blokk i describe('generateConfluentSignal')
+  og LEGG TIL disse testene:
+
+    describe('Dynamisk confidence-basert score (fa5b550b6)', () => {
+      beforeEach(() => {
+        // Disable Sonar for isolerte unit-tester
+        vi.stubEnv('NEXT_PUBLIC_SONAR_ENABLED', 'false');
+      });
+
+      afterEach(() => {
+        vi.unstubAllEnvs();
+      });
+
+      it('BUY med confidence=1.0 skal gi score 80', async () => {
+        vi.mocked(generateSignal).mockReturnValue({
+          action: 'BUY',
+          reason: 'RSI oversold, strong momentum',
+          confidence: 1.0,
+        });
+        const signal = await generateConfluentSignal({
+          symbol: 'BTCUSDT',
+          strategyType: 'rsi',
+          prices: Array(20).fill(50000),
+          includeNarrative: false,
+          includeRegime: false,
+        });
+        expect(signal.score).toBe(80);
+        expect(signal.action).toBe('BUY');
+      });
+
+      it('BUY med confidence=0.0 skal gi score 50', async () => {
+        vi.mocked(generateSignal).mockReturnValue({
+          action: 'BUY',
+          reason: 'Weak signal',
+          confidence: 0.0,
+        });
+        const signal = await generateConfluentSignal({
+          symbol: 'BTCUSDT',
+          strategyType: 'rsi',
+          prices: Array(20).fill(50000),
+          includeNarrative: false,
+          includeRegime: false,
+        });
+        expect(signal.score).toBe(50);
+      });
+
+      it('SELL med confidence=1.0 skal gi score 20 og action SELL', async () => {
+        vi.mocked(generateSignal).mockReturnValue({
+          action: 'SELL',
+          reason: 'Strong overbought',
+          confidence: 1.0,
+        });
+        const signal = await generateConfluentSignal({
+          symbol: 'BTCUSDT',
+          strategyType: 'rsi',
+          prices: Array(20).fill(50000),
+          includeNarrative: false,
+          includeRegime: false,
+        });
+        expect(signal.score).toBe(20);
+        expect(signal.action).toBe('SELL');
+      });
+
+      it('SELL med confidence=0.0 skal gi score 50 og action HOLD', async () => {
+        vi.mocked(generateSignal).mockReturnValue({
+          action: 'SELL',
+          reason: 'Weak sell signal',
+          confidence: 0.0,
+        });
+        const signal = await generateConfluentSignal({
+          symbol: 'BTCUSDT',
+          strategyType: 'rsi',
+          prices: Array(20).fill(50000),
+          includeNarrative: false,
+          includeRegime: false,
+        });
+        expect(signal.score).toBe(50);
+        expect(signal.action).toBe('HOLD');
+      });
+
+      it('HOLD med confidence=0.5 skal gi score 50', async () => {
+        vi.mocked(generateSignal).mockReturnValue({
+          action: 'HOLD',
+          reason: 'Sideways market',
+          confidence: 0.5,
+        });
+        const signal = await generateConfluentSignal({
+          symbol: 'BTCUSDT',
+          strategyType: 'rsi',
+          prices: Array(20).fill(50000),
+          includeNarrative: false,
+          includeRegime: false,
+        });
+        expect(signal.score).toBe(50);
+        expect(signal.action).toBe('HOLD');
+      });
+
+      it('undefined confidence skal defaulte til 0.5 (samme som gammel statisk score)', async () => {
+        vi.mocked(generateSignal).mockReturnValue({
+          action: 'BUY',
+          reason: 'Legacy signal uten confidence',
+          // confidence: undefined
+        });
+        const signal = await generateConfluentSignal({
+          symbol: 'BTCUSDT',
+          strategyType: 'rsi',
+          prices: Array(20).fill(50000),
+          includeNarrative: false,
+          includeRegime: false,
+        });
+        // 50 + (0.5 * 30) = 65 — lik gammel statisk BUY-score
+        expect(signal.score).toBe(65);
+      });
+    });
+
+VALIDERING:
+  npx vitest run src/lib/trading/__tests__/confluent-signal-engine.test.ts
+  -- Forventet: 22 tester grønne (var 16)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 4 — P2: Flytt repro-integrasjonstester ut av vitest unit-suite
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Fil: src/lib/trading/safety/__tests__/paper-execute-remote.repro.test.ts
+  Denne filen kjøres alltid av vitest og viser:
+    ↓ src/lib/trading/safety/__tests__/paper-execute-remote.repro.test.ts
+       (3 tests | 3 skipped)
+  Filen er en integrasjonstest mot live Supabase og skal IKKE ligge i unit-suite.
+
+FIX STEG 1 — Flytt filen:
+  Kjør i terminal:
+    mkdir -p /Users/taj/klarpakke/e2e/repro
+    mv /Users/taj/klarpakke/src/lib/trading/safety/__tests__/paper-execute-remote.repro.test.ts \
+       /Users/taj/klarpakke/e2e/repro/paper-execute-remote.repro.test.ts
+
+FIX STEG 2 — Ekskluder fra vitest:
+  Fil: vitest.config.ts
+
+  FINN exclude-arrayen (eller legg til under test: {}):
+    test: {
+      exclude: [
+        'node_modules/**',
+        'e2e/**',
+        '**/*.repro.test.ts',
+        '**/*.e2e.test.ts',
+      ],
+    }
+
+  Hvis det ikke finnes en exclude-array fra før, legg den til inni
+  defineConfig({ test: { ... } })-blokken.
+
+FIX STEG 3 — Dokumenter hvordan den kjøres:
+  Legg til i e2e/repro/paper-execute-remote.repro.test.ts øverst i kommentarblokken:
+  /**
+   * INTEGRASJONSTEST — kjører mot live Supabase.
+   * Krever: REPRO_PAPER_EXECUTE=1 og .env.local med SUPABASE_SERVICE_ROLE_KEY
+   *
+   * Kjør manuelt:
+   *   REPRO_PAPER_EXECUTE=1 npx vitest run e2e/repro/paper-execute-remote.repro.test.ts
+   *
+   * ALDRI inkludert i npm run test:unit eller CI-pipeline.
+   */
+
+VALIDERING:
+  npx vitest run
+  -- Forventet output: INGEN '↓ skipped' for repro-filen
+  -- Test Files: 44 passed (var 44 passed | 1 skipped)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX 5 — P2: Smoke-test for AutoTradingConfigCard
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Fil: src/components/dashboard/AutoTradingConfigCard.tsx
+  Ingen tester. Komponenten:
+  - Henter konfig fra Supabase (user_auto_trading_configs)
+  - Lagrer risk_level, is_enabled, is_paper_trading, trading_capital_nok
+  - Viser loading-state, toggle, risk-selector, slider, save-knapp
+  Kritisk fordi den er nå montert på /dashboard/auto-trade (commit ff3860220).
+
+FIX — Opprett ny testfil:
+  Fil: src/components/dashboard/__tests__/AutoTradingConfigCard.test.tsx
+
+  INNHOLD:
+  import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+  import { describe, it, expect, vi, beforeEach } from 'vitest';
+  import { AutoTradingConfigCard } from '../AutoTradingConfigCard';
+
+  // Mock Supabase createClient
+  const mockFrom = vi.fn();
+  const mockAuth = {
+    getUser: vi.fn().mockResolvedValue({
+       { user: { id: 'user-123' } }
+    }),
+  };
+
+  vi.mock('@/lib/utils', () => ({
+    createClient: () => ({
+      auth: mockAuth,
+      from: mockFrom,
+    }),
+    cn: (...args: string[]) => args.filter(Boolean).join(' '),
+  }));
+
+  // Mock sonner toast
+  vi.mock('sonner', () => ({
+    toast: {
+      success: vi.fn(),
+      error: vi.fn(),
+    },
+  }));
+
+  function mockSupabaseChain( object | null, error: object | null = null) {
+    const chain = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockReturnThis(),
+      returns: vi.fn().mockResolvedValue({ data, error }),
+      update: vi.fn().mockReturnThis(),
+      insert: vi.fn().mockResolvedValue({  null, error: null }),
+    };
+    mockFrom.mockReturnValue(chain);
+    return chain;
+  }
+
+  describe('AutoTradingConfigCard', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('rendrer loading-state mens data hentes', () => {
+      mockFrom.mockReturnValue({
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        maybeSingle: vi.fn().mockReturnThis(),
+        returns: vi.fn().mockReturnValue(new Promise(() => {})), // aldri resolverer
+      });
+      render(<AutoTradingConfigCard />);
+      expect(screen.getByText('Laster...')).toBeInTheDocument();
+    });
+
+    it('rendrer konfig-kort etter data er lastet', async () => {
+      mockSupabaseChain({
+        is_enabled: false,
+        is_paper_trading: true,
+        trading_capital_nok: 15000,
+        risk_level: 'medium',
+      });
+      render(<AutoTradingConfigCard />);
+      await waitFor(() => {
+        expect(screen.getByText('Auto-Trading')).toBeInTheDocument();
+        expect(screen.getByText('Risikonivå')).toBeInTheDocument();
+        expect(screen.getByText('Balansert')).toBeInTheDocument();
+      });
+    });
+
+    it('rendrer med tom DB (ingen eksisterende config)', async () => {
+      mockSupabaseChain(null); // maybeSingle returnerer null
+      render(<AutoTradingConfigCard />);
+      await waitFor(() => {
+        expect(screen.getByText('Auto-Trading')).toBeInTheDocument();
+      });
+    });
+
+    it('viser riktig risikonivå fra DB', async () => {
+      mockSupabaseChain({
+        is_enabled: true,
+        is_paper_trading: false,
+        trading_capital_nok: 50000,
+        risk_level: 'high',
+      });
+      render(<AutoTradingConfigCard />);
+      await waitFor(() => {
+        expect(screen.getByText('Aggressiv')).toBeInTheDocument();
+      });
+    });
+
+    it('viser Live Trading-advarsel når live-modus er valgt', async () => {
+      mockSupabaseChain({
+        is_enabled: false,
+        is_paper_trading: false,
+        trading_capital_nok: 10000,
+        risk_level: 'medium',
+      });
+      render(<AutoTradingConfigCard />);
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Live trading bruker ekte penger/i)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('Lagre-knapp kaller saveConfig og viser toast.success', async () => {
+      const chain = mockSupabaseChain({
+        is_enabled: false,
+        is_paper_trading: true,
+        trading_capital_nok: 10000,
+        risk_level: 'low',
+      });
+      // Mock existingConfig-sjekk
+      chain.maybeSingle.mockResolvedValueOnce({  { id: 'cfg-1' }, error: null });
+      chain.update = vi.fn().mockReturnThis();
+      chain.eq = vi.fn().mockResolvedValue({  null, error: null });
+
+      render(<AutoTradingConfigCard />);
+      await waitFor(() => screen.getByText('Lagre innstillinger'));
+
+      fireEvent.click(screen.getByText('Lagre innstillinger'));
+
+      await waitFor(() => {
+        const { toast } = await import('sonner');
+        expect(toast.success).toHaveBeenCalledWith('Innstillinger lagret!');
+      });
+    });
+  });
+
+VALIDERING:
+  npx vitest run src/components/dashboard/__tests__/AutoTradingConfigCard.test.tsx
+  -- Forventet: 6 tester grønne
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SLUTTVALIDERING — kjør ETTER alle 5 fixes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 1. Full TypeScript-sjekk:
+npx tsc --noEmit
+-- Forventet: 0 errors
+
+# 2. Full unit-test suite:
+npm run test:unit
+-- Forventet: 341 passed, 0 skipped (var 335 passed, 4 skipped)
+-- Forventet total tid: < 5 sek (var 14.32s)
+
+# 3. Verifiser Supabase RPC-fix:
+Supabase SQL Editor:
+  SELECT calculate_daily_loss(
+    'e63ad8c4-0000-0000-0000-000000000000'::UUID
+  );
+-- Forventet: 0 (ikke SQL-error)
+
+# 4. Commit:
+git add -A
+git commit -m "fix: daily_loss RPC tabell-ref, fake timers sonar tests, confidence score tests, repro test location, AutoTradingConfigCard smoke tests"
+git push
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FIX  PRIO  BESKRIVELSE
+───────────────────────────────────────────────────────────────────────────
+  1   P0   calculate_daily_loss RPC: 'trades' → 'auto_trading_trades'
+           → Aktiverer risikostopp for alle live-brukere
+
+  2   P1   vi.useFakeTimers() i sonar-tester
+           → CI-bygge: 13 sek raskere per push
+
+  3   P1   6 nye tester for dynamisk confidence-score
+           → Sikrer at fa5b550b6 ikke regresserer
+
+  4   P2   Flytt repro-test til e2e/repro/
+           → Ryddig test-output, 0 skipped i unit-suite
+
+  5   P2   6 smoke-tester for AutoTradingConfigCard
+           → Testdekning på kritisk montert komponent

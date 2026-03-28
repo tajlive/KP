@@ -264,6 +264,123 @@ describe('generateConfluentSignal', () => {
     expect(mockNarrativeScanWithFallback).not.toHaveBeenCalled();
     expect(mockRegimeScanWithFallback).not.toHaveBeenCalled();
   });
+
+  describe('Dynamisk confidence-basert score (fa5b550b6)', () => {
+    let generateSignalSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(async () => {
+      // Disable Sonar for isolerte unit-tester
+      vi.stubEnv('NEXT_PUBLIC_SONAR_ENABLED', 'false');
+      const { generateSignal } = await import('../signal-generator');
+      generateSignalSpy = vi.spyOn(await import('../signal-generator'), 'generateSignal');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      generateSignalSpy?.mockRestore();
+    });
+
+    it('BUY med confidence=1.0 skal gi score 80', async () => {
+      generateSignalSpy.mockReturnValue({
+        action: 'BUY',
+        reason: 'RSI oversold, strong momentum',
+        confidence: 1.0,
+      });
+      const signal = await generateConfluentSignal({
+        symbol: 'BTCUSDT',
+        strategyType: 'rsi',
+        prices: Array(20).fill(50000),
+        includeNarrative: false,
+        includeRegime: false,
+      });
+      expect(signal.score).toBe(80);
+      expect(signal.action).toBe('BUY');
+    });
+
+    it('BUY med confidence=0.0 skal gi score 50', async () => {
+      generateSignalSpy.mockReturnValue({
+        action: 'BUY',
+        reason: 'Weak signal',
+        confidence: 0.0,
+      });
+      const signal = await generateConfluentSignal({
+        symbol: 'BTCUSDT',
+        strategyType: 'rsi',
+        prices: Array(20).fill(50000),
+        includeNarrative: false,
+        includeRegime: false,
+      });
+      expect(signal.score).toBe(50);
+    });
+
+    it('SELL med confidence=1.0 skal gi score 20 og action SELL', async () => {
+      generateSignalSpy.mockReturnValue({
+        action: 'SELL',
+        reason: 'Strong overbought',
+        confidence: 1.0,
+      });
+      const signal = await generateConfluentSignal({
+        symbol: 'BTCUSDT',
+        strategyType: 'rsi',
+        prices: Array(20).fill(50000),
+        includeNarrative: false,
+        includeRegime: false,
+      });
+      expect(signal.score).toBe(20);
+      expect(signal.action).toBe('SELL');
+    });
+
+    it('SELL med confidence=0.0 skal gi score 50 og action HOLD', async () => {
+      generateSignalSpy.mockReturnValue({
+        action: 'SELL',
+        reason: 'Weak sell signal',
+        confidence: 0.0,
+      });
+      const signal = await generateConfluentSignal({
+        symbol: 'BTCUSDT',
+        strategyType: 'rsi',
+        prices: Array(20).fill(50000),
+        includeNarrative: false,
+        includeRegime: false,
+      });
+      expect(signal.score).toBe(50);
+      expect(signal.action).toBe('HOLD');
+    });
+
+    it('HOLD med confidence=0.5 skal gi score 50', async () => {
+      generateSignalSpy.mockReturnValue({
+        action: 'HOLD',
+        reason: 'Sideways market',
+        confidence: 0.5,
+      });
+      const signal = await generateConfluentSignal({
+        symbol: 'BTCUSDT',
+        strategyType: 'rsi',
+        prices: Array(20).fill(50000),
+        includeNarrative: false,
+        includeRegime: false,
+      });
+      expect(signal.score).toBe(50);
+      expect(signal.action).toBe('HOLD');
+    });
+
+    it('undefined confidence skal defaulte til 0.5 (samme som gammel statisk score)', async () => {
+      generateSignalSpy.mockReturnValue({
+        action: 'BUY',
+        reason: 'Legacy signal uten confidence',
+        // confidence: undefined
+      });
+      const signal = await generateConfluentSignal({
+        symbol: 'BTCUSDT',
+        strategyType: 'rsi',
+        prices: Array(20).fill(50000),
+        includeNarrative: false,
+        includeRegime: false,
+      });
+      // 50 + (0.5 * 30) = 65 — lik gammel statisk BUY-score
+      expect(signal.score).toBe(65);
+    });
+  });
 });
 
 describe('explainConfluentSignal', () => {
