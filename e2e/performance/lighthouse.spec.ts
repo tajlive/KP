@@ -12,6 +12,7 @@
  * @performance
  */
 
+/* eslint-disable no-undef */
 import { test, expect } from "@playwright/test";
 import type { Page, CDPSession } from "@playwright/test";
 

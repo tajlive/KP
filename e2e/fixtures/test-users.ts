@@ -198,6 +198,7 @@ export const LEGACY_TEST_USERS = [
 /**
  * Get test user by type and identifier
  */
+/* eslint-disable no-redeclare */
 export function getTestUser(type: "primary", identifier?: never): TestUser;
 export function getTestUser(type: "tier", tier: UserTier): TestUser;
 export function getTestUser(

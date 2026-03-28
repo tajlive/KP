@@ -1,5 +1,5 @@
 // Mock for next-intl/server
-export async function getTranslations(namespace?: string) {
+export async function getTranslations(_namespace?: string) {
   return function t(key: string) {
     // Return a formatted string based on key
     if (key.includes('.')) {
@@ -13,6 +13,6 @@ export async function getLocale() {
   return 'no';
 }
 
-export async function setRequestLocale(locale: string) {
+export async function setRequestLocale(_locale: string) {
   // No-op in storybook
 }
