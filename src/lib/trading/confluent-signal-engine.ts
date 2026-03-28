@@ -16,6 +16,7 @@ import { isSonarIntegrationEnabled } from '@/lib/ai/sonar/feature-flags';
 import { generateSignal, type Signal } from './signal-generator';
 import type { ExplainSignalInput, ExplainSignalResult } from '@/lib/ai/sonar';
 import { explainSignalWithFallback } from '@/lib/ai/sonar';
+import { createClient } from '@supabase/supabase-js';
 
 // ============================================================================
 // Types
@@ -49,6 +50,7 @@ export interface ConfluentSignalOptions {
   includeNarrative?: boolean;
   includeRegime?: boolean;
   userRiskProfile?: 'conservative' | 'balanced' | 'aggressive';
+  userId?: string;
 }
 
 // ============================================================================
@@ -81,6 +83,51 @@ const RISK_THRESHOLDS = {
   MEDIUM: 0.5,
   HIGH: 0.7,
 };
+
+// ============================================================================
+// Volatility & Trend Calculations
+// ============================================================================
+
+/**
+ * Beregn historisk volatilitet fra prisrekke
+ * Returnerer normalisert verdi 0.0-1.0
+ * < 0.3 = lav, 0.3-0.6 = middels, > 0.6 = høy
+ */
+function calculateVolatility(prices: number[]): number {
+  if (prices.length < 2) return 0.5;
+  const returns: number[] = [];
+  for (let i = 1; i < prices.length; i++) {
+    if (prices[i - 1] !== 0) {
+      returns.push((prices[i] - prices[i - 1]) / prices[i - 1]);
+    }
+  }
+  if (returns.length === 0) return 0.5;
+  const mean = returns.reduce((a, b) => a + b, 0) / returns.length;
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / returns.length;
+  const stdDev = Math.sqrt(variance);
+  // Annualiser (daglig -> årlig), normaliser mot 100% vol = 1.0
+  const annualizedVol = stdDev * Math.sqrt(252);
+  return Math.min(1.0, annualizedVol);
+}
+
+/**
+ * Beregn EMA-slope som trendindikator
+ * Returnerer 0.0-1.0 (0.5 = nøytrål, >0.5 = opptrender, <0.5 = nedtrender)
+ */
+function calculateTrendStrength(prices: number[], period = 9): number {
+  if (prices.length < period + 1) return 0.5;
+  const k = 2 / (period + 1);
+  let ema = prices[0];
+  for (let i = 1; i < prices.length; i++) {
+    ema = prices[i] * k + ema * (1 - k);
+  }
+  // Sammenlign EMA med prisen fra 'period' perioder tilbake
+  const oldPrice = prices[prices.length - period - 1];
+  if (oldPrice === 0) return 0.5;
+  const slopeRatio = (ema - oldPrice) / oldPrice;
+  // Normaliser: +10% -> 1.0, -10% -> 0.0, 0% -> 0.5
+  return Math.max(0, Math.min(1, 0.5 + slopeRatio * 5));
+}
 
 // ============================================================================
 // Score Calculation
@@ -214,6 +261,48 @@ function scoreToDecision(score: number): 'STRONG_BUY' | 'BUY' | 'HOLD' | 'SELL' 
 }
 
 // ============================================================================
+// Persistence
+// ============================================================================
+
+/**
+ * Persister et ConfluentSignal til ai_decision_log
+ * Feiler stille — signal-generering skal aldri blokkeres av DB-feil
+ */
+async function persistSignalToLog(
+  signal: ConfluentSignal,
+  symbol: string,
+  userId?: string
+): Promise<void> {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+      || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseKey) return;
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Mapping til faktiske kolonner i ai_decision_log:
+    // decision_type, symbol, sentiment_score (0-100), analysis_data (jsonb), decision_reason, user_id, executed_at
+    await supabase.from('ai_decision_log').insert({
+      symbol,
+      decision_type: signal.action,           // BUY/SELL/HOLD
+      sentiment_score: Math.round(signal.score), // 0-100 (integer)
+      analysis_data: {
+        factors: signal.factors,
+        risk_level: signal.riskLevel,
+        used_fallback: signal.metadata.usedFallback,
+      },
+      decision_reason: signal.reason,
+      ...(userId && { user_id: userId }),
+      executed_at: new Date().toISOString(),
+    });
+  } catch (err) {
+    // Logg men kast ikke videre — signal-generering skal ikke feile pga. DB
+    logger.warn('[ConfluentSignalEngine] Failed to persist signal to DB:', err);
+  }
+}
+
+// ============================================================================
 // Main Engine
 // ============================================================================
 
@@ -232,6 +321,7 @@ export async function generateConfluentSignal(
     prices,
     includeNarrative = true,
     includeRegime = true,
+    userId,
   } = options;
 
   // Check if Sonar integration is enabled
@@ -285,6 +375,10 @@ export async function generateConfluentSignal(
     usedFallback = true;
   }
 
+  // 3.5 Beregn volatilitet og trend fra prisdata
+  const volatility = calculateVolatility(prices);
+  const trendStrength = calculateTrendStrength(prices);
+
   // 4. Calculate scores
   const technicalScore = calculateTechnicalScore(baseSignal);
   const narrativeScore = narrativeResult
@@ -311,7 +405,7 @@ export async function generateConfluentSignal(
   const riskLevel = calculateRiskLevel(
     narrativeResult?.event_risk ?? 0,
     regimeResult?.regime ?? 'unclear',
-    0.5 // Default volatility if not calculated
+    volatility
   );
 
   // 7. Determine final action
@@ -334,19 +428,15 @@ export async function generateConfluentSignal(
   }
 
   const duration = Date.now() - startTime;
-  logger.info(
-    `[ConfluentSignalEngine] Generated signal for ${symbol} in ${duration}ms. ` +
-      `Score: ${compositeScore.toFixed(1)}, Action: ${action}, Risk: ${riskLevel}`
-  );
-
-  return {
+  
+  const result: ConfluentSignal = {
     action,
     reason: enhancedReason,
     score: Math.round(compositeScore),
     riskLevel,
     factors: {
-      trend: action === 'BUY' ? 0.7 : action === 'SELL' ? 0.3 : 0.5,
-      volatility: 0.5,
+      trend: trendStrength,
+      volatility,
       ai_signal: compositeScore / 100,
       narrative_sentiment: narrativeResult?.sentiment,
       event_risk: narrativeResult?.event_risk,
@@ -358,6 +448,16 @@ export async function generateConfluentSignal(
       usedFallback,
     },
   };
+
+  // Lagre til DB (feiler stille)
+  persistSignalToLog(result, symbol, userId).catch(() => {});
+
+  logger.info(
+    `[ConfluentSignalEngine] Generated signal for ${symbol} in ${duration}ms. ` +
+      `Score: ${compositeScore.toFixed(1)}, Action: ${action}, Risk: ${riskLevel}`
+  );
+
+  return result;
 }
 
 // ============================================================================
