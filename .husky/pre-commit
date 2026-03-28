@@ -4,10 +4,56 @@
 
 cd /Users/taj/klarpakke || exit 1
 
-echo "🔍 [1/3] Sjekker secrets i staged filer..."
+# ============================================================================
+# Hjelpefunksjoner
+# ============================================================================
+
+# Sjekk om staged filer matcher et pattern
+has_staged_in_path() {
+  git diff --cached --name-only | grep -q "$1"
+}
+
+# ============================================================================
+# 1. Secrets-sjekk (alltid)
+# ============================================================================
+
+echo "🔍 [1/4] Sjekker secrets i staged filer..."
 bash scripts/check-secrets-staged.sh || exit 1
 
-echo "🔍 [2/3] TypeScript-sjekk (tsc --noEmit)..."
+# ============================================================================
+# 2. AST/Type-verifisering for kritiske paths (kun hvis relevant)
+# ============================================================================
+
+CRITICAL_PATHS="src/lib/ai/sonar/ src/lib/trading/ src/app/api/signal/ scripts/"
+NEEDS_AST_CHECK=false
+
+for path in $CRITICAL_PATHS; do
+  if has_staged_in_path "^$path"; then
+    NEEDS_AST_CHECK=true
+    echo "📁 Fant endringer i $path — trigger AST-verifisering"
+  fi
+done
+
+if [ "$NEEDS_AST_CHECK" = true ]; then
+  echo "🔍 [2/4] AST/type-verifisering (ts-morph)..."
+  npm run verify:ts-ast 2>&1
+  AST_EXIT=$?
+  if [ $AST_EXIT -ne 0 ]; then
+    echo ""
+    echo "❌ AST-verifisering feilet! Commit blokkert."
+    echo "   Fiks TypeScript-feilene over først."
+    echo ""
+    exit 1
+  fi
+else
+  echo "⏭️  [2/4] Ingen kritiske paths endret — skipper AST-verifisering"
+fi
+
+# ============================================================================
+# 3. Full TypeScript-sjekk (alltid)
+# ============================================================================
+
+echo "🔍 [3/4] TypeScript-sjekk (tsc --noEmit)..."
 npx tsc --noEmit 2>&1
 TSC_EXIT=$?
 if [ $TSC_EXIT -ne 0 ]; then
@@ -23,7 +69,11 @@ if [ $TSC_EXIT -ne 0 ]; then
   exit 1
 fi
 
-echo "🔍 [3/3] Supabase kolonne-guard..."
+# ============================================================================
+# 4. Supabase kolonne-guard (alltid)
+# ============================================================================
+
+echo "🔍 [4/4] Supabase kolonne-guard..."
 node scripts/guard-supabase-columns.mjs
 GUARD_EXIT=$?
 if [ $GUARD_EXIT -ne 0 ]; then
