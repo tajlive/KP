@@ -1,20 +1,30 @@
 /**
  * AutoTradingConfigCard - Unit Tests
+ * Supabase chain: .from().select().eq().maybeSingle().returns<T>()
  */
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const mockReturns = vi.fn();
-const mockMaybeSingle = vi.fn();
-const mockUpdate = vi.fn();
-const mockInsert = vi.fn();
+// ResizeObserver mock (krevet av Radix UI Slider)
+class MockResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
+
+// Supabase chain mock
+// Kjedet: .from().select().eq().maybeSingle().returns<T>() -> Promise<{error,data}>
+const mockReturnsChain = vi.fn();
+const mockMaybeSingleChain = vi.fn(() => ({
+  returns: mockReturnsChain,
+}));
 const mockSelectChain = {
   select: vi.fn().mockReturnThis(),
   eq: vi.fn().mockReturnThis(),
-  maybeSingle: mockMaybeSingle,
-  returns: mockReturns,
-  update: mockUpdate,
-  insert: mockInsert,
+  maybeSingle: mockMaybeSingleChain,
+  update: vi.fn().mockReturnThis(),
+  insert: vi.fn(),
 };
 const mockFrom = vi.fn(() => mockSelectChain);
 const mockGetUser = vi.fn();
@@ -33,12 +43,6 @@ vi.mock('sonner', () => ({
   toast: { success: mockToastSuccess, error: mockToastError },
 }));
 
-function setupUser(id = 'user-abc') {
-  // Workaround: write_file strips '' inside object literals
-  const authResult = Object.fromEntries([['data', { user: { id } }]]);
-  mockGetUser.mockResolvedValue(authResult);
-}
-
 type CfgShape = {
   is_enabled?: boolean | null;
   is_paper_trading?: boolean | null;
@@ -46,21 +50,26 @@ type CfgShape = {
   risk_level?: string | null;
 } | null;
 
+function setupUser(id = 'user-abc') {
+  const userPayload = { user: { id } };
+  mockGetUser.mockResolvedValue(Object.fromEntries([['data', userPayload]]));
+}
+
 function setupConfig(cfg: CfgShape) {
-  const withError = Object.fromEntries([['data', cfg], ['error', null]]);
-  mockMaybeSingle.mockResolvedValue(withError);
-  mockReturns.mockResolvedValue(withError);
+  mockReturnsChain.mockResolvedValue(
+    Object.fromEntries([['data', cfg], ['error', null]])
+  );
 }
 
 describe('AutoTradingConfigCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset chain mocks
+    mockMaybeSingleChain.mockReturnValue({ returns: mockReturnsChain });
+    mockSelectChain.select.mockReturnThis();
+    mockSelectChain.eq.mockReturnThis();
     setupUser();
     setupConfig(null);
-    mockInsert.mockResolvedValue(Object.fromEntries([['data', null], ['error', null]]));
-    mockUpdate.mockReturnValue({
-      eq: vi.fn().mockResolvedValue(Object.fromEntries([['data', null], ['error', null]])),
-    });
   });
 
   it('kan importeres og er en React-komponent', async () => {
