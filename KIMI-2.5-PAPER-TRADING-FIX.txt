@@ -1,0 +1,199 @@
+# KIMI 2.5: Paper Trading Saldo Bug Fix (Klarpakke Production)
+
+## Root Cause (CONFIRMED)
+Mismatch mellom API design og component error-handling:
+
+1. **Endepunkt** (`/api/paper-trading/balance`):
+   - Returns 200 + DEFAULT_BALANCE when no session exists
+   - Returns 200 + DEFAULT_BALANCE on Supabase errors
+   - NEVER returns 404 or error status
+
+2. **Komponenten** (`PaperTradingCard.tsx`):
+   - Expects 404 or error status to show error state
+   - Expects `response.ok === false` to trigger catch
+   - But endpoint returns 200 always → component stuck in "loading"
+
+3. **Mobil spesifikk**: Loading UI spinner rendered forever
+
+## Impact
+- Mobil-brukere ser evig loading-spinner
+- Desktop kanskje fungerer hvis caching/timing er annerledes
+- Bruker klikker "Sjekk på nytt" → samme resultat
+- Noen kan ikke starte paper trading session
+
+## Solution: BOTH fixes for robustness
+
+### PART 1: Fix Endepunkt (/api/paper-trading/balance/route.ts)
+
+**Change #1**: Add `success` flag + actual error status codes
+
+Replace:
+```typescript
+if (sessionError || !session) {
+  return NextResponse.json(DEFAULT_BALANCE);
+}
+```
+
+With:
+```typescript
+if (sessionError || !session) {
+  // No session found is OK, return 200 with flag
+  return NextResponse.json(
+    {
+      success: false,
+      balance: {
+        starting: DEFAULT_BALANCE.balance.starting,
+        current: DEFAULT_BALANCE.balance.current,
+        pnl: 0,
+        pnlPercentage: 0,
+        isPositive: true,
+      },
+      recentTrades: [],
+      message: "No active paper trading session",
+    },
+    { status: 200 } // Still 200, but success=false
+  );
+}
+```
+
+**Change #2**: On actual Supabase errors, return 500:
+
+Replace end catch:
+```typescript
+catch (error) {
+  console.error("Paper trading balance error:", error);
+  return NextResponse.json(DEFAULT_BALANCE);
+}
+```
+
+With:
+```typescript
+catch (error) {
+  console.error("Paper trading balance error:", error);
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Failed to fetch balance",
+      details: error instanceof Error ? error.message : String(error),
+    },
+    { status: 500 }
+  );
+}
+```
+
+### PART 2: Fix Komponenten (PaperTradingCard.tsx)
+
+**Change #1**: Check `data.success` flag instead of status
+
+Replace:
+```typescript
+const data = await response.json();
+
+if (!data.balance) {
+  setState('empty');
+  setErrorMessage('Ingen lekepenger-session funnet');
+  hasSessionRef.current = false;
+  return;
+}
+
+setBalance(data.balance);
+setState('ready');
+hasSessionRef.current = true;
+```
+
+With:
+```typescript
+const data = await response.json();
+
+// Check success flag from API
+if (!data.success || !data.balance) {
+  setState('empty');
+  setErrorMessage(
+    data.message || 'Ingen lekepenger-session funnet. Start en ny sesjon.'
+  );
+  hasSessionRef.current = false;
+  return;
+}
+
+setBalance(data.balance);
+setState('ready');
+hasSessionRef.current = true;
+```
+
+**Change #2**: Better error handling for 5xx responses
+
+Replace catch block:
+```typescript
+catch (error) {
+  console.error('Failed to fetch balance:', error);
+  setErrorMessage(
+    error instanceof Error ? error.message : 'Kunne ikke hente saldo'
+  );
+  setState('error');
+  toast.error('Kunne ikke hente saldo');
+  hasSessionRef.current = null;
+}
+```
+
+With:
+```typescript
+catch (error) {
+  console.error('Failed to fetch balance:', error);
+  const errorMsg = error instanceof Error ? error.message : 'Kunne ikke hente saldo';
+  setErrorMessage(errorMsg);
+  setState('error');
+  
+  // Only show toast on actual errors, not empty state
+  if (hasSessionRef.current !== false) {
+    toast.error(errorMsg);
+  }
+  
+  hasSessionRef.current = null; // Will retry
+}
+```
+
+### PART 3: Test on Mobile
+
+1. Open app on real phone/emulator
+2. Navigate to Paper Trading card
+3. Verify loading state disappears within 5 seconds
+4. If no session: should show "Ingen lekepenger-session funnet. Start en ny sesjon." with "Sjekk på nytt" button
+5. Click "Sjekk på nytt" → should stay on same message (not spinner)
+6. Start a paper trading session elsewhere
+7. Refresh/navigate back → balance should load
+
+### Verification Checklist
+- [ ] Endpoint returns `{success: true, balance: {...}}` when session exists
+- [ ] Endpoint returns `{success: false, message: "..."}` when no session
+- [ ] Endpoint returns 500 on actual errors (Supabase down, auth failed)
+- [ ] Component shows "loading" for max 3 seconds
+- [ ] Component shows "empty" state (not spinner) when no session
+- [ ] Component shows "ready" state with balance when session exists
+- [ ] Mobile and desktop both work
+- [ ] Polling stops after getting 404/empty response
+- [ ] "Refresh" button works to retry
+
+### Implementation Order
+1. Fix endpoint first (`/api/paper-trading/balance/route.ts`)
+2. Fix component next (`PaperTradingCard.tsx`)
+3. Deploy to staging
+4. Test on mobile (iOS + Android if possible)
+5. Merge to main
+
+### Git Commit
+```bash
+git add src/app/api/paper-trading/balance/route.ts
+git add src/components/dashboard/PaperTradingCard.tsx
+
+git commit -m "fix(paper-trading): fix balance fetch on mobile + improve error handling
+
+- Add success flag to balance endpoint to distinguish no-session from errors
+- Return 500 on actual Supabase failures
+- Component checks success flag instead of relying on status codes
+- Fixes stuck loading spinner on mobile when no session exists
+- Improves error messaging and user guidance
+
+Fixes: KLA-XXX (paper trading mobile saldo bug)"
+
+git push origin main
+```

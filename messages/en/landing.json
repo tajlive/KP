@@ -256,5 +256,8 @@
     "label4": "Auto-trading",
     "description4": "Bot never sleeps",
     "paymentLabel": "Secure payment methods"
+  },
+  "stickyCTA": {
+    "label": "Start for free"
   }
 }

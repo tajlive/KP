@@ -1,0 +1,141 @@
+import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import type { NextRequest } from "next/server";
+
+// Fallback balance when no session exists
+const DEFAULT_BALANCE = {
+  balance: {
+    starting: 100000,
+    current: 100000,
+    pnl: 0,
+    pnlPercentage: 0,
+    isPositive: true,
+  },
+  recentTrades: [] as Array<{
+    id: string;
+    symbol: string;
+    side: string;
+    quantity: number;
+    price: number;
+    total_value: number;
+    created_at: string;
+  }>,
+};
+
+export async function GET(request: NextRequest) {
+  try {
+    // For API routes in App Router, we need to use cookies() directly
+    const cookieStore = await cookies();
+
+    // Create Supabase client with proper cookie handling
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookieEncoding: "raw",
+        cookies: {
+          getAll: () => cookieStore.getAll(),
+          setAll: () => {
+            /* Read-only for GET request */
+          },
+        },
+      },
+    );
+
+    // Get authenticated user
+    const {
+       { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Samme sesjonslogikk som execute-paper-trade: aktiv paper, sist oppdatert
+    const {  session, error: sessionError } = await supabase
+      .from("trading_sessions")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("mode", "paper")
+      .eq("status", "active")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (sessionError || !session) {
+      // No session found is valid state (not an error)
+      // Return 200 with success=false flag for client to detect
+      return NextResponse.json(
+        {
+          success: false,
+          balance: {
+            starting: DEFAULT_BALANCE.balance.starting,
+            current: DEFAULT_BALANCE.balance.current,
+            pnl: 0,
+            pnlPercentage: 0,
+            isPositive: true,
+          },
+          recentTrades: [],
+          message: "No active paper trading session",
+        },
+        { status: 200 }
+      );
+    }
+
+    // Calculate P&L with null checks
+    const currentCapital = session.current_capital_nok ?? 100000;
+    const startingCapital = session.starting_capital_nok ?? 100000;
+    const pnl = currentCapital - startingCapital;
+    const pnlPercentage =
+      startingCapital > 0 ? (pnl / startingCapital) * 100 : 0;
+
+    // Get recent trades
+    const {  recentTrades, error: tradesError } = await supabase
+      .from("trades")
+      .select("*")
+      .eq("session_id", session.id)
+      .order("executed_at", { ascending: false })
+      .limit(5);
+
+    if (tradesError) {
+      console.error("Error fetching trades:", tradesError);
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        session_id: session.id,
+        balance: {
+          starting: startingCapital,
+          current: currentCapital,
+          pnl: pnl,
+          pnlPercentage: pnlPercentage,
+          isPositive: pnl >= 0,
+        },
+        recentTrades: (recentTrades || []).map((trade) => ({
+          id: trade.id,
+          symbol: trade.trading_pair,
+          side: trade.side,
+          quantity: trade.quantity,
+          price: trade.price,
+          total_value: trade.total_value,
+          created_at: trade.created_at,
+        })),
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Paper trading balance error:", error);
+    // Return error status on actual failures
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to fetch balance",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  }
+}
