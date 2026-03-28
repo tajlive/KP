@@ -59,9 +59,12 @@ export function PaperTradingCard() {
       
       const data = await response.json();
       
-      if (!data.balance) {
+      // Check success flag from API to distinguish no-session from errors
+      if (!data.success || !data.balance) {
         setState('empty');
-        setErrorMessage('Ingen lekepenger-session funnet');
+        setErrorMessage(
+          data.message || 'Ingen lekepenger-session funnet. Start en ny sesjon.'
+        );
         hasSessionRef.current = false;
         return;
       }
@@ -71,9 +74,15 @@ export function PaperTradingCard() {
       hasSessionRef.current = true;
     } catch (error) {
       console.error('Failed to fetch balance:', error);
-      setErrorMessage(error instanceof Error ? error.message : 'Kunne ikke hente saldo');
+      const errorMsg = error instanceof Error ? error.message : 'Kunne ikke hente saldo';
+      setErrorMessage(errorMsg);
       setState('error');
-      toast.error('Kunne ikke hente saldo');
+      
+      // Only show toast on actual errors, not empty state
+      if (hasSessionRef.current !== false) {
+        toast.error(errorMsg);
+      }
+      
       hasSessionRef.current = null; // Unknown state, will retry
     }
   }, []);
