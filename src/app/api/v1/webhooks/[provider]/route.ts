@@ -81,6 +81,7 @@ async function handleStripeWebhook(body: string, headers: Headers) {
   }
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 async function handleResendWebhook(body: string, headers: Headers) {
   try {
     const signature = headers.get("resend-signature") || headers.get("x-resend-signature");
@@ -98,9 +99,9 @@ async function handleResendWebhook(body: string, headers: Headers) {
         ...(signature ? { "resend-signature": signature } : {}),
       },
       body,
-    }) as NextRequest;
+    }) as any as NextRequest;
 
-    return await existingHandler(mockRequest);
+    return await existingHandler(mockRequest as NextRequest);
   } catch (error) {
     console.error("[v1/webhooks/resend]", error);
     return NextResponse.json(
@@ -109,6 +110,7 @@ async function handleResendWebhook(body: string, headers: Headers) {
     );
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 async function handleGitHubWebhook(body: string, headers: Headers) {
   try {
