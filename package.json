@@ -12,6 +12,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
+    "verify:ts-ast": "tsx scripts/verify-ts-ast.ts",
     "i18n:validate": "node scripts/validate-i18n.js",
     "check": "bash scripts/verify-production.sh",
     "cloud:bootstrap": "node scripts/bootstrap-critical-env.mjs",
@@ -332,6 +333,8 @@
     "postcss": "^8.5.8",
     "storybook": "^8.6.14",
     "tailwindcss": "^4.2.1",
+    "ts-morph": "^27.0.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^6.4.1",
     "vitest": "^4.0.18"
