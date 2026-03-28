@@ -88,16 +88,21 @@ const RISK_THRESHOLDS = {
 
 /**
  * Calculate technical score from base signal generator
+ * Bruker confidence (0.0-1.0) for dynamisk score-beregning
  */
 function calculateTechnicalScore(baseSignal: Signal): number {
+  const confidence = baseSignal.confidence ?? 0.5;
   switch (baseSignal.action) {
     case 'BUY':
-      return 65;
+      // Sterk BUY = 65-80, svak BUY = 55-65 (ved confidence 0.5 = 65)
+      return 50 + (confidence * 30);
     case 'SELL':
-      return 35;
+      // Sterk SELL = 20-35, svak SELL = 35-45 (ved confidence 0.5 = 35)
+      return 50 - (confidence * 30);
     case 'HOLD':
     default:
-      return 50;
+      // Hold nær midten, men litt bias basert på confidence
+      return 45 + (confidence * 10);
   }
 }
 
