@@ -1,5 +1,5 @@
 // Mock for next-intl
-export function useTranslations(namespace?: string) {
+export function useTranslations(_namespace?: string) {
   return function t(key: string) {
     // Return a formatted string based on key
     if (key.includes('.')) {

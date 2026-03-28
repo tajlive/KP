@@ -215,7 +215,7 @@ export async function getWebhookInfo(
 export async function triggerCronJob(
   job: string,
   secret: string
-): Promise<{ ok: boolean; duration_ms: number; result: any }> {
+): Promise<{ ok: boolean; duration_ms: number; result: unknown }> {
   const response = await fetch(`${endpoints.cron}/${job}`, {
     method: "POST",
     headers: {

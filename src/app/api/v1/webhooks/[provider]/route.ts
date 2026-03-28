@@ -98,7 +98,7 @@ async function handleResendWebhook(body: string, headers: Headers) {
         ...(signature ? { "resend-signature": signature } : {}),
       },
       body,
-    }) as any; // Type cast to avoid NextRequest strict check
+    }) as NextRequest;
 
     return await existingHandler(mockRequest);
   } catch (error) {

@@ -86,6 +86,7 @@ export async function POST(
   }
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 async function handleSendNotification(
   request: NextRequest,
   supabase: any,
@@ -154,7 +155,7 @@ async function handleSendNotification(
     }
 
     const results = await Promise.allSettled(
-      subscriptions.map(async (sub: any) => {
+      (subscriptions as Array<{ subscription: webpush.PushSubscription; user_id: string }>).map(async (sub) => {
         try {
           await webpush.sendNotification(
             sub.subscription,
@@ -168,7 +169,7 @@ async function handleSendNotification(
       })
     );
 
-    const sent = results.filter(r => r.status === "fulfilled" && (r.value as any).success).length;
+    const sent = results.filter(r => r.status === "fulfilled" && (r.value as { success: boolean }).success).length;
     const failed = results.length - sent;
 
     return NextResponse.json({
@@ -285,6 +286,7 @@ export async function GET(
 }
 
 async function handleGetStatus(supabase: any, userId: string) {
+/* eslint-enable @typescript-eslint/no-explicit-any */
   try {
     const { data: subscriptions, error } = await supabase
       .from("push_subscriptions")
@@ -295,7 +297,7 @@ async function handleGetStatus(supabase: any, userId: string) {
 
     return NextResponse.json({
       subscribed: subscriptions && subscriptions.length > 0,
-      channels: subscriptions?.map((s: any) => s.channel) || [],
+      channels: (subscriptions as Array<{ channel: string }>)?.map((s) => s.channel) || [],
       lastUpdated: subscriptions?.[0]?.updated_at,
     });
   } catch (error) {

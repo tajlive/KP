@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
