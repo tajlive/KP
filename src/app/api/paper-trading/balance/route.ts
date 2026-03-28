@@ -65,7 +65,14 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
 
     if (sessionError || !session) {
-      return NextResponse.json(DEFAULT_BALANCE);
+      return NextResponse.json(
+        {
+          success: false,
+          balance: DEFAULT_BALANCE.balance,
+          message: "No active paper trading session",
+        },
+        { status: 200 }
+      );
     }
 
     // Calculate P&L with null checks
@@ -87,28 +94,38 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching trades:", tradesError);
     }
 
-    return NextResponse.json({
-      session_id: session.id,
-      balance: {
-        starting: startingCapital,
-        current: currentCapital,
-        pnl: pnl,
-        pnlPercentage: pnlPercentage,
-        isPositive: pnl >= 0,
+    return NextResponse.json(
+      {
+        success: true,
+        session_id: session.id,
+        balance: {
+          starting: startingCapital,
+          current: currentCapital,
+          pnl: pnl,
+          pnlPercentage: pnlPercentage,
+          isPositive: pnl >= 0,
+        },
+        recentTrades: (recentTrades || []).map((trade) => ({
+          id: trade.id,
+          symbol: trade.trading_pair,
+          side: trade.side,
+          quantity: trade.quantity,
+          price: trade.price,
+          total_value: trade.total_value,
+          created_at: trade.created_at,
+        })),
       },
-      recentTrades: (recentTrades || []).map((trade) => ({
-        id: trade.id,
-        symbol: trade.trading_pair,
-        side: trade.side,
-        quantity: trade.quantity,
-        price: trade.price,
-        total_value: trade.total_value,
-        created_at: trade.created_at,
-      })),
-    });
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Paper trading balance error:", error);
-    // Return default balance on error to prevent UI crash
-    return NextResponse.json(DEFAULT_BALANCE);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to fetch balance",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }
