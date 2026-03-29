@@ -20,7 +20,7 @@ const COIN_NAMES: Record<string, string> = {
   DOGEUSDT: "Dogecoin",
 };
 
-const POLL_MS = 5000;
+const POLL_MS = 15_000; // Reduced from 5s to 15s to save Vercel Hobby plan resources
 
 /**
  * Sanntidspriser (poll) via egen API-rute → Binance.

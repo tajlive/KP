@@ -23,7 +23,7 @@ export default function BetaLayout({
             {process.env.VERCEL && (
               <>
                 <Analytics />
-                <SpeedInsights />
+                {process.env.NODE_ENV !== "production" && <SpeedInsights />}
               </>
             )}
           </ToastProvider>
