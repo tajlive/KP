@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowUp, ArrowDown, DollarSign } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { TradeSuccessOverlay } from "@/components/trading/TradeSuccessOverlay";
+import { useTradeSuccess } from "@/hooks/useTradeSuccess";
 
 interface Props {
   symbol: string;
@@ -31,6 +33,14 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
   const [paperSessionId, setPaperSessionId] = useState<string | null>(null);
+  const { showSuccess } = useTradeSuccess();
+  const [lastTrade, setLastTrade] = useState<{
+    symbol: string;
+    amount: number;
+    direction: "BUY" | "SELL";
+    nokValue: number;
+  } | null>(null);
+  const [showOverlay, setShowOverlay] = useState(false);
 
   const fetchBalance = async () => {
     try {
@@ -136,6 +146,17 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
         );
       }
 
+      // Show success overlay
+      const tradeData = {
+        symbol: symbol.toUpperCase().replace(/USDT$/, ""),
+        amount: qty,
+        direction: (side === "buy" ? "BUY" : "SELL") as "BUY" | "SELL",
+        nokValue: totalValue,
+      };
+      setLastTrade(tradeData);
+      setShowOverlay(true);
+
+      // Also show toast as fallback/backup
       toast.success(
         `${side === "buy" ? (isNo ? "Kjøpt" : "Bought") : isNo ? "Solgt" : "Sold"} ${qty} ${symbol} ${isNo ? "for kr" : "for NOK"} ${totalValue.toLocaleString(isNo ? "nb-NO" : "en-US", { minimumFractionDigits: 2 })}`,
         {
@@ -159,16 +180,25 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
   const totalValue = parseFloat(quantity || "0") * currentPrice;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="sm"
-          onClick={handleOpen}
-          className="bg-teal-600 hover:bg-teal-700 text-white font-medium"
-        >
-          {isNo ? "Lekepenger-handel" : "Paper trade"}
-        </Button>
-      </DialogTrigger>
+    <>
+      <TradeSuccessOverlay
+        isOpen={showOverlay}
+        symbol={lastTrade?.symbol ?? ""}
+        amount={lastTrade?.amount ?? 0}
+        direction={lastTrade?.direction ?? "BUY"}
+        nokValue={lastTrade?.nokValue ?? 0}
+        onClose={() => setShowOverlay(false)}
+      />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button
+            size="sm"
+            onClick={handleOpen}
+            className="bg-teal-600 hover:bg-teal-700 text-white font-medium"
+          >
+            {isNo ? "Lekepenger-handel" : "Paper trade"}
+          </Button>
+        </DialogTrigger>
       <DialogContent className="bg-slate-900 border-slate-800 text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -270,5 +300,6 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
         </div>
       </DialogContent>
     </Dialog>
+  </>
   );
 }

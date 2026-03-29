@@ -227,13 +227,14 @@
     "privacy": "Vi deler aldri e-posten din med tredjepart. Avmeld når som helst."
   },
   "trustStrip": {
-    "label1": "Aktive brukere",
-    "description1": "og vokser",
-    "label2": "Trustpilot-vurdering",
-    "label3": "Startkapital",
-    "description3": "Gratis lekepenger for alle",
-    "label4": "Auto-trading",
-    "description4": "Boten sover aldri",
+    "label1": "Paper Trading",
+    "description1": "kr 100 000 lekepenger",
+    "label2": "Risikofritt",
+    "description2": "Øv uten å tape penger",
+    "label3": "Auto-trading",
+    "description3": "Døgnkontinuerlig",
+    "label4": "Fokus",
+    "description4": "Utdanning først",
     "paymentLabel": "Trygge betalingsmåter"
   },
   "stickyCTA": {

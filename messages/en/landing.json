@@ -248,13 +248,14 @@
     "privacy": "We never share your email with third parties. Unsubscribe anytime."
   },
   "trustStrip": {
-    "label1": "Active users",
-    "description1": "and growing",
-    "label2": "Trustpilot rating",
-    "label3": "Starting capital",
-    "description3": "Free paper money for everyone",
-    "label4": "Auto-trading",
-    "description4": "Bot never sleeps",
+    "label1": "Paper Trading",
+    "description1": "100,000 NOK practice funds",
+    "label2": "Risk-Free",
+    "description2": "Practice without losing money",
+    "label3": "Auto-trading",
+    "description3": "24/7 continuous",
+    "label4": "Focus",
+    "description4": "Education first",
     "paymentLabel": "Secure payment methods"
   },
   "stickyCTA": {

@@ -32,3 +32,7 @@ export { Spinner } from './spinner';
 
 // Separator (if exists)
 export * from './separator';
+
+// Skeleton Loading States
+export { Skeleton, SkeletonDashboard } from './skeleton';
+export type { SkeletonProps, SkeletonVariant } from './skeleton';

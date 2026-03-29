@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Mail,
   Lock,
@@ -43,9 +43,23 @@ export function EmailAuthForm({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // CRITICAL FIX: Defensive mount to prevent hydration mismatch
+  // and ensure password is ALWAYS hidden on initial render
+  useEffect(() => {
+    setIsClient(true);
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    
+    if (process.env.NODE_ENV === 'development') {
+       
+      console.log('[EmailAuthForm] Mounted - password visibility reset to hidden');
+    }
+  }, []);
 
   const validateForm = (): boolean => {
     setError("");
@@ -220,7 +234,8 @@ export function EmailAuthForm({
       <div className="relative">
         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input
-          type={showPassword ? "text" : "password"}
+          // CRITICAL: Only show text if client AND user clicked toggle
+          type={isClient && showPassword ? "text" : "password"}
           placeholder={locale === "no" ? "Passord" : "Password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -229,7 +244,16 @@ export function EmailAuthForm({
         />
         <button
           type="button"
-          onClick={() => setShowPassword(!showPassword)}
+          onClick={() => {
+            setShowPassword(prev => {
+              const next = !prev
+              if (process.env.NODE_ENV === 'development') {
+                 
+                console.log(`[EmailAuthForm] Password toggle - new state: ${next ? 'visible' : 'hidden'}`)
+              }
+              return next
+            })
+          }}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
         >
           {showPassword ? (
@@ -245,7 +269,8 @@ export function EmailAuthForm({
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
-            type={showConfirmPassword ? "text" : "password"}
+            // CRITICAL: Only show text if client AND user clicked toggle
+            type={isClient && showConfirmPassword ? "text" : "password"}
             placeholder={
               locale === "no" ? "Bekreft passord" : "Confirm Password"
             }
@@ -256,7 +281,16 @@ export function EmailAuthForm({
           />
           <button
             type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            onClick={() => {
+              setShowConfirmPassword(prev => {
+                const next = !prev
+                if (process.env.NODE_ENV === 'development') {
+                   
+                  console.log(`[EmailAuthForm] Confirm toggle - new state: ${next ? 'visible' : 'hidden'}`)
+                }
+                return next
+              })
+            }}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
           >
             {showConfirmPassword ? (

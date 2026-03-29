@@ -1,7 +1,69 @@
 /**
- * Lightweight client-side monitoring for Klarpakke
- * Tracks errors, performance metrics, and user interactions
+ * Client-side monitoring for Klarpakke
+ * Integrates with Sentry for error tracking and custom monitoring
  */
+
+import * as Sentry from '@sentry/nextjs';
+
+export function initSentry(): void {
+  if (typeof window === 'undefined') return;
+
+  Sentry.init({
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    environment: process.env.NEXT_PUBLIC_APP_ENV ?? 'development',
+    release: process.env.NEXT_PUBLIC_APP_VERSION,
+    
+    // Low sample rate in production to avoid quota issues
+    tracesSampleRate: process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 0.1 : 1.0,
+    
+    // Filter out noise
+    beforeSend(event) {
+      // Ignore Safari ResizeObserver noise
+      if (event.exception?.values?.[0]?.value?.includes('ResizeObserver')) {
+        return null;
+      }
+      
+      // Ignore network errors from Supabase Realtime reconnects
+      if (event.exception?.values?.[0]?.type === 'NetworkError' ||
+          event.exception?.values?.[0]?.value?.includes('aborted') ||
+          event.exception?.values?.[0]?.value?.includes('fetch')) {
+        return null;
+      }
+      
+      // Ignore expected auth errors
+      if (event.exception?.values?.[0]?.value?.includes('JWT expired') ||
+          event.exception?.values?.[0]?.value?.includes('Invalid Refresh Token')) {
+        return null;
+      }
+      
+      return event;
+    },
+    
+    integrations: [
+      Sentry.browserTracingIntegration(),
+    ],
+    
+    // Replay only on errors, not constantly
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1.0,
+  });
+}
+
+export function setUserContext(userId: string, email?: string): void {
+  Sentry.setUser({ id: userId, email });
+}
+
+export function clearUserContext(): void {
+  Sentry.setUser(null);
+}
+
+export function captureError(error: Error, context?: Record<string, unknown>): void {
+  Sentry.captureException(error, { extra: context });
+}
+
+export function captureMessage(message: string, level: Sentry.SeverityLevel = 'info'): void {
+  Sentry.captureMessage(message, level);
+}
 
 interface ErrorReport {
   type: 'unhandled_error' | 'unhandled_rejection' | 'console_error' | 'fetch_error';

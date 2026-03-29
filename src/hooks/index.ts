@@ -19,3 +19,17 @@ export {
 
 // Legacy price hooks (backward compatibility)
 export { usePrices, useAnimatedPrice } from './usePrices';
+
+// Trading hooks
+export {
+  useTradeSuccess,
+  TradeSuccessProvider,
+} from './useTradeSuccess';
+export type { TradeData } from './useTradeSuccess';
+
+// Animation hooks
+export { useCountUp } from './useCountUp';
+
+// Live data hooks
+export { useLivePnL } from './useLivePnL';
+export type { LivePnLData } from './useLivePnL';

@@ -24,17 +24,28 @@ export const CDS_THEME_MAP = {
   borderDefault: "var(--cds-colors-line)",
 } as const;
 
-/** Dark/light theme bakgrunn/border – konsistent på landing, priser, dashboard */
+/** Coinbase-inspired dark theme surfaces */
 export const SURFACE = {
-  BG: "bg-slate-950", // #0f172a
-  BG_LIGHT: "bg-kp-bg-secondary", // #F7F8FA — theme, ikke arbitrary hex
-  BG_ELEVATED: "bg-slate-900", // kort
-  BG_CARD: "bg-slate-900/80", // kort med subtil transparens
-  BORDER: "border-slate-800",
-  BORDER_MUTED: "border-slate-800/80",
+  // Dark theme (default) - Coinbase CDS colors
+  BG: "bg-[#0a0b0d]",              // Deepest background
+  BG_SECONDARY: "bg-[#161719]",    // Card/surface
+  BG_TERTIARY: "bg-[#1a1c24]",     // Elevated
+  BG_ELEVATED: "bg-[#1f2128]",     // Hover/elevated states
+  BG_LIGHT: "bg-kp-bg-secondary",  // Light theme fallback
+  BG_CARD: "bg-[#161719]",         // Card background
+  BG_CARD_TRANSPARENT: "bg-[#161719]/90",
+  
+  // Border colors - subtle white opacity
+  BORDER: "border-white/[0.08]",
+  BORDER_LIGHT: "border-white/[0.05]",
+  BORDER_STRONG: "border-white/[0.15]",
+  BORDER_BRAND: "border-brand-500/50",
+  
+  // Text colors
   TEXT: "text-white",
-  TEXT_MUTED: "text-slate-400",
-  TEXT_SUBTLE: "text-slate-500",
+  TEXT_SECONDARY: "text-gray-400",  // gray-400 for secondary
+  TEXT_MUTED: "text-gray-500",      // gray-500 for muted
+  TEXT_SUBTLE: "text-gray-600",     // gray-600 for very subtle
 } as const;
 
 export const BRAND = {
@@ -74,19 +85,28 @@ export const SHADOW = {
 } as const;
 
 export const BUTTON = {
+  // Primary: Solid brand color
   primary: `${BRAND.primary} ${RADIUS.button} px-6 py-3 font-semibold shadow-sm transition-all duration-200 active:scale-[0.98]`,
+  // Secondary: Subtle background
   secondary: `${BRAND.secondary} ${RADIUS.button} px-6 py-3 font-semibold`,
+  // Ghost: Transparent with border (Coinbase style)
+  ghost: `bg-transparent hover:bg-white/[0.05] text-white border ${SURFACE.BORDER} hover:border-white/[0.15] ${RADIUS.button} px-6 py-3 font-semibold transition-all duration-200`,
+  // Vipps branded
   vipps: `${BRAND.vipps} ${RADIUS.button} px-6 py-3 font-semibold`,
+  // Status buttons
   danger: `${BRAND.danger} ${RADIUS.button} px-6 py-3 font-semibold`,
-  ghost:
-    "bg-transparent hover:bg-white/5 text-white border border-slate-700 hover:border-slate-600",
+  success: `${BRAND.success} ${RADIUS.button} px-6 py-3 font-semibold`,
 } as const;
 
 export const CARD = {
-  default: `bg-white dark:bg-slate-900 ${RADIUS.card} border border-slate-200 dark:border-slate-800 shadow-sm p-6`,
-  hover: `bg-white dark:bg-slate-900 ${RADIUS.card} border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow duration-200 p-6`,
-  dark: `${SURFACE.BG_ELEVATED} ${RADIUS.card} border border-slate-800 shadow-sm p-6`,
-  darkHover: `${SURFACE.BG_ELEVATED} ${RADIUS.card} border border-slate-800 shadow-sm hover:shadow-md hover:border-slate-700 transition-all duration-200 p-6`,
+  default: `${SURFACE.BG_CARD} ${RADIUS.card} border ${SURFACE.BORDER} shadow-sm p-6`,
+  hover: `${SURFACE.BG_CARD} ${RADIUS.card} border ${SURFACE.BORDER} shadow-sm hover:shadow-md hover:border-white/[0.12] transition-all duration-200 p-6`,
+  elevated: `${SURFACE.BG_ELEVATED} ${RADIUS.card} border ${SURFACE.BORDER} shadow-lg p-6`,
+  dark: `${SURFACE.BG_SECONDARY} ${RADIUS.card} border ${SURFACE.BORDER} shadow-sm p-6`,
+  darkHover: `${SURFACE.BG_SECONDARY} ${RADIUS.card} border ${SURFACE.BORDER} shadow-sm hover:shadow-md hover:border-white/[0.12] transition-all duration-200 p-6`,
+  // Light theme variants
+  light: `bg-white ${RADIUS.card} border border-gray-200 shadow-sm p-6`,
+  lightHover: `bg-white ${RADIUS.card} border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 p-6`,
 } as const;
 
 /** Hero/landing – gradient og CTA (samme merke #0052FF) */

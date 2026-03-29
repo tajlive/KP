@@ -24,46 +24,46 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
       <div className="max-w-6xl mx-auto">
         {/* STATS ROW — 2 cols on mobile, 4 cols on desktop */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
-          {/* Stat 1: Users */}
+          {/* Stat 1: Paper Trading Capital */}
           <div className="text-center">
             <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
               {t('label1')}
             </div>
             <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-              500K+
+              kr 100K
             </div>
             <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description1')}</div>
           </div>
 
-          {/* Stat 2: TrustPilot */}
+          {/* Stat 2: Risk-Free Practice */}
           <div className="text-center">
             <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
-              ⭐ {t('label2')}
+              {t('label2')}
             </div>
-            <div className="text-xl sm:text-2xl font-black text-amber-500">
-              4.9/5
+            <div className="text-xl sm:text-2xl font-black text-green-600 dark:text-green-500">
+              0 kr
             </div>
-            <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">1,234 reviews</div>
+            <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description2')}</div>
           </div>
 
-          {/* Stat 3: Paper Capital */}
+          {/* Stat 3: Auto-Trading */}
           <div className="text-center">
             <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
               {t('label3')}
             </div>
-            <div className="text-xl sm:text-2xl font-black text-green-600 dark:text-green-500">
-              kr 100K
+            <div className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400">
+              24/7
             </div>
             <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description3')}</div>
           </div>
 
-          {/* Stat 4: Auto-Trading */}
+          {/* Stat 4: Education Focus */}
           <div className="text-center">
             <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
               {t('label4')}
             </div>
-            <div className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400">
-              24/7
+            <div className="text-xl sm:text-2xl font-black text-brand-500 dark:text-brand-400">
+              100%
             </div>
             <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description4')}</div>
           </div>

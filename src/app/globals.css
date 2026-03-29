@@ -91,8 +91,11 @@
      DARK MODE - CSS CUSTOM PROPERTIES
      ============================================ */
   
-  /* Light mode (default) */
   :root {
+    /* Bottom nav height for PWA */
+    --bottom-nav-height: 5.75rem;
+    
+    /* Light mode (default) */
     /* Background colors */
     --kp-bg-primary: #ffffff;
     --kp-bg-secondary: #f7f8fa;
@@ -128,41 +131,57 @@
     --kp-input-placeholder: #8e94a7;
   }
   
-  /* Dark mode */
+  /* Dark mode - Coinbase CDS Inspired */
   .dark {
-    /* Background colors */
-    --kp-bg-primary: #0a0b0d;
-    --kp-bg-secondary: #111218;
-    --kp-bg-tertiary: #1a1c24;
-    --kp-bg-card: #171923;
-    --kp-bg-hover: #1e212b;
-    --kp-bg-active: #2a2d3a;
+    /* Background colors - Coinbase dark palette */
+    --kp-bg-primary: #0a0b0d;         /* Deepest background */
+    --kp-bg-secondary: #161719;       /* Card/surface background */
+    --kp-bg-tertiary: #1a1c24;        /* Elevated surfaces */
+    --kp-bg-card: #161719;            /* Card background */
+    --kp-bg-hover: #1f2128;           /* Hover state */
+    --kp-bg-active: #252830;          /* Active/pressed state */
     
-    /* Text colors */
-    --kp-text-primary: #f1f5f9;
-    --kp-text-secondary: #94a3b8;
-    --kp-text-tertiary: #64748b;
-    --kp-text-muted: #475569;
+    /* Text colors - High contrast for readability */
+    --kp-text-primary: #ffffff;       /* Primary text - pure white */
+    --kp-text-secondary: #9ca3af;     /* Secondary text - gray-400 */
+    --kp-text-tertiary: #6b7280;      /* Tertiary/muted - gray-500 */
+    --kp-text-muted: #4b5563;         /* Very muted - gray-600 */
     
-    /* Border colors */
-    --kp-border: #2a2d3a;
-    --kp-border-light: #1e212b;
-    --kp-border-dark: #374151;
+    /* Border colors - Subtle, low opacity white */
+    --kp-border: rgba(255, 255, 255, 0.08);
+    --kp-border-light: rgba(255, 255, 255, 0.05);
+    --kp-border-dark: rgba(255, 255, 255, 0.15);
+    --kp-border-brand: rgba(0, 82, 255, 0.5);
     
     /* Surface colors */
-    --kp-surface: #171923;
-    --kp-surface-elevated: #1e212b;
+    --kp-surface: #161719;
+    --kp-surface-elevated: #1f2128;
     
-    /* Navigation */
-    --kp-nav-bg: rgba(15, 23, 42, 0.8);
-    --kp-nav-text: #f1f5f9;
-    --kp-nav-text-muted: #94a3b8;
+    /* Navigation - Glass effect */
+    --kp-nav-bg: rgba(10, 11, 13, 0.85);
+    --kp-nav-text: #ffffff;
+    --kp-nav-text-muted: #9ca3af;
     
-    /* Input colors */
+    /* Input colors - Dark with subtle borders */
     --kp-input-bg: #1a1c24;
-    --kp-input-border: #2a2d3a;
-    --kp-input-text: #f1f5f9;
-    --kp-input-placeholder: #64748b;
+    --kp-input-border: rgba(255, 255, 255, 0.08);
+    --kp-input-border-focus: #0052FF;
+    --kp-input-text: #ffffff;
+    --kp-input-placeholder: #6b7280;
+    
+    /* Brand accent */
+    --kp-brand: #0052FF;
+    --kp-brand-hover: #0047E0;
+    --kp-brand-light: #3d7aff;
+    --kp-brand-subtle: rgba(0, 82, 255, 0.15);
+    
+    /* Status colors - Coinbase style */
+    --kp-success: #05B169;
+    --kp-success-bg: rgba(5, 177, 105, 0.15);
+    --kp-warning: #F59E0B;
+    --kp-warning-bg: rgba(245, 158, 11, 0.15);
+    --kp-danger: #EF4444;
+    --kp-danger-bg: rgba(239, 68, 68, 0.15);
   }
   
   /* Smooth theme transitions - disabled for users who prefer reduced motion */
@@ -411,6 +430,15 @@ html {
 }
 
 /* ============================================
+   PWA - BOTTOM NAV UTILITY
+   ============================================ */
+
+/* Main content padding for bottom nav */
+.main-content {
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ============================================
    DARK MODE - UTILITY CLASSES
    ============================================ */
 
@@ -431,3 +459,91 @@ html {
 .border-kp { border-color: var(--kp-border); }
 .border-kp-light { border-color: var(--kp-border-light); }
 .border-kp-dark { border-color: var(--kp-border-dark); }
+
+/* ============================================
+   SKELETON LOADING STATES
+   ============================================ */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    oklch(0.2 0 0 / 0.06) 25%,
+    oklch(0.2 0 0 / 0.12) 50%,
+    oklch(0.2 0 0 / 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { 
+    animation: none; 
+    opacity: 0.5; 
+  }
+}
+
+/* ============================================
+   SKELETON SHIMMER - Klarpakke Design System
+   ============================================ */
+
+@keyframes klarpakke-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: klarpakke-shimmer 1.6s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* ============================================
+   LIVE P&L WIDGET - Live indicator
+   ============================================ */
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+/* ============================================
+   TABULAR NUMS - For financial values
+   ============================================ */
+
+.font-tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
