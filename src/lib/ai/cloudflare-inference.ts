@@ -4,6 +4,7 @@
  * Falls back to rule-based system if AI is unavailable
  */
 
+import { opik } from './opik-client';
 import { calculateRSI, calculateSMA, calculateEMA } from './market-data';
 
 export interface PredictionInput {
@@ -39,6 +40,18 @@ const CF_WORKER_URL = process.env.NEXT_PUBLIC_CF_AI_WORKER_URL || 'https://klarp
  * 10,000 requests/dag = ~416 requests/time = plenty
  */
 export async function predictTrade(input: PredictionInput): Promise<PredictionOutput> {
+  const trace = opik.startTrace({
+    name: 'predictTrade',
+    input: {
+      symbol: input.symbol,
+      currentPrice: input.currentPrice,
+      sentiment: input.sentiment,
+      marketTrend: input.marketTrend,
+      fearGreedIndex: input.fearGreedIndex,
+    },
+    tags: ['trading', input.symbol, input.marketTrend],
+  });
+
   try {
     // Beregn tekniske indikatorer hvis ikke allerede gitt
     const enrichedInput = {
@@ -58,7 +71,7 @@ export async function predictTrade(input: PredictionInput): Promise<PredictionOu
 
       if (response.ok) {
         const result = await response.json();
-        return {
+        const output: PredictionOutput = {
           ...result,
           indicators: {
             rsi: enrichedInput.rsi,
@@ -67,16 +80,66 @@ export async function predictTrade(input: PredictionInput): Promise<PredictionOu
                             enrichedInput.sentiment < -0.3 ? 'BEARISH' : 'NEUTRAL'
           }
         };
+
+        opik.endTrace(trace?.id || null, {
+          output: {
+            action: output.action,
+            confidence: output.confidence,
+            targetPrice: output.targetPrice,
+            stopLoss: output.stopLoss,
+            reason: output.reason,
+          },
+          metadata: {
+            source: 'cloudflare_ai',
+            rsi: enrichedInput.rsi,
+            sma20: enrichedInput.sma20,
+            sma50: enrichedInput.sma50,
+          },
+        });
+
+        return output;
       }
     } catch (error) {
       console.warn('Cloudflare AI failed, using fallback:', error);
     }
 
     // Fallback: Rule-based prediction (100% gratis, ingen API nødvendig)
-    return ruleBasedPrediction(enrichedInput);
+    const ruleBased = ruleBasedPrediction(enrichedInput);
+    
+    opik.endTrace(trace?.id || null, {
+      output: {
+        action: ruleBased.action,
+        confidence: ruleBased.confidence,
+        targetPrice: ruleBased.targetPrice,
+        stopLoss: ruleBased.stopLoss,
+        reason: ruleBased.reason,
+      },
+      metadata: {
+        source: 'rule_based',
+        rsi: enrichedInput.rsi,
+        sma20: enrichedInput.sma20,
+        sma50: enrichedInput.sma50,
+      },
+    });
+
+    return ruleBased;
   } catch (error) {
     console.error('Prediction failed:', error);
-    return fallbackPrediction(input);
+    const fallback = fallbackPrediction(input);
+    
+    opik.endTrace(trace?.id || null, {
+      error: error instanceof Error ? error.message : String(error),
+      output: {
+        action: fallback.action,
+        confidence: fallback.confidence,
+        reason: fallback.reason,
+      },
+      metadata: {
+        source: 'fallback_after_error',
+      },
+    });
+
+    return fallback;
   }
 }
 

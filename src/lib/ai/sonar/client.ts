@@ -4,6 +4,7 @@
  */
 
 import { logger } from '@/lib/logger';
+import { opik } from '../opik-client';
 import {
   calculateBackoff,
   DEFAULT_RETRY_CONFIG,
@@ -296,16 +297,35 @@ export async function callSonar(
   prompt: string,
   options: SonarRequestOptions
 ): Promise<string> {
+  // Start Opik trace
+  const trace = opik.startTrace({
+    name: 'callSonar',
+    input: {
+      prompt: prompt.slice(0, 1000), // Limit input size
+      tier: options.tier,
+      mode: options.mode,
+      jsonMode: options.jsonMode,
+    },
+    tags: ['trading', options.tier, options.mode],
+  });
+
   // Check rate limit
   const rateLimitCheck = rateLimiter.consume(options.tier);
   if (!rateLimitCheck.allowed) {
     const waitMs = rateLimiter.getTimeUntilNextToken(options.tier);
-    throw new SonarError(
+    const error = new SonarError(
       `Rate limit exceeded. Try again in ${Math.ceil(waitMs / 1000)}s`,
       'RATE_LIMIT',
       429,
       true
     );
+    
+    opik.endTrace(trace?.id || null, {
+      error: `${error.code}: ${error.message}`,
+      metadata: { rateLimited: true, waitMs, exceptionType: error.code },
+    });
+    
+    throw error;
   }
 
   const startTime = Date.now();
@@ -333,6 +353,20 @@ export async function callSonar(
         `[Sonar] Request succeeded - tier: ${options.tier}, mode: ${options.mode}, latency: ${latencyMs}ms`
       );
 
+      opik.endTrace(trace?.id || null, {
+        output: {
+          content: content.slice(0, 1000), // Limit output size
+          model: response.model,
+          usage: response.usage,
+        },
+        metadata: {
+          latencyMs,
+          tier: options.tier,
+          mode: options.mode,
+          attempts: attempt + 1,
+        },
+      });
+
       return content;
     } catch (error) {
       if (error instanceof SonarError) {
@@ -352,7 +386,13 @@ export async function callSonar(
         await _delayFn(delay);
       } else {
         // Unexpected error type
-        throw error;
+        lastError = new SonarError(
+          String(error),
+          'API_ERROR',
+          undefined,
+          false
+        );
+        break;
       }
     }
   }
@@ -366,6 +406,18 @@ export async function callSonar(
       `Error: ${lastError?.message}, Code: ${lastError?.code}, ` +
       `Tier: ${options.tier}, Mode: ${options.mode}`
   );
+
+  opik.endTrace(trace?.id || null, {
+    error: lastError 
+      ? `${lastError.code}: ${lastError.message}`
+      : 'API_ERROR: Unknown error after retries',
+    metadata: {
+      errorCode: lastError?.code,
+      attempts: DEFAULT_RETRY_CONFIG.maxRetries + 1,
+      tier: options.tier,
+      mode: options.mode,
+    },
+  });
 
   throw (
     lastError ||

@@ -14,6 +14,8 @@
  * ```
  */
 
+import { opik, traceLLMCall } from './opik-client';
+
 // ==================== TYPES ====================
 
 export type AIProvider = 'kimi' | 'nvidia' | 'auto';
@@ -246,7 +248,7 @@ Bruk alltid norsk. Vær pedagogisk og oppmuntrende.`,
 
 // ==================== KIMI IMPLEMENTATION ====================
 
-async function chatWithKimi(
+async function chatWithKimiInternal(
   messages: AIMessage[],
   options: AIOptions = {}
 ): Promise<AIResponse> {
@@ -291,6 +293,21 @@ async function chatWithKimi(
     usage: data.usage,
     latency_ms,
   };
+}
+
+async function chatWithKimi(
+  messages: AIMessage[],
+  options: AIOptions = {}
+): Promise<AIResponse> {
+  const lastMessage = messages[messages.length - 1]?.content || '';
+  
+  return traceLLMCall(
+    {
+      functionName: 'chatWithKimi',
+      prompt: lastMessage,
+    },
+    () => chatWithKimiInternal(messages, options)
+  );
 }
 
 async function* streamKimiResponse(
@@ -372,7 +389,7 @@ async function* streamKimiResponse(
 
 // ==================== NVIDIA NIM IMPLEMENTATION ====================
 
-async function chatWithNvidia(
+async function chatWithNvidiaInternal(
   messages: AIMessage[],
   options: AIOptions = {}
 ): Promise<AIResponse> {
@@ -417,6 +434,21 @@ async function chatWithNvidia(
     usage: data.usage,
     latency_ms,
   };
+}
+
+async function chatWithNvidia(
+  messages: AIMessage[],
+  options: AIOptions = {}
+): Promise<AIResponse> {
+  const lastMessage = messages[messages.length - 1]?.content || '';
+  
+  return traceLLMCall(
+    {
+      functionName: 'chatWithNvidia',
+      prompt: lastMessage,
+    },
+    () => chatWithNvidiaInternal(messages, options)
+  );
 }
 
 async function* streamNvidiaResponse(

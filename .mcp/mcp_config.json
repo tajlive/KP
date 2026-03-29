@@ -55,6 +55,18 @@
       "args": ["scripts/run-perplexity-mcp.mjs"]
     },
     
+    "opik": {
+      "description": "Opik MCP - LLM observability, traces, metrics (krever OPIK_API_KEY)",
+      "command": "node",
+      "args": ["scripts/run-opik-mcp.mjs"]
+    },
+    
+    "klarpakke": {
+      "description": "Klarpakke Supabase MCP — DB-spørringer via Edge Function",
+      "command": "node",
+      "args": ["scripts/run-klarpakke-mcp.mjs"]
+    },
+    
     "resend": {
       "description": "Resend MCP - epostutsendelse",
       "command": "npx",
@@ -93,9 +105,9 @@
         "reason": "Mangler VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local",
         "setup": "Legg til VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local"
       },
-      "klarpakke-remote-mcp": {
-        "reason": "Mangler KLARPAKKE_MCP_TOKEN",
-        "setup": "Konfigurer KLARPAKKE_MCP_TOKEN i .env.local hvis nødvendig"
+      "klarpakke-remote-mcp-old": {
+        "reason": "Erstattet av 'klarpakke' MCP",
+        "setup": "Bruk 'klarpakke' istedenfor"
       }
     }
   }

@@ -1,207 +1,114 @@
 {
   "mcpServers": {
-    "klarpakke-deploy": {
-      "name": "Klarpakke Produksjons Assistent",
-      "description": "Automatiserer deploy, verifisering og overvåking av Klarpakke",
-      "commands": {
-        "verify-git": {
-          "description": "Verifiser Git konfigurasjon",
-          "command": "cd ~/Klarpakke && git config user.name && git config user.email"
-        },
-        "verify-production": {
-          "description": "Sjekk at www.klarpakke.no fungerer",
-          "command": "curl -sI https://www.klarpakke.no/no | grep HTTP"
-        },
-        "deploy-status": {
-          "description": "Sjekk siste Vercel deploy",
-          "command": "cd ~/Klarpakke && vercel ls klarpakke | head -5"
-        },
-        "health-check": {
-          "description": "Test API health endpoint",
-          "command": "curl -s https://www.klarpakke.no/api/health | head -1"
-        },
-        "build-local": {
-          "description": "Bygg lokalt for testing",
-          "command": "cd ~/Klarpakke && npm run build"
-        },
-        "deploy-manual": {
-          "description": "Manuell deploy til Vercel",
-          "command": "cd ~/Klarpakke && vercel --prod"
-        }
+    "_meta": {
+      "version": "2.0",
+      "lastOptimized": "2026-03-27",
+      "for": "KIMI CLI",
+      "description": "Optimalisert MCP-konfigurasjon for Klarpakke - kun aktive servere"
+    },
+    
+    "supabase": {
+      "description": "Offisiell Supabase MCP - Management API, projekter, Edge Functions",
+      "command": "node",
+      "args": ["scripts/run-official-supabase-mcp.mjs"]
+    },
+    
+    "supabase-db": {
+      "description": "Supabase Postgres MCP - SQL queries, tabeller, migrasjoner",
+      "command": "node",
+      "args": ["scripts/run-supabase-mcp.mjs"]
+    },
+    
+    "github": {
+      "description": "GitHub MCP - repo, issues, pull requests",
+      "command": "node",
+      "args": ["scripts/run-github-mcp.mjs"]
+    },
+    
+    "linear": {
+      "description": "Linear MCP - issues, projects, teams",
+      "command": "node",
+      "args": ["scripts/run-linear-mcp.mjs"]
+    },
+    
+    "vercel": {
+      "description": "Vercel MCP - deployments, projects, domains",
+      "command": "node",
+      "args": ["scripts/run-vercel-mcp.mjs"]
+    },
+    
+    "filesystem": {
+      "description": "Filesystem MCP - filoperasjoner i prosjektet",
+      "command": "node",
+      "args": ["scripts/run-filesystem-mcp.mjs"]
+    },
+    
+    "context7": {
+      "description": "Context7 MCP - bibliotekdokumentasjon",
+      "command": "node",
+      "args": ["scripts/run-context7-mcp.mjs"]
+    },
+    
+    "perplexity": {
+      "description": "Perplexity MCP - AI-søk",
+      "command": "node",
+      "args": ["scripts/run-perplexity-mcp.mjs"]
+    },
+    
+    "opik": {
+      "description": "Opik MCP - LLM observability, traces, metrics (krever OPIK_API_KEY)",
+      "command": "node",
+      "args": ["scripts/run-opik-mcp.mjs"]
+    },
+    
+    "klarpakke": {
+      "description": "Klarpakke Supabase MCP — DB-spørringer via Edge Function",
+      "command": "node",
+      "args": ["scripts/run-klarpakke-mcp.mjs"]
+    },
+    
+    "resend": {
+      "description": "Resend MCP - epostutsendelse",
+      "command": "npx",
+      "args": ["-y", "resend-mcp@2.2.0"],
+      "env": {
+        "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
     },
-    "klarpakke-mac": {
-      "name": "Mac M1 SSH Tilgang",
-      "description": "SSH-tilgang til din Mac M1 for lokal testing",
-      "config": {
-        "sshKey": "~/.ssh/klarpakke_mac",
-        "defaultUser": "taj",
-        "defaultPort": 2222,
-        "setupGuide": "SSH_SETUP_MAC.md"
-      },
-      "commands": {
-        "mac-test": {
-          "description": "Test SSH tilkobling til Mac",
-          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac -o ConnectTimeout=10 {USER}@{HOST} 'echo \"✅ SSH fungerer! Hostname: $(hostname)\"'"
-        },
-        "mac-run": {
-          "description": "Kjør kommando på Mac",
-          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} '{COMMAND}'"
-        },
-        "mac-test-klarpakke": {
-          "description": "Kjør Klarpakke tester på Mac",
-          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} 'cd ~/Klarpakke && ./scripts/test-klarpakke.sh'"
-        },
-        "mac-deploy": {
-          "description": "Deploy fra Mac",
-          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} 'cd ~/Klarpakke && vercel --prod'"
-        },
-        "mac-status": {
-          "description": "Sjekk Mac status",
-          "command": "ssh -p {PORT} -i ~/.ssh/klarpakke_mac {USER}@{HOST} 'uptime && df -h /'"
-        }
-      }
-    },
-    "klarpakke-testing": {
-      "name": "Klarpakke Playwright/Allure Testing",
-      "description": "E2E testing med Playwright og Allure rapportering",
-      "commands": {
-        "test-production": {
-          "description": "Kjør produksjons-tester",
-          "command": "cd ~/Klarpakke && npm run test:e2e:report"
-        },
-        "test-allure": {
-          "description": "Kjør tester med Allure rapport",
-          "command": "cd ~/Klarpakke && npm run test:e2e:allure"
-        },
-        "allure-generate": {
-          "description": "Generer Allure rapport",
-          "command": "cd ~/Klarpakke && npm run allure:generate"
-        },
-        "allure-open": {
-          "description": "Åpne Allure rapport i nettleser",
-          "command": "cd ~/Klarpakke && npm run allure:open"
-        },
-        "test-specific": {
-          "description": "Kjør spesifikk test-fil",
-          "command": "cd ~/Klarpakke && npx playwright test tests/e2e/klarpakke-production.spec.ts --reporter=allure-playwright,line"
-        },
-        "test-debug": {
-          "description": "Kjør tester med debug (headed mode)",
-          "command": "cd ~/Klarpakke && npx playwright test tests/e2e/klarpakke-production.spec.ts --headed"
-        },
-        "auto-test-production": {
-          "description": "Automatisk testing via GitHub Actions",
-          "command": "cd ~/Klarpakke && gh workflow run playwright-allure.yml"
-        },
-        "auto-test-local": {
-          "description": "Kjør tester lokalt på Mac",
-          "command": "cd ~/Klarpakke && ./scripts/test-klarpakke.sh production"
-        },
-        "test-status": {
-          "description": "Sjekk status på siste test-kjøring",
-          "command": "cd ~/Klarpakke && gh run list --workflow=playwright-allure.yml --limit 5"
-        },
-        "test-report": {
-          "description": "Åpne siste Allure rapport",
-          "command": "open ~/Klarpakke/allure-report/index.html"
-        },
-      }
-    },
-    "github-klarpakke": {
-      "name": "GitHub MCP for Klarpakke",
-      "repo": "tajlive/KP",
-      "commands": {
-        "list-workflows": "github_list_workflows",
-        "check-runs": "github_list_check_runs",
-        "view-issues": "github_list_issues --state OPEN"
-      }
-    }
-  },
-  "automation": {
-    "levels": {
-      "level1": {
-        "name": "Grunnleggende Verifisering",
-        "steps": [
-          "Verifiser Git config",
-          "Sjekk Vercel CLI",
-          "Test produksjons-URL",
-          "Sjekk API health"
-        ]
-      },
-      "level2": {
-        "name": "Full Deploy",
-        "steps": [
-          "Level 1 +",
-          "Bygg prosjekt",
-          "Deploy til Vercel",
-          "Verifiser deploy"
-        ]
-      },
-      "level3": {
-        "name": "Sikkerhet & Overvåking",
-        "steps": [
-          "Level 2 +",
-          "Sett opp Sentry",
-          "Konfigurer CSP",
-          "Database backup"
-        ]
-      },
-      "level4": {
-        "name": "Testing & QA",
-        "steps": [
-          "Kjør Playwright E2E tester",
-          "Generer Allure rapport",
-          "Verifiser testdekning",
-          "Sjekk performance metrics"
-        ]
-      },
-      "all": {
-        "name": "Komplett Oppsett",
-        "steps": [
-          "Alle Level 1-4 +",
-          "CI/CD pipeline",
-          "Automatisk rollback",
-          "Monitoring"
-        ]
-      }
-    }
-  },
-  "checklist": {
-    "pre-deploy": [
-      "npm run build fungerer",
-      "npm run lint passerer", 
-      "npm run test:e2e:report passerer",
-      "Git pushed til main",
-      "Vercel secrets satt"
-    ],
-    "post-deploy": [
-      "www.klarpakke.no svarer 200",
-      "Login fungerer",
-      "Supabase kobler",
-      "API health OK",
-      "E2E tester passerer"
-    ]
-  },
-  "troubleshooting": {
-    "404-feil": "Sjekk middleware.ts og CSP headers",
-    "git-mismatch": "Kjør: git config user.name 'tajlive'",
-    "rate-limit": "Vent 3 timer eller bruk Vercel Dashboard",
-    "build-feil": "Sjekk next.config.mjs for errors",
-    "test-feil": "Kjør: npm run test:e2e:headed for å se hva som feiler"
-  },
-  "testing": {
+    
     "playwright": {
-      "config": "playwright.allure.config.ts",
-      "testDir": "tests/e2e",
-      "outputDir": "allure-results",
-      "reportDir": "allure-report",
-      "browsers": ["chromium", "mobile-chrome"],
-      "criticalTests": [
-        "Hovedside laster korrekt",
-        "API Health endpoint fungerer",
-        "Autentisering - Login knapp finnes"
-      ]
+      "description": "Playwright MCP - browser automation",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    
+    "chrome-devtools": {
+      "description": "Chrome DevTools MCP - debugging",
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@0.20.3", "--no-usage-statistics"]
+    },
+    
+    "_disabled": {
+      "sentry": {
+        "reason": "Mangler SENTRY_AUTH_TOKEN og SENTRY_ORG i .env.local",
+        "setup": "Legg til SENTRY_AUTH_TOKEN og SENTRY_ORG i .env.local"
+      },
+      "stripe": {
+        "reason": "Mangler STRIPE_SECRET_KEY i .env.local",
+        "setup": "Legg til STRIPE_SECRET_KEY i .env.local"
+      },
+      "cloudflare": {
+        "reason": "Mangler CLOUDFLARE_API_TOKEN i .env.local",
+        "setup": "Legg til CLOUDFLARE_API_TOKEN i .env.local"
+      },
+      "vipps": {
+        "reason": "Mangler VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local",
+        "setup": "Legg til VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local"
+      },
+      "klarpakke-remote-mcp-old": {
+        "reason": "Erstattet av 'klarpakke' MCP",
+        "setup": "Bruk 'klarpakke' istedenfor"
+      }
     }
   }
 }
