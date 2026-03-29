@@ -218,6 +218,13 @@ const nextConfig = {
       };
     }
 
+    // Exclude opik from webpack bundling to avoid zod version conflicts
+    // Opik is loaded dynamically at runtime
+    config.externals = config.externals || [];
+    if (Array.isArray(config.externals)) {
+      config.externals.push('opik');
+    }
+
     // Note: splitChunks removed — Next.js 15 handles this optimally
 
     return config;

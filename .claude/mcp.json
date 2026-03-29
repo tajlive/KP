@@ -1,17 +1,114 @@
 {
   "mcpServers": {
-    "klarpakke-automation": {
+    "_meta": {
+      "version": "2.0",
+      "lastOptimized": "2026-03-27",
+      "for": "KIMI CLI",
+      "description": "Optimalisert MCP-konfigurasjon for Klarpakke - kun aktive servere"
+    },
+    
+    "supabase": {
+      "description": "Offisiell Supabase MCP - Management API, projekter, Edge Functions",
       "command": "node",
-      "args": ["mcp-server/dist/index.js"],
+      "args": ["scripts/run-official-supabase-mcp.mjs"]
+    },
+    
+    "supabase-db": {
+      "description": "Supabase Postgres MCP - SQL queries, tabeller, migrasjoner",
+      "command": "node",
+      "args": ["scripts/run-supabase-mcp.mjs"]
+    },
+    
+    "github": {
+      "description": "GitHub MCP - repo, issues, pull requests",
+      "command": "node",
+      "args": ["scripts/run-github-mcp.mjs"]
+    },
+    
+    "linear": {
+      "description": "Linear MCP - issues, projects, teams",
+      "command": "node",
+      "args": ["scripts/run-linear-mcp.mjs"]
+    },
+    
+    "vercel": {
+      "description": "Vercel MCP - deployments, projects, domains",
+      "command": "node",
+      "args": ["scripts/run-vercel-mcp.mjs"]
+    },
+    
+    "filesystem": {
+      "description": "Filesystem MCP - filoperasjoner i prosjektet",
+      "command": "node",
+      "args": ["scripts/run-filesystem-mcp.mjs"]
+    },
+    
+    "context7": {
+      "description": "Context7 MCP - bibliotekdokumentasjon",
+      "command": "node",
+      "args": ["scripts/run-context7-mcp.mjs"]
+    },
+    
+    "perplexity": {
+      "description": "Perplexity MCP - AI-søk",
+      "command": "node",
+      "args": ["scripts/run-perplexity-mcp.mjs"]
+    },
+    
+    "opik": {
+      "description": "Opik MCP - LLM observability, traces, metrics (krever OPIK_API_KEY)",
+      "command": "node",
+      "args": ["scripts/run-opik-mcp.mjs"]
+    },
+    
+    "klarpakke": {
+      "description": "Klarpakke Supabase MCP — DB-spørringer via Edge Function",
+      "command": "node",
+      "args": ["scripts/run-klarpakke-mcp.mjs"]
+    },
+    
+    "resend": {
+      "description": "Resend MCP - epostutsendelse",
+      "command": "npx",
+      "args": ["-y", "resend-mcp@2.2.0"],
       "env": {
-        "NODE_ENV": "production"
+        "RESEND_API_KEY": "${RESEND_API_KEY}"
+      }
+    },
+    
+    "playwright": {
+      "description": "Playwright MCP - browser automation",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    
+    "chrome-devtools": {
+      "description": "Chrome DevTools MCP - debugging",
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@0.20.3", "--no-usage-statistics"]
+    },
+    
+    "_disabled": {
+      "sentry": {
+        "reason": "Mangler SENTRY_AUTH_TOKEN og SENTRY_ORG i .env.local",
+        "setup": "Legg til SENTRY_AUTH_TOKEN og SENTRY_ORG i .env.local"
+      },
+      "stripe": {
+        "reason": "Mangler STRIPE_SECRET_KEY i .env.local",
+        "setup": "Legg til STRIPE_SECRET_KEY i .env.local"
+      },
+      "cloudflare": {
+        "reason": "Mangler CLOUDFLARE_API_TOKEN i .env.local",
+        "setup": "Legg til CLOUDFLARE_API_TOKEN i .env.local"
+      },
+      "vipps": {
+        "reason": "Mangler VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local",
+        "setup": "Legg til VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local"
+      },
+      "klarpakke-remote-mcp-old": {
+        "reason": "Erstattet av 'klarpakke' MCP",
+        "setup": "Bruk 'klarpakke' istedenfor"
       }
     }
-  },
-  "version": "1.0.0",
-  "metadata": {
-    "name": "Klarpakke MCP Configuration",
-    "description": "MCP server configuration for Klarpakke automation and CI/CD",
-    "updated": "2025-02-02"
   }
 }
