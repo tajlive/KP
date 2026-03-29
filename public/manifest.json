@@ -7,8 +7,8 @@
   "id": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],
-  "background_color": "#0A0B0D",
-  "theme_color": "#0052FF",
+  "background_color": "#0a0b0d",
+  "theme_color": "#2563eb",
   "orientation": "portrait",
   "scope": "/",
   "lang": "no",
@@ -20,16 +20,28 @@
   ],
   "icons": [
     {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
       "src": "/icons/icon-192x192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-512x512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/favicon.svg",
@@ -46,7 +58,7 @@
       "url": "/no/dashboard",
       "icons": [
         {
-          "src": "/icons/icon-192x192.png",
+          "src": "/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -58,7 +70,7 @@
       "url": "/no/paper-trading",
       "icons": [
         {
-          "src": "/icons/icon-192x192.png",
+          "src": "/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -70,7 +82,7 @@
       "url": "/no/kurs",
       "icons": [
         {
-          "src": "/icons/icon-192x192.png",
+          "src": "/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]

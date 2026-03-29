@@ -70,9 +70,24 @@ function InnloggingForm() {
     "idle",
   );
   const [loginError, setLoginError] = useState("");
+  const [isClient, setIsClient] = useState(false);
   const searchParams = useSearchParams();
   const t = useTranslations("auth");
   const locale = useLocale();
+
+  // CRITICAL FIX: Defensive mount to prevent hydration mismatch
+  // and ensure password is ALWAYS hidden on initial render
+  useEffect(() => {
+    setIsClient(true);
+    // Force reset to hidden on every mount - defensive against any 
+    // state leakage from hot reload, strict mode, or browser autofill
+    setShowPassword(false);
+    
+    if (process.env.NODE_ENV === 'development') {
+       
+      console.log('[InnloggingForm] Mounted - password visibility reset to hidden');
+    }
+  }, []);
 
   // Lagre referral-kode i cookie
   useEffect(() => {
@@ -245,7 +260,9 @@ function InnloggingForm() {
                     <Input
                       id={passwordFieldId}
                       data-testid="innlogging-password-input"
-                      type={showPassword ? "text" : "password"}
+                      // CRITICAL: Always default to password type until client mount
+                      // This prevents any SSR/hydration/autofill from showing plaintext
+                      type={isClient && showPassword ? "text" : "password"}
                       name="password"
                       autoComplete="current-password"
                       placeholder={t("passwordPlaceholder")}
@@ -259,7 +276,17 @@ function InnloggingForm() {
                     <button
                       type="button"
                       tabIndex={0}
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() => {
+                        // EXPLICIT toggle only on user click - no derived state
+                        setShowPassword(prev => {
+                          const next = !prev;
+                          if (process.env.NODE_ENV === 'development') {
+                             
+                            console.log(`[PasswordToggle] Changed to: ${next ? 'visible' : 'hidden'}`);
+                          }
+                          return next;
+                        });
+                      }}
                       className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center w-11 h-11 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
                       aria-label={
                         showPassword

@@ -328,14 +328,21 @@ export default function ClientKurs() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1 text-xs text-slate-400">
                             <Users className="h-3.5 w-3.5" />
-                            {course.students.toLocaleString()}{" "}
-                            {locale === "no"
-                              ? "studenter"
-                              : locale === "th"
-                                ? "นักเรียน"
-                                : locale === "zh"
-                                  ? "学生"
-                                  : "students"}
+                            {course.students
+                              ? `${(course.students as number).toLocaleString()} ${locale === "no"
+                                  ? "studenter"
+                                  : locale === "th"
+                                    ? "นักเรียน"
+                                    : locale === "zh"
+                                      ? "学生"
+                                      : "students"}`
+                              : locale === "no"
+                                ? "Åpent for alle"
+                                : locale === "th"
+                                  ? "เปิดสำหรับทุกคน"
+                                  : locale === "zh"
+                                    ? "对所有人开放"
+                                    : "Open to all"}
                           </div>
                           <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 group-hover:gap-2 transition-all">
                             {course.cta}

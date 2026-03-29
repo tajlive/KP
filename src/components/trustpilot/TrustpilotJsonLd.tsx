@@ -55,19 +55,15 @@ export async function TrustpilotJsonLd({ maxReviews = 3 }: TrustpilotJsonLdProps
       />
     );
   } catch (error) {
-    // Return basic organization schema if data fetch fails
+    // Return basic organization schema without ratings if data fetch fails
+    // We don't include fake ratings - only real data from Trustpilot API
     const fallbackJsonLd = {
       "@context": "https://schema.org",
       "@type": "Organization",
       name: "Klarpakke",
       url: "https://www.klarpakke.no",
       logo: "https://www.klarpakke.no/logo.svg",
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.8",
-        reviewCount: "1200",
-        bestRating: "5",
-      },
+      description: "Klarpakke - Norges første krypto-utdanningsplattform med paper trading og auto-handel",
     };
 
     return (

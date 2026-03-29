@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { AuthProvider } from "@/components/auth/AuthContext";
+import { OnboardingFlow } from "@/components/onboarding";
+import { TradeSuccessProvider } from "@/hooks/useTradeSuccess";
 
 // KRITISK: Inline script som kjører FØR AuthProvider for å rense korrupte tokens
 const CorruptTokenCleanup = () => (
@@ -69,7 +71,9 @@ export default function DashboardClientLayout({
             <AuthProvider>
               <ToastProvider>
                 <TradingModeProvider>
-                  <ProtectedRoute>
+                  <TradeSuccessProvider>
+                    <ProtectedRoute>
+                      <OnboardingFlow />
                     <SentryInit />
                     <div
                       className={`min-h-screen min-h-dvh ${SURFACE.BG_LIGHT} flex flex-col overflow-x-hidden`}
@@ -86,7 +90,8 @@ export default function DashboardClientLayout({
                       </div>
                       <BottomTabs />
                     </div>
-                  </ProtectedRoute>
+                    </ProtectedRoute>
+                  </TradeSuccessProvider>
                   <Analytics />
                   <SpeedInsights />
                 </TradingModeProvider>

@@ -55,8 +55,16 @@ function SignupContent() {
   const t = useTranslations("auth");
   const redirectDest = redirectTo || hrefWithLocale(locale, "/dashboard");
 
+  // CRITICAL FIX: Defensive mount to prevent hydration mismatch
+  // and ensure password is ALWAYS hidden on initial render
   useEffect(() => {
     setMounted(true);
+    setShowPassword(false);
+    
+    if (process.env.NODE_ENV === 'development') {
+       
+      console.log('[SignupContent] Mounted - password visibility reset to hidden');
+    }
   }, []);
 
   // Innlogget bruker som besøker signup → dashboard (backup for middleware)
@@ -271,7 +279,8 @@ function SignupContent() {
               <div className="relative">
                 <Input
                   id="signup-password"
-                  type={showPassword ? "text" : "password"}
+                  // CRITICAL: Only show text if client AND user clicked toggle
+                  type={mounted && showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -279,7 +288,16 @@ function SignupContent() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => {
+                    setShowPassword(prev => {
+                      const next = !prev
+                      if (process.env.NODE_ENV === 'development') {
+                         
+                        console.log(`[Signup] Toggle clicked - new state: ${next ? 'visible' : 'hidden'}`)
+                      }
+                      return next
+                    })
+                  }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (

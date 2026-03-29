@@ -104,7 +104,7 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
           })}
         </div>
 
-        {/* Global ratings highlight */}
+        {/* Trust indicator - honest, no fake numbers */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -124,8 +124,9 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
               ))}
             </div>
             <span className="text-slate-400 font-medium">
-              <span className="text-white font-black">1,200+</span>{" "}
-              {language === "no" ? "brukere" : "users"}
+              <span className="text-white font-black">
+                {language === "no" ? "Vårt fellesskap" : "Our community"}
+              </span>
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -138,8 +139,9 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
               ))}
             </div>
             <span className="text-slate-400 font-medium">
-              <span className="text-white font-black">4.9/5</span>{" "}
-              {language === "no" ? "vurdering" : "rating"}
+              <span className="text-white font-black">
+                {language === "no" ? "Høyt verdsatt" : "Highly rated"}
+              </span>
             </span>
           </div>
         </motion.div>

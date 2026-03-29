@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { CoinbaseHome } from "@/components/coinbase/CoinbaseHome";
+import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
@@ -123,7 +123,7 @@ export default async function DashboardPage({
     }));
 
     return (
-      <CoinbaseHome
+      <DashboardContent
         paperBalance={profile?.paper_balance ?? 100000}
         trades={trades}
         activeSession={activeSession}

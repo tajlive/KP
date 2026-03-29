@@ -23,8 +23,8 @@ export function LandingNavigation() {
 
   const mainLinks = [
     { path: "/kurs", label: t("courses") },
+    { path: "/autotrade", label: "Autotrade" },
     { path: "/paper-trading", label: t("paperTrading") },
-    // REMOVED: { path: "/om-oss", label: t("about") },
     { path: "/priser", label: t("pricing") },
   ];
 

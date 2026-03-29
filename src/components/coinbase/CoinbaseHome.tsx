@@ -18,6 +18,7 @@ import { PortfolioChart } from "@/components/coinbase/PortfolioChart";
 import { QuickActions } from "@/components/coinbase/QuickActions";
 import { AssetList } from "@/components/coinbase/AssetList";
 import { WatchlistCard } from "@/components/coinbase/WatchlistCard";
+import { LivePnLWidget } from "@/components/dashboard/LivePnLWidget";
 
 type TradeRow = {
   trading_pair: string;
@@ -123,6 +124,8 @@ export function CoinbaseHome({
 
   return (
     <div className="space-y-6 pb-2 md:pb-8">
+      <LivePnLWidget />
+
       {tradesPollFailed ? (
         <p
           className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
