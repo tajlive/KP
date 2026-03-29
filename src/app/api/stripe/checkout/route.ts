@@ -4,9 +4,29 @@ import { createServerClient } from '@/lib/supabase/server';
 
 const pendingCheckouts = new Set<string>();
 
+// Valid Stripe price IDs - must match environment variables
+const getAllowedPriceIds = (): string[] => {
+  return [
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_BACHELOR,
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_MASTER,
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_PHD,
+    process.env.NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR,
+  ].filter((id): id is string => !!id && id.startsWith('price_'));
+};
+
 export async function POST(request: NextRequest) {
   try {
     const { priceId, mode = 'subscription', successPath = '/dashboard' } = await request.json();
+    
+    // Validate priceId against allowed values
+    const allowedPriceIds = getAllowedPriceIds();
+    if (!priceId || !allowedPriceIds.includes(priceId)) {
+      console.error('[Stripe Checkout] Invalid price ID:', priceId);
+      return NextResponse.json(
+        { error: 'Ugyldig pris-ID' },
+        { status: 400 }
+      );
+    }
     
     const response = NextResponse.next();
     const supabase = createServerClient(request, response);
