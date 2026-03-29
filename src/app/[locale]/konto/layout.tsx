@@ -23,7 +23,7 @@ export default function KontoLayout({
             {process.env.VERCEL && (
               <>
                 <Analytics />
-                <SpeedInsights />
+                {process.env.NODE_ENV !== "production" && <SpeedInsights />}
               </>
             )}
           </ToastProvider>

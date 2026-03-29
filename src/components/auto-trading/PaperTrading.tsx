@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Bot, History, Loader2, PlayCircle, Square } from "lucide-react";
 import { useEffect, useState } from "react";
 import { STRATEGY_CATALOG_PAPER } from "@/lib/auto-trading/strategy-catalog";
+import { createClient } from "@/lib/utils";
 
 const DEFAULT_STRATEGIES = [...STRATEGY_CATALOG_PAPER];
 
@@ -67,11 +68,26 @@ export default function PaperTrading({
   const [recentTrades, setRecentTrades] = useState<Trade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Supabase Realtime subscription for session updates
   useEffect(() => {
     fetchSessionData();
 
-    const interval = setInterval(fetchSessionData, 10000);
-    return () => clearInterval(interval);
+    const supabase = createClient();
+    const channel = supabase
+      .channel('paper-session')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'trading_sessions',
+        filter: `mode=eq.paper`
+      }, () => {
+        fetchSessionData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   async function fetchSessionData(): Promise<void> {

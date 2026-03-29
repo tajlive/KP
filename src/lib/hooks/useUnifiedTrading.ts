@@ -5,6 +5,7 @@ import { createClient } from "@/lib/utils";
 import { TradingMode } from "@/types/trading";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useWebSocketPrice } from "@/hooks/useWebSocketPrice";
 
 // Matches actual DB: trading_sessions table columns:
 // id, user_id, trading_pair, mode, strategy, status, params, started_at,
@@ -138,9 +139,11 @@ export function useUnifiedTrading(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const priceIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // WebSocket price with fallback polling
+  const { price: wsPrice, isConnected: wsConnected } = useWebSocketPrice(symbol);
+  const fallbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch live price from server-side proxy
+  // Fetch live price from server-side proxy (fallback)
   const fetchPrice = useCallback(async () => {
     try {
       const res = await fetch(`/api/trading/price?symbol=${symbol}`);
@@ -153,14 +156,35 @@ export function useUnifiedTrading(
     }
   }, [symbol]);
 
-  // Poll price every 5 seconds (reduced from 2s)
+  // Use WebSocket price when available, fallback to REST polling every 30s
   useEffect(() => {
+    if (wsConnected && wsPrice) {
+      setCurrentPrice(wsPrice);
+    }
+  }, [wsPrice, wsConnected]);
+
+  // Fallback polling every 30s when WebSocket is not connected
+  useEffect(() => {
+    if (wsConnected) {
+      // Clear fallback interval when WS is connected
+      if (fallbackIntervalRef.current) {
+        clearInterval(fallbackIntervalRef.current);
+        fallbackIntervalRef.current = null;
+      }
+      return;
+    }
+
+    // Initial fetch
     fetchPrice();
-    priceIntervalRef.current = setInterval(fetchPrice, 5000);
+    // Fallback polling every 30s (not 5s)
+    fallbackIntervalRef.current = setInterval(fetchPrice, 30_000);
+    
     return () => {
-      if (priceIntervalRef.current) clearInterval(priceIntervalRef.current);
+      if (fallbackIntervalRef.current) {
+        clearInterval(fallbackIntervalRef.current);
+      }
     };
-  }, [fetchPrice]);
+  }, [fetchPrice, wsConnected]);
 
   // Fetch sessions
   const refreshSessions = useCallback(async () => {
