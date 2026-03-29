@@ -126,8 +126,10 @@ export async function POST(req: NextRequest) {
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const supabase = getSupabase();
-  const userId = session.metadata?.userId;
-  const tier = session.metadata?.tier;
+  const userId = session.metadata?.supabase_user_id;
+  // Fallback: try to get tier from price_id mapping if tier not in metadata
+  const priceId = session.metadata?.price_id;
+  const tier = session.metadata?.tier || mapPriceIdToTier(priceId);
   const subscriptionId = session.subscription as string;
   const customerId = session.customer as string;
 
@@ -409,10 +411,22 @@ function mapTierToPlanType(tier: string): string {
     master: "master",
     phd: "phd",
     professor: "professor",
-    student: "student14", // Note: some plans might have trailing IDs from Stripe
+    student: "student",
     free: "student",
   };
   return tierMap[tier] || "student";
+}
+
+// Helper to map price ID to tier when metadata is missing
+function mapPriceIdToTier(priceId: string | undefined): string | undefined {
+  if (!priceId) return undefined;
+  const priceMap: Record<string, string> = {
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_BACHELOR || '']: 'bachelor',
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_MASTER || '']: 'master',
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PHD || '']: 'phd',
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PROFESSOR || '']: 'professor',
+  };
+  return priceMap[priceId];
 }
 
 async function sendWelcomeEmail(userId: string, planType: string) {
