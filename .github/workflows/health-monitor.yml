@@ -1,0 +1,192 @@
+# ═══════════════════════════════════════════════════════════════
+# KLARPAKKE — Post-Launch Health Monitor
+# Kjører hvert 5. minutt, pinger /api/health, varsler Slack ved feil
+# ═══════════════════════════════════════════════════════════════
+
+name: 🩺 Health Monitor
+
+on:
+  schedule:
+    # Hvert 5. minutt
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: health-monitor
+  cancel-in-progress: false
+
+env:
+  HEALTH_ENDPOINT: https://www.klarpakke.no/api/health
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_OPS_WEBHOOK_URL }}
+
+jobs:
+  health-check:
+    name: Ping Health Endpoint
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    
+    steps:
+      - name: Check Health Endpoint
+        id: health
+        run: |
+          START_TIME=$(date +%s%N)
+          
+          # Perform health check with retry
+          for i in {1..3}; do
+            HTTP_CODE=$(curl -s -o /tmp/health_response.json -w "%{http_code}" \
+              --max-time 15 \
+              --retry 2 \
+              --retry-delay 1 \
+              "$HEALTH_ENDPOINT")
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              break
+            fi
+            sleep 2
+          done
+          
+          END_TIME=$(date +%s%N)
+          RESPONSE_TIME=$(( (END_TIME - START_TIME) / 1000000 ))  # Convert to ms
+          
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+          echo "response_time_ms=$RESPONSE_TIME" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
+          
+          # Extract status from JSON if 200
+          if [ "$HTTP_CODE" = "200" ]; then
+            STATUS=$(cat /tmp/health_response.json | jq -r '.status // "unknown"')
+            VERSION=$(cat /tmp/health_response.json | jq -r '.version // "unknown"')
+            echo "status=$STATUS" >> $GITHUB_OUTPUT
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            
+            # Check if status is healthy
+            if [ "$STATUS" != "healthy" ]; then
+              echo "❌ Health status is NOT healthy: $STATUS"
+              exit 1
+            fi
+          else
+            echo "status=error" >> $GITHUB_OUTPUT
+            echo "version=unknown" >> $GITHUB_OUTPUT
+            echo "❌ HTTP $HTTP_CODE from health endpoint"
+            exit 1
+          fi
+          
+          echo "✅ Health check passed (HTTP $HTTP_CODE, status: $STATUS, ${RESPONSE_TIME}ms)"
+
+      - name: Upload Health Metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-metrics-${{ github.run_id }}
+          path: /tmp/health_response.json
+          retention-days: 30
+
+      - name: Log to GitHub Actions Summary
+        run: |
+          echo "## 🩺 Health Check Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Timestamp | ${{ steps.health.outputs.timestamp }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| HTTP Code | ${{ steps.health.outputs.http_code }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ steps.health.outputs.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Response Time | ${{ steps.health.outputs.response_time_ms }} ms |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ steps.health.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Send Slack Notification on Failure
+        if: failure()
+        run: |
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "channel": "#ops",
+              "username": "Klarpakke Health Monitor",
+              "icon_emoji": ":ambulance:",
+              "attachments": [
+                {
+                  "color": "danger",
+                  "title": "🚨 Health Check FAILED",
+                  "title_link": "https://www.klarpakke.no/api/health",
+                  "fields": [
+                    {
+                      "title": "Timestamp",
+                      "value": "'"${{ steps.health.outputs.timestamp }}"'",
+                      "short": true
+                    },
+                    {
+                      "title": "HTTP Code",
+                      "value": "'"${{ steps.health.outputs.http_code }}"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Status",
+                      "value": "'"${{ steps.health.outputs.status }}"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Response Time",
+                      "value": "'"${{ steps.health.outputs.response_time_ms }}"' ms",
+                      "short": true
+                    }
+                  ],
+                  "footer": "Klarpakke Health Monitor",
+                  "ts": '$(date +%s)'
+                }
+              ]
+            }'
+
+      - name: Send Slack Recovery Notification
+        if: success() && github.run_attempt > 1
+        run: |
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "channel": "#ops",
+              "username": "Klarpakke Health Monitor",
+              "icon_emoji": ":white_check_mark:",
+              "attachments": [
+                {
+                  "color": "good",
+                  "title": "✅ Health Check RECOVERED",
+                  "title_link": "https://www.klarpakke.no/api/health",
+                  "fields": [
+                    {
+                      "title": "Timestamp",
+                      "value": "'"${{ steps.health.outputs.timestamp }}"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Status",
+                      "value": "'"${{ steps.health.outputs.status }}"'",
+                      "short": true
+                    },
+                    {
+                      "title": "Response Time",
+                      "value": "'"${{ steps.health.outputs.response_time_ms }}"' ms",
+                      "short": true
+                    }
+                  ],
+                  "footer": "Klarpakke Health Monitor",
+                  "ts": '$(date +%s)'
+                }
+              ]
+            }'
+
+  aggregate-metrics:
+    name: Aggregate Hourly Metrics
+    runs-on: ubuntu-latest
+    if: github.run_attempt == 1
+    needs: health-check
+    
+    steps:
+      - name: Download Recent Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: health-metrics-*
+          merge-multiple: true
+          path: ./metrics
+
+      - name: Generate Trend Report
+        run: |
+          echo "## 📊 Health Metrics Trend (Last Hour)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          ls -la ./metrics/ | head -20 >> $GITHUB_STEP_SUMMARY
