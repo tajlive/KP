@@ -1,17 +1,33 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import {
+  type UIRiskLevel,
+  type ApiRiskLevel,
+  mapUiToApiRiskLevel,
+  mapApiToUiRiskLevel,
+} from "@/lib/trading/risk-level-mapping";
 
-type RiskLevel = "safe" | "balanced" | "aggressive";
+/** @deprecated Use UIRiskLevel from @/lib/trading/risk-level-mapping */
+type RiskLevel = UIRiskLevel;
+
+/** Re-export for convenience */
+export type { UIRiskLevel, ApiRiskLevel };
+export { mapUiToApiRiskLevel, mapApiToUiRiskLevel };
 type OnboardingStep = 1 | 2 | 3;
 
 interface OnboardingState {
   step: OnboardingStep;
-  riskLevel: RiskLevel | null;
+  riskLevel: UIRiskLevel | null;
   isComplete: boolean;
   isLoading: boolean;
   direction: number;
   goToStep: (step: OnboardingStep) => void;
-  setRiskLevel: (level: RiskLevel) => void;
+  /** Set UI risk level (safe/balanced/aggressive) */
+  setRiskLevel: (level: UIRiskLevel) => void;
+  /** Set API risk level (low/medium/high) - will be converted to UI level */
+  setApiRiskLevel: (level: ApiRiskLevel) => void;
+  /** Get API risk level (low/medium/high) - use when sending to backend */
+  getApiRiskLevel: () => ApiRiskLevel | null;
   completeOnboarding: () => Promise<void>;
   skipToApp: () => void;
 }
@@ -32,6 +48,11 @@ export const useOnboardingStore = create<OnboardingState>()(
         });
       },
       setRiskLevel: (riskLevel) => set({ riskLevel }),
+      setApiRiskLevel: (apiLevel) => set({ riskLevel: mapApiToUiRiskLevel(apiLevel) }),
+      getApiRiskLevel: () => {
+        const { riskLevel } = get();
+        return riskLevel ? mapUiToApiRiskLevel(riskLevel) : null;
+      },
       skipToApp: () => set({ isComplete: true }),
       completeOnboarding: async () => {
         set({ isLoading: true });

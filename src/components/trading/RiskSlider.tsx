@@ -5,10 +5,22 @@ import { motion, PanInfo, useAnimation } from "framer-motion";
 import { Shield, Scale, Zap, ChevronRight, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type RiskLevel = "safe" | "balanced" | "aggressive";
+import {
+  type UIRiskLevel,
+  type ApiRiskLevel,
+  mapUiToApiRiskLevel,
+  mapApiToUiRiskLevel,
+} from "@/lib/trading/risk-level-mapping";
+
+/** @deprecated Use UIRiskLevel from @/lib/trading/risk-level-mapping */
+export type RiskLevel = UIRiskLevel;
+
+/** Re-export for convenience */
+export type { UIRiskLevel, ApiRiskLevel };
+export { mapUiToApiRiskLevel, mapApiToUiRiskLevel };
 
 interface RiskConfig {
-  id: RiskLevel;
+  id: UIRiskLevel;
   icon: React.ElementType;
   label: string;
   labelEn: string;
@@ -81,9 +93,15 @@ const RISK_LEVELS: RiskConfig[] = [
 
 interface RiskSliderProps {
   locale?: "no" | "en";
-  initialLevel?: RiskLevel;
-  onChange?: (level: RiskLevel) => void;
-  onConfirm?: (level: RiskLevel) => void | Promise<void>;
+  initialLevel?: UIRiskLevel;
+  /** Called with UI risk level (safe/balanced/aggressive) */
+  onChange?: (level: UIRiskLevel) => void;
+  /** Called with UI risk level (safe/balanced/aggressive) */
+  onConfirm?: (level: UIRiskLevel) => void | Promise<void>;
+  /** Called with API risk level (low/medium/high) - use this when sending to backend */
+  onChangeApi?: (level: ApiRiskLevel) => void;
+  /** Called with API risk level (low/medium/high) - use this when sending to backend */
+  onConfirmApi?: (level: ApiRiskLevel) => void | Promise<void>;
   showConfirmButton?: boolean;
 }
 
@@ -92,9 +110,11 @@ export function RiskSlider({
   initialLevel = "balanced",
   onChange,
   onConfirm,
+  onChangeApi,
+  onConfirmApi,
   showConfirmButton = true,
 }: RiskSliderProps) {
-  const [currentLevel, setCurrentLevel] = useState<RiskLevel>(initialLevel);
+  const [currentLevel, setCurrentLevel] = useState<UIRiskLevel>(initialLevel);
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const controls = useAnimation();
@@ -114,6 +134,7 @@ export function RiskSlider({
 
         setCurrentLevel(newLevel);
         onChange?.(newLevel);
+        onChangeApi?.(mapUiToApiRiskLevel(newLevel));
       }
 
       controls.start({
@@ -155,6 +176,7 @@ export function RiskSlider({
         navigator.vibrate([50, 30, 50]);
       }
       await onConfirm?.(currentLevel);
+      await onConfirmApi?.(mapUiToApiRiskLevel(currentLevel));
     } finally {
       setIsSubmitting(false);
     }
@@ -340,7 +362,7 @@ export function RiskBadge({
   level,
   locale = "no",
 }: {
-  level: RiskLevel;
+  level: UIRiskLevel;
   locale?: "no" | "en";
 }) {
   const config = RISK_LEVELS.find((l) => l.id === level)!;
@@ -360,7 +382,7 @@ export function RiskBadge({
   );
 }
 
-export function useRiskLevel(initialLevel: RiskLevel = "balanced") {
+export function useRiskLevel(initialLevel: UIRiskLevel = "balanced") {
   const [level, setLevel] = useState<RiskLevel>(initialLevel);
   const config = RISK_LEVELS.find((l) => l.id === level)!;
 

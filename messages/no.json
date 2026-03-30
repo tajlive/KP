@@ -261,7 +261,7 @@
     },
     "config": {
       "title": "Konfigurasjon",
-      "riskLevel": "Risiko Nivå",
+      "riskLevel": "Risikonivå",
       "safe": "Sikker",
       "moderate": "Moderat",
       "aggressive": "Aggressiv",
@@ -435,7 +435,7 @@
     },
     "config": {
       "title": "Konfigurasjon",
-      "riskLevel": "Risiko Nivå",
+      "riskLevel": "Risikonivå",
       "safe": "Sikker",
       "moderate": "Moderat",
       "aggressive": "Aggressiv",

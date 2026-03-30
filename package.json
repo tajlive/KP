@@ -115,6 +115,8 @@
     "db:repair-history": "./scripts/db-repair-migration-history.sh",
     "db:repair:drift": "bash scripts/db-repair-migration-history.sh",
     "db:push:drift": "npx supabase db push --linked --include-all",
+    "db:setup-test-trader": "psql $DATABASE_URL -f scripts/setup-test-trader.sql",
+    "db:verify-test-trader": "bash scripts/verify-test-trader.sh",
     "db:status": "supabase migration list --linked",
     "db:diff": "supabase db diff --linked",
     "db:lint": "supabase db lint --linked",
@@ -188,7 +190,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.39",
-    "@ai-sdk/perplexity": "^3.0.18",
+    "@ai-sdk/perplexity": "^3.0.26",
     "@ai-sdk/react": "^3.0.113",
     "@coinbase/cds-web": "^8.57.1",
     "@headlessui/react": "^2.2.9",

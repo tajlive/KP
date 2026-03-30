@@ -391,6 +391,105 @@ export interface DatabasePatch {
           updated_at?: string;
         };
       };
+      trading_triggers: {
+        Row: {
+          id: string;
+          user_id: string;
+          symbol: string;
+          trigger_price: number;
+          side: string;
+          quantity: number;
+          action: string;
+          mode: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          symbol: string;
+          trigger_price: number;
+          side: string;
+          quantity: number;
+          action: string;
+          mode?: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          symbol?: string;
+          trigger_price?: number;
+          side?: string;
+          quantity?: number;
+          action?: string;
+          mode?: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      notification_preferences: {
+        Row: {
+          id: string;
+          user_id: string;
+          email_enabled: boolean;
+          push_enabled: boolean;
+          price_alerts: boolean;
+          trade_notifications: boolean;
+          marketing_emails: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          email_enabled?: boolean;
+          push_enabled?: boolean;
+          price_alerts?: boolean;
+          trade_notifications?: boolean;
+          marketing_emails?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          email_enabled?: boolean;
+          push_enabled?: boolean;
+          price_alerts?: boolean;
+          trade_notifications?: boolean;
+          marketing_emails?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      user_preferences: {
+        Row: {
+          id: string;
+          user_id: string;
+          trading_mode: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          trading_mode?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          trading_mode?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 }

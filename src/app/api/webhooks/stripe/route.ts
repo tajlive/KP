@@ -12,6 +12,31 @@ import type { Database } from "@/types/supabase-generated";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Idempotency: spor behandlede events for å hindre dobbel prosessering
+const processedEvents = new Map<string, number>();
+const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 timer
+
+function isDuplicateEvent(eventId: string): boolean {
+  const now = Date.now();
+  const processedAt = processedEvents.get(eventId);
+  
+  if (processedAt && (now - processedAt) < IDEMPOTENCY_WINDOW_MS) {
+    return true;
+  }
+  
+  // Cleanup gamle entries hvis map vokser for stor
+  if (processedEvents.size > 10000) {
+    for (const [key, time] of processedEvents) {
+      if ((now - time) > IDEMPOTENCY_WINDOW_MS) {
+        processedEvents.delete(key);
+      }
+    }
+  }
+  
+  processedEvents.set(eventId, now);
+  return false;
+}
+
 // Stripe client
 const getStripe = () => {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -74,6 +99,13 @@ export async function POST(req: NextRequest) {
 
     console.info(`[Stripe Webhook] Mottatt: ${event.type}`);
 
+    // Idempotency sjekk
+    const eventId = `${event.id}:${event.type}`;
+    if (isDuplicateEvent(eventId)) {
+      console.info(`[Stripe Webhook] Duplikat event ignorert: ${eventId}`);
+      return NextResponse.json({ received: true, idempotent: true });
+    }
+
     // Håndter ulike event-typer
     switch (event.type) {
       case "checkout.session.completed": {
@@ -91,6 +123,12 @@ export async function POST(req: NextRequest) {
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         await handlePaymentFailed(invoice);
+        break;
+      }
+
+      case "customer.subscription.created": {
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleSubscriptionCreated(subscription);
         break;
       }
 
@@ -294,6 +332,97 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     );
   } catch (error) {
     console.error("[Stripe Webhook] Feil i handlePaymentFailed:", error);
+  }
+}
+
+async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
+  const supabase = getSupabase();
+
+  try {
+    // Cast to access period fields (Stripe types are partial)
+    const subWithPeriod = subscription as unknown as {
+      current_period_start?: number;
+      current_period_end?: number;
+      status: string;
+    };
+
+    // Get customer ID and metadata
+    const customerId = subscription.customer as string;
+    const subscriptionId = subscription.id;
+    
+    // Try to find existing user by customer ID
+    const { data: existingSub } = await supabase
+      .from("subscriptions")
+      .select("user_id")
+      .eq("stripe_customer_id", customerId)
+      .maybeSingle();
+
+    // If no existing subscription record, try to get user from metadata
+    let userId = existingSub?.user_id;
+    
+    if (!userId) {
+      // Check if metadata contains user_id from checkout session
+      const metadataUserId = subscription.metadata?.supabase_user_id;
+      if (metadataUserId) {
+        userId = metadataUserId;
+      }
+    }
+
+    if (!userId) {
+      console.warn(`[Stripe Webhook] No user found for subscription ${subscriptionId}`);
+      return;
+    }
+
+    // Get price and tier info
+    const priceId = subscription.items?.data[0]?.price?.id;
+    const tier = mapPriceIdToTier(priceId) || "student";
+    const planType = mapTierToPlanType(tier);
+
+    // Upsert subscription record
+    const { error: subError } = await supabase.from("subscriptions").upsert(
+      {
+        user_id: userId,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: subscriptionId,
+        plan_type: planType,
+        status: subWithPeriod.status,
+        current_period_start: subWithPeriod.current_period_start
+          ? new Date(subWithPeriod.current_period_start * 1000).toISOString()
+          : new Date().toISOString(),
+        current_period_end: subWithPeriod.current_period_end
+          ? new Date(subWithPeriod.current_period_end * 1000).toISOString()
+          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "stripe_subscription_id",
+      },
+    );
+
+    if (subError) {
+      console.error("[Stripe Webhook] Feil ved opprettelse av subscription:", subError);
+      return;
+    }
+
+    // Update profile
+    const { error: profileError } = await supabase
+      .from("user_profiles")
+      .update({
+        subscription_tier: planType,
+        subscription_status: subWithPeriod.status === "active" ? "active" : "pending",
+        stripe_customer_id: customerId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+
+    if (profileError) {
+      console.error("[Stripe Webhook] Feil ved oppdatering av profil:", profileError);
+      return;
+    }
+
+    console.info(`[Stripe Webhook] Subscription ${subscriptionId} opprettet for bruker ${userId}`);
+  } catch (error) {
+    console.error("[Stripe Webhook] Feil i handleSubscriptionCreated:", error);
   }
 }
 

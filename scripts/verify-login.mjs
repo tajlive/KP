@@ -9,10 +9,22 @@ config({ path: join(__dirname, '..', '.env.local') });
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-const EMAIL = 'tom@klarpakke.no';
-const PASSWORD = process.env.TEST_USER_PASSWORD;
+const EMAIL = process.env.E2E_USER_EMAIL || 'tom@klarpakke.no';
+const PASSWORD = process.env.E2E_USER_PASSWORD;
 
-console.log('🔐 Testing login with verified credentials...\n');
+if (!SUPABASE_URL || !ANON_KEY) {
+  console.error('❌ Missing Supabase credentials in .env.local (NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY)');
+  process.exit(1);
+}
+
+if (!PASSWORD) {
+  console.error('❌ Missing E2E_USER_PASSWORD in .env.local');
+  console.error('   Set it or run: npm run test:e2e:prepare');
+  process.exit(1);
+}
+
+console.log('🔐 Testing login with verified credentials...');
+console.log('   Email:', EMAIL, '\n');
 
 const supabase = createClient(SUPABASE_URL, ANON_KEY);
 
@@ -23,6 +35,10 @@ const { data, error } = await supabase.auth.signInWithPassword({
 
 if (error) {
   console.error('❌ Login failed:', error.message);
+  console.error('\nNext steps:');
+  console.error('  1. Verify the user exists in Supabase Auth');
+  console.error('  2. Run: npm run test:e2e:prepare');
+  console.error('     or: node scripts/create-test-users.js --from-env');
   process.exit(1);
 } else {
   console.log('✅ Login successful!\n');

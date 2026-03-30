@@ -29,7 +29,7 @@ NEXT_PUBLIC_SITE_URL=https://www.klarpakke.no
 ### 3. Setup Webhook
 - Dashboard → Developers → Webhooks
 - Click "Add endpoint"
-- Endpoint URL: `https://www.klarpakke.no/api/stripe/webhook`
+- Endpoint URL: `https://www.klarpakke.no/api/webhooks/stripe`
 - Events to send:
   - `checkout.session.completed`
   - `payment_intent.succeeded`

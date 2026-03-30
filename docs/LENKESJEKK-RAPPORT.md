@@ -87,7 +87,7 @@ Verifisert at følgende anker-ID-er finnes på landingssiden:
 | `/api/profile` | GET | 500 | Krever Authorization header |
 | `/api/stripe/checkout` | POST | - | Krever request body |
 | `/api/stripe/portal` | POST | - | Krever request body |
-| `/api/stripe/webhook` | POST | - | Webhook fra Stripe |
+| `/api/webhooks/stripe` | POST | - | Webhook fra Stripe |
 
 **Merk:** API-ruter som returnerer 500 uten autentisering er forventet oppførsel. Disse endepunktene krever gyldige tokens.
 
