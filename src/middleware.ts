@@ -5,6 +5,7 @@ import { routing } from "./i18n/routing.config";
 import { handleOnboarding } from "./middleware/onboarding";
 import { handleTierGate } from "./middleware/tier-gate";
 import { redirectWithCookies } from "./middleware/auth-guard";
+import { rateLimitMiddleware, withRateLimitHeaders } from "./lib/middleware/rate-limit";
 import {
   isGuestAuthRoute,
   localizedPathname,
@@ -43,6 +44,14 @@ const AUTH_PATHS = [
 ];
 
 export async function middleware(request: NextRequest) {
+  // Rate limiting for API routes (tidlig exit for performance)
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+    const rateLimitResponse = await rateLimitMiddleware(request);
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+  }
+
   const host = request.headers.get("host") || "";
 
   if (host.endsWith(".vercel.app") && process.env.NEXT_PUBLIC_APP_URL) {

@@ -10,7 +10,7 @@ describe('Analytics Event Contract', () => {
     global.window = {
       plausible: vi.fn(),
       location: { href: 'https://test.klarpakke.no/dashboard' },
-    } as unknown as Window & typeof globalThis;
+    } as unknown as any;
   });
   
   afterEach(() => {
@@ -100,7 +100,7 @@ describe('Analytics Error Handling', () => {
   });
 
   it('should not throw if plausible is undefined', () => {
-    global.window = {} as unknown as Window & typeof globalThis;
+    global.window = {} as unknown as any;
     
     expect(() => {
       track({ name: 'test_event' });

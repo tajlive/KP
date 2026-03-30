@@ -10,7 +10,8 @@
  */
 
 export type UserTier = "student" | "bachelor" | "master" | "phd" | "professor";
-export type UserType = "primary" | "tier" | "trading" | "notifications";
+export type UserType = "primary" | "tier" | "trading" | "notifications" | "risk";
+export type RiskLevel = "low" | "medium" | "high";
 
 export interface TestUser {
   email: string;
@@ -210,6 +211,10 @@ export function getTestUser(
   variant: "withSubscription" | "withoutSubscription"
 ): TestUser;
 export function getTestUser(
+  type: "risk",
+  variant: RiskLevel
+): TestUser;
+export function getTestUser(
   type: UserType,
   identifier?: string
 ): TestUser | undefined {
@@ -226,10 +231,62 @@ export function getTestUser(
       return identifier
         ? NOTIFICATION_TEST_USERS[identifier as keyof typeof NOTIFICATION_TEST_USERS]
         : undefined;
+    case "risk":
+      return identifier
+        ? RISK_TEST_USERS[identifier as RiskLevel]
+        : undefined;
     default:
       return undefined;
   }
 }
+
+/**
+ * Risk-based test users
+ */
+export const RISK_TEST_USERS: Record<RiskLevel, TestUser & { riskLevel: RiskLevel; tradingMode: 'paper' | 'live' }> = {
+  low: {
+    email: "test.trader.lowrisk@klarpakke.no",
+    password: "TestLowRisk123!",
+    displayName: "Test Trader Low Risk",
+    tier: "bachelor",
+    riskLevel: "low",
+    tradingMode: "paper",
+    description: "Paper trader with low risk profile (forsiktig): 2% position, 5% exposure, 1% daily loss",
+    features: {
+      hasTradingSession: true,
+      hasNotifications: false,
+      isVerified: true,
+    },
+  },
+  medium: {
+    email: "test.trader.mediumrisk@klarpakke.no",
+    password: "TestMedRisk123!",
+    displayName: "Test Trader Medium Risk",
+    tier: "master",
+    riskLevel: "medium",
+    tradingMode: "paper",
+    description: "Paper trader with medium risk profile (moderat): 5% position, 15% exposure, 3% daily loss",
+    features: {
+      hasTradingSession: true,
+      hasNotifications: false,
+      isVerified: true,
+    },
+  },
+  high: {
+    email: "test.trader.highrisk@klarpakke.no",
+    password: "TestHighRisk123!",
+    displayName: "Test Trader High Risk",
+    tier: "phd",
+    riskLevel: "high",
+    tradingMode: "paper",
+    description: "Paper trader with high risk profile (aggressiv): 10% position, 30% exposure, 5% daily loss",
+    features: {
+      hasTradingSession: true,
+      hasNotifications: false,
+      isVerified: true,
+    },
+  },
+};
 
 /**
  * All test users for provisioning
@@ -239,6 +296,7 @@ export const ALL_TEST_USERS: TestUser[] = [
   ...Object.values(TIER_TEST_USERS),
   ...Object.values(TRADING_TEST_USERS),
   ...Object.values(NOTIFICATION_TEST_USERS),
+  ...Object.values(RISK_TEST_USERS),
 ];
 
 /**

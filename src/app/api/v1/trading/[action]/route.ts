@@ -411,7 +411,7 @@ async function handleTrigger(
 
   const { symbol, trigger_price, side, quantity, action } = validation.data;
 
-  // Use type assertion since trading_triggers table is not in generated types
+  // TYPE_DEBT: trading_triggers ikke i genererte typer enda
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: trigger, error } = await (supabase as any)
     .from("trading_triggers")
@@ -424,7 +424,6 @@ async function handleTrigger(
       action,
       mode,
       status: "ACTIVE",
-      created_at: new Date().toISOString(),
     })
     .select()
     .single();
@@ -683,7 +682,7 @@ async function handleGetMode(request: NextRequest) {
   }
 
   try {
-    // Use type assertion since user_preferences is not in generated types
+    // TYPE_DEBT: user_preferences ikke i genererte typer enda
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: preference, error } = await (supabase as any)
       .from("user_preferences")
@@ -749,7 +748,7 @@ async function handleSetMode(request: NextRequest) {
   const { mode } = validation.data;
 
   try {
-    // Use type assertion since user_preferences is not in generated types
+    // TYPE_DEBT: user_preferences ikke i genererte typer enda
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any)
       .from("user_preferences")

@@ -260,53 +260,53 @@
       "balance": "Balance"
     },
     "config": {
-      "title": "Konfigurasjon",
-      "riskLevel": "Risiko Nivå",
-      "safe": "Sikker",
-      "moderate": "Moderat",
-      "aggressive": "Aggressiv",
-      "symbols": "Symboler",
+      "title": "Configuration",
+      "riskLevel": "Risk Level",
+      "safe": "Safe",
+      "moderate": "Moderate",
+      "aggressive": "Aggressive",
+      "symbols": "Symbols",
       "minConfidence": "Minimum Confidence"
     },
     "recentDecisions": {
-      "title": "Siste Beslutninger",
-      "empty": "Ingen beslutninger ennå",
-      "emptyDescription": "Start AI for å se analyser",
+      "title": "Recent Decisions",
+      "empty": "No decisions yet",
+      "emptyDescription": "Start AI to see analyses",
       "target": "Target",
       "stop": "Stop",
       "rsi": "RSI"
     },
     "howItWorks": {
-      "title": "Hvordan Det Fungerer (100% Gratis)",
+      "title": "How It Works (100% Free)",
       "step1": {
-        "title": "Markedsdata",
+        "title": "Market Data",
         "description": "CoinLore API (gratis, 14,000+ coins)",
-        "detail": "Real-time priser og markedsinformasjon"
+        "detail": "Real-time prices and market information"
       },
       "step2": {
-        "title": "Sentiment Analyse",
+        "title": "Sentiment Analysis",
         "description": "Hugging Face + Reddit (gratis)",
-        "detail": "Analyserer nyheter og sosiale medier"
+        "detail": "Analyzes news and social media"
       },
       "step3": {
-        "title": "AI Prediksjon",
+        "title": "AI Prediction",
         "description": "Cloudflare Workers AI (10,000 req/dag gratis)",
-        "detail": "Kombinerer teknisk analyse med sentiment"
+        "detail": "Combines technical analysis with sentiment"
       },
       "step4": {
         "title": "Auto-Execution",
         "description": "Paper trading (gratis øving)",
-        "detail": "Øv med virtuell kapital før live trading"
+        "detail": "Practice with virtual capital before live trading"
       },
-      "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først i paper mode. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
+      "warning": "Important: This is free AI for analysis. All trading starts in paper mode. No paid APIs used. Cloudflare Workers AI provides 10,000 free requests per day."
     },
     "actions": {
-      "runNow": "Kjør nå",
+      "runNow": "Run Now",
       "start": "Start AI",
-      "stop": "Stopp AI"
+      "stop": "Stop AI"
     },
     "errors": {
-      "notAuthenticated": "Du må være logget inn for å bruke AI auto-trading"
+      "notAuthenticated": "You must be logged in to use AI auto-trading"
     },
     "selectRisk": "Select Risk Level",
     "loading": "Loading...",
@@ -2298,75 +2298,75 @@
         "addNew": "Add new API key",
         "label": "Label",
         "labelPlaceholder": "E.g. Main account, Test account",
-        "apiKey": "API-nøkkel",
-        "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
+        "apiKey": "API Key",
+        "apiKeyPlaceholder": "Enter your Binance API key",
         "apiSecret": "API Secret",
-        "apiSecretPlaceholder": "Skriv inn din Binance API Secret",
-        "testnet": "Bruk Binance Testnet (for testing)",
-        "testConnection": "Test Tilkobling",
-        "saveKey": "Lagre API-nøkkel",
-        "testing": "Tester...",
-        "saving": "Lagrer...",
-        "success": "✅ API-nøkkel lagret!",
-        "testSuccess": "✅ Tilkobling vellykket!",
-        "testFailed": "❌ Tilkobling feilet",
-        "error": "Feil ved lagring",
-        "deleteConfirm": "Er du sikker på at du vil slette denne API-nøkkelen?",
-        "showSecret": "Vis secret",
-        "hideSecret": "Skjul secret",
-        "yourKeys": "Dine API-nøkler",
-        "noKeys": "Ingen API-nøkler lagt til",
-        "noKeysDesc": "Legg til din første API-nøkkel for å komme i gang",
-        "lastTested": "Sist testet",
+        "apiSecretPlaceholder": "Enter your Binance API Secret",
+        "testnet": "Use Binance Testnet (for testing)",
+        "testConnection": "Test Connection",
+        "saveKey": "Save API Key",
+        "testing": "Testing...",
+        "saving": "Saving...",
+        "success": "✅ API key saved!",
+        "testSuccess": "✅ Connection successful!",
+        "testFailed": "❌ Connection failed",
+        "error": "Error saving",
+        "deleteConfirm": "Are you sure you want to delete this API key?",
+        "showSecret": "Show secret",
+        "hideSecret": "Hide secret",
+        "yourKeys": "Your API Keys",
+        "noKeys": "No API keys added",
+        "noKeysDesc": "Add your first API key to get started",
+        "lastTested": "Last tested",
         "status": {
-          "active": "Aktiv",
+          "active": "Active",
           "inactive": "Inaktiv",
-          "success": "Vellykket",
-          "failed": "Feilet",
-          "pending": "Venter"
+          "success": "Success",
+          "failed": "Failed",
+          "pending": "Pending"
         },
         "howToGet": {
-          "title": "Hvordan få Binance API-nøkler",
-          "intro": "Følg disse stegene for å få dine API-nøkler:",
-          "step1": "1. Logg inn på din Binance-konto",
-          "step2": "2. Gå til Profil → API Management",
-          "step3": "3. Opprett en ny API-nøkkel (gi den et navn)",
-          "step4": "4. Fullfør 2FA-verifisering",
-          "step5": "5. Kopier både API Key og Secret Key",
-          "step6": "6. Aktiver 'Enable Spot & Margin Trading' tillatelse",
-          "step7": "7. Lim inn over og test tilkoblingen",
-          "warning": "⚠️ Aldri del dine API-nøkler med noen. Hold dem sikre."
+          "title": "How to get Binance API keys",
+          "intro": "Follow these steps to get your API keys:",
+          "step1": "1. Log in to your Binance account",
+          "step2": "2. Go to Profile → API Management",
+          "step3": "3. Create a new API key (give it a name)",
+          "step4": "4. Complete 2FA verification",
+          "step5": "5. Copy both API Key and Secret Key",
+          "step6": "6. Enable 'Enable Spot & Margin Trading' permission",
+          "step7": "7. Paste above and test the connection",
+          "warning": "⚠️ Never share your API keys with anyone. Keep them secure."
         }
       }
     },
     "notifications": {
-      "title": "Varselinnstillinger",
-      "email": "E-postvarsler",
-      "push": "Push-varsler",
-      "trading": "Trading-varsler",
-      "positionOpened": "Når en posisjon åpnes",
-      "positionClosed": "Når en posisjon lukkes",
-      "priceAlerts": "Prisvarsler",
-      "courseUpdates": "Kursoppdateringer",
-      "newsletter": "Nyhetsbrev"
+      "title": "Notification Settings",
+      "email": "Email notifications",
+      "push": "Push notifications",
+      "trading": "Trading notifications",
+      "positionOpened": "When a position opens",
+      "positionClosed": "When a position closes",
+      "priceAlerts": "Price alerts",
+      "courseUpdates": "Course updates",
+      "newsletter": "Newsletter"
     },
     "security": {
-      "title": "Sikkerhet",
-      "twoFactor": "To-faktor autentisering",
-      "enable2FA": "Aktiver 2FA",
-      "disable2FA": "Deaktiver 2FA",
-      "sessions": "Aktive økter",
-      "signOutAll": "Logg ut alle enheter"
+      "title": "Security",
+      "twoFactor": "Two-factor authentication",
+      "enable2FA": "Enable 2FA",
+      "disable2FA": "Disable 2FA",
+      "sessions": "Active sessions",
+      "signOutAll": "Sign out all devices"
     },
     "preferences": {
-      "title": "Preferanser",
-      "language": "Språk",
-      "timezone": "Tidssone",
-      "currency": "Valuta",
-      "theme": "Tema",
-      "themeLight": "Lys",
-      "themeDark": "Mørk",
-      "themeAuto": "Automatisk"
+      "title": "Preferences",
+      "language": "Language",
+      "timezone": "Timezone",
+      "currency": "Currency",
+      "theme": "Theme",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeAuto": "Auto"
     }
   },
   "simulator": {
