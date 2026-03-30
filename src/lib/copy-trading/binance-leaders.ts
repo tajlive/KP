@@ -94,7 +94,7 @@ export async function fetchBinanceLeaderboard(
 
     return leaders;
   } catch (error) {
-    logError(error, { domain: "binance_leaderboard" });
+    logError(error instanceof Error ? error : String(error), { domain: "binance_leaderboard" });
     return [];
   }
 }
@@ -142,7 +142,7 @@ export async function getTraderDetails(encryptedUid: string): Promise<{
       history: history.data || [],
     };
   } catch (error) {
-    logError(error, { domain: "trader_details", encryptedUid });
+    logError(error instanceof Error ? error : String(error), { domain: "trader_details", encryptedUid });
     return null;
   }
 }

@@ -43,11 +43,11 @@ export async function GET(request: NextRequest) {
     if (user) {
       const { data: follows } = await supabase
         .from("copy_trading_follows")
-        .select("trader_uid")
-        .eq("user_id", user.id)
-        .eq("status", "active");
+        .select("leader_id")
+        .eq("follower_id", user.id)
+        .eq("is_active", true);
 
-      followingUids = follows?.map(f => f.trader_uid) || [];
+      followingUids = follows?.map(f => f.leader_id) || [];
     }
 
     // Marker hvem brukeren følger
