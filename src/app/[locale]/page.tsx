@@ -4,6 +4,7 @@ import { SURFACE } from "@/lib/design/tokens";
 import HeroSection from "@/components/landing/HeroSection";
 import { TrustStrip } from "@/components/landing/TrustStrip";
 import { StickyCTA } from "@/components/landing/StickyCTA";
+import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import {
   DemoWidgetSkeleton,
   CoursePreviewSkeleton,
@@ -91,18 +92,36 @@ export default async function HomePage({ params }: HomePageProps) {
         <HeroSection locale={locale} />
         <TrustStrip locale={locale} />
 
-        {/* Below-fold: Dynamic imports with skeleton fallbacks */}
-        <DemoWidget />
-        <CoursePreview />
+        {/* Below-fold: Dynamic imports with skeleton fallbacks + ScrollReveal */}
+        <ScrollReveal direction="up" delay={0.1}>
+          <DemoWidget />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" delay={0.1}>
+          <CoursePreview />
+        </ScrollReveal>
 
-        <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
-          <ThreeSteps />
-        </section>
+        <ScrollReveal direction="up" delay={0.1}>
+          <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
+            <ThreeSteps />
+          </section>
+        </ScrollReveal>
 
-        <FeaturesBentoGrid />
-        <LandingTransparencySection locale={locale} />
-        <ROISimulator />
-        <FinalCTASection />
+        <ScrollReveal direction="up" delay={0.1}>
+          <FeaturesBentoGrid />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" delay={0.1}>
+          <LandingTransparencySection locale={locale} />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" delay={0.1}>
+          <ROISimulator />
+        </ScrollReveal>
+        
+        <ScrollReveal direction="up" delay={0.1}>
+          <FinalCTASection />
+        </ScrollReveal>
       </main>
 
       {/* Mobile sticky CTA - always visible on mobile */}
