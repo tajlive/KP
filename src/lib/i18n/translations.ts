@@ -289,26 +289,35 @@ export const translations = {
         help: "Hjelp",
       },
     },
-    trustpilot: {
-      reviews: "anmeldelser",
-      review: "anmeldelse",
-      verified: "Verifisert",
-      demo: "Demo",
-      demoData: "Demo-data",
-      trustScore: "TrustScore",
-      readAllReviews: "Les alle anmeldelser",
-      visitTrustpilot: "Besøk Trustpilot",
-      scrollLeft: "Bla til venstre",
-      scrollRight: "Bla til høyre",
-      goToReview: "Gå til anmeldelse {number}",
-      mini: {
-        ariaLabel: "{stars} av 5 stjerner basert på {count} anmeldelser",
+    traders: {
+      comingSoon: {
+        badge: "Under utvikling",
+        title: "Trading-roboter kommer snart",
+        description: "Vi bygger automatiske trading-strategier drevet av kunstig intelligens. Fra konservative til aggressive strategier for alle erfaringsnivåer.",
+        heading: "Strategier under utvikling",
+        body: "Våre AI-drevne trading-roboter er under aktiv utvikling. Vi tester nå strategier i paper trading-miljø før lansering. Følg med for oppdateringer!",
+        ctaPaperTrading: "Prøv paper trading",
+        ctaDashboard: "Tilbake til dashboard",
       },
-      section: {
-        badge: "Excellent på Trustpilot",
-        title: "Dette sier våre kunder",
-        subtitle: "Les hva norske tradere mener om Klarpakke",
-        cta: "Les alle anmeldelser på Trustpilot",
+      features: {
+        dca: {
+          title: "DCA-strategi",
+          description: "Dollar-cost averaging for jevn kjøp over tid",
+        },
+        momentum: {
+          title: "Momentum trading",
+          description: "Utnytter markedsmomentum for optimal timing",
+        },
+        risk: {
+          title: "Risk management",
+          description: "Automatisk stop-loss og posisjonsstyring",
+        },
+      },
+    },
+    metadata: {
+      traders: {
+        title: "Trading-roboter | Klarpakke",
+        description: "AI-drevne trading-strategier for kryptovaluta. Automatisk handel basert på markedsanalyse og risikostyring.",
       },
     },
     errors: {
@@ -619,26 +628,35 @@ export const translations = {
         help: "Help",
       },
     },
-    trustpilot: {
-      reviews: "reviews",
-      review: "review",
-      verified: "Verified",
-      demo: "Demo",
-      demoData: "Demo data",
-      trustScore: "TrustScore",
-      readAllReviews: "Read all reviews",
-      visitTrustpilot: "Visit Trustpilot",
-      scrollLeft: "Scroll left",
-      scrollRight: "Scroll right",
-      goToReview: "Go to review {number}",
-      mini: {
-        ariaLabel: "{stars} out of 5 stars based on {count} reviews",
+    traders: {
+      comingSoon: {
+        badge: "Under development",
+        title: "Trading bots coming soon",
+        description: "We are building automated trading strategies powered by artificial intelligence. From conservative to aggressive strategies for all experience levels.",
+        heading: "Strategies under development",
+        body: "Our AI-powered trading bots are under active development. We are currently testing strategies in a paper trading environment before launch. Stay tuned for updates!",
+        ctaPaperTrading: "Try paper trading",
+        ctaDashboard: "Back to dashboard",
       },
-      section: {
-        badge: "Excellent on Trustpilot",
-        title: "What our customers say",
-        subtitle: "Read what Norwegian traders think about Klarpakke",
-        cta: "Read all reviews on Trustpilot",
+      features: {
+        dca: {
+          title: "DCA strategy",
+          description: "Dollar-cost averaging for steady purchases over time",
+        },
+        momentum: {
+          title: "Momentum trading",
+          description: "Exploits market momentum for optimal timing",
+        },
+        risk: {
+          title: "Risk management",
+          description: "Automatic stop-loss and position management",
+        },
+      },
+    },
+    metadata: {
+      traders: {
+        title: "Trading bots | Klarpakke",
+        description: "AI-powered trading strategies for cryptocurrency. Automatic trading based on market analysis and risk management.",
       },
     },
     errors: {

@@ -224,8 +224,8 @@ describe('ConfluentSignalCardSkeleton', () => {
   it('renders skeleton elements', () => {
     render(<ConfluentSignalCardSkeleton />);
 
-    // Should have skeleton elements
-    const skeletons = document.querySelectorAll('[data-slot="skeleton"]');
+    // Should have skeleton elements with skeleton-shimmer class
+    const skeletons = document.querySelectorAll('.skeleton-shimmer');
     expect(skeletons.length).toBeGreaterThan(0);
   });
 });
