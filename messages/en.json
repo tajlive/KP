@@ -1390,6 +1390,40 @@
   },
   "landing": {
     "badge": "Klarpakke University",
+    "hero": {
+      "badge": "🇳🇴 Norway's easiest crypto trading",
+      "title": {
+        "line1": "Trade crypto smarter.",
+        "line2": "Automatic and risk-free."
+      },
+      "subtitle": "From beginner to confident trader",
+      "cta": {
+        "primary": "Start free now",
+        "secondary": "See how it works"
+      },
+      "trust": {
+        "free": "Free to start",
+        "noCard": "No credit card required",
+        "cancel": "Cancel anytime"
+      }
+    },
+    "trustStrip": {
+      "stats": {
+        "paperCapital": "Virtual starting capital",
+        "paperDesc": "Practice with real market data",
+        "zero": "$0",
+        "riskFree": "Risk-free",
+        "riskDesc": "Learn without losing money",
+        "signals": "AI signals",
+        "signalsDesc": "Trade around the clock",
+        "growing": "Growing",
+        "community": "Norwegian community",
+        "communityDesc": "Norwegian traders helping each other"
+      },
+      "payment": {
+        "secure": "Secure payment via"
+      }
+    },
     "heroTitle": "Start today. <span>Become an expert in 4 weeks.</span>",
     "heroDescription": "Get started in 2 minutes. Practice low-risk trading while you learn the fundamentals from scratch.",
     "heroButton": "Start now",
