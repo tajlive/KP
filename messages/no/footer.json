@@ -1,4 +1,11 @@
 {
+  "description": "Norsk krypto-utdanning. Lær uten risiko.",
+  "headings": {
+    "product": "Produkt",
+    "company": "Selskap",
+    "legal": "Juridisk",
+    "payment": "Betaling"
+  },
   "product": "Produkt",
   "company": "Selskap",
   "legal": "Juridisk",
@@ -13,6 +20,8 @@
     "courses": "Kurs",
     "paperTrading": "Lekepenger",
     "pricing": "Priser",
+    "calculator": "Kalkulator",
+    "help": "Hjelp",
     "about": "Om oss",
     "contact": "Kontakt",
     "privacy": "Personvern",

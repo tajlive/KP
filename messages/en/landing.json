@@ -117,10 +117,23 @@
     "spotsLeft": "spots remaining. First come, first served!"
   },
   "hero": {
-    "title": "Learn Trading the Right Way",
+    "badge": "🇳🇴 Norway's easiest crypto trading",
+    "title": {
+      "line1": "Trade crypto smarter.",
+      "line2": "Automatic and risk-free."
+    },
     "subtitle": "From beginner to confident trader",
     "description": "Practice with virtual money, learn from experts, and trade safely",
-    "beta_badge": "BETA LAUNCH - ONLY 23/50 SPOTS LEFT",
+    "cta": {
+      "primary": "Start free now",
+      "secondary": "See how it works"
+    },
+    "trust": {
+      "free": "Free to start",
+      "noCard": "No credit card required",
+      "cancel": "Cancel anytime"
+    },
+    "beta_badge": "BETA LAUNCH",
     "title_emotional": "Master Trading in Your Language",
     "hook_emotional": "A year from now, you'll either be glad you started today –\nor wish you had.",
     "question_emotional": "Which version of yourself do you want to meet?",
@@ -248,6 +261,21 @@
     "privacy": "We never share your email with third parties. Unsubscribe anytime."
   },
   "trustStrip": {
+    "stats": {
+      "paperCapital": "Virtual starting capital",
+      "paperDesc": "Practice with real market data",
+      "zero": "$0",
+      "riskFree": "Risk-free",
+      "riskDesc": "Learn without losing money",
+      "signals": "AI signals",
+      "signalsDesc": "Trade around the clock",
+      "growing": "Growing",
+      "community": "Norwegian community",
+      "communityDesc": "Norwegian traders helping each other"
+    },
+    "payment": {
+      "secure": "Secure payment via"
+    },
     "label1": "Paper Trading",
     "description1": "100,000 NOK practice funds",
     "label2": "Risk-Free",
