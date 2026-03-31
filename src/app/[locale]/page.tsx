@@ -61,6 +61,13 @@ const ROISimulator = dynamic(
   }
 );
 
+const FeaturesBentoGrid = dynamic(
+  () => import("@/components/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
+  {
+    loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
+  }
+);
+
 // ISR: Revalidate page every hour for fresh content
 export const revalidate = 3600;
 
@@ -92,6 +99,7 @@ export default async function HomePage({ params }: HomePageProps) {
           <ThreeSteps />
         </section>
 
+        <FeaturesBentoGrid />
         <LandingTransparencySection locale={locale} />
         <ROISimulator />
         <FinalCTASection />
