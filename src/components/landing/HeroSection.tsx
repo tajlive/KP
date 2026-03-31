@@ -5,6 +5,7 @@ import { Sparkles, ArrowRight, Play } from 'lucide-react';
 import { ButtonPremium } from '@/components/ui/ButtonPremium';
 import { BadgePremium } from '@/components/ui/BadgePremium';
 import { motion } from 'framer-motion';
+import { LiveSparkChartHero } from './LiveSparkChart';
 
 interface HeroSectionProps {
   locale?: string;
@@ -114,6 +115,11 @@ export default async function HeroSection({ locale = 'no' }: HeroSectionProps) {
               </svg>
               <span>{t('trust.cancel')}</span>
             </div>
+          </div>
+
+          {/* Live Price Charts */}
+          <div className="mt-12 flex justify-center">
+            <LiveSparkChartHero />
           </div>
         </div>
       </div>
