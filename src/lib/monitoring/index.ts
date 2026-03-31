@@ -12,10 +12,11 @@ export {
 
 /**
  * Log health check metrics til DB for historisk analyse
+ * @deprecated Tabell health_check_metrics finnes ikke i DB ennå - midlertidig deaktivert
  */
 export async function logHealthMetrics(
-  supabase: ReturnType<typeof import("@/lib/supabase/server").createClient>,
-  healthData: {
+  _supabase: ReturnType<typeof import("@/lib/supabase/server").createClient>,
+  _healthData: {
     status: string;
     checks: {
       database?: { status: string; latency?: number };
@@ -27,23 +28,10 @@ export async function logHealthMetrics(
     uptime: number;
   }
 ) {
-  try {
-    await supabase.from("health_check_metrics").insert({
-      overall_status: healthData.status,
-      database_status: healthData.checks.database?.status,
-      database_latency_ms: healthData.checks.database?.latency,
-      trading_signals_status: healthData.checks.tradingSignals?.status,
-      trading_signals_latency_ms: healthData.checks.tradingSignals?.latency,
-      kv_status: healthData.checks.kv?.status,
-      kv_latency_ms: healthData.checks.kv?.latency,
-      environment_status: healthData.checks.environment?.status,
-      version: healthData.version,
-      uptime_seconds: healthData.uptime,
-      raw_response: healthData,
-    });
-  } catch (error) {
-    console.error("[Monitoring] Failed to log health metrics:", error);
-  }
+  // TODO: KLA-XXX - Opprett health_check_metrics tabell i Supabase
+  // Deaktivert midlertidig pga manglende DB-tabell
+  // eslint-disable-next-line no-console
+  console.log("[Monitoring] Health metrics logging disabled - table not created yet");
 }
 
 /**

@@ -317,9 +317,9 @@ test.describe("Critical User Flows @critical @user-flows", () => {
       const trustStrip = page.getByTestId("trust-strip");
       await expect(trustStrip).toBeVisible({ timeout: 10000 });
 
-      // Verify trust indicators
-      await expect(trustStrip.getByText(/500K|users|brukere/i)).toBeVisible();
-      await expect(trustStrip.getByText(/4.9|TrustPilot|reviews/i)).toBeVisible();
+      // Verify trust indicators - paper trading stats and payment logos
+      await expect(trustStrip.getByText(/100K|paper|simulert/i)).toBeVisible();
+      await expect(trustStrip.getByText(/Vipps|Stripe|PayPal/i)).toBeVisible();
     });
 
     test("footer links are accessible", async ({ page }) => {

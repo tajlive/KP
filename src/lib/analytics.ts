@@ -49,6 +49,11 @@ function dedupe(eventKey: string): boolean {
   return true;
 }
 
+/** Reset dedupe state - kun for testing */
+export function __resetDedupeState(): void {
+  recentEvents.clear();
+}
+
 export function track<T extends AnalyticsEvent>(event: T): void {
   if (typeof window === 'undefined') return;
 

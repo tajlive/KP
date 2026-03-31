@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { track, type AnalyticsEvent } from './analytics';
+import { track, trackError, __resetDedupeState, type AnalyticsEvent } from './analytics';
 
 describe('Analytics Event Contract', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
@@ -11,6 +11,9 @@ describe('Analytics Event Contract', () => {
       plausible: vi.fn(),
       location: { href: 'https://test.klarpakke.no/dashboard' },
     } as unknown as any;
+    
+    // Reset dedupe state between tests
+    __resetDedupeState();
   });
   
   afterEach(() => {
@@ -64,6 +67,7 @@ describe('Analytics Event Contract', () => {
     track({ name: 'pricing_viewed' });
     track({ name: 'dashboard_viewed' });
     
+    // All three different events should be tracked
     expect(global.window.plausible).toHaveBeenCalledTimes(3);
   });
 
@@ -91,6 +95,18 @@ describe('Analytics Event Contract', () => {
 });
 
 describe('Analytics Error Handling', () => {
+  beforeEach(() => {
+    vi.spyOn(global, 'fetch').mockResolvedValue({ ok: true } as Response);
+    global.window = {
+      plausible: vi.fn(),
+      location: { href: 'https://test.klarpakke.no/dashboard' },
+    } as unknown as any;
+  });
+  
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should not throw if fetch fails', () => {
     vi.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
     
@@ -110,7 +126,8 @@ describe('Analytics Error Handling', () => {
   it('should truncate error messages to 100 chars', () => {
     const longMessage = 'a'.repeat(200);
     
-    track({ name: 'error', props: { context: 'test', message: longMessage } });
+    // Use trackError helper which handles truncation
+    trackError('test', longMessage);
     
     expect(global.window.plausible).toHaveBeenCalledWith('error', {
       props: { context: 'test', message: 'a'.repeat(100) },

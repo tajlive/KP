@@ -1,13 +1,11 @@
 /**
- * TrustStrip — Trust badges immediately under hero
- * Design: Coinbase-inspired trust signals
- * Layout: Mobile-responsive grid
- * 
- * NOTE: Konvertert til Server Component (Script 03 - Performance)
- * Bruker getTranslations fra next-intl/server
+ * TrustStrip — Premium 2026 Design
+ * Trust signals with glassmorphism cards and subtle animations
  */
 
 import { getTranslations } from 'next-intl/server';
+import { GlassCard, StatCard } from '@/components/ui/GlassCard';
+import { TrendingUp, Shield, Zap, Users } from 'lucide-react';
 
 interface TrustStripProps {
   locale?: string;
@@ -16,92 +14,134 @@ interface TrustStripProps {
 export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
   const t = await getTranslations({ locale, namespace: 'landing.trustStrip' });
 
+  const stats = [
+    {
+      label: t('stats.paperCapital'),
+      value: '100K',
+      suffix: 'NOK',
+      description: t('stats.paperDesc'),
+      icon: <TrendingUp className="w-5 h-5" />,
+    },
+    {
+      label: t('stats.riskFree'),
+      value: t('stats.zero'),
+      suffix: '',
+      description: t('stats.riskDesc'),
+      icon: <Shield className="w-5 h-5" />,
+    },
+    {
+      label: t('stats.signals'),
+      value: '24/7',
+      suffix: '',
+      description: t('stats.signalsDesc'),
+      icon: <Zap className="w-5 h-5" />,
+    },
+    {
+      label: t('stats.community'),
+      value: t('stats.growing'),
+      suffix: '',
+      description: t('stats.communityDesc'),
+      icon: <Users className="w-5 h-5" />,
+    },
+  ];
+
+  const paymentLogos = [
+    { name: 'Vipps', color: '#FF5B24' },
+    { name: 'Stripe', color: '#635BFF' },
+    { name: 'Apple Pay', color: '#fff' },
+    { name: 'PayPal', color: '#003087' },
+  ];
+
   return (
     <section 
       data-testid="trust-strip"
-      className="w-full bg-white border-b border-slate-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 dark:bg-slate-950 dark:border-slate-800"
+      className="relative w-full bg-kp-bg-primary border-y border-kp-border py-12 sm:py-16 lg:py-20 overflow-hidden"
     >
-      <div className="max-w-6xl mx-auto">
-        {/* STATS ROW — 2 cols on mobile, 4 cols on desktop */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
-          {/* Stat 1: Paper Trading Capital */}
-          <div className="text-center">
-            <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
-              {t('label1')}
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-              kr 100K
-            </div>
-            <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description1')}</div>
-          </div>
+      {/* Background gradient orbs */}
+      <div 
+        className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(0,82,255,0.3) 0%, transparent 70%)' }}
+      />
+      <div 
+        className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)' }}
+      />
 
-          {/* Stat 2: Risk-Free Practice */}
-          <div className="text-center">
-            <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
-              {t('label2')}
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-green-600 dark:text-green-500">
-              0 kr
-            </div>
-            <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description2')}</div>
-          </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
+          {stats.map((stat, index) => (
+            <GlassCard
+              key={stat.label}
+              variant="elevated"
+              hover="lift"
+              padding="md"
+              className="group"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 rounded-lg bg-kp-surface-highlight text-kp-brand group-hover:text-kp-brand-light transition-colors">
+                  {stat.icon}
+                </div>
+                {stat.suffix && (
+                  <span className="text-xs font-medium text-kp-text-tertiary bg-kp-surface-highlight px-2 py-1 rounded-badge">
+                    {stat.suffix}
+                  </span>
+                )}
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-kp-text-primary tracking-tight mb-1">
+                {stat.value}
+              </div>
+              <div className="text-sm font-medium text-kp-text-secondary mb-1">
+                {stat.label}
+              </div>
+              <div className="text-xs text-kp-text-tertiary">
+                {stat.description}
+              </div>
+            </GlassCard>
+          ))}
+        </div>
 
-          {/* Stat 3: Auto-Trading */}
-          <div className="text-center">
-            <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
-              {t('label3')}
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400">
-              24/7
-            </div>
-            <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description3')}</div>
-          </div>
-
-          {/* Stat 4: Education Focus */}
-          <div className="text-center">
-            <div className="text-xs sm:text-sm text-slate-600 font-medium mb-1 dark:text-slate-400">
-              {t('label4')}
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-brand-500 dark:text-brand-400">
-              100%
-            </div>
-            <div className="text-xs text-slate-500 mt-1 dark:text-slate-500">{t('description4')}</div>
+        {/* Payment Methods */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+          <span className="text-sm text-kp-text-tertiary font-medium">
+            {t('payment.secure')}
+          </span>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {paymentLogos.map((logo) => (
+              <div
+                key={logo.name}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-kp-surface-highlight border border-kp-border hover:border-kp-border-hover transition-colors"
+              >
+                <span className="text-sm font-semibold text-kp-text-secondary">
+                  {logo.name}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* PAYMENT LOGOS */}
-        <div className="border-t border-slate-100 pt-8 sm:pt-12 dark:border-slate-800">
-          <div className="text-xs text-slate-600 font-medium text-center mb-4 dark:text-slate-400">
-            {t('paymentLabel')}
+        {/* Trust badges row */}
+        <div className="mt-10 pt-8 border-t border-kp-border flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+          <div className="flex items-center gap-2 text-sm text-kp-text-tertiary">
+            <Shield className="w-4 h-4 text-kp-success" />
+            <span>256-bit SSL</span>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
-            {/* Vipps */}
-            <div className="relative h-6 sm:h-8 w-auto flex items-center">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Vipps</span>
-            </div>
-
-            {/* Apple Pay */}
-            <div className="relative h-6 sm:h-8 w-auto flex items-center">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Apple Pay</span>
-            </div>
-
-            {/* Stripe */}
-            <div className="relative h-6 sm:h-8 w-auto flex items-center">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Stripe</span>
-            </div>
-
-            {/* PayPal */}
-            <div className="relative h-6 sm:h-8 w-auto flex items-center">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">PayPal</span>
-            </div>
-
-            {/* TrustPilot */}
-            <div className="relative h-6 sm:h-8 w-auto flex items-center">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">TrustPilot</span>
-            </div>
+          <div className="flex items-center gap-2 text-sm text-kp-text-tertiary">
+            <svg className="w-4 h-4 text-kp-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>GDPR-sikret</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-kp-text-tertiary">
+            <svg className="w-4 h-4 text-kp-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Lynrask utførelse</span>
           </div>
         </div>
       </div>
     </section>
   );
 }
+
+export default TrustStrip;
