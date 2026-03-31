@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AuthProvider } from "@/components/auth/AuthContext";
+import { useProgress } from "@/hooks/useProgress";
 import { OnboardingFlow } from "@/components/onboarding";
 import { TradeSuccessProvider } from "@/hooks/useTradeSuccess";
 
@@ -34,6 +35,9 @@ import { SURFACE } from "@/lib/design/tokens";
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   usePaperTradingInit(user?.id);
+  
+  // Aktiver progress sync for dashboard
+  useProgress();
 
   useEffect(() => {
     if (user?.id) {
