@@ -214,21 +214,31 @@ cmd_deploy() {
     
     log_success "Edge Functions deployed"
     
-    # 5. Verifiser cron jobs
-    log_info "Step 5/8: Verifying cron jobs..."
-    sleep 5  # Vent på at cron-jobbene registreres
+    # 5. Sett opp pg_cron schedules via SQL
+    log_info "Step 5/8: Setting up pg_cron schedules..."
     
+    # Kjør cron schedules SQL
+    if [[ -f "sql/cron_schedules.sql" ]]; then
+        log_info "  Executing sql/cron_schedules.sql..."
+        supabase db execute --file sql/cron_schedules.sql 2>&1 | tail -20
+        log_success "Cron schedules configured via pg_cron"
+    else
+        log_warn "sql/cron_schedules.sql not found"
+    fi
+    
+    # Verifiser at jobber er satt opp
+    sleep 2
     CRON_JOBS=$(supabase inspect db cron 2>/dev/null || echo "")
     if echo "$CRON_JOBS" | grep -q "daily-ops-report"; then
         log_success "daily-ops-report cron job active"
     else
-        log_warn "daily-ops-report cron job not found in listing"
+        log_warn "daily-ops-report cron job not found - may need manual setup"
     fi
     
     if echo "$CRON_JOBS" | grep -q "health-keepalive"; then
         log_success "health-keepalive cron job active"
     else
-        log_warn "health-keepalive cron job not found in listing"
+        log_warn "health-keepalive cron job not found - may need manual setup"
     fi
     
     # 6. Smoke Tests
