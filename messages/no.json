@@ -1390,6 +1390,40 @@
   },
   "landing": {
     "badge": "Klarpakke Universitet",
+    "hero": {
+      "badge": "🇳🇴 Norges enkleste krypto-trading",
+      "title": {
+        "line1": "Handel krypto smartere.",
+        "line2": "Automatisk og risikofritt."
+      },
+      "subtitle": "Fra nybegynner til selvsikker trader",
+      "cta": {
+        "primary": "Start gratis nå",
+        "secondary": "Se hvordan det fungerer"
+      },
+      "trust": {
+        "free": "Gratis å starte",
+        "noCard": "Ingen betalingskort kreves",
+        "cancel": "Avslutt når som helst"
+      }
+    },
+    "trustStrip": {
+      "stats": {
+        "paperCapital": "Virtuell startkapital",
+        "paperDesc": "Øv med ekte markedsdata",
+        "zero": "0 kr",
+        "riskFree": "Risikofritt",
+        "riskDesc": "Lær uten å tape penger",
+        "signals": "AI-signaler",
+        "signalsDesc": "Handel rundt klokken",
+        "growing": "Voksende",
+        "community": "Norsk fellesskap",
+        "communityDesc": "Norske tradere hjelper hverandre"
+      },
+      "payment": {
+        "secure": "Trygg betaling via"
+      }
+    },
     "heroTitle": "Start i dag. <span>Bli ekspert på 4 uker.</span>",
     "heroDescription": "Kom i gang på 2 minutter. Øv lavrisiko trading mens du lærer faget fra grunnen av.",
     "heroButton": "Start nå",
