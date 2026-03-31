@@ -1,6 +1,12 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import ClientCheckout from "./ClientCheckout";
 import PlanCheckout from "./CheckoutContent";
+
+export const metadata: Metadata = {
+  title: "Checkout | Klarpakke",
+  robots: { index: false, follow: false },
+};
 
 export default async function Page({
   params,
