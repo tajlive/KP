@@ -1,6 +1,7 @@
 -- ═══════════════════════════════════════════════════════════════
 -- KLARPAKKE — pg_cron Schedules for Monitoring
--- Kjøres etter supabase db push for å sette opp cron-jobber
+-- Kjøres automatisk som del av 'supabase db push'
+-- ELLER manuelt: psql $DATABASE_URL -f sql/cron_schedules.sql
 -- ═══════════════════════════════════════════════════════════════
 
 -- Sørg for at pg_cron extension er aktivert

@@ -118,8 +118,8 @@ supabase inspect db cron
 supabase functions deploy daily-ops-report
 supabase functions deploy stripe-webhook-logger
 
-# Verifiser:
-supabase functions list
+# Merk: Cron schedules settes opp automatisk via sql/cron_schedules.sql
+# (kjøres som del av 'supabase db push' i steg 3)
 ```
 
 #### Steg 5: Deploy Next.js til Vercel (3-5 min)
