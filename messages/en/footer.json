@@ -1,4 +1,11 @@
 {
+  "description": "Norwegian crypto education. Learn without risk.",
+  "headings": {
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "payment": "Payment"
+  },
   "product": "Product",
   "company": "Company",
   "legal": "Legal",
@@ -13,6 +20,8 @@
     "courses": "Courses",
     "paperTrading": "Paper Trading",
     "pricing": "Pricing",
+    "calculator": "Calculator",
+    "help": "Help",
     "about": "About Us",
     "contact": "Contact",
     "privacy": "Privacy",

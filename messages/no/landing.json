@@ -117,10 +117,23 @@
     "spotsLeft": "plasser igjen. Først til mølle!"
   },
   "hero": {
-    "title": "Lær trading på riktig måte",
+    "badge": "🇳🇴 Norges enkleste krypto-trading",
+    "title": {
+      "line1": "Handel krypto smartere.",
+      "line2": "Automatisk og risikofritt."
+    },
     "subtitle": "Fra nybegynner til selvsikker trader",
     "description": "Øv med virtuelle penger, lær av eksperter, og handle trygt",
-    "beta_badge": "BETA-LANSERING - KUN 23/50 PLASSER IGJEN",
+    "cta": {
+      "primary": "Start gratis nå",
+      "secondary": "Se hvordan det fungerer"
+    },
+    "trust": {
+      "free": "Gratis å starte",
+      "noCard": "Ingen betalingskort kreves",
+      "cancel": "Avslutt når som helst"
+    },
+    "beta_badge": "BETA-LANSERING",
     "title_emotional": "Lær Trading På Norsk",
     "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
     "question_emotional": "Hvilken versjon av deg selv vil du møte?",
@@ -227,6 +240,21 @@
     "privacy": "Vi deler aldri e-posten din med tredjepart. Avmeld når som helst."
   },
   "trustStrip": {
+    "stats": {
+      "paperCapital": "Virtuell startkapital",
+      "paperDesc": "Øv med ekte markedsdata",
+      "zero": "0 kr",
+      "riskFree": "Risikofritt",
+      "riskDesc": "Lær uten å tape penger",
+      "signals": "AI-signaler",
+      "signalsDesc": "Handel rundt klokken",
+      "growing": "Voksende",
+      "community": "Norsk fellesskap",
+      "communityDesc": "Norske tradere hjelper hverandre"
+    },
+    "payment": {
+      "secure": "Trygg betaling via"
+    },
     "label1": "Paper Trading",
     "description1": "kr 100 000 lekepenger",
     "label2": "Risikofritt",
