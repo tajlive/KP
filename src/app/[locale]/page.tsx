@@ -54,6 +54,13 @@ const FinalCTASection = dynamic(
   }
 );
 
+const ROISimulator = dynamic(
+  () => import("@/components/landing/ROISimulator").then((mod) => mod.ROISimulator),
+  {
+    loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
+  }
+);
+
 // ISR: Revalidate page every hour for fresh content
 export const revalidate = 3600;
 
@@ -86,6 +93,7 @@ export default async function HomePage({ params }: HomePageProps) {
         </section>
 
         <LandingTransparencySection locale={locale} />
+        <ROISimulator />
         <FinalCTASection />
       </main>
 
