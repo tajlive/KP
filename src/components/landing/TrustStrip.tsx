@@ -4,6 +4,7 @@
  */
 
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 import { GlassCard, StatCard } from '@/components/ui/GlassCard';
 import { TrendingUp, Shield, Zap, Users } from 'lucide-react';
 
@@ -46,10 +47,10 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
   ];
 
   const paymentLogos = [
-    { name: 'Vipps', color: '#FF5B24' },
-    { name: 'Stripe', color: '#635BFF' },
-    { name: 'Apple Pay', color: '#fff' },
-    { name: 'PayPal', color: '#003087' },
+    { name: 'Vipps', src: '/images/payments/vipps.svg' },
+    { name: 'Stripe', src: '/images/payments/stripe.svg' },
+    { name: 'Apple Pay', src: '/images/payments/apple-pay.svg' },
+    { name: 'PayPal', src: '/images/payments/paypal.svg' },
   ];
 
   return (
@@ -106,16 +107,16 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
           <span className="text-sm text-kp-text-tertiary font-medium">
             {t('payment.secure')}
           </span>
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex items-center gap-4 opacity-70 grayscale hover:grayscale-0 transition-all">
             {paymentLogos.map((logo) => (
-              <div
+              <Image
                 key={logo.name}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-kp-surface-highlight border border-kp-border hover:border-kp-border-hover transition-colors"
-              >
-                <span className="text-sm font-semibold text-kp-text-secondary">
-                  {logo.name}
-                </span>
-              </div>
+                src={logo.src}
+                alt={logo.name}
+                width={48}
+                height={24}
+                className="object-contain"
+              />
             ))}
           </div>
         </div>

@@ -80,7 +80,7 @@ export default function DashboardClientLayout({
                       <OnboardingFlow />
                     <SentryInit />
                     <div
-                      className={`min-h-screen min-h-dvh ${SURFACE.BG_LIGHT} flex flex-col overflow-x-hidden`}
+                      className={`min-h-screen min-h-dvh ${SURFACE.BG_LIGHT} flex flex-col overflow-x-hidden overflow-y-auto`}
                       data-testid="dashboard-root"
                     >
                       <ScrollToTop />
