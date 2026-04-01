@@ -110,6 +110,10 @@ export default async function HomePage({ params }: HomePageProps) {
         <ScrollReveal direction="up" delay={0.1}>
           <FeaturesBentoGrid />
         </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0.1}>
+          <ROISimulator />
+        </ScrollReveal>
         
         <ScrollReveal direction="up" delay={0.1}>
           <LandingTransparencySection locale={locale} />
