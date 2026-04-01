@@ -43,7 +43,7 @@ export interface BacktestResult {
   buyHoldReturn: number;
 }
 
-export type StrategyType = 'SMA_CROSSOVER' | 'RSI_MEAN_REVERSION' | 'AI_SIGNALS';
+export type StrategyType = 'SMA_CROSSOVER' | 'RSI_MEAN_REVERSION' | 'AI_SIGNALS' | 'ENSEMBLE_AI';
 
 // Risk profile mapping for backtest strategies
 export type RiskProfile = 'konservativ' | 'balansert' | 'aggressiv';
@@ -206,7 +206,36 @@ function generateSignals(
   } else {
     signals.push(...new Array(data.length).fill('HOLD'));
   }
-  
+
+  return signals;
+}
+
+export function generateSignalsFromLog(
+  candles: OHLCV[],
+  logSignals: { timestamp: string; decision_type: string; sentiment_score: number }[]
+): ('BUY' | 'SELL' | 'HOLD')[] {
+  const signals: ('BUY' | 'SELL' | 'HOLD')[] = [];
+  const logMap = new Map<string, { action: 'BUY' | 'SELL' | 'HOLD'; confidence: number }>();
+
+  for (const entry of logSignals) {
+    const hourKey = new Date(entry.timestamp).toISOString().slice(0, 13); // YYYY-MM-DDTHH
+    const action = entry.decision_type.toUpperCase() as 'BUY' | 'SELL' | 'HOLD';
+    if (['BUY', 'SELL', 'HOLD'].includes(action)) {
+      logMap.set(hourKey, { action, confidence: entry.sentiment_score ?? 0 });
+    }
+  }
+
+  for (const candle of candles) {
+    const hourKey = new Date(candle.timestamp).toISOString().slice(0, 13);
+    const entry = logMap.get(hourKey);
+    // Only execute if confidence >= 80
+    if (entry && entry.confidence >= 80) {
+      signals.push(entry.action);
+    } else {
+      signals.push('HOLD');
+    }
+  }
+
   return signals;
 }
 
@@ -218,13 +247,14 @@ export function runBacktest(
     smaFast?: number;
     smaSlow?: number;
     maxPositionPct?: number;
-  }
+  },
+  externalSignals?: ('BUY' | 'SELL' | 'HOLD')[]
 ): BacktestResult & { enhancedMetrics: EnhancedBacktestMetrics } {
   const smaFast = options?.smaFast ?? 20;
   const smaSlow = options?.smaSlow ?? 50;
   const maxPositionPct = options?.maxPositionPct ?? 1.0;
-  
-  const signals = generateSignals(candles, strategy, smaFast, smaSlow);
+
+  const signals = externalSignals ?? generateSignals(candles, strategy, smaFast, smaSlow);
   const trades: Trade[] = [];
   const equityCurve: { timestamp: number; equity: number }[] = [];
   
