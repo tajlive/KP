@@ -31,7 +31,6 @@ export * from "./field";
 export * from "./form";
 export * from "./GlassCard";
 export * from "./hover-card";
-export * from "./index.tsNested";
 export * from "./input-group";
 export * from "./input";
 export * from "./item";
