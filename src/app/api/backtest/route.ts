@@ -4,16 +4,20 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchHistoricalData, runBacktest, StrategyType } from '@/lib/backtest/engine';
+import { fetchHistoricalData, runBacktest, StrategyType, RiskProfile, STRATEGY_MAP } from '@/lib/backtest/engine';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 const BacktestSchema = z.object({
-  symbol: z.string().regex(/^[A-Z]{3,10}USDT$/),
+  symbol: z.string().regex(/^[A-Z]{3,10}USDT$/).optional(),
   interval: z.enum(['1d', '4h', '1h']).default('1d'),
-  strategy: z.enum(['SMA_CROSSOVER', 'RSI_MEAN_REVERSION', 'AI_SIGNALS']),
-  initialCapital: z.number().min(1000).max(1000000),
-  period: z.number().min(7).max(730).default(365), // Days
+  strategy: z.enum(['SMA_CROSSOVER', 'RSI_MEAN_REVERSION', 'AI_SIGNALS']).default('SMA_CROSSOVER'),
+  initialCapital: z.number().min(1000).max(1000000).default(10000),
+  period: z.number().min(7).max(1095).default(365), // Days - up to 3 years
+  riskProfile: z.enum(['konservativ', 'balansert', 'aggressiv']).optional(),
+  smaFast: z.number().min(5).max(50).optional(),
+  smaSlow: z.number().min(20).max(200).optional(),
+  maxPositionPct: z.number().min(0.1).max(1.0).optional(),
 });
 
 export const dynamic = 'force-dynamic';
@@ -30,7 +34,34 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { symbol, interval, strategy, initialCapital, period } = validation.data;
+    const { 
+      symbol, 
+      interval, 
+      strategy, 
+      initialCapital, 
+      period,
+      riskProfile,
+      smaFast,
+      smaSlow,
+      maxPositionPct,
+    } = validation.data;
+    
+    // Determine strategy parameters
+    let finalSymbol = symbol || 'BTCUSDT';
+    let finalSmaFast = smaFast || 20;
+    let finalSmaSlow = smaSlow || 50;
+    let finalMaxPositionPct = maxPositionPct || 1.0;
+    let strategyName = 'BTC SMA 20/50';
+    
+    // If risk profile is provided, use its configuration
+    if (riskProfile && STRATEGY_MAP[riskProfile]) {
+      const config = STRATEGY_MAP[riskProfile];
+      finalSymbol = config.symbol;
+      finalSmaFast = config.smaFast;
+      finalSmaSlow = config.smaSlow;
+      finalMaxPositionPct = config.maxPositionPct;
+      strategyName = config.name;
+    }
     
     // Rate limit check - TODO: add backtest_results table (KLA-240)
     const supabase = await createClient();
@@ -40,7 +71,7 @@ export async function POST(request: NextRequest) {
     // See FASE 4 of KLA-240 for migration
     
     // Fetch historical data based on period
-    const candles = await fetchHistoricalData(symbol, interval, period);
+    const candles = await fetchHistoricalData(finalSymbol, interval, period);
     
     if (candles.length < 50) {
       return NextResponse.json(
@@ -49,8 +80,12 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Run backtest
-    const result = runBacktest(candles, strategy as StrategyType, initialCapital);
+    // Run backtest with strategy parameters
+    const result = runBacktest(candles, strategy as StrategyType, initialCapital, {
+      smaFast: finalSmaFast,
+      smaSlow: finalSmaSlow,
+      maxPositionPct: finalMaxPositionPct,
+    });
     
     // Save to Supabase if authenticated - TODO: re-enable after migration (KLA-240)
     // if (user) {
@@ -59,6 +94,9 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       ...result,
+      strategyName,
+      symbol: finalSymbol,
+      period,
       disclaimer: 'Historisk avkastning er ingen garanti for fremtidig avkastning',
     });
   } catch (error) {

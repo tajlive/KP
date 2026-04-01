@@ -45,6 +45,51 @@ export interface BacktestResult {
 
 export type StrategyType = 'SMA_CROSSOVER' | 'RSI_MEAN_REVERSION' | 'AI_SIGNALS';
 
+// Risk profile mapping for backtest strategies
+export type RiskProfile = 'konservativ' | 'balansert' | 'aggressiv';
+
+export interface StrategyConfig {
+  symbol: string;
+  smaFast: number;
+  smaSlow: number;
+  maxPositionPct: number;
+  name: string;
+}
+
+export const STRATEGY_MAP: Record<RiskProfile, StrategyConfig> = {
+  konservativ: {
+    symbol: 'ETHUSDT',     // ETH = lavere volatilitet
+    smaFast: 30,           // tregere signal = færre trades
+    smaSlow: 100,
+    maxPositionPct: 0.5,   // kun 50% av kapital per trade
+    name: 'ETH SMA 30/100',
+  },
+  balansert: {
+    symbol: 'BTCUSDT',
+    smaFast: 20,
+    smaSlow: 50,
+    maxPositionPct: 0.75,  // 75% av kapital
+    name: 'BTC SMA 20/50',
+  },
+  aggressiv: {
+    symbol: 'BTCUSDT',
+    smaFast: 10,           // raskere signal = flere trades
+    smaSlow: 30,
+    maxPositionPct: 1.0,   // full posisjon
+    name: 'BTC SMA 10/30',
+  },
+};
+
+// USD/NOK conversion rate (konservativt estimat)
+const USDNOK_RATE = 10.5;
+
+export interface EnhancedBacktestMetrics extends BacktestMetrics {
+  buyHoldReturnPct: number;
+  alpha: number;  // strategi - buyhold
+  startValueNOK: number;
+  endValueNOK: number;
+}
+
 const FEE_RATE = 0.001;
 
 export async function fetchHistoricalData(
@@ -123,20 +168,22 @@ function calculateRSI(data: OHLCV[], period: number = 14): number[] {
 
 function generateSignals(
   data: OHLCV[],
-  strategy: StrategyType
+  strategy: StrategyType,
+  smaFast: number = 20,
+  smaSlow: number = 50
 ): ('BUY' | 'SELL' | 'HOLD')[] {
   const signals: ('BUY' | 'SELL' | 'HOLD')[] = [];
   
   if (strategy === 'SMA_CROSSOVER') {
-    const sma20 = calculateSMA(data, 20);
-    const sma50 = calculateSMA(data, 50);
+    const smaFastValues = calculateSMA(data, smaFast);
+    const smaSlowValues = calculateSMA(data, smaSlow);
     
     for (let i = 0; i < data.length; i++) {
-      if (isNaN(sma20[i]) || isNaN(sma50[i])) {
+      if (isNaN(smaFastValues[i]) || isNaN(smaSlowValues[i])) {
         signals.push('HOLD');
-      } else if (sma20[i] > sma50[i] && sma20[i - 1] <= sma50[i - 1]) {
+      } else if (smaFastValues[i] > smaSlowValues[i] && smaFastValues[i - 1] <= smaSlowValues[i - 1]) {
         signals.push('BUY');
-      } else if (sma20[i] < sma50[i] && sma20[i - 1] >= sma50[i - 1]) {
+      } else if (smaFastValues[i] < smaSlowValues[i] && smaFastValues[i - 1] >= smaSlowValues[i - 1]) {
         signals.push('SELL');
       } else {
         signals.push('HOLD');
@@ -166,9 +213,18 @@ function generateSignals(
 export function runBacktest(
   candles: OHLCV[],
   strategy: StrategyType,
-  initialCapital: number
-): BacktestResult {
-  const signals = generateSignals(candles, strategy);
+  initialCapital: number,
+  options?: {
+    smaFast?: number;
+    smaSlow?: number;
+    maxPositionPct?: number;
+  }
+): BacktestResult & { enhancedMetrics: EnhancedBacktestMetrics } {
+  const smaFast = options?.smaFast ?? 20;
+  const smaSlow = options?.smaSlow ?? 50;
+  const maxPositionPct = options?.maxPositionPct ?? 1.0;
+  
+  const signals = generateSignals(candles, strategy, smaFast, smaSlow);
   const trades: Trade[] = [];
   const equityCurve: { timestamp: number; equity: number }[] = [];
   
@@ -182,15 +238,16 @@ export function runBacktest(
     const signal = signals[i];
     
     if (!position && signal === 'BUY') {
-      const fee = capital * FEE_RATE;
-      const positionSize = capital - fee;
+      const positionCapital = capital * maxPositionPct;
+      const fee = positionCapital * FEE_RATE;
+      const positionSize = positionCapital - fee;
       position = {
         side: 'LONG',
         entryPrice: candle.close,
         size: positionSize / candle.close,
         entryTime: candle.timestamp,
       };
-      capital = 0;
+      capital = capital - positionCapital;
     } else if (position && signal === 'SELL') {
       const exitValue = position.size * candle.close;
       const fee = exitValue * FEE_RATE;
@@ -280,20 +337,56 @@ export function runBacktest(
     ? ((candles[candles.length - 1].close - candles[0].open) / candles[0].open) * 100
     : 0;
   
+  // Build metrics object first
+  const metrics: BacktestMetrics = {
+    totalReturnPct,
+    maxDrawdownPct: maxDrawdown * 100,
+    sharpeRatio,
+    winRate,
+    totalTrades: trades.length,
+    profitFactor,
+    bestTrade,
+    worstTrade,
+    avgTradeDuration,
+  };
+  
+  // Convert to NOK
+  const startValueNOK = initialCapital * USDNOK_RATE;
+  const endValueNOK = finalEquity * USDNOK_RATE;
+  
+  const enhancedMetrics: EnhancedBacktestMetrics = {
+    ...metrics,
+    buyHoldReturnPct: buyHoldReturn,
+    alpha: totalReturnPct - buyHoldReturn,
+    startValueNOK,
+    endValueNOK,
+  };
+  
   return {
     trades,
     equityCurve,
-    metrics: {
-      totalReturnPct,
-      maxDrawdownPct: maxDrawdown * 100,
-      sharpeRatio,
-      winRate,
-      totalTrades: trades.length,
-      profitFactor,
-      bestTrade,
-      worstTrade,
-      avgTradeDuration,
-    },
+    metrics,
     buyHoldReturn,
+    enhancedMetrics,
   };
+}
+
+// Helper function to run backtest with risk profile
+export async function runBacktestWithProfile(
+  riskProfile: RiskProfile,
+  initialCapitalUSD: number,
+  months: number
+): Promise<BacktestResult & { enhancedMetrics: EnhancedBacktestMetrics; config: StrategyConfig }> {
+  const config = STRATEGY_MAP[riskProfile];
+  const limit = months <= 3 ? 90 : months <= 12 ? 365 : months <= 24 ? 730 : 1095;
+  
+  const candles = await fetchHistoricalData(config.symbol, '1d', limit);
+  
+  const result = runBacktest(candles, 'SMA_CROSSOVER', initialCapitalUSD, {
+    smaFast: config.smaFast,
+    smaSlow: config.smaSlow,
+    maxPositionPct: config.maxPositionPct,
+  });
+  
+  return { ...result, config };
 }

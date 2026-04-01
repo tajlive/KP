@@ -1,19 +1,24 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Calculator, Info } from 'lucide-react';
+import { TrendingUp, Calculator, Info, BarChart3 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ButtonPremium } from '@/components/ui/ButtonPremium';
+import type { LandingBacktestTeaserRef } from './LandingBacktestTeaser';
 
 const PRESET_AMOUNTS = [10000, 25000, 50000, 100000];
 const RISK_PROFILES = [
-  { label: 'Konservativ', rate: 0.3, color: 'bg-green-500' },
-  { label: 'Balansert', rate: 0.6, color: 'bg-blue-500' },
-  { label: 'Agressiv', rate: 1.2, color: 'bg-purple-500' },
+  { label: 'Konservativ', rate: 0.3, color: 'bg-green-500', key: 'konservativ' as const },
+  { label: 'Balansert', rate: 0.6, color: 'bg-blue-500', key: 'balansert' as const },
+  { label: 'Agressiv', rate: 1.2, color: 'bg-purple-500', key: 'aggressiv' as const },
 ];
 
-export function ROISimulator() {
+interface ROISimulatorProps {
+  backtestRef?: React.RefObject<LandingBacktestTeaserRef | null>;
+}
+
+export function ROISimulator({ backtestRef }: ROISimulatorProps) {
   const [amount, setAmount] = useState<number>(50000);
   const [riskIndex, setRiskIndex] = useState<number>(1);
   const [months, setMonths] = useState<number>(12);
@@ -181,6 +186,23 @@ export function ROISimulator() {
                   Start alltid med lekepenger.
                 </p>
               </div>
+
+              {/* Link to backtest */}
+              {backtestRef && (
+                <button
+                  onClick={() => {
+                    backtestRef.current?.runBacktestWithConfig({
+                      amount,
+                      riskProfile: RISK_PROFILES[riskIndex].key,
+                      months,
+                    });
+                  }}
+                  className="w-full text-sm text-kp-brand hover:text-kp-brand-light underline transition-colors flex items-center justify-center gap-2 py-2"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  Se hva denne strategien faktisk har gjort historisk →
+                </button>
+              )}
 
               <ButtonPremium size="lg" glow className="w-full" icon={<TrendingUp className="w-5 h-5" />}>
                 Prøv med lekepenger
