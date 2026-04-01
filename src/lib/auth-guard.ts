@@ -10,7 +10,7 @@ export async function requireAuth(locale: string = "no", nextPath?: string) {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    const base = localizedPathname(locale, "/innlogging");
+    const base = localizedPathname(locale, "/login");
     const loginUrl = `${base}${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`;
     redirect(loginUrl);
   }

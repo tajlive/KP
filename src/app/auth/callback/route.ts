@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     console.error("[Auth Callback] No code received");
     return NextResponse.redirect(
       new URL(
-        `${localizedPathname(locale, "/innlogging")}?error=no_code`,
+        `${localizedPathname(locale, "/login")}?error=no_code`,
         request.url,
       ),
     );
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     console.error("[Auth Callback] Exchange failed:", error.message);
     return NextResponse.redirect(
       new URL(
-        `${localizedPathname(locale, "/innlogging")}?error=exchange_failed`,
+        `${localizedPathname(locale, "/login")}?error=exchange_failed`,
         request.url,
       ),
     );

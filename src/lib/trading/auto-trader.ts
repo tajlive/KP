@@ -7,7 +7,7 @@ import {
 } from '@/lib/supabase/auto-trading';
 import { executePaperTrade } from '@/lib/supabase/paper-trading';
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/supabase-generated'
+import type { Database } from '@/types/database.types'
 
 type Supa = SupabaseClient<Database>
 

@@ -8,7 +8,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { withAuth } from "@/lib/api-auth";
 import { LeaderboardQuerySchema } from "@/lib/schemas";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 /** Materialized view `leaderboard` — row shape until view is in generated types */
 type LeaderboardViewRow = {

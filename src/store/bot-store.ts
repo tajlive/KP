@@ -1,7 +1,7 @@
 import { createClient } from "../lib/supabase/client";
 import { create } from "zustand";
 import type { Tables } from "../lib/supabase/client";
-import type { Database } from "../types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 type BotStatus = "active" | "paused" | "stopped" | "error";
 type BotStrategyType =

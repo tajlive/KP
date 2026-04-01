@@ -1,23 +1,23 @@
 import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { SURFACE } from "@/lib/design/tokens";
-import HeroSection from "@/components/landing/HeroSection";
-import { TrustStrip } from "@/components/landing/TrustStrip";
-import { LiveProofStrip } from "@/components/landing/LiveProofStrip";
-import { StickyCTA } from "@/components/landing/StickyCTA";
-import { ScrollReveal } from "@/components/landing/ScrollReveal";
+import HeroSection from "@/features/landing/HeroSection";
+import { TrustStrip } from "@/features/landing/TrustStrip";
+import { LiveProofStrip } from "@/features/landing/LiveProofStrip";
+import { StickyCTA } from "@/features/landing/StickyCTA";
+import { ScrollReveal } from "@/features/landing/ScrollReveal";
 import {
   DemoWidgetSkeleton,
   CoursePreviewSkeleton,
   ThreeStepsSkeleton,
   LandingTransparencySkeleton,
   FinalCTASkeleton,
-} from "@/components/landing/skeletons/BelowFoldSkeletons";
+} from "@/features/landing/skeletons/BelowFoldSkeletons";
 
 // Dynamic imports for below-fold components (Phase 3: Code Splitting)
 // Keeps initial bundle small for better LCP
 const DemoWidget = dynamic(
-  () => import("@/components/landing/DemoWidget").then((mod) => mod.DemoWidget),
+  () => import("@/features/landing/DemoWidget").then((mod) => mod.DemoWidget),
   {
     loading: () => <DemoWidgetSkeleton />,
     ssr: true,
@@ -25,7 +25,7 @@ const DemoWidget = dynamic(
 );
 
 const CoursePreview = dynamic(
-  () => import("@/components/landing/CoursePreview").then((mod) => mod.CoursePreview),
+  () => import("@/features/landing/CoursePreview").then((mod) => mod.CoursePreview),
   {
     loading: () => <CoursePreviewSkeleton />,
     ssr: true,
@@ -33,7 +33,7 @@ const CoursePreview = dynamic(
 );
 
 const ThreeSteps = dynamic(
-  () => import("@/components/landing/ThreeSteps").then((mod) => mod.ThreeSteps),
+  () => import("@/features/landing/ThreeSteps").then((mod) => mod.ThreeSteps),
   {
     loading: () => <ThreeStepsSkeleton />,
     ssr: true,
@@ -41,7 +41,7 @@ const ThreeSteps = dynamic(
 );
 
 const LandingTransparencySection = dynamic(
-  () => import("@/components/landing/LandingTransparency").then((mod) => mod.LandingTransparencySection),
+  () => import("@/features/landing/LandingTransparency").then((mod) => mod.LandingTransparencySection),
   {
     loading: () => <LandingTransparencySkeleton />,
     ssr: true,
@@ -49,7 +49,7 @@ const LandingTransparencySection = dynamic(
 );
 
 const FinalCTASection = dynamic(
-  () => import("@/components/landing/FinalCTASection"),
+  () => import("@/features/landing/FinalCTASection"),
   {
     loading: () => <FinalCTASkeleton />,
     ssr: true,
@@ -57,14 +57,14 @@ const FinalCTASection = dynamic(
 );
 
 const FeaturesBentoGrid = dynamic(
-  () => import("@/components/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
+  () => import("@/features/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
   {
     loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
   }
 );
 
 const BacktestROICoupled = dynamic(
-  () => import("@/components/landing/BacktestROICoupled").then((mod) => mod.BacktestROICoupled),
+  () => import("@/features/landing/BacktestROICoupled").then((mod) => mod.BacktestROICoupled),
   {
     loading: () => <div className="h-[600px] bg-kp-bg-primary animate-pulse" />,
   }

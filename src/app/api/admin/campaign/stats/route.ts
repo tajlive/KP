@@ -1,6 +1,7 @@
 
 
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 import { NextResponse } from 'next/server';
 import { CAMPAIGN_CONFIG } from '@/lib/campaign-config';
 import { getErrorMessage } from '@/lib/utils/error';
@@ -14,7 +15,7 @@ function getSupabaseClient() {
     return null;
   }
   
-  return createClient(url, key);
+  return createClient<Database>(url, key);
 }
 
 export async function GET() {

@@ -101,7 +101,7 @@ export async function GET() {
       .upsert(
         {
           cache_key: "market_brief",
-          value: brief as unknown as import("@/types/supabase-generated").Json,
+          value: brief as unknown as import("@/types/database.types").Json,
           expires_at: expiresAt,
         },
         { onConflict: "cache_key" },

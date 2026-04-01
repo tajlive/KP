@@ -72,7 +72,7 @@ test.describe("Component Consolidation", () => {
             errors.push(...checkImports(filePath));
           } else if (file.endsWith(".ts") || file.endsWith(".tsx")) {
             const content = fs.readFileSync(filePath, "utf-8");
-            if (content.includes("from '@/components/auto-trade'")) {
+            if (content.includes("from '@/features/auto-trade'")) {
               errors.push(`Found deprecated import in: ${filePath}`);
             }
           }
@@ -100,7 +100,7 @@ test.describe("Component Consolidation", () => {
             errors.push(...checkImports(filePath));
           } else if (file.endsWith(".ts") || file.endsWith(".tsx")) {
             const content = fs.readFileSync(filePath, "utf-8");
-            if (content.includes("from '@/components/courses'")) {
+            if (content.includes("from '@/features/course'")) {
               errors.push(`Found deprecated import in: ${filePath}`);
             }
           }

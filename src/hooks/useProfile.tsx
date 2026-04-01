@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 import { Profile } from "@/types/database";
 import { useEffect, useState } from "react";
 

@@ -6,7 +6,7 @@
  */
 
 import { createClient } from "../../supabase/server";
-import type { Json } from "@/types/supabase-generated";
+import type { Json } from "@/types/database.types";
 import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 import {
   PAPER_DEMO_DEFAULT_MAX_DAILY_LOSS_PCT,

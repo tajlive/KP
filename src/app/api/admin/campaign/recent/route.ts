@@ -1,6 +1,7 @@
 
 
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 import { NextResponse } from 'next/server';
 import { getErrorMessage } from '@/lib/utils/error';
 
@@ -12,7 +13,7 @@ function getSupabaseClient() {
     return null;
   }
   
-  return createClient(url, key);
+  return createClient<Database>(url, key);
 }
 
 export async function GET(request: Request) {
@@ -36,7 +37,7 @@ export async function GET(request: Request) {
   try {
     const { data: recentUsers, error } = await supabase
       .from('user_profiles')
-      .select('id, email, first_name, last_name, created_at, source')
+      .select('id, email, full_name, display_name, created_at')
       .order('created_at', { ascending: false })
       .limit(limit);
 
@@ -54,9 +55,9 @@ export async function GET(request: Request) {
 
     const formatted = recentUsers.map(user => ({
       id: user.id,
-      name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Anonym',
+      name: user.full_name || user.display_name || 'Anonym',
       email: user.email,
-      source: user.source || 'direct',
+      source: 'direct',
       time_ago: getTimeAgo(new Date(user.created_at)),
     }));
 

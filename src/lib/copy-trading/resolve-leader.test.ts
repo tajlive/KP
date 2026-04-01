@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, it } from "vitest";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 import { resolveLeaderAuthId } from "./resolve-leader";
 
 type MaybeRow = Record<string, unknown> | null;

@@ -1,7 +1,7 @@
 "use client";
 import { createBrowserClient } from "@supabase/ssr";
 import { safeStorage } from "@/lib/supabase/safe-storage";
-import type { Database, Json } from "@/types/supabase-generated";
+import type { Database, Json } from "@/types/database.types";
 import {
   enrichStrategyConfigForSession,
   parseInitialCapitalFromConfig,

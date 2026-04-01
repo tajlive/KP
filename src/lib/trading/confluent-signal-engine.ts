@@ -17,6 +17,7 @@ import { generateSignal, type Signal } from './signal-generator';
 import type { ExplainSignalInput, ExplainSignalResult } from '@/lib/ai/sonar';
 import { explainSignalWithFallback } from '@/lib/ai/sonar';
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 
 // ============================================================================
 // Types
@@ -279,7 +280,7 @@ async function persistSignalToLog(
       || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!supabaseUrl || !supabaseKey) return;
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
     // Mapping til faktiske kolonner i ai_decision_log:
     // decision_type, symbol, sentiment_score (0-100), analysis_data (jsonb), decision_reason, user_id, executed_at
@@ -288,14 +289,14 @@ async function persistSignalToLog(
       decision_type: signal.action,           // BUY/SELL/HOLD
       sentiment_score: Math.round(signal.score), // 0-100 (integer)
       analysis_data: {
-        factors: signal.factors,
+        factors: signal.factors as unknown as import('@/types/database.types').Json,
         risk_level: signal.riskLevel,
         used_fallback: signal.metadata.usedFallback,
-      },
+      } as unknown as import('@/types/database.types').Json,
       decision_reason: signal.reason,
       ...(userId && { user_id: userId }),
       executed_at: new Date().toISOString(),
-    });
+    } as any);
   } catch (err) {
     // Logg men kast ikke videre — signal-generering skal ikke feile pga. DB
     logger.warn('[ConfluentSignalEngine] Failed to persist signal to DB:', err);

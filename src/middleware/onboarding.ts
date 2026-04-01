@@ -9,7 +9,7 @@ const PROTECTED_PATHS = [
   "/admin",
   "/checkout",
   "/akademi",
-  "/paper-trading",
+  "/paper",
   "/auto-trading",
   "/konto",
   "/handelshistorikk",

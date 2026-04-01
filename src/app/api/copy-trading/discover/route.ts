@@ -5,7 +5,7 @@ import { DiscoverQuerySchema } from "@/lib/schemas";
 import { inferRiskTier } from "@/lib/copy-trading/risk-tier";
 import { traderProfilesToDiscoverLeaders } from "@/lib/copy-trading/discover-from-trader-profiles";
 import type { DiscoverLeaderDto } from "@/lib/copy-trading/discover-types";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

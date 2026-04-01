@@ -1,6 +1,6 @@
 import type { DiscoverLeaderDto } from "@/lib/copy-trading/discover-types";
 import { inferRiskTier } from "@/lib/copy-trading/risk-tier";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 type TraderProfileRow = Database["public"]["Tables"]["trader_profiles"]["Row"];
 

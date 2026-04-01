@@ -1,5 +1,5 @@
 import { isEmailOnServerAdminAllowlist } from "@/lib/admin/admin-allowlist.server";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 

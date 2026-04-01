@@ -17,6 +17,17 @@ export {
   executeOptimalTrade, 
   calculateOptimalTradePreview,
   getOptimalTradeHistory,
+  checkEarlyExit,
   type OptimalTradeParams,
   type OptimalTradeResult 
 } from './engine';
+
+// KLA-252: Early Exit System
+export {
+  evaluateEarlyExit,
+  calculateRMultiple,
+  shouldUpdateTrailingStop,
+  type ExitSignal,
+  type EarlyExitParams,
+  type ExitRecommendation,
+} from './early-exit';

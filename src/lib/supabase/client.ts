@@ -15,7 +15,7 @@
  * const supabase = getSupabaseClient()
  */
 import { createBrowserClient } from "@supabase/ssr";
-import type { Database } from "../../types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>;
 

@@ -1,6 +1,7 @@
 
 
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
   try {
     // Hent kontakt
