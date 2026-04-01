@@ -8,3 +8,7 @@ verify_jwt = false  # Cron jobs don't use JWT
 [functions.sync-prices]
 enabled = true
 verify_jwt = false
+
+[functions.klarpakke-mcp]
+enabled = true
+verify_jwt = false  # Custom auth via KLARPAKKE_MCP_SECRET

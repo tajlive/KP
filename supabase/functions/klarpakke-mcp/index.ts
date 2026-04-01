@@ -260,10 +260,12 @@ async function queryTable(supabase: SupabaseClient, args?: { table: string; sele
 
 async function getUserStats(supabase: SupabaseClient): Promise<ToolResponse> {
   const { count: users } = await supabase.from('user_profiles').select('*', { count: 'exact', head: true });
-  const { count: activePaper } = await supabase.from('paper_trading_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active');
+  const { count: activePaper } = await supabase.from('trading_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active').eq('mode', 'paper');
+  const { count: activeLive } = await supabase.from('trading_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active').eq('mode', 'live');
   return createSuccessResponse({ 
     total_users: users ?? 0,
-    active_paper_traders: activePaper ?? 0
+    active_paper_traders: activePaper ?? 0,
+    active_live_traders: activeLive ?? 0
   });
 }
 

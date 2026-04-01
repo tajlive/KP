@@ -11,5 +11,17 @@ if [ -z "$TOKEN" ]; then
   exit 1
 fi
 
-curl -s -H "Authorization: Bearer ${TOKEN}" \
-  "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/klarpakke-mcp/mcp?query=SELECT%20count(*)%20as%20active_sessions%20FROM%20trading_sessions%20WHERE%20status='active'" | jq .
+# Send a proper MCP JSON-RPC request to the get_user_stats tool
+curl -s -X POST \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: application/json" \
+  "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/klarpakke-mcp/mcp" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_user_stats",
+      "arguments": {}
+    },
+    "id": 1
+  }' | jq .
