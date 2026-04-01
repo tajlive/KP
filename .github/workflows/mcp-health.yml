@@ -100,6 +100,33 @@ jobs:
           fi
         continue-on-error: true
 
+      - name: Sjekk MCP Edge Function
+        env:
+          KLARPAKKE_MCP_TOKEN: ${{ secrets.KLARPAKKE_MCP_TOKEN }}
+        run: |
+          if [[ -z "$KLARPAKKE_MCP_TOKEN" ]]; then
+            echo "⏭️ MCP Edge Function: hoppet over (KLARPAKKE_MCP_TOKEN ikke satt)"
+          else
+            ./scripts/mcp-health.sh | tee mcp-health-result.json
+          fi
+        continue-on-error: true
+
+      - name: Post til Linear (KLA-251)
+        if: always()
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+        run: |
+          if [[ -z "$LINEAR_API_KEY" ]]; then
+            echo "⏭️ Linear: hoppet over (LINEAR_API_KEY ikke satt)"
+          else
+            BODY="MCP Health Check — $(date '+%Y-%m-%d %H:%M')\\n\\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            curl -s -X POST https://api.linear.app/graphql \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $LINEAR_API_KEY" \
+              -d "{\"query\":\"mutation { commentCreate(input: { issueId: \\\"6e75fa33-44c8-403b-8ffc-a2db7d26601f\\\", body: \\\"$BODY\\\" }) { success } }\"}" | jq .
+          fi
+        continue-on-error: true
+
       - name: Rapport
         if: always()
         run: |
