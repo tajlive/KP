@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { SURFACE } from "@/lib/design/tokens";
 import HeroSection from "@/components/landing/HeroSection";
 import { TrustStrip } from "@/components/landing/TrustStrip";
+import { LiveProofStrip } from "@/components/landing/LiveProofStrip";
 import { StickyCTA } from "@/components/landing/StickyCTA";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import {
@@ -69,6 +70,13 @@ const FeaturesBentoGrid = dynamic(
   }
 );
 
+const LandingBacktestTeaser = dynamic(
+  () => import("@/components/landing/LandingBacktestTeaser").then((mod) => mod.LandingBacktestTeaser),
+  {
+    loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
+  }
+);
+
 // ISR: Revalidate page every hour for fresh content
 export const revalidate = 3600;
 
@@ -90,6 +98,7 @@ export default async function HomePage({ params }: HomePageProps) {
       <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
         {/* Above-fold: Synchronous for LCP */}
         <HeroSection locale={locale} />
+        <LiveProofStrip />
         <TrustStrip locale={locale} />
 
         {/* Below-fold: Dynamic imports with skeleton fallbacks + ScrollReveal */}
@@ -105,6 +114,10 @@ export default async function HomePage({ params }: HomePageProps) {
           <section id="land-steg" className="scroll-mt-24 max-w-6xl mx-auto px-4">
             <ThreeSteps />
           </section>
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0.1}>
+          <LandingBacktestTeaser />
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={0.1}>
