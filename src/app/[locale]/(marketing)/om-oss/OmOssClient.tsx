@@ -244,7 +244,7 @@ export default function OmOssClient() {
         <div className="bg-linear-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white text-center">
           <h2 className="font-fraunces text-3xl font-bold mb-4">{t("cta.title")}</h2>
           <p className="font-lexend text-xl text-blue-100 mb-8">{t("cta.subtitle")}</p>
-          <Link href="/innlogging">
+          <Link href="/login">
             <Button
               size="lg"
               className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"

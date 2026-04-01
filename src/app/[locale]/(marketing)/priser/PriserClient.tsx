@@ -358,7 +358,7 @@ export default function PriserClient() {
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">{t("cta.title")}</h2>
           <p className="text-xl text-blue-100 mb-8">{t("cta.subtitle")}</p>
-          <Link href={hrefWithLocale(locale, "/innlogging")}>
+          <Link href={hrefWithLocale(locale, "/login")}>
             <Button
               size="lg"
               className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"

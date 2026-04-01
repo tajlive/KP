@@ -22,7 +22,7 @@ export function MarketingNavigation() {
 
   const mainLinks = [
     { path: "/kurs", label: t("navLearn") },
-    { path: "/paper-trading", label: t("navTrade") },
+    { path: "/paper", label: t("navTrade") },
     { path: "/auto-trading", label: t("navBots") },
     { path: "/priser", label: t("navPricing") },
   ];
@@ -100,7 +100,7 @@ export function MarketingNavigation() {
               </>
             ) : (
               <>
-                <Link href={l("/innlogging")}>
+                <Link href={l("/login")}>
                   <Button
                     size="sm"
                     variant="outline"
@@ -111,7 +111,7 @@ export function MarketingNavigation() {
                     {t("login")}
                   </Button>
                 </Link>
-                <Link href={l("/signup")}>
+                <Link href={l("/register")}>
                   <Button
                     size="sm"
                     className={`${BRAND.primary} shadow-md shadow-blue-500/20`}
@@ -190,7 +190,7 @@ export function MarketingNavigation() {
               ) : (
                 <>
                   <Link
-                    href={l("/innlogging")}
+                    href={l("/login")}
                     className="block"
                     onClick={() => setIsOpen(false)}
                   >
@@ -204,7 +204,7 @@ export function MarketingNavigation() {
                     </Button>
                   </Link>
                   <Link
-                    href={l("/signup")}
+                    href={l("/register")}
                     className="block"
                     onClick={() => setIsOpen(false)}
                   >

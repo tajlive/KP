@@ -247,7 +247,7 @@ export default async function OmPage({
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href={hrefWithLocale(locale, "/signup")}
+              href={hrefWithLocale(locale, "/register")}
               className={`inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#0052FF] hover:bg-[#0047E0] text-white rounded-xl font-bold text-lg transition-all`}
             >
               Kom i gang gratis

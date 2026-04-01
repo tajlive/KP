@@ -36,8 +36,8 @@ const PROTECTED_PATHS = [
 
 // Sider som kun gjelder uinnloggede — innloggede omdirigeres til dashboard
 const AUTH_PATHS = [
-  "/innlogging",
-  "/signup",
+  "/login",
+  "/register",
   "/registrer",
   "/login",
   "/glemt-passord",
@@ -84,7 +84,7 @@ export async function middleware(request: NextRequest) {
   if (strippedPath === "/beta" || strippedPath.startsWith("/beta/")) {
     const url = request.nextUrl.clone();
     if (strippedPath.includes("live-trading")) {
-      url.pathname = localizedPathname(locale, "/paper-trading");
+      url.pathname = localizedPathname(locale, "/paper");
       url.searchParams.set("mode", "live");
     } else if (strippedPath.includes("auto-trade")) {
       url.pathname = localizedPathname(locale, "/dashboard/auto-trade");
@@ -117,8 +117,8 @@ export async function middleware(request: NextRequest) {
     "/trade": "/dashboard/trade",
     "/auto-trading": "/dashboard/auto-trade",
     "/auto-trading-ai": "/dashboard/auto-trade",
-    "/login": "/innlogging",
-    "/registrer": "/signup",
+    "/innlogging": "/login",
+    "/registrer": "/register",
   };
   for (const [from, to] of Object.entries(CANONICAL_REDIRECTS)) {
     if (strippedPath === from || strippedPath.startsWith(from + "/")) {
@@ -152,7 +152,7 @@ export async function middleware(request: NextRequest) {
       const { data: { user } } = await earlySupabase.auth.getUser();
       if (!user) {
         const loginUrl = new URL(
-          localizedPathname(locale, "/innlogging"),
+          localizedPathname(locale, "/login"),
           request.url,
         );
         loginUrl.searchParams.set("next", localizedPathname(locale, strippedPath));

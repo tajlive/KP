@@ -1,4 +1,4 @@
-import CompetitionClient from "../beta/konkurranse/CompetitionClient";
+import CompetitionClient from "../../(beta)/beta/konkurranse/CompetitionClient";
 
 export const dynamic = "force-dynamic";
 

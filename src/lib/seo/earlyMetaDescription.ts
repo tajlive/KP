@@ -12,7 +12,7 @@ export function isEarlyMetaDescriptionPath(strippedPath: string): boolean {
   const path = normalizePath(strippedPath);
   if (path === "/") return true;
   if (path === "/priser" || path.startsWith("/priser/")) return true;
-  if (path === "/innlogging" || path.startsWith("/innlogging/")) return true;
+  if (path === "/login" || path.startsWith("/login/")) return true;
   return false;
 }
 
@@ -38,7 +38,7 @@ export async function getEarlyMetaDescription(
     return t("description");
   }
 
-  if (path === "/innlogging" || path.startsWith("/innlogging/")) {
+  if (path === "/login" || path.startsWith("/login/")) {
     const t = await getTranslations({ locale, namespace: "metadata" });
     return t("login.description");
   }

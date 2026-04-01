@@ -23,8 +23,8 @@ export function LandingNavigation() {
 
   const mainLinks = [
     { path: "/kurs", label: t("courses") },
-    { path: "/autotrade", label: "Autotrade" },
-    { path: "/paper-trading", label: t("paperTrading") },
+    { path: "/auto", label: "Autotrade" },
+    { path: "/paper", label: t("paperTrading") },
     { path: "/priser", label: t("pricing") },
   ];
 
@@ -73,7 +73,7 @@ export function LandingNavigation() {
                   </Button>
                 </Link>
               ) : (
-                <Link href={l("/innlogging")}>
+                <Link href={l("/login")}>
                   <Button
                     variant="ghost"
                     className="text-white font-bold hover:bg-white/5 rounded-xl px-6"
@@ -125,7 +125,7 @@ export function LandingNavigation() {
             <TradingModeToggle />
             {!loading && (
               <Link
-                href={l(user ? "/dashboard" : "/innlogging")}
+                href={l(user ? "/dashboard" : "/login")}
                 className="block"
               >
                 <Button

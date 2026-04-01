@@ -110,7 +110,7 @@ export function ThreeSteps() {
         <button
           type="button"
           onClick={() =>
-            router.push(hrefWithLocale(locale, user ? "/dashboard" : "/signup"))
+            router.push(hrefWithLocale(locale, user ? "/dashboard" : "/register"))
           }
           className="bg-teal-500 hover:bg-teal-600 text-white font-lexend font-medium px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2 min-h-[48px]"
         >

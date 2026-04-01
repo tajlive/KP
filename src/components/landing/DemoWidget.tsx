@@ -28,8 +28,8 @@ export function DemoWidget() {
   const t = useTranslations("landing.demoWidget");
   const locale = useLocale();
   const { user } = useAuth();
-  const signupHref = hrefWithLocale(locale, "/signup");
-  const paperHref = hrefWithLocale(locale, "/paper-trading");
+  const signupHref = hrefWithLocale(locale, "/register");
+  const paperHref = hrefWithLocale(locale, "/paper");
 
   const [prices, setPrices] = useState<number[]>(() =>
     buildDeterministicPriceHistory(BTC_START, 40),

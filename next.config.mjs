@@ -115,9 +115,21 @@ const nextConfig = {
       // { source: "/no/:path*", destination: "/:path*", permanent: true },
       // { source: "/no", destination: "/", permanent: true },
       
+      // Route consolidation redirects (2026)
+      { source: "/innlogging", destination: "/login", permanent: true },
+      { source: "/:locale/innlogging", destination: "/:locale/login", permanent: true },
+      { source: "/signup", destination: "/register", permanent: true },
+      { source: "/:locale/signup", destination: "/:locale/register", permanent: true },
+      { source: "/autotrade", destination: "/auto", permanent: true },
+      { source: "/:locale/autotrade", destination: "/:locale/auto", permanent: true },
+      { source: "/autotrade/:path*", destination: "/auto/:path*", permanent: true },
+      { source: "/:locale/autotrade/:path*", destination: "/:locale/auto/:path*", permanent: true },
+      { source: "/paper-trading", destination: "/paper", permanent: true },
+      { source: "/:locale/paper-trading", destination: "/:locale/paper", permanent: true },
+      { source: "/paper-trading/:path*", destination: "/paper/:path*", permanent: true },
+      { source: "/:locale/paper-trading/:path*", destination: "/:locale/paper/:path*", permanent: true },
+
       // Legacy English root URLs → /en/ prefix
-      { source: "/login", destination: "/en/login", permanent: true },
-      { source: "/signup", destination: "/en/signup", permanent: true },
       { source: "/pricing", destination: "/en/pricing", permanent: true },
       { source: "/courses", destination: "/en/courses", permanent: true },
       { source: "/courses/:path*", destination: "/en/courses/:path*", permanent: true },
@@ -156,7 +168,7 @@ const nextConfig = {
       { source: "/:locale/beta-testing", destination: "/:locale/beta", permanent: true },
       { source: "/signals", destination: "/dashboard", permanent: true },
       { source: "/:locale/signals", destination: "/:locale/dashboard", permanent: true },
-      { source: "/simulator", destination: "/paper-trading", permanent: true },
+      { source: "/simulator", destination: "/paper", permanent: true },
       
       // API v1 Consolidation (Script 04 - Phase 1)
       // Trading APIs

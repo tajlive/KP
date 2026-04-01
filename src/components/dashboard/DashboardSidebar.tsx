@@ -71,7 +71,7 @@ export function DashboardSidebar() {
   const tradingLinks = DASHBOARD_TRADING_NAV.map((item) => ({
     ...item,
     icon:
-      item.href === "/paper-trading"
+      item.href === "/paper"
         ? TrendingUp
         : item.href === "/dashboard/auto-trade"
           ? Bot
@@ -108,7 +108,7 @@ export function DashboardSidebar() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.refresh();
-    router.push(hrefWithLocale(locale, "/innlogging"));
+    router.push(hrefWithLocale(locale, "/login"));
   };
 
   const l = (path: string) => hrefWithLocale(locale, path);

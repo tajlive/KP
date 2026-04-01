@@ -149,7 +149,7 @@ export default async function AutotradePage({
                 <ArrowRight className="w-5 h-5 inline-block ml-2" />
               </Link>
               <Link
-                href={hrefWithLocale(locale, "/paper-trading")}
+                href={hrefWithLocale(locale, "/paper")}
                 className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold text-lg border border-white/20 transition-all duration-200"
               >
                 Prøv med lekepenger
@@ -277,7 +277,7 @@ export default async function AutotradePage({
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Klar til å la robotene jobbe for deg?</h2>
           <p className="text-lg text-slate-400 mb-8">Start med paper-trading i dag. Ingen risiko, kun læring.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href={hrefWithLocale(locale, "/signup")} className={HERO.ctaPrimary}>
+            <Link href={hrefWithLocale(locale, "/register")} className={HERO.ctaPrimary}>
               Opprett konto <ArrowRight className="w-5 h-5 inline-block ml-2" />
             </Link>
             <Link href={hrefWithLocale(locale, "/priser")} className="px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-xl font-semibold text-lg hover:bg-white/10 transition-all">

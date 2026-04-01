@@ -45,13 +45,13 @@ function sanitizeClientRedirect(value: string | null, locale: string): string {
   try {
     const url = new URL(value);
     const path = url.pathname + (url.search || "");
-    if (!path || path.includes("/innlogging")) return fallback;
+    if (!path || path.includes("/login")) return fallback;
     // Normalize typo: dashbord → dashboard
     const normalized = path.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
     return normalized;
   } catch {
     if (!value.startsWith("/") || value.startsWith("//")) return fallback;
-    if (value.includes("/innlogging")) return fallback;
+    if (value.includes("/login")) return fallback;
     const normalized = value.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
     return normalized;
   }

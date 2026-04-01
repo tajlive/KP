@@ -40,7 +40,7 @@ export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
       !(pathname ?? "/").includes("/auth/callback")
     ) {
       const locale = (pathname ?? "/").startsWith("/en") ? "en" : "no";
-      const login = hrefWithLocale(locale, "/innlogging");
+      const login = hrefWithLocale(locale, "/login");
       router.push(`${login}?redirectTo=${encodeURIComponent(pathname ?? "/")}`);
     }
   }, [isAuthenticated, pathname, router]);

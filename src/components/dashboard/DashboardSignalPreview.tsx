@@ -204,7 +204,7 @@ export function DashboardSignalPreview({
           </span>
         </div>
         <Link
-          href={hrefWithLocale(locale, "/paper-trading")}
+          href={hrefWithLocale(locale, "/paper")}
           className="text-sm font-medium text-[#3d7aff] hover:text-[#5c8fff] transition-colors"
         >
           {t("signalPreview.seeAll")}

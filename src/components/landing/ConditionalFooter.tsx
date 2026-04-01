@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Footer } from "./Footer";
 
-const APP_ROUTES = ["/dashboard", "/admin", "/paper-trading"];
+const APP_ROUTES = ["/dashboard", "/admin", "/paper"];
 
 export function ConditionalFooter() {
   const pathname = usePathname();

@@ -5,7 +5,7 @@ describe("hrefWithLocale (as-needed prefix)", () => {
   it("norsk (default): ingen /no-prefiks", () => {
     expect(hrefWithLocale("no", "/")).toBe("/");
     expect(hrefWithLocale("no", "/dashboard")).toBe("/dashboard");
-    expect(hrefWithLocale("no", "/innlogging")).toBe("/innlogging");
+    expect(hrefWithLocale("no", "/login")).toBe("/login");
   });
 
   it("engelsk: /en/...", () => {

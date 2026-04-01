@@ -107,14 +107,14 @@ export default async function PaperTradingLandingPage({
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href={hrefWithLocale(locale, "/signup")}
+                  href={hrefWithLocale(locale, "/register")}
                   className="px-8 py-4 bg-white text-emerald-700 rounded-xl font-bold text-lg shadow-xl hover:bg-emerald-50 transition-all duration-200 inline-flex items-center justify-center gap-2"
                 >
                   <PlayCircle className="w-5 h-5" />
                   Start nå — det er gratis
                 </Link>
                 <Link
-                  href={hrefWithLocale(locale, "/innlogging")}
+                  href={hrefWithLocale(locale, "/login")}
                   className="px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-xl font-semibold text-lg hover:bg-white/10 transition-all duration-200 inline-flex items-center justify-center"
                 >
                   Logg inn
@@ -317,7 +317,7 @@ export default async function PaperTradingLandingPage({
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href={hrefWithLocale(locale, "/signup")}
+              href={hrefWithLocale(locale, "/register")}
               className="px-8 py-4 bg-white text-emerald-700 rounded-xl font-bold text-lg shadow-xl hover:bg-emerald-50 transition-all inline-flex items-center justify-center gap-2"
             >
               Opprett gratis konto

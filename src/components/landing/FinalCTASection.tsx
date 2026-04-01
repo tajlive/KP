@@ -12,7 +12,7 @@ export default function FinalCTASection() {
   const locale = useLocale();
   const t = useTranslations("landing.finalCta");
   const { user } = useAuth();
-  const signupHref = hrefWithLocale(locale, "/signup");
+  const signupHref = hrefWithLocale(locale, "/register");
   const dashboardHref = hrefWithLocale(locale, "/dashboard");
 
   const guarantees = [

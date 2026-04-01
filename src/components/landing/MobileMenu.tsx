@@ -14,9 +14,9 @@ export function MobileMenu() {
   const l = (path: string) => hrefWithLocale(locale, path === "/" ? "/" : path);
 
   const menuItems = [
-    { href: l("/signup"), label: t("signup") },
+    { href: l("/register"), label: t("signup") },
     { href: l("/priser"), label: t("pricing") },
-    { href: l("/innlogging"), label: t("login") },
+    { href: l("/login"), label: t("login") },
   ];
 
   return (

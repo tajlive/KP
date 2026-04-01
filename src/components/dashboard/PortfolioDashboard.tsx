@@ -327,8 +327,8 @@ export default function PortfolioDashboard({
 
   const tradingDeskPath =
     activeSession?.mode === "live"
-      ? "/paper-trading?mode=live"
-      : "/paper-trading";
+      ? "/paper?mode=live"
+      : "/paper";
 
   type Position = { symbol: string; qty: number; value: number };
   const positions = displayTrades.reduce(

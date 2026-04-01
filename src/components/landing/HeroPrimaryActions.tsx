@@ -16,8 +16,8 @@ export function HeroPrimaryActions({
   const t = useTranslations("landing.modernHero");
   const { user } = useAuth();
 
-  const signupHref = hrefWithLocale(locale, "/signup");
-  const paperHref = hrefWithLocale(locale, "/paper-trading");
+  const signupHref = hrefWithLocale(locale, "/register");
+  const paperHref = hrefWithLocale(locale, "/paper");
   const dashboardHref = hrefWithLocale(locale, "/dashboard");
 
   if (user) {
