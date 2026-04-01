@@ -183,6 +183,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {metaDescription != null ? (
           <meta name="description" content={metaDescription} />
         ) : null}
+        {/* Google Search Console Verification */}
+        {process.env.NEXT_PUBLIC_GSC_VERIFICATION ? (
+          <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GSC_VERIFICATION} />
+        ) : null}
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
         <script
           dangerouslySetInnerHTML={{

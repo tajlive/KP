@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import {
   GraduationCap,
   Wallet,
   Bot,
   Shield,
   TrendingUp,
-  Users,
   Zap,
   Clock,
+  Users,
   ArrowRight,
-} from 'lucide-react';
-import { GlassCard } from '@/components/ui/GlassCard';
-import { ButtonPremium } from '@/components/ui/ButtonPremium';
+} from "lucide-react";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { ButtonPremium } from "@/components/ui/ButtonPremium";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -28,8 +28,8 @@ function FeatureCard({
   icon,
   title,
   description,
-  className = '',
-  gradient = 'from-kp-brand/20 to-kp-brand/5',
+  className = "",
+  gradient = "from-kp-brand/20 to-kp-brand/5",
   delay = 0,
 }: FeatureCardProps) {
   return (
@@ -65,8 +65,7 @@ function LargeFeatureCard({
   title,
   description,
   stats,
-  className = '',
-  gradient = 'from-kp-brand/30 via-kp-brand/10 to-transparent',
+  className = "",
   delay = 0,
 }: FeatureCardProps & { stats?: { value: string; label: string }[] }) {
   return (
@@ -82,10 +81,7 @@ function LargeFeatureCard({
         hover="lift"
         className="h-full relative overflow-hidden"
       >
-        {/* Background gradient */}
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-50`}
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-kp-brand/30 via-kp-brand/10 to-transparent opacity-50" />
 
         <div className="relative z-10 h-full flex flex-col">
           <div className="w-14 h-14 rounded-xl bg-kp-surface-highlight flex items-center justify-center mb-4">
@@ -104,12 +100,8 @@ function LargeFeatureCard({
             <div className="grid grid-cols-2 gap-4 mt-auto">
               {stats.map((stat, i) => (
                 <div key={i} className="text-center p-3 rounded-lg bg-kp-surface/50">
-                  <div className="text-xl font-bold text-kp-brand">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-kp-text-tertiary">
-                    {stat.label}
-                  </div>
+                  <div className="text-xl font-bold text-kp-brand">{stat.value}</div>
+                  <div className="text-xs text-kp-text-tertiary">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -124,59 +116,51 @@ export function FeaturesBentoGrid() {
   const features = [
     {
       icon: <GraduationCap className="w-6 h-6" />,
-      title: 'Strukturert læring',
-      description:
-        'Fra nybegynner til avansert. Videoer, quiz og praktiske øvelser som passer ditt tempo.',
-      gradient: 'from-blue-500/20 to-blue-500/5',
+      title: "Strukturert læring",
+      description: "Fra nybegynner til avansert. Videoer, quiz og praktiske øvelser som passer ditt tempo.",
+      gradient: "from-blue-500/20 to-blue-500/5",
     },
     {
       icon: <Wallet className="w-6 h-6" />,
-      title: '100 000 kr lekepenger',
-      description:
-        'Øv deg med ekte markedsdata uten å risikere dine egne sparepenger.',
-      gradient: 'from-green-500/20 to-green-500/5',
+      title: "100 000 kr lekepenger",
+      description: "Øv deg med ekte markedsdata uten å risikere dine egne sparepenger.",
+      gradient: "from-green-500/20 to-green-500/5",
     },
     {
       icon: <Bot className="w-6 h-6" />,
-      title: 'AI Trading Bot',
-      description:
-        'Våre algoritmer analyserer markedet 24/7 og finner de beste mulighetene for deg.',
-      gradient: 'from-purple-500/20 to-purple-500/5',
+      title: "AI Trading Bot",
+      description: "Våre algoritmer analyserer markedet 24/7 og finner de beste mulighetene.",
+      gradient: "from-purple-500/20 to-purple-500/5",
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: 'Bank-grade sikkerhet',
-      description:
-        '256-bit kryptering, 2FA, og full GDPR-compliance. Din data er trygg hos oss.',
-      gradient: 'from-amber-500/20 to-amber-500/5',
+      title: "Bank-grade sikkerhet",
+      description: "256-bit kryptering, 2FA, og full GDPR-compliance.",
+      gradient: "from-amber-500/20 to-amber-500/5",
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: 'Lynraske signaler',
-      description:
-        'Sanntids markedsdata direkte fra Binance. Ingen forsinkelser, ingen ventetid.',
-      gradient: 'from-yellow-500/20 to-yellow-500/5',
+      title: "Lynraske signaler",
+      description: "Sanntids markedsdata direkte fra Binance. Ingen forsinkelser.",
+      gradient: "from-yellow-500/20 to-yellow-500/5",
     },
     {
       icon: <Clock className="w-6 h-6" />,
-      title: 'Alltid tilgjengelig',
-      description:
-        'Handel når som helst, hvor som helst. På mobil, nettbrett eller datamaskin.',
-      gradient: 'from-cyan-500/20 to-cyan-500/5',
+      title: "Alltid tilgjengelig",
+      description: "Handel når som helst, hvor som helst. På mobil, nettbrett eller PC.",
+      gradient: "from-cyan-500/20 to-cyan-500/5",
     },
     {
       icon: <Users className="w-6 h-6" />,
-      title: 'Norsk fellesskap',
-      description:
-        'Bli med i et voksende fellesskap av norske tradere. Del erfaringer og lær av andre.',
-      gradient: 'from-pink-500/20 to-pink-500/5',
+      title: "Norsk fellesskap",
+      description: "Bli med i et voksende fellesskap av norske tradere.",
+      gradient: "from-pink-500/20 to-pink-500/5",
     },
   ];
 
   return (
     <section className="py-16 lg:py-24 bg-kp-bg-primary">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -195,48 +179,29 @@ export function FeaturesBentoGrid() {
             transition={{ delay: 0.1 }}
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-kp-text-primary mb-4"
           >
-            Alt du trenger for å{' '}
+            Alt du trenger for å{" "}
             <span className="bg-gradient-to-r from-kp-brand to-kp-brand-light bg-clip-text text-transparent">
               mestre trading
             </span>
           </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-kp-text-secondary max-w-2xl mx-auto"
-          >
-            Vi har samlet de beste verktøyene for å lære trading på en trygg,
-            strukturert og engasjerende måte.
-          </motion.p>
         </div>
 
-        {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          {/* Large featured card */}
           <LargeFeatureCard
             icon={<Bot className="w-7 h-7 text-kp-brand" />}
             title="AI-drevet trading"
-            description="Våre avanserte algoritmer analyserer markedet kontinuerlig og identifiserer de beste handelsmulighetene for deg. Slipp å stirre på grafer hele dagen."
+            description="Våre avanserte algoritmer analyserer markedet kontinuerlig og identifiserer de beste handelsmulighetene."
             stats={[
-              { value: '24/7', label: 'Overvåking' },
-              { value: '<2s', label: 'Responstid' },
+              { value: "24/7", label: "Overvåking" },
+              { value: "<2s", label: "Responstid" },
             ]}
             delay={0.1}
           />
 
-          {/* Regular cards */}
           {features.map((feature, index) => (
-            <FeatureCard
-              key={feature.title}
-              {...feature}
-              delay={0.1 + index * 0.05}
-            />
+            <FeatureCard key={feature.title} {...feature} delay={0.1 + index * 0.05} />
           ))}
 
-          {/* CTA Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -248,13 +213,8 @@ export function FeaturesBentoGrid() {
               variant="glow"
               className="h-full flex flex-col items-center justify-center text-center p-8 bg-gradient-to-br from-kp-brand to-kp-brand-dark"
             >
-              <h3 className="text-xl font-bold text-white mb-3">
-                Klar til å starte?
-              </h3>
-              <p className="text-white/80 mb-6 max-w-md">
-                Bli med i dag og få tilgang til alle funksjoner. Start gratis,
-                oppgrader når du er klar.
-              </p>
+              <h3 className="text-xl font-bold text-white mb-3">Klar til å starte?</h3>
+              <p className="text-white/80 mb-6">Bli med i dag og få tilgang til alle funksjoner.</p>
               <ButtonPremium
                 variant="secondary"
                 size="lg"
