@@ -1,17 +1,17 @@
 "use client";
 
-import { RiskDisclaimer } from "@/components/RiskDisclaimer";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { RiskDisclaimer } from "@/shared/disclaimers/RiskDisclaimer";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
 import { BINANCE_REFERRAL_LINK as BINANCE_REF_LINK } from "@/lib/constants/binance";
 import {
   AlertTriangle,

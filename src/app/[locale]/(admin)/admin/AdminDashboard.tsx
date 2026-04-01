@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
 import type { Profile } from "@/types/database";

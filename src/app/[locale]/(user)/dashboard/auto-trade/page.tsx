@@ -1,9 +1,9 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { Metadata } from "next";
-import { BotWizard } from "@/components/auto-trade/BotWizard";
-import { RobotThinkingStrip } from "@/components/trading/RobotThinkingStrip";
-import { AutoTradingConfigCard } from "@/components/dashboard/AutoTradingConfigCard";
+import { BotWizard } from "@/features/auto-trade/BotWizard";
+import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
+import { AutoTradingConfigCard } from "@/features/dashboard/AutoTradingConfigCard";
 
 export const dynamic = "force-dynamic";
 

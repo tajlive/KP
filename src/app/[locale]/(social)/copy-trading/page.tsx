@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import CopyTradingDashboard from "@/components/copy-trading/CopyTradingDashboard";
+import CopyTradingDashboard from "@/features/copy-trading/CopyTradingDashboard";
 
 export const dynamic = "force-dynamic";
 export const metadata = {

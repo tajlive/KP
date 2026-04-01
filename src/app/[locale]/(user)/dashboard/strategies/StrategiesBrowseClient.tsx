@@ -5,9 +5,9 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { createClient } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StrategyMetadataForm } from "@/components/strategy-marketplace/StrategyMetadataForm";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { StrategyMetadataForm } from "@/features/marketplace/strategy-marketplace/StrategyMetadataForm";
 import type { StrategyMetadataFormValues } from "@/lib/strategy-form-gen";
 import { toast } from "sonner";
 

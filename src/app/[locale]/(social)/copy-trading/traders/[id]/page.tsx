@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import CreatorProfileClient from "@/components/copy-trading/CreatorProfileClient";
+import CreatorProfileClient from "@/features/copy-trading/CreatorProfileClient";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { AlertCircle } from "lucide-react";

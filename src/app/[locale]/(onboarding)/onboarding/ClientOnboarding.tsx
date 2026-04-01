@@ -1,6 +1,6 @@
 "use client";
 
-import SpeedOnboarding from "@/components/onboarding/SpeedOnboarding";
+import SpeedOnboarding from "@/features/onboarding/SpeedOnboarding";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { Check, HelpCircle, Coins } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
-import { PaymentTrustLogos } from "@/components/landing/PaymentTrustLogos";
-import { useVippsMarket } from "@/components/providers/VippsMarketProvider";
+import { PaymentTrustLogos } from "@/features/landing/PaymentTrustLogos";
+import { useVippsMarket } from "@/shared/providers/VippsMarketProvider";
 import { getPriserPlans } from "./priser-plans";
 
 const legacyFaqs = [

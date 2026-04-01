@@ -1,6 +1,6 @@
 "use client";
 
-import { PaymentMethodSelector } from "@/components/payment/PaymentMethodSelector";
+import { PaymentMethodSelector } from "@/features/payments/PaymentMethodSelector";
 import { cn, createClient } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowLeft, Check, CreditCard, Loader2, Shield } from "lucide-react";

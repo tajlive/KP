@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { useLocale, useTranslations } from "next-intl";
 import { SURFACE, BRAND } from "@/lib/design/tokens";
 import {
@@ -10,7 +10,7 @@ import {
   PremiumStatusBanner,
   PremiumTradingHero,
   PremiumTradingShell,
-} from "@/components/trading/PremiumTradingLayout";
+} from "@/features/trading/PremiumTradingLayout";
 import { aggregateTradeHistoryStats } from "@/lib/trading/trade-history-aggregates";
 import { explainStrategySignalJson } from "@/lib/bot-status-helpers";
 import {

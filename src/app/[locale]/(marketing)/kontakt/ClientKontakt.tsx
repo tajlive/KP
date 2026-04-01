@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { ArrowRight, CheckCircle, Mail, MapPin, MessageSquare, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

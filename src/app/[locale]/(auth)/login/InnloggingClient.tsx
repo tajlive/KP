@@ -1,15 +1,15 @@
 "use client";
 
-import { AuthButtons } from "@/components/auth/UnifiedAuthButton";
-import { Button } from "@/components/ui/button";
+import { AuthButtons } from "@/features/auth/UnifiedAuthButton";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
 import { getAuthErrorMessage } from "@/lib/auth/config";
 import {
   getErrorMessage,
@@ -32,7 +32,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useState, Suspense } from "react";
-import { useAuth } from "@/components/auth/AuthContext";
+import { useAuth } from "@/features/auth/AuthContext";
 
 /**
  * Saniterer redirect-destinasjon til en sikker relativ sti.

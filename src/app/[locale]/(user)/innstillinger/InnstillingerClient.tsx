@@ -15,9 +15,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import NotificationSettings from "@/components/settings/NotificationSettings";
+import { Button } from "@/shared/ui/button";
+import { Switch } from "@/shared/ui/switch";
+import NotificationSettings from "@/features/settings/NotificationSettings";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

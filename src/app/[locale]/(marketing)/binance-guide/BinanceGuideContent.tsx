@@ -1,8 +1,8 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { RiskDisclaimer } from '@/components/RiskDisclaimer'
+import { Button } from '@/shared/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { RiskDisclaimer } from '@/shared/disclaimers/RiskDisclaimer'
 import { 
   ExternalLink, 
   CheckCircle, 

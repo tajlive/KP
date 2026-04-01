@@ -19,10 +19,10 @@ import {
 import {
   GamificationProvider,
   useGamification,
-} from "@/components/gamification/GamificationProvider";
-import { XPBar } from "@/components/gamification/XPBar";
-import { LevelUpModal } from "@/components/gamification/LevelUpModal";
-import { UpgradeBanner } from "@/components/dashboard/UpgradeBanner";
+} from "@/features/gamification/GamificationProvider";
+import { XPBar } from "@/features/gamification/XPBar";
+import { LevelUpModal } from "@/features/gamification/LevelUpModal";
+import { UpgradeBanner } from "@/features/dashboard/UpgradeBanner";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import { LEARNING_TRACKS, type UserBadge } from "@/lib/learningTracks";
 import { TIERS, type TierSlug } from "@/lib/pricing/tiers";

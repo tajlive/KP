@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
-import { TradeHub } from "@/components/coinbase/TradeHub";
+import { TradeHub } from "@/features/coinbase/TradeHub";
 
 export const dynamic = "force-dynamic";
 

@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { Metadata } from "next";
-import { BotDetailView } from "@/components/auto-trade/BotDetailView";
+import { BotDetailView } from "@/features/auto-trade/BotDetailView";
 
 export const dynamic = "force-dynamic";
 

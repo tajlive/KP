@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/shared/ui/Logo";
 
 // Krever Supabase env; unngå statisk generering ved build
 export const dynamic = "force-dynamic";

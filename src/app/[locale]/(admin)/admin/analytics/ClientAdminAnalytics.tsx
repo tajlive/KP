@@ -16,7 +16,7 @@ import {
   Smartphone,
   Tablet,
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { createClient } from '@/lib/utils';
 import { formatDistanceToNow } from '@/lib/utils';
 

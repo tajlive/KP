@@ -1,4 +1,4 @@
-import { SetupWizard } from '@/components/strategies';
+import { SetupWizard } from '@/features/strategies';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

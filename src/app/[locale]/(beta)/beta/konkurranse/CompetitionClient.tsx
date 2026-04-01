@@ -7,8 +7,8 @@ import { getLeaderboard, getUserRank } from '@/lib/paper-trading/supabase'
 import { LeaderboardEntry } from '@/types/paper-trading'
 import { usePaperTrading } from '@/hooks/usePaperTrading'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/shared/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import {
     Trophy,
     Users,

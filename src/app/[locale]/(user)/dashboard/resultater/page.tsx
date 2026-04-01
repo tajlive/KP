@@ -1,4 +1,4 @@
-import TradingResultsDashboard from "@/components/dashboard/TradingResultsDashboard";
+import TradingResultsDashboard from "@/features/dashboard/TradingResultsDashboard";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 

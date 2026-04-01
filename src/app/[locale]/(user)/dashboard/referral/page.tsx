@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
-import { ReferralDashboard } from "@/components/referral/ReferralDashboard";
+import { ReferralDashboard } from "@/features/referral/ReferralDashboard";
 
 export const metadata = {
   title: "Golden Ticket | Klarpakke",

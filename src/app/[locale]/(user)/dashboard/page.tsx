@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { DashboardContent } from "@/features/dashboard/DashboardContent";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";

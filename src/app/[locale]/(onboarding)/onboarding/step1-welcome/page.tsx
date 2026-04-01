@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { Bot, Clock, Shield } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 

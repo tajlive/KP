@@ -2,11 +2,11 @@ import { createClient, createServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpen, Clock, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ProgressBar } from "@/components/kurs/ProgressBar";
-import { LessonQuiz } from "@/components/kurs/LessonQuiz";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
+import { ProgressBar } from "@/features/kurs/ProgressBar";
+import { LessonQuiz } from "@/features/kurs/LessonQuiz";
 import { markLessonComplete } from "@/lib/courses/actions";
 import ReactMarkdown from "react-markdown";
 

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import FundingArbitrageDashboard from '@/components/funding/FundingArbitrageDashboard';
+import FundingArbitrageDashboard from '@/features/funding/FundingArbitrageDashboard';
 
 export const metadata: Metadata = {
   title: 'Funding Arbitrage | Klarpakke',

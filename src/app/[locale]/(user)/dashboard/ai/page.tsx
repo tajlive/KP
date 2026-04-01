@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
-import { AiHub } from "@/components/coinbase/AiHub";
+import { AiHub } from "@/features/coinbase/AiHub";
 
 export const dynamic = "force-dynamic";
 

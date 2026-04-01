@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
-import { AssetDetailView } from "@/components/coinbase/AssetDetailView";
+import { AssetDetailView } from "@/features/coinbase/AssetDetailView";
 
 export const dynamic = "force-dynamic";
 

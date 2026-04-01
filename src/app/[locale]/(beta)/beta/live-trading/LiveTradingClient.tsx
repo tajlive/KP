@@ -1,6 +1,6 @@
 "use client";
 
-import { OrderHistory } from "@/components/trading/OrderHistory";
+import { OrderHistory } from "@/features/trading/OrderHistory";
 import { useRealtimePrices } from "@/lib/hooks/useRealtimePrices";
 import { createClient } from "@/lib/utils";
 import { Profile } from "@/types/database";
@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 const TradingViewWidget = dynamic(
-  () => import("@/components/trading/TradingViewWidget"),
+  () => import("@/features/trading/TradingViewWidget"),
   {
     ssr: false,
     loading: () => (

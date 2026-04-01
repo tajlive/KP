@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import { CopyTradingDiscoverClient } from "@/components/copy-trading/CopyTradingDiscoverClient";
+import { CopyTradingDiscoverClient } from "@/features/copy-trading/CopyTradingDiscoverClient";
 import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";

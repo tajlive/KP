@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
-import { EarnHub } from "@/components/coinbase/EarnHub";
+import { EarnHub } from "@/features/coinbase/EarnHub";
 
 export const dynamic = "force-dynamic";
 

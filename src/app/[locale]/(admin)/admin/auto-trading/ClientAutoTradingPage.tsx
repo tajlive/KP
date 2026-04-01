@@ -1,9 +1,9 @@
 "use client";
 
-import UnifiedTradingDashboard from "@/components/trading/UnifiedTradingDashboard";
-import { ExchangeApiSettings } from "@/components/settings/ExchangeApiSettings";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import UnifiedTradingDashboard from "@/features/trading/UnifiedTradingDashboard";
+import { ExchangeApiSettings } from "@/features/settings/ExchangeApiSettings";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent } from "@/shared/ui/card";
 import { createClient } from "@/lib/utils";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";

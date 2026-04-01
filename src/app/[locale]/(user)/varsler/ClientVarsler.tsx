@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { Bell, BookOpen, Calendar, Mail, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { useTranslations, useLocale } from 'next-intl';
 
 interface NotificationSetting {

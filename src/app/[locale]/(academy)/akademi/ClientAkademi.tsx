@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Input } from '@/shared/ui/input';
 import { 
   BookOpen, 
   Search, 
@@ -32,7 +32,7 @@ import {
   LessonType 
 } from '@/lib/learningTracks';
 import { useLearningProgress } from '@/lib/useLearningProgress';
-import { TrackProgress } from '@/components/learning/Badge';
+import { TrackProgress } from '@/features/learning/Badge';
 import { cn } from '@/lib/utils';
 
 type FilterLevel = TrackLevel | 'all';

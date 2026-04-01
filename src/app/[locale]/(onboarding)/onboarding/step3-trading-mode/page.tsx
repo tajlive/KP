@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Gamepad2, Info } from "lucide-react";
 import {
@@ -11,7 +11,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/shared/ui/tooltip";
 
 export default function OnboardingStep3() {
   const t = useTranslations("onboarding.step3");

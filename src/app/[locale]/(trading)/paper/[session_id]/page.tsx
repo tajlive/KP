@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-guard";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { PaperTradingSessionDetail } from "@/components/paper-trading/PaperTradingSessionDetail";
+import { PaperTradingSessionDetail } from "@/features/paper-trading/PaperTradingSessionDetail";
 import type { ComponentProps } from "react";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";

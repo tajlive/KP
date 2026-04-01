@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { AuthProvider } from "@/components/auth/AuthContext";
+import { AuthProvider } from "@/features/auth/AuthContext";
 import { useProgress } from "@/hooks/useProgress";
-import { OnboardingFlow } from "@/components/onboarding";
+import { OnboardingFlow } from "@/features/onboarding/OnboardingFlow";
 import { TradeSuccessProvider } from "@/hooks/useTradeSuccess";
 
 // KRITISK: Inline script som kjører FØR AuthProvider for å rense korrupte tokens
@@ -14,22 +14,22 @@ const CorruptTokenCleanup = () => (
     }}
   />
 );
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { ScrollToTop } from "@/components/dashboard/ScrollToTop";
-import { TopNav } from "@/components/navigation/TopNav";
-import { BottomTabs } from "@/components/navigation/BottomTabs";
+import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
+import { ScrollToTop } from "@/features/dashboard/ScrollToTop";
+import { TopNav } from "@/shared/navigation/TopNav";
+import { BottomTabs } from "@/shared/navigation/BottomTabs";
 import { usePaperTradingInit } from "@/hooks/usePaperTradingInit";
 import { createClient } from "@/lib/utils";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
-import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
-import { ThemeProvider } from "@/components/theme";
-import { QueryProvider } from "@/components/query-provider";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { SentryInit } from "@/components/providers/SentryInit";
+import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";
+import { ThemeProvider } from "@/shared/theme";
+import { QueryProvider } from "@/shared/providers/query-provider";
+import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
+import { SentryInit } from "@/shared/providers/SentryInit";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { useAuth } from "@/components/auth/AuthContext";
+import { useAuth } from "@/features/auth/AuthContext";
 import { SURFACE } from "@/lib/design/tokens";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {

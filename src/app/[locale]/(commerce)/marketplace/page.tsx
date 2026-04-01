@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-guard";
-import MarketplaceClient from "@/components/marketplace/MarketplaceClient";
+import MarketplaceClient from "@/features/marketplace/MarketplaceClient";
 
 export const dynamic = "force-dynamic";
 export const metadata = {

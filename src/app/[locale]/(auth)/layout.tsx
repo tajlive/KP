@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/components/auth/AuthContext";
+import { AuthProvider } from "@/features/auth/AuthContext";
 import { DM_Sans, Instrument_Serif } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";

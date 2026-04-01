@@ -1,14 +1,14 @@
 "use client";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/shared/ui/card";
 import * as Sentry from "@sentry/nextjs";
 import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { useState } from "react";

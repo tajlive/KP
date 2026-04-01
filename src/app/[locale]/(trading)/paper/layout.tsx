@@ -1,10 +1,10 @@
 "use client";
 
-import { AuthProvider } from "@/components/auth/AuthContext";
+import { AuthProvider } from "@/features/auth/AuthContext";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
-import { ClientSideProviders } from "@/components/providers/ClientSideProviders";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";
+import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 

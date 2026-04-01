@@ -1,6 +1,6 @@
 "use client";
 
-import { BacktestPanel } from "@/components/backtest";
+import { BacktestPanel } from "@/features/backtest";
 import { getAppUrl } from "@/lib/auth/config";
 import { createClient } from "@/lib/utils";
 import { Profile, Trade } from "@/types/database";
