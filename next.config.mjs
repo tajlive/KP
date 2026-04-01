@@ -304,6 +304,11 @@ const nextConfig = {
                 },
               ]
             : []),
+          // SEO: Canonical URL for duplicate prevention
+          {
+            key: "Link",
+            value: '<https://klarpakke.no/:path*>; rel="canonical"',
+          },
         ],
       },
       {

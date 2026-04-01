@@ -51,16 +51,18 @@ export default function FundingArbitrageDashboard() {
             <div>
               <h2 className="text-xl font-bold text-amber-400 mb-2">Viktig Informasjon om Funding Arbitrage</h2>
               <ul className="text-amber-200/80 space-y-1 text-sm">
-                <li>• <strong>Ingen garanti:</strong> Historisk APY varierer (4-15%), kan gå negativt</li>
-                <li>• <strong>Risiko:</strong> Exchange failure, basis risk, margin calls</li>
-                <li>• <strong>Kompleksitet:</strong> Krever kontoer på flere exchanges, API keys</li>
-                <li>• <strong>Regulering:</strong> Sjekk lokale regler før du starter</li>
+                <li>• <strong>Historiske tall, ingen garanti:</strong> Historisk APY varierer (4-15%), kan gå negativt. Fortidig avkastning garanterer ikke fremtidig resultat.</li>
+                <li>• <strong>Ingen automatisk utførelse:</strong> Dette er kun et analyseverktøy. All handel må utføres manuelt på dine egne exchange-kontoer.</li>
+                <li>• <strong>Risiko:</strong> Exchange failure, basis risk, margin calls, likviditetsrisiko.</li>
+                <li>• <strong>Kompleksitet:</strong> Krever kontoer på flere exchanges, forståelse av derivater.</li>
+                <li>• <strong>Regulering:</strong> Sjekk lokale regler før du starter. Ikke tilgjengelig for alle jurisdiksjoner.</li>
               </ul>
             </div>
           </div>
         </div>
 
         {/* Historical Performance (Realistic) */}
+        {/* DISCLAIMER: All numbers are backtested estimates. Not guaranteed. */}
         <GlassCard variant="elevated" className="p-8">
           <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-3">
             <TrendingUp className="w-6 h-6 text-emerald-400" />
@@ -71,7 +73,7 @@ export default function FundingArbitrageDashboard() {
             <div className="text-center p-4 bg-white/5 rounded-2xl">
               <div className="text-4xl font-black text-emerald-400">{formatPct(historical.avgAnnualReturn)}</div>
               <div className="text-sm text-slate-400 uppercase tracking-wider mt-1">Gj.snitt APY</div>
-              <div className="text-xs text-slate-500">Ikke garantert</div>
+              <div className="text-xs text-slate-500">Historisk estimat</div>
             </div>
             <div className="text-center p-4 bg-white/5 rounded-2xl">
               <div className="text-4xl font-black text-rose-400">{formatPct(historical.maxDrawdown)}</div>

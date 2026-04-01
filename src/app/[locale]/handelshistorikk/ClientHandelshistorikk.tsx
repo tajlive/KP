@@ -20,7 +20,7 @@ import {
   Clock3,
   ClipboardCopy,
 } from "lucide-react";
-import type { Json } from "@/types/supabase-generated";
+import type { Json } from "@/types/database.types";
 import {
   reportTradeHistoryEmptyWhileSignedIn,
   reportTradingIntegrityPollFailure,

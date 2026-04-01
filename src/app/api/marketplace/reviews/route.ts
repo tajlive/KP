@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 export const dynamic = "force-dynamic";
 

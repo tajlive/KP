@@ -247,6 +247,7 @@ export type Database = {
           decision_type: string
           executed_at: string | null
           id: string
+          opik_trace_id: string | null
           sentiment_score: number | null
           symbol: string
           user_id: string
@@ -258,6 +259,7 @@ export type Database = {
           decision_type: string
           executed_at?: string | null
           id?: string
+          opik_trace_id?: string | null
           sentiment_score?: number | null
           symbol?: string
           user_id: string
@@ -269,6 +271,7 @@ export type Database = {
           decision_type?: string
           executed_at?: string | null
           id?: string
+          opik_trace_id?: string | null
           sentiment_score?: number | null
           symbol?: string
           user_id?: string
@@ -465,6 +468,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      atr_cache: {
+        Row: {
+          atr_14: number | null
+          atr_28: number | null
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          atr_14?: number | null
+          atr_28?: number | null
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          atr_14?: number | null
+          atr_28?: number | null
+          symbol?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       audit_logs: {
         Row: {
@@ -1236,6 +1260,63 @@ export type Database = {
         }
         Relationships: []
       }
+      backtest_results: {
+        Row: {
+          created_at: string | null
+          equity_curve: Json | null
+          id: string
+          initial_capital: number
+          interval: string
+          max_drawdown_pct: number
+          metrics: Json | null
+          profit_factor: number | null
+          sharpe_ratio: number | null
+          strategy: string
+          symbol: string
+          total_return_pct: number
+          total_trades: number
+          updated_at: string | null
+          user_id: string | null
+          win_rate: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          equity_curve?: Json | null
+          id?: string
+          initial_capital: number
+          interval: string
+          max_drawdown_pct: number
+          metrics?: Json | null
+          profit_factor?: number | null
+          sharpe_ratio?: number | null
+          strategy: string
+          symbol: string
+          total_return_pct: number
+          total_trades?: number
+          updated_at?: string | null
+          user_id?: string | null
+          win_rate?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          equity_curve?: Json | null
+          id?: string
+          initial_capital?: number
+          interval?: string
+          max_drawdown_pct?: number
+          metrics?: Json | null
+          profit_factor?: number | null
+          sharpe_ratio?: number | null
+          strategy?: string
+          symbol?: string
+          total_return_pct?: number
+          total_trades?: number
+          updated_at?: string | null
+          user_id?: string | null
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
       backup_policies_20260224: {
         Row: {
           backed_up_at: string | null
@@ -1870,6 +1951,8 @@ export type Database = {
       }
       conditional_orders: {
         Row: {
+          binance_oco_id: string | null
+          binance_order_list_id: number | null
           created_at: string | null
           current_price_at_creation: number | null
           executed_at: string | null
@@ -1889,6 +1972,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          binance_oco_id?: string | null
+          binance_order_list_id?: number | null
           created_at?: string | null
           current_price_at_creation?: number | null
           executed_at?: string | null
@@ -1908,6 +1993,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          binance_oco_id?: string | null
+          binance_order_list_id?: number | null
           created_at?: string | null
           current_price_at_creation?: number | null
           executed_at?: string | null
@@ -2663,6 +2750,39 @@ export type Database = {
           id?: number
           updated_at?: string | null
           usdt_nok_rate?: number | null
+        }
+        Relationships: []
+      }
+      kelly_stats: {
+        Row: {
+          avg_loss_pct: number | null
+          avg_win_pct: number | null
+          id: string
+          kelly_fraction: number | null
+          strategy: string
+          updated_at: string | null
+          user_id: string | null
+          winrate: number | null
+        }
+        Insert: {
+          avg_loss_pct?: number | null
+          avg_win_pct?: number | null
+          id?: string
+          kelly_fraction?: number | null
+          strategy: string
+          updated_at?: string | null
+          user_id?: string | null
+          winrate?: number | null
+        }
+        Update: {
+          avg_loss_pct?: number | null
+          avg_win_pct?: number | null
+          id?: string
+          kelly_fraction?: number | null
+          strategy?: string
+          updated_at?: string | null
+          user_id?: string | null
+          winrate?: number | null
         }
         Relationships: []
       }
@@ -3514,6 +3634,51 @@ export type Database = {
           step4_completed?: boolean | null
           step5_completed?: boolean | null
           updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      optimal_trades: {
+        Row: {
+          atr_multiplier: number | null
+          created_at: string | null
+          entry_price: number | null
+          id: string
+          kelly_size: number | null
+          pyramid_level: number | null
+          rr_ratio: number | null
+          session_id: string | null
+          stop_price: number | null
+          symbol: string | null
+          target_price: number | null
+          user_id: string | null
+        }
+        Insert: {
+          atr_multiplier?: number | null
+          created_at?: string | null
+          entry_price?: number | null
+          id?: string
+          kelly_size?: number | null
+          pyramid_level?: number | null
+          rr_ratio?: number | null
+          session_id?: string | null
+          stop_price?: number | null
+          symbol?: string | null
+          target_price?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          atr_multiplier?: number | null
+          created_at?: string | null
+          entry_price?: number | null
+          id?: string
+          kelly_size?: number | null
+          pyramid_level?: number | null
+          rr_ratio?: number | null
+          session_id?: string | null
+          stop_price?: number | null
+          symbol?: string | null
+          target_price?: number | null
           user_id?: string | null
         }
         Relationships: []
@@ -6311,6 +6476,7 @@ export type Database = {
           phase_min_days: number | null
           phase_profitable: boolean | null
           phase_started_at: string | null
+          risk_level: string
           strategy_id: string | null
           trading_capital_nok: number | null
           updated_at: string | null
@@ -6329,6 +6495,7 @@ export type Database = {
           phase_min_days?: number | null
           phase_profitable?: boolean | null
           phase_started_at?: string | null
+          risk_level?: string
           strategy_id?: string | null
           trading_capital_nok?: number | null
           updated_at?: string | null
@@ -6347,6 +6514,7 @@ export type Database = {
           phase_min_days?: number | null
           phase_profitable?: boolean | null
           phase_started_at?: string | null
+          risk_level?: string
           strategy_id?: string | null
           trading_capital_nok?: number | null
           updated_at?: string | null
@@ -7538,7 +7706,7 @@ export type Database = {
         Returns: number
       }
       calculate_daily_loss: {
-        Args: { p_session_id: string; p_user_id: string }
+        Args: { p_strategy_id?: string; p_user_id: string }
         Returns: number
       }
       calculate_level: { Args: { xp: number }; Returns: number }

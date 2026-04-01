@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Tables } from "@/types/supabase-generated";
+import type { Tables } from "@/types/database.types";
 
 export interface AutoTradingConfig {
   id: string;

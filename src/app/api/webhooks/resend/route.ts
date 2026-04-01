@@ -7,13 +7,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 import { Webhook } from 'svix';
 
 const WEBHOOK_SECRET = process.env.RESEND_WEBHOOK_SECRET;
 
 // Supabase admin client
 const getSupabase = () => {
-  return createClient(
+  return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );

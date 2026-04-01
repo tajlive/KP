@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email/send";
 import { getDailySummaryEmail } from "@/lib/email/templates";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 interface UserForSummary {
   id: string;

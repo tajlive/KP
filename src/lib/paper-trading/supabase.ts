@@ -14,6 +14,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 import {
   PaperSimulation, PaperTrade, LeaderboardEntry,
   RiskLevel, RiskPreset, BacktestResult
@@ -23,7 +24,7 @@ import { RISK_PRESETS } from './presets';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 /**
  * Map trading_sessions row to PaperSimulation type
@@ -74,7 +75,7 @@ export async function createSimulation(
       strategy_id: riskLevel,
       initial_capital: initialBalance,
       current_capital: initialBalance,
-      strategy_config: preset,
+      strategy_config: preset as unknown as import('@/types/database.types').Json,
       mode: 'paper',
       status: 'active',
       started_at: new Date().toISOString(),
@@ -210,7 +211,7 @@ export async function createTrade(
     return null;
   }
 
-  return data as PaperTrade;
+  return data as unknown as PaperTrade;
 }
 
 /**
@@ -256,7 +257,7 @@ export async function getSimulationTrades(simulationId: string): Promise<PaperTr
     return [];
   }
 
-  return data as PaperTrade[] || [];
+  return (data as unknown as PaperTrade[]) || [];
 }
 
 /**
@@ -314,7 +315,7 @@ export async function saveBacktestResult(
       idempotency_key: `${Date.now()}-${Math.random()}`,
     }));
 
-    await supabase.from('trades').insert(trades);
+    await supabase.from('trades').insert(trades as any);
   }
 
   return mapToPaperSimulation(data);
@@ -328,7 +329,7 @@ export async function getLeaderboard(
   limit: number = 50
 ): Promise<LeaderboardEntry[]> {
   const { data, error } = await supabase
-    .from('leaderboard_entries')
+    .from('leaderboard_entries' as any)
     .select('*')
     .eq('period', period)
     .eq('is_public', true)
@@ -340,7 +341,7 @@ export async function getLeaderboard(
     return [];
   }
 
-  return data || [];
+  return (data as unknown as LeaderboardEntry[]) || [];
 }
 
 /**
@@ -351,14 +352,14 @@ export async function getUserRank(
   period: 'daily' | 'weekly' | 'monthly' | 'all_time' = 'weekly'
 ): Promise<LeaderboardEntry | null> {
   const { data, error } = await supabase
-    .from('leaderboard_entries')
+    .from('leaderboard_entries' as any)
     .select('*')
     .eq('user_id', userId)
     .eq('period', period)
     .single();
 
   if (error) return null;
-  return data;
+  return data as unknown as LeaderboardEntry | null;
 }
 
 /**
@@ -388,7 +389,7 @@ export async function saveStrategy(strategy: SavedStrategy): Promise<SavedStrate
     return null;
   }
 
-  return data;
+  return data as unknown as SavedStrategy;
 }
 
 export async function getSavedStrategies(userId: string): Promise<SavedStrategy[]> {
@@ -404,7 +405,7 @@ export async function getSavedStrategies(userId: string): Promise<SavedStrategy[
     return [];
   }
 
-  return data || [];
+  return (data as unknown as SavedStrategy[]) || [];
 }
 
 export async function deleteStrategy(strategyId: string): Promise<boolean> {

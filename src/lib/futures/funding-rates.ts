@@ -1,9 +1,17 @@
 /**
- * Binance Futures Funding Rate Monitor
+ * Binance Futures Funding Rate Monitor - KLA-246
  *
  * Public API — no API keys required.
  * Fetches current funding rates from Binance USDⓈ-M Futures
  * and identifies delta-neutral arbitrage opportunities.
+ *
+ * DISCLAIMER:
+ * - This module is for ANALYSIS only. No trading is performed.
+ * - Historical returns are estimates, not guarantees.
+ * - Funding arbitrage carries significant risks including exchange failure and basis risk.
+ *
+ * @module funding-rates
+ * @see {@link getFundingRateSnapshot} for complete market data
  */
 
 const FAPI_BASE = 'https://fapi.binance.com';
@@ -42,7 +50,15 @@ const DEFAULT_SYMBOLS = [
 ];
 
 /**
- * Fetch current funding rates from Binance Futures (public, no auth).
+ * Fetch current funding rates from Binance Futures (public, no auth required).
+ *
+ * Uses the Binance USDⓈ-M Futures API to get real-time funding rates.
+ * This is a read-only operation. No trades are executed.
+ *
+ * @param symbols - Optional array of trading pairs (e.g., ['BTCUSDT', 'ETHUSDT'])
+ * @returns Array of funding rate data sorted by absolute rate (highest first)
+ * @throws Error if Binance API returns non-200 status
+ * @see https://binance-docs.github.io/apidocs/futures/en/#mark-price
  */
 export async function getFundingRates(
   symbols?: string[]
@@ -86,6 +102,14 @@ export async function getFundingRates(
 
 /**
  * Fetch historical funding rates for a specific symbol.
+ *
+ * Returns up to `limit` historical funding rate payments for analysis.
+ * Useful for backtesting and volatility assessment.
+ *
+ * @param symbol - Trading pair (e.g., 'BTCUSDT')
+ * @param limit - Number of historical records (default: 30, max: 1000)
+ * @returns Array of historical funding rates with timestamps
+ * @throws Error if Binance API returns non-200 status
  */
 export async function getFundingRateHistory(
   symbol: string,
@@ -109,11 +133,23 @@ export async function getFundingRateHistory(
 }
 
 /**
- * Identify delta-neutral arbitrage opportunities.
+ * Identify delta-neutral spot-futures arbitrage opportunities.
  *
- * When funding is positive: longs pay shorts. Strategy: buy spot + short futures.
- * When funding is negative: shorts pay longs. Strategy: short spot + long futures.
- * In both cases you are delta-neutral (no price exposure) and earn the funding.
+ * Analyzes funding rates to find assets where the funding payment
+ * exceeds a minimum threshold (8% annualized).
+ *
+ * Strategy:
+ * - When funding is positive: longs pay shorts. Strategy: buy spot + short futures.
+ * - When funding is negative: shorts pay longs. Strategy: short spot + long futures.
+ * - In both cases you are delta-neutral (no price exposure) and earn the funding.
+ *
+ * IMPORTANT:
+ * - This is analysis only. No trades are executed.
+ * - Actual returns depend on execution quality, fees, and market conditions.
+ * - Minimum threshold: 8% annualized (filters out noise).
+ *
+ * @param rates - Array of funding rate data from {@link getFundingRates}
+ * @returns Array of opportunities sorted by absolute annualized return
  */
 export function identifyOpportunities(
   rates: FundingRateData[]
@@ -156,6 +192,17 @@ export function identifyOpportunities(
 
 /**
  * Full snapshot: rates + opportunities + market sentiment.
+ *
+ * Returns a complete view of the current funding rate landscape,
+ * including arbitrage opportunities and overall market sentiment.
+ *
+ * @param symbols - Optional array of trading pairs to include
+ * @returns Complete funding rate snapshot with analysis
+ * @throws Error if Binance API request fails
+ * @example
+ * const snapshot = await getFundingRateSnapshot();
+ * console.log(`Market sentiment: ${snapshot.marketSentiment}`);
+ * console.log(`Found ${snapshot.opportunities.length} opportunities`);
  */
 export async function getFundingRateSnapshot(
   symbols?: string[]

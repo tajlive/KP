@@ -1,6 +1,7 @@
 
 
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 import { NextRequest, NextResponse } from 'next/server';
 
 // 1x1 transparent GIF
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
   try {
     // Logg åpning

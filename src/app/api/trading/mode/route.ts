@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
 import { normalizeTier } from "@/lib/pricing/tiers";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 

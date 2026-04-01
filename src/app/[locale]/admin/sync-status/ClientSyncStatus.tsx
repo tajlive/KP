@@ -22,7 +22,7 @@ import {
   Play,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 type DbWithAutoTradesLegacy = Database & {
   public: Database["public"] & {

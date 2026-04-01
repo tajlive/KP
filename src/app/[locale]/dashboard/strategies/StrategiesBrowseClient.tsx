@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { createClient } from "@/lib/utils";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StrategyMetadataForm } from "@/components/strategy-marketplace/StrategyMetadataForm";

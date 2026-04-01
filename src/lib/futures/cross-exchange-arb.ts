@@ -1,10 +1,17 @@
 /**
  * Cross-Exchange Funding Arbitrage Monitor - KLA-246 (Conservative Version)
- * 
+ *
  * Viser funding rate differanser mellom exchanges.
- * INGEN auto-execution — kun informasjon.
- * 
- * DISCLAIMER: Historiske returns varierer. Ingen garanti for fremtidig avkastning.
+ * INGEN auto-execution — kun informasjon og analyse.
+ *
+ * DISCLAIMER:
+ * - Historiske returns varierer (3-12% APY). Ingen garanti for fremtidig avkastning.
+ * - Dette er et analyseverktøy. Ingen automatisk utførelse.
+ * - Brukere må manuelt utføre trades på egne exchange-kontoer.
+ * - Krever forståelse av derivater og margin-handel.
+ *
+ * @module cross-exchange-arb
+ * @see {@link identifyCrossExchangeArbitrage} for main opportunity detection
  */
 
 import { getFundingRates as getBinanceFunding } from './funding-rates';
@@ -17,16 +24,38 @@ interface ExchangeFundingRate {
   estimatedAnnual: number; // %
 }
 
+/**
+ * Represents a cross-exchange funding arbitrage opportunity.
+ *
+ * This is an analysis structure only. No execution logic is performed.
+ *
+ * @example
+ * {
+ *   symbol: 'BTCUSDT',
+ *   longExchange: 'OKX',
+ *   shortExchange: 'Bybit',
+ *   netRate: 0.0004,  // 0.04% per 8h
+ *   estimatedAnnual: 14.6,  // 14.6% APY (estimate, not guaranteed)
+ *   riskLevel: 'medium'
+ * }
+ */
 interface CrossExchangeOpportunity {
   symbol: string;
-  longExchange: string;   // Where to go LONG (pays less or receives)
-  shortExchange: string;  // Where to go SHORT (receives funding)
+  /** Exchange to go LONG on (where funding rate is lower) */
+  longExchange: string;
+  /** Exchange to go SHORT on (where funding rate is higher) */
+  shortExchange: string;
+  /** Funding rate for the long position */
   longRate: number;
+  /** Funding rate for the short position */
   shortRate: number;
-  netRate: number;        // Difference
+  /** Net funding rate difference (what you earn) */
+  netRate: number;
+  /** Estimated annual return in percent (historical estimate, NOT guaranteed) */
   estimatedAnnual: number;
   riskLevel: 'low' | 'medium' | 'high';
-  requires: string[];     // What's needed to execute
+  /** Requirements to execute this opportunity manually */
+  requires: string[];
 }
 
 // Mock data for exchanges we don't have API keys for
@@ -51,11 +80,22 @@ async function getOKXFundingRates(): Promise<ExchangeFundingRate[]> {
 
 /**
  * Identify cross-exchange funding arbitrage opportunities.
- * 
- * Strategy: 
- * - If Bybit rate > OKX rate: LONG on OKX, SHORT on Bybit
- * - Earn the difference in funding rates
- * - Risk: Basis risk (prices diverge), exchange risk, margin requirements
+ *
+ * Analyzes funding rates across multiple exchanges (Binance real API + mock data
+ * for Bybit/OKX) to find delta-neutral opportunities.
+ *
+ * Strategy:
+ * - Go LONG on exchange with LOWER funding rate (pay less)
+ * - Go SHORT on exchange with HIGHER funding rate (receive more)
+ * - Earn the net difference (minus fees and risks)
+ *
+ * IMPORTANT:
+ * - This function is READ-ONLY. It does not execute any trades.
+ * - Returns are estimates based on current funding rates. Actual results vary.
+ * - Risks include: basis risk, exchange failure, margin calls, regulatory changes.
+ *
+ * @returns Array of opportunities sorted by net rate (highest first)
+ * @see {@link getHistoricalArbitragePerformance} for backtested historical data
  */
 export async function identifyCrossExchangeArbitrage(): Promise<CrossExchangeOpportunity[]> {
   const [binanceRates, bybitRates, okxRates] = await Promise.all([
@@ -124,8 +164,16 @@ export async function identifyCrossExchangeArbitrage(): Promise<CrossExchangeOpp
 }
 
 /**
- * Historical performance simulation
- * Based on actual 2024 funding rate data
+ * Historical performance simulation based on backtested 2024-2026 data.
+ *
+ * IMPORTANT: These are simulated/backtested results, not live trading records.
+ * Actual performance will vary based on market conditions, execution quality,
+ * and exchange-specific factors.
+ *
+ * @returns Historical performance metrics with realistic drawdowns
+ * @example
+ * const perf = getHistoricalArbitragePerformance();
+ * console.log(`${perf.avgAnnualReturn}% APY (historisk, ikke garantert)`);
  */
 export function getHistoricalArbitragePerformance(): {
   period: string;
@@ -148,7 +196,17 @@ export function getHistoricalArbitragePerformance(): {
 }
 
 /**
- * Calculate realistic position sizing with risk management
+ * Calculate realistic position sizing with risk management.
+ *
+ * This is a sizing calculator only. It does not execute any trades.
+ * Users must manually implement these position sizes on their own accounts.
+ *
+ * @param portfolioValue - Total portfolio value in NOK
+ * @param riskLevel - Risk appetite: 'conservative' (5%), 'balanced' (10%), or 'aggressive' (20%)
+ * @returns Position sizing recommendations with risk warnings
+ * @example
+ * const sizing = calculateArbitragePosition(100000, 'balanced');
+ * console.log(`Max position: ${sizing.maxPosition} NOK`);
  */
 export function calculateArbitragePosition(
   portfolioValue: number,

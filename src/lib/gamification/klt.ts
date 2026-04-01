@@ -1,6 +1,6 @@
 import { createClient as createBrowserClient } from "@/lib/utils";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 type UserLevelsRow = {
   user_id: string;
@@ -126,7 +126,7 @@ export async function awardKLT({
       category: type,
       description: reason,
       reason: reason,
-      metadata: (metadata ?? {}) as import("@/types/supabase-generated").Json,
+      metadata: (metadata ?? {}) as import("@/types/database.types").Json,
     });
 
     if (txError) throw txError;

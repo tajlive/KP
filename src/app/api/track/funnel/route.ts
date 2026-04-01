@@ -1,6 +1,7 @@
 
 
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 import { NextResponse } from 'next/server';
 
 function getSupabaseClient() {
@@ -8,7 +9,7 @@ function getSupabaseClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   
   if (!key) return null;
-  return createClient(url, key);
+  return createClient<Database>(url, key);
 }
 
 export async function POST(request: Request) {
