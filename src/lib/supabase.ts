@@ -1,5 +1,5 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/supabase'
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database.types'
 
 // Lazy initialization to prevent build-time errors
 let supabaseInstance: SupabaseClient<Database> | null = null
@@ -12,7 +12,7 @@ function getSupabaseInstance(): SupabaseClient<Database> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
   
-  supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey)
+  supabaseInstance = createSupabaseClient<Database>(supabaseUrl, supabaseAnonKey)
   return supabaseInstance
 }
 
@@ -24,7 +24,26 @@ export const supabase = new Proxy({} as SupabaseClient<Database>, {
   },
 })
 
+// Export typed admin client factory
+export function createAdminClient(): SupabaseClient<Database> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!url || !key) {
+    throw new Error('Missing Supabase environment variables')
+  }
+
+  return createSupabaseClient<Database>(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+}
+
+// Re-export SSR clients for convenience
+export { getSupabaseClient, createClient } from '@/lib/supabase/client'
+export { createClient as createServerClient, createServerClient as createSSRServerClient } from '@/lib/supabase/server'
+
 // Re-export database types from central location
+export type { Database }
 export type { 
   Profile, 
   Trade, 

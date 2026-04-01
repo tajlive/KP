@@ -1,6 +1,6 @@
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import type { Json } from "@/types/supabase-generated";
+import type { Json } from "@/types/database.types";
 import {
   enrichStrategyConfigForSession,
   parseInitialCapitalFromConfig,

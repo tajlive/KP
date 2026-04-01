@@ -1,7 +1,7 @@
 import { verifyAdminAccess } from "@/lib/admin/verify-admin-access";
 import { createClient as createServiceClient } from "@/lib/supabase/server";
 import { logAdminAudit } from "@/lib/admin/log-admin-audit";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 

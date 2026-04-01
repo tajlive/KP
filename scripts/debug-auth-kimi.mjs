@@ -545,7 +545,7 @@ async function runAll() {
     }
 
     // Sjekk InnloggingClient saniterer redirectTo
-    const innloggingPath = path.join(__dirname, '..', 'src/app/[locale]/innlogging/InnloggingClient.tsx');
+    const innloggingPath = path.join(__dirname, '..', 'src/app/[locale]/(auth)/login/InnloggingClient.tsx');
     if (existsSync(innloggingPath)) {
       const innlogging = readFileSync(innloggingPath, 'utf8');
       if (innlogging.includes('sanitizeClientRedirect')) {

@@ -1,6 +1,8 @@
 // KLA-251: Optimal 2026 Trading Engine
+// KLA-255: Early Exit Integration
 import { calculateKelly, updateKellyStats, saveKellyStats, KellyStats } from './kelly';
 import { calculateOptimalStop, ATRResult } from './atr';
+import { evaluateEarlyExit, calculateRMultiple, ExitRecommendation } from './early-exit';
 import { createClient } from '@/lib/supabase/client';
 
 export interface OptimalTradeParams {
@@ -155,4 +157,76 @@ export async function getOptimalTradeHistory(userId: string, limit = 10) {
   // TODO: Implement after regenerating types
   console.log('Trade history fetch skipped (table not in types)');
   return [];
+}
+
+/**
+ * KLA-255: Check early exit conditions for an open position.
+ *
+ * Integrates Kelly Criterion position sizing with Early Exit System.
+ * This is analysis-only - NO automatic order execution.
+ *
+ * @param entryPrice - Position entry price
+ * @param currentPrice - Current market price
+ * @param stopPrice - Initial stop loss price
+ * @param side - 'LONG' or 'SHORT'
+ * @param symbol - Trading pair
+ * @param atr - Current ATR value
+ * @param atrAvg14 - 14-period average ATR
+ * @param fundingTime - Time until next funding (ms)
+ * @param fundingRate - Expected funding rate
+ * @returns Exit recommendation
+ *
+ * @example
+ * const rec = await checkEarlyExit({
+ *   entryPrice: 84000,
+ *   currentPrice: 86000,
+ *   stopPrice: 82000,
+ *   side: 'LONG',
+ *   symbol: 'BTCUSDT',
+ *   atr: 450,
+ *   atrAvg14: 380,
+ *   fundingTime: 3600000,
+ *   fundingRate: 0.0001
+ * });
+ */
+export async function checkEarlyExit({
+  entryPrice,
+  currentPrice,
+  stopPrice,
+  side,
+  symbol,
+  atr,
+  atrAvg14,
+  fundingTime,
+  fundingRate,
+}: {
+  entryPrice: number;
+  currentPrice: number;
+  stopPrice: number;
+  side: 'LONG' | 'SHORT';
+  symbol: string;
+  atr: number;
+  atrAvg14: number;
+  fundingTime: number;
+  fundingRate: number;
+}): Promise<ExitRecommendation> {
+  // Calculate current R-multiple
+  const pnlR = calculateRMultiple(entryPrice, currentPrice, stopPrice, side);
+
+  // Check early exit conditions
+  const recommendation = evaluateEarlyExit({
+    symbol,
+    entryPrice,
+    side,
+    currentPrice,
+    initialStop: stopPrice,
+    currentStop: stopPrice, // Could be updated by trailing
+    pnlR,
+    atr,
+    atrAvg14,
+    fundingTime,
+    fundingRate,
+  });
+
+  return recommendation;
 }

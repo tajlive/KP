@@ -151,7 +151,7 @@ verify_auth_components() {
     done
     
     # Sjekk at innloggingssiden er oppdatert
-    if grep -q "LinkedInButton" "$REPO_ROOT/src/app/[locale]/innlogging/InnloggingClient.tsx"; then
+    if grep -q "LinkedInButton" "$REPO_ROOT/src/app/[locale]/(auth)/login/InnloggingClient.tsx"; then
         print_success "Innloggingsside oppdatert med LinkedIn"
     else
         print_warning "Innloggingsside mangler LinkedIn. Oppdaterer..."

@@ -3,23 +3,7 @@
 // Server-side Supabase client (for API routes)
 // ============================================================================
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-// Database type definition (since @/types/database doesn't exist)
-interface Database {
-  public: {
-    Tables: {
-      trading_sessions: {
-        Row: TradingSession;
-        Insert: Partial<TradingSession>;
-        Update: Partial<TradingSession>;
-      };
-      trades: {
-        Row: Trade;
-        Insert: Partial<Trade>;
-        Update: Partial<Trade>;
-      };
-    };
-  };
-}
+import type { Database } from "@/types/database.types";
 
 let _client: ReturnType<typeof createSupabaseClient<Database>> | null = null;
 

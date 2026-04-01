@@ -5,7 +5,7 @@ const baseUrl = "https://www.klarpakke.no";
 // Norwegian routes (default - no prefix)
 const noRoutes = [
   "",
-  "/paper-trading",
+  "/paper",
   "/kurs",
   "/kalkulator",
   "/leaderboard",

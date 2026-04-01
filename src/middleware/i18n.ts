@@ -1,155 +1,97 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { NextRequest, NextResponse } from "next/server";
+import { routing } from "@/i18n/routing.config";
+import {
+  localizedPathname,
+  parseLocalePath,
+} from "./locale-path";
 
 export const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
-export const DEFAULT_LOCALE = "no" as const;
-export const VISIBLE_LOCALES = ["no", "en"] as const;
 
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+const handleI18nRouting = createMiddleware(routing);
 
-export function isSupportedLocale(locale: string): locale is SupportedLocale {
-  return SUPPORTED_LOCALES.includes(locale as SupportedLocale);
-}
+const CANONICAL_REDIRECTS: Record<string, string> = {
+  "/dashboard/activity": "/handelshistorikk",
+  "/dashboard/trading": "/dashboard/trade",
+  "/dashboard/innstillinger": "/dashboard/settings",
+  "/trade": "/dashboard/trade",
+  "/auto-trading": "/dashboard/auto-trade",
+  "/auto-trading-ai": "/dashboard/auto-trade",
+  "/innlogging": "/login",
+  "/registrer": "/register",
+};
 
-export function getPreferredLocale(acceptLanguage: string | null): string {
-  if (!acceptLanguage) return DEFAULT_LOCALE;
+export function i18nMiddleware(
+  request: NextRequest,
+): NextResponse | Promise<NextResponse> {
+  const host = request.headers.get("host") || "";
 
-  const languages = acceptLanguage
-    .split(",")
-    .map((lang) => {
-      const [code, qValue] = lang.trim().split(";q=");
-      const quality = qValue ? parseFloat(qValue) : 1.0;
-      return { code: code.toLowerCase(), quality };
-    })
-    .sort((a, b) => b.quality - a.quality);
-
-  for (const { code } of languages) {
-    if (isSupportedLocale(code)) return code;
-    const baseCode = code.split("-")[0];
-    if (isSupportedLocale(baseCode)) return baseCode;
-    if (baseCode === "nb") return "no";
+  // 1. Canonical redirect for *.vercel.app
+  if (host.endsWith(".vercel.app") && process.env.NEXT_PUBLIC_APP_URL) {
+    const canonical = new URL(process.env.NEXT_PUBLIC_APP_URL);
+    const url = request.nextUrl.clone();
+    url.hostname = canonical.hostname;
+    url.port = "";
+    url.protocol = canonical.protocol;
+    return NextResponse.redirect(url, { status: 308 });
   }
 
-  return DEFAULT_LOCALE;
-}
+  const pathname = request.nextUrl.pathname;
+  const { locale, strippedPath } = parseLocalePath(pathname);
 
-/**
- * Check if pathname has a locale prefix
- * Handles both prefixed (/en/) and root (/) for default locale
- */
-export function getLocaleFromPathname(pathname: string): {
-  locale: SupportedLocale;
-  withoutLocale: string;
-} | null {
-  // Check for explicit locale prefix (/en/, /th/, /zh/)
-  for (const locale of SUPPORTED_LOCALES) {
-    if (locale === DEFAULT_LOCALE) continue; // Skip default locale - no prefix
-    if (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`) {
-      return {
-        locale,
-        withoutLocale:
-          pathname === `/${locale}` ? "/" : pathname.slice(`/${locale}`.length),
-      };
+  // 2. PKCE callback on root with ?code=
+  if (strippedPath === "/" && request.nextUrl.searchParams.has("code")) {
+    const url = request.nextUrl.clone();
+    url.pathname = localizedPathname(locale, "/auth/callback");
+    return NextResponse.redirect(url, 302);
+  }
+
+  // 3. Beta removal redirects
+  if (strippedPath === "/beta" || strippedPath.startsWith("/beta/")) {
+    const url = request.nextUrl.clone();
+    if (strippedPath.includes("live-trading")) {
+      url.pathname = localizedPathname(locale, "/paper");
+      url.searchParams.set("mode", "live");
+    } else if (strippedPath.includes("auto-trade")) {
+      url.pathname = localizedPathname(locale, "/dashboard/auto-trade");
+    } else if (strippedPath.includes("connect-exchange")) {
+      url.pathname = localizedPathname(locale, "/dashboard");
+    } else {
+      url.pathname = localizedPathname(locale, "/dashboard");
+    }
+    return NextResponse.redirect(url, 308);
+  }
+
+  // 4. English alias /settings -> innstillinger
+  if (strippedPath === "/settings" || strippedPath.startsWith("/settings/")) {
+    const tail =
+      strippedPath === "/settings"
+        ? ""
+        : strippedPath.slice("/settings".length);
+    const target = `/innstillinger${tail}`;
+    return NextResponse.redirect(
+      new URL(localizedPathname(locale, target), request.url),
+      308,
+    );
+  }
+
+  // 5. Canonical redirects
+  for (const [from, to] of Object.entries(CANONICAL_REDIRECTS)) {
+    if (strippedPath === from || strippedPath.startsWith(`${from}/`)) {
+      const dest = to.startsWith("/") ? to : `/${to}`;
+      return NextResponse.redirect(
+        new URL(localizedPathname(locale, dest), request.url),
+        308,
+      );
     }
   }
 
-  // Default locale (no prefix)
-  if (
-    !SUPPORTED_LOCALES.some(
-      (l) => l !== DEFAULT_LOCALE && pathname.startsWith(`/${l}/`),
-    )
-  ) {
-    return { locale: DEFAULT_LOCALE, withoutLocale: pathname };
-  }
+  // 6. Enrich request headers for downstream middleware
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-kp-stripped-path", strippedPath);
+  requestHeaders.set("x-kp-locale", locale);
+  const requestWithPath = new NextRequest(request, { headers: requestHeaders });
 
-  return null;
-}
-
-export function handleI18nRedirect(request: NextRequest): NextResponse | null {
-  const { pathname } = request.nextUrl;
-
-  // Skip API routes, auth callbacks, and static files
-  if (
-    pathname.startsWith("/api/") ||
-    pathname.startsWith("/auth/") ||
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/favicon") ||
-    pathname.startsWith("/images/") ||
-    pathname.startsWith("/static/") ||
-    pathname.match(/\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|json)$/)
-  ) {
-    return null;
-  }
-
-  // Debug logging for production troubleshooting
-  const acceptLanguage = request.headers.get("accept-language");
-  const preferredLocale = getPreferredLocale(acceptLanguage);
-  console.log(
-    `[i18n middleware] path: ${pathname}, accept-lang: ${acceptLanguage}, preferred: ${preferredLocale}`,
-  );
-
-  // Check if user is accessing old /no/* URLs -> redirect to /*
-  if (pathname.startsWith("/no/")) {
-    const newPath = pathname.slice(3); // Remove '/no'
-    const redirectUrl = new URL(newPath || "/", request.url);
-    redirectUrl.search = request.nextUrl.search;
-    return NextResponse.redirect(redirectUrl, { status: 301 });
-  }
-
-  // Handle /no (root) -> redirect to /
-  if (pathname === "/no") {
-    const redirectUrl = new URL("/", request.url);
-    redirectUrl.search = request.nextUrl.search;
-    return NextResponse.redirect(redirectUrl, { status: 301 });
-  }
-
-  // Check for explicit non-default locale prefix (/en/, /th/, /zh/)
-  const hasNonDefaultLocale = SUPPORTED_LOCALES.some(
-    (locale) =>
-      locale !== DEFAULT_LOCALE &&
-      (pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`),
-  );
-
-  // If has non-default locale prefix, let it through
-  if (hasNonDefaultLocale) {
-    return null;
-  }
-
-  // If preferred locale is NOT Norwegian, redirect to appropriate locale path
-  if (preferredLocale !== DEFAULT_LOCALE) {
-    // Map th/zh preference to en — th/zh are not active i18n SoT (docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md)
-    const targetLocale = ["th", "zh"].includes(preferredLocale)
-      ? "en"
-      : preferredLocale;
-
-    const redirectUrl = new URL(`/${targetLocale}${pathname}`, request.url);
-    redirectUrl.search = request.nextUrl.search;
-
-    // Use 302 (temporary) to allow future locale preference override
-    return NextResponse.redirect(redirectUrl, { status: 302 });
-  }
-
-  // Norwegian users (or unknown locale) -> stay on root path (no prefix)
-  return null;
-}
-
-/**
- * Get the correct href for a locale switch
- * - Norwegian (default): /path (no prefix)
- * - English: /en/path (with prefix)
- */
-export function getLocaleHref(
-  currentPath: string,
-  targetLocale: SupportedLocale,
-): string {
-  const currentLocaleInfo = getLocaleFromPathname(currentPath);
-  const currentPathWithoutLocale =
-    currentLocaleInfo?.withoutLocale || currentPath;
-
-  if (targetLocale === DEFAULT_LOCALE) {
-    return currentPathWithoutLocale || "/";
-  }
-
-  const path = currentPathWithoutLocale === "/" ? "" : currentPathWithoutLocale;
-  return `/${targetLocale}${path}`;
+  // 7. next-intl routing
+  return handleI18nRouting(requestWithPath);
 }

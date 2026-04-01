@@ -62,8 +62,8 @@ export function sanitizePostAuthRedirect(
 
   const lower = pathPart.toLowerCase();
   const authFragments = [
-    "/innlogging",
-    "/signup",
+    "/login",
+    "/register",
     "/glemt-passord",
     "/registrer",
   ];
@@ -75,10 +75,9 @@ export function sanitizePostAuthRedirect(
 }
 
 const GUEST_AUTH_EXACT = new Set([
-  "/innlogging",
-  "/signup",
-  "/glemt-passord",
   "/login",
+  "/register",
+  "/glemt-passord",
   "/registrer",
 ]);
 

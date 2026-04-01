@@ -9,7 +9,7 @@ export const PROTECTED_PATHS = [
   "/innstillinger",
   "/courses",
   "/betaling",
-  "/paper-trading",
+  "/paper",
   "/auto-trading",
   "/auto-trading-ai",
   "/akademi",
@@ -27,12 +27,10 @@ export const PROTECTED_PATHS = [
 ] as const;
 
 export const PUBLIC_PATHS = [
-  "/innlogging",
-  "/registrer",
+  "/login",
+  "/register",
   "/glemt-passord",
   "/auth/callback",
-  "/login",
-  "/signup",
   "/forgot-password",
   "/reset-password",
 ] as const;

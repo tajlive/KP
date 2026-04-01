@@ -3,7 +3,7 @@
  * Designed for 24/7 execution in a standalone environment.
  */
 import { runAutoTradingIteration } from "@/lib/auto-trading/binance-executor";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
 

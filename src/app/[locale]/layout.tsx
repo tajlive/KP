@@ -3,19 +3,19 @@ import { headers } from "next/headers";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
-import { VippsMarketProvider } from "@/components/providers/VippsMarketProvider";
-import { AuthProvider } from "@/components/auth/AuthContext";
-import { SessionCleanup } from "@/components/SessionCleanup";
-import { LocaleMarketingShell } from "@/components/layout/LocaleMarketingShell";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { OrganizationJsonLd } from "@/components/JsonLd";
+import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
+import { AuthProvider } from "@/features/auth/AuthContext";
+import { SessionCleanup } from "@/features/auth/SessionCleanup";
+import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
+import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
+import { OrganizationJsonLd } from "@/shared/seo/JsonLd";
 import {
   getEarlyMetaDescription,
   isEarlyMetaDescriptionPath,
 } from "@/lib/seo/earlyMetaDescription";
-import { MarketingProviders } from "@/components/providers/MarketingProviders";
-import { ThemeProvider } from "@/components/theme";
-import { PlausibleScript } from "@/components/analytics/PlausibleScript";
+import { MarketingProviders } from "@/shared/providers/MarketingProviders";
+import { ThemeProvider } from "@/shared/theme";
+import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter } from "next/font/google";

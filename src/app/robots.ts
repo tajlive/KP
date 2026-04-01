@@ -17,8 +17,8 @@ export default function robots(): MetadataRoute.Robots {
           "/*.rsc$",
           "/admin-login",
           "/dashboard/",
-          "/innlogging",
-          "/signup",
+          "/login",
+          "/register",
           "/registrer",
         ],
       },
@@ -26,17 +26,17 @@ export default function robots(): MetadataRoute.Robots {
         // AI crawlers - allow crawling public content for GEO (Generative Engine Optimization)
         userAgent: "GPTBot",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/innlogging"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/login"],
       },
       {
         userAgent: "ChatGPT-User",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/innlogging"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/login"],
       },
       {
         userAgent: "CCBot",
         allow: ["/"],
-        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/innlogging"],
+        disallow: ["/api/", "/_next/", "/admin-dashboard/", "/dashboard/", "/login"],
       },
       {
         // Googlebot - full access to public pages

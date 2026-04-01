@@ -3,7 +3,7 @@
 // Kombinerer genererte typer med patches for manglende tabeller
 // ═══════════════════════════════════════════════════════════════
 
-import type { Database as GeneratedDatabase } from "./supabase-generated";
+import type { Database as GeneratedDatabase } from "./database.types";
 import type { DatabasePatch } from "@/lib/database.types.patch";
 
 // Deep merge utility types

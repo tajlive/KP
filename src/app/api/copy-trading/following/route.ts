@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/api-auth";
 import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

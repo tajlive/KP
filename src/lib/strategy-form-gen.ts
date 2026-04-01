@@ -3,7 +3,7 @@
  * UI: `StrategyMetadataForm` (next-intl namespace `strategyMarketplace.metadata`).
  */
 import { z } from "zod";
-import type { Database } from "@/types/supabase-generated";
+import type { Database } from "@/types/database.types";
 
 export type StrategyRow = Database["public"]["Tables"]["strategies"]["Row"];
 
