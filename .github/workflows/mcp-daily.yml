@@ -1,0 +1,67 @@
+name: 🤖 Daily MCP Health → Linear
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 06:00 UTC hver dag
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: MCP Health Check
+        id: mcp
+        env:
+          KLARPAKKE_MCP_SECRET: ${{ secrets.KLARPAKKE_MCP_SECRET }}
+        run: |
+          if [ -z "$KLARPAKKE_MCP_SECRET" ]; then
+            echo "result={\"error\":\"Missing KLARPAKKE_MCP_SECRET\"}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer ${KLARPAKKE_MCP_SECRET}" \
+            -H "Content-Type: application/json" \
+            "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/klarpakke-mcp/mcp" \
+            -d '{
+              "jsonrpc": "2.0",
+              "method": "tools/call",
+              "params": { "name": "get_user_stats", "arguments": {} },
+              "id": 1
+            }')
+
+          echo "raw_response=${RESPONSE}" >> "$GITHUB_OUTPUT"
+          echo "$RESPONSE" | jq .
+
+          # Parse stats from nested content
+          TEXT=$(echo "$RESPONSE" | jq -r '.result.content[0].text // empty')
+          TOTAL_USERS=$(echo "$TEXT" | jq -r '.total_users // "N/A"')
+          PAPER=$(echo "$TEXT" | jq -r '.active_paper_traders // "N/A"')
+          LIVE=$(echo "$TEXT" | jq -r '.active_live_traders // "N/A"')
+
+          echo "total_users=${TOTAL_USERS}" >> "$GITHUB_OUTPUT"
+          echo "paper=${PAPER}" >> "$GITHUB_OUTPUT"
+          echo "live=${LIVE}" >> "$GITHUB_OUTPUT"
+
+      - name: Post to Linear (KLA-251)
+        if: always()
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          TOTAL_USERS: ${{ steps.mcp.outputs.total_users }}
+          PAPER: ${{ steps.mcp.outputs.paper }}
+          LIVE: ${{ steps.mcp.outputs.live }}
+        run: |
+          if [ -z "$LINEAR_API_KEY" ]; then
+            echo "⏭️ Linear: skipping (LINEAR_API_KEY not set)"
+            exit 0
+          fi
+
+          BODY="🤖 Daily MCP Health — $(date -u '+%Y-%m-%d %H:%M UTC')\n\n- Total users: ${TOTAL_USERS:-N/A}\n- Active paper traders: ${PAPER:-N/A}\n- Active live traders: ${LIVE:-N/A}\n\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -s -X POST https://api.linear.app/graphql \
+            -H "Content-Type: application/json" \
+            -H "Authorization: ${LINEAR_API_KEY}" \
+            -d "{\"query\":\"mutation { commentCreate(input: { issueId: \\\"6e75fa33-44c8-403b-8ffc-a2db7d26601f\\\", body: \\\"${BODY}\\\" }) { success } }\"}" | jq .
