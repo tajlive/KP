@@ -1,7 +1,7 @@
 'use server';
 
 import { getTranslations } from 'next-intl/server';
-import { Sparkles, ArrowRight, Play } from 'lucide-react';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { ButtonPremium } from '@/components/ui/ButtonPremium';
 import { BadgePremium } from '@/components/ui/BadgePremium';
 import { motion } from 'framer-motion';
@@ -72,27 +72,22 @@ export default async function HeroSection({ locale = 'no' }: HeroSectionProps) {
             {t('subtitle')}
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          {/* CTA Buttons - Single primary CTA */}
+          <div className="flex flex-col items-center gap-4">
             <ButtonPremium 
               size="lg" 
               glow
-              className="w-full sm:w-auto min-w-[200px]"
+              className="w-full sm:w-auto min-w-[240px]"
               icon={<ArrowRight className="w-5 h-5" />}
               iconPosition="right"
             >
               {t('cta.primary')}
             </ButtonPremium>
             
-            <ButtonPremium 
-              variant="glass" 
-              size="lg"
-              className="w-full sm:w-auto min-w-[200px]"
-              icon={<Play className="w-5 h-5" />}
-              iconPosition="left"
-            >
-              {t('cta.secondary')}
-            </ButtonPremium>
+            {/* Disclaimer */}
+            <p className="text-xs text-kp-text-tertiary mt-2">
+              ⚠️ {t('disclaimer')}
+            </p>
           </div>
 
           {/* Trust indicators */}

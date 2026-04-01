@@ -1,5 +1,6 @@
 "use client";
 
+import { BacktestPanel } from "@/components/backtest";
 import { getAppUrl } from "@/lib/auth/config";
 import { createClient } from "@/lib/utils";
 import { Profile, Trade } from "@/types/database";
@@ -191,6 +192,9 @@ export default function BetaDashboardClient({
             </div>
           </div>
         )}
+
+        {/* Backtest Panel */}
+        <BacktestPanel />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

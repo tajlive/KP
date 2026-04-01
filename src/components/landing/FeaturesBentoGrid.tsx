@@ -116,44 +116,44 @@ export function FeaturesBentoGrid() {
   const features = [
     {
       icon: <GraduationCap className="w-6 h-6" />,
-      title: "Strukturert læring",
-      description: "Fra nybegynner til avansert. Videoer, quiz og praktiske øvelser som passer ditt tempo.",
+      title: "Gå fra nybegynner til trader på 4 uker",
+      description: "Strukturerte kurs med videoer, quiz og praktiske øvelser. Du lærer i ditt eget tempo.",
       gradient: "from-blue-500/20 to-blue-500/5",
     },
     {
       icon: <Wallet className="w-6 h-6" />,
-      title: "100 000 kr lekepenger",
-      description: "Øv deg med ekte markedsdata uten å risikere dine egne sparepenger.",
+      title: "Øv uten å tape penger",
+      description: "Start med 100 000 kr virtuelle penger. Få erfaring med ekte markedsdata før du bruker egne sparepenger.",
       gradient: "from-green-500/20 to-green-500/5",
     },
     {
       icon: <Bot className="w-6 h-6" />,
-      title: "AI Trading Bot",
-      description: "Våre algoritmer analyserer markedet 24/7 og finner de beste mulighetene.",
+      title: "AI forteller deg når å kjøpe og selge",
+      description: "Få tydelige signaler basert på teknisk analyse. AI-en overvåker markedet 24/7 for deg.",
       gradient: "from-purple-500/20 to-purple-500/5",
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: "Bank-grade sikkerhet",
-      description: "256-bit kryptering, 2FA, og full GDPR-compliance.",
+      title: "Stop-loss beskytter deg automatisk",
+      description: "Sett dine egne risikogrenser. Systemet selger automatisk hvis markedet går mot deg.",
       gradient: "from-amber-500/20 to-amber-500/5",
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: "Lynraske signaler",
-      description: "Sanntids markedsdata direkte fra Binance. Ingen forsinkelser.",
+      title: "Få signaler umiddelbart",
+      description: "Ingen forsinkelse. Data kommer direkte fra Binance — verdens største kryptobørs.",
       gradient: "from-yellow-500/20 to-yellow-500/5",
     },
     {
       icon: <Clock className="w-6 h-6" />,
-      title: "Alltid tilgjengelig",
-      description: "Handel når som helst, hvor som helst. På mobil, nettbrett eller PC.",
+      title: "Handelsboten handler mens du sover",
+      description: "Auto-trading følger din strategi døgnet rundt. Du slipper å stirre på grafer hele dagen.",
       gradient: "from-cyan-500/20 to-cyan-500/5",
     },
     {
       icon: <Users className="w-6 h-6" />,
       title: "Norsk fellesskap",
-      description: "Bli med i et voksende fellesskap av norske tradere.",
+      description: "Bli med i et voksende fellesskap av norske tradere. Støtte på norsk når du trenger det.",
       gradient: "from-pink-500/20 to-pink-500/5",
     },
   ];
@@ -179,9 +179,9 @@ export function FeaturesBentoGrid() {
             transition={{ delay: 0.1 }}
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-kp-text-primary mb-4"
           >
-            Alt du trenger for å{" "}
+            Hva du får med{" "}
             <span className="bg-gradient-to-r from-kp-brand to-kp-brand-light bg-clip-text text-transparent">
-              mestre trading
+              Klarpakke
             </span>
           </motion.h2>
         </div>
@@ -189,8 +189,8 @@ export function FeaturesBentoGrid() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <LargeFeatureCard
             icon={<Bot className="w-7 h-7 text-kp-brand" />}
-            title="AI-drevet trading"
-            description="Våre avanserte algoritmer analyserer markedet kontinuerlig og identifiserer de beste handelsmulighetene."
+            title="Handelsboten handler mens du sover"
+            description="Våre algoritmer analyserer markedet kontinuerlig og utfører handler automatisk basert på din strategi. Du bestemmer risikonivået — boten gjør jobben."
             stats={[
               { value: "24/7", label: "Overvåking" },
               { value: "<2s", label: "Responstid" },

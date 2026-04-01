@@ -119,20 +119,21 @@
   "hero": {
     "badge": "🇳🇴 Norges enkleste krypto-trading",
     "title": {
-      "line1": "Handel krypto smartere.",
-      "line2": "Automatisk og risikofritt."
+      "line1": "Lær krypto-trading med 100 000 kr",
+      "line2": "— uten å risikere egne penger."
     },
-    "subtitle": "Fra nybegynner til selvsikker trader",
+    "subtitle": "Øv med ekte markedsdata. Paper trading med AI-signaler. Ingen betalingskort kreves.",
     "description": "Øv med virtuelle penger, lær av eksperter, og handle trygt",
     "cta": {
       "primary": "Start gratis nå",
       "secondary": "Se hvordan det fungerer"
     },
     "trust": {
-      "free": "Gratis å starte",
-      "noCard": "Ingen betalingskort kreves",
-      "cancel": "Avslutt når som helst"
+      "free": "100 000 kr virtuelt",
+      "noCard": "Ekte Binance-kurser",
+      "cancel": "Norsk support"
     },
+    "disclaimer": "Paper trading = virtuelle penger. Ingen garanti for avkastning.",
     "beta_badge": "BETA-LANSERING",
     "title_emotional": "Lær Trading På Norsk",
     "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
