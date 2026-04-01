@@ -56,13 +56,6 @@ const FinalCTASection = dynamic(
   }
 );
 
-const ROISimulator = dynamic(
-  () => import("@/components/landing/ROISimulator").then((mod) => mod.ROISimulator),
-  {
-    loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
-  }
-);
-
 const FeaturesBentoGrid = dynamic(
   () => import("@/components/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
   {
@@ -70,10 +63,10 @@ const FeaturesBentoGrid = dynamic(
   }
 );
 
-const LandingBacktestTeaser = dynamic(
-  () => import("@/components/landing/LandingBacktestTeaser").then((mod) => mod.LandingBacktestTeaser),
+const BacktestROICoupled = dynamic(
+  () => import("@/components/landing/BacktestROICoupled").then((mod) => mod.BacktestROICoupled),
   {
-    loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
+    loading: () => <div className="h-[600px] bg-kp-bg-primary animate-pulse" />,
   }
 );
 
@@ -117,23 +110,15 @@ export default async function HomePage({ params }: HomePageProps) {
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={0.1}>
-          <LandingBacktestTeaser />
+          <BacktestROICoupled />
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={0.1}>
           <FeaturesBentoGrid />
         </ScrollReveal>
-
-        <ScrollReveal direction="up" delay={0.1}>
-          <ROISimulator />
-        </ScrollReveal>
         
         <ScrollReveal direction="up" delay={0.1}>
           <LandingTransparencySection locale={locale} />
-        </ScrollReveal>
-        
-        <ScrollReveal direction="up" delay={0.1}>
-          <ROISimulator />
         </ScrollReveal>
         
         <ScrollReveal direction="up" delay={0.1}>
