@@ -197,6 +197,7 @@ export function BotWizard({
     try {
       const res = await fetch("/api/auto-trading/paper", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           strategy,
