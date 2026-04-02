@@ -3,7 +3,7 @@
  * GET: Hent detaljert fremgang for et kurs
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface RouteParams {
@@ -41,7 +41,7 @@ interface CourseData {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { courseId } = await params;
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     
     // Verifiser bruker
     const { data: { user }, error: authError } = await supabase.auth.getUser();

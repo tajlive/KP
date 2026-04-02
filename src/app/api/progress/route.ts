@@ -3,7 +3,7 @@
  * 2026-stil: Clean, typed, med Zod-validering
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -31,7 +31,7 @@ interface ProgressUpdateData {
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     
     // Verifiser bruker
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     
     // Verifiser bruker
     const { data: { user }, error: authError } = await supabase.auth.getUser();
