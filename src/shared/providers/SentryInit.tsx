@@ -1,26 +1,24 @@
 /**
  * SentryInit.tsx
- * 
- * Client component that initializes Sentry lazily on app routes.
- * This ensures Sentry is only loaded when user navigates to dashboard/trading
- * routes, saving ~418KB on marketing pages.
- * 
- * Usage: Add <SentryInit /> to dashboard/app layouts only.
- * DO NOT add to marketing pages.
+ *
+ * DEPRECATED: Sentry initialization has moved to sentry.client.config.ts
+ * This component is kept for backwards compatibility but renders nothing.
+ *
+ * The route-gated init logic is now in root sentry.client.config.ts
+ * which automatically:
+ * - Initializes Sentry on app routes (dashboard, trading, etc.)
+ * - Skips initialization on marketing routes to save ~418KB
  */
 
 'use client';
 
 import { useEffect } from 'react';
-import { initSentryLazy } from '@/lib/sentry-lazy';
 
 export function SentryInit() {
   useEffect(() => {
-    // Initialize Sentry lazily when component mounts
-    // This only runs on app routes (dashboard, trading, etc.)
-    initSentryLazy();
+    // NO-OP: Sentry is now initialized by sentry.client.config.ts
+    // This component is kept for backwards compatibility
   }, []);
 
-  // This component renders nothing
   return null;
 }
