@@ -27,9 +27,9 @@ const TAILWIND_KP = new Set([
   // Border
   'border-kp-border',
   // Status
-  'bg-kp-success', 'bg-kp-success-light', 'text-kp-success',
-  'bg-kp-warning', 'bg-kp-warning-light', 'text-kp-warning',
-  'bg-kp-danger', 'bg-kp-danger-light', 'text-kp-danger',
+  'bg-kp-success', 'bg-kp-success-light', 'text-kp-success', 'border-kp-success',
+  'bg-kp-warning', 'bg-kp-warning-light', 'text-kp-warning', 'border-kp-warning',
+  'bg-kp-danger', 'bg-kp-danger-light', 'text-kp-danger', 'border-kp-danger',
 ]);
 
 // CSS-utility-klasser definert direkte i globals.css
