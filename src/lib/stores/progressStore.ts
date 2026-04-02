@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { createClient } from '@/lib/supabase/client';
+import { apiFetch } from '@/lib/api-client';
 
 // Types
 export interface LessonProgress {
@@ -98,7 +99,7 @@ export const useProgressStore = create<ProgressState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await fetch('/api/progress');
+          const response = await apiFetch('/api/progress');
           
           if (!response.ok) {
             const error = await response.json();
@@ -125,7 +126,7 @@ export const useProgressStore = create<ProgressState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await fetch(`/api/progress/${courseId}`);
+          const response = await apiFetch(`/api/progress/${courseId}`);
           
           if (!response.ok) {
             const error = await response.json();
@@ -158,9 +159,8 @@ export const useProgressStore = create<ProgressState>()(
         set({ isUpdating: true, error: null });
         
         try {
-          const response = await fetch('/api/progress', {
+          const response = await apiFetch('/api/progress', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               courseId,
               lessonId,
