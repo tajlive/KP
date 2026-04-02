@@ -481,11 +481,9 @@ button,
   min-width: 48px;
 }
 
-/* OPTIMIZATION: Reduce layout shift (CLS) */
-html {
-  overflow-x: hidden;
-}
-/* NB: overflow-x: hidden på body dreper vertikal scroll på Safari/iOS */
+/* OPTIMIZATION: Reduce layout shift (CLS) - REMOVED overflow-x: hidden */
+/* overflow-x: hidden on html can block vertical scrolling on some browsers */
+/* Use specific container classes for overflow control instead */
 
 /* OPTIMIZATION: Smooth touch scrolling on iOS */
 .scroll-smooth {
