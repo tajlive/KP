@@ -85,7 +85,7 @@ export default function DashboardClientLayout({
                     >
                       <ScrollToTop />
                       <TopNav />
-                      <main className="flex-1 px-3 pt-3 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:px-4 lg:px-8 lg:pt-4 md:pb-8">
+                      <main className="flex-1 px-3 pt-3 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] sm:px-4 lg:px-8 lg:pt-4 md:pb-8 overflow-y-auto">
                         <div className="mx-auto w-full max-w-7xl">
                           <DashboardContent>{children}</DashboardContent>
                         </div>
