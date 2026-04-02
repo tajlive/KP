@@ -1,3 +1,5 @@
+
+
 /**
  * Paper Trading Supabase Service
  * Handles persistent storage of simulations, trades, and strategies

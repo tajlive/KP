@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -187,7 +188,7 @@ export function BacktestPanel() {
                         border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '8px',
                       }}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                       
                       formatter={(value: any) => formatNOK(Number(value))}
                     />
                     <Area

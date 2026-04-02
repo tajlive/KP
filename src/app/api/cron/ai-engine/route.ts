@@ -74,6 +74,7 @@ export async function GET(req: NextRequest) {
       const signal = item.signal;
 
       // Persist to ai_decision_log
+      // TODO: KLA-XXX Legg til riktig user_id fra autentisert kontekst
       const { error: insertError } = await db.from('ai_decision_log').insert({
         symbol: signal.symbol,
         decision_type: signal.action,
@@ -87,6 +88,7 @@ export async function GET(req: NextRequest) {
         } as unknown as import('@/types/database.types').Json,
         decision_reason: signal.reasoning,
         executed_at: new Date().toISOString(),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       if (insertError) {
