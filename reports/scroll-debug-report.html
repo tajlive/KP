@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Debug Report - Klarpakke</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0; 
+      padding: 20px; 
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    h1 { color: #fff; margin-bottom: 10px; }
+    .summary { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .stat-card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .stat-card.critical { border-left: 4px solid #ef4444; }
+    .stat-card.warning { border-left: 4px solid #f59e0b; }
+    .stat-card.info { border-left: 4px solid #3b82f6; }
+    .stat-number { font-size: 32px; font-weight: bold; }
+    .stat-label { color: #94a3b8; font-size: 14px; }
+    .finding {
+      background: #1e293b;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid;
+    }
+    .finding.critical { border-left-color: #ef4444; }
+    .finding.warning { border-left-color: #f59e0b; }
+    .finding.info { border-left-color: #3b82f6; }
+    .file-path { color: #60a5fa; font-family: monospace; font-size: 13px; }
+    .message { margin: 8px 0; font-weight: 500; }
+    .code {
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #94a3b8;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    .fix {
+      background: #064e3b;
+      color: #6ee7b7;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .section { margin: 30px 0; }
+    .section h2 { color: #fff; margin-bottom: 15px; }
+    .success { color: #10b981; }
+    .scroll-test {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+    .scroll-container {
+      height: 200px;
+      overflow-y: auto;
+      border: 2px solid #334155;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .scroll-content {
+      height: 500px;
+      background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Scroll Debug Report</h1>
+  <p>Generated: 2.4.2026, 15:04:00</p>
+  
+  <div class="summary">
+    <div class="stat-card critical">
+      <div class="stat-number">39</div>
+      <div class="stat-label">Critical Issues</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-number">20</div>
+      <div class="stat-label">Warnings</div>
+    </div>
+    <div class="stat-card info">
+      <div class="stat-number">389</div>
+      <div class="stat-label">Info Items</div>
+    </div>
+    <div class="stat-card" style="border-left-color: #10b981;">
+      <div class="stat-number">448</div>
+      <div class="stat-label">Total Findings</div>
+    </div>
+  </div>
+
+  <div class="scroll-test">
+    <h3>Test: Does this scroll container work?</h3>
+    <p>If you can scroll this box, your browser supports overflow scrolling:</p>
+    <div class="scroll-container">
+      <div class="scroll-content">Scroll me!</div>
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <h2>🚨 Critical Issues (Must Fix)</h2>
+    
+    <div class="finding critical">
+      <div class="file-path">src/shared/ui/slider.tsx:42</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">ata-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5&quot; )} &gt; &lt;SliderPrimitive.Range</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/shared/ui/progress.tsx:22</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">&lt;ProgressPrimitive.Indicator data-slot=&quot;progress-indicator&quot; className=&quot;bg-primary h-full w-full flex-1 transition-all&quot; style={{ transform: `translateX(-${100 - (value || 0)}%</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/shared/ui/command.tsx:22</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">ive data-slot=&quot;command&quot; className={cn( &quot;bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md&quot;, className )} {...props}</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/trading/TradingModeToggle.tsx:45</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">l={`Handelsmodus: ${isLive ? &quot;Live Trading&quot; : &quot;Paper Trading&quot;}`} className=&quot;relative w-full h-full rounded-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ri</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/trading/PremiumSignalRow.tsx:25</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">div className=&quot;h-1 rounded-full bg-slate-700/80 overflow-hidden&quot;&gt; &lt;div className=&quot;h-full rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-[width] duration-500</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/trading/PortfolioStats.tsx:127</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">rk:bg-gray-700 rounded-full overflow-hidden&quot;&gt; &lt;div className=&quot;h-full bg-yellow-500 rounded-full transition-all&quot; style={{</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/trading/BotStatusDashboard.tsx:665</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">3 bg-slate-800 rounded-full overflow-hidden&quot;&gt; &lt;div className=&quot;h-full bg-blue-500 rounded-full&quot; style={{ width: `${winRat</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/trading/AdvancedStatsModal.tsx:420</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">unded-full overflow-hidden&quot;&gt; &lt;div className={`h-full ${day.pnl &gt;= 0 ? &quot;bg-green-500&quot; : &quot;bg-red-500&quot;}`} style={{</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/trading/AdvancedStatsModal.tsx:698</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">verflow-hidden&quot;&gt; &lt;div className={`h-full ${ bt.confidence_score &gt;= 70</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/strategies/SetupWizard.tsx:87</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">return true; default: return false; } }; return ( &lt;div className=&quot;min-h-screen gemini-gradient-bg&quot;&gt; {/* Animated Background Orbs */} &lt;div className=&quot;fixed ins</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/progress/OverallProgressStats.tsx:125</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">-kp-surface-highlight rounded-full overflow-hidden&quot;&gt; &lt;div className=&quot;h-full bg-gradient-to-r from-kp-brand to-kp-brand-light rounded-full transition-all duration-500&quot;</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/progress/CourseProgressCard.tsx:67</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">levated&quot; hover=&quot;lift&quot; className={className} &gt; &lt;div className=&quot;flex flex-col h-full&quot;&gt; {/* Header with thumbnail or gradient */} &lt;div className=&quot;relative h-32 rou</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/onboarding/SpeedOnboarding.tsx:228</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">0 dark:bg-slate-700 rounded-full overflow-hidden&quot;&gt; &lt;motion.div className=&quot;h-full bg-linear-to-r from-blue-500 to-indigo-500 rounded-full&quot; initial={{ width: &quot;100</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/onboarding/OnboardingProgress.tsx:43</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">flex-1 overflow-hidden rounded-full bg-white/10&quot;&gt; &lt;motion.div className=&quot;h-full rounded-full bg-[#2563eb]&quot; initial={false} animate={{</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/signals/SignalTable.tsx:187</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">00 rounded-full overflow-hidden&quot;&gt; &lt;div className=&quot;h-full bg-primary&quot; ref={(el) =&gt; { if (el) el.s</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/marketplace/StrategyDetailPage.tsx:90</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">ategy.riskLevel]; const isPositive = strategy.avgReturn &gt;= 0; return ( &lt;div className=&quot;min-h-screen bg-white dark:bg-[#0A0A0A]&quot;&gt; {/* Header with gradient accent */} &lt;div className</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/landing/HeroSection.stories.tsx:10</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">=&gt; { const isEnglish = locale === &#39;en&#39;; return ( &lt;section className=&quot;relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#0052FF] to-[#1e40a</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/landing/FeaturesBentoGrid.tsx:82</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">ssName}`} &gt; &lt;GlassCard variant=&quot;elevated&quot; hover=&quot;lift&quot; className=&quot;h-full relative overflow-hidden&quot; &gt; &lt;div className=&quot;absolute inset-0 bg-gradient-to-br</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/landing/FeaturesBentoGrid.tsx:86</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">om-kp-brand/30 via-kp-brand/10 to-transparent opacity-50&quot; /&gt; &lt;div className=&quot;relative z-10 h-full flex flex-col&quot;&gt; &lt;div className=&quot;w-14 h-14 rounded-xl bg-kp-surface-highlight flex i</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/landing/CoursePreview.tsx:78</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">div className=&quot;mt-4 h-1 bg-slate-800 rounded-full overflow-hidden&quot;&gt; &lt;div className=&quot;h-full w-0 bg-[#0052FF] rounded-full transition-all duration-300 group-hover:w-full&quot; /&gt;</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/gamification/GamificationCard.tsx:141</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">initial={{ width: 0 }} animate={{ width: `${xpProgress}%` }} className=&quot;h-full bg-linear-to-r from-blue-500 to-purple-500&quot; /&gt; &lt;/div&gt; {nextRank &amp;&amp;</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/dashboard/DashboardSidebar.tsx:181</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">:static lg:block hidden md:block `} &gt; &lt;div className=&quot;flex flex-col h-full overflow-hidden&quot;&gt; &lt;div className={`border-b border-slate-100 flex items</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/dashboard/DashboardLearningSidebar.tsx:178</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">e=&quot;h-2 bg-slate-800 rounded-full overflow-hidden&quot;&gt; &lt;motion.div className=&quot;h-full bg-linear-to-r from-indigo-500 to-purple-500 rounded-full&quot; initial={{ width: 0</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/dashboard/DashboardLearningSidebar.tsx:270</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">rounded-full overflow-hidden&quot;&gt; &lt;motion.div className={cn(&quot;h-full rounded-full&quot;, track.color)} initial={{ width: 0 }}</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/course/VideoHero.tsx:292</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">loop muted playsInline preload=&quot;none&quot; className=&quot;absolute w-full h-full object-cover opacity-30&quot; /&gt; &lt;div className=&quot;absolute inset-0 bg-linear-to-br from</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/copy-trading/LeaderComparisonStrip.tsx:34</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">flex-1 overflow-hidden rounded-full bg-slate-800&quot;&gt; &lt;motion.div className=&quot;h-full rounded-full bg-gradient-to-r from-indigo-500 to-blue-500&quot; initial={reduceMotio</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/copy-trading/LeaderComparisonStrip.tsx:45</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">flex-1 overflow-hidden rounded-full bg-slate-800&quot;&gt; &lt;motion.div className=&quot;h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500&quot; initial={reduceMo</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/ai/AIDecisionPanel.tsx:274</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">ate-700 rounded-full overflow-hidden&quot;&gt; &lt;motion.div className=&quot;h-full bg-linear-to-r from-violet-500 to-fuchsia-500 rounded-full&quot; initial={{ wi</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/auto-trading/LiveStrategyView.tsx:316</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">-slate-700 rounded-full mx-auto overflow-hidden&quot;&gt; &lt;div className=&quot;h-full bg-blue-500 rounded-full transition-all duration-500&quot; style={{ width: `${(t</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/shared/layout/header/MiniPulseWidget.tsx:60</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">ame=&quot;hidden sm:block w-12 h-6 overflow-hidden&quot;&gt; &lt;svg viewBox=&quot;0 0 100 40&quot; className=&quot;w-full h-full&quot;&gt; &lt;path d=&quot;M0,30 Q10,10 20,25 T40,15 T60,35 T80,5 T100,20&quot;</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/features/dashboard/pulse/PulseChartContainer.tsx:55</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">-900/50 backdrop-blur-xl border border-white/5 rounded-4xl overflow-hidden shadow-2xl flex flex-col h-full&quot;&gt; &lt;PulseHeaderStats portfolioValue={stats.portfolioValue} dailyChangeNo</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(trading)/paper/page.tsx:82</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">{ locale: string }&gt;; }) { const { locale } = await params; return ( &lt;main className=&quot;min-h-screen bg-slate-50 dark:bg-slate-950&quot;&gt; {/* Hero */} &lt;section className=&quot;relative overf</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(trading)/auto/page.tsx:121</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">{ locale: string }&gt;; }) { const { locale } = await params; return ( &lt;main className=&quot;min-h-screen bg-slate-50 dark:bg-slate-950&quot;&gt; {/* Hero */} &lt;section className=&quot;relative overf</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(social)/tradere/page.tsx:33</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">t t = await getTranslations({ locale, namespace: &quot;traders&quot; }); return ( &lt;main className=&quot;min-h-screen bg-slate-50 dark:bg-slate-950&quot;&gt; {/* Hero */} &lt;section className=&quot;relative overf</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(marketing)/priser/ClientPricingPage.tsx:181</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">error); } finally { setLoadingTier(null); } }; return ( &lt;div className={`min-h-screen ${SURFACE.BG} font-sans ${SURFACE.TEXT}`}&gt; {/* HERO - samme stil som landing: merke #</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(marketing)/priser/ClientPricingPage.tsx:186</div>
+      <div class="message">Found h-full with overflow-hidden</div>
+      <div class="code">RFACE.BG} border-b ${SURFACE.BORDER}`} &gt; &lt;div className=&quot;absolute top-0 left-0 w-full h-full pointer-events-none&quot;&gt; &lt;div className=&quot;absolute top-[-10%] right-[-5%] w-[600px] h-[</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(marketing)/om/page.tsx:69</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">{ locale: string }&gt;; }) { const { locale } = await params; return ( &lt;main className=&quot;min-h-screen bg-slate-50 dark:bg-slate-950&quot;&gt; {/* Hero */} &lt;section className=&quot;relative overf</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(auth)/register/SignupClient.tsx:412</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">} return prev - 1; }); }, 1000); }; return ( &lt;div className=&quot;min-h-screen bg-[#F8F9FC] flex items-center justify-center px-4&quot;&gt; &lt;Card className=&quot;max-w-md w-full</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+    <div class="finding critical">
+      <div class="file-path">src/app/[locale]/(academy)/kurs/ClientKurs.tsx:113</div>
+      <div class="message">Found h-screen with overflow-hidden</div>
+      <div class="code">show: { opacity: 1, y: 0, transition: { duration: 0.4 } }, }; return ( &lt;div className=&quot;min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-50 dark:from-gray-950 dark:via-gray-900 dar</div>
+      <div class="fix">Fix: CRITICAL: This blocks scroll</div>
+    </div>
+    
+  </div>
+  
+
+  
+  <div class="section">
+    <h2>⚠️ Warnings (Should Review)</h2>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/ui/sidebar.tsx:377</div>
+      <div class="message">min-h-0 in flex container</div>
+      <div class="code">v data-slot=&quot;sidebar-content&quot; data-sidebar=&quot;content&quot; className={cn( &quot;flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden&quot;,</div>
+      <div class="fix">Fix: May need overflow-y-auto to enable scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/ui/select.tsx:63</div>
+      <div class="message">Found overflow-x-hidden</div>
+      <div class="code">adix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md&quot;, position === &quot;popper&quot; &amp;&amp;</div>
+      <div class="fix">Fix: Verify this does not block scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/ui/dropdown-menu.tsx:43</div>
+      <div class="message">Found overflow-x-hidden</div>
+      <div class="code">menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md&quot;, className )}</div>
+      <div class="fix">Fix: Verify this does not block scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/ui/context-menu.tsx:105</div>
+      <div class="message">Found overflow-x-hidden</div>
+      <div class="code">-menu-content-available-height) min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md&quot;, className )}</div>
+      <div class="fix">Fix: Verify this does not block scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/ui/command.tsx:91</div>
+      <div class="message">Found overflow-x-hidden</div>
+      <div class="code">imitive.List data-slot=&quot;command-list&quot; className={cn( &quot;max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto&quot;, className )} {...props} /&gt; ) } functi</div>
+      <div class="fix">Fix: Verify this does not block scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/ui/SlidingSegmentedControl.tsx:78</div>
+      <div class="message">min-h-0 in flex container</div>
+      <div class="code">onClick={() =&gt; onChange(opt.value)} className={cn( &quot;relative z-10 flex min-h-0 min-w-0 flex-1 items-center justify-center rounded-full px-2 py-1 outline-none transition-co</div>
+      <div class="fix">Fix: May need overflow-y-auto to enable scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/navigation/TopNav.tsx:87</div>
+      <div class="message">min-h-0 in flex container</div>
+      <div class="code">label={t(&quot;settings&quot;)} title={t(&quot;settings&quot;)} className=&quot;min-h-11 min-w-11 sm:min-h-0 sm:min-w-0&quot; start={&lt;Settings className=&quot;h-4 w-4&quot; /&gt;} &gt; &lt;sp</div>
+      <div class="fix">Fix: May need overflow-y-auto to enable scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/navigation/TopNav.tsx:99</div>
+      <div class="message">min-h-0 in flex container</div>
+      <div class="code">ria-label={t(&quot;alerts&quot;)} title={t(&quot;alerts&quot;)} className=&quot;min-h-11 min-w-11 sm:min-h-0 sm:min-w-0&quot; start={&lt;Bell className=&quot;h-4 w-4&quot; /&gt;} &gt; &lt;span c</div>
+      <div class="fix">Fix: May need overflow-y-auto to enable scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/shared/navigation/TopNav.tsx:111</div>
+      <div class="message">min-h-0 in flex container</div>
+      <div class="code">a-label={t(&quot;profile&quot;)} title={t(&quot;profile&quot;)} className=&quot;min-h-11 min-w-11 sm:min-h-0 sm:min-w-0&quot; start={&lt;User className=&quot;h-4 w-4&quot; /&gt;} &gt; &lt;span c</div>
+      <div class="fix">Fix: May need overflow-y-auto to enable scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/trading/TradingModeToggle.tsx:72</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">Labels ── */} &lt;span className=&quot;relative z-10 flex items-center justify-between h-full px-3 pointer-events-none&quot;&gt; {MODES.map(({ value, label, Icon }) =&gt; { const active =</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/trading/BotStatusDashboard.tsx:776</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">olute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none&quot; /&gt; {isBotActive &amp;&amp; ( &lt;div className=&quot;relative z-10 mb-6&quot;&gt;</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/trading/BotStatusDashboard.tsx:975</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">te top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none&quot; /&gt; &lt;div className=&quot;relative z-10&quot;&gt; &lt;div className=&quot;flex items-ce</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/landing/Testimonials.tsx:22</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">t-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none&quot; /&gt; &lt;div className=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10&quot;</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/landing/FinalCTASection.tsx:27</div>
+      <div class="message">Found overflow-x-hidden</div>
+      <div class="code">(&quot;guarantee3&quot;), t(&quot;guarantee4&quot;), ]; return ( &lt;section className={`relative py-32 overflow-x-hidden ${SURFACE.BG}`} aria-labelledby=&quot;final-cta-heading&quot; &gt; &lt;div classNa</div>
+      <div class="fix">Fix: Verify this does not block scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/landing/FinalCTASection.tsx:111</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">&lt;span className=&quot;absolute inset-0 rounded-2xl animate-pulse blur-xl pointer-events-none opacity-20 z-0&quot; style={{ backgroundColor: BRAND_COLOR.DEFAUL</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/landing/DemoWidget.tsx:112</div>
+      <div class="message">Found overflow-x-hidden</div>
+      <div class="code">section id=&quot;land-demo&quot; data-testid=&quot;demo-widget&quot; className=&quot;relative scroll-mt-24 overflow-x-hidden bg-slate-950 py-16 md:py-28&quot; &gt; &lt;div className=&quot;pointer-events-no</div>
+      <div class="fix">Fix: Verify this does not block scroll</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/dashboard/FirstTradeCard.tsx:139</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">ull bg-[#0052FF]/5&quot; /&gt; &lt;/div&gt; {showConfetti &amp;&amp; ( &lt;div className=&quot;fixed inset-0 pointer-events-none z-50&quot;&gt; {Array.from({ length: 50 }).map((_, i) =&gt; ( &lt;div</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/dashboard/DashboardLearningSidebar.tsx:313</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">ext-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10&quot;&gt; {badge.label} &lt;div className=&quot;absolut</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/copy-trading/CopyTradingDiscoverClient.tsx:223</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">me=&quot;relative&quot;&gt; {refreshing &amp;&amp; leaders.length &gt; 0 &amp;&amp; ( &lt;div className=&quot;pointer-events-none absolute inset-0 z-10 flex items-start justify-end rounded-3xl p-4&quot;</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+    <div class="finding warning">
+      <div class="file-path">src/features/dashboard/pulse/PulseChart.module.css:4</div>
+      <div class="message">pointer-events-none with z-index</div>
+      <div class="code">/* Pulse Chart Custom Tooltip &amp; Overlays */ .pulse-tooltip { @apply fixed pointer-events-none z-50 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl p-3 shad</div>
+      <div class="fix">Fix: High z-index + pointer-events-none may block interactions</div>
+    </div>
+    
+  </div>
+  
+
+  
+  <div class="section">
+    <h2>ℹ️ Info (For Reference)</h2>
+    <details>
+      <summary>Show 389 info items</summary>
+      
+      <div class="finding info">
+        <div class="file-path">src/styles/kp-tokens.css:177</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/not-found.tsx:15</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/loading.tsx:8</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/global-error.tsx:37</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/error.tsx:59</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/toggle.tsx:8</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/toggle.tsx:8</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/tabs.tsx:45</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/tabs.tsx:45</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/table.tsx:9</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/switch.tsx:21</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/slider.tsx:34</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/slider.tsx:48</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/slider.tsx:56</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:173</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:202</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:247</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:232</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:477</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:477</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:589</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:691</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sidebar.tsx:691</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sheet.tsx:61</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sheet.tsx:63</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sheet.tsx:37</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sheet.tsx:59</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/sheet.tsx:73</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/separator.tsx:20</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/select.tsx:63</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/select.tsx:38</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/select.tsx:110</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/select.tsx:110</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/select.tsx:135</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/scroll-area.tsx:43</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/resizable.tsx:15</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/label.tsx:16</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/kbd.tsx:8</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/item.tsx:75</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/input.tsx:13</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/input-group.tsx:131</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/empty.tsx:32</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:43</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:75</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:75</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:93</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:93</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:99</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:129</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:129</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:134</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dropdown-menu.tsx:212</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/drawer.tsx:40</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/drawer.tsx:59</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dot-pattern.tsx:30</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dot-pattern.tsx:30</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dialog.tsx:39</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dialog.tsx:61</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dialog.tsx:73</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/dialog.tsx:73</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:105</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:69</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:129</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:129</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:147</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:147</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:153</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:172</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:172</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/context-menu.tsx:177</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/command.tsx:91</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/command.tsx:148</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/command.tsx:148</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/calendar.tsx:107</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/button-group.tsx:52</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/badge.tsx:8</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/alert-dialog.tsx:37</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/alert-dialog.tsx:55</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/accordion.tsx:36</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/accordion.tsx:42</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/SlidingSegmentedControl.tsx:62</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/MarkdownRenderer.tsx:24</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/GlassCard.tsx:56</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/CookieConsent.tsx:32</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/pwa/PWAInstallPrompt.tsx:52</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/pwa/InstallPrompt.tsx:116</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/pwa/InstallPrompt.tsx:266</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/navigation/TopNav.tsx:46</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/navigation/BottomTabs.tsx:177</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/error/error-boundary.tsx:92</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/layout/NotificationTray.tsx:181</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/layout/MarketingNavigation.tsx:40</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/layout/MarketingNavigation.tsx:34</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/layout/LocaleMarketingShell.tsx:68</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/layout/BottomNav.tsx:189</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/layout/BottomNav.tsx:105</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/disclaimers/DashboardDisclaimer.tsx:50</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/disclaimers/DashboardDisclaimer.tsx:70</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/UnifiedTradingDashboard.tsx:768</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/UnifiedTradingDashboard.tsx:366</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/UnifiedTradingDashboard.tsx:387</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/UnifiedTradingDashboard.tsx:428</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/UnifiedTradingDashboard.tsx:969</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/TradingModeToggle.tsx:72</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/TradingModeToggle.tsx:58</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/TradingModeToggle.tsx:95</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/TradingModeToggle.tsx:107</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/TradeSuccessOverlay.tsx:98</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/SignalFeed.tsx:260</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/RobotThinkingStrip.tsx:51</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/RobotThinkingStrip.tsx:57</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/RiskSlider.tsx:229</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/RiskSlider.tsx:246</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/ProfessionalChart.tsx:194</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/PremiumTradingLayout.tsx:41</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/PositionsTable.tsx:35</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/OrderHistory.tsx:52</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/OptimalTrader.tsx:93</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/OptimalTrader.tsx:88</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/BotStatusDashboard.tsx:293</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/BotStatusDashboard.tsx:489</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/BotStatusDashboard.tsx:278</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/BotStatusDashboard.tsx:291</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/BotStatusDashboard.tsx:293</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/BotStatusDashboard.tsx:663</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/BotStatusDashboard.tsx:293</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/AdvancedStatsModal.tsx:299</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/AdvancedStatsModal.tsx:418</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/trading/AdvancedStatsModal.tsx:696</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/strategies/SetupWizard.tsx:89</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/strategies/SetupWizard.tsx:89</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/referral/ReferralDashboard.tsx:104</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/referral/GoldenTicket.tsx:57</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/referral/GoldenTicket.tsx:49</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/referral/GoldenTicket.tsx:54</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/progress/CourseProgressCard.tsx:78</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/paper-trading/PaperTradingPageClient.tsx:68</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/paper-trading/PaperTradingList.tsx:409</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/notifications/NotificationBell.tsx:142</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/SpeedOnboarding.tsx:310</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/OnboardingProgress.tsx:41</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/OnboardingFlow.tsx:68</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/OnboardingFlow.tsx:61</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/OnboardingCompletion.tsx:24</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/signals/ConfluentSignalCard.tsx:413</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/marketplace/StrategyDetailPage.tsx:285</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/marketplace/StrategyDetailPage.tsx:290</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/marketplace/MarketplaceClient.tsx:255</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/TrustStrip.tsx:63</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/TrustStrip.tsx:67</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/Studieprogram.tsx:132</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/StickyCTA.tsx:14</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/StickyCTA.tsx:17</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/SimpleLanding.tsx:13</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/ROISimulator.tsx:135</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/ROISimulator.tsx:221</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/ROISimulator.tsx:229</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/ROISimulator.tsx:240</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/PricingSection.tsx:110</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/MobileMenu.tsx:27</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/MobileMenu.tsx:39</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/LiveSparkChart.tsx:149</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/LiveSparkChart.tsx:181</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/LivePriceTicker.tsx:133</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/LivePriceTicker.tsx:133</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/LandingNavigation.tsx:32</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/HeroSection.tsx:18</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/HeroSection.tsx:20</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/HeroSection.stories.tsx:10</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/HeroSection.stories.tsx:14</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/HeroSection.stories.tsx:21</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/FinalCTASection.tsx:45</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/FeaturesBentoGrid.tsx:45</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/FeaturesBentoGrid.tsx:214</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/EmailCapture.tsx:57</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/DemoWidget.tsx:122</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/DemoWidget.tsx:115</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/DemoWidget.tsx:246</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/ComparisonSection.tsx:84</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/ComparisonSection.tsx:93</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/AutoTradeDemo.tsx:172</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/AutoTradeDemo.tsx:165</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/AutoTradeDemo.tsx:172</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/landing/AutoTradeDemo.tsx:215</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/gamification/XPBar.tsx:53</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/gamification/LevelUpModal.tsx:14</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/gamification/KLTWallet.tsx:216</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/funding/FundingArbitrageDashboard.tsx:46</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/UpgradeGate.tsx:40</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/TradingResultsDashboard.tsx:235</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/ReferralDashboard.tsx:174</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/ReferralDashboard.tsx:122</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/ReferralDashboard.tsx:93</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/PortfolioDashboard.tsx:528</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/PortfolioDashboard.tsx:522</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/PortfolioDashboard.tsx:528</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/GetStartedCard.tsx:196</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/FirstTradeCard.tsx:139</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/DashboardTabs.tsx:37</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/DashboardSidebar.tsx:208</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/DashboardSidebar.tsx:181</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/DashboardSidebar.tsx:208</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/DashboardSidebar.tsx:175</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/DashboardSidebar.tsx:275</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/course/VideoHero.tsx:109</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/course/VideoHero.tsx:130</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/course/VideoHero.tsx:131</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/course/Progress.tsx:5</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/copy-trading/LeaderComparisonStrip.tsx:32</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/copy-trading/LeaderComparisonStrip.tsx:43</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/copy-trading/LeaderCard.tsx:91</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/copy-trading/LeaderCard.tsx:94</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/copy-trading/LeaderCard.tsx:72</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/copy-trading/LeaderCard.tsx:75</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/copy-trading/CopyTradingSubAppHeader.tsx:30</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/auto-trade/BotWizard.tsx:660</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/auto-trade/BotDetailView.tsx:318</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/auth/AuthContainer.tsx:63</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/MoonshotChat.tsx:121</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/MoonshotChat.tsx:121</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:302</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:306</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:309</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:494</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:265</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:302</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:256</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:267</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:268</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/ChatWidget.tsx:526</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/AIChat.tsx:209</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/ai/AIChat.tsx:209</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/auto-trading/PaperTrading.tsx:336</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/auto-trading/LiveStrategyView.tsx:386</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/page.tsx:91</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/page.tsx:129</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/not-found.tsx:18</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/loading.tsx:8</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/layout.tsx:277</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/error.tsx:34</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/modals/ConnectBinanceModal.tsx:69</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/charts/Sparkline.tsx:37</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/shared/ui/charts/Sparkline.tsx:50</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/steps/OnboardingStep3.tsx:90</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/steps/OnboardingStep2.tsx:58</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/steps/OnboardingStep2.tsx:127</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/onboarding/steps/OnboardingStep1.tsx:124</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/pulse/PulseChartContainer.tsx:55</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/pulse/PulseChart.tsx:159</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/pulse/PulseChart.module.css:4</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/features/dashboard/pulse/PulseChart.module.css:10</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/funding-arbitrage/page.tsx:11</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/funding-arbitrage/page.tsx:11</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/funding-arbitrage/page.tsx:11</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/layout.tsx:42</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/layout.tsx:48</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/feil/serverfeil/ClientServerError.tsx:9</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/feil/ingen-tilgang/ClientForbidden.tsx:9</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/feil/ikke-funnet/ClientNotFound.tsx:9</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/dev/cds-test/page.tsx:10</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/konto/layout.tsx:20</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/konto/LommebokDashboard.tsx:292</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/innstillinger/layout.tsx:20</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/innstillinger/InnstillingerClient.tsx:349</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/handelshistorikk/layout.tsx:20</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/handelshistorikk/ClientHandelshistorikk.tsx:445</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/handelshistorikk/ClientHandelshistorikk.tsx:548</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/handelshistorikk/ClientHandelshistorikk.tsx:326</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(trading)/paper/layout.tsx:34</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/dashboard/loading.tsx:5</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/dashboard/error.tsx:34</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/dashboard/DashboardClientLayout.tsx:88</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/dashboard/DashboardClientLayout.tsx:83</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/dashboard/DashboardClientLayout.tsx:88</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/varsler/ClientVarsler.tsx:81</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(social)/copy-trading/page.tsx:19</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(social)/copy-trading/layout.tsx:23</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/velg-strategi/page.tsx:18</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/velkommen/VelkommenContent.tsx:78</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/quiz/QuizClient.tsx:93</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/quiz/QuizClient.tsx:179</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/verify/page.tsx:14</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/priser/PriserClient.tsx:200</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/priser/PriserClient.tsx:54</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/priser/ClientPricingPage.tsx:220</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/priser/ClientPricingPage.tsx:186</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/interessetest/ClientInteressetest.tsx:190</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/interessetest/ClientInteressetest.tsx:320</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/onboarding/page.tsx:25</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/onboarding/loading.tsx:5</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/onboarding/layout.tsx:51</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/onboarding/layout.tsx:69</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/onboarding/ClientOnboarding.tsx:12</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/kontakt/ClientKontakt.tsx:58</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/kalkulator/ClientKalkulator.tsx:176</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/kalkulator/ClientKalkulator.tsx:178</div>
+        <div class="message">Found sticky positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/hjelp/HelpClient.tsx:53</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/binance-guide/BinanceGuideContent.tsx:67</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/om-oss/OmOssClient.tsx:50</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/layout.tsx:20</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/ClientCheckout.tsx:117</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/ClientCheckout.tsx:125</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/ClientCheckout.tsx:147</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/ClientCheckout.tsx:168</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/ClientCheckout.tsx:282</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/CheckoutContent.tsx:107</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/CheckoutContent.tsx:120</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/layout.tsx:20</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/marketplace/page.tsx:19</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/marketplace/loading.tsx:5</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/marketplace/loading.tsx:10</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/marketplace/layout.tsx:20</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/login/InnloggingClient.tsx:173</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/login/InnloggingClient.tsx:398</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/login/InnloggingClient.tsx:236</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/login/InnloggingClient.tsx:259</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/register/SignupClient.tsx:182</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/register/SignupClient.tsx:195</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/register/SignupClient.tsx:454</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:285</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:161</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:256</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:285</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:357</div>
+        <div class="message">Flex + overflow combination detected</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:260</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:272</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/layout.tsx:342</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/error.tsx:34</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/ClientStudentsPage.tsx:227</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/ClientStudentsPage.tsx:342</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/ClientAdminDashboard.tsx:251</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/ClientAdminDashboard.tsx:187</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(academy)/akademi/ClientAkademi.tsx:127</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(academy)/kurs/ClientKurs.tsx:116</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/glemt-passord/GlemtPassordClient.tsx:49</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(auth)/glemt-passord/GlemtPassordClient.tsx:53</div>
+        <div class="message">Found h-full</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(legal)/vilkar/page.tsx:24</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(legal)/personvern/ClientPersonvern.tsx:9</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(trading)/paper/[session_id]/page.tsx:24</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(trading)/paper/[session_id]/page.tsx:125</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/dashboard/tax-report/TaxReportClient.tsx:438</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(user)/dashboard/portfolio/page.tsx:15</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/priser/cancel/ClientPriserCancel.tsx:12</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/priser/success/SuccessContent.tsx:82</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(marketing)/priser/success/ClientPriserSuccess.tsx:12</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(onboarding)/onboarding/step5-complete/page.tsx:103</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/success/page.tsx:23</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/success/ClientCheckoutSuccess.tsx:65</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/success/ClientCheckoutSuccess.tsx:78</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/success/ClientCheckoutSuccess.tsx:97</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(commerce)/checkout/success/ClientCheckoutSuccess.tsx:192</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/live-trading/LiveTradingClient.tsx:264</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/live-trading/LiveTradingClient.tsx:275</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/live-trading/LiveTradingClient.tsx:290</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/live-trading/LiveTradingClient.tsx:531</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/konkurranse/CompetitionClient.tsx:132</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/dashboard/BetaDashboardClient.tsx:154</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/dashboard/BetaDashboardClient.tsx:161</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/dashboard/BetaDashboardClient.tsx:238</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/dashboard/BetaDashboardClient.tsx:269</div>
+        <div class="message">pointer-events-none</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/connect-exchange/ConnectExchangeClient.tsx:72</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/auto-trade/ClientBetaAutoTrade.tsx:267</div>
+        <div class="message">Found overflow-y-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/apply/BetaApplyClient.tsx:104</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/apply/BetaApplyClient.tsx:115</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/apply/BetaApplyClient.tsx:129</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/apply/BetaApplyClient.tsx:152</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(academy)/leksjon/[lessonId]/page.tsx:30</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/v2/ClientAdminV2.tsx:64</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/v2/ClientAdminV2.tsx:72</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/v2/ClientAdminV2.tsx:93</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/users/ClientAdminUsers.tsx:431</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/users/ClientAdminUsers.tsx:588</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/users/ClientAdminUsers.tsx:661</div>
+        <div class="message">Found fixed positioning</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/sync-status/ClientSyncStatus.tsx:316</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/reset-password/ClientResetPassword.tsx:86</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/reset-password/ClientResetPassword.tsx:99</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/reset-password/ClientResetPassword.tsx:127</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/reset-password/ClientResetPassword.tsx:164</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/monetization/ClientMonetization.tsx:208</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/login/ClientAdminLogin.tsx:63</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/forgot-password/ClientForgotPassword.tsx:50</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/forgot-password/ClientForgotPassword.tsx:82</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/campaign/ClientCampaign.tsx:88</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/campaign/ClientCampaign.tsx:96</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/campaign/ClientCampaign.tsx:138</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(social)/copy-trading/traders/[id]/page.tsx:17</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(social)/copy-trading/traders/[id]/page.tsx:105</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(beta)/beta/apply/takk/BetaThankYouClient.tsx:13</div>
+        <div class="message">Found h-screen</div>
+      </div>
+      
+      <div class="finding info">
+        <div class="file-path">src/app/[locale]/(admin)/admin/auto-trading/sessions/ClientAdminSessions.tsx:165</div>
+        <div class="message">Found overflow-x-auto</div>
+      </div>
+      
+    </details>
+  </div>
+  
+
+  <div class="section">
+    <h2>📋 Scroll Debugging Checklist</h2>
+    <ul>
+      <li>✅ Check that html/body don't have overflow:hidden</li>
+      <li>✅ Verify only ONE container has overflow-y-auto per page</li>
+      <li>✅ Ensure flex containers with min-h-0 have overflow-y-auto</li>
+      <li>✅ Check for pointer-events-none overlays blocking interactions</li>
+      <li>✅ Verify cookie domain consistency for auth</li>
+      <li>✅ Test scroll on mobile (touch events)</li>
+      <li>✅ Check that fixed/sticky elements don't cover scrollable area</li>
+    </ul>
+  </div>
+
+</body>
+</html>
