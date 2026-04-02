@@ -101,9 +101,17 @@ export const useProgressStore = create<ProgressState>()(
         try {
           const response = await apiFetch('/api/progress');
           
+          // apiFetch handles 401 by redirecting, so if we get here, it's a real error
           if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Kunne ikke hente fremgang');
+            let errorMessage = 'Kunne ikke hente fremgang';
+            try {
+              const error = await response.json();
+              errorMessage = error.error || errorMessage;
+            } catch {
+              // If JSON parse fails, use status text
+              errorMessage = response.statusText || errorMessage;
+            }
+            throw new Error(errorMessage);
           }
           
           const data = await response.json();
@@ -114,6 +122,10 @@ export const useProgressStore = create<ProgressState>()(
             isLoading: false,
           });
         } catch (error) {
+          // Don't set error if we got redirected (page is navigating away)
+          if (error instanceof Error && error.message.includes('redirect')) {
+            return;
+          }
           set({
             error: error instanceof Error ? error.message : 'Ukjent feil',
             isLoading: false,
