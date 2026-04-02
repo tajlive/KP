@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -323,7 +324,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                             borderRadius: '8px',
                             fontSize: '12px',
                           }}
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                           
                           formatter={(value: any) => formatNOK(Number(value))}
                           labelFormatter={(label) => `Måned ${label}`}
                         />

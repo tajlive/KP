@@ -4,14 +4,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchHistoricalData, runBacktest, StrategyType, RiskProfile, STRATEGY_MAP } from '@/lib/backtest/engine';
+import { fetchHistoricalData, runBacktest, generateSignalsFromLog, StrategyType, RiskProfile, STRATEGY_MAP } from '@/lib/backtest/engine';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 const BacktestSchema = z.object({
   symbol: z.string().regex(/^[A-Z]{3,10}USDT$/).optional(),
   interval: z.enum(['1d', '4h', '1h']).default('1d'),
-  strategy: z.enum(['SMA_CROSSOVER', 'RSI_MEAN_REVERSION', 'AI_SIGNALS']).default('SMA_CROSSOVER'),
+  strategy: z.enum(['SMA_CROSSOVER', 'RSI_MEAN_REVERSION', 'AI_SIGNALS', 'ENSEMBLE_AI']).default('SMA_CROSSOVER'),
   initialCapital: z.number().min(1000).max(1000000).default(10000),
   period: z.number().min(7).max(1095).default(365), // Days - up to 3 years
   riskProfile: z.enum(['konservativ', 'balansert', 'aggressiv']).optional(),
@@ -80,12 +80,44 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Build signals
+    let externalSignals: ('BUY' | 'SELL' | 'HOLD')[] | undefined;
+
+    if (strategy === 'ENSEMBLE_AI') {
+      const fromDate = new Date(Date.now() - period * 24 * 60 * 60 * 1000).toISOString();
+      const { data: logSignals, error: logError } = await supabase
+        .from('ai_decision_log')
+        .select('executed_at, decision_type, sentiment_score, analysis_data')
+        .eq('symbol', finalSymbol)
+        .gte('executed_at', fromDate)
+        .order('executed_at', { ascending: true });
+
+      if (logError) {
+        console.error('[Backtest] ai_decision_log query error:', logError);
+      }
+
+      // Filter to ensemble signals only if analysis_data has ensemble flag
+      const ensembleSignals = (logSignals || []).filter((row) => {
+        const data = row.analysis_data as Record<string, unknown> | null | undefined;
+        return data && data.ensemble === true;
+      });
+
+      externalSignals = generateSignalsFromLog(
+        candles,
+        ensembleSignals.map((s) => ({
+          timestamp: s.executed_at ?? new Date().toISOString(),
+          decision_type: s.decision_type,
+          sentiment_score: s.sentiment_score ?? 0,
+        }))
+      );
+    }
+
     // Run backtest with strategy parameters
     const result = runBacktest(candles, strategy as StrategyType, initialCapital, {
       smaFast: finalSmaFast,
       smaSlow: finalSmaSlow,
       maxPositionPct: finalMaxPositionPct,
-    });
+    }, externalSignals);
     
     // Save to Supabase if authenticated - TODO: re-enable after migration (KLA-240)
     // if (user) {

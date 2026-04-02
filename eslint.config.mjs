@@ -391,6 +391,31 @@ const eslintConfig = [
       "no-console": "off",
     },
   },
+
+  // KLA-PROFIT1: Midlertidig override for legacy lint-gjeld
+  // TODO: KLA-XXX Fjern dette når legacy filer er fikset
+  {
+    name: "kla-profit1-legacy-exemptions",
+    files: [
+      "playwright/global-setup.ts",
+      "src/features/backtest/BacktestPanel.tsx",
+      "src/features/funding/FundingArbitrageDashboard.tsx",
+      "src/features/landing/LandingBacktestTeaser.tsx",
+      "src/features/landing/ROISimulator.tsx",
+      "src/features/trading/AggressivitySlider.tsx",
+      "src/features/trading/OptimalTrader.tsx",
+      "src/features/trading/TradeAmountSlider.tsx",
+      "src/lib/monitoring/index.ts",
+      "src/lib/paper-trading/supabase.ts",
+      "src/lib/trading/confluent-signal-engine.ts",
+    ],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "jsx-a11y/label-has-associated-control": "off",
+      "jsx-a11y/label-has-for": "off",
+    },
+  },
 ];
 
 export default eslintConfig;

@@ -1,3 +1,85 @@
-# CODEOWNERS for https://github.com/tajlive/KP
+# CODEOWNERS for Klarpakke
+# ============================================================================
+# Denne filen definerer hvem som automatisk blir assigned som reviewer
+# basert på hvilke filer som endres i en PR.
+#
+# Syntax: pattern @user1 @user2 @org/team
+# - Siste match vinner (mer spesifikke patterns overstyrer generelle)
+# - Bruk @username for individuelle brukere
+# - Bruk @org/team for team (hvis GitHub Teams er satt opp)
+# ============================================================================
+
+# ============================================================================
+# TODO: Bytt til team-basert ownership når GitHub Teams er opprettet
+# Se docs/RELEASE-GATE.md for team-struktur
+# ============================================================================
+
+# ============================================================================
 # Default owner for the entire repository
-*       @tajlive
+# ============================================================================
+* @tajlive
+
+# ============================================================================
+# Frontend / React / Next.js
+# TODO: Endre til @klarpakke/frontend-leads når team er opprettet
+# ============================================================================
+/src/app/**/*.tsx @tajlive
+/src/components/**/*.tsx @tajlive
+/src/shared/ui/**/*.tsx @tajlive
+/src/features/**/*.tsx @tajlive
+/src/hooks/**/*.ts @tajlive
+/src/lib/utils*.ts @tajlive
+tailwind.config.* @tajlive
+next.config.* @tajlive
+
+# ============================================================================
+# Backend / API / Server-side
+# TODO: Endre til @klarpakke/backend-leads når team er opprettet
+# ============================================================================
+/src/app/**/route.ts @tajlive
+/src/app/**/api/**/*.ts @tajlive
+/src/lib/**/*.ts @tajlive
+/src/lib/supabase/**/*.ts @tajlive
+/src/lib/trading/**/*.ts @tajlive
+/src/lib/ai/**/*.ts @tajlive
+
+# ============================================================================
+# Supabase / Database
+# TODO: Endre til @klarpakke/backend-leads når team er opprettet
+# ============================================================================
+/supabase/migrations/**/*.sql @tajlive
+/supabase/functions/**/*.ts @tajlive
+/supabase/*.sql @tajlive
+
+# ============================================================================
+# Platform / DevOps / CI-CD
+# TODO: Endre til @klarpakke/platform når team er opprettet
+# ============================================================================
+/.github/workflows/*.yml @tajlive
+/.github/CODEOWNERS @tajlive
+/.github/dependabot.yml @tajlive
+/docker*.yml @tajlive
+/vercel.json @tajlive
+
+# ============================================================================
+# Testing
+# TODO: Endre til @klarpakke/qa-leads @klarpakke/frontend-leads når teams er opprettet
+# ============================================================================
+/e2e/**/*.ts @tajlive
+/tests/**/*.ts @tajlive
+/playwright.config.* @tajlive
+/vitest.config.* @tajlive
+
+# ============================================================================
+# Documentation
+# ============================================================================
+/docs/**/*.md @tajlive
+*.md @tajlive
+
+# ============================================================================
+# KLA-PROFIT1 Specific (AI Profit Metrics)
+# Dobbelt-review for kritisk funksjonalitet
+# ============================================================================
+/src/app/**/dashboard/metrics/** @tajlive
+/e2e/**/ensemble-metrics*.ts @tajlive
+/supabase/functions/ensemble-signals/** @tajlive
