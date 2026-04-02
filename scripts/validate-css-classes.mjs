@@ -35,8 +35,13 @@ const TAILWIND_KP = new Set([
 // CSS-utility-klasser definert direkte i globals.css
 const GLOBALS_CSS_KP = new Set([
   'bg-kp-primary', 'bg-kp-secondary', 'bg-kp-tertiary', 'bg-kp-card', 'bg-kp-surface',
-  'text-kp-primary', 'text-kp-secondary', 'text-kp-tertiary', 'text-kp-muted',
-  'border-kp', 'border-kp-light', 'border-kp-dark',
+  'bg-kp-surface-highlight', 'bg-kp-surface-elevated',
+  'text-kp-primary', 'text-kp-secondary', 'text-kp-tertiary', 'text-kp-muted', 'text-kp-text-muted',
+  'border-kp', 'border-kp-light', 'border-kp-dark', 'border-kp-brand',
+  // Feil/status
+  'bg-kp-error', 'border-kp-error', 'text-kp-error',
+  'bg-kp-border', 'bg-kp-brand-subtle',
+  'border-kp-border-strong', 'border-kp-border-hover',
 ]);
 
 const VALID = new Set([...TAILWIND_KP, ...GLOBALS_CSS_KP]);
