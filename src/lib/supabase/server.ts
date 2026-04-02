@@ -7,6 +7,14 @@ import {
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Cookie domain helper - must match auth-guard.ts for consistency
+function getCookieDomain(request: NextRequest): string | undefined {
+  const host = request.headers.get("host") || "";
+  const isWWW = host.startsWith("www.");
+  const rootDomain = isWWW ? host.replace("www.", "") : host;
+  return rootDomain.includes(":") ? undefined : `.${rootDomain}`;
+}
+
 type SupabaseCookie = {
   name: string;
   value: string;
@@ -54,6 +62,7 @@ export function createServerClient(
 
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {
+    const cookieDomain = getCookieDomain(request);
     return createSSRServerClient<Database>(url, key, {
       cookieEncoding: "raw",
       cookies: {
@@ -61,7 +70,12 @@ export function createServerClient(
         setAll: (cookiesToSet: SupabaseCookie[]) => {
           cookiesToSet.forEach((cookie) => {
             const { name, value, options } = cookie;
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, {
+              ...options,
+              domain: cookieDomain,
+              sameSite: "lax" as const,
+              secure: process.env.NODE_ENV === "production",
+            });
           });
         },
       },

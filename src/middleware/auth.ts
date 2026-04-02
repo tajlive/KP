@@ -13,6 +13,7 @@ import { handleTierGate } from "./tier-gate";
 const PROTECTED_PATHS = [
   "/dashboard",
   "/innstillinger",
+  "/settings",
   "/admin",
   "/onboarding",
   "/checkout",
