@@ -57,6 +57,20 @@ export function getSupabaseClient(): SupabaseClient {
         },
       },
     });
+    
+    // Listen for auth errors and handle token expiration
+    _client.auth.onAuthStateChange((event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('[Supabase] Token refreshed successfully');
+      }
+      if (event === 'SIGNED_OUT' || (event === 'USER_UPDATED' && !session)) {
+        console.log('[Supabase] Auth state: signed out');
+        // Optionally redirect to login
+        if (typeof window !== 'undefined' && window.location.pathname.startsWith('/dashboard')) {
+          window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+        }
+      }
+    });
   } catch (err) {
     // @supabase/ssr throws when url/key invalid; convert to our config error
     if (
