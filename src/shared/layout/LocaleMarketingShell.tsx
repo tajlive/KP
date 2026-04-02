@@ -60,9 +60,8 @@ function MarketingShellLayout({
   children: ReactNode;
 }) {
   if (hideMarketing) {
-    return (
-      <div className="relative flex min-h-screen flex-col">{children}</div>
-    );
+    // Ingen wrapper for app-ruter (dashboard, etc) - lar DashboardClientLayout håndtere layout
+    return <>{children}</>;
   }
 
   return (
