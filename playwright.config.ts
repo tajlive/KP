@@ -48,6 +48,9 @@ applyEnvFile(".env.development.local", { skipNodeEnv: true });
  * Fyll kun hull fra repo-sporet `.env.example` (samme standard testbruker som create-test-users / AGENTS.md).
  */
 applyEnvFile(".env.example", { skipNodeEnv: true, fillMissingOnly: true });
+// Never force local Playwright runs to production via .env.example defaults
+delete process.env.BASE_URL;
+delete process.env.PLAYWRIGHT_TEST_BASE_URL;
 
 /**
  * `scripts/full-e2e.sh` eksporterer KLARPAKKE_E2E_FROM_PROVISION=1 etter create-test-users.js.
@@ -88,6 +91,7 @@ function resolvePlaywrightWorkers(): number | undefined {
  */
 
 export default defineConfig({
+  globalSetup: "./playwright/global-setup.ts",
   testDir: "./e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -242,6 +246,8 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         storageState: e2eAuthStoragePath,
         viewport: { width: 1920, height: 1080 },
+        navigationTimeout: 60_000,
+        actionTimeout: 15_000,
       },
       dependencies: ["setup"],
     },

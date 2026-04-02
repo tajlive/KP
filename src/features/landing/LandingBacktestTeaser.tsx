@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
@@ -360,7 +361,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                             border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '8px',
                           }}
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                           
                           formatter={(value: any, name: any) => [
                             formatNOK(Number(value)),
                             name === 'equity' ? 'Din strategi' : 'Buy & Hold'

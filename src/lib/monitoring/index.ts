@@ -1,3 +1,5 @@
+
+
 // ═══════════════════════════════════════════════════════════════
 // KLARPAKKE — Monitoring Module
 // Samlet eksport av monitoring-funksjoner
@@ -30,7 +32,7 @@ export async function logHealthMetrics(
 ) {
   // TODO: KLA-XXX - Opprett health_check_metrics tabell i Supabase
   // Deaktivert midlertidig pga manglende DB-tabell
-  // eslint-disable-next-line no-console
+   
   console.log("[Monitoring] Health metrics logging disabled - table not created yet");
 }
 
