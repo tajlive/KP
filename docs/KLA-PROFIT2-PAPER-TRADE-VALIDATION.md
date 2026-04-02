@@ -1,199 +1,216 @@
-# KLA-PROFIT2: Paper-Trade 48h Validering
+# KLA-PROFIT2: 48H Paper Trading Validation
 
-**Epic:** KLA-231 Profit First Initiative  
-**Parent:** KLA-PROFIT1 (Merged)  
-**Status:** 📋 Backlog / Ready to Start  
-**Priority:** P0  
-**Assignee:** Platform + Trading Team  
-**Deadline:** 48 timer etter KLA-PROFIT1 merge  
+## 🎯 Objective
+Validate paper trading system integrity post-KLA-PROFIT1 deploy with 48-hour continuous monitoring.
 
 ---
 
-## Bakgrunn
+## 📅 Timeline
 
-KLA-PROFIT1 (Ensemble AI Metrics) er nå i produksjon. Denne oppgaven tracker 48-timers validering av:
-- Signal persistence og kvalitet
-- Paper-trade integrasjon
-- System stabilitet
-- Performance metrics
+```
+Start:  2026-04-02 15:30 (NOW)
+End:    2026-04-04 15:30 (48h)
+Report: 2026-04-04 16:00
+```
 
 ---
 
-## Akseptansekriterier
+## 🔍 Validation Scope
 
-### 1. Signal Persistence (KLA-PROFIT2-1)
+### 1. Paper Trading Session Lifecycle ⏱️
+| Check | Method | Frequency | Success Criteria |
+|-------|--------|-----------|------------------|
+| Session creation | API POST /api/paper-trading/init | Every 4h | 201 Created |
+| Session persistence | DB query | Every 4h | Session active |
+| Balance updates | WebSocket + API | Real-time | NOK amounts correct |
+| Trade execution | API POST /api/paper-trading/execute | Every 6h | Order confirmation |
 
-**Database:** `ai_decision_log`
+### 2. Data Integrity 📊
+| Metric | Check | Tool |
+|--------|-------|------|
+| Starting capital | 100,000 NOK | DB + UI |
+| Current capital | Accurate calculation | Balance API |
+| PnL calculation | (Current - Start) / Start | Formula validation |
+| Trade history | All trades logged | Supabase query |
 
-- [ ] Signals lagres korrekt med `ensemble = true`
-- [ ] `symbol`, `decision_type`, `sentiment_score` er populett
-- [ ] `analysis_data` inneholder scores, indicators, sizing
-- [ ] `executed_at` timestamp er korrekt
-- [ ] Minst 10 signals lagret første 24 timer
-- [ ] Ingen duplikate signals (unik på symbol + executed_at)
-
-**Verifisering:**
-```sql
-SELECT 
-  symbol,
-  decision_type,
-  sentiment_score,
-  analysis_data->>'ensemble' as ensemble,
-  executed_at
-FROM ai_decision_log
-WHERE analysis_data->>'ensemble' = 'true'
-ORDER BY executed_at DESC
-LIMIT 10;
+### 3. API Health 🔌
+```
+Endpoints to monitor:
+✓ GET  /api/paper-trading/init
+✓ POST /api/paper-trading/init  
+✓ GET  /api/paper-trading/balance
+✓ POST /api/paper-trading/execute
+✓ GET  /api/paper-trading/trades
 ```
 
-### 2. Kelly Criterion Validering (KLA-PROFIT2-2)
+**Expected Response Times:**
+- < 200ms: Excellent
+- 200-500ms: Acceptable
+- > 500ms: Investigate
 
-- [ ] Kelly % beregnes korrekt (0-5% range)
-- [ ] `maxRiskPct` er innenfor toleranse
-- [ ] Backtest viser konsistent Kelly-verdier
-- [ ] Ingen negative Kelly-verdier
+### 4. Auth Flow 🔐
+| Scenario | Test | Expected |
+|----------|------|----------|
+| Valid session | API call with cookie | 200 OK + JSON |
+| Expired session | API call | 401 → redirect to login |
+| No session | API call | 401 + error message |
 
-**Verifisering:**
-```sql
-SELECT 
-  symbol,
-  sentiment_score,
-  analysis_data->'sizing'->>'kellyPct' as kelly,
-  analysis_data->'sizing'->>'maxRiskPct' as max_risk
-FROM ai_decision_log
-WHERE analysis_data->>'ensemble' = 'true'
-LIMIT 5;
-```
+---
 
-### 3. Paper-Trade Integration (KLA-PROFIT2-3)
+## 🛠️ Monitoring Setup
 
-- [ ] Ensemble signals trigget paper-trade (hvis enabled)
-- [ ] Ingen feil i paper-trade execution
-- [ ] Korrekt posisjonsstørrelse basert på Kelly
-- [ ] Logging av paper-trade decisions
-
-**Sjekk:** `/admin/paper-trading` dashboard
-
-### 4. Sentry Error Tracking (KLA-PROFIT2-4)
-
-**Periode:** 48 timer etter merge
-
-- [ ] Ingen 500-errors på `/api/ai/ensemble`
-- [ ] Ingen 500-errors på `/api/cron/ai-engine`
-- [ ] Ingen hydration errors på `/dashboard/metrics`
-- [ ] < 10 warnings per time
-
-**URL:** https://klarpakke.sentry.io
-
-### 5. Performance Metrics (KLA-PROFIT2-5)
-
-- [ ] API response time < 500ms (p95)
-- [ ] Dashboard load time < 3s
-- [ ] Edge Function cold start < 2s
-- [ ] Cron completion < 5 minutter
-
-**Verifisering:**
-- Vercel Analytics
-- Supabase Dashboard
-- Edge Function logs
-
-### 6. Edge Function Health (KLA-PROFIT2-6)
-
-- [ ] `ensemble-signals` Edge Function svarer 200
-- [ ] CORS headers korrekte
-- [ ] Response time < 500ms
-- [ ] Ingen 500/502/503 errors
-
-**Test:**
+### Automated Scripts
 ```bash
-curl -s "https://vuxbjlykgmzskxbclquf.supabase.co/functions/v1/ensemble-signals?limit=5" \
-  -H "Authorization: Bearer $ANON_KEY" | jq
+# Run every 4 hours via cron/CI
+npm run validate:paper-trading
+```
+
+### Manual Checks
+| Time | Action | Owner |
+|------|--------|-------|
+| T+0h | Initial session creation | Automated |
+| T+4h | Balance verification | Automated |
+| T+12h | Mid-point health check | Manual review |
+| T+24h | 24h report generation | Automated |
+| T+36h | Deep dive analysis | Manual review |
+| T+48h | Final validation | Automated + Manual |
+
+### Alert Thresholds
+```yaml
+critical:
+  - api_error_rate > 5%
+  - session_loss > 0 (any session disappears)
+  - pnl_calculation_error > 0
+  
+warning:
+  - response_time > 500ms
+  - balance_sync_delay > 30s
+  - trade_execution_failures > 2 per hour
 ```
 
 ---
 
-## Daglig Sjekkliste
+## 📋 Validation Checklist
 
-### Dag 1 (0-24 timer)
+### Session Management
+- [ ] New user gets paper trading session on first dashboard visit
+- [ ] Existing user retains session on return
+- [ ] Session survives page refresh
+- [ ] Session survives browser restart (cookie persistence)
+- [ ] Multiple sessions not created for same user
 
-- [ ] 09:00: Sjekk Sentry for nattlige errors
-- [ ] 12:00: Verifiser signal count i database
-- [ ] 15:00: Sjekk dashboard performance
-- [ ] 18:00: Verifiser Edge Function health
-- [ ] 21:00: Sjekk cron job status
+### Balance Operations
+- [ ] Starting balance always 100,000 NOK
+- [ ] Balance updates after each trade
+- [ ] PnL calculation matches (Current - Start)
+- [ ] No negative balance allowed
+- [ ] Balance display matches DB value
 
-### Dag 2 (24-48 timer)
+### Trade Execution
+- [ ] Buy order creates position
+- [ ] Sell order closes position
+- [ ] Partial fills handled correctly
+- [ ] Trade fees calculated (0.1%)
+- [ ] Trade history shows all transactions
 
-- [ ] 09:00: Sjekk Sentry for nattlige errors
-- [ ] 12:00: Verifiser signal count (bør være >10)
-- [ ] 15:00: Sjekk Kelly Criterion konsistens
-- [ ] 18:00: Verifiser paper-trade integrasjon
-- [ ] 21:00: Final review og lukking
-
----
-
-## Escalation
-
-**Kritisk (umiddelbar aksjon):**
-- 500-errors på `/api/ai/ensemble`
-- Dashboard krasj
-- Database connection errors
-
-**Høy (innen 2 timer):**
-- > 50 errors per time i Sentry
-- Edge Function down
-- Cron job feiler
-
-**Medium (innen 24 timer):**
-- Performance degradation
-- Warning spam i Sentry
-- Minor UI issues
+### Error Handling
+- [ ] 401 returns JSON (not HTML)
+- [ ] Insufficient funds error handled gracefully
+- [ ] Network errors retry with backoff
+- [ ] Invalid symbol rejected
 
 ---
 
-## Rapport Template
+## 🐛 Known Issues to Verify
 
-**Sluttrapport (etter 48 timer):**
+### Issue #1: Paper Trading HTML Response
+**Description:** API returns HTML instead of JSON on auth failure  
+**Expected:** `{"error": "Unauthorized"}`  
+**Status:** Under investigation
 
-```markdown
-## KLA-PROFIT2: 48h Rapport
+**Verification Steps:**
+1. Clear cookies
+2. Visit /dashboard/metrics
+3. Check network tab for /api/paper-trading/init
+4. Verify response is JSON, not HTML
 
-### Signal Stats
-- Total signals: X
-- Signals per symbol: BTC (X), ETH (X), SOL (X)
-- Avg confidence: X%
-- Kelly range: X% - X%
+### Issue #2: /dashboard/settings Redirect Loop
+**Description:** ERR_TOO_MANY_REDIRECTS on settings page  
+**Expected:** 200 OK with settings form  
+**Status:** Under investigation
 
-### Error Stats
-- Sentry errors: X
-- API 500s: X
-- Edge Function errors: X
+**Verification Steps:**
+1. Log in as test user
+2. Navigate to /no/dashboard/settings
+3. Verify page loads without redirects
 
-### Performance
-- API p95: Xms
-- Dashboard load: Xs
-- Edge Function p95: Xms
+---
 
-### Anbefaling
-- [ ] GO for økning til 10 symbols
-- [ ] GO for live trading integration
-- [ ] Trenger mer tuning (se KLA-PROFIT3)
+## 📊 Success Criteria
 
-**Signert:** Platform Lead + Trading Lead
+### Must Have (Pass Criteria)
+- [ ] 99.9% API uptime over 48h
+- [ ] Zero data loss (all trades persisted)
+- [ ] Balance calculations 100% accurate
+- [ ] All auth flows working
+
+### Nice to Have
+- [ ] Average response time < 200ms
+- [ ] Zero manual interventions
+- [ ] No console errors
+
+---
+
+## 🚨 Escalation
+
+### Auto-Rollback Triggers
+1. > 10% API error rate for > 15 minutes
+2. Data integrity issues detected
+3. User reports of lost sessions/trades
+
+### Rollback Procedure
+```bash
+# Emergency rollback
+$ git revert adfa939d8..d813b8e24 --no-edit
+$ git push origin main
+$ npm run deploy:prod
 ```
 
 ---
 
-## Relaterte Issues
+## 📈 Reporting
 
-- KLA-PROFIT1: ✅ Merged
-- KLA-PROFIT3: Live Trading Integration (Backlog)
-- KLA-PROFIT4: A/B Test Ensemble vs TA-only (Backlog)
+### 24h Mid-Point Report
+- API health metrics
+- Session statistics
+- Error rate analysis
+- Preliminary findings
+
+### 48h Final Report
+- Complete validation results
+- Performance metrics
+- Issues identified (if any)
+- Recommendations for KLA-PROFIT3
 
 ---
 
-## Kontakt
+## 👥 Responsibilities
 
-- Slack: #profit-first-initiative
-- On-call: @platform-oncall
-- Dashboard: https://www.klarpakke.no/no/dashboard/metrics
+| Role | Responsibility |
+|------|----------------|
+| Kimi (AI) | Automated monitoring, first response |
+| Human Review | 12h and 36h manual checks |
+| On-Call | Emergency response if alerts fire |
+
+---
+
+## 📎 References
+
+- KLA-PROFIT1: `/docs/KLA-PROFIT1-FINAL-STATUS.md`
+- Scroll Tests: `npm run test:scroll`
+- API Docs: `/docs/api-routes.md`
+
+---
+
+*Plan created: 2026-04-02 15:15*  
+*Validation period: 2026-04-02 → 2026-04-04*
