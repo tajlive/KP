@@ -51,6 +51,10 @@ export function getSupabaseClient(): SupabaseClient {
   try {
     _client = createBrowserClient<Database>(url, key, {
       cookieEncoding: "raw",
+      cookieOptions: {
+        sameSite: "none",
+        secure: true,
+      },
       global: {
         headers: {
           "x-client-info": "klarpakke/1.0",
