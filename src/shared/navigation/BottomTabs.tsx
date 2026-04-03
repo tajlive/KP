@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
-type TabId = "home" | "trading" | "robots" | "learn" | "me";
+type TabId = "home" | "trade" | "ai" | "portfolio" | "more";
 
 interface Tab {
   id: TabId;
   labelKey: string;
+  href: string;
   icon: React.FC<{ className?: string }>;
   filledIcon: React.FC<{ className?: string }>;
 }
@@ -91,12 +92,43 @@ const UserFilled = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const WalletIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+    <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
+  </svg>
+);
+
+const WalletFilled = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h15a2 2 0 0 0 2-2v-2h-3a2 2 0 0 1 0-4h3v-4h-3a2 2 0 0 1 0-4h3z" />
+    <circle cx="17" cy="12" r="1" fill="white" />
+  </svg>
+);
+
+const MenuIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="3" y1="12" x2="21" y2="12" />
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <line x1="3" y1="18" x2="21" y2="18" />
+  </svg>
+);
+
+const MenuFilled = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <rect x="3" y="5" width="18" height="2" rx="1" />
+    <rect x="3" y="11" width="18" height="2" rx="1" />
+    <rect x="3" y="17" width="18" height="2" rx="1" />
+  </svg>
+);
+
 const TABS: Tab[] = [
-  { id: "home", labelKey: "home", icon: HomeIcon, filledIcon: HomeFilled },
-  { id: "trading", labelKey: "trading", icon: TrendingUpIcon, filledIcon: TrendingUpFilled },
-  { id: "robots", labelKey: "robots", icon: BotIcon, filledIcon: BotFilled },
-  { id: "learn", labelKey: "learn", icon: GraduationCapIcon, filledIcon: GraduationCapFilled },
-  { id: "me", labelKey: "profile", icon: UserIcon, filledIcon: UserFilled },
+  { id: "home", labelKey: "home", href: "/dashboard", icon: HomeIcon, filledIcon: HomeFilled },
+  { id: "trade", labelKey: "trade", href: "/dashboard/trade", icon: TrendingUpIcon, filledIcon: TrendingUpFilled },
+  { id: "ai", labelKey: "ai", href: "/dashboard/ai", icon: BotIcon, filledIcon: BotFilled },
+  { id: "portfolio", labelKey: "portfolio", href: "/dashboard/portfolio", icon: WalletIcon, filledIcon: WalletFilled },
+  { id: "more", labelKey: "more", href: "/dashboard/settings", icon: MenuIcon, filledIcon: MenuFilled },
 ];
 
 const ACTIVE_COLOR = "#2563eb";
@@ -109,6 +141,22 @@ export function BottomTabs() {
   const t = useTranslations("dashboard.sidebar");
 
   const [activeTab, setActiveTab] = useState<TabId>("home");
+  
+  // Helper to check if a tab should be active based on current pathname
+  const getActiveTabFromPath = (path: string): TabId => {
+    // Check for exact match or starts with for nested routes
+    for (const tab of TABS) {
+      const fullPath = `/${locale}${tab.href}`;
+      if (tab.id === "home") {
+        if (path === `/${locale}/dashboard` || path === `/${locale}/dashboard/`) {
+          return "home";
+        }
+      } else if (path.startsWith(fullPath)) {
+        return tab.id;
+      }
+    }
+    return "home";
+  };
   const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
@@ -116,12 +164,7 @@ export function BottomTabs() {
       if (tab.id === "home") {
         return pathname === `/${locale}/dashboard` || pathname === `/${locale}/dashboard/`;
       }
-      return pathname.startsWith(`/${locale}${
-        tab.id === "me" ? "/dashboard/settings" :
-        tab.id === "learn" ? "/kurs" :
-        tab.id === "robots" ? "/dashboard/auto-trade" :
-        "/dashboard/trade"
-      }`);
+      return pathname.startsWith(`/${locale}${tab.href}`);
     });
 
     if (currentTab) {
@@ -158,13 +201,7 @@ export function BottomTabs() {
     }
 
     setActiveTab(tab.id);
-    const path = 
-      tab.id === "me" ? "/dashboard/settings" :
-      tab.id === "learn" ? "/kurs" :
-      tab.id === "robots" ? "/dashboard/auto-trade" :
-      tab.id === "trading" ? "/dashboard/trade" :
-      "/dashboard";
-    router.push(`/${locale}${path}`);
+    router.push(`/${locale}${tab.href}`);
   };
 
   if (isHidden) return null;
