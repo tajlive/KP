@@ -9,6 +9,9 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.22.1]
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -17,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install dependencies
@@ -29,8 +32,8 @@ jobs:
       - name: Type-check
         run: npm run type-check
 
-      - name: NPM audit (report only)
-        run: npm audit --audit-level high || true
+      - name: NPM audit (fail on high)
+        run: npm audit --audit-level=high
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
