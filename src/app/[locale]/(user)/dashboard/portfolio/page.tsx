@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -48,7 +48,7 @@ export default async function PortfolioPage({ params }: PageProps) {
     const { locale } = await params;
     const t = await getTranslations("dashboard.portfolioPage");
 
-    const supabase = createClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

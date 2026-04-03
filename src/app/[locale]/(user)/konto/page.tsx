@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { LommebokDashboard } from "./LommebokDashboard";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function LommebokPage({ params }: PageProps) {
 
   try {
     // Hent autentisert bruker
-    const supabase = createClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
       error: authError,
