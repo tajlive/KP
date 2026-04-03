@@ -1,43 +1,57 @@
-## 📝 Beskrivelse
-<!-- Beskriv endringene dine -->
+## 📋 PR Checklist
 
-## 🔗 Relaterte Issues
-Closes #
+- [ ] Code follows project style guidelines (`npm run lint`)
+- [ ] TypeScript compiles without errors (`npm run type-check`)
+- [ ] Tests pass (`npm run test:unit`)
+- [ ] E2E critical tests pass (`npm run test:e2e:critical`)
 
-## 🚀 Type endring
-- [ ] 🐛 Bug fix
-- [ ] ✨ Ny feature
-- [ ] 💥 Breaking change
-- [ ] 📚 Dokumentasjon
-- [ ] 🧹 Refactoring
-- [ ] ⚡ Performance
-- [ ] 🤖 MCP Server
+## 🔐 Auth Changes (if applicable)
 
-## ✅ Checklist
-- [ ] Koden bygger (`npm run build`)
-- [ ] ESLint OK (`npm run lint`)
-- [ ] TypeScript OK (`npx tsc --noEmit`)
-- [ ] Testet i dev environment
-- [ ] Mobile-first design (hvis UI-endring)
-- [ ] README oppdatert (hvis nødvendig)
-- [ ] Database migrations inkludert (hvis relevant)
+- [ ] OAuth redirect URIs updated in Google Cloud Console
+- [ ] Supabase Auth providers configured
+- [ ] Environment variables documented
+- [ ] `npm run verify:google-oauth` passes
 
-## 📱 Mobile Testing
-<!-- Hvis UI-endring: Testet på hvilke devices? -->
-- [ ] iPhone
-- [ ] Android
-- [ ] Desktop
+## 🚀 Deployment Notes
 
-## 📸 Screenshots
-<!-- Legg ved screenshots av UI-endringer -->
+### Pre-deploy
+```bash
+npm run verify:google-oauth
+npm run type-check
+npm run lint
+```
 
-## 🤖 MCP Impact
-<!-- Påvirker dette MCP-serveren? -->
-- [ ] Ingen påvirkning
-- [ ] Nye verktøy lagt til
-- [ ] Eksisterende verktøy endret
+### Post-deploy Verification
+- [ ] `/api/health` returns 200
+- [ ] Google OAuth login works in incognito
+- [ ] Email/password login works
+- [ ] Magic link delivery works
 
-## 🔐 Security
-- [ ] Ingen sikkerhetspåvirkning
-- [ ] Nye permissions/roles
-- [ ] Håndterer brukerdata
+## 🐛 Related Issues
+
+Fixes: # (issue number)
+
+## 📝 Description
+
+<!-- Describe your changes -->
+
+## 🔍 Testing
+
+<!-- Describe how you tested your changes -->
+
+- [ ] Local development (`npm run dev`)
+- [ ] Staging environment
+- [ ] Production (post-deploy)
+
+## 📊 Sentry/Datadog
+
+<!-- Any new alerts or monitoring added? -->
+
+- [ ] New auth error alerts configured
+- [ ] Dashboards updated
+
+---
+
+**Reviewer Notes:**
+- For auth changes, verify redirect URI config matches Google Console
+- Check Sentry auth error dashboard after deploy

@@ -8,6 +8,7 @@ import { SUPPORTED_PROVIDERS, PROVIDER_NAMES } from "@/lib/auth/config";
 import { signInWithOAuth, sendMagicLink, isValidEmail } from "@/lib/auth/utils";
 import { RADIUS, SHADOW } from "@/lib/design/tokens";
 import { toast } from "sonner";
+import { logAuthError, logAuthEvent, AuthErrorCode, AuthEvent } from "@/lib/auth/sentry-auth";
 
 export type Provider = keyof typeof SUPPORTED_PROVIDERS;
 
@@ -121,6 +122,12 @@ export function UnifiedAuthButton({
   const styles = PROVIDER_STYLES[provider];
 
   const handleSignIn = useCallback(async () => {
+    logAuthEvent(AuthEvent.LOGIN_STARTED, { 
+      provider: providerKey, 
+      locale,
+      method: 'oauth',
+    });
+    
     try {
       setIsLoading(true);
       if (provider === "VIPPS") {
@@ -130,6 +137,11 @@ export function UnifiedAuthButton({
         );
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
+          logAuthError(
+            AuthErrorCode.VIPPS_OAUTH_FAILED,
+            new Error(err.error || res.statusText),
+            { locale, status: res.status }
+          );
           throw new Error(err.error || res.statusText);
         }
         const data = (await res.json()) as { url: string };
@@ -142,6 +154,25 @@ export function UnifiedAuthButton({
       }
     } catch (error) {
       console.error(`[Auth] ${provider} sign in error:`, error);
+      
+      // Map provider to error code
+      const errorCodeMap: Record<string, AuthErrorCode> = {
+        'google': AuthErrorCode.GOOGLE_OAUTH_FAILED,
+        'azure': AuthErrorCode.MICROSOFT_OAUTH_FAILED,
+        'linkedin': AuthErrorCode.LINKEDIN_OAUTH_FAILED,
+        'vipps': AuthErrorCode.VIPPS_OAUTH_FAILED,
+      };
+      
+      logAuthError(
+        errorCodeMap[providerKey] || AuthErrorCode.UNKNOWN,
+        error instanceof Error ? error : new Error(String(error)),
+        { 
+          locale, 
+          provider: providerKey,
+          userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
+        }
+      );
+      
       toast.error(
         locale === "no"
           ? `Kunne ikke logge inn med ${displayName}. Prøv igjen.`
@@ -149,7 +180,7 @@ export function UnifiedAuthButton({
       );
       setIsLoading(false);
     }
-  }, [provider, locale, displayName, redirectPath]);
+  }, [provider, providerKey, locale, displayName, redirectPath]);
 
   const baseClasses = `
     flex items-center justify-center gap-3

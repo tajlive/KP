@@ -1,0 +1,94 @@
+{
+  "name": "Klarpakke Auth Error Alerts",
+  "version": "1.0.0",
+  "alerts": [
+    {
+      "name": "Google OAuth Failures - Critical",
+      "description": "Alert when Google OAuth failures exceed threshold",
+      "conditions": {
+        "event_type": "error",
+        "filter": "event.tags.auth_code:auth:google:oauth_failed",
+        "threshold": {
+          "count": 3,
+          "window": "5m"
+        }
+      },
+      "actions": {
+        "slack": {
+          "channel": "#alerts-auth",
+          "message": "🚨 Google OAuth failures detected: {{ event.count }} errors in 5 minutes"
+        },
+        "linear": {
+          "team": "Engineering",
+          "title": "P0: Google OAuth failures spiking",
+          "priority": "urgent",
+          "labels": ["auth", "oauth", "google", "p0"]
+        }
+      }
+    },
+    {
+      "name": "PKCE Exchange Failures",
+      "description": "Alert on PKCE exchange failures indicating config issues",
+      "conditions": {
+        "event_type": "error",
+        "filter": "event.tags.auth_code:auth:pkce:exchange_failed",
+        "threshold": {
+          "count": 5,
+          "window": "10m"
+        }
+      },
+      "actions": {
+        "slack": {
+          "channel": "#alerts-auth",
+          "message": "⚠️ PKCE exchange failures: {{ event.count }} errors - check redirect URIs"
+        },
+        "linear": {
+          "team": "Engineering",
+          "title": "Auth: PKCE exchange failures detected",
+          "priority": "high",
+          "labels": ["auth", "pkce", "oauth"]
+        }
+      }
+    },
+    {
+      "name": "Email Login Failures Spike",
+      "description": "Alert on unusual email login failure rates",
+      "conditions": {
+        "event_type": "error",
+        "filter": "event.tags.auth_code:auth:email:login_failed",
+        "threshold": {
+          "count": 10,
+          "window": "5m"
+        }
+      },
+      "actions": {
+        "slack": {
+          "channel": "#alerts-auth",
+          "message": "⚠️ Email login failures spiking: {{ event.count }} in 5 minutes"
+        }
+      }
+    }
+  ],
+  "dashboards": {
+    "auth_health": {
+      "title": "Auth Health Dashboard",
+      "widgets": [
+        {
+          "type": "error_count",
+          "title": "OAuth Errors by Provider",
+          "query": "event.type:error auth:*:oauth_failed"
+        },
+        {
+          "type": "error_count",
+          "title": "PKCE/Callback Errors",
+          "query": "event.type:error auth:pkce:*"
+        },
+        {
+          "type": "error_count",
+          "title": "Session Errors",
+          "query": "event.type:error auth:session:*"
+        }
+      ]
+    }
+  }
+}

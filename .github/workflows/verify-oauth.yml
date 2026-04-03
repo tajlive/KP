@@ -1,0 +1,193 @@
+name: Verify OAuth Configuration
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/lib/auth/**'
+      - 'src/app/auth/**'
+      - 'src/middleware/auth.ts'
+      - 'scripts/google-oauth-verifier.ts'
+      - '.github/workflows/verify-oauth.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/lib/auth/**'
+      - 'src/app/auth/**'
+      - 'src/middleware/auth.ts'
+      - 'scripts/google-oauth-verifier.ts'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to verify'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  verify-oauth:
+    name: Verify OAuth Config (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [staging, production]
+        # Skip production on PRs from forks
+        exclude:
+          - environment: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'production' || '' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup environment
+        run: |
+          if [ "${{ matrix.environment }}" = "production" ]; then
+            echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL }}" >> .env.local
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}" >> .env.local
+            echo "NEXT_PUBLIC_APP_URL=https://www.klarpakke.no" >> .env.local
+          else
+            echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.STAGING_SUPABASE_URL }}" >> .env.local
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.STAGING_SUPABASE_ANON_KEY }}" >> .env.local
+            echo "NEXT_PUBLIC_APP_URL=${{ secrets.STAGING_URL || 'https://staging.klarpakke.no' }}" >> .env.local
+          fi
+
+      - name: TypeScript check
+        run: npx tsc --noEmit --skipLibCheck
+
+      - name: Run OAuth verification
+        id: oauth-verify
+        run: |
+          npm run verify:google-oauth:json > oauth-result.json
+          echo "result<<EOF" >> $GITHUB_OUTPUT
+          cat oauth-result.json >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Check status
+          STATUS=$(cat oauth-result.json | jq -r '.status')
+          if [ "$STATUS" = "error" ]; then
+            echo "::error::OAuth verification failed for ${{ matrix.environment }}"
+            exit 1
+          fi
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = JSON.parse(`${{ steps.oauth-verify.outputs.result }}`);
+            const body = `## ❌ OAuth Verification Failed (${{ matrix.environment }})
+            
+            ${result.mismatches?.length > 0 ? `
+            ### Redirect URI Mismatches
+            ${result.mismatches.map(m => `- **${m.type}**: ${m.issue}`).join('\n')}
+            ` : ''}
+            
+            ### Expected Configuration
+            \`\`\`
+            ${result.copy_paste?.google_console || 'N/A'}
+            \`\`\`
+            
+            Please update Google Cloud Console configuration.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oauth-verification-${{ matrix.environment }}
+          path: oauth-result.json
+
+  notify-slack:
+    name: Notify Slack
+    needs: verify-oauth
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify Slack on failure
+        if: needs.verify-oauth.result == 'failure'
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "❌ OAuth verification failed on main branch",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "⚠️ OAuth Configuration Alert"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "OAuth verification failed on <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|main branch>.\n\nPlease check redirect URI configuration."
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  deploy-check:
+    name: Post-Deploy Verification
+    needs: verify-oauth
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Wait for Vercel deployment
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
+        id: wait-for-vercel
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 300
+          environment: production
+
+      - name: Verify deployment health
+        run: |
+          DEPLOY_URL="${{ steps.wait-for-vercel.outputs.url }}"
+          echo "Checking health at $DEPLOY_URL/api/health"
+          
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/api/health" || echo "000")
+          
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Health check failed with status $HTTP_STATUS"
+            exit 1
+          fi
+          
+          echo "✅ Health check passed"
+
+      - name: Test OAuth endpoints
+        run: |
+          DEPLOY_URL="${{ steps.wait-for-vercel.outputs.url }}"
+          
+          # Test that login page loads
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOY_URL/no/login" || echo "000")
+          
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Login page failed with status $HTTP_STATUS"
+            exit 1
+          fi
+          
+          echo "✅ Login page accessible"
