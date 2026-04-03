@@ -56,7 +56,7 @@ test("Paper trading: side laster", async ({ page }) => {
 test("Landing: har meta description", async ({ page }) => {
   await page.goto(`${BASE}/no`, { waitUntil: "domcontentloaded" });
   const meta = await page
-    .locator('meta[name="description"]')
+    .locator('head meta[name="description"]')
     .getAttribute("content");
   expect(meta).toBeTruthy();
   expect(meta!.length).toBeGreaterThan(50);
