@@ -9,12 +9,7 @@
  * - Other actions -> delegates to existing API routes or safety layer functions
  */
 
-import {
-  executePaperTrade,
-  executeLiveTrade,
-  type PaperTradeRequest,
-  type LiveTradeRequest,
-} from "@/lib/trading/safety";
+import { executeTrade } from "@/lib/trading/safety";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
 import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -273,18 +268,17 @@ async function handleExecute(
         );
       }
 
-      const paperRequest: PaperTradeRequest = {
+      const result = await executeTrade(supabase, {
         userId: user.id,
         symbol,
         side: data.side,
         quantity,
         price,
         orderType: data.order_type || "market",
+        mode: "paper",
         botId: data.bot_id,
         sessionId: data.session_id,
-      };
-
-      const result = await executePaperTrade(paperRequest);
+      });
 
       if (!result.success) {
         return NextResponse.json({
@@ -311,18 +305,17 @@ async function handleExecute(
         );
       }
 
-      const liveRequest: LiveTradeRequest = {
+      const result = await executeTrade(supabase, {
         userId: user.id,
         sessionId: data.session_id,
         symbol: data.symbol.toUpperCase(),
         side: data.side,
         quantity: data.quantity,
-        price: data.price,
+        price: data.price || 0,
         orderType: data.order_type || "market",
+        mode: "live",
         botId: data.bot_id,
-      };
-
-      const result = await executeLiveTrade(liveRequest);
+      });
 
       if (!result.success) {
         if (result.rejectionReason) {

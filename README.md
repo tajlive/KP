@@ -30,6 +30,15 @@ Dette verifiserer:
 BASE_URL=https://klarpakke-preview.vercel.app npm run verify:prod
 ```
 
+### Trading Auth Architecture
+
+User-bound trading-ruter bruker `createServerClient(request, response)` for å sikre at RLS-policyer respekteres. Se [docs/trading/TRADING-AUTH-REFACTOR-P0.md](docs/trading/TRADING-AUTH-REFACTOR-P0.md) for detaljer.
+
+**Kjerneprinsipper:**
+- Paper og live trading bruker samme `executeTrade(supabase, request)` pipeline
+- Mode bestemmer kun execution-adapter (PaperExecutor vs BinanceExecutor)
+- Service-role (`createClient()`) er kun tillatt i cron/system-ruter og legacy wrappers
+
 ### Deploy-sekvens
 
 ```bash

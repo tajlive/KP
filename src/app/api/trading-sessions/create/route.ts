@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { normalizeTier } from "@/lib/pricing/tiers";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
@@ -15,18 +15,16 @@ const createSessionSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.next();
-    const supabaseAuth = createServerClient(request, response);
+    const supabase = createServerClient(request, response);
 
     const {
       data: { user },
       error: authError,
-    } = await supabaseAuth.auth.getUser();
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "Ikke autentisert" }, { status: 401 });
     }
-
-    const supabase = createClient();
 
     const body = await request.json();
     const parsed = createSessionSchema.safeParse(body);

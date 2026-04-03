@@ -39,3 +39,11 @@ export {
   type BotHealth,
   type BotStatus,
 } from "./bot-health";
+
+// Unified core (P0 refactor)
+export { executeTrade } from "@/lib/trading/core/execute-trade";
+export type {
+  ExecuteTradeRequest,
+  ExecuteTradeResult,
+  TradeSignalContext,
+} from "@/lib/trading/core/types";

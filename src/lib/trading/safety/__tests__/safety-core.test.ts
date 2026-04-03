@@ -51,7 +51,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "paper",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(false);
       expect(result.rejectionReason).toBe("SESSION_NOT_ACTIVE");
@@ -88,7 +88,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "live", // But trying to trade live
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(false);
       expect(result.rejectionReason).toBe("INVALID_TRADING_MODE");
@@ -164,7 +164,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "paper",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(true);
       expect(result.riskProfileId).toBeDefined();
@@ -240,7 +240,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "paper",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(true);
     });
@@ -315,7 +315,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "live",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(false);
       expect(result.rejectionReason).toBe("PAIR_NOT_ALLOWED");
@@ -394,7 +394,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "live",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(false);
       expect(result.rejectionReason).toBe("DAILY_LOSS_CHECK_FAILED");
@@ -463,7 +463,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "paper",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(true);
     });
@@ -538,7 +538,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "live",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
       expect(result.allowed).toBe(false);
       expect(result.rejectionReason).toBe("DAILY_LOSS_CHECK_FAILED");
@@ -617,7 +617,7 @@ describe("KLA-137 Trading Safety Core", () => {
         tradingMode: "paper",
       };
 
-      const result = await validateTradeAgainstRiskProfile(trade);
+      const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
       expect(result.allowed).toBe(true);
     });
   });
@@ -652,7 +652,7 @@ describe("KLA-137 Trading Safety Core", () => {
           tradingMode: "paper",
         };
 
-        const result = await validateTradeAgainstRiskProfile(trade);
+        const result = await validateTradeAgainstRiskProfile(mockSupabase, trade);
 
         expect(result.allowed).toBe(false);
       } finally {

@@ -1,11 +1,11 @@
 /**
  * KLA-137: Live Trading Execution API
- * 
+ *
  * PHYSICALLY SEPARATED from paper trading.
- * Uses executeLiveTrade from safety layer.
+ * Uses executeTrade from safety layer with user session/RLS.
  */
 
-import { executeLiveTrade } from "@/lib/trading/safety";
+import { executeTrade } from "@/lib/trading/safety";
 import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.next();
     const supabase = createServerClient(request, response);
-    
+
     const {
       data: { user },
       error: authError,
@@ -44,29 +44,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { session_id, symbol, side, quantity, price, order_type, bot_id } = validation.data;
+    const { session_id, symbol, side, quantity, price, order_type, bot_id } =
+      validation.data;
 
-    // Execute live trade via SAFETY LAYER
-    const result = await executeLiveTrade({
+    // Execute live trade via unified core
+    const result = await executeTrade(supabase, {
       userId: user.id,
       sessionId: session_id,
       symbol: symbol.toUpperCase(),
       side,
       quantity,
-      price,
+      price: price ?? 0,
       orderType: order_type,
+      mode: "live",
       botId: bot_id,
     });
 
     if (!result.success) {
       // Check if it was rejected by safety layer or execution error
       if (result.rejectionReason) {
-        return NextResponse.json({
-          success: false,
-          error: result.error,
-          rejectionReason: result.rejectionReason,
-          type: "TRADE_REJECTED",
-        }, { status: 200 }); // 200 because request was valid, trade was just blocked
+        return NextResponse.json(
+          {
+            success: false,
+            error: result.error,
+            rejectionReason: result.rejectionReason,
+            type: "TRADE_REJECTED",
+          },
+          { status: 200 },
+        ); // 200 because request was valid, trade was just blocked
       }
 
       return NextResponse.json(

@@ -4,10 +4,10 @@
  * Used by paper-trading UI (hub, session detail), FirstTradeCard, and PaperTradeButton.
  */
 
-import { executePaperTrade } from "@/lib/trading/safety";
+import { executeTrade } from "@/lib/trading/safety";
 import { paperExecuteSuccessResponseSchema } from "@/lib/trading/safety/paper-execute-success-response";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`, {
           signal: AbortSignal.timeout(5000),
         }),
-        getUsdtToNokRateAsync(createClient()),
+        getUsdtToNokRateAsync(supabase),
       ]);
 
       if (!priceRes.ok) {
@@ -130,13 +130,14 @@ export async function POST(request: NextRequest) {
       price = p;
     }
 
-    const result = await executePaperTrade({
+    const result = await executeTrade(supabase, {
       userId: user.id,
       symbol,
       side,
       quantity,
       price,
       orderType: "market",
+      mode: "paper",
       botId: "botId" in parsed.data ? parsed.data.botId : undefined,
       sessionId: parsed.data.session_id,
     });

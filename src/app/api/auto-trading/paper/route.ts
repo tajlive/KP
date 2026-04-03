@@ -1,4 +1,4 @@
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import type { TierSlug } from "@/lib/pricing/tiers";
 import { NextRequest, NextResponse } from "next/server";
@@ -30,12 +30,12 @@ type StartPaperBotResponse = {
 export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.next();
-    const supabaseAuth = createServerClient(request, response);
+    const supabase = createServerClient(request, response);
 
     const {
       data: { user },
       error: authError,
-    } = await supabaseAuth.auth.getUser();
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json<StartPaperBotResponse>(
         {
@@ -71,8 +71,6 @@ export async function POST(request: NextRequest) {
       pairs,
       starting_capital_nok: startingCapital,
     } = parsed.data;
-
-    const supabase = createClient();
 
     const { data: profRow, error: profErr } = await supabase
       .from("user_profiles")

@@ -5,7 +5,7 @@
  * FAIL CLOSED principle: if data missing or checks fail, trade is blocked.
  */
 
-import { createClient } from "../../supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Json } from "@/types/database.types";
 import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
 import {
@@ -69,9 +69,9 @@ export interface RiskProfile {
  * FAIL CLOSED: Any error or missing data results in rejection
  */
 export async function validateTradeAgainstRiskProfile(
+  supabase: SupabaseClient,
   trade: TradeRequest,
 ): Promise<RiskValidationResult> {
-  const supabase = createClient();
 
   try {
     // 1. Hent session info
@@ -472,12 +472,11 @@ export async function validateTradeAgainstRiskProfile(
  * Record a trade rejection for audit trail
  */
 export async function recordTradeRejection(
+  supabase: SupabaseClient,
   trade: TradeRequest,
   result: RiskValidationResult,
 ): Promise<void> {
   if (result.allowed) return;
-
-  const supabase = createClient();
 
   try {
     await supabase.from("trade_rejections").insert({
@@ -513,12 +512,12 @@ export async function recordTradeRejection(
  * Record a trade decision (allow/reject) for audit trail
  */
 export async function recordTradeDecision(
+  supabase: SupabaseClient,
   trade: TradeRequest,
   result: RiskValidationResult,
   executedQuantity?: number,
   executedPrice?: number,
 ): Promise<void> {
-  const supabase = createClient();
 
   try {
     await supabase.from("trade_decisions").insert({
