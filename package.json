@@ -32,6 +32,17 @@
     "secrets:sync:github": "node scripts/sync-github-actions-secrets.mjs",
     "secrets:sync:github:dry": "node scripts/sync-github-actions-secrets.mjs --dry-run",
     "verify": "node scripts/verify-production.mjs",
+    "verify:google-oauth": "npx ts-node scripts/google-oauth-verifier.ts",
+    "verify:google-oauth:json": "npx ts-node scripts/google-oauth-verifier.ts --json",
+    "env:validate": "npx ts-node scripts/env-checker.ts",
+    "env:generate": "npx ts-node scripts/env-checker.ts --generate",
+    "launch:prod": "npx ts-node scripts/launch-production.ts",
+    "launch:simulate": "npx ts-node scripts/launch-production.ts --dry-run",
+    "launch:staging": "npx ts-node scripts/launch-production.ts --staging",
+    "sentry:alerts:import": "npx ts-node scripts/import-sentry-alerts.ts",
+    "sentry:alerts:dry-run": "npx ts-node scripts/import-sentry-alerts.ts --dry-run",
+    "supabase:health": "curl -s $SUPABASE_URL/functions/v1/post-deploy-check -H \"Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY\" | jq",
+    "post-deploy:check": "npm run supabase:health",
     "verify:automation": "bash scripts/verify-automation.sh",
     "release": "npm run lint && npm run type-check && npm run build",
     "launch": "bash scripts/launch-week2.sh",
@@ -353,7 +364,7 @@
     "vitest": "^4.0.18"
   },
   "engines": {
-    "node": "22.22.1",
+    "node": "22",
     "npm": "10.9.4"
   },
   "lint-staged": {

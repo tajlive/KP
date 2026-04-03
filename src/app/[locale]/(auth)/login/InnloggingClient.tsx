@@ -33,6 +33,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useState, Suspense } from "react";
 import { useAuth } from "@/features/auth/AuthContext";
+import { logAuthError, logAuthEvent, AuthErrorCode, AuthEvent, setAuthUser } from "@/lib/auth/sentry-auth";
 
 /**
  * Saniterer redirect-destinasjon til en sikker relativ sti.
@@ -127,6 +128,12 @@ function InnloggingForm() {
 
   /** Egen innsending (type="button") — unngår nativ POST til /innlogging som hopper over Supabase (Playwright så POST 200 uten /auth/v1/token). */
   const submitEmailLogin = async () => {
+    logAuthEvent(AuthEvent.LOGIN_STARTED, { 
+      provider: 'email', 
+      locale,
+      method: 'password',
+    });
+    
     if (!isValidEmail(email)) {
       setLoginError(t("invalidEmail"));
       setStatus("login_error");
@@ -149,15 +156,26 @@ function InnloggingForm() {
       });
 
       if (error) {
+        logAuthError(AuthErrorCode.EMAIL_LOGIN_FAILED, error, { 
+          locale,
+          emailDomain: email.split('@')[1],
+        });
         setStatus("login_error");
         setLoginError(getErrorMessage(error, locale));
         return;
       }
 
       if (user) {
+        logAuthEvent(AuthEvent.LOGIN_SUCCESS, { 
+          provider: 'email', 
+          userId: (user as { id: string }).id,
+          locale,
+        });
+        setAuthUser((user as { id: string }).id, email);
         router.push(safeRedirectTo, { scroll: false });
       }
-    } catch {
+    } catch (catchError) {
+      logAuthError(AuthErrorCode.EMAIL_LOGIN_FAILED, catchError, { locale });
       setStatus("login_error");
       setLoginError(t("genericError"));
     }

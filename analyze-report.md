@@ -1,8 +1,9 @@
 # Klarpakke Repo Analyse Report
-Generert: 2026-04-03T07:03:04+02:00
+Generert: 2026-04-03T07:21:43+02:00
 
 === GIT METRIKKER ===
 ```
+418c5e2ba upgrade: Node 22.22.1 LTS + npm audit clean [KLA-255]
 9b8166a73 chore: add repo analysis pipeline [KLA-253]
 eadf83e90 KLA-252: P0 trading auth refactor + unified execution + docs
 200d7b7df HOTFIX #9: Fix paper bot start - add missing credentials
@@ -22,7 +23,6 @@ c7f3f48ae fix(mcp): update health check, edge function stats + disable verify_jw
 f750f59ea fix(mcp-health): support KLARPAKKE_MCP_SECRET (edge function env) [KLA-251]
 b61ea5e53 ci: add MCP edge-function check + Linear comment to mcp-health [KLA-251]
 5be93dbd1 KLA-LAUNCH: CI + Stripe + MCP health (#60)
-023beb960 feat(funding): KLA-246 cross-exchange arb dashboard (conservative, realistic)
 ```
 
 Git status:
@@ -33,22 +33,19 @@ Your branch is up to date with 'origin/main'.
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   .github/workflows/analyze.yml
-	modified:   .nvmrc
 	modified:   analyze-report.md
-	modified:   package-lock.json
-	modified:   package.json
+	modified:   e2e/smoke/launch-critical.spec.ts
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	analyze-report-v2.md
+	launch-report.md
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
 === FILSTRUKTUR ===
 - TypeScript-filer i src/: 1026
-- TS/JS-filer totalt (ekskl. node_modules): 2062
+- TS/JS-filer totalt (ekskl. node_modules): 2017
 
 === NODE/VERSJONER ===
 - Node: v22.22.1
@@ -95,55 +92,12 @@ To address all issues (including breaking changes), run:
 - trades (avvikende status): 0
 
 === PLAYWRIGHT E2E ===
-- ⚠️ Playwright smoke-chromium:   3 passed (34.6s) (1 kjent feil: meta-description strict mode)
-Siste 40 linjer fra Playwright logg:
-```
-    ║ <3 Playwright Team                                         ║
-    ╚════════════════════════════════════════════════════════════╝
-
-    Error Context: test-results/smoke-launch-critical-Ingen-MISSING-MESSAGE-console-errors-smoke-chromium-retry1/error-context.md
-
-    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
-    test-results/smoke-launch-critical-Ingen-MISSING-MESSAGE-console-errors-smoke-chromium-retry1/trace.zip
-    Usage:
-
-        npx playwright show-trace test-results/smoke-launch-critical-Ingen-MISSING-MESSAGE-console-errors-smoke-chromium-retry1/trace.zip
-
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  25 failed
-    [smoke-chromium] › e2e/smoke/final-launch.spec.ts:5:1 › Landing /: laster og har CTA ───────────
-    [smoke-chromium] › e2e/smoke/final-launch.spec.ts:10:1 › Landing /en: laster ───────────────────
-    [smoke-chromium] › e2e/smoke/final-launch.spec.ts:15:1 › Prisside: laster ──────────────────────
-    [smoke-chromium] › e2e/smoke/final-launch.spec.ts:20:1 › Innlogging: viser loginskjema ─────────
-    [smoke-chromium] › e2e/smoke/final-launch.spec.ts:27:1 › Ingen MISSING_MESSAGE errors ──────────
-    [smoke-chromium] › e2e/smoke/health.spec.ts:32:3 › Smoke: Health Checks @smoke › homepage loads without errors 
-    [smoke-chromium] › e2e/smoke/health.spec.ts:70:3 › Smoke: Health Checks @smoke › login page is accessible 
-    [smoke-chromium] › e2e/smoke/health.spec.ts:81:3 › Smoke: Health Checks @smoke › leaderboard page loads 
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /no ─────────
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /en ─────────
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /no/dashboard 
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /en/dashboard 
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /no/priser ──
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /en/priser ──
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /no/innlogging 
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:18:3 › Ingen MISSING_MESSAGE på /en/innlogging 
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:34:1 › Håndterer korrupt localStorage uten reload-loop 
-    [smoke-chromium] › e2e/smoke/i18n-coverage.spec.ts:77:1 › Kun en navbar rendres per side ───────
-    [smoke-chromium] › e2e/smoke/launch-critical.spec.ts:5:1 › Landing NO: laster og har CTA ───────
-    [smoke-chromium] › e2e/smoke/launch-critical.spec.ts:14:1 › Landing EN: laster og har CTA ──────
-    [smoke-chromium] › e2e/smoke/launch-critical.spec.ts:19:1 › Prisside: laster ───────────────────
-    [smoke-chromium] › e2e/smoke/launch-critical.spec.ts:28:1 › Innlogging: viser loginskjema ──────
-    [smoke-chromium] › e2e/smoke/launch-critical.spec.ts:47:1 › Paper trading: side laster ─────────
-    [smoke-chromium] › e2e/smoke/launch-critical.spec.ts:56:1 › Landing: har meta description ──────
-    [smoke-chromium] › e2e/smoke/launch-critical.spec.ts:65:1 › Ingen MISSING_MESSAGE console errors 
-  3 passed (34.6s)
-```
+- ✅ Playwright smoke-chromium: OK (  28 passed (59.2s))
 
 === SAMMENDRAG ===
 - Lint OK: true
 - Type-check OK: true
-- Playwright OK: false
+- Playwright OK: true
 - Failed trades (auto_trade_log): 0
 
 ✅ Ingen kritiske feilede trades (>5). Ingen Linear-issue nødvendig.

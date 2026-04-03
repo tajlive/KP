@@ -50,7 +50,26 @@ export async function authMiddleware(
   // We intentionally continue auth processing for 200 responses.
 
   // Skip auth callback — route handler does its own PKCE exchange
+  // But log for debugging OAuth issues
   if (strippedPath.startsWith("/auth/callback")) {
+    const code = request.nextUrl.searchParams.get("code");
+    const error = request.nextUrl.searchParams.get("error");
+    const locale = parseLocalePath(pathname).locale;
+    
+    // Log OAuth callback for debugging
+    if (process.env.NODE_ENV === "development" || error) {
+      console.log(`[Auth Callback] ${error ? "ERROR" : "SUCCESS"} - Locale: ${locale}, Has code: ${!!code}, Error: ${error || "none"}`);
+    }
+    
+    // Log to Sentry in production if there's an error
+    if (error && process.env.NODE_ENV === "production") {
+      console.error(`[Auth Callback] OAuth error: ${error}`, {
+        locale,
+        path: strippedPath,
+        referer: request.headers.get("referer"),
+      });
+    }
+    
     return response;
   }
 

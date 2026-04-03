@@ -1,19 +1,14 @@
 /**
- * Singleton Supabase browser client.
- *
+ * Singleton Supabase browser client
+ * 
  * KRITISK: Aldri opprett flere instanser — én per browser-session.
- * Lock "sb-*-auth-token" kan ikke deles mellom instanser og vil
- * forårsake "gotrue-js lock not released within 5000ms" feil.
- *
- * OAuth/PKCE: Vi bruker IKKE custom storage (localStorage) her. @supabase/ssr
- * må lagre code_verifier i cookies slik at server-callback kan lese den ved
- * exchangeCodeForSession. Med storage: safeStorage (localStorage) havnet
- * brukeren tilbake på innlogging etter Google fordi serveren ikke så verifier.
- *
+ * Token refresh håndteres av AuthContext, IKKE her for å unngå race conditions.
+ * 
  * @usage
  * import { getSupabaseClient } from '@/lib/supabase/client'
  * const supabase = getSupabaseClient()
  */
+
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 
@@ -22,13 +17,21 @@ type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>;
 // Module-level singleton — survives HMR and React re-renders
 let _client: SupabaseClient | null = null;
 
-/** Message thrown when Supabase env vars are missing. Check with: err.message.startsWith('Supabase er ikke konfigurert') */
+function getBrowserCookieDomain(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  const host = window.location.hostname;
+  if (host === "localhost" || host.includes(":")) return undefined;
+  const rootDomain = host.replace(/^www\./, "");
+  return `.${rootDomain}`;
+}
+
+/** Message thrown when Supabase env vars are missing */
 export const CONFIG_ERROR_MSG =
-  "Supabase er ikke konfigurert. Sjekk at NEXT_PUBLIC_SUPABASE_URL og NEXT_PUBLIC_SUPABASE_ANON_KEY er satt: Lokalt i .env.local eller .env; på Vercel i Project Settings → Environment Variables. Variablene må være tilgjengelige ved byggetid (NEXT_PUBLIC_* inlines i klienten).";
+  "Supabase er ikke konfigurert. Sjekk at NEXT_PUBLIC_SUPABASE_URL og NEXT_PUBLIC_SUPABASE_ANON_KEY er satt.";
 
 /**
- * Get the singleton Supabase browser client.
- * Creates the client on first call, returns cached instance thereafter.
+ * Get the singleton Supabase browser client
+ * NOTE: Token refresh is handled by AuthContext to prevent race conditions
  */
 export function getSupabaseClient(): SupabaseClient {
   if (_client) return _client;
@@ -44,6 +47,7 @@ export function getSupabaseClient(): SupabaseClient {
     url.includes("your-project") ||
     key.includes("your_") ||
     key === "placeholder";
+  
   if (isPlaceholder) {
     throw new Error(CONFIG_ERROR_MSG);
   }
@@ -54,29 +58,28 @@ export function getSupabaseClient(): SupabaseClient {
       cookieOptions: {
         sameSite: "none",
         secure: true,
+        domain: getBrowserCookieDomain(),
       },
       global: {
         headers: {
           "x-client-info": "klarpakke/1.0",
         },
       },
+      auth: {
+        autoRefreshToken: false, // DISABLED: Handled by AuthContext
+        persistSession: true,
+        detectSessionInUrl: true,
+      },
     });
     
-    // Listen for auth errors and handle token expiration
+    // Minimal auth state listener - only for logging
     _client.auth.onAuthStateChange((event, session) => {
-      if (event === 'TOKEN_REFRESHED') {
-        console.log('[Supabase] Token refreshed successfully');
-      }
-      if (event === 'SIGNED_OUT' || (event === 'USER_UPDATED' && !session)) {
-        console.log('[Supabase] Auth state: signed out');
-        // Optionally redirect to login
-        if (typeof window !== 'undefined' && window.location.pathname.startsWith('/dashboard')) {
-          window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
-        }
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Supabase] Auth event: ${event}`, session ? 'has session' : 'no session');
       }
     });
+    
   } catch (err) {
-    // @supabase/ssr throws when url/key invalid; convert to our config error
     if (
       err instanceof Error &&
       /required.*create a Supabase client|URL and API key are required/i.test(

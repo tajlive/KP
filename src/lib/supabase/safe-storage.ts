@@ -102,10 +102,24 @@ function clearSupabaseAuthCookies(): void {
     const toRemove = names.filter(
       n => n.startsWith('sb-') || n.includes('auth-token') || n.includes('supabase')
     )
-    const opts = 'path=/; max-age=0'
+    const baseOpts = 'path=/; max-age=0'
+    const host = typeof window !== 'undefined' ? window.location.hostname : ''
+    const rootDomain = host && host !== 'localhost' && !host.includes(':')
+      ? host.replace(/^www\./, '')
+      : null
+
     toRemove.forEach(name => {
       try {
-        document.cookie = `${encodeURIComponent(name)}=; ${opts}`
+        // Clear for current host
+        document.cookie = `${encodeURIComponent(name)}=; ${baseOpts}`
+        // Clear for root domain (catches shadow cookies from server)
+        if (rootDomain) {
+          document.cookie = `${encodeURIComponent(name)}=; ${baseOpts}; domain=.${rootDomain}`
+        }
+        // Clear for exact www host if applicable
+        if (host && host.startsWith('www.')) {
+          document.cookie = `${encodeURIComponent(name)}=; ${baseOpts}; domain=${host}`
+        }
       } catch { /* ignore */ }
     })
     if (toRemove.length > 0) {

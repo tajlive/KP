@@ -44,6 +44,22 @@ END;
 
 **Siste kodeanalyse (feil + backlog):** `docs/ANALYSE-KODEBASE-2026-03.md` (Linear: KLA-232).
 
+**OAuth / Auth / Deployment (P0-fiks 2026-04):**
+- **Verifier:** `npm run verify:google-oauth` — sjekk Google Console config
+- **Launch script:** `npm run launch:prod` — full deployment pipeline
+- **Debug UI:** `/no/debug/oauth` (dev only) — visuell OAuth-diagnostikk
+- **Admin deploy:** `/no/admin/deploy` — produksjonsdeploy UI
+- **CI/CD:** `.github/workflows/verify-oauth.yml` — OAuth-verifikasjon på PR
+- **Sentry alerts:** `npm run sentry:alerts:import` — importer auth-error alerts
+- **Edge Function:** `supabase/functions/post-deploy-check` — health check post-deploy
+
+| Auth Tool | Kommando |
+|-----------|----------|
+| Verifiser OAuth | `npm run verify:google-oauth` |
+| Simuler deploy | `npm run launch:simulate` |
+| Sentry alerts import | `npm run sentry:alerts:import` |
+| Post-deploy health | `npm run supabase:health` |
+
 | Område                                           | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Brukeropprettelse Admin API                      | ✅ Fungerer — alle 9 tabeller opprettes                                                                                                                                                                                                                                                                                                                                                                                                                                                       |

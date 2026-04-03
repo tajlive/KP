@@ -47,6 +47,15 @@ function getSupabaseClient() {
 const MAX_REFRESH_ATTEMPTS = 3;
 const BACKOFF_DELAYS = [5000, 15000, 60000]; // 5s, 15s, 60s
 
+function isFatalRefreshError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return (
+    msg.includes("Invalid Refresh Token") ||
+    msg.includes("Already Used") ||
+    msg.includes("Refresh Token Not Found")
+  );
+}
+
 /** Sjekk synkront om Supabase-env er satt — unngår at barn kaller createClient() før vi har fanget feil */
 function checkSupabaseEnv(): boolean {
   if (typeof window === "undefined") return true; // Server: bruk server-klient
@@ -241,9 +250,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (error) {
           console.warn("[AuthContext] Session error:", error.message);
-          // KRITISK: Rens ALLE Supabase-nøkler, ikke bare spesifikke
-          clearAllSupabaseStorage();
-          // clearAllSupabaseStorage gjør window.location.reload()
+          // Stop retry storm on fatal refresh errors before clearing storage
+          if (isFatalRefreshError(error)) {
+            try {
+              await supabase.auth.signOut({ scope: "local" });
+            } catch {
+              // ignore
+            }
+            if (mounted) {
+              clearAllSupabaseStorage({ skipReload: true });
+              setSession(null);
+              setUser(null);
+            }
+          } else {
+            // KRITISK: Rens ALLE Supabase-nøkler, ikke bare spesifikke
+            clearAllSupabaseStorage();
+            // clearAllSupabaseStorage gjør window.location.reload()
+          }
         } else {
           if (mounted) {
             setSession(session);
@@ -254,6 +277,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Invalid UTF-8 eller annen storage-korrupsjon – rense UTEN reload for å unngå loop
         console.warn("[AuthContext] Korrupt auth-storage:", err);
         if (mounted) {
+          // Stop gotrue-js retry storm on fatal refresh errors before clearing storage
+          if (isFatalRefreshError(err)) {
+            try {
+              await supabase.auth.signOut({ scope: "local" });
+            } catch {
+              // ignore signOut errors
+            }
+          }
           clearAllSupabaseStorage({ skipReload: true });
           setSession(null);
           setUser(null);
