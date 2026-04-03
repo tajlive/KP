@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
-import { createServerClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth-guard";
+import { localizedPathname } from "@/middleware/locale-path";
 import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -48,27 +49,26 @@ export default async function PortfolioPage({ params }: PageProps) {
     const { locale } = await params;
     const t = await getTranslations("dashboard.portfolioPage");
 
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Use requireAuth for proper authentication (redirects to login if not authenticated)
+    const { supabase, user } = await requireAuth(
+      locale,
+      localizedPathname(locale, "/dashboard/portfolio")
+    );
 
-    // Note: Auth is handled by middleware - user should always exist here
-    // But handle gracefully just in case
-    if (!user) {
-      return (
-        <div className="text-center p-20">
-          <p className="text-slate-400">Please log in to view your portfolio</p>
-        </div>
-      );
-    }
-
-    // Fetch wallets (assets)
-    const { data: wallets } = await supabase
-      .from("wallets")
-      .select("*")
-      .eq("user_id", user.id)
-      .gt("balance", 0);
+    // Fetch wallets (assets) and trading sessions
+    const [{ data: wallets }, { data: sessions }] = await Promise.all([
+      supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", user.id)
+        .gt("balance", 0),
+      supabase
+        .from("trading_sessions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("started_at", { ascending: false })
+        .limit(10),
+    ]);
 
     return (
       <div className="space-y-6">
@@ -144,3 +144,6 @@ export default async function PortfolioPage({ params }: PageProps) {
     return <PortfolioErrorFallback locale={locale} />;
   }
 }
+
+// Re-export for TypeScript compatibility
+export type { PageProps };
