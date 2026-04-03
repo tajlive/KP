@@ -12,7 +12,7 @@
 
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { HealthDashboardClient } from "./HealthDashboardClient";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function checkAdminAccess() {
-  const supabase = createClient();
+  const supabase = await createServerClient();
   
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -46,7 +46,7 @@ async function checkAdminAccess() {
 
 // Fetch initial health data
 async function getHealthData() {
-  const supabase = createClient();
+  const supabase = await createServerClient();
   
   try {
     const startTime = Date.now();

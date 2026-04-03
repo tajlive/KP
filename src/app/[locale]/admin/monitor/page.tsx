@@ -13,7 +13,7 @@
 
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { MonitorDashboardClient } from "./MonitorDashboardClient";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function checkAdminAccess() {
-  const supabase = createClient();
+  const supabase = await createServerClient();
   
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -47,7 +47,7 @@ async function checkAdminAccess() {
 
 // Fetch initial metrics
 async function getInitialMetrics() {
-  const supabase = createClient();
+  const supabase = await createServerClient();
   
   try {
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
@@ -80,7 +80,7 @@ async function getInitialMetrics() {
       .limit(50);
     
     // Calculate success rate
-    const completedTrades = recentTrades?.filter(t => t.status === "completed").length || 0;
+    const completedTrades = recentTrades?.filter((t: {status: string}) => t.status === "completed").length || 0;
     const totalTrades = recentTrades?.length || 1;
     
     return {

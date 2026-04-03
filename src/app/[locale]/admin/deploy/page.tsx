@@ -9,7 +9,7 @@
 
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { DeployDashboard } from "./DeployDashboard";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // Admin check
 async function checkAdminAccess() {
-  const supabase = createClient();
+  const supabase = await createServerClient();
   
   try {
     const { data: { user } } = await supabase.auth.getUser();
