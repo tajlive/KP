@@ -1,20 +1,18 @@
 /**
  * KLA-137: Paper Trade Execution with Safety Layer
  *
+ * DEPRECATED WRAPPER: This file is now a thin wrapper around executeTrade.
+ * Use executeTrade(supabase, request) directly for new code.
+ *
  * PHYSICALLY SEPARATED from live trading path.
  * This function can NEVER send orders to exchange.
  */
 
-import type { PostgrestError } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { getUsdtToNokRateAsync, usdtToNok } from "@/lib/trading/currency";
-import {
-  validateTradeAgainstRiskProfile,
-  recordTradeRejection,
-  recordTradeDecision,
-  type TradeRequest,
-} from "./risk-validator";
+import { executeTrade } from "@/lib/trading/core/execute-trade";
+import type { ExecuteTradeRequest, ExecuteTradeResult } from "@/lib/trading/core/types";
 
+/** @deprecated Use ExecuteTradeRequest from @/lib/trading/core/execute-trade */
 export interface PaperTradeRequest {
   userId: string;
   symbol: string;
@@ -23,16 +21,14 @@ export interface PaperTradeRequest {
   price: number;
   orderType?: "market" | "limit";
   botId?: string;
-  /** Når satt: bruk denne aktive paper-sesjonen (eiersjekk i DB). Unngår at handler havner i «annen» aktiv sesjon. */
   sessionId?: string;
 }
 
+/** @deprecated Use ExecuteTradeResult from @/lib/trading/core/execute-trade */
 export interface PaperTradeResult {
   success: boolean;
   tradeId?: string;
-  /** Active paper session the trade was recorded under */
   sessionId?: string;
-  /** Present when success is true; can be 0 on error for convenience */
   newBalance?: number;
   rejectionReason?: string;
   error?: string;
@@ -43,256 +39,35 @@ export interface PaperTradeResult {
  *
  * SAFETY GUARANTEE: This function ONLY interacts with Supabase.
  * It can NEVER send orders to any exchange.
+ *
+ * @deprecated Use executeTrade(supabase, request) directly. This wrapper maintains
+ * backwards compatibility by using service-role client internally.
  */
 export async function executePaperTrade(
   request: PaperTradeRequest,
 ): Promise<PaperTradeResult> {
   const supabase = createClient();
 
-  try {
-    // 1. Paper-sesjon: eksplisitt id (foretrukket) eller siste oppdaterte aktive
-    let session: {
-      id: string;
-      user_id: string;
-      current_capital_nok: number | null;
-      current_capital: number | null;
-      status: string;
-      mode: string;
-    } | null = null;
-    let sessionError: PostgrestError | null = null;
+  const execRequest: ExecuteTradeRequest = {
+    userId: request.userId,
+    sessionId: request.sessionId, // Will be resolved inside executeTrade
+    symbol: request.symbol,
+    side: request.side,
+    quantity: request.quantity,
+    price: request.price,
+    orderType: request.orderType || "market",
+    mode: "paper",
+    botId: request.botId,
+  };
 
-    if (request.sessionId) {
-      const res = await supabase
-        .from("trading_sessions")
-        .select(
-          "id, user_id, current_capital_nok, current_capital, status, mode",
-        )
-        .eq("id", request.sessionId)
-        .eq("user_id", request.userId)
-        .eq("mode", "paper")
-        .eq("status", "active")
-        .maybeSingle();
-      session = res.data;
-      sessionError = res.error;
-      if (!session && !sessionError) {
-        return {
-          success: false,
-          error:
-            "Fant ikke aktiv paper-sesjon for denne ID-en (eller sesjonen tilhører ikke deg).",
-        };
-      }
-    } else {
-      const res = await supabase
-        .from("trading_sessions")
-        .select(
-          "id, user_id, current_capital_nok, current_capital, status, mode",
-        )
-        .eq("user_id", request.userId)
-        .eq("mode", "paper")
-        .eq("status", "active")
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      session = res.data;
-      sessionError = res.error;
-    }
+  const result: ExecuteTradeResult = await executeTrade(supabase, execRequest);
 
-    if (sessionError || !session) {
-      if (request.sessionId) {
-        return {
-          success: false,
-          error:
-            sessionError?.message ??
-            "Fant ikke aktiv paper-sesjon for denne ID-en (eller sesjonen tilhører ikke deg).",
-        };
-      }
-      const now = new Date().toISOString();
-      const capital = 100000;
-      const { data: newSession, error: createError } = await supabase
-        .from("trading_sessions")
-        .insert({
-          user_id: request.userId,
-          mode: "paper",
-          status: "active",
-          strategy_id: "dca",
-          strategy_config: {},
-          trading_pair: request.symbol.toUpperCase(),
-          starting_capital_nok: capital,
-          current_capital_nok: capital,
-          initial_capital: capital,
-          current_capital: capital,
-          total_pnl: 0,
-          winning_trades: 0,
-          losing_trades: 0,
-          total_trades: 0,
-          started_at: now,
-          last_heartbeat: now,
-          created_at: now,
-          updated_at: now,
-        })
-        .select()
-        .single();
-
-      if (createError || !newSession) {
-        return {
-          success: false,
-          error: "Failed to create paper trading session",
-        };
-      }
-
-      return executePaperTrade(request);
-    }
-
-    // 2. Build trade request for validation
-    const tradeRequest: TradeRequest = {
-      userId: request.userId,
-      sessionId: session.id,
-      symbol: request.symbol,
-      side: request.side,
-      quantity: request.quantity,
-      price: request.price,
-      orderType: request.orderType || "market",
-      tradingMode: "paper",
-      botId: request.botId,
-    };
-
-    // 3. VALIDATE against risk profile (CRITICAL SAFETY CHECK)
-    const validationResult =
-      await validateTradeAgainstRiskProfile(tradeRequest);
-
-    if (!validationResult.allowed) {
-      // Record rejection for audit
-      await recordTradeRejection(tradeRequest, validationResult);
-      await recordTradeDecision(tradeRequest, validationResult);
-
-      return {
-        success: false,
-        rejectionReason: validationResult.rejectionReason,
-        error: `Trade rejected: ${validationResult.rejectionReason}`,
-      };
-    }
-
-    // 4. Calculate trade value (Binance price is USDT; session balance is NOK)
-    const rate = await getUsdtToNokRateAsync(supabase);
-    const orderValueUsdt = request.quantity * request.price;
-    const orderValueNok = usdtToNok(orderValueUsdt, rate);
-    const currentBalance = Number(
-      session.current_capital_nok ?? session.current_capital ?? 0,
-    );
-
-    // Double-check balance (defense in depth)
-    if (request.side === "buy" && orderValueNok > currentBalance) {
-      const rejectionResult = {
-        allowed: false as const,
-        rejectionReason: "INSUFFICIENT_BALANCE" as const,
-        rejectionDetails: {
-          required: orderValueNok,
-          available: currentBalance,
-        },
-      };
-      await recordTradeRejection(tradeRequest, rejectionResult);
-
-      return {
-        success: false,
-        rejectionReason: "INSUFFICIENT_BALANCE",
-        error: "Insufficient balance for this trade",
-      };
-    }
-
-    // 5. Calculate new balance (paper simulation, in NOK)
-    const newBalance =
-      request.side === "buy"
-        ? currentBalance - orderValueNok
-        : currentBalance + orderValueNok;
-
-    // 6. Record trade (total_value i NOK). status må være gyldig enum/text (filled).
-    const nowIso = new Date().toISOString();
-    const { data: trade, error: tradeError } = await supabase
-      .from("trades")
-      .insert({
-        session_id: session.id,
-        user_id: request.userId,
-        trading_pair: request.symbol,
-        side: request.side,
-        quantity: request.quantity,
-        price: request.price,
-        total_value: orderValueNok,
-        fee: 0, // Paper trading has no fees
-        status: "filled",
-        mode: "paper",
-        order_type: request.orderType ?? "market",
-        idempotency_key: `${session.id}-${Date.now()}-${Math.random()}`,
-        executed_at: nowIso,
-        created_at: nowIso,
-      })
-      .select()
-      .single();
-
-    if (tradeError) {
-      console.error("[PaperTrade] Failed to record trade:", tradeError);
-      return {
-        success: false,
-        error: "Failed to record paper trade",
-      };
-    }
-
-    // 7. Synkroniser NOK-felt med current_capital etter DB-trigger (trigger oppdaterer current_capital)
-    const { data: sessionAfter, error: readErr } = await supabase
-      .from("trading_sessions")
-      .select("current_capital")
-      .eq("id", session.id)
-      .maybeSingle();
-
-    if (readErr) {
-      console.error(
-        "[PaperTrade] Failed to read session after trade:",
-        readErr,
-      );
-    }
-
-    const synced =
-      sessionAfter?.current_capital != null
-        ? Number(sessionAfter.current_capital)
-        : newBalance;
-
-    const { error: updateError } = await supabase
-      .from("trading_sessions")
-      .update({
-        current_capital_nok: synced,
-        current_capital: synced,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", session.id);
-
-    if (updateError) {
-      console.error(
-        "[PaperTrade] Failed to sync session capital:",
-        updateError,
-      );
-    }
-
-    // 8. Record successful decision
-    await recordTradeDecision(
-      tradeRequest,
-      validationResult,
-      request.quantity,
-      request.price,
-    );
-
-    return {
-      success: true,
-      tradeId: trade.id,
-      sessionId: session.id,
-      newBalance: synced,
-    };
-  } catch (error) {
-    console.error("[PaperTrade] Unexpected error:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Unknown error executing paper trade",
-    };
-  }
+  return {
+    success: result.success,
+    tradeId: result.tradeId,
+    sessionId: result.sessionId,
+    newBalance: result.newBalance,
+    rejectionReason: result.rejectionReason,
+    error: result.error,
+  };
 }

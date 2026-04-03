@@ -10,7 +10,7 @@
  * For live trading: Orders are submitted to Binance as OCO orders
  */
 
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -30,22 +30,18 @@ const ConditionalOrderSchema = z.object({
 
 type ConditionalOrderType = "stop_loss" | "take_profit" | "trailing_stop";
 
-function getAuthUser(request: NextRequest) {
+export async function POST(request: NextRequest) {
   const response = NextResponse.next();
   const supabase = createServerClient(request, response);
-  return supabase.auth.getUser();
-}
 
-export async function POST(request: NextRequest) {
   const {
     data: { user },
     error: authError,
-  } = await getAuthUser(request);
+  } = await supabase.auth.getUser();
+
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const supabase = createClient();
 
   try {
     // Parse and validate request
@@ -94,7 +90,7 @@ export async function POST(request: NextRequest) {
       const { data: position } = await supabase
         .from("positions")
         .select("quantity")
-        .eq("user_id", user.id) // positions has no session_id column
+        .eq("user_id", user.id)
         .eq("symbol", symbol)
         .single();
 
@@ -144,7 +140,7 @@ export async function POST(request: NextRequest) {
       side,
       quantity,
       trigger_price,
-      limit_price: limit_price || trigger_price, // Default to trigger price (market order)
+      limit_price: limit_price || trigger_price,
       trailing_percent: type === "trailing_stop" ? trailing_percent : null,
       current_price_at_creation: currentPrice,
       status: "pending",
@@ -155,7 +151,6 @@ export async function POST(request: NextRequest) {
     // For live trading, also submit to Binance
     if (session.mode === "live") {
       // TODO: Submit OCO order to Binance
-      // This requires Binance API integration for conditional orders
       console.log(
         "Live conditional order would be submitted to Binance:",
         orderData,
@@ -218,15 +213,17 @@ export async function POST(request: NextRequest) {
 
 // GET - List user's conditional orders
 export async function GET(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
+
   const {
     data: { user },
     error: authError,
-  } = await getAuthUser(request);
+  } = await supabase.auth.getUser();
+
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const supabase = createClient();
 
   const { searchParams } = new URL(request.url);
   const session_id = searchParams.get("session_id");
@@ -268,15 +265,17 @@ export async function GET(request: NextRequest) {
 
 // DELETE - Cancel a conditional order
 export async function DELETE(request: NextRequest) {
+  const response = NextResponse.next();
+  const supabase = createServerClient(request, response);
+
   const {
     data: { user },
     error: authError,
-  } = await getAuthUser(request);
+  } = await supabase.auth.getUser();
+
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const supabase = createClient();
 
   const { searchParams } = new URL(request.url);
   const order_id = searchParams.get("order_id");

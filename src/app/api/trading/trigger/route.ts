@@ -1,21 +1,19 @@
-import { createServerClient, createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 // POST /api/trading/trigger
 // Manually triggers the strategy runner (for immediate feedback when user starts a strategy)
 export async function POST(request: NextRequest) {
   try {
-    const res = NextResponse.next();
-    const supabaseAuth = createServerClient(request, res);
+    const response = NextResponse.next();
+    const supabase = createServerClient(request, response);
 
     const {
       data: { user },
-    } = await supabaseAuth.auth.getUser();
+    } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const supabase = createClient();
 
     const { data: sessions, error: sessError } = await supabase
       .from("trading_sessions")
@@ -28,26 +26,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "No active strategies for user" });
     }
 
-    // Call the Edge Function using the validated user's context
+    // Call the Edge Function using the validated user's access token
     const {
       data: { session },
-    } = await supabase.auth.getSession(); // Still needed for the access_token to pass to Edge Function
+    } = await supabase.auth.getSession();
     const functionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/strategy-runner`;
 
-    const response = await fetch(functionUrl, {
+    const edgeResponse = await fetch(functionUrl, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${session?.access_token || process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        Authorization: `Bearer ${session?.access_token}`,
         "Content-Type": "application/json",
       },
     });
 
-    if (!response.ok) {
-      const error = await response.text();
+    if (!edgeResponse.ok) {
+      const error = await edgeResponse.text();
       throw new Error(`Edge function error: ${error}`);
     }
 
-    const result = await response.json();
+    const result = await edgeResponse.json();
 
     return NextResponse.json({
       success: true,

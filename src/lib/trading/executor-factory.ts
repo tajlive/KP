@@ -10,7 +10,7 @@
  *   const result = await executor.executeOrder({ ... });
  */
 
-import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { BinanceExecutor } from "./binance-executor";
 import type { OrderExecutor } from "./order-executor";
 import { PaperExecutor } from "./paper-executor";
@@ -25,16 +25,16 @@ export class ExecutorFactory {
    * @returns OrderExecutor instance
    */
   static async create(
+    supabase: SupabaseClient,
     userId: string,
     mode: "paper" | "live",
     sessionId?: string,
   ): Promise<OrderExecutor> {
     if (mode === "paper") {
-      return new PaperExecutor(userId, sessionId);
+      return new PaperExecutor(supabase, userId, sessionId);
     }
 
     // Live mode: fetch and decrypt Binance API keys
-    const supabase = createClient();
 
     // Get user's tier (validate live trading access)
     const { data: profile, error: profileError } = await supabase
@@ -101,8 +101,7 @@ export class ExecutorFactory {
    * @param sessionId - Trading session ID
    * @returns OrderExecutor instance
    */
-  static async createFromSession(sessionId: string): Promise<OrderExecutor> {
-    const supabase = createClient();
+  static async createFromSession(supabase: SupabaseClient, sessionId: string): Promise<OrderExecutor> {
 
     const { data: session, error } = await supabase
       .from("trading_sessions")
@@ -115,7 +114,7 @@ export class ExecutorFactory {
     }
 
     const mode = session.mode as "paper" | "live";
-    return this.create(session.user_id, mode, sessionId);
+    return this.create(supabase, session.user_id, mode, sessionId);
   }
 
   /**
@@ -124,8 +123,7 @@ export class ExecutorFactory {
    * @param userId - User ID
    * @returns true if user can trade live
    */
-  static async canTradeLive(userId: string): Promise<boolean> {
-    const supabase = createClient();
+  static async canTradeLive(supabase: SupabaseClient, userId: string): Promise<boolean> {
 
     const { data: profile } = await supabase
       .from("user_profiles")

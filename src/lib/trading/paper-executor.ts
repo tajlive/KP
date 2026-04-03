@@ -11,8 +11,8 @@
  * Uses trading_sessions table to track paper capital.
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { OpenPosition } from "@/lib/shared";
-import { createClient } from "@/lib/supabase/server";
 import type {
   BalanceInfo,
   OrderExecutor,
@@ -24,6 +24,7 @@ import { calculateFee, fetchBinancePrice } from "./order-executor";
 
 export class PaperExecutor implements OrderExecutor {
   constructor(
+    private supabase: SupabaseClient,
     private userId: string,
     private sessionId?: string, // Optional: if not provided, finds active session
   ) {}
@@ -113,7 +114,7 @@ export class PaperExecutor implements OrderExecutor {
    * Get current paper trading balance
    */
   async getBalance(): Promise<BalanceInfo> {
-    const supabase = createClient();
+    const supabase = this.supabase;
 
     // Find active paper session
     let sessionId = this.sessionId;
@@ -164,7 +165,7 @@ export class PaperExecutor implements OrderExecutor {
    * Get current open position
    */
   async getPosition(symbol: string): Promise<Position | null> {
-    const supabase = createClient();
+    const supabase = this.supabase;
 
     // Find active paper session
     let sessionId = this.sessionId;
