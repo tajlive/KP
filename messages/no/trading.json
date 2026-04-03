@@ -218,5 +218,419 @@
     "chip_scan": "Scan",
     "chip_risk": "Risiko OK",
     "chip_signal": "Signal"
+  },
+  "tradeDetails": {
+    "title": "Handledetaljer",
+    "close": "Lukk",
+    "notFound": "Handel ikke funnet",
+    "overview": "Oversikt",
+    "numbers": "Tall",
+    "result": "Resultat",
+    "type": "Type",
+    "strategy": "Strategi",
+    "quantity": "Antall",
+    "totalValue": "Total verdi",
+    "entryPrice": "Inngangspris",
+    "exitPrice": "Utsalgspris",
+    "stopLoss": "Stoploss",
+    "takeProfit": "Målpris (Take Profit)",
+    "fee": "Gebyr",
+    "buy": "Kjøp",
+    "sell": "Salg",
+    "automatic": "Automatisk trading",
+    "manual": "Manuell",
+    "whyBuy": "Hvorfor kjøpte vi?",
+    "whySell": "Hvorfor solgte vi?",
+    "confidence": "Konfidens",
+    "paperNotice": "Dette er en øvingshandel med virtuell kapital. Ingen ekte penger er brukt.",
+    "learnMore": "Vil du lære mer om denne typen handel?",
+    "readMore": "Les mer om",
+    "strategyParams": "Strategiparametere",
+    "live": "Live",
+    "paper": "Lekepenger",
+    "paperShort": "Øv"
+  },
+  "tradingModeSelector": {
+    "title": "Velg handelsmodus",
+    "paper": {
+      "title": "Øv med lekepenger",
+      "description": "Alle handler her er simulert. Du risikerer ingen ekte penger.",
+      "feature1": "Start med 100 000 kr i lekepenger",
+      "feature2": "Test strategier risikofritt",
+      "feature3": "Lær uten å tape penger"
+    },
+    "live": {
+      "title": "Ekte trading",
+      "description": "Handler med ekte penger. Les vilkår og risiko før du kobler til børs.",
+      "warning": "Real risiko: Du kan tape penger",
+      "feature1": "Trader med ekte midler",
+      "feature2": "Reell fortjeneste og tap",
+      "feature3": "Skattepliktig inntekt"
+    },
+    "locked": {
+      "comingSoon": "Live trading kommer snart. Følg med på oppdateringer!",
+      "connectExchange": "Koble til en børs for å aktivere live trading."
+    },
+    "liveWarning": {
+      "title": "Advarsel: Ekte penger",
+      "description": "Du trader nå med ekte midler. Alle handler vil påvirke din faktiske saldo."
+    }
+  },
+  "recentTrades": {
+    "title": "Siste handler",
+    "empty": "Ingen handler å vise",
+    "emptyAll": "Start trading for å se handler her",
+    "emptyPaper": "Ingen øvingshandler ennå",
+    "emptyLive": "Ingen live-handler ennå",
+    "filter": "Vis",
+    "filterAll": "Alle",
+    "filterPaper": "Lekepenger",
+    "filterLive": "Live",
+    "time": "Tid",
+    "symbol": "Symbol",
+    "tradeType": "Type",
+    "strategy": "Strategi",
+    "size": "Størrelse",
+    "pnl": "P&L",
+    "buy": "Kjøp",
+    "sell": "Salg",
+    "showingCount": "Viser {count} handler",
+    "modePaper": "lekepenger",
+    "modeLive": "live"
+  },
+  "orderEntry": {
+    "title": "Ny Handel",
+    "symbolPrice": "{symbol} @ ${price}",
+    "side": {
+      "long": "KJØP (LONG)",
+      "short": "SELG (SHORT)"
+    },
+    "quantity": {
+      "label": "Antall (stk)",
+      "placeholder": "0.00",
+      "value": "Verdi: ${value}",
+      "max": "Maks"
+    },
+    "leverage": {
+      "label": "Leverage: {value}x"
+    },
+    "stopLoss": {
+      "label": "Stop Loss",
+      "placeholder": "$0.00"
+    },
+    "takeProfit": {
+      "label": "Take Profit",
+      "placeholder": "$0.00"
+    },
+    "summary": {
+      "margin": "Margin påkrevd",
+      "fee": "Handelsgebyr (0.1%)",
+      "total": "Total"
+    },
+    "submit": {
+      "long": "KJØP {symbol}",
+      "short": "SELG {symbol}",
+      "submitting": "Åpner posisjon..."
+    },
+    "errors": {
+      "insufficientMargin": "Ikke nok margin tilgjengelig",
+      "enterQuantity": "Vennligst fyll inn antall"
+    }
+  },
+  "positions": {
+    "title": "Åpne Posisjoner",
+    "titleCount": "Åpne Posisjoner ({count})",
+    "empty": {
+      "title": "Ingen åpne posisjoner",
+      "description": "Start trading ved å åpne din første posisjon"
+    },
+    "columns": {
+      "symbol": "Symbol",
+      "side": "Side",
+      "size": "Størrelse",
+      "entry": "Entry",
+      "current": "Nåværende",
+      "pnl": "P&L",
+      "action": "Handling"
+    },
+    "close": "Lukk",
+    "closeAria": "Lukk posisjon {symbol}",
+    "totalUnrealizedPnL": "Total Urealisert P&L"
+  },
+  "strategyConfig": {
+    "dca": {
+      "weeklyAmount": "Ukentlig beløp",
+      "btcAllocation": "BTC-fordeling"
+    },
+    "trend": {
+      "riskPerTrade": "Risiko per trade",
+      "stopLoss": "Stop-loss"
+    },
+    "multisignal": {
+      "aggressiveness": "Aggressivitet",
+      "levels": {
+        "cautious": "Forsiktig",
+        "normal": "Normal",
+        "aggressive": "Aggressiv"
+      }
+    },
+    "grid": {
+      "upperPrice": "Øvre pris",
+      "lowerPrice": "Nedre pris",
+      "levels": "Grid-nivåer",
+      "capital": "Kapital"
+    },
+    "aiCopy": {
+      "maxPerTrade": "Maks per trade",
+      "maxLoss": "Maks tap"
+    },
+    "unit": {
+      "nok": "{value} NOK",
+      "percent": "{value}%"
+    }
+  },
+  "aggressivitySlider": {
+    "title": "Hvor raskt skal roboten reagere?",
+    "levels": {
+      "conservative": {
+        "label": "Forsiktig",
+        "description": "Venter på tydelige signaler før den handler",
+        "whatItMeans": "Roboten er tålmodig og venter på sterke bekreftelser",
+        "reactionTime": "5–15 minutter etter signal oppstår",
+        "confirmationNeeded": "2–3 indikatorer må stemme",
+        "moreLikely": [
+          "Å unngå falske signaler",
+          "Færre, men mer solide handler",
+          "Lavere trading-frekens (2–5 per dag)"
+        ],
+        "lessLikely": [
+          "Å fange med et momentum fra start",
+          "Å handle på raske nyheter",
+          "Høy aktivitet i kontoen"
+        ]
+      },
+      "moderate": {
+        "label": "Balansert",
+        "description": "Handler når flere indikatorer peker samme vei",
+        "whatItMeans": "Roboten balanserer mellom å vente og å handle raskt",
+        "reactionTime": "1–5 minutter etter signal oppstår",
+        "confirmationNeeded": "1–2 indikatorer må stemme",
+        "moreLikely": [
+          "Å fange med på trender tidlig",
+          "God balanse mellom sikkerhet og hastighet",
+          "Moderat aktivitet (5–10 handler per dag)"
+        ],
+        "lessLikely": [
+          "Å gå glipp av alle muligheter",
+          "Å handle kun på svake signaler",
+          "Ekstrem aktivitet eller inaktivitet"
+        ]
+      },
+      "aggressive": {
+        "label": "Aggressiv",
+        "description": "Handler raskt på de første signalene",
+        "whatItMeans": "Roboten reagerer umiddelbart på markedssignalene",
+        "reactionTime": "Umiddelbart (sekunder) etter signal",
+        "confirmationNeeded": "Kun 1 indikator trengs",
+        "moreLikely": [
+          "Å fange med på momentum fra start",
+          "Høy aktivitet (10–20 handler per dag)",
+          "Å reagere raskt på nyheter"
+        ],
+        "lessLikely": [
+          "Å unngå alle falske signaler",
+          "Tålmodig venting på bekreftelse",
+          "Langsom, rolig handel"
+        ]
+      }
+    },
+    "sections": {
+      "reactionTime": "Reaksjonstid",
+      "confirmation": "Bekreftelse",
+      "moreLikely": "Mer sannsynlig",
+      "lessLikely": "Mindre sannsynlig",
+      "comparison": "Sammenligning",
+      "comparisonConservative": "Sikkerhet først, færre handler",
+      "comparisonBalanced": "Godt kompromiss",
+      "comparisonAggressive": "Flere muligheter, mer støy"
+    }
+  },
+  "tradeAmountSlider": {
+    "balance": "Din saldo",
+    "maxPerTrade": "Maks per trade",
+    "alreadyInMarket": "Allerede i markedet",
+    "title": "Hvor mye vil du handle for?",
+    "status": {
+      "blocked": {
+        "title": "Overstiger maksgrensen på {amount} kr",
+        "description": "Systemet vil blokkere denne handelen. Velg et lavere beløp."
+      },
+      "warning": {
+        "title": "Nærmer seg total eksponeringsgrense",
+        "description": "Du har {remaining} kr igjen til din maksimale eksponering."
+      },
+      "caution": {
+        "title": "Stor andel av saldoen ({percentage}%)",
+        "description": "Vurder å dele opp i flere mindre handler."
+      },
+      "ok": {
+        "title": "Innenfor trygge rammer ({percentage}% av saldoen)",
+        "description": "Dette er et fornuftig beløp for ditt risikonivå."
+      }
+    },
+    "whatThisMeans": "Dette betyr",
+    "scenarios": {
+      "gain": "Hvis markedet stiger 10%, tjener du ca {amount} kr",
+      "loss": "Hvis markedet faller 10%, taper du ca {amount} kr",
+      "stopLoss": "Roboten selger automatisk hvis tapet overstiger {amount} kr (15%)"
+    },
+    "paperTrading": {
+      "title": "Du handler med lekepenger",
+      "description": "Ingen reell risiko – øv til du føler deg klar for ekte penger"
+    }
+  },
+  "riskExplanation": {
+    "howItWorks": "Slik fungerer dette nivået",
+    "whatThisMeans": "Hva dette betyr",
+    "moreLikely": "Mer sannsynlig",
+    "lessLikely": "Mindre sannsynlig",
+    "systemBlocks": "Systemet blokkerer",
+    "noRealRisk": "Ingen reell risiko – bytt til ekte penger når du er klar",
+    "levels": {
+      "safe": {
+        "headline": "Trygg",
+        "practicalExample": "Med {balance} kr kan du handle for inntil {maxAmount} kr per trade ({maxPct}% av saldoen)",
+        "autoSellExplanation": "Hvis en handel taper {stopLossAmount} kr ({stopLossPct}%), selger roboten automatisk for å beskytte deg",
+        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} kr i åpne handler samtidig ({maxExposurePct}% av saldoen)",
+        "moreLikely": [
+          "Små, jevne gevinster (+200–500 kr per uke)",
+          "Du sover godt uten å sjekke prisen hele tiden",
+          "Du lærer markedet å kjenne uten stress"
+        ],
+        "lessLikely": [
+          "Å doble kontoen på én måned",
+          "Spennende daglige svingninger",
+          "Følelsen av å være «i markedet»"
+        ],
+        "systemBlocks": [
+          "Handler over {maxAmount} kr per trade",
+          "Nye handler hvis du har tapt mer enn {dailyLoss} kr i dag",
+          "Handler hvis total eksponering overstiger {maxExposure} kr"
+        ],
+        "copyForSavers": {
+          "headline": "Perfekt for deg som vil lære uten å risikere",
+          "body": "Her får du kjenne på hvordan det er å handle krypto, men roboten passer på at du ikke taper for mye. Perfekt for første gang."
+        }
+      },
+      "balanced": {
+        "headline": "Balansert",
+        "practicalExample": "Med {balance} kr kan du handle for inntil {maxAmount} kr per trade ({maxPct}% av saldoen)",
+        "autoSellExplanation": "Hvis en handel taper {stopLossAmount} kr ({stopLossPct}%), selger roboten automatisk",
+        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} kr i åpne handler samtidig ({maxExposurePct}% av saldoen)",
+        "moreLikely": [
+          "Varierte uker – noen med pluss, noen med minus",
+          "Du merker at kontoen beveger seg mer",
+          "Lærer å håndtere både gevinster og tap"
+        ],
+        "lessLikely": [
+          "Å miste halve kontoen på én dag",
+          "Å tjene 10 000 kr på én uke uten flaks",
+          "Kjedelige, flate perioder"
+        ],
+        "systemBlocks": [
+          "Handler over {maxAmount} kr per trade",
+          "Nye handler hvis du har tapt mer enn {dailyLoss} kr i dag",
+          "Handler hvis total eksponering overstiger {maxExposure} kr"
+        ],
+        "copyForSavers": {
+          "headline": "For deg som har handlet litt før",
+          "body": "Du tåler å se kontoen gå litt ned noen dager, fordi du vet den pleier å komme seg. Mer spennende, men fortsatt trygt."
+        }
+      },
+      "aggressive": {
+        "headline": "Aggressiv",
+        "practicalExample": "Med {balance} kr kan du handle for inntil {maxAmount} kr per trade ({maxPct}% av saldoen)",
+        "autoSellExplanation": "Roboten selger først når tapet når {stopLossAmount} kr ({stopLossPct}%)",
+        "maxOpenPositions": "Du kan ha maksimalt {maxExposure} kr i åpne handler samtidig ({maxExposurePct}% av saldoen)",
+        "moreLikely": [
+          "Spennende, aktive handelsdager",
+          "Større svingninger (+/- 3 000–8 000 kr per uke)",
+          "Læring om hvordan det føles med reell risiko"
+        ],
+        "lessLikely": [
+          "Jevn, forutsigbar vekst",
+          "Å unngå alle store tap",
+          "Å sove godt hvis markedet krasjer om natten"
+        ],
+        "systemBlocks": [
+          "Handler over {maxAmount} kr per trade",
+          "Nye handler hvis du har tapt mer enn {dailyLoss} kr i dag",
+          "Handler hvis total eksponering overstiger {maxExposure} kr"
+        ],
+        "copyForSavers": {
+          "headline": "For deg som tåler å se store svingninger",
+          "body": "Du vet at store gevinster krever større risiko. Du håndterer stresset når kontoen faller 20% på én dag, fordi du ser det lange bildet."
+        }
+      }
+    }
+  },
+  "botStatus": {
+    "title": "Bot-kontrollsenter",
+    "description": "Status, beslutninger og ytelse synkroniseres kontinuerlig. Handler vises automatisk når de utføres.",
+    "nav": {
+      "overview": "Oversikt",
+      "advanced": "Avansert",
+      "ai": "AI",
+      "leaderboard": "Ledertavle",
+      "market": "Marked"
+    },
+    "strategies": {
+      "title": "Mine Strategier",
+      "empty": "Du har ingen aktive strategier akkurat nå.",
+      "paper": "LEKEPENGER",
+      "live": "LIVE",
+      "pnlTotal": "P&L Totalt"
+    },
+    "trades": {
+      "title": "Siste Handler",
+      "seeAll": "Se alle",
+      "action": "Handling",
+      "symbol": "Symbol",
+      "price": "Pris",
+      "value": "Verdi",
+      "time": "Tid",
+      "empty": "Ingen handler ennå. Boten vil handle når signalene er rette."
+    },
+    "overview": {
+      "title": "Oversikt",
+      "portfolioValue": "Portefølje Verdi",
+      "dailyResult": "Daglig Resultat",
+      "weeklyResult": "Ukentlig Resultat",
+      "monthlyResult": "Månedlig Resultat",
+      "winRate": "Gjennomsnittlig Win Rate",
+      "quickActions": "Hurtighandlinger",
+      "newStrategy": "Ny Strategi",
+      "newStrategyDesc": "Utforsk markedsplassen",
+      "pauseBot": "Pause Bot",
+      "pauseBotDesc": "Stopp midlertidig",
+      "settings": "Innstillinger",
+      "settingsDesc": "Juster preferanser"
+    },
+    "risk": {
+      "low": "Lav",
+      "balanced": "Balansert",
+      "high": "Høy"
+    }
+  },
+  "paperTrading": {
+    "card": {
+      "title": "Paper Trading",
+      "loading": "Henter saldo...",
+      "error": "Kunne ikke hente saldo. Sjekk internettforbindelsen.",
+      "empty": "Ingen aktiv papirhandelssesjon. Start en ny for å se saldoen.",
+      "currentBalance": "Gjeldende saldo",
+      "startingCapital": "Startkapital",
+      "pnl": "P&L"
+    }
   }
 }

@@ -36,6 +36,7 @@
     "verify:google-oauth:json": "npx ts-node scripts/google-oauth-verifier.ts --json",
     "env:validate": "npx ts-node scripts/env-checker.ts",
     "env:generate": "npx ts-node scripts/env-checker.ts --generate",
+    "test:duplicate": "vitest run src/tests/duplicateContent.test.ts",
     "launch:prod": "npx ts-node scripts/launch-production.ts",
     "launch:simulate": "npx ts-node scripts/launch-production.ts --dry-run",
     "launch:staging": "npx ts-node scripts/launch-production.ts --staging",

@@ -139,6 +139,20 @@ jobs:
         run: npm run test:unit
         id: unittest
 
+      - name: 🔍 Duplicate Content Check
+        run: npm run test:duplicate
+        id: duplicate
+        continue-on-error: true
+
+      - name: 📤 Post Duplicate Report to PR
+        if: steps.duplicate.outcome == 'failure' && github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: npx tsx scripts/post-duplicate-report.ts
+
       - name: 🏗️ Build
         run: npm run build
         id: build

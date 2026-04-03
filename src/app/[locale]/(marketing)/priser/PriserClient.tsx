@@ -8,6 +8,7 @@ import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { PaymentTrustLogos } from "@/features/landing/PaymentTrustLogos";
 import { useVippsMarket } from "@/shared/providers/VippsMarketProvider";
 import { getPriserPlans } from "./priser-plans";
+import { PrimaryCtaSection } from "@/features/marketing/components";
 
 const legacyFaqs = [
   {
@@ -353,22 +354,17 @@ export default function PriserClient() {
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="bg-blue-600 py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">{t("cta.title")}</h2>
-          <p className="text-xl text-blue-100 mb-8">{t("cta.subtitle")}</p>
-          <Link href={hrefWithLocale(locale, "/login")}>
-            <Button
-              size="lg"
-              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold"
-            >
-              {t("cta.button")}
-            </Button>
-          </Link>
-          <p className="text-blue-200 text-sm mt-4">{t("cta.guarantee")}</p>
-        </div>
-      </div>
+      {/* CTA - Using shared component with tracking */}
+      <PrimaryCtaSection
+        title={t("cta.title")}
+        description={t("cta.subtitle")}
+        primaryLabel={t("cta.button")}
+        primaryHref="/login"
+        variant="pricing"
+        locale={locale}
+        trackingId="pricing-primary"
+        funnelStage="pricing"
+      />
     </div>
   );
 }

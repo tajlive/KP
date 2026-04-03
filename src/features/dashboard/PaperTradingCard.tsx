@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import * as Sentry from '@sentry/nextjs';
-import { useToast } from '@/hooks/use-toast';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { useEffect, useRef, useState } from "react";
+import * as Sentry from "@sentry/nextjs";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface BalanceData {
   success: boolean;
@@ -29,11 +31,12 @@ interface BalanceData {
 }
 
 export function PaperTradingCard() {
+  const t = useTranslations("trading.paperTrading.card");
   const { toast } = useToast();
-  const [balance, setBalance] = useState<BalanceData['balance'] | null>(null);
+  const [balance, setBalance] = useState<BalanceData["balance"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasSession, setHasSession] = useState(true);
-  const [state, setState] = useState<'loading' | 'empty' | 'success' | 'error'>('loading');
+  const [state, setState] = useState<"loading" | "empty" | "success" | "error">("loading");
 
   // Polling management
   const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -42,13 +45,13 @@ export function PaperTradingCard() {
   // Error throttling
   const [lastErrorTime, setLastErrorTime] = useState<number>(0);
   const [errorCount, setErrorCount] = useState(0);
-  const lastErrorMessageRef = useRef<string>('');
+  const lastErrorMessageRef = useRef<string>("");
 
   // Mobile detection
   const isMobileRef = useRef<boolean>(false);
-  const POLL_INTERVAL_MS = 30000; // 30s desktop, 60s mobile (set below)
-  const FETCH_TIMEOUT_MS = 5000; // 5 second max fetch time
-  const ERROR_TOAST_THROTTLE_MS = 5000; // Only show error toast every 5s
+  const POLL_INTERVAL_MS = 30000;
+  const FETCH_TIMEOUT_MS = 5000;
+  const ERROR_TOAST_THROTTLE_MS = 5000;
 
   // Detect mobile on mount
   useEffect(() => {
@@ -61,14 +64,13 @@ export function PaperTradingCard() {
     const timeoutId = setTimeout(() => timeoutController.abort(), FETCH_TIMEOUT_MS);
 
     try {
-      const response = await fetch('/api/paper-trading/balance', {
+      const response = await fetch("/api/paper-trading/balance", {
         signal: AbortSignal.any([signal, timeoutController.signal]),
       });
 
       if (!response.ok) {
-        // Log server-side errors to Sentry
         if (response.status >= 500) {
-          Sentry.captureMessage(`Paper trading balance fetch failed: ${response.status}`, 'error');
+          Sentry.captureMessage(`Paper trading balance fetch failed: ${response.status}`, "error");
         }
         throw new Error(`HTTP ${response.status}`);
       }
@@ -85,18 +87,16 @@ export function PaperTradingCard() {
     const now = Date.now();
     const timeSinceLastError = now - lastErrorTime;
 
-    // Only show toast if 5+ seconds since last error OR error message is different
     if (timeSinceLastError > ERROR_TOAST_THROTTLE_MS || message !== lastErrorMessageRef.current) {
       lastErrorMessageRef.current = message;
       setLastErrorTime(now);
       setErrorCount(1);
       toast({
-        title: 'Saldo hentes',
+        title: t("loading"),
         description: message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } else {
-      // Count duplicate errors (for analytics)
       setErrorCount((c) => c + 1);
     }
   };
@@ -105,35 +105,29 @@ export function PaperTradingCard() {
     try {
       const data = await fetchWithTimeout(signal);
 
-      // Check for success flag
       if (!data.success || !data.balance) {
-        // No session found - valid state
         setHasSession(false);
-        setState('empty');
+        setState("empty");
         setBalance(null);
         return;
       }
 
-      // Success case
       setBalance(data.balance);
       setHasSession(true);
-      setState('success');
+      setState("success");
       setIsLoading(false);
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        // Abort is expected (cleanup or timeout)
+      if (error instanceof Error && error.name === "AbortError") {
         return;
       }
 
-      const errorMsg =
-        error instanceof Error ? error.message : String(error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
 
-      // Send detailed error to Sentry
       Sentry.captureException(error, {
         tags: {
-          component: 'PaperTradingCard',
-          endpoint: 'paper-trading/balance',
-          errorType: errorMsg.includes('timeout') ? 'network_timeout' : 'network_error',
+          component: "PaperTradingCard",
+          endpoint: "paper-trading/balance",
+          errorType: errorMsg.includes("timeout") ? "network_timeout" : "network_error",
         },
         extra: {
           isMobile: isMobileRef.current,
@@ -142,20 +136,18 @@ export function PaperTradingCard() {
         },
       });
 
-      // Show throttled error toast
       showErrorToast(
-        errorMsg.includes('timeout')
-          ? 'Nettverket er tregt. Prøver igjen...'
-          : 'Kunne ikke hente saldo. Sjekk internettforbindelsen.'
+        errorMsg.includes("timeout")
+          ? "Nettverket er tregt. Prøver igjen..."
+          : "Kunne ikke hente saldo. Sjekk internettforbindelsen.",
       );
 
-      setState('error');
+      setState("error");
       setIsLoading(false);
     }
   };
 
   const scheduleNextPoll = (signal: AbortSignal) => {
-    // Adjust interval for mobile
     const interval = isMobileRef.current ? POLL_INTERVAL_MS * 2 : POLL_INTERVAL_MS;
 
     pollingTimeoutRef.current = setTimeout(() => {
@@ -170,15 +162,12 @@ export function PaperTradingCard() {
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
-    // Fetch immediately
     fetchBalance(controller.signal).then(() => {
-      // Schedule next poll
       if (!controller.signal.aborted) {
         scheduleNextPoll(controller.signal);
       }
     });
 
-    // Cleanup on unmount
     return () => {
       controller.abort();
       if (pollingTimeoutRef.current) {
@@ -188,56 +177,68 @@ export function PaperTradingCard() {
   }, []);
 
   // Render states
-  if (state === 'empty') {
+  if (state === "empty") {
     return (
-      <div className="p-6 border border-slate-200 rounded-lg bg-slate-50">
-        <p className="text-slate-600">Ingen aktiv papirhandelssesjon. Start en ny for å se saldoen.</p>
+      <div className="p-6 border border-kp-border rounded-lg bg-kp-bg-secondary">
+        <p className="text-kp-text-secondary">{t("empty")}</p>
       </div>
     );
   }
 
-  if (state === 'error') {
+  if (state === "error") {
     return (
-      <div className="p-6 border border-red-200 rounded-lg bg-red-50 flex items-center gap-3">
-        <AlertCircle className="w-5 h-5 text-red-600" />
-        <p className="text-red-700">Kunne ikke hente saldo. Sjekk internettforbindelsen.</p>
+      <div className="p-6 border border-kp-danger/30 rounded-lg bg-kp-danger-bg flex items-center gap-3">
+        <AlertCircle className="w-5 h-5 text-kp-danger" />
+        <p className="text-kp-danger">{t("error")}</p>
       </div>
     );
   }
 
-  if (state === 'loading' || !balance) {
+  if (state === "loading" || !balance) {
     return (
-      <div className="p-6 border border-slate-200 rounded-lg bg-slate-50 flex items-center gap-3">
-        <Loader2 className="w-5 h-5 text-slate-600 animate-spin" />
-        <p className="text-slate-600">Henter saldo...</p>
+      <div className="p-6 border border-kp-border rounded-lg bg-kp-bg-secondary flex items-center gap-3">
+        <Loader2 className="w-5 h-5 text-kp-text-muted animate-spin" />
+        <p className="text-kp-text-secondary">{t("loading")}</p>
       </div>
     );
   }
 
   // Success render
   return (
-    <div className="p-6 border border-slate-200 rounded-lg bg-white">
+    <div className="p-6 border border-kp-border rounded-lg bg-kp-bg-secondary">
       <div className="space-y-4">
         <div>
-          <p className="text-sm text-slate-600">Gjeldende saldo</p>
-          <p className="text-2xl font-bold text-slate-900">
-            {balance.current.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })}
+          <p className="text-sm text-kp-text-muted">{t("currentBalance")}</p>
+          <p className="text-2xl font-bold text-kp-text-primary">
+            {balance.current.toLocaleString("no-NO", {
+              style: "currency",
+              currency: "NOK",
+            })}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-slate-600">Startkapital</p>
-            <p className="text-sm font-semibold text-slate-900">
-              {balance.starting.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })}
+            <p className="text-xs text-kp-text-muted">{t("startingCapital")}</p>
+            <p className="text-sm font-semibold text-kp-text-primary">
+              {balance.starting.toLocaleString("no-NO", {
+                style: "currency",
+                currency: "NOK",
+              })}
             </p>
           </div>
           <div>
-            <p className="text-xs text-slate-600">P&L</p>
-            <p className={`text-sm font-semibold ${
-              balance.isPositive ? 'text-green-600' : 'text-red-600'
-            }`}>
-              {balance.isPositive ? '+' : ''}
-              {balance.pnl.toLocaleString('no-NO', { style: 'currency', currency: 'NOK' })}
+            <p className="text-xs text-kp-text-muted">{t("pnl")}</p>
+            <p
+              className={cn(
+                "text-sm font-semibold",
+                balance.isPositive ? "text-kp-success" : "text-kp-danger",
+              )}
+            >
+              {balance.isPositive ? "+" : ""}
+              {balance.pnl.toLocaleString("no-NO", {
+                style: "currency",
+                currency: "NOK",
+              })}
               ({balance.pnlPercentage.toFixed(2)}%)
             </p>
           </div>
@@ -246,3 +247,5 @@ export function PaperTradingCard() {
     </div>
   );
 }
+
+export default PaperTradingCard;
