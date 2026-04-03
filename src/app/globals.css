@@ -95,92 +95,119 @@
     /* Bottom nav height for PWA */
     --bottom-nav-height: 5.75rem;
     
-    /* Light mode (default) */
-    /* Background colors */
-    --kp-bg-primary: #ffffff;
-    --kp-bg-secondary: #f7f8fa;
-    --kp-bg-tertiary: #eef1f6;
-    --kp-bg-card: #ffffff;
-    --kp-bg-hover: #f1f5f9;
-    --kp-bg-active: #e2e8f0;
+    /* ============================================
+       LIGHT MODE - WCAG AA Compliant
+       ============================================ */
     
-    /* Text colors */
-    --kp-text-primary: #1a1d26;
-    --kp-text-secondary: #5e6478;
-    --kp-text-tertiary: #8e94a7;
-    --kp-text-muted: #64748b;
+    /* Background colors - Crisp, clean light palette */
+    --kp-bg-primary: #fafafa;         /* Page background - soft white */
+    --kp-bg-secondary: #ffffff;       /* Cards, panels */
+    --kp-bg-tertiary: #f4f4f5;        /* Elevated surfaces */
+    --kp-bg-card: #ffffff;            /* Card background */
+    --kp-bg-hover: #f4f4f5;           /* Hover state */
+    --kp-bg-active: #e4e4e7;          /* Active/pressed state */
     
-    /* Border colors */
-    --kp-border: #e2e5ec;
-    --kp-border-light: #f1f5f9;
-    --kp-border-dark: #cbd5e1;
+    /* Text colors - High contrast for readability (WCAG AA) */
+    --kp-text-primary: #18181b;       /* Primary text - zinc-900 */
+    --kp-text-secondary: #3f3f46;     /* Secondary - zinc-700 */
+    --kp-text-tertiary: #52525b;      /* Tertiary - zinc-600 */
+    --kp-text-muted: #71717a;         /* Muted - zinc-500 (4.6:1 on white) */
+    
+    /* Border colors - Subtle but visible */
+    --kp-border: #e4e4e7;             /* zinc-200 */
+    --kp-border-light: #f4f4f5;       /* zinc-100 */
+    --kp-border-dark: #d4d4d8;        /* zinc-300 */
+    --kp-border-brand: rgba(0, 82, 255, 0.3);
     
     /* Surface colors */
     --kp-surface: #ffffff;
     --kp-surface-elevated: #ffffff;
+    --kp-surface-highlight: rgba(0, 82, 255, 0.04);
     
     /* Navigation */
-    --kp-nav-bg: rgba(15, 23, 42, 0.5);
-    --kp-nav-text: #ffffff;
-    --kp-nav-text-muted: #94a3b8;
+    --kp-nav-bg: rgba(255, 255, 255, 0.9);
+    --kp-nav-text: #18181b;
+    --kp-nav-text-muted: #71717a;
     
     /* Input colors */
     --kp-input-bg: #ffffff;
-    --kp-input-border: #e2e5ec;
-    --kp-input-text: #1a1d26;
-    --kp-input-placeholder: #8e94a7;
-  }
-  
-  /* Dark mode - Coinbase CDS Inspired */
-  .dark {
-    /* Background colors - Coinbase dark palette */
-    --kp-bg-primary: #0a0b0d;         /* Deepest background */
-    --kp-bg-secondary: #161719;       /* Card/surface background */
-    --kp-bg-tertiary: #1a1c24;        /* Elevated surfaces */
-    --kp-bg-card: #161719;            /* Card background */
-    --kp-bg-hover: #1f2128;           /* Hover state */
-    --kp-bg-active: #252830;          /* Active/pressed state */
-    
-    /* Text colors - High contrast for readability */
-    --kp-text-primary: #ffffff;       /* Primary text - pure white */
-    --kp-text-secondary: #9ca3af;     /* Secondary text - gray-400 */
-    --kp-text-tertiary: #6b7280;      /* Tertiary/muted - gray-500 */
-    --kp-text-muted: #4b5563;         /* Very muted - gray-600 */
-    
-    /* Border colors - Subtle, low opacity white */
-    --kp-border: rgba(255, 255, 255, 0.08);
-    --kp-border-light: rgba(255, 255, 255, 0.05);
-    --kp-border-dark: rgba(255, 255, 255, 0.15);
-    --kp-border-brand: rgba(0, 82, 255, 0.5);
-    
-    /* Surface colors */
-    --kp-surface: #161719;
-    --kp-surface-elevated: #1f2128;
-    
-    /* Navigation - Glass effect */
-    --kp-nav-bg: rgba(10, 11, 13, 0.85);
-    --kp-nav-text: #ffffff;
-    --kp-nav-text-muted: #9ca3af;
-    
-    /* Input colors - Dark with subtle borders */
-    --kp-input-bg: #1a1c24;
-    --kp-input-border: rgba(255, 255, 255, 0.08);
+    --kp-input-border: #d4d4d8;
     --kp-input-border-focus: #0052FF;
-    --kp-input-text: #ffffff;
-    --kp-input-placeholder: #6b7280;
+    --kp-input-text: #18181b;
+    --kp-input-placeholder: #a1a1aa;
     
     /* Brand accent */
     --kp-brand: #0052FF;
     --kp-brand-hover: #0047E0;
     --kp-brand-light: #3d7aff;
+    --kp-brand-dark: #0039c7;
+    --kp-brand-glow: rgba(0, 82, 255, 0.25);
+    --kp-brand-subtle: rgba(0, 82, 255, 0.1);
+    
+    /* Status colors */
+    --kp-success: #059669;            /* emerald-600 - good contrast on white */
+    --kp-success-bg: rgba(5, 150, 105, 0.1);
+    --kp-warning: #d97706;            /* amber-600 */
+    --kp-warning-bg: rgba(217, 119, 6, 0.1);
+    --kp-danger: #dc2626;             /* red-600 */
+    --kp-danger-bg: rgba(220, 38, 38, 0.1);
+  }
+  
+  /* ============================================
+     DARK MODE - WCAG AA Compliant
+     ============================================ */
+  .dark {
+    /* Background colors - Rich, deep dark palette */
+    --kp-bg-primary: #09090b;         /* Deepest background - zinc-950 */
+    --kp-bg-secondary: #18181b;       /* Main surface - zinc-900 */
+    --kp-bg-tertiary: #27272a;        /* Elevated surfaces - zinc-800 */
+    --kp-bg-card: #18181b;            /* Card background */
+    --kp-bg-hover: #27272a;           /* Hover state */
+    --kp-bg-active: #3f3f46;          /* Active/pressed state - zinc-700 */
+    
+    /* Text colors - High contrast for readability (WCAG AA) */
+    --kp-text-primary: #fafafa;       /* Primary text - zinc-50 */
+    --kp-text-secondary: #e4e4e7;     /* Secondary - zinc-200 */
+    --kp-text-tertiary: #a1a1aa;      /* Tertiary - zinc-400 */
+    --kp-text-muted: #71717a;         /* Muted - zinc-500 */
+    
+    /* Border colors - Subtle but visible */
+    --kp-border: rgba(255, 255, 255, 0.1);
+    --kp-border-light: rgba(255, 255, 255, 0.06);
+    --kp-border-dark: rgba(255, 255, 255, 0.15);
+    --kp-border-brand: rgba(0, 82, 255, 0.5);
+    
+    /* Surface colors */
+    --kp-surface: #18181b;
+    --kp-surface-elevated: #27272a;
+    --kp-surface-highlight: rgba(255, 255, 255, 0.05);
+    
+    /* Navigation - Glass effect */
+    --kp-nav-bg: rgba(9, 9, 11, 0.9);
+    --kp-nav-text: #fafafa;
+    --kp-nav-text-muted: #a1a1aa;
+    
+    /* Input colors */
+    --kp-input-bg: #27272a;
+    --kp-input-border: rgba(255, 255, 255, 0.1);
+    --kp-input-border-focus: #0052FF;
+    --kp-input-text: #fafafa;
+    --kp-input-placeholder: #71717a;
+    
+    /* Brand accent */
+    --kp-brand: #0052FF;
+    --kp-brand-hover: #0047E0;
+    --kp-brand-light: #3d7aff;
+    --kp-brand-dark: #0039c7;
+    --kp-brand-glow: rgba(0, 82, 255, 0.4);
     --kp-brand-subtle: rgba(0, 82, 255, 0.15);
     
-    /* Status colors - Coinbase style */
-    --kp-success: #05B169;
-    --kp-success-bg: rgba(5, 177, 105, 0.15);
-    --kp-warning: #F59E0B;
+    /* Status colors */
+    --kp-success: #10b981;            /* emerald-500 */
+    --kp-success-bg: rgba(16, 185, 129, 0.15);
+    --kp-warning: #f59e0b;            /* amber-500 */
     --kp-warning-bg: rgba(245, 158, 11, 0.15);
-    --kp-danger: #EF4444;
+    --kp-danger: #ef4444;             /* red-500 */
     --kp-danger-bg: rgba(239, 68, 68, 0.15);
   }
   

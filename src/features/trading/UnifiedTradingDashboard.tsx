@@ -44,6 +44,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCurrency } from "@/hooks/useCurrency";
+import { useTradingMode } from "@/lib/hooks/useTradingMode";
 import { CurrencySwitcher } from "./CurrencySwitcher";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
@@ -55,6 +56,9 @@ import {
   getDefaultStrategyDashboardConfigs,
 } from "@/lib/auto-trading/strategy-catalog";
 import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
+import { RecentTradesTable } from "@/features/trading/components/RecentTradesTable";
+import { TradeDetailsDrawer } from "@/features/trading/components/TradeDetailsDrawer";
+import { TradingModeSelector } from "@/features/trading/components/TradingModeSelector";
 
 const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
   dca_trygg: <Shield className="w-5 h-5" />,
@@ -146,9 +150,12 @@ export default function UnifiedTradingDashboard({
 
   const { error: showError } = useI18nToast();
   const [isStarting, setIsStarting] = useState<StrategyType | null>(null);
+  const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null);
+  const [tradeModeFilter, setTradeModeFilter] = useState<TradingMode | "all">("all");
   const { success: showSuccess, error: showToastError } = useI18nToast();
   const tTrading = useTranslations("trading");
   const { format: formatNOK } = useCurrency();
+  const { mode: tradingModeState, canSwitchToLive, switchMode } = useTradingMode();
 
   const STRATEGIES = STRATEGY_DEFS.map((s) => ({
     ...s,
@@ -510,8 +517,36 @@ export default function UnifiedTradingDashboard({
           strategies={STRATEGIES}
         />
 
+        {/* Trading Mode Selector */}
+        <TradingModeSelector
+          mode={mode}
+          onChange={(newMode) => {
+            setMode(newMode);
+            void switchMode(newMode);
+          }}
+          hasExchangeConnection={canSwitchToLive}
+          isLiveEnabled={canSwitchToLive}
+        />
+
         {/* Recent Trades */}
-        <RecentTradesSection trades={trades} formatNOK={formatNOK} />
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{tTrading("recentTradesPanel.title")}</h2>
+          </div>
+          <RecentTradesTable
+            trades={trades}
+            onSelectTrade={setSelectedTradeId}
+            selectedTradeId={selectedTradeId}
+            modeFilter={tradeModeFilter}
+            onModeFilterChange={setTradeModeFilter}
+          />
+        </div>
+
+        {/* Trade Details Drawer */}
+        <TradeDetailsDrawer
+          tradeId={selectedTradeId}
+          onClose={() => setSelectedTradeId(null)}
+        />
 
         {/* Strategy Selector */}
         <StrategySelectorSection

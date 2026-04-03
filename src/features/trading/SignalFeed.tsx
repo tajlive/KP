@@ -2,7 +2,6 @@
 
 import { ConfidenceMeter } from "@/features/trading/PremiumSignalRow";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import { MARKET_DESK } from "@/lib/design/market-desk";
 import { useSubscription } from "@/lib/hooks/useSubscription";
 import { formatSignalDateTime } from "@/lib/format-signal-datetime";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,10 +19,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { BRAND } from "@/lib/design/tokens";
 import { getTradingFeedState } from "@/lib/trading/data-source-state";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface TradingSignal {
   id: string;
@@ -41,7 +40,7 @@ interface TradingSignal {
   created_at: string | null;
 }
 
-const REFRESH_INTERVAL_MS = 15_000; // Oppdater oftere så nye signaler vises raskt
+const REFRESH_INTERVAL_MS = 15_000;
 
 type SignalSide = "buy" | "sell" | "hold";
 
@@ -131,16 +130,13 @@ export function SignalFeed() {
 
   useEffect(() => {
     fetchSignals();
-    intervalRef.current = setInterval(
-      () => fetchSignals(),
-      REFRESH_INTERVAL_MS,
-    );
+    intervalRef.current = setInterval(() => fetchSignals(), REFRESH_INTERVAL_MS);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [fetchSignals]);
 
-  // Realtime: JWT må synkes med Realtime ellers leverer ikke RLS postgres_changes (samme mønster som trading-api).
+  // Realtime: JWT must be synced with Realtime for RLS postgres_changes to work
   useEffect(() => {
     const supabase = getSupabaseClient();
     let cancelled = false;
@@ -179,10 +175,10 @@ export function SignalFeed() {
 
   if (loading || subLoading) {
     return (
-      <div className="bg-slate-800/60 rounded-xl p-6 space-y-4 animate-pulse">
-        <div className="h-5 w-40 bg-slate-700 rounded" />
+      <div className="bg-kp-bg-tertiary/50 rounded-xl p-6 space-y-4 animate-pulse border border-kp-border">
+        <div className="h-5 w-40 bg-kp-bg-tertiary rounded" />
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-20 bg-slate-700/50 rounded-lg" />
+          <div key={i} className="h-20 bg-kp-bg-tertiary/50 rounded-lg" />
         ))}
       </div>
     );
@@ -199,32 +195,36 @@ export function SignalFeed() {
   });
 
   return (
-    <div className={`${MARKET_DESK.panel} overflow-hidden`}>
+    <div className="bg-kp-bg-tertiary/50 border border-kp-border rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/50">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-kp-border">
         <div className="flex items-center gap-2.5">
           <div className="relative">
-            <Radio className="h-4 w-4 text-emerald-400" />
+            <Radio className="h-4 w-4 text-kp-success" />
             <span
-              className={`absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-400 ${liveIndicator ? "animate-ping" : "animate-pulse"}`}
+              className={cn(
+                "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-kp-success",
+                liveIndicator ? "animate-ping" : "animate-pulse",
+              )}
             />
           </div>
-          <h2 className="text-sm font-semibold text-white tracking-wide uppercase">
+          <h2 className="text-sm font-semibold text-kp-text-primary tracking-wide uppercase">
             {t("title")}
           </h2>
-          <span className="text-[10px] text-slate-400 tabular-nums">
+          <span className="text-[10px] text-kp-text-muted tabular-nums">
             {t("activeCount", { count: signals.length })}
           </span>
           <span
-            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+            className={cn(
+              "text-[10px] px-2 py-0.5 rounded-full font-semibold border",
               sourceState === "live"
-                ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                ? "bg-kp-success-bg text-kp-success border-kp-success/30"
                 : sourceState === "stale"
-                  ? "bg-amber-500/15 text-amber-200 border border-amber-500/30"
+                  ? "bg-kp-warning-bg text-kp-warning border-kp-warning/30"
                   : sourceState === "empty"
-                    ? "bg-slate-600/25 text-slate-300 border border-slate-500/40"
-                    : "bg-rose-500/15 text-rose-200 border border-rose-500/30"
-            }`}
+                    ? "bg-kp-bg-tertiary text-kp-text-muted border-kp-border"
+                    : "bg-kp-danger-bg text-kp-danger border-kp-danger/30",
+            )}
           >
             {sourceState === "live"
               ? t("statusLive")
@@ -235,7 +235,7 @@ export function SignalFeed() {
                   : t("statusError")}
           </span>
           {lastUpdated && (
-            <span className="text-[10px] text-slate-400">
+            <span className="text-[10px] text-kp-text-muted">
               · {t("updatedPrefix")}{" "}
               {formatDistanceToNow(lastUpdated, {
                 addSuffix: true,
@@ -247,27 +247,27 @@ export function SignalFeed() {
         <button
           onClick={() => fetchSignals(true)}
           disabled={refreshing}
-          className="p-1.5 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition-colors disabled:opacity-40"
+          className="p-1.5 rounded-md text-kp-text-muted hover:text-kp-text-primary hover:bg-kp-bg-hover transition-colors disabled:opacity-40"
           aria-label={t("refreshAria")}
         >
           <RefreshCw
-            className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`}
+            className={cn("h-3.5 w-3.5", refreshing && "animate-spin")}
           />
         </button>
       </div>
 
       {/* Signal list */}
-      <div className="divide-y divide-slate-700/40 max-h-[520px] overflow-y-auto">
+      <div className="divide-y divide-kp-border max-h-[520px] overflow-y-auto">
         {signals.length === 0 ? (
           <div className="p-8 text-center">
-            <TrendingUp className="h-8 w-8 text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-200 text-sm font-medium">
+            <TrendingUp className="h-8 w-8 text-kp-text-muted mx-auto mb-3" />
+            <p className="text-kp-text-primary text-sm font-medium">
               {t("emptyTitle")}
             </p>
-            <p className="text-slate-400 text-xs mt-1 max-w-[280px] mx-auto leading-relaxed">
+            <p className="text-kp-text-muted text-xs mt-1 max-w-[280px] mx-auto leading-relaxed">
               {t("emptyBody")}
             </p>
-            <p className="text-slate-500 text-[10px] mt-2">
+            <p className="text-kp-text-muted text-[10px] mt-2">
               {t("emptyFooter")}
             </p>
           </div>
@@ -295,10 +295,10 @@ export function SignalFeed() {
 
               const chipClass =
                 side === "buy"
-                  ? "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20"
+                  ? "bg-kp-success-bg text-kp-success ring-1 ring-kp-success/30"
                   : side === "sell"
-                    ? "bg-red-500/15 text-red-400 ring-1 ring-red-500/20"
-                    : "bg-slate-600/25 text-slate-300 ring-1 ring-slate-500/30";
+                    ? "bg-kp-danger-bg text-kp-danger ring-1 ring-kp-danger/30"
+                    : "bg-kp-bg-tertiary text-kp-text-muted ring-1 ring-kp-border";
 
               return (
                 <motion.div
@@ -307,13 +307,16 @@ export function SignalFeed() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ delay: i * 0.03, duration: 0.2 }}
-                  className="px-5 py-3.5 hover:bg-slate-700/30 transition-colors"
+                  className="px-5 py-3.5 hover:bg-kp-bg-hover transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     {/* Left: symbol + direction badge */}
                     <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className={`shrink-0 flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md ${chipClass}`}
+                        className={cn(
+                          "shrink-0 flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-md",
+                          chipClass,
+                        )}
                         title={absolute}
                       >
                         {side === "buy" ? (
@@ -329,19 +332,19 @@ export function SignalFeed() {
                         {directionLabel}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-white text-sm truncate">
+                        <p className="font-semibold text-kp-text-primary text-sm truncate">
                           {signal.symbol}
                         </p>
                         {signal.created_at ? (
-                          <p className="text-[11px] text-slate-300 tabular-nums mt-0.5">
+                          <p className="text-[11px] text-kp-text-secondary tabular-nums mt-0.5">
                             <time dateTime={signal.created_at}>{absolute}</time>
                             {age ? (
-                              <span className="text-slate-500"> · {age}</span>
+                              <span className="text-kp-text-muted"> · {age}</span>
                             ) : null}
                           </p>
                         ) : null}
                         {signal.signal_type && (
-                          <p className="text-[10px] text-slate-500 truncate">
+                          <p className="text-[10px] text-kp-text-muted truncate">
                             {signal.signal_type}
                           </p>
                         )}
@@ -360,7 +363,7 @@ export function SignalFeed() {
                         </>
                       )}
                       {signal.created_at ? (
-                        <p className="text-[10px] text-slate-500 mt-0.5 tabular-nums sm:hidden">
+                        <p className="text-[10px] text-kp-text-muted mt-0.5 tabular-nums sm:hidden">
                           {absolute}
                         </p>
                       ) : null}
@@ -391,7 +394,7 @@ export function SignalFeed() {
 
                   {/* Reasoning (only for paid users) */}
                   {canSeeFullDetails && signal.reasoning && (
-                    <p className="mt-2 text-[11px] text-slate-300 leading-relaxed line-clamp-2">
+                    <p className="mt-2 text-[11px] text-kp-text-secondary leading-relaxed line-clamp-2">
                       {signal.reasoning}
                     </p>
                   )}
@@ -401,46 +404,27 @@ export function SignalFeed() {
           </AnimatePresence>
         )}
       </div>
-
-      {/* Upgrade banner for free/bachelor users */}
-      {!canSeeFullDetails && signals.length > 0 && (
-        <div className="px-5 py-3.5 border-t border-slate-700/50 bg-linear-to-r from-brand-500/12 to-transparent">
-          <div className="flex items-center gap-3">
-            <div className="shrink-0 p-2 rounded-lg bg-brand-500/15 ring-1 ring-brand-500/25">
-              <Lock className="h-4 w-4 text-brand-400" aria-hidden />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-white">
-                {t("upgradeTitle")}
-              </p>
-              <p className="text-[10px] text-slate-300 mt-0.5 leading-snug">
-                {t("upgradeBody")}
-              </p>
-            </div>
-            <Link
-              href={`/${locale}/priser`}
-              className={`shrink-0 text-[10px] font-bold ${BRAND.link} transition-colors`}
-            >
-              {t("upgradeCta")}
-            </Link>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 function ConfidenceBadge({ value }: { value: number }) {
-  const pct = Math.round(value);
-  const color =
-    pct >= 80
-      ? "text-emerald-400"
-      : pct >= 60
-        ? "text-yellow-400"
-        : "text-orange-400";
+  const t = useTranslations("trading.signalFeed");
+  let colorClass = "text-kp-text-muted";
+  if (value >= 80) colorClass = "text-kp-success";
+  else if (value >= 60) colorClass = "text-kp-warning";
+  else if (value >= 40) colorClass = "text-kp-warning";
+  else colorClass = "text-kp-danger";
 
   return (
-    <span className={`text-xs font-bold tabular-nums ${color}`}>{pct}%</span>
+    <div
+      className={cn(
+        "text-xs font-bold tabular-nums tracking-tight",
+        colorClass,
+      )}
+    >
+      {value.toFixed(0)}%
+    </div>
   );
 }
 
@@ -456,20 +440,22 @@ function PriceCell({
   lockedLabel: string;
 }) {
   return (
-    <div className="bg-slate-900/50 rounded-md px-2.5 py-1.5">
-      <p className="text-[9px] text-slate-400 uppercase tracking-wider">
+    <div className="bg-kp-bg-secondary rounded-md px-2.5 py-1.5 border border-kp-border">
+      <p className="text-[9px] uppercase text-kp-text-muted font-bold tracking-wider">
         {label}
       </p>
       {visible ? (
-        <p className="text-xs font-medium text-slate-200 tabular-nums mt-0.5">
+        <p className="text-xs font-mono font-semibold text-kp-text-primary truncate">
           {value != null ? `$${value.toLocaleString("en-US")}` : "—"}
         </p>
       ) : (
-        <div className="flex items-center gap-1 mt-0.5">
-          <ShieldAlert className="h-3 w-3 text-slate-500" aria-hidden />
-          <span className="text-[10px] text-slate-400">{lockedLabel}</span>
+        <div className="flex items-center gap-1 text-kp-text-muted">
+          <Lock className="w-3 h-3" />
+          <span className="text-[10px] font-medium">{lockedLabel}</span>
         </div>
       )}
     </div>
   );
 }
+
+export default SignalFeed;

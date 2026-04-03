@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { Button } from "@/shared/ui/button";
 import { Switch } from "@/shared/ui/switch";
 import NotificationSettings from "@/features/settings/NotificationSettings";
+import { ThemeSettings } from "@/features/settings/ThemeSettings";
+import { Palette } from "lucide-react";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -346,16 +348,24 @@ function InnstillingerBillingCard() {
 
 export default function InnstillingerClient() {
   return (
-    <div className="min-h-screen bg-slate-950 p-4 sm:p-8">
+    <div className="min-h-screen bg-kp-bg-primary p-4 sm:p-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Innstillinger</h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Administrer varsler, e-post og sikkerhet
+          <h1 className="text-2xl font-bold text-kp-text-primary">Innstillinger</h1>
+          <p className="text-kp-text-muted text-sm mt-1">
+            Administrer varsler, e-post, sikkerhet og utseende
           </p>
         </div>
 
         <InnstillingerBillingCard />
+
+        {/* Utseende / Tema */}
+        <Section
+          icon={<Palette className="w-5 h-5 text-pink-400" />}
+          title="Utseende"
+        >
+          <ThemeSettings />
+        </Section>
 
         {/* E-post */}
         <Section
@@ -397,10 +407,10 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div className="bg-kp-bg-secondary border border-kp-border rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-5">
         {icon}
-        <h2 className="text-base font-semibold text-white">{title}</h2>
+        <h2 className="text-base font-semibold text-kp-text-primary">{title}</h2>
       </div>
       {children}
     </div>

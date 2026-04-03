@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { StrategyType } from "@/lib/trading-api";
 
 interface StrategyConfigProps {
@@ -13,6 +14,8 @@ export function StrategyConfig({
   config,
   onChange,
 }: StrategyConfigProps) {
+  const t = useTranslations("trading.strategyConfig");
+
   switch (type) {
     case "dca_trygg": {
       const dcaConfig = config as {
@@ -22,8 +25,11 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="stratcfg-dca-weekly" className="text-slate-400 text-sm">
-              Ukentlig beløp: {dcaConfig.weeklyAmount} NOK
+            <label
+              htmlFor="stratcfg-dca-weekly"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("dca.weeklyAmount")}: {t("unit.nok", { value: dcaConfig.weeklyAmount })}
             </label>
             <input
               id="stratcfg-dca-weekly"
@@ -35,12 +41,15 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, weeklyAmount: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
           <div>
-            <label htmlFor="stratcfg-dca-btc" className="text-slate-400 text-sm">
-              BTC-fordeling: {dcaConfig.btcAllocation}%
+            <label
+              htmlFor="stratcfg-dca-btc"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("dca.btcAllocation")}: {t("unit.percent", { value: dcaConfig.btcAllocation })}
             </label>
             <input
               id="stratcfg-dca-btc"
@@ -51,7 +60,7 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, btcAllocation: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
         </div>
@@ -62,8 +71,11 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="stratcfg-trend-risk" className="text-slate-400 text-sm">
-              Risiko per trade: {trendConfig.riskPerTrade}%
+            <label
+              htmlFor="stratcfg-trend-risk"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("trend.riskPerTrade")}: {t("unit.percent", { value: trendConfig.riskPerTrade })}
             </label>
             <input
               id="stratcfg-trend-risk"
@@ -74,12 +86,15 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, riskPerTrade: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
           <div>
-            <label htmlFor="stratcfg-trend-stoploss" className="text-slate-400 text-sm">
-              Stop-loss: {trendConfig.stopLoss}%
+            <label
+              htmlFor="stratcfg-trend-stoploss"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("trend.stopLoss")}: {t("unit.percent", { value: trendConfig.stopLoss })}
             </label>
             <input
               id="stratcfg-trend-stoploss"
@@ -90,7 +105,7 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, stopLoss: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
         </div>
@@ -101,18 +116,23 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="stratcfg-multi-agg" className="text-slate-400 text-sm">Aggressivitet</label>
+            <label
+              htmlFor="stratcfg-multi-agg"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("multisignal.aggressiveness")}
+            </label>
             <select
               id="stratcfg-multi-agg"
               value={multiConfig.aggressiveness}
               onChange={(e) =>
                 onChange({ ...config, aggressiveness: e.target.value })
               }
-              className="w-full mt-1 bg-slate-600 text-white rounded px-3 py-2"
+              className="w-full mt-1 bg-kp-input-bg border border-kp-input-border text-kp-input-text rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
             >
-              <option value="forsiktig">Forsiktig</option>
-              <option value="normal">Normal</option>
-              <option value="aggressiv">Aggressiv</option>
+              <option value="forsiktig">{t("multisignal.levels.cautious")}</option>
+              <option value="normal">{t("multisignal.levels.normal")}</option>
+              <option value="aggressiv">{t("multisignal.levels.aggressive")}</option>
             </select>
           </div>
         </div>
@@ -127,9 +147,14 @@ export function StrategyConfig({
       };
       return (
         <div className="space-y-4 mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="stratcfg-grid-upper" className="text-slate-400 text-sm">Øvre pris</label>
+              <label
+                htmlFor="stratcfg-grid-upper"
+                className="text-kp-text-muted text-sm"
+              >
+                {t("grid.upperPrice")}
+              </label>
               <input
                 id="stratcfg-grid-upper"
                 type="number"
@@ -137,11 +162,16 @@ export function StrategyConfig({
                 onChange={(e) =>
                   onChange({ ...config, upperPrice: Number(e.target.value) })
                 }
-                className="w-full mt-1 bg-slate-600 text-white rounded px-3 py-2"
+                className="w-full mt-1 bg-kp-input-bg border border-kp-input-border text-kp-input-text rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
               />
             </div>
             <div>
-              <label htmlFor="stratcfg-grid-lower" className="text-slate-400 text-sm">Nedre pris</label>
+              <label
+                htmlFor="stratcfg-grid-lower"
+                className="text-kp-text-muted text-sm"
+              >
+                {t("grid.lowerPrice")}
+              </label>
               <input
                 id="stratcfg-grid-lower"
                 type="number"
@@ -149,13 +179,16 @@ export function StrategyConfig({
                 onChange={(e) =>
                   onChange({ ...config, lowerPrice: Number(e.target.value) })
                 }
-                className="w-full mt-1 bg-slate-600 text-white rounded px-3 py-2"
+                className="w-full mt-1 bg-kp-input-bg border border-kp-input-border text-kp-input-text rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
               />
             </div>
           </div>
           <div>
-            <label htmlFor="stratcfg-grid-levels" className="text-slate-400 text-sm">
-              Grid-nivåer: {gridConfig.levels}
+            <label
+              htmlFor="stratcfg-grid-levels"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("grid.levels")}: {gridConfig.levels}
             </label>
             <input
               id="stratcfg-grid-levels"
@@ -166,12 +199,15 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, levels: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
           <div>
-            <label htmlFor="stratcfg-grid-capital" className="text-slate-400 text-sm">
-              Kapital: {gridConfig.capital} NOK
+            <label
+              htmlFor="stratcfg-grid-capital"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("grid.capital")}: {t("unit.nok", { value: gridConfig.capital })}
             </label>
             <input
               id="stratcfg-grid-capital"
@@ -183,7 +219,7 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, capital: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
         </div>
@@ -194,8 +230,11 @@ export function StrategyConfig({
       return (
         <div className="space-y-4 mt-4">
           <div>
-            <label htmlFor="stratcfg-ai-max" className="text-slate-400 text-sm">
-              Maks per trade: {aiConfig.maxPerTrade} NOK
+            <label
+              htmlFor="stratcfg-ai-max"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("aiCopy.maxPerTrade")}: {t("unit.nok", { value: aiConfig.maxPerTrade })}
             </label>
             <input
               id="stratcfg-ai-max"
@@ -207,12 +246,15 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, maxPerTrade: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
           <div>
-            <label htmlFor="stratcfg-ai-loss" className="text-slate-400 text-sm">
-              Maks tap: {aiConfig.maxLoss} NOK
+            <label
+              htmlFor="stratcfg-ai-loss"
+              className="text-kp-text-muted text-sm"
+            >
+              {t("aiCopy.maxLoss")}: {t("unit.nok", { value: aiConfig.maxLoss })}
             </label>
             <input
               id="stratcfg-ai-loss"
@@ -224,7 +266,7 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, maxLoss: Number(e.target.value) })
               }
-              className="w-full mt-1"
+              className="w-full mt-1 accent-kp-brand cursor-pointer"
             />
           </div>
         </div>

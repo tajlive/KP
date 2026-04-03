@@ -218,5 +218,419 @@
     "chip_scan": "Scan",
     "chip_risk": "Risk OK",
     "chip_signal": "Signal"
+  },
+  "tradeDetails": {
+    "title": "Trade Details",
+    "close": "Close",
+    "notFound": "Trade not found",
+    "overview": "Overview",
+    "numbers": "Numbers",
+    "result": "Result",
+    "type": "Type",
+    "strategy": "Strategy",
+    "quantity": "Quantity",
+    "totalValue": "Total Value",
+    "entryPrice": "Entry Price",
+    "exitPrice": "Exit Price",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "fee": "Fee",
+    "buy": "Buy",
+    "sell": "Sell",
+    "automatic": "Automatic Trading",
+    "manual": "Manual",
+    "whyBuy": "Why did we buy?",
+    "whySell": "Why did we sell?",
+    "confidence": "Confidence",
+    "paperNotice": "This is a practice trade with virtual capital. No real money was used.",
+    "learnMore": "Want to learn more about this type of trade?",
+    "readMore": "Read more about",
+    "strategyParams": "Strategy Parameters",
+    "live": "Live",
+    "paper": "Paper",
+    "paperShort": "Paper"
+  },
+  "tradingModeSelector": {
+    "title": "Select Trading Mode",
+    "paper": {
+      "title": "Practice with Paper Money",
+      "description": "All trades here are simulated. You risk no real money.",
+      "feature1": "Start with 100,000 NOK in practice money",
+      "feature2": "Test strategies risk-free",
+      "feature3": "Learn without losing money"
+    },
+    "live": {
+      "title": "Live Trading",
+      "description": "Trading with real money. Read terms and risks before connecting exchange.",
+      "warning": "Real risk: You can lose money",
+      "feature1": "Trade with real funds",
+      "feature2": "Real profits and losses",
+      "feature3": "Taxable income"
+    },
+    "locked": {
+      "comingSoon": "Live trading coming soon. Stay tuned for updates!",
+      "connectExchange": "Connect an exchange to enable live trading."
+    },
+    "liveWarning": {
+      "title": "Warning: Real Money",
+      "description": "You are now trading with real funds. All trades will affect your actual balance."
+    }
+  },
+  "recentTrades": {
+    "title": "Recent Trades",
+    "empty": "No trades to show",
+    "emptyAll": "Start trading to see trades here",
+    "emptyPaper": "No practice trades yet",
+    "emptyLive": "No live trades yet",
+    "filter": "Show",
+    "filterAll": "All",
+    "filterPaper": "Paper",
+    "filterLive": "Live",
+    "time": "Time",
+    "symbol": "Symbol",
+    "tradeType": "Type",
+    "strategy": "Strategy",
+    "size": "Size",
+    "pnl": "P&L",
+    "buy": "Buy",
+    "sell": "Sell",
+    "showingCount": "Showing {count} trades",
+    "modePaper": "paper",
+    "modeLive": "live"
+  },
+  "orderEntry": {
+    "title": "New Trade",
+    "symbolPrice": "{symbol} @ ${price}",
+    "side": {
+      "long": "BUY (LONG)",
+      "short": "SELL (SHORT)"
+    },
+    "quantity": {
+      "label": "Quantity",
+      "placeholder": "0.00",
+      "value": "Value: ${value}",
+      "max": "Max"
+    },
+    "leverage": {
+      "label": "Leverage: {value}x"
+    },
+    "stopLoss": {
+      "label": "Stop Loss",
+      "placeholder": "$0.00"
+    },
+    "takeProfit": {
+      "label": "Take Profit",
+      "placeholder": "$0.00"
+    },
+    "summary": {
+      "margin": "Margin Required",
+      "fee": "Trading Fee (0.1%)",
+      "total": "Total"
+    },
+    "submit": {
+      "long": "BUY {symbol}",
+      "short": "SELL {symbol}",
+      "submitting": "Opening position..."
+    },
+    "errors": {
+      "insufficientMargin": "Insufficient margin available",
+      "enterQuantity": "Please enter quantity"
+    }
+  },
+  "positions": {
+    "title": "Open Positions",
+    "titleCount": "Open Positions ({count})",
+    "empty": {
+      "title": "No open positions",
+      "description": "Start trading by opening your first position"
+    },
+    "columns": {
+      "symbol": "Symbol",
+      "side": "Side",
+      "size": "Size",
+      "entry": "Entry",
+      "current": "Current",
+      "pnl": "P&L",
+      "action": "Action"
+    },
+    "close": "Close",
+    "closeAria": "Close position {symbol}",
+    "totalUnrealizedPnL": "Total Unrealized P&L"
+  },
+  "strategyConfig": {
+    "dca": {
+      "weeklyAmount": "Weekly Amount",
+      "btcAllocation": "BTC Allocation"
+    },
+    "trend": {
+      "riskPerTrade": "Risk per Trade",
+      "stopLoss": "Stop-loss"
+    },
+    "multisignal": {
+      "aggressiveness": "Aggressiveness",
+      "levels": {
+        "cautious": "Cautious",
+        "normal": "Normal",
+        "aggressive": "Aggressive"
+      }
+    },
+    "grid": {
+      "upperPrice": "Upper Price",
+      "lowerPrice": "Lower Price",
+      "levels": "Grid Levels",
+      "capital": "Capital"
+    },
+    "aiCopy": {
+      "maxPerTrade": "Max per Trade",
+      "maxLoss": "Max Loss"
+    },
+    "unit": {
+      "nok": "{value} NOK",
+      "percent": "{value}%"
+    }
+  },
+  "aggressivitySlider": {
+    "title": "How fast should the bot react?",
+    "levels": {
+      "conservative": {
+        "label": "Conservative",
+        "description": "Waits for clear signals before trading",
+        "whatItMeans": "The bot is patient and waits for strong confirmations",
+        "reactionTime": "5–15 minutes after signal appears",
+        "confirmationNeeded": "2–3 indicators must agree",
+        "moreLikely": [
+          "Avoiding false signals",
+          "Fewer, but more solid trades",
+          "Lower trading frequency (2–5 per day)"
+        ],
+        "lessLikely": [
+          "Catching momentum from the start",
+          "Trading on quick news",
+          "High account activity"
+        ]
+      },
+      "moderate": {
+        "label": "Balanced",
+        "description": "Trades when multiple indicators point same direction",
+        "whatItMeans": "The bot balances between waiting and acting quickly",
+        "reactionTime": "1–5 minutes after signal appears",
+        "confirmationNeeded": "1–2 indicators must agree",
+        "moreLikely": [
+          "Catching trends early",
+          "Good balance between safety and speed",
+          "Moderate activity (5–10 trades per day)"
+        ],
+        "lessLikely": [
+          "Missing all opportunities",
+          "Trading only on weak signals",
+          "Extreme activity or inactivity"
+        ]
+      },
+      "aggressive": {
+        "label": "Aggressive",
+        "description": "Acts quickly on first signals",
+        "whatItMeans": "The bot reacts immediately to market signals",
+        "reactionTime": "Immediately (seconds) after signal",
+        "confirmationNeeded": "Only 1 indicator needed",
+        "moreLikely": [
+          "Catching momentum from the start",
+          "High activity (10–20 trades per day)",
+          "Reacting quickly to news"
+        ],
+        "lessLikely": [
+          "Avoiding all false signals",
+          "Patient waiting for confirmation",
+          "Slow, calm trading"
+        ]
+      }
+    },
+    "sections": {
+      "reactionTime": "Reaction Time",
+      "confirmation": "Confirmation",
+      "moreLikely": "More Likely",
+      "lessLikely": "Less Likely",
+      "comparison": "Comparison",
+      "comparisonConservative": "Safety first, fewer trades",
+      "comparisonBalanced": "Good compromise",
+      "comparisonAggressive": "More opportunities, more noise"
+    }
+  },
+  "tradeAmountSlider": {
+    "balance": "Your Balance",
+    "maxPerTrade": "Max per Trade",
+    "alreadyInMarket": "Already in Market",
+    "title": "How much do you want to trade?",
+    "status": {
+      "blocked": {
+        "title": "Exceeds maximum limit of {amount} kr",
+        "description": "System will block this trade. Choose a lower amount."
+      },
+      "warning": {
+        "title": "Approaching total exposure limit",
+        "description": "You have {remaining} kr left for your maximum exposure."
+      },
+      "caution": {
+        "title": "Large portion of balance ({percentage}%)",
+        "description": "Consider splitting into multiple smaller trades."
+      },
+      "ok": {
+        "title": "Within safe limits ({percentage}% of balance)",
+        "description": "This is a reasonable amount for your risk level."
+      }
+    },
+    "whatThisMeans": "This Means",
+    "scenarios": {
+      "gain": "If market rises 10%, you earn approx {amount} kr",
+      "loss": "If market falls 10%, you lose approx {amount} kr",
+      "stopLoss": "Bot auto-sells if loss exceeds {amount} kr (15%)"
+    },
+    "paperTrading": {
+      "title": "You're trading with play money",
+      "description": "No real risk – practice until you feel ready for real money"
+    }
+  },
+  "riskExplanation": {
+    "howItWorks": "How this level works",
+    "whatThisMeans": "What this means",
+    "moreLikely": "More Likely",
+    "lessLikely": "Less Likely",
+    "systemBlocks": "System Blocks",
+    "noRealRisk": "No real risk – switch to real money when ready",
+    "levels": {
+      "safe": {
+        "headline": "Safe",
+        "practicalExample": "With {balance} kr you can trade up to {maxAmount} kr per trade ({maxPct}% of balance)",
+        "autoSellExplanation": "If a trade loses {stopLossAmount} kr ({stopLossPct}%), the bot automatically sells to protect you",
+        "maxOpenPositions": "You can have maximum {maxExposure} kr in open trades at once ({maxExposurePct}% of balance)",
+        "moreLikely": [
+          "Small, steady gains (+200-500 kr per week)",
+          "You sleep well without checking price constantly",
+          "You learn the market without stress"
+        ],
+        "lessLikely": [
+          "Doubling account in one month",
+          "Exciting daily swings",
+          "Feeling of being «in the market»"
+        ],
+        "systemBlocks": [
+          "Trades over {maxAmount} kr per trade",
+          "New trades if you've lost more than {dailyLoss} kr today",
+          "Trades if total exposure exceeds {maxExposure} kr"
+        ],
+        "copyForSavers": {
+          "headline": "Perfect for learning without risking",
+          "body": "Here you get to feel what it's like to trade crypto, but the bot ensures you don't lose too much. Perfect for first time."
+        }
+      },
+      "balanced": {
+        "headline": "Balanced",
+        "practicalExample": "With {balance} kr you can trade up to {maxAmount} kr per trade ({maxPct}% of balance)",
+        "autoSellExplanation": "If a trade loses {stopLossAmount} kr ({stopLossPct}%), the bot automatically sells",
+        "maxOpenPositions": "You can have maximum {maxExposure} kr in open trades at once ({maxExposurePct}% of balance)",
+        "moreLikely": [
+          "Varied weeks – some with gains, some with losses",
+          "You notice the account moves more",
+          "Learn to handle both profits and losses"
+        ],
+        "lessLikely": [
+          "Losing half the account in one day",
+          "Earning 10,000 kr in one week without luck",
+          "Boring, flat periods"
+        ],
+        "systemBlocks": [
+          "Trades over {maxAmount} kr per trade",
+          "New trades if you've lost more than {dailyLoss} kr today",
+          "Trades if total exposure exceeds {maxExposure} kr"
+        ],
+        "copyForSavers": {
+          "headline": "For those who have traded a bit before",
+          "body": "You tolerate seeing the account go down some days, because you know it usually recovers. More exciting, but still safe."
+        }
+      },
+      "aggressive": {
+        "headline": "Aggressive",
+        "practicalExample": "With {balance} kr you can trade up to {maxAmount} kr per trade ({maxPct}% of balance)",
+        "autoSellExplanation": "Bot only sells when loss reaches {stopLossAmount} kr ({stopLossPct}%)",
+        "maxOpenPositions": "You can have maximum {maxExposure} kr in open trades at once ({maxExposurePct}% of balance)",
+        "moreLikely": [
+          "Exciting, active trading days",
+          "Larger swings (+/- 3,000-8,000 kr per week)",
+          "Learning what real risk feels like"
+        ],
+        "lessLikely": [
+          "Steady, predictable growth",
+          "Avoiding all large losses",
+          "Sleeping well if market crashes at night"
+        ],
+        "systemBlocks": [
+          "Trades over {maxAmount} kr per trade",
+          "New trades if you've lost more than {dailyLoss} kr today",
+          "Trades if total exposure exceeds {maxExposure} kr"
+        ],
+        "copyForSavers": {
+          "headline": "For those who tolerate seeing large swings",
+          "body": "You know that big gains require bigger risk. You handle the stress when account drops 20% in one day, because you see the long picture."
+        }
+      }
+    }
+  },
+  "botStatus": {
+    "title": "Bot Control Center",
+    "description": "Status, decisions and performance are synced continuously. Trades appear automatically when executed.",
+    "nav": {
+      "overview": "Overview",
+      "advanced": "Advanced",
+      "ai": "AI",
+      "leaderboard": "Leaderboard",
+      "market": "Market"
+    },
+    "strategies": {
+      "title": "My Strategies",
+      "empty": "You have no active strategies right now.",
+      "paper": "PAPER",
+      "live": "LIVE",
+      "pnlTotal": "P&L Total"
+    },
+    "trades": {
+      "title": "Recent Trades",
+      "seeAll": "See all",
+      "action": "Action",
+      "symbol": "Symbol",
+      "price": "Price",
+      "value": "Value",
+      "time": "Time",
+      "empty": "No trades yet. The bot will trade when signals are right."
+    },
+    "overview": {
+      "title": "Overview",
+      "portfolioValue": "Portfolio Value",
+      "dailyResult": "Daily Result",
+      "weeklyResult": "Weekly Result",
+      "monthlyResult": "Monthly Result",
+      "winRate": "Average Win Rate",
+      "quickActions": "Quick Actions",
+      "newStrategy": "New Strategy",
+      "newStrategyDesc": "Explore marketplace",
+      "pauseBot": "Pause Bot",
+      "pauseBotDesc": "Stop temporarily",
+      "settings": "Settings",
+      "settingsDesc": "Adjust preferences"
+    },
+    "risk": {
+      "low": "Low",
+      "balanced": "Balanced",
+      "high": "High"
+    }
+  },
+  "paperTrading": {
+    "card": {
+      "title": "Paper Trading",
+      "loading": "Fetching balance...",
+      "error": "Could not fetch balance. Check internet connection.",
+      "empty": "No active paper trading session. Start a new one to see balance.",
+      "currentBalance": "Current Balance",
+      "startingCapital": "Starting Capital",
+      "pnl": "P&L"
+    }
   }
 }

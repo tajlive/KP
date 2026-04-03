@@ -163,6 +163,188 @@ export function InteractiveButton() {
 </div>
 ```
 
+### Shared Marketing Components
+
+For å unngå duplisert innhold på marketing-sider, bruk delte komponenter fra `src/features/marketing/components/`:
+
+#### ✅ Riktig - Bruk delte komponenter
+
+```typescript
+// src/app/[locale]/(marketing)/paper/page.tsx
+import { PaperHero, GettingStartedSteps } from "@/features/marketing/components";
+
+export default function PaperTradingPage({ params }: { params: { locale: string } }) {
+  const { locale } = params;
+  
+  return (
+    <main>
+      {/* Bruk delt hero-komponent */}
+      <PaperHero locale={locale} />
+      
+      {/* Andre seksjoner... */}
+      
+      {/* Bruk delt steps-komponent */}
+      <GettingStartedSteps 
+        title={locale === 'en' ? "Get started in 3 simple steps" : "Kom i gang på 3 enkle steg"}
+      />
+    </main>
+  );
+}
+```
+
+#### ❌ Galt - Kopier innhold inline
+
+```typescript
+// ❌ IKKE GJØR DETTE
+// src/app/[locale]/(marketing)/paper/page.tsx
+export default function PaperTradingPage() {
+  return (
+    <main>
+      {/* ❌ Kopiert Paper-tekst inline - dette dupliseres på flere sider */}
+      <section className="bg-emerald-600">
+        <h1>Øv på trading uten å risikere penger</h1>
+        <p>Start med 100 000 kr i lekepenger. Test strategier, lær markedene...</p>
+        <button>Start nå — det er gratis</button>
+      </section>
+      
+      {/* ❌ Kopiert steps inline */}
+      <section>
+        <h2>Kom i gang på 3 enkle steg</h2>
+        <div>01 - Opprett konto...</div>
+        <div>02 - Start paper-trading...</div>
+        <div>03 - Bli klar for live...</div>
+      </section>
+    </main>
+  );
+}
+```
+
+**Tilgjengelige komponenter:**
+| Komponent | Props | Bruk på |
+|-----------|-------|---------|
+| `PaperHero` | `locale: string` | `/paper`, `/en/paper` |
+| `GettingStartedSteps` | `steps?: Step[], title?: string` | `/paper`, `/` |
+| `HelpContactBlock` | ingen | `/hjelp`, `/en/help` |
+| `PrimaryCtaSection` | `title, description, primaryLabel, primaryHref, secondaryLabel?, secondaryHref?, variant?, locale?` | `/paper`, `/priser` |
+
+**PrimaryCtaSection eksempel (norsk):**
+```typescript
+<PrimaryCtaSection
+  title="Klar til å starte din trading-reise?"
+  description="Registrer deg gratis i dag og få 100 000 kr i lekepenger."
+  primaryLabel="Opprett gratis konto"
+  primaryHref="/register"
+  secondaryLabel="Se priser"
+  secondaryHref="/priser"
+  variant="paper"
+  locale={locale}
+/>
+```
+
+**PrimaryCtaSection eksempel (engelsk):**
+```typescript
+<PrimaryCtaSection
+  title="Ready to start your trading journey?"
+  description="Sign up for free today and get 100,000 NOK in practice money."
+  primaryLabel="Create free account"
+  primaryHref="/register"
+  secondaryLabel="See pricing"
+  secondaryHref="/pricing"
+  variant="paper"
+  locale={locale}
+/>
+```
+
+**Kjør duplikat-test før push:**
+```bash
+npm run test:duplicate
+```
+
+Denne testen sjekker at ingen tekstblokker (>80 tegn) dupliseres på tvers av marketing-sider (`/`, `/paper`, `/priser`, `/hjelp` og `/en/*` variantene).
+
+#### Marketing Analytics
+
+Alle marketing CTAs skal trackes for å måle konvertering. Bruk `trackingId` prop:
+
+```typescript
+<PrimaryCtaSection
+  title="Klar til å starte?"
+  description="Registrer deg gratis..."
+  primaryLabel="Opprett konto"
+  primaryHref="/register"
+  variant="paper"
+  locale={locale}
+  trackingId="paper-primary"  // Required!
+/>
+```
+
+**Gyldige tracking IDs:**
+- `pricing-primary`, `pricing-secondary`
+- `paper-primary`, `paper-secondary`
+- `hero-primary`, `hero-secondary`
+- `course-primary`, `course-secondary`
+- `help-primary`, `signup-primary`
+
+**A/B Testing:**
+```typescript
+<PrimaryCtaSection
+  ...
+  trackingId="paper-primary"
+  experimentKey="paper-cta-text-v1"
+  variantKey="A"  // eller "B"
+/>
+```
+
+Se resultater i admin-dashboardet: `/admin/marketing/ctas`
+
+**Krav:** Ingen nye CTAs uten `trackingId`. Dette er påkrevd for å kunne måle hvilke sider/varianter som konverterer best.
+
+#### Funnel Analytics
+
+Hver CTA er tilknyttet en funnel-stage som sporer brukerens reise:
+
+```
+CTA-klikk → Signup → First Paper Session → First Auto-trade
+```
+
+**Funnel stages:**
+- `landing` - Landing page CTAs (hero-primary)
+- `paper` - Paper trading CTAs (paper-primary)
+- `pricing` - Pricing page CTAs (pricing-primary)
+- `course` - Course/marketing CTAs (course-primary)
+- `signup` - Signup-flow CTAs
+
+**Slack-rapporter:**
+- Sendes ukentlig til #marketing-kanalen
+- Inneholder: Topp 5 CTAs, signup-rate, paper-aktivering, auto-trade-konvertering
+- A/B-test sammenligninger med vinner-variant
+
+**Handling på rapporter:**
+- Hvis en CTA faller >30% uke-over-uke: Opprett Linear-oppgave for undersøkelse
+- Hvis A/B-test viser signifikant vinner: Diskuter rollout i team-møte
+- Se detaljer i admin-dashboard: `/admin/marketing/ctas` (tab "Funnel")
+
+#### Hvis CI feiler på duplikat-test
+
+Hvis `npm run test:duplicate` feiler i CI:
+
+1. **Sjekk rapporten** som genereres i `output/duplicate-report.md`:
+   ```bash
+   cat output/duplicate-report.md
+   ```
+
+2. **Rapporten viser:**
+   - Hvilke routes som har duplikater
+   - Den dupliserte teksten (forkortet til 120 tegn)
+   - Antall forekomster
+
+3. **Fiks ved å:**
+   - Flytte duplisert innhold til en delt komponent i `src/features/marketing/components/`
+   - Importere og bruke den delte komponenten i stedet for inline-tekst
+   - Kjøre `npm run test:duplicate` lokalt for å verifisere
+
+4. **Whitelist**: Korte tekster som "Logg inn", "Start gratis", og footer-tekster er whitelisted og vil ikke trigge feil.
+
 ---
 
 ## Testing Requirements

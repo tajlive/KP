@@ -8,55 +8,64 @@ const config = {
   theme: {
     extend: {
       colors: {
-        // PREMIUM 2026 DARK DESIGN SYSTEM
+        // SEMANTIC DESIGN SYSTEM - Koblet til CSS-variabler
         kp: {
-          // Background hierarchy - deeper, richer dark
-          'bg-primary': '#050507',        // Deepest background
-          'bg-secondary': '#0a0a0f',      // Main surface
-          'bg-tertiary': '#0f0f14',       // Elevated cards
-          'bg-elevated': '#15151c',       // Inputs, hover
-          'bg-card': 'rgba(15, 15, 20, 0.6)', // Glass card base
+          // Background hierarchy
+          'bg-primary': 'var(--kp-bg-primary)',
+          'bg-secondary': 'var(--kp-bg-secondary)',
+          'bg-tertiary': 'var(--kp-bg-tertiary)',
+          'bg-elevated': 'var(--kp-bg-elevated)',
+          'bg-card': 'var(--kp-bg-card)',
+          'bg-hover': 'var(--kp-bg-hover)',
+          'bg-active': 'var(--kp-bg-active)',
           
-          // Text hierarchy - improved contrast
-          'text-primary': '#fafafa',      // Primary text
-          'text-secondary': '#a1a1aa',    // Secondary text
-          'text-tertiary': '#71717a',     // Muted text
-          'text-muted': '#52525b',        // Subtle text
+          // Text hierarchy - WCAG AA compliant
+          'text-primary': 'var(--kp-text-primary)',
+          'text-secondary': 'var(--kp-text-secondary)',
+          'text-tertiary': 'var(--kp-text-tertiary)',
+          'text-muted': 'var(--kp-text-muted)',
           
-          // Borders - refined glass effect
-          'border': 'rgba(255, 255, 255, 0.06)',
-          'border-hover': 'rgba(255, 255, 255, 0.12)',
-          'border-strong': 'rgba(255, 255, 255, 0.18)',
+          // Borders
+          'border': 'var(--kp-border)',
+          'border-light': 'var(--kp-border-light)',
+          'border-dark': 'var(--kp-border-dark)',
+          'border-brand': 'var(--kp-border-brand)',
           
-          // Premium accent - Coinbase blue with glow
-          'brand': '#0052FF',
-          'brand-light': '#3d7aff',
-          'brand-dark': '#0047E0',
-          'brand-hover': '#0039c7',
-          'brand-glow': 'rgba(0, 82, 255, 0.4)',
-          'brand-subtle': 'rgba(0, 82, 255, 0.1)',
+          // Premium accent
+          'brand': 'var(--kp-brand)',
+          'brand-light': 'var(--kp-brand-light)',
+          'brand-dark': 'var(--kp-brand-dark)',
+          'brand-hover': 'var(--kp-brand-hover)',
+          'brand-glow': 'var(--kp-brand-glow)',
+          'brand-subtle': 'var(--kp-brand-subtle)',
           
-          // Surface tints for depth
-          'surface': '#0a0a0f',
-          'surface-elevated': '#12121a',
-          'surface-highlight': 'rgba(255, 255, 255, 0.03)',
+          // Surface
+          'surface': 'var(--kp-surface)',
+          'surface-elevated': 'var(--kp-surface-elevated)',
+          'surface-highlight': 'var(--kp-surface-highlight)',
           
-          // Status colors - more refined
-          'success': '#10b981',
-          'success-light': 'rgba(16, 185, 129, 0.15)',
-          'success-glow': 'rgba(16, 185, 129, 0.3)',
-          'warning': '#f59e0b',
-          'warning-light': 'rgba(245, 158, 11, 0.15)',
-          'danger': '#ef4444',
-          'danger-light': 'rgba(239, 68, 68, 0.15)',
-          'danger-glow': 'rgba(239, 68, 68, 0.3)',
+          // Input
+          'input-bg': 'var(--kp-input-bg)',
+          'input-border': 'var(--kp-input-border)',
+          'input-border-focus': 'var(--kp-input-border-focus)',
+          'input-text': 'var(--kp-input-text)',
+          'input-placeholder': 'var(--kp-input-placeholder)',
           
-          // Gradient accents
-          'gradient-start': '#0052FF',
-          'gradient-end': '#7c3aed',
+          // Status
+          'success': 'var(--kp-success)',
+          'success-bg': 'var(--kp-success-bg)',
+          'warning': 'var(--kp-warning)',
+          'warning-bg': 'var(--kp-warning-bg)',
+          'danger': 'var(--kp-danger)',
+          'danger-bg': 'var(--kp-danger-bg)',
+          
+          // Navigation
+          'nav-bg': 'var(--kp-nav-bg)',
+          'nav-text': 'var(--kp-nav-text)',
+          'nav-text-muted': 'var(--kp-nav-text-muted)',
         },
         
-        // Brand scale
+        // Brand scale (statiske for gradients)
         brand: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -68,16 +77,6 @@ const config = {
           700: '#0039c7',
           800: '#002fa3',
           900: '#002680',
-        },
-        
-        // Premium surface palette
-        surface: {
-          'deepest': '#050507',
-          'primary': '#0a0a0f',
-          'secondary': '#0f0f14',
-          'tertiary': '#15151c',
-          'elevated': '#1c1c24',
-          'glass': 'rgba(15, 15, 20, 0.6)',
         },
       },
       

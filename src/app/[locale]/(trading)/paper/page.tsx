@@ -1,19 +1,16 @@
 import { Metadata } from "next";
-import { BRAND, HERO } from "@/lib/design/tokens";
 import { 
   TrendingUp, 
   Shield, 
   Clock,
-  CheckCircle,
-  ArrowRight,
-  Users,
-  PlayCircle,
   Wallet,
-  LineChart,
-  GraduationCap
+  GraduationCap,
+  PlayCircle,
+  CheckCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { PaperHero, GettingStartedSteps, PrimaryCtaSection } from "@/features/marketing/components";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +65,24 @@ const steps = [
     number: "03",
     title: "Bli klar for live",
     description: "Når du er komfortabel, oppgrader til ekte trading med ett klikk.",
+  },
+];
+
+const enSteps = [
+  {
+    number: "01",
+    title: "Create account",
+    description: "Sign up for free in under 2 minutes. No credit card required.",
+  },
+  {
+    number: "02",
+    title: "Start paper trading",
+    description: "Get instant access to 100,000 NOK in practice money and all our tools.",
+  },
+  {
+    number: "03",
+    title: "Get ready for live",
+    description: "When you're comfortable, upgrade to real trading with one click.",
   },
 ];
 
@@ -262,28 +277,11 @@ export default async function PaperTradingLandingPage({
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="py-20 bg-slate-100 dark:bg-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Kom i gang på 3 enkle steg
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {steps.map((step, index) => (
-              <div key={index} className="relative text-center">
-                <div className="text-5xl font-black text-slate-200 dark:text-slate-800 mb-4">
-                  {step.number}
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{step.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* How it works - Using shared component */}
+      <GettingStartedSteps 
+        steps={locale === 'en' ? enSteps : steps}
+        title={locale === 'en' ? "Get started in 3 simple steps" : "Kom i gang på 3 enkle steg"}
+      />
 
       {/* Testimonial */}
       <section className="py-20">
@@ -305,33 +303,29 @@ export default async function PaperTradingLandingPage({
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-emerald-600 to-teal-700">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Klar til å starte din trading-reise?
-          </h2>
-          <p className="text-lg text-emerald-100 mb-8 max-w-2xl mx-auto">
-            Registrer deg gratis i dag og få 100 000 kr i lekepenger. 
-            Ingen kredittkort, ingen forpliktelser — bare læring.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href={hrefWithLocale(locale, "/register")}
-              className="px-8 py-4 bg-white text-emerald-700 rounded-xl font-bold text-lg shadow-xl hover:bg-emerald-50 transition-all inline-flex items-center justify-center gap-2"
-            >
-              Opprett gratis konto
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href={hrefWithLocale(locale, "/priser")}
-              className="px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-xl font-semibold text-lg hover:bg-white/10 transition-all"
-            >
-              Se priser
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* CTA - Using shared component with tracking */}
+      <PrimaryCtaSection
+        title={
+          locale === "en"
+            ? "Ready to start your trading journey?"
+            : "Klar til å starte din trading-reise?"
+        }
+        description={
+          locale === "en"
+            ? "Sign up for free today and get 100,000 NOK in practice money. No credit card, no commitments — just learning."
+            : "Registrer deg gratis i dag og få 100 000 kr i lekepenger. Ingen kredittkort, ingen forpliktelser — bare læring."
+        }
+        primaryLabel={
+          locale === "en" ? "Create free account" : "Opprett gratis konto"
+        }
+        primaryHref="/register"
+        secondaryLabel={locale === "en" ? "See pricing" : "Se priser"}
+        secondaryHref="/priser"
+        variant="paper"
+        locale={locale}
+        trackingId="paper-primary"
+        funnelStage="paper"
+      />
     </main>
   );
 }

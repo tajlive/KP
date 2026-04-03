@@ -12,6 +12,18 @@
 - [ ] Environment variables documented
 - [ ] `npm run verify:google-oauth` passes
 
+## 🎨 Marketing Content (if applicable)
+
+- [ ] Ingen dupliserte marketing-seksjoner (sjekk /, /paper, /priser, /hjelp)
+- [ ] Nye tekstblokker ligger i delte komponenter, ikke copy-pastet på flere sider
+- [ ] `npm run test:duplicate` passerer (hvis aktuelt)
+- [ ] Delte komponenter brukes kun én gang per side
+
+### Marketing Components Location
+- Paper Hero: `src/features/marketing/components/PaperHero.tsx`
+- Getting Started Steps: `src/features/marketing/components/GettingStartedSteps.tsx`
+- Help Contact Block: `src/features/marketing/components/HelpContactBlock.tsx`
+
 ## 🚀 Deployment Notes
 
 ### Pre-deploy
