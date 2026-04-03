@@ -61,7 +61,7 @@ export function createSupabaseClient(
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, {
               ...options,
-              sameSite: "lax" as const,
+              sameSite: "none" as const,
               secure: true,
               domain: cookieDomain,
             });
@@ -85,7 +85,7 @@ export function redirectWithCookies(
     redirectResponse.cookies.set(cookie.name, cookie.value, {
       ...cookie,
       domain: cookieDomain,
-      sameSite: "lax" as const,
+      sameSite: "none" as const,
       secure: true,
     });
   });

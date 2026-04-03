@@ -73,8 +73,8 @@ export function createServerClient(
             response.cookies.set(name, value, {
               ...options,
               domain: cookieDomain,
-              sameSite: "lax" as const,
-              secure: process.env.NODE_ENV === "production",
+              sameSite: "none" as const,
+              secure: true,
             });
           });
         },
