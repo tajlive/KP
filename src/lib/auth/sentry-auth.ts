@@ -32,6 +32,7 @@ export enum AuthErrorCode {
   EMAIL_LOGIN_FAILED = "auth:email:login_failed",
   EMAIL_SIGNUP_FAILED = "auth:email:signup_failed",
   PASSWORD_RESET_FAILED = "auth:password:reset_failed",
+  INVALID_RESET_TOKEN = "auth:password:invalid_token",
   MAGIC_LINK_FAILED = "auth:magic_link:failed",
   
   // Configuration errors
@@ -52,6 +53,8 @@ export enum AuthEvent {
   SESSION_REFRESHED = "auth:session:refreshed",
   MAGIC_LINK_SENT = "auth:magic_link:sent",
   PASSWORD_RESET_REQUESTED = "auth:password:reset_requested",
+  PASSWORD_RESET_STARTED = "auth:password:reset_started",
+  PASSWORD_RESET_SUCCESS = "auth:password:reset_success",
 }
 
 interface AuthContext {
