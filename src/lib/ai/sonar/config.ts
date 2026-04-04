@@ -264,6 +264,54 @@ VIKTIG:
 - Alltid inkluder minst én risikoadvarsel om at trading er risikofullt
 - JSON må være gyldig og komplett
 `,
+
+  /**
+   * MARKET_SENTIMENT - Nyhetsbasert sentiment analyse for auto-trading filter
+   * 
+   * Brukes til å blokkere trades når det er negativt sentiment med høy confidence.
+   * Regel: Hvis recommendation === 'avoid' OG confidence > 0.7 → blokker trade
+   */
+  MARKET_SENTIMENT: (input: { symbol: string }): string => `
+Du er en finansiell nyhetsanalytiker for en krypto trading-plattform. Analyser SISTE NYHETER for ${input.symbol} fra de siste 12-24 timer.
+
+OPPGAVE:
+1. Søk i åpne webkilder etter nyheter om ${input.symbol}
+2. Vurder om nyhetene er: POSITIVE (kan kjøpe), NEUTRALE (hold), eller NEGATIVE (unngå)
+3. Returner KUN gyldig JSON med strukturen nedenfor
+
+RETURNSKJEMA:
+{
+  "symbol": "${input.symbol}",
+  "recommendation": "buy|hold|avoid",
+  "confidence": 0.85,
+  "sentiment_score": 0.3,
+  "news_count": 12,
+  "key_headlines": [
+    "Kort oppsummering av viktig nyhet 1",
+    "Kort oppsummering av viktig nyhet 2"
+  ],
+  "reasoning_excerpt": "Kort begrunnelse for anbefalingen (maks 150 tegn)",
+  "sources": [
+    { "title": "Kildenavn", "url": "https://..." }
+  ],
+  "risk_flags": ["regulatory_concern", "exchange_issue"]
+}
+
+FELT-BESKRIVELSER:
+- recommendation: "buy" hvis nyheter er positive, "hold" hvis nøytrale/usikre, "avoid" hvis negative
+- confidence: 0.0 til 1.0 (hvor sikker er du på anbefalingen)
+- sentiment_score: -1.0 (veldig negativt) til 1.0 (veldig positivt)
+- news_count: antall relevante nyheter funnet
+- key_headlines: opptil 3 viktige nyhetshodesett
+- risk_flags: valgfri liste med risikofaktorer (f.eks. "hack", "regulatory", "liquidity")
+
+VIKTIG:
+- Bruk KUN åpne, offentlige kilder
+- IKKE inkluder personlige data (PII)
+- recommendation MÅ være én av: "buy", "hold", "avoid"
+- Høy confidence (>0.7) med "avoid" vil BLOKKERE trades automatisk
+- JSON må være gyldig og komplett
+`,
 } as const;
 
 // ============================================================================

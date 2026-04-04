@@ -242,37 +242,61 @@ export type Database = {
       ai_decision_log: {
         Row: {
           analysis_data: Json | null
+          block_layer: string | null
           created_at: string | null
           decision_reason: string | null
           decision_type: string
           executed_at: string | null
           id: string
           opik_trace_id: string | null
+          position_size_mul: number | null
+          regime_confidence: string | null
+          regime_context: string | null
+          regime_reasoning: string | null
           sentiment_score: number | null
+          sonar_confidence: number | null
+          sonar_recommendation: string | null
+          sonar_sentiment: string | null
           symbol: string
           user_id: string
         }
         Insert: {
           analysis_data?: Json | null
+          block_layer?: string | null
           created_at?: string | null
           decision_reason?: string | null
           decision_type: string
           executed_at?: string | null
           id?: string
           opik_trace_id?: string | null
+          position_size_mul?: number | null
+          regime_confidence?: string | null
+          regime_context?: string | null
+          regime_reasoning?: string | null
           sentiment_score?: number | null
+          sonar_confidence?: number | null
+          sonar_recommendation?: string | null
+          sonar_sentiment?: string | null
           symbol?: string
           user_id: string
         }
         Update: {
           analysis_data?: Json | null
+          block_layer?: string | null
           created_at?: string | null
           decision_reason?: string | null
           decision_type?: string
           executed_at?: string | null
           id?: string
           opik_trace_id?: string | null
+          position_size_mul?: number | null
+          regime_confidence?: string | null
+          regime_context?: string | null
+          regime_reasoning?: string | null
           sentiment_score?: number | null
+          sonar_confidence?: number | null
+          sonar_recommendation?: string | null
+          sonar_sentiment?: string | null
           symbol?: string
           user_id?: string
         }
@@ -4589,6 +4613,27 @@ export type Database = {
         }
         Relationships: []
       }
+      regime_cache: {
+        Row: {
+          created_at: string
+          regime_data: Json
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          regime_data: Json
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          regime_data?: Json
+          symbol?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       risk_presets: {
         Row: {
           atr_mult: number
@@ -4805,6 +4850,33 @@ export type Database = {
           session_id?: string
           step_number?: number | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      sonar_sentiment_cache: {
+        Row: {
+          confidence: number
+          created_at: string
+          recommendation: string
+          sentiment_data: Json
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          recommendation: string
+          sentiment_data: Json
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          recommendation?: string
+          sentiment_data?: Json
+          symbol?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -6863,6 +6935,7 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          avatar_url: string | null
           binance_api_key_id: string | null
           binance_api_secret_id: string | null
           binance_connected: boolean
@@ -6900,6 +6973,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          avatar_url?: string | null
           binance_api_key_id?: string | null
           binance_api_secret_id?: string | null
           binance_connected?: boolean
@@ -6937,6 +7011,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          avatar_url?: string | null
           binance_api_key_id?: string | null
           binance_api_secret_id?: string | null
           binance_connected?: boolean
