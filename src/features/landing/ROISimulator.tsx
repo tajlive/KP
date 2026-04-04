@@ -1,40 +1,52 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Calculator, AlertCircle, BarChart3, Loader2 } from 'lucide-react';
+import { TrendingUp, Calculator, AlertCircle, BarChart3, Loader2, Info } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { GlassCard } from '@/shared/ui/GlassCard';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';
-import { calculateROI, ROIScenario } from '@/lib/roi/calculator';
-import type { HistoricalReturnData } from '@/lib/roi/historical';
+import {
+  calculateBacktestWithCache,
+  formatBacktestResult,
+  type BacktestResult,
+  type RiskProfile,
+  STRATEGY_CONFIGS,
+} from '@/lib/trading/backtestEngine';
 import type { LandingBacktestTeaserRef } from './LandingBacktestTeaser';
 
 const PRESET_AMOUNTS = [10000, 25000, 50000, 100000, 250000, 500000];
-const RISK_PROFILES = [
+
+const RISK_PROFILES: Array<{
+  key: RiskProfile;
+  label: string;
+  desc: string;
+  color: string;
+  emoji: string;
+}> = [
   { 
-    key: 'konservativ' as const, 
+    key: 'konservativ', 
     label: 'Konservativ', 
     desc: 'ETH + DCA',
     color: 'bg-green-500',
     emoji: '🛡️'
   },
   { 
-    key: 'balansert' as const, 
+    key: 'balansert', 
     label: 'Balansert', 
     desc: 'BTC + SMA 20/50',
     color: 'bg-blue-500',
     emoji: '⚖️'
   },
   { 
-    key: 'aggressiv' as const, 
+    key: 'aggressiv', 
     label: 'Aggressiv', 
     desc: 'BTC + SMA 10/30',
     color: 'bg-purple-500',
     emoji: '🚀'
   },
 ];
+
 const MONTHS_OPTIONS = [3, 6, 12, 24, 36];
 
 interface ROISimulatorProps {
@@ -42,30 +54,17 @@ interface ROISimulatorProps {
 }
 
 export function ROISimulator({ backtestRef }: ROISimulatorProps) {
-  const [amount, setAmount] = useState<number>(50000);
+  const [amount, setAmount] = useState<number>(100000);
   const [riskIndex, setRiskIndex] = useState<number>(1);
   const [months, setMonths] = useState<number>(12);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{
-    scenarios: ROIScenario;
-    historical: HistoricalReturnData;
-    formatted: {
-      principal: string;
-      optimistic: string;
-      expected: string;
-      pessimistic: string;
-      returns: {
-        optimistic: string;
-        expected: string;
-        pessimistic: string;
-      };
-    };
-  } | null>(null);
+  const [result, setResult] = useState<BacktestResult | null>(null);
+  const [formatted, setFormatted] = useState<ReturnType<typeof formatBacktestResult> | null>(null);
   
   const riskProfile = RISK_PROFILES[riskIndex].key;
 
-  // Beregn ROI når inputs endres
+  // Beregn backtest når inputs endres
   useEffect(() => {
     let cancelled = false;
     
@@ -74,9 +73,21 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
       setError(null);
       
       try {
-        const roi = await calculateROI(amount, riskProfile, months);
+        const config = STRATEGY_CONFIGS[riskProfile];
+        const backtestResult = await calculateBacktestWithCache({
+          initialCapitalNOK: amount,
+          strategyId: config.id,
+          months,
+        });
+        
         if (!cancelled) {
-          setResult(roi);
+          // fromCache indikerer om resultatet kom fra cache
+          const cacheResult = backtestResult as { fromCache?: boolean };
+          if (cacheResult.fromCache) {
+            console.log('[Backtest] Served from cache');
+          }
+          setResult(backtestResult);
+          setFormatted(formatBacktestResult(backtestResult));
         }
       } catch (err) {
         if (!cancelled) {
@@ -105,6 +116,32 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
       maximumFractionDigits: 0,
     }).format(value);
 
+  // Generer equity curve for chart
+  const equityCurveData = result?.equityCurve.map((point, index) => ({
+    month: Math.floor(index / 30),
+    value: point.equity * (result.usdNokRate),
+  })) || [];
+
+  // Beregn scenario-kurver
+  const scenarioCurve = Array.from({ length: months + 1 }, (_, i) => {
+    const progress = i / months;
+    const startValue = amount;
+    
+    if (!result) return { month: i, optimistic: startValue, expected: startValue, pessimistic: startValue };
+    
+    // Bruk eksponensiell vekst basert på faktiske scenarier
+    const optimisticValue = startValue * Math.pow(1 + result.scenarios.optimistic / 100, progress);
+    const expectedValue = startValue * Math.pow(1 + result.scenarios.expected / 100, progress);
+    const pessimisticValue = startValue * Math.pow(1 + result.scenarios.pessimistic / 100, progress);
+    
+    return {
+      month: i,
+      optimistic: Math.round(optimisticValue),
+      expected: Math.round(expectedValue),
+      pessimistic: Math.round(pessimisticValue),
+    };
+  });
+
   return (
     <section className="py-16 lg:py-24 bg-kp-bg-primary" id="roi-calculator">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -117,16 +154,17 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-kp-brand/10 text-kp-brand text-sm font-medium mb-4">
             <Calculator className="w-4 h-4" />
-            <span>Avkastningskalkulator</span>
+            <span>Backtest-kalkulator</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold text-kp-text-primary mb-4">
             Hva kan du oppnå?{' '}
             <span className="bg-gradient-to-r from-kp-brand to-kp-brand-light bg-clip-text text-transparent">
-              Realistisk estimat
+              Ekte backtest
             </span>
           </h2>
           <p className="text-kp-text-secondary max-w-xl mx-auto">
-            Basert på ekte historiske data fra Binance — ikke hardkodede renter.
+            Basert på ekte historiske data fra Binance med realistiske trading fees og slippage.
+            Samme motor som brukes i paper trading.
           </p>
         </motion.div>
 
@@ -137,7 +175,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
               {/* Amount Slider */}
               <div>
                 <label className="flex items-center justify-between text-sm font-medium text-kp-text-primary mb-3">
-                  <span>Investeringsbeløp</span>
+                  <span>Startkapital</span>
                   <span className="text-kp-brand font-bold text-lg">
                     {formatNOK(amount)}
                   </span>
@@ -171,7 +209,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
               {/* Risk Profile */}
               <div>
                 <label className="text-sm font-medium text-kp-text-primary mb-3 block">
-                  Risikoprofil
+                  Strategi
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {RISK_PROFILES.map((profile, i) => (
@@ -195,7 +233,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
               {/* Months */}
               <div>
                 <label className="flex items-center justify-between text-sm font-medium text-kp-text-primary mb-3">
-                  <span>Tidshorisont</span>
+                  <span>Periode</span>
                   <span className="text-kp-brand font-bold">{months} måneder</span>
                 </label>
                 <div className="flex gap-2 flex-wrap">
@@ -229,7 +267,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                   className="h-full flex flex-col items-center justify-center py-12"
                 >
                   <Loader2 className="w-12 h-12 text-kp-brand animate-spin mb-4" />
-                  <p className="text-kp-text-secondary">Henter historiske data...</p>
+                  <p className="text-kp-text-secondary">Kjører backtest mot historiske data...</p>
                 </motion.div>
               ) : error ? (
                 <motion.div
@@ -242,7 +280,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                   <AlertCircle className="w-12 h-12 text-kp-error mb-4" />
                   <p className="text-kp-error">{error}</p>
                 </motion.div>
-              ) : result ? (
+              ) : result && formatted ? (
                 <motion.div
                   key="results"
                   initial={{ opacity: 0, y: 20 }}
@@ -254,23 +292,23 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                   <div className="space-y-3">
                     <ScenarioRow
                       label="Optimistisk"
-                      value={result.formatted.optimistic}
-                      returnPct={result.formatted.returns.optimistic}
+                      value={formatted.scenarios.optimistic}
+                      returnPct={formatted.scenarios.optimisticReturn}
                       color="text-green-400"
                       bgColor="bg-green-500/10"
                     />
                     <ScenarioRow
                       label="Forventet"
-                      value={result.formatted.expected}
-                      returnPct={result.formatted.returns.expected}
+                      value={formatted.scenarios.expected}
+                      returnPct={formatted.scenarios.expectedReturn}
                       color="text-kp-brand"
                       bgColor="bg-kp-brand/10"
                       isMain
                     />
                     <ScenarioRow
                       label="Pessimistisk"
-                      value={result.formatted.pessimistic}
-                      returnPct={result.formatted.returns.pessimistic}
+                      value={formatted.scenarios.pessimistic}
+                      returnPct={formatted.scenarios.pessimisticReturn}
                       color="text-amber-400"
                       bgColor="bg-amber-500/10"
                     />
@@ -281,13 +319,25 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                     <div className="p-3 rounded-lg bg-kp-surface-highlight">
                       <p className="text-xs text-kp-text-tertiary">Max drawdown</p>
                       <p className="text-lg font-bold text-kp-error">
-                        {(result.historical.maxDrawdown * 100).toFixed(1)}%
+                        {formatted.metrics.maxDrawdown}
                       </p>
                     </div>
                     <div className="p-3 rounded-lg bg-kp-surface-highlight">
                       <p className="text-xs text-kp-text-tertiary">Volatilitet</p>
                       <p className="text-lg font-bold text-kp-text-primary">
-                        {(result.historical.volatility * 100).toFixed(0)}%
+                        {formatted.metrics.volatility}
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-kp-surface-highlight">
+                      <p className="text-xs text-kp-text-tertiary">Win rate</p>
+                      <p className="text-lg font-bold text-kp-brand">
+                        {formatted.metrics.winRate}
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-kp-surface-highlight">
+                      <p className="text-xs text-kp-text-tertiary">Antall trades</p>
+                      <p className="text-lg font-bold text-kp-text-primary">
+                        {result.metrics.totalTrades}
                       </p>
                     </div>
                   </div>
@@ -295,7 +345,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                   {/* Mini Chart */}
                   <div className="h-32">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={result.scenarios.equityCurve}>
+                      <LineChart data={scenarioCurve}>
                         <Line
                           type="monotone"
                           dataKey="optimistic"
@@ -324,8 +374,7 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                             borderRadius: '8px',
                             fontSize: '12px',
                           }}
-                           
-                          formatter={(value: any) => formatNOK(Number(value))}
+                          formatter={(value) => typeof value === 'number' ? formatNOK(value) : value}
                           labelFormatter={(label) => `Måned ${label}`}
                         />
                       </LineChart>
@@ -352,10 +401,12 @@ export function ROISimulator({ backtestRef }: ROISimulatorProps) {
                   {/* Disclaimer */}
                   <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
                     <p className="text-xs text-amber-200 flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <span>
-                        Basert på {result.historical.dataPoints} dager historiske data 
-                        ({RISK_PROFILES[riskIndex].desc}). Ingen garanti for fremtidig avkastning.
+                        <strong>Beregnet med historisk backtest.</strong> Tidligere avkastning 
+                        er ingen garanti for fremtidig avkastning. Strategien har utført 
+                        {result.metrics.totalTrades} trades over {result.equityCurve.length} dager 
+                        med {STRATEGY_CONFIGS[riskProfile].feeRate * 100}% trading fees. 
                         Start med paper trading.
                       </span>
                     </p>

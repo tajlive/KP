@@ -66,6 +66,39 @@ Opprettet: `tests/e2e/critical-flows.spec.ts`
 - 8 kritiske tester definert
 - Playwright config trenger oppdatering for prod-testing
 
+### Backtest Engine Testing 🆕
+
+**Implementert:** Én sannhetskilde for avkastningsberegning
+- **Modul:** `src/lib/trading/backtestEngine.ts`
+- **Dokumentasjon:** `docs/trading/BACKTEST-ENGINE.md`
+- **Tester:** 
+  - 11 enhetstester: `src/lib/trading/__tests__/backtestEngine.test.ts`
+  - E2E-tester: `e2e/landing/backtest-match.spec.ts`
+
+**Status:** ✅ KLAR
+- Lint: 0 feil
+- Type-check: 0 feil  
+- Enhetstester: 11/11 passerer
+
+**Strategier testet:**
+| Strategi | Asset | SMA | Status |
+|----------|-------|-----|--------|
+| ETH DCA | ETHUSDT | 30/100 | ✅ |
+| BTC SMA 20/50 | BTCUSDT | 20/50 | ✅ |
+| BTC SMA 10/30 | BTCUSDT | 10/30 | ✅ |
+
+**Integrasjonspunkter:**
+- Landing page (`ROISimulator.tsx`): ✅ Oppdatert til å bruke backtestEngine
+- Dashboard: 🟡 Klar for integrasjon
+- Paper trading: ✅ Bruker samme logikk
+
+**Key APIs:**
+```typescript
+calculateBacktest({ strategyId, months, initialCapitalNOK })
+calculateBacktestWithProfile(riskProfile, capital, months)
+formatBacktestResult(result, locale)
+```
+
 ---
 
 ## 👤 FASE 4 — TESTBRUKERE
