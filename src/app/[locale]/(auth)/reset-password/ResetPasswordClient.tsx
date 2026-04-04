@@ -137,7 +137,8 @@ function ResetPasswordForm() {
 
       // Redirect to login after a short delay
       setTimeout(() => {
-        router.push(`/${locale}/logg-inn?reset=success`);
+        const loginPath = locale === 'en' ? '/en/login' : '/no/login';
+        router.push(`${loginPath}?reset=success`);
       }, 2000);
     } catch (unexpectedError) {
       console.error("[ResetPassword] Unexpected error:", unexpectedError);
@@ -177,7 +178,7 @@ function ResetPasswordForm() {
               </CardDescription>
               <div className="mt-6">
                 <Link
-                  href={`/${locale}/logg-inn`}
+                  href={locale === 'en' ? '/en/login' : '/no/login'}
                   className={`${BRAND.link} underline underline-offset-2`}
                 >
                   {locale === "no" ? "Gå til innlogging" : "Go to login"}
@@ -401,7 +402,7 @@ function ResetPasswordForm() {
               <span className="text-gray-500 dark:text-slate-400">
                 {locale === "no" ? "Husket passordet?" : "Remembered your password?"}{" "}
                 <Link
-                  href={`/${locale}/logg-inn`}
+                  href={locale === 'en' ? '/en/login' : '/no/login'}
                   className={`${BRAND.link} underline underline-offset-2 font-medium`}
                 >
                   {locale === "no" ? "Logg inn" : "Sign in"}
