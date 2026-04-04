@@ -31,6 +31,11 @@ export type {
   SonarCacheConfig,
   SonarError,
   SonarValidationError,
+  // Market Sentiment types (P0)
+  MarketSentimentResult,
+  SentimentRecommendation,
+  SentimentCacheEntry,
+  SentimentBlockDecision,
 } from './types';
 
 // Client
@@ -93,3 +98,12 @@ export {
   clearExplanationCache,
 } from './explainSignal';
 export type { ExplainSignalOptions } from './explainSignal';
+
+// Market Sentiment (P0 news-sentiment filter for auto-trading)
+export {
+  getMarketSentiment,
+  shouldBlockTrade,
+  getMarketSentimentForEdgeFunction,
+  checkSentimentBlock,
+  getSentimentMetrics,
+} from './marketSentiment';

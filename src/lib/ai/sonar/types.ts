@@ -153,6 +153,43 @@ export interface SonarCacheConfig {
 }
 
 // ============================================================================
+// Market Sentiment Types (Auto-Trading Filter)
+// ============================================================================
+
+export type SentimentRecommendation = 'buy' | 'hold' | 'avoid';
+
+export interface MarketSentimentResult {
+  symbol: string;
+  recommendation: SentimentRecommendation;
+  confidence: number; // 0-1
+  sentiment_score: number; // -1 til 1
+  news_count: number;
+  key_headlines: string[];
+  reasoning_excerpt: string;
+  sources: {
+    title: string;
+    url: string;
+  }[];
+  risk_flags: string[];
+  analyzed_at: string;
+}
+
+export interface SentimentCacheEntry {
+  symbol: string;
+  sentiment_data: MarketSentimentResult;
+  recommendation: SentimentRecommendation;
+  confidence: number;
+  created_at: string;
+}
+
+export interface SentimentBlockDecision {
+  blocked: boolean;
+  reason?: string;
+  sentiment: MarketSentimentResult;
+  logged_at: string;
+}
+
+// ============================================================================
 // Error Types
 // ============================================================================
 
