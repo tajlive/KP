@@ -459,14 +459,47 @@ klarpakke/
 │   ├── app/              # Next.js App Router
 │   ├── components/       # React components
 │   ├── lib/              # Utilities
+│   ├── services/         # Business logic (regime, indicators)
 │   └── hooks/            # Custom hooks
 ├── supabase/
-│   └── migrations/       # Database migrations
+│   ├── migrations/       # Database migrations
+│   └── functions/        # Edge Functions
 ├── scripts/              # Automation scripts
 ├── tests/                # Tests
 ├── docs/                 # Documentation
 └── .ai/                  # AI context
 ```
+
+---
+
+## AI Trading Pipeline — Regler
+
+1. **Alle trade-beslutninger MÅ logges til `ai_decision_log`**
+2. **Bruk alltid `createServerClient()` (ikke `createClient`) i Server Components**
+3. **Nye avkastningstall ALDRI hardkodes** — bruk `backtestPresets.ts`
+4. **Sonar API kalles aldri fra klient** (kun server/edge functions)
+5. **Nye indikatorer legges i `src/services/indicators.ts`**
+
+### 3-Lags Pipeline
+
+```
+LAG 1: Regime (EMA/ADX/RSI) → blokkerer BEAR marked
+LAG 2: Sonar (Perplexity)   → blokkerer ved avoid + confidence > 0.7
+LAG 3: Execute              → finalSize = base × regimeMul × sentimentMul
+```
+
+**Viktig:** Regime lag er alltid først — det beskytter kapital i bearmarkeder.
+
+---
+
+## Kalkulatorer — Regler
+
+- **Én sannhetskilde:** `src/features/landing/backtestPresets.ts`
+- **pessimisticReturn < expectedReturn < optimisticReturn** (alltid)
+- **Runtime-assert i dev mode** hvis dette brytes
+- **Gjenbruk `useBacktestEstimate` hook** overalt
+
+---
 
 ---
 
