@@ -53,7 +53,7 @@ if (!validateKimi()) {
 // MCP Server State
 const serverInfo = {
   name: "kimi-cli-server",
-  version: "1.0.0",
+  version: "2.0.0",
 };
 
 const tools = [
@@ -131,7 +131,7 @@ const tools = [
   },
   {
     name: "kimi_run_tests",
-    description: "Be Kimi kjøre tester og rapportere resultater.",
+    description: "Be Kimi kjøre tester og rapportere resultater (alias for kimi_test).",
     inputSchema: {
       type: "object",
       properties: {
@@ -140,6 +140,94 @@ const tools = [
           description: "Spesifikk testfil eller pattern (valgfri, ellers kjøres alle tester)",
         },
       },
+    },
+  },
+  {
+    name: "kimi_test",
+    description: "Kjør tester: vitest (unit), playwright (e2e), eller spesifikk testfil. Returnerer rapport med status.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        type: {
+          type: "string",
+          enum: ["unit", "e2e", "critical", "full"],
+          description: "Type test: unit (vitest), e2e (playwright), critical (kritiske paths), full (alt)",
+        },
+        path: {
+          type: "string",
+          description: "Spesifikk testfil eller pattern (valgfri)",
+        },
+        coverage: {
+          type: "boolean",
+          description: "Kjør med coverage (valgfri, default false)",
+        },
+      },
+    },
+  },
+  {
+    name: "kimi_ci",
+    description: "Kjør CI-pipeline: lint + type-check + test. Returnerer full rapport.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        skipTests: {
+          type: "boolean",
+          description: "Hopp over tester (valgfri, default false)",
+        },
+      },
+    },
+  },
+  {
+    name: "kimi_deploy",
+    description: "Deploy til produksjon: Vercel, eller vis deploy-status.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        target: {
+          type: "string",
+          enum: ["vercel", "prod", "preview", "status"],
+          description: "Deploy-mål: vercel (standard), prod (produksjon), preview, status (sjekk status)",
+        },
+        verify: {
+          type: "boolean",
+          description: "Verifiser etter deploy (valgfri, default true)",
+        },
+      },
+    },
+  },
+  {
+    name: "kimi_db",
+    description: "Database-operasjoner: migrasjoner, type-generering, eller status-sjekk.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        action: {
+          type: "string",
+          enum: ["migrate", "gen-types", "status", "lint", "push"],
+          description: "Handling: migrate (kjør migrasjoner), gen-types (generer TypeScript-typer), status (sjekk DB), lint (valider), push (push skjema)",
+        },
+        environment: {
+          type: "string",
+          enum: ["local", "staging", "production"],
+          description: "Miljø (valgfri, default local)",
+        },
+      },
+      required: ["action"],
+    },
+  },
+  {
+    name: "kimi_monitor",
+    description: "Health checks: Supabase, API, signals, eller full system-status.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        check: {
+          type: "string",
+          enum: ["supabase", "api", "signals", "trading", "full", "prod"],
+          description: "Hva som sjekkes: supabase (DB health), api (/api/health), signals (signal-pipeline), trading (trading-system), full (alt lokalt), prod (produksjonssjekk)",
+        },
+      },
+      required: ["check"],
     },
   },
 ];
@@ -223,11 +311,116 @@ async function handleToolCall(name, args) {
       }
     }
     
-    case "kimi_run_tests": {
-      const testCmd = args.testPath 
-        ? `npm test -- ${args.testPath}` 
-        : "npm test";
-      return await callKimi(`Kjør tester med: ${testCmd}. Rapporter resultatene tydelig.`, ["--yolo"]);
+    case "kimi_run_tests":
+    case "kimi_test": {
+      const testType = args.type || "unit";
+      const testPath = args.path || args.testPath;
+      const coverage = args.coverage ? " med coverage" : "";
+      
+      let cmd;
+      switch (testType) {
+        case "unit":
+          cmd = testPath ? `npm run test:unit -- ${testPath}${coverage}` : `npm run test:unit${coverage}`;
+          break;
+        case "e2e":
+          cmd = testPath ? `npm run test:e2e -- ${testPath}` : "npm run test:e2e";
+          break;
+        case "critical":
+          cmd = "npm run test:e2e:critical";
+          break;
+        case "full":
+          cmd = "npm run test:full";
+          break;
+        default:
+          cmd = testPath ? `npm test -- ${testPath}` : "npm test";
+      }
+      
+      return await callKimi(`Kjør tester: ${cmd}. Gi meg en kort rapport med: 1) Antall passerte/feilede, 2) Kritiske feil, 3) Anbefalinger.`, ["--yolo"]);
+    }
+    
+    case "kimi_ci": {
+      const skipTests = args.skipTests ? " --skip-tests" : "";
+      return await callKimi(`Kjør CI-pipeline: lint + type-check${skipTests ? "" : " + test"}. Rapporter: 1) Lint-status, 2) Type-check status, 3) Test-resultater, 4) Kan vi deploye?`, ["--yolo"]);
+    }
+    
+    case "kimi_deploy": {
+      const target = args.target || "vercel";
+      const verify = args.verify !== false;
+      
+      let cmd;
+      switch (target) {
+        case "prod":
+          cmd = verify ? "npm run deploy:prod && npm run verify:prod" : "npm run deploy:prod";
+          break;
+        case "preview":
+          cmd = "npm run deploy:preview";
+          break;
+        case "status":
+          cmd = "npm run vercel:status";
+          break;
+        default:
+          cmd = verify ? "npm run deploy && npm run verify" : "npm run deploy";
+      }
+      
+      return await callKimi(`Deploy: ${cmd}. Rapporter: 1) Deploy-status, 2) URL, 3) Verifikasjonsresultat.`, ["--yolo"]);
+    }
+    
+    case "kimi_db": {
+      const action = args.action;
+      const env = args.environment || "local";
+      
+      let cmd;
+      switch (action) {
+        case "migrate":
+          cmd = `npm run db:migrate -- --env ${env}`;
+          break;
+        case "gen-types":
+          cmd = "npm run db:gen-types";
+          break;
+        case "status":
+          cmd = "npm run db:status";
+          break;
+        case "lint":
+          cmd = "npm run db:lint";
+          break;
+        case "push":
+          cmd = `npm run db:push -- --env ${env}`;
+          break;
+        default:
+          cmd = "npm run db:status";
+      }
+      
+      return await callKimi(`DB-operasjon: ${cmd}. Rapporter: 1) Status, 2) Eventuelle feil, 3) Neste steg.`, ["--yolo"]);
+    }
+    
+    case "kimi_monitor": {
+      const check = args.check;
+      
+      let cmd;
+      switch (check) {
+        case "supabase":
+          cmd = "npm run supabase:health";
+          break;
+        case "api":
+          cmd = "npm run health:api";
+          break;
+        case "signals":
+          cmd = "npm run signals:health";
+          break;
+        case "trading":
+          cmd = "npm run trading:health";
+          break;
+        case "full":
+          cmd = "npm run health:full";
+          break;
+        case "prod":
+          cmd = "npm run verify:prod";
+          break;
+        default:
+          cmd = "npm run health";
+      }
+      
+      return await callKimi(`Health check: ${cmd}. Rapporter: 1) Alle statuser, 2) Kritiske feil (P0), 3) Anbefalinger.`, ["--yolo"]);
     }
     
     default:

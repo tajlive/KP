@@ -1284,6 +1284,48 @@ export type Database = {
         }
         Relationships: []
       }
+      backtest_cache: {
+        Row: {
+          cache_version: number
+          created_at: string
+          expires_at: string
+          id: string
+          metrics_summary: Json
+          period_months: number
+          result_data: Json
+          result_hash: string
+          strategy_id: string
+          symbol: string
+          usd_nok_rate: number
+        }
+        Insert: {
+          cache_version?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          metrics_summary: Json
+          period_months: number
+          result_data: Json
+          result_hash: string
+          strategy_id: string
+          symbol: string
+          usd_nok_rate?: number
+        }
+        Update: {
+          cache_version?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          metrics_summary?: Json
+          period_months?: number
+          result_data?: Json
+          result_hash?: string
+          strategy_id?: string
+          symbol?: string
+          usd_nok_rate?: number
+        }
+        Relationships: []
+      }
       backtest_results: {
         Row: {
           created_at: string | null
@@ -1337,6 +1379,69 @@ export type Database = {
           total_trades?: number
           updated_at?: string | null
           user_id?: string | null
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
+      backtest_telemetry: {
+        Row: {
+          anonymous_id: string | null
+          cache_age_ms: number | null
+          cache_hit: boolean
+          cagr: number | null
+          converted_at: string | null
+          converted_to_paper: boolean
+          created_at: string
+          id: string
+          initial_capital_nok: number
+          max_drawdown: number | null
+          period_months: number
+          referrer: string | null
+          session_id: string
+          strategy_id: string
+          total_trades: number | null
+          user_agent: string | null
+          volatility: number | null
+          win_rate: number | null
+        }
+        Insert: {
+          anonymous_id?: string | null
+          cache_age_ms?: number | null
+          cache_hit?: boolean
+          cagr?: number | null
+          converted_at?: string | null
+          converted_to_paper?: boolean
+          created_at?: string
+          id?: string
+          initial_capital_nok: number
+          max_drawdown?: number | null
+          period_months: number
+          referrer?: string | null
+          session_id: string
+          strategy_id: string
+          total_trades?: number | null
+          user_agent?: string | null
+          volatility?: number | null
+          win_rate?: number | null
+        }
+        Update: {
+          anonymous_id?: string | null
+          cache_age_ms?: number | null
+          cache_hit?: boolean
+          cagr?: number | null
+          converted_at?: string | null
+          converted_to_paper?: boolean
+          created_at?: string
+          id?: string
+          initial_capital_nok?: number
+          max_drawdown?: number | null
+          period_months?: number
+          referrer?: string | null
+          session_id?: string
+          strategy_id?: string
+          total_trades?: number | null
+          user_agent?: string | null
+          volatility?: number | null
           win_rate?: number | null
         }
         Relationships: []
@@ -7988,6 +8093,17 @@ export type Database = {
         }[]
       }
       get_next_founder_number: { Args: never; Returns: number }
+      get_or_create_backtest_cache: {
+        Args: {
+          p_metrics_summary: Json
+          p_period_months: number
+          p_result_data: Json
+          p_strategy_id: string
+          p_symbol: string
+          p_usd_nok_rate?: number
+        }
+        Returns: Json
+      }
       get_or_create_email_preferences: {
         Args: { p_user_id: string }
         Returns: {
@@ -8167,6 +8283,21 @@ export type Database = {
       is_service_role: { Args: never; Returns: boolean }
       is_trading_allowed: { Args: never; Returns: boolean }
       level_norsk: { Args: { lvl: string }; Returns: string }
+      log_backtest_telemetry: {
+        Args: {
+          p_anonymous_id?: string
+          p_cache_age_ms?: number
+          p_cache_hit?: boolean
+          p_initial_capital_nok: number
+          p_metrics: Json
+          p_period_months: number
+          p_referrer?: string
+          p_session_id: string
+          p_strategy_id: string
+          p_user_agent?: string
+        }
+        Returns: string
+      }
       log_user_action: {
         Args: {
           p_action: string
@@ -8175,6 +8306,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      mark_backtest_converted: {
+        Args: { p_session_id: string }
+        Returns: boolean
       }
       place_paper_trade_with_slippage: {
         Args: {

@@ -119,6 +119,7 @@ export async function GET(request: NextRequest) {
 /**
  * Get cached regime or compute new
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getOrComputeRegime(symbol: string, supabase: any): Promise<RegimeResult> {
   // Check cache
   const { data: cached } = await supabase
@@ -152,6 +153,7 @@ async function getOrComputeRegime(symbol: string, supabase: any): Promise<Regime
  */
 async function getOrComputeSentiment(
   symbol: string, 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any
 ): Promise<MarketSentimentResult> {
   // Check cache
@@ -174,6 +176,7 @@ async function getOrComputeSentiment(
 /**
  * Fetch OHLCV from cache or database
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function fetchOHLCV(supabase: any, symbol: string): Promise<Array<{
   timestamp: number;
   open: number;
@@ -202,6 +205,7 @@ async function fetchOHLCV(supabase: any, symbol: string): Promise<Array<{
     .limit(500);
 
   if (marketData && marketData.length >= 200) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return marketData.map((d: any) => ({
       timestamp: new Date(d.timestamp).getTime(),
       open: d.open,
