@@ -47,7 +47,7 @@
     "verify:automation": "bash scripts/verify-automation.sh",
     "release": "npm run lint && npm run type-check && npm run build",
     "launch": "bash scripts/launch-week2.sh",
-    "deploy": "gcloud run deploy klarpakke --source . --region us-central1 --project klarpakke-universitet --allow-unauthenticated",
+    "deploy": "npx vercel --prod --archive=tgz",
     "deploy:check": "curl -sI https://www.klarpakke.no | head -3",
     "prebuild": "npm run i18n:validate",
     "predeploy": "npm run type-check && npm run build",
@@ -365,7 +365,7 @@
     "vitest": "^4.0.18"
   },
   "engines": {
-    "node": "22",
+    "node": "24.x",
     "npm": "10.9.4"
   },
   "lint-staged": {
