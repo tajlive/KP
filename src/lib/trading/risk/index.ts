@@ -8,6 +8,7 @@
 export {
   RiskKernel,
   RiskStateManager,
+  createRiskKernel,
   DEFAULT_RISK_LIMITS,
   type RiskLimits,
   type RiskCheck,

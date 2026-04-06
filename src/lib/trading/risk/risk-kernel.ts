@@ -387,6 +387,14 @@ export class RiskKernel {
 }
 
 /**
+ * Factory function for creating RiskKernel instances.
+ * Use this instead of `new RiskKernel()` for production bundle compatibility.
+ */
+export function createRiskKernel(limits: Partial<RiskLimits> = {}): RiskKernel {
+  return new RiskKernel(limits);
+}
+
+/**
  * Risk State Manager – Maintains current risk state
  */
 export class RiskStateManager {
