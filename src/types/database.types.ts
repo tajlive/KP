@@ -514,6 +514,39 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_log: {
+        Row: {
+          created_at: string | null
+          evidence_hash: string
+          evidence_id: string
+          id: string
+          order_id: string
+          payload: Json
+          s3_path: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          evidence_hash: string
+          evidence_id: string
+          id?: string
+          order_id: string
+          payload: Json
+          s3_path?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          evidence_hash?: string
+          evidence_id?: string
+          id?: string
+          order_id?: string
+          payload?: Json
+          s3_path?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -1560,6 +1593,96 @@ export type Database = {
           email?: string
           id?: string
           source?: string | null
+        }
+        Relationships: []
+      }
+      beta_user_metrics: {
+        Row: {
+          created_at: string | null
+          daily_pnl: number | null
+          date: string
+          ending_balance: number | null
+          id: string
+          initial_capital: number | null
+          kill_switch_count: number | null
+          losing_trades: number | null
+          total_trades: number | null
+          user_id: string
+          winning_trades: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_pnl?: number | null
+          date: string
+          ending_balance?: number | null
+          id?: string
+          initial_capital?: number | null
+          kill_switch_count?: number | null
+          losing_trades?: number | null
+          total_trades?: number | null
+          user_id: string
+          winning_trades?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_pnl?: number | null
+          date?: string
+          ending_balance?: number | null
+          id?: string
+          initial_capital?: number | null
+          kill_switch_count?: number | null
+          losing_trades?: number | null
+          total_trades?: number | null
+          user_id?: string
+          winning_trades?: number | null
+        }
+        Relationships: []
+      }
+      beta_users: {
+        Row: {
+          cohort: string
+          created_at: string | null
+          daily_max_gain: number | null
+          daily_pnl_cap: number | null
+          ending_balance: number | null
+          enrolled_at: string | null
+          id: string
+          initial_capital: number | null
+          max_consecutive_losses: number | null
+          max_drawdown_pct: number | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cohort: string
+          created_at?: string | null
+          daily_max_gain?: number | null
+          daily_pnl_cap?: number | null
+          ending_balance?: number | null
+          enrolled_at?: string | null
+          id?: string
+          initial_capital?: number | null
+          max_consecutive_losses?: number | null
+          max_drawdown_pct?: number | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cohort?: string
+          created_at?: string | null
+          daily_max_gain?: number | null
+          daily_pnl_cap?: number | null
+          ending_balance?: number | null
+          enrolled_at?: string | null
+          id?: string
+          initial_capital?: number | null
+          max_consecutive_losses?: number | null
+          max_drawdown_pct?: number | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -3338,6 +3461,36 @@ export type Database = {
           },
         ]
       }
+      market_sentiment: {
+        Row: {
+          created_at: string | null
+          id: string
+          source: string
+          symbol: string
+          timestamp: string | null
+          trend: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          source?: string
+          symbol: string
+          timestamp?: string | null
+          trend?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          source?: string
+          symbol?: string
+          timestamp?: string | null
+          trend?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       market_volatility: {
         Row: {
           last_updated: string | null
@@ -3582,6 +3735,51 @@ export type Database = {
           session_id?: string
           stderr?: string | null
           stdout?: string | null
+        }
+        Relationships: []
+      }
+      mifid2_reports: {
+        Row: {
+          created_at: string | null
+          generated_at: string
+          id: string
+          period_end: string
+          period_start: string
+          record_count: number
+          report_id: string
+          report_type: string
+          status: string
+          submission_error: string | null
+          submitted_at: string | null
+          xml_content: string
+        }
+        Insert: {
+          created_at?: string | null
+          generated_at: string
+          id?: string
+          period_end: string
+          period_start: string
+          record_count?: number
+          report_id: string
+          report_type: string
+          status?: string
+          submission_error?: string | null
+          submitted_at?: string | null
+          xml_content: string
+        }
+        Update: {
+          created_at?: string | null
+          generated_at?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          record_count?: number
+          report_id?: string
+          report_type?: string
+          status?: string
+          submission_error?: string | null
+          submitted_at?: string | null
+          xml_content?: string
         }
         Relationships: []
       }
@@ -3842,6 +4040,48 @@ export type Database = {
           plan_type?: string | null
           status?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      outbox_recovery: {
+        Row: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          last_attempt: string | null
+          next_attempt: string | null
+          payload: Json
+          requires_manual_intervention: boolean
+          status: string
+          type: string
+        }
+        Insert: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          last_attempt?: string | null
+          next_attempt?: string | null
+          payload: Json
+          requires_manual_intervention?: boolean
+          status?: string
+          type: string
+        }
+        Update: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          last_attempt?: string | null
+          next_attempt?: string | null
+          payload?: Json
+          requires_manual_intervention?: boolean
+          status?: string
+          type?: string
         }
         Relationships: []
       }
@@ -4850,6 +5090,90 @@ export type Database = {
         }
         Relationships: []
       }
+      risk_state: {
+        Row: {
+          state: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          state?: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          state?: Json
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      risk_violations: {
+        Row: {
+          action: string
+          actual_value: number | null
+          created_at: string | null
+          expected_value: number | null
+          id: string
+          rule: string
+          severity: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          actual_value?: number | null
+          created_at?: string | null
+          expected_value?: number | null
+          id?: string
+          rule: string
+          severity: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          actual_value?: number | null
+          created_at?: string | null
+          expected_value?: number | null
+          id?: string
+          rule?: string
+          severity?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rl_agents: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          state_vector: Json
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          state_vector?: Json
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          state_vector?: Json
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       saved_strategies: {
         Row: {
           config: Json | null
@@ -5355,6 +5679,42 @@ export type Database = {
         }
         Relationships: []
       }
+      system_alerts: {
+        Row: {
+          acknowledged: boolean
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          component: string
+          created_at: string
+          details: Json | null
+          id: string
+          message: string
+          severity: string
+        }
+        Insert: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          component: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          message: string
+          severity: string
+        }
+        Update: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          component?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          message?: string
+          severity?: string
+        }
+        Relationships: []
+      }
       system_health_logs: {
         Row: {
           binance_status: string
@@ -5382,6 +5742,57 @@ export type Database = {
           metadata?: Json | null
           response_time_ms?: number | null
           supabase_status?: string
+        }
+        Relationships: []
+      }
+      technical_indicators: {
+        Row: {
+          adx: number | null
+          atr: number | null
+          bb_lower: number | null
+          bb_middle: number | null
+          bb_upper: number | null
+          created_at: string | null
+          ema20: number | null
+          ema50: number | null
+          id: string
+          macd: number | null
+          macd_signal: number | null
+          rsi: number | null
+          symbol: string
+          timestamp: string | null
+        }
+        Insert: {
+          adx?: number | null
+          atr?: number | null
+          bb_lower?: number | null
+          bb_middle?: number | null
+          bb_upper?: number | null
+          created_at?: string | null
+          ema20?: number | null
+          ema50?: number | null
+          id?: string
+          macd?: number | null
+          macd_signal?: number | null
+          rsi?: number | null
+          symbol: string
+          timestamp?: string | null
+        }
+        Update: {
+          adx?: number | null
+          atr?: number | null
+          bb_lower?: number | null
+          bb_middle?: number | null
+          bb_upper?: number | null
+          created_at?: string | null
+          ema20?: number | null
+          ema50?: number | null
+          id?: string
+          macd?: number | null
+          macd_signal?: number | null
+          rsi?: number | null
+          symbol?: string
+          timestamp?: string | null
         }
         Relationships: []
       }
@@ -5760,6 +6171,8 @@ export type Database = {
           side: string
           status: string
           strategy_signal: Json | null
+          symbol: string | null
+          total: number | null
           total_value: number
           trading_pair: string
           user_id: string
@@ -5782,6 +6195,8 @@ export type Database = {
           side: string
           status?: string
           strategy_signal?: Json | null
+          symbol?: string | null
+          total?: number | null
           total_value: number
           trading_pair: string
           user_id: string
@@ -5804,6 +6219,8 @@ export type Database = {
           side?: string
           status?: string
           strategy_signal?: Json | null
+          symbol?: string | null
+          total?: number | null
           total_value?: number
           trading_pair?: string
           user_id?: string
@@ -7926,6 +8343,14 @@ export type Database = {
           reason: string
           trades_remaining: number
           volume_remaining: number
+        }[]
+      }
+      check_beta_kill_switch: {
+        Args: { p_user_id: string }
+        Returns: {
+          can_trade: boolean
+          reason: string
+          severity: string
         }[]
       }
       check_daily_limits: {

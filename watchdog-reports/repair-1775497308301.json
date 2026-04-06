@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-04-06T17:41:48.301Z",
+  "mode": "repair",
+  "overallSuccess": true,
+  "results": [
+    {
+      "email": "tom@klarpakke.no",
+      "actions": [
+        {
+          "action": "check",
+          "status": "exists",
+          "type": "auth_user"
+        },
+        {
+          "action": "check",
+          "status": "exists",
+          "type": "user_profile"
+        },
+        {
+          "action": "verify",
+          "status": "success",
+          "type": "login",
+          "note": "password_reset"
+        }
+      ],
+      "success": true,
+      "name": "primary"
+    }
+  ],
+  "repairs": [
+    {
+      "type": "password_reset",
+      "userId": "2415156e-4877-4e63-992a-4b327b670cc9"
+    }
+  ],
+  "logSummary": {
+    "total": 18,
+    "errors": 1,
+    "warnings": 1
+  }
+}

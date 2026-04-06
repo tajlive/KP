@@ -2,7 +2,7 @@
   "mcpServers": {
     "_meta": {
       "version": "2.0",
-      "lastOptimized": "2026-03-27",
+      "lastOptimized": "2026-04-06",
       "for": "KIMI CLI",
       "description": "Optimalisert MCP-konfigurasjon for Klarpakke - kun aktive servere"
     },
@@ -61,6 +61,24 @@
       "args": ["scripts/run-opik-mcp.mjs"]
     },
     
+    "sentry": {
+      "description": "Sentry MCP - error tracking, issues, releases",
+      "command": "node",
+      "args": ["scripts/run-sentry-mcp.mjs"]
+    },
+    
+    "stripe": {
+      "description": "Stripe MCP - payments, subscriptions, billing",
+      "command": "node",
+      "args": ["scripts/run-stripe-mcp.mjs"]
+    },
+    
+    "vipps": {
+      "description": "Vipps MCP - Norwegian payment processing",
+      "command": "node",
+      "args": ["scripts/run-vipps-mcp.mjs"]
+    },
+    
     "klarpakke": {
       "description": "Klarpakke Supabase MCP — DB-spørringer via Edge Function",
       "command": "node",
@@ -89,22 +107,12 @@
     },
     
     "_disabled": {
-      "sentry": {
-        "reason": "Mangler SENTRY_AUTH_TOKEN og SENTRY_ORG i .env.local",
-        "setup": "Legg til SENTRY_AUTH_TOKEN og SENTRY_ORG i .env.local"
-      },
-      "stripe": {
-        "reason": "Mangler STRIPE_SECRET_KEY i .env.local",
-        "setup": "Legg til STRIPE_SECRET_KEY i .env.local"
-      },
+
       "cloudflare": {
         "reason": "Mangler CLOUDFLARE_API_TOKEN i .env.local",
         "setup": "Legg til CLOUDFLARE_API_TOKEN i .env.local"
       },
-      "vipps": {
-        "reason": "Mangler VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local",
-        "setup": "Legg til VIPPS_CLIENT_ID og VIPPS_CLIENT_SECRET i .env.local"
-      },
+
       "klarpakke-remote-mcp-old": {
         "reason": "Erstattet av 'klarpakke' MCP",
         "setup": "Bruk 'klarpakke' istedenfor"

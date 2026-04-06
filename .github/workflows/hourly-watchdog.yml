@@ -1,0 +1,326 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# KLARPAKKE — Hourly External User Watchdog (GitHub Actions)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Kjører hver time: E2E med ekte bruker, signal-health, trader-diagnose
+#
+# Schedule: Hver time (xx:00)
+# Manual: workflow_dispatch (kan velge miljø)
+#
+# Secrets påkrevd:
+#   - SUPABASE_SERVICE_ROLE_KEY
+#   - E2E_USER_EMAIL / E2E_USER_PASSWORD (eller TEST_USER_*)
+#   - SLACK_WEBHOOK_URL (valgfri, solo-mode OK)
+#   - LINEAR_API_KEY / LINEAR_TEAM_ID (valgfri, solo-mode OK)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🐕 Hourly External User Watchdog
+
+on:
+  schedule:
+    # Kjør hver time på minutt 0
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Miljø å teste'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      skip_provision:
+        description: 'Hopp over testbruker-provision'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: hourly-watchdog
+  cancel-in-progress: false  # La pågående kjøring fullføre
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NODE_OPTIONS: --max-old-space-size=8192
+
+jobs:
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 1: Hourly Watchdog
+  # ═════════════════════════════════════════════════════════════════════════════
+  hourly-watchdog:
+    name: Hourly Watchdog Run
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 🖥️ Runtime-verifisering
+        run: |
+          echo "Node: $(node -v)"
+          echo "npm: $(npm -v)"
+          echo "Time: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium firefox
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # E2E Testbruker Provision (Supabase Admin)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Provision E2E test user
+        if: ${{ !inputs.skip_provision }}
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL || 'tom@klarpakke.no' }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD || 'TestPassword123!' }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::SUPABASE_SERVICE_ROLE_KEY mangler"
+            exit 2
+          fi
+          node scripts/create-test-users.js --from-env
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Critical E2E Tests (mot produksjon)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Run Critical E2E Tests
+        env:
+          BASE_URL: ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}
+          PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL || 'tom@klarpakke.no' }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD || 'TestPassword123!' }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+          # Produksjon: ikke kjør Firefox (tregere, ikke kritisk for hourly)
+          PW_WORKERS: 2
+        run: |
+          echo "Testing mot: $PLAYWRIGHT_TEST_BASE_URL"
+          npx playwright test --project=critical-chromium --project=smoke-chromium
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Signal Pipeline Health Check
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Check Signal Pipeline Health
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SIGNAL_HEALTH_MAX_AGE_MINUTES: 20
+        run: npm run signals:health
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Diagnose: Signals + Traders
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Diagnose Signals and Traders
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run diagnose:signals-traders
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Diagnose: User Trades
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Diagnose User Trades
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
+        run: node scripts/diagnose-user-trades.mjs --email="$TEST_USER_EMAIL" || echo "User trades check completed (may be empty for fresh user)"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Production Health Gate
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Production Health Gate
+        if: ${{ inputs.environment != 'staging' }}
+        env:
+          HEALTH_URL: ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}/api/health
+          ALERT_STALE_SIGNALS: "1"
+          FAIL_ON_DEGRADED: "0"
+        run: npm run health:prod:gate
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Samle rapporter
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Generate Watchdog Report
+        if: always()
+        run: |
+          mkdir -p watchdog-reports
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          DATE_PREFIX=$(date -u +"%Y%m%d-%H%M%S")
+          
+          cat > "watchdog-reports/watchdog-$DATE_PREFIX.json" <<EOF
+          {
+            "timestamp": "$TIMESTAMP",
+            "environment": "${{ inputs.environment || 'production' }}",
+            "run_id": "${{ github.run_id }}",
+            "commit": "${{ github.sha }}",
+            "status": "${{ job.status }}",
+            "workflow_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          EOF
+          
+          cp "watchdog-reports/watchdog-$DATE_PREFIX.json" watchdog-reports/watchdog-latest.json
+
+      - name: Upload Watchdog Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: watchdog-report-${{ github.run_id }}
+          path: |
+            watchdog-reports/
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # GitHub Step Summary
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Update GitHub Summary
+        if: always()
+        run: |
+          echo "## 🐕 Hourly Watchdog Resultat" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detalj | Verdi |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Timestamp | $(date -u +"%Y-%m-%dT%H:%M:%SZ") |" >> $GITHUB_STEP_SUMMARY
+          echo "| Miljø | ${{ inputs.environment || 'production' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run | [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |" >> $GITHUB_STEP_SUMMARY
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 2: Slack Notification (on failure)
+  # ═════════════════════════════════════════════════════════════════════════════
+  notify-failure:
+    name: Notify on Failure
+    needs: hourly-watchdog
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Slack Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL ikke satt — ingen Slack-varsel"
+            exit 0
+          fi
+          
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"channel\": \"#ops\",
+              \"username\": \"Klarpakke Watchdog\",
+              \"icon_emoji\": \":ambulance:\",
+              \"attachments\": [
+                {
+                  \"color\": \"danger\",
+                  \"title\": \"🚨 Hourly Watchdog FAILED\",
+                  \"title_link\": \"$RUN_URL\",
+                  \"fields\": [
+                    {\"title\": \"Timestamp\", \"value\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\", \"short\": true},
+                    {\"title\": \"Miljø\", \"value\": \"${{ inputs.environment || 'production' }}\", \"short\": true},
+                    {\"title\": \"Commit\", \"value\": \"${{ github.sha }}\", \"short\": true}
+                  ],
+                  \"footer\": \"Klarpakke Hourly Watchdog\",
+                  \"ts\": $(date +%s)
+                }
+              ]
+            }"
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 3: Recovery Notification (on recovery)
+  # ═════════════════════════════════════════════════════════════════════════════
+  notify-recovery:
+    name: Notify Recovery
+    needs: hourly-watchdog
+    if: success() && github.run_attempt > 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Slack Recovery Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            exit 0
+          fi
+          
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"channel\": \"#ops\",
+              \"username\": \"Klarpakke Watchdog\",
+              \"icon_emoji\": \":white_check_mark:\",
+              \"attachments\": [
+                {
+                  \"color\": \"good\",
+                  \"title\": \"✅ Hourly Watchdog RECOVERED\",
+                  \"title_link\": \"$RUN_URL\",
+                  \"fields\": [
+                    {\"title\": \"Timestamp\", \"value\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\", \"short\": true},
+                    {\"title\": \"Miljø\", \"value\": \"${{ inputs.environment || 'production' }}\", \"short\": true}
+                  ],
+                  \"footer\": \"Klarpakke Hourly Watchdog\",
+                  \"ts\": $(date +%s)
+                }
+              ]
+            }"
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 4: Create Linear Incident (on failure)
+  # ═════════════════════════════════════════════════════════════════════════════
+  create-linear-incident:
+    name: Create Linear Incident
+    needs: hourly-watchdog
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create Linear Incident
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+          LINEAR_ISSUE_TITLE: "🚨 Hourly Watchdog Failed (auto)"
+          LINEAR_ISSUE_DESCRIPTION: |
+            Automated hourly watchdog failed.
+            
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - Commit: ${{ github.sha }}
+            - Environment: ${{ inputs.environment || 'production' }}
+            - Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            
+            Check signals, traders, and E2E test results.
+        run: node scripts/create-linear-incident.mjs || echo "Linear incident creation failed (non-blocking)"

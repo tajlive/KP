@@ -42,7 +42,7 @@ function appBaseUrl(): string {
   const b =
     process.env.PLAYWRIGHT_TEST_BASE_URL ||
     process.env.BASE_URL ||
-    "http://localhost:3001";
+    "http://localhost:3000";
   return b.replace(/\/$/, "");
 }
 
