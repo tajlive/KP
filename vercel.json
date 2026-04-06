@@ -11,6 +11,9 @@
     },
     "src/app/api/cron/daily-summary/route.ts": {
       "maxDuration": 120
+    },
+    "src/app/api/cron/tick/route.ts": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -90,6 +93,10 @@
     {
       "path": "/api/cron/update-usdt-nok",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/tick",
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/v1/cron/keepalive",
