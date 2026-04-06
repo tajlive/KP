@@ -34,6 +34,9 @@ const LEGACY_ALIASES: Record<string, TickStrategyEngineKey> = {
   trend_follow: "trend_follow",
   multi_signal: "multi_signal",
   grid: "grid",
+  // Korte aliases fra auto-trading/paper
+  multi: "multi_signal",
+  trend: "trend_follow",
 };
 
 export function resolveTickStrategyEngineKey(
