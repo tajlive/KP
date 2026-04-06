@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         console.error('Fee calculation RPC error:', error);
         // Fall through to local calculation
       } else {
-        result = (data as any[])?.[0];
+        result = (data as unknown[])?.[0];
       }
     }
     

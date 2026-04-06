@@ -457,7 +457,7 @@ export class PolicyEnsemble {
     const { fearGreedIndex } = state.market;
     
     let position = 0;
-    let confidence = 0.8;
+    const confidence = 0.8;
     
     // Only trade in clear conditions
     if (fearGreedIndex < 20 && maxDrawdown < 0.05) {
