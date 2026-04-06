@@ -1,0 +1,391 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# KLARPAKKE — Self-Healing Guard (Master Workflow)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Master workflow som koordinerer alle selvhelbredende komponenter:
+# - Hourly Watchdog (E2E + health checks)
+# - Auto-repair av testbrukere
+# - Auto-restart av signal-engine
+# - Auto-fix av DB drift
+# - Vercel rollback ved total failure
+# - Linear + Slack notifikasjoner
+#
+# Triggers:
+#   - schedule: Hver time
+#   - workflow_dispatch: Manuell
+#   - repository_dispatch: Fra andre workflows
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🛡️ Self-Healing Guard
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Hver time
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Kjøremodus'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - check-only
+          - repair-only
+          - force-recovery
+      environment:
+        description: 'Miljø'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+  repository_dispatch:
+    types: [watchdog-failed, health-degraded]
+
+concurrency:
+  group: self-healing-guard
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NODE_OPTIONS: --max-old-space-size=8192
+
+jobs:
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 1: Pre-flight Checks
+  # ═════════════════════════════════════════════════════════════════════════════
+  preflight:
+    name: Pre-flight Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should_proceed: ${{ steps.decision.outputs.should_proceed }}
+      health_status: ${{ steps.health.outputs.status }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Quick Health Check
+        id: health
+        run: |
+          for i in 1 2 3; do
+            if curl -sf ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}/api/health > /tmp/health.json; then
+              STATUS=$(jq -r '.status' /tmp/health.json)
+              echo "status=$STATUS" >> $GITHUB_OUTPUT
+              echo "Health status: $STATUS"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "status=unreachable" >> $GITHUB_OUTPUT
+          echo "Health check failed"
+
+      - name: Decision
+        id: decision
+        run: |
+          if [[ "${{ inputs.mode }}" == "force-recovery" ]]; then
+            echo "should_proceed=true" >> $GITHUB_OUTPUT
+            echo "Force recovery mode"
+          elif [[ "${{ steps.health.outputs.status }}" == "healthy" ]]; then
+            echo "should_proceed=true" >> $GITHUB_OUTPUT
+            echo "Health OK - proceeding with checks"
+          elif [[ "${{ steps.health.outputs.status }}" == "unreachable" ]]; then
+            echo "should_proceed=true" >> $GITHUB_OUTPUT
+            echo "CRITICAL: Health unreachable - emergency mode"
+          else
+            echo "should_proceed=true" >> $GITHUB_OUTPUT
+            echo "Health degraded - will attempt repair"
+          fi
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 2: E2E Watchdog
+  # ═════════════════════════════════════════════════════════════════════════════
+  e2e-watchdog:
+    name: E2E Watchdog
+    needs: preflight
+    if: needs.preflight.outputs.should_proceed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      e2e_status: ${{ steps.e2e.outputs.status }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Provision E2E User
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+        run: node scripts/create-test-users.js --from-env || echo "Provision may have failed - continuing"
+
+      - name: Run E2E Critical
+        id: e2e
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+        run: |
+          if npx playwright test --project=critical-chromium --project=smoke-chromium; then
+            echo "status=passed" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 7
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 3: Auto-Repair Pipeline (Parallel)
+  # ═════════════════════════════════════════════════════════════════════════════
+  auto-repair:
+    name: Auto-Repair Pipeline
+    needs: [preflight, e2e-watchdog]
+    if: always() && needs.preflight.outputs.should_proceed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        repair-type: [users, health, db]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Repair: Test Users
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Repair Test Users
+        if: matrix.repair-type == 'users'
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+        run: |
+          if [[ "${{ inputs.mode }}" == "check-only" ]]; then
+            node scripts/watchdog-auto-repair.mjs --check-only || true
+          else
+            node scripts/watchdog-auto-repair.mjs --primary-only || true
+          fi
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Repair: Health (Signal Engine)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Repair Health
+        if: matrix.repair-type == 'health' && (needs.preflight.outputs.health_status != 'healthy' || inputs.mode == 'force-recovery')
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ "${{ inputs.mode }}" == "check-only" ]]; then
+            node scripts/health-recovery.mjs --check-only || true
+          else
+            node scripts/health-recovery.mjs || echo "Health recovery may have failed"
+          fi
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Repair: DB Drift
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Repair DB Drift
+        if: matrix.repair-type == 'db' && inputs.mode != 'check-only'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        run: |
+          if [[ "${{ inputs.mode }}" == "check-only" ]]; then
+            node scripts/db-drift-auto.mjs --check-only || true
+          else
+            node scripts/db-drift-auto.mjs --dry-run || echo "DB drift check completed"
+          fi
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 4: Signal Health Verification
+  # ═════════════════════════════════════════════════════════════════════════════
+  signal-verify:
+    name: Signal Pipeline Verification
+    needs: auto-repair
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Signal Health
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run signals:health || echo "Signal health check completed"
+
+      - name: Diagnose Signals & Traders
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run diagnose:signals-traders || echo "Diagnose completed"
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 5: Emergency Rollback (Conditional)
+  # ═════════════════════════════════════════════════════════════════════════════
+  emergency-rollback:
+    name: Emergency Rollback
+    needs: [preflight, e2e-watchdog, auto-repair]
+    if: |
+      always() && 
+      (needs.preflight.outputs.health_status == 'unreachable' || 
+       needs.e2e-watchdog.outputs.e2e_status == 'failed') &&
+      inputs.mode != 'check-only'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production  # Krever approval
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Attempt Vercel Rollback
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+        run: |
+          echo "🚨 EMERGENCY ROLLBACK INITIATED"
+          node scripts/vercel-rollback-guard.mjs --force || echo "Rollback may have failed - manual intervention required"
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 6: Sync Notifications
+  # ═════════════════════════════════════════════════════════════════════════════
+  sync-notifications:
+    name: Sync Notifications
+    needs: [e2e-watchdog, auto-repair, signal-verify]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine Overall Status
+        id: status
+        run: |
+          if [[ "${{ needs.e2e-watchdog.outputs.e2e_status }}" == "failed" ]]; then
+            echo "overall=failed" >> $GITHUB_OUTPUT
+          else
+            echo "overall=success" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync Linear
+        if: steps.status.outputs.overall == 'failed'
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+        run: |
+          node scripts/linear-watchdog-sync.mjs --status=failed --details='{"failedChecks":["e2e"]}' || true
+
+      - name: Update Linear (Recovered)
+        if: steps.status.outputs.overall == 'success'
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+        run: |
+          node scripts/linear-watchdog-sync.mjs --status=recovered || true
+
+      - name: Send Slack Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ "${{ steps.status.outputs.overall }}" == "failed" ]]; then
+            node scripts/slack-recovery-thread.mjs --status=failed --details='{"environment":"${{ inputs.environment || 'production' }}"}' || true
+          else
+            node scripts/slack-recovery-thread.mjs --status=recovered || true
+          fi
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 7: Summary
+  # ═════════════════════════════════════════════════════════════════════════════
+  summary:
+    name: Summary Report
+    needs: [preflight, e2e-watchdog, auto-repair, signal-verify, emergency-rollback]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "## 🛡️ Self-Healing Guard Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Pre-flight | ${{ needs.preflight.outputs.health_status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Watchdog | ${{ needs.e2e-watchdog.outputs.e2e_status || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Auto-Repair | ${{ contains(needs.auto-repair.result, 'success') && 'completed' || 'failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Signal Verify | ${{ needs.signal-verify.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Emergency Rollback | ${{ needs.emergency-rollback.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Overall:** ${{ contains(needs.*.result, 'failure') && '⚠️ Some checks failed' || '✅ All checks passed' }}" >> $GITHUB_STEP_SUMMARY

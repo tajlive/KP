@@ -3,34 +3,62 @@
 **Repo:** [tajlive/KP](https://github.com/tajlive/KP)  
 Gå til: https://github.com/tajlive/KP/settings/secrets/actions
 
-## Automatisk fra `.env.local` (anbefalt)
+## Solo-mode: Minimum påkrevd (for CI/CD)
 
-Krever [GitHub CLI](https://cli.github.com/) (`gh auth login` med `repo`-tilgang):
+| Secret | Hvor finner du | Hvis mangler |
+|--------|----------------|--------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard → Settings → API | Build feiler |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API | Build feiler |
+| `VERCEL_TOKEN` | Vercel → Settings → Tokens | Deploy feiler |
+| `VERCEL_ORG_ID` | Vercel Dashboard → Settings → General | Deploy feiler (400) |
+| `VERCEL_PROJECT_ID` | Vercel Project → Settings → General | Deploy feiler (400) |
+
+## Solo-mode: Optional (workflows skipper hvis mangler)
+
+| Secret | Bruk | Hvis mangler |
+|--------|------|--------------|
+| `SUPABASE_SERVICE_ROLE_KEY` | E2E provision, watchdog repair | E2E skip, unit fortsetter |
+| `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` | E2E test login | Bruker default testbruker |
+| `SLACK_WEBHOOK_URL` | Varsling | Logger til fil/artifacts |
+| `LINEAR_API_KEY` / `LINEAR_TEAM_ID` | Issue tracking | Skip issue creation |
+| `SENTRY_AUTH_TOKEN` | Source maps | Build uten source maps |
+| `SUPABASE_ACCESS_TOKEN` | DB push/lint | Skip DB steg |
+
+## Hurtigoppsett med GitHub CLI
 
 ```bash
-npm run secrets:sync:github:dry   # vis hva som ville blitt satt (ingen skriving)
-npm run secrets:sync:github       # sett allowlisted secrets som finnes i .env.local
+# 1. Autentiser
+gh auth login
+
+# 2. Sett minimum secrets (erstatt med dine verdier)
+gh secret set NEXT_PUBLIC_SUPABASE_URL --repo tajlive/KP
+gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo tajlive/KP
+gh secret set VERCEL_TOKEN --repo tajlive/KP
+gh secret set VERCEL_ORG_ID --repo tajlive/KP
+gh secret set VERCEL_PROJECT_ID --repo tajlive/KP
+
+# 3. Optional (trykk Enter for å hoppe over)
+gh secret set SUPABASE_SERVICE_ROLE_KEY --repo tajlive/KP
+gh secret set E2E_USER_EMAIL --repo tajlive/KP
+gh secret set E2E_USER_PASSWORD --repo tajlive/KP
 ```
 
-Repo detekteres fra `git remote origin` eller `GITHUB_REPO=owner/repo`.  
-Kun nøkler som brukes i `.github/workflows/` er inkludert — se `scripts/sync-github-actions-secrets.mjs`.
+## Automatisk sync fra `.env.local`
+
+```bash
+npm run secrets:sync:github:dry    # Vis hva som ville blitt satt
+npm run secrets:sync:github        # Sett allowlisted secrets
+```
+
+## Verifisering
+
+Etter secrets er satt, push en endring til main eller kjør manuelt:
+```bash
+gh workflow run pr-check --ref main
+gh workflow run deploy --field environment=staging
+```
 
 ---
 
-Klikk "New repository secret" for hvert av disse (eller bruk `gh secret set NAME --repo tajlive/KP`):
-
-| Secret                       | Hvor finnes verdien                                                                                                                                                                                                                                                     |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SUPABASE_ACCESS_TOKEN        | supabase.com/dashboard/account/tokens → "Generate new token"                                                                                                                                                                                                            |
-| SUPABASE_DB_PASSWORD         | supabase.com/dashboard/project/vuxbjlykgmzskxbclquf/settings/database → "Database password"                                                                                                                                                                             |
-| NEXT_PUBLIC_VAPID_PUBLIC_KEY | Allerede i .env.local (BGz8FXj8dTrjCw8n_La...)                                                                                                                                                                                                                          |
-| VAPID_PRIVATE_KEY            | Allerede satt i Supabase Secrets — hent fra: supabase secrets list --project-ref vuxbjlykgmzskxbclquf                                                                                                                                                                   |
-| SENTRY_AUTH_TOKEN            | Sentry org **elbatt-chatbot**, prosjekt **klarpakke-production**. Opprett token på [Auth Tokens](https://elbatt-chatbot.sentry.io/settings/auth-tokens/) med scopes **project:releases** og **org:read**. Deretter: `gh secret set SENTRY_AUTH_TOKEN --repo tajlive/KP` |
-
-Etter secrets er satt:
-→ Push én liten endring til main, eller gå til:
-https://github.com/tajlive/KP/actions
-→ Klikk "Deploy Supabase" → "Run workflow"
-
-CI/CD kjører deretter AUTOMATISK ved alle fremtidige pushes til main
-som endrer filer i supabase/\*\*
+**Oppdatert:** 2026-04-06  
+**Solo-mode:** ✅ Ingen Slack/Linear/team påkrevd

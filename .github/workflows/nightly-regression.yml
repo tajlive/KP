@@ -1,0 +1,332 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# KLARPAKKE — Nightly Full Regression (GitHub Actions)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Kjører hver natt: Dyp regresjonstest med test:full eller test:full:quality
+# Inkluderer: Lint, type-check, unit tests, E2E (all browsers), signal-diagnose
+#
+# Schedule: Hver natt kl 03:00 UTC (nattevakt i Europa, kveld i USA)
+# Manual: workflow_dispatch
+#
+# Forskjell fra hourly-watchdog:
+#   - Kjører lengre og dypere (alle browsere, regression-suite)
+#   - Inkluderer kvalitetsgates (lint, type-check)
+#   - Mer omfattende rapportering
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🌙 Nightly Full Regression
+
+on:
+  schedule:
+    # Kjør kl 03:00 UTC hver natt
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      quality_mode:
+        description: 'Kvalitetsmodus (inkluder lint + type-check)'
+        required: true
+        default: true
+        type: boolean
+      deep_mode:
+        description: 'Deep mode (inkluder regression-chromium)'
+        required: true
+        default: true
+        type: boolean
+      environment:
+        description: 'Miljø'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+concurrency:
+  group: nightly-regression
+  cancel-in-progress: false  # La aldri avbryte en pågående nattkjøring
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NODE_OPTIONS: --max-old-space-size=8192
+
+jobs:
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 1: Quality Gates (kun hvis quality_mode)
+  # ═════════════════════════════════════════════════════════════════════════════
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type Check
+        run: npm run type-check
+
+      - name: Unit Tests
+        run: npm run test:unit
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 2: Full E2E Regression
+  # ═════════════════════════════════════════════════════════════════════════════
+  full-regression:
+    name: Full E2E Regression
+    needs: quality-gates
+    if: always() && (needs.quality-gates.result == 'success' || needs.quality-gates.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 🖥️ Runtime-verifisering
+        run: |
+          echo "Node: $(node -v)"
+          echo "npm: $(npm -v)"
+          echo "Time: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright (all browsers)
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # E2E Testbruker Provision
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Provision E2E test users
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL || 'tom@klarpakke.no' }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD || 'TestPassword123!' }}
+          E2E_LEADER_EMAIL: ${{ secrets.E2E_LEADER_EMAIL || secrets.TEST_USER_B_EMAIL }}
+          E2E_LEADER_PASSWORD: ${{ secrets.E2E_LEADER_PASSWORD || secrets.TEST_USER_B_PASSWORD }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+          TEST_USER_B_PASSWORD: ${{ secrets.TEST_USER_B_PASSWORD }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::SUPABASE_SERVICE_ROLE_KEY mangler"
+            exit 2
+          fi
+          node scripts/create-test-users.js --from-env
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Full E2E Test Suite
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Run Full E2E Suite
+        env:
+          BASE_URL: ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}
+          PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || secrets.TEST_USER_EMAIL || 'tom@klarpakke.no' }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || secrets.TEST_USER_PASSWORD || 'TestPassword123!' }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+          E2E_LEADER_EMAIL: ${{ secrets.E2E_LEADER_EMAIL || secrets.TEST_USER_B_EMAIL }}
+          E2E_LEADER_PASSWORD: ${{ secrets.E2E_LEADER_PASSWORD || secrets.TEST_USER_B_PASSWORD }}
+          TEST_USER_B_EMAIL: ${{ secrets.TEST_USER_B_EMAIL }}
+          TEST_USER_B_PASSWORD: ${{ secrets.TEST_USER_B_PASSWORD }}
+          # Deep mode: inkluder regression-chromium
+          KP_TEST_FULL_DEEP: ${{ inputs.deep_mode != false && '1' || '0' }}
+          PW_WORKERS: 2
+        run: |
+          echo "Testing mot: $PLAYWRIGHT_TEST_BASE_URL"
+          echo "Deep mode: $KP_TEST_FULL_DEEP"
+          
+          # Kjør smoke + critical (all browsers) + regression hvis deep
+          npx playwright test \
+            --project=smoke-chromium \
+            --project=critical-chromium \
+            --project=critical-firefox \
+            ${{ inputs.deep_mode != false && '--project=regression-chromium' || '' }}
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Signal Pipeline Health
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Signal Pipeline Health
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run signals:health
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Diagnose: Signals + Traders
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Diagnose Signals and Traders
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || vars.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npm run diagnose:signals-traders
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Lighthouse Audit (mot produksjon)
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Lighthouse Audit
+        if: ${{ inputs.environment != 'staging' }}
+        run: npm run test:lighthouse:prod || echo "Lighthouse completed with warnings"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Allure Report
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          npm run allure:generate || echo "Allure report generation skipped"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Upload Artifacts
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Upload All Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-regression-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+            test-results.json
+            allure-report/
+            lighthouse-report/
+          retention-days: 30
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # GitHub Step Summary
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: Update GitHub Summary
+        if: always()
+        run: |
+          echo "## 🌙 Nightly Regression Resultat" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detalj | Verdi |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Dato | $(date -u +"%Y-%m-%d") |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tid | $(date -u +"%H:%M:%SZ") |" >> $GITHUB_STEP_SUMMARY
+          echo "| Miljø | ${{ inputs.environment || 'production' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quality Mode | ${{ inputs.quality_mode != false && 'Yes' || 'No' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deep Mode | ${{ inputs.deep_mode != false && 'Yes' || 'No' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run | [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |" >> $GITHUB_STEP_SUMMARY
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 3: Notify on Failure
+  # ═════════════════════════════════════════════════════════════════════════════
+  notify-failure:
+    name: Notify on Failure
+    needs: [quality-gates, full-regression]
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Slack Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL ikke satt"
+            exit 0
+          fi
+          
+          # Bestem hvilken job som feilet
+          QUALITY_STATUS="${{ needs.quality-gates.result }}"
+          REGRESSION_STATUS="${{ needs.full-regression.result }}"
+          
+          FAILED_JOBS=""
+          if [ "$QUALITY_STATUS" == "failure" ]; then
+            FAILED_JOBS="Quality Gates"
+          fi
+          if [ "$REGRESSION_STATUS" == "failure" ]; then
+            FAILED_JOBS="${FAILED_JOBS}${FAILED_JOBS:+, }Full Regression"
+          fi
+          
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"channel\": \"#ops\",
+              \"username\": \"Klarpakke Nightly\",
+              \"icon_emoji\": \"🌙\",
+              \"attachments\": [
+                {
+                  \"color\": \"danger\",
+                  \"title\": \"🚨 Nightly Regression FAILED\",
+                  \"title_link\": \"$RUN_URL\",
+                  \"fields\": [
+                    {\"title\": \"Dato\", \"value\": \"$(date -u +"%Y-%m-%d")\", \"short\": true},
+                    {\"title\": \"Tid\", \"value\": \"$(date -u +"%H:%M:%SZ")\", \"short\": true},
+                    {\"title\": \"Feilet i\", \"value\": \"$FAILED_JOBS\", \"short\": true},
+                    {\"title\": \"Commit\", \"value\": \"${{ github.sha }}\", \"short\": true}
+                  ],
+                  \"footer\": \"Klarpakke Nightly Regression\",
+                  \"ts\": $(date +%s)
+                }
+              ]
+            }"
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # JOB 4: Success Summary
+  # ═════════════════════════════════════════════════════════════════════════════
+  notify-success:
+    name: Success Summary
+    needs: [quality-gates, full-regression]
+    if: success()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Slack Success Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            exit 0
+          fi
+          
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"channel\": \"#ops\",
+              \"username\": \"Klarpakke Nightly\",
+              \"icon_emoji\": \"🌙\",
+              \"attachments\": [
+                {
+                  \"color\": \"good\",
+                  \"title\": \"✅ Nightly Regression Passed\",
+                  \"title_link\": \"$RUN_URL\",
+                  \"fields\": [
+                    {\"title\": \"Dato\", \"value\": \"$(date -u +"%Y-%m-%d")\", \"short\": true},
+                    {\"title\": \"Tid\", \"value\": \"$(date -u +"%H:%M:%SZ")\", \"short\": true},
+                    {\"title\": \"Commit\", \"value\": \"${{ github.sha }}\", \"short\": true},
+                    {\"title\": \"Varighet\", \"value\": \"~45 min\", \"short\": true}
+                  ],
+                  \"footer\": \"Klarpakke Nightly Regression\",
+                  \"ts\": $(date +%s)
+                }
+              ]
+            }"

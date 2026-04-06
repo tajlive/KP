@@ -10,6 +10,7 @@ export interface TradeSignalContext {
   action: "buy" | "sell" | "hold";
   confidence: number;
   regime?: string;
+  strategy?: string;
   sizingPct?: number;
   stopLossPrice?: number;
   takeProfitPrice?: number;

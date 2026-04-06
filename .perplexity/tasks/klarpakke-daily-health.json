@@ -1,0 +1,8 @@
+{
+  "name": "Klarpakke Daily Health",
+  "description": "Daglig sjekk av systemhelse - DB, API, builds",
+  "schedule": "0 9 * * *",
+  "prompt": "Bruk kimi_medium: Kjør daglig health check for Klarpakke.\n\n1. Bruk kimi_shell: cd /Users/taj/klarpakke && npm run verify\n2. Bruk kimi_shell: npm run health:prod:gate 2>/dev/null || echo 'Prod health ikke tilgjengelig'\n3. Bruk github: Sjekk om det er noen failed workflows i tajlive/KP\n4. Bruk vercel: List siste deployments\n\nRapportér GO/NO-GO med:\n- ✅ Verifiserte punkter\n- ⚠️ Advarsler\n- ❌ Blokkeringer (hvis noen)",
+  "sources": ["kimi", "github", "vercel"],
+  "output": "daily-health-report"
+}

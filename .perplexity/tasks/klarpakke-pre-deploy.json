@@ -1,0 +1,8 @@
+{
+  "name": "Klarpakke Pre-Deploy Checklist",
+  "description": "Sjekkliste før deploy til produksjon",
+  "schedule": "manual",
+  "prompt": "Bruk kimi_large: Kjør pre-deploy checklist for Klarpakke.\n\nKRITISK - alle må være ✅:\n1. Bruk kimi_shell: cd /Users/taj/klarpakke && npm run lint\n2. Bruk kimi_shell: npm run type-check\n3. Bruk kimi_test: Kjør test:unit\n4. Bruk kimi_shell: npm run build\n5. Bruk kimi_shell: npm run verify\n\nVALIDERING:\n- Bruk supabase: Sjekk at DB-migrasjoner er synk\n- Bruk vercel: Bekreft at staging ser bra ut\n\nRapportér STRICT GO/NO-GO:\n## Status: GO / NO-GO\n\n### ✅ Verifisert\n- [x] Lint passerer\n- [x] Type-check passerer\n- [x] Unit tests passerer\n- [x] Build suksess\n- [x] Verify suksess\n\n### Neste steg\nHvis GO: Ready for deploy\nHvis NO-GO: Fiks blokkeringer først",
+  "sources": ["kimi", "supabase", "vercel"],
+  "output": "pre-deploy-report"
+}

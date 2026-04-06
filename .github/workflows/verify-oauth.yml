@@ -124,7 +124,7 @@ jobs:
     steps:
       - name: Notify Slack on failure
         if: needs.verify-oauth.result == 'failure'
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {
