@@ -199,7 +199,7 @@ export class RiskKernel {
     }
     
     // Check 7: Leverage limit
-    const leverageCheck = this.checkLeverage(adjustedTrade, state);
+    const leverageCheck = this.checkLeverage(adjustedTrade);
     if (!leverageCheck.allowed) {
       violations.push(this.createViolation('maxLeverage', 'critical', this.limits.maxLeverage, adjustedTrade.leverage, 'blocked'));
       return { allowed: false, violations };

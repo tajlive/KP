@@ -11,6 +11,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { ExecutionEvidence } from './execution-audit';
+import type { Database } from '@/types/database.types';
 
 // S3 client would be imported here
 // import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
@@ -106,7 +107,7 @@ export class AuditStore {
         results.s3Path = s3Result.path;
         
         // Update Supabase record with S3 path
-        if (results.supabaseId) {
+        if (results.supabaseId && s3Result.path) {
           await this.updateS3Path(results.supabaseId, s3Result.path);
         }
       } else {
@@ -172,8 +173,8 @@ export class AuditStore {
     }
     
     const records: AuditQueryResult[] = (data || []).map(row => ({
-      evidence: row.payload as ExecutionEvidence,
-      s3Path: row.s3_path,
+      evidence: (row.payload as unknown) as ExecutionEvidence,
+      s3Path: row.s3_path ?? undefined,
       retrievedFrom: row.s3_path ? 'both' : 'supabase'
     }));
     
@@ -269,7 +270,7 @@ export class AuditStore {
       let errors = 0;
       
       for (const record of data || []) {
-        const evidence = record.payload as ExecutionEvidence;
+        const evidence = (record.payload as unknown) as ExecutionEvidence;
         
         // Write to S3
         const s3Result = await this.persistToS3(evidence);
@@ -350,8 +351,8 @@ export class AuditStore {
         totalRecords: count || 0,
         supabaseRecords: count || 0,
         s3Records: 0, // Would query S3
-        oldestRecord: rangeData ? new Date(rangeData.created_at) : new Date(),
-        newestRecord: rangeDataNewest ? new Date(rangeDataNewest.created_at) : new Date(),
+        oldestRecord: (rangeData as { created_at: string } | null)?.created_at ? new Date((rangeData as { created_at: string }).created_at) : new Date(),
+        newestRecord: (rangeDataNewest as { created_at: string } | null)?.created_at ? new Date((rangeDataNewest as { created_at: string }).created_at) : new Date(),
         storageSizeBytes: 0 // Would calculate from DB stats
       };
       
@@ -404,7 +405,7 @@ export class AuditStore {
           evidence_hash: evidence.hash,
           order_id: evidence.orderId,
           user_id: evidence.clientId,
-          payload: evidence,
+          payload: evidence as unknown as Database['public']['Tables']['audit_log']['Insert']['payload'],
           created_at: evidence.createdAt.toISOString()
         })
         .select('id')

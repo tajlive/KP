@@ -18,6 +18,7 @@
 
 import { type MarketRegime, RegimeClassifier } from './regime-classifier';
 import { PPOAgent, ACTIONS } from '../rl/ppo-agent';
+import { type PortfolioState } from '../rl/sentiment-reward';
 
 export type PolicyType = 'v2-trend' | 'v2-dca' | 'v2-grid' | 'ppo-rl' | 'fallback' | 'no-trade';
 
@@ -87,6 +88,7 @@ export interface PolicyState {
     fearGreedTrend: number;
     volatility: number;
     trendStrength: number;
+    regime: 'bull' | 'bear' | 'neutral' | 'volatile';
   };
   portfolio: {
     totalEquity: number;
@@ -369,7 +371,8 @@ export class PolicyEnsemble {
     state: PolicyState,
     regime: MarketRegime
   ): Omit<PolicyDecision, 'regime' | 'explanation' | 'shouldTrade'> {
-    const { bbUpper, bbLower, bbMiddle, close } = state.prices;
+    const { close } = state.prices;
+    const { bbUpper, bbLower, bbMiddle } = state.indicators;
     
     let position = 0;
     let confidence = 0.5;
@@ -422,7 +425,7 @@ export class PolicyEnsemble {
       state.prices,
       state.indicators,
       state.market,
-      state.portfolio,
+      state.portfolio as PortfolioState,
       state.timeFeatures
     );
     

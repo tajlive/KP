@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "project": "Klarpakke",
+    "description": "KIMI CLI command aliases for Klarpakke"
+  },
+  "commands": {
+    "health": {
+      "description": "Sjekk produksjonshelse",
+      "command": "npm run health:prod:gate"
+    },
+    "verify": {
+      "description": "Verifiser miljø og paths",
+      "command": "npm run verify"
+    },
+    "status": {
+      "description": "Git status + prosjektstatus",
+      "command": "git status && npm run verify 2>/dev/null || echo 'verify ikke tilgjengelig'"
+    },
+    "dev": {
+      "description": "Start utviklingsserver",
+      "command": "npm run dev"
+    },
+    "build": {
+      "description": "Bygg prosjekt",
+      "command": "npm run build"
+    },
+    "lint": {
+      "description": "Kjør linter",
+      "command": "npm run lint"
+    },
+    "typecheck": {
+      "description": "TypeScript sjekk",
+      "command": "npm run type-check"
+    },
+    "test": {
+      "description": "Kjør unit tester",
+      "command": "npm run test:unit"
+    },
+    "test:e2e": {
+      "description": "Kjør E2E tester (critical)",
+      "command": "npm run test:e2e:critical:chromium"
+    },
+    "test:full": {
+      "description": "Full test suite",
+      "command": "npm run test:full"
+    },
+    "db:status": {
+      "description": "Sjekk DB migrasjonsstatus",
+      "command": "npm run db:status"
+    },
+    "db:push": {
+      "description": "Push DB endringer",
+      "command": "npm run db:push"
+    },
+    "db:gen": {
+      "description": "Generer TypeScript typer fra DB",
+      "command": "npm run db:gen-types"
+    },
+    "deploy": {
+      "description": "Deploy til produksjon",
+      "command": "npm run deploy:prod"
+    },
+    "deploy:staging": {
+      "description": "Deploy til staging",
+      "command": "vercel deploy --target=preview"
+    },
+    "mcp:check": {
+      "description": "Verifiser MCP konfigurasjon",
+      "command": "npm run mcp:validate 2>/dev/null || node scripts/validate-mcp-config.mjs"
+    },
+    "watchdog": {
+      "description": "Kjør watchdog sjekk",
+      "command": "npm run test:watchdog 2>/dev/null || bash scripts/hourly-external-user-watchdog.sh"
+    }
+  }
+}

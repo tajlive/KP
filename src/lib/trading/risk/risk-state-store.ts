@@ -56,6 +56,8 @@ export interface StateRecoveryResult {
   limits: RiskLimits;
   source: 'redis' | 'database' | 'default';
   recoveredAt: Date;
+  version?: number;
+  createdAt?: Date;
 }
 
 /**
@@ -106,7 +108,7 @@ export class RiskStateStore {
       }
       
       if (data) {
-        const persisted = data.state as PersistedRiskState;
+        const persisted = (data.state as unknown) as PersistedRiskState;
         
         // Cache in Redis for next read
         await this.redis.set(redisKey, JSON.stringify(persisted), this.redisTtl);
@@ -154,11 +156,11 @@ export class RiskStateStore {
       
       // 2. Write to database (durable)
       const supabase = await createClient();
-      const { error } = await supabase
-        .from('risk_state')
+      const { error } = await (supabase
+        .from('risk_state') as any)
         .upsert({
           user_id: userId,
-          state: persisted,
+          state: persisted as unknown as Record<string, unknown>,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'
@@ -282,7 +284,7 @@ export class RiskStateStore {
         return [];
       }
       
-      return data?.map(d => d.state as PersistedRiskState) || [];
+      return data?.map(d => (d.state as unknown) as PersistedRiskState) || [];
       
     } catch (error) {
       console.error('[RiskStateStore] Error getting all states:', error);

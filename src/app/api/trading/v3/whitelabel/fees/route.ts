@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     
     if (useRPC && clientId && partnerId) {
       // Use database function for calculation with high water mark
+      // @ts-expect-error - RPC function not in generated types yet
       const { data, error } = await supabase.rpc('calculate_aum_fees', {
         p_client_id: clientId,
         p_partner_id: partnerId,
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
         console.error('Fee calculation RPC error:', error);
         // Fall through to local calculation
       } else {
-        result = data?.[0];
+        result = (data as any[])?.[0];
       }
     }
     

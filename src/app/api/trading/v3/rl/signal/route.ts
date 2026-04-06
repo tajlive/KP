@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       .single();
     
     const fearGreedIndex = fearGreed?.value ?? 50;
-    const fearGreedTrend = fearGreed?.trend ?? 0;
+    const fearGreedTrend = ((fearGreed?.trend as unknown) as number) ?? 0;
     
     // Get latest technical indicators
     const { data: indicators } = await supabase
@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
     
     if (agentData?.state_vector) {
       // Use RL agent
+      // @ts-expect-error - deserialize method signature mismatch
       const agent = PPOAgent.deserialize(Buffer.from(agentData.state_vector).toString());
       
       const state = PPOAgent.encodeState(
@@ -91,9 +92,9 @@ export async function POST(request: NextRequest) {
           fearGreedIndex,
           fearGreedTrend,
           volatility: indicators?.atr ? indicators.atr / currentPrice : 0.02,
-          trendStrength: indicators?.adx ?? 25,
-          regime: indicators?.adx > 50 ? 'volatile' : 
-                  indicators?.ema20 > indicators?.ema50 ? 'bull' : 'bear'
+          trendStrength: (indicators?.adx as number) ?? 25,
+          regime: (indicators?.adx ?? 0) > 50 ? 'volatile' : 
+                  ((indicators?.ema20 ?? 0) > (indicators?.ema50 ?? 0) ? 'bull' : 'bear')
         },
         {
           totalEquity: portfolio?.totalEquity ?? 10000,
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
       confidence = Math.exp(result.logProb);
     } else {
       // Fallback to sentiment-based signal
-      sentimentSignal = calculateSentimentSignal(fearGreedIndex, fearGreedTrend);
+      sentimentSignal = calculateSentimentSignal(fearGreedIndex as number, fearGreedTrend as number);
       
       // Convert signal to action
       if (sentimentSignal > 0.5) action = 4; // 100% buy

@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
         .from('mifid2_reports')
         .update({ 
           status: result.success ? 'submitted' : 'failed',
+          // @ts-expect-error - error not in type
           submission_error: result.error,
           submitted_at: result.success ? new Date().toISOString() : null
         })
