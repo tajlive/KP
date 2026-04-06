@@ -109,6 +109,13 @@ export class RegimeClassifier {
   }
   
   private applyRegimePersistence(rawRegime: MarketRegime): MarketRegime {
+    // Allow immediate regime detection from unknown state
+    if (this.currentRegime === 'unknown') {
+      this.currentRegime = rawRegime;
+      this.regimeBars = 1;
+      return rawRegime;
+    }
+    
     if (rawRegime === this.currentRegime) {
       this.regimeBars++;
       return rawRegime;

@@ -16,8 +16,7 @@ import { getRiskStateStore } from "@/lib/trading/risk/risk-state-store";
 import { getAuditStore } from "@/lib/trading/execution/audit-store";
 import { OutboxRecovery } from "@/lib/trading/core/outbox-recovery";
 import { getKillSwitchStatus, getThresholds } from "@/lib/trading/core/outbox-monitor";
-// @ts-expect-error - RiskKernel export issue
-import { RiskKernel } from "@/lib/trading/risk";
+import { RiskKernel } from "@/lib/trading/risk/risk-kernel";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -195,7 +194,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const kernel = new RiskKernel(limits);
     const result = kernel.checkTrade(
       { side: 'buy', quantity: 100, price: 100, notional: 10000, leverage: 1 },
-      { equity: 100000, peakEquity: 100000, dailyPnl: 0, openPositions: 0, totalRisk: 0, marginUsed: 0 }
+      { equity: 100000, peakEquity: 100000, dailyPnl: 0, openPositions: 0, openNotional: 0, currentLeverage: 0, consecutiveLosses: 0, tradesToday: 0, tradesThisHour: 0, volatilitySpikeActive: false, volatilityCooldownEnd: null, consecutiveLossCooldownEnd: null, manualBlock: false, lastTradeTime: null, currentTime: new Date() }
     );
     
     results.checks.riskKernel.latency = Date.now() - checkStart;
