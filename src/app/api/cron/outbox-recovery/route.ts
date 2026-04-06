@@ -126,7 +126,7 @@ async function sendAlert(
     severity: 'info' | 'warning' | 'critical';
     component: string;
     message: string;
-    details?: any;
+    details?: unknown;
   }
 ): Promise<void> {
   // Store alert in database
@@ -134,7 +134,7 @@ async function sendAlert(
     severity: alert.severity,
     component: alert.component,
     message: alert.message,
-    details: alert.details,
+    details: alert.details as any,
     created_at: new Date().toISOString(),
     acknowledged: false
   });

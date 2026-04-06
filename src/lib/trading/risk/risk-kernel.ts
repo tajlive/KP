@@ -135,7 +135,7 @@ export class RiskKernel {
     adjustedTrade?: typeof proposedTrade;
   } {
     const violations: RiskViolation[] = [];
-    let adjustedTrade = { ...proposedTrade };
+    const adjustedTrade = { ...proposedTrade };
     
     // Check 1: Daily loss limit
     const dailyLossCheck = this.checkDailyLoss(state);

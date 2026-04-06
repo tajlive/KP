@@ -171,8 +171,10 @@ const nextConfig = {
       { source: "/simulator", destination: "/paper", permanent: true },
       
       // API v1 Consolidation (Script 04 - Phase 1)
-      // Trading APIs
-      { source: "/api/trading/:path*", destination: "/api/v1/trading/:path*", permanent: true },
+      // Trading APIs (exclude v3 which is new)
+      { source: "/api/trading/execute", destination: "/api/v1/trading/execute", permanent: true },
+      { source: "/api/trading/sessions/:path*", destination: "/api/v1/trading/sessions/:path*", permanent: true },
+      { source: "/api/trading/mode", destination: "/api/v1/trading/mode", permanent: true },
       { source: "/api/paper-trading/:path*", destination: "/api/v1/trading/:path*?mode=paper", permanent: true },
       // Webhooks (except Stripe - keep original for signature verification)
       { source: "/api/webhooks/resend/:path*", destination: "/api/v1/webhooks/resend/:path*", permanent: true },
