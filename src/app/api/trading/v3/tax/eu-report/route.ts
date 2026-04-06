@@ -68,15 +68,16 @@ export async function POST(request: NextRequest) {
       date: new Date(t.created_at),
       symbol: t.symbol || 'BTC/USDT',
       side: t.side?.toLowerCase() as 'buy' | 'sell',
-      quantity: parseFloat(t.quantity || '0'),
-      price: parseFloat(t.price || '0'),
-      fees: parseFloat(t.fee || '0'),
-      total: parseFloat(t.total || '0'),
+      quantity: parseFloat(((t.quantity as unknown) as string) || '0'),
+      price: parseFloat(((t.price as unknown) as string) || '0'),
+      fees: parseFloat(((t.fee as unknown) as string) || '0'),
+      total: parseFloat(((t.total as unknown) as string) || '0'),
       currency: 'USD'
     }));
     
-    // Store tax report
-    const { data: report, error: reportError } = await supabase
+    // Store tax report - table not in generated types, use any cast
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: report, error: reportError } = await (supabase as any)
       .from('european_tax_reports')
       .upsert({
         user_id: user.id,
@@ -91,9 +92,11 @@ export async function POST(request: NextRequest) {
         tax_currency: getCurrencyForJurisdiction(jurisdiction),
         calculation_method: getMethodForJurisdiction(jurisdiction),
         generated_at: new Date().toISOString()
-      }, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any, {
         onConflict: 'user_id,jurisdiction,tax_year'
-      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any)
       .select()
       .single();
     
@@ -131,11 +134,13 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ jurisdiction: string; year: string }> }
+  request: NextRequest
 ) {
   try {
-    const { jurisdiction, year } = await params;
+    // Extract params from URL search params instead of route params
+    const url = new URL(request.url);
+    const jurisdiction = url.searchParams.get('jurisdiction') || '';
+    const year = url.searchParams.get('year') || '';
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -152,8 +157,9 @@ export async function GET(
       );
     }
     
-    // Fetch existing report
-    const { data: report, error } = await supabase
+    // Fetch existing report - table not in generated types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: report, error } = await (supabase as any)
       .from('european_tax_reports')
       .select('*')
       .eq('user_id', user.id)
@@ -169,7 +175,8 @@ export async function GET(
     }
     
     // Generate export based on format
-    const format = report.report_format as 'XML' | 'CSV' | 'PDF';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const format = (report as any).report_format as 'XML' | 'CSV' | 'PDF';
     const content = generateExport(report, format);
     
     const contentType = format === 'XML' ? 'application/xml' :

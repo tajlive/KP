@@ -1,5 +1,54 @@
 # Klarpakke Agent Guide
 
+## KIMI CLI i Klarpakke (hurtigreferanse)
+
+KIMI er primæragent for all kodeendring i dette prosjektet.
+
+### Kjerneregel: YOLO + Verifiser
+- **YOLO-modus aktiv:** Implementer uten å spørre om bekreftelse
+- **Verifiser først:** Kjør sjekker før endring
+- **Minimal endring:** Kun det som må til
+- **GO/NO-GO alltid:** Tydelig statusrapport
+
+### Raske KIMI-kommandoer
+```bash
+# Helse & Status
+kimi health          # npm run health:prod:gate
+kimi verify          # npm run verify
+kimi status          # git status + sjekk
+
+# Utvikling  
+kimi dev             # npm run dev
+kimi build           # npm run build
+kimi lint            # npm run lint
+kimi typecheck       # npm run type-check
+
+# Testing
+kimi test            # npm run test:unit
+kimi test:e2e        # npm run test:e2e:critical:chromium
+
+# Database
+kimi db:status       # npm run db:status
+kimi db:push         # npm run db:push
+kimi db:gen          # npm run db:gen-types
+
+# Deploy
+kimi deploy          # npm run deploy:prod
+```
+
+### KIMI Templates (i .kimi/templates/)
+- `feature.md` – Ny feature
+- `bugfix.md` – Bug-fix
+- `refactor.md` – Refaktorering
+
+### Viktigst å huske
+1. For all kode i `/Users/taj/klarpakke`: Bruk KIMI-først-regelen
+2. Hvis KIMI ikke er tilgjengelig: Si det eksplisitt
+3. Alltid GO/NO-GO i output
+4. Se `.kimi/AGENT-KLARPAKKE.md` for full guide
+
+---
+
 ## PL/pgSQL-regler (aldri bryt disse)
 
 - **DECLARE må alltid stå på funksjons-toppnivå**, aldri inne i BEGIN

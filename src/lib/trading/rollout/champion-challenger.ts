@@ -365,7 +365,7 @@ export class ChampionChallengerRollout {
       compare('Max Drawdown', champion.maxDrawdown, challenger.maxDrawdown, false),
       compare('Win Rate', champion.winRate, challenger.winRate, true),
       compare('Error Rate', champion.errorRate, challenger.errorRate, false)
-    ];
+    ] as { metric: string; champion: number; challenger: number; difference: number; winner: PolicyVersion }[];
   }
   
   /**

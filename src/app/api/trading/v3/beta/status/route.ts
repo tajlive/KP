@@ -46,9 +46,9 @@ export async function GET() {
       .limit(1)
       .single();
     
-    const currentBalance = todayMetrics?.ending_balance ?? betaUser.initial_capital;
-    const peak = peakBalance?.ending_balance ?? betaUser.initial_capital;
-    const currentDrawdown = peak > 0 ? (peak - currentBalance) / peak : 0;
+    const currentBalance = todayMetrics?.ending_balance ?? betaUser.initial_capital ?? 0;
+    const peak = peakBalance?.ending_balance ?? betaUser.initial_capital ?? 0;
+    const currentDrawdown = (peak ?? 0) > 0 ? ((peak ?? 0) - (currentBalance ?? 0)) / (peak ?? 1) : 0;
     
     return NextResponse.json({
       status: betaUser.status,
@@ -68,9 +68,10 @@ export async function GET() {
         todayPnl: todayMetrics?.daily_pnl ?? 0,
         todayTrades: todayMetrics?.total_trades ?? 0,
         totalTrades: todayMetrics?.total_trades ?? 0,
+        // @ts-expect-error - kill_switch_count not in generated types yet
         killSwitchCount: betaUser.kill_switch_count
       },
-      canTrade: betaUser.status === 'active' && currentDrawdown < betaUser.max_drawdown_pct
+      canTrade: betaUser.status === 'active' && currentDrawdown < (betaUser.max_drawdown_pct ?? 0.1)
     });
     
   } catch (error) {

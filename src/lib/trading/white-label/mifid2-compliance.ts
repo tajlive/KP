@@ -143,6 +143,8 @@ export interface SuitabilityAssessment {
   result: ProductSuitability;
   /** Reasons if not suitable */
   notSuitableReasons?: string[];
+  /** Appropriateness test for complex products */
+  appropriatenessTest?: boolean;
 }
 
 export interface ProductGovernance {
@@ -562,7 +564,7 @@ export class HighWaterMarkCalculator {
   updateHighWaterMark(clientId: string, currentValue: number): number {
     const currentHWM = this.highWaterMarks.get(clientId) || 0;
     const newHWM = Math.max(currentHWM, currentValue);
-    this.highWaterMark.set(clientId, newHWM);
+    this.highWaterMarks.set(clientId, newHWM);
     return newHWM;
   }
   

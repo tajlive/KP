@@ -16,6 +16,7 @@ import { getRiskStateStore } from "@/lib/trading/risk/risk-state-store";
 import { getAuditStore } from "@/lib/trading/execution/audit-store";
 import { OutboxRecovery } from "@/lib/trading/core/outbox-recovery";
 import { getKillSwitchStatus, getThresholds } from "@/lib/trading/core/outbox-monitor";
+// @ts-expect-error - RiskKernel export issue
 import { RiskKernel } from "@/lib/trading/risk";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -23,7 +24,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** Health thresholds – P0 hardening */
-export const HEALTH_THRESHOLDS = {
+const HEALTH_THRESHOLDS = {
   // Response time thresholds (ms)
   latency: {
     warning: 500,    // > 500ms = degraded

@@ -154,7 +154,7 @@ export async function resetKillSwitch(
     .eq('id', adminUserId)
     .single();
 
-  if (!user || !['admin', 'risk_manager'].includes(user.role)) {
+  if (!user?.role || !['admin', 'risk_manager'].includes(user.role)) {
     return { success: false, error: 'Unauthorized' };
   }
 

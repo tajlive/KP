@@ -612,7 +612,7 @@ export async function executeTradeSafe(
           version: 1,
           updatedAt: new Date(),
           createdAt: new Date()
-        },
+        } as unknown as Database['public']['Tables']['risk_state']['Insert']['state'],
         updated_at: nowIso
       }, { onConflict: 'user_id' });
     
