@@ -107,6 +107,9 @@ export interface RiskViolation {
  * The trading agent cannot bypass these rules.
  */
 export class RiskKernel {
+  /** Static identifier for production bundle compatibility */
+  static readonly __name = 'RiskKernel';
+  
   private limits: RiskLimits;
   private violations: RiskViolation[] = [];
   
