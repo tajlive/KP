@@ -43,27 +43,15 @@ export default function OnboardingStep4() {
       }
 
       // Redirect hvis brukeren er på feil steg
-      if (!profile?.onboarding_step || profile.onboarding_step < 3) {
-        const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step2-experience",
-          "/onboarding/step3-trading-mode",
-          "/onboarding/step4-binance",
-        ];
-        router.push(steps[profile?.onboarding_step || 0]);
+      // NY: 3-stegs flyt - step4 er nå valgfritt og kan aksesseres når som helst etter step3
+      if (!profile?.onboarding_step || profile.onboarding_step < 1) {
+        router.push("/onboarding/step1-welcome");
         return;
       }
 
-      if (profile.onboarding_step > 3) {
-        const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step2-experience",
-          "/onboarding/step3-trading-mode",
-          "/onboarding/step4-binance",
-          "/onboarding/step5-complete",
-        ];
-        router.push(steps[profile.onboarding_step]);
-        return;
+      if (profile.onboarding_step >= 3) {
+        // Allerede fullført hovedflyten, tillat å komme tilbake for å koble Binance
+        // men ikke redirect
       }
 
       // Hvis allerede koblet, gå videre
