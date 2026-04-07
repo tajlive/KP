@@ -849,31 +849,40 @@ async function handleToolCall(name, args) {
         return { content: [{ type: "text", text: `⚡ Output:\n${shellResult.output}` }] };
       }
 
-      // === TEST ===
+      // === TEST - Kaller kimi CLI med ren argv ===
       case "kimi_test": {
         const testType = args.type || "unit";
-        const testPath = args.path;
-        const coverage = args.coverage ? " med coverage" : "";
+        const testArgs = [];
         
-        let cmd;
+        // Bygg opp argv array: ['kimi', 'test', testType, ...extraArgs]
         switch (testType) {
           case "unit":
-            cmd = testPath ? `npm run test:unit -- ${testPath}${coverage}` : `npm run test:unit${coverage}`;
+            testArgs.push('unit');
+            if (args.path) testArgs.push(args.path);
+            if (args.coverage) testArgs.push('--coverage');
             break;
           case "e2e":
-            cmd = testPath ? `npm run test:e2e -- ${testPath}` : "npm run test:e2e";
+            testArgs.push('e2e');
+            if (args.path) testArgs.push(args.path);
             break;
           case "critical":
-            cmd = "npm run test:e2e:critical";
+            testArgs.push('critical');
             break;
           case "full":
-            cmd = "npm run test:full";
+            testArgs.push('full');
             break;
           default:
-            cmd = testPath ? `npm test -- ${testPath}` : "npm test";
+            testArgs.push(testType);
         }
         
-        return await callKimi(`Kjør tester: ${cmd}. Gi meg en kort rapport med: 1) Antall passerte/feilede, 2) Kritiske feil, 3) Anbefalinger.`, ["--yolo"]);
+        const result = runKimiCLI('test', testArgs, 300000);
+        if (result.debug) {
+          return { content: [{ type: 'text', text: `[DEBUG] kimi_test argv: ${JSON.stringify(result.argv)}` }] };
+        }
+        if (result.error) {
+          return { content: [{ type: 'text', text: result.stdout || result.error }], isError: true };
+        }
+        return { content: [{ type: 'text', text: result.output }] };
       }
 
 // ============================================================================
@@ -1100,6 +1109,9 @@ function runSmokeTest() {
     { tool: 'kimi_ci', args: {}, expectedCmd: ['kimi', 'ci'] },
     { tool: 'kimi_monitor', args: { check: 'full' }, expectedCmd: ['kimi', 'monitor', 'full'] },
     { tool: 'kimi_deploy', args: { target: 'preview' }, expectedCmd: ['kimi', 'deploy', 'preview'] },
+    { tool: 'kimi_test', args: { type: 'unit' }, expectedCmd: ['kimi', 'test', 'unit'] },
+    { tool: 'kimi_test', args: { type: 'full' }, expectedCmd: ['kimi', 'test', 'full'] },
+    { tool: 'kimi_test', args: { type: 'e2e', path: 'login.spec.ts' }, expectedCmd: ['kimi', 'test', 'e2e', 'login.spec.ts'] },
   ];
   
   let passed = 0;
@@ -1114,6 +1126,12 @@ function runSmokeTest() {
         case 'kimi_ci': resolvedCmd = ['kimi', 'ci']; break;
         case 'kimi_monitor': resolvedCmd = ['kimi', 'monitor', test.args.check || 'full']; break;
         case 'kimi_deploy': resolvedCmd = ['kimi', 'deploy', test.args.target || 'preview']; break;
+        case 'kimi_test': {
+          const testArgs = [test.args.type || 'unit'];
+          if (test.args.path) testArgs.push(test.args.path);
+          resolvedCmd = ['kimi', 'test', ...testArgs];
+          break;
+        }
       }
       
       const match = JSON.stringify(resolvedCmd) === JSON.stringify(test.expectedCmd);
