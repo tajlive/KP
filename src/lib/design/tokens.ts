@@ -64,7 +64,7 @@ export const BRAND = {
     "focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2",
   /** For Radix Switch etc. */
   dataChecked: "data-[state=checked]:bg-brand-500",
-  gradient: "bg-gradient-to-br from-brand-500 to-brand-600",
+  gradient: "bg-linear-to-br from-brand-500 to-brand-600",
   secondary:
     "bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white",
   danger: "bg-red-600 hover:bg-red-700 text-white",

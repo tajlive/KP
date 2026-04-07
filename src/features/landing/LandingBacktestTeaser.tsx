@@ -189,7 +189,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                     <div className="flex flex-wrap items-center justify-between gap-4">
                       <div>
                         <h3 className="text-lg font-semibold text-kp-text-primary">
-                          📊 Estimert avkastning — {months} måneder
+                          <BarChart3 className="w-5 h-5 inline mr-1" /> Estimert avkastning — {months} måneder
                         </h3>
                         <p className="text-sm text-kp-text-secondary">
                           Profil: {PRESET_TO_UI_LABEL[presetProfile]} • {estimate.preset.strategyLabel} • {estimate.preset.asset}

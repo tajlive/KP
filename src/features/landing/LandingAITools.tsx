@@ -12,7 +12,7 @@ export default async function LandingAITools({ locale }: Props) {
     <section className={`py-16 md:py-24 ${SURFACE.BG_LIGHT} border-t border-slate-200`}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#0052FF]/10 text-[#0052FF] rounded-full text-sm font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-500/10 text-brand-500 rounded-full text-sm font-semibold mb-4">
             <Sparkles className="w-4 h-4" aria-hidden />
             {t('badge')}
           </div>
@@ -27,8 +27,8 @@ export default async function LandingAITools({ locale }: Props) {
         <div className="grid md:grid-cols-2 gap-6">
           <div className={`${CARD.hover} flex flex-col`}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#0052FF]/10 flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-[#0052FF]" aria-hidden />
+              <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-brand-500" aria-hidden />
               </div>
               <h3 className="text-xl font-bold text-slate-900">
                 {t('marketBrief.title')}
@@ -47,8 +47,8 @@ export default async function LandingAITools({ locale }: Props) {
 
           <div className={`${CARD.hover} flex flex-col`}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#0052FF]/10 flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-[#0052FF]" aria-hidden />
+              <div className="w-12 h-12 rounded-xl bg-brand-500/10 flex items-center justify-center">
+                <MessageSquare className="w-6 h-6 text-brand-500" aria-hidden />
               </div>
               <h3 className="text-xl font-bold text-slate-900">
                 {t('strategyAdvisor.title')}

@@ -90,7 +90,7 @@ export function LiveSignalFeed() {
       <div className="flex items-center gap-2 mb-4 px-1">
         <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
         <span className={`${MARKET_DESK.title} text-slate-300`}>
-          <Zap className="h-3 w-3 text-[#0052FF] shrink-0" aria-hidden />
+          <Zap className="h-3 w-3 text-brand-500 shrink-0" aria-hidden />
           {t("liveSignalFeed.title")}
         </span>
         <span
@@ -136,7 +136,7 @@ export function LiveSignalFeed() {
       <div className="mt-4 pt-3 border-t border-slate-700/50 flex justify-center">
         <Link
           href={`/${locale}/paper-trading`}
-          className="text-[10px] font-bold text-[#0052FF] hover:text-[#3d7aff] uppercase tracking-tight transition-colors"
+          className="text-[10px] font-bold text-brand-500 hover:text-brand-400 uppercase tracking-tight transition-colors"
         >
           {t("liveSignalFeed.seeAll")}
         </Link>
