@@ -15,6 +15,61 @@ export type TradeStatus =
 export type OrderType = "market" | "limit" | "stop_loss" | "take_profit";
 export type TradingPhase = "paper" | "micro" | "small" | "full";
 
+// ============================================================================
+// TRADE REASON CODES - For brukerforklaringer
+// ============================================================================
+
+export type TradeReasonCode =
+  // Kjøp-reasons
+  | "RSI_DIP_BUY"           // RSI falt under terskel -> kjøp
+  | "SMA_CROSSOVER_BUY"     // SMA kort krysset over lang -> kjøp
+  | "TREND_BREAKOUT_BUY"    // Pris brøt over trendlinje -> kjøp
+  | "GRID_BUY"              // Pris falt til grid-nivå -> kjøp
+  | "DCA_INTERVAL_BUY"      // DCA interval nådd -> kjøp
+  | "MULTI_SIGNAL_BUY"      // Flere signaler alignet -> kjøp
+  | "MEAN_REVERSION_BUY"    // Pris under gjennomsnitt -> kjøp
+  // Salg-reasons
+  | "TAKE_PROFIT_SELL"      // Målpris nådd -> selg
+  | "STOP_LOSS_SELL"        // Stoploss nådd -> selg
+  | "TRAILING_TP_SELL"      // Trailing take profit -> selg
+  | "PARTIAL_TP_SELL"       // Delvis gevinstsikring -> selg
+  | "TREND_REVERSAL_SELL"   // Trend reversering -> selg
+  | "SMA_CROSSOVER_SELL"    // SMA kort krysset under lang -> selg
+  // Risk/Guardrail blocks
+  | "DAILY_DRAWDOWN_HIT"    // Daglig tapsgrense nådd -> blokker
+  | "EDGE_FILTER_SKIP"      // For lav forventet edge -> skip
+  | "GLOBAL_RISK_LIMIT_HIT" // Global risiko-limit nådd -> blokker
+  | "MANUAL_SELL"           // Bruker solgte manuelt
+  | "UNKNOWN";              // Ukjent årsak (fallback)
+
+export interface TradeReasonParams {
+  rsi?: number;                    // RSI verdi ved trade
+  smaFast?: number;               // Kort SMA verdi
+  smaSlow?: number;               // Lang SMA verdi
+  priceChange24h?: number;        // Prisendring siste 24t (%)
+  dropFromPeak?: number;          // Fall fra topp (%)
+  gridLevel?: number;             // Grid nivå
+  intervalMinutes?: number;       // DCA interval
+  profitPct?: number;             // Gevinst prosent
+  lossPct?: number;               // Tap prosent
+  drawdownPct?: number;           // Drawdown prosent
+  expectedEdge?: number;          // Forventet edge etter fees
+  confidence?: number;            // Signal konfidens
+  [key: string]: number | string | undefined;
+}
+
+export interface IndicatorSnapshot {
+  rsi?: number;
+  macd?: number;
+  macd_signal?: number;
+  sma_20?: number;
+  sma_50?: number;
+  price?: number;
+  price_24h_ago?: number;
+  volatility?: number;
+  timestamp: string;
+}
+
 /**
  * Risk Configuration - embedded in trading_sessions.risk_config
  */
@@ -135,6 +190,11 @@ export interface Trade {
 
   // Metadata
   strategy_signal: Record<string, unknown> | null;
+
+  // Explanation & Reasoning (Nytt for trade forklaring)
+  reason_code?: TradeReasonCode;
+  reason_params?: TradeReasonParams;
+  indicator_snapshot?: IndicatorSnapshot;
 
   // Timestamps
   opened_at?: string;
