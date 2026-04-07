@@ -289,6 +289,17 @@
     "description4": "Education first",
     "paymentLabel": "Secure payment methods"
   },
+  "leaderboard": {
+    "title": "Top Performing Traders",
+    "subtitle": "See who has the best returns this month",
+    "viewAll": "View full leaderboard",
+    "join": "Join now",
+    "rank": "Rank",
+    "trader": "Trader",
+    "profit": "Return",
+    "monthly": "This month",
+    "allTime": "All time"
+  },
   "stickyCTA": {
     "label": "Start for free"
   }

@@ -268,6 +268,17 @@
     "description4": "Utdanning først",
     "paymentLabel": "Trygge betalingsmåter"
   },
+  "leaderboard": {
+    "title": "Mest lønnsomme tradere",
+    "subtitle": "Se hvem som har best avkastning denne måneden",
+    "viewAll": "Se full leaderboard",
+    "join": "Bli med",
+    "rank": "Plassering",
+    "trader": "Trader",
+    "profit": "Avkastning",
+    "monthly": "Denne måneden",
+    "allTime": "Gjennom alle tider"
+  },
   "stickyCTA": {
     "label": "Start gratis nå"
   }
