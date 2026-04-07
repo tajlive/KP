@@ -7,7 +7,7 @@
 import { executeTrade } from "@/lib/trading/safety";
 import { paperExecuteSuccessResponseSchema } from "@/lib/trading/safety/paper-execute-success-response";
 import { getUsdtToNokRateAsync } from "@/lib/trading/currency";
-import { createServerClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -36,8 +36,7 @@ const bodySchema = z.union([
 
 export async function POST(request: NextRequest) {
   try {
-    const response = NextResponse.next();
-    const supabase = createServerClient(request, response);
+    const supabase = await createClient();
     const {
       data: { user },
       error: authError,

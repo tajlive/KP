@@ -24,6 +24,7 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
 
   // Cloudflare Pages compatibility
+  // Note: API routes should not be affected by trailingSlash
   trailingSlash: false,
 
   // Transpile next-intl and @tanstack/react-query to avoid webpack "reading 'call'" issues
