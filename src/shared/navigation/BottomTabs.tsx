@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { MOBILE_BOTTOM_TABS } from "@/lib/navigation/config";
 
-type TabId = "home" | "trade" | "ai" | "portfolio" | "more";
+type TabId = "home" | "paper" | "trade" | "courses" | "profile";
 
 interface Tab {
   id: TabId;
@@ -123,13 +124,27 @@ const MenuFilled = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const TABS: Tab[] = [
-  { id: "home", labelKey: "home", href: "/dashboard", icon: HomeIcon, filledIcon: HomeFilled },
-  { id: "trade", labelKey: "trade", href: "/dashboard/trade", icon: TrendingUpIcon, filledIcon: TrendingUpFilled },
-  { id: "ai", labelKey: "ai", href: "/dashboard/ai", icon: BotIcon, filledIcon: BotFilled },
-  { id: "portfolio", labelKey: "portfolio", href: "/dashboard/portfolio", icon: WalletIcon, filledIcon: WalletFilled },
-  { id: "more", labelKey: "more", href: "/dashboard/settings", icon: MenuIcon, filledIcon: MenuFilled },
-];
+// Map icon names from nav config to icon components
+const ICON_MAP: Record<string, { icon: React.FC<{ className?: string }>, filledIcon: React.FC<{ className?: string }> }> = {
+  Home: { icon: HomeIcon, filledIcon: HomeFilled },
+  Gamepad2: { icon: WalletIcon, filledIcon: WalletFilled }, // Using wallet for paper trading
+  TrendingUp: { icon: TrendingUpIcon, filledIcon: TrendingUpFilled },
+  BookOpen: { icon: GraduationCapIcon, filledIcon: GraduationCapFilled },
+  User: { icon: UserIcon, filledIcon: UserFilled },
+  Bot: { icon: BotIcon, filledIcon: BotFilled },
+};
+
+// Build tabs from nav config
+const TABS: Tab[] = MOBILE_BOTTOM_TABS.map(navItem => {
+  const icons = ICON_MAP[navItem.icon || 'Home'] || ICON_MAP.Home;
+  return {
+    id: navItem.key as TabId,
+    labelKey: navItem.labelKey.replace('dashboard.sidebar.', '').replace('navigation.', ''),
+    href: navItem.href,
+    icon: icons.icon,
+    filledIcon: icons.filledIcon,
+  };
+});
 
 const ACTIVE_COLOR = "#2563eb";
 const INACTIVE_COLOR = "#6b7280";

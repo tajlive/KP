@@ -46,25 +46,15 @@ export default function OnboardingStep3() {
       }
 
       // Redirect hvis brukeren er på feil steg
-      if (!profile?.onboarding_step || profile.onboarding_step < 2) {
-        const steps = [
-          `/${locale}/onboarding/step1-welcome`,
-          `/${locale}/onboarding/step2-experience`,
-          `/${locale}/onboarding/step3-trading-mode`,
-        ];
-        router.push(steps[profile?.onboarding_step || 0]);
+      // NY: 3-stegs flyt - step 0-2 er hovedflyt
+      if (!profile?.onboarding_step || profile.onboarding_step < 1) {
+        router.push(`/${locale}/onboarding/step1-welcome`);
         return;
       }
 
       if (profile.onboarding_step > 2) {
-        const steps = [
-          `/${locale}/onboarding/step1-welcome`,
-          `/${locale}/onboarding/step2-experience`,
-          `/${locale}/onboarding/step3-trading-mode`,
-          `/${locale}/onboarding/step4-binance`,
-          `/${locale}/onboarding/step5-complete`,
-        ];
-        router.push(steps[profile.onboarding_step]);
+        // Allerede forbi dette steget, gå til complete
+        router.push(`/${locale}/onboarding/step5-complete`);
         return;
       }
 
@@ -99,7 +89,8 @@ export default function OnboardingStep3() {
 
       if (error) throw error;
 
-      router.push(`/${locale}/onboarding/step4-binance`);
+      // NY: Hopp over step4-binance (valgfritt), gå direkte til complete
+      router.push(`/${locale}/onboarding/step5-complete`);
     } catch (err) {
       console.error("Failed to save:", err);
       setLoading(false);
@@ -117,6 +108,11 @@ export default function OnboardingStep3() {
   return (
     <TooltipProvider>
       <div className="space-y-8">
+        {/* Progress bar - 3 steg totalt, vi er på steg 2 */}
+        <div className="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full overflow-hidden">
+          <div className="bg-blue-600 h-full rounded-full w-2/3" />
+        </div>
+
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
