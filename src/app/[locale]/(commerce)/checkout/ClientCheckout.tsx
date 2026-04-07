@@ -4,6 +4,7 @@ import { createClient } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
 
 import { AlertCircle, CheckCircle, Loader2, Shield, Lock, CreditCard, Gift } from "lucide-react";
+import { BRAND } from "@/lib/design/tokens";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -239,7 +240,7 @@ function CheckoutContent() {
           <button
             onClick={handleCheckout}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50"
+            className={`w-full flex items-center justify-center gap-2 px-6 py-4 ${BRAND.gradient} hover:opacity-90 text-white rounded-xl font-semibold transition-all shadow-lg shadow-brand-500/30 disabled:opacity-50`}
           >
             {loading ? (
               <>

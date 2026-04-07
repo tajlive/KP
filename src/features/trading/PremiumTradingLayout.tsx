@@ -7,7 +7,7 @@
  * - Begrens innholdsbredden på `Shell` med `max-w-* mx-auto` + `px-4`; mobil: ekstra `pb` (f.eks. `pb-16`) så fast bunn-UI ikke overlapper.
  */
 
-import { BRAND, RADIUS, SHADOW } from "@/lib/design/tokens";
+import { BRAND, RADIUS, SHADOW, SURFACE } from "@/lib/design/tokens";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -78,7 +78,7 @@ export function PremiumStatusBanner({
         `rounded-2xl border px-4 py-3 text-sm ${RADIUS.card}`,
         danger
           ? "border-red-500/30 bg-red-950/40 text-red-200"
-          : "border-slate-200/80 bg-white/90 text-slate-600 dark:border-slate-800/80 dark:bg-slate-900/60 dark:text-slate-400",
+          : cn("border-slate-200/80 bg-white/90 text-slate-600 dark:border-slate-800/80 dark:text-slate-400", SURFACE.glass.low),
       )}
     >
       {children}
@@ -96,7 +96,7 @@ export function PremiumPanel({
   return (
     <div
       className={cn(
-        `border border-slate-200/80 bg-white/95 p-5 dark:border-slate-800/80 dark:bg-slate-900/60 ${RADIUS.card} ${SHADOW.card}`,
+        `${SURFACE.glass.medium} p-5 ${RADIUS.card} ${SHADOW.card} dark:bg-white/[0.05]`,
         className,
       )}
     >

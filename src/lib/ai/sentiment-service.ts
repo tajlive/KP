@@ -172,21 +172,21 @@ export async function analyzeMarketSentiment(): Promise<SentimentAnalysis> {
 export function formatSentiment(
   sentiment: MarketSentiment,
   locale: string = "no"
-): { label: string; color: string; emoji: string } {
-  const labels: Record<string, Record<MarketSentiment, { label: string; color: string; emoji: string }>> = {
+): { label: string; color: string; icon: 'extreme_fear' | 'fear' | 'neutral' | 'greed' | 'extreme_greed' } {
+  const labels: Record<string, Record<MarketSentiment, { label: string; color: string; icon: 'extreme_fear' | 'fear' | 'neutral' | 'greed' | 'extreme_greed' }>> = {
     no: {
-      extreme_fear: { label: "Ekstrem Frykt", color: "text-red-500", emoji: "😱" },
-      fear: { label: "Frykt", color: "text-orange-500", emoji: "😰" },
-      neutral: { label: "Nøytral", color: "text-yellow-500", emoji: "😐" },
-      greed: { label: "Grådighet", color: "text-emerald-500", emoji: "😏" },
-      extreme_greed: { label: "Ekstrem Grådighet", color: "text-green-500", emoji: "🤑" },
+      extreme_fear: { label: "Ekstrem Frykt", color: "text-red-500", icon: "extreme_fear" },
+      fear: { label: "Frykt", color: "text-orange-500", icon: "fear" },
+      neutral: { label: "Nøytral", color: "text-yellow-500", icon: "neutral" },
+      greed: { label: "Grådighet", color: "text-emerald-500", icon: "greed" },
+      extreme_greed: { label: "Ekstrem Grådighet", color: "text-green-500", icon: "extreme_greed" },
     },
     en: {
-      extreme_fear: { label: "Extreme Fear", color: "text-red-500", emoji: "😱" },
-      fear: { label: "Fear", color: "text-orange-500", emoji: "😰" },
-      neutral: { label: "Neutral", color: "text-yellow-500", emoji: "😐" },
-      greed: { label: "Greed", color: "text-emerald-500", emoji: "😏" },
-      extreme_greed: { label: "Extreme Greed", color: "text-green-500", emoji: "🤑" },
+      extreme_fear: { label: "Extreme Fear", color: "text-red-500", icon: "extreme_fear" },
+      fear: { label: "Fear", color: "text-orange-500", icon: "fear" },
+      neutral: { label: "Neutral", color: "text-yellow-500", icon: "neutral" },
+      greed: { label: "Greed", color: "text-emerald-500", icon: "greed" },
+      extreme_greed: { label: "Extreme Greed", color: "text-green-500", icon: "extreme_greed" },
     },
   };
 

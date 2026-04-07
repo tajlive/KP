@@ -40,6 +40,13 @@ export const SURFACE = {
   BORDER_LIGHT: "border-white/[0.05]",
   BORDER_STRONG: "border-white/[0.15]",
   BORDER_BRAND: "border-brand-500/50",
+
+  // Glass morphism - consistent across app
+  glass: {
+    low: "bg-white/[0.03] backdrop-blur-md border border-white/[0.05]",
+    medium: "bg-white/[0.05] backdrop-blur-xl border border-white/[0.08]",
+    high: "bg-white/[0.08] backdrop-blur-2xl border border-white/[0.12]",
+  },
   
   // Text colors
   TEXT: "text-white",

@@ -19,6 +19,10 @@ import { QuickActions } from "@/features/coinbase/QuickActions";
 import { AssetList } from "@/features/coinbase/AssetList";
 import { WatchlistCard } from "@/features/coinbase/WatchlistCard";
 import { LivePnLWidget } from "@/features/dashboard/LivePnLWidget";
+import { SimplifiedHero } from "@/features/dashboard/SimplifiedHero";
+import { FirstTradePrompt } from "@/features/dashboard/FirstTradePrompt";
+import { AdvancedSection } from "@/features/dashboard/AdvancedSection";
+import { MicroLearning } from "@/features/onboarding/MicroLearning";
 
 type TradeRow = {
   trading_pair: string;
@@ -122,113 +126,130 @@ export function CoinbaseHome({
     return { total, pct };
   }, [paperBalance, liveTrades]);
 
+  // Calculate weekly change (mock - in production would come from API)
+  const weeklyChange = totals.pct;
+
   return (
     <div className="space-y-6 pb-2 md:pb-8">
-      <LivePnLWidget />
+      {/* Micro-learning tips - contextual onboarding */}
+      <MicroLearning />
 
-      {tradesPollFailed ? (
-        <p
-          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
-          role="status"
-          data-testid="dashboard-integrity-poll-warning"
-        >
-          {tDash("marketDesk.integrityPollWarning")}
-        </p>
-      ) : null}
+      {/* Simplified Hero - First screen for beginners */}
+      <SimplifiedHero balance={totals.total} changePct={weeklyChange} />
 
-      <Card
-        className="border border-slate-200 bg-white p-4 shadow-sm"
-        data-testid="dashboard-home-overview"
-      >
-        <HStack className="items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <Text as="p" className="text-sm font-semibold text-slate-900">
-              {tDash("homeOverview.title")}
-            </Text>
-            <Text as="p" className="mt-1 text-xs text-slate-600">
-              {tDash("homeOverview.subtitle")}
-            </Text>
-          </div>
-          <Button
-            type="button"
-            variant="secondary"
-            data-testid="dashboard-integrity-sync"
-            onClick={() => void runManualIntegritySync()}
-            disabled={manualIntegritySync || !userId}
-            aria-label={tDash("marketDesk.integritySyncAria")}
-            title={tDash("marketDesk.integritySyncAria")}
-            className="h-11 w-11 shrink-0 p-0 touch-manipulation"
+      {/* First Trade Prompt - Show if user hasn't traded yet */}
+      <FirstTradePrompt />
+
+      {/* Advanced Section - Collapsible with all existing functionality */}
+      <AdvancedSection>
+        <LivePnLWidget />
+
+        {tradesPollFailed ? (
+          <p
+            className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+            role="status"
+            data-testid="dashboard-integrity-poll-warning"
           >
-            <RefreshCw
-              className={`h-4 w-4 ${manualIntegritySync ? "animate-spin" : ""}`}
-              aria-hidden
-            />
-          </Button>
-        </HStack>
-      </Card>
-
-      <PortfolioBalance totalNok={totals.total} deltaPercent={totals.pct} />
-
-      {activeSession && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            Aktiv sesjon
+            {tDash("marketDesk.integrityPollWarning")}
           </p>
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <p className="text-xs text-slate-500">Kapital</p>
-              <p className="text-sm font-semibold text-slate-900">
-                {activeSession.current_capital_nok.toLocaleString('nb-NO')} NOK
-              </p>
+        ) : null}
+
+        <Card
+          className="border border-slate-200 bg-white p-4 shadow-sm"
+          data-testid="dashboard-home-overview"
+        >
+          <HStack className="items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <Text as="p" className="text-sm font-semibold text-slate-900">
+                {tDash("homeOverview.title")}
+              </Text>
+              <Text as="p" className="mt-1 text-xs text-slate-600">
+                {tDash("homeOverview.subtitle")}
+              </Text>
             </div>
-            <div>
-              <p className="text-xs text-slate-500">P&L</p>
-              <p className={`text-sm font-semibold ${
-                (activeSession.total_pnl ?? 0) >= 0
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              }`}>
-                {((activeSession.total_pnl ?? 0) >= 0 ? '+' : '')}
-                {(activeSession.total_pnl ?? 0).toLocaleString('nb-NO')} NOK
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Handler</p>
-              <p className="text-sm font-semibold text-slate-900">
-                {activeSession.total_trades ?? 0}
-              </p>
+            <Button
+              type="button"
+              variant="secondary"
+              data-testid="dashboard-integrity-sync"
+              onClick={() => void runManualIntegritySync()}
+              disabled={manualIntegritySync || !userId}
+              aria-label={tDash("marketDesk.integritySyncAria")}
+              title={tDash("marketDesk.integritySyncAria")}
+              className="h-11 w-11 shrink-0 p-0 touch-manipulation"
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${manualIntegritySync ? "animate-spin" : ""}`}
+                aria-hidden
+              />
+            </Button>
+          </HStack>
+        </Card>
+
+        <PortfolioBalance totalNok={totals.total} deltaPercent={totals.pct} />
+
+        {activeSession && (
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+              Aktiv sesjon
+            </p>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-xs text-slate-500">Kapital</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {activeSession.current_capital_nok.toLocaleString("nb-NO")} NOK
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">P&L</p>
+                <p
+                  className={`text-sm font-semibold ${
+                    (activeSession.total_pnl ?? 0) >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {(activeSession.total_pnl ?? 0) >= 0 ? "+" : ""}
+                  {(activeSession.total_pnl ?? 0).toLocaleString("nb-NO")} NOK
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Handler</p>
+                <p className="text-sm font-semibold text-slate-900">
+                  {activeSession.total_trades ?? 0}
+                </p>
+              </div>
             </div>
           </div>
+        )}
+
+        <QuickActions />
+
+        <PortfolioChart baseValue={Math.max(totals.total, 1)} />
+
+        <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+          <AssetList trades={liveTrades} />
+          <div className="space-y-6">
+            <Card className="border border-slate-200 bg-white p-5 shadow-sm">
+              <Text as="h3" className="text-base font-semibold text-slate-900">
+                {t("aiMarketBriefTitle")}
+              </Text>
+              <Text as="p" className="mt-2 text-sm text-slate-600">
+                {t("aiMarketBriefDescription")}
+              </Text>
+              <Button
+                as={Link}
+                href={hrefWithLocale(locale, "/dashboard/ai")}
+                variant="primary"
+                className="mt-4"
+                block
+              >
+                {t("openAiHub")}
+              </Button>
+            </Card>
+            <WatchlistCard />
+          </div>
         </div>
-      )}
-
-      <QuickActions />
-
-      <PortfolioChart baseValue={Math.max(totals.total, 1)} />
-
-      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        <AssetList trades={liveTrades} />
-        <div className="space-y-6">
-          <Card className="border border-slate-200 bg-white p-5 shadow-sm">
-            <Text as="h3" className="text-base font-semibold text-slate-900">
-              {t("aiMarketBriefTitle")}
-            </Text>
-            <Text as="p" className="mt-2 text-sm text-slate-600">
-              {t("aiMarketBriefDescription")}
-            </Text>
-            <Button
-              as={Link}
-              href={hrefWithLocale(locale, "/dashboard/ai")}
-              variant="primary"
-              className="mt-4"
-              block
-            >
-              {t("openAiHub")}
-            </Button>
-          </Card>
-          <WatchlistCard />
-        </div>
-      </div>
+      </AdvancedSection>
     </div>
   );
 }

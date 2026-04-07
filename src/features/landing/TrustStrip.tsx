@@ -5,8 +5,9 @@
 
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import { GlassCard, StatCard } from '@/shared/ui/GlassCard';
-import { TrendingUp, Shield, Zap, Users } from 'lucide-react';
+import { GlassCard } from '@/shared/ui/GlassCard';
+import { Shield, Zap, Users } from 'lucide-react';
+import { UserCountStat } from './UserCountStat';
 
 interface TrustStripProps {
   locale?: string;
@@ -16,13 +17,6 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
   const t = await getTranslations({ locale, namespace: 'landing.trustStrip' });
 
   const stats = [
-    {
-      label: t('stats.paperCapital'),
-      value: '100K',
-      suffix: 'NOK',
-      description: t('stats.paperDesc'),
-      icon: <TrendingUp className="w-5 h-5" />,
-    },
     {
       label: t('stats.riskFree'),
       value: t('stats.zero'),
@@ -71,7 +65,14 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
-          {stats.map((stat, index) => (
+          {/* Dynamic User Count - First Card */}
+          <UserCountStat
+            label={t('stats.activeUsers')}
+            description={t('stats.activeUsersDesc')}
+          />
+
+          {/* Other Stats */}
+          {stats.map((stat) => (
             <GlassCard
               key={stat.label}
               variant="elevated"

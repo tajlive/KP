@@ -1,12 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check, Shield, TrendingUp, AlertTriangle, Zap } from 'lucide-react';
+import { Check, Shield, TrendingUp, Zap, Scale, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SURFACE } from '@/lib/design/tokens';
 
 export interface Strategy {
   id: string;
-  emoji: string;
+  icon: 'shield' | 'scale' | 'rocket';
   title: string;
   subtitle: string;
   description: string;
@@ -52,10 +53,17 @@ const riskConfig = {
   },
 };
 
+const strategyIcons = {
+  shield: Shield,
+  scale: Scale,
+  rocket: Rocket,
+};
+
 export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardProps) {
   const config = riskConfig[strategy.riskLevel];
   if (!config) return null;
   const RiskIcon = config.icon;
+  const StrategyIcon = strategyIcons[strategy.icon];
 
   return (
     <motion.div
@@ -63,8 +71,7 @@ export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardPro
       className={cn(
         "relative overflow-hidden cursor-pointer transition-all duration-500",
         "rounded-3xl p-6 md:p-8 border-2",
-        "bg-linear-to-br from-slate-900/80 to-slate-800/50",
-        "backdrop-blur-xl",
+        SURFACE.glass.medium,
         isSelected 
           ? "border-indigo-400 shadow-2xl scale-[1.02]"
           : cn("border-slate-700/50 hover:border-slate-500", config.border)
@@ -102,14 +109,18 @@ export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardPro
 
       {/* Content */}
       <div className="relative z-10">
-        {/* Header with Emoji and Selection Indicator */}
+        {/* Header with Icon and Selection Indicator */}
         <div className="flex items-start justify-between mb-6">
           <motion.div 
-            className="text-5xl md:text-6xl"
+            className={cn(
+              "w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center",
+              SURFACE.glass.low,
+              config.text
+            )}
             animate={isSelected ? { scale: 1.1 } : { scale: 1 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            {strategy.emoji}
+            <StrategyIcon className="w-8 h-8 md:w-10 md:h-10" strokeWidth={1.5} />
           </motion.div>
           {isSelected && (
             <motion.div
@@ -132,7 +143,7 @@ export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardPro
         </p>
 
         {/* Expected Return - Highlight Box */}
-        <div className="mb-6 p-4 md:p-5 rounded-2xl bg-slate-800/70 border border-slate-700/50">
+        <div className={cn("mb-6 p-4 md:p-5 rounded-2xl", SURFACE.glass.low)}>
           <p className={cn("text-3xl md:text-4xl font-bold", config.text)}>
             {strategy.expectedReturn}
           </p>
@@ -190,7 +201,7 @@ export function StrategyCard({ strategy, isSelected, onSelect }: StrategyCardPro
             {strategy.suitableFor.map((item, i) => (
               <span 
                 key={i}
-                className="text-xs bg-slate-800/80 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700/50"
+                className={cn("text-xs text-slate-300 px-3 py-1.5 rounded-lg", SURFACE.glass.low)}
               >
                 {item}
               </span>

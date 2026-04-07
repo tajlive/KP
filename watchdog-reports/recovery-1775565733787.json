@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-04-07T12:42:13.787Z",
+  "status": "unhealthy",
+  "checks": {
+    "health": {
+      "healthy": false,
+      "reason": "stale_heartbeat",
+      "status": "warning",
+      "heartbeatAge": 22.16265,
+      "maxAge": 20
+    },
+    "apiHealth": {
+      "reachable": true,
+      "status": 200,
+      "statusText": "OK",
+      "data": {
+        "status": "degraded",
+        "timestamp": "2026-04-07T12:42:13.619Z",
+        "version": "b86abfb",
+        "checks": {
+          "database": {
+            "status": "ok",
+            "latency": 84
+          },
+          "tradingSignals": {
+            "status": "warning",
+            "latency": 93,
+            "message": "Signal engine heartbeat stale (22m old)",
+            "details": {
+              "feedStateHint": "empty",
+              "engineHeartbeatAgeMinutes": 22.17,
+              "latestSignalAgeMinutes": null,
+              "staleThresholdMinutes": 20,
+              "criticalThresholdMinutes": 40,
+              "incidentThresholdMinutes": 60
+            }
+          },
+          "kv": {
+            "status": "ok",
+            "latency": 342
+          },
+          "environment": {
+            "status": "ok"
+          }
+        },
+        "uptime": 204
+      },
+      "overallStatus": "degraded"
+    },
+    "signal": {
+      "exists": true,
+      "signal": {
+        "id": "7e45e64b-aae0-4332-9ffa-0a49ca9b0b4e",
+        "created_at": "2026-04-07T12:20:03.027584+00:00",
+        "status": "active",
+        "symbol": "BTCUSDT",
+        "action": "buy"
+      },
+      "ageMinutes": 22.179333333333332,
+      "isStale": true
+    }
+  },
+  "actions": []
+}

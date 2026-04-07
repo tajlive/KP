@@ -75,6 +75,22 @@ export function i18nMiddleware(
     );
   }
 
+  // KLA-238: Profile consolidation redirects (temporary 307)
+  if (strippedPath === "/konto" || strippedPath.startsWith("/konto/")) {
+    const target = "/profile/wallet";
+    return NextResponse.redirect(
+      new URL(localizedPathname(locale, target), request.url),
+      307,
+    );
+  }
+  if (strippedPath === "/innstillinger" || strippedPath.startsWith("/innstillinger/")) {
+    const target = "/profile/settings";
+    return NextResponse.redirect(
+      new URL(localizedPathname(locale, target), request.url),
+      307,
+    );
+  }
+
   // 5. Canonical redirects
   for (const [from, to] of Object.entries(CANONICAL_REDIRECTS)) {
     if (strippedPath === from || strippedPath.startsWith(`${from}/`)) {
