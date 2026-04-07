@@ -97,7 +97,7 @@ export function NotificationBell() {
                 </button>
               )}
               <Link
-                href={`/${locale}/varsler/innstillinger`}
+                href={`/${locale}/profile/notifications`}
                 className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                 title="Innstillinger"
                 aria-label="Varslingsinnstillinger"

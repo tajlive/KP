@@ -3,7 +3,7 @@ import type { Strategy } from './StrategyCard';
 export const STRATEGIES: Strategy[] = [
   {
     id: 'conservative',
-    emoji: '🛡️',
+    icon: 'shield',
     title: 'Trygg sparing',
     subtitle: 'Lav risiko, stabil vekst',
     description: 
@@ -15,7 +15,7 @@ export const STRATEGIES: Strategy[] = [
     riskLevel: 'low',
     protection: 'Auto stop-loss ved 5% tap. Kun BTC & ETH.',
     minInvestment: '1 000 kr',
-    suitableFor: ['👶 Første gang du prøver krypto', '📅 Vil spare langsiktig', '😰 Vil sove godt om natten'],
+    suitableFor: ['Første gang du prøver krypto', 'Vil spare langsiktig', 'Vil sove godt om natten'],
     features: [
       'Kun de tryggeste kryptovalutaene',
       'Kjøper kun i opptrender',
@@ -25,7 +25,7 @@ export const STRATEGIES: Strategy[] = [
   },
   {
     id: 'balanced',
-    emoji: '⚖️',
+    icon: 'scale',
     title: 'Balansert vekst',
     subtitle: 'Moderat risiko, bedre avkastning',
     description: 
@@ -36,7 +36,7 @@ export const STRATEGIES: Strategy[] = [
     riskLevel: 'medium',
     protection: 'Auto stop-loss ved 8% tap. Maks 5 handler per dag.',
     minInvestment: '5 000 kr',
-    suitableFor: ['📊 Tåler noen svingninger', '💼 Vil ha bedre avkastning enn banken', '📈 Har fulgt med på krypto litt'],
+    suitableFor: ['Tåler noen svingninger', 'Vil ha bedre avkastning enn banken', 'Har fulgt med på krypto litt'],
     features: [
       'Top 10 kryptovalutaer',
       'Kjøper dips og breakouts',
@@ -46,7 +46,7 @@ export const STRATEGIES: Strategy[] = [
   },
   {
     id: 'aggressive',
-    emoji: '🚀',
+    icon: 'rocket',
     title: 'Agressiv vekst',
     subtitle: 'Høy risiko, høy potensiell avkastning',
     description: 
@@ -57,7 +57,7 @@ export const STRATEGIES: Strategy[] = [
     riskLevel: 'high',
     protection: 'Auto stop-loss ved 12% tap. Maks 10 handler per dag.',
     minInvestment: '10 000 kr',
-    suitableFor: ['🎲 Tåler store svingninger', '💰 Har råd til å tape litt', '🧠 Forstår høy risiko = høy avkastning'],
+    suitableFor: ['Tåler store svingninger', 'Har råd til å tape litt', 'Forstår høy risiko = høy avkastning'],
     features: [
       'Top 20 kryptovalutaer',
       'Momentum og volatilitet trading',

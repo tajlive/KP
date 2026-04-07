@@ -13,6 +13,8 @@ import {
   Sparkles,
   Target,
   Wallet,
+  Scale,
+  Rocket,
 } from "lucide-react";
 import React, { useState } from "react";
 import { StrategyCard } from "./StrategyCard";
@@ -265,9 +267,11 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
 
                   {/* Selected Strategy Summary */}
                   <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-800/50 mb-6 border border-slate-700/30">
-                    <span className="text-3xl">
-                      {selectedStrategyData.emoji}
-                    </span>
+                    <div className="w-12 h-12 rounded-xl bg-slate-700/50 flex items-center justify-center">
+                      {selectedStrategyData.icon === 'shield' && <Shield className="w-6 h-6 text-emerald-400" />}
+                      {selectedStrategyData.icon === 'scale' && <Scale className="w-6 h-6 text-amber-400" />}
+                      {selectedStrategyData.icon === 'rocket' && <Rocket className="w-6 h-6 text-rose-400" />}
+                    </div>
                     <div className="flex-1">
                       <p className="text-white font-medium">
                         {selectedStrategyData.title}
@@ -381,9 +385,11 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                     >
                       <span className="text-slate-400">Valgt strategi</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl">
-                          {selectedStrategyData.emoji}
-                        </span>
+                        <div className="w-8 h-8 rounded-lg bg-slate-700/50 flex items-center justify-center">
+                          {selectedStrategyData.icon === 'shield' && <Shield className="w-4 h-4 text-emerald-400" />}
+                          {selectedStrategyData.icon === 'scale' && <Scale className="w-4 h-4 text-amber-400" />}
+                          {selectedStrategyData.icon === 'rocket' && <Rocket className="w-4 h-4 text-rose-400" />}
+                        </div>
                         <span className="text-white font-medium">
                           {selectedStrategyData.title}
                         </span>

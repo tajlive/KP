@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-04-07T12:42:46.478Z",
+  "status": "recovered",
+  "initialChecks": {
+    "health": {
+      "healthy": true,
+      "status": "warning",
+      "heartbeatAge": 0.2507666666666667
+    },
+    "apiHealth": {
+      "reachable": true,
+      "status": 200,
+      "statusText": "OK",
+      "data": {
+        "status": "healthy",
+        "timestamp": "2026-04-07T12:42:44.180Z",
+        "version": "b86abfb",
+        "checks": {
+          "database": {
+            "status": "ok",
+            "latency": 87
+          },
+          "tradingSignals": {
+            "status": "ok",
+            "latency": 143,
+            "message": "Engine OK; latest feed row 23m old (normal during HOLD)",
+            "details": {
+              "feedStateHint": "stale",
+              "holdLikely": true,
+              "engineHeartbeatAgeMinutes": 0.26,
+              "latestSignalAgeMinutes": 22.68,
+              "staleThresholdMinutes": 20,
+              "criticalThresholdMinutes": 40,
+              "incidentThresholdMinutes": 60
+            }
+          },
+          "kv": {
+            "status": "ok",
+            "latency": 344
+          },
+          "environment": {
+            "status": "ok"
+          }
+        },
+        "uptime": 235
+      },
+      "overallStatus": "healthy"
+    },
+    "signal": {
+      "exists": true,
+      "signal": {
+        "id": "7e45e64b-aae0-4332-9ffa-0a49ca9b0b4e",
+        "created_at": "2026-04-07T12:20:03.027584+00:00",
+        "status": "active",
+        "symbol": "BTCUSDT",
+        "action": "buy"
+      },
+      "ageMinutes": 22.6885,
+      "isStale": true
+    }
+  },
+  "finalChecks": {
+    "health": {
+      "healthy": true,
+      "status": "warning",
+      "heartbeatAge": 0.00705
+    },
+    "apiHealth": {
+      "reachable": true,
+      "status": 200,
+      "statusText": "OK",
+      "data": {
+        "status": "healthy",
+        "timestamp": "2026-04-07T12:42:46.439Z",
+        "version": "b86abfb",
+        "checks": {
+          "database": {
+            "status": "ok",
+            "latency": 57
+          },
+          "tradingSignals": {
+            "status": "ok",
+            "latency": 112,
+            "message": "Engine OK; latest feed row 23m old (normal during HOLD)",
+            "details": {
+              "feedStateHint": "stale",
+              "holdLikely": true,
+              "engineHeartbeatAgeMinutes": 0.01,
+              "latestSignalAgeMinutes": 22.72,
+              "staleThresholdMinutes": 20,
+              "criticalThresholdMinutes": 40,
+              "incidentThresholdMinutes": 60
+            }
+          },
+          "kv": {
+            "status": "ok",
+            "latency": 239
+          },
+          "environment": {
+            "status": "ok"
+          }
+        },
+        "uptime": 237
+      },
+      "overallStatus": "healthy"
+    }
+  },
+  "actions": [
+    {
+      "action": "invoke",
+      "target": "signal-engine",
+      "method": "http",
+      "success": true
+    }
+  ],
+  "verification": {
+    "recovered": true,
+    "waitedMs": 217
+  }
+}

@@ -18,6 +18,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useParams } from "next/navigation";
+import { BRAND } from "@/lib/design/tokens";
 
 const BETA_BENEFITS = [
   {
@@ -79,7 +80,7 @@ export function VelkommenContent() {
       {/* Hero */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-blue-600 to-emerald-600 rounded-2xl mb-8 shadow-2xl shadow-blue-500/20">
+          <div className={`inline-flex items-center justify-center w-20 h-20 ${BRAND.gradient} rounded-2xl mb-8 shadow-2xl shadow-brand-500/20`}>
             <GraduationCap className="w-10 h-10 text-white" />
           </div>
 
@@ -98,7 +99,7 @@ export function VelkommenContent() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               size="lg"
-              className="bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-lg px-8"
+              className={`${BRAND.gradient} hover:opacity-90 text-lg px-8`}
               asChild
             >
               <a href={`/${locale}/innlogging`}>
@@ -150,7 +151,7 @@ export function VelkommenContent() {
                       size="sm"
                       className={
                         item.primary
-                          ? "bg-linear-to-r from-blue-600 to-emerald-600"
+                          ? BRAND.gradient
                           : "border-slate-600 text-slate-300 hover:bg-slate-700"
                       }
                       asChild

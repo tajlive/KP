@@ -263,6 +263,8 @@
   },
   "trustStrip": {
     "stats": {
+      "activeUsers": "Active traders",
+      "activeUsersDesc": "Users in last 90 days",
       "paperCapital": "Virtual starting capital",
       "paperDesc": "Practice with real market data",
       "zero": "$0",

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { SURFACE } from "@/lib/design/tokens";
 import HeroSection from "@/features/landing/HeroSection";
+import { KLTTeaser } from "@/features/landing/KLTTeaser";
 import { TrustStrip } from "@/features/landing/TrustStrip";
 import { LiveProofStrip } from "@/features/landing/LiveProofStrip";
 import { StickyCTA } from "@/features/landing/StickyCTA";
@@ -56,6 +57,14 @@ const FinalCTASection = dynamic(
   }
 );
 
+const LeaderboardPreview = dynamic(
+  () => import("@/features/landing/LeaderboardPreview").then((mod) => mod.LeaderboardPreview),
+  {
+    loading: () => <div className="h-96 bg-kp-bg-primary animate-pulse" />,
+    ssr: true,
+  }
+);
+
 const FeaturesBentoGrid = dynamic(
   () => import("@/features/landing/FeaturesBentoGrid").then((mod) => mod.FeaturesBentoGrid),
   {
@@ -91,10 +100,15 @@ export default async function HomePage({ params }: HomePageProps) {
       <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
         {/* Above-fold: Synchronous for LCP */}
         <HeroSection locale={locale} />
+        <KLTTeaser locale={locale} />
         <LiveProofStrip />
         <TrustStrip locale={locale} />
 
         {/* Below-fold: Dynamic imports with skeleton fallbacks + ScrollReveal */}
+        <ScrollReveal direction="up" delay={0.1}>
+          <LeaderboardPreview />
+        </ScrollReveal>
+
         <ScrollReveal direction="up" delay={0.1}>
           <DemoWidget />
         </ScrollReveal>

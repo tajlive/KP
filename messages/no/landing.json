@@ -242,6 +242,8 @@
   },
   "trustStrip": {
     "stats": {
+      "activeUsers": "Aktive tradere",
+      "activeUsersDesc": "Brukere siste 90 dager",
       "paperCapital": "Virtuell startkapital",
       "paperDesc": "Øv med ekte markedsdata",
       "zero": "0 kr",

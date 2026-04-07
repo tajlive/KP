@@ -3,6 +3,7 @@
 import SpeedOnboarding from "@/features/onboarding/SpeedOnboarding";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import { Zap } from "lucide-react";
 
 export default function ClientOnboarding() {
   const router = useRouter();
@@ -13,7 +14,9 @@ export default function ClientOnboarding() {
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">⚡</div>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-3">
+            <Zap className="w-8 h-8 text-indigo-500" />
+          </div>
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">
             Kom i gang
           </h1>
@@ -24,7 +27,7 @@ export default function ClientOnboarding() {
 
         <SpeedOnboarding
           onComplete={() => {
-            router.push(`/${locale}/dashboard/auto-trade`);
+            router.push(`/${locale}/dashboard`);
           }}
         />
       </div>

@@ -1623,6 +1623,14 @@
         "question": "Trenger jeg Binance-konto?",
         "answer": "Ikke for lekepenger. Hvis du vil bruke live trading, trenger du en Binance-konto med API-nøkler."
       }
+    },
+    "leaderboard": {
+      "badge": "Toppliste",
+      "title": "Mest lønnsomme tradere",
+      "subtitle": "Se hvem som leder denne uken i vår paper-trading konkurranse. Start din egen reise mot toppen!",
+      "ctaPrimary": "Se full leaderboard",
+      "ctaSecondary": "Bli med",
+      "trustNote": "Resultater fra simulert trading. Ikke finansiell rådgivning."
     }
   },
   "leagues": {

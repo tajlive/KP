@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Quote, Star, ArrowRight } from "lucide-react";
-import { BRAND, RADIUS } from "@/lib/design/tokens";
+import { BRAND, RADIUS, SURFACE } from "@/lib/design/tokens";
+import { cn } from "@/lib/utils";
 
 interface TestimonialsProps {
   language?: "no" | "en";
@@ -61,7 +62,7 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
                   delay: index * 0.1,
                 }}
                 whileHover={{ y: -10, rotate: isEven ? 1 : -1 }}
-                className="bg-white/3 backdrop-blur-sm p-8 rounded-4xl border border-white/10 hover:border-white/20 transition-all duration-500 group"
+                className={cn(SURFACE.glass.low, "p-8 rounded-4xl hover:border-white/20 transition-all duration-500 group")}
               >
                 <div className="mb-6">
                   <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4">

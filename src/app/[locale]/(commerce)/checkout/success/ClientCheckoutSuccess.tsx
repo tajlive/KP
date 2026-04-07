@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error';
 import { CheckCircle, Loader2, ArrowRight } from 'lucide-react';
+import { BRAND } from '@/lib/design/tokens';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -161,7 +162,7 @@ function SuccessContent() {
         {/* CTA */}
         <button
           onClick={() => router.push(`/${locale}/dashboard`, { scroll: false })}
-          className="w-full sm:w-auto px-8 py-4 bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:scale-105 flex items-center justify-center gap-2 mx-auto"
+          className={`w-full sm:w-auto px-8 py-4 ${BRAND.gradient} hover:opacity-90 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:scale-105 flex items-center justify-center gap-2 mx-auto`}
         >
           Gå Til Dashboard
           <ArrowRight className="w-5 h-5" />

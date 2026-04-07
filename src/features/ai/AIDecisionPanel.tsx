@@ -8,7 +8,7 @@
 
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Brain, TrendingUp, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
+import { Brain, TrendingUp, AlertTriangle, Info, CheckCircle2, AlertOctagon, Meh, Smile, Laugh } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
@@ -185,8 +185,13 @@ export default function AIDecisionPanel({
                   {lang === "en" ? "Market Sentiment" : "Markedssentiment"}
                 </span>
                 {sentimentFormatted && (
-                  <span className={`text-sm font-bold ${sentimentFormatted.color}`}>
-                    {sentimentFormatted.emoji} {sentimentFormatted.label}
+                  <span className={`text-sm font-bold inline-flex items-center gap-1.5 ${sentimentFormatted.color}`}>
+                    {sentimentFormatted.icon === 'extreme_fear' && <AlertOctagon className="w-4 h-4" />}
+                    {sentimentFormatted.icon === 'fear' && <AlertTriangle className="w-4 h-4" />}
+                    {sentimentFormatted.icon === 'neutral' && <Meh className="w-4 h-4" />}
+                    {sentimentFormatted.icon === 'greed' && <Smile className="w-4 h-4" />}
+                    {sentimentFormatted.icon === 'extreme_greed' && <Laugh className="w-4 h-4" />}
+                    {sentimentFormatted.label}
                   </span>
                 )}
               </div>

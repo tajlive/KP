@@ -14,6 +14,7 @@ import {
   Timer,
   TrendingUp,
   Zap,
+  Circle,
 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { RiskDisclaimer } from "./RiskDisclaimer";
@@ -26,59 +27,59 @@ import { useCallback, useEffect, useState } from "react";
 interface RiskProfile {
   id: string;
   name: string;
-  emoji: string;
   color: string;
   bg: string;
   border: string;
   description: string;
   dailyLoss: string;
   icon: typeof Shield;
+  fillColor: string;
 }
 
 const RISK_PROFILES: RiskProfile[] = [
   {
     id: "safe",
     name: "Trygg",
-    emoji: "🟢",
     color: "text-green-500",
     bg: "from-green-500/10 to-emerald-500/10",
     border: "border-green-400/40 hover:border-green-400",
     description: "Lavt risiko, jevn vekst",
     dailyLoss: "2% maks dagstap",
     icon: Shield,
+    fillColor: "fill-green-500",
   },
   {
     id: "balanced",
     name: "Balansert",
-    emoji: "🔵",
     color: "text-blue-500",
     bg: "from-blue-500/10 to-indigo-500/10",
     border: "border-blue-400/40 hover:border-blue-400",
     description: "God balanse mellom risiko og avkastning",
     dailyLoss: "5% maks dagstap",
     icon: TrendingUp,
+    fillColor: "fill-blue-500",
   },
   {
     id: "offensive",
     name: "Offensiv",
-    emoji: "🟠",
     color: "text-orange-500",
     bg: "from-orange-500/10 to-amber-500/10",
     border: "border-orange-400/40 hover:border-orange-400",
     description: "Høyere risiko, høyere potensial",
     dailyLoss: "8% maks dagstap",
     icon: Flame,
+    fillColor: "fill-orange-500",
   },
   {
     id: "aggressive",
     name: "Aggressiv",
-    emoji: "🔴",
     color: "text-red-500",
     bg: "from-red-500/10 to-rose-500/10",
     border: "border-red-400/40 hover:border-red-400",
     description: "Maks risiko for erfarne",
     dailyLoss: "12% maks dagstap",
     icon: Zap,
+    fillColor: "fill-red-500",
   },
 ];
 
@@ -314,7 +315,7 @@ export default function SpeedOnboarding({
                       />
                     )}
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl">{profile.emoji}</span>
+                      <Circle className={`w-4 h-4 ${profile.fillColor} ${profile.color}`} />
                       <Icon className={`w-4 h-4 ${profile.color}`} />
                     </div>
                     <div className="font-bold text-slate-900 dark:text-white text-sm">

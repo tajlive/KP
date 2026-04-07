@@ -3,7 +3,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
-import { X, TrendingUp, TrendingDown, Shield, Zap, Target, Wallet, AlertCircle } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Shield, Zap, Target, Wallet, AlertCircle, Scale, Rocket } from 'lucide-react';
 import { calculateOptimalTradePreview, OptimalTradeResult } from '@/lib/trading/optimal/engine';
 import { Button } from '@/shared/ui/button';
 
@@ -15,9 +15,9 @@ interface OptimalTraderProps {
 }
 
 const RISK_PROFILES = [
-  { key: 'conservative', label: 'Konservativ', emoji: '🛡️', desc: 'ATR 2.5x', color: 'from-green-500 to-green-600' },
-  { key: 'balanced', label: 'Balansert', emoji: '⚖️', desc: 'ATR 1.8x', color: 'from-blue-500 to-blue-600' },
-  { key: 'aggressive', label: 'Aggressiv', emoji: '🚀', desc: 'ATR 1.2x', color: 'from-purple-500 to-purple-600' },
+  { key: 'conservative', label: 'Konservativ', icon: Shield, desc: 'ATR 2.5x', color: 'from-green-500 to-green-600' },
+  { key: 'balanced', label: 'Balansert', icon: Scale, desc: 'ATR 1.8x', color: 'from-blue-500 to-blue-600' },
+  { key: 'aggressive', label: 'Aggressiv', icon: Rocket, desc: 'ATR 1.2x', color: 'from-purple-500 to-purple-600' },
 ] as const;
 
 export default function OptimalTrader({ 
@@ -176,7 +176,7 @@ export default function OptimalTrader({
                     : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/30'
                 }`}
               >
-                <span className="text-xl block mb-1">{profile.emoji}</span>
+                <profile.icon className="w-5 h-5 mx-auto mb-1" />
                 <span className="text-xs font-bold block">{profile.label}</span>
                 <span className="text-[10px] opacity-80">{profile.desc}</span>
               </button>

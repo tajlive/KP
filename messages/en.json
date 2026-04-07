@@ -1623,6 +1623,14 @@
         "question": "Do I need a Binance account?",
         "answer": "Not for paper trading. If you want to use live trading, you need a Binance account with API keys."
       }
+    },
+    "leaderboard": {
+      "badge": "Leaderboard",
+      "title": "Most Profitable Traders",
+      "subtitle": "See who's leading this week in our paper trading competition. Start your own journey to the top!",
+      "ctaPrimary": "View Full Leaderboard",
+      "ctaSecondary": "Join Now",
+      "trustNote": "Results from simulated trading. Not financial advice."
     }
   },
   "leagues": {

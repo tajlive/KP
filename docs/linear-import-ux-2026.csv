@@ -1,0 +1,77 @@
+ID,Title,Description,Priority,Story Points,Labels,Assignee,State
+KLA-237,Forenkle dashboard første-skjerm,"Redesign dashboard-førsteskjerm for nybegynnere. Inspirert av Coinbase/Revolut - stor saldo øverst, én primær CTA, progressive disclosure for avanserte funksjoner.
+
+Akseptkriterier:
+- Saldo vises stort og tydelig øverst (50% av viewport på mobil)
+- Én primær CTA: ""Start trading"" eller ""Se markedet""
+- Avanserte funksjoner skjult bak ""Mer"" eller expand-knapp
+- ""Første handel""-prompt for nye brukere
+- Slide-up panel for detaljer
+- A/B-testet mot eksisterende CoinbaseHome
+
+Filer:
+- src/features/coinbase/CoinbaseHome.tsx
+- src/features/dashboard/DashboardContent.tsx
+- src/features/dashboard/FirstTradeCard.tsx
+
+Estimat: 8t",High,8,"ux,dashboard,mobile,q2-2026",,Backlog
+KLA-238,Konsolider profile/konto ruter,"Slå sammen overlappende ruter /profile, /konto, /innstillinger til én rute /profile med tabs: Profil, Lommebok, Innstillinger, Varsler.
+
+Akseptkriterier:
+- Ny rute: /profile med tabs
+- Redirects: /konto/* → /profile/wallet
+- Redirects: /innstillinger/* → /profile/settings
+- Oppdater alle lenker i navigasjon
+- Middleware redirect for gamle stier
+
+Estimat: 5t",Medium,5,"ux,nav,refactor,breaking-change,q2-2026",,Backlog
+KLA-239,Leaderboard-preview på landing,"Vis topp 3 fra paper-trading med ""Konkurrer om 50k KLT"" CTA på landingssiden. Øker engasjement og konvertering.
+
+Akseptkriterier:
+- Ny komponent: LeaderboardPreview.tsx
+- Vis topp 3 brukere fra paper-trading
+- CTA: ""Se full leaderboard"" → /konkurranse
+- Sekundær CTA: ""Bli med"" → /register
+- Oppdateres daglig (cache 24t)
+
+Estimat: 5t",Medium,5,"konvertering,gamification,landing,q3-2026",,Backlog
+KLA-240,KLT-teaser under hero,"En linje under hero: ""Tjen KLT gjennom kurs og konkurranser - 50 000 KLT til månedens vinner"" med lenke.
+
+Akseptkriterier:
+- Ny komponent: KLTTeaser.tsx
+- Plassering: Under HeroSection
+- Highlight: ""50 000 KLT til månedens vinner""
+- Lenke: ""Lær mer om KLT""
+- Animasjon: Subtle pulse på KLT-tallet
+
+Estimat: 2t",Medium,2,"konvertering,landing,klt,q3-2026",,Backlog
+KLA-241,Dynamisk brukertall fra DB,"Erstatt hardkodet ""10 000+ brukere"" med faktisk count fra Supabase. Øker troverdighet.
+
+Akseptkriterier:
+- API-endepunkt: GET /api/stats/users
+- Cache: 1 time
+- Viser: ""{count} studenter lærer trading""
+- Fallback: Hardkodet tall hvis API feiler
+- Formatering: 10.2k for store tall
+
+Estimat: 3t",Low,3,"konvertering,landing,trust,q3-2026",,Backlog
+KLA-242,Mikro-læring i dashboard,"Tooltips/inline hints på dashboard for førstegangsbrukere. Revolut Stories-inspirert. Context-aware tips.
+
+Akseptkriterier:
+- Onboarding-tour for første besøk
+- Context-aware tooltips
+- Progress-bar for ""Første steg""
+- Dismissable tips (localStorage)
+- Analytics: Hvilke tips klikkes mest?
+- Mobile: Bottom sheet
+
+Estimat: 13t",Medium,13,"ux,læring,dashboard,q3-2026",,Backlog
+KLA-243,Glass-morfisme konsistent,"Definer glass-nivå i tokens: bg-white/5 + border + blur. Bruk konsistent på alle kort.
+
+Akseptkriterier:
+- Nytt token: SURFACE.glass (3 nivåer)
+- Oppdater alle kort: GlassCard, StrategyCard, PremiumPanel
+- Fjern hardkodede glass-verdier
+- Dokumentasjon i Storybook
+
+Estimat: 5t",Low,5,"design-debt,tokens,ui,q3-2026",,Backlog
