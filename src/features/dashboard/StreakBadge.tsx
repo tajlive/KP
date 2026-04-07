@@ -1,5 +1,7 @@
 "use client";
 
+import { Flame } from "lucide-react";
+
 interface StreakBadgeProps {
   streak: number;
   locale: string;
@@ -14,7 +16,7 @@ export function StreakBadge({ streak, locale }: StreakBadgeProps) {
 
   return (
     <div className="flex items-center gap-3 bg-white rounded-xl border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3">
-      <div className="text-2xl">🔥</div>
+      <Flame className="w-6 h-6 text-orange-500" />
       <div>
         <p className="text-sm font-semibold text-[#1A1D26]">
           {streak} {no ? "dager på rad" : "day streak"}

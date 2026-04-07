@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { TrendingUp, Users, MousePointer, BarChart3 } from 'lucide-react';
+import { TrendingUp, Users, MousePointer, BarChart3, Target } from 'lucide-react';
 
 interface VariantStats {
   name: string;
@@ -254,7 +254,7 @@ export default function ClientABTests() {
                 {parseFloat(lift) > 20 && (
                   <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
                     <h4 className="font-semibold text-green-900 dark:text-green-200 mb-1">
-                      🎯 Recommendation: Implement Variant A
+                      <Target className="w-5 h-5 inline mr-1" /> Recommendation: Implement Variant A
                     </h4>
                     <p className="text-sm text-green-800 dark:text-green-300">
                       Variant A is showing a statistically significant +{lift}% lift in conversions. 

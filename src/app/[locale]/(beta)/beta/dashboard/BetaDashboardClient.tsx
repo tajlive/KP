@@ -9,6 +9,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Wallet, BarChart3, Bot, Zap, Trophy } from "lucide-react";
 
 interface BetaStats {
   todayTrades: number;
@@ -237,7 +238,9 @@ export default function BetaDashboardClient({
             href={`/${params.locale}/beta/live-trading`}
             className={`bg-linear-to-br from-blue-500 to-blue-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all ${!exchangeConnected && "opacity-50 pointer-events-none"}`}
           >
-            <div className="text-5xl mb-4">💰</div>
+            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+              <Wallet className="w-8 h-8 text-white" />
+            </div>
             <h2 className="text-2xl font-bold mb-2">{t("liveTrading")}</h2>
             <p className="text-blue-100">
               {t("liveTradingDesc")}
@@ -248,7 +251,9 @@ export default function BetaDashboardClient({
             href={`/${params.locale}/paper-trading`}
             className="bg-linear-to-br from-green-500 to-green-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
           >
-            <div className="text-5xl mb-4">📊</div>
+            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+              <BarChart3 className="w-8 h-8 text-white" />
+            </div>
             <h2 className="text-2xl font-bold mb-2">{t("paperTrading")}</h2>
             <p className="text-green-100">{t("paperTradingDesc")}</p>
           </Link>
@@ -257,7 +262,9 @@ export default function BetaDashboardClient({
             href={`/${params.locale}/beta/ai-copilot`}
             className="bg-linear-to-br from-emerald-500 to-emerald-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
           >
-            <div className="text-5xl mb-4">🤖</div>
+            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+              <Bot className="w-8 h-8 text-white" />
+            </div>
             <h2 className="text-2xl font-bold mb-2">{t("aiCopilot")}</h2>
             <p className="text-emerald-100">
               {t("aiCopilotDesc")}
@@ -268,7 +275,9 @@ export default function BetaDashboardClient({
             href={`/${params.locale}/beta/auto-trade`}
             className={`bg-linear-to-br from-orange-500 to-orange-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all ${!exchangeConnected && "opacity-50 pointer-events-none"}`}
           >
-            <div className="text-5xl mb-4">⚡</div>
+            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+              <Zap className="w-8 h-8 text-white" />
+            </div>
             <h2 className="text-2xl font-bold mb-2">{t("autoTrade")}</h2>
             <p className="text-orange-100">{t("autoTradeDesc")}</p>
           </Link>
@@ -277,7 +286,9 @@ export default function BetaDashboardClient({
             href={`/${params.locale}/beta/konkurranse`}
             className="bg-linear-to-br from-yellow-500 to-yellow-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all md:col-span-2 lg:col-span-1"
           >
-            <div className="text-5xl mb-4">🏆</div>
+            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+              <Trophy className="w-8 h-8 text-white" />
+            </div>
             <h2 className="text-2xl font-bold mb-2">{t("competition")}</h2>
             <p className="text-yellow-100">
               {t("competitionDesc")}

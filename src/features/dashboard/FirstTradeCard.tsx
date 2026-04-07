@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BRAND } from "@/lib/design/tokens";
 import { toast } from "sonner";
+import { Zap } from "lucide-react";
 
 interface FirstTradeCardProps {
   userId: string;

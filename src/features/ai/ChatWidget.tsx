@@ -271,7 +271,7 @@ function ChatWidgetInner() {
             <div className="relative bg-slate-900/60 backdrop-blur-md p-4 border-b border-white/5 flex items-center justify-between z-10">
               <div className="flex items-center gap-3">
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-linear-to-tr from-blue-600 to-emerald-600 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity" />
+                  <div className="absolute inset-0 bg-linear-to-tr from-brand-500 to-brand-600 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity" />
                   <div className="relative p-2.5 bg-slate-900 rounded-xl ring-1 ring-white/10">
                     <GraduationCap className="w-5 h-5 text-blue-400" />
                   </div>

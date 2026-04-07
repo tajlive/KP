@@ -4,7 +4,8 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { CAMPAIGN_CONFIG } from "@/lib/campaign-config";
 import { createClient } from "@/lib/utils";
-import { Lock, RefreshCw, TrendingUp, Trophy, Users } from "lucide-react";
+import { BRAND } from "@/lib/design/tokens";
+import { Lock, RefreshCw, TrendingUp, Trophy, Users, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -121,7 +122,7 @@ export default function ClientCampaign() {
           <div className="flex gap-4 justify-center">
             <Button
               asChild
-              className="bg-linear-to-r from-blue-600 to-emerald-600"
+              className={`${BRAND.gradient}`}
             >
               <Link href={`/${locale}/innlogging`}>Logg inn</Link>
             </Button>
@@ -140,7 +141,7 @@ export default function ClientCampaign() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              🎓 100 STUDENTER PÅ 24 TIMER
+              <GraduationCap className="w-8 h-8 inline mr-2" /> 100 STUDENTER PÅ 24 TIMER
             </h1>
             <p className="text-slate-400">
               Sist oppdatert: {new Date().toLocaleTimeString("no-NO")}

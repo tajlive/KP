@@ -250,7 +250,7 @@ export function VelkommenContent() {
           </p>
           <Button
             size="lg"
-            className="bg-linear-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-lg px-8"
+            className={`${BRAND.gradient} hover:opacity-90 text-lg px-8`}
             asChild
           >
             <a href={`/${locale}/innlogging`}>
