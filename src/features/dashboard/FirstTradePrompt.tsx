@@ -24,7 +24,7 @@ export function FirstTradePrompt() {
   const handleClick = () => {
     localStorage.setItem(HAS_TRADED_KEY, "true");
     setHasTraded(true);
-    router.push(`/${locale}/dashboard/paper-trading`);
+    router.push(`/${locale}/dashboard/trade?mode=paper`);
   };
 
   // Don't render until we've checked localStorage (to avoid hydration mismatch)
