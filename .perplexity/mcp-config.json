@@ -17,6 +17,16 @@
         "PATH": "${PATH}:/Users/taj/.local/bin",
         "DEBUG": "${DEBUG:-0}"
       }
+    },
+    "klarpakke_kimi": {
+      "transport": "stdio",
+      "command": "kimi",
+      "args": ["--acp"],
+      "cwd": "/Users/taj/klarpakke",
+      "env": {
+        "PATH": "${PATH}:/Users/taj/.local/bin",
+        "DEBUG": "${DEBUG:-0}"
+      }
     }
   }
 }
