@@ -44,8 +44,13 @@ export default async function OnboardingLayout({
   }
 
   // Beregn nåværende steg fra URL
-  // (Dette er Server Component, så vi bruker enkel logikk)
-  const currentStep = profile?.onboarding_step || 0;
+  // NY: 3-stegs flyt - mapper gamle steg til ny visning
+  // DB step 0 = Nytt steg 1 (welcome+experience)
+  // DB step 1-2 = Nytt steg 2 (trading-mode)  
+  // DB step >=3 = Nytt steg 3 (complete)
+  const dbStep = profile?.onboarding_step || 0;
+  const displayStep = dbStep >= 3 ? 2 : dbStep >= 1 ? 1 : 0; // 0-indexed for display
+  const TOTAL_STEPS = 3;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -56,7 +61,7 @@ export default async function OnboardingLayout({
             <Logo className="h-8" />
           </Link>
           <div className="text-sm text-slate-500">
-            {t("stepIndicator", { current: currentStep + 1, total: 5 })}
+            {t("stepIndicator", { current: displayStep + 1, total: TOTAL_STEPS })}
           </div>
         </div>
       </header>
@@ -67,7 +72,7 @@ export default async function OnboardingLayout({
           <div className="h-1 bg-slate-100 dark:bg-slate-800">
             <div
               className="h-full bg-blue-600 transition-all duration-500"
-              style={{ width: `${((currentStep + 1) / 5) * 100}%` }}
+              style={{ width: `${((displayStep + 1) / TOTAL_STEPS) * 100}%` }}
             />
           </div>
         </div>

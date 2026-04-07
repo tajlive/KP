@@ -54,15 +54,19 @@ export default function OnboardingStep1() {
       }
 
       // Hvis brukeren er på et senere steg, redirect dit
-      if (profile?.onboarding_step && profile.onboarding_step > 1) {
-        const steps = [
-          "/onboarding/step1-welcome",
-          "/onboarding/step3-trading-mode",
-          "/onboarding/step5-complete",
-        ];
-        const newStep = profile.onboarding_step >= 2 ? 1 : profile.onboarding_step;
-        router.push(steps[newStep] || steps[0]);
-        return;
+      // NY: 3-stegs flyt mapping
+      // DB step 0 = Nytt steg 1 (welcome) - blir her
+      // DB step 1 = Nytt steg 2 (trading-mode)  
+      // DB step >= 2 = Nytt steg 3 (complete)
+      if (profile?.onboarding_step && profile.onboarding_step > 0) {
+        if (profile.onboarding_step === 1) {
+          router.push("/onboarding/step3-trading-mode");
+          return;
+        }
+        if (profile.onboarding_step >= 2) {
+          router.push("/onboarding/step5-complete");
+          return;
+        }
       }
 
       setChecking(false);
