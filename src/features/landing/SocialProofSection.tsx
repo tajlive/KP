@@ -167,7 +167,7 @@ export default function SocialProofSection() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => router.push(`/${locale}/paper-trading`)}
+                onClick={() => router.push(`/${locale}/dashboard/trade?mode=paper`)}
                 aria-label="Start din reise med lekepenger"
                 className="px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all"
               >

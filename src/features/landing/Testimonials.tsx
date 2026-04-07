@@ -156,7 +156,7 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
           className="mt-12 flex justify-center"
         >
           <Link
-            href={`/${locale}/paper-trading`}
+            href={`/${locale}/dashboard/trade?mode=paper`}
             className={`inline-flex items-center gap-2 px-8 py-4 ${BRAND.primary} ${RADIUS.button} font-bold transition-all duration-200 hover:scale-[1.02]`}
           >
             {language === "no"

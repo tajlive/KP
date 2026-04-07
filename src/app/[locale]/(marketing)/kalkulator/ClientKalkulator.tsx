@@ -432,7 +432,7 @@ VIKTIG: Dette er hypotetiske beregninger. Krypto er risikabelt. Du kan tape hele
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-center mt-10">
           <p className="text-gray-500 text-sm mb-4">{t("cta.text")}</p>
           <Link
-            href={`/${locale}/paper-trading`}
+            href={`/${locale}/dashboard/trade?mode=paper`}
             className={`inline-flex items-center gap-2 px-6 py-3 ${BRAND.primary} font-semibold rounded-full transition-colors`}
           >
             <TrendingUp className="w-4 h-4" />

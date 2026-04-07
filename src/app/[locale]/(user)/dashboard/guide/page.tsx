@@ -41,7 +41,7 @@ export default function GuidePage() {
         </h3>
         <p className="text-gray-300 mb-4">{t("cta.description")}</p>
         <Link
-          href={`/${locale}/paper-trading`}
+          href={`/${locale}/dashboard/trade?mode=paper`}
           className="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-white transition-colors"
         >
           {t("cta.button")}

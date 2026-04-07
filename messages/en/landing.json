@@ -298,7 +298,11 @@
     "trader": "Trader",
     "profit": "Return",
     "monthly": "This month",
-    "allTime": "All time"
+    "allTime": "All time",
+    "badge": "Top 3",
+    "ctaPrimary": "Start trading",
+    "ctaSecondary": "Join now",
+    "trustNote": "100% risk-free with paper trading"
   },
   "stickyCTA": {
     "label": "Start for free"

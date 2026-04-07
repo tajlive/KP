@@ -77,7 +77,7 @@ export default async function TraderePage({
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href={`/${locale}/paper-trading`}
+                href={`/${locale}/dashboard/trade?mode=paper`}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#0052FF] text-white font-semibold rounded-xl hover:bg-[#0052FF]/90 transition-colors"
               >
                 {t("comingSoon.ctaPaperTrading", { defaultValue: "Prøv paper trading" })}
