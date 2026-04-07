@@ -109,8 +109,8 @@ function macd(
 class DCAStrategy implements StrategyEngine {
   evaluate(input: StrategyInput): StrategySignal {
     const { session, config, candles } = input;
-    const intervalMinutes = (config.interval_minutes as number) ?? 60;
-    let positionSize = (config.position_size as number) ?? 0.02;
+    const intervalMinutes = (config.interval_minutes as number) ?? 30; // Redusert fra 60
+    let positionSize = (config.position_size as number) ?? 0.05; // Økt fra 0.02
     const lastTick = session.last_tick_at
       ? new Date(session.last_tick_at).getTime()
       : 0;
@@ -174,8 +174,8 @@ class DCAStrategy implements StrategyEngine {
 class TrendFollowStrategy implements StrategyEngine {
   evaluate(input: StrategyInput): StrategySignal {
     const { candles, session, config } = input;
-    const fastPeriod = (config.fast_period as number) ?? 12;
-    const slowPeriod = (config.slow_period as number) ?? 26;
+    const fastPeriod = (config.fast_period as number) ?? 8;  // Raskere: 8 istedenfor 12
+    const slowPeriod = (config.slow_period as number) ?? 21; // Raskere: 21 istedenfor 26
 
     if (candles.length < slowPeriod + 2) {
       return { action: "hold", reason: "Insufficient candle data" };
@@ -213,7 +213,7 @@ class MultiSignalStrategy implements StrategyEngine {
     const { candles, session } = input;
     const closes = candles.map((c) => c.close);
 
-    if (closes.length < 30) {
+    if (closes.length < 20) {
       return { action: "hold", reason: "Insufficient data" };
     }
 
@@ -221,12 +221,14 @@ class MultiSignalStrategy implements StrategyEngine {
     const { macd: macdLine, signal: signalLine } = macd(closes, 12, 26, 9);
     const indicators = { rsi: rsiValue, macd: macdLine, signal: signalLine };
 
+    // Mer aggressive signal-terskler
     let buySignals = 0;
-    if (rsiValue < 30) buySignals++;
+    if (rsiValue < 45) buySignals++; // Endret fra 30
     if (macdLine > signalLine) buySignals++;
+    if (closes[closes.length - 1] > closes[closes.length - 5]) buySignals++; // Price momentum
 
     let sellSignals = 0;
-    if (rsiValue > 70) sellSignals++;
+    if (rsiValue > 55) sellSignals++; // Endret fra 70
     if (macdLine < signalLine) sellSignals++;
 
     if (buySignals >= 2 && !session.open_position) {
