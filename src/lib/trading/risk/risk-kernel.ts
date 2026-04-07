@@ -37,7 +37,30 @@ export interface RiskLimits {
   // Time-based restrictions
   allowedHours: number[];         // UTC hours when trading allowed
   blockWeekends: boolean;         // Block weekend trading
+  
+  // ATR-based exit configuration
+  atrExit: ATRExitConfig;
 }
+
+export interface ATRExitConfig {
+  enabled: boolean;
+  period: number;                 // ATR calculation period (default 14)
+  stopLossMultiplier: number;     // ATR multiplier for stop-loss (default 1.5)
+  takeProfitMultiplier: number;   // ATR multiplier for take-profit (default 3.0)
+  trailingStop: boolean;          // Enable trailing stop
+  trailingStopMultiplier: number; // ATR multiplier for trailing stop (default 1.0)
+  timeframe: '1m' | '5m' | '15m' | '1h' | '4h' | '1d'; // ATR timeframe
+}
+
+export const DEFAULT_ATR_EXIT_CONFIG: ATRExitConfig = {
+  enabled: true,
+  period: 14,
+  stopLossMultiplier: 1.5,
+  takeProfitMultiplier: 3.0,
+  trailingStop: true,
+  trailingStopMultiplier: 1.0,
+  timeframe: '1h',
+};
 
 export const DEFAULT_RISK_LIMITS: RiskLimits = {
   maxDailyLoss: 500,
@@ -53,7 +76,8 @@ export const DEFAULT_RISK_LIMITS: RiskLimits = {
   volatilityThreshold: 0.08,
   volatilityCooldownBars: 5,
   allowedHours: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-  blockWeekends: false
+  blockWeekends: false,
+  atrExit: DEFAULT_ATR_EXIT_CONFIG,
 };
 
 export interface RiskCheck {
@@ -383,6 +407,220 @@ export class RiskKernel {
    */
   updateLimits(limits: Partial<RiskLimits>): void {
     this.limits = { ...this.limits, ...limits };
+  }
+  
+  // ============================================================================
+  // ATR-BASED EXITS (2026 Enhancement)
+  // ============================================================================
+  
+  /**
+   * Calculate ATR-based stop-loss price
+   * 
+   * @param entryPrice - Position entry price
+   * @param atr - Current ATR value
+   * @param side - 'long' or 'short'
+   * @returns Stop-loss price
+   */
+  calculateATRStopLoss(
+    entryPrice: number,
+    atr: number,
+    side: 'long' | 'short'
+  ): number {
+    const config = this.limits.atrExit;
+    if (!config.enabled) {
+      // Fallback to fixed percentage if ATR exits disabled
+      const fixedStopPercent = 0.05; // 5%
+      return side === 'long' 
+        ? entryPrice * (1 - fixedStopPercent)
+        : entryPrice * (1 + fixedStopPercent);
+    }
+    
+    const stopDistance = atr * config.stopLossMultiplier;
+    return side === 'long'
+      ? entryPrice - stopDistance
+      : entryPrice + stopDistance;
+  }
+  
+  /**
+   * Calculate ATR-based take-profit price
+   * 
+   * @param entryPrice - Position entry price
+   * @param atr - Current ATR value
+   * @param side - 'long' or 'short'
+   * @returns Take-profit price
+   */
+  calculateATRTakeProfit(
+    entryPrice: number,
+    atr: number,
+    side: 'long' | 'short'
+  ): number {
+    const config = this.limits.atrExit;
+    if (!config.enabled) {
+      // Fallback to fixed 2:1 R:R if ATR exits disabled
+      const fixedTpPercent = 0.10; // 10%
+      return side === 'long'
+        ? entryPrice * (1 + fixedTpPercent)
+        : entryPrice * (1 - fixedTpPercent);
+    }
+    
+    const tpDistance = atr * config.takeProfitMultiplier;
+    return side === 'long'
+      ? entryPrice + tpDistance
+      : entryPrice - tpDistance;
+  }
+  
+  /**
+   * Calculate trailing stop price based on highest/lowest price since entry
+   * 
+   * @param extremePrice - Highest (long) or lowest (short) price since entry
+   * @param atr - Current ATR value
+   * @param side - 'long' or 'short'
+   * @returns Trailing stop price
+   */
+  calculateATRTrailingStop(
+    extremePrice: number,
+    atr: number,
+    side: 'long' | 'short'
+  ): number {
+    const config = this.limits.atrExit;
+    if (!config.enabled || !config.trailingStop) {
+      return 0; // Trailing stop disabled
+    }
+    
+    const trailingDistance = atr * config.trailingStopMultiplier;
+    return side === 'long'
+      ? extremePrice - trailingDistance
+      : extremePrice + trailingDistance;
+  }
+  
+  /**
+   * Evaluate if an exit should be triggered based on current price
+   * 
+   * @param position - Current position details
+   * @param currentPrice - Current market price
+   * @param atr - Current ATR value
+   * @returns Exit recommendation
+   */
+  evaluateATRExit(
+    position: {
+      side: 'long' | 'short';
+      entryPrice: number;
+      highestPrice: number;    // For trailing stop (long)
+      lowestPrice: number;     // For trailing stop (short)
+      size: number;
+    },
+    currentPrice: number,
+    atr: number
+  ): {
+    shouldExit: boolean;
+    reason: 'stop_loss' | 'take_profit' | 'trailing_stop' | 'none';
+    exitPrice: number;
+    pnlPercent: number;
+    pnlAmount: number;
+  } {
+    const config = this.limits.atrExit;
+    
+    // Calculate exit levels
+    const stopLoss = this.calculateATRStopLoss(position.entryPrice, atr, position.side);
+    const takeProfit = this.calculateATRTakeProfit(position.entryPrice, atr, position.side);
+    
+    // Check stop-loss
+    const stopLossHit = position.side === 'long'
+      ? currentPrice <= stopLoss
+      : currentPrice >= stopLoss;
+    
+    if (stopLossHit) {
+      const pnlPercent = position.side === 'long'
+        ? (stopLoss - position.entryPrice) / position.entryPrice
+        : (position.entryPrice - stopLoss) / position.entryPrice;
+      
+      return {
+        shouldExit: true,
+        reason: 'stop_loss',
+        exitPrice: stopLoss,
+        pnlPercent: pnlPercent * 100,
+        pnlAmount: position.size * pnlPercent,
+      };
+    }
+    
+    // Check take-profit
+    const takeProfitHit = position.side === 'long'
+      ? currentPrice >= takeProfit
+      : currentPrice <= takeProfit;
+    
+    if (takeProfitHit) {
+      const pnlPercent = position.side === 'long'
+        ? (takeProfit - position.entryPrice) / position.entryPrice
+        : (position.entryPrice - takeProfit) / position.entryPrice;
+      
+      return {
+        shouldExit: true,
+        reason: 'take_profit',
+        exitPrice: takeProfit,
+        pnlPercent: pnlPercent * 100,
+        pnlAmount: position.size * pnlPercent,
+      };
+    }
+    
+    // Check trailing stop (only if position is profitable)
+    if (config.trailingStop) {
+      const isProfitable = position.side === 'long'
+        ? currentPrice > position.entryPrice
+        : currentPrice < position.entryPrice;
+      
+      if (isProfitable) {
+        const trailingStop = this.calculateATRTrailingStop(
+          position.side === 'long' ? position.highestPrice : position.lowestPrice,
+          atr,
+          position.side
+        );
+        
+        const trailingStopHit = position.side === 'long'
+          ? currentPrice <= trailingStop
+          : currentPrice >= trailingStop;
+        
+        if (trailingStopHit) {
+          const pnlPercent = position.side === 'long'
+            ? (trailingStop - position.entryPrice) / position.entryPrice
+            : (position.entryPrice - trailingStop) / position.entryPrice;
+          
+          return {
+            shouldExit: true,
+            reason: 'trailing_stop',
+            exitPrice: trailingStop,
+            pnlPercent: pnlPercent * 100,
+            pnlAmount: position.size * pnlPercent,
+          };
+        }
+      }
+    }
+    
+    // No exit triggered
+    const currentPnlPercent = position.side === 'long'
+      ? (currentPrice - position.entryPrice) / position.entryPrice
+      : (position.entryPrice - currentPrice) / position.entryPrice;
+    
+    return {
+      shouldExit: false,
+      reason: 'none',
+      exitPrice: currentPrice,
+      pnlPercent: currentPnlPercent * 100,
+      pnlAmount: position.size * currentPnlPercent,
+    };
+  }
+  
+  /**
+   * Get ATR exit configuration
+   */
+  getATRExitConfig(): ATRExitConfig {
+    return { ...this.limits.atrExit };
+  }
+  
+  /**
+   * Update ATR exit configuration
+   */
+  updateATRExitConfig(config: Partial<ATRExitConfig>): void {
+    this.limits.atrExit = { ...this.limits.atrExit, ...config };
   }
 }
 

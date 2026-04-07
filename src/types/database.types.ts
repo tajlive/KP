@@ -6160,6 +6160,7 @@ export type Database = {
           fee: number
           id: string
           idempotency_key: string
+          indicator_snapshot: Json | null
           is_copy: boolean
           leader_trade_id: string | null
           mode: string
@@ -6167,6 +6168,8 @@ export type Database = {
           price: number
           quantity: number
           realized_pnl: number | null
+          reason_code: string | null
+          reason_params: Json | null
           session_id: string
           side: string
           status: string
@@ -6184,6 +6187,7 @@ export type Database = {
           fee?: number
           id?: string
           idempotency_key: string
+          indicator_snapshot?: Json | null
           is_copy?: boolean
           leader_trade_id?: string | null
           mode: string
@@ -6191,6 +6195,8 @@ export type Database = {
           price: number
           quantity: number
           realized_pnl?: number | null
+          reason_code?: string | null
+          reason_params?: Json | null
           session_id: string
           side: string
           status?: string
@@ -6208,6 +6214,7 @@ export type Database = {
           fee?: number
           id?: string
           idempotency_key?: string
+          indicator_snapshot?: Json | null
           is_copy?: boolean
           leader_trade_id?: string | null
           mode?: string
@@ -6215,6 +6222,8 @@ export type Database = {
           price?: number
           quantity?: number
           realized_pnl?: number | null
+          reason_code?: string | null
+          reason_params?: Json | null
           session_id?: string
           side?: string
           status?: string

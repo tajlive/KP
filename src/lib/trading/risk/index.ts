@@ -10,10 +10,12 @@ export {
   RiskStateManager,
   createRiskKernel,
   DEFAULT_RISK_LIMITS,
+  DEFAULT_ATR_EXIT_CONFIG,
   type RiskLimits,
   type RiskCheck,
   type RiskState,
-  type RiskViolation
+  type RiskViolation,
+  type ATRExitConfig
 } from './risk-kernel';
 
 export {

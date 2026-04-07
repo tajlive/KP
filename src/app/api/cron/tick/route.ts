@@ -7,12 +7,13 @@
 
 import { RiskConfig, RiskManager } from "@/lib/auto-trading/risk-manager";
 import { resolveTickStrategyEngineKey } from "@/lib/trading/strategy-id-aliases";
+import { buildTradeReason, buildIndicatorSnapshot, resolveStrategyKey } from "@/lib/trading/build-trade-reason";
 import { div, mul } from "@/lib/decimal";
 import { createClient } from "@/lib/supabase/server";
 import type { TradeSide, TradingSession } from "@/types/trading";
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
+import type { Database, Json } from "@/types/database.types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -528,6 +529,18 @@ async function processSession(
     direction: signal.action === "buy" ? "LONG" : "SHORT",
   });
 
+  // Build reason code and indicator snapshot for trade explanation
+  const strategyKey = resolveStrategyKey(session.strategy_id);
+  const { reasonCode, reasonParams } = buildTradeReason({
+    side: signal.action as TradeSide,
+    strategyKey,
+    indicators: ((signal.indicators || {}) as unknown as Record<string, unknown>) || null,
+    currentPrice,
+    candles,
+    entryPrice: session.open_position?.entry_price,
+  });
+  const indicatorSnapshot = buildIndicatorSnapshot(candles, (signal.indicators as unknown as Record<string, unknown>) || null);
+
   // Execute trade
   const totalValue = mul(quantity, currentPrice);
   const idempotencyKey = `${session.id}-${signal.action}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -548,7 +561,10 @@ async function processSession(
       fee: session.mode === "live" ? mul(totalValue, 0.001) : 0,
       status: "filled",
       strategy_signal: { ...signal.indicators, stop_loss: stopLossPrice },
-      stop_loss_price: stopLossPrice,
+      // Explanation data
+      reason_code: reasonCode,
+      reason_params: reasonParams as unknown as Json,
+      indicator_snapshot: indicatorSnapshot as unknown as Json,
       opened_at: new Date().toISOString(),
       executed_at: new Date().toISOString(),
     })
