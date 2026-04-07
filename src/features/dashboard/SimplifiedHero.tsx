@@ -26,7 +26,7 @@ export function SimplifiedHero({ balance, changePct }: Props) {
         {changePct > 0 ? "+" : ""}
         {changePct.toFixed(2)}% denne uken
       </div>
-      <Link href={`/${locale}/dashboard/paper-trading`}>
+      <Link href={`/${locale}/dashboard/trade?mode=paper`}>
         <Button
           className={`${BRAND.gradient} mt-6 px-8 py-6 text-lg font-semibold rounded-xl`}
         >
