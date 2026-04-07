@@ -191,6 +191,7 @@
     "deploy:preview": "npx vercel --archive=tgz",
     "deploy:prod": "npx vercel --prod --archive=tgz --yes",
     "deploy:prebuilt": "npx vercel build --prod && npx vercel deploy --prebuilt --prod --archive=tgz --yes",
+    "kimi:test": "kimi --acp",
     "mcp:smoke": "node scripts/run-kimi-mcp-optimized.mjs --smoke-test",
     "mcp:test": "scripts/mcp-test-runner.sh quick",
     "mcp:test:full": "scripts/mcp-test-runner.sh full",
