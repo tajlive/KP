@@ -8,6 +8,15 @@
         "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}",
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       }
+    },
+    "kimi": {
+      "command": "node",
+      "args": ["scripts/run-kimi-mcp-optimized.mjs"],
+      "cwd": "/Users/taj/klarpakke",
+      "env": {
+        "PATH": "${PATH}:/Users/taj/.local/bin",
+        "DEBUG": "${DEBUG:-0}"
+      }
     }
   }
 }
