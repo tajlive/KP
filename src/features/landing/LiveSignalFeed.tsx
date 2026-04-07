@@ -135,7 +135,7 @@ export function LiveSignalFeed() {
 
       <div className="mt-4 pt-3 border-t border-slate-700/50 flex justify-center">
         <Link
-          href={`/${locale}/paper-trading`}
+          href={`/${locale}/dashboard/trade?mode=paper`}
           className="text-[10px] font-bold text-brand-500 hover:text-brand-400 uppercase tracking-tight transition-colors"
         >
           {t("liveSignalFeed.seeAll")}

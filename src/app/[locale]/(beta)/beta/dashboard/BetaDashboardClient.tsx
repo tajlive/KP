@@ -248,7 +248,7 @@ export default function BetaDashboardClient({
           </Link>
 
           <Link
-            href={`/${params.locale}/paper-trading`}
+            href={`/${params.locale}/dashboard/trade?mode=paper`}
             className="bg-linear-to-br from-green-500 to-green-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
           >
             <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">

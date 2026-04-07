@@ -277,7 +277,11 @@
     "trader": "Trader",
     "profit": "Avkastning",
     "monthly": "Denne måneden",
-    "allTime": "Gjennom alle tider"
+    "allTime": "Gjennom alle tider",
+    "badge": "Top 3",
+    "ctaPrimary": "Start trading",
+    "ctaSecondary": "Bli med",
+    "trustNote": "100% risikofritt med paper trading"
   },
   "stickyCTA": {
     "label": "Start gratis nå"
