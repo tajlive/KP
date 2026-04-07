@@ -1,8 +1,8 @@
 # V3.0.1 Safe-by-Default Implementation Summary
 
-**Dato:** 2026-04-06  
+**Dato:** 2026-04-06 (oppdatert 2026-04-07)  
 **Status:** ✅ Klar for staging deploy  
-**Endring:** Safe-by-default policy for trading pipeline
+**Endring:** Safe-by-default policy + Risk Guardrails for trading pipeline
 
 ---
 
@@ -26,8 +26,10 @@ Implementert omfattende fail-safe mekanismer for V3.0.1 trading pipeline:
 |-----|-------------|--------|
 | `src/lib/trading/core/execute-trade-safe.ts` | Safe-by-default trade execution med fail-closed policy | 520 |
 | `src/lib/trading/core/outbox-recovery.ts` | Partial write recovery med retry logikk | 350 |
+| `src/lib/trading/risk/guardrails.ts` | **NY:** Risk guardrails (DD-cap, edge-filter, global limits) | 280 |
 | `src/app/api/trading/v3/health/route.ts` | Health check API for alle komponenter | 250 |
 | `src/app/api/cron/outbox-recovery/route.ts` | Cron job for outbox processing | 150 |
+| `src/app/api/trading/v3/metrics/route.ts` | **NY:** Strategi-metrikker API | 180 |
 
 ### Database
 
@@ -47,6 +49,58 @@ Implementert omfattende fail-safe mekanismer for V3.0.1 trading pipeline:
 | Fil | Beskrivelse |
 |-----|-------------|
 | `docs/trading/V3-0-P0-HARDENING-PLAN.md` | Oppdatert med safe-by-default policy |
+
+---
+
+## Risk Guardrails (Nytt i v3.0.1-p1)
+
+Ekstra sikkerhetslag for å beskytte kapital uten å redusere trade-frekvens unødvendig.
+
+### 1. Daily Drawdown Cap per Strategi
+
+```typescript
+// Maks 2% tap per strategi per dag
+if (strategyDrawdown >= 2.0%) {
+  BLOCK: "GUARDRAIL: Daily drawdown cap reached for [strategy]"
+}
+```
+
+**Beskrivelse:** Hver strategi (DCA, Trend, Multi, Grid) har sin egen 2% daily drawdown-grense. Dette forhindrer at en enkelt strategi taper for mye mens andre strategier kan fortsette å trade.
+
+### 2. Edge Filter (Expected Edge)
+
+```typescript
+// Ikke trade hvis forventet edge etter fees < 0.1%
+const expectedEdge = (targetPrice - entryPrice) / entryPrice * 100 - fees;
+if (expectedEdge < 0.1%) {
+  SKIP: "GUARDRAIL: Expected edge below threshold"
+}
+```
+
+**Beskrivelse:** Filteret sjekker at potensiell fortjeneste overstiger trading fees + minimum margin. Dette reduserer "noise trades" som sannsynligvis vil tape.
+
+### 3. Global Account Risk Limit
+
+```typescript
+// Global 2% risk limit på tvers av alle strategier
+const globalDrawdown = totalPnL / totalEquity * 100;
+if (globalDrawdown >= 2.0%) {
+  BLOCK: "GUARDRAIL: Global account drawdown limit reached"
+}
+```
+
+**Beskrivelse:** Selv om hver bot kan ha 5% position size, sikrer global limit at total risiko på kontonivå ikke overstiger 2% per dag.
+
+### Guardrail Konfigurasjon
+
+```typescript
+export const DEFAULT_GUARDRAIL_CONFIG = {
+  maxDailyDrawdownPercent: 2.0,      // Per strategi
+  minEdgeAfterFeesPercent: 0.1,      // Minimum edge
+  tradingFeePercent: 0.1,            // 0.1% per side
+  globalAccountRiskLimitPercent: 2.0 // På tvers av alle strategier
+};
+```
 
 ---
 
@@ -107,6 +161,53 @@ Hver trade får en envelope med full sporbarhet:
 
 ---
 
+## Cron/Tick Robusthet
+
+### Idempotens (Duplicate Protection)
+
+```typescript
+// Tick window + session = unik nøkkel
+const idempotencyKey = `${tickWindow}-${session.id}`;
+
+// Sjekk om denne kombinasjonen allerede er prosessert
+if (await isTickProcessed(idempotencyKey)) {
+  return { action: "already_processed" };
+}
+
+// Marker som prosessert før trade execution
+await markTickAsProcessed(idempotencyKey, {
+  timestamp: new Date().toISOString(),
+  window: tickWindow,
+  status: "processing"
+});
+```
+
+**Beskrivelse:** Hver tick (5-min vindu) + session-kombinasjon kan kun trigge én trade. Dette forhindrer dobbelt-execution hvis cron kalles flere ganger.
+
+### Tick Execution Logging
+
+```typescript
+// Logg til tick_execution_log tabellen
+{
+  tick_window: "2026-04-07T02:00:00Z",
+  session_id: "uuid",
+  strategy_id: "dca",
+  action: "buy" | "sell" | "hold" | "risk_blocked",
+  status: "success" | "failed" | "skipped",
+  execution_time_ms: 145,
+  risk_reason?: "drawdown_cap" | "edge_filter" | "global_limit",
+  metadata: {
+    price: 87500,
+    signal_confidence: 0.72,
+    guardrail_checks: { drawdown: 1.2, edge: 0.15 }
+  }
+}
+```
+
+**Beskrivelse:** Alle tick executions logges med timestamp, vindu, status og metadata. Dette muliggjør debugging og performance-analyse.
+
+---
+
 ## Partial Write Recovery
 
 ### Outbox Pattern
@@ -154,6 +255,73 @@ Hver trade får en envelope med full sporbarhet:
 | 10 | Outbox status | ✅ Ja |
 | 11 | Load test (1000/min) | ⚠️ Optional |
 | 12 | Rollback test | ⚠️ Advarsel |
+
+---
+
+## Metrics API (Nytt)
+
+```bash
+GET /api/trading/v3/metrics
+```
+
+```json
+{
+  "generated_at": "2026-04-07T02:00:00Z",
+  "strategies": {
+    "dca": {
+      "trades_per_day": 12,
+      "win_rate": 58.3,
+      "avg_r": 1.4,
+      "max_drawdown": 1.8,
+      "current_drawdown": 0.5,
+      "total_pnl": 125.50,
+      "sharpe_ratio": 1.2
+    },
+    "trend": {
+      "trades_per_day": 8,
+      "win_rate": 52.1,
+      "avg_r": 1.2,
+      "max_drawdown": 2.1,
+      "current_drawdown": 1.2,
+      "total_pnl": 89.30,
+      "sharpe_ratio": 0.9
+    },
+    "multi_signal": {
+      "trades_per_day": 15,
+      "win_rate": 61.2,
+      "avg_r": 1.6,
+      "max_drawdown": 1.5,
+      "current_drawdown": 0.3,
+      "total_pnl": 210.80,
+      "sharpe_ratio": 1.5
+    },
+    "grid": {
+      "trades_per_day": 6,
+      "win_rate": 66.7,
+      "avg_r": 1.1,
+      "max_drawdown": 0.9,
+      "current_drawdown": 0.1,
+      "total_pnl": 45.20,
+      "sharpe_ratio": 1.1
+    }
+  },
+  "summary": {
+    "total_trades_24h": 41,
+    "total_pnl_24h": 156.40,
+    "active_sessions": 13,
+    "guardrail_blocks_24h": 3
+  }
+}
+```
+
+**Metrikker per strategi:**
+- `trades_per_day`: Antall trades siste 24 timer
+- `win_rate`: Vinnende trades / totale trades (%)
+- `avg_r`: Gjennomsnittlig Risk/Reward ratio
+- `max_drawdown`: Maksimalt tap fra topp (%)
+- `current_drawdown`: Nåværende drawdown (%)
+- `total_pnl`: Total fortjeneste (NOK)
+- `sharpe_ratio': Risk-adjusted return
 
 ---
 
@@ -258,11 +426,15 @@ curl https://staging.klarpakke.no/api/cron/outbox-recovery \
 | Kriterie | Status |
 |----------|--------|
 | Risk Kernel blokkerer 100% av violations | ✅ Kode klar |
+| Risk Guardrails (DD-cap, edge-filter) | ✅ Implementert |
+| Global account risk limit (2%) | ✅ Implementert |
 | State persistence dual-write | ✅ Implementert |
 | Audit logs immutable | ✅ SHA-256 hash |
 | Partial write recovery | ✅ Outbox pattern |
-| Idempotency garanti | ✅ SHA-256 keys |
+| Idempotency garanti (tick+session) | ✅ Implementert |
+| Tick execution logging | ✅ Implementert |
 | 40+ P0-tester passerer | ✅ Implementert |
+| Metrics API (per strategi) | ✅ Implementert |
 | Release gate 12/12 | ⬜ Venter på staging |
 | 24h stabil staging | ⬜ Post-deploy |
 
