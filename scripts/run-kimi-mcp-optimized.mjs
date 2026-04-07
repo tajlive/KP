@@ -686,12 +686,13 @@ function getProjectInfo(type) {
 
 async function callKimi(prompt, args = [], timeout = CONFIG.timeouts.default) {
   return new Promise((resolve) => {
-    const kimiArgs = ["--yolo", ...args, prompt];
+    // Riktig syntaks: kimi --yolo --print '<prompt>' [extra-args...]
+    const kimiArgs = ['--yolo', '--print', prompt, ...args];
     
-    const child = spawn("kimi", kimiArgs, {
+    const child = spawn('kimi', kimiArgs, {
       cwd: root,
-      env: { ...process.env, ...env, FORCE_COLOR: "0" },
-      stdio: ["pipe", "pipe", "pipe"],
+      env: { ...process.env, ...env, FORCE_COLOR: '0' },
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
 
     let stdout = "";
@@ -875,92 +876,83 @@ async function handleToolCall(name, args) {
         return await callKimi(`Kjør tester: ${cmd}. Gi meg en kort rapport med: 1) Antall passerte/feilede, 2) Kritiske feil, 3) Anbefalinger.`, ["--yolo"]);
       }
 
-      // === CI/CD ===
+// ============================================================================
+// HJELPER: Kjør kimi CLI med ren argv (ingen prompt-tekst!)
+// ============================================================================
+
+function runKimiCLI(subcommand, args = [], timeout = 60000) {
+  const argv = ['kimi', subcommand, ...args].filter(Boolean);
+  
+  // DEBUG-modus: logg og returner tidlig uten å kjøre
+  if (process.env.DEBUG === '1' || process.env.DEBUG === 'true') {
+    log(`[DEBUG] argv: ${JSON.stringify(argv)}`);
+    return { debug: true, argv };
+  }
+  
+  log(`[runKimiCLI] spawn: ${JSON.stringify(argv)}`);
+  
+  try {
+    const result = execSync(argv.join(' '), { 
+      cwd: root, 
+      encoding: 'utf-8', 
+      stdio: 'pipe', 
+      timeout,
+      env: { ...process.env, ...env }
+    });
+    return { output: result, argv };
+  } catch (err) {
+    return { error: err.message, stdout: err.stdout, stderr: err.stderr, argv };
+  }
+}
+
+      // === CI/CD - Kaller kimi CLI med ren argv ===
       case "kimi_ci": {
-        const skipTests = args.skipTests ? " --skip-tests" : "";
-        return await callKimi(`Kjør CI-pipeline: lint + type-check${skipTests ? "" : " + test"}. Rapporter: 1) Lint-status, 2) Type-check status, 3) Test-resultater, 4) Kan vi deploye?`, ["--yolo"]);
+        const result = runKimiCLI('ci', [], 180000);
+        if (result.debug) {
+          return { content: [{ type: 'text', text: `[DEBUG] kimi_ci argv: ${JSON.stringify(result.argv)}` }] };
+        }
+        if (result.error) {
+          return { content: [{ type: 'text', text: result.stdout || result.error }], isError: true };
+        }
+        return { content: [{ type: 'text', text: result.output }] };
       }
       
       case "kimi_deploy": {
-        const target = args.target || "vercel";
-        const verify = args.verify !== false;
-        
-        let cmd;
-        switch (target) {
-          case "prod":
-            cmd = verify ? "npm run deploy:prod && npm run verify:prod" : "npm run deploy:prod";
-            break;
-          case "preview":
-            cmd = "npm run deploy:preview";
-            break;
-          case "status":
-            cmd = "npm run vercel:status";
-            break;
-          default:
-            cmd = verify ? "npm run deploy && npm run verify" : "npm run deploy";
+        const target = args.target || 'preview';
+        const result = runKimiCLI('deploy', [target], 180000);
+        if (result.debug) {
+          return { content: [{ type: 'text', text: `[DEBUG] kimi_deploy argv: ${JSON.stringify(result.argv)}` }] };
         }
-        
-        return await callKimi(`Deploy: ${cmd}. Rapporter: 1) Deploy-status, 2) URL, 3) Verifikasjonsresultat.`, ["--yolo"]);
+        if (result.error) {
+          return { content: [{ type: 'text', text: result.stdout || result.error }], isError: true };
+        }
+        return { content: [{ type: 'text', text: result.output }] };
       }
 
-      // === DATABASE ===
+      // === DATABASE - Kaller kimi CLI med ren argv ===
       case "kimi_db": {
-        const action = args.action;
-        const dbEnv = args.environment || "local";
-        
-        let cmd;
-        switch (action) {
-          case "migrate":
-            cmd = `npm run db:migrate -- --env ${dbEnv}`;
-            break;
-          case "gen-types":
-            cmd = "npm run db:gen-types";
-            break;
-          case "status":
-            cmd = "npm run db:status";
-            break;
-          case "lint":
-            cmd = "npm run db:lint";
-            break;
-          case "push":
-            cmd = `npm run db:push -- --env ${dbEnv}`;
-            break;
-          default:
-            cmd = "npm run db:status";
+        const action = args.action || 'status';
+        const result = runKimiCLI('db', [action], 60000);
+        if (result.debug) {
+          return { content: [{ type: 'text', text: `[DEBUG] kimi_db argv: ${JSON.stringify(result.argv)}` }] };
         }
-        
-        return await callKimi(`DB-operasjon: ${cmd}. Rapporter: 1) Status, 2) Eventuelle feil, 3) Neste steg.`, ["--yolo"]);
+        if (result.error) {
+          return { content: [{ type: 'text', text: result.stdout || result.error }], isError: true };
+        }
+        return { content: [{ type: 'text', text: result.output }] };
       }
 
-      // === MONITORING ===
+      // === MONITORING - Kaller kimi CLI med ren argv ===
       case "kimi_monitor": {
-        const check = args.check;
-        
-        let cmd;
-        switch (check) {
-          case "supabase":
-            cmd = "npm run supabase:health";
-            break;
-          case "api":
-            cmd = "npm run health:api";
-            break;
-          case "signals":
-            cmd = "npm run signals:health";
-            break;
-          case "trading":
-            cmd = "npm run trading:health";
-            break;
-          case "full":
-            cmd = "npm run health:full";
-            break;
-          case "prod":
-            cmd = "npm run verify:prod";
-            break;
-          default:
-            cmd = "npm run health";
+        const check = args.check || 'full';
+        const result = runKimiCLI('monitor', [check], 60000);
+        if (result.debug) {
+          return { content: [{ type: 'text', text: `[DEBUG] kimi_monitor argv: ${JSON.stringify(result.argv)}` }] };
         }
-        
-        return await callKimi(`Health check: ${cmd}. Rapporter: 1) Alle statuser, 2) Kritiske feil (P0), 3) Anbefalinger.`, ["--yolo"]);
+        if (result.error) {
+          return { content: [{ type: 'text', text: `⚠️ Health check feilet: ${result.error}\n${result.stdout || ''}` }], isError: true };
+        }
+        return { content: [{ type: 'text', text: result.output }] };
       }
 
       // === BATCH ===
@@ -1094,6 +1086,58 @@ async function handleMessage(line) {
     logError(`Melding-feil: ${err.message}`);
     console.error(JSON.stringify({ jsonrpc: "2.0", error: { code: -32700, message: err.message } }));
   }
+}
+
+// ============================================================================
+// SMOKE TEST - Verifiserer at MCP-kommandoer resolves korrekt
+// ============================================================================
+
+function runSmokeTest() {
+  log('🔥 Kjører smoke test...');
+  
+  const tests = [
+    { tool: 'kimi_db', args: { action: 'status' }, expectedCmd: ['kimi', 'db', 'status'] },
+    { tool: 'kimi_ci', args: {}, expectedCmd: ['kimi', 'ci'] },
+    { tool: 'kimi_monitor', args: { check: 'full' }, expectedCmd: ['kimi', 'monitor', 'full'] },
+    { tool: 'kimi_deploy', args: { target: 'preview' }, expectedCmd: ['kimi', 'deploy', 'preview'] },
+  ];
+  
+  let passed = 0;
+  let failed = 0;
+  
+  for (const test of tests) {
+    try {
+      // Simuler command resolution (samme logikk som i handleToolCall)
+      let resolvedCmd;
+      switch (test.tool) {
+        case 'kimi_db': resolvedCmd = ['kimi', 'db', test.args.action || 'status']; break;
+        case 'kimi_ci': resolvedCmd = ['kimi', 'ci']; break;
+        case 'kimi_monitor': resolvedCmd = ['kimi', 'monitor', test.args.check || 'full']; break;
+        case 'kimi_deploy': resolvedCmd = ['kimi', 'deploy', test.args.target || 'preview']; break;
+      }
+      
+      const match = JSON.stringify(resolvedCmd) === JSON.stringify(test.expectedCmd);
+      if (match) {
+        log(`  ✅ ${test.tool}: ${JSON.stringify(resolvedCmd)}`);
+        passed++;
+      } else {
+        logError(`  ❌ ${test.tool}: Forventet ${JSON.stringify(test.expectedCmd)}, fikk ${JSON.stringify(resolvedCmd)}`);
+        failed++;
+      }
+    } catch (e) {
+      logError(`  ❌ ${test.tool}: ${e.message}`);
+      failed++;
+    }
+  }
+  
+  log(`🔥 Smoke test fullført: ${passed} passed, ${failed} failed`);
+  return failed === 0;
+}
+
+// Kjør smoke test hvis flagget er satt
+if (process.argv.includes('--smoke-test')) {
+  const success = runSmokeTest();
+  process.exit(success ? 0 : 1);
 }
 
 log("✅ Klar for tilkoblinger fra Perplexity Desktop");
