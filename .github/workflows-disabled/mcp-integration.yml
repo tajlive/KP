@@ -1,3 +1,4 @@
+# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
 name: MCP Integration Tests
 
 on:
@@ -6,52 +7,53 @@ on:
     paths:
       - '.cursor/mcp.json'
       - '.mcp/**'
+      - '.kimi/**'
       - 'scripts/mcp*.sh'
+      - 'scripts/run-*-mcp.mjs'
+      - 'scripts/test-mcp*.sh'
+      - 'scripts/verify-automation.sh'
+      - 'scripts/validate-mcp-config.mjs'
+      - 'scripts/automation-preflight.mjs'
   pull_request:
     branches: [ main ]
     paths:
       - '.cursor/mcp.json'
       - '.mcp/**'
+      - '.kimi/**'
       - 'scripts/mcp*.sh'
+      - 'scripts/run-*-mcp.mjs'
+      - 'scripts/test-mcp*.sh'
+      - 'scripts/verify-automation.sh'
+      - 'scripts/validate-mcp-config.mjs'
+      - 'scripts/automation-preflight.mjs'
+
+concurrency:
+  group: mcp-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+# Node 24 opt-in for JS actions — deprecation 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   mcp-config-validation:
     name: Validate MCP Configuration
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       
-    - name: Validate MCP JSON files
+    - name: Validate MCP config (JSON + .cursor ↔ .mcp ↔ .kimi)
+      run: node scripts/validate-mcp-config.mjs
+
+    - name: List MCP servers (Cursor)
       run: |
-        echo "🔍 Validating MCP configuration files..."
-        
-        # Check if .cursor/mcp.json exists and is valid JSON
-        if [ -f ".cursor/mcp.json" ]; then
-          echo "✅ .cursor/mcp.json exists"
-          node -e "JSON.parse(require('fs').readFileSync('.cursor/mcp.json', 'utf8'))" && echo "✅ Valid JSON"
-        else
-          echo "❌ .cursor/mcp.json missing"
-          exit 1
-        fi
-        
-        # Check if .mcp/mcp_config.json exists and is valid JSON
-        if [ -f ".mcp/mcp_config.json" ]; then
-          echo "✅ .mcp/mcp_config.json exists"
-          node -e "JSON.parse(require('fs').readFileSync('.mcp/mcp_config.json', 'utf8'))" && echo "✅ Valid JSON"
-        else
-          echo "❌ .mcp/mcp_config.json missing"
-          exit 1
-        fi
-        
-        echo ""
-        echo "📋 MCP Servers configured:"
+        echo "📋 MCP Servers:"
         node -e "
-          const config = JSON.parse(require('fs').readFileSync('.cursor/mcp.json', 'utf8'));
-          Object.keys(config.mcpServers || {}).forEach(server => {
-            console.log('  ✅', server);
-          });
+          const c = JSON.parse(require('fs').readFileSync('.cursor/mcp.json', 'utf8'));
+          Object.keys(c.mcpServers || {}).sort().forEach(s => console.log('  ✅', s));
         "
 
   mcp-security-check:
@@ -60,14 +62,14 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       
     - name: Check for exposed secrets
       run: |
         echo "🔒 Checking for exposed secrets in MCP config..."
         
         # Check for hardcoded tokens (basic check)
-        if grep -E "(sk_live|sk_test|lin_api_|sbp_|vcp_|sntryu_)" .cursor/mcp.json .mcp/mcp_config.json 2>/dev/null | grep -v "^\s*//"; then
+        if grep -E "(sk_live|sk_test|lin_api_|sbp_|vcp_|sntryu_)" .cursor/mcp.json .mcp/mcp_config.json .kimi/mcp-config.json 2>/dev/null | grep -v "^\s*//"; then
           echo "⚠️  Warning: Potential hardcoded secrets found in MCP config"
           echo "   Consider using environment variables instead"
         else
@@ -77,16 +79,18 @@ jobs:
         # Check for proper environment variable usage
         echo ""
         echo "📋 Environment variable usage:"
-        grep -o '\${[A-Z_]*}' .cursor/mcp.json .mcp/mcp_config.json 2>/dev/null | sort -u || echo "  No env vars found"
+        grep -o '\${[A-Z_]*}' .cursor/mcp.json .mcp/mcp_config.json .kimi/mcp-config.json 2>/dev/null | sort -u || echo "  No env vars found"
 
   mcp-readme:
     name: Update MCP Documentation
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         
@@ -113,8 +117,9 @@ jobs:
         
         ## Configuration Files
         
-        - `.cursor/mcp.json` - Cursor IDE configuration
-        - `.mcp/mcp_config.json` - General MCP configuration
+        - `.cursor/mcp.json` - Master (Cursor IDE)
+        - `.mcp/mcp_config.json` - Synced copy (CI/tools)
+        - `.kimi/mcp-config.json` - Synced copy (Kimi CLI); use `npm run mcp:sync`
         
         ## Usage
         
