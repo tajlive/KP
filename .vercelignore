@@ -5,7 +5,15 @@
 *.spec.tsx
 __tests__/
 __mocks__/
-scripts/
+# Scripts needed for build - DO NOT exclude
+# scripts/
 *.log
 *.md
 !.env.production
+
+# Exclude other unnecessary files
+.allure-results/
+coverage/
+.vscode/
+.idea/
+*.local
