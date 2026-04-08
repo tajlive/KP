@@ -176,14 +176,15 @@ export async function GET(
         
         // Set session cookies manually
         const { session } = data;
-        response.cookies.set("sb-access-token", session.access_token, {
+        // Use correct Supabase SSR cookie format: sb-<project-ref>-auth-token
+        response.cookies.set("sb-vuxbjlykgmzskxbclquf-auth-token", session.access_token, {
           domain: ".klarpakke.no",
           path: "/",
           secure: true,
           sameSite: "none",
           maxAge: session.expires_in,
         });
-        response.cookies.set("sb-refresh-token", session.refresh_token, {
+        response.cookies.set("sb-vuxbjlykgmzskxbclquf-refresh-token", session.refresh_token, {
           domain: ".klarpakke.no",
           path: "/",
           secure: true,
@@ -199,14 +200,15 @@ export async function GET(
       console.info("🔥 MANUAL EXCHANGE SUCCESS:", { hasAccessToken: !!tokenData.access_token });
       
       // Set session cookies manually
-      response.cookies.set("sb-access-token", tokenData.access_token, {
+      // Use correct Supabase SSR cookie format: sb-<project-ref>-auth-token
+      response.cookies.set("sb-vuxbjlykgmzskxbclquf-auth-token", tokenData.access_token, {
         domain: ".klarpakke.no",
         path: "/",
         secure: true,
         sameSite: "none",
         maxAge: tokenData.expires_in,
       });
-      response.cookies.set("sb-refresh-token", tokenData.refresh_token, {
+      response.cookies.set("sb-vuxbjlykgmzskxbclquf-refresh-token", tokenData.refresh_token, {
         domain: ".klarpakke.no",
         path: "/",
         secure: true,
