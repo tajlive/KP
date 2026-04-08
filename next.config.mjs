@@ -7,9 +7,6 @@ const withNextIntl = createNextIntlPlugin({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // SWC minification for faster builds and smaller bundles
-  swcMinify: true,
-  
   // Explicitly pass Supabase env to client (NEXT_PUBLIC_* inlined at build time).
   // Helps when .env loading order or Edge/build context differs.
   env: {
