@@ -1,171 +1,169 @@
-# 🏛️ MemPalace + KIMI Auto-Setup Guide
+# 🏛️ MemPalace + KIMI Guide (M1 Mac + iTerm Optimized)
 
 > **Raw Mode = 96.6% LongMemEval R@5** (høyest publisert, zero API calls)
-> 
-> MemPalace er **ikke** et sammendrag-system. Det lagrer alt verbatim og gjør det søkbart.
 
-## ✅ Oppsett Fullført
+## 🚀 Hurtigstart for M1 Mac
 
-MemPalace er nå optimalisert for Klarpakke med:
-- **Raw mode** (96.6% accuracy, anbefalt)
-- **Klarpakke wing** med prosjekt-spesifikke rooms
-- **Auto-save hver 15. samtale**
-- **Exit-save** når du avslutter KIMI
-- **Daglig versjonssjekk** via GitHub Actions
-- **MCP server** integrert med KIMI
-
-## 🚀 Hvordan bruke
-
-### 1. Start KIMI (med auto-save)
 ```bash
-# Last shell config (kun første gang etter setup)
+# 1. Setup (kun én gang)
+bash ~/.kimi/setup-m1.sh
 source ~/.zshrc
 
-# Start KIMI - auto-save er nå aktiv
+# 2. Start KIMI (med auto-save)
 kimi
+
+# 3. Søk i kunnskap (ChromaDB-workaround for M1)
+knowledge-search auth
 ```
 
-### 2. Manuelle kommandoer
+## 🍎 M1 Mac Spesifikke Optimaliseringer
+
+### Hva er annerledes på M1?
+
+| Problem | Løsning |
+|---------|---------|
+| ChromaDB krasjer (Issue #74) | Bruk `knowledge-search` i stedet |
+| x86 Python pakker | Homebrew ARM64 path først |
+| Ytelse | Native ARM64 builds |
+
+### ChromaDB Workaround
+
+På M1 Mac kan ChromaDB ha kompabilitetsproblemer. Vi har løst dette med:
+
 ```bash
-memsave              # Lagre nåværende samtale umiddelbart
-memsave "auth fix"   # Lagre med beskrivelse
-memstatus            # Sjekk MemPalace status
-memsync              # Sync prosjekt til MemPalace
-npm run mempalace:sync:full   # Full re-mining
+# ❌ Dette kan feile på M1:
+mempalace search "auth"
+
+# ✅ Bruk istedenfor:
+knowledge-search "auth"
+
+# Eller:
+./scripts/knowledge-search.sh "auth"
 ```
 
-### 3. Auto-Save Logikk
-```
-Samtale #1  → Teller øker
-Samtale #2  → Teller øker
-...
-Samtale #15 → 🔄 AUTO-LAGRING til MemPalace!
-Samtale #16 → Teller øker
-...
-EXIT KIMI   → 🔄 LAGRER siste samtale automatisk
-```
+## 📋 Kommandoer
 
-### 4. I KIMI - Automatisk hukommelse
-Bare still spørsmål som normalt. KIMI husker automatisk:
-
-| Spørsmål | Hva KIMI gjør |
-|----------|---------------|
-| `"Hva jobbet vi med sist?"` | Søker i MemPalace via MCP |
-| `"Hva var status på paper-trading?"` | Henter L1 kontekst + søker |
-| `"Hvilke beslutninger tok vi?"` | Søker hall_facts |
-| `"Søk etter auth-migrering"` | Dyp søk i alle closets |
-
-### 5. Lagre nye minner
-```
-> "Husk at vi skal bruke NOK ikke USDT for valuta"
-> "Lagre at E2E-testene trenger fix"
+### Grunnleggende
+```bash
+kimi                      # Start KIMI med auto-save
+memsave                   # Lagre nåværende samtale
+memsave "beskrivelse"     # Lagre med beskrivelse
+memstatus                 # MemPalace status
+memsync                   # Sync prosjekt til MemPalace
 ```
 
-## 📁 Filer opprettet
+### Knowledge (M1-optimized)
+```bash
+npm run knowledge:mine    # Generer kunnskap
+npm run knowledge:sync    # Synk til MemPalace
+knowledge-search <ord>    # Søk uten ChromaDB
+knowledge-graph           # Vis knowledge stats
+```
 
-| Fil | Hva |
-|-----|-----|
-| `~/.kimi/mcp.json` | MCP server konfigurasjon |
-| `~/.kimi/hooks/mempalace-auto-save.sh` | Auto-save hver 15. samtale |
-| `~/.kimi/hooks/mempalace-exit-save.sh` | Lagre ved exit |
-| `~/.kimi/hooks/mempalace-save-now.sh` | Manuel lagring |
-| `~/.kimi/setup-shell-integration.sh` | Shell setup script |
-| `~/klarpakke/mempalace.yaml` | MemPalace prosjektkonfig |
-| `~/klarpakke/.mempalace/config.json` | Raw mode config (96.6%) |
-| `~/klarpakke/scripts/mempalace-sync.sh` | Sync skript |
-| `~/klarpakke/scripts/mempalace-wake.sh` | Wake-up helper |
-| `.github/workflows/mempalace-guard.yml` | Daglig versjonssjekk |
+### iTerm Spesifikt
+```bash
+notify "Tittel" "Melding"  # macOS notification
+memwake                    # Hurtig wake-up
+```
+
+## 🎨 iTerm Funksjoner
+
+### 1. Badge Viser Prosjekt
+Se øverst i iTerm-vinduet - badge viser automatisk aktivt prosjekt:
+- `🏛️ KLARPAKKE` når du er i klarpakke-mappen
+- `🧠 MemPalace` når du jobber med mempalace
+
+### 2. Cmd+Click på Filer
+I output fra f.eks. `knowledge-search` kan du:
+- **Cmd+Click** på filnavn for å åpne i editor
+- **Cmd+Click** på lenker for å åpne i nettleser
+
+### 3. Fargekoding
+- 🟠 **Oransje** = Beslutninger
+- 🔵 **Blå** = Mønstre  
+- 🔴 **Rød** = Feil
 
 ## 🔄 Auto-Funksjoner
 
-### Automatisk aktivert:
-- ✅ **Lagring hver 15. samtale** (endre med `MEMPALACE_SAVE_INTERVAL=N`)
-- ✅ **Exit-save** når du forlater KIMI
-- ✅ MemPalace søker før KIMI svarer (hvis relevant)
-- ✅ Lagring av beslutninger (via naturlig samtale)
-- ✅ Wake-up kontekst ved start
-- ✅ **Daglig sjekk** for MemPalace-oppdateringer
-- ✅ Raw mode (ikke AAAK) for beste accuracy
+| Hva | Når |
+|-----|-----|
+| Lagre samtale | Hver 15. samtale |
+| Exit-save | Når du avslutter KIMI |
+| Knowledge mining | Daglig kl 08:00 UTC |
+| Versjonssjekk | Daglig kl 07:00 UTC |
 
-### GitHub Actions Schedule:
-```yaml
-07:00 UTC - Sjekk for MemPalace-oppdateringer
-09:00 UTC - Dokumentasjons-guard
+## 🧠 Knowledge System
+
+### Struktur
+```
+.knowledge/
+├── decisions/     # Arkitektur-beslutninger (fra ADR)
+├── errors/        # Feil og løsninger (manuell)
+├── patterns/      # Kode-mønstre (auto-generert)
+└── current-todos.md   # TODOs i koden
 ```
 
-## 🎯 Best Practices (fra MemPalace README)
+### Smart bruk
+```bash
+# Finn hotspots i koden
+knowledge-search "trading"
 
-1. **Raw mode er default** (96.6% vs 84.2% for AAAK)
-   - Config: `"mode": "raw"` i config.json
-   - AAAK er experimental og trades fidelity for compression
+# Se siste beslutninger
+cat .knowledge/decisions/*.md | head -50
 
-2. **Start samtaler med kontekst:**
-   ```
-   > "Hva var det vi bestemte om X?"
-   ```
+# Sjekk TODOs
+grep "TODO" .knowledge/current-todos.md
+```
 
-3. **Bekreft lagring:**
-   ```
-   > "Husk at vi valgte Y over Z"
-   ```
+## 🎯 Best Practices
 
-4. **Bruk rom for organisering:**
-   ```
-   > "Dette gjelder auth-migrering"
-   ```
-
-5. **Synk regelmessig:**
+1. **Logg feil umiddelbart**
    ```bash
-   npm run mempalace:sync  # Kjør etter viktige endringer
+   echo "# $(date +%Y-%m-%d) - [Feil]
+   
+   ## Symptom
+   [beskrivelse]
+   
+   ## Fix
+   [løsning]
+   " > .knowledge/errors/$(date +%Y-%m-%d)-kortnavn.md
    ```
 
-## 📊 Benchmarks
+2. **Søk før du spør**
+   ```bash
+   knowledge-search "auth"  # Har vi løst dette før?
+   ```
 
-| Mode | LongMemEval R@5 | Bruk |
-|------|-----------------|------|
-| **Raw** | **96.6%** ✅ | Default - beste accuracy |
-| AAAK | 84.2% | Experimental - compression |
-| +Haiku rerank | 100% | Med optional reranking |
-
-**Kostnad:** ~$10/år (170 tokens wake-up + søk)
-**VS LLM summaries:** ~$507/år
-
-## ⚙️ Konfigurasjon
-
-### Endre lagringsintervall
-```bash
-# Legg til i ~/.zshrc eller ~/.bashrc
-export MEMPALACE_SAVE_INTERVAL=10  # Lagre hver 10. samtale
-```
-
-### Deaktiver auto-save midlertidig
-```bash
-MEMPALACE_SAVE_INTERVAL=99999 kimi
-```
-
-### Sjekk nåværende teller
-```bash
-cat ~/.kimi/logs/mempalace-counter
-```
+3. **Bruk iTerm notifications**
+   ```bash
+   long-running-command && notify "Done" "Ferdig!"
+   ```
 
 ## 🆘 Feilsøking
 
 | Problem | Løsning |
 |---------|---------|
+| `chroma.sqlite3` feil | Normalt på M1 - bruk `knowledge-search` |
 | `mempalace: command not found` | `pip install mempalace` |
-| MCP ikke tilgjengelig | `kimi mcp list` - sjekk at mempalace er der |
-| Ingen minner funnet | Kjør `npm run mempalace:sync:full` |
-| Auto-save fungerer ikke | Sjekk `~/.kimi/logs/mempalace-counter` |
-| Exit-save fungerer ikke | Kjør `bash ~/.kimi/hooks/mempalace-exit-save.sh` manuelt |
-| Kontekst for gammel | `mempalace compress` for AAAK kompresjon |
+| Badge vises ikke | Sjekk at iTerm2 Shell Integration er aktivert |
+| Knowledge ikke funnet | Kjør `npm run knowledge:mine` |
+
+## 📊 Benchmarks
+
+| Mode | LongMemEval R@5 |
+|------|-----------------|
+| **Raw** | **96.6%** ✅ |
+| AAAK | 84.2% |
+| +Haiku rerank | 100% |
 
 ## 🔗 Referanser
 
 - **GitHub:** https://github.com/milla-jovovich/mempalace
+- **Issue #74:** macOS ARM64 ChromaDB workaround
 - **PyPI:** https://pypi.org/project/mempalace/
-- **LongMemEval:** 96.6% R@5, zero API calls, reproducible
 
 ---
 
-**Sist oppdatert:** 2026-04-08
-**Versjon:** MemPalace 3.0.0 (Raw Mode) + KIMI MCP + Auto-Save
+**Sist oppdatert:** 2026-04-08  
+**Platform:** Apple Silicon (M1/M2/M3) + iTerm2  
+**Versjon:** MemPalace 3.0.0 + Knowledge Miner

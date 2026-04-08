@@ -1,0 +1,19 @@
+wing: klarpakke-knowledge
+platform: darwin-arm64
+chroma_workaround: true
+
+rooms:
+- name: decisions
+  description: Arkitektur-beslutninger (M1-optimized)
+- name: patterns
+  description: Kode-mønstre
+- name: errors
+  description: Feil og løsninger
+- name: todos
+  description: TODOs og FIXMEs
+
+# M1-spesifikke notater
+notes:
+- "ChromaDB har issues på M1 - bruk knowledge-search.sh istedenfor"
+- "iTerm: Cmd+Click på filnavn for å åpne"
+- "Performance: Rust-baserte tools > Python på M1"
