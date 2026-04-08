@@ -68,7 +68,7 @@ export default function PositionsTable() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="hover:bg-kp-bg-hover"
+                className="hover:bg-kp-brand-hover"
               >
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-2">
@@ -84,8 +84,8 @@ export default function PositionsTable() {
                   <span
                     className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold ${
                       position.side === "long"
-                        ? "bg-kp-success-bg text-kp-success"
-                        : "bg-kp-danger-bg text-kp-danger"
+                        ? "bg-kp-success text-kp-success"
+                        : "bg-kp-danger text-kp-danger"
                     }`}
                   >
                     {position.side === "long" ? (
@@ -136,7 +136,7 @@ export default function PositionsTable() {
                     size="sm"
                     onClick={() => closePosition(position.id)}
                     aria-label={t("closeAria", { symbol: position.symbol })}
-                    className="text-kp-danger border-kp-danger/30 hover:bg-kp-danger-bg min-h-[36px]"
+                    className="text-kp-danger border-kp-danger/30 hover:bg-kp-danger min-h-[36px]"
                   >
                     <X className="w-4 h-4 mr-1" />
                     {t("close")}

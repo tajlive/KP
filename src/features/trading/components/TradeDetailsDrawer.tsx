@@ -316,7 +316,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                 <p className="text-kp-text-secondary text-center">{error || t("notFound")}</p>
                 <button
                   onClick={onClose}
-                  className="mt-4 px-4 py-2 bg-kp-bg-tertiary hover:bg-kp-bg-hover rounded-lg text-kp-text-primary transition-colors"
+                  className="mt-4 px-4 py-2 bg-kp-bg-tertiary hover:bg-kp-brand-hover rounded-lg text-kp-text-primary transition-colors"
                 >
                   {t("close")}
                 </button>
@@ -331,7 +331,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-medium ${
                           trade.mode === "live"
-                            ? "bg-kp-success-bg text-kp-success"
+                            ? "bg-kp-success text-kp-success"
                             : "bg-kp-brand-subtle text-kp-brand"
                         }`}
                       >
@@ -342,7 +342,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                   </div>
                   <button
                     onClick={onClose}
-                    className="p-2 hover:bg-kp-bg-hover rounded-lg transition-colors"
+                    className="p-2 hover:bg-kp-brand-hover rounded-lg transition-colors"
                     aria-label={t("close")}
                   >
                     <X className="w-5 h-5 text-kp-text-muted" />
@@ -362,7 +362,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                     {t("overview")}
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-border-light">
+                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-light">
                       <p className="text-kp-text-muted text-xs mb-1">{t("type")}</p>
                       <div className="flex items-center gap-1.5">
                         {trade.side === "buy" ? (
@@ -378,14 +378,14 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                         )}
                       </div>
                     </div>
-                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-border-light">
+                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-light">
                       <p className="text-kp-text-muted text-xs mb-1">{t("strategy")}</p>
                       <div className="flex items-center gap-1.5">
                         <Bot className="w-4 h-4 text-kp-brand" />
                         <span className="text-kp-text-primary font-medium">{getStrategyName(trade)}</span>
                       </div>
                     </div>
-                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-border-light">
+                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-light">
                       <p className="text-kp-text-muted text-xs mb-1">{t("quantity")}</p>
                       <p className="text-kp-text-primary font-medium tabular-nums">
                         {trade.quantity.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
@@ -393,7 +393,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                         })}
                       </p>
                     </div>
-                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-border-light">
+                    <div className="bg-kp-bg-tertiary/50 rounded-lg p-3 border border-kp-light">
                       <p className="text-kp-text-muted text-xs mb-1">{t("totalValue")}</p>
                       <p className="text-kp-text-primary font-medium tabular-nums">
                         {trade.total_value.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
@@ -449,7 +449,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                       <CheckCircle2 className="w-4 h-4 text-kp-success" />
                       {t("whySell")}
                     </h3>
-                    <div className="bg-kp-success-bg border border-kp-success/20 rounded-xl p-4">
+                    <div className="bg-kp-success border border-kp-success/20 rounded-xl p-4">
                       <p className="text-kp-text-primary leading-relaxed">{explanation.whySell}</p>
                     </div>
                   </section>
@@ -464,7 +464,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                         <p className="text-kp-text-secondary text-sm mb-2">{t("learnMore")}</p>
                         <Link
                           href={explanation.learnMoreUrl}
-                          className="text-kp-brand hover:text-kp-brand-hover text-sm font-medium underline underline-offset-2"
+                          className="text-kp-brand hover:text-kp-brand text-sm font-medium underline underline-offset-2"
                           onClick={onClose}
                         >
                           {t("readMore")} {getLearnMoreTitle(explanation.learnMoreKey, isNorwegian ? "no" : "en")}
@@ -555,7 +555,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                 <div className="pt-4 border-t border-kp-border">
                   <button
                     onClick={onClose}
-                    className="w-full py-3 bg-kp-bg-tertiary hover:bg-kp-bg-hover rounded-xl text-kp-text-primary font-medium transition-colors"
+                    className="w-full py-3 bg-kp-bg-tertiary hover:bg-kp-brand-hover rounded-xl text-kp-text-primary font-medium transition-colors"
                   >
                     {t("close")}
                   </button>

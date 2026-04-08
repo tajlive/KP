@@ -79,13 +79,13 @@ export function TradeAmountSlider({
   const getStatusBg = () => {
     switch (status) {
       case "blocked":
-        return "bg-kp-danger-bg border-kp-danger/30";
+        return "bg-kp-danger border-kp-danger/30";
       case "warning":
         return "bg-kp-warning-bg border-kp-warning/30";
       case "caution":
         return "bg-kp-warning-bg border-kp-warning/30";
       default:
-        return "bg-kp-success-bg border-kp-success/30";
+        return "bg-kp-success border-kp-success/30";
     }
   };
 
@@ -242,7 +242,7 @@ export function TradeAmountSlider({
                   ? "opacity-50 cursor-not-allowed"
                   : amount === preset
                   ? "bg-kp-success hover:bg-kp-success/90"
-                  : "border-kp-border hover:bg-kp-bg-hover"
+                  : "border-kp-border hover:bg-kp-brand-hover"
               )}
             >
               {formatCurrency(preset)} kr

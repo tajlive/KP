@@ -128,7 +128,7 @@ export function StrategyConfig({
               onChange={(e) =>
                 onChange({ ...config, aggressiveness: e.target.value })
               }
-              className="w-full mt-1 bg-kp-input-bg border border-kp-input-border text-kp-input-text rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
+              className="w-full mt-1 bg-kp-bg-secondary border border-kp-border text-kp-text-primary rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
             >
               <option value="forsiktig">{t("multisignal.levels.cautious")}</option>
               <option value="normal">{t("multisignal.levels.normal")}</option>
@@ -162,7 +162,7 @@ export function StrategyConfig({
                 onChange={(e) =>
                   onChange({ ...config, upperPrice: Number(e.target.value) })
                 }
-                className="w-full mt-1 bg-kp-input-bg border border-kp-input-border text-kp-input-text rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
+                className="w-full mt-1 bg-kp-bg-secondary border border-kp-border text-kp-text-primary rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
               />
             </div>
             <div>
@@ -179,7 +179,7 @@ export function StrategyConfig({
                 onChange={(e) =>
                   onChange({ ...config, lowerPrice: Number(e.target.value) })
                 }
-                className="w-full mt-1 bg-kp-input-bg border border-kp-input-border text-kp-input-text rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
+                className="w-full mt-1 bg-kp-bg-secondary border border-kp-border text-kp-text-primary rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-kp-brand focus:border-transparent"
               />
             </div>
           </div>

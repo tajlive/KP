@@ -73,7 +73,7 @@ export function ThemeSettings() {
               w-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200
               ${isSelected 
                 ? "border-kp-brand/50 bg-kp-brand-subtle" 
-                : "border-kp-border bg-kp-bg-secondary/50 hover:border-kp-border-dark hover:bg-kp-bg-tertiary/50"
+                : "border-kp-border bg-kp-bg-secondary/50 hover:border-kp-dark-border hover:bg-kp-bg-tertiary/50"
               }
             `}
           >

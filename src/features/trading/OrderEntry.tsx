@@ -83,7 +83,7 @@ export default function OrderEntry() {
             className={`py-3 px-4 rounded-xl font-bold text-sm transition-all min-h-[44px] ${
               side === "long"
                 ? "bg-kp-success text-white shadow-lg"
-                : "bg-kp-bg-tertiary text-kp-text-secondary hover:bg-kp-bg-hover"
+                : "bg-kp-bg-tertiary text-kp-text-secondary hover:bg-kp-brand-hover"
             }`}
           >
             <TrendingUp className="w-4 h-4 inline mr-2" />
@@ -94,7 +94,7 @@ export default function OrderEntry() {
             className={`py-3 px-4 rounded-xl font-bold text-sm transition-all min-h-[44px] ${
               side === "short"
                 ? "bg-kp-danger text-white shadow-lg"
-                : "bg-kp-bg-tertiary text-kp-text-secondary hover:bg-kp-bg-hover"
+                : "bg-kp-bg-tertiary text-kp-text-secondary hover:bg-kp-brand-hover"
             }`}
           >
             <TrendingDown className="w-4 h-4 inline mr-2" />
@@ -116,7 +116,7 @@ export default function OrderEntry() {
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder={t("quantity.placeholder")}
-            className="text-lg font-mono bg-kp-input-bg border-kp-input-border text-kp-input-text"
+            className="text-lg font-mono bg-kp-bg-secondary border-kp-border text-kp-text-primary"
           />
           <div className="flex justify-between mt-1">
             <span className="text-xs text-kp-text-muted">
@@ -124,7 +124,7 @@ export default function OrderEntry() {
             </span>
             <button
               onClick={() => setQuantity((portfolio.balance / currentPrice).toFixed(4))}
-              className="text-xs text-kp-brand hover:text-kp-brand-hover hover:underline"
+              className="text-xs text-kp-brand hover:text-kp-brand hover:underline"
             >
               {t("quantity.max")}
             </button>
@@ -170,7 +170,7 @@ export default function OrderEntry() {
               value={stopLoss}
               onChange={(e) => setStopLoss(e.target.value)}
               placeholder={t("stopLoss.placeholder")}
-              className="font-mono bg-kp-input-bg border-kp-input-border text-kp-input-text"
+              className="font-mono bg-kp-bg-secondary border-kp-border text-kp-text-primary"
             />
           </div>
           <div>
@@ -186,7 +186,7 @@ export default function OrderEntry() {
               value={takeProfit}
               onChange={(e) => setTakeProfit(e.target.value)}
               placeholder={t("takeProfit.placeholder")}
-              className="font-mono bg-kp-input-bg border-kp-input-border text-kp-input-text"
+              className="font-mono bg-kp-bg-secondary border-kp-border text-kp-text-primary"
             />
           </div>
         </div>
