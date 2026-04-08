@@ -36,7 +36,7 @@ export async function GET(
   const pkceCookie = allCookies.find((c) => c.name.includes("code-verifier"));
   const vippsVerifier = allCookies.find((c) => c.name === VIPPS_PKCE_COOKIE);
 
-  // DEBUG: Log all auth-related cookies for troubleshooting
+  // DEBUG: Log all auth-related cookies
   const authCookies = allCookies.filter(c => 
     c.name.includes('sb-') || 
     c.name.includes('supabase') ||
@@ -51,8 +51,6 @@ export async function GET(
     authCookieNames: authCookies.map(c => c.name),
     pkceCookieName: pkceCookie?.name || "NONE",
     pkceCookieValue: pkceCookie ? `${pkceCookie.value.substring(0, 20)}...` : "NONE",
-    pkceCookieDomain: pkceCookie?.value ? 
-      allCookies.find(c => c.name === pkceCookie.name)?.name : undefined,
     vippsCookie: vippsVerifier ? "SET" : "NONE",
     originUsed: origin,
     requestHost: host,
@@ -101,132 +99,45 @@ export async function GET(
   });
   const response = successResponse;
 
-  // CRITICAL FIX: PKCE cookie value is URL-encoded and may contain quotes
-  // We need to decode it and ensure it's available for the exchange
-  let codeVerifier: string | undefined;
+  // CRITICAL FIX: Decode and re-set PKCE cookie for Supabase SSR
+  // The cookie value is URL-encoded and may contain quotes
   if (pkceCookie) {
-    // Decode URL-encoded value and remove surrounding quotes if present
-    let rawValue = decodeURIComponent(pkceCookie.value);
-    if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
-      rawValue = rawValue.slice(1, -1);
-    }
-    codeVerifier = rawValue;
-    
-    console.info("🔥 PKCE COOKIE FOUND:", {
-      name: pkceCookie.name,
-      rawLength: pkceCookie.value.length,
-      decodedLength: codeVerifier?.length,
-      hasQuotes: pkceCookie.value.includes('%22') || pkceCookie.value.startsWith('"'),
-    });
-    
-    // Re-set the cookie with decoded value for Supabase SSR to find
-    response.cookies.set(pkceCookie.name, codeVerifier, {
-      domain: ".klarpakke.no",
-      path: "/",
-      secure: true,
-      sameSite: "none",
-      httpOnly: false,
-    });
-    console.info("🔥 RE-SET PKCE COOKIE with decoded value");
-  } else {
-    console.error("🔥 NO PKCE COOKIE FOUND - auth will fail!");
-    console.info("🔥 Available cookies:", allCookies.map(c => c.name));
-  }
-
-  try {
-    const supabase = createServerClient(request, response);
-
-    // MANUAL PKCE EXCHANGE: If we have codeVerifier, do manual exchange
-    // This bypasses Supabase SSR cookie issues
-    if (codeVerifier) {
-      console.info("🔥 ATTEMPTING MANUAL PKCE EXCHANGE");
+    try {
+      // Decode URL-encoded value
+      let rawValue = decodeURIComponent(pkceCookie.value);
       
-      const exchangeResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=pkce`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          },
-          body: JSON.stringify({
-            auth_code: code,
-            code_verifier: codeVerifier,
-          }),
-        }
-      );
-      
-      if (!exchangeResponse.ok) {
-        const errorText = await exchangeResponse.text();
-        console.error("🔥 MANUAL EXCHANGE FAILED:", exchangeResponse.status, errorText);
-        
-        // Fall back to regular exchange
-        console.info("🔥 FALLING BACK TO REGULAR EXCHANGE");
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-        
-        if (exchangeError || !data.session) {
-          console.error("🔥 EXCHANGE FAILED:", exchangeError?.message);
-          return NextResponse.redirect(
-            new URL(
-              `/${locale}/innlogging?error=exchange_failed&detail=${encodeURIComponent(exchangeError?.message || "NO_SESSION")}`,
-              origin,
-            ),
-          );
-        }
-        
-        // Set session cookies manually
-        const { session } = data;
-        // Use correct Supabase SSR cookie format: single JSON cookie
-        const cookieValue = JSON.stringify({
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-          expires_in: session.expires_in,
-          expires_at: Math.floor(Date.now() / 1000) + session.expires_in,
-          token_type: "bearer",
-          user: session.user,
-        });
-        response.cookies.set("sb-vuxbjlykgmzskxbclquf-auth-token", cookieValue, {
-          domain: ".klarpakke.no",
-          path: "/",
-          secure: true,
-          sameSite: "none",
-          maxAge: 60 * 60 * 24 * 365, // 1 year
-        });
-        
-        console.info("✅ OAUTH SUCCESS (fallback) — redirecting to", `${origin}${next}`);
-        return response;
+      // Remove surrounding quotes if present
+      if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
+        rawValue = rawValue.slice(1, -1);
       }
       
-      const tokenData = await exchangeResponse.json();
-      console.info("🔥 MANUAL EXCHANGE SUCCESS:", { hasAccessToken: !!tokenData.access_token });
-      
-      // Set session cookies manually
-      // Use correct Supabase SSR cookie format: single JSON cookie
-      const cookieValue = JSON.stringify({
-        access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
-        expires_in: tokenData.expires_in,
-        expires_at: Math.floor(Date.now() / 1000) + tokenData.expires_in,
-        token_type: "bearer",
-        user: tokenData.user,
+      console.info("🔥 RE-SETTING PKCE COOKIE:", {
+        name: pkceCookie.name,
+        decodedLength: rawValue.length,
       });
-      response.cookies.set("sb-vuxbjlykgmzskxbclquf-auth-token", cookieValue, {
+      
+      // Re-set the cookie with decoded value
+      response.cookies.set(pkceCookie.name, rawValue, {
         domain: ".klarpakke.no",
         path: "/",
         secure: true,
         sameSite: "none",
-        maxAge: 60 * 60 * 24 * 365, // 1 year
+        httpOnly: false,
       });
-      
-      console.info("✅ OAUTH SUCCESS (manual) — redirecting to", `${origin}${next}`);
-      return response;
+    } catch (e) {
+      console.error("🔥 FAILED TO DECODE PKCE COOKIE:", e);
     }
-    
-    // Regular exchange without PKCE
+  } else {
+    console.error("🔥 NO PKCE COOKIE FOUND - auth will fail!");
+  }
+
+  try {
+    // Use Supabase SSR client to handle exchange and cookie setting
+    const supabase = createServerClient(request, response);
+
+    console.info("🔥 CALLING exchangeCodeForSession");
     const { data, error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
-
-    await supabase.auth.getSession();
 
     console.info("🔥 EXCHANGE RESULT:", {
       success: !exchangeError,
@@ -234,8 +145,6 @@ export async function GET(
       errorName: exchangeError?.name,
       hasSession: !!data?.session,
       userId: data?.session?.user?.id?.slice(0, 8),
-      redirectingTo: `${origin}${next}`,
-      // Check if PKCE cookie is still present after exchange
       responseCookies: response.cookies.getAll().map(c => c.name),
     });
 
