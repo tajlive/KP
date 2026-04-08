@@ -204,7 +204,7 @@ describe('P0 Kill-Switch', () => {
       expect(result).toBeDefined();
     });
     
-    it('BLOCK when outbox.pending above threshold', async () => {
+    test('BLOCK when outbox.pending above threshold', async () => {
       const result = await checkOutboxHealth({
         supabase: mockSupabase,
         pendingThreshold: 5,

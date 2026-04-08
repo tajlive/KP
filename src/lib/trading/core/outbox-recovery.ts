@@ -17,7 +17,7 @@ import { getAuditStore } from "@/lib/trading/execution/audit-store";
 interface OutboxItem {
   id: string;
   type: 'RISK_STATE_SYNC' | 'AUDIT_S3_SYNC' | 'AUDIT_DB_SYNC';
-  payload: any;
+  payload: unknown;
   attempts: number;
   createdAt: Date;
   lastAttempt?: Date;
@@ -71,15 +71,18 @@ export class OutboxRecovery {
       return [];
     }
 
-    return (data || []).map((item: any) => ({
-      id: item.id as string,
-      type: item.type as OutboxItem['type'],
-      payload: item.payload as Record<string, unknown>,
-      attempts: (item.attempts as number) || 0,
-      createdAt: new Date(item.created_at as string),
-      lastAttempt: item.last_attempt ? new Date(item.last_attempt as string) : undefined,
-      error: item.error as string | undefined
-    }));
+    return (data || []).map((raw: unknown) => {
+      const item = raw as Record<string, unknown>;
+      return {
+        id: item.id as string,
+        type: item.type as OutboxItem['type'],
+        payload: item.payload as Record<string, unknown>,
+        attempts: (item.attempts as number) || 0,
+        createdAt: new Date(item.created_at as string),
+        lastAttempt: item.last_attempt ? new Date(item.last_attempt as string) : undefined,
+        error: item.error as string | undefined
+      };
+    });
   }
 
   /**
@@ -145,7 +148,7 @@ export class OutboxRecovery {
    * Sync risk state fra Redis til Supabase
    */
   private async syncRiskState(item: OutboxItem): Promise<{ success: boolean; error?: string }> {
-    const { userId } = item.payload;
+    const userId = (item.payload as { userId: string }).userId;
     const store = getRiskStateStore();
 
     // Hent fra Redis
@@ -184,7 +187,7 @@ export class OutboxRecovery {
    * Sync audit fra DB til S3
    */
   private async syncAuditToS3(item: OutboxItem): Promise<{ success: boolean; error?: string }> {
-    const { evidenceId, evidence } = item.payload;
+    const { evidenceId, evidence } = item.payload as { evidenceId: string; evidence: unknown };
     const auditStore = getAuditStore();
 
     // TODO: Implement S3 sync - auditStore har ikke syncToS3 metode ennå

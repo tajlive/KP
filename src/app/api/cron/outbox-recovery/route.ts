@@ -134,7 +134,7 @@ async function sendAlert(
     severity: alert.severity,
     component: alert.component,
     message: alert.message,
-    details: alert.details as any,
+    details: alert.details as unknown,
     created_at: new Date().toISOString(),
     acknowledged: false
   });

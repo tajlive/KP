@@ -156,11 +156,11 @@ export class RiskStateStore {
       
       // 2. Write to database (durable)
       const supabase = await createClient();
-      const { error } = await (supabase
-        .from('risk_state') as any)
+      const { error } = await supabase
+        .from('risk_state')
         .upsert({
           user_id: userId,
-          state: persisted as unknown as Record<string, unknown>,
+          state: persisted as unknown,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'

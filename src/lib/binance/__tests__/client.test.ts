@@ -28,14 +28,15 @@ import {
 
 const originalEnv = process.env;
 
+const consoleSpies: ReturnType<typeof vi.spyOn>[] = [];
+
 beforeAll(() => {
-  vi.spyOn(console, "info").mockImplementation(() => {});
-  vi.spyOn(console, "warn").mockImplementation(() => {});
+  consoleSpies.push(vi.spyOn(console, "info").mockImplementation(() => {}));
+  consoleSpies.push(vi.spyOn(console, "warn").mockImplementation(() => {}));
 });
 
 afterAll(() => {
-  vi.mocked(console.info).mockRestore();
-  vi.mocked(console.warn).mockRestore();
+  consoleSpies.forEach(spy => spy.mockRestore());
 });
 
 beforeEach(() => {

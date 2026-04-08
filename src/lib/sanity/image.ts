@@ -7,7 +7,7 @@ const imageBuilder = createImageUrlBuilder(client);
 // IMAGE URL BUILDER
 // =============================================================================
 
-export function urlFor(source: any) {
+export function urlFor(source: unknown) {
   return imageBuilder.image(source);
 }
 
@@ -16,7 +16,7 @@ export function urlFor(source: any) {
 // =============================================================================
 
 export function getOptimizedImageUrl(
-  source: any,
+  source: unknown,
   options: {
     width?: number;
     height?: number;
@@ -30,7 +30,7 @@ export function getOptimizedImageUrl(
   let builder = urlFor(source)
     .width(width)
     .quality(quality)
-    .format(format as any)
+    .format(format as unknown)
     .fit(fit);
   
   if (height) {
@@ -45,7 +45,7 @@ export function getOptimizedImageUrl(
 // =============================================================================
 
 export function getResponsiveImageSrc(
-  source: any,
+  source: unknown,
   sizes: number[] = [320, 640, 960, 1280, 1920]
 ) {
   return sizes.map(size => ({
@@ -58,7 +58,7 @@ export function getResponsiveImageSrc(
 // PLACEHOLDER / LQIP
 // =============================================================================
 
-export function getPlaceholderUrl(source: any) {
+export function getPlaceholderUrl(source: unknown) {
   return urlFor(source)
     .width(20)
     .quality(20)

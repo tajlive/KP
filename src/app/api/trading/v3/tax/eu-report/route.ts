@@ -230,7 +230,7 @@ function getFilingDeadline(jurisdiction: EuropeanJurisdiction, taxYear: number):
   return deadlines[jurisdiction];
 }
 
-function generateExport(report: any, format: 'XML' | 'CSV' | 'PDF'): string {
+function generateExport(report: unknown, format: 'XML' | 'CSV' | 'PDF'): string {
   const tradeRecords = report.report_data?.trades || [];
   
   switch (format) {
@@ -246,7 +246,7 @@ function generateExport(report: any, format: 'XML' | 'CSV' | 'PDF'): string {
   }
 }
 
-function generateXML(report: any, trades: any[]): string {
+function generateXML(report: unknown, trades: unknown[]): string {
   const header = '<?xml version="1.0" encoding="UTF-8"?>';
   const tradesXml = trades.map(t => `
   <Trade>
@@ -274,7 +274,7 @@ function generateXML(report: any, trades: any[]): string {
 </TaxReport>`;
 }
 
-function generateCSV(report: any, trades: any[]): string {
+function generateCSV(report: unknown, trades: unknown[]): string {
   const header = 'Date,Symbol,Side,Quantity,Price,Fees,Total';
   const rows = trades.map(t => 
     `${t.date},${t.symbol},${t.side},${t.quantity},${t.price},${t.fees},${t.total}`
