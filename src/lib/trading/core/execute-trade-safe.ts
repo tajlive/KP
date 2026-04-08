@@ -260,7 +260,7 @@ export async function executeTradeSafe(
   if (!riskRecovery) {
     // Prøv å initialisere én gang
     try {
-      const currentBalance = Number(session.current_capital_nok ?? session.current_capital ?? 0);
+      const currentBalance = Number(session?.current_capital_nok ?? session?.current_capital ?? 0);
       riskRecovery = await riskStore.initializeState(request.userId, currentBalance);
     } catch (initError) {
       const envelope = await buildRejectionEnvelope(supabase, {
@@ -385,7 +385,7 @@ export async function executeTradeSafe(
   const auditIntent = auditor.recordIntent({
     orderId: tradeId,
     clientId: request.userId,
-    sessionId: session.id,
+    sessionId: session?.id ?? request.sessionId,
     side: finalTrade.side,
     type: request.orderType,
     symbol: request.symbol,
@@ -512,7 +512,7 @@ export async function executeTradeSafe(
     .from("trades")
     .insert({
       id: tradeId,
-      session_id: session.id,
+      session_id: session?.id ?? request.sessionId,
       user_id: request.userId,
       trading_pair: request.symbol,
       side: request.side,
@@ -696,7 +696,7 @@ export async function executeTradeSafe(
   return {
     success: true,
     tradeId: trade.id,
-    sessionId: session.id,
+    sessionId: session?.id ?? request.sessionId,
     orderId: execResult.orderId,
     executedPrice: execResult.executedPrice,
     executedQuantity: execResult.executedQuantity,
@@ -714,27 +714,43 @@ export async function executeTradeSafe(
 // Helper Functions
 // ============================================================================
 
+interface TradingSession {
+  id: string;
+  current_capital_nok?: number;
+  current_capital?: number;
+}
+
 async function resolveSession(
   supabase: SupabaseClient<Database>,
   request: ExecuteTradeRequest
-): Promise<{ success: boolean; session?: unknown; sessionId?: string; error?: string }> {
+): Promise<{ success: boolean; session?: TradingSession; sessionId?: string; error?: string }> {
   // Simplified session resolution
   // Would include full session logic from execute-trade-v3
-  return { success: true, session: {}, sessionId: request.sessionId };
+  const sessionId = request.sessionId ?? crypto.randomUUID();
+  return { success: true, session: { id: sessionId }, sessionId };
+}
+
+interface RiskState {
+  equity: number;
+  peakEquity: number;
+  dailyPnl: number;
+  openPositions: number;
 }
 
 function isValidRiskState(state: unknown): boolean {
   if (!state || typeof state !== 'object') return false;
   
+  const s = state as RiskState;
+  
   // Sjekk påkrevde felter
   const required = ['equity', 'peakEquity', 'dailyPnl', 'openPositions'];
   for (const field of required) {
-    if (typeof state[field] !== 'number') return false;
+    if (typeof s[field as keyof RiskState] !== 'number') return false;
   }
   
   // Sjekk at verdier er fornuftige
-  if (state.equity < 0 || state.peakEquity < 0) return false;
-  if (isNaN(state.equity) || isNaN(state.peakEquity)) return false;
+  if (s.equity < 0 || s.peakEquity < 0) return false;
+  if (isNaN(s.equity) || isNaN(s.peakEquity)) return false;
   
   return true;
 }
@@ -766,6 +782,14 @@ function generateDecisionHash(params: unknown): string {
     .slice(0, 16);
 }
 
+interface RiskViolation {
+  rule: string;
+  severity: string;
+  expectedValue?: number | string;
+  actualValue?: number | string;
+  action?: string;
+}
+
 async function logRiskViolations(
   supabase: SupabaseClient,
   userId: string,
@@ -773,15 +797,18 @@ async function logRiskViolations(
 ): Promise<void> {
   try {
     await supabase.from('risk_violations').insert(
-      violations.map(v => ({
-        user_id: userId,
-        rule: v.rule,
-        severity: v.severity,
-        expected_value: v.expectedValue,
-        actual_value: v.actualValue,
-        action: v.action,
-        created_at: new Date().toISOString()
-      }))
+      violations.map(v => {
+        const violation = v as RiskViolation;
+        return {
+          user_id: userId,
+          rule: violation.rule,
+          severity: violation.severity,
+          expected_value: violation.expectedValue,
+          actual_value: violation.actualValue,
+          action: violation.action,
+          created_at: new Date().toISOString()
+        };
+      })
     );
   } catch (error) {
     console.error('[executeTradeSafe] Failed to log violations:', error);

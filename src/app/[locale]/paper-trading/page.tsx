@@ -2,6 +2,20 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PaperTradingPageClient } from "@/features/paper-trading/PaperTradingPageClient";
 
+type SessionRow = {
+  id: string;
+  mode: "paper" | "live";
+  status: "active" | "paused" | "stopped" | "crashed";
+  trading_pair: string;
+  strategy_id: string;
+  current_capital_nok: number;
+  starting_capital_nok: number;
+  total_pnl: number;
+  winning_trades: number;
+  total_trades: number;
+  created_at: string;
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function PaperTradingPage({
@@ -38,7 +52,7 @@ export default async function PaperTradingPage({
   
   return (
     <PaperTradingPageClient
-      sessions={(sessions || []) as unknown}
+      sessions={(sessions || []) as unknown as SessionRow[]}
       balance={profile?.paper_balance || 100000}
       locale={locale}
       userId={user.id}

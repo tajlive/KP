@@ -41,7 +41,7 @@ export class OutboxRecovery {
       .from('outbox_recovery')
       .insert({
         type: item.type,
-        payload: item.payload,
+        payload: item.payload as unknown,
         attempts: 0,
         status: 'pending',
         created_at: new Date().toISOString()
