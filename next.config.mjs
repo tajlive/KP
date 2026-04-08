@@ -119,8 +119,9 @@ const nextConfig = {
       // { source: "/no", destination: "/", permanent: true },
       
       // Route consolidation redirects (2026)
-      { source: "/innlogging", destination: "/login", permanent: true },
-      { source: "/:locale/innlogging", destination: "/:locale/login", permanent: true },
+      // Fjernet - håndteres av i18n middleware (linje 20 i i18n.ts)
+      // { source: "/innlogging", destination: "/login", permanent: true },
+      // { source: "/:locale/innlogging", destination: "/:locale/login", permanent: true },
       { source: "/signup", destination: "/register", permanent: true },
       { source: "/:locale/signup", destination: "/:locale/register", permanent: true },
       { source: "/autotrade", destination: "/auto", permanent: true },
