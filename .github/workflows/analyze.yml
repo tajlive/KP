@@ -9,9 +9,6 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22.22.1]
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -20,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: '.nvmrc'
           cache: npm
 
       - name: Install dependencies
