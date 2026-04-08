@@ -7,11 +7,22 @@ const withNextIntl = createNextIntlPlugin({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // SWC minification for faster builds and smaller bundles
+  swcMinify: true,
+  
   // Explicitly pass Supabase env to client (NEXT_PUBLIC_* inlined at build time).
   // Helps when .env loading order or Edge/build context differs.
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  },
+  
+  // Reduce memory usage during build
+  onDemandEntries: {
+    // period (in ms) where the server will keep pages in the buffer
+    maxInactiveAge: 60 * 60 * 1000,
+    // number of pages that should be kept simultaneously without being disposed
+    pagesBufferLength: 5,
   },
 
   // distDir removed to let Vercel handle output correctly
@@ -81,6 +92,9 @@ const nextConfig = {
 
   // Experimental optimizations - DISABLED for Vercel compatibility
   experimental: {
+    // Reduce memory usage by limiting workers based on available memory
+    memoryBasedWorkersCount: true,
+    // Optimize package imports
     optimizePackageImports: [
       "lucide-react",
       "framer-motion",
@@ -357,7 +371,10 @@ const nextConfig = {
 // Kjør upload kun på Vercel (VERCEL=1) der bygg er kanonisk for prod.
 // GitHub Actions kjører `npm run build` uten VERCEL — da hoppes upload over (samme som lokal `next build`).
 // Tving av/på: SENTRY_UPLOAD_SOURCE_MAPS=true|false
+// Preview deploys: Skip source map upload to save memory and time
+const isPreviewDeploy = process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_GIT_IS_PULL_REQUEST === '1';
 const sentryShouldUpload =
+  !isPreviewDeploy &&
   process.env.SENTRY_UPLOAD_SOURCE_MAPS !== "false" &&
   (process.env.VERCEL === "1" ||
     process.env.SENTRY_UPLOAD_SOURCE_MAPS === "true");

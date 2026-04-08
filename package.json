@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
-    "build": "next build",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "build:local": "SKIP_LINT_IN_BUILD=true next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
@@ -244,7 +244,8 @@
     "debug:auth:real": "node scripts/debug-real-login.mjs",
     "debug:auth:pkce": "node scripts/debug-pkce-cookies.mjs",
     "debug:auth:redirect": "node scripts/debug-redirect-cookies.mjs",
-    "debug:auth:callback": "node scripts/debug-callback-test.mjs"
+    "debug:auth:callback": "node scripts/debug-callback-test.mjs",
+    "build:vercel": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.39",
