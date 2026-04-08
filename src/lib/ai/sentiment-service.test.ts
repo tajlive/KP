@@ -48,14 +48,14 @@ describe("sentiment-service", () => {
       const result = formatSentiment("extreme_fear", "no");
       expect(result.label).toBe("Ekstrem Frykt");
       expect(result.color).toBe("text-red-500");
-      expect(result.emoji).toBe("😱");
+      expect(result.icon).toBe("extreme_fear");
     });
 
     it("should format extreme_greed correctly in English", () => {
       const result = formatSentiment("extreme_greed", "en");
       expect(result.label).toBe("Extreme Greed");
       expect(result.color).toBe("text-green-500");
-      expect(result.emoji).toBe("🤑");
+      expect(result.icon).toBe("extreme_greed");
     });
 
     it("should default to Norwegian for unknown locale", () => {
