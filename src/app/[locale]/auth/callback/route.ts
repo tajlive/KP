@@ -136,11 +136,91 @@ export async function GET(
   try {
     const supabase = createServerClient(request, response);
 
-    // Try exchange with explicit code verifier if available
-    // Some versions of Supabase SSR support passing it directly
-    const exchangeOptions = codeVerifier ? { codeVerifier } : undefined;
+    // MANUAL PKCE EXCHANGE: If we have codeVerifier, do manual exchange
+    // This bypasses Supabase SSR cookie issues
+    if (codeVerifier) {
+      console.info("🔥 ATTEMPTING MANUAL PKCE EXCHANGE");
+      
+      const exchangeResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=pkce`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          },
+          body: JSON.stringify({
+            auth_code: code,
+            code_verifier: codeVerifier,
+          }),
+        }
+      );
+      
+      if (!exchangeResponse.ok) {
+        const errorText = await exchangeResponse.text();
+        console.error("🔥 MANUAL EXCHANGE FAILED:", exchangeResponse.status, errorText);
+        
+        // Fall back to regular exchange
+        console.info("🔥 FALLING BACK TO REGULAR EXCHANGE");
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        
+        if (exchangeError || !data.session) {
+          console.error("🔥 EXCHANGE FAILED:", exchangeError?.message);
+          return NextResponse.redirect(
+            new URL(
+              `/${locale}/innlogging?error=exchange_failed&detail=${encodeURIComponent(exchangeError?.message || "NO_SESSION")}`,
+              origin,
+            ),
+          );
+        }
+        
+        // Set session cookies manually
+        const { session } = data;
+        response.cookies.set("sb-access-token", session.access_token, {
+          domain: ".klarpakke.no",
+          path: "/",
+          secure: true,
+          sameSite: "none",
+          maxAge: session.expires_in,
+        });
+        response.cookies.set("sb-refresh-token", session.refresh_token, {
+          domain: ".klarpakke.no",
+          path: "/",
+          secure: true,
+          sameSite: "none",
+          maxAge: 60 * 60 * 24 * 365, // 1 year
+        });
+        
+        console.info("✅ OAUTH SUCCESS (fallback) — redirecting to", `${origin}${next}`);
+        return response;
+      }
+      
+      const tokenData = await exchangeResponse.json();
+      console.info("🔥 MANUAL EXCHANGE SUCCESS:", { hasAccessToken: !!tokenData.access_token });
+      
+      // Set session cookies manually
+      response.cookies.set("sb-access-token", tokenData.access_token, {
+        domain: ".klarpakke.no",
+        path: "/",
+        secure: true,
+        sameSite: "none",
+        maxAge: tokenData.expires_in,
+      });
+      response.cookies.set("sb-refresh-token", tokenData.refresh_token, {
+        domain: ".klarpakke.no",
+        path: "/",
+        secure: true,
+        sameSite: "none",
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+      });
+      
+      console.info("✅ OAUTH SUCCESS (manual) — redirecting to", `${origin}${next}`);
+      return response;
+    }
+    
+    // Regular exchange without PKCE
     const { data, error: exchangeError } =
-      await supabase.auth.exchangeCodeForSession(code, exchangeOptions);
+      await supabase.auth.exchangeCodeForSession(code);
 
     await supabase.auth.getSession();
 
