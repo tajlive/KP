@@ -105,6 +105,8 @@ const nextConfig = {
   // Norwegian (default) = no prefix, English = /en/ prefix
   async rewrites() {
     return [
+      // Paper-trading API - rewrite to bypass any redirects
+      { source: '/api/paper-trading/:path*', destination: '/api/paper-trading/:path*' },
       // Lesson routes - map to lesson page
       { source: '/leksjon/:lessonId', destination: '/leksjon/[lessonId]' },
     ];
