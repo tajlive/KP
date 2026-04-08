@@ -187,7 +187,7 @@ export function PaperTradingCard() {
 
   if (state === "error") {
     return (
-      <div className="p-6 border border-kp-danger/30 rounded-lg bg-kp-danger-bg flex items-center gap-3">
+      <div className="p-6 border border-kp-danger/30 rounded-lg bg-kp-danger flex items-center gap-3">
         <AlertCircle className="w-5 h-5 text-kp-danger" />
         <p className="text-kp-danger">{t("error")}</p>
       </div>

@@ -94,7 +94,7 @@ export function RecentTradesTable({
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   modeFilter === m
                     ? "bg-kp-brand text-white"
-                    : "bg-kp-bg-tertiary text-kp-text-secondary hover:bg-kp-bg-hover"
+                    : "bg-kp-bg-tertiary text-kp-text-secondary hover:bg-kp-brand-hover"
                 }`}
               >
                 {m === "all" ? t("filterAll") : m === "paper" ? t("filterPaper") : t("filterLive")}
@@ -138,7 +138,7 @@ export function RecentTradesTable({
                     className={`
                       grid grid-cols-12 gap-2 px-4 py-3 cursor-pointer transition-all
                       ${isSelected ? "bg-kp-brand-subtle border-l-4 border-kp-brand" : ""}
-                      ${isHovered && !isSelected ? "bg-kp-bg-hover" : ""}
+                      ${isHovered && !isSelected ? "bg-kp-brand-hover" : ""}
                     `}
                   >
                     {/* Time */}
@@ -149,7 +149,7 @@ export function RecentTradesTable({
                       <span
                         className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
                           trade.mode === "live"
-                            ? "bg-kp-success-bg text-kp-success"
+                            ? "bg-kp-success text-kp-success"
                             : "bg-kp-brand-subtle text-kp-brand"
                         }`}
                       >

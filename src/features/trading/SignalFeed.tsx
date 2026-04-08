@@ -218,12 +218,12 @@ export function SignalFeed() {
             className={cn(
               "text-[10px] px-2 py-0.5 rounded-full font-semibold border",
               sourceState === "live"
-                ? "bg-kp-success-bg text-kp-success border-kp-success/30"
+                ? "bg-kp-success text-kp-success border-kp-success/30"
                 : sourceState === "stale"
                   ? "bg-kp-warning-bg text-kp-warning border-kp-warning/30"
                   : sourceState === "empty"
                     ? "bg-kp-bg-tertiary text-kp-text-muted border-kp-border"
-                    : "bg-kp-danger-bg text-kp-danger border-kp-danger/30",
+                    : "bg-kp-danger text-kp-danger border-kp-danger/30",
             )}
           >
             {sourceState === "live"
@@ -247,7 +247,7 @@ export function SignalFeed() {
         <button
           onClick={() => fetchSignals(true)}
           disabled={refreshing}
-          className="p-1.5 rounded-md text-kp-text-muted hover:text-kp-text-primary hover:bg-kp-bg-hover transition-colors disabled:opacity-40"
+          className="p-1.5 rounded-md text-kp-text-muted hover:text-kp-text-primary hover:bg-kp-brand-hover transition-colors disabled:opacity-40"
           aria-label={t("refreshAria")}
         >
           <RefreshCw
@@ -295,9 +295,9 @@ export function SignalFeed() {
 
               const chipClass =
                 side === "buy"
-                  ? "bg-kp-success-bg text-kp-success ring-1 ring-kp-success/30"
+                  ? "bg-kp-success text-kp-success ring-1 ring-kp-success/30"
                   : side === "sell"
-                    ? "bg-kp-danger-bg text-kp-danger ring-1 ring-kp-danger/30"
+                    ? "bg-kp-danger text-kp-danger ring-1 ring-kp-danger/30"
                     : "bg-kp-bg-tertiary text-kp-text-muted ring-1 ring-kp-border";
 
               return (
@@ -307,7 +307,7 @@ export function SignalFeed() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ delay: i * 0.03, duration: 0.2 }}
-                  className="px-5 py-3.5 hover:bg-kp-bg-hover transition-colors"
+                  className="px-5 py-3.5 hover:bg-kp-brand-hover transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     {/* Left: symbol + direction badge */}

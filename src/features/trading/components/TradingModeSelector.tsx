@@ -40,7 +40,7 @@ export function TradingModeSelector({
           className={`relative p-4 rounded-xl border-2 transition-all text-left ${
             mode === "paper"
               ? "border-kp-brand bg-kp-brand-subtle"
-              : "border-kp-border hover:border-kp-border-dark bg-kp-bg-tertiary/50"
+              : "border-kp-border hover:border-kp-dark-border bg-kp-bg-tertiary/50"
           }`}
         >
           <div className="flex items-start gap-3">
@@ -102,10 +102,10 @@ export function TradingModeSelector({
           disabled={isLiveLocked}
           className={`relative p-4 rounded-xl border-2 transition-all text-left ${
             isLiveLocked
-              ? "border-kp-border-light bg-kp-bg-tertiary/30 opacity-60 cursor-not-allowed"
+              ? "border-kp-light bg-kp-bg-tertiary/30 opacity-60 cursor-not-allowed"
               : mode === "live"
-              ? "border-kp-success bg-kp-success-bg"
-              : "border-kp-border hover:border-kp-border-dark bg-kp-bg-tertiary/50"
+              ? "border-kp-success bg-kp-success"
+              : "border-kp-border hover:border-kp-dark-border bg-kp-bg-tertiary/50"
           }`}
         >
           <div className="flex items-start gap-3">
@@ -193,7 +193,7 @@ export function TradingModeSelector({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-3 p-3 bg-kp-danger-bg border border-kp-danger/30 rounded-lg flex items-start gap-2"
+          className="mt-3 p-3 bg-kp-danger border border-kp-danger/30 rounded-lg flex items-start gap-2"
         >
           <AlertTriangle className="w-5 h-5 text-kp-danger shrink-0" />
           <div>
