@@ -127,10 +127,11 @@ const nextConfig = {
       { source: "/:locale/autotrade", destination: "/:locale/auto", permanent: true },
       { source: "/autotrade/:path*", destination: "/auto/:path*", permanent: true },
       { source: "/:locale/autotrade/:path*", destination: "/:locale/auto/:path*", permanent: true },
-      { source: "/paper-trading", destination: "/paper", permanent: true },
-      { source: "/:locale/paper-trading", destination: "/:locale/paper", permanent: true },
-      { source: "/paper-trading/:path*", destination: "/paper/:path*", permanent: true },
-      { source: "/:locale/paper-trading/:path*", destination: "/:locale/paper/:path*", permanent: true },
+      // Paper-trading redirects - COMMENTED OUT to fix API routes
+      // { source: "/paper-trading", destination: "/paper", permanent: true },
+      // { source: "/:locale/paper-trading", destination: "/:locale/paper", permanent: true },
+      // { source: "/paper-trading/:path*", destination: "/paper/:path*", permanent: true },
+      // { source: "/:locale/paper-trading/:path*", destination: "/:locale/paper/:path*", permanent: true },
 
       // Legacy English root URLs → /en/ prefix
       { source: "/pricing", destination: "/en/pricing", permanent: true },
