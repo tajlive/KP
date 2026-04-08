@@ -38,8 +38,8 @@ const nextConfig = {
   // Note: API routes should not be affected by trailingSlash
   trailingSlash: false,
 
-  // Transpile next-intl and @tanstack/react-query to avoid webpack "reading 'call'" issues
-  transpilePackages: ["next-intl", "@tanstack/react-query"],
+  // Transpile packages to avoid webpack issues
+  transpilePackages: ["next-intl", "@tanstack/react-query", "styled-components"],
 
   // Use Node.js runtime (Cloudflare Pages supports this via next-on-pages)
   // Individual API routes can opt into edge runtime if needed
@@ -112,6 +112,9 @@ const nextConfig = {
       "@radix-ui/react-select",
       "@radix-ui/react-tabs",
       "@radix-ui/react-tooltip",
+      // rxjs: needs optimization to prevent barrel import errors
+      "rxjs",
+      "rxjs/operators",
     ],
   },
 
