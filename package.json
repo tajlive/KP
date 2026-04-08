@@ -82,6 +82,8 @@
     "mempalace:check-update": "curl -s https://api.github.com/repos/milla-jovovich/mempalace/releases/latest | jq -r '.tag_name'",
     "mempalace:save": "bash ~/.kimi/hooks/mempalace-save-now.sh",
     "mempalace:setup": "bash ~/.kimi/setup-shell-integration.sh",
+    "knowledge:mine": "node scripts/knowledge-miner.mjs",
+    "knowledge:sync": "node scripts/knowledge-miner.mjs && mempalace mine .knowledge --mode projects --wing klarpakke 2>/dev/null || true",
     "memory:sync": "npm run mempalace:sync",
     "memory:wake": "npm run mempalace:wake",
     "memory:save": "npm run mempalace:save",

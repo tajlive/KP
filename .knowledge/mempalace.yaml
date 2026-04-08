@@ -1,0 +1,10 @@
+wing: klarpakke-knowledge
+rooms:
+- name: decisions
+  description: Arkitektur- og tekniske beslutninger
+- name: patterns
+  description: Kode-mønstre og beste praksis
+- name: errors
+  description: Feil som har skjedd og hvordan de ble løst
+- name: todos
+  description: TODOs og FIXMEs i kodebasen
