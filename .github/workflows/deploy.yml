@@ -70,7 +70,7 @@ jobs:
           echo "npm: $(npm -v)"
 
       - name: Install dependencies
-        run: npm ci --prefer-offline
+        run: npm ci --prefer-offline --legacy-peer-deps
 
       - name: Restore Next.js build cache
         uses: actions/cache@v5

@@ -108,7 +108,7 @@ jobs:
         run: npm run node:policy
 
       - name: 📦 Install
-        run: npm ci --prefer-offline
+        run: npm ci --prefer-offline --legacy-peer-deps --legacy-peer-deps
 
       - name: 🌐 i18n Validering
         run: npm run i18n:validate
@@ -261,7 +261,7 @@ jobs:
           cache: "npm"
 
       - name: 📦 Install
-        run: npm ci --prefer-offline
+        run: npm ci --prefer-offline --legacy-peer-deps
 
       - name: Unngå auto-fix-loop
         id: loop
