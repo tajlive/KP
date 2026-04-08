@@ -717,13 +717,13 @@ export async function executeTradeSafe(
 async function resolveSession(
   supabase: SupabaseClient<Database>,
   request: ExecuteTradeRequest
-): Promise<{ success: boolean; session?: any; sessionId?: string; error?: string }> {
+): Promise<{ success: boolean; session?: unknown; sessionId?: string; error?: string }> {
   // Simplified session resolution
   // Would include full session logic from execute-trade-v3
   return { success: true, session: {}, sessionId: request.sessionId };
 }
 
-function isValidRiskState(state: any): boolean {
+function isValidRiskState(state: unknown): boolean {
   if (!state || typeof state !== 'object') return false;
   
   // Sjekk påkrevde felter
@@ -758,7 +758,7 @@ function generateIdempotencyKey(request: ExecuteTradeRequest): string {
     .slice(0, 32);
 }
 
-function generateDecisionHash(params: any): string {
+function generateDecisionHash(params: unknown): string {
   return crypto
     .createHash('sha256')
     .update(JSON.stringify(params))
@@ -769,7 +769,7 @@ function generateDecisionHash(params: any): string {
 async function logRiskViolations(
   supabase: SupabaseClient,
   userId: string,
-  violations: any[]
+  violations: unknown[]
 ): Promise<void> {
   try {
     await supabase.from('risk_violations').insert(
@@ -788,7 +788,7 @@ async function logRiskViolations(
   }
 }
 
-async function queueForRetry(userId: string, state: any): Promise<void> {
+async function queueForRetry(userId: string, state: unknown): Promise<void> {
   // Outbox pattern: Legg i kø for retry
   console.log(`[executeTradeSafe] Queued state for retry: ${userId}`);
   // Implementeres med faktisk kø (f.eks. Bull, SQS, etc.)

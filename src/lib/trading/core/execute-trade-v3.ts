@@ -510,7 +510,7 @@ async function logRiskViolations(
   }
 }
 
-async function persistAudit(evidence: any): Promise<void> {
+async function persistAudit(evidence: unknown): Promise<void> {
   try {
     const store = getAuditStore();
     await store.persist(evidence);
