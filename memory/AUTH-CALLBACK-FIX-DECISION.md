@@ -152,3 +152,46 @@ Watch for:
 2. Deploy to Vercel
 3. Test login flow
 4. Monitor logs for "🔥 PRESERVED PKCE COOKIE"
+
+## Final Status - 2026-04-08 16:00
+
+✅ **DEPLOYED TO PRODUCTION**
+
+```
+Commit: 8331ad130
+Message: fix(auth): preserve PKCE cookie during OAuth callback
+```
+
+### What Was Fixed
+
+**Problem:** 
+- Users immediately kicked out after Google OAuth login
+- Error: "PKCE code verifier not found in storage"
+- Root cause: PKCE cookie set correctly but not accessible during `exchangeCodeForSession`
+
+**Solution:**
+- Explicitly preserve PKCE cookie in response before creating Supabase client
+- Enhanced logging to track all auth cookies
+- Hardcoded cookie attributes to ensure consistency
+
+### Files Changed
+- `src/app/[locale]/auth/callback/route.ts` (+27 lines)
+
+### Monitoring
+
+Watch Vercel logs for:
+- `🔥 PRESERVED PKCE COOKIE` - cookie preservation successful
+- `🔥 EXCHANGE RESULT: { success: true }` - session exchange worked
+
+If issues persist:
+1. Check Sentry for auth errors
+2. Run: `npm run debug:auth:real` to test manually
+3. Review: `docs/AUTH-DEBUG-PLAYBOOK.md`
+
+### Test Status
+⚠️ Existing unit test failures (unrelated to auth fix)
+- Risk kernel tests
+- Champion-challenger tests  
+- Chaos tests
+
+These should be fixed separately - not blocking auth fix.
