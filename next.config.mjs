@@ -47,8 +47,8 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.SKIP_LINT_IN_BUILD === "true",
   },
   typescript: {
-    // TEMPORARY: Skip type checking during build to fix memory issues
-    // Re-enable after build is stable
+    // TEMPORARY: Skip type checking during build to fix TypeScript errors
+    // Re-enable after fixing Sanity schema types and test failures
     ignoreBuildErrors: true,
   },
 
