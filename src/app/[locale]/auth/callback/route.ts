@@ -36,14 +36,26 @@ export async function GET(
   const pkceCookie = allCookies.find((c) => c.name.includes("code-verifier"));
   const vippsVerifier = allCookies.find((c) => c.name === VIPPS_PKCE_COOKIE);
 
+  // DEBUG: Log all auth-related cookies for troubleshooting
+  const authCookies = allCookies.filter(c => 
+    c.name.includes('sb-') || 
+    c.name.includes('supabase') ||
+    c.name.includes('verifier')
+  );
+
   console.info("🔥 CALLBACK DEBUG:", {
     code: code ? `${code.slice(0, 20)}...` : "MISSING",
     error,
     statePrefix: state?.slice(0, 10) ?? "MISSING",
     totalCookies: allCookies.length,
+    authCookieNames: authCookies.map(c => c.name),
     pkceCookieName: pkceCookie?.name || "NONE",
+    pkceCookieValue: pkceCookie ? `${pkceCookie.value.substring(0, 20)}...` : "NONE",
+    pkceCookieDomain: pkceCookie?.value ? 
+      allCookies.find(c => c.name === pkceCookie.name)?.name : undefined,
     vippsCookie: vippsVerifier ? "SET" : "NONE",
     originUsed: origin,
+    requestHost: host,
   });
 
   if (error) {
@@ -89,6 +101,20 @@ export async function GET(
   });
   const response = successResponse;
 
+  // Preserve PKCE cookie in response to ensure it's available during exchange
+  // This fixes issues where the cookie might be lost in redirects
+  // Note: RequestCookie only has name/value, so we hardcode known good defaults
+  if (pkceCookie) {
+    response.cookies.set(pkceCookie.name, pkceCookie.value, {
+      domain: ".klarpakke.no",
+      path: "/",
+      secure: true,
+      sameSite: "none",
+      httpOnly: false,
+    });
+    console.info("🔥 PRESERVED PKCE COOKIE:", pkceCookie.name);
+  }
+
   try {
     const supabase = createServerClient(request, response);
 
@@ -100,9 +126,12 @@ export async function GET(
     console.info("🔥 EXCHANGE RESULT:", {
       success: !exchangeError,
       error: exchangeError?.message,
+      errorName: exchangeError?.name,
       hasSession: !!data?.session,
       userId: data?.session?.user?.id?.slice(0, 8),
       redirectingTo: `${origin}${next}`,
+      // Check if PKCE cookie is still present after exchange
+      responseCookies: response.cookies.getAll().map(c => c.name),
     });
 
     if (exchangeError || !data.session) {
