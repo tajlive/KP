@@ -1,64 +1,148 @@
 #!/usr/bin/env node
 /**
- * Auth Debug Script
- * Checks cookie configuration across the app
+ * Auth Flow Debugger
+ * Bruker Playwright for å teste komplett innloggingsflyt
  */
 
-import { readFileSync } from 'fs';
-import { glob } from 'glob';
+import { chromium } from 'playwright';
 
-console.log('🔍 Debugging Auth/Cookie Issues\n');
+const BASE_URL = 'https://www.klarpakke.no';
+const TEST_USER = 'tomarnejensen@gmail.com';
 
-// Check 1: Cookie domain in server.ts
-console.log('1️⃣ Checking server.ts cookie domain...');
-const serverTs = readFileSync('src/lib/supabase/server.ts', 'utf-8');
-if (serverTs.includes('getCookieDomain')) {
-  console.log('   ✅ Cookie domain helper present');
-} else {
-  console.log('   ❌ Cookie domain helper MISSING');
-}
-
-if (serverTs.includes('domain: cookieDomain')) {
-  console.log('   ✅ Cookie domain being set');
-} else {
-  console.log('   ❌ Cookie domain NOT being set');
-}
-
-// Check 2: /settings in protected paths
-console.log('\n2️⃣ Checking /settings in PROTECTED_PATHS...');
-const authTs = readFileSync('src/middleware/auth.ts', 'utf-8');
-if (authTs.includes('"/settings"')) {
-  console.log('   ✅ /settings is protected');
-} else {
-  console.log('   ❌ /settings NOT protected');
-}
-
-// Check 3: Fetch calls with credentials
-console.log('\n3️⃣ Checking API fetch calls...');
-const files = await glob('src/**/*.{ts,tsx}');
-let fetchWithoutCredentials = 0;
-
-for (const file of files.slice(0, 50)) { // Check first 50 files
-  const content = readFileSync(file, 'utf-8');
-  // Look for fetch calls without credentials
-  if (content.includes('fetch(') && !content.includes('credentials:')) {
-    // This might be OK if it's not an API call
-    continue;
+async function debugAuth() {
+  console.log('🔐 Starter auth debugging...\n');
+  
+  const browser = await chromium.launch({ 
+    headless: false, // Vis browser for debugging
+    slowMo: 100 
+  });
+  
+  const context = await browser.newContext({
+    recordVideo: { dir: 'test-videos/' },
+  });
+  
+  // Enable logging
+  context.on('request', req => {
+    if (req.url().includes('auth') || req.url().includes('session')) {
+      console.log(`📤 Request: ${req.method()} ${req.url()}`);
+    }
+  });
+  
+  context.on('response', async res => {
+    if (res.url().includes('auth') || res.url().includes('session')) {
+      console.log(`📥 Response: ${res.status()} ${res.url()}`);
+      const headers = await res.allHeaders();
+      if (headers['set-cookie']) {
+        console.log(`🍪 Set-Cookie: ${headers['set-cookie']}`);
+      }
+    }
+  });
+  
+  const page = await context.newPage();
+  
+  try {
+    // Step 1: Gå til login
+    console.log('Step 1: Går til login...');
+    await page.goto(`${BASE_URL}/no/login`);
+    await page.waitForLoadState('networkidle');
+    
+    // Sjekk cookies før login
+    const cookiesBefore = await context.cookies();
+    console.log(`Cookies før login: ${cookiesBefore.length}`);
+    
+    // Step 2: Klikk "Logg inn med Google"
+    console.log('\nStep 2: Klikker "Logg inn med Google"...');
+    const googleButton = await page.locator('button:has-text("Google")');
+    
+    if (await googleButton.isVisible().catch(() => false)) {
+      await googleButton.click();
+      
+      // Vent på Google popup
+      const [popup] = await Promise.all([
+        page.waitForEvent('popup'),
+        page.waitForTimeout(1000),
+      ]);
+      
+      console.log('Google popup åpnet');
+      
+      // Sjekk om bruker allerede er logget inn hos Google
+      await popup.waitForLoadState('networkidle');
+      
+      if (await popup.locator('text=' + TEST_USER).isVisible().catch(() => false)) {
+        console.log('Bruker funnet i Google, velger...');
+        await popup.locator('text=' + TEST_USER).click();
+      } else {
+        console.log('⚠️ Bruker ikke funnet i Google accountchooser');
+      }
+      
+      // Vent på redirect tilbake
+      await page.waitForURL('**/dashboard**', { timeout: 30000 });
+      
+      // Step 3: Sjekk om vi er logget inn
+      console.log('\nStep 3: Sjekker om innlogging var vellykket...');
+      const currentUrl = page.url();
+      console.log(`Current URL: ${currentUrl}`);
+      
+      // Sjekk cookies etter login
+      const cookiesAfter = await context.cookies();
+      console.log(`\nCookies etter login: ${cookiesAfter.length}`);
+      
+      const authCookies = cookiesAfter.filter(c => 
+        c.name.includes('sb-') || 
+        c.name.includes('supabase') ||
+        c.name.includes('auth')
+      );
+      
+      console.log(`Auth cookies funnet: ${authCookies.length}`);
+      authCookies.forEach(c => {
+        console.log(`  - ${c.name}: ${c.value.substring(0, 20)}... (domain: ${c.domain})`);
+      });
+      
+      // Sjekk localStorage
+      const localStorage = await page.evaluate(() => 
+        Object.fromEntries(Object.entries(localStorage).filter(([k]) => 
+          k.includes('sb-') || k.includes('supabase')
+        ))
+      );
+      
+      console.log(`\nLocalStorage items: ${Object.keys(localStorage).length}`);
+      
+      // Step 4: Refresh og sjekk om session beholdes
+      console.log('\nStep 4: Refresher siden for å sjekke session...');
+      await page.reload();
+      await page.waitForLoadState('networkidle');
+      
+      const urlAfterRefresh = page.url();
+      console.log(`URL etter refresh: ${urlAfterRefresh}`);
+      
+      if (urlAfterRefresh.includes('/login')) {
+        console.log('❌ FEIL: Bruker ble kastet ut etter refresh!');
+      } else if (urlAfterRefresh.includes('/dashboard')) {
+        console.log('✅ Session beholdes korrekt!');
+      }
+      
+    } else {
+      console.log('⚠️ Google login knapp ikke funnet');
+    }
+    
+  } catch (error) {
+    console.error('❌ Error under debugging:', error);
+    
+    // Ta screenshot
+    await page.screenshot({ path: 'auth-error.png', fullPage: true });
+    console.log('Screenshot lagret: auth-error.png');
+    
+  } finally {
+    console.log('\n🔍 Debug info:');
+    console.log('  - Sjekk test-videos/ for opptak');
+    console.log('  - Sjekk auth-error.png for screenshot');
+    
+    // Hold browser åpen for manuell inspeksjon
+    console.log('\n⏳ Browser holder åpen i 30 sekunder...');
+    await page.waitForTimeout(30000);
+    
+    await browser.close();
   }
 }
 
-console.log('   ℹ️  Fetch credential checking requires runtime inspection');
-
-console.log('\n📋 DIAGNOSIS:');
-console.log('   The 401 errors suggest cookies are not being sent with API requests.');
-console.log('   Possible causes:');
-console.log('   1. Old cookies before fix - try clearing cookies');
-console.log('   2. Cookie domain mismatch between middleware and API');
-console.log('   3. CORS issues with credentials');
-console.log('   4. Session expired and not refreshing');
-
-console.log('\n🔧 NEXT STEPS:');
-console.log('   1. Clear all cookies for klarpakke.no in browser');
-console.log('   2. Hard refresh (Cmd+Shift+R)');
-console.log('   3. Log in again');
-console.log('   4. Check Network tab - cookies should be sent with API calls');
+debugAuth();
