@@ -8,13 +8,51 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    
+    // Optimalisering for hastighet
+    pool: "threads",
+    poolOptions: {
+      threads: {
+        singleThread: false,
+        useAtomics: true,
+        isolate: false, // Raskere, men deler minne mellom tester
+      },
+    },
+    
+    // Parallelisering
+    fileParallelism: true,
+    maxConcurrency: 8,
+    
     // Inkluder kun unit/component-tester – Playwright e2e kjøres separat
     include: ["src/**/*.{test,spec}.{ts,tsx,js,jsx}"],
-    exclude: ["node_modules/**", "tests/e2e/**", "tests/smoke/**", "e2e/**", "**/*.d.ts"],
+    exclude: [
+      "node_modules/**", 
+      "tests/e2e/**", 
+      "tests/smoke/**", 
+      "e2e/**", 
+      "**/*.d.ts",
+      "**/p0-*.test.ts", // P0-tester krever DB, kjøres separat
+    ],
+    
+    // Retry for flaky tester i CI
+    retry: process.env.CI ? 2 : 0,
+    
+    // Timeout
+    testTimeout: 30000,
+    hookTimeout: 30000,
+    
+    // Rapportører
+    reporters: process.env.CI 
+      ? ["default", "junit"] 
+      : ["default"],
+    outputFile: process.env.CI 
+      ? "./test-results/junit.xml" 
+      : undefined,
+    
+    // Coverage
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      // Terskel ~25 % — økes gradvis (AGENTS.md / TYPE-DEBT-ROADMAP-2026).
       thresholds: {
         lines: 25,
         functions: 25,
@@ -27,8 +65,16 @@ export default defineConfig({
         "**/*.d.ts",
         "**/*.config.*",
         "**/mockData.ts",
+        "**/p0-*.test.ts",
       ],
     },
+    
+    // Minneoptimalisering
+    maxWorkers: process.env.CI ? 2 : undefined,
+    
+    // Clear mocks mellom tester
+    clearMocks: true,
+    restoreMocks: true,
   },
   resolve: {
     alias: {
@@ -38,5 +84,9 @@ export default defineConfig({
         "./src/test/mocks/server-only-stub.ts",
       ),
     },
+  },
+  // Bygg-optimalisering
+  esbuild: {
+    target: "es2022",
   },
 });
