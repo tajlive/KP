@@ -108,9 +108,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
               glow
               className="w-full sm:w-auto min-w-[240px]"
               icon={<ArrowRight className="w-5 h-5" />}
-              iconPosition="right"
-              asChild
-            >
+              iconPosition="right">
               <a href={content.heroCta.link}>
                 {content.heroCta.text}
               </a>

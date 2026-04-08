@@ -112,7 +112,7 @@ export default {
       slug: 'slug.current',
       language: 'language',
     },
-    prepare({ title, slug, language }: { title: string; slug: string; language: string }) {
+    prepare({ title, slug, language }: any) {
       return {
         title,
         subtitle: `/${language}/${slug}`,

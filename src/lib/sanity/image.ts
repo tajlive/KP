@@ -30,7 +30,7 @@ export function getOptimizedImageUrl(
   let builder = urlFor(source)
     .width(width)
     .quality(quality)
-    .format(format)
+    .format(format as any)
     .fit(fit);
   
   if (height) {
