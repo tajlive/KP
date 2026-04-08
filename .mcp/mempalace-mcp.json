@@ -1,0 +1,89 @@
+{
+  "name": "mempalace-mcp",
+  "version": "1.0.0",
+  "description": "Mempalace Context Provider for KIMI",
+  "capabilities": {
+    "context_management": true,
+    "code_indexing": true,
+    "error_prediction": true,
+    "semantic_routing": true
+  },
+  "context_layers": {
+    "layer_1_system": {
+      "description": "System-level kontekst",
+      "files": ["package.json", "tsconfig.json", "next.config.mjs"],
+      "refresh_interval": "manual"
+    },
+    "layer_2_architecture": {
+      "description": "Arkitektur og design",
+      "files": ["docs/architecture/*.md", "docs/MEMPALACE.md"],
+      "refresh_interval": "on_change"
+    },
+    "layer_3_domain": {
+      "description": "Domene-spesifikk kunnskap",
+      "domains": {
+        "trading": {
+          "types": ["src/types/trading.ts"],
+          "core": ["src/lib/trading/core/*.ts"],
+          "tests": ["src/lib/trading/__tests__/*.ts"]
+        },
+        "auth": {
+          "types": ["src/types/auth.ts"],
+          "core": ["src/lib/auth/*.ts"],
+          "middleware": ["src/middleware.ts"]
+        }
+      },
+      "refresh_interval": "realtime"
+    },
+    "layer_4_session": {
+      "description": "Sessjons-spesifikk kontekst",
+      "current_room": null,
+      "recent_files": [],
+      "active_branch": null,
+      "refresh_interval": "immediate"
+    }
+  },
+  "shortcuts": {
+    "@auth": {
+      "description": "Auth system kontekst",
+      "files": ["src/lib/auth/", "src/middleware.ts", "src/types/auth.ts"],
+      "docs": ["docs/security/auth-flow.md"]
+    },
+    "@trading": {
+      "description": "Trading system kontekst",
+      "files": ["src/lib/trading/", "src/types/trading.ts"],
+      "docs": ["docs/architecture/TYPE-DEBT-ROADMAP-2026.md"]
+    },
+    "@db": {
+      "description": "Database kontekst",
+      "files": ["supabase/migrations/", "src/lib/supabase/"],
+      "docs": ["docs/CRON-SOURCE-OF-TRUTH.md"]
+    },
+    "@test": {
+      "description": "Testing kontekst",
+      "files": ["tests/", "vitest.config.ts", "playwright.config.ts"],
+      "docs": ["docs/testing/TEST-CALIBRATION-2026.md"]
+    }
+  },
+  "error_prediction": {
+    "enabled": true,
+    "patterns": {
+      "typescript_strict": {
+        "regex": "as (unknown|any)",
+        "severity": "warning",
+        "suggestion": "Bruk ordentlig typing"
+      },
+      "missing_tests": {
+        "regex": "export (function|class)",
+        "check": "*.test.ts",
+        "severity": "info",
+        "suggestion": "Vurder å legge til tester"
+      }
+    }
+  },
+  "performance": {
+    "cache_ttl": 300,
+    "index_on_startup": true,
+    "lazy_load_domains": true
+  }
+}

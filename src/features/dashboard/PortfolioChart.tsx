@@ -205,7 +205,7 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
     }).format(value);
   };
 
-  const CustomTooltip = ({ active, payload, label }: unknown) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChartDataPoint; value: number }> }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl">

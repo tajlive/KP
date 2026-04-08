@@ -8,7 +8,7 @@ const imageBuilder = createImageUrlBuilder(client);
 // =============================================================================
 
 export function urlFor(source: unknown) {
-  return imageBuilder.image(source);
+  return imageBuilder.image(source as Parameters<typeof imageBuilder.image>[0]);
 }
 
 // =============================================================================
@@ -30,7 +30,7 @@ export function getOptimizedImageUrl(
   let builder = urlFor(source)
     .width(width)
     .quality(quality)
-    .format(format as unknown)
+    .format(format as 'jpg' | 'pjpg' | 'png' | 'webp')
     .fit(fit);
   
   if (height) {

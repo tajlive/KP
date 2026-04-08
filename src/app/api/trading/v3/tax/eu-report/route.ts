@@ -9,6 +9,36 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { EuropeanJurisdiction } from '@/lib/trading/white-label/european-tax';
 
+// Interfaces for tax report data
+interface TradeRecord {
+  date: string | Date;
+  symbol: string;
+  side: string;
+  quantity: number | string;
+  price: number | string;
+  fees: number | string;
+  total: number | string;
+}
+
+interface TaxReportData {
+  trades: TradeRecord[];
+}
+
+interface TaxReport {
+  id: string;
+  jurisdiction: string;
+  tax_year: number;
+  report_format: 'XML' | 'CSV' | 'PDF';
+  report_data: TaxReportData;
+  total_gains?: number;
+  total_losses?: number;
+  net_taxable?: number;
+  estimated_tax?: number;
+  tax_currency: string;
+  calculation_method: string;
+  generated_at: string;
+}
+
 const VALID_JURISDICTIONS: EuropeanJurisdiction[] = ['DE', 'FR', 'IT', 'ES', 'NL', 'AT', 'CH', 'NO'];
 
 export async function POST(request: NextRequest) {
@@ -230,7 +260,7 @@ function getFilingDeadline(jurisdiction: EuropeanJurisdiction, taxYear: number):
   return deadlines[jurisdiction];
 }
 
-function generateExport(report: unknown, format: 'XML' | 'CSV' | 'PDF'): string {
+function generateExport(report: TaxReport, format: 'XML' | 'CSV' | 'PDF'): string {
   const tradeRecords = report.report_data?.trades || [];
   
   switch (format) {
@@ -246,7 +276,7 @@ function generateExport(report: unknown, format: 'XML' | 'CSV' | 'PDF'): string 
   }
 }
 
-function generateXML(report: unknown, trades: unknown[]): string {
+function generateXML(report: TaxReport, trades: TradeRecord[]): string {
   const header = '<?xml version="1.0" encoding="UTF-8"?>';
   const tradesXml = trades.map(t => `
   <Trade>
@@ -274,7 +304,7 @@ function generateXML(report: unknown, trades: unknown[]): string {
 </TaxReport>`;
 }
 
-function generateCSV(report: unknown, trades: unknown[]): string {
+function generateCSV(report: TaxReport, trades: TradeRecord[]): string {
   const header = 'Date,Symbol,Side,Quantity,Price,Fees,Total';
   const rows = trades.map(t => 
     `${t.date},${t.symbol},${t.side},${t.quantity},${t.price},${t.fees},${t.total}`

@@ -55,7 +55,7 @@ export default async function BotDetailPage({
           typeof BotDetailView
         >[0]["session"]
       }
-      trades={(tradesRes.data as Trade[]) ?? []}
+      trades={(tradesRes.data ?? []) as any}
       locale={locale}
     />
   );

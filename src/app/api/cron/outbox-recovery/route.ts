@@ -13,6 +13,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { OutboxRecovery } from "@/lib/trading/core/outbox-recovery";
 import { NextRequest, NextResponse } from "next/server";
+import type { Json } from "@/types/supabase";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -134,7 +135,7 @@ async function sendAlert(
     severity: alert.severity,
     component: alert.component,
     message: alert.message,
-    details: alert.details as unknown,
+    details: alert.details as Json,
     created_at: new Date().toISOString(),
     acknowledged: false
   });

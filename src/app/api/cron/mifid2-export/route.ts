@@ -94,13 +94,13 @@ export async function GET(request: NextRequest) {
 }
 
 async function generateRTS22(store: unknown, periodStart: Date, periodEnd: Date): Promise<Mifid2Report> {
-  const { evidence } = await store.exportForMifid2(periodStart, periodEnd);
+  const { evidence } = await (store as { exportForMifid2: (start: Date, end: Date) => Promise<{ evidence: { evidenceId: string }[] }> }).exportForMifid2(periodStart, periodEnd);
   const reportId = `RTS22-${periodStart.toISOString().split('T')[0]}`;
   
   const xmlContent = `<?xml version="1.0"?>
 <TRS22Rpt>
   <Txs>
-    ${evidence.map((e: unknown) => `<Tx><TxId>${e.evidenceId}</TxId></Tx>`).join('')}
+    ${evidence.map((e) => `<Tx><TxId>${e.evidenceId}</TxId></Tx>`).join('')}
   </Txs>
 </TRS22Rpt>`;
   
@@ -117,13 +117,13 @@ async function generateRTS22(store: unknown, periodStart: Date, periodEnd: Date)
 }
 
 async function generateRTS27(store: unknown, periodStart: Date, periodEnd: Date): Promise<Mifid2Report> {
-  const { evidence } = await store.exportForMifid2(periodStart, periodEnd);
+  const { evidence } = await (store as { exportForMifid2: (start: Date, end: Date) => Promise<{ evidence: { orderId: string }[] }> }).exportForMifid2(periodStart, periodEnd);
   const reportId = `RTS27-${periodStart.toISOString().split('T')[0]}`;
   
   const xmlContent = `<?xml version="1.0"?>
 <BestExctnRpt>
   <Exctns>
-    ${evidence.map((e: unknown) => `<Exctn><OrdrId>${e.orderId}</OrdrId></Exctn>`).join('')}
+    ${evidence.map((e) => `<Exctn><OrdrId>${e.orderId}</OrdrId></Exctn>`).join('')}
   </Exctns>
 </BestExctnRpt>`;
   
