@@ -101,25 +101,46 @@ export async function GET(
   });
   const response = successResponse;
 
-  // Preserve PKCE cookie in response to ensure it's available during exchange
-  // This fixes issues where the cookie might be lost in redirects
-  // Note: RequestCookie only has name/value, so we hardcode known good defaults
+  // CRITICAL FIX: PKCE cookie value is URL-encoded and may contain quotes
+  // We need to decode it and ensure it's available for the exchange
+  let codeVerifier: string | undefined;
   if (pkceCookie) {
-    response.cookies.set(pkceCookie.name, pkceCookie.value, {
+    // Decode URL-encoded value and remove surrounding quotes if present
+    let rawValue = decodeURIComponent(pkceCookie.value);
+    if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
+      rawValue = rawValue.slice(1, -1);
+    }
+    codeVerifier = rawValue;
+    
+    console.info("🔥 PKCE COOKIE FOUND:", {
+      name: pkceCookie.name,
+      rawLength: pkceCookie.value.length,
+      decodedLength: codeVerifier?.length,
+      hasQuotes: pkceCookie.value.includes('%22') || pkceCookie.value.startsWith('"'),
+    });
+    
+    // Re-set the cookie with decoded value for Supabase SSR to find
+    response.cookies.set(pkceCookie.name, codeVerifier, {
       domain: ".klarpakke.no",
       path: "/",
       secure: true,
       sameSite: "none",
       httpOnly: false,
     });
-    console.info("🔥 PRESERVED PKCE COOKIE:", pkceCookie.name);
+    console.info("🔥 RE-SET PKCE COOKIE with decoded value");
+  } else {
+    console.error("🔥 NO PKCE COOKIE FOUND - auth will fail!");
+    console.info("🔥 Available cookies:", allCookies.map(c => c.name));
   }
 
   try {
     const supabase = createServerClient(request, response);
 
+    // Try exchange with explicit code verifier if available
+    // Some versions of Supabase SSR support passing it directly
+    const exchangeOptions = codeVerifier ? { codeVerifier } : undefined;
     const { data, error: exchangeError } =
-      await supabase.auth.exchangeCodeForSession(code);
+      await supabase.auth.exchangeCodeForSession(code, exchangeOptions);
 
     await supabase.auth.getSession();
 
