@@ -90,6 +90,28 @@ describe('ChampionChallengerRollout', () => {
     });
     
     it('should trigger rollback on high drawdown', () => {
+      // First record champion metrics
+      rollout.recordMetrics({
+        version: 'champion',
+        cohort: 'alpha',
+        totalReturn: 0.15,
+        sharpeRatio: 1.2,
+        maxDrawdown: 0.10,
+        winRate: 0.55,
+        profitFactor: 1.5,
+        volatility: 0.2,
+        avgLoss: -50,
+        consecutiveLosses: 1,
+        errorRate: 0.01,
+        avgSlippage: 5,
+        avgLatency: 100,
+        fillRate: 0.95,
+        trades: 100,
+        bars: 100,
+        startTime: new Date(),
+        endTime: new Date()
+      });
+      
       const metrics: PolicyMetrics = {
         version: 'challenger',
         cohort: 'alpha',
@@ -119,6 +141,28 @@ describe('ChampionChallengerRollout', () => {
     });
     
     it('should trigger rollback on high error rate', () => {
+      // First record champion metrics
+      rollout.recordMetrics({
+        version: 'champion',
+        cohort: 'alpha',
+        totalReturn: 0.15,
+        sharpeRatio: 1.2,
+        maxDrawdown: 0.10,
+        winRate: 0.55,
+        profitFactor: 1.5,
+        volatility: 0.2,
+        avgLoss: -50,
+        consecutiveLosses: 1,
+        errorRate: 0.01,
+        avgSlippage: 5,
+        avgLatency: 100,
+        fillRate: 0.95,
+        trades: 100,
+        bars: 100,
+        startTime: new Date(),
+        endTime: new Date()
+      });
+      
       const metrics: PolicyMetrics = {
         version: 'challenger',
         cohort: 'alpha',
@@ -223,7 +267,7 @@ describe('ChampionChallengerRollout', () => {
         version: 'challenger',
         cohort: 'alpha',
         totalReturn: 0.11,
-        sharpeRatio: 1.25,
+        sharpeRatio: 1.4, // > 1.2 * 1.1 = 1.32 to trigger 'increasing' recommendation
         maxDrawdown: 0.09,
         winRate: 0.56,
         profitFactor: 1.6,
