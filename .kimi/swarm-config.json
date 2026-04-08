@@ -1,0 +1,75 @@
+{
+  "name": "Klarpakke Swarm",
+  "version": "1.0.0",
+  "description": "Multi-agent swarm for høyeste kvalitet",
+  "platform": "darwin-arm64",
+  "swarm": {
+    "coordinator": "kimi",
+    "agents": [
+      {
+        "id": "analyzer",
+        "name": "Code Analyzer",
+        "trigger": "pre-task",
+        "model": "claude-sonnet-4-20250514",
+        "context_window": 200000,
+        "specialty": "AST analysis, complexity detection",
+        "prompt_file": ".kimi/swarm/analyzer.md"
+      },
+      {
+        "id": "architect",
+        "name": "Architecture Guardian",
+        "trigger": "on-decision",
+        "model": "claude-opus-4",
+        "context_window": 200000,
+        "specialty": "ADR compliance, pattern enforcement",
+        "prompt_file": ".kimi/swarm/architect.md"
+      },
+      {
+        "id": "tester",
+        "name": "Test Strategist",
+        "trigger": "post-implementation",
+        "model": "claude-sonnet-4",
+        "context_window": 200000,
+        "specialty": "Test coverage, edge cases",
+        "prompt_file": ".kimi/swarm/tester.md"
+      },
+      {
+        "id": "security",
+        "name": "Security Auditor",
+        "trigger": "on-security-path",
+        "model": "claude-opus-4",
+        "context_window": 200000,
+        "specialty": "RLS, secrets, auth",
+        "prompt_file": ".kimi/swarm/security.md"
+      },
+      {
+        "id": "knowledge",
+        "name": "Knowledge Keeper",
+        "trigger": "post-task",
+        "model": "claude-sonnet-4",
+        "context_window": 200000,
+        "specialty": "MemPalace sync, decision logging",
+        "prompt_file": ".kimi/swarm/knowledge.md"
+      }
+    ],
+    "workflows": {
+      "feature": ["analyzer", "architect", "tester", "knowledge"],
+      "bugfix": ["analyzer", "tester", "knowledge"],
+      "refactor": ["analyzer", "architect", "tester", "knowledge"],
+      "security": ["security", "analyzer", "tester", "knowledge"]
+    }
+  },
+  "quality_gates": {
+    "min_test_coverage": 80,
+    "max_complexity": 15,
+    "max_file_lines": 500,
+    "require_adr": true,
+    "require_docs": true
+  },
+  "mem_palace": {
+    "sync_on_complete": true,
+    "extract_decisions": true,
+    "extract_patterns": true,
+    "extract_errors": true
+  }
+}
