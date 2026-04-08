@@ -385,7 +385,7 @@ export async function executeTradeSafe(
   const auditIntent = auditor.recordIntent({
     orderId: tradeId,
     clientId: request.userId,
-    sessionId: session?.id ?? request.sessionId,
+    sessionId: session?.id ?? request.sessionId ?? '',
     side: finalTrade.side,
     type: request.orderType,
     symbol: request.symbol,
@@ -473,7 +473,7 @@ export async function executeTradeSafe(
   // ========================================================================
   // 6. Execute Trade
   // ========================================================================
-  const executor = await ExecutorFactory.create(supabase, request.userId, request.mode, session.id);
+  const executor = await ExecutorFactory.create(supabase, request.userId, request.mode, session?.id ?? request.sessionId ?? '');
   const execResult = await executor.executeOrder({
     symbol: request.symbol,
     side: finalTrade.side,
@@ -512,7 +512,7 @@ export async function executeTradeSafe(
     .from("trades")
     .insert({
       id: tradeId,
-      session_id: session?.id ?? request.sessionId,
+      session_id: session?.id ?? request.sessionId ?? '',
       user_id: request.userId,
       trading_pair: request.symbol,
       side: request.side,
@@ -696,7 +696,7 @@ export async function executeTradeSafe(
   return {
     success: true,
     tradeId: trade.id,
-    sessionId: session?.id ?? request.sessionId,
+    sessionId: session?.id ?? request.sessionId ?? '',
     orderId: execResult.orderId,
     executedPrice: execResult.executedPrice,
     executedQuantity: execResult.executedQuantity,
