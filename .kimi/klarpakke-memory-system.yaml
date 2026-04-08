@@ -1,0 +1,102 @@
+# 🤖 Klarpakke Memory System - Perplexity + MemPalace + KIMI
+# Dette systemet lar KIMI huske ALT om Klarpakke-prosjektet
+
+system:
+  name: "Klarpakke Auto-Memory"
+  version: "1.0.0"
+  description: "Automatisk hukommelse for Klarpakke ved å kombinere Perplexity, MemPalace og KIMI"
+
+# MCP Servere aktive i KIMI
+mcp_servers:
+  - name: mempalace
+    description: "Lokal AI-minne (hysterisk, gratis)"
+    status: active
+    
+  - name: perplexity
+    description: "Web-søk og research (sanntidsinfo)"
+    status: active
+    
+  - name: supabase
+    description: "Database tilgang"
+    status: active
+    
+  - name: context7
+    description: "Dokumentasjon"
+    status: active
+
+# Minne-strategi
+memory_strategy:
+  # L0: Identitet (alltid lastet)
+  identity: |
+    Jeg er KIMI, assisterer med Klarpakke - en fintech trading plattform.
+    Bruker: Taj, solo-utvikler.
+    Stack: Next.js 15, React 19, Supabase, TypeScript, Tailwind.
+  
+  # L1: Kritiske fakta (hentes fra MemPalace closets)
+  critical_facts:
+    - paper_trading_api_fixed: "8. april 2026 - 308 redirect fjernet"
+    - auth_issue: "Cookie/session problem under etterforskning"
+    - test_user: "tom@klarpakke.no / TestPassword123!"
+    - deploy_target: "Vercel (arn1)"
+    
+  # L2: Prosjekt-kontekst (rom-basert)
+  project_rooms:
+    - name: "paper-trading"
+      topics: ["API", "execute", "init", "balance", "sessions"]
+      status: "fixed"
+      
+    - name: "auth-system"
+      topics: ["google-oauth", "session", "cookies", "middleware"]
+      status: "investigating"
+      
+    - name: "e2e-testing"
+      topics: ["playwright", "test-users", "critical-flows"]
+      status: "needs-fix"
+      
+    - name: "deployment"
+      topics: ["vercel", "github-actions", "supabase"]
+      status: "active"
+
+# Auto-actions
+auto_actions:
+  # Når KIMI starter
+  on_startup:
+    - wake_up_mempalace
+    - load_klarpakke_context
+    
+  # Før hver samtale
+  on_conversation_start:
+    - search_mempalace_for_topic
+    
+  # Etter viktige beslutninger
+  on_decision:
+    - store_in_mempalace
+    - sync_to_perplexity_if_needed
+
+# Perplexity bruksområder
+perplexity_usage:
+  # Når skal Perplexity kalles automatisk?
+  auto_search_when:
+    - "Bruker spør om 'siste nytt' eller 'dokumentasjon'"
+    - "Tema ikke funnet i MemPalace"
+    - "Tekniske spesifikasjoner (Next.js, Supabase, osv.)"
+    
+  # Hva skal lagres i MemPalace etter Perplexity-søk?
+  store_results:
+    - "Viktige funn fra søk"
+    - "Tekniske beslutninger basert på research"
+    - "Best practices oppdaget"
+
+# Integrasjon mellom Perplexity og MemPalace
+integration_flow: |
+  Bruker spør noe → KIMI sjekker MemPalace først
+  ↓
+  Hvis funnet i MemPalace → Bruk lokal kontekst (gratis, raskt)
+  ↓
+  Hvis IKKE funnet → Kall Perplexity for research
+  ↓
+  Etter Perplexity-svar → Spør bruker: "Skal jeg huske dette?"
+  ↓
+  Hvis ja → Lagre i MemPalace (for fremtidig bruk)
+  
+  Resultat: Over tid bygger vi en stadig rikere lokal kunnskapsbase!

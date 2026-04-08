@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CoinbaseHome } from "@/features/coinbase/CoinbaseHome";
+import { DashboardPro } from "./DashboardPro";
 import { SkeletonDashboard } from "@/shared/ui/skeleton";
 
 type TradeRow = {
@@ -26,7 +27,7 @@ type ActiveSession = {
   updated_at: string | null;
 } | null;
 
-interface DashboardContentProps {
+export interface DashboardContentProps {
   paperBalance: number;
   trades: TradeRow[];
   activeSession?: ActiveSession;
@@ -38,10 +39,10 @@ export function DashboardContent({
   activeSession,
 }: DashboardContentProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [useProDashboard, setUseProDashboard] = useState(true);
 
   useEffect(() => {
     // Simulate a brief loading state to show skeleton
-    // In production, this would be replaced with actual data fetching
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 300);
@@ -66,11 +67,18 @@ export function DashboardContent({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
         >
-          <CoinbaseHome
-            paperBalance={paperBalance}
-            trades={trades}
-            activeSession={activeSession}
-          />
+          {useProDashboard ? (
+            <DashboardPro 
+              paperBalance={paperBalance}
+              sessionId={activeSession?.id}
+            />
+          ) : (
+            <CoinbaseHome
+              paperBalance={paperBalance}
+              trades={trades}
+              activeSession={activeSession}
+            />
+          )}
         </motion.div>
       )}
     </AnimatePresence>
