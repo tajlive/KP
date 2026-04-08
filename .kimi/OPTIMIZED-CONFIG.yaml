@@ -1,0 +1,232 @@
+# 🚀 MemPalace-Klarpakke OPTIMIZERT Konfigurasjon v2.0
+# Optimalisert for: Speed, Cost, Quality, Security
+
+system:
+  name: "Klarpakke AI Memory System"
+  version: "2.0.0"
+  optimized: true
+  last_updated: "2026-04-08"
+
+# === YTELSE (Performance) ===
+performance:
+  # AAAK Komprimering (30x raskere søk)
+  compression:
+    enabled: true
+    algorithm: "AAAK"
+    target_ratio: 30
+    
+  # Søke-optimalisering
+  search:
+    # Alltid bruk rom-filtrering først
+    prefer_room_search: true
+    # Maks resultater
+    max_results: 10
+    # Tidsfiltrering
+    default_recency: "30d"
+    
+  # Wake-up optimalisering
+  wake_up:
+    max_tokens: 170  # L0+L1 optimal
+    critical_rooms_only: true
+    rooms:
+      - paper-trading
+      - auth-system
+      - deployment
+      - e2e-testing
+
+# === KOSTNAD (Cost Optimization) ===
+cost_control:
+  # Perplexity rate limiting
+  perplexity:
+    max_calls_per_hour: 10
+    max_calls_per_day: 50
+    cache_ttl_seconds: 86400  # 24 timer
+    
+  # Fallback-strategi
+  fallback_order:
+    - mempalace_search      # Gratis, lokal
+    - mempalace_room_recall # Gratis, rask
+    - context7_search       # Gratis, docs
+    - perplexity_search     # Betalt, siste utvei
+    
+  # Kostnadsgrense
+  monthly_budget_usd: 20
+  alert_threshold: 80  # % av budsjett
+
+# === KVALITET (Quality) ===
+quality:
+  # Deduplisering
+  deduplication:
+    enabled: true
+    schedule: "weekly"
+    similarity_threshold: 0.85
+    
+  # Kontradiksjons-sjekk
+  fact_checking:
+    enabled: true
+    check_on_store: true
+    
+  # Entity linking
+  auto_linking:
+    enabled: true
+    link_related_rooms: true
+    
+  # Backup
+  backup:
+    enabled: true
+    schedule: "daily"
+    retention_days: 30
+    location: "~/.mempalace/backups"
+
+# === SIKKERHET (Security) ===
+security:
+  # API key håndtering
+  api_keys:
+    storage: "environment"  # Ikke i filer
+    rotation_reminder: "monthly"
+    
+  # Tilgangskontroll
+  access_control:
+    restrict_mcp_tools: false  # true i produksjon
+    allowed_tools: "all"
+    
+  # Audit logging
+  audit_log:
+    enabled: true
+    log_mcp_calls: true
+    retention_days: 90
+
+# === AUTOMATISERING (Automation) ===
+automation:
+  # Git hooks
+  git_hooks:
+    post_commit: true      # Auto-mine ved commit
+    pre_push: false        # Sjekk før push
+    
+  # Auto-save
+  auto_save:
+    on_kimi_exit: true
+    on_important_decision: true
+    decision_keywords:
+      - "bestemt"
+      - "valgt"
+      - "fikset"
+      - "løst"
+      - "husk"
+      - "decided"
+      - "fixed"
+      - "remember"
+      
+  # Cron jobs
+  scheduled_tasks:
+    daily_backup: "0 2 * * *"      # 02:00 daglig
+    weekly_cleanup: "0 3 * * 0"    # Søndag 03:00
+    monthly_report: "0 4 1 * *"    # 1. hver måned
+
+# === OVERVÅKING (Monitoring) ===
+monitoring:
+  # Health checks
+  health_check:
+    enabled: true
+    schedule: "daily"
+    report_location: "~/.kimi/health/latest-report.txt"
+    
+  # Metrics
+  metrics:
+    track_mcp_calls: true
+    track_search_latency: true
+    track_cost: true
+    
+  # Alarmer
+  alerts:
+    on_mcp_failure: true
+    on_high_cost: true
+    on_low_quality_results: true
+
+# === MCP SERVERE ===
+mcp_servers:
+  mempalace:
+    enabled: true
+    priority: 1
+    transport: stdio
+    command: python
+    args: ["-m", "mempalace.mcp_server"]
+    
+  perplexity:
+    enabled: true
+    priority: 2
+    transport: stdio
+    command: perplexity-mcp
+    rate_limit: 10/hour
+    
+  supabase:
+    enabled: true
+    priority: 3
+    transport: stdio
+    command: npx
+    args: ["-y", "@supabase/mcp-server-supabase@latest"]
+    
+  context7:
+    enabled: true
+    priority: 4
+    transport: http
+    url: https://mcp.context7.com/mcp
+
+# === INTEGRASJON (Integration) ===
+integration:
+  # KIMI-spesifikt
+  kimi:
+    auto_wake_up: true
+    show_context_sources: true
+    suggest_store_after_perplexity: true
+    
+  # Git integrasjon
+  git:
+    auto_mine_on_commit: true
+    commit_keywords:
+      - fix
+      - feat
+      - perf
+      - refactor
+      - docs
+      
+  # Linear integrasjon (hvis autentisert)
+  linear:
+    sync_issues_to_memories: false  # Sett til true for å aktivere
+    sync_on_status_change: true
+
+# === TUNING (Advanced Tuning) ===
+advanced:
+  # ChromaDB tuning
+  chromadb:
+    # HNSW parametere for raskere søk
+    hnsw:
+      M: 16
+      ef_construction: 200
+      ef_search: 128
+      
+  # Embedding modell
+  embeddings:
+    model: "all-MiniLM-L6-v2"
+    device: "cpu"  # "cuda" hvis GPU tilgjengelig
+    batch_size: 32
+    
+  # Caching
+  cache:
+    enabled: true
+    backend: "sqlite"
+    ttl_seconds: 3600
+    max_size_mb: 100
+
+# === DEBUGGING ===
+debug:
+  # Logging nivå
+  log_level: "info"  # debug, info, warn, error
+  
+  # Verbose output
+  verbose_mcp_calls: false
+  verbose_search: false
+  
+  # Profiling
+  profile_performance: false
+  profile_memory: false
