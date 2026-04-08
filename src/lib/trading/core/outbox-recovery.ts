@@ -11,13 +11,14 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
+import type { Json } from "@/types/database.types";
 import { getRiskStateStore } from "@/lib/trading/risk/risk-state-store";
 import { getAuditStore } from "@/lib/trading/execution/audit-store";
 
 interface OutboxItem {
   id: string;
   type: 'RISK_STATE_SYNC' | 'AUDIT_S3_SYNC' | 'AUDIT_DB_SYNC';
-  payload: unknown;
+  payload: Json;
   attempts: number;
   createdAt: Date;
   lastAttempt?: Date;
@@ -41,7 +42,7 @@ export class OutboxRecovery {
       .from('outbox_recovery')
       .insert({
         type: item.type,
-        payload: item.payload as unknown,
+        payload: item.payload as Json,
         attempts: 0,
         status: 'pending',
         created_at: new Date().toISOString()
@@ -76,7 +77,7 @@ export class OutboxRecovery {
       return {
         id: item.id as string,
         type: item.type as OutboxItem['type'],
-        payload: item.payload as Record<string, unknown>,
+        payload: item.payload as Json,
         attempts: (item.attempts as number) || 0,
         createdAt: new Date(item.created_at as string),
         lastAttempt: item.last_attempt ? new Date(item.last_attempt as string) : undefined,

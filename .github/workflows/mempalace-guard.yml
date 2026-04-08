@@ -1,15 +1,16 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# MEMPALACE GUARD - Dokumentasjonsovervåkning
+# MEMPALACE GUARD - Dokumentasjonsovervåkning + Versjonssjekk
 # ═══════════════════════════════════════════════════════════════════════════════
 # Sjekker at all dokumentasjon er oppdatert og konsistent
-# Kjører daglig og ved endringer i docs/
+# Sjekker daglig for nye MemPalace-versjoner fra GitHub/PyPI
 # ═══════════════════════════════════════════════════════════════════════════════
 
 name: 🏛️ Mempalace Guard
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Hver dag kl 09:00
+    - cron: '0 9 * * *'  # Hver dag kl 09:00 UTC (dokumentasjon)
+    - cron: '0 7 * * *'  # Hver dag kl 07:00 UTC (versjonssjekk)
   push:
     paths:
       - 'docs/**'
@@ -75,4 +76,93 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: '🏛️ **Mempalace Guard** detected documentation issues. Please check the logs.'
+            });
+
+  # ═══════════════════════════════════════════════════════════════════════════════
+  # MEMPALACE VERSJONSSJEKK - Sjekker for nye versjoner daglig
+  # ═══════════════════════════════════════════════════════════════════════════════
+  version-check:
+    name: 📦 Check MemPalace Updates
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 7 * * *' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: 🔍 Check Latest MemPalace Version
+        id: check-version
+        run: |
+          # Hent siste versjon fra GitHub releases
+          LATEST=$(curl -s https://api.github.com/repos/milla-jovovich/mempalace/releases/latest | jq -r '.tag_name')
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          
+          # Hent siste versjon fra PyPI
+          PYPI_VERSION=$(curl -s https://pypi.org/pypi/mempalace/json | jq -r '.info.version')
+          echo "pypi=$PYPI_VERSION" >> $GITHUB_OUTPUT
+          
+          echo "📦 MemPalace siste versjoner:"
+          echo "   GitHub: $LATEST"
+          echo "   PyPI:   $PYPI_VERSION"
+      
+      - name: 📋 Check Installed Version
+        id: installed
+        run: |
+          # Sjekk om mempalace er installert
+          if command -v mempalace &> /dev/null; then
+            INSTALLED=$(pip show mempalace | grep Version | cut -d' ' -f2)
+            echo "version=$INSTALLED" >> $GITHUB_OUTPUT
+            echo "installed=true" >> $GITHUB_OUTPUT
+            echo "✅ MemPalace installert: v$INSTALLED"
+          else
+            echo "installed=false" >> $GITHUB_OUTPUT
+            echo "⚠️ MemPalace ikke installert"
+          fi
+      
+      - name: 🔔 Create Update Notification
+        if: steps.installed.outputs.installed == 'true' && steps.installed.outputs.version != steps.check-version.outputs.pypi
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const installed = '${{ steps.installed.outputs.version }}';
+            const latest = '${{ steps.check-version.outputs.pypi }}';
+            
+            // Sjekk om det allerede finnes en åpen issue for denne versjonen
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'mempalace,update',
+              state: 'open'
+            });
+            
+            const title = `🏛️ MemPalace ${latest} tilgjengelig (du har ${installed})`;
+            const existingIssue = issues.data.find(i => i.title.includes(`MemPalace ${latest}`));
+            
+            if (existingIssue) {
+              console.log(`Issue already exists: #${existingIssue.number}`);
+              return;
+            }
+            
+            const body = `## 🏛️ Ny MemPalace-versjon tilgjengelig
+            
+| | Versjon |
+|---|---|
+| **Installert** | ${installed} |
+| **Siste (PyPI)** | ${latest} |
+| **GitHub Release** | ${{ steps.check-version.outputs.latest }} |
+
+### Oppdatering
+\`\`\`bash
+pip install --upgrade mempalace
+\`\`\`
+
+### Release Notes
+Se [GitHub Releases](https://github.com/milla-jovovich/mempalace/releases) for detaljer.
+
+---
+*Denne issuen ble opprettet automatisk av MemPalace Guard.*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['mempalace', 'update', 'maintenance']
             });
