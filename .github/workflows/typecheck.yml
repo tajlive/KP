@@ -41,7 +41,7 @@ jobs:
         run: npm run node:policy
 
       - name: Install dependencies
-        run: npm ci --prefer-offline
+        run: npm ci --prefer-offline --legacy-peer-deps
 
       # Kjør tsc — feiler hard ved TypeScript-feil (ingen || true)
       - name: TypeScript check

@@ -69,7 +69,7 @@ jobs:
           echo "Time: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Install Playwright
         run: npx playwright install --with-deps chromium firefox
@@ -307,7 +307,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Create Linear Incident
         env:
