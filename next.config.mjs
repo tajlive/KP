@@ -210,8 +210,41 @@ const nextConfig = {
     ];
   },
 
+  // Generate build ID to bust caches
+  generateBuildId: async () => {
+    return process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || Date.now().toString();
+  },
+  
   // Webpack optimizations
   webpack: (config, { isServer, dev }) => {
+    // Limit memory usage in webpack
+    config.optimization = {
+      ...config.optimization,
+      // Reduce parallel processing
+      minimize: true,
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Vendor chunk for node_modules
+          vendor: {
+            name: 'vendor',
+            chunks: 'all',
+            test: /node_modules/,
+            priority: 20,
+          },
+          // Common chunk for shared code
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 10,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+    };
     // Reduce Vercel build log noise: next-intl extractor uses dynamic import(t)
     // which webpack cannot statically parse (cache invalidation warning).
     // Serializing big strings warning is from webpack cache; we use gzip.
