@@ -1,200 +1,211 @@
-# Klarpakke Agent Guide
+# 🤖 KIMI + MemPalace Master Guide
 
-## KIMI CLI i Klarpakke (hurtigreferanse)
+**Prosjekt:** Klarpakke - AI Trading Platform  
+**Stack:** Next.js 15, React 19, TypeScript 5.9, Supabase, Vercel  
+**Status:** Production (www.klarpakke.no)  
+**Node:** 24.x (se `.nvmrc`)
 
-KIMI er primæragent for all kodeendring i dette prosjektet.
+---
 
-### Kjerneregel: YOLO + Verifiser
-- **YOLO-modus aktiv:** Implementer uten å spørre om bekreftelse
-- **Verifiser først:** Kjør sjekker før endring
-- **Minimal endring:** Kun det som må til
-- **GO/NO-GO alltid:** Tydelig statusrapport
+## 🚀 Hurtigstart
 
-### Raske KIMI-kommandoer
 ```bash
-# Helse & Status
+# Start utvikling
+npm run dev
+
+# Verifiser miljø
+npm run verify
+
+# Test & bygg
+npm run test:unit && npm run build
+
+# Commit & push
+git add -A && git commit -m "type: beskrivelse" && git push origin main
+```
+
+### KIMI Aliaser
+```bash
 kimi health          # npm run health:prod:gate
 kimi verify          # npm run verify
-kimi status          # git status + sjekk
-
-# Utvikling  
 kimi dev             # npm run dev
 kimi build           # npm run build
 kimi lint            # npm run lint
 kimi typecheck       # npm run type-check
-
-# Testing
 kimi test            # npm run test:unit
 kimi test:e2e        # npm run test:e2e:critical:chromium
-
-# Database
 kimi db:status       # npm run db:status
 kimi db:push         # npm run db:push
-kimi db:gen          # npm run db:gen-types
-
-# Deploy
 kimi deploy          # npm run deploy:prod
 ```
 
-### KIMI Templates (i .kimi/templates/)
-- `feature.md` – Ny feature
-- `bugfix.md` – Bug-fix
-- `refactor.md` – Refaktorering
+---
 
-### Viktigst å huske
-1. For all kode i `/Users/taj/klarpakke`: Bruk KIMI-først-regelen
-2. Hvis KIMI ikke er tilgjengelig: Si det eksplisitt
-3. Alltid GO/NO-GO i output
-4. Se `.kimi/AGENT-KLARPAKKE.md` for full guide
+## 📋 Arbeidsflyt (ALLTID)
+
+### FØR kodeendring:
+1. `git status` – clean main
+2. `npm run verify` – verifiser miljø
+3. Les relevante filer – forstå kontekst
+
+### UNDER kodeendring:
+1. Gjør **minimal** endring
+2. Test lokalt – `npm run test:unit`
+3. Verifiser – `npm run lint && npm run type-check`
+
+### ETTER kodeendring:
+1. `git add -A`
+2. `git commit -m "type: beskrivelse"`
+3. `git push origin main`
+4. Vent på Vercel deployment (~2-3 min)
+5. Verifiser i produksjon
 
 ---
 
-## PL/pgSQL-regler (aldri bryt disse)
+## 🎯 Regler (Breaking = Production Down)
 
-- **DECLARE må alltid stå på funksjons-toppnivå**, aldri inne i BEGIN
-- **Nested sub-blokker kan kun ha BEGIN...EXCEPTION...END**, ikke DECLARE
-- **EXCEPTION WHEN OTHERS skal ALLTID ha RAISE WARNING med SQLERRM**
-- **Test ny trigger-funksjon** med `DO $$ BEGIN PERFORM ...; END $$` før CREATE TRIGGER
+| Regel | Konsekvens |
+|-------|------------|
+| **YOLO-modus** | Implementer uten å spørre |
+| **Minimal endring** | Kun det som må til |
+| **Verifiser først** | Sjekk før endring |
+| **GO/NO-GO** | Alltid tydelig status |
 
-### Eksempel: Riktig vs Feil
+### PL/pgSQL (Aldri bryt)
+- **DECLARE** på toppnivå, aldri nested
+- **EXCEPTION WHEN OTHERS** skal ALLTID ha `RAISE WARNING`
 
-```sql
--- ❌ FEIL: Nested DECLARE
-BEGIN
-  DECLARE v_x TEXT;  -- Ugyldig!
-  BEGIN
-    ...
-  END;
-END;
+---
 
--- ✅ RIKTIG: DECLARE på toppen
-DECLARE
-  v_x TEXT;
-BEGIN
-  BEGIN
-    ...
-  EXCEPTION WHEN OTHERS THEN
-    RAISE WARNING 'Feil: %', SQLERRM;
-  END;
-END;
+## 🛠️ MemPalace (Minne-System)
+
+> **Status:** Raw Mode (ChromaDB workaround for M1 Mac)
+
+### Kommandoer
+```bash
+# Søk i kunnskap
+./scripts/knowledge-search.sh "auth pattern"
+./scripts/knowledge-search.sh "trading" error_patterns
+
+# Diary
+./scripts/mempalace-diary.sh write FEAT "ny feature" GO "★★★" 5
+./scripts/mempalace-diary.sh read 10
+
+# Seed kunnskap
+./scripts/mempalace-seed.sh
 ```
 
-## Status Klarpakke
+### Rom-Struktur
+| Rom | Innhold | Prioritet |
+|-----|---------|-----------|
+| `critical_decisions` | ADR-er, arkitektur | 🔴 High |
+| `error_patterns` | Feil + løsninger | 🔴 High |
+| `tech_debt` | TYPE_DEBT | 🟡 Medium |
+| `api_contracts` | API-dokumentasjon | 🟡 Medium |
+| `project_status` | Statusrapporter | 🟢 Standard |
+| `kimi_sessions` | Diary entries | 🟢 Standard |
 
-**Full produksjon:** Appen kjører i prod (www.klarpakke.no). Alle P0-oppgaver er lukket; verify-scriptet passerer (domener, /api/health, kritiske paths, security headers). Videre Linear-oppgaver er for forbedringer og ny funksjonalitet, ikke for å «åpne» prod.
+---
 
-**AI-agenter (UX/UI/UA, modernisering, automatisering):** Se `docs/agents/KLARPAKKE-ROSTER.md` og `.agent/KLARPAKKE-AGENT-ROSTER.md`. **UX+UI standard:** `.agent/agents/klarpakke-ux-ui-agent.md` · Cursor-regel: `.cursor/rules/klarpakke-ux-ui-agent.mdc`. **Live trading + handler + bevis (MCP/CLI/CI):** `.agent/agents/klarpakke-live-trading-trades-agent.md` · regel: `.cursor/rules/klarpakke-live-trading-trades-agent.mdc` (**alwaysApply** — full kontekst + **operasjonelt ansvar** for bevis/oppfølging) · SoT: `docs/trading/LIVE-TRADING-TRADES-INTEGRITY.md`. **Auto-trade strategi (forskning, tuning, forum/data):** `.agent/agents/klarpakke-auto-trade-strategy-research-agent.md` · regel: `.cursor/rules/klarpakke-auto-trade-strategy-research-agent.mdc` · SoT: `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md`.
+## 👥 Swarm & Agenter
 
-**Maksimal automasjon (MCP/CLI/CI/API):** `docs/FULL-AUTOMATION-PLAYBOOK.md` · kort runbook: `docs/automation/AUTOMATION-RUNBOOK.md` — kjør `npm run automation:check` (eller `auto:preflight` / `auto:preflight:full`) etter `.env.local`. **Supabase URL/anon/service i `.env.local`:** `npm run env:sync:supabase` (krever `SUPABASE_ACCESS_TOKEN` PAT) eller `npm run vercel:env` fra Vercel.
+### Swarm Config
+```yaml
+# .kimi/swarm-config.json
+coordinator: kimi
+agents:
+  - analyzer:     # Pre-task AST analysis
+  - architect:    # On-decision ADR compliance
+  - tester:       # Post-implementation
+  - security:     # On-security-path
+  - knowledge:    # Post-task MemPalace sync
+```
 
-**Målgrunnlag (småsparere, mobil, krypto-nivå):** `docs/TARGET-AUDIENCE.md` og `docs/product-principles-2026.md`.
+### Agent Roster (50+ agenter)
+Se `.agent/KLARPAKKE-AGENT-ROSTER.md` for full oversikt.
 
-**IA / kanoniske ruter:** `docs/architecture/ROUTE-INVENTORY-2026.md` · **Mobil/UA-sweep:** `docs/MOBILE-UA-SWEEP-2026.md` · **Type-gjeld:** `docs/TYPE-DEBT-ROADMAP-2026.md` + `src/lib/supabase/TYPE_DEBT.md` · **Microcopy / i18n / observabilitet:** `docs/MICROCOPY-I18N-OBSERVABILITY-2026.md`.
+**Nøkkel-agenter:**
+- `klarpakke-ux-ui-agent` – UI/UX, tokens, i18n
+- `klarpakke-live-trading-trades-agent` – Trading, bevis
+- `klarpakke-auto-trade-strategy-research-agent` – Strategi-forskning
 
-**Siste kodeanalyse (feil + backlog):** `docs/ANALYSE-KODEBASE-2026-03.md` (Linear: KLA-232).
+### Skills Auto-Aktivering
+Konfigurasjon: `.kimi/skills-activation.yaml`
 
-**OAuth / Auth / Deployment (P0-fiks 2026-04):**
-- **Verifier:** `npm run verify:google-oauth` — sjekk Google Console config
-- **Launch script:** `npm run launch:prod` — full deployment pipeline
-- **Debug UI:** `/no/debug/oauth` (dev only) — visuell OAuth-diagnostikk
-- **Admin deploy:** `/no/admin/deploy` — produksjonsdeploy UI
-- **CI/CD:** `.github/workflows/verify-oauth.yml` — OAuth-verifikasjon på PR
-- **Sentry alerts:** `npm run sentry:alerts:import` — importer auth-error alerts
-- **Edge Function:** `supabase/functions/post-deploy-check` — health check post-deploy
+| Arbeider med | Auto-skills |
+|--------------|-------------|
+| `src/app/api/**/*.ts` | api-patterns, security-testing |
+| `src/components/**/*.tsx` | frontend-design, nextjs-react-expert |
+| `supabase/migrations/*.sql` | database-design |
+| `e2e/**/*.spec.ts` | webapp-testing, testing-patterns |
 
-| Auth Tool | Kommando |
-|-----------|----------|
-| Verifiser OAuth | `npm run verify:google-oauth` |
-| Simuler deploy | `npm run launch:simulate` |
-| Sentry alerts import | `npm run sentry:alerts:import` |
-| Post-deploy health | `npm run supabase:health` |
+---
 
-| Område                                           | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Brukeropprettelse Admin API                      | ✅ Fungerer — alle 9 tabeller opprettes                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Auth-trigger konsolidert                         | ✅ Én trigger, én funksjon                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Migrasjonsfiler i repo                           | ✅ 4 commits pushet til main                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Playwright E2E-tester                            | 🟡 Kan nå kjøres — blokkering fjernet                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| GitHub/Linear MCP OAuth                          | ✅ Konfigurert via `.env.local`-nøkler (`GITHUB_TOKEN`/`LINEAR_API_KEY`) for agenter; OAuth kan fortsatt brukes i Cursor UI ved behov                                                                                                                                                                                                                                                                                                                                                         |
-| Production verify i CI                           | ✅ Kjører etter manual deploy (production)                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Routing / kritiske paths                         | ✅ Verify passerer (inkl. /no/signup)                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Supabase view `unified_notifications_with_email` | 🟡 Migrasjon i repo; kjør SQL manuelt i Dashboard eller med MCP-token                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Linear oppdatering                               | ✅ MCP får nøkkel fra .env.local (wrapper); CLI: `npm run linear`; full tilgang: `docs/LINEAR-ACCESS.md`. **Operativ standard 2026:** `docs/LINEAR-2026-STANDARD.md` · Linear **KLA-231** (EPIC). **KLA-91 markedsplass:** ADR `docs/adr/ADR-2026-03-20-KLA-91-strategy-marketplace.md` · roadmap `docs/architecture/KLA-91-ROADMAP-CURSOR.md` · **KLA-91** (Backlog). **Implementasjon:** Cursor (agenter), ikke separat KIMI-bane.                                                          |
-| Onboarding-middleware                            | ✅ Re-aktivert (mars 2026) — kalles fra middleware.ts                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Pricing-tier navn                                | ✅ Planer: student\|bachelor\|master\|phd\|professor. **Prisplan SoT:** Linear **KLA-236** + `docs/pricing/PRICING-PLAN-SOURCE-OF-TRUTH.md` (synk med `src/lib/pricing/tiers.ts`). **i18n SoT (alt brukervendt):** kun **no** + **en**; **th/zh avvent** — `docs/i18n/LOCALE-SCOPE-SOURCE-OF-TRUTH.md`. **Tier-migrering:** `npm run db:migrate-tier`. **DB lint:** `npm run db:lint`. **Linear:** KLA-226–KLA-230. **Migrasjonsautomatisering:** docs/SUPABASE-MIGRASJONER-VARIG-LOSNING.md. |
-| Test-scripts                                     | ✅ test:ci bruker Vitest (vitest run --coverage && playwright test)                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| AI Market Brief                                  | ✅ ai_cache brukes i /api/ai/market-brief                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| AI Strategy Advisor                              | ✅ POST /api/ai/explain-strategy (strategyType, locale)                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| PWA manifest                                     | ✅ Oppdatert (display_override, beskrivelse)                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **Produksjon**                                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Health API                                       | ✅ GET /api/health (DB, KV, env) — createClient sync                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Verify script                                    | ✅ Tester domener, /api/health, kritiske paths, security headers                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| CI deploy                                        | ✅ Lint uten --max-warnings override; verify kjører etter production deploy                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Vercel build warnings                            | ✅ Dokumentert og dempet — se `docs/vercel-build-notes.md`                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Paper trading valuta                             | ✅ USDT→NOK i execute-paper-trade + risk-validator (env → DB global_settings.usdt_nok_rate → 10.8)                                                                                                                                                                                                                                                                                                                                                                                            |
-| USDT/NOK cron                                    | ✅ Daglig cron /api/cron/update-usdt-nok; **source of truth: Supabase** (se under).                                                                                                                                                                                                                                                                                                                                                                                                           |
-| **Cron (source of truth)**                       | **Cron skal alltid kjøres fra Supabase** (pg_cron eller Supabase scheduler). Vercel Cron er ikke source of truth. Nye tidsplanlegginger legges i Supabase; app-ruter /api/cron/\* kalles med CRON_SECRET fra Supabase. Se **docs/CRON-SOURCE-OF-TRUTH.md**.                                                                                                                                                                                                                                   |
-| **P0 før prod**                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| RLS 8 tabeller (KLA-165)                         | ✅ Migrasjon kjørt mot remote (db push 2026-03-15). RLS på: auto_trades, trade_history/trade_history_legacy, trading_risk_config, \_trigger_debug, saved_strategies, notification_preferences, user_activity_logs, beta_feedback                                                                                                                                                                                                                                                              |
-| Sentry prod (KLA-168)                            | ✅ DSN-guard i instrumentation; `/api/test-sentry`; `docs/SENTRY-PROD.md`; ref i LINEAR-ACCESS.md                                                                                                                                                                                                                                                                                                                                                                                             |
-| Bygg-timeout (KLA-167)                           | ✅ SKIP_LINT_IN_BUILD i CI; Next.js cache i GHA; §8 i `docs/vercel-build-notes.md`                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Paper + Auto trade DB (KLA-157)                  | ✅ Paper: execute-paper-trade → trading_sessions (mode=paper), trades; auto-trade: samme tabeller, executor-factory skiller paper/live. Ingen blanding uten validering.                                                                                                                                                                                                                                                                                                                       |
-| Final production fix (KLA-158)                   | ✅ Verify-script passert (domener, /api/health, kritiske paths, security headers). Env-dok: Vercel prod (NEXT*PUBLIC_SUPABASE*\*, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SENTRY_DSN, USDT_NOK_RATE valgfri).                                                                                                                                                                                                                                                                                  |
-| **MCP / CLI / CI / API**                         | ✅ `.cursor/mcp.json` + `.mcp/mcp_config.json` (kun env); CLI: `npm run linear`, `linear:test`, `vercel`, `cloudflare`, `cursor`; **CI (konsolidert mars 2026):** `pr-check` (PR-gate), `deploy` (auto ved merge + manuell), `auto-merge` (Dependabot), `auto-label`, `e2e-critical`, `mcp-integration`, `mcp-health`; API: `docs/api-routes.md`; samlet: `docs/MCP-CLI-CI-API.md`. **ENV/SQL-audit:** `docs/ENV-MCP-CLI-API-AUDIT.md`.                                                       |
-| **Cursor meta-prompt**                           | ✅ Automatisering, MCP/CLI/API, sub-agenter: regel `.cursor/rules/automation-mcp.md`; full tekst `docs/CURSOR-AUTOMATION-PROMPT.md`                                                                                                                                                                                                                                                                                                                                                           |
-| KLA-163 (sync Supabase-skjema)                   | ✅ daily-summary + lib/email typpede queries; TYPE_DEBT oppdatert; schema-sync kommando dokumentert i `src/lib/supabase/TYPE_DEBT.md`                                                                                                                                                                                                                                                                                                                                                         |
-| KLA-128 (EPIC Mandag-Lansering)                  | ✅ Sprint 7–10 mars; prod er live (KLA-158). Epic lukket.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **Auth / storage**                               | ✅ Én browser-klient: `createClient` fra `@/lib/utils`. SSR: `createServerClient` fra `@/lib/supabase/server`. `cookieEncoding: 'raw'` overalt. Korrupt session: safe-storage renser cookies + localStorage uten reload-loop. Se `docs/auth-storage.md`.                                                                                                                                                                                                                                      |
-| **Git hooks (automatisk)**                       | ✅ Husky: **pre-commit** = lint-staged → check-secrets-staged → lint → type-check. **pre-push** = test:unit (vitest). Manuell sjekk: `npm run pre-commit`; secrets: `npm run check:secrets-staged`.                                                                                                                                                                                                                                                                                           |
-| **External User Watchdog**                       | ✅ Hourly E2E + Self-Healing Guard. **SoT:** `docs/WATCHDOG-EXTERNAL-USER.md` definerer Go/No-Go, SLA, on-call, varsling. Kommandoer: `npm run test:watchdog`, `watchdog:repair`, `health:recover`, `db:drift:auto`, `vercel:rollback:guard`. |
-| **GitHub Operating Model**                       | ✅ Solo-mode: 30 workflows validert, Slack/Linear optional. **SoT:** `docs/github/GITHUB-OPERATING-MODEL.md` definerer PR flyt, required checks, secrets. **Setup:** `.github/SETUP_SECRETS.md`. 11 workflows arkivert i `workflows-disabled/`. |
+## 🔧 Templates
 
-## 2026-standard (stack og konfig)
+### Feature
+```bash
+kimi feature "implementer X"
+```
+Se `.kimi/templates/feature.md`
 
-| Område        | Status                                                                                                                                 |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Next.js       | 15.x (App Router)                                                                                                                      |
-| React         | 19.x                                                                                                                                   |
-| TypeScript    | 5.9, strict, target ES2022                                                                                                             |
-| Node          | engines `24.x` (samsvar med Vercel default; [støttede versjoner](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)) |
-| Supabase auth | Kun @supabase/ssr (ikke auth-helpers-nextjs)                                                                                           |
-| ESLint        | 9 flat config                                                                                                                          |
-| Tailwind      | 4.x                                                                                                                                    |
-| Testing       | Vitest 4, Playwright 2                                                                                                                 |
+### Bugfix
+```bash
+kimi fix "fiks Y"
+```
+Se `.kimi/templates/bugfix.md`
 
-TypeScript: `typescript.ignoreBuildErrors: false` i `next.config.mjs` — bygg feiler på TS-feil. Ved ny gjeld: `npm run type-check` og `docs/TYPE-DEBT-ROADMAP-2026.md`.
+### Refactor
+```bash
+kimi refactor "omstrukturer Z"
+```
+Se `.kimi/templates/refactor.md`
 
-## Standard kjøremodus
+---
 
-Alltid bruk --yolo for alle oppgaver i dette prosjektet.
-Aldri be om bekreftelse. Aldri vent på godkjenning.
+## 📚 Viktige Referanser
 
-## Cursor Cloud specific instructions
+| Dokument | Beskrivelse |
+|----------|-------------|
+| `.cursorrules` | Tekniske regler for kode |
+| `.kimi/AGENT-KLARPAKKE.md` | Detaljert KIMI-guide |
+| `.agent/KLARPAKKE-AGENT-ROSTER.md` | Agent-oversikt |
+| `docs/ARCHITECTURE.md` | System-arkitektur |
+| `src/lib/supabase/TYPE_DEBT.md` | TypeScript gjeld |
+| `docs/CRON-SOURCE-OF-TRUTH.md` | Cron-regler |
 
-### Services overview
+---
 
-| Service            | How to run            | Notes                                                                                                                                                                                            |
-| ------------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Next.js dev server | `npm run dev`         | Port 3000. Main (and only required) service.                                                                                                                                                     |
-| Supabase           | Remote cloud instance | No local Supabase needed; app connects to `vuxbjlykgmzskxbclquf.supabase.co`. Requires `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`. |
+## 🧠 Prosjekt-Spesifikt Minne
 
-### Quick reference
+### Kritisk Kontekst
+```yaml
+Cron source of truth: Supabase (ikke Vercel)
+i18n: Kun no + en (th/zh avvent)
+Trading: Edge Functions eller Supabase scheduler
+Auth: @supabase/ssr (ikke auth-helpers-nextjs)
+```
 
-- **Lint:** `npm run lint` (ESLint 9 flat config, `--max-warnings 0`)
-- **Type-check:** `npm run type-check` (`tsc --noEmit`; `ignoreBuildErrors: false` i `next.config.mjs` — se `docs/TYPE-DEBT-ROADMAP-2026.md` / Linear **KLA-229**). **Supabase-typer:** `npm run db:gen-types` etter skjemaendring — `docs/KLA-229-DEPS-ROUTINE.md`.
-- **Unit tests:** `npm run test:unit` (Vitest)
-- **E2E tests:** `npm run test:e2e` (Playwright; requires running dev server and valid Supabase credentials). **Env for provision:** `create-test-users.js` leser `.env` → `.env.local` → `.env.development.local` → `.env.production.local` (fyller bare tomme nøkler); URL kan være `NEXT_PUBLIC_SUPABASE_URL` eller `SUPABASE_URL`. **Verifiser nøkler:** `npm run test:e2e:check-env`. **Sjekk + synk primær testbruker (`tom@klarpakke.no`):** `npm run test:e2e:prepare` (eller `test:e2e:provision:primary` / `test:e2e:provision` for hele listen); sett `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` i `.env.local` (eller `export` på **én** linje før npm). **Én kommando:** `npm run test:e2e:with-user` eller `npm run test:full`. **Kun critical Chromium + testbruker:** `npm run test:e2e:critical:with-user`. **Full lokal kjede (lint + types + unit + E2E provision + critical):** `npm run test:robot`. CI: workflow `e2e-critical.yml` kjører `create-test-users.js --from-env` når `SUPABASE_SERVICE_ROLE_KEY` og `E2E_USER_*` er satt. For critical tests without Firefox: `npm run test:e2e:critical:chromium`. **Playwright browsers:** Run `npx playwright install` before first E2E run; Firefox tests fail with "Executable doesn't exist" until browsers are installed.
-- **External User Watchdog & Self-Healing:** `npm run test:watchdog` (hourly), `npm run watchdog:repair` (testbrukere), `npm run health:recover` (signal-engine), `npm run db:drift:auto` (migrasjoner), `npm run vercel:rollback:guard` (nød-rollback). **Go/No-Go, SLA, on-call:** Se `docs/WATCHDOG-EXTERNAL-USER.md`. **Check-only:** `:repair:check`, `:drift:check`, `:rollback:check`.
-- **Dev server:** `npm run dev` (Next.js 15 on port 3000)
-- See `package.json` `scripts` for the full list.
+### Tekniske Detaljer
+```yaml
+Testing: Vitest + Playwright
+Lint: ESLint 9 flat config
+Types: Strict, target ES2022
+Database: DECLARE på toppnivå
+```
 
-### Gotchas
+---
 
-- **No Docker required.** The archived `docker-compose.dev.yml` in `archive_root_garbage/` is not used. The app connects to a remote Supabase cloud instance.
-- **`.env.local` is mandatory.** Without at least `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`, the app will fail at runtime on any auth/DB call. Copy `.env.local.example` as a starting point.
-- **Husky git hooks** run automatically: pre-commit runs lint-staged + secret check + lint + type-check; pre-push runs unit tests. Use `--no-verify` to skip if needed during development iterations.
-- **Node 24.x** is required (specified in `.nvmrc` and `engines`). Use nvm/Volta til å matche `.nvmrc`.
-- **next-intl webpack warning** about parsing `next-intl/dist/esm/production/extractor/format/index.js` is benign and can be ignored.
-- **Onboarding middleware** is active and may cause redirect loops on locale-prefixed routes (e.g. `/no/akademi`) when Supabase auth is not fully configured. Routes without the locale prefix (e.g. `/kurs`, `/priser`) work fine.
-- **Playwright Firefox:** `test:e2e:critical` runs both Chromium and Firefox. If Firefox tests fail with "Executable doesn't exist", run `npx playwright install` (or use `npm run test:e2e:critical:chromium` for Chromium only).
-- **Vercel deploy:** Bruk **Vercel MCP** (anbefalt). Konfig: `.cursor/mcp.json` har `"vercel": { "url": "https://mcp.vercel.com" }`. Første gang: Cursor viser «Needs login» → autoriser i nettleser. Fallback: `npm run deploy:prod` krever `vercel login` eller `VERCEL_TOKEN`. Se docs/VERCEL-MCP-CLI.md.
+## 🔗 MCP Verktøy
+
+| Verktøy | Bruk |
+|---------|------|
+| `mempalace_search` | Søk i lokalt minne |
+| `mempalace_remember` | Lagre minne |
+| `perplexity_search` | Web-research |
+| `query_database` | Supabase SQL |
+| `search_docs` | Context7 docs |
+
+---
+
+**Sist oppdatert:** 2026-04-09  
+**Versjon:** 2.0 (Konsolidert)

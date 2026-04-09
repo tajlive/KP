@@ -1,0 +1,36 @@
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   🏛️  KIMI + MemPalace - OPTIMALISERT FOR KLARPAKKE             │
+│                                                                 │
+│   YOLO Mode: ACTIVE    MemPalace: CONNECTED    Skills: AUTO     │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   📋 HURTIGKOMMANDOER:                                          │
+│                                                                 │
+│   .kimi/autostart.sh        → Full oppstart med kontekst        │
+│   cat .kimi/QUICKSTART.md   → 30-sekunders guide                │
+│                                                                 │
+│   ./scripts/knowledge-search.sh "<q>"  → Søk kunnskap           │
+│   ./scripts/mempalace-diary.sh read    → Se aktivitet           │
+│   .kimi/context-predictor.sh           → Prediker kontekst      │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   🧠 MEMPALACE ROM:                                             │
+│                                                                 │
+│   🔴 critical_decisions   → ADR-er, arkitektur                  │
+│   🔴 error_patterns       → Feil og løsninger                   │
+│   🟡 tech_debt            → TYPE_DEBT                           │
+│   🟡 api_contracts        → API dokumentasjon                   │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ⚡ REGLER:                                                    │
+│                                                                 │
+│   ✅ YOLO: Implementer uten å spørre                           │
+│   ✅ Minimal: Kun det som må til                               │
+│   ✅ Verifiser: Sjekk før endring                              │
+│   ✅ GO/NO-GO: Alltid tydelig status                           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘

@@ -1,0 +1,30 @@
+# KIMI Diary Template (AAAK Format)
+
+## Format
+```
+SESSION:YYYYMMDD|TYPE:task_type|FILES:count|STATUS:GO/NO-GO|★rating
+```
+
+## Type Codes
+- FEAT = Feature implementation
+- FIX = Bug fix
+- REF = Refactoring
+- DOC = Documentation
+- OPT = Optimization
+- SEC = Security fix
+
+## Eksempel
+```
+SESSION:20260409|TYPE:FEAT|FILES:5|STATUS:GO|★★★
+TASK:optimize-mempalace|AGENT:kimi|SCOPE:analysis
+DEC:activate-raw-mode|ALT:[fix-chroma,disable-search]|★★★★
+```
+
+## Usage
+```bash
+# Skriv til diary
+mempalace_diary_write --agent_name=kimi --entry="SESSION:..."
+
+# Les siste entries
+mempalace_diary_read --agent_name=kimi --last_n=5
+```

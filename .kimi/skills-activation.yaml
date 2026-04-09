@@ -1,0 +1,163 @@
+# KIMI Skills Auto-Activation
+# Aktiverer relevante skills basert på filtype og kontekst
+
+version: "1.0"
+
+# Mapping: filpattern → skills
+patterns:
+  # API Development
+  "src/app/api/**/*.ts":
+    skills:
+      - api-patterns
+      - api-patterns/security-testing
+      - api-patterns/rate-limiting
+    priority: high
+    
+  "src/app/api/**/route.ts":
+    skills:
+      - api-patterns/rest
+      - api-patterns/response
+    priority: critical
+    
+  # Database
+  "supabase/migrations/*.sql":
+    skills:
+      - database-design
+      - database-design/migrations
+      - database-design/optimization
+    priority: critical
+    
+  "src/lib/supabase/**/*.ts":
+    skills:
+      - database-design
+      - database-design/schema-design
+    priority: high
+    
+  # Frontend Components
+  "src/components/**/*.tsx":
+    skills:
+      - frontend-design
+      - frontend-design/ux-psychology
+      - nextjs-react-expert
+    priority: high
+    
+  "src/app/**/page.tsx":
+    skills:
+      - frontend-design
+      - nextjs-react-expert/6-rendering-rendering-performance
+      - seo-fundamentals
+    priority: high
+    
+  "src/app/**/layout.tsx":
+    skills:
+      - nextjs-react-expert
+      - frontend-design/typography-system
+    priority: medium
+    
+  # Trading (Klarpakke-spesifikt)
+  "src/lib/trading/**/*.ts":
+    skills:
+      - crypto-specialist
+      - api-patterns
+    priority: critical
+    
+  "src/components/trading/**/*.tsx":
+    skills:
+      - frontend-design
+      - mobile-design
+    priority: high
+    
+  # Testing
+  "**/*.test.ts":
+    skills:
+      - testing-patterns
+      - tdd-workflow
+    priority: high
+    
+  "**/*.spec.ts":
+    skills:
+      - webapp-testing
+      - testing-patterns
+    priority: high
+    
+  "e2e/**/*.ts":
+    skills:
+      - webapp-testing
+      - webapp-testing/scripts/playwright_runner.py
+    priority: critical
+    
+  # i18n
+  "messages/*.json":
+    skills:
+      - i18n-localization
+    priority: medium
+    
+  "src/app/[locale]/**":
+    skills:
+      - i18n-localization
+      - nextjs-react-expert
+    priority: medium
+    
+  # Configuration
+  "next.config.*":
+    skills:
+      - nextjs-react-expert
+      - performance-profiling
+    priority: medium
+    
+  "tailwind.config.*":
+    skills:
+      - frontend-design/color-system
+      - tailwind-patterns
+    priority: medium
+    
+  "eslint.config.*":
+    skills:
+      - lint-and-validate
+    priority: low
+
+# Task-type → skills mapping
+task_types:
+  feature:
+    - app-builder/feature-building
+    - plan-writing
+    - testing-patterns
+    
+  bugfix:
+    - systematic-debugging
+    - testing-patterns
+    - code-review-checklist
+    
+  refactor:
+    - clean-code
+    - architecture
+    - nextjs-react-expert
+    
+  security:
+    - vulnerability-scanner
+    - api-patterns/security-testing
+    - red-team-tactics
+    
+  performance:
+    - performance-profiling
+    - nextjs-react-expert/2-bundle-bundle-size-optimization
+    - nextjs-react-expert/5-rerender-re-render-optimization
+    
+  documentation:
+    - documentation-templates
+
+# Auto-trigger conditions
+auto_trigger:
+  on_error:
+    pattern: "TypeScript|type.*error"
+    skill: lint-and-validate/scripts/type_coverage.py
+    
+  on_test_failure:
+    pattern: "FAIL|failed"
+    skill: testing-patterns
+    
+  on_security_path:
+    pattern: "auth|login|password|secret|token"
+    skills:
+      - vulnerability-scanner
+      - security-auditor
