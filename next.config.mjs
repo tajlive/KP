@@ -92,6 +92,21 @@ const nextConfig = {
 
   // Static page generation timeout (important for large sites)
   staticPageGenerationTimeout: 120,
+  
+  // PRO: Experimental optimizations
+  experimental: {
+    // Optimalisert bundling for store pakker
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-icons',
+      'recharts',
+      '@supabase/supabase-js',
+    ],
+    // Server Actions config
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
 
   // Consolidated webpack configuration (merged from both sections)
   webpack: (config, { isServer, dev, nextRuntime }) => {
