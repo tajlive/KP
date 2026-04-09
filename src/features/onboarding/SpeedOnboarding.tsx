@@ -166,7 +166,7 @@ export default function SpeedOnboarding({
 
       if (user) {
         // Build payload matching the schema in user_trading_config
-        const updatePayload: Record<string, unknown> = {
+        const updatePayload: { [key: string]: unknown } = {
           user_id: user.id,
           risk_level: selectedRisk,
           selected_pairs: selectedCoins.map((c) => `${c}USDT`),
@@ -183,7 +183,7 @@ export default function SpeedOnboarding({
         }
 
         // Save preferences
-        await supabase.from("user_trading_config").upsert(updatePayload);
+        await supabase.from("user_trading_config").upsert(updatePayload as any);
 
         // Start paper trading session
         await fetch("/api/auto-trading/paper", {

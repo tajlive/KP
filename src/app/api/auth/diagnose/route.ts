@@ -83,7 +83,7 @@ interface DiagnosisResult {
 }
 
 function getSafeHeaders(headers: Headers): Record<string, string> {
-  const safe: Record<string, string> = {};
+  const safe: { [key: string]: string } = {};
   const allowed = [
     "host",
     "x-forwarded-host",

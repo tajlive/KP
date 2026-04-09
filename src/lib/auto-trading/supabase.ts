@@ -109,7 +109,7 @@ export async function createUserConfig(
       trading_capital_nok: tradingCapital,
       phase: "paper" as TradingPhase,
       allocated_capital_pct: 10.0,
-    })
+    } as any)
     .select()
     .single();
 
@@ -127,8 +127,7 @@ export async function updateUserConfig(
 ): Promise<boolean> {
   const { error } = await supabase
     .from("user_auto_trading_configs")
-    .update(updates)
-    .eq("user_id", userId);
+    .update(updates as any).eq("user_id", userId);
 
   if (error) {
     console.error("Error updating user config:", error);
@@ -209,7 +208,7 @@ export async function createSession(
       current_capital_nok: startingCapital,
       allocated_capital_pct: allocatedCapitalPct,
       status: "active",
-    })
+    } as any)
     .select()
     .single();
 
@@ -227,8 +226,7 @@ export async function updateSession(
 ): Promise<boolean> {
   const { error } = await supabase
     .from("trading_sessions") // ← var: auto_trading_sessions
-    .update(updates)
-    .eq("id", sessionId);
+    .update(updates as any).eq("id", sessionId);
 
   if (error) {
     console.error("Error updating session:", error);
@@ -329,7 +327,7 @@ export async function closeTrade(
       close_reason: closeReason,
       fees_nok: feesNok,
       closed_at: new Date().toISOString(),
-    })
+    } as any)
     .eq("id", tradeId);
 
   if (error) {
@@ -407,7 +405,7 @@ export async function logCircuitBreaker(
       trigger_value: triggerValue,
       action,
       resume_at: resumeAt,
-    });
+    } as any);
 
   if (error) {
     console.error("Error logging circuit breaker:", error);
@@ -446,7 +444,7 @@ export async function logProfitExtraction(
       capital_before_nok: capitalBeforeNok,
       capital_after_nok: capitalAfterNok,
       extraction_method: method,
-    });
+    } as any);
 
   if (error) {
     console.error("Error logging profit extraction:", error);

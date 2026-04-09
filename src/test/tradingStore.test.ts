@@ -3,7 +3,7 @@ import { useTradingStore } from "@/store/tradingStore";
 
 // Mock localStorage — zustand persist bruker det som default storage
 const localStorageMock = (() => {
-  let store: Record<string, string> = {};
+  let store: { [key: string]: string } = {};
   return {
     getItem: (key: string) => store[key] ?? null,
     setItem: (key: string, value: string) => {

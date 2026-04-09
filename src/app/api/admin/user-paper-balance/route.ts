@@ -101,8 +101,7 @@ export async function POST(request: NextRequest) {
 
       const { data: updated, error: sessErr } = await db
         .from("trading_sessions")
-        .update(patch)
-        .eq("user_id", user_id)
+        .update(patch as any).eq("user_id", user_id)
         .eq("mode", "paper")
         .eq("status", "active")
         .select("id");
@@ -114,7 +113,7 @@ export async function POST(request: NextRequest) {
       sessionsUpdated = updated?.length ?? 0;
     }
 
-    const paperLegacyPatch: Record<string, number | string | null> = {
+    const paperLegacyPatch: { [key: string]: number | string | null } = {
       current_balance: balance_nok,
       updated_at: now,
     };
@@ -125,8 +124,7 @@ export async function POST(request: NextRequest) {
 
     const { error: ptsErr } = await db
       .from("paper_trading_sessions")
-      .update(paperLegacyPatch)
-      .eq("user_id", user_id);
+      .update(paperLegacyPatch as any).eq("user_id", user_id);
 
     if (ptsErr) {
       console.warn("[admin user-paper-balance] paper_trading_sessions", ptsErr);

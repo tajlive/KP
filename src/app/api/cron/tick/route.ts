@@ -379,8 +379,7 @@ async function processSession(
     .update({
       last_heartbeat: new Date().toISOString(),
       last_tick_at: new Date().toISOString(),
-    })
-    .eq("id", session.id);
+    } as any).eq("id", session.id);
 
   // Trailing take-profit check on open positions
   if (session.open_position && signal.action === "hold") {
@@ -509,7 +508,7 @@ async function processSession(
       user_id: session.user_id,
       action: "risk_blocked",
       details: riskLogDetails,
-    });
+    } as any);
 
     console.warn("Trade blocked by risk manager:", {
       session_id: session.id,
@@ -567,7 +566,7 @@ async function processSession(
       indicator_snapshot: indicatorSnapshot as unknown as Json,
       opened_at: new Date().toISOString(),
       executed_at: new Date().toISOString(),
-    })
+    } as any)
     .select("id")
     .single();
 
@@ -652,7 +651,7 @@ async function mirrorTradeToFollowers(
         executed_at: new Date().toISOString(),
         is_copy: true,
         leader_trade_id: tradeRecord.id as string,
-      });
+      } as any);
 
       if (mirrorError) {
         console.warn(

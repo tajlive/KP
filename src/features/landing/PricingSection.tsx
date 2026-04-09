@@ -30,7 +30,7 @@ const tierIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   phd: Target,
   professor: Crown,
 };
-const tierIconColors: Record<string, string> = {
+const tierIconColors: { [key: string]: string } = {
   student: "text-slate-400",
   bachelor: "text-blue-400",
   master: "text-emerald-400",

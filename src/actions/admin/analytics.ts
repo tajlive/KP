@@ -128,7 +128,7 @@ export async function getSignupTrend(days: number = 30) {
     if (error) throw error;
 
     // Aggregate by date
-    const trends: Record<string, number> = {};
+    const trends: { [key: string]: number } = {};
 
     // Initialize dates
     for (let i = 0; i < days; i++) {

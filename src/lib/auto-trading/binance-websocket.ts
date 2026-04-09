@@ -362,7 +362,7 @@ export class AutoTradingWebSocket {
             closed_at: new Date().toISOString(),
             closed_reason: "MARKET_CLOSE",
             binance_close_order_id: update.orderId,
-          })
+          } as any)
           .eq("id", t.id)
           .select();
 

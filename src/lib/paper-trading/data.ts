@@ -8,7 +8,7 @@ import { BacktestParams } from '@/types/paper-trading';
 const COINGECKO_API = 'https://api.coingecko.com/api/v3';
 
 // Coin ID mapping
-const COIN_IDS: Record<string, string> = {
+const COIN_IDS: { [key: string]: string } = {
   'BTC': 'bitcoin',
   'ETH': 'ethereum',
   'SOL': 'solana',
@@ -139,7 +139,7 @@ function generateMockData(symbol: string, days: number): MarketData[] {
   const symbolSeed = symbol.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   
   // Starting price based on symbol
-  const basePrices: Record<string, number> = {
+  const basePrices: { [key: string]: number } = {
     'BTC': 45000, 'ETH': 2500, 'SOL': 100, 'ADA': 0.5,
     'DOT': 7, 'MATIC': 0.8, 'LINK': 15, 'UNI': 8
   };

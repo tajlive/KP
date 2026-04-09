@@ -77,7 +77,7 @@ export async function activateEmergencyStop(
         emergency_triggered_at: new Date().toISOString(),
         emergency_triggered_by: triggeredBy,
         emergency_reason: reason,
-      });
+      } as any);
 
     if (settingsError) throw settingsError;
 
@@ -99,7 +99,7 @@ export async function activateEmergencyStop(
       affected_sessions: activeSessions?.length || 0,
       closed_positions: closedPositions,
       timestamp: new Date().toISOString(),
-    });
+    } as any);
 
     // 5. Send alert til admin
     await sendEmergencyAlert(reason, triggeredBy, closedPositions);
@@ -135,7 +135,7 @@ export async function deactivateEmergencyStop(
       emergency_resolved_at: new Date().toISOString(),
       emergency_resolved_by: resolvedBy,
       emergency_resolution: resolution,
-    });
+    } as any);
 
     if (error) throw error;
 
@@ -199,7 +199,7 @@ export async function panicCloseAllPositions(): Promise<number> {
             status: "CLOSED",
             closed_at: new Date().toISOString(),
             close_reason: "EMERGENCY_PANIC_CLOSE",
-          })
+          } as any)
           .eq("id", (row as unknown as { id: string }).id);
 
         closedCount++;
@@ -281,7 +281,7 @@ async function sendEmergencyAlert(
       `Lukkede posisjoner: ${closedPositions}\n\n` +
       `Tid: ${new Date().toISOString()}`,
     acknowledged: false,
-  });
+  } as any);
 
   // Emergency alert stored in DB — admin notified via dashboard
 }

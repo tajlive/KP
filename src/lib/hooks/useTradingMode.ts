@@ -179,7 +179,7 @@ export function useTradingMode() {
             binance_connected: true,
             binance_api_key_id: encryptedKey,
             binance_api_secret_id: encryptedSecret,
-          })
+          } as any)
           .eq("id", user.id);
 
         if (error) throw error;
@@ -228,7 +228,7 @@ export function useTradingMode() {
           binance_api_key_id: null,
           binance_api_secret_id: null,
           trading_mode: "paper",
-        })
+        } as any)
         .eq("id", user.id);
 
       if (error) throw error;

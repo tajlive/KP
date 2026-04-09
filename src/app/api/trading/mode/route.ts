@@ -173,8 +173,7 @@ export async function POST(request: NextRequest) {
       .update({
         trading_mode: mode,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+      } as any).eq("id", user.id);
 
     if (error) {
       console.error("Error updating trading mode:", error);
@@ -189,7 +188,7 @@ export async function POST(request: NextRequest) {
       action: "TRADING_MODE_CHANGED",
       details: { new_mode: mode },
       created_at: new Date().toISOString(),
-    });
+    } as any);
     if (auditErr) {
       console.warn(
         "[trading/mode] audit_logs insert skipped:",

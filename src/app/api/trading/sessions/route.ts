@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
   const productId = resolveProductStrategyId(strategy_id);
 
-  const mergedConfig: Record<string, unknown> = {
+  const mergedConfig: { [key: string]: unknown } = {
     ...(typeof bodyStrategyConfig === "object" && bodyStrategyConfig !== null
       ? (bodyStrategyConfig as Record<string, unknown>)
       : {}),
@@ -193,7 +193,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const validActions: Record<string, string> = {
+  const validActions: { [key: string]: string } = {
     pause: "paused",
     resume: "active",
     stop: "stopped",
@@ -207,7 +207,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const updates: Record<string, unknown> = {
+  const updates: { [key: string]: unknown } = {
     status: newStatus,
   };
 
@@ -217,8 +217,7 @@ export async function PATCH(request: NextRequest) {
 
   const { data: session, error } = await supabase
     .from("trading_sessions")
-    .update(updates)
-    .eq("id", session_id)
+    .update(updates as any).eq("id", session_id)
     .eq("user_id", user.id)
     .select()
     .single();

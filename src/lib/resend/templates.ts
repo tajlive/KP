@@ -245,7 +245,7 @@ export const circuitBreakerTriggered = (params: {
 }): EmailTemplate => {
   const { strategyName, triggerType, triggerValue, pauseDuration } = params;
   
-  const triggerNames: Record<string, string> = {
+  const triggerNames: { [key: string]: string } = {
     daily_loss_limit: 'Daglig tapsgrense nådd',
     consecutive_losses: 'Påfølgende tap',
     high_volatility: 'Høy volatilitet',

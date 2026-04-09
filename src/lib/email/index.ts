@@ -433,7 +433,7 @@ const templates = {
     newRank: number,
     period: string,
   ) => {
-    const periodText: Record<string, string> = {
+    const periodText: { [key: string]: string } = {
       daily: "daglige",
       weekly: "ukentlige",
       monthly: "månedlige",

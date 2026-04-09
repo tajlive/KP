@@ -70,7 +70,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 function sanitizeReport(report: Record<string, unknown>): Record<string, unknown> {
   const sensitiveFields = ['password', 'token', 'secret', 'apiKey', 'authorization'];
-  const sanitized: Record<string, unknown> = {};
+  const sanitized: { [key: string]: unknown } = {};
 
   for (const [key, value] of Object.entries(report)) {
     if (sensitiveFields.some(field => key.toLowerCase().includes(field))) {

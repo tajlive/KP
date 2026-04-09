@@ -38,7 +38,7 @@ function clampPaperCapital(n: number) {
 
 const TIER_ORDER = ["student", "bachelor", "master", "phd", "professor"];
 
-const TIER_COIN_LIMIT: Record<string, number> = {
+const TIER_COIN_LIMIT: { [key: string]: number } = {
   student: 3,
   bachelor: 5,
   master: 10,

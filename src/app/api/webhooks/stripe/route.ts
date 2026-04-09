@@ -43,7 +43,7 @@ const getStripe = () => {
     throw new Error("STRIPE_SECRET_KEY ikke satt");
   }
   return new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2026-02-25.clover",
+    apiVersion: "2026-03-25.dahlia",
   });
 };
 
@@ -215,8 +215,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         subscription_status: "active",
         stripe_customer_id: customerId,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+      } as any).eq("id", userId);
 
     if (profileError) {
       console.error(
@@ -252,8 +251,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
         status: "active",
         current_period_end: periodEnd,
         updated_at: new Date().toISOString(),
-      })
-      .eq("stripe_subscription_id", subscriptionId);
+      } as any).eq("stripe_subscription_id", subscriptionId);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved payment succeeded:", error);
@@ -273,8 +271,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
         .update({
           subscription_status: "active",
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", sub.user_id);
+        } as any).eq("id", sub.user_id);
     }
 
     console.info(
@@ -299,8 +296,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       .update({
         status: "past_due",
         updated_at: new Date().toISOString(),
-      })
-      .eq("stripe_subscription_id", subscriptionId);
+      } as any).eq("stripe_subscription_id", subscriptionId);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved payment failed:", error);
@@ -320,8 +316,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
         .update({
           subscription_status: "past_due",
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", sub.user_id);
+        } as any).eq("id", sub.user_id);
     }
 
     // Send påminnelse om betaling
@@ -412,8 +407,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         subscription_status: subWithPeriod.status === "active" ? "active" : "pending",
         stripe_customer_id: customerId,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+      } as any).eq("id", userId);
 
     if (profileError) {
       console.error("[Stripe Webhook] Feil ved oppdatering av profil:", profileError);
@@ -446,8 +440,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
           ? new Date(subWithPeriod.current_period_end * 1000).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),
-      })
-      .eq("stripe_subscription_id", subscription.id);
+      } as any).eq("stripe_subscription_id", subscription.id);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved subscription update:", error);
@@ -473,8 +466,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
               ? "active"
               : "canceled",
             updated_at: new Date().toISOString(),
-          })
-          .eq("id", sub.user_id);
+          } as any).eq("id", sub.user_id);
       }
     }
 
@@ -503,8 +495,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
       .update({
         status: "cancelled",
         updated_at: new Date().toISOString(),
-      })
-      .eq("stripe_subscription_id", subscription.id);
+      } as any).eq("stripe_subscription_id", subscription.id);
 
     // Nedgrader bruker til free
     if (sub?.user_id) {
@@ -514,8 +505,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
           subscription_tier: "student",
           subscription_status: "canceled",
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", sub.user_id);
+        } as any).eq("id", sub.user_id);
     }
 
     console.info(
@@ -535,7 +525,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
 
 function mapTierToPlanType(tier: string): string {
   // Mapper UI-tier til database plan_type
-  const tierMap: Record<string, string> = {
+  const tierMap: { [key: string]: string } = {
     bachelor: "bachelor",
     master: "master",
     phd: "phd",
@@ -549,7 +539,7 @@ function mapTierToPlanType(tier: string): string {
 // Helper to map price ID to tier when metadata is missing
 function mapPriceIdToTier(priceId: string | undefined): string | undefined {
   if (!priceId) return undefined;
-  const priceMap: Record<string, string> = {
+  const priceMap: { [key: string]: string } = {
     [process.env.NEXT_PUBLIC_STRIPE_PRICE_BACHELOR || '']: 'bachelor',
     [process.env.NEXT_PUBLIC_STRIPE_PRICE_MASTER || '']: 'master',
     [process.env.NEXT_PUBLIC_STRIPE_PRICE_PHD || '']: 'phd',

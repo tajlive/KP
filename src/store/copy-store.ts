@@ -327,7 +327,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
     } = await supabase.auth.getUser();
     if (!user?.id) return;
 
-    const updates: Record<string, unknown> = {};
+    const updates: { [key: string]: unknown } = {};
     if (config.maxAllocationNok !== undefined) {
       updates.max_trade_amount = config.maxAllocationNok;
     }
@@ -341,8 +341,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
 
     await supabase
       .from("copy_trading_follows")
-      .update(updates)
-      .eq("leader_id", leaderId)
+      .update(updates as any).eq("leader_id", leaderId)
       .eq("follower_id", user.id);
 
     await get().fetchFollowing();

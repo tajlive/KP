@@ -203,7 +203,7 @@ export abstract class BaseStrategy {
     side: "LONG" | "SHORT",
   ): { stopLossPrice: number; dynamicStopPct: number } {
     // ATR multiplikator basert på risikonivå
-    const atrMultipliers: Record<string, number> = {
+    const atrMultipliers: { [key: string]: number } = {
       conservative: 1.5,
       balanced: 2.0,
       aggressive: 2.5,

@@ -2,6 +2,11 @@
 
 Komplett guide for å sette opp Supabase-backend.
 
+> **⚠️ Oppdatert:** 9. April 2026
+> - `@supabase/supabase-js`: 2.102.1
+> - `@supabase/ssr`: 0.10.0 (breaking changes i cookie API)
+> - TypeScript 6 kompatibilitet: Krever `as any` for dynamiske updates
+
 ---
 
 ## ⚡ Rask Setup (Automatisk)

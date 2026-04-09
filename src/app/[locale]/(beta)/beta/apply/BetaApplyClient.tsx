@@ -81,8 +81,7 @@ export default function BetaApplyClient({
         .update({
           application_status: "approved",
           reviewed_at: new Date().toISOString(),
-        })
-        .eq("user_id", user.id);
+        } as any).eq("user_id", user.id);
 
       setSubmitted(true);
 

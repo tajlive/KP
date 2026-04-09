@@ -223,7 +223,7 @@ export interface PaperTrade {
 }
 
 // Webflow integration types
-export const WEBFLOW_ROOTS: Record<string, string> = {
+export const WEBFLOW_ROOTS: { [key: string]: string } = {
   HEADER: 'klarpakke-header-root',
   FOOTER: 'klarpakke-footer-root',
   HERO: 'klarpakke-hero-root',

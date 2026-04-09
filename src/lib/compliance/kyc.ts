@@ -254,7 +254,7 @@ export async function approveKYC(
       status: 'verified',
       verified_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
-    })
+    } as any)
     .eq('user_id', userId) as any);
 
   if (error) {
@@ -282,7 +282,7 @@ export async function rejectKYC(
     .update({
       status: 'rejected',
       updated_at: new Date().toISOString()
-    })
+    } as any)
     .eq('user_id', userId) as any);
 
   if (error) {
@@ -314,7 +314,7 @@ async function logAdminAction(
     notes,
     timestamp: new Date().toISOString(),
     correlation_id: crypto.randomUUID()
-  });
+  } as any);
 }
 
 /**

@@ -39,7 +39,7 @@ export const isSanityConfigured = () => {
 // Safe fetch helper that falls back gracefully
 export async function safeFetch<T>(
   query: string,
-  params: Record<string, unknown> = {},
+  params: { [key: string]: unknown } = {},
   fallback: T
 ): Promise<T> {
   try {

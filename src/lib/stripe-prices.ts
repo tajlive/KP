@@ -196,7 +196,7 @@ export function getProducts(): ProductInfo[] {
 export function getCourseProduct(courseSlug: string): ProductInfo | undefined {
   const products = getProducts();
 
-  const courseMap: Record<string, string> = {
+  const courseMap: { [key: string]: string } = {
     "krypto-for-smaasparere": "crypto-course",
     "trading-masterclass": "trading-course",
     "trading-grunnkurs": "trading-course",

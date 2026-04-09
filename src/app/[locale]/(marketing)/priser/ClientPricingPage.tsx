@@ -40,7 +40,7 @@ const tierIcons: Record<string, React.ReactNode> = {
 };
 
 // Default priser mens vi venter på API (riktige priser fra nettsiden)
-const DEFAULT_PRICES: Record<string, number> = {
+const DEFAULT_PRICES: { [key: string]: number } = {
   student: 0,
   bachelor: 24900, // 249 kr/mnd
   master: 49900, // 499 kr/mnd

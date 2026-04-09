@@ -61,7 +61,7 @@ interface EquityPoint {
   equity: number;
 }
 
-const STRATEGY_LABELS: Record<string, string> = {
+const STRATEGY_LABELS: { [key: string]: string } = {
   dca_trygg: "DCA Trygg",
   trend_balansert: "Trend Balansert",
   multisignal_aktiv: "Multi-Signal Aktiv",

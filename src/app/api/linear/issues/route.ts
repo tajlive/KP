@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
       }
     `;
 
-    const variables: Record<string, unknown> = { first: limit };
+    const variables: { [key: string]: unknown } = { first: limit };
     if (state) {
       variables.filter = { state: { name: { eq: state } } };
     }

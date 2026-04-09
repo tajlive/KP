@@ -23,8 +23,7 @@ export const DELETE = withAuth(async (req: NextRequest, { user }) => {
 
     const { data, error } = await db
       .from('copy_trading_follows')
-      .update({ is_active: false, updated_at: new Date().toISOString() })
-      .eq('id', parsed.data.follow_id)
+      .update({ is_active: false, updated_at: new Date().toISOString() } as any).eq('id', parsed.data.follow_id)
       .eq('follower_id', user.id) // Only own follows
       .select()
       .single();

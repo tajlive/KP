@@ -94,7 +94,7 @@ export function CourseList({ locale = 'no' }: CourseListProps) {
   };
   const labels = levelLabels[locale] ?? levelLabels['no'];
 
-  const levelColors: Record<string, string> = {
+  const levelColors: { [key: string]: string } = {
     beginner: 'bg-green-100 text-green-700',
     intermediate: 'bg-blue-100 text-blue-700',
     advanced: 'bg-emerald-100 text-emerald-700',

@@ -149,7 +149,11 @@ export interface TradeEnvelope {
 
 export interface SafeExecutionResult extends ExecuteTradeResult {
   envelope?: TradeEnvelope;
+  auditStatus?: TradeEnvelope['auditStatus'];
   executionTrace?: {
+    startedAt: number;
+    completedAt?: number;
+    steps: string[];
     riskCheckPassed: boolean;
     auditPersisted: boolean;
     statePersisted: boolean;
@@ -172,6 +176,8 @@ export async function executeTradeSafe(
 ): Promise<SafeExecutionResult> {
   const startTime = Date.now();
   const trace = {
+    startedAt: startTime,
+    steps: [] as string[],
     riskCheckPassed: false,
     auditPersisted: false,
     statePersisted: false,
@@ -190,6 +196,7 @@ export async function executeTradeSafe(
       success: false,
       rejectionReason: "KILL_SWITCH_ACTIVE",
       error: killSwitchCheck.reason || "Trading temporarily disabled due to system health",
+      auditStatus: "failed",
       envelope: {
         tradeId: "",
         idempotencyKey: "",
@@ -230,6 +237,7 @@ export async function executeTradeSafe(
       success: false,
       rejectionReason: "DUPLICATE_TRADE",
       error: `Trade already exists: ${existingTrade.id}`,
+      auditStatus: "failed",
       envelope
     };
   }
@@ -246,7 +254,7 @@ export async function executeTradeSafe(
       degradedMode: true,
       degradationReason: `Session resolution failed: ${sessionResult.error}`
     });
-    return { success: false, error: sessionResult.error, envelope };
+    return { success: false, error: sessionResult.error, auditStatus: "failed", envelope };
   }
   const { session, sessionId } = sessionResult;
 
@@ -274,6 +282,7 @@ export async function executeTradeSafe(
         success: false,
         rejectionReason: "RISK_STATE_UNAVAILABLE",
         error: "Cannot safely determine risk state. Trade blocked for safety.",
+        auditStatus: "failed",
         envelope
       };
     }
@@ -292,6 +301,7 @@ export async function executeTradeSafe(
       success: false,
       rejectionReason: "RISK_STATE_CORRUPT",
       error: "Risk state is corrupt or invalid. Trade blocked.",
+      auditStatus: "failed",
       envelope
     };
   }
@@ -315,6 +325,7 @@ export async function executeTradeSafe(
       success: false,
       rejectionReason: "RISK_COOLDOWN",
       error: `Trading blocked: ${cooldown.reason} cooldown`,
+      auditStatus: "failed",
       envelope
     };
   }
@@ -357,6 +368,7 @@ export async function executeTradeSafe(
       success: false,
       rejectionReason: "RISK_LIMIT_VIOLATION",
       error: `Risk limits violated: ${riskCheck.violations.map(v => v.rule).join(', ')}`,
+      auditStatus: "failed",
       envelope
     };
   }
@@ -433,6 +445,7 @@ export async function executeTradeSafe(
           success: false,
           rejectionReason: "AUDIT_FAILURE",
           error: "Cannot create audit trail. Trade blocked for compliance.",
+          auditStatus: "failed",
           envelope
         };
       } else {
@@ -461,6 +474,7 @@ export async function executeTradeSafe(
         success: false,
         rejectionReason: "AUDIT_EXCEPTION",
         error: "Audit system error. Trade blocked.",
+        auditStatus: "failed",
         envelope
       };
     } else {
@@ -499,6 +513,7 @@ export async function executeTradeSafe(
     return {
       success: false,
       error: execResult.error || "Execution failed",
+      auditStatus,
       envelope
     };
   }
@@ -536,7 +551,7 @@ export async function executeTradeSafe(
         degraded_mode: degradedMode,
         degradation_reason: degradationReason,
       }
-    })
+    } as any)
     .select()
     .single();
 
@@ -561,6 +576,7 @@ export async function executeTradeSafe(
       executedPrice: execResult.executedPrice,
       executedQuantity: execResult.executedQuantity,
       fee: execResult.fee,
+      auditStatus,
       error: "CRITICAL: Trade executed but failed to save to database. Manual reconciliation required.",
       envelope,
       executionTrace: trace
@@ -701,8 +717,13 @@ export async function executeTradeSafe(
     executedPrice: execResult.executedPrice,
     executedQuantity: execResult.executedQuantity,
     fee: execResult.fee,
+    auditStatus,
     envelope,
-    executionTrace: trace,
+    executionTrace: {
+      ...trace,
+      completedAt: Date.now(),
+      steps: ['killSwitchCheck', 'idempotencyCheck', 'sessionResolution', 'riskStateRecovery', 'riskKernelCheck', 'auditIntent', 'tradeExecution', 'tradeRecording', 'statePersistence', 'auditFinalize']
+    },
     // Marker hvis vi er i degraded mode
     ...(degradedMode && {
       warning: `Trade executed in DEGRADED MODE: ${degradationReason}`

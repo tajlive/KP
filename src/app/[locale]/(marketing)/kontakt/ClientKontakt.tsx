@@ -17,7 +17,7 @@ export default function ClientKontakt() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: { [key: string]: string } = {};
     
     if (!formData.name.trim()) {
       newErrors.name = t("form.nameRequired");

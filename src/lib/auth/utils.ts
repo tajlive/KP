@@ -305,7 +305,7 @@ export function getErrorMessage(
 ): string {
   if (!error) return "";
 
-  const norwegianMessages: Record<string, string> = {
+  const norwegianMessages: { [key: string]: string } = {
     "Invalid login credentials": "Feil e-post eller passord. Prøv igjen.",
     "Email not confirmed": "E-posten er ikke bekreftet. Sjekk innboksen din.",
     "User already registered":

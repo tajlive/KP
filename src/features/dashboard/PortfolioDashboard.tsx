@@ -77,7 +77,7 @@ const FirstTradeCard = dynamic(
 
 const DASHBOARD_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
 
-const COIN_GRADIENTS: Record<string, string> = {
+const COIN_GRADIENTS: { [key: string]: string } = {
   BTCUSDT: "from-[#F7931A] to-[#E8860A]",
   ETHUSDT: "from-[#627EEA] to-[#4A63D2]",
   SOLUSDT: "from-[#9945FF] to-[#14F195]",

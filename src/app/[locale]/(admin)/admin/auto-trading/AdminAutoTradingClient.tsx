@@ -274,7 +274,7 @@ function StatCard({
   value: string | number;
   color: string;
 }) {
-  const bg: Record<string, string> = {
+  const bg: { [key: string]: string } = {
     emerald: "bg-emerald-400/10",
     blue: "bg-blue-400/10",
     red: "bg-red-400/10",

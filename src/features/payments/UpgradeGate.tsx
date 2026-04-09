@@ -20,7 +20,7 @@ interface UserStats {
   currentTier: string;
 }
 
-const TIER_NAMES: Record<string, string> = {
+const TIER_NAMES: { [key: string]: string } = {
   student: "Student",
   bachelor: "Bachelor",
   master: "Master",

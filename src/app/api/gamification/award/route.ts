@@ -4,7 +4,7 @@ import { trackCriticalAction } from "@/lib/sentry";
 import { z } from "zod";
 
 // XP awards configuration
-const XP_AWARDS: Record<string, number> = {
+const XP_AWARDS: { [key: string]: number } = {
   login: 50,
   onboarding_complete: 500,
   paper_trade_started: 250,

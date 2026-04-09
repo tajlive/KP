@@ -62,17 +62,16 @@ export async function POST(request: NextRequest) {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    const updates: Record<string, string> =
+    const updates =
       action === "stop"
         ? { status: "stopped", stopped_at: new Date().toISOString() }
         : action === "pause"
           ? { status: "paused" }
-          : { status: "active" };
+          : { status: "active" } as { [key: string]: string };
 
     const { error } = await serviceClient
       .from("trading_sessions")
-      .update(updates)
-      .eq("id", sessionId);
+      .update(updates as any).eq("id", sessionId);
 
     if (error) throw error;
 

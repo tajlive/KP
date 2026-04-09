@@ -72,7 +72,7 @@ function getDecisionColor(decision: string): string {
 }
 
 function getDecisionLabel(decision: string): string {
-  const labels: Record<string, string> = {
+  const labels: { [key: string]: string } = {
     STRONG_BUY: 'Sterkt kjøp',
     BUY: 'Kjøp',
     HOLD: 'Hold',
@@ -100,7 +100,7 @@ function getRiskLevelLabel(level: number): string {
 }
 
 function getRegimeEmoji(regime: string): string {
-  const emojis: Record<string, string> = {
+  const emojis: { [key: string]: string } = {
     bull: '🐂',
     bear: '🐻',
     range: '↔️',
@@ -110,7 +110,7 @@ function getRegimeEmoji(regime: string): string {
 }
 
 function getRegimeLabel(regime: string): string {
-  const labels: Record<string, string> = {
+  const labels: { [key: string]: string } = {
     bull: 'Bull',
     bear: 'Bear',
     range: 'Sideways',

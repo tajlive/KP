@@ -31,7 +31,7 @@ export async function grantFounderStatus(userId: string) {
     // 3. Update role
     const { error: updateError } = await supabase
       .from("user_profiles")
-      .update({ role: "founder", is_founder: true })
+      .update({ role: "founder", is_founder: true } as any)
       .eq("id", userId);
 
     if (updateError) throw updateError;
@@ -99,7 +99,7 @@ export async function banUser(userId: string, reason: string) {
         status: "banned",
         banned_at: new Date().toISOString(),
         ban_reason: reason,
-      })
+      } as any)
       .eq("id", userId);
 
     if (error) throw error;

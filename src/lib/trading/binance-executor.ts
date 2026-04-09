@@ -76,7 +76,7 @@ export class BinanceExecutor implements OrderExecutor {
   private async makeRequest<T>(
     endpoint: string,
     method: 'GET' | 'POST' = 'GET',
-    params: Record<string, unknown> = {}
+    params: { [key: string]: unknown } = {}
   ): Promise<T> {
     const timestamp = Date.now();
     const queryParams = { ...params, timestamp };
@@ -113,7 +113,7 @@ export class BinanceExecutor implements OrderExecutor {
   async executeOrder(params: OrderParams): Promise<OrderResult> {
     try {
       // Build order parameters
-      const orderParams: Record<string, unknown> = {
+      const orderParams: { [key: string]: unknown } = {
         symbol: params.symbol,
         side: params.side.toUpperCase(),
         type: params.orderType.toUpperCase(),

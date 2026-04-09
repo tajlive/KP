@@ -5,7 +5,7 @@ import { vi } from "vitest";
 // som gjør window.localStorage.setItem til undefined.
 // Må defineres her (setupFiles) før zustand persist initialiserer.
 const localStorageMock = (() => {
-  let store: Record<string, string> = {};
+  let store: { [key: string]: string } = {};
   return {
     getItem: (key: string): string | null => store[key] ?? null,
     setItem: (key: string, value: string): void => {

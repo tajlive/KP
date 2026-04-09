@@ -34,7 +34,7 @@ export async function GET(req: Request) {
       .update({
         usdt_nok_rate: usdToNok,
         updated_at: new Date().toISOString(),
-      } as Record<string, unknown>)
+      } as any)
       .eq("id", 1);
 
     if (error) {

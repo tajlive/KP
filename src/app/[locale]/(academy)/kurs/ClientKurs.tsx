@@ -14,7 +14,7 @@ import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
-const levelColors: Record<string, string> = {
+const levelColors: { [key: string]: string } = {
   beginner:
     "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
   intermediate:
@@ -24,7 +24,7 @@ const levelColors: Record<string, string> = {
 };
 
 function getLevelKey(level: string): string {
-  const map: Record<string, string> = {
+  const map: { [key: string]: string } = {
     Nybegynner: "beginner",
     Beginner: "beginner",
     เริ่มต้น: "beginner",
