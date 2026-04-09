@@ -226,7 +226,7 @@ export async function GET(
         domain: cookieDomain,
         path: '/',
         secure: true,
-        sameSite: 'lax',  // lax is better for OAuth redirects
+        sameSite: 'none',  // Match server.ts for Vercel compatibility
         httpOnly: false,  // must be false for client-side Supabase to read
         maxAge: 60 * 60 * 24 * 7, // 7 days
       });
@@ -236,7 +236,7 @@ export async function GET(
         domain: cookieDomain,
         path: '/',
         secure: true,
-        sameSite: 'lax',
+        sameSite: 'none',  // Match server.ts
         httpOnly: false,
         maxAge: 0, // delete immediately
       });
