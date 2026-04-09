@@ -66,3 +66,25 @@ src/app/studio/  # Exclude from build
 
 **Date:** 2026-04-09
 **Fix Commit:** 5d0036c2a
+
+## Vercel Warning: middleware file convention deprecated
+
+**Warning Message:**
+```
+⚠ The "middleware" file convention is deprecated. 
+Please use "proxy" instead. 
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+```
+
+**Status:** ACCEPTED / KNOWN ISSUE
+
+**Why we keep middleware.ts:**
+- proxy.ts breaks auth/session handling
+- Users get kicked out immediately after login
+- "expired=1" redirect loop
+
+**Solution:** Stay on middleware.ts until Next.js fixes proxy.ts compatibility
+or we find a working auth solution with proxy.
+
+**Date:** 2026-04-09
+**Decision:** Keep middleware.ts (auth stability > deprecation warning)
