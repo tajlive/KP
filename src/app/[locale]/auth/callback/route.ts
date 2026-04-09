@@ -150,6 +150,25 @@ export async function GET(
   }
 
   try {
+    // CRITICAL FIX: Set up PKCE cookie properly before creating Supabase client
+    // Supabase SSR reads code-verifier from cookies, but it may be URL-encoded
+    if (pkceCookie) {
+      try {
+        let rawValue = decodeURIComponent(pkceCookie.value);
+        if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
+          rawValue = rawValue.slice(1, -1);
+        }
+        // Re-set the decoded cookie before creating Supabase client
+        request.cookies.set(pkceCookie.name, rawValue);
+        console.error("🔥 PKCE COOKIE DECODED:", {
+          name: pkceCookie.name,
+          decodedLength: rawValue.length,
+        });
+      } catch (e) {
+        console.error("🔥 FAILED TO DECODE PKCE COOKIE:", e);
+      }
+    }
+
     // Use Supabase SSR client to handle exchange and cookie setting
     const supabase = createServerClient(request, response);
 
