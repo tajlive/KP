@@ -7,6 +7,7 @@ const withNextIntl = createNextIntlPlugin({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  
   // Explicitly pass Supabase env to client (NEXT_PUBLIC_* inlined at build time).
   // Helps when .env loading order or Edge/build context differs.
   env: {
@@ -93,7 +94,7 @@ const nextConfig = {
   staticPageGenerationTimeout: 120,
 
   // Consolidated webpack configuration (merged from both sections)
-  webpack: (config, { isServer, dev }) => {
+  webpack: (config, { isServer, dev, nextRuntime }) => {
     // 1. Exclude native modules from client bundle (Turbopack compatibility)
     if (!isServer) {
       config.resolve.fallback = {
