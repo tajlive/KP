@@ -22,7 +22,7 @@ export function MarketingNavigation() {
 
   const mainLinks = [
     { path: "/kurs", label: t("navLearn") },
-    { path: "/paper", label: t("navTrade") },
+    { path: "/paper-trading", label: t("navTrade") },
     { path: "/auto-trading", label: t("navBots") },
     { path: "/priser", label: t("navPricing") },
   ];

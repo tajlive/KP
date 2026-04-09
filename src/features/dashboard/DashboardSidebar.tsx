@@ -71,7 +71,7 @@ export function DashboardSidebar() {
   const tradingLinks = DASHBOARD_TRADING_NAV.map((item) => ({
     ...item,
     icon:
-      item.href === "/paper"
+      item.href === "/paper-trading"
         ? TrendingUp
         : item.href === "/dashboard/auto-trade"
           ? Bot

@@ -17,7 +17,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { id: "home", labelKey: "home", icon: Home, href: "/dashboard" },
   { id: "learn", labelKey: "learn", icon: GraduationCap, href: "/kurs" },
-  { id: "trade", labelKey: "trade", icon: TrendingUp, href: "/paper" },
+  { id: "trade", labelKey: "trade", icon: TrendingUp, href: "/paper-trading" },
   { id: "profile", labelKey: "profile", icon: User, href: "/profile" },
 ];
 
