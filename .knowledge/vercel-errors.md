@@ -45,3 +45,24 @@ legacy-peer-deps=true  # ✅ Legg til denne
 
 **Date:** 2026-04-09
 **Fix Commit:** 33c133e3c
+
+## Vercel Error: Sanity Studio + React 19 createContext
+
+**Error Message:**
+```
+Error: Failed to collect page data for /studio/[[...tool]]
+TypeError: a6.default.createContext is not a function
+```
+
+**Cause:** Sanity Studio not compatible with React 19
+
+**Temporary Solution:**
+```bash
+# .vercelignore:
+src/app/studio/  # Exclude from build
+```
+
+**Permanent Fix:** Wait for Sanity to update for React 19
+
+**Date:** 2026-04-09
+**Fix Commit:** 5d0036c2a
