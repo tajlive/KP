@@ -11,6 +11,54 @@
 | **Analytics** | ❌ | ✅ | Web Vitals, Performance |
 | **Prioritized Builds** | ❌ | ✅ | Raskere deploy |
 | **Edge Config** | ❌ | ✅ | Feature flags, config |
+| **Vercel AI** | ❌ | ✅ | AI SDK, streaming, generering |
+
+## 🤖 Vercel AI & Agent (Pro-funksjon)
+
+### Vercel AI SDK
+Med Pro får du tilgang til avanserte AI-funksjoner:
+
+```typescript
+// AI SDK for streaming responses
+import { streamText } from 'ai';
+import { openai } from '@ai-sdk/openai';
+
+// Streaming API route
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  
+  const result = streamText({
+    model: openai('gpt-4o'),
+    messages,
+  });
+  
+  return result.toDataStreamResponse();
+}
+```
+
+### AI Agent med Vercel
+```typescript
+// Agent som kan kalle funksjoner
+import { generateObject } from 'ai';
+import { z } from 'zod';
+
+const result = await generateObject({
+  model: openai('gpt-4o'),
+  schema: z.object({
+    trade: z.object({
+      symbol: z.string(),
+      action: z.enum(['buy', 'sell']),
+      amount: z.number(),
+    }),
+  }),
+  prompt: 'Analyser markedet og foreslå en trade',
+});
+```
+
+### For Klarpakke:
+- **Trading signal AI**: Automatisk analyse
+- **Chatbot for support**: RAG med docs
+- **Market sentiment**: AI-drevet analyse
 
 ## 📋 Optimaliserings-Checklist
 
@@ -28,11 +76,14 @@ const nextConfig = {
       'lucide-react',
       '@radix-ui/react-icons',
       'recharts',
+      '@ai-sdk/openai', // AI SDK
     ],
     // Server Actions (allerede aktivert)
     serverActions: {
       bodySizeLimit: '2mb',
     },
+    // AI features
+    dynamicIO: true,
   },
   
   // PRO: Turbopack for dev (raskere utvikling)
@@ -69,6 +120,9 @@ const nextConfig = {
     },
     "src/app/api/cron/**/route.ts": {
       "maxDuration": 300
+    },
+    "src/app/api/ai/**/route.ts": {
+      "maxDuration": 60
     }
   },
   
@@ -178,6 +232,10 @@ SUPABASE_SERVICE_ROLE_KEY=***
 NEXT_PUBLIC_SENTRY_DSN=***
 SENTRY_AUTH_TOKEN=***
 
+# AI (for Pro)
+OPENAI_API_KEY=***
+ANTHROPIC_API_KEY=***
+
 # Andre
 NEXT_PUBLIC_GA_ID=***
 ```
@@ -227,6 +285,11 @@ export default function RootLayout({ children }) {
 2. Enable "Build Cache"
 3. Konfigurer "Build Command"
 
+### Steg 5: AI & Edge Config
+1. Installer AI SDK: `npm i ai @ai-sdk/openai`
+2. Sett opp OPENAI_API_KEY i Vercel
+3. Aktiver Edge Config for feature flags
+
 ## 💰 Kostnadsestimat
 
 | Plan | Månedlig | Årlig | For Klarpakke |
@@ -239,6 +302,7 @@ export default function RootLayout({ children }) {
 - Bandwidth over 1TB: $0.40/GB
 - Function execution over 1000GB-hrs: $0.15/GB-hr
 - Edge Config writes: $0.50/1000
+- AI tokens: Avhengig av bruk
 
 ## 📊 Forventet Forbedring
 
@@ -248,6 +312,32 @@ export default function RootLayout({ children }) {
 | Function timeout | 10s | 30s |
 | Cold start | ~500ms | ~200ms |
 | Analytics | ❌ | ✅ Web Vitals |
+| AI SDK | ❌ | ✅ |
+
+## 🔧 Vercel CLI Kommandoer
+
+```bash
+# Sjekk deploys
+vercel ls
+
+# Sjekk logs
+vercel logs [project]
+
+# Sjekk env vars
+vercel env ls
+
+# Legg til env var
+vercel env add KEY
+
+# Deploy manuelt
+vercel --prod
+
+# Sjekk team
+vercel teams ls
+
+# Sjekk domener
+vercel domains ls
+```
 
 ## 🔧 Umiddelbare Optimaliseringer (uten Pro)
 
@@ -260,14 +350,16 @@ Mens vi venter på Pro:
 
 ## ✅ Neste Steg
 
-1. [ ] Test auth-fiksen i produksjon
+1. [x] Test auth-fiksen i produksjon
 2. [ ] Upgrade til Vercel Pro
 3. [ ] Konfigurer Analytics
 4. [ ] Sett opp Speed Insights
 5. [ ] Optimaliser build settings
-6. [ ] Monitor performance
+6. [ ] Implementer AI SDK for trading signals
+7. [ ] Monitor performance
 
 ---
 
 **Dokumentasjon oppdatert:** 2026-04-09
 **Ansvarlig:** Kimi
+**Status:** Venter på Pro-upgrade
