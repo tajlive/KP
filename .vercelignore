@@ -17,3 +17,8 @@ coverage/
 .vscode/
 .idea/
 *.local
+
+# Sanity Studio - React 19 compatibility issue
+# Error: createContext is not a function
+# TODO: Re-enable after Sanity updates for React 19
+src/app/studio/
