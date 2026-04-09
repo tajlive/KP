@@ -149,26 +149,25 @@ export async function GET(
     console.error("🔥 NO PKCE COOKIE FOUND - auth will fail!");
   }
 
-  try {
-    // CRITICAL FIX: Set up PKCE cookie properly before creating Supabase client
-    // Supabase SSR reads code-verifier from cookies, but it may be URL-encoded
-    if (pkceCookie) {
-      try {
-        let rawValue = decodeURIComponent(pkceCookie.value);
-        if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
-          rawValue = rawValue.slice(1, -1);
-        }
-        // Re-set the decoded cookie before creating Supabase client
-        request.cookies.set(pkceCookie.name, rawValue);
-        console.error("🔥 PKCE COOKIE DECODED:", {
-          name: pkceCookie.name,
-          decodedLength: rawValue.length,
-        });
-      } catch (e) {
-        console.error("🔥 FAILED TO DECODE PKCE COOKIE:", e);
+  // Prepare code verifier
+  let codeVerifier: string | undefined;
+  if (pkceCookie) {
+    try {
+      let rawValue = decodeURIComponent(pkceCookie.value);
+      if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
+        rawValue = rawValue.slice(1, -1);
       }
+      codeVerifier = rawValue;
+      console.error("🔥 CODE VERIFIER PREPARED:", {
+        name: pkceCookie.name,
+        length: codeVerifier.length,
+      });
+    } catch (e) {
+      console.error("🔥 FAILED TO DECODE PKCE COOKIE:", e);
     }
+  }
 
+  try {
     // Use Supabase SSR client to handle exchange and cookie setting
     const supabase = createServerClient(request, response);
 
@@ -201,15 +200,47 @@ export async function GET(
       );
     }
 
+    // CRITICAL: Manually set auth cookies if Supabase didn't set them
+    // This ensures the session persists across page loads
+    const session = data.session;
+    const existingAuthCookie = responseCookies.find(c => c.name.includes('auth-token'));
+    
+    if (!existingAuthCookie) {
+      console.error("🔥 MANUALLY SETTING AUTH COOKIES");
+      
+      // Set access token cookie
+      response.cookies.set('sb-access-token', session.access_token, {
+        domain: cookieDomain,
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+        httpOnly: false,
+        maxAge: 60 * 60, // 1 hour
+      });
+      
+      // Set refresh token cookie
+      response.cookies.set('sb-refresh-token', session.refresh_token, {
+        domain: cookieDomain,
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+        httpOnly: false,
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      });
+      
+      console.error("🔥 AUTH COOKIES SET MANUALLY");
+    }
+
     console.error(
       `✅ OAUTH SUCCESS — redirecting to ${next}`,
     );
     
     // DEBUG: Final cookie check before redirect
+    const finalCookies = response.cookies.getAll();
     console.error("🔥 FINAL RESPONSE COOKIES:", {
-      count: responseCookies.length,
-      names: responseCookies.map(c => c.name),
-      hasAuthToken: responseCookies.some(c => c.name.includes('auth-token')),
+      count: finalCookies.length,
+      names: finalCookies.map(c => c.name),
+      hasAuthToken: finalCookies.some(c => c.name.includes('auth-token') || c.name === 'sb-access-token'),
     });
     
     return response;
