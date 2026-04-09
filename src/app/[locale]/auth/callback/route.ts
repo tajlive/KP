@@ -101,6 +101,9 @@ export async function GET(
 
   // CRITICAL FIX: Decode and re-set PKCE cookie for Supabase SSR
   // The cookie value is URL-encoded and may contain quotes
+  // Use same cookie domain logic as createServerClient for consistency
+  const cookieDomain = host.includes(":") ? undefined : `.${host.replace(/^www\./, "")}`;
+  
   if (pkceCookie) {
     try {
       // Decode URL-encoded value
@@ -114,11 +117,12 @@ export async function GET(
       console.info("🔥 RE-SETTING PKCE COOKIE:", {
         name: pkceCookie.name,
         decodedLength: rawValue.length,
+        domain: cookieDomain,
       });
       
       // Re-set the cookie with decoded value
       response.cookies.set(pkceCookie.name, rawValue, {
-        domain: ".klarpakke.no",
+        domain: cookieDomain,
         path: "/",
         secure: true,
         sameSite: "none",

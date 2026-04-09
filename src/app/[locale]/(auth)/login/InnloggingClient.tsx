@@ -221,7 +221,8 @@ function InnloggingForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5 pt-2">
-            {loginError && (
+            {/* Hydration-safe: only show error after client mount */}
+            {isClient && loginError && (
               <div
                 data-testid="innlogging-error"
                 className="flex items-center gap-2 p-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800"
