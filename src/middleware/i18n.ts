@@ -10,7 +10,7 @@ export const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
 
 const handleI18nRouting = createMiddleware(routing);
 
-const CANONICAL_REDIRECTS: Record<string, string> = {
+const CANONICAL_REDIRECTS: { [key: string]: string } = {
   "/dashboard/activity": "/handelshistorikk",
   "/dashboard/trading": "/dashboard/trade",
   "/dashboard/innstillinger": "/dashboard/settings",

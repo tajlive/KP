@@ -57,10 +57,17 @@ vi.mock("@/lib/trading/executor-factory", () => ({
 }));
 
 vi.mock("@/lib/trading/risk/risk-kernel", () => ({
-  RiskKernel: vi.fn().mockImplementation(() => ({
-    validate: vi.fn().mockReturnValue({ approved: true })
-  })),
-  RiskStateManager: vi.fn(),
+  RiskKernel: vi.fn().mockImplementation(function() {
+    return {
+      checkTrade: vi.fn().mockReturnValue({ allowed: true, violations: [] })
+    };
+  }),
+  RiskStateManager: vi.fn().mockImplementation(function(equity: number) {
+    return {
+      getState: vi.fn().mockReturnValue({ equity, peakEquity: equity * 1.1 }),
+      recordTrade: vi.fn()
+    };
+  }),
   DEFAULT_RISK_LIMITS: {
     maxPositionSize: 100000,
     maxDailyLoss: 10000,
@@ -76,9 +83,31 @@ vi.mock("@/lib/trading/risk/risk-state-store", () => ({
         peakEquity: 110000,
         dailyPnl: 1000,
         openPositions: 2
+      },
+      limits: {
+        maxPositionSize: 100000,
+        maxDailyLoss: 10000,
+        maxLeverage: 2
       }
     }),
-    initializeState: vi.fn()
+    initializeState: vi.fn().mockResolvedValue({
+      state: {
+        equity: 100000,
+        peakEquity: 110000,
+        dailyPnl: 0,
+        openPositions: 0
+      },
+      limits: {
+        maxPositionSize: 100000,
+        maxDailyLoss: 10000,
+        maxLeverage: 2
+      }
+    }),
+    isInCooldown: vi.fn().mockResolvedValue({ inCooldown: false, reason: null, endsAt: null }),
+    redis: {
+      set: vi.fn().mockResolvedValue('OK'),
+      get: vi.fn().mockResolvedValue(null)
+    }
   })
 }));
 
@@ -89,11 +118,13 @@ vi.mock("@/lib/trading/execution/audit-store", () => ({
 }));
 
 vi.mock("@/lib/trading/execution/execution-audit", () => ({
-  ExecutionAuditor: vi.fn().mockImplementation(() => ({
-    recordIntent: vi.fn().mockReturnValue({ id: "audit-123" }),
-    recordRejection: vi.fn(),
-    recordExecution: vi.fn()
-  })),
+  ExecutionAuditor: vi.fn().mockImplementation(function() {
+    return {
+      recordIntent: vi.fn().mockReturnValue({ id: "audit-123" }),
+      recordRejection: vi.fn(),
+      recordFill: vi.fn()
+    };
+  }),
   createL2Snapshot: vi.fn().mockReturnValue({ bids: [], asks: [] })
 }));
 
@@ -101,23 +132,31 @@ vi.mock("@/lib/trading/execution/execution-audit", () => ({
 import { executeTradeSafe } from "./execute-trade-safe";
 
 describe("executeTradeSafe (P0 Critical)", () => {
-  const mockSupabase = {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({ 
-        eq: vi.fn(() => ({ 
-          maybeSingle: vi.fn().mockResolvedValue({ data: null })
-        })) 
-      })),
-      insert: vi.fn(() => ({ 
+  const createMockSupabase = () => ({
+    from: vi.fn((table: string) => {
+      // Default response for all tables
+      return {
         select: vi.fn(() => ({ 
-          single: vi.fn().mockResolvedValue({ 
-            data: { id: "trade-123" }, 
-            error: null 
-          })
-        }))
-      })),
-    })),
-  };
+          eq: vi.fn(() => ({ 
+            maybeSingle: vi.fn().mockResolvedValue({ data: null })
+          })),
+          // For risk_state count check
+          count: vi.fn().mockResolvedValue({ count: 0, error: null }),
+        })),
+        insert: vi.fn(() => ({ 
+          select: vi.fn(() => ({ 
+            single: vi.fn().mockResolvedValue({ 
+              data: { id: "trade-123" }, 
+              error: null 
+            })
+          }))
+        })),
+        upsert: vi.fn().mockResolvedValue({ error: null }),
+      };
+    }),
+  });
+  
+  let mockSupabase = createMockSupabase();
 
   const validTradeRequest = {
     userId: "user-123",
@@ -130,13 +169,50 @@ describe("executeTradeSafe (P0 Critical)", () => {
     mode: "paper" as const
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    mockSupabase = createMockSupabase();
     
     // Default: all systems GO (safe state)
     mockKillSwitchStatus.mockReturnValue({ activated: false });
     mockIsTradingAllowed.mockResolvedValue({ allowed: true, reason: null });
     mockCheckOutboxHealth.mockResolvedValue({ healthy: true });
+    
+    // Reset risk-state-store mock to default implementation
+    const { getRiskStateStore } = await import("@/lib/trading/risk/risk-state-store");
+    (getRiskStateStore as any).mockReturnValue({
+      getState: vi.fn().mockResolvedValue({
+        state: {
+          equity: 100000,
+          peakEquity: 110000,
+          dailyPnl: 1000,
+          openPositions: 2
+        },
+        limits: {
+          maxPositionSize: 100000,
+          maxDailyLoss: 10000,
+          maxLeverage: 2
+        }
+      }),
+      initializeState: vi.fn().mockResolvedValue({
+        state: {
+          equity: 100000,
+          peakEquity: 110000,
+          dailyPnl: 0,
+          openPositions: 0
+        },
+        limits: {
+          maxPositionSize: 100000,
+          maxDailyLoss: 10000,
+          maxLeverage: 2
+        }
+      }),
+      isInCooldown: vi.fn().mockResolvedValue({ inCooldown: false, reason: null, endsAt: null }),
+      redis: {
+        set: vi.fn().mockResolvedValue('OK'),
+        get: vi.fn().mockResolvedValue(null)
+      }
+    });
   });
 
   describe("🛡️ Safe-by-Default", () => {
@@ -144,6 +220,10 @@ describe("executeTradeSafe (P0 Critical)", () => {
       // Arrange
       mockKillSwitchStatus.mockReturnValue({ 
         activated: true, 
+        reason: "market_volatility" 
+      });
+      mockIsTradingAllowed.mockResolvedValue({ 
+        allowed: false, 
         reason: "market_volatility" 
       });
 
@@ -173,6 +253,9 @@ describe("executeTradeSafe (P0 Critical)", () => {
 
     it("P0-SAFE-03: SKAL avvise trade hvis audit feiler", async () => {
       // Arrange
+      const originalValue = process.env.AUDIT_FAIL_BLOCK;
+      process.env.AUDIT_FAIL_BLOCK = 'true';
+      
       const { getAuditStore } = await import("@/lib/trading/execution/audit-store");
       (getAuditStore as any).mockReturnValue({
         persist: vi.fn().mockResolvedValue({ success: false, error: "DB error" })
@@ -180,6 +263,9 @@ describe("executeTradeSafe (P0 Critical)", () => {
 
       // Act
       const result = await executeTradeSafe(mockSupabase as any, validTradeRequest);
+      
+      // Restore env
+      process.env.AUDIT_FAIL_BLOCK = originalValue;
 
       // Assert
       expect(result.success).toBe(false);

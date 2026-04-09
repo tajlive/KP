@@ -82,7 +82,7 @@ export async function createSimulation(
       status: 'active',
       started_at: new Date().toISOString(),
       trading_pair: 'BTC/USDT',
-    })
+    } as any)
     .select()
     .single();
 
@@ -139,7 +139,7 @@ export async function updateSimulation(
   updates: Partial<PaperSimulation>
 ): Promise<boolean> {
   // Map PaperSimulation fields to trading_sessions fields
-  const dbUpdates: Record<string, unknown> = {};
+  const dbUpdates: { [key: string]: unknown } = {};
   
   if (updates.current_balance !== undefined) dbUpdates.current_capital = updates.current_balance;
   if (updates.total_pnl !== undefined) dbUpdates.total_pnl = updates.total_pnl;
@@ -150,7 +150,7 @@ export async function updateSimulation(
   
   const { error } = await supabase
     .from('trading_sessions')
-    .update({ ...dbUpdates, updated_at: new Date().toISOString() })
+    .update({ ...dbUpdates, updated_at: new Date().toISOString() } as any)
     .eq('id', simulationId);
 
   if (error) {
@@ -171,7 +171,7 @@ export async function endSimulation(simulationId: string): Promise<boolean> {
       status: 'stopped',
       stopped_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', simulationId);
 
   if (error) {
@@ -193,7 +193,7 @@ export async function createTrade(
     .from('trades')
     .insert({
       session_id: simulationId,
-      user_id: (trade.metadata as { user_id?: string })?.user_id ?? '',
+      user_id: (trade.metadata as { user_id?: string } as any)?.user_id ?? '',
       trading_pair: trade.symbol,
       side: trade.side === 'LONG' ? 'buy' : 'sell',
       quantity: trade.quantity,
@@ -233,7 +233,7 @@ export async function closeTrade(
       status: 'executed',
       closed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('id', tradeId);
 
   if (error) {
@@ -293,7 +293,7 @@ export async function saveBacktestResult(
       started_at: backtestResult.start_date,
       stopped_at: backtestResult.end_date,
       trading_pair: backtestResult.symbol,
-    })
+    } as any)
     .select()
     .single();
 
@@ -382,7 +382,7 @@ export interface SavedStrategy {
 export async function saveStrategy(strategy: SavedStrategy): Promise<SavedStrategy | null> {
   const { data, error } = await supabase
     .from('saved_strategies')
-    .insert(strategy)
+    .insert(strategy as any)
     .select()
     .single();
 

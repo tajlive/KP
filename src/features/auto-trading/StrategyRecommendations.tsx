@@ -376,13 +376,13 @@ function MetricCard({
 
 // Risk Badge Component
 function RiskBadge({ level }: { level: string }) {
-  const colors: Record<string, string> = {
+  const colors: { [key: string]: string } = {
     'conservative': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     'balanced': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     'aggressive': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   };
   
-  const labels: Record<string, string> = {
+  const labels: { [key: string]: string } = {
     'conservative': 'Konservativ',
     'balanced': 'Balansert',
     'aggressive': 'Aggressiv',

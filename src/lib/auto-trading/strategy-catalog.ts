@@ -150,7 +150,7 @@ export function enrichStrategyConfigForSession(
   const rl = RISK_LEVELS[key];
   const opt = optProfile(strategyType);
 
-  const base: Record<string, unknown> = {
+  const base: { [key: string]: unknown } = {
     ...userConfig,
     risk_level_key: key,
     trailing_stop_pct: userConfig.trailing_stop_pct ?? rl.trailing_stop_pct,

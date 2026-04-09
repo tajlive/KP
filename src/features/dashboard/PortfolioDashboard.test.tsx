@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import PortfolioDashboard from "./PortfolioDashboard";
 
-const dashboardT: Record<string, string> = {
+const dashboardT: { [key: string]: string } = {
   "portfolioHero.balanceLabel": "Porteføljesaldo (NOK)",
   "portfolioHero.pnlHint": "Resultat",
   "portfolioHero.footerHint": "Under: posisjoner og handler.",

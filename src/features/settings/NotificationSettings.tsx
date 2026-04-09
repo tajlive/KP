@@ -102,7 +102,7 @@ export default function NotificationSettings() {
                         user_id: user.id,
                         ...newPrefs,
                         updated_at: new Date().toISOString(),
-                    })
+                    } as any)
                 
                 if (error) throw error
                 setPrefs(newPrefs)
@@ -175,14 +175,14 @@ export default function NotificationSettings() {
                 endpoint: subscription.endpoint,
                 p256dh: keys.p256dh,
                 auth: keys.auth
-            })
+            } as any)
 
             // Create notification preferences if not exists
             await supabase.from('notification_preferences').upsert({
                 user_id: user.id,
                 ...prefs,
                 push_notifications: true,
-            })
+            } as any)
         }
 
         setIsSubscribed(true)

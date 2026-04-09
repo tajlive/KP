@@ -108,7 +108,7 @@ export function createCircuitBreakerAlert(
 }
 
 function getCircuitBreakerTitle(check: CircuitBreakerCheck): string {
-  const titles: Record<string, string> = {
+  const titles: { [key: string]: string } = {
     account_drawdown: 'Trading Stoppet - Kritisk Drawdown',
     strategy_drawdown: 'Strategi Pauset - Høy Drawdown',
     consecutive_losses: 'Trading Pauset - Tap på Rad',

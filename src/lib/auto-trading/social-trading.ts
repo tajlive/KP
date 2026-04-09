@@ -30,7 +30,7 @@ export async function followStrategy(
       trading_capital_nok: capitalNok,
       is_enabled: true,
       phase: "paper", // Start alltid i paper trading for nye følgere
-    })
+    } as any)
     .select()
     .single();
 
@@ -46,7 +46,7 @@ export async function followStrategy(
       starting_capital_nok: capitalNok,
       current_capital_nok: capitalNok,
       status: "ACTIVE",
-    });
+    } as any);
 
   if (sessionError) throw sessionError;
 

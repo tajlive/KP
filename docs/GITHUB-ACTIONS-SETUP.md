@@ -2,9 +2,11 @@
 
 > **⚠️ Primær referanse:** Se [.github/GITHUB_SETUP.md](../.github/GITHUB_SETUP.md) for oppdatert oppsett (mars 2026).
 > **Feilsøking:** Se [docs/GITHUB-ACTIONS-TROUBLESHOOTING.md](./GITHUB-ACTIONS-TROUBLESHOOTING.md).
+> **Dependency Update:** Se [SERVICE-DOCS-UPDATE-2026-04-09.md](./SERVICE-DOCS-UPDATE-2026-04-09.md)
 
 **Status**: Workflows klare for aktivering
-**Siste oppdatering**: 2026-01-31
+**Siste oppdatering**: 9. April 2026
+**Node.js:** 24.14.1
 
 ---
 

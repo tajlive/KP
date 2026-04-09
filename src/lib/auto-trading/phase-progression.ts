@@ -199,7 +199,7 @@ export function getAllPhases() {
 // ============================================================
 
 /** Legacy display names → tier slug (én kilde: @/lib/pricing/tiers) */
-const LEGACY_TIER_MAP: Record<string, string> = {
+const LEGACY_TIER_MAP: { [key: string]: string } = {
   Komplett: "master",
   Pro: "phd",
 };

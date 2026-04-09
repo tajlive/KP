@@ -10,7 +10,7 @@ export interface CoinPrice {
   lastUpdated: Date;
 }
 
-const COIN_NAMES: Record<string, string> = {
+const COIN_NAMES: { [key: string]: string } = {
   BTCUSDT: "Bitcoin",
   ETHUSDT: "Ethereum",
   SOLUSDT: "Solana",

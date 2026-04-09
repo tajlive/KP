@@ -1,6 +1,10 @@
 # Vercel Dashboard – Sjekkliste og optimalisering
 
-**Sist oppdatert:** 2026-03-21
+**Sist oppdatert:** 9. April 2026
+**Next.js:** 16.2.3
+**Node.js:** 24.14.1
+
+> **⚠️ Viktig:** Next.js 16 bruker nå Turbopack som default. Se [SERVICE-DOCS-UPDATE-2026-04-09.md](./SERVICE-DOCS-UPDATE-2026-04-09.md) for detaljer.
 
 Komplett oversikt over anbefalte innstillinger for Klarpakke på Vercel. Gå gjennom hver seksjon i [Vercel Dashboard](https://vercel.com) → klarpakke → Settings.
 

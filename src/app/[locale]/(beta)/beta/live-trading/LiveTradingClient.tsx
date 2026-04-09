@@ -197,7 +197,7 @@ export default function LiveTradingClient({
       .select("currency, balance")
       .eq("user_id", user.id);
     if (data) {
-      const balMap: Record<string, number> = {};
+      const balMap: { [key: string]: number } = {};
       data.forEach((w: { currency: string; balance: number }) => {
         balMap[w.currency] = w.balance;
       });

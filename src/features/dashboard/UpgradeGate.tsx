@@ -12,7 +12,7 @@ interface UpgradeGateProps {
   children: ReactNode;
 }
 
-const TIER_LEVELS: Record<string, number> = {
+const TIER_LEVELS: { [key: string]: number } = {
   student: 0,
   bachelor: 1,
   master: 2,

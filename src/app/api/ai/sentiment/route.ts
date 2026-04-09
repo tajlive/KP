@@ -48,7 +48,7 @@ export async function GET(_req: NextRequest) {
     const value = parseInt(latest.value, 10);
     
     // Map classification to Norwegian
-    const classificationMap: Record<string, string> = {
+    const classificationMap: { [key: string]: string } = {
       "Extreme Fear": "Ekstrem frykt",
       "Fear": "Frykt",
       "Neutral": "Nøytral",

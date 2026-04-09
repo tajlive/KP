@@ -142,7 +142,7 @@ export async function validateFormData<T>(
     return [validated as T, null];
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const fieldErrors: Record<string, string> = {};
+      const fieldErrors: { [key: string]: string } = {};
       error.issues.forEach((issue) => {
         const path = issue.path.join('.');
         fieldErrors[path] = issue.message;

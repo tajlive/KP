@@ -73,7 +73,7 @@ export async function checkRebalanceNeeded(
     ) + (session.current_capital_nok || 0);
 
   // Group by symbol
-  const symbolValues: Record<string, number> = {};
+  const symbolValues: { [key: string]: number } = {};
   for (const pos of positions) {
     const p = pos as {
       amount?: number;
@@ -345,7 +345,7 @@ export async function canAccessFeature(
   const status = await checkEducationStatus(userId, sessionId);
 
   // Map features to required levels
-  const featureLevels: Record<string, number> = {
+  const featureLevels: { [key: string]: number } = {
     paper_trading: 1,
     auto_trading_conservative: 2,
     auto_trading_balanced: 3,

@@ -142,7 +142,7 @@ function checkCopyTradingEligibility(
   }
 
   // Check subscription tier
-  const tierLevels: Record<string, number> = {
+  const tierLevels: { [key: string]: number } = {
     free: 0,
     student: 1,
     bachelor: 2,

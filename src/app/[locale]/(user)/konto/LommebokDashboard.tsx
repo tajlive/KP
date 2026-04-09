@@ -116,7 +116,7 @@ export function LommebokDashboard() {
     const json = (await res.json()) as Partial<BinancePricesResponse> & { error?: string };
     if (!res.ok) throw new Error(json.error ?? "Failed to load prices");
 
-    const map: Record<string, number> = {};
+    const map: { [key: string]: number } = {};
     for (const row of json.prices ?? []) {
       if (!row || typeof row.symbol !== "string") continue;
       if (typeof row.price !== "number" || !Number.isFinite(row.price) || row.price <= 0) continue;

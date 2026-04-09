@@ -128,7 +128,7 @@ async function startTrial(userId: string): Promise<TrialStatus> {
     .update({
       trial_started_at: now.toISOString(),
       trial_expires_at: expiresAt.toISOString(),
-    } as Record<string, string>)
+    } as any)
     .eq('id', userId);
   
   if (error) {
@@ -151,7 +151,7 @@ async function startTrial(userId: string): Promise<TrialStatus> {
       user_id: userId,
       event_type: 'trial_started',
       event_data: { trial_days: 14, expires_at: expiresAt.toISOString() },
-    });
+    } as any);
   } catch (logError) {
     console.error('Failed to log trial start:', logError);
   }

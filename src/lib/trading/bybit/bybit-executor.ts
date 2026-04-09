@@ -170,7 +170,7 @@ export class BybitExecutor {
     const payload = method === 'GET' ? queryString : JSON.stringify(params || {});
     const signature = this.generateSignature(timestamp, payload);
     
-    const headers: Record<string, string> = {
+    const headers: { [key: string]: string } = {
       'X-BAPI-API-KEY': this.config.apiKey,
       'X-BAPI-TIMESTAMP': timestamp,
       'X-BAPI-SIGN': signature,
@@ -506,7 +506,7 @@ export class BybitExecutor {
    * Get open positions
    */
   async getPositions(symbol?: string): Promise<Position[]> {
-    const params: Record<string, string> = { category: 'linear' };
+    const params: { [key: string]: string } = { category: 'linear' };
     if (symbol) params.symbol = symbol;
     
     const result = await this.request<{

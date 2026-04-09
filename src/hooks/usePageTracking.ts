@@ -77,7 +77,7 @@ async function trackPageView(data: PageViewData) {
 }
 
 // Track custom event
-async function trackEvent(eventType: string, eventData: Record<string, unknown> = {}) {
+async function trackEvent(eventType: string, eventData: { [key: string]: unknown } = {}) {
   try {
     const sessionId = getSessionId();
     const visitorId = getVisitorId();
@@ -225,7 +225,7 @@ export function usePageTracking() {
   }, [pathname, user?.id]);
 
   // Return tracking utilities
-  const trackClick = useCallback((elementName: string, additionalData: Record<string, unknown> = {}) => {
+  const trackClick = useCallback((elementName: string, additionalData: { [key: string]: unknown } = {}) => {
     trackEvent('click', {
       element: elementName,
       page_path: pathname,

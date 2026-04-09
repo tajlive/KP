@@ -207,7 +207,7 @@ export async function GET(request: NextRequest) {
 function processTrendData(data: Array<{ created_at: string }>) {
   if (!data || data.length === 0) return [];
 
-  const trend: Record<string, number> = {};
+  const trend: { [key: string]: number } = {};
   data.forEach((item) => {
     const date = new Date(item.created_at).toISOString().split("T")[0];
     trend[date] = (trend[date] || 0) + 1;
@@ -225,7 +225,7 @@ function processTradingVolume(
 ) {
   if (!trades || trades.length === 0) return [];
 
-  const volume: Record<string, number> = {};
+  const volume: { [key: string]: number } = {};
 
   // Initialize all dates with 0
   const days = Math.ceil(

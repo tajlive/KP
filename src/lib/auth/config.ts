@@ -81,7 +81,7 @@ export const SUPPORTED_PROVIDERS = {
 } as const;
 
 // Provider display names (Norwegian)
-export const PROVIDER_NAMES: Record<string, string> = {
+export const PROVIDER_NAMES: { [key: string]: string } = {
   google: "Google",
   azure: "Microsoft",
   linkedin: "LinkedIn",
@@ -114,7 +114,7 @@ export const OAUTH_CONFIG: Record<
 };
 
 // Error messages (Norwegian)
-export const AUTH_ERRORS: Record<string, string> = {
+export const AUTH_ERRORS: { [key: string]: string } = {
   no_code: "Ingen autorisasjonskode mottatt fra leverandør.",
   exchange_failed:
     "Google-innlogging feilet (sjekk at informasjonskapsler ikke blokkeres, eller prøv e-post/passord).",

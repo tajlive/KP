@@ -160,7 +160,7 @@ export default function ClientStudentsPage() {
     });
   };
 
-  const roleColors: Record<string, string> = {
+  const roleColors: { [key: string]: string } = {
     admin: "bg-emerald-500/20 text-emerald-400",
     analyst: "bg-blue-500/20 text-blue-400",
     trader: "bg-emerald-500/20 text-emerald-400",

@@ -4,7 +4,7 @@ import { generateText } from "ai";
 
 export const maxDuration = 20;
 
-const STRATEGY_NAMES: Record<string, string> = {
+const STRATEGY_NAMES: { [key: string]: string } = {
   dca: "DCA (Dollar Cost Averaging)",
   grid: "Grid Trading",
   momentum: "Momentum",

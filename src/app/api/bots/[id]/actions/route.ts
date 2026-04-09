@@ -60,7 +60,7 @@ export const POST = withRateLimit(
     }
 
     // trading_sessions: strategy_id er korrekt FK (config_id finnes ikke i schema)
-    const sessionStatusMap: Record<string, string> = {
+    const sessionStatusMap: { [key: string]: string } = {
       pause: "PAUSED",
       resume: "ACTIVE",
       stop: "STOPPED",

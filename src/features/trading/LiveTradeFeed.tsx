@@ -83,7 +83,7 @@ const MOCK_TRADES: LiveTrade[] = [
   },
 ];
 
-const COUNTRY_FLAGS: Record<string, string> = {
+const COUNTRY_FLAGS: { [key: string]: string } = {
   NO: "🇳🇴",
   SE: "🇸🇪",
   DK: "🇩🇰",

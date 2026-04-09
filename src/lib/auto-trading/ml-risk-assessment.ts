@@ -124,7 +124,7 @@ class TradeRiskModel {
   
   private scoreTrendAlignment(features: TradeFeatures): number {
     // Score based on how well signal aligns with market regime
-    const regimeScores: Record<string, number> = {
+    const regimeScores: { [key: string]: number } = {
       bull: features.recentCandles > 0 ? 0.9 : 0.4,
       bear: features.recentCandles < 0 ? 0.9 : 0.4,
       sideways: 0.6,
@@ -135,7 +135,7 @@ class TradeRiskModel {
   
   private scoreVolatility(features: TradeFeatures): number {
     // Prefer normal volatility, penalize extremes
-    const scores: Record<string, number> = {
+    const scores: { [key: string]: number } = {
       low: 0.7,
       normal: 1.0,
       high: 0.6,
@@ -152,7 +152,7 @@ class TradeRiskModel {
   }
   
   private scoreVolume(features: TradeFeatures): number {
-    const scores: Record<string, number> = {
+    const scores: { [key: string]: number } = {
       low: 0.5,
       normal: 0.8,
       high: 1.0

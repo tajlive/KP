@@ -107,12 +107,15 @@ const commonGlobals = {
 
 /** @type {import('eslint').Linter.Config[]} */
 const eslintConfig = [
-  // Next.js – først slik at Next build sin plugin-sjekk ser @next/next tidlig i config
-  nextPlugin.flatConfig.coreWebVitals,
+  // Next.js - ESLint 10 compatible config
   {
-    name: "nextjs-overrides",
+    name: "nextjs-core",
+    plugins: {
+      "@next/next": nextPlugin,
+    },
     settings: { next: { rootDir: "." } },
     rules: {
+      ...nextPlugin.configs.recommended.rules,
       "@next/next/no-img-element": "warn",
       "@next/next/no-html-link-for-pages": "off",
     },

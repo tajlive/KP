@@ -22,7 +22,7 @@ export interface Order {
 }
 
 export class SimulatorEngine {
-  private prices: Record<string, number> = {};
+  private prices: { [key: string]: number } = {};
   private positions: Position[] = [];
   private orders: Order[] = [];
   readonly history = new HistoryStore();

@@ -53,7 +53,7 @@ export class RateLimitError extends AppError {
 // ERROR MESSAGES
 // ============================================================
 
-const ERROR_MESSAGES: Record<string, string> = {
+const ERROR_MESSAGES: { [key: string]: string } = {
   'VALIDATION_ERROR': 'Please check your input and try again',
   'AUTH_ERROR': 'You need to log in to continue',
   'NOT_FOUND': 'The resource you are looking for was not found',

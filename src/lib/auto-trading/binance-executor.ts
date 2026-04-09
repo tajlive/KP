@@ -363,8 +363,7 @@ export async function executeTrade(
             status: "paused",
             pause_reason: circuitCheck.triggered,
             updated_at: new Date().toISOString(),
-          })
-          .eq("id", sessionId);
+          } as any).eq("id", sessionId);
       }
 
       return {
@@ -614,8 +613,7 @@ export async function executeTrade(
       .update({
         total_trades: (sessionRow.total_trades || 0) + 1,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", sessionId);
+      } as any).eq("id", sessionId);
 
     const tradeRow = trade as AutoTradingTradeRow | null;
 
@@ -703,7 +701,7 @@ export async function closeTrade(
     const pnlPercent = (pnl / (trade.position_value_nok || 1)) * 100;
 
     // Map reason to close_reason enum
-    const closeReasonMap: Record<string, string> = {
+    const closeReasonMap: { [key: string]: string } = {
       STOP_LOSS: "stop_loss",
       TAKE_PROFIT: "take_profit",
       TRAILING_STOP: "stop_loss",
@@ -721,8 +719,7 @@ export async function closeTrade(
         pnl_pct: pnlPercent,
         closed_at: new Date().toISOString(),
         close_reason: closeReasonMap[reason] ?? "manual",
-      })
-      .eq("id", trade.id);
+      } as any).eq("id", trade.id);
 
     // Update session balance
     const { data: session } = await supabase
@@ -750,8 +747,7 @@ export async function closeTrade(
               ? (sessionRow.losing_trades || 0) + 1
               : sessionRow.losing_trades,
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", trade.session_id);
+        } as any).eq("id", trade.session_id);
     }
 
     // Create notification
@@ -847,8 +843,7 @@ async function checkPhaseProgression(
   if (canProgress && newPhase !== sessionRow.phase) {
     await supabase
       .from("user_auto_trading_configs")
-      .update({ phase: newPhase })
-      .eq("id", sessionRow.config_id);
+      .update({ phase: newPhase } as any).eq("id", sessionRow.config_id);
 
     await supabase.from("notifications").insert({
       user_id: userId,
@@ -968,7 +963,7 @@ function calculateATRFromKlines(
  * Conservative=2.5 (wider), Balanced=2.0, Aggressive=1.5 (tighter)
  */
 function getTrailingStopATRMultiplier(riskLevel: string | undefined): number {
-  const multipliers: Record<string, number> = {
+  const multipliers: { [key: string]: number } = {
     conservative: 2.5,
     moderate: 2.0,
     balanced: 2.0,
@@ -1201,8 +1196,8 @@ export async function syncOpenTrades(userId: string): Promise<void> {
   const typedOpenTrades = (openTrades ||
     []) as unknown as AutoTradingTradeRow[];
   const symbols = [...new Set(typedOpenTrades.map((t) => t.symbol))];
-  const prices: Record<string, number> = {};
-  const atrBySymbol: Record<string, number> = {};
+  const prices: { [key: string]: number } = {};
+  const atrBySymbol: { [key: string]: number } = {};
 
   for (const symbol of symbols) {
     try {
@@ -1225,7 +1220,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
 
   // Build session -> risk_level map for ATR multiplier
   const sessionIds = [...new Set(typedOpenTrades.map((t) => t.session_id))];
-  const sessionRiskLevel: Record<string, string> = {};
+  const sessionRiskLevel: { [key: string]: string } = {};
   for (const sessionId of sessionIds) {
     const { data: sessionData } = await supabase
       .from("trading_sessions")

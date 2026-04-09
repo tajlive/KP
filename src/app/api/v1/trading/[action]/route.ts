@@ -417,8 +417,7 @@ async function handleTrigger(
       action,
       mode,
       status: "ACTIVE",
-    })
-    .select()
+    } as any).select()
     .single();
 
   if (error) {
@@ -433,7 +432,7 @@ async function handleTrigger(
     success: true,
     trigger,
     mode,
-  });
+  } as any);
 }
 
 /**
@@ -522,7 +521,7 @@ async function handleOrder(
         last_heartbeat: now,
         created_at: now,
         updated_at: now,
-      })
+      } as any)
       .select("id")
       .single();
     
@@ -553,7 +552,7 @@ async function handleOrder(
       created_at: new Date().toISOString(),
       // idempotency_key is required per schema
       idempotency_key: `${user.id}-${Date.now()}-${Math.random().toString(36).substring(7)}`,
-    })
+    } as any)
     .select()
     .single();
 
@@ -870,7 +869,7 @@ async function handleCreateSession(
         last_heartbeat: now,
         created_at: now,
         updated_at: now,
-      })
+      } as any)
       .select()
       .single();
 

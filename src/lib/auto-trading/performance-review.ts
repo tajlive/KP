@@ -671,7 +671,7 @@ function getMarketImpactDescription(
   regime: string,
   metrics: PerformanceMetrics,
 ): string {
-  const regimeDescriptions: Record<string, string> = {
+  const regimeDescriptions: { [key: string]: string } = {
     bull: "Bull marked har hjulpet avkastningen",
     bear: "Bear marked har utfordret strategien",
     sideways: "Sideways marked har gitt begrenset avkastning",

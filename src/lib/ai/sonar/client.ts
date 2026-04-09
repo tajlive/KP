@@ -199,7 +199,7 @@ async function makeSonarRequest(
   const searchContext = getSearchContextForMode(options.mode);
   const timeout = getTimeout(options.timeoutMs);
 
-  const requestBody: Record<string, unknown> = {
+  const requestBody: { [key: string]: unknown } = {
     model,
     messages: [
       {

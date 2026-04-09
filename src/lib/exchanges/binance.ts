@@ -150,7 +150,7 @@ export class BinanceService {
     requiresAuth: boolean = false
   ): Promise<T> {
     const timestamp = Date.now();
-    const queryParams: Record<string, string> = {
+    const queryParams: { [key: string]: string } = {
       timestamp: timestamp.toString(),
     };
 
@@ -166,7 +166,7 @@ export class BinanceService {
     
     const url = `${this.baseUrl}${endpoint}?${queryString}&signature=${signature}`;
 
-    const headers: Record<string, string> = {
+    const headers: { [key: string]: string } = {
       'X-MBX-APIKEY': this.apiKey,
       'Content-Type': 'application/json',
     };
@@ -292,7 +292,7 @@ export class BinanceService {
    * Get all open orders
    */
   async getOpenOrders(symbol?: string): Promise<BinanceOrderStatus[]> {
-    const params: Record<string, string> = {};
+    const params: { [key: string]: string } = {};
     if (symbol) {
       params.symbol = symbol;
     }

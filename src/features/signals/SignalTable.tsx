@@ -29,7 +29,7 @@ const filterLabels: Record<FilterType, string> = {
   rejected: "Avslått",
 };
 
-const statusLabels: Record<string, string> = {
+const statusLabels: { [key: string]: string } = {
   pending: "Venter",
   approved: "Godkjent",
   rejected: "Avslått",
@@ -84,7 +84,7 @@ export default function SignalTable({
   };
 
   const getStatusBadgeClass = (status: string | undefined) => {
-    const classes: Record<string, string> = {
+    const classes: { [key: string]: string } = {
       pending: "kp-badge-pending",
       approved: "kp-badge-approved",
       rejected: "kp-badge-rejected",
