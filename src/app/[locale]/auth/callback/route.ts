@@ -43,7 +43,7 @@ export async function GET(
     c.name.includes('verifier')
   );
 
-  console.info("🔥 CALLBACK DEBUG:", {
+  console.error("🔥 CALLBACK DEBUG:", {
     code: code ? `${code.slice(0, 20)}...` : "MISSING",
     error,
     statePrefix: state?.slice(0, 10) ?? "MISSING",
@@ -104,7 +104,7 @@ export async function GET(
   // Use same cookie domain logic as createServerClient for consistency
   const cookieDomain = host.includes(":") ? undefined : `.${host.replace(/^www\./, "")}`;
   
-  console.info("🔥 COOKIE CONFIG:", {
+  console.error("🔥 COOKIE CONFIG:", {
     cookieDomain,
     host,
     origin,
@@ -121,7 +121,7 @@ export async function GET(
         rawValue = rawValue.slice(1, -1);
       }
       
-      console.info("🔥 RE-SETTING PKCE COOKIE:", {
+      console.error("🔥 RE-SETTING PKCE COOKIE:", {
         name: pkceCookie.name,
         decodedLength: rawValue.length,
         domain: cookieDomain,
@@ -146,13 +146,13 @@ export async function GET(
     // Use Supabase SSR client to handle exchange and cookie setting
     const supabase = createServerClient(request, response);
 
-    console.info("🔥 CALLING exchangeCodeForSession");
+    console.error("🔥 CALLING exchangeCodeForSession");
     const { data, error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
 
     // DEBUG: Log response cookies after exchange
     const responseCookies = response.cookies.getAll();
-    console.info("🔥 EXCHANGE RESULT:", {
+    console.error("🔥 EXCHANGE RESULT:", {
       success: !exchangeError,
       error: exchangeError?.message,
       errorName: exchangeError?.name,
@@ -175,12 +175,12 @@ export async function GET(
       );
     }
 
-    console.info(
+    console.error(
       `✅ OAUTH SUCCESS — redirecting to ${next}`,
     );
     
     // DEBUG: Final cookie check before redirect
-    console.info("🔥 FINAL RESPONSE COOKIES:", {
+    console.error("🔥 FINAL RESPONSE COOKIES:", {
       count: responseCookies.length,
       names: responseCookies.map(c => c.name),
       hasAuthToken: responseCookies.some(c => c.name.includes('auth-token')),
