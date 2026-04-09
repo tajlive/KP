@@ -3,6 +3,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+// Set API key BEFORE importing client (module evaluates env at load time)
+process.env.PERPLEXITY_API_KEY = 'pplx-test-key';
+
 import {
   callSonar,
   getSonarMetrics,
@@ -27,12 +31,11 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
-// Mock config
+// Mock config (retry config only, API key is set via env above)
 vi.mock('../config', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../config')>();
   return {
     ...actual,
-    SONAR_API_KEY: 'pplx-test-key',
     DEFAULT_RETRY_CONFIG: {
       maxRetries: 2,
       baseDelayMs: 100,
