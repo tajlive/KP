@@ -42,16 +42,16 @@ const nextConfig = {
   // Individual API routes can opt into edge runtime if needed
 
   // ESLint config removed - handled by eslint.config.mjs (Next.js 16 standard)
-  // Build: lint kjører under build (2026-standard). I CI som allerede kjører lint kan
-  // SKIP_LINT_IN_BUILD=true settes for å unngå dobbel lint og redusere build-tid (KLA-167).
-  eslint: {
-    ignoreDuringBuilds: true, // Always skip - we run lint separately
-  },
+  // TypeScript strict mode - build fails on errors
   typescript: {
     // TypeScript 6 strict mode - build fails on errors
     // Fixed ~70 type errors with proper typing (as any for Supabase compatibility where needed)
     ignoreBuildErrors: false,
   },
+
+  // React Compiler - Automatic memoization (Next.js 16 stable)
+  // Tidligere i experimental, nå top-level
+  reactCompiler: true,
 
   // Production optimizations
   compiler: {
@@ -176,10 +176,8 @@ const nextConfig = {
     'nunjucks',
   ],
 
-  // Experimental optimizations - DISABLED for Vercel compatibility
+  // Experimental optimizations
   experimental: {
-    // React Compiler - Automatic memoization (Next.js 16 stable)
-    reactCompiler: true,
     // Partial Prerendering - Experimental feature for faster loads
     // ppr: true, // Enable when ready to test
     // Turbopack disabled - using webpack for better compatibility
