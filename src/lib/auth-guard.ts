@@ -11,7 +11,7 @@ export async function requireAuth(locale: string = "no", nextPath?: string) {
     c.name.includes('sb-') || c.name.includes('supabase') || c.name.includes('auth')
   );
   
-  console.info("🔥 REQUIRE AUTH - COOKIES:", {
+  console.error("🔥 REQUIRE AUTH - COOKIES:", {
     totalCookies: allCookies.length,
     authCookieNames: authCookies.map(c => c.name),
     hasAuthToken: authCookies.some(c => c.name.includes('auth-token')),
@@ -25,7 +25,7 @@ export async function requireAuth(locale: string = "no", nextPath?: string) {
     error,
   } = await supabase.auth.getUser();
 
-  console.info("🔥 REQUIRE AUTH - RESULT:", {
+  console.error("🔥 REQUIRE AUTH - RESULT:", {
     hasUser: !!user,
     userId: user?.id?.slice(0, 8),
     error: error?.message,
