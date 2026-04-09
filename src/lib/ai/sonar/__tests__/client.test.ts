@@ -5,7 +5,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Set API key BEFORE importing client (module evaluates env at load time)
-process.env.PERPLEXITY_API_KEY = 'pplx-test-key';
+process.env.PERPLEXITY_API_KEY = 'pplx-test-key-ci';
 
 import {
   callSonar,
@@ -95,7 +95,7 @@ describe('callSonar', () => {
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          'Authorization': 'Bearer pplx-test-key',
+          'Authorization': 'Bearer pplx-test-key-ci',
           'Content-Type': 'application/json',
         }),
         body: expect.stringContaining('Test prompt'),
