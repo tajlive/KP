@@ -2,6 +2,7 @@ import { getAppUrl } from "@/lib/auth/config";
 import { handleVippsCallback } from "@/lib/auth/vipps-callback";
 import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { handleOAuthError, getErrorRedirectUrl } from "./error-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -56,11 +57,17 @@ export async function GET(
     requestHost: host,
   });
 
+  // 🚨 HANDLE OAUTH ERRORS FROM PROVIDER (Google, etc.)
   if (error) {
     console.error("🔥 OAUTH PROVIDER ERROR:", error);
-    return NextResponse.redirect(
-      new URL(`/${locale}/innlogging?error=${error}`, origin),
-    );
+    
+    // Use our error handler for user-friendly messages
+    const errorResult = handleOAuthError(error, locale);
+    console.error("🔥 ERROR DETAILS:", errorResult);
+    
+    // Redirect to login with error info
+    const errorUrl = getErrorRedirectUrl(errorResult, locale, origin);
+    return NextResponse.redirect(errorUrl, { status: 302 });
   }
 
   if (!code) {

@@ -100,11 +100,25 @@ function InnloggingForm() {
 
   const errorParam = searchParams?.get("error");
   const detailParam = searchParams?.get("detail");
+  const messageParam = searchParams?.get("message");
+  const fixParam = searchParams?.get("fix");
+
+  // Parse fix instructions from URL
+  const fixInstructions = (() => {
+    if (!fixParam) return [];
+    try {
+      const parsed = JSON.parse(decodeURIComponent(fixParam));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  })();
 
   useEffect(() => {
     if (errorParam) {
-      let errorMessage = getAuthErrorMessage(errorParam);
-      if (detailParam && typeof detailParam === "string") {
+      // Use user-friendly message from OAuth error handler if available
+      let errorMessage = messageParam || getAuthErrorMessage(errorParam);
+      if (detailParam && typeof detailParam === "string" && !messageParam) {
         try {
           const decoded = decodeURIComponent(detailParam);
           if (decoded && decoded.length < 200) errorMessage += ` (${decoded})`;
@@ -115,7 +129,7 @@ function InnloggingForm() {
       setLoginError(errorMessage || t("loginError"));
       setStatus("login_error");
     }
-  }, [errorParam, detailParam, t]);
+  }, [errorParam, detailParam, messageParam, t]);
 
   const next = searchParams?.get("next") as string | null;
   const rawRedirect = next || searchParams?.get("redirectTo") || null;
@@ -225,10 +239,28 @@ function InnloggingForm() {
             {isClient && loginError && (
               <div
                 data-testid="innlogging-error"
-                className="flex items-center gap-2 p-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800"
+                className={`p-4 text-sm rounded-xl border ${
+                  fixInstructions.length > 0
+                    ? "bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800"
+                    : "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
+                }`}
               >
-                <AlertCircle className="w-5 h-5 shrink-0" />
-                <span>{loginError}</span>
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                  <div className="space-y-2">
+                    <span className="font-medium">{loginError}</span>
+                    {fixInstructions.length > 0 && (
+                      <div className="pt-2 border-t border-amber-200/50 dark:border-amber-800/50">
+                        <p className="font-semibold mb-1">Hva du kan gjøre:</p>
+                        <ol className="list-decimal list-inside space-y-1 text-xs opacity-90">
+                          {fixInstructions.map((step: string, i: number) => (
+                            <li key={i}>{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 

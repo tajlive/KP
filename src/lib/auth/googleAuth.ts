@@ -27,6 +27,8 @@ export async function signInWithGoogle() {
           access_type: 'offline',
           prompt: 'consent',
         },
+        // Eksplisitt bare basic profile - ingen sensitive scopes
+        scopes: 'openid email profile',
       },
     })
 
