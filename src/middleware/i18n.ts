@@ -19,6 +19,7 @@ const CANONICAL_REDIRECTS: { [key: string]: string } = {
   "/auto-trading-ai": "/dashboard/auto-trade",
   "/innlogging": "/login",
   "/registrer": "/register",
+  "/paper": "/paper-trading",
 };
 
 export function i18nMiddleware(
@@ -50,7 +51,7 @@ export function i18nMiddleware(
   if (strippedPath === "/beta" || strippedPath.startsWith("/beta/")) {
     const url = request.nextUrl.clone();
     if (strippedPath.includes("live-trading")) {
-      url.pathname = localizedPathname(locale, "/paper");
+      url.pathname = localizedPathname(locale, "/paper-trading");
       url.searchParams.set("mode", "live");
     } else if (strippedPath.includes("auto-trade")) {
       url.pathname = localizedPathname(locale, "/dashboard/auto-trade");
