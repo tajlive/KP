@@ -104,6 +104,13 @@ export async function GET(
   // Use same cookie domain logic as createServerClient for consistency
   const cookieDomain = host.includes(":") ? undefined : `.${host.replace(/^www\./, "")}`;
   
+  console.info("🔥 COOKIE CONFIG:", {
+    cookieDomain,
+    host,
+    origin,
+    next,
+  });
+
   if (pkceCookie) {
     try {
       // Decode URL-encoded value
@@ -143,13 +150,16 @@ export async function GET(
     const { data, error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
 
+    // DEBUG: Log response cookies after exchange
+    const responseCookies = response.cookies.getAll();
     console.info("🔥 EXCHANGE RESULT:", {
       success: !exchangeError,
       error: exchangeError?.message,
       errorName: exchangeError?.name,
       hasSession: !!data?.session,
       userId: data?.session?.user?.id?.slice(0, 8),
-      responseCookies: response.cookies.getAll().map(c => c.name),
+      responseCookieCount: responseCookies.length,
+      responseCookieNames: responseCookies.map(c => c.name),
     });
 
     if (exchangeError || !data.session) {
@@ -166,8 +176,16 @@ export async function GET(
     }
 
     console.info(
-      `✅ OAUTH SUCCESS — redirecting to ${protocol}://${host}${next}`,
+      `✅ OAUTH SUCCESS — redirecting to ${next}`,
     );
+    
+    // DEBUG: Final cookie check before redirect
+    console.info("🔥 FINAL RESPONSE COOKIES:", {
+      count: responseCookies.length,
+      names: responseCookies.map(c => c.name),
+      hasAuthToken: responseCookies.some(c => c.name.includes('auth-token')),
+    });
+    
     return response;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
