@@ -42,11 +42,11 @@ describe("i18nMiddleware", () => {
     expect(res.headers.get("location")).toBe("http://localhost/dashboard");
   });
 
-  it("redirects /beta/live-trading to /paper?mode=live", async () => {
+  it("redirects /beta/live-trading to /paper-trading?mode=live", async () => {
     const req = new NextRequest(new URL("http://localhost/beta/live-trading"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe("http://localhost/paper?mode=live");
+    expect(res.headers.get("location")).toBe("http://localhost/paper-trading?mode=live");
   });
 
   it("redirects root with ?code= to /auth/callback", async () => {
