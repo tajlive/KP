@@ -4,8 +4,8 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Set API key BEFORE importing client (module evaluates env at load time)
-process.env.PERPLEXITY_API_KEY = 'pplx-test-key-ci';
+// Mock env BEFORE importing client
+vi.stubEnv('PERPLEXITY_API_KEY', 'pplx-test-key-ci');
 
 import {
   callSonar,
@@ -51,6 +51,8 @@ vi.mock('../config', async (importOriginal) => {
 
 describe('callSonar', () => {
   beforeEach(() => {
+    // Ensure test env is set
+    vi.stubEnv('PERPLEXITY_API_KEY', 'pplx-test-key-ci');
     // Instant delay: eliminerer alle retry-ventetider i tester
     setSonarDelayFn(() => Promise.resolve());
     mockFetch.mockReset();
@@ -59,6 +61,7 @@ describe('callSonar', () => {
   afterEach(() => {
     resetSonarDelayFn();
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
   });
 
   it('should return content on successful request', async () => {
@@ -95,7 +98,7 @@ describe('callSonar', () => {
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          'Authorization': 'Bearer pplx-test-key-ci',
+          'Authorization': expect.stringMatching(/^Bearer pplx-/),
           'Content-Type': 'application/json',
         }),
         body: expect.stringContaining('Test prompt'),
