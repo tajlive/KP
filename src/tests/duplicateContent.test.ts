@@ -170,12 +170,12 @@ describe('Marketing Pages - Duplicate Content Detection', () => {
   const routes = [
     // Norwegian routes
     { path: '/', name: 'Landing Page (NO)' },
-    { path: '/paper', name: 'Paper Trading Page (NO)' },
+    { path: '/paper-trading', name: 'Paper Trading Page (NO)' },
     { path: '/priser', name: 'Pricing Page (NO)' },
     { path: '/hjelp', name: 'Help Page (NO)' },
     // English routes
     { path: '/en', name: 'Landing Page (EN)' },
-    { path: '/en/paper', name: 'Paper Trading Page (EN)' },
+    { path: '/en/paper-trading', name: 'Paper Trading Page (EN)' },
     { path: '/en/pricing', name: 'Pricing Page (EN)' },
     { path: '/en/help', name: 'Help Page (EN)' },
   ];

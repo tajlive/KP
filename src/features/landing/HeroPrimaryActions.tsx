@@ -17,7 +17,7 @@ export function HeroPrimaryActions({
   const { user } = useAuth();
 
   const signupHref = hrefWithLocale(locale, "/register");
-  const paperHref = hrefWithLocale(locale, "/paper");
+  const paperHref = hrefWithLocale(locale, "/paper-trading");
   const dashboardHref = hrefWithLocale(locale, "/dashboard");
 
   if (user) {

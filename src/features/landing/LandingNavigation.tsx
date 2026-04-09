@@ -24,7 +24,7 @@ export function LandingNavigation() {
   const mainLinks = [
     { path: "/kurs", label: t("courses") },
     { path: "/auto", label: "Autotrade" },
-    { path: "/paper", label: t("paperTrading") },
+    { path: "/paper-trading", label: t("paperTrading") },
     { path: "/priser", label: t("pricing") },
   ];
 
