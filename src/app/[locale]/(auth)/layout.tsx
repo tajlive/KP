@@ -39,13 +39,16 @@ export default async function AuthLayout({
   }
 
   return (
-    <div className={`${dmSans.variable} ${instrumentSerif.variable} ${dmSans.className} font-sans antialiased bg-white min-h-screen`}>
+    <div 
+      className={`${dmSans.variable} ${instrumentSerif.variable} ${dmSans.className} font-sans antialiased bg-white min-h-screen`}
+      suppressHydrationWarning
+    >
       <NextIntlClientProvider locale={locale} messages={messages}>
         {/* NOTE: ClientSideProviders intentionally NOT used here.
             It contains ChatWidget which should only mount once in root layout.
             Auth pages don't need the global widgets (chat, PWA prompt). */}
         <AuthProvider>
-          <div className="min-h-screen flex flex-col">{children}</div>
+          <div className="min-h-screen flex flex-col" suppressHydrationWarning>{children}</div>
         </AuthProvider>
       </NextIntlClientProvider>
     </div>
