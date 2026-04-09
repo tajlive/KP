@@ -98,6 +98,10 @@ export const OAUTH_CONFIG: Record<
   }
 > = {
   google: {
+    // CRITICAL: Eksplisitte basic scopes for å unngå "unverified app" feil
+    // Hvis vi ber om sensitive scopes (gmail, drive, etc.) uten godkjenning,
+    // får brukeren "access_denied" eller "unverified app" advarsel
+    scopes: "openid email profile",
     queryParams: {
       access_type: "offline",
       prompt: "consent",
