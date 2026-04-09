@@ -41,6 +41,8 @@ env:
   NPM_CONFIG_LEGACY_PEER_DEPS: "true"
   NEXT_TELEMETRY_DISABLED: "1"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Test API key for Sonar client tests
+  PERPLEXITY_API_KEY: "pplx-test-key-ci"
 
 jobs:
   # ═══════════════════════════════════════════════════════════════

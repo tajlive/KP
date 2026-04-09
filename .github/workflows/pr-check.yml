@@ -24,6 +24,8 @@ permissions:
 # Node 24 opt-in for JS actions (checkout, setup-node, cache) — deprecation 2026
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Test API key for Sonar client tests
+  PERPLEXITY_API_KEY: "pplx-test-key-ci"
 
 jobs:
   paths:
