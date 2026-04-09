@@ -238,7 +238,7 @@ function InnloggingForm() {
               }
             >
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                {locale === "no" ? "E-post" : "Email"}
+                {t("emailLabel")}
               </p>
               <form
                 data-testid="innlogging-password-form"
@@ -356,7 +356,7 @@ function InnloggingForm() {
               </div>
               <div className="relative flex justify-center">
                 <span className="bg-white dark:bg-slate-900 px-4 text-sm text-slate-500 dark:text-slate-400">
-                  {locale === "no" ? "eller logg inn med" : "or continue with"}
+                  {t("orContinueWith")}
                 </span>
               </div>
             </div>
@@ -390,19 +390,19 @@ function InnloggingForm() {
         </Card>
 
         <p className="mt-8 text-center text-sm text-gray-500 dark:text-slate-400">
-          Ved å logge inn godtar du våre{" "}
+          {t("termsPrefix")}{" "}
           <Link
             href={`/${locale}/vilkar`}
             className={`${BRAND.link} underline underline-offset-2`}
           >
-            vilkår
+            {t("terms")}
           </Link>{" "}
-          og{" "}
+          {t("and")}{" "}
           <Link
             href={`/${locale}/personvern`}
             className={`${BRAND.link} underline underline-offset-2`}
           >
-            personvernerklæring
+            {t("privacy")}
           </Link>
         </p>
       </div>
