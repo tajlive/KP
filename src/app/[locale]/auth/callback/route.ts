@@ -208,27 +208,44 @@ export async function GET(
     if (!existingAuthCookie) {
       console.error("🔥 MANUALLY SETTING AUTH COOKIES");
       
-      // Set access token cookie
-      response.cookies.set('sb-access-token', session.access_token, {
-        domain: cookieDomain,
-        path: '/',
-        secure: true,
-        sameSite: 'none',
-        httpOnly: false,
-        maxAge: 60 * 60, // 1 hour
+      // Supabase SSR expects cookies in this format
+      const projectId = 'vuxbjlykgmzskxbclquf';
+      
+      // Set the main auth token cookie (format: sb-<project-id>-auth-token)
+      // This contains both access_token and refresh_token as JSON
+      const authTokenValue = JSON.stringify({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        expires_in: session.expires_in,
+        expires_at: session.expires_at,
+        token_type: session.token_type,
+        user: session.user,
       });
       
-      // Set refresh token cookie
-      response.cookies.set('sb-refresh-token', session.refresh_token, {
+      response.cookies.set(`sb-${projectId}-auth-token`, authTokenValue, {
         domain: cookieDomain,
         path: '/',
         secure: true,
-        sameSite: 'none',
-        httpOnly: false,
+        sameSite: 'lax',  // lax is better for OAuth redirects
+        httpOnly: false,  // must be false for client-side Supabase to read
         maxAge: 60 * 60 * 24 * 7, // 7 days
       });
       
-      console.error("🔥 AUTH COOKIES SET MANUALLY");
+      // Also set code verifier cookie removal
+      response.cookies.set(`sb-${projectId}-auth-token-code-verifier`, '', {
+        domain: cookieDomain,
+        path: '/',
+        secure: true,
+        sameSite: 'lax',
+        httpOnly: false,
+        maxAge: 0, // delete immediately
+      });
+      
+      console.error("🔥 AUTH COOKIES SET MANUALLY:", {
+        name: `sb-${projectId}-auth-token`,
+        domain: cookieDomain,
+        valueLength: authTokenValue.length,
+      });
     }
 
     console.error(
