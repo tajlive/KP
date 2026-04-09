@@ -206,13 +206,12 @@ export async function GET(
     const existingAuthCookie = responseCookies.find(c => c.name.includes('auth-token'));
     
     if (!existingAuthCookie) {
-      console.error("🔥 MANUALLY SETTING AUTH COOKIES");
+      console.error("🔥 MANUALLY SETTING AUTH COOKIES (with chunking)");
       
-      // Supabase SSR expects cookies in this format
+      // Supabase SSR expects cookies in this format, chunked if large
       const projectId = 'vuxbjlykgmzskxbclquf';
       
-      // Set the main auth token cookie (format: sb-<project-id>-auth-token)
-      // This contains both access_token and refresh_token as JSON
+      // Create the auth token value
       const authTokenValue = JSON.stringify({
         access_token: session.access_token,
         refresh_token: session.refresh_token,
@@ -222,29 +221,53 @@ export async function GET(
         user: session.user,
       });
       
-      response.cookies.set(`sb-${projectId}-auth-token`, authTokenValue, {
-        domain: cookieDomain,
-        path: '/',
-        secure: true,
-        sameSite: 'none',  // Match server.ts for Vercel compatibility
-        httpOnly: false,  // must be false for client-side Supabase to read
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-      });
+      // Chunk the cookie if it's too large (> 4000 bytes to be safe)
+      const maxChunkSize = 4000;
+      const cookieName = `sb-${projectId}-auth-token`;
+      
+      if (authTokenValue.length > maxChunkSize) {
+        // Split into chunks
+        const chunks = [];
+        for (let i = 0; i < authTokenValue.length; i += maxChunkSize) {
+          chunks.push(authTokenValue.slice(i, i + maxChunkSize));
+        }
+        
+        // Set each chunk
+        chunks.forEach((chunk, index) => {
+          response.cookies.set(`${cookieName}.${index}`, chunk, {
+            domain: cookieDomain,
+            path: '/',
+            secure: true,
+            sameSite: 'none',
+            httpOnly: false,
+            maxAge: 60 * 60 * 24 * 7,
+          });
+        });
+        
+        console.error("🔥 AUTH COOKIES CHUNKED:", {
+          chunks: chunks.length,
+          totalLength: authTokenValue.length,
+        });
+      } else {
+        // Set as single cookie
+        response.cookies.set(cookieName, authTokenValue, {
+          domain: cookieDomain,
+          path: '/',
+          secure: true,
+          sameSite: 'none',
+          httpOnly: false,
+          maxAge: 60 * 60 * 24 * 7,
+        });
+      }
       
       // Also set code verifier cookie removal
       response.cookies.set(`sb-${projectId}-auth-token-code-verifier`, '', {
         domain: cookieDomain,
         path: '/',
         secure: true,
-        sameSite: 'none',  // Match server.ts
+        sameSite: 'none',
         httpOnly: false,
-        maxAge: 0, // delete immediately
-      });
-      
-      console.error("🔥 AUTH COOKIES SET MANUALLY:", {
-        name: `sb-${projectId}-auth-token`,
-        domain: cookieDomain,
-        valueLength: authTokenValue.length,
+        maxAge: 0,
       });
     }
 

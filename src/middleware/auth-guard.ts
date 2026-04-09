@@ -89,6 +89,26 @@ export function redirectWithCookies(
       secure: true,
     });
   });
+  
+  // Also copy all cookies from the original request to ensure chunked auth cookies are preserved
+  // This is critical for Supabase SSR cookie chunking (.0, .1, .2)
+  request.cookies.getAll().forEach((cookie) => {
+    // Only copy auth-related cookies that might not be in response yet
+    if (cookie.name.includes('sb-') || cookie.name.includes('auth-token')) {
+      // Check if already set from response
+      const existing = redirectResponse.cookies.get(cookie.name);
+      if (!existing) {
+        redirectResponse.cookies.set(cookie.name, cookie.value, {
+          domain: cookieDomain,
+          path: '/',
+          sameSite: "none" as const,
+          secure: true,
+          httpOnly: false,
+        });
+      }
+    }
+  });
+  
   return redirectResponse;
 }
 
