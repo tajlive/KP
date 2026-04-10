@@ -4,7 +4,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
-import { AuthProvider } from "@/features/auth/AuthContext";
+import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { SessionCleanup } from "@/features/auth/SessionCleanup";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
