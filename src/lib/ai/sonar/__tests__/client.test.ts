@@ -4,19 +4,6 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock env BEFORE importing client
-vi.stubEnv('PERPLEXITY_API_KEY', 'pplx-test-key-ci');
-
-import {
-  callSonar,
-  getSonarMetrics,
-  resetSonarMetrics,
-  checkSonarHealth,
-  setSonarDelayFn,
-  resetSonarDelayFn,
-} from '../client';
-import { SonarError } from '../types';
-
 // Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -31,28 +18,51 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
-// Mock config (retry config only, API key is set via env above)
-vi.mock('../config', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../config')>();
-  return {
-    ...actual,
-    DEFAULT_RETRY_CONFIG: {
-      maxRetries: 2,
-      baseDelayMs: 100,
-      maxDelayMs: 500,
-      retryableStatusCodes: [408, 429, 500, 502, 503, 504],
-    },
-    RATE_LIMIT_CONFIG: {
-      sonar: { tokensPerMinute: 1000, burstSize: 100 },
-      'sonar-pro': { tokensPerMinute: 500, burstSize: 50 },
-    },
-  };
-});
+// Mock config module completely BEFORE importing client
+// This ensures SONAR_API_KEY is set at module load time
+vi.mock('../config', () => ({
+  SONAR_API_KEY: 'pplx-test-key-ci',
+  SONAR_API_BASE_URL: 'https://api.perplexity.ai',
+  DEFAULT_RETRY_CONFIG: {
+    maxRetries: 2,
+    baseDelayMs: 100,
+    maxDelayMs: 500,
+    retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+  },
+  RATE_LIMIT_CONFIG: {
+    sonar: { tokensPerMinute: 1000, burstSize: 100 },
+    'sonar-pro': { tokensPerMinute: 500, burstSize: 50 },
+  },
+  getModelForTier: (tier: string) => tier,
+  getSearchContextForMode: (mode: string) => mode === 'low' ? 'low' : mode === 'high' ? 'high' : 'medium',
+  getTimeout: (timeoutMs?: number) => timeoutMs || 30000,
+  calculateBackoff: (attempt: number) => Math.min(1000 * Math.pow(2, attempt), 10000),
+  validateConfig: () => ({ valid: true }),
+  DEFAULT_CACHE_CONFIG: {
+    regimeTtlMs: 4 * 60 * 60 * 1000,
+    explanationTtlMs: 30 * 60 * 1000,
+    narrativeTtlMs: 2 * 60 * 60 * 1000,
+  },
+  FALLBACK_VALUES: {
+    narrative_sentiment: 0,
+    event_risk: 0,
+    market_regime: 'unclear',
+  },
+}));
+
+// Now import client after mocks are set up
+import {
+  callSonar,
+  getSonarMetrics,
+  resetSonarMetrics,
+  checkSonarHealth,
+  setSonarDelayFn,
+  resetSonarDelayFn,
+} from '../client';
+import { SonarError } from '../types';
 
 describe('callSonar', () => {
   beforeEach(() => {
-    // Ensure test env is set
-    vi.stubEnv('PERPLEXITY_API_KEY', 'pplx-test-key-ci');
     // Instant delay: eliminerer alle retry-ventetider i tester
     setSonarDelayFn(() => Promise.resolve());
     mockFetch.mockReset();
@@ -61,7 +71,6 @@ describe('callSonar', () => {
   afterEach(() => {
     resetSonarDelayFn();
     vi.clearAllMocks();
-    vi.unstubAllEnvs();
   });
 
   it('should return content on successful request', async () => {
