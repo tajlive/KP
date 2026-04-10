@@ -1,0 +1,32 @@
+# Kimi CLI Runtime Configuration
+# FULL AUTO-APPROVE MODE - 2026-04-10
+
+export KIMI_PROJECT_ROOT="/Users/taj/klarpakke"
+export KIMI_USER="taj"
+export KIMI_MACHINE="macbookair"
+
+# AUTO-APPROVE INNSTILLINGER
+export KIMI_AUTO_APPROVE=true
+export KIMI_REQUIRE_CONFIRM=false
+export KIMI_AUTO_CONFIRM_DELAY=0
+
+# Verktøy-aktivering
+export KIMI_AUTO_MCP=true
+export KIMI_AUTO_SUPABASE=true
+
+# Logging (alle handlinger logges)
+export KIMI_LOG_LEVEL="info"
+export KIMI_LOG_FILE="/Users/taj/klarpakke/logs/kimi-activity.log"
+export KIMI_SECURITY_LOG="/Users/taj/klarpakke/logs/kimi-security.log"
+
+# Sikkerhetsbegrensninger (selv med auto-approve)
+export KIMI_MAX_CONCURRENT=10
+export KIMI_TIMEOUT_DEFAULT=300
+export KIMI_BLOCK_ROOT=false  # Sett til true for å blokkere sudo
+
+# Git konfig
+export GIT_AUTHOR_NAME="Kimi CLI"
+export GIT_AUTHOR_EMAIL="kimi@klarpakke.local"
+
+# Notis: Destruktive kommandoer logges alltid til security-log
+# Slett ~/.kimi-auto-approve for å gå tilbake til manuell modus

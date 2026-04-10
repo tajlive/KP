@@ -8,6 +8,9 @@ const withNextIntl = createNextIntlPlugin({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   
+  // VERCEL PRO OPTIMIZATIONS 2026-04-10
+  // Plan: Pro ($20/month) - 90min builds, 3008MB memory, 1TB bandwidth
+  
   // Explicitly pass Supabase env to client (NEXT_PUBLIC_* inlined at build time).
   // Helps when .env loading order or Edge/build context differs.
   env: {
@@ -15,13 +18,16 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
   
-  // Reduce memory usage during build
+  // PRO: Increased memory for builds (matches vercel.json function memory)
   onDemandEntries: {
     // period (in ms) where the server will keep pages in the buffer
     maxInactiveAge: 60 * 60 * 1000,
     // number of pages that should be kept simultaneously without being disposed
     pagesBufferLength: 5,
   },
+  
+  // PRO: Faster builds with SWC
+  swcMinify: true,
 
 
 
@@ -93,21 +99,6 @@ const nextConfig = {
   // Static page generation timeout (important for large sites)
   staticPageGenerationTimeout: 120,
   
-  // PRO: Experimental optimizations
-  experimental: {
-    // Optimalisert bundling for store pakker
-    optimizePackageImports: [
-      'lucide-react',
-      '@radix-ui/react-icons',
-      'recharts',
-      '@supabase/supabase-js',
-    ],
-    // Server Actions config
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
-
   // Consolidated webpack configuration (merged from both sections)
   webpack: (config, { isServer, dev, nextRuntime }) => {
     // 1. Exclude native modules from client bundle (Turbopack compatibility)

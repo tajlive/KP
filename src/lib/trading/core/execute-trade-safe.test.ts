@@ -128,6 +128,14 @@ vi.mock("@/lib/trading/execution/execution-audit", () => ({
   createL2Snapshot: vi.fn().mockReturnValue({ bids: [], asks: [] })
 }));
 
+vi.mock("./distributed-lock", () => ({
+  acquireTradeLock: vi.fn().mockResolvedValue({
+    acquired: true,
+    lockId: "test-lock-123",
+    release: vi.fn().mockResolvedValue(true)
+  })
+}));
+
 // Now import the function under test
 import { executeTradeSafe } from "./execute-trade-safe";
 

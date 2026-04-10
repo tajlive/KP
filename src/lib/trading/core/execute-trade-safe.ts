@@ -16,136 +16,35 @@ import {
   validateTradeAgainstRiskProfile,
   recordTradeRejection,
   recordTradeDecision,
-  type TradeRequest,
-  type RiskValidationResult,
 } from "@/lib/trading/safety/risk-validator";
 import { ExecutorFactory } from "@/lib/trading/executor-factory";
-import { RiskKernel, RiskStateManager, type RiskLimits, DEFAULT_RISK_LIMITS } from "@/lib/trading/risk/risk-kernel";
+import { RiskKernel, RiskStateManager } from "@/lib/trading/risk/risk-kernel";
 import { getRiskStateStore } from "@/lib/trading/risk/risk-state-store";
 import { getAuditStore } from "@/lib/trading/execution/audit-store";
 import { ExecutionAuditor, createL2Snapshot } from "@/lib/trading/execution/execution-audit";
 import type { ExecuteTradeRequest, ExecuteTradeResult } from "./types";
-import { checkOutboxHealth, isTradingAllowed, getKillSwitchStatus } from "./outbox-monitor";
+import { isTradingAllowed, getKillSwitchStatus } from "./outbox-monitor";
+import { acquireTradeLock } from "./distributed-lock";
+import {
+  RISK_KERNEL_VERSION,
+  POLICY_VERSION,
+  type TradeEnvelope,
+  buildRejectionEnvelope,
+  buildSystemHealth,
+  resolveSession,
+  isValidRiskState,
+  generateIdempotencyKey,
+  generateDecisionHash,
+  logRiskViolations,
+  queueForRetry,
+  type TradingSession,
+} from "./execute-trade-helpers";
 import crypto from "crypto";
 
 const PAPER_DEFAULT_CAPITAL = 100000;
-const RISK_KERNEL_VERSION = "3.0.1-p0";
-const POLICY_VERSION = "v3-ensemble-1.0";
 
-/** Health check thresholds for trading */
-export interface HealthThresholds {
-  maxResponseTimeMs: number;
-  minHealthyServices: number;
-}
-
-const DEFAULT_HEALTH_THRESHOLDS: HealthThresholds = {
-  maxResponseTimeMs: 5000,
-  minHealthyServices: 3 // Krever minst 3 av 5 services healthy
-};
-
-/**
- * Bygg komplett rejection envelope med alle påkrevde felter
- */
-async function buildRejectionEnvelope(
-  supabase: SupabaseClient<Database>,
-  params: {
-    tradeId?: string;
-    idempotencyKey: string;
-    decisionHash?: string;
-    auditStatus: TradeEnvelope['auditStatus'];
-    persistenceStatus: TradeEnvelope['persistenceStatus'];
-    degradedMode?: boolean;
-    degradationReason?: string;
-  }
-): Promise<TradeEnvelope> {
-  const killSwitchStatus = getKillSwitchStatus();
-  const systemHealth = await buildSystemHealth(supabase, killSwitchStatus);
-  
-  return {
-    tradeId: params.tradeId ?? "",
-    idempotencyKey: params.idempotencyKey,
-    decisionHash: params.decisionHash ?? "",
-    riskVersion: RISK_KERNEL_VERSION,
-    policyVersion: POLICY_VERSION,
-    auditStatus: params.auditStatus,
-    persistenceStatus: params.persistenceStatus,
-    createdAt: new Date(),
-    degradedMode: params.degradedMode,
-    degradationReason: params.degradationReason,
-    killSwitchStatus: {
-      activated: killSwitchStatus.activated,
-      reason: killSwitchStatus.reason
-    },
-    systemHealth
-  };
-}
-
-async function buildSystemHealth(
-  supabase: SupabaseClient<Database>,
-  killSwitchStatus: { activated: boolean; reason?: string }
-): Promise<TradeEnvelope['systemHealth']> {
-  const failedServices: string[] = [];
-  let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
-
-  try {
-    // Check Supabase
-    const { error: dbError } = await supabase
-      .from('risk_state')
-      .select('count', { count: 'exact', head: true });
-    if (dbError) failedServices.push('supabase');
-
-    // Check Redis
-    try {
-      const store = getRiskStateStore();
-      await store['redis'].get('health:check');
-    } catch {
-      failedServices.push('redis');
-    }
-
-    // Check S3
-    try {
-      const auditStore = getAuditStore();
-      const s3Health = await auditStore.checkHealth();
-      if (!s3Health) failedServices.push('s3');
-    } catch {
-      failedServices.push('s3');
-    }
-
-    // Determine status
-    if (killSwitchStatus.activated || failedServices.length >= 2) {
-      status = 'unhealthy';
-    } else if (failedServices.length === 1) {
-      status = 'degraded';
-    }
-
-    return { status, failedServices };
-  } catch {
-    return { status: 'unhealthy', failedServices: ['health-check-failed'] };
-  }
-}
-
-export interface TradeEnvelope {
-  tradeId: string;
-  idempotencyKey: string;
-  decisionHash: string;
-  riskVersion: string;
-  policyVersion: string;
-  auditStatus: 'pending' | 'confirmed' | 'failed' | 'degraded';
-  persistenceStatus: 'pending' | 'redis_ok' | 'db_ok' | 'dual_ok' | 'failed';
-  createdAt: Date;
-  degradedMode?: boolean;
-  degradationReason?: string;
-  /** Kill-switch status ved trade-tidspunkt */
-  killSwitchStatus?: {
-    activated: boolean;
-    reason?: string;
-  };
-  /** System health ved trade-tidspunkt */
-  systemHealth?: {
-    status: 'healthy' | 'degraded' | 'unhealthy';
-    failedServices: string[];
-  };
-}
+// Re-export types for backward compatibility
+export { type TradeEnvelope, RISK_KERNEL_VERSION, POLICY_VERSION };
 
 export interface SafeExecutionResult extends ExecuteTradeResult {
   envelope?: TradeEnvelope;
@@ -186,6 +85,7 @@ export async function executeTradeSafe(
 
   // ========================================================================
   // KILL-SWITCH CHECK: Block all trades if system is unhealthy
+  // (Before lock acquisition to avoid unnecessary lock overhead)
   // ========================================================================
   const killSwitchCheck = await isTradingAllowed(supabase);
   const killSwitchStatus = getKillSwitchStatus();
@@ -216,7 +116,52 @@ export async function executeTradeSafe(
   }
   
   // ========================================================================
-  // 0. Idempotency Check – Prevent duplicate trades
+  // 0. Distributed Lock – Prevent concurrent trades for same user+symbol
+  // ========================================================================
+  const lockResult = await acquireTradeLock(request.userId, request.symbol, {
+    ttlSeconds: 30,
+    retries: 2,
+    retryDelayMs: 50,
+  });
+  
+  if (!lockResult.acquired) {
+    const envelope = await buildRejectionEnvelope(supabase, {
+      idempotencyKey: "",
+      auditStatus: "failed",
+      persistenceStatus: "failed",
+      degradationReason: `Concurrent trade detected: ${lockResult.error}`
+    });
+    return {
+      success: false,
+      rejectionReason: "CONCURRENT_TRADE_BLOCKED",
+      error: "Another trade is being processed for this symbol. Please wait and try again.",
+      auditStatus: "failed",
+      envelope
+    };
+  }
+  
+  // CRITICAL: Ensure lock is ALWAYS released when done
+  // Use try/finally pattern for all operations after lock acquisition
+  try {
+    return await executeTradeWithLock(supabase, request, trace, startTime, killSwitchStatus);
+  } finally {
+    await lockResult.release();
+  }
+}
+
+/**
+ * Internal function that executes trade while holding the lock
+ */
+async function executeTradeWithLock(
+  supabase: SupabaseClient<Database>,
+  request: ExecuteTradeRequest,
+  trace: { startedAt: number; steps: string[]; riskCheckPassed: boolean; auditPersisted: boolean; statePersisted: boolean; tradeRecorded: boolean },
+  startTime: number,
+  killSwitchStatus: { activated: boolean; reason?: string }
+): Promise<SafeExecutionResult> {
+
+  // ========================================================================
+  // 1. Idempotency Check – Prevent duplicate trades
   // ========================================================================
   const idempotencyKey = generateIdempotencyKey(request);
   
@@ -729,115 +674,11 @@ export async function executeTradeSafe(
       warning: `Trade executed in DEGRADED MODE: ${degradationReason}`
     })
   };
-}
+} // End of executeTradeWithLock
+
 
 // ============================================================================
 // Helper Functions
 // ============================================================================
 
-interface TradingSession {
-  id: string;
-  current_capital_nok?: number;
-  current_capital?: number;
-}
-
-async function resolveSession(
-  supabase: SupabaseClient<Database>,
-  request: ExecuteTradeRequest
-): Promise<{ success: boolean; session?: TradingSession; sessionId?: string; error?: string }> {
-  // Simplified session resolution
-  // Would include full session logic from execute-trade-v3
-  const sessionId = request.sessionId ?? crypto.randomUUID();
-  return { success: true, session: { id: sessionId }, sessionId };
-}
-
-interface RiskState {
-  equity: number;
-  peakEquity: number;
-  dailyPnl: number;
-  openPositions: number;
-}
-
-function isValidRiskState(state: unknown): boolean {
-  if (!state || typeof state !== 'object') return false;
-  
-  const s = state as RiskState;
-  
-  // Sjekk påkrevde felter
-  const required = ['equity', 'peakEquity', 'dailyPnl', 'openPositions'];
-  for (const field of required) {
-    if (typeof s[field as keyof RiskState] !== 'number') return false;
-  }
-  
-  // Sjekk at verdier er fornuftige
-  if (s.equity < 0 || s.peakEquity < 0) return false;
-  if (isNaN(s.equity) || isNaN(s.peakEquity)) return false;
-  
-  return true;
-}
-
-function generateIdempotencyKey(request: ExecuteTradeRequest): string {
-  const components = [
-    request.userId,
-    request.sessionId,
-    request.symbol,
-    request.side,
-    request.quantity.toFixed(8),
-    request.price.toFixed(2),
-    request.orderType,
-    Math.floor(Date.now() / 60000) // 1-minutt window
-  ];
-  
-  return crypto
-    .createHash('sha256')
-    .update(components.join('|'))
-    .digest('hex')
-    .slice(0, 32);
-}
-
-function generateDecisionHash(params: unknown): string {
-  return crypto
-    .createHash('sha256')
-    .update(JSON.stringify(params))
-    .digest('hex')
-    .slice(0, 16);
-}
-
-interface RiskViolation {
-  rule: string;
-  severity: string;
-  expectedValue?: number | string;
-  actualValue?: number | string;
-  action?: string;
-}
-
-async function logRiskViolations(
-  supabase: SupabaseClient,
-  userId: string,
-  violations: unknown[]
-): Promise<void> {
-  try {
-    await supabase.from('risk_violations').insert(
-      violations.map(v => {
-        const violation = v as RiskViolation;
-        return {
-          user_id: userId,
-          rule: violation.rule,
-          severity: violation.severity,
-          expected_value: violation.expectedValue,
-          actual_value: violation.actualValue,
-          action: violation.action,
-          created_at: new Date().toISOString()
-        };
-      })
-    );
-  } catch (error) {
-    console.error('[executeTradeSafe] Failed to log violations:', error);
-  }
-}
-
-async function queueForRetry(userId: string, state: unknown): Promise<void> {
-  // Outbox pattern: Legg i kø for retry
-  console.log(`[executeTradeSafe] Queued state for retry: ${userId}`);
-  // Implementeres med faktisk kø (f.eks. Bull, SQS, etc.)
-}
+// Helper functions are now imported from execute-trade-helpers.ts

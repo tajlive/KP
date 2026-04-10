@@ -1,0 +1,116 @@
+# Kimi CLI Auto-Approve Konfigurasjon
+# FULL AUTO-APPROVE MODUS - Alle ikke-destruktive kommandoer godkjennes automatisk
+# Sist oppdatert: 2026-04-10
+# Sett KIMI_REQUIRE_CONFIRM=true for å skru av
+
+# ============================================================
+# GODKJENT KOMMANDOER (kjøres uten bekreftelse)
+# ============================================================
+
+# Git operasjoner - alle
+git *
+
+# NPM/Node - alle vanlige	npm *
+node *
+npx *
+
+# Python
+python *
+pip *
+uv *
+
+# Shell - vanlige
+ls *
+cat *
+cd *
+pwd
+echo *
+mkdir *
+touch *
+cp *
+mv *
+chmod *
+chown *
+head *
+tail *
+less *
+more *
+wc *
+sort *
+uniq *
+diff *
+
+# Søk og filtre
+grep *
+find *
+glob *
+awk *
+sed *
+ripgrep *
+rg *
+
+# Nettverk
+curl *
+wget *
+ping *
+dig *
+nslookup *
+ssh *
+scp *
+
+# Bygg og utvikling
+make *
+cargo *
+go *
+docker *
+docker-compose *
+kubectl *
+terraform *
+
+# Database
+psql *
+mysql *
+mongosh *
+redis-cli *
+supabase *
+
+# Testing
+jest *
+vitest *
+playwright *
+cypress *
+pytest *
+
+# Lint og formatering
+eslint *
+prettier *
+black *
+flake8 *
+mypy *
+ruff *
+
+# Verifisering og status
+npm run verify
+npm run health
+npm run status
+npm run info
+
+# ============================================================
+# KREVER BEKREFTELSE (destruktive/irreversible)
+# ============================================================
+# Disse KREVER alltid manuell bekreftelse uavhengig av denne filen:
+#
+# rm -rf /              # Sletting av systemfiler
+# drop database         # Sletting av database
+# rm -rf node_modules   # Sletting av avhengigheter (kan gjenskapes)
+# git push --force      # Force push til git
+# git reset --hard      # Hard reset
+# sudo *                # Admin-operasjoner
+# kill -9 1             # Drepe systemprosesser
+# dd if=* of=*          # Disk-operasjoner
+# mkfs.*                # Formatering
+# ALTER TABLE DROP      # Database DDL
+# DELETE FROM *         # Massesletting (uten WHERE)
+# ============================================================
+
+# Notis: Destruktive operasjoner logges alltid til kimi-security.log

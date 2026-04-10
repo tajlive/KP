@@ -1,24 +1,137 @@
-# Exclude large files that aren't needed for build
+# ============================================================================
+# Vercel Ignore - Reduserer build-tid ved å ekskludere unødvendige filer
+# ============================================================================
+
+# Test files
 *.test.ts
 *.test.tsx
+*.test.js
+*.test.jsx
 *.spec.ts
 *.spec.tsx
+*.spec.js
+*.spec.jsx
 __tests__/
 __mocks__/
-# Scripts needed for build - DO NOT exclude
-# scripts/
-*.log
-*.md
-!.env.production
+e2e/
+tests/
+playwright.config.ts
+playwright.config.ultimate.ts
+playwright.allure.config.ts
+playwright.prod.config.ts
+vitest.config.ts
+jest.config.ts
 
-# Exclude other unnecessary files
-.allure-results/
+# Coverage og rapporter
 coverage/
+.allure-results/
+allure-report/
+allure-results/
+test-results/
+playwright-report/
+lighthouse-report.json
+lighthouse-mobile-*.json
+audit-report.json
+lint-report.json
+.eslint-report.json
+
+# Logs
+*.log
+logs/
+
+# Dokumentasjon (unntatt README)
+*.md
+!README.md
+CHANGELOG.md
+LINEAR*.md
+STATUS*.md
+VERCEL*.md
+PRODUCTION*.md
+TEST*.md
+IMPLEMENTATION*.md
+KLARPAKKE*.md
+OAUTH*.md
+AUTH*.md
+DIAGNOSTICS*.md
+ROUTING*.md
+P0*.md
+P1*.md
+FINAL*.md
+*.md.backup
+
+# IDE og editor
 .vscode/
 .idea/
-*.local
+*.swp
+*.swo
+*~
+
+# Lokale miljøfiler
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.mcp
+.env.mcp.local
+
+# Git
+.git/
+.gitignore
+
+# Node (ikke node_modules - trengs for build)
+# .npm/
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scripts som ikke trengs i produksjon
+scripts/*.test.ts
+scripts/*.spec.ts
+scripts/test-*.ts
+scripts/debug-*.ts
+scripts/verify-*.ts
 
 # Sanity Studio - React 19 compatibility issue
 # Error: createContext is not a function
 # TODO: Re-enable after Sanity updates for React 19
 src/app/studio/
+
+# Archive og backup
+archive/
+archive_root_garbage/
+archive-docs/
+*.backup
+*.backup.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Husky (kjøres lokalt)
+.husky/_/
+
+# MCP og AI-configs som ikke trengs
+.mcp/
+.perplexity/
+.claude/
+.kimi-scripts/
+
+# Test data
+data/test/
+*.seed.json
+seed*.js
+seed*.mjs
+seed*.cjs
+
+# Build artifacts (ikke .next - trengs for deploy)
+dist/
+build/
+.out/

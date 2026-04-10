@@ -1,0 +1,250 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# DATABASE MAINTENANCE — Automatisk vedlikehold av Supabase database
+# ═══════════════════════════════════════════════════════════════════════════════
+# Kjører: Ukentlig (søndag 03:00 UTC)
+# Gjør: Index analyse, RLS sjekk, vacuum, stats oppdatering
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🗄️ Database Maintenance
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'  # Hver søndag kl 03:00 UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (ingen endringer)'
+        required: true
+        default: true
+        type: boolean
+      maintenance_type:
+        description: 'Type vedlikehold'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - index-analysis
+          - rls-optimization
+          - vacuum
+          - stats-update
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # INDEX ANALYSIS — Identifiser ubrukte indexer
+  # ═══════════════════════════════════════════════════════════════
+  index-analysis:
+    name: 📊 Index Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'index-analysis'
+    
+    steps:
+      - uses: actions/checkout@v5
+      
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      
+      - name: 📦 Install
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🔍 Run Index Analysis
+        id: index-analysis
+        run: node scripts/auto-index-maintenance.mjs
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        continue-on-error: true
+      
+      - name: 📊 Index Report Summary
+        if: always()
+        run: |
+          if [ -f reports/index-maintenance-report.json ]; then
+            echo "## 📊 Index Analysis Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat reports/index-maintenance-report.json | jq -r '
+              "- **Ubrukte indexer:** \(.summary.total_unused_indexes)",
+              "- **Total størrelse:** \(.summary.total_size_pretty)",
+              "- **Trygge å fjerne:** \(.summary.safe_to_remove)",
+              "- **Potensiell sparing:** \(.summary.potential_savings)"
+            ' >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: 💾 Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: index-maintenance-report
+          path: reports/index-maintenance-report.json
+          retention-days: 30
+
+  # ═══════════════════════════════════════════════════════════════
+  # RLS OPTIMIZATION — Sjekk og optimaliser RLS policies
+  # ═══════════════════════════════════════════════════════════════
+  rls-optimization:
+    name: 🔐 RLS Optimization Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'rls-optimization'
+    
+    steps:
+      - uses: actions/checkout@v5
+      
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      
+      - name: 📦 Install
+        run: npm ci --legacy-peer-deps
+      
+      - name: 🔐 Analyze RLS Policies
+        id: rls-analysis
+        run: node scripts/optimize-rls-policies.mjs
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        continue-on-error: true
+      
+      - name: 📊 RLS Report Summary
+        if: always()
+        run: |
+          if [ -f reports/rls-optimization-report.json ]; then
+            echo "## 🔐 RLS Optimization Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            cat reports/rls-optimization-report.json | jq -r '
+              "- **Totale policies:** \(.total_policies)",
+              "- **Tabeller med RLS:** \(.tables_with_policies)",
+              "- **Trenger optimalisering:** \(.needs_optimization | length)",
+              "- **Potensielle duplikater:** \(.potential_duplicates | length)"
+            ' >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: 💾 Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rls-optimization-report
+          path: reports/rls-optimization-report.json
+          retention-days: 30
+
+  # ═══════════════════════════════════════════════════════════════
+  # DATABASE VACUUM — Rydd opp i dead tuples
+  # ═══════════════════════════════════════════════════════════════
+  vacuum:
+    name: 🧹 Vacuum Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'vacuum'
+    
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: 🧹 Check Tables Needing Vacuum
+        run: |
+          echo "## 🧹 Vacuum Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Vacuum check kjøres via Supabase cron job (db-vacuum)." >> $GITHUB_STEP_SUMMARY
+          echo "Denne jobben verifiserer at vacuum kjører korrekt." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tables with high dead tuple ratio bør undersøkes." >> $GITHUB_STEP_SUMMARY
+
+  # ═══════════════════════════════════════════════════════════════
+  # STATS UPDATE — Oppdater pg_stat statistics
+  # ═══════════════════════════════════════════════════════════════
+  stats-update:
+    name: 📈 Stats Update
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'stats-update'
+    needs: [index-analysis, rls-optimization]
+    
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: 📈 Update Statistics
+        run: |
+          echo "## 📈 Statistics Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "ANALYZE kjøres automatisk av Supabase." >> $GITHUB_STEP_SUMMARY
+          echo "For manuell oppdatering, kjør:" >> $GITHUB_STEP_SUMMARY
+          echo '```sql' >> $GITHUB_STEP_SUMMARY
+          echo "ANALYZE VERBOSE;" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  # ═══════════════════════════════════════════════════════════════
+  # SUMMARY — Send rapport til Linear
+  # ═══════════════════════════════════════════════════════════════
+  summary:
+    name: 📝 Summary & Notification
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [index-analysis, rls-optimization, vacuum, stats-update]
+    if: always()
+    
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: 📥 Download All Reports
+        uses: actions/download-artifact@v4
+        with:
+          path: reports
+          pattern: '*-report'
+          merge-multiple: true
+      
+      - name: 📝 Generate Summary
+        id: summary
+        run: |
+          echo "## 🗄️ Database Maintenance Summary" >> $GITHUB_STEP_SUMMARY
+          echo "**Run Date:** $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Check for issues
+          ISSUES=0
+          
+          if [ -f reports/index-maintenance-report.json ]; then
+            UNUSED=$(cat reports/index-maintenance-report.json | jq -r '.summary.total_unused_indexes // 0')
+            if [ "$UNUSED" -gt 300 ]; then
+              echo "🔴 **Index Issue:** $UNUSED unused indexes detected" >> $GITHUB_STEP_SUMMARY
+              ISSUES=$((ISSUES + 1))
+            elif [ "$UNUSED" -gt 200 ]; then
+              echo "🟡 **Index Warning:** $UNUSED unused indexes" >> $GITHUB_STEP_SUMMARY
+              ISSUES=$((ISSUES + 1))
+            else
+              echo "✅ **Indexes:** $UNUSED unused (acceptable)" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+          
+          if [ -f reports/rls-optimization-report.json ]; then
+            NEEDS_OPT=$(cat reports/rls-optimization-report.json | jq -r '.needs_optimization | length // 0')
+            if [ "$NEEDS_OPT" -gt 50 ]; then
+              echo "🔴 **RLS Issue:** $NEEDS_OPT policies need optimization" >> $GITHUB_STEP_SUMMARY
+              ISSUES=$((ISSUES + 1))
+            elif [ "$NEEDS_OPT" -gt 0 ]; then
+              echo "🟡 **RLS Warning:** $NEEDS_OPT policies need attention" >> $GITHUB_STEP_SUMMARY
+              ISSUES=$((ISSUES + 1))
+            else
+              echo "✅ **RLS Policies:** All optimized" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Generated Files" >> $GITHUB_STEP_SUMMARY
+          echo "- \`scripts/sql/remove-unused-indexes.sql\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`scripts/sql/optimize-rls-policies.sql\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`reports/index-maintenance-report.json\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`reports/rls-optimization-report.json\`" >> $GITHUB_STEP_SUMMARY
+          
+          # Set output for potential Linear integration
+          echo "issues_found=$ISSUES" >> $GITHUB_OUTPUT
+      
+      - name: 🔔 Notify if Issues Found
+        if: steps.summary.outputs.issues_found > 0
+        run: |
+          echo "⚠️ Database maintenance issues found: ${{ steps.summary.outputs.issues_found }}"
+          echo "Check the workflow summary for details."

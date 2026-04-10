@@ -1,29 +1,57 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
   "framework": "nextjs",
   "buildCommand": "next build",
   "installCommand": "npm ci",
   "outputDirectory": ".next",
   "regions": ["arn1"],
+  "github": {
+    "silent": true,
+    "autoJobCanceling": true
+  },
   "functions": {
-    "src/app/api/**/route.ts": {
-      "maxDuration": 30
+    "src/app/api/cron/**/*.ts": {
+      "maxDuration": 300,
+      "memory": 3008
     },
-    "src/app/api/cron/daily-summary/route.ts": {
-      "maxDuration": 120
+    "src/app/api/v1/trading/**/*.ts": {
+      "maxDuration": 30,
+      "memory": 3008
     },
-    "src/app/api/cron/tick/route.ts": {
-      "maxDuration": 60
+    "src/app/api/webhooks/stripe/**/*.ts": {
+      "maxDuration": 30,
+      "memory": 1024
+    },
+    "src/app/api/ai/**/*.ts": {
+      "maxDuration": 60,
+      "memory": 3008
+    },
+    "src/app/api/health/**/*.ts": {
+      "maxDuration": 10,
+      "memory": 512
+    },
+    "src/app/api/status/**/*.ts": {
+      "maxDuration": 5,
+      "memory": 256
+    },
+    "src/app/api/stats/**/*.ts": {
+      "maxDuration": 10,
+      "memory": 512
+    },
+    "src/app/api/test-*/**/*.ts": {
+      "maxDuration": 10,
+      "memory": 512
+    },
+    "src/app/api/pricing/**/*.ts": {
+      "maxDuration": 10,
+      "memory": 512
     }
   },
   "rewrites": [
     {
       "source": "/:locale/manifest.json",
       "destination": "/manifest.json"
-    },
-    {
-      "source": "/sw.js",
-      "destination": "/sw.js"
     }
   ],
   "redirects": [
@@ -46,6 +74,42 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/_next/image/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/api/health",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     },
@@ -77,5 +141,14 @@
       "path": "/api/cron/update-usdt-nok",
       "schedule": "0 6 * * *"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "NODE_OPTIONS": "--max-old-space-size=8192"
+    }
+  },
+  "install": {
+    "silent": true
+  }
 }

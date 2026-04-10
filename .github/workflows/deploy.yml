@@ -1,4 +1,4 @@
-# SIST OPPDATERT: 2026-03-27 - Node 24 standardisering
+# SIST OPPDATERT: 2026-04-10 - Vercel optimalisering
 # ============================================================================
 # DEPLOY — Automatisk ved merge til main + manuell trigger
 # ============================================================================
@@ -57,6 +57,8 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: ${{ steps.ref.outputs.ref }}
+          # Fetch full history for better Vercel deploy info
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -75,9 +77,19 @@ jobs:
       - name: Restore Next.js build cache
         uses: actions/cache@v5
         with:
-          path: .next/cache
-          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
-          restore-keys: next-${{ runner.os }}-
+          path: |
+            .next/cache
+            .turbo
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs', 'vercel.json') }}
+          restore-keys: |
+            next-${{ runner.os }}-
+
+      - name: Restore Vercel CLI cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.local/share/vercel
+          key: vercel-cli-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: vercel-cli-${{ runner.os }}-
 
       - name: Lint
         run: npm run lint
@@ -108,17 +120,24 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-ci-build' }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          # Optimalisering: deaktiver telemetri i CI
+          NEXT_TELEMETRY_DISABLED: '1'
 
       # --no-wait: CLI kan henge lenge på «Completing…» etter vellykket deploy (GitHub job-timeout).
       - name: Deploy to Vercel
+        id: vercel-deploy
         run: |
           if [ "$IS_PRODUCTION" == "true" ]; then
-            npx vercel deploy --prod --no-wait --token ${{ secrets.VERCEL_TOKEN }} --yes
+            DEPLOY_URL=$(npx vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --yes --meta commit=${{ github.sha }} --meta branch=main)
+            echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
           else
-            npx vercel deploy --no-wait --token ${{ secrets.VERCEL_TOKEN }} --yes
+            DEPLOY_URL=$(npx vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes --meta commit=${{ github.sha }} --meta branch=${{ github.ref_name }})
+            echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+            echo "environment=preview" >> $GITHUB_OUTPUT
           fi
+          echo "Deployed to: $DEPLOY_URL"
         env:
-          # Unngår "Project names cannot contain ---" – bruk eksisterende prosjekt
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
@@ -167,10 +186,17 @@ jobs:
           echo "## 🚀 Deploy Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "$IS_PRODUCTION" == "true" ]; then
-            echo "**Environment:** Production" >> $GITHUB_STEP_SUMMARY
+            echo "**Environment:** Production ✅" >> $GITHUB_STEP_SUMMARY
             echo "**URL:** https://www.klarpakke.no" >> $GITHUB_STEP_SUMMARY
           else
-            echo "**Environment:** Preview" >> $GITHUB_STEP_SUMMARY
+            echo "**Environment:** Preview 🔄" >> $GITHUB_STEP_SUMMARY
+            echo "**URL:** ${{ steps.vercel-deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           fi
           echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Optimaliseringer aktivert:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Next.js build cache" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Vercel CLI cache" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Node 24 runtime" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Telemetry disabled" >> $GITHUB_STEP_SUMMARY
