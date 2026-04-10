@@ -25,6 +25,14 @@ const CANONICAL_REDIRECTS: { [key: string]: string } = {
 export function i18nMiddleware(
   request: NextRequest,
 ): NextResponse | Promise<NextResponse> {
+  const pathname = request.nextUrl.pathname;
+  
+  // KRITISK: Ikke redirect auth/callback - det ødelegger OAuth PKCE flyten
+  // Route handleren ligger i app/[locale]/auth/callback/ og trenger locale prefix
+  if (pathname.includes("/auth/callback")) {
+    return NextResponse.next();
+  }
+
   const host = request.headers.get("host") || "";
 
   // 1. Canonical redirect for *.vercel.app
@@ -37,7 +45,6 @@ export function i18nMiddleware(
     return NextResponse.redirect(url, { status: 308 });
   }
 
-  const pathname = request.nextUrl.pathname;
   const { locale, strippedPath } = parseLocalePath(pathname);
 
   // 2. PKCE callback on root with ?code=
