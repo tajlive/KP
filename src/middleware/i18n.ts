@@ -30,7 +30,9 @@ export function i18nMiddleware(
   // KRITISK: Ikke redirect auth/callback - det ødelegger OAuth PKCE flyten
   // Route handleren ligger i app/[locale]/auth/callback/ og trenger locale prefix
   if (pathname.includes("/auth/callback")) {
-    return NextResponse.next();
+    const res = NextResponse.next();
+    res.headers.set("x-kp-auth-callback", "skipped-i18n");
+    return res;
   }
 
   const host = request.headers.get("host") || "";
