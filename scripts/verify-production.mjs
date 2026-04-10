@@ -33,9 +33,9 @@ const CRITICAL_PATHS = [
   },
   { path: "/no/innlogging", status: 200, description: "Login page (innlogging)" },
   {
-    path: "/no/signup",
+    path: "/no/register",
     status: 200,
-    description: "Signup page",
+    description: "Signup page (register)",
     noFollowRedirects: true,
     acceptStatuses: [200, 302, 307],
   },
