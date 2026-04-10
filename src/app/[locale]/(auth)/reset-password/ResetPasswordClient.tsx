@@ -109,7 +109,40 @@ function ResetPasswordForm() {
     try {
       const supabase = getSupabaseClient();
 
-      // Update the user's password
+      // Get the recovery code from URL
+      const code = searchParams?.get("code");
+      if (!code) {
+        setStatus("error");
+        setErrorMessage(
+          locale === "no"
+            ? "Ugyldig eller utløpt lenke. Vennligst be om en ny passordtilbakestilling."
+            : "Invalid or expired link. Please request a new password reset."
+        );
+        return;
+      }
+
+      // Verify the recovery code to establish a session
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        token_hash: code,
+        type: "recovery",
+      });
+
+      if (verifyError) {
+        console.error("[ResetPassword] Verify failed:", verifyError.message);
+        logAuthError(AuthErrorCode.INVALID_RESET_TOKEN, verifyError, {
+          locale,
+          errorCode: verifyError.code,
+        });
+        setStatus("error");
+        setErrorMessage(
+          locale === "no"
+            ? "Lenken er ugyldig eller utløpt. Vennligst be om en ny."
+            : "The link is invalid or has expired. Please request a new one."
+        );
+        return;
+      }
+
+      // Update the user's password (now that we have a session)
       const { error } = await supabase.auth.updateUser({
         password,
       });

@@ -83,51 +83,8 @@ export async function authMiddleware(
     return response;
   }
 
-  // 0. Pre-auth guard for protected paths
-  const isProtectedEarly = PROTECTED_PATHS.some((p) =>
-    strippedPath.startsWith(p),
-  );
-  if (isProtectedEarly) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (supabaseUrl && supabaseAnonKey) {
-      // Use consistent cookie configuration for auth guard
-      const cookieDomain = getCookieDomain(request);
-      const earlySupabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-        cookieEncoding: "raw",
-        cookies: {
-          getAll: () => request.cookies.getAll(),
-          // Ensure cookies are set with correct domain and security options
-          setAll: (cookiesToSet) => {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              response.cookies.set(name, value, {
-                ...options,
-                domain: cookieDomain,
-                sameSite: "none" as const,
-                secure: true,
-              });
-            });
-          },
-        },
-      });
-      const {
-        data: { user },
-      } = await earlySupabase.auth.getUser();
-      if (!user) {
-        const loginUrl = new URL(
-          localizedPathname(parseLocalePath(pathname).locale, "/login"),
-          request.url,
-        );
-        loginUrl.searchParams.set(
-          "next",
-          localizedPathname(parseLocalePath(pathname).locale, strippedPath),
-        );
-        return NextResponse.redirect(loginUrl);
-      }
-    }
-  }
-
   // 1. Supabase session refresh (writes updated cookies to the passed response)
+  // CRITICAL FIX: Use single Supabase client per request to avoid cookie/sync issues
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -159,6 +116,22 @@ export async function authMiddleware(
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // 0. Pre-auth guard for protected paths - use the SAME supabase client
+  const isProtectedEarly = PROTECTED_PATHS.some((p) =>
+    strippedPath.startsWith(p),
+  );
+  if (isProtectedEarly && !user) {
+    const loginUrl = new URL(
+      localizedPathname(parseLocalePath(pathname).locale, "/login"),
+      request.url,
+    );
+    loginUrl.searchParams.set(
+      "next",
+      localizedPathname(parseLocalePath(pathname).locale, strippedPath),
+    );
+    return NextResponse.redirect(loginUrl);
+  }
 
   // Logged-in users should not see guest auth pages
   if (user && isGuestAuthRoute(strippedPath)) {

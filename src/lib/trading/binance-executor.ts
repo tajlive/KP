@@ -23,6 +23,7 @@ import type {
   Position,
 } from './order-executor';
 import { fetchBinancePrice, calculateFee } from './order-executor';
+import { binanceCircuitBreaker, CircuitBreakerOpenError } from './circuit-breaker';
 
 interface BinanceApiKeys {
   apiKey: string;
@@ -109,64 +110,75 @@ export class BinanceExecutor implements OrderExecutor {
 
   /**
    * Execute a real trade order on Binance
+   * Protected by circuit breaker for resilience
    */
   async executeOrder(params: OrderParams): Promise<OrderResult> {
     try {
-      // Build order parameters
-      const orderParams: { [key: string]: unknown } = {
-        symbol: params.symbol,
-        side: params.side.toUpperCase(),
-        type: params.orderType.toUpperCase(),
-        quantity: params.quantity,
-      };
-
-      // Add price for limit orders
-      if (params.orderType === 'limit' && params.price) {
-        orderParams.price = params.price;
-        orderParams.timeInForce = 'GTC'; // Good Till Cancel
-      }
-
-      // Place order
-      const order = await this.makeRequest<BinanceOrderResponse>(
-        '/api/v3/order',
-        'POST',
-        orderParams
-      );
-
-      // Calculate average execution price
-      const totalValue = order.fills?.reduce(
-        (sum, fill) => sum + parseFloat(fill.price) * parseFloat(fill.qty),
-        0
-      ) || 0;
-      const executedQty = parseFloat(order.executedQty);
-      const executedPrice = executedQty > 0 ? totalValue / executedQty : parseFloat(order.price);
-
-      // Calculate total fees
-      const fee = order.fills?.reduce(
-        (sum, fill) => sum + parseFloat(fill.commission),
-        0
-      ) || 0;
-
-      return {
-        success: true,
-        orderId: order.orderId.toString(),
-        executedPrice,
-        executedQuantity: executedQty,
-        fee,
-        timestamp: new Date(order.transactTime),
-      };
+      // Execute through circuit breaker
+      return await binanceCircuitBreaker.execute(() => this.executeOrderInternal(params));
     } catch (error) {
-      console.error('Binance execution error:', error);
-      return {
-        success: false,
-        orderId: '',
-        executedPrice: 0,
-        executedQuantity: 0,
-        fee: 0,
-        timestamp: new Date(),
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+      if (error instanceof CircuitBreakerOpenError) {
+        return {
+          success: false,
+          orderId: '',
+          error: 'Binance API temporarily unavailable (circuit breaker open). Please try again later.',
+          executedPrice: 0,
+          executedQuantity: 0,
+          fee: 0,
+          timestamp: new Date(),
+        };
+      }
+      throw error;
     }
+  }
+
+  /**
+   * Internal order execution (called through circuit breaker)
+   */
+  private async executeOrderInternal(params: OrderParams): Promise<OrderResult> {
+    // Build order parameters
+    const orderParams: { [key: string]: unknown } = {
+      symbol: params.symbol,
+      side: params.side.toUpperCase(),
+      type: params.orderType.toUpperCase(),
+      quantity: params.quantity,
+    };
+
+    // Add price for limit orders
+    if (params.orderType === 'limit' && params.price) {
+      orderParams.price = params.price;
+      orderParams.timeInForce = 'GTC'; // Good Till Cancel
+    }
+
+    // Place order
+    const order = await this.makeRequest<BinanceOrderResponse>(
+      '/api/v3/order',
+      'POST',
+      orderParams
+    );
+
+    // Calculate average execution price
+    const totalValue = order.fills?.reduce(
+      (sum, fill) => sum + parseFloat(fill.price) * parseFloat(fill.qty),
+      0
+    ) || 0;
+    const executedQty = parseFloat(order.executedQty);
+    const executedPrice = executedQty > 0 ? totalValue / executedQty : parseFloat(order.price);
+
+    // Calculate total fees
+    const fee = order.fills?.reduce(
+      (sum, fill) => sum + parseFloat(fill.commission),
+      0
+    ) || 0;
+
+    return {
+      success: true,
+      orderId: order.orderId.toString(),
+      executedPrice,
+      executedQuantity: executedQty,
+      fee,
+      timestamp: new Date(order.transactTime),
+    };
   }
 
   /**

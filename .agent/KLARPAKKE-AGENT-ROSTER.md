@@ -14,6 +14,7 @@ Oversikt over **anbefalte agenter** for å optimalisere og modernisere Klarpakke
 | **Live Trading & Trades**        | `agents/klarpakke-live-trading-trades-agent.md`          | Live/paper, RLS, historikk, Realtime/JWT; **full kontekst + operasjonelt ansvar** (bevis, oppfølging); MCP/CLI/CI                                       |
 | **Auto-Trade Strategy Research** | `agents/klarpakke-auto-trade-strategy-research-agent.md` | Alle strategier + presets + executor; dypere enn UI; forum/data-hypoteser; **ingen profitt-løfter**; SoT `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md` |
 | **OAuth Sherlock**               | `agents/klarpakke-oauth-sherlock.md`                     | **🕵️ Auth-spesialist:** OAuth, session, cookies, middleware; MemPalace + web-research; systematic debugging; PKCE, Google Auth, Supabase SSR |
+| **Web Logic Analyzer**           | `agents/web-logic-analyzer.md`                           | **🧠 Logikk-spesialist:** Business logic, state management, dataflyt, conditional rendering, kompleksitetsanalyse, auth flows |
 | **UX SaaS Lead**                 | `agents/ux-saas-lead.md`                                 | Premium-sjekkliste per side/komponent                                                                                                                   |
 | **UI/UX Designer**               | `agents/ui-ux-designer.md`                               | Visuelt/interaksjon — **Klarpakke tokens** (oppdatert)                                                                                                  |
 
