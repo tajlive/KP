@@ -37,47 +37,21 @@ export async function GET(
   const pkceCookie = allCookies.find((c) => c.name.includes("code-verifier"));
   const vippsVerifier = allCookies.find((c) => c.name === VIPPS_PKCE_COOKIE);
 
-  // DEBUG: Log all auth-related cookies
-  const authCookies = allCookies.filter(c => 
-    c.name.includes('sb-') || 
-    c.name.includes('supabase') ||
-    c.name.includes('verifier')
-  );
-
-  console.error("🔥 CALLBACK DEBUG:", {
-    code: code ? `${code.slice(0, 20)}...` : "MISSING",
-    error,
-    statePrefix: state?.slice(0, 10) ?? "MISSING",
-    totalCookies: allCookies.length,
-    authCookieNames: authCookies.map(c => c.name),
-    pkceCookieName: pkceCookie?.name || "NONE",
-    pkceCookieValue: pkceCookie ? `${pkceCookie.value.substring(0, 20)}...` : "NONE",
-    vippsCookie: vippsVerifier ? "SET" : "NONE",
-    originUsed: origin,
-    requestHost: host,
-  });
-
-  // 🚨 HANDLE OAUTH ERRORS FROM PROVIDER (Google, etc.)
+  // 🚨 HANDLE OAUTH ERRORS FROM PROVIDER
   if (error) {
     console.error("🔥 OAUTH PROVIDER ERROR:", error);
-    
-    // Use our error handler for user-friendly messages
     const errorResult = handleOAuthError(error, locale);
-    console.error("🔥 ERROR DETAILS:", errorResult);
-    
-    // Redirect to login with error info
     const errorUrl = getErrorRedirectUrl(errorResult, locale, origin);
     return NextResponse.redirect(errorUrl, { status: 302 });
   }
 
   if (!code) {
-    console.error("🔥 NO AUTH CODE RECEIVED");
     return NextResponse.redirect(
       new URL(`/${locale}/innlogging?error=no_code`, origin),
     );
   }
 
-  // Vipps flow: state starts with vipps_, use code_verifier cookie and our handler
+  // Vipps flow
   if (state?.startsWith(VIPPS_STATE_PREFIX)) {
     const result = await handleVippsCallback({
       code,
@@ -106,92 +80,31 @@ export async function GET(
   });
   const response = successResponse;
 
-  // CRITICAL FIX: Decode and re-set PKCE cookie for Supabase SSR
-  // The cookie value is URL-encoded and may contain quotes
-  // Use same cookie domain logic as createServerClient for consistency
+  // CRITICAL: Decode and re-set PKCE cookie for Supabase SSR
   const cookieDomain = host.includes(":") ? undefined : `.${host.replace(/^www\./, "")}`;
   
-  console.error("🔥 COOKIE CONFIG:", {
-    cookieDomain,
-    host,
-    origin,
-    next,
-  });
-
-  if (pkceCookie) {
-    try {
-      // Decode URL-encoded value
-      let rawValue = decodeURIComponent(pkceCookie.value);
-      
-      // Remove surrounding quotes if present
-      if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
-        rawValue = rawValue.slice(1, -1);
-      }
-      
-      console.error("🔥 RE-SETTING PKCE COOKIE:", {
-        name: pkceCookie.name,
-        decodedLength: rawValue.length,
-        domain: cookieDomain,
-      });
-      
-      // Re-set the cookie with decoded value
-      response.cookies.set(pkceCookie.name, rawValue, {
-        domain: cookieDomain,
-        path: "/",
-        secure: true,
-        sameSite: "none",
-        httpOnly: false,
-      });
-    } catch (e) {
-      console.error("🔥 FAILED TO DECODE PKCE COOKIE:", e);
-    }
-  } else {
-    console.error("🔥 NO PKCE COOKIE FOUND - auth will fail!");
-  }
-
-  // Prepare code verifier
-  let codeVerifier: string | undefined;
   if (pkceCookie) {
     try {
       let rawValue = decodeURIComponent(pkceCookie.value);
       if (rawValue.startsWith('"') && rawValue.endsWith('"')) {
         rawValue = rawValue.slice(1, -1);
       }
-      codeVerifier = rawValue;
-      console.error("🔥 CODE VERIFIER PREPARED:", {
-        name: pkceCookie.name,
-        length: codeVerifier.length,
-      });
+      // Re-set the decoded cookie so Supabase SSR can find it
+      request.cookies.set(pkceCookie.name, rawValue);
     } catch (e) {
       console.error("🔥 FAILED TO DECODE PKCE COOKIE:", e);
     }
   }
 
   try {
-    // Use Supabase SSR client to handle exchange and cookie setting
+    // Use Supabase SSR client - it will handle cookie setting automatically
     const supabase = createServerClient(request, response);
 
-    console.error("🔥 CALLING exchangeCodeForSession");
     const { data, error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
 
-    // DEBUG: Log response cookies after exchange
-    const responseCookies = response.cookies.getAll();
-    console.error("🔥 EXCHANGE RESULT:", {
-      success: !exchangeError,
-      error: exchangeError?.message,
-      errorName: exchangeError?.name,
-      hasSession: !!data?.session,
-      userId: data?.session?.user?.id?.slice(0, 8),
-      responseCookieCount: responseCookies.length,
-      responseCookieNames: responseCookies.map(c => c.name),
-    });
-
     if (exchangeError || !data.session) {
-      console.error(
-        "🔥 EXCHANGE FAILED:",
-        exchangeError?.message || "NO SESSION",
-      );
+      console.error("🔥 EXCHANGE FAILED:", exchangeError?.message || "NO SESSION");
       return NextResponse.redirect(
         new URL(
           `/${locale}/innlogging?error=exchange_failed&detail=${encodeURIComponent(exchangeError?.message || "NO_SESSION")}`,
@@ -200,88 +113,9 @@ export async function GET(
       );
     }
 
-    // CRITICAL: Manually set auth cookies if Supabase didn't set them
-    // This ensures the session persists across page loads
-    const session = data.session;
-    const existingAuthCookie = responseCookies.find(c => c.name.includes('auth-token'));
-    
-    if (!existingAuthCookie) {
-      console.error("🔥 MANUALLY SETTING AUTH COOKIES (with chunking)");
-      
-      // Supabase SSR expects cookies in this format, chunked if large
-      const projectId = 'vuxbjlykgmzskxbclquf';
-      
-      // Create the auth token value
-      const authTokenValue = JSON.stringify({
-        access_token: session.access_token,
-        refresh_token: session.refresh_token,
-        expires_in: session.expires_in,
-        expires_at: session.expires_at,
-        token_type: session.token_type,
-        user: session.user,
-      });
-      
-      // Chunk the cookie if it's too large (> 4000 bytes to be safe)
-      const maxChunkSize = 4000;
-      const cookieName = `sb-${projectId}-auth-token`;
-      
-      if (authTokenValue.length > maxChunkSize) {
-        // Split into chunks
-        const chunks = [];
-        for (let i = 0; i < authTokenValue.length; i += maxChunkSize) {
-          chunks.push(authTokenValue.slice(i, i + maxChunkSize));
-        }
-        
-        // Set each chunk
-        chunks.forEach((chunk, index) => {
-          response.cookies.set(`${cookieName}.${index}`, chunk, {
-            domain: cookieDomain,
-            path: '/',
-            secure: true,
-            sameSite: 'none',
-            httpOnly: false,
-            maxAge: 60 * 60 * 24 * 7,
-          });
-        });
-        
-        console.error("🔥 AUTH COOKIES CHUNKED:", {
-          chunks: chunks.length,
-          totalLength: authTokenValue.length,
-        });
-      } else {
-        // Set as single cookie
-        response.cookies.set(cookieName, authTokenValue, {
-          domain: cookieDomain,
-          path: '/',
-          secure: true,
-          sameSite: 'none',
-          httpOnly: false,
-          maxAge: 60 * 60 * 24 * 7,
-        });
-      }
-      
-      // Also set code verifier cookie removal
-      response.cookies.set(`sb-${projectId}-auth-token-code-verifier`, '', {
-        domain: cookieDomain,
-        path: '/',
-        secure: true,
-        sameSite: 'none',
-        httpOnly: false,
-        maxAge: 0,
-      });
-    }
-
-    console.error(
-      `✅ OAUTH SUCCESS — redirecting to ${next}`,
-    );
-    
-    // DEBUG: Final cookie check before redirect
-    const finalCookies = response.cookies.getAll();
-    console.error("🔥 FINAL RESPONSE COOKIES:", {
-      count: finalCookies.length,
-      names: finalCookies.map(c => c.name),
-      hasAuthToken: finalCookies.some(c => c.name.includes('auth-token') || c.name === 'sb-access-token'),
-    });
+    // Supabase SSR has now set the cookies via the setAll callback
+    // We just return the response which includes the cookies
+    console.error("✅ OAUTH SUCCESS — redirecting to", next);
     
     return response;
   } catch (err: unknown) {
