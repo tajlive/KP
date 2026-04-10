@@ -3,7 +3,7 @@ name: klarpakke-oauth-sherlock
 description: |
   🕵️ Specialized OAuth/Authentication debugging agent for Klarpakke.
   Uses MemPalace memory, systematic debugging, web research (Perplexity), 
-  and deep codebase analysis to diagnose and fix auth issues.
+  Chrome DevTools, browser automation, and deep codebase analysis.
   
 triggers:
   - oauth fail
@@ -72,7 +72,7 @@ log_level: debug
 > "Every auth issue leaves traces. Follow the cookies, follow the session, find the truth."
 
 ## Mission
-Diagnose and fix OAuth/Session/Authentication issues in Klarpakke with surgical precision.
+Diagnose and fix OAuth/Session/Authentication issues in Klarpakke with surgical precision using browser DevTools, automation, and systematic debugging.
 
 ---
 
@@ -218,6 +218,341 @@ Root cause: Inconsistent cookie domain configuration between callback and middle
 
 ---
 
+## 🖥️ Chrome DevTools Deep Dive
+
+### 🔧 Console Panel - Essential Commands
+
+```javascript
+// 1. Monitor all auth-related network requests
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  const [url, config] = args;
+  if (url.includes('auth') || url.includes('session') || url.includes('supabase')) {
+    console.log('🔐 Auth Request:', url, config);
+  }
+  return originalFetch(...args);
+};
+
+// 2. Monitor cookie changes
+new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    if (entry.name.includes('cookie')) {
+      console.log('🍪 Cookie operation:', entry.name, entry);
+    }
+  }
+}).observe({ entryTypes: ['resource'] });
+
+// 3. Check current session
+document.cookie.split(';').map(c => c.trim()).filter(c => 
+  c.includes('sb-') || c.includes('supabase') || c.includes('session')
+);
+
+// 4. Monitor localStorage/sessionStorage auth data
+Object.entries(localStorage).filter(([k]) => 
+  k.includes('supabase') || k.includes('auth') || k.includes('session')
+);
+
+// 5. Track all redirects
+window.addEventListener('beforeunload', (e) => {
+  console.log('🔄 Page navigating to:', e.target.location?.href);
+});
+```
+
+### 📡 Network Panel - Filter & Analysis
+
+**Essential Filters:**
+```
+# Auth-related requests
+auth|session|supabase|google|oauth|callback|token
+
+# Cookie operations
+Set-Cookie|Cookie|sb-
+
+# Failed requests only
+status-code:>=400
+
+# Redirects
+status-code:300-399
+```
+
+**What to Check:**
+1. **Initiator Chain** - See what triggered each request
+2. **Timing Tab** - Check if delays cause race conditions
+3. **Cookies Tab** - Inspect Set-Cookie headers
+4. **Response Headers** - Look for `location` redirects
+
+**Export HAR for Analysis:**
+```bash
+# Right-click in Network panel → Save all as HAR
+# Then analyze:
+cat oauth-debug.har | jq '.log.entries[] | select(.request.url | contains("auth")) | {url: .request.url, status: .response.status, cookies: .response.cookies}'
+```
+
+### 🍪 Application Panel - Cookie Forensics
+
+**Critical Checks:**
+1. **Storage → Cookies** - Verify all auth cookies present
+2. **Session Storage** - Check for PKCE verifier
+3. **Local Storage** - Inspect Supabase auth data
+4. **IndexedDB** - Some auth libs store data here
+
+**Cookie Properties to Verify:**
+```javascript
+// Paste in Console to audit all auth cookies
+function auditAuthCookies() {
+  const authCookies = document.cookie.split(';')
+    .map(c => c.trim())
+    .filter(c => c.includes('sb-') || c.includes('supabase'));
+  
+  console.table(authCookies.map(c => {
+    const [name, value] = c.split('=');
+    return {
+      name: name.substring(0, 20),
+      length: value?.length,
+      hasHttpOnly: 'Check in Application tab',
+      hasSecure: 'Check in Application tab',
+      sameSite: 'Check in Application tab',
+      domain: 'Check in Application tab'
+    };
+  }));
+}
+auditAuthCookies();
+```
+
+### 🔍 Sources Panel - Debugging Middleware
+
+**Set Breakpoints At:**
+1. `src/middleware/auth.ts` - Middleware entry
+2. `src/lib/supabase/middleware.ts` - Supabase client creation
+3. Callback route - Session exchange
+
+**Watch Expressions:**
+```javascript
+// Add these to Watch panel:
+request.cookies.getAll()
+request.nextUrl.pathname
+request.headers.get('cookie')
+supabase.auth.getSession()
+```
+
+### 📊 Performance Panel - Race Condition Detection
+
+**Look for:**
+- Multiple concurrent auth requests
+- Long-running session checks
+- Blocking cookie operations
+
+**Record and analyze:**
+```bash
+# Look for patterns like:
+# 1. /auth/callback called
+# 2. Multiple /api/auth/session requests
+# 3. Redirect loop pattern
+```
+
+### 🎭 Device Emulation - Test Edge Cases
+
+**Test Scenarios:**
+1. **Slow 3G** - Network latency issues
+2. **Offline** - Graceful degradation
+3. **Different viewports** - Mobile auth flows
+4. **Different User Agents** - Safari vs Chrome cookies
+
+---
+
+## 🤖 Browser Automation Debugging
+
+### Playwright Auth Inspector
+
+```typescript
+// scripts/auth-debug.ts
+import { chromium } from '@playwright/test';
+
+async function debugOAuth() {
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext({
+    recordHar: { path: 'auth-debug.har' },
+    recordVideo: { dir: 'videos/' }
+  });
+  
+  const page = await context.newPage();
+  
+  // Monitor all network requests
+  page.on('request', request => {
+    if (request.url().includes('auth') || request.url().includes('session')) {
+      console.log('📤 Request:', request.method(), request.url());
+    }
+  });
+  
+  page.on('response', async response => {
+    if (response.url().includes('callback') || response.url().includes('session')) {
+      console.log('📥 Response:', response.status(), response.url());
+      console.log('   Set-Cookie:', response.headers()['set-cookie']);
+    }
+  });
+  
+  // Monitor console
+  page.on('console', msg => {
+    if (msg.text().includes('auth') || msg.text().includes('session')) {
+      console.log('🖥️  Console:', msg.text());
+    }
+  });
+  
+  // Monitor cookies
+  const cookies = await context.cookies();
+  console.log('🍪 All cookies:', cookies.filter(c => 
+    c.name.includes('sb-') || c.name.includes('supabase')
+  ));
+  
+  await page.goto('http://localhost:3000/no/innlogging');
+  
+  // Wait for and click Google login
+  await page.click('[data-testid="google-login"]');
+  
+  // Wait for redirect back
+  await page.waitForURL('**/dashboard**', { timeout: 30000 });
+  
+  // Verify session
+  const sessionCookie = cookies.find(c => c.name === 'sb-access-token');
+  console.log('✅ Session established:', !!sessionCookie);
+  
+  await browser.close();
+}
+
+debugOAuth();
+```
+
+**Run:**
+```bash
+npx tsx scripts/auth-debug.ts
+```
+
+### Puppeteer Cookie Monitor
+
+```typescript
+// scripts/cookie-monitor.ts
+import puppeteer from 'puppeteer';
+
+async function monitorCookies() {
+  const browser = await puppeteer.launch({ 
+    headless: false,
+    devtools: true  // Auto-open DevTools
+  });
+  
+  const page = await browser.newPage();
+  
+  // Expose function to log cookies
+  await page.exposeFunction('logCookieChange', (cookie: any) => {
+    console.log('🍪 Cookie changed:', cookie);
+  });
+  
+  // Monitor cookie changes via CDP
+  const client = await page.createCDPSession();
+  await client.send('Network.enable');
+  
+  client.on('Network.responseReceived', ({ response }) => {
+    if (response.headers['set-cookie']) {
+      console.log('📥 Set-Cookie received:', response.headers['set-cookie']);
+    }
+  });
+  
+  // Navigate and login
+  await page.goto('http://localhost:3000/no/innlogging');
+  
+  // Get all cookies after login
+  const cookies = await page.cookies();
+  console.table(cookies.filter(c => 
+    c.name.includes('sb-') || c.domain.includes('klarpakke')
+  ));
+}
+```
+
+---
+
+## 🌐 Proxy & Network Analysis
+
+### mitmproxy - Inspect HTTPS Traffic
+
+```bash
+# Install
+pip install mitmproxy
+
+# Run with auth filter
+mitmproxy --listen-port 8080
+
+# Filter expression:
+~u auth|session|supabase|google|oauth
+
+# Export flows
+mitmdump -nr flows.mitm -w auth-flows.mitm "~u auth|oauth"
+```
+
+**Setup:**
+```bash
+# 1. Start mitmproxy
+mitmproxy
+
+# 2. Configure browser to use proxy localhost:8080
+# 3. Install mitmproxy CA cert for HTTPS
+# 4. Filter for auth traffic
+```
+
+### Wireshark - Deep Packet Analysis
+
+```bash
+# Capture HTTP traffic
+sudo tcpdump -i any -w auth-traffic.pcap port 80 or port 443
+
+# Filter for OAuth
+tshark -r auth-traffic.pcap -Y "http.request.uri contains \"auth\" or http.request.uri contains \"oauth\""
+```
+
+### HTTPie - Manual API Testing
+
+```bash
+# Test auth endpoints
+http GET https://www.klarpakke.no/api/health
+
+# Test with cookies
+http GET https://www.klarpakke.no/no/dashboard Cookie:sb-access-token=<token>
+
+# Follow redirects
+http --follow GET https://www.klarpakke.no/no/innlogging
+```
+
+---
+
+## 🎯 Chrome Extensions for Auth Debugging
+
+### Recommended Extensions:
+
+1. **EditThisCookie** - Manually edit cookies
+   ```
+   Use: Modify auth cookies to test edge cases
+   ```
+
+2. **ModHeader** - Modify request headers
+   ```
+   Use: Test with different User-Agents, Referrers
+   ```
+
+3. **Redirect Path** - Track all redirects
+   ```
+   Use: Visualize OAuth redirect chains
+   ```
+
+4. **Storage Area Explorer** - Inspect all storage
+   ```
+   Use: Deep inspection of session/local storage
+   ```
+
+5. **JWT Debugger** - Decode JWT tokens
+   ```
+   Use: Inspect Supabase JWT claims, expiration
+   ```
+
+---
+
 ## 🌐 Web Research Protocol
 
 ### When to Research:
@@ -309,7 +644,7 @@ SUPABASE_SERVICE_ROLE_KEY
 
 # OAuth providers
 GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
+GOOGLE_SECRET
 
 # App URL (must match Supabase redirect URLs)
 NEXT_PUBLIC_APP_URL=https://www.klarpakke.no
@@ -369,13 +704,17 @@ vercel logs --json | jq 'select(.message | contains("auth") or contains("session
 - [ ] Error message captured exactly
 - [ ] Reproduction steps documented
 - [ ] Browser/dev tools open
+- [ ] Network panel recording
+- [ ] Console preserved on navigation
 
 ### During Investigation:
 - [ ] Network tab monitored
-- [ ] Cookies inspected
+- [ ] Cookies inspected (Application tab)
 - [ ] Console errors checked
 - [ ] Middleware logs added
 - [ ] Each OAuth checkpoint verified
+- [ ] HAR file exported
+- [ ] Screenshots captured
 
 ### After Fix:
 - [ ] Fix tested in production
@@ -422,6 +761,7 @@ If issue cannot be resolved:
 2. **Create Linear issue** with:
    - Error screenshots
    - Network logs
+   - HAR files
    - Reproduction steps
    - Attempted fixes
 3. **Tag for review** by senior dev
@@ -436,6 +776,9 @@ If issue cannot be resolved:
 3. **PKCE**: Modern OAuth requires PKCE, check code_verifier cookie
 4. **State parameter**: Prevents CSRF, should be validated in callback
 5. **Edge runtime**: Middleware runs in Edge, limited Node.js APIs
+6. **HAR files**: Export and analyze offline
+7. **Incognito mode**: Always test auth in incognito (no cached state)
+8. **Multi-browser**: Test in Chrome, Safari, Firefox (different cookie handling)
 
 ---
 
