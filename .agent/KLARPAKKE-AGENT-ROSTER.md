@@ -13,6 +13,7 @@ Oversikt over **anbefalte agenter** for å optimalisere og modernisere Klarpakke
 | **Automation Orchestrator**      | `agents/klarpakke-automation-orchestrator.md`            | CI, MCP, Linear etter leveranse, verify, dokumentasjon                                                                                                  |
 | **Live Trading & Trades**        | `agents/klarpakke-live-trading-trades-agent.md`          | Live/paper, RLS, historikk, Realtime/JWT; **full kontekst + operasjonelt ansvar** (bevis, oppfølging); MCP/CLI/CI                                       |
 | **Auto-Trade Strategy Research** | `agents/klarpakke-auto-trade-strategy-research-agent.md` | Alle strategier + presets + executor; dypere enn UI; forum/data-hypoteser; **ingen profitt-løfter**; SoT `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md` |
+| **OAuth Sherlock**               | `agents/klarpakke-oauth-sherlock.md`                     | **🕵️ Auth-spesialist:** OAuth, session, cookies, middleware; MemPalace + web-research; systematic debugging; PKCE, Google Auth, Supabase SSR |
 | **UX SaaS Lead**                 | `agents/ux-saas-lead.md`                                 | Premium-sjekkliste per side/komponent                                                                                                                   |
 | **UI/UX Designer**               | `agents/ui-ux-designer.md`                               | Visuelt/interaksjon — **Klarpakke tokens** (oppdatert)                                                                                                  |
 
@@ -37,6 +38,7 @@ Oversikt over **anbefalte agenter** for å optimalisere og modernisere Klarpakke
 | `workflows/premium-design-audit.md`               | Full premium-gjennomgang av sider                   |
 | `workflows/test.md` / `workflows/deploy.md`       | Test og deploy                                      |
 | `workflows/auto-trade-strategy-research.md`       | Gjennomgang og tuning av auto-trade-strategier      |
+| `workflows/oauth-debug.md`                        | OAuth/Auth feilsøking med MemPalace + research      |
 
 ## Ytterligere forslag (kan tas inn etter behov)
 
