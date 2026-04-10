@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { AuthProvider } from "@/features/auth/AuthContext";
+import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { useProgress } from "@/hooks/useProgress";
 import { OnboardingFlow } from "@/features/onboarding/OnboardingFlow";
 import { TradeSuccessProvider } from "@/hooks/useTradeSuccess";
@@ -14,7 +14,7 @@ const CorruptTokenCleanup = () => (
     }}
   />
 );
-import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/lib/auth/new/ProtectedRoute";
 import { ScrollToTop } from "@/features/dashboard/ScrollToTop";
 import { TopNav } from "@/shared/navigation/TopNav";
 import { BottomTabs } from "@/shared/navigation/BottomTabs";
@@ -29,7 +29,7 @@ import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 import { SentryInit } from "@/shared/providers/SentryInit";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { SURFACE } from "@/lib/design/tokens";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {

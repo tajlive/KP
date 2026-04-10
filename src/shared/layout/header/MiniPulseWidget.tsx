@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { usePulseData } from "@/hooks/usePulseData";
 import { Activity, TrendingDown, TrendingUp } from "lucide-react";
 import { hrefWithLocale } from "@/i18n/href-with-locale";

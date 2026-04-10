@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
 import { AuthProvider } from "@/lib/auth/new/AuthContext";
-import { SessionCleanup } from "@/features/auth/SessionCleanup";
+// import { SessionCleanup } from "@/features/auth/SessionCleanup";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 import { OrganizationJsonLd } from "@/shared/seo/JsonLd";
@@ -283,7 +283,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           enableSystem
           disableTransitionOnChange={false}
         >
-        <SessionCleanup />
+        {/* <SessionCleanup /> */}
         <NextIntlClientProvider locale={locale} messages={messages}>
           <CdsProvider>
             <VippsMarketProvider showVippsMarket={showVippsMarket}>

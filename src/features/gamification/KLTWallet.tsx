@@ -14,7 +14,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { createClient } from "@/lib/utils";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { useTranslations } from "next-intl";
 
 interface KLTTransaction {

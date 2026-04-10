@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { Button } from "@/shared/ui/button";
 import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";

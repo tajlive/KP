@@ -86,3 +86,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+
+// Safe version that returns null if not in provider (for optional auth)
+export const useAuthSafe = () => {
+  try {
+    return useContext(AuthContext);
+  } catch {
+    return { user: null, loading: false, error: null, signOut: async () => {}, refreshUser: async () => {} };
+  }
+};
