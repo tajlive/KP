@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthProvider } from "@/features/auth/AuthContext";
+import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";

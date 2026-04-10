@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { HERO } from "@/lib/design/tokens";
 

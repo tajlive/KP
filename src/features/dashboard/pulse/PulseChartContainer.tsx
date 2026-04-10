@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { usePulseData } from "@/hooks/usePulseData";
 import { PresetProfileId } from "@/lib/auto-trading/preset-profiles";
 import { ChartTimeframe, PulseMode } from "@/types/pulse";

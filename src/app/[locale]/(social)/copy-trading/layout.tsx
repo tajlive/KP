@@ -1,7 +1,7 @@
 "use client";
 
 import { CopyTradingSubAppHeader } from "@/features/copy-trading/CopyTradingSubAppHeader";
-import { AuthProvider } from "@/features/auth/AuthContext";
+import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { TradingModeProvider } from "@/context/TradingModeContext";
 import { ClientSideProviders } from "@/shared/providers/ClientSideProviders";

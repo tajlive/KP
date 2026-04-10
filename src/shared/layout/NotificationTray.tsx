@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { createClient } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { nb } from "date-fns/locale";

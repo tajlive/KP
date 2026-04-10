@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Trophy, Target, Zap, Medal, Crown } from "lucide-react";
 import { createClient } from "@/lib/utils";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 
 interface UserLevel {
   level: number;

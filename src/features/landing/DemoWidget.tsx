@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { BRAND } from "@/lib/design/tokens";
 import { useCallback, useEffect, useRef, useState } from "react";
 

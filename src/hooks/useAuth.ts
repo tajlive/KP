@@ -1,5 +1,4 @@
 'use client'
 
-// Re-export from AuthContext for consistency
-// This ensures all components use the same auth state
-export { useAuth, useAuthSafe } from '@/features/auth/AuthContext'
+// Re-export from new AuthContext for consistency
+export { useAuth, useAuthSafe } from '@/lib/auth/new/AuthContext'

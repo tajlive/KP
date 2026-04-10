@@ -9,7 +9,7 @@ import { Text } from "@coinbase/cds-web/typography";
 import { Button } from "@coinbase/cds-web/buttons";
 import { HStack } from "@coinbase/cds-web/layout";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { useDashboardTradingIntegritySync } from "@/lib/hooks/useDashboardTradingIntegritySync";
 import { reportTradingIntegrityManualSync } from "@/lib/sentry";
 import type { Trade } from "@/lib/trading-api";

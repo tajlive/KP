@@ -1,7 +1,7 @@
 "use client";
 
 import TradingModeToggle from "@/features/trading/TradingModeToggle";
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/lib/auth/new/AuthContext";
 import { Button } from "@/shared/ui/button";
 import { ThemeToggle } from "@/shared/theme";
 import { BRAND } from "@/lib/design/tokens";
