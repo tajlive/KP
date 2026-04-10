@@ -6,7 +6,7 @@ import {
   parseLocalePath,
   sanitizePostAuthRedirect,
 } from "./locale-path";
-import { redirectWithCookies } from "./auth-guard";
+import { redirectWithCookies, createSupabaseClient, getCookieDomain } from "./auth-guard";
 import { handleOnboarding } from "./onboarding";
 import { handleTierGate } from "./tier-gate";
 
@@ -43,6 +43,16 @@ export async function authMiddleware(
   response = response ?? NextResponse.next();
   const pathname = request.nextUrl.pathname;
   const { strippedPath } = parseLocalePath(pathname);
+
+  // DEBUG: Log all cookies on every request
+  const allCookies = request.cookies.getAll();
+  const authCookies = allCookies.filter(c => c.name.includes('auth') || c.name.includes('sb-'));
+  console.error("🔥 MIDDLEWARE COOKIES:", {
+    path: pathname,
+    totalCookies: allCookies.length,
+    authCookieCount: authCookies.length,
+    authCookieNames: authCookies.map(c => c.name),
+  });
 
   // If i18n already redirected, we still operate on the original request
   // but the response object may carry cookies from i18n.
@@ -81,11 +91,23 @@ export async function authMiddleware(
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (supabaseUrl && supabaseAnonKey) {
+      // Use consistent cookie configuration for auth guard
+      const cookieDomain = getCookieDomain(request);
       const earlySupabase = createServerClient(supabaseUrl, supabaseAnonKey, {
         cookieEncoding: "raw",
         cookies: {
           getAll: () => request.cookies.getAll(),
-          setAll: () => {},
+          // Ensure cookies are set with correct domain and security options
+          setAll: (cookiesToSet) => {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, {
+                ...options,
+                domain: cookieDomain,
+                sameSite: "none" as const,
+                secure: true,
+              });
+            });
+          },
         },
       });
       const {
@@ -115,6 +137,8 @@ export async function authMiddleware(
     return response;
   }
 
+  // Use consistent cookie configuration with auth-guard
+  const cookieDomain = getCookieDomain(request);
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookieEncoding: "raw",
     cookies: {
@@ -122,7 +146,12 @@ export async function authMiddleware(
       setAll: (cookiesToSet) => {
         cookiesToSet.forEach(({ name, value, options }) => {
           request.cookies.set(name, value);
-          response.cookies.set(name, value, options);
+          response.cookies.set(name, value, {
+            ...options,
+            domain: cookieDomain,
+            sameSite: "none" as const,
+            secure: true,
+          });
         });
       },
     },
