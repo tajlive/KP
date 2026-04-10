@@ -11,13 +11,13 @@ test('1. Landingsside laster og viser kalkulator', async ({ page }) => {
 });
 
 test('2. Registrering-side er tilgjengelig', async ({ page }) => {
-  await page.goto(`${BASE}/registrer`);
+  await page.goto(`${BASE}/auth/register`);
   await expect(page.locator('input[type="email"]').first()).toBeVisible();
   await expect(page.locator('input[type="password"]').first()).toBeVisible();
 });
 
 test('3. Innlogging-side er tilgjengelig', async ({ page }) => {
-  await page.goto(`${BASE}/logg-inn`);
+  await page.goto(`${BASE}/auth/login`);
   await expect(page.locator('input[type="email"]').first()).toBeVisible();
 });
 
@@ -46,7 +46,7 @@ test('7. API health returnerer 200', async ({ request }) => {
 });
 
 test('8. Ingen 500-feil på noen kritisk side', async ({ page }) => {
-  const routes = ['', '/priser', '/hjelp', '/logg-inn', '/registrer'];
+  const routes = ['', '/priser', '/hjelp', '/auth/login', '/auth/register'];
   for (const route of routes) {
     const resp = await page.goto(`${BASE}${route}`);
     expect(resp?.status()).not.toBe(500);
