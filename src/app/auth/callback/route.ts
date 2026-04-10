@@ -1,163 +1,228 @@
-import { createServerClient } from "@/lib/supabase/server";
-import { localizedPathname } from "@/middleware/locale-path";
-import { NextResponse, type NextRequest } from "next/server";
-import { logAuthError, AuthErrorCode, logAuthEvent, AuthEvent, setAuthUser } from "@/lib/auth/sentry-auth";
+import { getAppUrl } from "@/lib/auth/config";
+import { handleVippsCallback } from "@/lib/auth/vipps-callback";
+import { createServerClient } from "@supabase/ssr";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+const VIPPS_PKCE_COOKIE = "vipps_pkce_verifier";
+const VIPPS_STATE_PREFIX = "vipps_";
+
+// Cookie domain helper
+function getCookieDomain(request: NextRequest): string | undefined {
+  const host = request.headers.get("host") || "";
+  const rootDomain = host.startsWith("www.") ? host.replace("www.", "") : host;
+  return rootDomain.includes(":") ? undefined : `.${rootDomain}`;
+}
+
+// Simple OAuth error handler
+function handleOAuthError(error: string): { error: string; description: string } {
+  return {
+    error,
+    description: error === "access_denied" ? "Bruker avbrøt innloggingen" : "OAuth feil",
+  };
+}
+
+function getErrorRedirectUrl(
+  errorResult: { error: string; description: string },
+  locale: string,
+  origin: string,
+): URL {
+  const url = new URL(`/${locale}/innlogging`, origin);
+  url.searchParams.set("error", errorResult.error);
+  url.searchParams.set("detail", errorResult.description);
+  return url;
+}
+
 export async function GET(request: NextRequest) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get("code");
-  const error = requestUrl.searchParams.get("error");
-  const errorDescription = requestUrl.searchParams.get("error_description");
-  const next = requestUrl.searchParams.get("next");
+  const url = new URL(request.url);
+  
+  // Get locale from query param or default to "no"
+  const locale = url.searchParams.get("locale") || "no";
+  
+  const host = request.headers.get("host") || "localhost:3000";
+  const canonicalUrl = getAppUrl();
 
-  // Extract locale from referer or default to 'no'
-  const referer = request.headers.get("referer") || "";
-  const localeMatch = referer.match(/\/(no|en|th|zh)\//);
-  const locale = localeMatch ? localeMatch[1] : "no";
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
+  const protocol = isLocalhost ? "http" : "https";
 
-  // Create response object first (for cookie handling)
-  const redirectPath = next || localizedPathname(locale, "/dashboard");
-  const redirectUrl = new URL(redirectPath, request.url);
-  const response = NextResponse.redirect(redirectUrl, { status: 302 });
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const origin = isLocalhost
+    ? `${protocol}://${host}`
+    : forwardedHost
+      ? `https://${forwardedHost}`
+      : canonicalUrl;
 
-  // Handle OAuth provider errors
+  const code = url.searchParams.get("code");
+  const error = url.searchParams.get("error");
+  const state = url.searchParams.get("state");
+  const cookieDomain = getCookieDomain(request);
+
+  const allCookies = request.cookies.getAll();
+  const pkceCookie = allCookies.find((c) => c.name.includes("code-verifier"));
+  const vippsVerifier = allCookies.find((c) => c.name === VIPPS_PKCE_COOKIE);
+
+  // 🚨 HANDLE OAUTH ERRORS FROM PROVIDER
   if (error) {
-    console.error("[Auth Callback] OAuth error:", { error, errorDescription });
-    logAuthError(
-      AuthErrorCode.CALLBACK_ERROR,
-      new Error(`OAuth error: ${error} - ${errorDescription || "No description"}`),
-      { locale, error, errorDescription }
-    );
-    
-    const errorUrl = new URL(
-      `${localizedPathname(locale, "/login")}?error=provider_error&detail=${encodeURIComponent(error)}`,
-      request.url,
-    );
-    return NextResponse.redirect(errorUrl);
+    console.error("🔥 OAUTH PROVIDER ERROR:", error);
+    const errorResult = handleOAuthError(error);
+    const errorUrl = getErrorRedirectUrl(errorResult, locale, origin);
+    return NextResponse.redirect(errorUrl, { status: 302 });
   }
 
   if (!code) {
-    console.error("[Auth Callback] No code received");
-    logAuthError(
-      AuthErrorCode.PKCE_CODE_MISSING,
-      new Error("No authorization code received from OAuth provider"),
-      { locale, referer }
-    );
-    
     return NextResponse.redirect(
-      new URL(
-        `${localizedPathname(locale, "/login")}?error=no_code`,
-        request.url,
-      ),
+      new URL(`/${locale}/innlogging?error=no_code`, origin),
     );
   }
 
-  // Use the route handler client that handles PKCE cookies properly
-  const supabase = createServerClient(request, response);
-  
-  try {
-    const { data: sessionData, error: exchangeError } =
-      await supabase.auth.exchangeCodeForSession(code);
-
-    if (exchangeError) {
-      console.error("[Auth Callback] Exchange failed:", exchangeError.message);
-      logAuthError(
-        AuthErrorCode.PKCE_EXCHANGE_FAILED,
-        exchangeError,
-        { 
-          locale, 
-          codePrefix: code?.substring(0, 10),
-          errorName: exchangeError.name,
-          errorStatus: exchangeError.status,
-        }
-      );
-      
-      return NextResponse.redirect(
-        new URL(
-          `${localizedPathname(locale, "/login")}?error=exchange_failed`,
-          request.url,
-        ),
-      );
-    }
-
-    if (!sessionData?.session) {
-      console.error("[Auth Callback] No session after exchange");
-      logAuthError(
-        AuthErrorCode.SESSION_INVALID,
-        new Error("No session returned after PKCE exchange"),
-        { locale, userId: sessionData?.user?.id }
-      );
-      
-      return NextResponse.redirect(
-        new URL(
-          `${localizedPathname(locale, "/login")}?error=session_invalid`,
-          request.url,
-        ),
-      );
-    }
-
-    // Success! Log the event and set Sentry user
-    logAuthEvent(AuthEvent.LOGIN_SUCCESS, {
-      userId: sessionData.user?.id,
-      provider: sessionData.user?.app_metadata?.provider || "unknown",
+  // Vipps flow
+  if (state?.startsWith(VIPPS_STATE_PREFIX)) {
+    const result = await handleVippsCallback({
+      code,
+      state,
+      codeVerifier: vippsVerifier?.value ?? null,
       locale,
     });
-    
-    if (sessionData.user?.id) {
-      setAuthUser(sessionData.user.id, sessionData.user.email);
-    }
+    const res = NextResponse.redirect(result.redirectUrl, { status: 302 });
+    res.cookies.delete(VIPPS_PKCE_COOKIE);
+    return res;
+  }
 
-    // ── Referral-kobling ────────────────────────────────────────────────────
-    // Les kp_ref-cookie satt av InnloggingClient
-    const refCookie = request.cookies.get("kp_ref")?.value;
-    const refCode = refCookie ? decodeURIComponent(refCookie) : null;
+  function sanitizeRedirectPath(path: string | null): string {
+    if (!path) return `/${locale}/dashboard`;
+    if (path.startsWith("//")) return `/${locale}/dashboard`;
+    const normalized = path.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
+    return normalized.startsWith("/") ? normalized : `/${locale}/dashboard`;
+  }
 
-    if (refCode && sessionData?.user) {
-      const userId = sessionData.user.id;
+  const nextParam =
+    url.searchParams.get("next") || url.searchParams.get("redirectTo") || null;
+  const next = sanitizeRedirectPath(nextParam);
 
-      // Finn og koble referral-raden (SECURITY DEFINER-funksjonen håndterer validering)
-      const { error: refError } = await supabase
-        .from("referral_tracking")
-        .update({
-          referred_user_id: userId,
-          status: "account_created",
-          signed_up_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("referral_code", refCode)
-        .eq("status", "pending")
-        .is("referred_user_id", null)
-        .neq("referrer_user_id", userId); // kan ikke verve seg selv
+  // Debug: Log all incoming cookies
+  console.error("🔥 CALLBACK DEBUG — Incoming cookies:", {
+    count: allCookies.length,
+    names: allCookies.map((c) => c.name),
+    pkceCookies: allCookies
+      .filter((c) => c.name.includes("code-verifier"))
+      .map((c) => ({
+        name: c.name,
+        valueLen: c.value.length,
+        valuePreview: c.value.substring(0, 50) + "...",
+        isEncoded: c.value.includes("%"),
+      })),
+  });
 
-      if (refError) {
-        console.error(
-          "[Auth Callback] Referral update failed:",
-          refError.message,
-        );
-        // Don't fail the login if referral fails
-      }
+  // Create response early so we can capture cookies set by Supabase
+  const redirectResponse = NextResponse.redirect(new URL(next, origin), {
+    status: 302,
+  });
 
-      // Slett cookie etter bruk
-      response.cookies.set("kp_ref", "", { maxAge: 0, path: "/" });
-    }
-    // ────────────────────────────────────────────────────────────────────────
+  try {
+    // Create Supabase SSR client with detailed logging
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookieEncoding: "raw",
+        cookies: {
+          getAll: () => {
+            // Return all cookies, but decode PKCE cookie values
+            const cookies = request.cookies.getAll();
+            return cookies.map((cookie) => {
+              // PKCE cookies need to be URL-decoded for Supabase SSR
+              if (cookie.name.includes("code-verifier")) {
+                try {
+                  let decoded = decodeURIComponent(cookie.value);
+                  // Remove surrounding quotes if present
+                  if (decoded.startsWith('"') && decoded.endsWith('"')) {
+                    decoded = decoded.slice(1, -1);
+                  }
+                  console.error("🔥 PKCE COOKIE DECODED:", {
+                    name: cookie.name,
+                    originalLen: cookie.value.length,
+                    decodedLen: decoded.length,
+                  });
+                  return { ...cookie, value: decoded };
+                } catch (e) {
+                  console.error("🔥 PKCE DECODE FAILED:", e);
+                  return cookie;
+                }
+              }
+              return cookie;
+            });
+          },
+          setAll: (cookiesToSet) => {
+            console.error("🔥 SUPABASE SETALL CALLED:", {
+              count: cookiesToSet.length,
+              names: cookiesToSet.map((c) => c.name),
+            });
 
-    return response;
-    
-  } catch (unexpectedError) {
-    console.error("[Auth Callback] Unexpected error:", unexpectedError);
-    logAuthError(
-      AuthErrorCode.UNKNOWN,
-      unexpectedError,
-      { locale, codePrefix: code?.substring(0, 10) }
+            cookiesToSet.forEach(({ name, value, options }) => {
+              console.error("🔥 SETTING COOKIE:", {
+                name,
+                valueLen: value.length,
+                valuePreview: value.substring(0, 100) + "...",
+              });
+
+              redirectResponse.cookies.set(name, value, {
+                ...options,
+                domain: cookieDomain,
+                sameSite: "none",
+                secure: true,
+                path: "/",
+              });
+            });
+          },
+        },
+      },
     );
-    
+
+    console.error(
+      "🔥 CALLING exchangeCodeForSession with code:",
+      code.substring(0, 20) + "...",
+    );
+
+    const { data, error: exchangeError } =
+      await supabase.auth.exchangeCodeForSession(code);
+
+    console.error("🔥 EXCHANGE RESULT:", {
+      success: !exchangeError,
+      error: exchangeError?.message,
+      hasSession: !!data?.session,
+      userId: data?.session?.user?.id?.slice(0, 8),
+    });
+
+    if (exchangeError || !data.session) {
+      console.error(
+        "🔥 EXCHANGE FAILED:",
+        exchangeError?.message || "NO SESSION",
+      );
+      return NextResponse.redirect(
+        new URL(
+          `/${locale}/innlogging?error=exchange_failed&detail=${encodeURIComponent(exchangeError?.message || "NO_SESSION")}`,
+          origin,
+        ),
+      );
+    }
+
+    // Debug: Log cookies that were set on redirectResponse
+    const setCookies = redirectResponse.cookies.getAll();
+    console.error("🔥 COOKIES SET ON REDIRECT RESPONSE:", {
+      count: setCookies.length,
+      names: setCookies.map((c) => c.name),
+    });
+
+    console.error("✅ OAUTH SUCCESS — redirecting to", next);
+    return redirectResponse;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("🔥 CALLBACK EXCEPTION:", message);
     return NextResponse.redirect(
       new URL(
-        `${localizedPathname(locale, "/login")}?error=callback_error`,
-        request.url,
+        `/${locale}/innlogging?error=auth_failed&detail=${encodeURIComponent(message)}`,
+        origin,
       ),
     );
   }

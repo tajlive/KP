@@ -69,7 +69,8 @@ export function getCallbackUrl(locale: string = "no"): string {
     ? (locale as ValidLocale)
     : "no";
 
-  return `${origin}/${safeLocale}/auth/callback`;
+  // Use non-localized callback to avoid i18n redirect issues
+  return `${origin}/auth/callback?locale=${safeLocale}`;
 }
 
 // Supported OAuth providers
