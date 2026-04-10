@@ -69,7 +69,7 @@ test.describe("Smoke: Health Checks @smoke", () => {
 
   test("login page is accessible", async ({ page }) => {
     // Eksplisitt locale + lang timeout: unngår flakiness ved kald dev-server og parallel workers
-    await page.goto("/no/innlogging", {
+    await page.goto("/auth/login", {
       waitUntil: "domcontentloaded",
       timeout: 90_000,
     });
@@ -95,7 +95,7 @@ test.describe("Smoke: Health Checks @smoke", () => {
     } else {
       // May be redirected to login if protected
       const url = page.url();
-      expect(url).toMatch(/leaderboard|innlogging|login/);
+      expect(url).toMatch(/leaderboard|auth\/login/);
       console.log("⚠️ Leaderboard redirected to:", url);
     }
   });
