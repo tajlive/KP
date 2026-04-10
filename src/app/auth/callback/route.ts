@@ -93,7 +93,17 @@ export async function GET(request: NextRequest) {
     if (!path) return `/${locale}/dashboard`;
     if (path.startsWith("//")) return `/${locale}/dashboard`;
     const normalized = path.replace(/\/dashbord(\/|$)/g, "/dashboard$1");
-    return normalized.startsWith("/") ? normalized : `/${locale}/dashboard`;
+    
+    // Ensure path has locale prefix - if not, add it
+    const hasLocalePrefix = /^\/(no|en|th|zh)\//.test(normalized);
+    if (!hasLocalePrefix) {
+      // If path starts with / but no locale, add locale
+      if (normalized.startsWith("/")) {
+        return `/${locale}${normalized}`;
+      }
+      return `/${locale}/${normalized}`;
+    }
+    return normalized;
   }
 
   const nextParam =
