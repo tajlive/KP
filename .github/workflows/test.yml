@@ -104,6 +104,14 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SKIP_LINT_IN_BUILD: "true"
       
+      - name: 🚀 Start Server
+        run: |
+          npm start &
+          npx wait-on http://localhost:3000 --timeout 120000
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      
       - name: 🔥 Run Smoke Tests
         run: npm run test:e2e:smoke
         env:
@@ -151,6 +159,14 @@ jobs:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
       
+      - name: 🚀 Start Server
+        run: |
+          npm start &
+          npx wait-on http://localhost:3000 --timeout 120000
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      
       - name: 🎯 Run Critical Tests
         run: npm run test:e2e:critical -- --shard=${{ matrix.shard }}/2
         env:
@@ -196,6 +212,14 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+      
+      - name: 🚀 Start Server
+        run: |
+          npm start &
+          npx wait-on http://localhost:3000 --timeout 120000
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
       - name: 📊 Run Regression Tests
         run: npm run test:e2e:regression
