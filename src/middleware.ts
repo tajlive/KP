@@ -1,16 +1,18 @@
 /**
- * NY MIDDLEWARE - Forenklet
+ * MIDDLEWARE med i18n + Auth
  * 
- * Kun to oppgaver:
- * 1. Route protection (kreve auth for /dashboard)
- * 2. i18n (språk)
- * 
- * Ingen komplekse auth-redirects her!
+ * 1. i18n routing (next-intl) - håndterer / → /no
+ * 2. Route protection (kreve auth for /dashboard)
  */
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import createIntlMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing.config";
+
+// Opprett next-intl middleware
+const handleI18n = createIntlMiddleware(routing);
 
 // Routes som krever auth
 const PROTECTED_ROUTES = [
@@ -27,10 +29,18 @@ const AUTH_ROUTES = [
   "/auth/reset-password",
 ];
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Opprett Supabase client
+  // 1. Kjør i18n routing først (håndterer / → /no)
+  const i18nResponse = handleI18n(request);
+  
+  // Hvis i18n gir redirect (f.eks. / → /no), returner den
+  if (i18nResponse.status !== 200) {
+    return i18nResponse;
+  }
+
+  // 2. Auth håndtering
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -39,7 +49,7 @@ export async function proxy(request: NextRequest) {
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookies) => {
-          cookies.forEach(({ name, value, options }) => {
+          cookies.forEach(({ name, value }) => {
             request.cookies.set(name, value);
           });
         },
@@ -47,7 +57,6 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  // Sjekk om bruker er logget inn
   const { data: { user } } = await supabase.auth.getUser();
 
   // Hvis protected route og ikke logget inn -> redirect til login
@@ -68,8 +77,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Alt OK, fortsett
-  return NextResponse.next();
+  // Returner i18n response (med eventuelle cookie updates)
+  return i18nResponse;
 }
 
 export const config = {
