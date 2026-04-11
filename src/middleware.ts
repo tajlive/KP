@@ -105,9 +105,12 @@ function applySecurityHeaders(response: NextResponse, nonce: string): NextRespon
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip i18n for auth routes (they don't use locale prefix)
+  // Skip i18n for static files and auth routes (they don't use locale prefix)
   // Must be done BEFORE calling handleI18n to prevent redirect loops
-  if (pathname.startsWith("/auth/")) {
+  if (
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/auth/")
+  ) {
     // For auth routes, just apply security headers and pass through
     let nonce: string;
     try {
