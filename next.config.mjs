@@ -26,11 +26,6 @@ const nextConfig = {
     pagesBufferLength: 5,
   },
   
-  // PRO: Faster builds with SWC
-  swcMinify: true,
-
-
-
   // distDir removed to let Vercel handle output correctly
   // output removed - use default for Vercel App Router
 
