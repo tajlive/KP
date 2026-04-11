@@ -6,6 +6,8 @@
  * - Epost + passord skjema (server action)
  * - Google OAuth knapp
  * - Link til register og glemt passord
+ * 
+ * BUILD: Force rebuild to clear Vercel cache
  */
 
 import { useState } from "react";
