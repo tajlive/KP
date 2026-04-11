@@ -1,0 +1,21 @@
+{
+  "description": "Learn to trade crypto the smart way with Klarpakke. We offer courses, tools, and paper trading to help you succeed.",
+  "headings": {
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "payment": "Payment"
+  },
+  "links": {
+    "courses": "Courses",
+    "pricing": "Pricing",
+    "paperTrading": "Paper Trading",
+    "calculator": "Calculator",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "disclaimer": "Cryptocurrency is a high-risk investment. Do not invest more than you can afford to lose."
+}

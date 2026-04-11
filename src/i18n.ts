@@ -16,6 +16,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     // Load all consolidated namespaces for the locale
     const [
       common,
+      navigation,
+      footer,
       auth,
       dashboard,
       trading,
@@ -39,6 +41,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../messages/${validLocale}/common.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/common.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/navigation.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/navigation.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/footer.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/footer.json").then((m) => m.default)),
       import(`../messages/${validLocale}/auth.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/auth.json").then((m) => m.default)),
@@ -102,6 +110,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       locale: validLocale,
       messages: {
         common,
+        navigation,
+        footer,
         auth,
         dashboard,
         trading,
