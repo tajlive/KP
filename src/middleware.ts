@@ -26,9 +26,9 @@ const PROTECTED_ROUTES = [
 
 // Auth routes (redirect til dashboard hvis allerede logget inn)
 const AUTH_ROUTES = [
-  "/auth/login",
-  "/auth/register",
-  "/auth/reset-password",
+  "/no/login",
+  "/no/register",
+  "/no/reset-password",
 ];
 
 /**
@@ -174,7 +174,7 @@ export async function middleware(request: NextRequest) {
   );
   
   if (isProtected && !user) {
-    const loginUrl = new URL("/auth/login", request.url);
+    const loginUrl = new URL("/no/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     const redirectResponse = NextResponse.redirect(loginUrl);
     return applySecurityHeaders(redirectResponse, nonce);
