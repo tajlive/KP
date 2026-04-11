@@ -44,7 +44,7 @@ export async function signUpWithEmail(formData: FormData) {
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/callback`,
     },
   });
 
@@ -71,7 +71,7 @@ export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/callback`,
       queryParams: {
         access_type: "offline",
         prompt: "consent",
@@ -95,7 +95,7 @@ export async function signInWithMicrosoft() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "azure",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/callback`,
       scopes: "email profile openid",
     },
   });
@@ -119,7 +119,7 @@ export async function sendPasswordReset(formData: FormData) {
   const email = formData.get("email") as string;
   
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/update-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/update-password`,
   });
 
   if (error) {
