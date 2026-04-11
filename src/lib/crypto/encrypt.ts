@@ -13,7 +13,10 @@ const KEY_LENGTH = 256;
 async function getEncryptionKey(): Promise<CryptoKey> {
   // For now, use environment variable as key material
   // TODO: Implement proper key management (e.g., AWS KMS, Vault)
-  const keyMaterial = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'klarpakke-secure-key-2024-change-in-production';
+  const keyMaterial = process.env.NEXT_PUBLIC_ENCRYPTION_KEY;
+  if (!keyMaterial) {
+    throw new Error('NEXT_PUBLIC_ENCRYPTION_KEY is not set. Encryption cannot proceed without a valid key.');
+  }
   
   const encoder = new TextEncoder();
   const keyData = encoder.encode(keyMaterial);

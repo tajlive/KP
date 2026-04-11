@@ -157,13 +157,13 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   } catch {
     // Fallback: last kritiske namespaces for å unngå blank side
     // Bruker Promise.all for å laste parallelt og redusere TTFB ved feil
-    const [base, landing, navigation, auth] = await Promise.all([
-      import('../../../messages/en/base.json').then((m) => m.default).catch(() => ({})),
+    // Oppdatert etter i18n konsolidering (base+navigation → common)
+    const [common, landing, auth] = await Promise.all([
+      import('../../../messages/en/common.json').then((m) => m.default).catch(() => ({})),
       import('../../../messages/en/landing.json').then((m) => m.default).catch(() => ({})),
-      import('../../../messages/en/navigation.json').then((m) => m.default).catch(() => ({})),
       import('../../../messages/en/auth.json').then((m) => m.default).catch(() => ({})),
     ]);
-    messages = { base, landing, navigation, auth };
+    messages = { common, landing, auth };
   }
 
   const hdrs = await headers();
@@ -172,6 +172,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     ? await getEarlyMetaDescription(locale, strippedPath)
     : null;
   const showVippsMarket = shouldShowVippsForRequest(hdrs);
+  
+  // Get CSP nonce from middleware header for inline scripts
+  const cspNonce = hdrs.get("x-csp-nonce") ?? undefined;
 
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -189,6 +192,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         ) : null}
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
         <script
+          nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){
   try {

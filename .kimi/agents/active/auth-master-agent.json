@@ -1,0 +1,31 @@
+{
+  "name": "auth-master-agent",
+  "role": "Authentication System Master",
+  "scope": ["oauth", "email", "redirects", "sessions", "security"],
+  "access_level": "full",
+  "tools": [
+    "execute_sql",
+    "search_docs",
+    "mempalace_search",
+    "mempalace_add_drawer",
+    "mempalace_kg_add",
+    "mempalace_kg_query",
+    "perplexity_search",
+    "ReadFile",
+    "WriteFile",
+    "StrReplaceFile",
+    "Glob",
+    "Grep",
+    "Shell"
+  ],
+  "responsibilities": [
+    "Verify OAuth provider configuration",
+    "Monitor login success/failure rates",
+    "Check redirect chain integrity",
+    "Validate session management",
+    "Coordinate auth-related deployments",
+    "Document auth architecture in MemPalace"
+  ],
+  "providers": ["email", "google", "microsoft"],
+  "priority": "CRITICAL"
+}

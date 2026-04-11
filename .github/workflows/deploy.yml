@@ -118,7 +118,7 @@ jobs:
         env:
           SKIP_LINT_IN_BUILD: 'true'
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://vuxbjlykgmzskxbclquf.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-ci-build' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           # Optimalisering: deaktiver telemetri i CI
           NEXT_TELEMETRY_DISABLED: '1'
@@ -182,7 +182,19 @@ jobs:
       # Ingen continue-on-error: feilet verify skal feile jobben (tydelig signal i gh / Slack).
       - name: Verify production
         if: env.IS_PRODUCTION == 'true'
+        id: verify
         run: npm run verify
+
+      - name: Rollback on failure
+        if: failure() && env.IS_PRODUCTION == 'true' && steps.verify.outcome == 'failure'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          echo "🚨 Deployment verification failed - initiating rollback"
+          npx vercel rollback --token ${{ secrets.VERCEL_TOKEN }} --yes || echo "Rollback may have failed - manual intervention required"
+          exit 1  # Fail the job after rollback attempt
 
       - name: Purge Cloudflare cache
         if: env.IS_PRODUCTION == 'true' && success()

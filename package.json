@@ -373,6 +373,7 @@
     "react-resizable-panels": "^4.6.2",
     "react-ts-tradingview-widgets": "^1.2.8",
     "recharts": "^3.8.1",
+    "rehype-sanitize": "^6.0.0",
     "resend": "^6.9.3",
     "rxjs": "^7.8.2",
     "sanity": "^5.20.0",

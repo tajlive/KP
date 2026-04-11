@@ -132,16 +132,16 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
-          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
         run: node scripts/create-test-users.js --from-env || echo "Provision may have failed - continuing"
 
       - name: Run E2E Critical
         id: e2e
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ inputs.environment == 'staging' && vars.STAGING_URL || 'https://www.klarpakke.no' }}
-          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL || 'tom@klarpakke.no' }}
-          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD || 'TestPassword123!' }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
         run: |
           if npx playwright test --project=critical-chromium --project=smoke-chromium; then
             echo "status=passed" >> $GITHUB_OUTPUT

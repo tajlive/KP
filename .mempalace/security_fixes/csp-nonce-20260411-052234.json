@@ -1,0 +1,59 @@
+{
+  "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "agent": "CSP Security Agent",
+  "title": "CSP Nonce-Based Security Implementation",
+  "category": "security_fixes",
+  "priority": "high",
+  "description": "Replaced 'unsafe-inline' in CSP with cryptographically secure nonce-based approach",
+  "changes": [
+    {
+      "file": "src/middleware/csp.ts",
+      "action": "created",
+      "details": "New CSP middleware with nonce generation using crypto.randomBytes(16)"
+    },
+    {
+      "file": "src/middleware.ts",
+      "action": "modified",
+      "details": "Integrated nonce-based CSP headers into main middleware flow"
+    },
+    {
+      "file": "src/middleware/index.ts",
+      "action": "modified",
+      "details": "Exported cspMiddleware and utility functions"
+    },
+    {
+      "file": "src/hooks/useCSPNonce.ts",
+      "action": "created",
+      "details": "React hook for client components to access CSP nonce"
+    },
+    {
+      "file": "src/app/[locale]/layout.tsx",
+      "action": "modified",
+      "details": "Added nonce to inline script for Supabase token cleanup"
+    },
+    {
+      "file": "next.config.mjs",
+      "action": "modified",
+      "details": "Removed CSP header from config (now handled by middleware)"
+    }
+  ],
+  "security_improvements": [
+    "Replaced 'unsafe-inline' in script-src with nonce-based approach",
+    "Replaced 'unsafe-inline' in style-src with nonce-based approach",
+    "Cryptographically secure nonce using crypto.randomBytes(16).toString('base64')",
+    "Unique nonce generated for every request (prevents replay attacks)",
+    "Nonce exposed via X-CSP-Nonce header for client-side use",
+    "Regex escaping function to prevent injection attacks"
+  ],
+  "backward_compatibility": [
+    "Middleware generates nonce for all requests",
+    "Client components can access nonce via useCSPNonce hook",
+    "Inline scripts must use nonce attribute",
+    "Dev mode still allows 'unsafe-eval' for HMR"
+  ],
+  "compliance": {
+    "no_eval": true,
+    "regex_escaped": true,
+    "crypto_secure": true
+  }
+}
