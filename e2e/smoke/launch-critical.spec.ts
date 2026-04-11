@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://www.klarpakke.no";
+const BASE = process.env.PLAYWRIGHT_TEST_BASE_URL || process.env.BASE_URL || "http://localhost:3000";
 
 test("Landing NO: laster og har CTA", async ({ page }) => {
   await page.goto(`${BASE}/no`, { waitUntil: "domcontentloaded" });
