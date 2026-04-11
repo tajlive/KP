@@ -105,6 +105,19 @@ function applySecurityHeaders(response: NextResponse, nonce: string): NextRespon
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Skip i18n for auth routes (they don't use locale prefix)
+  if (pathname.startsWith("/auth/")) {
+    // For auth routes, just apply security headers and pass through
+    let nonce: string;
+    try {
+      nonce = generateNonce();
+    } catch {
+      nonce = "fallback-nonce-" + Date.now();
+    }
+    const response = NextResponse.next();
+    return applySecurityHeaders(response, nonce);
+  }
+
   // Generate nonce for this request
   let nonce: string;
   try {
