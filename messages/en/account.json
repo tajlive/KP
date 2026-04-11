@@ -1,0 +1,133 @@
+{
+  "title": "Innstillinger",
+  "subtitle": "Administrer din konto og preferanser",
+  "tabs": {
+    "profile": "Profil",
+    "api": "API Nøkler",
+    "notifications": "Varsler",
+    "security": "Sikkerhet",
+    "preferences": "Preferanser"
+  },
+  "profile": {
+    "title": "Profilinformasjon",
+    "fullName": "Fullt navn",
+    "email": "E-post",
+    "bio": "Bio",
+    "avatar": "Profilbilde",
+    "uploadAvatar": "Last opp bilde",
+    "changePassword": "Endre passord",
+    "save": "Lagre endringer",
+    "saved": "Endringer lagret!",
+    "error": "Kunne ikke lagre endringer"
+  },
+  "api": {
+    "title": "API Innstillinger",
+    "description": "Koble til handelsplattformer for automatisk trading",
+    "binance": {
+      "title": "Binance API",
+      "description": "Koble til din Binance-konto for automatisk trading",
+      "addNew": "Legg til ny API-nøkkel",
+      "label": "Merkelapp",
+      "labelPlaceholder": "F.eks. Hovedkonto, Testkonto",
+      "apiKey": "API-nøkkel",
+      "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
+      "apiSecret": "API Secret",
+      "apiSecretPlaceholder": "Skriv inn din Binance API Secret",
+      "testnet": "Bruk Binance Testnet (for testing)",
+      "testConnection": "Test Tilkobling",
+      "saveKey": "Lagre API-nøkkel",
+      "testing": "Tester...",
+      "saving": "Lagrer...",
+      "success": "✅ API-nøkkel lagret!",
+      "testSuccess": "✅ Tilkobling vellykket!",
+      "testFailed": "❌ Tilkobling feilet",
+      "error": "Feil ved lagring",
+      "deleteConfirm": "Er du sikker på at du vil slette denne API-nøkkelen?",
+      "showSecret": "Vis secret",
+      "hideSecret": "Skjul secret",
+      "yourKeys": "Dine API-nøkler",
+      "noKeys": "Ingen API-nøkler lagt til",
+      "noKeysDesc": "Legg til din første API-nøkkel for å komme i gang",
+      "lastTested": "Sist testet",
+      "status": {
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "success": "Vellykket",
+        "failed": "Feilet",
+        "pending": "Venter"
+      },
+      "howToGet": {
+        "title": "Hvordan få Binance API-nøkler",
+        "intro": "Følg disse stegene for å få dine API-nøkler:",
+        "step1": "1. Logg inn på din Binance-konto",
+        "step2": "2. Gå til Profil → API Management",
+        "step3": "3. Opprett en ny API-nøkkel (gi den et navn)",
+        "step4": "4. Fullfør 2FA-verifisering",
+        "step5": "5. Kopier både API Key og Secret Key",
+        "step6": "6. Aktiver 'Enable Spot & Margin Trading' tillatelse",
+        "step7": "7. Lim inn over og test tilkoblingen",
+        "warning": "⚠️ Aldri del dine API-nøkler med noen. Hold dem sikre."
+      }
+    }
+  },
+  "notifications": {
+    "title": "Varselinnstillinger",
+    "email": "E-postvarsler",
+    "push": "Push-varsler",
+    "trading": "Trading-varsler",
+    "positionOpened": "Når en posisjon åpnes",
+    "positionClosed": "Når en posisjon lukkes",
+    "priceAlerts": "Prisvarsler",
+    "courseUpdates": "Kursoppdateringer",
+    "newsletter": "Nyhetsbrev"
+  },
+  "security": {
+    "title": "Sikkerhet",
+    "twoFactor": "To-faktor autentisering",
+    "enable2FA": "Aktiver 2FA",
+    "disable2FA": "Deaktiver 2FA",
+    "sessions": "Aktive økter",
+    "signOutAll": "Logg ut alle enheter"
+  },
+  "billing": {
+    "sectionTitle": "Subscription",
+    "title": "Subscription & billing",
+    "description": "Update your card, view invoices, or cancel via Stripe’s secure portal.",
+    "cta": "Open billing portal",
+    "loading": "Opening…",
+    "error": "Could not open the portal. Try again or contact support."
+  },
+  "preferences": {
+    "title": "Preferanser",
+    "language": "Språk",
+    "timezone": "Tidssone",
+    "currency": "Valuta",
+    "theme": "Tema",
+    "themeLight": "Lys",
+    "themeDark": "Mørk",
+    "themeAuto": "Automatisk"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "subtitle": "Your personal wallet for crypto trading",
+    "security": {
+      "title": "Security first",
+      "readOnly": "We only request <strong>read-only</strong> API keys. This means we can read balances and transactions, but <strong>NEVER</strong> execute trades or withdrawals.",
+      "warning": "Never share API keys with write access (write/trade/withdraw).",
+      "commission": "We receive a small commission from Binance at no extra cost to you. This helps us keep the service free."
+    }
+  },
+  "connected": "Connected",
+  "notConnected": "Not connected",
+  "updatedNow": "Updated now",
+  "selectExchange": "Select exchange",
+  "addExchange": "Add exchange",
+  "exchangeHelp": "If you don't have an exchange account yet, we recommend Binance. You can later connect your account here to see everything in one place.",
+  "balances": {
+    "title": "Your balances",
+    "total": "Total value",
+    "currency": "Currency",
+    "amount": "Amount",
+    "value": "Value"
+  }
+}

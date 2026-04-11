@@ -311,39 +311,14 @@ const nextConfig = {
   },
 
   // Headers (optimized for security and performance)
+  // NOTE: Content-Security-Policy is now handled by middleware (src/middleware.ts)
+  // with nonce-based approach instead of 'unsafe-inline' for enhanced security
   async headers() {
-    const isDev = process.env.NODE_ENV === "development";
-    /* Lokale WS (HMR, Turbo, Console Ninja m.m.) — kun dev; prod beholdes streng */
-    const devLocalWs =
-      " ws://localhost:* ws://127.0.0.1:* wss://localhost:* wss://127.0.0.1:*";
-
-    /* CSP constructed as single-line string - NO comments inside */
-    const cspHeader = [
-      "default-src 'self';",
-      "script-src 'self' 'unsafe-inline'" + (isDev ? " 'unsafe-eval'" : "") + " https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.vercel-scripts.com https://vercel.live https://plausible.io;",
-      "style-src 'self' 'unsafe-inline';",
-      "img-src 'self' blob: data: https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.coingecko.com https://vercel.com https://klarpakke.no https://www.klarpakke.no;",
-      "font-src 'self' data: https://vercel.live https://r2cdn.perplexity.ai;",
-      "worker-src 'self' blob:;",
-      "object-src 'none';",
-      "base-uri 'self';",
-      "form-action 'self';",
-      "frame-ancestors 'none';",
-      "connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://plausible.io https://o4509555622608896.ingest.de.sentry.io" +
-        (isDev ? devLocalWs : "") +
-        ";",
-      "frame-src https://vercel.live;",
-      "upgrade-insecure-requests;",
-    ].join(" ");
-
     return [
       {
         source: "/:path*",
         headers: [
-          {
-            key: "Content-Security-Policy",
-            value: cspHeader,
-          },
+          // CSP header removed - handled by middleware with nonce-based approach
           {
             key: "X-Frame-Options",
             value: "DENY",

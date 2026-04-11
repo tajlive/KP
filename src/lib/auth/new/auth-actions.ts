@@ -87,6 +87,26 @@ export async function signInWithGoogle() {
   }
 }
 
+export async function signInWithMicrosoft() {
+  const supabase = await createClient();
+  
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "azure",
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      scopes: "email profile openid",
+    },
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  if (data.url) {
+    redirect(data.url);
+  }
+}
+
 // ============================================
 // PASSWORD RESET
 // ============================================
