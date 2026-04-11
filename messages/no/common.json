@@ -21,5 +21,18 @@
   "edit": "Rediger",
   "update": "Oppdater",
   "submit": "Send inn",
-  "refresh": "Oppdater side"
+  "refresh": "Oppdater side",
+  "navigation": {
+    "home": "Hjem",
+    "courses": "Kurs",
+    "pricing": "Priser",
+    "login": "Logg inn",
+    "signup": "Registrer deg",
+    "profile": "Profil",
+    "tagline": "Lær å trade krypto på den smarte måten",
+    "navLearn": "Lær",
+    "navTrade": "Trade",
+    "navBots": "Bots",
+    "navPricing": "Priser"
+  }
 }

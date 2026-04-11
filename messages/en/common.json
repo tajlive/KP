@@ -21,5 +21,18 @@
   "edit": "Edit",
   "update": "Update",
   "submit": "Submit",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "navigation": {
+    "home": "Home",
+    "courses": "Courses",
+    "pricing": "Pricing",
+    "login": "Log in",
+    "signup": "Sign up",
+    "profile": "Profile",
+    "tagline": "Learn to trade crypto the smart way",
+    "navLearn": "Learn",
+    "navTrade": "Trade",
+    "navBots": "Bots",
+    "navPricing": "Pricing"
+  }
 }
