@@ -27,11 +27,11 @@ export function i18nMiddleware(
 ): NextResponse | Promise<NextResponse> {
   const pathname = request.nextUrl.pathname;
   
-  // KRITISK: Ikke redirect auth/callback - det ødelegger OAuth PKCE flyten
-  // Route handleren ligger i app/[locale]/auth/callback/ og trenger locale prefix
-  if (pathname.includes("/auth/callback")) {
+  // KRITISK: Ikke redirect auth/* routes - de er utenfor [locale] mappa
+  // og skal ikke prosesseres av next-intl (forårsaker redirect loops)
+  if (pathname.startsWith("/auth/") || pathname === "/login" || pathname === "/register") {
     const res = NextResponse.next();
-    res.headers.set("x-kp-auth-callback", "skipped-i18n");
+    res.headers.set("x-kp-auth-route", "skipped-i18n");
     return res;
   }
 
