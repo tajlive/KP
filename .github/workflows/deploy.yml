@@ -123,6 +123,19 @@ jobs:
           # Optimalisering: deaktiver telemetri i CI
           NEXT_TELEMETRY_DISABLED: '1'
 
+      - name: Verify vercel.json
+        run: |
+          echo "=== vercel.json content ==="
+          cat vercel.json
+          echo ""
+          echo "=== Checking for installCommand ==="
+          if grep -q "installCommand" vercel.json; then
+            echo "ERROR: installCommand found in vercel.json!"
+            exit 1
+          else
+            echo "OK: installCommand not found"
+          fi
+
       # --no-wait: CLI kan henge lenge på «Completing…» etter vellykket deploy (GitHub job-timeout).
       - name: Deploy to Vercel
         id: vercel-deploy
