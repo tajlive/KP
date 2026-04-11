@@ -49,8 +49,11 @@ applyEnvFile(".env.development.local", { skipNodeEnv: true });
  */
 applyEnvFile(".env.example", { skipNodeEnv: true, fillMissingOnly: true });
 // Never force local Playwright runs to production via .env.example defaults
-delete process.env.BASE_URL;
-delete process.env.PLAYWRIGHT_TEST_BASE_URL;
+// Only delete if NOT in CI (CI should use the explicitly set env vars)
+if (!process.env.CI) {
+  delete process.env.BASE_URL;
+  delete process.env.PLAYWRIGHT_TEST_BASE_URL;
+}
 
 /**
  * `scripts/full-e2e.sh` eksporterer KLARPAKKE_E2E_FROM_PROVISION=1 etter create-test-users.js.
