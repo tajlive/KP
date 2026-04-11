@@ -36,7 +36,7 @@ const nextConfig = {
 
   // Cloudflare Pages compatibility
   // Note: API routes should not be affected by trailingSlash
-  trailingSlash: false,
+  // trailingSlash: false,  // DISABLED - may cause redirect loops with auth routes
 
   // Transpile packages to avoid webpack issues
   transpilePackages: ["next-intl", "@tanstack/react-query", "styled-components"],
