@@ -2,7 +2,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin({
   requestConfig: "./src/i18n.ts",
-  localePrefix: "as-needed"
 });
 
 /** @type {import('next').NextConfig} */
