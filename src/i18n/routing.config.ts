@@ -7,7 +7,7 @@ import { defineRouting } from "next-intl/routing";
 export const routing = defineRouting({
   locales: ["no", "en"],
   defaultLocale: "no",
-  localePrefix: "always",
+  localePrefix: "as-needed",
   // Ikke bruk Accept-Language til å omdirigere /dashboard → /en/dashboard.
   localeDetection: false,
 });
