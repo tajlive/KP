@@ -34,5 +34,26 @@
     "navTrade": "Trade",
     "navBots": "Bots",
     "navPricing": "Priser"
+  },
+  "footer": {
+    "description": "Lær å trade krypto på den smarte måten med Klarpakke. Vi tilbyr kurs, verktøy og paper trading for å hjelpe deg å lykkes.",
+    "headings": {
+      "product": "Produkt",
+      "company": "Selskap",
+      "legal": "Juridisk",
+      "payment": "Betaling"
+    },
+    "links": {
+      "courses": "Kurs",
+      "pricing": "Priser",
+      "paperTrading": "Paper Trading",
+      "calculator": "Kalkulator",
+      "about": "Om oss",
+      "contact": "Kontakt",
+      "help": "Hjelp",
+      "privacy": "Personvern",
+      "terms": "Vilkår"
+    },
+    "disclaimer": "Kryptovaluta er en høyrisikoinvestering. Ikke invester mer enn du har råd til å tape."
   }
 }
