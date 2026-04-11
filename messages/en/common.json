@@ -33,7 +33,10 @@
     "navLearn": "Learn",
     "navTrade": "Trade",
     "navBots": "Bots",
-    "navPricing": "Pricing"
+    "navPricing": "Pricing",
+    "siteNavAria": "Main navigation",
+    "myPage": "Dashboard",
+    "logout": "Log out"
   },
   "footer": {
     "description": "Learn to trade crypto the smart way with Klarpakke. We offer courses, tools, and paper trading to help you succeed.",
@@ -55,5 +58,41 @@
       "terms": "Terms"
     },
     "disclaimer": "Cryptocurrency is a high-risk investment. Do not invest more than you can afford to lose."
+  },
+  "dashboard": {
+    "sidebar": {
+      "home": "Home",
+      "learn": "Learn",
+      "trade": "Trading (paper)",
+      "trading": "Trading",
+      "robots": "Bots",
+      "history": "History",
+      "results": "Results",
+      "profile": "Profile",
+      "sectionTrading": "Trading",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar",
+      "mode": "Mode",
+      "language": "Language",
+      "displayCurrency": "Display currency",
+      "overview": "Overview",
+      "portfolio": "Portfolio",
+      "liveTrading": "Live Trading",
+      "binanceApi": "Binance API",
+      "activity": "Activity",
+      "taxReport": "Tax Report",
+      "settings": "Settings",
+      "admin": "Admin",
+      "logout": "Log out",
+      "paperTrading": "Paper Trading",
+      "autoTrade": "Start bot",
+      "ai": "AI",
+      "earn": "Learn",
+      "forYou": "For you",
+      "alerts": "Alerts",
+      "guide": "Guide",
+      "mainMenu": "Main Menu",
+      "closeMenu": "Close menu"
+    }
   }
 }
