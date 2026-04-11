@@ -224,11 +224,9 @@ const nextConfig = {
 
   async redirects() {
     return [
-      // Auth redirects - /login → /auth/login (fix for broken auth links)
-      { source: "/login", destination: "/auth/login", permanent: true },
-      { source: "/:locale/login", destination: "/auth/login", permanent: true },
-      { source: "/register", destination: "/auth/register", permanent: true },
-      { source: "/:locale/register", destination: "/auth/register", permanent: true },
+      // Auth redirects - /login → /no/login (fix for broken auth links)
+      { source: "/login", destination: "/no/login", permanent: true },
+      { source: "/register", destination: "/no/register", permanent: true },
       
       // NOTE: /no/ redirect removed to fix lesson routes (KLA-156)
       // { source: "/no/:path*", destination: "/:path*", permanent: true },
