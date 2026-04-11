@@ -124,7 +124,13 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(i18nResponse, nonce);
   }
 
-  // 2. Auth håndtering
+  // 2. Auth håndtering - create a response to modify cookies on
+  const response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+  
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -133,8 +139,8 @@ export async function middleware(request: NextRequest) {
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookies) => {
-          cookies.forEach(({ name, value }) => {
-            request.cookies.set(name, value);
+          cookies.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
           });
         },
       },
@@ -163,7 +169,12 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(redirectResponse, nonce);
   }
 
-  // Apply security headers to the response
+  // Apply security headers to i18n response (which includes the body)
+  // Copy any cookies set by Supabase to the i18n response
+  response.cookies.getAll().forEach(cookie => {
+    i18nResponse.cookies.set(cookie.name, cookie.value, cookie);
+  });
+  
   return applySecurityHeaders(i18nResponse, nonce);
 }
 

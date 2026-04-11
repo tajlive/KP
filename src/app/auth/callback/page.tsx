@@ -41,8 +41,11 @@ export default function AuthCallbackPage() {
         if (error) {
           setError(error.message);
         } else {
-          // Success! Redirect til dashboard
-          router.push("/dashboard");
+          // Success! Redirect til dashboard with locale
+          const locale = window.location.pathname.split('/')[1];
+          const targetLocale = ['no', 'en'].includes(locale) ? locale : 'no';
+          router.push(`/${targetLocale}/dashboard`);
+          router.refresh(); // Refresh to ensure middleware picks up session
         }
       });
   }, [searchParams, router]);

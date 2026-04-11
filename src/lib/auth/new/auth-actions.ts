@@ -9,6 +9,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 
 // ============================================
 // EMAIL/PASSWORD AUTH
@@ -29,7 +30,8 @@ export async function signInWithEmail(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  const locale = await getLocale();
+  redirect(`/${locale}/dashboard`);
 }
 
 export async function signUpWithEmail(formData: FormData) {
@@ -50,7 +52,7 @@ export async function signUpWithEmail(formData: FormData) {
     return { error: error.message };
   }
 
-  return { success: true, message: "Sjekk e-posten din for bekreftelse" };
+  return { success: true, message: "Check your email for confirmation" };
 }
 
 export async function signOut() {
@@ -124,7 +126,7 @@ export async function sendPasswordReset(formData: FormData) {
     return { error: error.message };
   }
 
-  return { success: true, message: "Passordtilbakestilling sendt til e-post" };
+  return { success: true, message: "Password reset sent to email" };
 }
 
 export async function updatePassword(formData: FormData) {
@@ -140,7 +142,8 @@ export async function updatePassword(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  const locale = await getLocale();
+  redirect(`/${locale}/dashboard`);
 }
 
 // ============================================

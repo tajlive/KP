@@ -33,7 +33,10 @@
     "navLearn": "Lær",
     "navTrade": "Trade",
     "navBots": "Bots",
-    "navPricing": "Priser"
+    "navPricing": "Priser",
+    "siteNavAria": "Hovednavigasjon",
+    "myPage": "Min Side",
+    "logout": "Logg ut"
   },
   "footer": {
     "description": "Lær å trade krypto på den smarte måten med Klarpakke. Vi tilbyr kurs, verktøy og paper trading for å hjelpe deg å lykkes.",
@@ -55,5 +58,41 @@
       "terms": "Vilkår"
     },
     "disclaimer": "Kryptovaluta er en høyrisikoinvestering. Ikke invester mer enn du har råd til å tape."
+  },
+  "dashboard": {
+    "sidebar": {
+      "home": "Hjem",
+      "learn": "Lær",
+      "trade": "Handel (paper)",
+      "trading": "Handel",
+      "robots": "Roboter",
+      "history": "Historikk",
+      "results": "Resultater",
+      "profile": "Profil",
+      "sectionTrading": "Handel",
+      "expandSidebar": "Utvid sidepanel",
+      "collapseSidebar": "Skjul sidepanel",
+      "mode": "Modus",
+      "language": "Språk",
+      "displayCurrency": "Visningsvaluta",
+      "overview": "Oversikt",
+      "portfolio": "Portefølje",
+      "liveTrading": "Live-handel",
+      "binanceApi": "Binance API",
+      "activity": "Aktivitet",
+      "taxReport": "Skatterapport",
+      "settings": "Innstillinger",
+      "admin": "Administrator",
+      "logout": "Logg ut",
+      "paperTrading": "Lekepenger",
+      "autoTrade": "Start bot",
+      "ai": "AI",
+      "earn": "Læring",
+      "forYou": "For deg",
+      "alerts": "Varsler",
+      "guide": "Guide",
+      "mainMenu": "Hovedmeny",
+      "closeMenu": "Lukk meny"
+    }
   }
 }
