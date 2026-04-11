@@ -169,7 +169,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Matcher alt unntatt statiske filer og API routes
-    "/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Matcher alt unntatt statiske filer, API routes, og auth routes
+    "/((?!_next/static|_next/image|favicon.ico|api/|auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
