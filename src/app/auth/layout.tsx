@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Autentisering | Klarpakke",
   description: "Logg inn eller registrer deg på Klarpakke",
+  robots: { index: false, follow: false },
+  alternates: {
+    canonical: null,
+  },
 };
 
 export default function AuthLayout({
