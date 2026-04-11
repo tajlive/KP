@@ -10,11 +10,6 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="no">
-      <body className="antialiased bg-slate-950">
-        {children}
-      </body>
-    </html>
-  );
+  // Auth layout skal IKKE ha <html> eller <body> - det er root layout sitt ansvar
+  return <>{children}</>;
 }
