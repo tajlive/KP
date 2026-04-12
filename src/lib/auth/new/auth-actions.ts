@@ -7,7 +7,7 @@
 
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 
@@ -16,7 +16,7 @@ import { getLocale } from "next-intl/server";
 // ============================================
 
 export async function signInWithEmail(formData: FormData) {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -35,7 +35,7 @@ export async function signInWithEmail(formData: FormData) {
 }
 
 export async function signUpWithEmail(formData: FormData) {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -56,7 +56,7 @@ export async function signUpWithEmail(formData: FormData) {
 }
 
 export async function signOut() {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   await supabase.auth.signOut();
   redirect("/");
 }
@@ -66,7 +66,7 @@ export async function signOut() {
 // ============================================
 
 export async function signInWithGoogle() {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -90,7 +90,7 @@ export async function signInWithGoogle() {
 }
 
 export async function signInWithMicrosoft() {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "azure",
@@ -114,7 +114,7 @@ export async function signInWithMicrosoft() {
 // ============================================
 
 export async function sendPasswordReset(formData: FormData) {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   
   const email = formData.get("email") as string;
   
@@ -130,7 +130,7 @@ export async function sendPasswordReset(formData: FormData) {
 }
 
 export async function updatePassword(formData: FormData) {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   
   const password = formData.get("password") as string;
   
@@ -151,7 +151,7 @@ export async function updatePassword(formData: FormData) {
 // ============================================
 
 export async function getCurrentUser() {
-  const supabase = await createClient();
+  const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   return user;
 }

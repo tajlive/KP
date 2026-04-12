@@ -35,6 +35,7 @@ export function CoursePreview() {
 
   return (
     <section
+      suppressHydrationWarning
       id="land-kurs"
       className="scroll-mt-24 border-y border-white/[0.06] bg-slate-950/90 py-14 md:py-20"
     >

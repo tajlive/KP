@@ -20,6 +20,7 @@ import { ThemeProvider } from "@/shared/theme";
 import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 import { Inter } from "next/font/google";
 import { SURFACE } from "@/lib/design/tokens";
 import { CdsProvider } from "@/app/providers/CdsProvider";
@@ -183,7 +184,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
 
   return (
-    <html lang={locale} className={inter.variable}>
+    <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <head suppressHydrationWarning>
         {metaDescription != null ? (
           <meta name="description" content={metaDescription} />
@@ -193,7 +194,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GSC_VERIFICATION} />
         ) : null}
         {/* KRITISK: Rens korrupt Supabase auth-token FØR gotrue-js kjører */}
-        <script
+        <Script
+          id="supabase-auth-cleaner"
+          strategy="beforeInteractive"
           nonce={cspNonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){

@@ -52,7 +52,7 @@ export function ThreeSteps() {
   ];
 
   return (
-    <div className="pt-16 pb-12 md:pt-24 md:pb-16">
+    <div suppressHydrationWarning className="pt-16 pb-12 md:pt-24 md:pb-16">
       <div className="text-center mb-12">
         <h2 className="font-fraunces text-3xl md:text-4xl font-bold text-slate-100 mb-4">
           {t("sectionTitle")}
