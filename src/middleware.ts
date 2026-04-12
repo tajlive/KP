@@ -43,14 +43,15 @@ function generateNonce(): string {
  * Build CSP header with nonce
  * Replaces 'unsafe-inline' with nonce-based approach
  */
-function buildCSPHeader(nonce: string): string {
+function buildCSPHeader(_nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
   
-  // CSP directives - using nonce instead of 'unsafe-inline'
+  // CSP directives - using 'unsafe-inline' for compatibility
+  // TODO: Re-implement nonce-based CSP when Next.js 15 nonce injection is stable
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.vercel-scripts.com https://vercel.live https://plausible.io`,
-    `style-src 'self' 'nonce-${nonce}'`,
+    `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.vercel-scripts.com https://vercel.live https://plausible.io`,
+    `style-src 'self' 'unsafe-inline'`,
     "img-src 'self' blob: data: https://vuxbjlykgmzskxbclquf.supabase.co https://*.tradingview.com https://*.coingecko.com https://vercel.com https://klarpakke.no https://www.klarpakke.no",
     "font-src 'self' data: https://vercel.live https://r2cdn.perplexity.ai",
     "worker-src 'self' blob:",
@@ -105,10 +106,11 @@ function applySecurityHeaders(response: NextResponse, nonce: string): NextRespon
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip i18n for static files and auth routes (they don't use locale prefix)
+  // Skip i18n for static files, API routes, and auth routes (they don't use locale prefix)
   // Must be done BEFORE calling handleI18n to prevent redirect loops
   if (
     pathname.startsWith("/_next/") ||
+    pathname.startsWith("/api/") ||
     pathname.startsWith("/auth/")
   ) {
     // For auth routes, just apply security headers and pass through

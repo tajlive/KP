@@ -1,0 +1,61 @@
+{
+  "title": "Test kunnskapen din",
+  "subtitle": "Sjekk hva du har lært med vår quiz",
+  "startButton": "Start quiz",
+  "nextButton": "Neste",
+  "previousButton": "Forrige",
+  "finishButton": "Fullfør",
+  "retryButton": "Prøv igjen",
+  "questionCounter": "Spørsmål {current} av {total}",
+  "correctAnswer": "Riktig!",
+  "wrongAnswer": "Feil",
+  "explanationTitle": "Forklaring",
+  "resultTitle": "Resultat",
+  "resultSubtitle": "Du fullførte quizen!",
+  "scoreText": "Du fikk {score} av {total} riktige",
+  "perfectScore": "Perfekt! 🎉",
+  "goodScore": "Bra jobbet! 👍",
+  "retryScore": "Prøv igjen for å forbedre! 💪",
+  "questions": {
+    "0": {
+      "question": "Hva er Bitcoin?",
+      "options": [
+        "En digital valuta som fungerer uten sentral bank",
+        "En fysisk mynt laget av gull",
+        "En aksje i et teknologiselskap",
+        "En bank i USA"
+      ],
+      "explanation": "Bitcoin er en desentralisert digital valuta som ikke kontrolleres av noen sentral bank eller myndighet."
+    },
+    "1": {
+      "question": "Hva er 'paper trading'?",
+      "options": [
+        "Å handle med ekte penger",
+        "Å øve på trading med virtuelle penger",
+        "Å skrive om trading på papir",
+        "Å kjøpe papir-aksjer"
+      ],
+      "explanation": "Paper trading er en måte å øve på trading med virtuelle/simulerte penger, uten å risikere ekte penger."
+    },
+    "2": {
+      "question": "Hva betyr 'volatilitet' i kryptomarkedet?",
+      "options": [
+        "Hvor raskt prisen kan endre seg",
+        "Hvor mange som handler",
+        "Hvor gammel kryptovalutaen er",
+        "Hvor stor markedsverdien er"
+      ],
+      "explanation": "Volatilitet beskriver hvor mye prisen på en kryptovaluta svinger over tid. Høy volatilitet betyr store prissvingninger."
+    },
+    "3": {
+      "question": "Hva er en 'blockchain'?",
+      "options": [
+        "En database som er distribuert over mange datamaskiner",
+        "En type kredittkort",
+        "En bank i Sveits",
+        "En app for trading"
+      ],
+      "explanation": "Blockchain er en distribuert database (ledger) som registrerer alle transaksjoner på tvers av et nettverk av datamaskiner."
+    }
+  }
+}

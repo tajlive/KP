@@ -257,6 +257,7 @@ export function DashboardSidebar() {
               </>
             )}
             <button
+              data-testid="logout-button"
               onClick={handleSignOut}
               title={collapsed ? t("logout") : undefined}
               className={`flex items-center gap-3 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl w-full transition-colors font-medium border border-transparent hover:border-red-100 ${

@@ -50,7 +50,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+    <div data-testid="login-page" className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center">
@@ -61,7 +61,7 @@ export default function LoginPage() {
         {/* Login Card */}
         <div className="bg-slate-900 rounded-2xl p-8 border border-slate-800">
           {error && (
-            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+            <div data-testid="auth-error" className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
               {error}
             </div>
           )}
@@ -119,6 +119,7 @@ export default function LoginPage() {
           <div className="space-y-3">
             {/* Google Login */}
             <button
+              data-testid="google-login-button"
               onClick={handleGoogleLogin}
               disabled={loading}
               className="w-full py-3 px-4 bg-white hover:bg-gray-100 disabled:bg-gray-100 text-gray-900 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -146,6 +147,7 @@ export default function LoginPage() {
 
             {/* Microsoft Login */}
             <button
+              data-testid="microsoft-login-button"
               onClick={handleMicrosoftLogin}
               disabled={loading}
               className="w-full py-3 px-4 bg-[#2F2F2F] hover:bg-[#1F1F1F] disabled:bg-[#2F2F2F]/50 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"

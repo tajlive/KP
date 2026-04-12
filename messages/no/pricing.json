@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "title": "Priser | Klarpakke Universitet",
+    "description": "Velg planen som passer deg. Fra gratis studentnivå til avansert Pro. Ingen skjulte gebyrer."
+  },
+  "title": "Velg din plan",
+  "sectionTitle": "Priser",
+  "description": "Fleksible planer for alle nivåer. Start gratis og oppgrader når du er klar.",
+  "disclaimer": "Alle priser er i NOK og inkluderer mva. Ingen bindingstid.",
+  "mostPopular": "Mest populær",
+  "tiers": {
+    "student": {
+      "name": "Student",
+      "period": "gratis",
+      "description": "Perfekt for å komme i gang",
+      "cta": "Start gratis"
+    },
+    "basis": {
+      "name": "Basis",
+      "description": "For deg som vil lære mer",
+      "cta": "Velg Basis"
+    },
+    "komplett": {
+      "name": "Komplett",
+      "description": "Mest verdi for pengene",
+      "cta": "Velg Komplett"
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "For seriøse tradere",
+      "cta": "Velg Pro"
+    }
+  },
+  "success": {
+    "title": "Takk for din bestilling!",
+    "loadingTitle": "Bekrefter betaling...",
+    "verifying": "Verifiserer betaling...",
+    "invalidSession": "Ugyldig betalingsøkt. Vennligst prøv igjen.",
+    "loginRequired": "Du må være logget inn for å se din bestilling.",
+    "messageConfirmed": "Din betaling er bekreftet! Du vil motta en e-post med detaljer.",
+    "messagePending": "Din betaling behandles. Vi sender deg en e-post når den er bekreftet.",
+    "messageFallback": "Takk for din bestilling! Sjekk e-posten din for detaljer.",
+    "loadingMessage": "Laster..."
+  },
+  "cancel": {
+    "title": "Betaling avbrutt",
+    "message": "Du har avbrutt betalingen. Ingen belastning har skjedd.",
+    "returnButton": "Tilbake til priser"
+  }
+}

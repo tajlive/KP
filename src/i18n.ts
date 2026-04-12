@@ -16,6 +16,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     // Load all consolidated namespaces for the locale
     const [
       common,
+      metadata,
       navigation,
       footer,
       auth,
@@ -32,15 +33,21 @@ export default getRequestConfig(async ({ requestLocale }) => {
       simulator,
       education,
       checkout,
+      pricing,
       about,
       competition,
       help,
+      quiz,
+      strategyMarketplace,
       legal,
       tax
     ] = await Promise.all([
       import(`../messages/${validLocale}/common.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/common.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/metadata.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/metadata.json").then((m) => m.default)),
       import(`../messages/${validLocale}/navigation.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/navigation.json").then((m) => m.default)),
@@ -89,6 +96,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../messages/${validLocale}/checkout.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/checkout.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/pricing.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/pricing.json").then((m) => m.default)),
       import(`../messages/${validLocale}/about.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/about.json").then((m) => m.default)),
@@ -98,6 +108,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../messages/${validLocale}/help.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/help.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/quizPage.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/quizPage.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/strategyMarketplace.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/strategyMarketplace.json").then((m) => m.default)),
       import(`../messages/${validLocale}/legal.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/legal.json").then((m) => m.default)),
@@ -110,6 +126,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       locale: validLocale,
       messages: {
         common,
+        metadata,
         navigation,
         footer,
         auth,
@@ -126,9 +143,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
         simulator,
         education,
         checkout,
+        pricing,
         about,
         competition,
-        help,
+        helpPage: help,
+        quizPage: quiz,
+        strategyMarketplace,
         legal,
         tax
       },

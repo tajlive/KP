@@ -5,6 +5,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
 import { AuthProvider } from "@/lib/auth/new/AuthContext";
+import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
+import { SanityTokensProvider } from "@/lib/design/useSanityTokens";
 // import { SessionCleanup } from "@/features/auth/SessionCleanup";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
@@ -294,7 +296,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
               <MarketingProviders>
                 <ErrorBoundary>
                   <AuthProvider>
-                    <LocaleMarketingShell>{children}</LocaleMarketingShell>
+                    <SanityTokensProvider>
+                      <AuthHashHandler />
+                      <LocaleMarketingShell>{children}</LocaleMarketingShell>
+                    </SanityTokensProvider>
                   </AuthProvider>
                 </ErrorBoundary>
               </MarketingProviders>

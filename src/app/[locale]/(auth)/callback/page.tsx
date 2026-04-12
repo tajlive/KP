@@ -57,11 +57,12 @@ export default function AuthCallbackPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+      <div data-testid="auth-error" className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
         <div className="bg-slate-900 rounded-2xl p-8 border border-slate-800 max-w-md w-full text-center">
           <h1 className="text-xl font-bold text-red-400 mb-4">Innlogging feilet</h1>
           <p className="text-slate-400 mb-6">{error}</p>
           <button
+            data-testid="retry-login-button"
             onClick={() => router.push("/no/login")}
             className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
           >
@@ -73,7 +74,7 @@ export default function AuthCallbackPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+    <div data-testid="auth-callback-loading" className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
         <h1 className="text-xl font-bold text-white mb-2">Fullfører innlogging...</h1>

@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "title": "Strategy Metadata",
+    "titleLabel": "Strategy Name",
+    "titlePlaceholder": "E.g. 'Conservative BTC Strategy'",
+    "titleError": "Strategy name is required",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe your strategy...",
+    "priceLabel": "Price (NOK)",
+    "pricePlaceholder": "E.g. 199",
+    "priceError": "Invalid price",
+    "publicLabel": "Public Strategy",
+    "publicDescription": "Other users can see and purchase this strategy",
+    "submit": "Save Strategy",
+    "submitUpdate": "Update Strategy"
+  },
+  "browse": {
+    "title": "Strategies",
+    "subtitle": "Browse and manage your trading strategies",
+    "listHeading": "Your Strategies",
+    "loading": "Loading strategies...",
+    "empty": "No strategies found. Create your first strategy!",
+    "loadError": "Could not load strategies",
+    "retry": "Try again",
+    "openAutoTrade": "Open auto-trading",
+    "metadataSectionTitle": "Strategy Information",
+    "metadataSectionHint": "Edit details for this strategy",
+    "demoSaved": "Demo '{title}' saved!",
+    "createNew": "Create new strategy"
+  }
+}

@@ -15,6 +15,7 @@ const HEALTH_CHECKS = [
   "general",
   "sonar",
   "websocket",
+  "oauth",
 ] as const;
 
 type HealthCheck = (typeof HEALTH_CHECKS)[number];
@@ -50,6 +51,10 @@ export async function GET(
       case "websocket": {
         const { GET: websocketHandler } = await import("@/app/api/health/websocket/route");
         return websocketHandler();
+      }
+      case "oauth": {
+        const { GET: oauthHandler } = await import("@/app/api/health/oauth/route");
+        return oauthHandler();
       }
       default:
         return NextResponse.json(
