@@ -6,13 +6,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from "@/lib/supabase/server";
 import { PPOAgent, ACTIONS } from '@/lib/trading/rl/ppo-agent';
 import { calculateSentimentSignal } from '@/lib/trading/rl/sentiment-reward';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

@@ -11,7 +11,7 @@ import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing.config";
-import { randomBytes } from "crypto";
+
 
 // Opprett next-intl middleware
 const handleI18n = createIntlMiddleware(routing);
@@ -36,7 +36,9 @@ const AUTH_ROUTES = [
  * Returns base64-encoded 16 bytes (128 bits)
  */
 function generateNonce(): string {
-  return randomBytes(16).toString("base64");
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Buffer.from(array).toString("base64");
 }
 
 /**
