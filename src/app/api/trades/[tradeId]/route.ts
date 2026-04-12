@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import type { Database } from "@/types/database.types";
 
@@ -34,7 +34,7 @@ export async function GET(
 ) {
   try {
     const { tradeId } = await params;
-    const supabase = await createClient();
+    const supabase = await createServerClient();
 
     // Hent bruker
     const {

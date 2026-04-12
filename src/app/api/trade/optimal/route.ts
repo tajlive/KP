@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeOptimalTrade } from '@/lib/trading/optimal/engine';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from "@/lib/supabase/server";
 import { z } from 'zod';
 
 const OptimalTradeSchema = z.object({
@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 // GET endpoint for trade history
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

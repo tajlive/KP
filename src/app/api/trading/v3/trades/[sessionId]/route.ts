@@ -5,7 +5,7 @@
  * Includes indicator snapshots for chart visualization
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 import { generateExplanation } from "@/lib/trader-explanations";
 import type { TradeReasonCode, TradeReasonParams, IndicatorSnapshot } from "@/types/trading";
 import { NextRequest, NextResponse } from "next/server";
@@ -49,7 +49,7 @@ export async function GET(
     const locale = (searchParams.get("locale") as "no" | "en") || "no";
     const limit = parseInt(searchParams.get("limit") || "50", 10);
 
-    const supabase = await createClient();
+    const supabase = await createServerClient();
 
     // Verify user owns this session
     const { data: { user } } = await supabase.auth.getUser();

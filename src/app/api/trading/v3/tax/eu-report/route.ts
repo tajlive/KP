@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from "@/lib/supabase/server";
 import type { EuropeanJurisdiction } from '@/lib/trading/white-label/european-tax';
 
 // Interfaces for tax report data
@@ -43,7 +43,7 @@ const VALID_JURISDICTIONS: EuropeanJurisdiction[] = ['DE', 'FR', 'IT', 'ES', 'NL
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -171,7 +171,7 @@ export async function GET(
     const url = new URL(request.url);
     const jurisdiction = url.searchParams.get('jurisdiction') || '';
     const year = url.searchParams.get('year') || '';
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {

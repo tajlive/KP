@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchHistoricalData, runBacktest, generateSignalsFromLog, StrategyType, RiskProfile, STRATEGY_MAP } from '@/lib/backtest/engine';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from "@/lib/supabase/server";
 import { z } from 'zod';
 
 const BacktestSchema = z.object({
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Rate limit check - TODO: add backtest_results table (KLA-240)
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
     // Note: Rate limiting and storage disabled until backtest_results table is created
