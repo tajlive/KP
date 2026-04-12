@@ -39,6 +39,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       help,
       quiz,
       strategyMarketplace,
+      coursePreview,
+      threeSteps,
       legal,
       tax
     ] = await Promise.all([
@@ -114,6 +116,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../messages/${validLocale}/strategyMarketplace.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/strategyMarketplace.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/coursePreview.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/coursePreview.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/threeSteps.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/threeSteps.json").then((m) => m.default)),
       import(`../messages/${validLocale}/legal.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/legal.json").then((m) => m.default)),
@@ -149,6 +157,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
         helpPage: help,
         quizPage: quiz,
         strategyMarketplace,
+        coursePreview,
+        threeSteps,
         legal,
         tax
       },
