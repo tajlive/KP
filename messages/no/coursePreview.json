@@ -1,0 +1,21 @@
+{
+  "sectionTitle": "Kom i gang på under én time",
+  "sectionSubtitle": "Gratis å starte — fullfør på din egen tid",
+  "freeBadge": "Gratis",
+  "seeAllCourses": "Se alle kurs →",
+  "course1": {
+    "title": "Hva er Bitcoin?",
+    "level": "Nybegynner",
+    "time": "15 min"
+  },
+  "course2": {
+    "title": "Slik leser du en chart",
+    "level": "Nybegynner",
+    "time": "20 min"
+  },
+  "course3": {
+    "title": "Din første papirhandel",
+    "level": "Nybegynner",
+    "time": "10 min"
+  }
+}
