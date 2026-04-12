@@ -207,5 +207,52 @@ Database: DECLARE på toppnivå
 
 ---
 
-**Sist oppdatert:** 2026-04-09  
-**Versjon:** 2.0 (Konsolidert)
+## 🤖 Agent Collaboration (KIMI + Gemini/Antigravity)
+
+### Hurtigstart
+
+```bash
+# 1. Setup (én gang)
+npm run agent:setup
+source ~/.zshrc
+
+# 2. Planlegg med Gemini
+npm run ask:gemini "Implementer mean reversion trading strategy"
+# eller: agent-plan "din oppgave"
+
+# 3. KIMI utfører
+npm run tell:kimi TASK-20240411-143022-A1B2.md
+# eller: agent-exec TASK-XXXX.md
+
+# 4. Sjekk status
+npm run agent:status
+```
+
+### Samarbeidsflyt
+
+```
+Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
+         ▲                                                            │
+         └──────────────────── Handoff ←───────────────────────────────┘
+```
+
+### Nøkkelkommandoer
+
+| Kommando | Beskrivelse |
+|----------|-------------|
+| `npm run agent:plan "..."` | Send til Gemini for planlegging |
+| `npm run agent:exec <file>` | KIMI utfører plan |
+| `npm run agent:swarm "filer"` | Kjør QA på filer |
+| `npm run agent:handoff <fra> <til>` | Overlevering |
+| `npm run agent:status` | Vis systemstatus |
+
+### Dokumentasjon
+
+- **Full guide:** `AGENT_COLLABORATION_GUIDE.md`
+- **Swarm system:** `SWARM-GUIDE.md`
+- **Antigravity:** `docs/antigravity.md`
+
+---
+
+**Sist oppdatert:** 2026-04-11  
+**Versjon:** 2.1 (+Agent Collaboration)

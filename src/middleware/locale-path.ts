@@ -5,15 +5,22 @@
 
 const LOCALE_RE = /^(no|en|th|zh)$/;
 
+import { routing } from "@/i18n/routing.config";
+
 /**
- * Path for redirects with next-intl `localePrefix: 'as-needed'`: default locale (no)
- * has no `/no` prefix; other locales use `/{locale}/...`.
+ * Path for redirects with next-intl routing config.
+ * Respects localePrefix setting: 'always' means all locales including default get prefix.
  */
 export function localizedPathname(
   locale: string,
   strippedPath: string,
 ): string {
   const path = strippedPath.startsWith("/") ? strippedPath : `/${strippedPath}`;
+  // With localePrefix: "always", all locales including default get /{locale} prefix
+  if (routing.localePrefix === "always") {
+    return `/${locale}${path}`;
+  }
+  // legacy: localePrefix: "as-needed" (default locale without prefix)
   if (locale === "no") {
     return path;
   }

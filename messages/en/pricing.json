@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "title": "Pricing | Klarpakke University",
+    "description": "Choose the plan that fits you. From free student level to advanced Pro. No hidden fees."
+  },
+  "title": "Choose your plan",
+  "sectionTitle": "Pricing",
+  "description": "Flexible plans for all levels. Start free and upgrade when you're ready.",
+  "disclaimer": "All prices are in NOK and include VAT. No binding period.",
+  "mostPopular": "Most popular",
+  "tiers": {
+    "student": {
+      "name": "Student",
+      "period": "free",
+      "description": "Perfect for getting started",
+      "cta": "Start free"
+    },
+    "basis": {
+      "name": "Basic",
+      "description": "For those who want to learn more",
+      "cta": "Choose Basic"
+    },
+    "komplett": {
+      "name": "Complete",
+      "description": "Best value for money",
+      "cta": "Choose Complete"
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "For serious traders",
+      "cta": "Choose Pro"
+    }
+  },
+  "success": {
+    "title": "Thank you for your order!",
+    "loadingTitle": "Confirming payment...",
+    "verifying": "Verifying payment...",
+    "invalidSession": "Invalid payment session. Please try again.",
+    "loginRequired": "You must be logged in to view your order.",
+    "messageConfirmed": "Your payment is confirmed! You will receive an email with details.",
+    "messagePending": "Your payment is being processed. We'll email you when confirmed.",
+    "messageFallback": "Thank you for your order! Check your email for details.",
+    "loadingMessage": "Loading..."
+  },
+  "cancel": {
+    "title": "Payment cancelled",
+    "message": "You have cancelled the payment. No charge has been made.",
+    "returnButton": "Back to pricing"
+  }
+}

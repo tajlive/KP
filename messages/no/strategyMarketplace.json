@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "title": "Strategi-metadata",
+    "titleLabel": "Navn på strategi",
+    "titlePlaceholder": "F.eks. 'Konservativ BTC-strategi'",
+    "titleError": "Strateginavn er påkrevd",
+    "descriptionLabel": "Beskrivelse",
+    "descriptionPlaceholder": "Beskriv strategien din...",
+    "priceLabel": "Pris (NOK)",
+    "pricePlaceholder": "F.eks. 199",
+    "priceError": "Ugyldig pris",
+    "publicLabel": "Offentlig strategi",
+    "publicDescription": "Andre brukere kan se og kjøpe denne strategien",
+    "submit": "Lagre strategi",
+    "submitUpdate": "Oppdater strategi"
+  },
+  "browse": {
+    "title": "Strategier",
+    "subtitle": "Bla gjennom og administrer dine trading-strategier",
+    "listHeading": "Dine strategier",
+    "loading": "Laster strategier...",
+    "empty": "Ingen strategier funnet. Opprett din første strategi!",
+    "loadError": "Kunne ikke laste strategier",
+    "retry": "Prøv igjen",
+    "openAutoTrade": "Åpne auto-trading",
+    "metadataSectionTitle": "Strategi-informasjon",
+    "metadataSectionHint": "Rediger detaljer for denne strategien",
+    "demoSaved": "Demo '{title}' lagret!",
+    "createNew": "Opprett ny strategi"
+  }
+}

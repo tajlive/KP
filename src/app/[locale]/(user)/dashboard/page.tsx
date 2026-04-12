@@ -123,11 +123,13 @@ export default async function DashboardPage({
     }));
 
     return (
-      <DashboardContent
-        paperBalance={profile?.paper_balance ?? 100000}
-        trades={trades}
-        activeSession={activeSession}
-      />
+      <div data-testid="dashboard-page">
+        <DashboardContent
+          paperBalance={profile?.paper_balance ?? 100000}
+          trades={trades}
+          activeSession={activeSession}
+        />
+      </div>
     );
   } catch (error) {
     console.error("Dashboard error:", error);

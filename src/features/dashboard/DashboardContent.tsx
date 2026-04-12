@@ -51,8 +51,9 @@ export function DashboardContent({
   }, []);
 
   return (
-    <AnimatePresence mode="wait">
-      {isLoading ? (
+    <div suppressHydrationWarning>
+      <AnimatePresence mode="wait">
+        {isLoading ? (
         <motion.div
           key="skeleton"
           initial={{ opacity: 1 }}
@@ -82,5 +83,6 @@ export function DashboardContent({
         </motion.div>
       )}
     </AnimatePresence>
+    </div>
   );
 }

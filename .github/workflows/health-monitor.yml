@@ -7,8 +7,9 @@ name: 🩺 Health Monitor
 
 on:
   schedule:
-    # Hvert 5. minutt
-    - cron: '*/5 * * * *'
+    # Hvert 15. minutt (redusert fra 5 min for å spare GitHub Actions minutter)
+    # For kritisk overvåkning, bruk UptimeRobot eller Pingdom (gratis)
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 concurrency:

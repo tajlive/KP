@@ -1,9 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 const config = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    // App Router (Next.js 15)
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Feature-based architecture
+    './src/features/**/*.{js,ts,jsx,tsx,mdx}',
+    // Shared components
+    './src/shared/**/*.{js,ts,jsx,tsx,mdx}',
+    // Legacy components (migreres til features)
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    // Utilities og hooks
+    './src/lib/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/hooks/**/*.{js,ts,jsx,tsx,mdx}',
+    // Styles
+    './src/styles/**/*.css',
   ],
   theme: {
     extend: {

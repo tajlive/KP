@@ -155,7 +155,14 @@ export function BottomTabs() {
   const locale = useLocale();
   const t = useTranslations("dashboard.sidebar");
 
-  const [activeTab, setActiveTab] = useState<TabId>("home");
+  // Initialiser activeTab basert på pathname for å unngå hydration mismatch
+  // Server og klient må ha samme initial verdi
+  const getInitialTab = (): TabId => {
+    // Default til "home" - konsistent for både server og klient
+    return "home";
+  };
+
+  const [activeTab, setActiveTab] = useState<TabId>(getInitialTab);
   
   // Helper to check if a tab should be active based on current pathname
   const getActiveTabFromPath = (path: string): TabId => {
@@ -228,6 +235,7 @@ export function BottomTabs() {
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="fixed bottom-0 left-0 right-0 z-30 md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      suppressHydrationWarning
     >
       <div className="absolute inset-0 bg-[#0a0b0d]/95 backdrop-blur-xl border-t border-white/[0.08]" />
 

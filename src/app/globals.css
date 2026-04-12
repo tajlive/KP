@@ -1,6 +1,6 @@
 @config "../../tailwind.config.mjs";
 @import "tailwindcss" layer(base);
-@import "../styles/kp-tokens.css";
+@import "../styles/kp-tokens-sanity.css";  /* Sanity-klare design tokens */
 @import "../styles/kp-components.css";
 
 @theme {
