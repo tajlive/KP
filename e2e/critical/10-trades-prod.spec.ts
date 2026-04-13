@@ -11,13 +11,17 @@ test.describe("Critical: 10 Trades Flow @critical @trading @allure", () => {
   test("execute 10 paper trades successfully", async ({ page }) => {
     console.log("🔄 Logger inn...");
     
-    // Login
-    await page.goto("/no/innlogging", { timeout: 60_000 });
-    await page.getByTestId("innlogging-email-input").fill(TEST_USER.email);
-    await page.getByTestId("innlogging-password-input").fill(TEST_USER.password);
-    await page.getByTestId("innlogging-submit").click();
-    await page.waitForURL(/dashboard/, { timeout: 30_000 });
-    console.log("✅ Innlogging OK");
+    // Login (hvis ikke allerede autentisert fra setup)
+    await page.goto("/no/login", { timeout: 60_000 });
+    if (page.url().includes("/dashboard")) {
+      console.log("✅ Allerede innlogget (setup-state)");
+    } else {
+      await page.locator('input[name="email"]').fill(TEST_USER.email);
+      await page.locator('input[name="password"]').fill(TEST_USER.password);
+      await page.locator('button[type="submit"]').click();
+      await page.waitForURL(/dashboard/, { timeout: 30_000 });
+      console.log("✅ Innlogging OK");
+    }
 
     // Bruk page.evaluate for API kall (cookies sendes automatisk)
     console.log("🔄 Initialiserer paper trading...");

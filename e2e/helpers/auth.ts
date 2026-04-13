@@ -65,7 +65,7 @@ export async function loginAsTestUser(
   }
 
   // Build login URL with optional redirect
-  let loginUrl = "/no/innlogging";
+  let loginUrl = "/no/login";
   if (redirectUrl) {
     loginUrl += `?next=${encodeURIComponent(redirectUrl)}`;
   }
@@ -119,7 +119,7 @@ export async function loginWithCredentials(
 ): Promise<void> {
   const { redirectUrl, timeout = 30000 } = options;
 
-  let loginUrl = "/no/innlogging";
+  let loginUrl = "/no/login";
   if (redirectUrl) {
     loginUrl += `?next=${encodeURIComponent(redirectUrl)}`;
   }

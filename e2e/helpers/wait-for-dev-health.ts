@@ -50,7 +50,7 @@ export async function waitForInnloggingPageReady(
   try {
     let lastErr: string | undefined;
     for (let i = 0; i < 24; i++) {
-      for (const path of ["/innlogging", "/no/innlogging"] as const) {
+      for (const path of ["/login", "/no/login"] as const) {
         try {
           const r = await ctx.get(path, { timeout: 15_000 });
           if (r.status() === 200) return;

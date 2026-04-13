@@ -109,7 +109,7 @@ function isGoTruePasswordTokenResponse(res: Response): boolean {
 async function logVisibleLoginError(page: Page) {
   try {
     if (page.isClosed()) return;
-    const box = page.getByTestId("innlogging-error");
+    const box = page.getByTestId("auth-error");
     if ((await box.count()) === 0) return;
     const txt = (
       await box
@@ -175,7 +175,7 @@ setup("authenticate via login", async ({ page, context, playwright }) => {
   const base = appBaseUrl();
   /** Kanonisk for localePrefix as-needed (no): /dashboard — matcher sanitizeClientRedirect + middleware. */
   const nextPath = "/dashboard";
-  const loginUrl = `${base}/no/innlogging?next=${encodeURIComponent(nextPath)}`;
+  const loginUrl = `${base}/no/login?next=${encodeURIComponent(nextPath)}`;
 
   let authed = false;
 
@@ -200,22 +200,21 @@ setup("authenticate via login", async ({ page, context, playwright }) => {
           timeout: 90_000,
         });
 
-        const emailInput = page.getByTestId("innlogging-email-input").first();
+        const emailInput = page.locator('input[name="email"]').first();
         await emailInput.waitFor({ state: "visible", timeout: 45_000 });
 
         await fillEmailControlledInput(emailInput, email);
         await expect(emailInput).toHaveValue(email, { timeout: 10_000 });
 
         const passwordInput = page
-          .getByTestId("innlogging-password-input")
+          .locator('input[name="password"]')
           .first();
         await typeIntoControlledInput(passwordInput, password);
         await expect(passwordInput).toHaveValue(password, { timeout: 10_000 });
         await delayMs(200);
 
         // method="post" on the form prevents accidental GET submit (credentials in query string).
-        const passwordForm = page.getByTestId("innlogging-password-form");
-        const submitBtn = passwordForm.getByTestId("innlogging-submit");
+        const submitBtn = page.locator('button[type="submit"]').first();
 
         const responsePromise = page.waitForResponse(
           (res) => isGoTruePasswordTokenResponse(res),
@@ -346,7 +345,7 @@ setup("authenticate via login", async ({ page, context, playwright }) => {
             const projectRef =
               supabaseUrl.match(/https:\/\/([^.]+)\./)?.[1] || "";
 
-            await page.goto(`${base}/no/innlogging`, {
+            await page.goto(`${base}/no/login`, {
               waitUntil: "domcontentloaded",
             });
 

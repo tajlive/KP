@@ -254,7 +254,7 @@ test.describe("Critical: Core Navigation @critical", () => {
   });
 
   test("login page structure is correct", async ({ page }) => {
-    await page.goto("/innlogging", { timeout: 60000 });
+    await page.goto("/no/login", { timeout: 60000 });
     await page
       .waitForLoadState("domcontentloaded", { timeout: 30000 })
       .catch(() => {});
@@ -294,8 +294,8 @@ test.describe("Critical: Logged-in user guest-auth redirect @critical @auth", ()
       timeout: 25_000,
     });
 
-    await page.goto("/no/innlogging", { timeout: 60_000 });
-    await page.waitForURL((url) => !url.pathname.includes("innlogging"), {
+    await page.goto("/no/login", { timeout: 60_000 });
+    await page.waitForURL((url) => !url.pathname.includes("login"), {
       timeout: 25_000,
     });
   });
@@ -306,7 +306,7 @@ test.describe("Critical: Logged-in user guest-auth redirect @critical @auth", ()
     await skipIfSupabaseOrAuthUnavailable(page);
 
     const next = "/no/konto";
-    await page.goto(`/no/innlogging?next=${encodeURIComponent(next)}`, {
+    await page.goto(`/no/login?next=${encodeURIComponent(next)}`, {
       timeout: 60_000,
     });
 
@@ -334,7 +334,7 @@ test.describe("Critical: Guest auth pages (no session) @critical @auth", () => {
     let lastErr = "";
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        await page.goto("/no/signup", {
+        await page.goto("/no/register", {
           timeout: 60_000,
           waitUntil: "domcontentloaded",
         });
@@ -362,7 +362,7 @@ test.describe("Critical: Guest auth pages (no session) @critical @auth", () => {
     ) {
       test.skip();
     }
-    await expect(page).toHaveURL(/signup/);
+    await expect(page).toHaveURL(/register|signup/);
     expect(bodyText).toMatch(/registrer|sign up|signup|opprett|e-post|email/i);
   });
 });
