@@ -1391,21 +1391,15 @@
   "landing": {
     "badge": "Klarpakke Universitet",
     "hero": {
-      "badge": "🇳🇴 Norges enkleste krypto-trading",
-      "title": {
-        "line1": "Handel krypto smartere.",
-        "line2": "Automatisk og risikofritt."
-      },
-      "subtitle": "Fra nybegynner til selvsikker trader",
-      "cta": {
-        "primary": "Start gratis nå",
-        "secondary": "Se hvordan det fungerer"
-      },
-      "trust": {
-        "free": "Gratis å starte",
-        "noCard": "Ingen betalingskort kreves",
-        "cancel": "Avslutt når som helst"
-      }
+      "beta_badge": "BETA-LANSERING - KUN 23/50 PLASSER IGJEN",
+      "title_emotional": "Lær Trading På Norsk",
+      "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
+      "question_emotional": "Hvilken versjon av deg selv vil du møte?",
+      "description_emotional": "Strukturerte kurs, lekepenger med 100 000 kr, og AI-coach som svarer på norsk. Alt på én plattform.",
+      "cta_start": "START GRATIS",
+      "cta_demo": "SE DEMO",
+      "social_proof_rating": "4.9/5 fra 127 studenter",
+      "social_proof_active": "aktive traders"
     },
     "trustStrip": {
       "stats": {
@@ -1534,17 +1528,6 @@
       },
       "cta": "Sikre min plass nå →",
       "spotsLeft": "plasser igjen. Først til mølle!"
-    },
-    "hero": {
-      "beta_badge": "BETA-LANSERING - KUN 23/50 PLASSER IGJEN",
-      "title_emotional": "Lær Trading På Norsk",
-      "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
-      "question_emotional": "Hvilken versjon av deg selv vil du møte?",
-      "description_emotional": "Strukturerte kurs, lekepenger med 100 000 kr, og AI-coach som svarer på norsk. Alt på én plattform.",
-      "cta_start": "START GRATIS",
-      "cta_demo": "SE DEMO",
-      "social_proof_rating": "4.9/5 fra 127 studenter",
-      "social_proof_active": "aktive traders"
     },
     "modernHero": {
       "badge": "For småsparere som vil lære – uten å være tech-nerd",
@@ -2806,18 +2789,6 @@
       "currency": "Valuta",
       "amount": "Antall",
       "value": "Verdi"
-    }
-  },
-  "toasts": {
-    "paperBot": {
-      "startFailedTitle": "Kunne ikke starte boten",
-      "networkError": "Nettverksfeil – sjekk tilkoblingen og prøv igjen.",
-      "sessionLimitTitle": "Grense for antall tradere nådd",
-      "sessionLimitDesc": "Du kan ha maks {max} aktive tradere samtidig. Stopp en eksisterende trader først.",
-      "duplicateSessionTitle": "Allerede aktiv",
-      "duplicateSessionDesc": "Du har allerede en bot som kjører med denne strategien på dette paret.",
-      "startedTitle": "Paper bot startet!",
-      "startedDesc": "Boten din handler nå med lekepenger."
     }
   }
 }
