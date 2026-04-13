@@ -1391,21 +1391,15 @@
   "landing": {
     "badge": "Klarpakke University",
     "hero": {
-      "badge": "🇳🇴 Norway's easiest crypto trading",
-      "title": {
-        "line1": "Trade crypto smarter.",
-        "line2": "Automatic and risk-free."
-      },
-      "subtitle": "From beginner to confident trader",
-      "cta": {
-        "primary": "Start free now",
-        "secondary": "See how it works"
-      },
-      "trust": {
-        "free": "Free to start",
-        "noCard": "No credit card required",
-        "cancel": "Cancel anytime"
-      }
+      "beta_badge": "BETA LAUNCH - ONLY 23/50 SPOTS LEFT",
+      "title_emotional": "Master Trading in Your Language",
+      "hook_emotional": "A year from now, you'll either be glad you started today –\nor wish you had.",
+      "question_emotional": "Which version of yourself do you want to meet?",
+      "description_emotional": "Structured courses, paper trading with $100k virtual capital, and AI coach support. All in one platform.",
+      "cta_start": "START FOR FREE",
+      "cta_demo": "SEE DEMO",
+      "social_proof_rating": "4.9/5 from 127 students",
+      "social_proof_active": "active traders"
     },
     "trustStrip": {
       "stats": {
@@ -1534,17 +1528,6 @@
       },
       "cta": "Secure my spot now →",
       "spotsLeft": "spots remaining. First come, first served!"
-    },
-    "hero": {
-      "beta_badge": "BETA LAUNCH - ONLY 23/50 SPOTS LEFT",
-      "title_emotional": "Master Trading in Your Language",
-      "hook_emotional": "A year from now, you'll either be glad you started today –\nor wish you had.",
-      "question_emotional": "Which version of yourself do you want to meet?",
-      "description_emotional": "Structured courses, paper trading with $100k virtual capital, and AI coach support. All in one platform.",
-      "cta_start": "START FOR FREE",
-      "cta_demo": "SEE DEMO",
-      "social_proof_rating": "4.9/5 from 127 students",
-      "social_proof_active": "active traders"
     },
     "modernHero": {
       "badge": "For small savers who want to learn – no tech skills required",
@@ -2806,18 +2789,6 @@
       "currency": "Currency",
       "amount": "Amount",
       "value": "Value"
-    }
-  },
-  "toasts": {
-    "paperBot": {
-      "startFailedTitle": "Could not start the bot",
-      "networkError": "Network error – check your connection and try again.",
-      "sessionLimitTitle": "Trader limit reached",
-      "sessionLimitDesc": "You can have at most {max} active traders at a time. Stop an existing trader first.",
-      "duplicateSessionTitle": "Already active",
-      "duplicateSessionDesc": "You already have a bot running this strategy on this pair.",
-      "startedTitle": "Paper bot started!",
-      "startedDesc": "Your bot is now trading with virtual money."
     }
   }
 }
