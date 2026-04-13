@@ -6,9 +6,12 @@
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { callSonar } from './client';
-import { PROMPT_TEMPLATES } from './config';
+import { PROMPT_TEMPLATES, DEFAULT_CACHE_CONFIG } from './config';
 import type { NarrativeScanResult, SentimentValue, ImpactLevel } from './types';
 import { SonarValidationError, SonarError } from './types';
+import { cache } from '@/lib/cache';
+
+const NARRATIVE_CACHE_KEY_PREFIX = 'sonar:narrative:';
 
 // ============================================================================
 // Zod Validation Schema
@@ -55,6 +58,32 @@ const DEFAULT_NARRATIVE_RESULT: NarrativeScanResult = {
   reasoning_excerpt: 'Ingen narrativdata tilgjengelig',
   sources: [],
 };
+
+// ============================================================================
+// Cache helpers
+// ============================================================================
+
+async function getCachedNarrativeData(symbol: string): Promise<NarrativeScanResult | null> {
+  try {
+    return await cache.get<NarrativeScanResult>(`${NARRATIVE_CACHE_KEY_PREFIX}${symbol.toUpperCase()}`);
+  } catch (err) {
+    logger.warn(`[NarrativeScan] Cache get feilet for ${symbol}:`, err);
+    return null;
+  }
+}
+
+async function setCachedNarrativeData(
+  symbol: string,
+  data: NarrativeScanResult,
+  ttlMs: number
+): Promise<void> {
+  try {
+    await cache.set(`${NARRATIVE_CACHE_KEY_PREFIX}${symbol.toUpperCase()}`, data, ttlMs);
+    logger.debug(`[NarrativeScan] Lagret ${symbol} i cache for ${ttlMs}ms`);
+  } catch (err) {
+    logger.warn(`[NarrativeScan] Cache set feilet for ${symbol}:`, err);
+  }
+}
 
 // ============================================================================
 // Response Parsing
@@ -109,6 +138,8 @@ export interface NarrativeScanOptions {
   tier?: 'sonar' | 'sonar-pro';
   mode?: 'low' | 'medium' | 'high';
   timeoutMs?: number;
+  skipCache?: boolean;
+  cacheTtlMs?: number;
 }
 
 /**
@@ -138,7 +169,17 @@ export async function narrativeScan(
     tier = 'sonar',
     mode = 'medium',
     timeoutMs = 30000,
+    skipCache = false,
+    cacheTtlMs = DEFAULT_CACHE_CONFIG.narrativeTtlMs,
   } = options;
+
+  if (!skipCache) {
+    const cached = await getCachedNarrativeData(normalizedSymbol);
+    if (cached) {
+      logger.debug(`[NarrativeScan] Cache hit for ${normalizedSymbol}`);
+      return cached;
+    }
+  }
 
   logger.info(`[NarrativeScan] Starting scan for ${normalizedSymbol}`);
   const startTime = Date.now();
@@ -160,6 +201,9 @@ export async function narrativeScan(
       `[NarrativeScan] Completed scan for ${normalizedSymbol} in ${duration}ms. ` +
         `Sentiment: ${result.sentiment}, Events: ${result.key_events.length}`
     );
+
+    // Save to cache
+    await setCachedNarrativeData(normalizedSymbol, result, cacheTtlMs);
 
     return result;
   } catch (error) {

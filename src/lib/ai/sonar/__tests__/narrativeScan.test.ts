@@ -38,9 +38,21 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
+// Mock cache to prevent cross-test contamination
+const mockCacheStore = new Map<string, unknown>();
+vi.mock('@/lib/cache', () => ({
+  cache: {
+    get: vi.fn(async (key: string) => mockCacheStore.get(key) ?? null),
+    set: vi.fn(async (key: string, data: unknown) => { mockCacheStore.set(key, data); }),
+    delete: vi.fn(async (key: string) => { mockCacheStore.delete(key); }),
+    clear: vi.fn(async () => { mockCacheStore.clear(); }),
+  },
+}));
+
 describe('narrativeScan', () => {
   beforeEach(() => {
     mockCallSonar.mockReset();
+    mockCacheStore.clear();
   });
 
   it('should return validated result on successful scan', async () => {
@@ -207,6 +219,7 @@ describe('narrativeScan', () => {
 describe('narrativeScanWithFallback', () => {
   beforeEach(() => {
     mockCallSonar.mockReset();
+    mockCacheStore.clear();
   });
 
   it('should return result on success', async () => {
