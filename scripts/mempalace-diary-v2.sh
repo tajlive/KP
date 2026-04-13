@@ -25,9 +25,14 @@ write_entry() {
     local ts
     ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+    local ttl="${6:-}"
+    if [ -z "$ttl" ]; then
+        if [ "$type" = "AUTO" ]; then ttl=30; else ttl="null"; fi
+    fi
+
     # Write JSONL entry (one JSON object per line)
-    printf '{"ts":"%s","type":"%s","task":"%s","files":%s,"status":"%s","rating":%s,"agent":"%s"}\n' \
-        "$ts" "$type" "$task" "$files" "$status" "$rating" "$AGENT" >> "$DIARY_V2"
+    printf '{"ts":"%s","type":"%s","task":"%s","files":%s,"status":"%s","rating":%s,"agent":"%s","ttl":%s}\n' \
+        "$ts" "$type" "$task" "$files" "$status" "$rating" "$AGENT" "$ttl" >> "$DIARY_V2"
 
     echo "📝 Diary entry added (v2 jsonl)"
 }

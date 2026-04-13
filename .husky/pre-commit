@@ -83,5 +83,12 @@ if [ $GUARD_EXIT -ne 0 ]; then
   exit 1
 fi
 
+# ============================================================================
+# 5. MemPalace Auto-Capture (valgfritt)
+# ============================================================================
+
+echo "🏛️  [5/5] MemPalace auto-capture..."
+node scripts/mempalace-auto-capture.mjs
+
 echo "✅ Pre-commit: Alt OK. Committer..."
 exit 0
