@@ -38,7 +38,7 @@ type DbWithAutoTradesLegacy = Database & {
 };
 
 function fromAutoTradesLegacy(db: SupabaseClient<Database>) {
-  return (db as unknown as SupabaseClient<DbWithAutoTradesLegacy>).from(
+  return (db as any as SupabaseClient<DbWithAutoTradesLegacy>).from(
     "auto_trades_legacy",
   );
 }

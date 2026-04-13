@@ -12,6 +12,7 @@ Oversikt over **anbefalte agenter** for å optimalisere og modernisere Klarpakke
 | **Modernization Lead**           | `agents/klarpakke-modernization-lead.md`                 | Stack, TYPE_DEBT, Next 15 / React 19, refaktor                                                                                                          |
 | **Automation Orchestrator**      | `agents/klarpakke-automation-orchestrator.md`            | CI, MCP, Linear etter leveranse, verify, dokumentasjon                                                                                                  |
 | **Live Trading & Trades**        | `agents/klarpakke-live-trading-trades-agent.md`          | Live/paper, RLS, historikk, Realtime/JWT; **full kontekst + operasjonelt ansvar** (bevis, oppfølging); MCP/CLI/CI                                       |
+| **Research Agent**               | `agents/klarpakke-research-agent.md`                     | **🔬 Systematisk research:** Perplexity Pro før arkitekturvalg; lagrer kilder i MemPalace `critical_decisions`; triggeres av `architect`/`security` |
 | **Auto-Trade Strategy Research** | `agents/klarpakke-auto-trade-strategy-research-agent.md` | Alle strategier + presets + executor; dypere enn UI; forum/data-hypoteser; **ingen profitt-løfter**; SoT `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md` |
 | **OAuth Sherlock**               | `agents/klarpakke-oauth-sherlock.md`                     | **🕵️ Auth-spesialist:** OAuth, session, cookies, middleware; MemPalace + web-research; systematic debugging; PKCE, Google Auth, Supabase SSR |
 | **Web Logic Analyzer**           | `agents/web-logic-analyzer.md`                           | **🧠 Logikk-spesialist:** Business logic, state management, dataflyt, conditional rendering, kompleksitetsanalyse, auth flows |
@@ -35,6 +36,7 @@ Oversikt over **anbefalte agenter** for å optimalisere og modernisere Klarpakke
 
 | Workflow                                          | Formål                                              |
 | ------------------------------------------------- | --------------------------------------------------- |
+| `workflows/research.md`                           | Perplexity Pro research før arkitektur- og strategiske beslutninger |
 | `workflows/klarpakke-experience-modernization.md` | UX + UA + modernisering + automatisering i én ramme |
 | `workflows/premium-design-audit.md`               | Full premium-gjennomgang av sider                   |
 | `workflows/test.md` / `workflows/deploy.md`       | Test og deploy                                      |

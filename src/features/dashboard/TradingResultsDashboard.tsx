@@ -422,7 +422,7 @@ export default function TradingResultsDashboard() {
                           ((v: unknown) => [
                             formatDisplay(Number(v)),
                             t("charts.cumulativeSeries"),
-                          ]) as unknown as NonNullable<
+                          ]) as any as NonNullable<
                             ComponentProps<typeof Tooltip>["formatter"]
                           >
                         }
@@ -529,7 +529,7 @@ export default function TradingResultsDashboard() {
                         ((v: unknown) => [
                           formatDisplay(Number(v)),
                           t("charts.dailySeries"),
-                        ]) as unknown as NonNullable<
+                        ]) as any as NonNullable<
                           ComponentProps<typeof Tooltip>["formatter"]
                         >
                       }
@@ -588,7 +588,7 @@ export default function TradingResultsDashboard() {
                           ((v: unknown) => [
                             formatDisplay(Number(v)),
                             t("charts.pairPnl"),
-                          ]) as unknown as NonNullable<
+                          ]) as any as NonNullable<
                             ComponentProps<typeof Tooltip>["formatter"]
                           >
                         }

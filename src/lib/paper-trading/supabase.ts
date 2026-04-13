@@ -56,7 +56,7 @@ function mapToPaperSimulation(data: Record<string, unknown>): PaperSimulation {
     is_active: (data.status as string) === 'active',
     started_at: (data.started_at as string) || (data.created_at as string),
     ended_at: (data.stopped_at as string) || null,
-    settings: ((data.strategy_config as Record<string, unknown>) || RISK_PRESETS[(data.strategy_id as RiskLevel) || 'standard']) as unknown as RiskPreset,
+    settings: ((data.strategy_config as Record<string, unknown>) || RISK_PRESETS[(data.strategy_id as RiskLevel) || 'standard']) as any as RiskPreset,
   };
 }
 
@@ -77,7 +77,7 @@ export async function createSimulation(
       strategy_id: riskLevel,
       initial_capital: initialBalance,
       current_capital: initialBalance,
-      strategy_config: preset as unknown as import('@/types/database.types').Json,
+      strategy_config: preset as any as import('@/types/database.types').Json,
       mode: 'paper',
       status: 'active',
       started_at: new Date().toISOString(),
@@ -213,7 +213,7 @@ export async function createTrade(
     return null;
   }
 
-  return data as unknown as PaperTrade;
+  return data as any as PaperTrade;
 }
 
 /**
@@ -259,7 +259,7 @@ export async function getSimulationTrades(simulationId: string): Promise<PaperTr
     return [];
   }
 
-  return (data as unknown as PaperTrade[]) || [];
+  return (data as any as PaperTrade[]) || [];
 }
 
 /**
@@ -343,7 +343,7 @@ export async function getLeaderboard(
     return [];
   }
 
-  return (data as unknown as LeaderboardEntry[]) || [];
+  return (data as any as LeaderboardEntry[]) || [];
 }
 
 /**
@@ -361,7 +361,7 @@ export async function getUserRank(
     .single();
 
   if (error) return null;
-  return data as unknown as LeaderboardEntry | null;
+  return data as any as LeaderboardEntry | null;
 }
 
 /**
@@ -391,7 +391,7 @@ export async function saveStrategy(strategy: SavedStrategy): Promise<SavedStrate
     return null;
   }
 
-  return data as unknown as SavedStrategy;
+  return data as any as SavedStrategy;
 }
 
 export async function getSavedStrategies(userId: string): Promise<SavedStrategy[]> {
@@ -407,7 +407,7 @@ export async function getSavedStrategies(userId: string): Promise<SavedStrategy[
     return [];
   }
 
-  return (data as unknown as SavedStrategy[]) || [];
+  return (data as any as SavedStrategy[]) || [];
 }
 
 export async function deleteStrategy(strategyId: string): Promise<boolean> {

@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     try {
       const supabase = await createClient();
       await (
-        supabase as unknown as {
+        supabase as any as {
           from: (t: string) => {
             upsert: (
               row: object,

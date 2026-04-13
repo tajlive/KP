@@ -61,7 +61,7 @@ export function useProfile() {
         user_id: user.id,
         ...updates,
         updated_at: new Date().toISOString(),
-      } as unknown as UserProfilesInsert;
+      } as any as UserProfilesInsert;
       const { data, error: upsertError } = await supabase
         .from("user_profiles")
         .upsert(upsertPayload)
@@ -70,7 +70,7 @@ export function useProfile() {
       if (upsertError) {
         setError(upsertError.message);
       } else {
-        setProfile((data ?? null) as unknown as Profile | null);
+        setProfile((data ?? null) as any as Profile | null);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));
@@ -95,14 +95,14 @@ export function useProfile() {
         delete (payload as Record<string, unknown>).created_at;
       const { data, error: updateError } = await supabase
         .from("user_profiles")
-        .update(payload as unknown as UserProfilesUpdate)
+        .update(payload as any as UserProfilesUpdate)
         .eq("id", user.id)
         .select()
         .single();
       if (updateError) {
         setError(updateError.message);
       } else {
-        setProfile((data ?? null) as unknown as Profile | null);
+        setProfile((data ?? null) as any as Profile | null);
       }
     } catch (e: unknown) {
       setError(getErrorMessage(e));

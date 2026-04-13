@@ -126,7 +126,7 @@ async function getCachedSentiment(
     }
 
     return {
-      data: data.sentiment_data as unknown as MarketSentimentResult,
+      data: data.sentiment_data as any as MarketSentimentResult,
       timestamp: new Date(data.created_at).getTime(),
     };
   } catch (error) {

@@ -1,3 +1,4 @@
+/* eslint-env node */
 const fs = require('fs');
 const execSync = require('child_process').execSync;
 
@@ -25,6 +26,7 @@ for (const file of files) {
     content = content.replace(/import \{ createClient \} from/g, 'import { createServerClient } from');
     
     fs.writeFileSync(file, content);
+    // eslint-disable-next-line no-undef
     console.log('Fixed', file);
   }
 }

@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
     let body: unknown;
     try {
-      body = JSON.parse(rawBody) as unknown;
+      body = JSON.parse(rawBody) as any;
     } catch {
       return NextResponse.json(
         { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },

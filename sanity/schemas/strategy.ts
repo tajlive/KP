@@ -7,7 +7,7 @@ export default {
       name: 'name',
       type: 'string',
       title: 'Navn',
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'slug',
@@ -31,7 +31,7 @@ export default {
       name: 'riskLevel',
       type: 'number',
       title: 'Risiko-nivå (1-5)',
-      validation: (Rule: any) => Rule.min(1).max(5),
+      validation: (Rule: unknown) => Rule.min(1).max(5),
     },
     {
       name: 'indicators',

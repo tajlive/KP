@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       mode,
       strategy_id: productId,
-      strategy_config: strategy_config as unknown as Json,
+      strategy_config: strategy_config as any as Json,
       trading_pair,
       risk_level: getDbRiskLevelEnum(productId),
       status: "active",

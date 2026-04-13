@@ -126,6 +126,7 @@ Se `.agent/KLARPAKKE-AGENT-ROSTER.md` for full oversikt.
 **Nøkkel-agenter:**
 - `klarpakke-ux-ui-agent` – UI/UX, tokens, i18n
 - `klarpakke-live-trading-trades-agent` – Trading, bevis
+- `klarpakke-research-agent` – Systematisk Perplexity Pro research før beslutninger
 - `klarpakke-auto-trade-strategy-research-agent` – Strategi-forskning
 
 ### Skills Auto-Aktivering
@@ -201,7 +202,8 @@ Database: DECLARE på toppnivå
 |---------|------|
 | `mempalace_search` | Søk i lokalt minne |
 | `mempalace_remember` | Lagre minne |
-| `perplexity_search` | Web-research |
+| `perplexity_research` | Web-research (deep) |
+| `perplexity_ask` | Web-research (quick) |
 | `query_database` | Supabase SQL |
 | `search_docs` | Context7 docs |
 

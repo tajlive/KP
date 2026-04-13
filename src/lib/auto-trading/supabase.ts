@@ -35,7 +35,7 @@ export async function getAllStrategies(): Promise<AutoTradingStrategy[]> {
     throw error;
   }
 
-  return (data || []) as unknown as AutoTradingStrategy[];
+  return (data || []) as any as AutoTradingStrategy[];
 }
 
 export async function getStrategyById(
@@ -52,7 +52,7 @@ export async function getStrategyById(
     return null;
   }
 
-  return data as unknown as AutoTradingStrategy | null;
+  return data as any as AutoTradingStrategy | null;
 }
 
 export async function getStrategyByRiskLevel(
@@ -70,7 +70,7 @@ export async function getStrategyByRiskLevel(
     return null;
   }
 
-  return data as unknown as AutoTradingStrategy | null;
+  return data as any as AutoTradingStrategy | null;
 }
 
 // ============================================================
@@ -91,7 +91,7 @@ export async function getUserConfig(
     return null;
   }
 
-  return data as unknown as UserAutoTradingConfig | null;
+  return data as any as UserAutoTradingConfig | null;
 }
 
 export async function createUserConfig(
@@ -118,7 +118,7 @@ export async function createUserConfig(
     return null;
   }
 
-  return data as unknown as UserAutoTradingConfig | null;
+  return data as any as UserAutoTradingConfig | null;
 }
 
 export async function updateUserConfig(
@@ -165,7 +165,7 @@ export async function getActiveSession(
     return null;
   }
 
-  return data as unknown as AutoTradingSession | null;
+  return data as any as AutoTradingSession | null;
 }
 
 export async function getUserSessions(
@@ -184,7 +184,7 @@ export async function getUserSessions(
     return [];
   }
 
-  return (data || []) as unknown as AutoTradingSession[];
+  return (data || []) as any as AutoTradingSession[];
 }
 
 export async function createSession(
@@ -217,7 +217,7 @@ export async function createSession(
     return null;
   }
 
-  return data as unknown as AutoTradingSession | null;
+  return data as any as AutoTradingSession | null;
 }
 
 export async function updateSession(
@@ -271,7 +271,7 @@ export async function getSessionTrades(
     return [];
   }
 
-  return (data || []) as unknown as AutoTradingTrade[];
+  return (data || []) as any as AutoTradingTrade[];
 }
 
 export async function getOpenTrades(
@@ -289,7 +289,7 @@ export async function getOpenTrades(
     return [];
   }
 
-  return (data || []) as unknown as AutoTradingTrade[];
+  return (data || []) as any as AutoTradingTrade[];
 }
 
 export async function createTrade(
@@ -306,7 +306,7 @@ export async function createTrade(
     return null;
   }
 
-  return data as unknown as AutoTradingTrade | null;
+  return data as any as AutoTradingTrade | null;
 }
 
 export async function closeTrade(

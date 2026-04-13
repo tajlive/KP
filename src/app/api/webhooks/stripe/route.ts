@@ -335,7 +335,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
   try {
     // Cast to access period fields (Stripe types are partial)
-    const subWithPeriod = subscription as unknown as {
+    const subWithPeriod = subscription as any as {
       current_period_start?: number;
       current_period_end?: number;
       status: string;
@@ -425,7 +425,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   try {
     // Access current_period_end from the subscription items or cast to access it
-    const subWithPeriod = subscription as unknown as {
+    const subWithPeriod = subscription as any as {
       current_period_end?: number;
       status: string;
       cancel_at_period_end: boolean;

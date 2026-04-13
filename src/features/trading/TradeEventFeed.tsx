@@ -119,8 +119,8 @@ function EventCard({
 }) {
   const explanation = generateExplanation({
     reasonCode: event.reasonCode,
-    reasonParams: event.reasonParams as unknown as TradeReasonParams | null,
-    indicatorSnapshot: event.indicatorSnapshot as unknown as IndicatorSnapshot | null,
+    reasonParams: event.reasonParams as any as TradeReasonParams | null,
+    indicatorSnapshot: event.indicatorSnapshot as any as IndicatorSnapshot | null,
     side: event.side,
     locale,
   });
@@ -326,8 +326,8 @@ export function TradeEventFeed({
           totalValue: t.total_value as number,
           realizedPnl: t.realized_pnl as number | null,
           reasonCode: t.reason_code as TradeReasonCode | null,
-          reasonParams: ((t.explanation as Record<string, unknown> | undefined)?.params || null) as unknown as TradeReasonParams | null,
-          indicatorSnapshot: t.indicators as unknown as IndicatorSnapshot | null,
+          reasonParams: ((t.explanation as Record<string, unknown> | undefined)?.params || null) as any as TradeReasonParams | null,
+          indicatorSnapshot: t.indicators as any as IndicatorSnapshot | null,
         }));
         
         setEvents(mappedEvents.slice(0, maxEvents));

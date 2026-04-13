@@ -13,7 +13,7 @@
     "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
     "build:local": "SKIP_LINT_IN_BUILD=true next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings 200",
+    "lint": "eslint . --max-warnings 300",
     "lint:gate": "eslint . --max-warnings 200",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",

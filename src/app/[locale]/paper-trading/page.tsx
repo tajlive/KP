@@ -52,7 +52,7 @@ export default async function PaperTradingPage({
   
   return (
     <PaperTradingPageClient
-      sessions={(sessions || []) as unknown as SessionRow[]}
+      sessions={(sessions || []) as any as SessionRow[]}
       balance={profile?.paper_balance || 100000}
       locale={locale}
       userId={user.id}

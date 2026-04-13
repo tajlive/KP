@@ -527,7 +527,7 @@ export default function BotStatusDashboard({
                       </span>
                     </td>
                     <td className="px-6 py-4 font-bold text-white">
-                      {(t as unknown as { trading_pair?: string })
+                      {(t as any as { trading_pair?: string })
                         .trading_pair || t.symbol}
                     </td>
                     <td className="px-6 py-4 text-right text-slate-300">

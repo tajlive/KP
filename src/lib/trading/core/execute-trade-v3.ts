@@ -513,7 +513,7 @@ async function logRiskViolations(
 async function persistAudit(evidence: unknown): Promise<void> {
   try {
     const store = getAuditStore();
-    await (store.persist as unknown as (evidence: unknown) => Promise<void>)(evidence);
+    await (store.persist as any as (evidence: unknown) => Promise<void>)(evidence);
   } catch (error) {
     console.error('[executeTradeV3] Failed to persist audit:', error);
   }

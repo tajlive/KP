@@ -78,7 +78,7 @@ function ProfileContent() {
 
       // user_badges table not in generated Supabase types
       const { data: badgeData } = await (
-        supabase as unknown as {
+        supabase as any as {
           from: (t: string) => {
             select: (s: string) => {
               eq: (

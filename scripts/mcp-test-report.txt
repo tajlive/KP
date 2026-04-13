@@ -1,5 +1,5 @@
 
-Klarpakke MCP Test — 2026-03-26 21:30:04
+Klarpakke MCP Test — 2026-04-13 22:10:06
 
 
 ## Infrastruktur
@@ -11,20 +11,17 @@ Klarpakke MCP Test — 2026-03-26 21:30:04
 
 ## Verktøy
 ✅ Linear API: OK
-⏭️  Vercel API: SKIPPET
-   Hint: Legg VERCEL_TOKEN i .env.local (vercel.com/account/tokens)
+✅ Vercel API: OK
 ⏭️  Stripe API: SKIPPET
    Hint: Legg STRIPE_SECRET_KEY i .env.local (dashboard.stripe.com/apikeys)
-⏭️  Cloudflare API: SKIPPET
-   Hint: Legg CLOUDFLARE_API_TOKEN i .env.local (dash.cloudflare.com/profile/api-tokens)
-✅ Cloudflare connectivity: OK
-⏭️  Sentry: SKIPPET
-   Hint: Legg SENTRY_AUTH_TOKEN i .env.local (sentry.io/settings/account/api/auth-tokens/)
+❌ Cloudflare API: TOM RESPONS
+❌ Cloudflare connectivity: FEIL
+✅ Sentry: OK via CLI-token
 ✅ Resend API: OK
 
 ## Analytics
-✅ Cloudflare (klarpakke.no): OK
+❌ Cloudflare (klarpakke.no): FEIL
 ✅ Plausible: Tilgjengelig
 
 ---
-RESULTAT: 6 bestått / 0 feilet / 6 skippet (av 12)
+RESULTAT: 6 bestått / 3 feilet / 3 skippet (av 12)

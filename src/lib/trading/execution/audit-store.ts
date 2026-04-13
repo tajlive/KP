@@ -173,7 +173,7 @@ export class AuditStore {
     }
     
     const records: AuditQueryResult[] = (data || []).map(row => ({
-      evidence: (row.payload as unknown) as ExecutionEvidence,
+      evidence: (row.payload as any) as ExecutionEvidence,
       s3Path: row.s3_path ?? undefined,
       retrievedFrom: row.s3_path ? 'both' : 'supabase'
     }));
@@ -270,7 +270,7 @@ export class AuditStore {
       let errors = 0;
       
       for (const record of data || []) {
-        const evidence = (record.payload as unknown) as ExecutionEvidence;
+        const evidence = (record.payload as any) as ExecutionEvidence;
         
         // Write to S3
         const s3Result = await this.persistToS3(evidence);
@@ -405,7 +405,7 @@ export class AuditStore {
           evidence_hash: evidence.hash,
           order_id: evidence.orderId,
           user_id: evidence.clientId,
-          payload: evidence as unknown as Database['public']['Tables']['audit_log']['Insert']['payload'],
+          payload: evidence as any as Database['public']['Tables']['audit_log']['Insert']['payload'],
           created_at: evidence.createdAt.toISOString()
         })
         .select('id')

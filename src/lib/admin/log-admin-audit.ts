@@ -40,7 +40,7 @@ export async function logAdminAudit(
   },
 ): Promise<void> {
   try {
-    const { error } = await (db as unknown as SupabaseClient<DbWithAdminAudit>)
+    const { error } = await (db as any as SupabaseClient<DbWithAdminAudit>)
       .from("admin_audit_log")
       .insert({
         admin_user_id: row.admin_user_id,

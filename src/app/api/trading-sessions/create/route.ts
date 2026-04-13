@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Logg aktivitet (activity_logs finnes ikke i genererte typer i alle miljøer)
-    const activityLogsFrom = supabase.from as unknown as (
+    const activityLogsFrom = supabase.from as any as (
       table: "activity_logs",
     ) => {
       insert: (payload: {

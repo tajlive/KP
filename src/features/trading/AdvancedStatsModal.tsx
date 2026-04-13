@@ -218,7 +218,7 @@ export default function AdvancedStatsModal({
         .limit(50);
 
       if (error) throw error;
-      setSignals((data || []) as unknown as Signal[]);
+      setSignals((data || []) as any as Signal[]);
     } catch (error) {
       console.error("Failed to fetch signals:", error);
     }
@@ -235,7 +235,7 @@ export default function AdvancedStatsModal({
         .limit(10);
 
       if (error) throw error;
-      setBacktests((data || []) as unknown as Backtest[]);
+      setBacktests((data || []) as any as Backtest[]);
     } catch (error) {
       console.error("Failed to fetch backtests:", error);
     }

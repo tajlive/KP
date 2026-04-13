@@ -108,7 +108,7 @@ export default function ClientAdminUsers() {
             (row.tier as string) ||
             "student";
           return {
-            ...(row as unknown as UserData),
+            ...(row as any as UserData),
             subscription_tier: tierRaw,
             paper_balance: Number(row.paper_balance ?? 0),
           };

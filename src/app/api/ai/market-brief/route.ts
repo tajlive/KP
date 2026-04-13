@@ -27,7 +27,7 @@ export async function GET() {
       .maybeSingle();
 
     if (cached?.value && typeof cached.value === "object" && "summary" in cached.value) {
-      return NextResponse.json(cached.value as unknown as MarketBrief);
+      return NextResponse.json(cached.value as any as MarketBrief);
     }
 
     // No OPENAI key = return a static brief
@@ -101,7 +101,7 @@ export async function GET() {
       .upsert(
         {
           cache_key: "market_brief",
-          value: brief as unknown as import("@/types/database.types").Json,
+          value: brief as any as import("@/types/database.types").Json,
           expires_at: expiresAt,
         },
         { onConflict: "cache_key" },

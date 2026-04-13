@@ -144,7 +144,7 @@ export async function GET(
             description: null,
             priceModel: "free",
             priceNok: 0,
-            backtestSummary: (item.strategy_config || {}) as unknown,
+            backtestSummary: (item.strategy_config || {}) as any,
             category: item.strategy_type as string | null,
             status: "published",
             subscriberCount:
@@ -174,12 +174,12 @@ export async function GET(
     // Map data to MarketplaceListing format
 
     const listings: MarketplaceListing[] =
-      (data as unknown[])?.map((value: unknown) => {
+      (data as any[])?.map((value: unknown) => {
         const item = value as Record<string, unknown>;
         const profiles = item.profiles as
           | { display_name: string; avatar_url: string | null }
           | undefined;
-        const backtestSummary = (item.backtest_summary || {}) as unknown;
+        const backtestSummary = (item.backtest_summary || {}) as any;
         return {
           id: item.id as string,
           sellerId: item.seller_id as string,
