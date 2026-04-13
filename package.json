@@ -158,7 +158,7 @@
     "test:e2e:allure": "npm run test:e2e:report && npm run allure:generate",
     "test:lighthouse": "npm run test:lighthouse:prod",
     "test:lighthouse:preview": "npx lhci autorun --collect.url=${PREVIEW_URL:-https://www.klarpakke.no}",
-    "test:lighthouse:prod": "npx lhci autorun --collect.url=https://www.klarpakke.no/no --collect.url=https://www.klarpakke.no/no/priser --collect.url=https://www.klarpakke.no/no/innlogging",
+    "test:lighthouse:prod": "npx lhci autorun --collect.url=https://www.klarpakke.no/no --collect.url=https://www.klarpakke.no/no/priser --collect.url=https://www.klarpakke.no/no/login",
     "preprod:quality": "npm run lint && npm run type-check && vitest run --coverage",
     "preprod:build": "SKIP_LINT_IN_BUILD=true npm run build",
     "preprod:lighthouse": "npm run test:lighthouse:prod",
