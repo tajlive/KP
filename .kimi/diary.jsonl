@@ -1,0 +1,10 @@
+{"ts":"2026-04-09T00:00:00Z","type":"ANALYSIS","task":"kimi-mempalace-optimalisering","files":8,"status":"GO","rating":4,"agent":"kimi"}
+{"ts":"2026-04-09T00:00:00Z","type":"FEAT","task":"startup-prompt-mempalace-integration","files":5,"status":"GO","rating":5,"agent":"kimi"}
+{"ts":"2026-04-11T00:00:00Z","type":"AUTH_AUDIT","task":"Microsoft OAuth UI missing - Added signInWithMicrosoft and UI buttons","files":3,"status":"GO","rating":3,"agent":"kimi"}
+{"ts":"2026-04-13T00:00:00Z","type":"FIX","task":"Replaced createClient with createServerClient in all SSR API routes to fix auth 401 expiration loops","files":25,"status":"GO","rating":3,"agent":"kimi"}
+{"ts":"2026-04-13T00:00:00Z","type":"FIX","task":"Removed duplicated AutoTradingConfigCard causing Frankenstein UI and fixed 6 i18n tests for Vercel deployment","files":3,"status":"GO","rating":3,"agent":"kimi"}
+{"ts":"2026-04-13T00:00:00Z","type":"FIX","task":"Auth SSR-migrering, Frankenstein-UI eliminert, Sonar narrative caching, TopAIInsightsRow dashboard-integrasjon, paperBot i18n + unique constraint fix","files":8,"status":"GO","rating":4,"agent":"kimi"}
+{"ts":"2026-04-13T00:00:00Z","type":"FEAT","task":"narrativeScan.ts","files":1,"status":"GO","rating":3,"agent":"kimi"}
+{"ts":"2026-04-13T00:00:00Z","type":"FEAT","task":"TopAIInsightsRow","files":2,"status":"GO","rating":3,"agent":"kimi"}
+{"ts":"2026-04-13T00:00:00Z","type":"FIX","task":"toasts.paperBot i18n-nøkler manglet helt i no.json/en.json - la til startFailedTitle, networkError, sessionLimitTitle/Desc, startedTitle/Desc","files":2,"status":"GO","rating":2,"agent":"kimi"}
+{"ts":"2026-04-13T00:00:00Z","type":"FIX","task":"auto-trading/paper/route.ts","files":1,"status":"GO","rating":2,"agent":"kimi"}
