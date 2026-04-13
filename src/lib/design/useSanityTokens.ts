@@ -70,7 +70,7 @@ function injectSanityTokensCSS(css: string): void {
   const styleId = 'sanity-design-tokens';
   
   // Fjern eksisterende hvis finnes
-  let existingStyle = document.getElementById(styleId);
+  const existingStyle = document.getElementById(styleId);
   if (existingStyle) {
     existingStyle.remove();
   }

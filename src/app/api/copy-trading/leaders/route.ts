@@ -31,7 +31,7 @@ type DbWithLeaderboardView = Database & {
 };
 
 function fromLeaderboard(db: SupabaseClient<Database>) {
-  return (db as unknown as SupabaseClient<DbWithLeaderboardView>).from(
+  return (db as any as SupabaseClient<DbWithLeaderboardView>).from(
     "leaderboard",
   );
 }

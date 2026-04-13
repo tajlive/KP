@@ -145,7 +145,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
 
         if (tradeError) throw tradeError;
 
-        const dbTrade = tradeData as unknown as DbTrade;
+        const dbTrade = tradeData as any as DbTrade;
 
         let aiData: AiDecision | null = null;
         const decisionId = dbTrade.ai_decision_id || (dbTrade.strategy_signal?.decision_id as string);

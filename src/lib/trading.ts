@@ -68,14 +68,14 @@ export const executeBuy = async (
       return { success: false, error: "Wallet not found" };
     }
 
-    const wallet = walletData as unknown as Wallet;
+    const wallet = walletData as any as Wallet;
 
     if (wallet.balance_usdt < totalCost) {
       return { success: false, error: "Insufficient balance" };
     }
 
     // Execute trade via RPC
-    const rpc = supabase.rpc as unknown as ExecuteTradeRpc;
+    const rpc = supabase.rpc as any as ExecuteTradeRpc;
     const { data: result, error: tradeError } = await rpc("execute_trade", {
       p_user_id: userId,
       p_symbol: symbol,
@@ -110,7 +110,7 @@ export const executeBuy = async (
       return { success: false, error: "Failed to fetch trade" };
     }
 
-    return { success: true, trade: trade as unknown as Trade };
+    return { success: true, trade: trade as any as Trade };
   } catch (error) {
     console.error("Buy execution error:", error);
     return { success: false, error: "Unexpected error occurred" };
@@ -137,14 +137,14 @@ export const executeSell = async (
       return { success: false, error: "No position found for this symbol" };
     }
 
-    const position = portfolioData as unknown as PortfolioItem;
+    const position = portfolioData as any as PortfolioItem;
 
     if (position.quantity < quantity) {
       return { success: false, error: "Insufficient quantity to sell" };
     }
 
     // Execute trade via RPC
-    const rpc = supabase.rpc as unknown as ExecuteTradeRpc;
+    const rpc = supabase.rpc as any as ExecuteTradeRpc;
     const { data: result, error: tradeError } = await rpc("execute_trade", {
       p_user_id: userId,
       p_symbol: symbol,
@@ -179,7 +179,7 @@ export const executeSell = async (
       return { success: false, error: "Failed to fetch trade" };
     }
 
-    return { success: true, trade: trade as unknown as Trade };
+    return { success: true, trade: trade as any as Trade };
   } catch (error) {
     console.error("Sell execution error:", error);
     return { success: false, error: "Unexpected error occurred" };
@@ -199,7 +199,7 @@ export const getWallet = async (userId: string): Promise<Wallet | null> => {
     return null;
   }
 
-  return data as unknown as Wallet;
+  return data as any as Wallet;
 };
 
 // Get user's portfolio
@@ -218,7 +218,7 @@ export const getPortfolio = async (
     return [];
   }
 
-  return (data || []) as unknown as PortfolioItem[];
+  return (data || []) as any as PortfolioItem[];
 };
 
 // Get user's trades
@@ -246,14 +246,14 @@ export const getTrades = async (
     return [];
   }
 
-  return (data || []) as unknown as Trade[];
+  return (data || []) as any as Trade[];
 };
 
 // Get trading stats (table may not be in generated types)
 export const getTradingStats = async (
   userId: string,
 ): Promise<TradingStats | null> => {
-  const fromTradingStats = supabase.from as unknown as TradingStatsFromFn;
+  const fromTradingStats = supabase.from as any as TradingStatsFromFn;
   const { data, error } = await fromTradingStats("trading_stats")
     .select("*")
     .eq("user_id", userId)
@@ -264,7 +264,7 @@ export const getTradingStats = async (
     return null;
   }
 
-  return data as unknown as TradingStats;
+  return data as any as TradingStats;
 };
 
 // Calculate unrealized P&L for a position
@@ -401,7 +401,7 @@ export const triggerPanicButton = async (
   error?: string;
 }> => {
   try {
-    const rpc = supabase.rpc as unknown as TriggerPanicRpc;
+    const rpc = supabase.rpc as any as TriggerPanicRpc;
     const { data: result, error } = await rpc("trigger_panic_button", {
       p_user_id: userId,
       p_reason: reason || "User triggered panic",

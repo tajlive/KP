@@ -7,7 +7,7 @@ export default {
       name: 'name',
       type: 'string',
       title: 'Navn',
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'role',
@@ -19,7 +19,7 @@ export default {
       type: 'text',
       title: 'Sitat',
       rows: 4,
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'avatar',
@@ -31,7 +31,7 @@ export default {
       name: 'rating',
       type: 'number',
       title: 'Vurdering (1-5)',
-      validation: (Rule: any) => Rule.min(1).max(5),
+      validation: (Rule: unknown) => Rule.min(1).max(5),
     },
     {
       name: 'platform',

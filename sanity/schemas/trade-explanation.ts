@@ -19,7 +19,7 @@ export default {
           { title: 'Sentiment Based', value: 'sentiment_based' },
         ],
       },
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'language',

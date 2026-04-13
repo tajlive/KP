@@ -7,14 +7,14 @@ export default {
       name: 'question',
       type: 'string',
       title: 'Spørsmål',
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'answer',
       type: 'array',
       title: 'Svar',
       of: [{ type: 'block' }],
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'category',

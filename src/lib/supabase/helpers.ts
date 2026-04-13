@@ -23,7 +23,7 @@ export type UserProfileOnboardingExtended = Pick<
 >;
 
 /**
- * Hent onboarding-felter for en bruker (typet uten as unknown i kallende kode).
+ * Hent onboarding-felter for en bruker (typet uten as any i kallende kode).
  */
 export async function getUserProfileOnboarding(
   supabase: SupabaseClient<Database>,

@@ -7,7 +7,7 @@ export default {
       name: 'title',
       type: 'string',
       title: 'Tittel',
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'slug',
@@ -17,7 +17,7 @@ export default {
         source: 'title',
         maxLength: 96,
       },
-      validation: (Rule: any) => Rule.required(),
+      validation: (Rule: unknown) => Rule.required(),
     },
     {
       name: 'metaTitle',
@@ -112,7 +112,7 @@ export default {
       slug: 'slug.current',
       language: 'language',
     },
-    prepare({ title, slug, language }: any) {
+    prepare({ title, slug, language }: unknown) {
       return {
         title,
         subtitle: `/${language}/${slug}`,

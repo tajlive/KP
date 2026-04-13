@@ -299,8 +299,13 @@ const nextConfig = {
       // Webhooks (except Stripe - keep original for signature verification)
       { source: "/api/webhooks/resend/:path*", destination: "/api/v1/webhooks/resend/:path*", permanent: true },
       { source: "/api/webhooks/github/:path*", destination: "/api/v1/webhooks/github/:path*", permanent: true },
-      // Cron jobs
-      { source: "/api/cron/:path*", destination: "/api/v1/cron/:path*", permanent: true },
+      // Cron jobs — ONLY redirect the 3 jobs actually implemented in v1 controller
+      { source: "/api/cron/daily-summary", destination: "/api/v1/cron/daily-summary", permanent: true },
+      { source: "/api/cron/daily-summary/:path*", destination: "/api/v1/cron/daily-summary/:path*", permanent: true },
+      { source: "/api/cron/update-usdt-nok", destination: "/api/v1/cron/update-usdt-nok", permanent: true },
+      { source: "/api/cron/update-usdt-nok/:path*", destination: "/api/v1/cron/update-usdt-nok/:path*", permanent: true },
+      { source: "/api/cron/keepalive", destination: "/api/v1/cron/keepalive", permanent: true },
+      { source: "/api/cron/keepalive/:path*", destination: "/api/v1/cron/keepalive/:path*", permanent: true },
       // Notifications
       { source: "/api/notifications/:path*", destination: "/api/v1/notifications/:path*", permanent: true },
       { source: "/:locale/simulator", destination: "/:locale/paper-trading", permanent: true },

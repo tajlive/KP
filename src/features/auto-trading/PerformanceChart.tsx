@@ -149,7 +149,7 @@ export function PerformanceChart({
                   ((value: number) => [
                     `${value.toFixed(2)}%`,
                     "Avkastning",
-                  ]) as unknown as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
+                  ]) as any as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
                 }
               />
               <ReferenceLine

@@ -195,7 +195,7 @@ export class PaperExecutor implements OrderExecutor {
       return null;
     }
 
-    const position = session.open_position as unknown as OpenPosition;
+    const position = session.open_position as any as OpenPosition;
 
     // Calculate unrealized P&L
     const currentPrice = await this.getMarketPrice(symbol);

@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     }
 
     const supabase = createClient();
-    const currentDatabaseRpc = supabase.rpc as unknown as (
+    const currentDatabaseRpc = supabase.rpc as any as (
       fn: "current_database_name",
     ) => {
       single: () => Promise<{

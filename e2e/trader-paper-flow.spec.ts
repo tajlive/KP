@@ -12,7 +12,7 @@ test.describe("Trader + Lekepenger Flow", () => {
     await page.goto("/no/auth/logg-inn");
     await page.fill('input[type="email"]', process.env.TEST_USER_EMAIL || "test@example.com");
     await page.fill('input[type="password"]', process.env.TEST_USER_PASSWORD || "testpass");
-    await page.click('button[type="submit"]');
+    await page.click('button[type="submit"');
     await page.waitForURL("**/dashboard**", { timeout: 10000 });
   });
 
@@ -21,7 +21,7 @@ test.describe("Trader + Lekepenger Flow", () => {
       await page.goto("/no/dashboard");
       
       // Sjekk at lekepenger-modus er aktiv
-      await expect(page.locator('[data-testid="trading-mode-badge"]")).toContainText("Lekepenger");
+      await expect(page.locator('[data-testid="trading-mode-badge"]')).toContainText("Lekepenger");
       
       // Sjekk at CTA for å starte første trader vises
       await expect(page.locator('text=Start øvingshandel')).toBeVisible();
@@ -56,7 +56,7 @@ test.describe("Trader + Lekepenger Flow", () => {
       await page.goto("/no/dashboard");
       
       // Sjekk at aktiv trader vises
-      await expect(page.locator('[data-testid="active-trader-card"]")).toBeVisible();
+      await expect(page.locator('[data-testid="active-trader-card"]')).toBeVisible();
       await expect(page.locator('text=Aktiv trader')).toBeVisible();
       
       // Sjekk saldo-visning
@@ -132,7 +132,7 @@ test.describe("Trader + Lekepenger Flow", () => {
       await page.goto("/no/dashboard/trade");
       
       // Sjekk initial modus (lekepenger)
-      await expect(page.locator('[data-testid="mode-indicator"]"')).toContainText("Lekepenger");
+      await expect(page.locator('[data-testid="mode-indicator"]')).toContainText("Lekepenger");
       
       // Bytt til Live (hvis Binance er koblet til)
       await page.click('[data-testid="mode-toggle"]');
@@ -144,7 +144,7 @@ test.describe("Trader + Lekepenger Flow", () => {
       await page.click('text=Bytt til lekepenger');
       
       // Verifiser tilbake til lekepenger
-      await expect(page.locator('[data-testid="mode-indicator"]"')).toContainText("Lekepenger");
+      await expect(page.locator('[data-testid="mode-indicator"]')).toContainText("Lekepenger");
     });
   });
 

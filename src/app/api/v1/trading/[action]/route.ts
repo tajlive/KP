@@ -193,7 +193,7 @@ async function handleExecute(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as unknown;
+    body = JSON.parse(rawBody) as any;
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -386,7 +386,7 @@ async function handleTrigger(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as unknown;
+    body = JSON.parse(rawBody) as any;
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -466,7 +466,7 @@ async function handleOrder(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as unknown;
+    body = JSON.parse(rawBody) as any;
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -721,7 +721,7 @@ async function handleSetMode(request: NextRequest) {
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as unknown;
+    body = JSON.parse(rawBody) as any;
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -827,7 +827,7 @@ async function handleCreateSession(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as unknown;
+    body = JSON.parse(rawBody) as any;
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },

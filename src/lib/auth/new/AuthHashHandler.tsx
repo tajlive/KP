@@ -55,7 +55,8 @@ export function AuthHashHandler() {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         // Sjekk om session allerede er satt av detectSessionInUrl
-        let { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        let session = initialSession;
 
         console.log("[AuthHashHandler] Initial session check:", session ? "Found" : "Not found", sessionError ? "Error: " + sessionError.message : "No error");
 
