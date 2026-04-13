@@ -121,7 +121,7 @@
     "botReady": "Trading-boten din er klar",
     "paperBalance": "Lekepenger-saldo: 100 000 kr",
     "features": {
-      "paperTrading": "Lekepenger klar"
+      "paperTrading": "Lekepenger klar",
       "strategies": "Tradingstrategier tilgjengelig",
       "analytics": "Analyse-dashboard"
     }
