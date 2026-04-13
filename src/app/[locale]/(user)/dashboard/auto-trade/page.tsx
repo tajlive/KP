@@ -3,7 +3,6 @@ import { normalizeTier } from "@/lib/pricing/tiers";
 import { Metadata } from "next";
 import { BotWizard } from "@/features/auto-trade/BotWizard";
 import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
-import { AutoTradingConfigCard } from "@/features/dashboard/AutoTradingConfigCard";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +40,7 @@ export default async function AutoTradePage({
   return (
     <div className="space-y-6">
       <RobotThinkingStrip />
-      <AutoTradingConfigCard />
+
       <BotWizard
         userId={user.id}
         locale={locale}

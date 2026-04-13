@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import { localizedPathname, parseLocalePath } from "./locale-path";
 
 describe("localizedPathname", () => {
-  it("default locale har ikke /no-prefiks", () => {
-    expect(localizedPathname("no", "/innstillinger")).toBe("/innstillinger");
+  it("default locale har /no-prefiks (localePrefix: always)", () => {
+    expect(localizedPathname("no", "/innstillinger")).toBe("/no/innstillinger");
     expect(localizedPathname("no", "/dashboard/settings")).toBe(
-      "/dashboard/settings",
+      "/no/dashboard/settings",
     );
   });
 
