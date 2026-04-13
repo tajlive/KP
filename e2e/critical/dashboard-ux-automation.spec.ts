@@ -40,6 +40,16 @@ test.describe("Critical: auto-trade wizard mobil @critical", () => {
   }) => {
     const mob = devices["iPhone 13"];
     await page.setViewportSize(mob.viewport);
+
+    // Unngå onboarding-modal ved å pre-populate localStorage (ny session)
+    await page.goto("/no/dashboard", { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "klarpakke-onboarding",
+        JSON.stringify({ state: { isComplete: true, riskLevel: null }, version: 0 }),
+      );
+    });
+
     await page.goto(AUTO_TRADE_NO, {
       waitUntil: "domcontentloaded",
       timeout: 60_000,
@@ -48,13 +58,6 @@ test.describe("Critical: auto-trade wizard mobil @critical", () => {
       isLoginUrl(page.url()),
       "Krever innlogget E2E-bruker (E2E_USER_EMAIL / secrets)",
     );
-
-    // Hopp over onboarding-modal hvis den vises (ny session)
-    const onboardingSkip = page.locator("text=Se dashbordet uten å sette opp");
-    if (await onboardingSkip.isVisible().catch(() => false)) {
-      await onboardingSkip.click();
-      await page.waitForTimeout(500);
-    }
 
     await page.getByTestId("bot-wizard-next").click();
     const capital = page.locator("#capital-input");
