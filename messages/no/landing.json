@@ -78,8 +78,8 @@
   "features": {
     "title": "Alt du trenger for å mestre trading",
     "subtitle": "Vi har samlet de beste verktøyene for å lære trading på en trygg, strukturert og engasjerende måte.",
-    "paperTrading": {
-      "title": "Paper Trading",
+    "lekepenger": {
+      "title": "Lekepenger",
       "desc": "Start med kr 100 000 i lekepenger. Øv deg uten å risikere ekte sparepenger."
     },
     "aiTeacher": {
@@ -98,7 +98,7 @@
       "title": "Øv deg hvor som helst",
       "desc": "Øv deg når som helst, hvor som helst. På mobil, nettbrett eller PC."
     },
-    "ctaTitle": "Prøv Paper Trading nå",
+    "ctaTitle": "Prøv lekepenger nå",
     "ctaSubtitle": "Ingen registrering nødvendig"
   },
   "foundersOffer": {
@@ -122,7 +122,7 @@
       "line1": "Lær krypto-trading med 100 000 kr",
       "line2": "— uten å risikere egne penger."
     },
-    "subtitle": "Øv med ekte markedsdata. Paper trading med AI-signaler. Ingen betalingskort kreves.",
+    "subtitle": "Øv med ekte markedsdata. Lekepenger med AI-signaler. Ingen betalingskort kreves."
     "description": "Øv med virtuelle penger, lær av eksperter, og handle trygt",
     "cta": {
       "primary": "Start gratis nå",
@@ -133,12 +133,12 @@
       "noCard": "Ekte Binance-kurser",
       "cancel": "Norsk support"
     },
-    "disclaimer": "Paper trading = virtuelle penger. Ingen garanti for avkastning.",
+    "disclaimer": "Lekepenger = virtuelle penger. Ingen garanti for avkastning."
     "beta_badge": "BETA-LANSERING",
     "title_emotional": "Lær Trading På Norsk",
     "hook_emotional": "Om ett år er du enten glad du startet i dag –\neller sur på deg selv for at du ikke gjorde det.",
     "question_emotional": "Hvilken versjon av deg selv vil du møte?",
-    "description_emotional": "Strukturerte kurs, paper trading med 100 000 kr virtuell kapital, og AI-coach som svarer på norsk. Alt på én plattform.",
+    "description_emotional": "Strukturerte kurs, lekepenger med 100 000 kr virtuell kapital, og AI-coach som svarer på norsk. Alt på én plattform."
     "cta_start": "START GRATIS",
     "cta_demo": "SE DEMO",
     "social_proof_rating": "4.9/5 fra 127 studenter",
@@ -155,14 +155,14 @@
     "audienceAria": "Velg hvor du vil starte på siden",
     "audienceLabel": "Start her",
     "audienceCourses": "Kurs først",
-    "audiencePaper": "Prøv papirhandel",
+    "audiencePaper": "Prøv lekepenger",
     "ctaPrimary": "Opprett gratis konto",
     "ctaSecondary": "Åpne papirhandel",
     "loggedInCtaPrimary": "Gå til min side",
     "loggedInCtaSecondary": "Åpne papirhandel",
     "loggedInCtaMicrocopy": "Dashbord, kurs og papirhandel er klart når du er.",
     "ctaMicrocopy": "I gang på minutter · Ingen skjulte kursgebyrer · Avslutt når du vil",
-    "mockupUrl": "klarpakke.no/paper",
+    "mockupUrl": "klarpakke.no/lekepenger",
     "mockupPaperLabel": "Lekepenger",
     "mockupBalance": "100 000 kr",
     "mockupRiskFree": "Risikofritt",
@@ -258,7 +258,7 @@
     "payment": {
       "secure": "Trygg betaling via"
     },
-    "label1": "Paper Trading",
+    "label1": "Lekepenger",
     "description1": "kr 100 000 lekepenger",
     "label2": "Risikofritt",
     "description2": "Øv uten å tape penger",
@@ -281,7 +281,7 @@
     "badge": "Top 3",
     "ctaPrimary": "Start trading",
     "ctaSecondary": "Bli med",
-    "trustNote": "100% risikofritt med paper trading"
+    "trustNote": "100% risikofritt med lekepenger"
   },
   "stickyCTA": {
     "label": "Start gratis nå"

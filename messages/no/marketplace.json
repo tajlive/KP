@@ -8,7 +8,7 @@
     "titlePart1": "Avansert teknologi.",
     "titlePart2": "Enkel i bruk.",
     "description": "Vi har brukt 3 år på å finjustere våre algoritmer. Ingen \"Quantum AI\" eller magiske løfter – bare solid matematikk og streng risikostyring som jobber 24/7.",
-    "ctaPrimary": "Start Paper Trading",
+    "ctaPrimary": "Start med lekepenger",
     "ctaSecondary": "Se resultater",
     "stats": {
       "profitLabel": "Total Gevinst (3 år)",
@@ -36,7 +36,7 @@
     "title": "Slik fungerer det",
     "step1": {
       "step": "01",
-      "title": "Paper Trading",
+      "title": "Lekepenger",
       "desc": "Du får 100 000 kr i lekepenger. Test helt risikofritt i 30 dager."
     },
     "step2": {
@@ -57,7 +57,7 @@
   },
   "cta": {
     "title": "Klar for å teste løsningen?",
-    "desc": "Det koster ingenting å prøve Paper Trading. Se selv hvorfor vår teknologi er bedre enn markedet.",
+    "desc": "Det koster ingenting å prøve lekepenger. Se selv hvorfor vår teknologi er bedre enn markedet."
     "button": "Opprett gratis konto",
     "subtext": "Ingen kredittkort kreves. Start på 1 minutt."
   },
@@ -195,8 +195,8 @@
     "newStrategy": "Ny strategi",
     "noStrategies": "Ingen strategier ennå",
     "noTrades": "Ingen handler ennå",
-    "paperSimulated": "Papir (simulert)",
-    "paperTrading": "Papir trading",
+    "paperSimulated": "Lekepenger (simulert)",
+    "paperTrading": "Lekepenger",
     "profitFromAll": "Fortjeneste fra alle strategier",
     "recentTrades": "Siste handler",
     "runningNow": "Kjører nå",

@@ -37,7 +37,7 @@
   "welcomeVideo": "Se denne korte videoen",
   "clickToPlay": "Klikk for å spille av videoen",
   "transcript": "Video-oppsummering",
-  "transcriptText": "Hei! Jeg er Tom Arne, gründeren av Klarpakke. \n\n Vi er utrolig glade for å ha deg med på reisen. Vårt mål er å gjøre krypto-trading forståelig og lønnsomt for alle, uten den vanlige 'hypen'. \n\n Du har nå tilgang til vår paper trading-simulator med 100 000 kr i virtuelle midler, slik at du kan øve deg helt risikofritt før du går videre til ekte trading. Lykke til!",
+  "transcriptText": "Hei! Jeg er Tom Arne, gründeren av Klarpakke. \n\n Vi er utrolig glade for å ha deg med på reisen. Vårt mål er å gjøre krypto-trading forståelig og lønnsomt for alle, uten den vanlige 'hypen'. \n\n Du har nå tilgang til vår lekepenger-simulator med 100 000 kr i virtuelle midler, slik at du kan øve deg helt risikofritt før du går videre til ekte trading. Lykke til!",
   "founderName": "Tom Arne Jensen",
   "founderTitle": "Gründer & CEO",
   "continueToDashboard": "Fortsett til Dashboard",
@@ -77,16 +77,16 @@
     "loading": "Lagrer..."
   },
   "step3": {
-    "title": "Paper Trading",
+    "title": "Lekepenger",
     "subtitle": "Øv med virtuelle penger",
     "description": "Du starter med 100 000 kr i virtuelle midler",
     "cta": "Start trading",
     "loading": "Setter opp...",
-    "whatIsPaperTrading": "Hva er paper trading?",
+    "whatIsPaperTrading": "Hva er lekepenger?",
     "paperTrading": {
       "title": "Virtuell trading",
       "description": "Handel med virtuelle penger for å lære uten risiko",
-      "tooltip": "Paper trading simulerer ekte markedsforhold",
+      "tooltip": "Lekepenger simulerer ekte markedsforhold",
       "virtual": "Virtuell",
       "yourBalance": "Din saldo"
     }
@@ -119,9 +119,9 @@
     "loading": "Laster dashboard...",
     "initializing": "Initialiserer...",
     "botReady": "Trading-boten din er klar",
-    "paperBalance": "Paper-saldo: 100 000 kr",
+    "paperBalance": "Lekepenger-saldo: 100 000 kr",
     "features": {
-      "paperTrading": "Paper Trading klar",
+      "paperTrading": "Lekepenger klar"
       "strategies": "Tradingstrategier tilgjengelig",
       "analytics": "Analyse-dashboard"
     }
