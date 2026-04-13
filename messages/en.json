@@ -2814,6 +2814,8 @@
       "networkError": "Network error – check your connection and try again.",
       "sessionLimitTitle": "Session limit reached",
       "sessionLimitDesc": "You can have at most {max} active paper sessions. Stop an existing bot first.",
+      "duplicateSessionTitle": "Already active",
+      "duplicateSessionDesc": "You already have a bot running this strategy on this pair.",
       "startedTitle": "Paper bot started!",
       "startedDesc": "Your bot is now trading with virtual money."
     }

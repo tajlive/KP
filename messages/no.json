@@ -2814,6 +2814,8 @@
       "networkError": "Nettverksfeil – sjekk tilkoblingen og prøv igjen.",
       "sessionLimitTitle": "Sesjonsgrense nådd",
       "sessionLimitDesc": "Du kan ha maks {max} aktive paper-sesjoner. Stopp en eksisterende bot først.",
+      "duplicateSessionTitle": "Allerede aktiv",
+      "duplicateSessionDesc": "Du har allerede en bot som kjører med denne strategien på dette paret.",
       "startedTitle": "Paper bot startet!",
       "startedDesc": "Boten din handler nå med lekepenger."
     }

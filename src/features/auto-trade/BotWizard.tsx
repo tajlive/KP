@@ -232,6 +232,12 @@ export function BotWizard({
           });
           return;
         }
+        if (data.code === "PAPER_BOT_DUPLICATE") {
+          toast.error(tToast("paperBot.duplicateSessionTitle"), {
+            description: tToast("paperBot.duplicateSessionDesc"),
+          });
+          return;
+        }
         toast.error(tToast("paperBot.startFailedTitle"), {
           description:
             typeof data.error === "string"
