@@ -61,7 +61,7 @@
     "step4": "Forvent at emosjonene vil være forskjellige"
   },
   "paperTradingInfo": "Lekepenger-modus",
-  "paperTradingDescription": "Du handler med lekepenger (virtuelle penger). Slippage og gebyrer er simulert for realistisk øving."
+  "paperTradingDescription": "Du handler med lekepenger (virtuelle penger). Slippage og gebyrer er simulert for realistisk øving.",
   "liveTradingInfo": "Live Trading Mode",
   "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
   "balance": "Saldo",
