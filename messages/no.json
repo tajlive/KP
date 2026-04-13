@@ -2812,8 +2812,8 @@
     "paperBot": {
       "startFailedTitle": "Kunne ikke starte boten",
       "networkError": "Nettverksfeil – sjekk tilkoblingen og prøv igjen.",
-      "sessionLimitTitle": "Sesjonsgrense nådd",
-      "sessionLimitDesc": "Du kan ha maks {max} aktive paper-sesjoner. Stopp en eksisterende bot først.",
+      "sessionLimitTitle": "Grense for antall tradere nådd",
+      "sessionLimitDesc": "Du kan ha maks {max} aktive tradere samtidig. Stopp en eksisterende trader først.",
       "duplicateSessionTitle": "Allerede aktiv",
       "duplicateSessionDesc": "Du har allerede en bot som kjører med denne strategien på dette paret.",
       "startedTitle": "Paper bot startet!",
