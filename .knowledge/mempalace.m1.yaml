@@ -1,19 +1,29 @@
 wing: klarpakke-knowledge
 platform: darwin-arm64
 chroma_workaround: true
+diary_format: jsonl  # v2
 
 rooms:
+- name: auth
+  description: Autentisering, SSR-migrering, OAuth
 - name: decisions
-  description: Arkitektur-beslutninger (M1-optimized)
-- name: patterns
-  description: Kode-mønstre
+  description: Arkitektur- og tekniske beslutninger (ADR)
 - name: errors
-  description: Feil og løsninger
-- name: todos
-  description: TODOs og FIXMEs
+  description: Feil-mønstre og løsninger
+- name: patterns
+  description: Kode-mønstre og beste praksis
+- name: session
+  description: KIMI/Antigravity sesjon-sammendrag
+- name: trading
+  description: Trading-motor, strategier, caching, constraintsnull
+- name: i18n
+  description: Internasjonalisering, navnerom, manglende nøkler
+- name: deployment
+  description: Deploy-historikk, rollback, Vercel-notater
+- name: api-contracts
+  description: API-endepunkter, request/response-formater
 
-# M1-spesifikke notater
 notes:
 - "ChromaDB har issues på M1 - bruk knowledge-search.sh istedenfor"
-- "iTerm: Cmd+Click på filnavn for å åpne"
-- "Performance: Rust-baserte tools > Python på M1"
+- "Diary v2: JSONL-format i .kimi/diary.jsonl"
+- "Antigravity bruker MEMPALACE_AGENT=antigravity ved diary-write"
