@@ -2807,5 +2807,15 @@
       "amount": "Antall",
       "value": "Verdi"
     }
+  },
+  "toasts": {
+    "paperBot": {
+      "startFailedTitle": "Kunne ikke starte boten",
+      "networkError": "Nettverksfeil – sjekk tilkoblingen og prøv igjen.",
+      "sessionLimitTitle": "Sesjonsgrense nådd",
+      "sessionLimitDesc": "Du kan ha maks {max} aktive paper-sesjoner. Stopp en eksisterende bot først.",
+      "startedTitle": "Paper bot startet!",
+      "startedDesc": "Boten din handler nå med lekepenger."
+    }
   }
 }
