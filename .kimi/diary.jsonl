@@ -36,3 +36,4 @@ TESTER:
 
 KONKLUSJON: Systemet støtter 3+ tradere på gratis tier.","files":5,"status":"GO","rating":5,"agent":"unknown","ttl":null}
 {"ts":"2026-04-13T16:45:35Z","type":"TEST","task":"MASTER TEST RUN: Lighthouse + Allure E2E + Vitest Unit. Planlegger og koordinerer via Agent Bridge","files":5,"status":"GO","rating":5,"agent":"unknown","ttl":null}
+{"ts":"2026-04-13T17:39:57.398Z","type":"AUTO","task":"[i18n] fix: resolve middleware duplicate warning + fix Lighthouse URL\n\n- Rename src/middleware/index.ts -> exports.ts to prevent Next.js duplicate middleware warning\n- Update test:lighthouse:prod to use /no/login instead of /no/innlogging (404)","files":7,"status":"GO","rating":2,"agent":"auto-capture","meta":{"staged_files":["e2e/auth.setup.ts","e2e/critical/10-trades-prod.spec.ts","e2e/critical/auth.spec.ts","e2e/helpers/auth.ts","e2e/helpers/wait-for-dev-health.ts","messages/en/trading.json","messages/no/trading.json"],"categories":["i18n"]}}

@@ -49,6 +49,13 @@ test.describe("Critical: auto-trade wizard mobil @critical", () => {
       "Krever innlogget E2E-bruker (E2E_USER_EMAIL / secrets)",
     );
 
+    // Hopp over onboarding-modal hvis den vises (ny session)
+    const onboardingSkip = page.locator("text=Se dashbordet uten å sette opp");
+    if (await onboardingSkip.isVisible().catch(() => false)) {
+      await onboardingSkip.click();
+      await page.waitForTimeout(500);
+    }
+
     await page.getByTestId("bot-wizard-next").click();
     const capital = page.locator("#capital-input");
     await expect(capital).toBeVisible();
