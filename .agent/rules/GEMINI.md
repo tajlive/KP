@@ -95,6 +95,11 @@ When auto-applying an agent, inform the user:
 
 ## TIER 0: UNIVERSAL RULES (Always Active)
 
+### 🧠 MEMPALACE PROTOCOL (MANDATORY)
+
+1. **Before Investigation:** If the user reports a bug or requests a feature, you MUST run `./scripts/knowledge-search.sh "<keywords>"` via `run_command` to check our stored knowledge.
+2. **After Deployment/Fixes:** When a fix or feature is successfully confirmed working, you MUST autonomously run `./scripts/mempalace-diary.sh write <TYPE> "<Description>" GO "★★★" <files_changed>` via `run_command` to log the victory.
+
 ### 🌐 Language Handling
 
 When user's prompt is NOT in English:

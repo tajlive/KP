@@ -25,35 +25,35 @@ describe("i18nMiddleware", () => {
     const req = new NextRequest(new URL("http://localhost/settings"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe("http://localhost/innstillinger");
+    expect(res.headers.get("location")).toBe("http://localhost/no/innstillinger");
   });
 
   it("redirects /innlogging to /login", async () => {
     const req = new NextRequest(new URL("http://localhost/innlogging"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe("http://localhost/login");
+    expect(res.headers.get("location")).toBe("http://localhost/no/login");
   });
 
   it("redirects /beta to /dashboard", async () => {
     const req = new NextRequest(new URL("http://localhost/beta"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe("http://localhost/dashboard");
+    expect(res.headers.get("location")).toBe("http://localhost/no/dashboard");
   });
 
   it("redirects /beta/live-trading to /paper-trading?mode=live", async () => {
     const req = new NextRequest(new URL("http://localhost/beta/live-trading"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe("http://localhost/paper-trading?mode=live");
+    expect(res.headers.get("location")).toBe("http://localhost/no/paper-trading?mode=live");
   });
 
   it("redirects root with ?code= to /auth/callback", async () => {
     const req = new NextRequest(new URL("http://localhost/?code=abc"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(302);
-    expect(res.headers.get("location")).toBe("http://localhost/auth/callback?code=abc");
+    expect(res.headers.get("location")).toBe("http://localhost/no/auth/callback?code=abc");
   });
 
   it("redirects vercel.app to canonical domain", async () => {
