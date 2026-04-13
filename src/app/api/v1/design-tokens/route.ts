@@ -10,6 +10,9 @@ import { NextRequest, NextResponse } from 'next/server';
 // Cache i 60 sekunder (maksimalt for Vercel Edge)
 export const revalidate = 60;
 
+// Force dynamic rendering since we use request.url
+export const dynamic = 'force-dynamic';
+
 // Grok query for design tokens
 const TOKENS_QUERY = `*[_type == "designTokens" && isActive == true][0] {
   brandColors,
