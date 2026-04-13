@@ -58,6 +58,7 @@ import {
 import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
 import { RecentTradesTable } from "@/features/trading/components/RecentTradesTable";
 import { TradeDetailsDrawer } from "@/features/trading/components/TradeDetailsDrawer";
+import { TopAIInsightsRow } from "@/features/trading/TopAIInsightsRow";
 import { TradingModeSelector } from "@/features/trading/components/TradingModeSelector";
 
 const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
@@ -493,6 +494,9 @@ export default function UnifiedTradingDashboard({
         <section className="space-y-4">
           <PulseChartContainer />
         </section>
+
+        {/* TOP AI Insights */}
+        <TopAIInsightsRow />
 
         {/* Trading Signals */}
         <SignalFeed />
