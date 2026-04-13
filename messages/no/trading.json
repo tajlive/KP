@@ -624,7 +624,7 @@
   },
   "paperTrading": {
     "card": {
-      "title": "Paper Trading",
+      "title": "Lekepenger",
       "loading": "Henter saldo...",
       "error": "Kunne ikke hente saldo. Sjekk internettforbindelsen.",
       "empty": "Ingen aktiv papirhandelssesjon. Start en ny for å se saldoen.",
