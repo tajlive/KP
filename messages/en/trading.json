@@ -76,11 +76,24 @@
   "fee": "Fee",
   "confirmTrade": "Confirm Trade",
   "positions": {
-    "title": "Positions",
-    "empty": "No open positions",
-    "buy": "Buy",
-    "sell": "Sell",
-    "close": "Close"
+    "title": "Open Positions",
+    "titleCount": "Open Positions ({count})",
+    "empty": {
+      "title": "No open positions",
+      "description": "Start trading by opening your first position"
+    },
+    "columns": {
+      "symbol": "Symbol",
+      "side": "Side",
+      "size": "Size",
+      "entry": "Entry",
+      "current": "Current",
+      "pnl": "P&L",
+      "action": "Action"
+    },
+    "close": "Close",
+    "closeAria": "Close position {symbol}",
+    "totalUnrealizedPnL": "Total Unrealized P&L"
   },
   "noPositions": "No open positions",
   "unrealizedPnL": "Unrealized P&L",
@@ -206,18 +219,18 @@
     "starting": "Starting…"
   },
   "robotBrain": {
-    "ariaLabel": "Bot status and analysis",
-    "badge": "Core logic active",
-    "disclaimer": "Visual monitoring simulation — not buy advice or guaranteed returns.",
-    "line1": "Syncing candlesticks with Binance …",
-    "line2": "Cross-checking RSI and MACD against risk profile …",
-    "line3": "Sizing positions within daily limits …",
-    "line4": "Reading volatility and spread for the trading pair …",
-    "line5": "Updating trailing and partial take-profit levels …",
-    "line6": "Waiting for the next allowed trading window …",
-    "chip_scan": "Scan",
-    "chip_risk": "Risk OK",
-    "chip_signal": "Signal"
+    "ariaLabel": "AI analysis status",
+    "badge": "Robot thinking",
+    "line1": "Analyzing market data...",
+    "line2": "Looking for momentum signals...",
+    "line3": "Evaluating risk vs return...",
+    "line4": "Checking volume trends...",
+    "line5": "Optimizing entry timing...",
+    "line6": "Ready to trade at next signal...",
+    "chip_scan": "Scanning",
+    "chip_risk": "Risk",
+    "chip_signal": "Signal",
+    "disclaimer": "These are automated analyses — not financial advice."
   },
   "tradeDetails": {
     "title": "Trade Details",
@@ -336,26 +349,6 @@
       "insufficientMargin": "Insufficient margin available",
       "enterQuantity": "Please enter quantity"
     }
-  },
-  "positions": {
-    "title": "Open Positions",
-    "titleCount": "Open Positions ({count})",
-    "empty": {
-      "title": "No open positions",
-      "description": "Start trading by opening your first position"
-    },
-    "columns": {
-      "symbol": "Symbol",
-      "side": "Side",
-      "size": "Size",
-      "entry": "Entry",
-      "current": "Current",
-      "pnl": "P&L",
-      "action": "Action"
-    },
-    "close": "Close",
-    "closeAria": "Close position {symbol}",
-    "totalUnrealizedPnL": "Total Unrealized P&L"
   },
   "strategyConfig": {
     "dca": {

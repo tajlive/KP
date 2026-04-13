@@ -76,11 +76,24 @@
   "fee": "Gebyr",
   "confirmTrade": "Bekreft Handel",
   "positions": {
-    "title": "Posisjoner",
-    "empty": "Ingen åpne posisjoner",
-    "buy": "Kjøp",
-    "sell": "Selg",
-    "close": "Lukk"
+    "title": "Åpne Posisjoner",
+    "titleCount": "Åpne Posisjoner ({count})",
+    "empty": {
+      "title": "Ingen åpne posisjoner",
+      "description": "Start trading ved å åpne din første posisjon"
+    },
+    "columns": {
+      "symbol": "Symbol",
+      "side": "Side",
+      "size": "Størrelse",
+      "entry": "Entry",
+      "current": "Nåværende",
+      "pnl": "P&L",
+      "action": "Handling"
+    },
+    "close": "Lukk",
+    "closeAria": "Lukk posisjon {symbol}",
+    "totalUnrealizedPnL": "Total Urealisert P&L"
   },
   "noPositions": "Ingen åpne posisjoner",
   "unrealizedPnL": "Urealisert P&L",
@@ -206,18 +219,18 @@
     "starting": "Starter…"
   },
   "robotBrain": {
-    "ariaLabel": "Bot status og analyse",
-    "badge": "Kjernelogikk aktiv",
-    "disclaimer": "Visuell simulering av overvåkning — ikke kjøpsanbefaling eller garantert avkastning.",
-    "line1": "Synkroniserer candlesticks mot Binance …",
-    "line2": "Kryssjekker RSI og MACD mot risikoprofil …",
-    "line3": "Vurderer posisjonsstørrelse innenfor daglige grenser …",
-    "line4": "Leser volatilitet og spread for handelspar …",
-    "line5": "Oppdaterer trailing og delvis take-profit-nivåer …",
-    "line6": "Venter på neste tillatte handelsvindu …",
-    "chip_scan": "Scan",
-    "chip_risk": "Risiko OK",
-    "chip_signal": "Signal"
+    "ariaLabel": "AI-analysestatus",
+    "badge": "Robotten tenker",
+    "line1": "Analyserer markedsdata...",
+    "line2": "Ser etter momentum-signaler...",
+    "line3": "Vurderer risiko vs avkastning...",
+    "line4": "Sjekker volumtrender...",
+    "line5": "Optimaliserer innkjøpstidspunkt...",
+    "line6": "Klar til å handle ved neste signal...",
+    "chip_scan": "Scanning",
+    "chip_risk": "Risiko",
+    "chip_signal": "Signal",
+    "disclaimer": "Dette er automatiserte analyser — ikke finansiell rådgivning."
   },
   "tradeDetails": {
     "title": "Handledetaljer",
@@ -336,26 +349,6 @@
       "insufficientMargin": "Ikke nok margin tilgjengelig",
       "enterQuantity": "Vennligst fyll inn antall"
     }
-  },
-  "positions": {
-    "title": "Åpne Posisjoner",
-    "titleCount": "Åpne Posisjoner ({count})",
-    "empty": {
-      "title": "Ingen åpne posisjoner",
-      "description": "Start trading ved å åpne din første posisjon"
-    },
-    "columns": {
-      "symbol": "Symbol",
-      "side": "Side",
-      "size": "Størrelse",
-      "entry": "Entry",
-      "current": "Nåværende",
-      "pnl": "P&L",
-      "action": "Handling"
-    },
-    "close": "Lukk",
-    "closeAria": "Lukk posisjon {symbol}",
-    "totalUnrealizedPnL": "Total Urealisert P&L"
   },
   "strategyConfig": {
     "dca": {
