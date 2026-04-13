@@ -106,7 +106,7 @@ function readHandoffs() {
         size: content.length,
         modified: stats.mtime,
         status: content.includes('Status: DONE') ? 'DONE' :
-                content.includes('Status: AWAITING') ? 'AWAITING' :
+                content.includes('Status: AWAITING') ? 'AWAITING' :  // Matches AWAITING, AWAITING_ANALYSIS, etc.
                 content.includes('Status: IN_PROGRESS') ? 'IN_PROGRESS' : 'UNKNOWN'
       });
     }
@@ -187,10 +187,10 @@ function detectConflicts(activity) {
 function suggestHandoff(activity) {
   const suggestions = [];
   
-  // Check if Antigravity has AWAITING handoffs
-  const awaitingHandoffs = activity.antigravity.recent.filter(h => h.status === 'AWAITING');
+  // Check if Antigravity has AWAITING handoffs (waiting for KIMI)
+  const antigravityAwaiting = activity.antigravity.recent.filter(h => h.status === 'AWAITING');
   
-  awaitingHandoffs.forEach(handoff => {
+  antigravityAwaiting.forEach(handoff => {
     suggestions.push({
       priority: 'HIGH',
       from: 'antigravity',
@@ -201,9 +201,24 @@ function suggestHandoff(activity) {
     });
   });
   
+  // Check if KIMI has AWAITING handoffs (waiting for Antigravity)
+  const handoffs = readHandoffs();
+  const kimiAwaiting = handoffs.filter(h => h.from === 'kimi' && h.status === 'AWAITING');
+  
+  kimiAwaiting.forEach(handoff => {
+    suggestions.push({
+      priority: 'HIGH',
+      from: 'kimi',
+      to: 'antigravity',
+      task: handoff.task,
+      reason: 'KIMI venter på analyse/review fra Antigravity',
+      action: `Les: cat .mempalace/handoffs/${handoff.file}`
+    });
+  });
+  
   // Check if KIMI has recent FIX that needs analysis
   const recentFixes = activity.kimi.recent.filter(e => e.type === 'FIX');
-  if (recentFixes.length > 0 && activity.antigravity.recent.length === 0) {
+  if (recentFixes.length > 0 && activity.antigravity.recent.length === 0 && kimiAwaiting.length === 0) {
     suggestions.push({
       priority: 'MEDIUM',
       from: 'kimi',
