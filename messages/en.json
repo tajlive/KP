@@ -2807,5 +2807,15 @@
       "amount": "Amount",
       "value": "Value"
     }
+  },
+  "toasts": {
+    "paperBot": {
+      "startFailedTitle": "Could not start the bot",
+      "networkError": "Network error – check your connection and try again.",
+      "sessionLimitTitle": "Session limit reached",
+      "sessionLimitDesc": "You can have at most {max} active paper sessions. Stop an existing bot first.",
+      "startedTitle": "Paper bot started!",
+      "startedDesc": "Your bot is now trading with virtual money."
+    }
   }
 }

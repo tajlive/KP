@@ -138,7 +138,24 @@ export async function POST(request: NextRequest) {
       .select("id")
       .single();
 
-    if (error) throw error;
+    if (error) {
+      // Supabase returns code '23505' for unique constraint violations
+      const pgCode = (error as { code?: string }).code;
+      if (pgCode === "23505") {
+        return NextResponse.json<StartPaperBotResponse>(
+          {
+            ok: false,
+            code: "PAPER_BOT_SESSION_LIMIT",
+            message: "Du har allerede en aktiv sesjon for dette paret og strategien.",
+            error: "Du har allerede en aktiv sesjon for dette paret og strategien.",
+            max_sessions: maxSessions,
+            next_step: "retry",
+          },
+          { status: 409 },
+        );
+      }
+      throw error;
+    }
 
     return NextResponse.json<StartPaperBotResponse>({
       ok: true,
@@ -149,12 +166,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("[auto-trading/paper POST] Error:", error);
+    const msg =
+      error instanceof Error ? error.message : "Ukjent feil ved oppstart av bot";
     return NextResponse.json<StartPaperBotResponse>(
       {
         ok: false,
         code: "INTERNAL_ERROR",
-        message: "Failed to start paper bot",
-        error: error instanceof Error ? error.message : "Unknown error",
+        message: msg,
+        error: msg,
         next_step: "retry",
       },
       { status: 500 },
