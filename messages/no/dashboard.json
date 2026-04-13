@@ -70,7 +70,7 @@
   },
   "riskNote": {
     "title": "Trygghet og åpenhet",
-    "body": "Paper-handler er simulert i NOK. Live-handel bruker børstilkobling og medfører reell risiko. Risikokontroll kan avvise ordrer utenfor profilens grenser.",
+    "body": "Øvingshandler er simulert i NOK. Live-handel bruker børstilkobling og medfører reell risiko. Risikokontroll kan avvise ordrer utenfor profilens grenser."
     "settingsCta": "Tilkobling og innstillinger"
   },
   "loading": "Laster dashboard...",
@@ -113,7 +113,7 @@
     "subtitle": "Signaler, posisjoner og siste handler — kuratert oversikt.",
     "myPositions": "Mine posisjoner",
     "recentTrades": "Siste handler",
-    "noPositions": "Ingen posisjoner ennå. Start med paper trading!",
+    "noPositions": "Ingen posisjoner ennå. Start med lekepenger!",
     "noTrades": "Ingen handler ennå",
     "seeAll": "Se alle",
     "modeLabel": "Modus",
@@ -320,7 +320,7 @@
   "sidebar": {
     "home": "Hjem",
     "learn": "Lær",
-    "trade": "Handel (paper)",
+    "trade": "Handel (øving)",
     "trading": "Handel",
     "robots": "Roboter",
     "history": "Historikk",
@@ -373,7 +373,7 @@
     "waitingForData": "Venter på data...",
     "readyToTrade": "Klar til å handle",
     "locked": "Låst",
-    "paperTradingFirst": "Start med øvingshandel først"
+    "paperTradingFirst": "Start med lekepenger først"
   },
   "actions": {
     "recommendedStart": "Anbefalt Start",

@@ -39,7 +39,7 @@
     "logout": "Logg ut"
   },
   "footer": {
-    "description": "Lær å trade krypto på den smarte måten med Klarpakke. Vi tilbyr kurs, verktøy og paper trading for å hjelpe deg å lykkes.",
+    "description": "Lær å trade krypto på den smarte måten med Klarpakke. Vi tilbyr kurs, verktøy og lekepenger (paper trading) for å hjelpe deg å lykkes.",
     "headings": {
       "product": "Produkt",
       "company": "Selskap",
@@ -49,7 +49,7 @@
     "links": {
       "courses": "Kurs",
       "pricing": "Priser",
-      "paperTrading": "Paper Trading",
+      "paperTrading": "Lekepenger",
       "calculator": "Kalkulator",
       "about": "Om oss",
       "contact": "Kontakt",
@@ -63,7 +63,7 @@
     "sidebar": {
       "home": "Hjem",
       "learn": "Lær",
-      "trade": "Handel (paper)",
+      "trade": "Handel (øving)",
       "trading": "Handel",
       "robots": "Roboter",
       "history": "Historikk",
@@ -103,7 +103,7 @@
       "sessionLimitDesc": "Du kan ha maks {max} aktive tradere samtidig. Stopp en eksisterende trader først.",
       "duplicateSessionTitle": "Allerede aktiv",
       "duplicateSessionDesc": "Du har allerede en bot som kjører med denne strategien på dette paret.",
-      "startedTitle": "Paper bot startet!",
+      "startedTitle": "Øvingsbot startet!",
       "startedDesc": "Boten din handler nå med lekepenger."
     }
   }

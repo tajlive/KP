@@ -1,5 +1,5 @@
 {
-  "description": "Lær å trade krypto på den smarte måten med Klarpakke. Vi tilbyr kurs, verktøy og paper trading for å hjelpe deg å lykkes.",
+  "description": "Lær å trade krypto på den smarte måten med Klarpakke. Vi tilbyr kurs, verktøy og lekepenger for å hjelpe deg å lykkes.",
   "headings": {
     "product": "Produkt",
     "company": "Selskap",
@@ -9,7 +9,7 @@
   "links": {
     "courses": "Kurs",
     "pricing": "Priser",
-    "paperTrading": "Paper Trading",
+    "paperTrading": "Lekepenger",
     "calculator": "Kalkulator",
     "about": "Om oss",
     "contact": "Kontakt",

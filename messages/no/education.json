@@ -28,7 +28,7 @@
   "learningObjective1": "Forstå grunnleggende trading-konsepter",
   "learningObjective2": "Lær å lese og analysere markedsdata",
   "learningObjective3": "Implementer risikostyring i dine trades",
-  "learningObjective4": "Øv med paper trading før ekte penger",
+  "learningObjective4": "Øv med lekepenger før ekte penger",
   "includes": {
     "videos": "Videoleksjoner",
     "videosDesc": "Se profesjonelle videoer på ditt eget tempo",
@@ -64,7 +64,7 @@
     "passed": "Bestått",
     "failed": "Ikke bestått",
     "whatNow": "Hva vil du gjøre nå?",
-    "tryPaperTrading": "Prøv Paper Trading",
+    "tryPaperTrading": "Prøv lekepenger",
     "continueLearning": "Fortsett å lære",
     "retry": "Ta quizen på nytt",
     "correct": "Riktig!",
@@ -174,7 +174,7 @@
       "cta": "Start gratis",
       "requirement": "Ingen forkunnskaper kreves",
       "features": [
-        "Ubegrenset paper trading (100 000 kr)",
+        "Ubegrenset lekepenger (100 000 kr)",
         "14 dagers full prøveperiode på auto-trading",
         "Deretter 1 auto-strategi på Student",
         "AI-læringsassistent og real-time markedsdata",
@@ -195,7 +195,7 @@
         "Live trading på Binance",
         "3 live auto-trading-strategier",
         "Skatterapport (CSV/HTML for Skatteetaten)",
-        "Kopier topp-tradere i paper-modus",
+        "Kopier topp-tradere i øvingsmodus"
         "Teknisk analyse + ukentlige webinarer · 1 000 KLT/mnd"
       ]
     },
