@@ -16,6 +16,7 @@ type StartPaperBotResponse = {
   code:
     | "PAPER_BOT_STARTED"
     | "PAPER_BOT_SESSION_LIMIT"
+    | "PAPER_BOT_DUPLICATE"
     | "UNAUTHORIZED"
     | "VALIDATION_FAILED"
     | "INTERNAL_ERROR";
@@ -145,10 +146,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json<StartPaperBotResponse>(
           {
             ok: false,
-            code: "PAPER_BOT_SESSION_LIMIT",
+            code: "PAPER_BOT_DUPLICATE",
             message: "Du har allerede en aktiv sesjon for dette paret og strategien.",
             error: "Du har allerede en aktiv sesjon for dette paret og strategien.",
-            max_sessions: maxSessions,
             next_step: "retry",
           },
           { status: 409 },
