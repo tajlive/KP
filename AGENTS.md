@@ -36,6 +36,12 @@ kimi test:e2e        # npm run test:e2e:critical:chromium
 kimi db:status       # npm run db:status
 kimi db:push         # npm run db:push
 kimi deploy          # npm run deploy:prod
+
+# Pipeline (NYTT)
+kimi ci              # npm run lint:gate && npm run test:unit
+kimi monitor         # Sjekk prod helse
+kimi prod            # Full pipeline: ci → db → monitor → deploy → monitor
+kimi prod:preview    # Full pipeline til preview
 ```
 
 ---

@@ -19,6 +19,12 @@ alias kdb='npm run db:status'
 alias kpush='npm run db:push'
 alias kdeploy='npm run deploy:prod'
 alias kpreview='vercel deploy --target=preview'
+alias kprod='bash /Users/taj/klarpakke/.kimi/prod-deploy.sh'
+alias kprod:preview='bash /Users/taj/klarpakke/.kimi/prod-deploy.sh --preview'
+
+# Pipeline
+alias kci='npm run lint:gate && npm run test:unit'
+alias kmonitor='curl -s https://www.klarpakke.no/api/health | jq -r ".status" || echo "unreachable"'
 
 # Auth (nytt etter refresh-guard)
 alias kauth:test='npm run test:unit -- src/lib/auth/__tests__'

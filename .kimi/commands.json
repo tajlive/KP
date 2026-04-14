@@ -74,6 +74,22 @@
       "description": "Deploy til preview/staging",
       "command": "vercel deploy --target=preview"
     },
+    "prod": {
+      "description": "Full prod pipeline (lint, test, db, monitor, deploy, monitor)",
+      "command": "bash /Users/taj/klarpakke/.kimi/prod-deploy.sh"
+    },
+    "prod:preview": {
+      "description": "Full pipeline mot preview",
+      "command": "bash /Users/taj/klarpakke/.kimi/prod-deploy.sh --preview"
+    },
+    "ci": {
+      "description": "Lint + unit tests",
+      "command": "npm run lint:gate && npm run test:unit"
+    },
+    "monitor": {
+      "description": "Sjekk produksjonshelse",
+      "command": "curl -s https://www.klarpakke.no/api/health | jq -r '.status' || echo 'unreachable'"
+    },
     "mcp:check": {
       "description": "Verifiser MCP konfigurasjon",
       "command": "npm run mcp:validate 2>/dev/null || node scripts/validate-mcp-config.mjs"
