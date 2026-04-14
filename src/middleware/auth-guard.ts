@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 
 export const PROTECTED_PATHS = [
   "/dashboard",
@@ -67,6 +68,12 @@ export function createSupabaseClient(
             });
           });
         },
+      },
+      global: {
+        fetch: createRefreshProtectedFetch(globalThis.fetch, {
+          source: "middleware",
+          path: request.nextUrl.pathname,
+        }),
       },
     },
   );

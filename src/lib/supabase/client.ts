@@ -2,7 +2,7 @@
  * Singleton Supabase browser client
  * 
  * KRITISK: Aldri opprett flere instanser — én per browser-session.
- * Token refresh håndteres av AuthContext, IKKE her for å unngå race conditions.
+ * Token refresh håndteres av refresh-guard (mutex + circuit breaker) og AuthContext.
  * 
  * @usage
  * import { getSupabaseClient } from '@/lib/supabase/client'
@@ -11,6 +11,7 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
+import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 
 type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>;
 
@@ -64,6 +65,7 @@ export function getSupabaseClient(): SupabaseClient {
         headers: {
           "x-client-info": "klarpakke/1.0",
         },
+        fetch: createRefreshProtectedFetch(globalThis.fetch, { source: "browser" }),
       },
       auth: {
         autoRefreshToken: false, // DISABLED: Handled by AuthContext

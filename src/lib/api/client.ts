@@ -189,7 +189,8 @@ export async function fetchJsonWithAuth<T>(
 
 /**
  * Check if user is authenticated
- * Uses Supabase client to verify session
+ * Uses Supabase client to verify session.
+ * NOTE: refreshSession() is mutex-protected by refresh-guard to prevent storms.
  */
 export async function checkAuth(): Promise<boolean> {
   try {

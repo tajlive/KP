@@ -2,6 +2,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { StrategyType } from "./trading-api";
 import { safeStorage } from "@/lib/supabase/safe-storage";
+import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,6 +10,9 @@ const supabase = createBrowserClient(
   {
     auth: {
       storage: safeStorage,
+    },
+    global: {
+      fetch: createRefreshProtectedFetch(globalThis.fetch, { source: "browser" }),
     },
   }
 );

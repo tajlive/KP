@@ -27,6 +27,7 @@ export enum AuthErrorCode {
   SESSION_INVALID = "auth:session:invalid",
   SESSION_EXPIRED = "auth:session:expired",
   SESSION_REFRESH_FAILED = "auth:session:refresh_failed",
+  REFRESH_TOKEN_FAILED = "auth:session:refresh_token_failed",
   
   // Email/password errors
   EMAIL_LOGIN_FAILED = "auth:email:login_failed",

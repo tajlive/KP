@@ -170,22 +170,11 @@ export const DiscoverQuerySchema = z.object({
 // src/lib/auth.ts
 // Extract authenticated user from request
 // ============================================================================
-import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase/server";
 
 export async function getAuthUser() {
-  const cookieStore = await cookies();
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookieEncoding: "raw",
-      cookies: {
-        getAll: () => cookieStore.getAll(),
-      },
-    },
-  );
+  const supabase = await createServerClient();
 
   const {
     data: { user },

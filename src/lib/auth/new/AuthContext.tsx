@@ -10,7 +10,7 @@
  * 4. Ingen dobbel klient-opprettelse
  */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 
@@ -34,8 +34,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const initialFetchRef = useRef(false);
 
   useEffect(() => {
+    // Guard against double-execution in React Strict Mode
+    if (initialFetchRef.current) return;
+    initialFetchRef.current = true;
+
     const supabase = createClient();
 
     // Hent initial user
@@ -55,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Lytt på auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
       }
