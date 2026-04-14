@@ -180,34 +180,34 @@ export function PaperTradingList({
       }
 
       if (response.status === 400) {
-        toast.error(data.error ?? (locale === "no" ? "Ugyldig input – sjekk feltene og proev igjen." : "Invalid input – check fields and try again."));
+        toast.error(data.error ?? t("errors.validationFailed"));
         return;
       }
 
       if (response.status === 401) {
-        toast.error(locale === "no" ? "Du maa vaere logget inn for aa opprette en sesjon." : "You must be logged in to create a session.");
+        toast.error(t("errors.unauthorized"));
         return;
       }
 
       if (response.status === 403) {
-        toast.error(data.error ?? (locale === "no" ? "Du har ikke tilgang til aa opprette denne typen sesjon." : "You do not have access to create this type of session."));
+        toast.error(data.error ?? t("errors.forbidden"));
         return;
       }
 
       if (!response.ok) {
-        toast.error(data.error ?? data.message ?? (locale === "no" ? "Noe gikk galt. Proev igjen." : "Something went wrong. Please try again."));
+        toast.error(data.error ?? data.message ?? t("errors.generic"));
         return;
       }
 
       if (!data.session_id) {
-        toast.error(locale === "no" ? "Sesjon mangler ID. Kontakt support." : "Session missing ID. Contact support.");
+        toast.error(t("errors.missingSessionId"));
         return;
       }
 
       router.push(`/${locale}/paper-trading/${data.session_id}`);
     } catch (err) {
       console.error("Failed to create session:", err);
-      toast.error(locale === "no" ? "Kunne ikke kontakte serveren. Sjekk nettforbindelsen." : "Could not reach server. Check your connection.");
+      toast.error(t("errors.network"));
     } finally {
       setIsLoading(false);
     }
@@ -216,7 +216,7 @@ export function PaperTradingList({
   const [isResetting, setIsResetting] = useState(false);
 
   const handleReset = async () => {
-    if (!window.confirm(locale === "no" ? "Nullstill alle oevishandelsesjoner? Alle handler slettes og saldo tilbakestilles til 100\u202f000\u00a0kr." : "Reset all paper trading sessions? All trades will be deleted and balance reset to 100\u202f000\u00a0kr.")) return;
+    if (!window.confirm(t("confirmResetAll"))) return;
     setIsResetting(true);
     try {
       const response = await fetch("/api/paper-trading/reset", {
@@ -229,16 +229,16 @@ export function PaperTradingList({
       try { data = (await response.json()) as ResetResponse; } catch { /* tom body */ }
 
       if (!response.ok) {
-        toast.error(data.error ?? (locale === "no" ? "Nullstilling feilet. Proev igjen." : "Reset failed. Please try again."));
+        toast.error(data.error ?? t("errors.resetFailed"));
         return;
       }
 
-      toast.success(locale === "no" ? "Oevishandel nullstilt. Saldo: 100\u202f000\u00a0kr." : "Paper trading reset. Balance: 100\u202f000\u00a0kr.");
+      toast.success(t("resetSuccess"));
       setLastUpdated(new Date());
       router.refresh();
     } catch (err) {
       console.error("Failed to reset paper trading:", err);
-      toast.error(locale === "no" ? "Nettverksfeil ved nullstilling." : "Network error during reset.");
+      toast.error(t("errors.resetNetwork"));
     } finally {
       setIsResetting(false);
     }
@@ -251,10 +251,10 @@ export function PaperTradingList({
     const diffDays = Math.floor(diffMs / 86400000);
     const diffHours = Math.floor(diffMs / 3600000);
 
-    if (diffDays > 0) return locale === "no" ? `${diffDays}d` : `${diffDays}d`;
+    if (diffDays > 0) return `${diffDays}d`;
     if (diffHours > 0)
-      return locale === "no" ? `${diffHours}t` : `${diffHours}h`;
-    return locale === "no" ? "Nå" : "Now";
+      return `${diffHours}${locale === "no" ? "t" : "h"}`;
+    return t("now");
   };
 
   const getStatusBadge = (status: string) => {
