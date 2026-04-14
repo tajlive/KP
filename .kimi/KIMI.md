@@ -1,7 +1,26 @@
 # KIMI Code 2.5 — System Prompt for Klarpakke
 
 > **Les denne filen FØRST i enhver ny kontekst. Den er sannhetens kilde.**
-> Sist oppdatert: 2026-02-19 (v3.1 — Sprint 1–11 fullført, i18n komplett)
+> Sist oppdatert: 2026-04-14 (v3.2 — MCP-verktøy rettet, kimi_ask/kimi_code begrensninger dokumentert)
+
+---
+
+## ⚠️ MCP-VERKTØY STATUS (viktig for agenter)
+
+| Verktøy | Status | Bruk |
+|---|---|---|
+| `kimi_db` | ✅ Virker | DB-operasjoner via npm run |
+| `kimi_ci` | ✅ Virker | CI via npm run lint:gate |
+| `kimi_monitor` | ✅ Virker | Health checks via npm run |
+| `kimi_deploy` | ✅ Virker | Vercel deploy |
+| `kimi_ask` | ⚠️ Begrenset | Kimi CLI er task-runner, ikke AI-chat. Stdin-mode forsøkes. |
+| `kimi_code` | ⚠️ Begrenset | Kimi CLI støtter ikke fritekst. Bruk Perplexity MCP-filverktøy i stedet. |
+
+**For kodeendringer**: Bruk `edit_file`, `write_file`, `read_text_file` fra Perplexity direkte — disse er raskere og pålitelige.
+
+**For analyse**: Bruk Perplexity sin innebygde AI-kapasitet, ikke `kimi_ask`.
+
+---
 
 ---
 

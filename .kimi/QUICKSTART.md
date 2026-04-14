@@ -1,4 +1,4 @@
-# ⚡ KIMI QUICKSTART (Les på 30 sekunder)
+# ⚡ KIMI QUICKSTART (Les på 30 sekunder) — v2.1
 
 ## 🚀 Ved Oppstart
 
@@ -9,31 +9,32 @@
 # 2. Sjekk kontekst
 .kimi/context-predictor.sh
 
-# 3. Søk kunnskap
-./scripts/knowledge-search.sh "<ditt emne>"
+# 3. MemPalace wake-up (FTS5)
+mempalace wake-up --wing klarpakke
 ```
 
-## 🧠 MemPalace Pattern
+## 🧠 MemPalace Pattern (FTS5)
 
 ```bash
-# FØR oppgave - søk
-./scripts/knowledge-search.sh "auth"
+# FØR oppgave — søk
+mempalace search "auth refresh"
 
-# ETTER oppgave - logg  
-./scripts/mempalace-diary.sh write FEAT "beskrivelse" GO "★★★" 5
+# ETTER oppgave — logg (MCP)
+# Bruk mempalace_add_drawer eller mempalace_diary_write
 ```
 
 ## 🛠️ Auto-Skills (Aktiveres automatisk)
 
 | Path | Skills |
 |------|--------|
-| `auth/` | vulnerability-scanner, security-testing |
-| `trading/` | crypto-specialist, api-patterns |
-| `api/` | api-patterns, rate-limiting |
-| `components/` | frontend-design, nextjs-react-expert |
-| `migrations/` | database-design |
+| `src/lib/auth/**/*.ts` | vulnerability-scanner, security-testing |
+| `src/lib/trading/**/*.ts` | crypto-specialist, api-patterns |
+| `src/app/api/**/*.ts` | api-patterns, rate-limiting |
+| `src/components/**/*.tsx` | frontend-design, nextjs-react-expert |
+| `supabase/migrations/*.sql` | database-design |
+| `e2e/**/*.ts` | webapp-testing |
 
-## ⚡ Kjappe Kommandoer
+## ⚡ Kjappe Kommandoer (Aliases)
 
 ```bash
 kimi health       # Health check
@@ -41,8 +42,27 @@ kimi verify       # Verifiser miljø
 kimi dev          # Start dev
 kimi build        # Bygg
 kimi test         # Kjør tester
+kimi test:auth    # Auth-tester
+kimi test:e2e     # E2E critical
 kimi deploy       # Deploy prod
+kimi preview      # Deploy preview
 ```
+
+## 🏛️ MemPalace Rom (11 rom)
+
+| Rom | Innhold | Prioritet |
+|-----|---------|-----------|
+| `auth_system` | Auth-mønstre | 🔴 High |
+| `auth` | Auth-fixes (MCP-lagret) | 🔴 High |
+| `critical_decisions` | ADR-er | 🔴 High |
+| `error_patterns` | Feil + løsninger | 🔴 High |
+| `api_contracts` | API-dokumentasjon | 🟡 Medium |
+| `tech_debt` | TYPE_DEBT | 🟡 Medium |
+| `infrastructure` | Deploy, DNS, Vercel | 🟢 Standard |
+| `operations` | Agent ops, monitoring | 🟢 Standard |
+| `ux_engineering` | UX/UI, i18n | 🟢 Standard |
+| `project_status` | Statusrapporter | 🟢 Standard |
+| `kimi_sessions` | Diary entries | 🟢 Standard |
 
 ## ✅ ALLTID Husk
 
@@ -51,14 +71,7 @@ kimi deploy       # Deploy prod
 - **Verifiser**: Sjekk før endring
 - **GO/NO-GO**: Tydelig status
 
-## 📚 MEMPALACE ROM
-
-- `critical_decisions` - ADR-er (høy)
-- `error_patterns` - Feil (høy)
-- `auth_system` - Auth (høy)
-- `tech_debt` - TYPE_DEBT (medium)
-- `api_contracts` - API (medium)
-
 ---
 
-**Full guide:** `.kimi/STARTUP_PROMPT.md`
+**Full guide:** `.kimi/STARTUP_PROMPT.md`  
+**Auth fix ref:** Commit `4a98feb1c` (refresh-guard mutex + circuit breaker)

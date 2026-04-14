@@ -1,6 +1,7 @@
 # KIMI Agent Guide for Klarpakke
 
-**Versjon:** 1.0  
+**Versjon:** 2.1  
+**Oppdatert:** 2026-04-14  
 **For:** KIMI CLI i Klarpakke-prosjektet  
 **Mål:** Maksimal automasjon, minimal friksjon
 
@@ -45,6 +46,8 @@ kimi typecheck       # npm run type-check
 # Testing
 kimi test            # npm run test:unit
 kimi test:e2e        # npm run test:e2e:critical:chromium
+kimi test:auth       # npm run test:unit -- src/lib/auth/__tests__
+kimi test:smoke      # npm run test:e2e:smoke
 
 # Database
 kimi db:status       # npm run db:status
@@ -54,6 +57,10 @@ kimi db:gen          # npm run db:gen-types
 # Deploy
 kimi deploy          # npm run deploy:prod
 kimi preview         # vercel deploy --target=preview
+
+# MemPalace (FTS5)
+mempalace search "auth" --wing klarpakke   # Søk kunnskap
+mempalace wake-up --wing klarpakke         # Hent kontekst
 ```
 
 ### 3. Smarte Templates
@@ -132,6 +139,8 @@ kimi refactor "[område]"
 - **i18n:** Kun no + en (th/zh avvent)
 - **Trading:** Edge Functions eller Supabase scheduler
 - **Auth:** @supabase/ssr (ikke auth-helpers-nextjs)
+- **Auth refresh:** refresh-guard.ts (mutex + circuit breaker) — se commit 4a98feb1c
+- **MemPalace:** SQLite FTS5 (ikke grep raw mode)
 
 ### Personlig Preferanser
 - YOLO-modus: Alltid aktiv (ikke spør om bekreftelse)

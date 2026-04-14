@@ -1,5 +1,5 @@
 #!/bin/bash
-# KIMI Autostart Sequence
+# KIMI Autostart Sequence — v2.1 (FTS5-optimisert)
 # Kjør ved hver KIMI oppstart for maksimal optimalisering
 
 set -e
@@ -13,7 +13,7 @@ echo ""
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 # 1. Git Status
 echo -e "${BLUE}📊 Git Status:${NC}"
@@ -25,13 +25,13 @@ else
 fi
 echo ""
 
-# 2. MemPalace Wake-up
-echo -e "${BLUE}🏛️  MemPalace Wake-up:${NC}"
-if [ -f "./scripts/knowledge-search.sh" ]; then
-    echo "  Critical decisions loaded:"
-    ./scripts/knowledge-search.sh "cron" critical_decisions 2>/dev/null | grep -E "(📄|docs/)" | head -3 | sed 's/^/    /' || echo "    (search available)"
+# 2. MemPalace Wake-up (FTS5)
+echo -e "${BLUE}🏛️  MemPalace Wake-up (FTS5):${NC}"
+WAKE_OUTPUT=$(mempalace wake-up --wing klarpakke 2>/dev/null | tail -20 || echo "")
+if [ -n "$WAKE_OUTPUT" ]; then
+    echo "$WAKE_OUTPUT" | head -12 | sed 's/^/  /'
 else
-    echo "  ⚠️  knowledge-search.sh not found"
+    echo "  Using local knowledge graph..."
 fi
 echo ""
 
@@ -44,7 +44,7 @@ if [ -f ".kimi/context-predictor.sh" ]; then
     case "$DOMAIN" in
         auth)
             echo "  Skills: vulnerability-scanner, security-testing"
-            echo "  Rooms: auth_system, error_patterns"
+            echo "  Rooms: auth_system, auth, error_patterns"
             ;;
         trading)
             echo "  Skills: crypto-specialist, api-patterns"
@@ -56,7 +56,7 @@ if [ -f ".kimi/context-predictor.sh" ]; then
             ;;
         ui)
             echo "  Skills: frontend-design, nextjs-react-expert"
-            echo "  Rooms: project_status"
+            echo "  Rooms: ux_engineering"
             ;;
         *)
             echo "  Skills: clean-code, testing-patterns"
@@ -70,12 +70,12 @@ echo ""
 
 # 4. Recent Activity
 echo -e "${BLUE}📖 Recent Activity:${NC}"
-if [ -f "./scripts/mempalace-diary.sh" ] && [ -f ".kimi/diary.log" ]; then
-    ENTRIES=$(./scripts/mempalace-diary.sh status 2>/dev/null || echo "0")
-    echo "  Total diary entries: $ENTRIES"
-    ./scripts/mempalace-diary.sh read 2 2>/dev/null | tail -6 | sed 's/^/  /' || echo "  No entries"
+DIARY_COUNT=$(find ~/.mempalace/palace -name "diary" -o -name "kimi_sessions" 2>/dev/null | wc -l || echo "0")
+if [ "$DIARY_COUNT" -gt 0 ]; then
+    echo "  Diary wings active: $DIARY_COUNT"
+    mempalace status 2>/dev/null | grep "drawers" | sed 's/^/  /' || echo "  Status available"
 else
-    echo "  No diary entries yet"
+    echo "  No recent diary entries"
 fi
 echo ""
 
@@ -91,10 +91,10 @@ echo -e "${GREEN}✅ KIMI Ready!${NC}"
 echo "=========================="
 echo ""
 echo "Quick commands:"
-echo "  ./scripts/knowledge-search.sh <query>  # Search memory"
-echo "  ./scripts/mempalace-diary.sh read      # View activity"
-echo "  npm run verify                         # Check environment"
-echo "  npm run dev                            # Start dev server"
+echo "  mempalace search \"auth\"         # Search memory (FTS5)"
+echo "  mempalace wake-up --wing klarpakke  # Full context"
+echo "  npm run verify                  # Check environment"
+echo "  npm run dev                     # Start dev server"
 echo ""
-echo "YOLO mode: ACTIVE | MemPalace: CONNECTED | Skills: AUTO"
+echo "YOLO mode: ACTIVE | MemPalace: FTS5 | Skills: AUTO"
 echo ""
