@@ -55,7 +55,7 @@ jobs:
     
     strategy:
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: ${{ github.event_name == 'schedule' && fromJson('[1, 2, 3, 4]') || fromJson('[1, 2]') }}
     
     steps:
       - uses: actions/checkout@v5
@@ -68,8 +68,8 @@ jobs:
       - name: 📦 Install
         run: npm ci --legacy-peer-deps
       
-      - name: ⚡ Run Unit Tests (Shard ${{ matrix.shard }}/4)
-        run: npm run test:unit -- --shard=${{ matrix.shard }}/4
+      - name: ⚡ Run Unit Tests (Shard ${{ matrix.shard }}/${{ github.event_name == 'schedule' && 4 || 2 }})
+        run: npm run test:unit -- --shard=${{ matrix.shard }}/${{ github.event_name == 'schedule' && 4 || 2 }}
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
