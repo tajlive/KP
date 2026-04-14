@@ -19,5 +19,7 @@
     "badge": "Valgfritt · Pro-funksjon"
   },
   "ctaButton": "Start gratis i dag",
-  "ctaSubtext": "Ingen kredittkort nødvendig · Avbryt når som helst"
+  "ctaSubtext": "Ingen kredittkort nødvendig · Avbryt når som helst",
+  "ctaButtonLoggedIn": "Gå til dashboard",
+  "ctaSubtextLoggedIn": "Du er allerede innlogget · Fortsett der du slapp"
 }

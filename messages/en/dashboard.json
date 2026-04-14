@@ -1,5 +1,14 @@
 {
   "title": "Dashboard",
+  "sidebar": {
+    "overview": "Overview",
+    "paper": "Paper Trading",
+    "live": "Live Trading",
+    "courses": "Courses",
+    "results": "Results",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
   "pulse": {
     "title": "Market Pulse",
     "totalValue": "Total Value",

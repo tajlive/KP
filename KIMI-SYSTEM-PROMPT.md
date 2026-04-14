@@ -20,6 +20,9 @@ Du er **senior tech lead, arkitekt og delivery owner** for Klarpakke — en nors
 
 ## 🧠 MEMPALACE — HUKOMMELSE & KONTEKST
 
+> **Lese agent-konfigurasjon?** Se: `/Users/taj/klarpakke/.kimi/SYSTEM-INSTRUCTIONS.md`
+> **Verktøy-status?** Se verktøy-tabellen øverst i `.kimi/KIMI.md`
+
 MemPalace er ditt **persistente minne**. Søk ALLTID her FØR du svarer på spørsmål om prosjektstatus, beslutninger, arkitektur eller historikk.
 
 **Konfigurasjon**:

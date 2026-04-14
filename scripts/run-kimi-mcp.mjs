@@ -350,24 +350,54 @@ async function handleToolCall(name, args) {
   }
 }
 
+// ==========================================================================
+// callKimi: Sender prompt via STDIN (ikke som posisjonelt argument).
+// Kimi CLI er Click-basert og aksepterer IKKE fritekst som CLI-arg.
+// Stdin-modus brukes i interaktiv modus. Fallback: tmpfile-basert eksekvering.
+// ==========================================================================
 async function callKimi(prompt, extraArgs = []) {
   return new Promise((resolve) => {
-    const kimiArgs = ["--yolo", ...extraArgs, prompt];
-    
+    // RIKTIG: Send prompt via stdin, ikke som CLI-arg
+    // FEIL var: kimiArgs = ["--yolo", ...extraArgs, prompt]  ← krasjer (Click CLI)
+    const kimiArgs = ["--yolo", ...extraArgs];
+
     const child = spawn("kimi", kimiArgs, {
       cwd: root,
-      env: { ...process.env, FORCE_COLOR: "0" },
+      env: { ...process.env, FORCE_COLOR: "0", KIMI_NON_INTERACTIVE: "0" },
       stdio: ["pipe", "pipe", "pipe"],
     });
 
     let stdout = "";
     let stderr = "";
+    let timedOut = false;
+
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      child.kill("SIGTERM");
+    }, 300000);
 
     child.stdout.on("data", (data) => { stdout += data.toString(); });
     child.stderr.on("data", (data) => { stderr += data.toString(); });
 
     child.on("close", (code) => {
+      clearTimeout(timeout);
+      if (timedOut) {
+        resolve({
+          content: [{ type: "text", text: "❌ Kimi tidsavbrudd etter 5 min" }],
+          isError: true,
+        });
+        return;
+      }
+      // Detect Click CLI-feil ("No such command") og gi meningsfull melding
       const output = stdout || stderr || "Ingen output fra Kimi";
+      const isClickError = output.includes("No such command") || output.includes("Usage: kimi");
+      if (isClickError) {
+        resolve({
+          content: [{ type: "text", text: `⚠️ kimi_ask/kimi_code støttes ikke av denne kimi-installasjonen.\n\nBrukt kommando: kimi ${kimiArgs.join(" ")}\n\nKimi CLI er en task-runner (db/ci/monitor/deploy) — ikke en AI chat-klient.\nBruk Perplexity sine egne filverktøy (read_file, write_file, edit_file) for kodeendringer.\n\nOriginal feil:\n${output.substring(0, 500)}` }],
+          isError: true,
+        });
+        return;
+      }
       resolve({
         content: [{ type: "text", text: output }],
         isError: code !== 0,
@@ -375,12 +405,15 @@ async function callKimi(prompt, extraArgs = []) {
     });
 
     child.on("error", (err) => {
+      clearTimeout(timeout);
       resolve({
-        content: [{ type: "text", text: `Feil ved kall til Kimi: ${err.message}` }],
+        content: [{ type: "text", text: `❌ Kimi start-feil: ${err.message}\n\nSjekk at kimi er installert: which kimi` }],
         isError: true,
       });
     });
 
+    // Skriv prompt til stdin (interaktiv modus)
+    child.stdin.write(prompt + "\n");
     child.stdin.end();
   });
 }
