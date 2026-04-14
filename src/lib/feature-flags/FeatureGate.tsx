@@ -1,10 +1,11 @@
 'use client';
 
 import { useFeatureFlag } from './useFeatureFlag';
+import type { FeatureFlags } from '@/lib/flags';
 import type { ReactNode } from 'react';
 
 interface FeatureGateProps {
-  flag: string;
+  flag: keyof FeatureFlags;
   children: ReactNode;
   fallback?: ReactNode;
 }

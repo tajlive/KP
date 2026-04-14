@@ -38,9 +38,9 @@ export const getEffectiveSonarTier = (): 'sonar' | 'sonar-pro' => {
 
 /**
  * Client-side feature flag name for Sonar UI
- * Use with useFeatureFlag('sonar-ui') hook
+ * Use with useFeatureFlag('sonarUi') hook
  */
-export const SONAR_UI_FEATURE_FLAG = 'sonar-ui' as const;
+export const SONAR_UI_FEATURE_FLAG = 'sonarUi' as const;
 
 // ============================================================================
 // Feature configuration
@@ -61,7 +61,7 @@ export interface SonarFeatureConfig {
 
 /**
  * Get complete feature configuration
- * Note: uiEnabled should be checked client-side with useFeatureFlag('sonar-ui')
+ * Note: uiEnabled should be checked client-side with useFeatureFlag('sonarUi')
  */
 export const getSonarFeatureConfig = (): Omit<SonarFeatureConfig, 'uiEnabled'> => {
   return {
