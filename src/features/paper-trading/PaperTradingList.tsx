@@ -165,7 +165,6 @@ export function PaperTradingList({
         }),
       });
 
-      // eslint-disable-next-line prefer-const
       let data: CreateSessionResponse = {};
       try { data = (await response.json()) as CreateSessionResponse; } catch { /* tom body */ }
 
@@ -224,7 +223,6 @@ export function PaperTradingList({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ starting_capital_nok: 100000 }),
       });
-      // eslint-disable-next-line prefer-const
       let data: ResetResponse = {};
       try { data = (await response.json()) as ResetResponse; } catch { /* tom body */ }
 
