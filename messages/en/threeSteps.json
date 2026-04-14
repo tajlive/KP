@@ -19,5 +19,7 @@
     "badge": "Optional · Pro feature"
   },
   "ctaButton": "Start free today",
-  "ctaSubtext": "No credit card required · Cancel anytime"
+  "ctaSubtext": "No credit card required · Cancel anytime",
+  "ctaButtonLoggedIn": "Go to dashboard",
+  "ctaSubtextLoggedIn": "You're already logged in · Pick up where you left off"
 }

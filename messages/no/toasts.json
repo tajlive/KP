@@ -1,0 +1,16 @@
+{
+  "paperBot": {
+    "startedTitle": "Strategi startet",
+    "startedDesc": "Boten kjører nå i øvingsmodus",
+    "stoppedTitle": "Strategi stoppet",
+    "stoppedDesc": "Strategien ble avsluttet",
+    "errorTitle": "Kunne ikke starte strategi",
+    "errorDesc": "Prøv igjen eller kontakt support"
+  },
+  "session": {
+    "createdTitle": "Øvingsøkt opprettet",
+    "createdDesc": "Du kan nå handle med virtuell kapital",
+    "errorTitle": "Kunne ikke opprette økt",
+    "errorDesc": "Sjekk tilkoblingen og prøv igjen"
+  }
+}

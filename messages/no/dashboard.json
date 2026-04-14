@@ -1,5 +1,14 @@
 {
   "title": "Oversikt",
+  "sidebar": {
+    "overview": "Oversikt",
+    "paper": "Øvingshandel",
+    "live": "Live Trading",
+    "courses": "Kurs",
+    "results": "Resultater",
+    "settings": "Innstillinger",
+    "profile": "Profil"
+  },
   "pulse": {
     "title": "Porteføljepuls",
     "totalValue": "Total Verdi",
