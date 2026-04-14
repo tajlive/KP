@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * 🏛️ Mempalace MCP Server
- * 
+ * 🏛️ Mempalace MCP Server — FTS5-optimized
+ *
  * Integrerer Mempalace minnesystem med MCP for:
- * - Søk i prosjektkunnskap
+ * - Søk i prosjektkunnskap (via mempalace CLI / SQLite FTS5)
  * - Knowledge graph spørringer
  * - Diary entries
  * - Kontekst-aware assistanse
@@ -24,24 +24,30 @@ function loadConfig() {
   if (!existsSync(configPath)) {
     return {
       wing: 'klarpakke',
-      storage: { mode: 'raw', search_backend: 'grep' },
+      storage: { mode: 'raw', search_backend: 'sqlite-fts5' },
       rooms: []
     };
   }
-  
+
   // Simple YAML parsing
   const content = readFileSync(configPath, 'utf8');
   const config = { rooms: [] };
   let currentRoom = null;
-  
+
   for (const line of content.split('\n')) {
     const trimmed = line.trim();
-    
+
     if (trimmed.startsWith('wing:')) {
       config.wing = trimmed.split(':')[1].trim();
     } else if (trimmed.startsWith('mode:')) {
       config.storage = config.storage || {};
       config.storage.mode = trimmed.split(':')[1].trim();
+    } else if (trimmed.startsWith('search_backend:')) {
+      config.storage = config.storage || {};
+      config.storage.search_backend = trimmed.split(':')[1].trim();
+    } else if (trimmed.startsWith('aaak_compression:')) {
+      config.storage = config.storage || {};
+      config.storage.aaak_compression = trimmed.split(':')[1].trim() === 'true';
     } else if (trimmed === 'rooms:') {
       // Start of rooms section
     } else if (trimmed.startsWith('- name:')) {
@@ -53,27 +59,87 @@ function loadConfig() {
       currentRoom.priority = trimmed.split(':')[1].trim();
     }
   }
-  
+
   return config;
 }
 
-// Search drawers using grep (raw mode)
+// Search drawers using mempalace CLI (SQLite FTS5)
 function searchDrawers(query, wing) {
-  // execSync imported at top level
-  
   try {
-    // Search in .mempalace directory
-    const mempalaceDir = resolve(root, '.mempalace');
-    if (!existsSync(mempalaceDir)) return [];
-    
     const result = execSync(
-      `grep -r -i -l "${query.replace(/"/g, '\\"')}" "${mempalaceDir}" 2>/dev/null | head -20`,
-      { encoding: 'utf8' }
+      `mempalace search ${JSON.stringify(query)} --wing ${wing || 'klarpakke'}`,
+      { encoding: 'utf8', cwd: root }
     );
-    
-    return result.trim().split('\n').filter(Boolean).map(path => ({
-      path: path.replace(mempalaceDir, ''),
-      content: readFileSync(path, 'utf8').slice(0, 500)
+
+    const lines = result.split('\n');
+    const drawers = [];
+    let current = null;
+    let inContent = false;
+    let sawMetadata = false;
+
+    for (const rawLine of lines) {
+      const line = rawLine.trimEnd();
+
+      // New result entry
+      const entryMatch = line.match(/^\s*\[(\d+)\]\s+(\S+)\s+\/\s+(\S+)/);
+      if (entryMatch) {
+        if (current) drawers.push(current);
+        current = {
+          rank: parseInt(entryMatch[1], 10),
+          wing: entryMatch[2],
+          room: entryMatch[3],
+          source: '',
+          match: 0,
+          content: ''
+        };
+        inContent = false;
+        sawMetadata = false;
+        continue;
+      }
+
+      if (!current) continue;
+
+      const sourceMatch = line.match(/^\s*Source:\s*(.*)/);
+      if (sourceMatch) {
+        current.source = sourceMatch[1].trim();
+        sawMetadata = true;
+        continue;
+      }
+
+      const matchMatch = line.match(/^\s*Match:\s*([\d.\-]+)/);
+      if (matchMatch) {
+        current.match = parseFloat(matchMatch[1]);
+        sawMetadata = true;
+        continue;
+      }
+
+      // Start of content block (first empty line after metadata)
+      if (line === '' && sawMetadata && !inContent) {
+        inContent = true;
+        continue;
+      }
+
+      // Separator between results
+      if (line.startsWith('───')) {
+        inContent = false;
+        sawMetadata = false;
+        continue;
+      }
+
+      if (inContent) {
+        current.content += line + '\n';
+      }
+    }
+
+    if (current) drawers.push(current);
+
+    // Trim trailing newlines and slice content for MCP transport
+    return drawers.map(d => ({
+      wing: d.wing,
+      room: d.room,
+      source: d.source,
+      match: d.match,
+      content: d.content.trim().slice(0, 800)
     }));
   } catch {
     return [];
@@ -84,7 +150,7 @@ function searchDrawers(query, wing) {
 function kgQuery(entity) {
   const kgPath = resolve(root, '.mempalace/kg.json');
   if (!existsSync(kgPath)) return null;
-  
+
   try {
     const kg = JSON.parse(readFileSync(kgPath, 'utf8'));
     return kg[entity] || null;
@@ -97,29 +163,42 @@ function kgQuery(entity) {
 function readDiary(agent, lastN = 10) {
   const diaryPath = resolve(root, `.mempalace/diary/${agent}.jsonl`);
   if (!existsSync(diaryPath)) return [];
-  
+
   try {
-    const lines = readFileSync(diaryPath, 'utf8').trim().split('\n').filter(Boolean);
-    return lines.slice(-lastN).map(line => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return { raw: line };
-      }
-    });
+    const lines = readFileSync(diaryPath, 'utf8').split('\n').filter(Boolean);
+    return lines.slice(-lastN).map(line => JSON.parse(line));
   } catch {
     return [];
   }
 }
 
-// MCP Server implementation
+function writeDiary(agent, entry) {
+  const diaryDir = resolve(root, '.mempalace/diary');
+  if (!existsSync(diaryDir)) {
+    execSync(`mkdir -p "${diaryDir}"`);
+  }
+
+  const diaryPath = resolve(diaryDir, `${agent}.jsonl`);
+  const record = JSON.stringify({
+    ts: new Date().toISOString(),
+    entry
+  });
+
+  try {
+    execSync(`echo ${JSON.stringify(record)} >> "${diaryPath}"`);
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
 class MempalaceMCP {
   constructor() {
     this.config = loadConfig();
     this.serverInfo = {
       name: 'mempalace-mcp',
-      version: '2.0.0',
-      description: 'Mempalace Memory System MCP Server'
+      version: '2.1-fts5',
+      features: ['search', 'kg_get', 'kg_add', 'read_diary', 'write_diary', 'get_status', 'find_tunnels']
     };
   }
 
@@ -146,47 +225,67 @@ class MempalaceMCP {
     return room;
   }
 
-  async kgGet(entity) {
-    return kgQuery(entity);
-  }
-
-  async kgAdd(subject, predicate, object, validFrom) {
-    // In raw mode, just log the operation
+  kgGet(entity) {
     return {
-      added: { subject, predicate, object, validFrom },
-      note: 'Knowledge graph update logged (raw mode)'
+      entity,
+      facts: kgQuery(entity),
+      note: 'Knowledge graph queried from local storage'
     };
   }
 
-  async readDiary(agent, lastN) {
-    return readDiary(agent, lastN);
-  }
+  kgAdd(subject, predicate, object, validFrom) {
+    const kgPath = resolve(root, '.mempalace/kg.json');
+    let kg = {};
 
-  async writeDiary(agent, entry) {
-    // In raw mode, just return confirmation
-    return {
-      written: true,
-      agent,
-      entry: entry.slice(0, 100),
-      note: 'Diary entry logged (raw mode)'
-    };
-  }
-
-  async getStatus() {
-    const mempalaceDir = resolve(root, '.mempalace');
-    let drawerCount = 0;
-    
     try {
-      const result = execSync(`find "${mempalaceDir}" -type f 2>/dev/null | wc -l`, { encoding: 'utf8' });
-      drawerCount = parseInt(result.trim()) || 0;
+      if (existsSync(kgPath)) {
+        kg = JSON.parse(readFileSync(kgPath, 'utf8'));
+      }
+    } catch {
+      kg = {};
+    }
+
+    if (!kg[subject]) kg[subject] = [];
+    kg[subject].push({ predicate, object, validFrom: validFrom || new Date().toISOString() });
+
+    try {
+      execSync(`mkdir -p "${resolve(root, '.mempalace')}"`);
+      execSync(`echo ${JSON.stringify(JSON.stringify(kg))} > "${kgPath}"`);
+    } catch {
+      // ignore write errors
+    }
+
+    return {
+      success: true,
+      fact: { subject, predicate, object, validFrom }
+    };
+  }
+
+  readDiary(agent, lastN) {
+    return {
+      agent,
+      entries: readDiary(agent, lastN)
+    };
+  }
+
+  writeDiary(agent, entry) {
+    return writeDiary(agent, entry);
+  }
+
+  getStatus() {
+    let drawerCount = 0;
+    try {
+      const result = execSync('mempalace status 2>&1', { encoding: 'utf8', cwd: root });
+      const match = result.match(/(\d+)\s+drawers/);
+      if (match) drawerCount = parseInt(match[1], 10);
     } catch {}
-    
+
     return {
       wing: this.config.wing,
       mode: this.config.storage?.mode || 'raw',
       rooms: this.config.rooms.length,
       drawers: drawerCount,
-      searchBackend: this.config.storage?.search_backend || 'grep',
+      searchBackend: this.config.storage?.search_backend || 'sqlite-fts5',
       aaakCompression: this.config.storage?.aaak_compression || false
     };
   }
@@ -215,7 +314,7 @@ class MempalaceMCP {
           tools: [
             {
               name: 'search',
-              description: 'Søk i Mempalace kunnskap',
+              description: 'Søk i Mempalace kunnskap (SQLite FTS5)',
               inputSchema: {
                 type: 'object',
                 properties: {
@@ -304,7 +403,7 @@ class MempalaceMCP {
           ]
         };
 
-      case 'tools/call':
+      case 'tools/call': {
         const { name, arguments: args } = params;
 
         switch (name) {
@@ -327,6 +426,7 @@ class MempalaceMCP {
           default:
             throw new Error(`Ukjent tool: ${name}`);
         }
+      }
 
       default:
         throw new Error(`Ukjent method: ${method}`);
@@ -343,13 +443,13 @@ let buffer = '';
 
 process.stdin.on('data', async (chunk) => {
   buffer += chunk;
-  
+
   let lines = buffer.split('\n');
   buffer = lines.pop();
-  
+
   for (const line of lines) {
     if (!line.trim()) continue;
-    
+
     try {
       const req = JSON.parse(line);
       const result = await mcp.handleRequest(req);
@@ -364,7 +464,7 @@ process.stdin.on('data', async (chunk) => {
   }
 });
 
-console.error('🏛️  Mempalace MCP Server started');
+console.error('🏛️  Mempalace MCP Server started (FTS5)');
 console.error(`   Wing: ${mcp.config.wing}`);
-console.error(`   Mode: ${mcp.config.storage?.mode || 'raw'}`);
+console.error(`   Backend: ${mcp.config.storage?.search_backend || 'sqlite-fts5'}`);
 console.error(`   Rooms: ${mcp.config.rooms.length}`);
