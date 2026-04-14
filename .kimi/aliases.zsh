@@ -54,14 +54,23 @@ alias gl='git log --oneline -10'
 alias gco='git checkout'
 alias gd='git diff'
 
+# Node / Project
+alias knode='nvm use 24.14.1 2>/dev/null || nvm install 24.14.1'
+
 # Utils
 alias kstats='echo "MemPalace drawers: $(mempalace status 2>/dev/null | grep "drawers" | grep -o "[0-9]*")" && echo "Last commit: $(git log -1 --format=%s 2>/dev/null)"'
 
 # Funksjon for KIMI startup
 kimi_startup() {
     cd /Users/taj/klarpakke
+    # Sikre riktig Node-versjon for prosjektet
+    if command -v nvm &>/dev/null || [ -s "$NVM_DIR/nvm.sh" ]; then
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      nvm use >/dev/null 2>&1
+    fi
     clear
     echo "🏛️  KIMI + MemPalace Activated (FTS5)"
+    echo "Node: $(node -v 2>/dev/null || echo 'unknown')"
     echo "======================================"
     kwake 2>/dev/null | tail -15
     echo ""
