@@ -295,9 +295,9 @@ export async function executeTrade(
 
     // Calculate consecutive losses and wins (for circuit breaker and drawdown recovery)
     const todaysTradesRows = (todaysTrades ||
-      []) as any as AutoTradingTradeRow[];
+      []) as unknown as AutoTradingTradeRow[];
     const weeksTradesRows = (weeksTrades ||
-      []) as any as AutoTradingTradeRow[];
+      []) as unknown as AutoTradingTradeRow[];
     const recentClosedTrades = [...todaysTradesRows, ...weeksTradesRows]
       .filter((t) => t.status === "CLOSED")
       .sort(
@@ -347,8 +347,8 @@ export async function executeTrade(
       config,
       circuitBreaker: circuitBreakerConfig,
       currentPortfolioValue: sessionRow.current_capital_nok,
-      todaysTrades: (todaysTrades || []) as any as AutoTradingTrade[],
-      weeksTrades: (weeksTrades || []) as any as AutoTradingTrade[],
+      todaysTrades: (todaysTrades || []) as unknown as AutoTradingTrade[],
+      weeksTrades: (weeksTrades || []) as unknown as AutoTradingTrade[],
       allTrades: [],
       consecutiveLosses,
       currentDrawdown,
@@ -363,7 +363,7 @@ export async function executeTrade(
             status: "paused",
             pause_reason: circuitCheck.triggered,
             updated_at: new Date().toISOString(),
-          } as any).eq("id", sessionId);
+          } as never).eq("id", sessionId);
       }
 
       return {
@@ -383,7 +383,7 @@ export async function executeTrade(
     const tradeFeatures = calculateTradeFeatures(
       signal.symbol,
       signal,
-      (todaysTrades || []) as any as AutoTradingTrade[],
+      (todaysTrades || []) as unknown as AutoTradingTrade[],
     );
     const riskAssessment = assessTradeRisk(signal, tradeFeatures);
 
@@ -412,7 +412,7 @@ export async function executeTrade(
 
     const correlationCheck = checkNewTradeCorrelation(
       signal.symbol,
-      (openPositions || []) as any as AutoTradingTrade[],
+      (openPositions || []) as unknown as AutoTradingTrade[],
       config.risk_level || "balanced",
     );
 
@@ -435,7 +435,7 @@ export async function executeTrade(
       .limit(50);
 
     const closedTrades = (historicalTradesData ||
-      []) as any as AutoTradingTrade[];
+      []) as unknown as AutoTradingTrade[];
     const winningTrades = closedTrades.filter((t) => (t.pnl_nok ?? 0) > 0);
 
     const winRate =
@@ -613,7 +613,7 @@ export async function executeTrade(
       .update({
         total_trades: (sessionRow.total_trades || 0) + 1,
         updated_at: new Date().toISOString(),
-      } as any).eq("id", sessionId);
+      } as never).eq("id", sessionId);
 
     const tradeRow = trade as AutoTradingTradeRow | null;
 
@@ -719,7 +719,7 @@ export async function closeTrade(
         pnl_pct: pnlPercent,
         closed_at: new Date().toISOString(),
         close_reason: closeReasonMap[reason] ?? "manual",
-      } as any).eq("id", trade.id);
+      } as never).eq("id", trade.id);
 
     // Update session balance
     const { data: session } = await supabase
@@ -747,7 +747,7 @@ export async function closeTrade(
               ? (sessionRow.losing_trades || 0) + 1
               : sessionRow.losing_trades,
           updated_at: new Date().toISOString(),
-        } as any).eq("id", trade.session_id);
+        } as never).eq("id", trade.session_id);
     }
 
     // Create notification
@@ -843,7 +843,7 @@ async function checkPhaseProgression(
   if (canProgress && newPhase !== sessionRow.phase) {
     await supabase
       .from("user_auto_trading_configs")
-      .update({ phase: newPhase } as any).eq("id", sessionRow.config_id);
+      .update({ phase: newPhase } as never).eq("id", sessionRow.config_id);
 
     await supabase.from("notifications").insert({
       user_id: userId,
@@ -1194,7 +1194,7 @@ export async function syncOpenTrades(userId: string): Promise<void> {
 
   // Get current prices and ATR for all symbols
   const typedOpenTrades = (openTrades ||
-    []) as any as AutoTradingTradeRow[];
+    []) as unknown as AutoTradingTradeRow[];
   const symbols = [...new Set(typedOpenTrades.map((t) => t.symbol))];
   const prices: { [key: string]: number } = {};
   const atrBySymbol: { [key: string]: number } = {};
@@ -1313,7 +1313,7 @@ export async function runAutoTradingIteration(
   }
 
   // 2. Process each session
-  for (const session of sessions as any as AutoTradingSessionRow[]) {
+  for (const session of sessions as unknown as AutoTradingSessionRow[]) {
     try {
       // Fetch config separately
       const { data: config } = await supabase

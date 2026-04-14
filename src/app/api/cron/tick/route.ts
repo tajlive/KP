@@ -379,7 +379,7 @@ async function processSession(
     .update({
       last_heartbeat: new Date().toISOString(),
       last_tick_at: new Date().toISOString(),
-    } as any).eq("id", session.id);
+    } as never).eq("id", session.id);
 
   // Trailing take-profit check on open positions
   if (session.open_position && signal.action === "hold") {
@@ -508,7 +508,7 @@ async function processSession(
       user_id: session.user_id,
       action: "risk_blocked",
       details: riskLogDetails,
-    } as any);
+    } as never);
 
     console.warn("Trade blocked by risk manager:", {
       session_id: session.id,
@@ -533,12 +533,12 @@ async function processSession(
   const { reasonCode, reasonParams } = buildTradeReason({
     side: signal.action as TradeSide,
     strategyKey,
-    indicators: ((signal.indicators || {}) as any as Record<string, unknown>) || null,
+    indicators: ((signal.indicators || {}) as unknown as Record<string, unknown>) || null,
     currentPrice,
     candles,
     entryPrice: session.open_position?.entry_price,
   });
-  const indicatorSnapshot = buildIndicatorSnapshot(candles, (signal.indicators as any as Record<string, unknown>) || null);
+  const indicatorSnapshot = buildIndicatorSnapshot(candles, (signal.indicators as unknown as Record<string, unknown>) || null);
 
   // Execute trade
   const totalValue = mul(quantity, currentPrice);
@@ -562,11 +562,11 @@ async function processSession(
       strategy_signal: { ...signal.indicators, stop_loss: stopLossPrice },
       // Explanation data
       reason_code: reasonCode,
-      reason_params: reasonParams as any as Json,
-      indicator_snapshot: indicatorSnapshot as any as Json,
+      reason_params: reasonParams as unknown as Json,
+      indicator_snapshot: indicatorSnapshot as unknown as Json,
       opened_at: new Date().toISOString(),
       executed_at: new Date().toISOString(),
-    } as any)
+    } as never)
     .select("id")
     .single();
 
@@ -651,7 +651,7 @@ async function mirrorTradeToFollowers(
         executed_at: new Date().toISOString(),
         is_copy: true,
         leader_trade_id: tradeRecord.id as string,
-      } as any);
+      } as never);
 
       if (mirrorError) {
         console.warn(
@@ -707,7 +707,7 @@ export async function GET(req: NextRequest) {
 
     const results: TickResult[] = [];
 
-    for (const session of sessions as any as TradingSession[]) {
+    for (const session of sessions as unknown as TradingSession[]) {
       // Timeout protection
       if (Date.now() - startTime > 55_000) {
         console.warn(

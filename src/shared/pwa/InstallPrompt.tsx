@@ -27,7 +27,7 @@ export function InstallPrompt() {
       return;
     }
 
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any as { MSStream: unknown }).MSStream;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream: unknown }).MSStream;
     setIsIOS(isIOSDevice);
 
     const handleBeforeInstallPrompt = (e: Event) => {

@@ -332,7 +332,7 @@ export class AutoTradingWebSocket {
 
       if (!trade) return;
 
-      const t = trade as any as {
+      const t = trade as unknown as {
         side: string;
         status: string;
         entry_price: number;

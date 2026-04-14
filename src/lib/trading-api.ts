@@ -301,7 +301,7 @@ export async function startStrategy(
       mode,
       status: "active",
       strategy_id: strategyType,
-      strategy_config: strategy_config as any as Json,
+      strategy_config: strategy_config as unknown as Json,
       trading_pair: tradingPair,
       risk_level: getDbRiskLevelEnum(productId),
       current_capital: initialCapital,

@@ -170,7 +170,7 @@ export class OutboxRecovery {
           version: state.version,
           updatedAt: new Date(),
           createdAt: state.createdAt
-        } as any as Database['public']['Tables']['risk_state']['Insert']['state'],
+        } as unknown as Database['public']['Tables']['risk_state']['Insert']['state'],
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' });
 

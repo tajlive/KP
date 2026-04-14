@@ -3,7 +3,7 @@
 # Production Smoke Test Script for Klarpakke
 # Verifies critical routing, auth protection, and i18n behavior
 #
-# Assertions align with Next.js 15 + next-intl localePrefix "as-needed"
+# Assertions align with Next.js 15 + next-intl localePrefix "always"
 # (same mental model as scripts/verify-production.mjs). Legacy middleware
 # headers (x-auth-path, x-not-found, x-locale-explicit) are not emitted.
 #
@@ -88,9 +88,9 @@ echo ""
 
 # Test 1: Auth-path protection (CRITICAL)
 info "Test 1: Auth-path protection with English Accept-Language"
-auth_headers=$(curl -sSI -H "Accept-Language: en-US,en;q=0.9" "$BASE_URL/innlogging" 2>&1 || true)
+auth_headers=$(curl -sSI -H "Accept-Language: en-US,en;q=0.9" "$BASE_URL/login" 2>&1 || true)
 
-# Sjekk for 200 OK eller 308 Permanent Redirect (Next.js 15 next-intl as-needed)
+# Med localePrefix "always" redirectes /login → /no/login med 307
 auth_status=$(echo "$auth_headers" | grep -oE "^HTTP/[0-9.]+ [0-9]+" | grep -oE "[0-9]+$")
 
 if [ "$auth_status" = "200" ]; then
@@ -98,70 +98,62 @@ if [ "$auth_status" = "200" ]; then
   if assert_contains "$auth_headers" "x-matched-path:" "auth x-matched-path"; then
     pass "auth-path: 200 OK, matched login route"
   fi
-elif [ "$auth_status" = "308" ]; then
-  # 308 Permanent Redirect (next-intl redirect til default locale)
+elif [ "$auth_status" = "307" ] || [ "$auth_status" = "308" ]; then
+  # 307 Temporary Redirect (next-intl "always" redirect til default locale prefix)
   if assert_contains "$auth_headers" "location:" "auth redirect has location"; then
-    if assert_not_contains "$auth_headers" "location: /en/innlogging" "auth must not redirect to en (relative)"; then
-      if assert_not_contains "$auth_headers" "location: https://www.klarpakke.no/en/innlogging" "auth must not redirect to en (absolute www)"; then
-        pass "auth-path: 308 redirect to default locale (not /en/), correct next-intl behavior"
-      fi
+    if assert_contains "$auth_headers" "/no/login" "auth redirect targets /no/login"; then
+      pass "auth-path: $auth_status redirect to /no/login, correct next-intl always behavior"
     fi
   fi
 else
-  fail "auth status (expected: 200 or 308, got: HTTP/2 $auth_status)"
+  fail "auth status (expected: 200, 307 or 308, got: HTTP/2 $auth_status)"
 fi
 echo ""
 
 # Test 2: 404 handling (CRITICAL)
 info "Test 2: Unknown paths return 404"
+# Med localePrefix "always" redirectes ukjent path først til /no/... ; følg redirect (-L) for å sjekke final 404
+not_found_final=$(curl -sSL -o /dev/null -w "%{http_code}" "$BASE_URL/denne-siden-finnes-ikke" 2>&1 || true)
 not_found_headers=$(curl -sSI "$BASE_URL/denne-siden-finnes-ikke" 2>&1 || true)
 
-if assert_status "$not_found_headers" "404" "404 status"; then
-  if echo "$not_found_headers" | grep -Fiq "x-next-error-status: 404" ||
-    echo "$not_found_headers" | grep -Fiq "x-matched-path: /404"; then
-    pass "404 works for unknown paths (Next diagnostic headers)"
-  else
-    fail "404 diagnostic header (expected x-next-error-status: 404 or x-matched-path: /404)"
-    echo "  Debug output:"
-    echo "$not_found_headers" | sed 's/^/    /'
-  fi
+if [ "$not_found_final" = "404" ]; then
+  pass "404 works for unknown paths (followed redirect chain)"
+else
+  fail "404 status (expected final 404 after redirect, got: $not_found_final)"
+  echo "  Debug output:"
+  echo "$not_found_headers" | sed 's/^/    /'
 fi
 echo ""
 
-# Test 3: Legacy redirect (/no/*)
-info "Test 3: Legacy /no/ redirect to unprefixed locale path"
-legacy_headers=$(curl -sSI "$BASE_URL/no/innlogging" 2>&1 || true)
+# Test 3: Prefixed default locale (/no/*) fungerer direkte under "always"
+info "Test 3: Prefixed default locale (/no/login) serves directly"
+legacy_headers=$(curl -sSI "$BASE_URL/no/login" 2>&1 || true)
 
-if echo "$legacy_headers" | grep -qE "^HTTP/[0-9.]+ (301|302|307|308) "; then
-  if assert_contains "$legacy_headers" "location:" "legacy redirect has location"; then
-    if assert_contains "$legacy_headers" "innlogging" "legacy redirect targets innlogging"; then
-      pass "legacy redirect works (/no/innlogging -> /innlogging, 301|302|307|308)"
-    fi
+legacy_status=$(echo "$legacy_headers" | grep -oE "^HTTP/[0-9.]+ [0-9]+" | grep -oE "[0-9]+$")
+
+if [ "$legacy_status" = "200" ]; then
+  if assert_contains "$legacy_headers" "x-matched-path:" "legacy x-matched-path"; then
+    pass "prefixed default locale works (/no/login -> 200 OK)"
   fi
 else
   local_actual=$(echo "$legacy_headers" | grep -m1 -oE "^HTTP/[0-9.]+ [0-9]+" || echo "UNKNOWN")
-  fail "legacy redirect status (expected 301|302|307|308, got: $local_actual)"
+  fail "prefixed default locale status (expected 200, got: $local_actual)"
 fi
 echo ""
 
-# Test 4: Explicit English locale (as-needed: /en/ fjernes for default-no)
-info "Test 4: Explicit /en/ locale redirects to default (as-needed behavior)"
-en_headers=$(curl -sSI "$BASE_URL/en/innlogging" 2>&1 || true)
+# Test 4: Explicit English locale (always: /en/ beholder prefix)
+info "Test 4: Explicit /en/ locale serves directly"
+en_headers=$(curl -sSI "$BASE_URL/en/login" 2>&1 || true)
 
 en_status=$(echo "$en_headers" | grep -oE "^HTTP/[0-9.]+ [0-9]+" | grep -oE "[0-9]+$")
 
 if [ "$en_status" = "200" ]; then
   # Eksplisitt /en/ fungerer (ikke redirect)
   if assert_contains "$en_headers" "next_locale=en" "explicit en locale cookie"; then
-    pass "explicit en locale works (/en/innlogging, NEXT_LOCALE=en)"
-  fi
-elif [ "$en_status" = "308" ]; then
-  # 308 Permanent Redirect (next-intl as-needed fjerner /en/ for default locale)
-  if assert_contains "$en_headers" "location:" "en redirect has location"; then
-    pass "explicit en: 308 redirect to default locale (as-needed removes /en/ prefix)"
+    pass "explicit en locale works (/en/login, NEXT_LOCALE=en)"
   fi
 else
-  fail "explicit en status (expected: 200 or 308, got: HTTP/2 $en_status)"
+  fail "explicit en status (expected: 200, got: HTTP/2 $en_status)"
 fi
 echo ""
 
@@ -176,17 +168,21 @@ if assert_contains "$health_response" '"status"' "health has status field"; then
 fi
 echo ""
 
-# Test 6: Non-auth path + English Accept-Language (as-needed default locale)
+# Test 6: Non-auth path + English Accept-Language (always: redirect til prefixed default locale)
 info "Test 6: Unprefixed /priser with English Accept-Language"
 priser_headers=$(curl -sSI -H "Accept-Language: en-US,en;q=0.9" "$BASE_URL/priser" 2>&1 || true)
 
-# With localePrefix as-needed, default (no) pages often stay on unprefixed URLs; alternates are in Link headers.
-if assert_status "$priser_headers" "200" "priser status"; then
-  if assert_contains "$priser_headers" "x-matched-path:" "priser x-matched-path"; then
-    if assert_contains "$priser_headers" "en/priser" "hreflang / alternate to English pricing"; then
-      pass "pricing: 200 + i18n alternates (no mandatory /en redirect)"
+# Med localePrefix "always" redirectes /priser → /no/priser med 307
+priser_status=$(echo "$priser_headers" | grep -oE "^HTTP/[0-9.]+ [0-9]+" | grep -oE "[0-9]+$")
+
+if [ "$priser_status" = "307" ] || [ "$priser_status" = "308" ]; then
+  if assert_contains "$priser_headers" "location:" "priser redirect has location"; then
+    if assert_contains "$priser_headers" "/no/priser" "priser redirect targets /no/priser"; then
+      pass "pricing: $priser_status redirect to /no/priser (correct next-intl always behavior)"
     fi
   fi
+else
+  fail "priser status (expected: 307 or 308, got: HTTP/2 $priser_status)"
 fi
 echo ""
 

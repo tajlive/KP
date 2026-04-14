@@ -300,7 +300,7 @@ async function calculateIndicators(symbol: string): Promise<MarketIndicators> {
     .eq("symbol", symbol)
     .order("timestamp", { ascending: false })
     .limit(200);
-  const prices = (res.data ?? []) as any as {
+  const prices = (res.data ?? []) as unknown as {
     price: number;
     high: number;
     low: number;

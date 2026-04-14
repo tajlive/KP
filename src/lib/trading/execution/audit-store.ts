@@ -405,7 +405,7 @@ export class AuditStore {
           evidence_hash: evidence.hash,
           order_id: evidence.orderId,
           user_id: evidence.clientId,
-          payload: evidence as any as Database['public']['Tables']['audit_log']['Insert']['payload'],
+          payload: evidence as unknown as Database['public']['Tables']['audit_log']['Insert']['payload'],
           created_at: evidence.createdAt.toISOString()
         })
         .select('id')

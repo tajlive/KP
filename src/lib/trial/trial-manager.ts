@@ -45,7 +45,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
     };
   }
   
-  const profileExt = profile as any as { subscription_tier?: string; tier?: string; trial_started_at?: string; trial_expires_at?: string };
+  const profileExt = profile as unknown as { subscription_tier?: string; tier?: string; trial_started_at?: string; trial_expires_at?: string };
   const tier = TIERS[(profileExt.subscription_tier ?? profileExt.tier) as keyof typeof TIERS];
   
   // 2. Hvis betalt tier → ingen trial nødvendig

@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       _session_migration_map: {
@@ -3164,6 +3189,60 @@ export type Database = {
           total_spent?: number
           updated_at?: string | null
           userid?: string
+        }
+        Relationships: []
+      }
+      kyc_profiles: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          documents: Json
+          enhanced_due_diligence: boolean
+          full_name: string | null
+          nationality: string | null
+          pep_status: string
+          rejection_reason: string | null
+          risk_rating: string
+          sanctions_status: string
+          status: string
+          updated_at: string
+          user_id: string
+          verification_method: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          documents?: Json
+          enhanced_due_diligence?: boolean
+          full_name?: string | null
+          nationality?: string | null
+          pep_status?: string
+          rejection_reason?: string | null
+          risk_rating?: string
+          sanctions_status?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          verification_method?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          documents?: Json
+          enhanced_due_diligence?: boolean
+          full_name?: string | null
+          nationality?: string | null
+          pep_status?: string
+          rejection_reason?: string | null
+          risk_rating?: string
+          sanctions_status?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          verification_method?: string | null
+          verified_at?: string | null
         }
         Relationships: []
       }
@@ -8386,6 +8465,7 @@ export type Database = {
         }[]
       }
       cleanup_old_ai_logs: { Args: never; Returns: number }
+      cleanup_old_notifications: { Args: never; Returns: undefined }
       close_paper_position: {
         Args: {
           close_reason: string
@@ -9056,6 +9136,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       notification_channel_v2: ["push", "email", "sms", "in_app"],

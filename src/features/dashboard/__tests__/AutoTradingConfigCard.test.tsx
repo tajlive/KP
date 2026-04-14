@@ -11,7 +11,7 @@ class MockResizeObserver {
   unobserve() {}
   disconnect() {}
 }
-global.ResizeObserver = MockResizeObserver as any as typeof ResizeObserver;
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 
 // Supabase chain mock
 // Kjedet: .from().select().eq().maybeSingle().returns<T>() -> Promise<{error,data}>

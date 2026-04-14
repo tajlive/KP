@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
       action: "BINANCE_KEYS_ADDED",
       details: { is_testnet: isTestnet },
       created_at: new Date().toISOString(),
-    } as any);
+    } as never);
 
     return NextResponse.json({
       success: true,
@@ -279,7 +279,7 @@ export async function DELETE(request: NextRequest) {
       user_id: user.id,
       action: "BINANCE_KEYS_DELETED",
       created_at: new Date().toISOString(),
-    } as any);
+    } as never);
 
     return NextResponse.json({
       success: true,

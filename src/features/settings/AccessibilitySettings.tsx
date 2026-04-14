@@ -31,7 +31,7 @@ export default function AccessibilitySettings() {
             .eq("id", user.id)
             .single();
 
-          const prefs = data as any as ProfileA11yFields | null;
+          const prefs = data as unknown as ProfileA11yFields | null;
           if (prefs) {
             setFontSize(
               (prefs.font_size_preference as "normal" | "large") || "normal",
@@ -67,7 +67,7 @@ export default function AccessibilitySettings() {
           .from("user_profiles")
           .update({
             font_size_preference: size,
-          } as any as UserProfilesUpdate)
+          } as unknown as UserProfilesUpdate)
           .eq("id", user.id);
 
         // Apply to document
@@ -93,7 +93,7 @@ export default function AccessibilitySettings() {
           .from("user_profiles")
           .update({
             high_contrast_mode: enabled,
-          } as any as UserProfilesUpdate)
+          } as unknown as UserProfilesUpdate)
           .eq("id", user.id);
 
         // Apply to document

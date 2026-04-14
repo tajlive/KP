@@ -39,6 +39,12 @@ npm run lint
 - [ ] Email/password login works
 - [ ] Magic link delivery works
 
+## 🔧 Infrastructure & Routing
+- [ ] Er `smoke-prod.sh` oppdatert hvis routing-config er endret?
+- [ ] Er `ARCHITECTURE.md` oppdatert ved infrastruktur-endring?
+- [ ] Er `database.types.ts` regenerert ved schema-endring?
+- [ ] Kjørt `npm run lint:gate` — under 100 warnings?
+
 ## 🐛 Related Issues
 
 Fixes: # (issue number)

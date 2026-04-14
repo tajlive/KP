@@ -193,7 +193,7 @@ async function handleExecute(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as any;
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -386,7 +386,7 @@ async function handleTrigger(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as any;
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -417,7 +417,7 @@ async function handleTrigger(
       action,
       mode,
       status: "ACTIVE",
-    } as any).select()
+    } as never).select()
     .single();
 
   if (error) {
@@ -432,7 +432,7 @@ async function handleTrigger(
     success: true,
     trigger,
     mode,
-  } as any);
+  } as never);
 }
 
 /**
@@ -466,7 +466,7 @@ async function handleOrder(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as any;
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -521,7 +521,7 @@ async function handleOrder(
         last_heartbeat: now,
         created_at: now,
         updated_at: now,
-      } as any)
+      } as never)
       .select("id")
       .single();
     
@@ -721,7 +721,7 @@ async function handleSetMode(request: NextRequest) {
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as any;
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -827,7 +827,7 @@ async function handleCreateSession(
 
   let body: unknown;
   try {
-    body = JSON.parse(rawBody) as any;
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json(
       { error: "Invalid request", details: { formErrors: ["Invalid JSON"] } },
@@ -869,7 +869,7 @@ async function handleCreateSession(
         last_heartbeat: now,
         created_at: now,
         updated_at: now,
-      } as any)
+      } as never)
       .select()
       .single();
 

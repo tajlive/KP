@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
     // Store in database
     const { data: order, error: orderError } = await supabase
       .from("conditional_orders")
-      .insert(orderData as any).select()
+      .insert(orderData as never).select()
       .single();
 
     if (orderError) {
@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
         trigger_price,
         quantity,
       },
-    } as any);
+    } as never);
 
     return NextResponse.json({
       success: true,
@@ -312,7 +312,7 @@ export async function DELETE(request: NextRequest) {
     // Update status to cancelled
     const { error } = await supabase
       .from("conditional_orders")
-      .update({ status: "cancelled", updated_at: new Date().toISOString() } as any).eq("id", order_id);
+      .update({ status: "cancelled", updated_at: new Date().toISOString() } as never).eq("id", order_id);
 
     if (error) {
       return NextResponse.json(

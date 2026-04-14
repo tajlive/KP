@@ -37,8 +37,8 @@ const BOOTSTRAP_CLEANED_KEY = '__klarpakke_sb_storage_cleaned__'
 export function clearCorruptSupabaseKeysSync(): void {
   if (typeof window === 'undefined') return
   try {
-    if ((window as any as { [key: string]: boolean })[BOOTSTRAP_CLEANED_KEY]) return
-    ;(window as any as { [key: string]: boolean })[BOOTSTRAP_CLEANED_KEY] = true
+    if ((window as unknown as { [key: string]: boolean })[BOOTSTRAP_CLEANED_KEY]) return
+    ;(window as unknown as { [key: string]: boolean })[BOOTSTRAP_CLEANED_KEY] = true
   } catch {
     return
   }
