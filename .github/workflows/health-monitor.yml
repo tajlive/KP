@@ -6,10 +6,8 @@
 name: 🩺 Health Monitor
 
 on:
-  schedule:
-    # Hver 6. time (04:00, 10:00, 16:00, 22:00 UTC) for å spare GitHub Actions-minutter.
-    # For kritisk overvåkning, bruk UptimeRobot eller Pingdom (gratis).
-    - cron: '0 */6 * * *'
+  # Schedule disabled — UptimeRobot (gratis) er primær overvåkning.
+  # Se docs/uptimerobot-setup.md for konfigurasjon.
   workflow_dispatch:
 
 concurrency:
