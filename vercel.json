@@ -5,10 +5,14 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
 
-  "regions": ["arn1"],
+  "regions": ["arn1", "fra1"],
   "github": {
     "silent": true,
-    "autoJobCanceling": true
+    "autoJobCanceling": true,
+    "deploymentProtection": {
+      "production": false,
+      "preview": true
+    }
   },
   "functions": {
     "src/app/api/cron/**/*.ts": {
@@ -17,7 +21,7 @@
     "src/app/api/v1/trading/**/*.ts": {
       "maxDuration": 30
     },
-    "src/app/api/webhooks/stripe/**/*.ts": {
+    "src/app/api/webhooks/**/*.ts": {
       "maxDuration": 30
     },
     "src/app/api/ai/**/*.ts": {
@@ -36,6 +40,9 @@
       "maxDuration": 10
     },
     "src/app/api/pricing/**/*.ts": {
+      "maxDuration": 10
+    },
+    "src/app/api/v1/design-tokens/**/*.ts": {
       "maxDuration": 10
     }
   },
@@ -97,6 +104,15 @@
     },
     {
       "source": "/api/health",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/api/status",
       "headers": [
         {
           "key": "Cache-Control",

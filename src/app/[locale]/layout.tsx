@@ -20,6 +20,8 @@ import { ThemeProvider } from "@/shared/theme";
 import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { FeatureFlagProvider } from "@/lib/feature-flags";
+import { getFlagsAsync } from "@/lib/flags";
 import Script from "next/script";
 import { Inter } from "next/font/google";
 import { SURFACE } from "@/lib/design/tokens";
@@ -175,7 +177,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     ? await getEarlyMetaDescription(locale, strippedPath)
     : null;
   const showVippsMarket = shouldShowVippsForRequest(hdrs);
-  
+
+  // Hent feature flags fra Edge Config (server-side)
+  const flags = await getFlagsAsync();
+
   // Get CSP nonce from middleware header for inline scripts
   const cspNonce = hdrs.get("x-csp-nonce") ?? undefined;
 
@@ -301,7 +306,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                   <AuthProvider>
                     <SanityTokensProvider>
                       <AuthHashHandler />
-                      <LocaleMarketingShell>{children}</LocaleMarketingShell>
+                      <FeatureFlagProvider initialFlags={flags}>
+                        <LocaleMarketingShell>{children}</LocaleMarketingShell>
+                      </FeatureFlagProvider>
                     </SanityTokensProvider>
                   </AuthProvider>
                 </ErrorBoundary>
@@ -311,12 +318,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         </NextIntlClientProvider>
         </ThemeProvider>
         <PlausibleScript />
-        {process.env.VERCEL && (
-          <>
-            <Analytics />
-            <SpeedInsights />
-          </>
-        )}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

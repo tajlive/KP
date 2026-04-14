@@ -6,34 +6,18 @@ import {
   useMemo,
   type ReactNode,
 } from 'react';
+import type { FeatureFlags } from '@/lib/flags';
+import { getFlags } from '@/lib/flags';
 
-export type FeatureFlagsMap = Record<string, boolean>;
-
-const defaultFlags: FeatureFlagsMap = {
-  'v2-layout': false,
-};
-
-function getFlagsFromEnv(): FeatureFlagsMap {
-  const v2Layout = process.env.NEXT_PUBLIC_V2_LAYOUT;
-  const v2Enabled =
-    v2Layout === 'true' || v2Layout === '1' || v2Layout === 'yes';
-
-  return {
-    ...defaultFlags,
-    'v2-layout': v2Enabled,
-  };
-}
-
-const FeatureFlagContext = createContext<FeatureFlagsMap | undefined>(
-  undefined,
-);
+const FeatureFlagContext = createContext<FeatureFlags | undefined>(undefined);
 
 interface FeatureFlagProviderProps {
   children: ReactNode;
+  initialFlags?: Partial<FeatureFlags>;
 }
 
-export function FeatureFlagProvider({ children }: FeatureFlagProviderProps) {
-  const flags = useMemo(() => getFlagsFromEnv(), []);
+export function FeatureFlagProvider({ children, initialFlags }: FeatureFlagProviderProps) {
+  const flags = useMemo(() => getFlags(initialFlags), [initialFlags]);
 
   return (
     <FeatureFlagContext.Provider value={flags}>
@@ -42,10 +26,10 @@ export function FeatureFlagProvider({ children }: FeatureFlagProviderProps) {
   );
 }
 
-export function useFeatureFlagContext(): FeatureFlagsMap {
+export function useFeatureFlagContext(): FeatureFlags {
   const context = useContext(FeatureFlagContext);
   if (context === undefined) {
-    return defaultFlags;
+    return getFlags();
   }
   return context;
 }

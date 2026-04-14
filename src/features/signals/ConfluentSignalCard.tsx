@@ -130,7 +130,7 @@ export function ConfluentSignalCard({
   className,
   showExplanationButton = true,
 }: ConfluentSignalCardProps) {
-  const sonarUiEnabled = useFeatureFlag('sonar-ui');
+  const sonarUiEnabled = useFeatureFlag('sonarUi');
   const [explanationOpen, setExplanationOpen] = React.useState(false);
   const [explanationData, setExplanationData] =
     React.useState<SignalExplanationData | null>(null);
