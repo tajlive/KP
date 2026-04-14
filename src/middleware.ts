@@ -8,7 +8,7 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient } from "@/lib/supabase/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing.config";
 
@@ -40,14 +40,6 @@ function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
   return Buffer.from(array).toString("base64");
-}
-
-// Cookie domain helper - must match src/lib/supabase/server.ts for consistency
-function getCookieDomain(request: NextRequest): string | undefined {
-  const host = request.headers.get("host") || "";
-  const isWWW = host.startsWith("www.");
-  const rootDomain = isWWW ? host.replace("www.", "") : host;
-  return rootDomain.includes(":") ? undefined : `.${rootDomain}`;
 }
 
 function stripLocalePrefix(pathname: string): string {
@@ -174,27 +166,7 @@ export async function middleware(request: NextRequest) {
     },
   });
   
-  const cookieDomain = getCookieDomain(request);
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookieEncoding: "raw",
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: (cookies) => {
-          cookies.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, {
-              ...options,
-              domain: cookieDomain,
-              sameSite: "none" as const,
-              secure: true,
-            });
-          });
-        },
-      },
-    }
-  );
+  const supabase = createServerClient(request, response);
 
   const { data: { user } } = await supabase.auth.getUser();
 

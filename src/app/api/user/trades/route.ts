@@ -1,5 +1,4 @@
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient } from "@/lib/supabase/server";
 import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -17,20 +16,7 @@ export async function GET(request: NextRequest) {
   const diagnostic_id = randomUUID();
 
   try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookieEncoding: "raw",
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {
-            /* read-only GET */
-          },
-        },
-      },
-    );
+    const supabase = await createServerClient();
 
     const {
       data: { user },

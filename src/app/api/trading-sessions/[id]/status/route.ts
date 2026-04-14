@@ -1,5 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_STATUSES = ["active", "paused", "stopped"] as const;
@@ -10,17 +9,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookieEncoding: "raw",
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-        },
-      }
-    );
+    const supabase = await createServerClient();
 
     // Sjekk autentisering
     const {

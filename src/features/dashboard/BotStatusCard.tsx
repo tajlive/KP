@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { createBrowserClient } from "@supabase/ssr";
 import { safeStorage } from "@/lib/supabase/safe-storage";
+import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 import { Bot, Pause, Play, ArrowRight, AlertTriangle } from "lucide-react";
 
 export interface TradingSession {
@@ -40,6 +41,9 @@ export function BotStatusCard({ initialSession }: BotStatusCardProps) {
     {
       auth: {
         storage: safeStorage,
+      },
+      global: {
+        fetch: createRefreshProtectedFetch(globalThis.fetch, { source: "browser" }),
       },
     },
   );

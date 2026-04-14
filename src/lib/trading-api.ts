@@ -1,6 +1,7 @@
 "use client";
 import { createBrowserClient } from "@supabase/ssr";
 import { safeStorage } from "@/lib/supabase/safe-storage";
+import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 import type { Database, Json } from "@/types/database.types";
 import {
   enrichStrategyConfigForSession,
@@ -16,6 +17,9 @@ const supabase = createBrowserClient(
   {
     auth: {
       storage: safeStorage,
+    },
+    global: {
+      fetch: createRefreshProtectedFetch(globalThis.fetch, { source: "browser" }),
     },
   },
 );

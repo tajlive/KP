@@ -1,4 +1,3 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import {
   isGuestAuthRoute,
@@ -6,7 +5,8 @@ import {
   parseLocalePath,
   sanitizePostAuthRedirect,
 } from "./locale-path";
-import { redirectWithCookies, createSupabaseClient, getCookieDomain } from "./auth-guard";
+import { redirectWithCookies } from "./auth-guard";
+import { createServerClient } from "@/lib/supabase/server";
 import { handleOnboarding } from "./onboarding";
 import { handleTierGate } from "./tier-gate";
 
@@ -94,25 +94,7 @@ export async function authMiddleware(
     return response;
   }
 
-  // Use consistent cookie configuration with auth-guard
-  const cookieDomain = getCookieDomain(request);
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookieEncoding: "raw",
-    cookies: {
-      getAll: () => request.cookies.getAll(),
-      setAll: (cookiesToSet) => {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          request.cookies.set(name, value);
-          response.cookies.set(name, value, {
-            ...options,
-            domain: cookieDomain,
-            sameSite: "none" as const,
-            secure: true,
-          });
-        });
-      },
-    },
-  });
+  const supabase = createServerClient(request, response);
   const {
     data: { user },
   } = await supabase.auth.getUser();
