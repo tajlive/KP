@@ -1,8 +1,9 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "2.1",
     "project": "Klarpakke",
-    "description": "KIMI CLI command aliases for Klarpakke"
+    "description": "KIMI CLI command aliases for Klarpakke — updated 2026-04-14",
+    "updated_for": "auth refresh-guard + MemPalace FTS5"
   },
   "commands": {
     "health": {
@@ -37,9 +38,17 @@
       "description": "Kjør unit tester",
       "command": "npm run test:unit"
     },
+    "test:auth": {
+      "description": "Kjør auth unit-tester",
+      "command": "npm run test:unit -- src/lib/auth/__tests__"
+    },
     "test:e2e": {
       "description": "Kjør E2E tester (critical)",
       "command": "npm run test:e2e:critical:chromium"
+    },
+    "test:smoke": {
+      "description": "Kjør smoke E2E tester",
+      "command": "npm run test:e2e:smoke"
     },
     "test:full": {
       "description": "Full test suite",
@@ -61,13 +70,21 @@
       "description": "Deploy til produksjon",
       "command": "npm run deploy:prod"
     },
-    "deploy:staging": {
-      "description": "Deploy til staging",
+    "preview": {
+      "description": "Deploy til preview/staging",
       "command": "vercel deploy --target=preview"
     },
     "mcp:check": {
       "description": "Verifiser MCP konfigurasjon",
       "command": "npm run mcp:validate 2>/dev/null || node scripts/validate-mcp-config.mjs"
+    },
+    "mempalace:search": {
+      "description": "Søk i MemPalace (FTS5)",
+      "command": "mempalace search"
+    },
+    "mempalace:wake": {
+      "description": "MemPalace wake-up for klarpakke",
+      "command": "mempalace wake-up --wing klarpakke"
     },
     "watchdog": {
       "description": "Kjør watchdog sjekk",

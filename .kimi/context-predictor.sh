@@ -1,6 +1,6 @@
 #!/bin/bash
-# Prediktiv Kontekst for KIMI
-# Gjetter relevant kontekst basert på tid, filer, og Linear
+# Prediktiv Kontekst for KIMI — v2.1 (2026-04-14)
+# Gjetter relevant kontekst basert på tid, filer, og MemPalace
 
 get_time_context() {
     local hour=$(date +%H)
@@ -21,14 +21,20 @@ get_recent_files() {
 detect_domain() {
     local files="$1"
     
-    if echo "$files" | grep -q "auth"; then
+    if echo "$files" | grep -qE "src/lib/auth|refresh-guard|sentry-auth"; then
         echo "auth"
-    elif echo "$files" | grep -q "trading"; then
+    elif echo "$files" | grep -qE "src/lib/trading|src/app/api/trading|auto-trading"; then
         echo "trading"
-    elif echo "$files" | grep -q "api"; then
+    elif echo "$files" | grep -qE "src/app/api/.*route\.ts"; then
         echo "api"
-    elif echo "$files" | grep -q "components"; then
+    elif echo "$files" | grep -qE "src/components|src/features|src/app/.*/page\.tsx"; then
         echo "ui"
+    elif echo "$files" | grep -qE "supabase/migrations|src/lib/supabase"; then
+        echo "database"
+    elif echo "$files" | grep -qE "e2e/|.*\.test\.(ts|tsx)|.*\.spec\.(ts|tsx)"; then
+        echo "testing"
+    elif echo "$files" | grep -qE "scripts/run-mempalace|mempalace\.yaml"; then
+        echo "infrastructure"
     else
         echo "general"
     fi
@@ -39,7 +45,7 @@ predict_skills() {
     
     case "$domain" in
         auth)
-            echo "vulnerability-scanner,api-patterns/security-testing"
+            echo "vulnerability-scanner,api-patterns/security-testing,testing-patterns"
             ;;
         trading)
             echo "crypto-specialist,api-patterns"
@@ -49,6 +55,15 @@ predict_skills() {
             ;;
         ui)
             echo "frontend-design,nextjs-react-expert"
+            ;;
+        database)
+            echo "database-design,database-design/migrations"
+            ;;
+        testing)
+            echo "webapp-testing,testing-patterns"
+            ;;
+        infrastructure)
+            echo "performance-profiling,api-patterns"
             ;;
         *)
             echo "clean-code,testing-patterns"
@@ -61,7 +76,7 @@ predict_rooms() {
     
     case "$domain" in
         auth)
-            echo "auth_system,error_patterns"
+            echo "auth_system,auth,error_patterns"
             ;;
         trading)
             echo "critical_decisions,api_contracts"
@@ -70,7 +85,16 @@ predict_rooms() {
             echo "api_contracts,critical_decisions"
             ;;
         ui)
-            echo "project_status"
+            echo "ux_engineering,project_status"
+            ;;
+        database)
+            echo "critical_decisions,tech_debt"
+            ;;
+        testing)
+            echo "error_patterns,critical_decisions"
+            ;;
+        infrastructure)
+            echo "infrastructure,operations"
             ;;
         *)
             echo "critical_decisions"
