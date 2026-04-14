@@ -2037,6 +2037,32 @@
       "text": "Create a free account to join the competition",
       "button": "Log in / Sign up"
     },
+    "resetSession": "Reset Session",
+    "mySessions": "My Sessions",
+    "noSessions": "No Sessions",
+    "noSessionsDesc": "Start your first paper trading session to practice without risk.",
+    "startFirst": "Start First Session",
+    "lastUpdated": "Last updated",
+    "refreshList": "Refresh",
+    "binanceUpdateInfo": "Prices are updated from Binance in real time",
+    "trades": "Trades",
+    "now": "Now",
+    "confirmResetAll": "Reset all paper trading sessions? All trades will be deleted and balance reset to 100\u202f000\u00a0kr.",
+    "resetSuccess": "Paper trading reset. Balance: 100\u202f000\u00a0kr.",
+    "sessions": {
+      "maxActiveReached": "Max active sessions reached. Redirecting...",
+      "maxActiveStudent": "You have reached the maximum number of active sessions for your plan."
+    },
+    "errors": {
+      "validationFailed": "Invalid input – check fields and try again.",
+      "unauthorized": "You must be logged in to create a session.",
+      "forbidden": "You do not have access to create this type of session.",
+      "generic": "Something went wrong. Please try again.",
+      "missingSessionId": "Session missing ID. Contact support.",
+      "network": "Could not reach server. Check your connection.",
+      "resetFailed": "Reset failed. Please try again.",
+      "resetNetwork": "Network error during reset."
+    },
     "saving": "Saving..."
   },
   "payment": {

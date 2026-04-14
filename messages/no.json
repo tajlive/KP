@@ -2037,6 +2037,32 @@
       "text": "Opprett en gratis konto for å delta i konkurransen",
       "button": "Logg inn / Registrer deg"
     },
+    "resetSession": "Nullstill øving",
+    "mySessions": "Mine sesjoner",
+    "noSessions": "Ingen sesjoner",
+    "noSessionsDesc": "Start din første øvingshandel for å øve uten risiko.",
+    "startFirst": "Start første øving",
+    "lastUpdated": "Sist oppdatert",
+    "refreshList": "Oppdater",
+    "binanceUpdateInfo": "Priser oppdateres fra Binance i sanntid",
+    "trades": "Handler",
+    "now": "Nå",
+    "confirmResetAll": "Nullstill alle øvishandelsesjoner? Alle handler slettes og saldo tilbakestilles til 100\u202f000\u00a0kr.",
+    "resetSuccess": "Øvishandel nullstilt. Saldo: 100\u202f000\u00a0kr.",
+    "sessions": {
+      "maxActiveReached": "Maks aktive sesjoner nådd. Omdirigerer...",
+      "maxActiveStudent": "Du har nådd maksimalt antall aktive sesjoner for din plan."
+    },
+    "errors": {
+      "validationFailed": "Ugyldig input – sjekk feltene og prøv igjen.",
+      "unauthorized": "Du må være logget inn for å opprette en sesjon.",
+      "forbidden": "Du har ikke tilgang til å opprette denne typen sesjon.",
+      "generic": "Noe gikk galt. Prøv igjen.",
+      "missingSessionId": "Sesjon mangler ID. Kontakt support.",
+      "network": "Kunne ikke kontakte serveren. Sjekk nettforbindelsen.",
+      "resetFailed": "Nullstilling feilet. Prøv igjen.",
+      "resetNetwork": "Nettverksfeil ved nullstilling."
+    },
     "saving": "Lagrer..."
   },
   "payment": {
