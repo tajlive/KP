@@ -43,6 +43,25 @@ import {
 /** Kort med skygge og 200ms overgang (tokens) */
 const cardBase = `bg-white dark:bg-slate-800/50 ${RADIUS.card} border border-[#E2E5EC] dark:border-slate-700 ${SHADOW.card}`;
 
+type CreateSessionResponse = {
+  success?: boolean;
+  session_id?: string | null;
+  code?: string;
+  error?: string;
+  message?: string;
+  tier?: string;
+  max?: number;
+  details?: unknown;
+};
+
+type ResetResponse = {
+  success?: boolean;
+  reset?: number;
+  code?: string;
+  error?: string;
+  message?: string;
+};
+
 interface TradingSession {
   id: string;
   mode: "paper" | "live";
@@ -146,11 +165,9 @@ export function PaperTradingList({
         }),
       });
 
-      const data = (await response.json()) as {
-        session_id?: string;
-        code?: string;
-        tier?: string;
-      };
+      // eslint-disable-next-line prefer-const
+      let data: CreateSessionResponse = {};
+      try { data = (await response.json()) as CreateSessionResponse; } catch { /* tom body */ }
 
       if (response.status === 409 && data?.code === "MAX_ACTIVE_SESSIONS") {
         if (data.session_id) {
@@ -162,15 +179,68 @@ export function PaperTradingList({
         return;
       }
 
-      if (!response.ok || !data.session_id) {
-        throw new Error("Failed to create session");
+      if (response.status === 400) {
+        toast.error(data.error ?? (locale === "no" ? "Ugyldig input – sjekk feltene og proev igjen." : "Invalid input – check fields and try again."));
+        return;
+      }
+
+      if (response.status === 401) {
+        toast.error(locale === "no" ? "Du maa vaere logget inn for aa opprette en sesjon." : "You must be logged in to create a session.");
+        return;
+      }
+
+      if (response.status === 403) {
+        toast.error(data.error ?? (locale === "no" ? "Du har ikke tilgang til aa opprette denne typen sesjon." : "You do not have access to create this type of session."));
+        return;
+      }
+
+      if (!response.ok) {
+        toast.error(data.error ?? data.message ?? (locale === "no" ? "Noe gikk galt. Proev igjen." : "Something went wrong. Please try again."));
+        return;
+      }
+
+      if (!data.session_id) {
+        toast.error(locale === "no" ? "Sesjon mangler ID. Kontakt support." : "Session missing ID. Contact support.");
+        return;
       }
 
       router.push(`/${locale}/paper-trading/${data.session_id}`);
     } catch (err) {
       console.error("Failed to create session:", err);
+      toast.error(locale === "no" ? "Kunne ikke kontakte serveren. Sjekk nettforbindelsen." : "Could not reach server. Check your connection.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleReset = async () => {
+    if (!window.confirm(locale === "no" ? "Nullstill alle oevishandelsesjoner? Alle handler slettes og saldo tilbakestilles til 100\u202f000\u00a0kr." : "Reset all paper trading sessions? All trades will be deleted and balance reset to 100\u202f000\u00a0kr.")) return;
+    setIsResetting(true);
+    try {
+      const response = await fetch("/api/paper-trading/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ starting_capital_nok: 100000 }),
+      });
+      // eslint-disable-next-line prefer-const
+      let data: ResetResponse = {};
+      try { data = (await response.json()) as ResetResponse; } catch { /* tom body */ }
+
+      if (!response.ok) {
+        toast.error(data.error ?? (locale === "no" ? "Nullstilling feilet. Proev igjen." : "Reset failed. Please try again."));
+        return;
+      }
+
+      toast.success(locale === "no" ? "Oevishandel nullstilt. Saldo: 100\u202f000\u00a0kr." : "Paper trading reset. Balance: 100\u202f000\u00a0kr.");
+      setLastUpdated(new Date());
+      router.refresh();
+    } catch (err) {
+      console.error("Failed to reset paper trading:", err);
+      toast.error(locale === "no" ? "Nettverksfeil ved nullstilling." : "Network error during reset.");
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -240,13 +310,31 @@ export function PaperTradingList({
                 </p>
               </div>
             </div>
-            <Button
-              className={`gap-2 shrink-0 min-h-11 px-5 text-sm font-semibold ${BRAND.primary} ${RADIUS.button} [&>span]:truncate [&>span]:max-w-[12rem]`}
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4 shrink-0" aria-hidden />
-              <span>{t("newSession")}</span>
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              {sessions.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReset}
+                  disabled={isResetting}
+                  className="gap-2 text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20"
+                  title={t("resetSession")}
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 ${isResetting ? "animate-spin" : ""}`}
+                    aria-hidden
+                  />
+                  <span className="hidden sm:inline">{t("resetSession")}</span>
+                </Button>
+              )}
+              <Button
+                className={`gap-2 shrink-0 min-h-11 px-5 text-sm font-semibold ${BRAND.primary} ${RADIUS.button} [&>span]:truncate [&>span]:max-w-[12rem]`}
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Plus className="w-4 h-4 shrink-0" aria-hidden />
+                <span>{t("newSession")}</span>
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -200,49 +200,117 @@ export async function getPaperTradeHistory(
 }
 
 /**
- * Reset paper trading session
+ * Reset paper trading session (P1: full reset inkl. alle counters)
  */
 export async function resetPaperTradingSession(
   supabase: Supa,
   sessionId: string,
+  startingCapital: number = 100000,
 ): Promise<void> {
-  // Delete all trades for this session
   const { error: deleteError } = await supabase
-    .from("trades")
+    .from('trades')
     .delete()
-    .eq("session_id", sessionId);
+    .eq('session_id', sessionId);
 
   if (deleteError) {
-    console.error("Failed to delete trades:", deleteError);
-    throw new Error("Failed to reset session");
+    console.error('[paper-trading] resetPaperTradingSession delete trades:', deleteError.message);
+    throw new Error('Failed to delete trades during reset');
   }
 
-  // Reset balance
+  const now = new Date().toISOString();
   const { error: updateError } = await supabase
-    .from("trading_sessions")
+    .from('trading_sessions')
     .update({
-      current_capital_nok: 100000,
+      current_capital_nok: startingCapital,
+      current_capital: startingCapital,
+      starting_capital_nok: startingCapital,
+      initial_capital: startingCapital,
+      total_pnl: 0,
+      total_trades: 0,
+      winning_trades: 0,
+      losing_trades: 0,
+      status: 'active',
+      updated_at: now,
+      last_heartbeat: now,
     })
-    .eq("id", sessionId);
+    .eq('id', sessionId);
 
   if (updateError) {
-    console.error("Failed to reset balance:", updateError);
-    throw new Error("Failed to reset session");
+    console.error('[paper-trading] resetPaperTradingSession update:', updateError.message);
+    throw new Error('Failed to reset session balance');
   }
 }
 
 /**
- * Get or create paper trading session (auto-initialization)
+ * Get or create paper trading session (auto-initialization).
+ * P1: Rydder opp duplikate aktive paper-sessions for brukeren
+ * og fikser manglende felter i gamle rader (soft migration).
  */
 export async function getOrCreatePaperTradingSession(
   supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession> {
-  const existing = await getPaperTradingSession(supabase, userId);
-  if (existing) {
-    return existing;
+  // Hent ALLE aktive paper-sessions for brukeren
+  const { data: allActive, error: fetchErr } = await supabase
+    .from('trading_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('mode', 'paper')
+    .eq('status', 'active')
+    .order('started_at', { ascending: false });
+
+  if (fetchErr) {
+    console.error('[paper-trading] getOrCreate fetch error:', fetchErr.message);
+    throw new Error('Failed to fetch paper trading sessions');
   }
-  return createPaperTradingSession(supabase, userId);
+
+  // Ingen aktive: opprett ny
+  if (!allActive || allActive.length === 0) {
+    return createPaperTradingSession(supabase, userId);
+  }
+
+  // Behold nyeste, sett resten til stopped
+  const [newest, ...duplicates] = allActive;
+
+  if (duplicates.length > 0) {
+    const duplicateIds = duplicates.map((s: { id: string }) => s.id);
+    const { error: stopErr } = await supabase
+      .from('trading_sessions')
+      .update({ status: 'stopped', updated_at: new Date().toISOString() })
+      .in('id', duplicateIds);
+    if (stopErr) {
+      console.error('[paper-trading] getOrCreate dedup error:', stopErr.message);
+    } else {
+      console.log(`[paper-trading] Stoppet ${duplicates.length} duplikat(er) for user ${userId}`);
+    }
+  }
+
+  // Soft migration: fyll inn manglende felter pa nyeste rad
+  const s = newest as unknown as Record<string, unknown>;
+  const needsUpdate = {} as Database['public']['Tables']['trading_sessions']['Update'];
+  if (s.initial_capital == null) needsUpdate.initial_capital = (s.starting_capital_nok as number | null | undefined) ?? 100000;
+  if (s.current_capital == null) needsUpdate.current_capital = (s.current_capital_nok as number | null | undefined) ?? 100000;
+  if (s.total_pnl == null) needsUpdate.total_pnl = 0;
+  if (s.total_trades == null) needsUpdate.total_trades = 0;
+  if (s.winning_trades == null) needsUpdate.winning_trades = 0;
+  if (s.losing_trades == null) needsUpdate.losing_trades = 0;
+  if (s.strategy_config == null) needsUpdate.strategy_config = {};
+  if (s.last_heartbeat == null) needsUpdate.last_heartbeat = new Date().toISOString();
+
+  if (Object.keys(needsUpdate).length > 0) {
+    needsUpdate.updated_at = new Date().toISOString();
+    const { error: patchErr } = await supabase
+      .from('trading_sessions')
+      .update(needsUpdate)
+      .eq('id', (newest as unknown as { id: string }).id);
+    if (patchErr) {
+      console.error('[paper-trading] getOrCreate soft-migration error:', patchErr.message);
+    } else {
+      console.log(`[paper-trading] Soft-migrert rad ${(newest as { id: string }).id} med ${Object.keys(needsUpdate).length} felt`);
+    }
+  }
+
+  return newest as unknown as PaperTradingSession;
 }
 
 /**
