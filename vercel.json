@@ -4,6 +4,8 @@
   "framework": "nextjs",
   "buildCommand": "next build",
   "outputDirectory": ".next",
+  "_note": "Deploy alerts: scripts/notify-deploy-status.ts + .github/workflows/deploy.yml bruker SLACK_DEPLOY_WEBHOOK_URL",
+  "_postDeployHook": "npx tsx scripts/notify-deploy-status.ts --status=success --url=https://www.klarpakke.no",
   "regions": ["arn1"],
   "github": {
     "silent": true,

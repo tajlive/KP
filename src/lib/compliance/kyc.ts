@@ -10,11 +10,17 @@
  * @module compliance/kyc
  * @version 1.0.0
  * 
- * TODO: Add kyc_profiles table to database and generate types
  * TODO: Implement actual PEP/Sanctions API integration
  */
 
 import { createClient } from "@/lib/supabase/client";
+import type { Database } from "@/types/database.types";
+
+type KYCProfileRow = Database["public"]["Tables"]["kyc_profiles"]["Row"];
+
+function kycDb() {
+  return createClient().from('kyc_profiles');
+}
 
 export type KYCStatus = 'unverified' | 'pending' | 'verified' | 'rejected';
 export type PEPStatus = 'clear' | 'pep' | 'pep_associate' | 'unknown';
@@ -156,9 +162,7 @@ export async function submitKYC(
       });
     }
 
-    // 2. Create KYC profile (using any cast until DB types updated)
-    const { error: insertError } = await (supabase
-      .from('kyc_profiles' as any)
+    const { error: insertError } = await kycDb()
       .insert({
         user_id: userId,
         status: 'pending',
@@ -169,10 +173,10 @@ export async function submitKYC(
         full_name: submission.fullName,
         date_of_birth: submission.dateOfBirth.toISOString(),
         nationality: submission.nationality,
-        documents: documentRecords,
+        documents: documentRecords as unknown as Database["public"]["Tables"]["kyc_profiles"]["Insert"]["documents"],
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
-      }) as any);
+      });
 
     if (insertError) {
       return { success: false, error: insertError.message };
@@ -210,11 +214,10 @@ async function triggerScreening(userId: string): Promise<void> {
 export async function getKYCStatus(userId: string): Promise<KYCProfile | null> {
   const supabase = createClient();
   
-  const { data, error } = await (supabase
-    .from('kyc_profiles' as any)
+  const { data, error } = await kycDb()
     .select('*')
     .eq('user_id', userId)
-    .single() as any);
+    .single();
 
   if (error || !data) {
     return null;
@@ -222,17 +225,17 @@ export async function getKYCStatus(userId: string): Promise<KYCProfile | null> {
 
   return {
     userId: data.user_id,
-    status: data.status,
-    verificationMethod: data.verification_method,
+    status: data.status as KYCStatus,
+    verificationMethod: data.verification_method as KYCProfile['verificationMethod'],
     verifiedAt: data.verified_at ? new Date(data.verified_at) : undefined,
-    pepStatus: data.pep_status,
-    sanctionsStatus: data.sanctions_status,
-    riskRating: data.risk_rating,
-    fullName: data.full_name,
+    pepStatus: data.pep_status as PEPStatus,
+    sanctionsStatus: data.sanctions_status as SanctionsStatus,
+    riskRating: data.risk_rating as RiskRating,
+    fullName: data.full_name ?? undefined,
     dateOfBirth: data.date_of_birth ? new Date(data.date_of_birth) : undefined,
-    nationality: data.nationality,
+    nationality: data.nationality ?? undefined,
     enhancedDueDiligence: data.enhanced_due_diligence,
-    documents: data.documents || [],
+    documents: (data.documents as unknown as KYCDocument[] | undefined) || [],
     createdAt: new Date(data.created_at),
     updatedAt: new Date(data.updated_at)
   };
@@ -248,14 +251,13 @@ export async function approveKYC(
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
 
-  const { error } = await (supabase
-    .from('kyc_profiles' as any)
+  const { error } = await kycDb()
     .update({
       status: 'verified',
       verified_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
-    } as any)
-    .eq('user_id', userId) as any);
+    })
+    .eq('user_id', userId);
 
   if (error) {
     return { success: false, error: error.message };
@@ -277,13 +279,12 @@ export async function rejectKYC(
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient();
 
-  const { error } = await (supabase
-    .from('kyc_profiles' as any)
+  const { error } = await kycDb()
     .update({
       status: 'rejected',
       updated_at: new Date().toISOString()
-    } as any)
-    .eq('user_id', userId) as any);
+    })
+    .eq('user_id', userId);
 
   if (error) {
     return { success: false, error: error.message };
@@ -314,7 +315,7 @@ async function logAdminAction(
     notes,
     timestamp: new Date().toISOString(),
     correlation_id: crypto.randomUUID()
-  } as any);
+  } as never);
 }
 
 /**
@@ -323,29 +324,28 @@ async function logAdminAction(
 export async function getPendingKYC(): Promise<KYCProfile[]> {
   const supabase = createClient();
 
-  const { data, error } = await (supabase
-    .from('kyc_profiles' as any)
+  const { data, error } = await kycDb()
     .select('*')
     .eq('status', 'pending')
-    .order('created_at', { ascending: true }) as any);
+    .order('created_at', { ascending: true });
 
   if (error || !data) {
     return [];
   }
 
-  return data.map((record: any) => ({
+  return data.map((record) => ({
     userId: record.user_id,
-    status: record.status,
-    verificationMethod: record.verification_method,
+    status: record.status as KYCStatus,
+    verificationMethod: record.verification_method as KYCProfile['verificationMethod'],
     verifiedAt: record.verified_at ? new Date(record.verified_at) : undefined,
-    pepStatus: record.pep_status,
-    sanctionsStatus: record.sanctions_status,
-    riskRating: record.risk_rating,
-    fullName: record.full_name,
+    pepStatus: record.pep_status as PEPStatus,
+    sanctionsStatus: record.sanctions_status as SanctionsStatus,
+    riskRating: record.risk_rating as RiskRating,
+    fullName: record.full_name ?? undefined,
     dateOfBirth: record.date_of_birth ? new Date(record.date_of_birth) : undefined,
-    nationality: record.nationality,
+    nationality: record.nationality ?? undefined,
     enhancedDueDiligence: record.enhanced_due_diligence,
-    documents: record.documents || [],
+    documents: (record.documents as unknown as KYCDocument[] | undefined) || [],
     createdAt: new Date(record.created_at),
     updatedAt: new Date(record.updated_at)
   }));

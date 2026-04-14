@@ -37,7 +37,7 @@ export async function getRiskConfig(userId: string): Promise<TradingRiskConfig |
     return null;
   }
   
-  return data as any as TradingRiskConfig | null;
+  return data as unknown as TradingRiskConfig | null;
 }
 
 /**

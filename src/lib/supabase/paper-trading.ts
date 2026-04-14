@@ -68,7 +68,7 @@ export async function createPaperTradingSession(
     throw new Error("Failed to create paper trading session");
   }
 
-  return data as any as PaperTradingSession;
+  return data as unknown as PaperTradingSession;
 }
 
 /**
@@ -95,7 +95,7 @@ export async function getPaperTradingSession(
     throw new Error("Failed to get paper trading session");
   }
 
-  return data as any as PaperTradingSession;
+  return data as unknown as PaperTradingSession;
 }
 
 /**
@@ -190,7 +190,7 @@ export async function getPaperTradeHistory(
     throw new Error("Failed to get trade history");
   }
 
-  return (data ?? []) as any as TradeHistoryItem[];
+  return (data ?? []) as unknown as TradeHistoryItem[];
 }
 
 /**

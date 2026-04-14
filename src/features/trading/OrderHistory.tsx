@@ -35,7 +35,7 @@ export function OrderHistory() {
             .order('created_at', { ascending: false })
             .limit(10)
 
-        if (data) setOrders(data as any as Order[])
+        if (data) setOrders(data as unknown as Order[])
         setLoading(false)
     }
 

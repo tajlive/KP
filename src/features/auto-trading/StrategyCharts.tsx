@@ -86,7 +86,7 @@ export default function StrategyCharts({
                   ((v: number) => [
                     `${v.toFixed(2)} USDT`,
                     "Equity",
-                  ]) as any as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
+                  ]) as unknown as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
                 }
               />
               <Area
@@ -163,7 +163,7 @@ export default function StrategyCharts({
                   borderRadius: 8,
                 }}
 formatter={
-                ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as any as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
+                ((v: number) => [`${v.toFixed(2)} USDT`, "Equity"]) as unknown as NonNullable<React.ComponentProps<typeof Tooltip>["formatter"]>
               }
               />
               <ReferenceLine

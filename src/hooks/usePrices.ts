@@ -45,7 +45,7 @@ export function usePrices() {
 
   useEffect(() => {
     const supabase = getSupabaseClient();
-    const fromCoinPrices = supabase.from as any as (
+    const fromCoinPrices = supabase.from as unknown as (
       table: "coin_prices",
     ) => {
       select: (columns: "*") => Promise<{ data: CoinPrice[] | null }>;
@@ -56,7 +56,7 @@ export function usePrices() {
       // Using local adapter: table exists in remote schema but can drift in local generated types.
       const { data } = await fromCoinPrices("coin_prices").select("*");
 
-      const priceMap = ((data || []) as any as CoinPrice[]).reduce(
+      const priceMap = ((data || []) as unknown as CoinPrice[]).reduce(
         (acc: Record<string, CoinPrice>, price) => {
           acc[price.symbol] = price;
           return acc;
@@ -108,7 +108,7 @@ export function usePrices() {
               high_24h: 0,
               low_24h: 0,
               last_updated: new Date().toISOString(),
-            } as any as CoinPrice;
+            } as unknown as CoinPrice;
           }
         });
         return next;

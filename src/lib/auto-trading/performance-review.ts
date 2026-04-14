@@ -156,7 +156,7 @@ export async function generateWeeklyReview(
   }
 
   // Calculate metrics
-  const tradesTyped = trades as any as AutoTradingTrade[];
+  const tradesTyped = trades as unknown as AutoTradingTrade[];
   const metrics = calculateMetrics(tradesTyped, startDate, endDate);
 
   // Assess strategy
@@ -812,7 +812,7 @@ async function storeReview(review: WeeklyReview): Promise<void> {
   const supabase = createClient();
 
   await (
-    supabase as any as {
+    supabase as unknown as {
       from: (t: string) => { insert: (row: object) => Promise<unknown> };
     }
   )

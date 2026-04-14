@@ -26,8 +26,8 @@ export type CoursesData = typeof noCourses;
 const coursesData: Record<string, CoursesData> = {
   no: noCourses,
   en: enCourses,
-  th: thCourses as any as CoursesData,
-  zh: zhCourses as any as CoursesData,
+  th: thCourses as unknown as CoursesData,
+  zh: zhCourses as unknown as CoursesData,
 };
 
 export function getCoursesData(locale: string): CoursesData {

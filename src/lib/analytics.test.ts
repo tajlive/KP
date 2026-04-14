@@ -10,7 +10,7 @@ describe('Analytics Event Contract', () => {
     global.window = {
       plausible: vi.fn(),
       location: { href: 'https://test.klarpakke.no/dashboard' },
-    } as any as any;
+    } as unknown as any;
     
     // Reset dedupe state between tests
     __resetDedupeState();
@@ -100,7 +100,7 @@ describe('Analytics Error Handling', () => {
     global.window = {
       plausible: vi.fn(),
       location: { href: 'https://test.klarpakke.no/dashboard' },
-    } as any as any;
+    } as unknown as any;
   });
   
   afterEach(() => {
@@ -116,7 +116,7 @@ describe('Analytics Error Handling', () => {
   });
 
   it('should not throw if plausible is undefined', () => {
-    global.window = {} as any as any;
+    global.window = {} as unknown as any;
     
     expect(() => {
       track({ name: 'test_event' });

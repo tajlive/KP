@@ -208,7 +208,7 @@ export function usePaperTradingEngine(symbol: string): PaperTradingEngine {
         // Update database
         if (user) {
           await (
-            supabase as any as {
+            supabase as unknown as {
               rpc: (name: string, params: object) => Promise<unknown>;
             }
           ).rpc("close_paper_trade", {

@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
           indicators: signal.indicators,
           sizing: signal.sizing,
           metadata: signal.metadata,
-        } as any as import('@/types/database.types').Json,
+        } as unknown as import('@/types/database.types').Json,
         decision_reason: signal.reasoning,
         executed_at: new Date().toISOString(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

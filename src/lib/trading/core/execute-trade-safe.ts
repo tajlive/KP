@@ -573,7 +573,7 @@ async function executeTradeWithLock(
           version: 1,
           updatedAt: new Date(),
           createdAt: new Date()
-        } as any as Database['public']['Tables']['risk_state']['Insert']['state'],
+        } as unknown as Database['public']['Tables']['risk_state']['Insert']['state'],
         updated_at: nowIso
       }, { onConflict: 'user_id' });
     

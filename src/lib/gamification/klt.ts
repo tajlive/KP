@@ -26,7 +26,7 @@ type DbWithUserLevels = Database & {
 };
 
 function userLevelsFrom(db: SupabaseClient<Database>) {
-  return (db as any as SupabaseClient<DbWithUserLevels>).from(
+  return (db as unknown as SupabaseClient<DbWithUserLevels>).from(
     "user_levels",
   );
 }

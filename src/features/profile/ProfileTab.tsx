@@ -77,7 +77,7 @@ function ProfileTabContent() {
       if (!user) return;
 
       const { data: badgeData } = await (
-        supabase as any as {
+        supabase as unknown as {
           from: (t: string) => {
             select: (s: string) => {
               eq: (

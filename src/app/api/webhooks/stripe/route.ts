@@ -215,7 +215,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         subscription_status: "active",
         stripe_customer_id: customerId,
         updated_at: new Date().toISOString(),
-      } as any).eq("id", userId);
+      } as never).eq("id", userId);
 
     if (profileError) {
       console.error(
@@ -251,7 +251,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
         status: "active",
         current_period_end: periodEnd,
         updated_at: new Date().toISOString(),
-      } as any).eq("stripe_subscription_id", subscriptionId);
+      } as never).eq("stripe_subscription_id", subscriptionId);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved payment succeeded:", error);
@@ -271,7 +271,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
         .update({
           subscription_status: "active",
           updated_at: new Date().toISOString(),
-        } as any).eq("id", sub.user_id);
+        } as never).eq("id", sub.user_id);
     }
 
     console.info(
@@ -296,7 +296,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       .update({
         status: "past_due",
         updated_at: new Date().toISOString(),
-      } as any).eq("stripe_subscription_id", subscriptionId);
+      } as never).eq("stripe_subscription_id", subscriptionId);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved payment failed:", error);
@@ -316,7 +316,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
         .update({
           subscription_status: "past_due",
           updated_at: new Date().toISOString(),
-        } as any).eq("id", sub.user_id);
+        } as never).eq("id", sub.user_id);
     }
 
     // Send påminnelse om betaling
@@ -335,7 +335,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
   try {
     // Cast to access period fields (Stripe types are partial)
-    const subWithPeriod = subscription as any as {
+    const subWithPeriod = subscription as unknown as {
       current_period_start?: number;
       current_period_end?: number;
       status: string;
@@ -407,7 +407,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         subscription_status: subWithPeriod.status === "active" ? "active" : "pending",
         stripe_customer_id: customerId,
         updated_at: new Date().toISOString(),
-      } as any).eq("id", userId);
+      } as never).eq("id", userId);
 
     if (profileError) {
       console.error("[Stripe Webhook] Feil ved oppdatering av profil:", profileError);
@@ -425,7 +425,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   try {
     // Access current_period_end from the subscription items or cast to access it
-    const subWithPeriod = subscription as any as {
+    const subWithPeriod = subscription as unknown as {
       current_period_end?: number;
       status: string;
       cancel_at_period_end: boolean;
@@ -466,7 +466,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
               ? "active"
               : "canceled",
             updated_at: new Date().toISOString(),
-          } as any).eq("id", sub.user_id);
+          } as never).eq("id", sub.user_id);
       }
     }
 
@@ -505,7 +505,7 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
           subscription_tier: "student",
           subscription_status: "canceled",
           updated_at: new Date().toISOString(),
-        } as any).eq("id", sub.user_id);
+        } as never).eq("id", sub.user_id);
     }
 
     console.info(

@@ -205,6 +205,20 @@ jobs:
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}' || true
 
+      - name: 🔔 Slack notification on failure
+        if: failure() && env.IS_PRODUCTION == 'true'
+        run: npx tsx scripts/notify-deploy-status.ts --status=error --url=https://www.klarpakke.no --message="Deploy eller verify feilet, se GitHub Actions"
+        env:
+          SLACK_DEPLOY_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK_URL }}
+        continue-on-error: true
+
+      - name: 🔔 Slack notification on success
+        if: success() && env.IS_PRODUCTION == 'true'
+        run: npx tsx scripts/notify-deploy-status.ts --status=success --url=https://www.klarpakke.no
+        env:
+          SLACK_DEPLOY_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOY_WEBHOOK_URL }}
+        continue-on-error: true
+
       - name: Deploy summary
         if: always()
         run: |

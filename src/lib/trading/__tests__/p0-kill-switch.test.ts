@@ -48,7 +48,7 @@ const createMockSupabase = (overrides?: {
     })),
     // Direct count simulation
     rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
-  } as any as SupabaseClient<Database>;
+  } as unknown as SupabaseClient<Database>;
 };
 
 describe('P0 Kill-Switch', () => {

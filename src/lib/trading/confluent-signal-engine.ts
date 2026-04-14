@@ -291,10 +291,10 @@ async function persistSignalToLog(
       decision_type: signal.action,           // BUY/SELL/HOLD
       sentiment_score: Math.round(signal.score), // 0-100 (integer)
       analysis_data: {
-        factors: signal.factors as any as import('@/types/database.types').Json,
+        factors: signal.factors as unknown as import('@/types/database.types').Json,
         risk_level: signal.riskLevel,
         used_fallback: signal.metadata.usedFallback,
-      } as any as import('@/types/database.types').Json,
+      } as unknown as import('@/types/database.types').Json,
       decision_reason: signal.reason,
       ...(userId && { user_id: userId }),
       executed_at: new Date().toISOString(),

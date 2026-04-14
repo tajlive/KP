@@ -44,7 +44,7 @@ export default function ClientStudentsPage() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setUsers((data as any as User[]) || []);
+      setUsers((data as unknown as User[]) || []);
     } catch (err) {
       console.error("Error fetching users:", getErrorMessage(err));
       toast.error("Kunne ikke laste brukere");

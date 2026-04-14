@@ -21,7 +21,7 @@ function createOrderedDbMock(rows: MaybeRow[]): SupabaseClient<Database> {
   });
   return {
     from: (_table: string) => chain(),
-  } as any as SupabaseClient<Database>;
+  } as unknown as SupabaseClient<Database>;
 }
 
 describe("resolveLeaderAuthId", () => {

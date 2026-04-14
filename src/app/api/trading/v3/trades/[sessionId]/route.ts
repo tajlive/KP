@@ -86,8 +86,8 @@ export async function GET(
     const tradesWithExplanations: TradeWithExplanation[] = (trades || []).map((trade) => {
       const explanation = generateExplanation({
         reasonCode: trade.reason_code as TradeReasonCode | null,
-        reasonParams: trade.reason_params as any as TradeReasonParams | null,
-        indicatorSnapshot: trade.indicator_snapshot as any as IndicatorSnapshot | null,
+        reasonParams: trade.reason_params as unknown as TradeReasonParams | null,
+        indicatorSnapshot: trade.indicator_snapshot as unknown as IndicatorSnapshot | null,
         side: trade.side as "buy" | "sell",
         locale,
       });
@@ -106,7 +106,7 @@ export async function GET(
           body: explanation.body,
           mood: explanation.mood,
         },
-        indicators: trade.indicator_snapshot as any as IndicatorSnapshot | null,
+        indicators: trade.indicator_snapshot as unknown as IndicatorSnapshot | null,
       };
     });
 

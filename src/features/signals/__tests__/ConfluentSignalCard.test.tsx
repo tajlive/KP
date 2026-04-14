@@ -103,7 +103,7 @@ describe('ConfluentSignalCard', () => {
             risk_warnings: ['Warning 1'],
             sources: [],
           }),
-      } as any as Response);
+      } as unknown as Response);
 
       render(<ConfluentSignalCard signal={mockSignal} symbol="BTC" />);
 

@@ -76,7 +76,7 @@ export function useNotifications() {
 
       if (error) throw error;
 
-      setNotifications((data || []) as any as Notification[]);
+      setNotifications((data || []) as unknown as Notification[]);
 
       // Calculate unread count
       const unread = (data || []).filter((n) => !n.is_read).length;
@@ -146,7 +146,7 @@ export function useNotifications() {
   // Mark notifications as read
   const markAsRead = async (notificationIds?: string[]) => {
     try {
-      const rpc = supabase.rpc as any as MarkNotificationsReadRpc;
+      const rpc = supabase.rpc as unknown as MarkNotificationsReadRpc;
       const { error } = await rpc("mark_notifications_read", {
         p_notification_ids: notificationIds || null,
       });
@@ -179,7 +179,7 @@ export function useNotifications() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return false;
-      const notificationPreferencesFrom = supabase.from as any as (
+      const notificationPreferencesFrom = supabase.from as unknown as (
         table: "notification_preferences",
       ) => {
         upsert: (

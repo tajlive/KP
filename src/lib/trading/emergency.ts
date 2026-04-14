@@ -77,7 +77,7 @@ export async function activateEmergencyStop(
         emergency_triggered_at: new Date().toISOString(),
         emergency_triggered_by: triggeredBy,
         emergency_reason: reason,
-      } as any);
+      } as never);
 
     if (settingsError) throw settingsError;
 
@@ -99,7 +99,7 @@ export async function activateEmergencyStop(
       affected_sessions: activeSessions?.length || 0,
       closed_positions: closedPositions,
       timestamp: new Date().toISOString(),
-    } as any);
+    } as never);
 
     // 5. Send alert til admin
     await sendEmergencyAlert(reason, triggeredBy, closedPositions);
@@ -135,7 +135,7 @@ export async function deactivateEmergencyStop(
       emergency_resolved_at: new Date().toISOString(),
       emergency_resolved_by: resolvedBy,
       emergency_resolution: resolution,
-    } as any);
+    } as never);
 
     if (error) throw error;
 
@@ -179,7 +179,7 @@ export async function panicCloseAllPositions(): Promise<number> {
 
     // Lukk hver posisjon med MARKET order (session row: trading_pair, open_position)
     for (const row of openPositions) {
-      const position = row as any as {
+      const position = row as unknown as {
         id: string;
         symbol: string;
         quantity: number;
@@ -199,8 +199,8 @@ export async function panicCloseAllPositions(): Promise<number> {
             status: "CLOSED",
             closed_at: new Date().toISOString(),
             close_reason: "EMERGENCY_PANIC_CLOSE",
-          } as any)
-          .eq("id", (row as any as { id: string }).id);
+          } as never)
+          .eq("id", (row as unknown as { id: string }).id);
 
         closedCount++;
       } catch (closeError) {
@@ -246,7 +246,7 @@ export async function canUserTrade(userId: string): Promise<{
     .select("id")
     .eq("id", userId)
     .single();
-  const status = userStatus as any as {
+  const status = userStatus as unknown as {
     trading_suspended?: boolean;
     trading_suspension_reason?: string;
   } | null;

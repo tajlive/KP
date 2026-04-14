@@ -74,7 +74,7 @@ export function GamificationCard() {
         .eq("user_id", user.id));
       
       if (achievementsResult.data) {
-        setAchievements((achievementsResult.data as any as Achievement[]));
+        setAchievements((achievementsResult.data as unknown as Achievement[]));
       }
       
       setLoading(false);

@@ -35,7 +35,7 @@ export async function getAllStrategies(): Promise<AutoTradingStrategy[]> {
     throw error;
   }
 
-  return (data || []) as any as AutoTradingStrategy[];
+  return (data || []) as AutoTradingStrategy[];
 }
 
 export async function getStrategyById(
@@ -52,7 +52,7 @@ export async function getStrategyById(
     return null;
   }
 
-  return data as any as AutoTradingStrategy | null;
+  return data as AutoTradingStrategy | null;
 }
 
 export async function getStrategyByRiskLevel(
@@ -70,7 +70,7 @@ export async function getStrategyByRiskLevel(
     return null;
   }
 
-  return data as any as AutoTradingStrategy | null;
+  return data as AutoTradingStrategy | null;
 }
 
 // ============================================================
@@ -91,7 +91,7 @@ export async function getUserConfig(
     return null;
   }
 
-  return data as any as UserAutoTradingConfig | null;
+  return data as UserAutoTradingConfig | null;
 }
 
 export async function createUserConfig(
@@ -109,7 +109,7 @@ export async function createUserConfig(
       trading_capital_nok: tradingCapital,
       phase: "paper" as TradingPhase,
       allocated_capital_pct: 10.0,
-    } as any)
+    })
     .select()
     .single();
 
@@ -118,7 +118,7 @@ export async function createUserConfig(
     return null;
   }
 
-  return data as any as UserAutoTradingConfig | null;
+  return data as UserAutoTradingConfig | null;
 }
 
 export async function updateUserConfig(
@@ -127,7 +127,7 @@ export async function updateUserConfig(
 ): Promise<boolean> {
   const { error } = await supabase
     .from("user_auto_trading_configs")
-    .update(updates as any).eq("user_id", userId);
+    .update(updates as never).eq("user_id", userId);
 
   if (error) {
     console.error("Error updating user config:", error);
@@ -165,7 +165,7 @@ export async function getActiveSession(
     return null;
   }
 
-  return data as any as AutoTradingSession | null;
+  return data as unknown as AutoTradingSession | null;
 }
 
 export async function getUserSessions(
@@ -184,7 +184,7 @@ export async function getUserSessions(
     return [];
   }
 
-  return (data || []) as any as AutoTradingSession[];
+  return (data || []) as unknown as AutoTradingSession[];
 }
 
 export async function createSession(
@@ -208,7 +208,7 @@ export async function createSession(
       current_capital_nok: startingCapital,
       allocated_capital_pct: allocatedCapitalPct,
       status: "active",
-    } as any)
+    } as never)
     .select()
     .single();
 
@@ -217,7 +217,7 @@ export async function createSession(
     return null;
   }
 
-  return data as any as AutoTradingSession | null;
+  return data as unknown as AutoTradingSession | null;
 }
 
 export async function updateSession(
@@ -226,7 +226,7 @@ export async function updateSession(
 ): Promise<boolean> {
   const { error } = await supabase
     .from("trading_sessions") // ← var: auto_trading_sessions
-    .update(updates as any).eq("id", sessionId);
+    .update(updates as never).eq("id", sessionId);
 
   if (error) {
     console.error("Error updating session:", error);
@@ -271,7 +271,7 @@ export async function getSessionTrades(
     return [];
   }
 
-  return (data || []) as any as AutoTradingTrade[];
+  return (data || []) as unknown as AutoTradingTrade[];
 }
 
 export async function getOpenTrades(
@@ -289,7 +289,7 @@ export async function getOpenTrades(
     return [];
   }
 
-  return (data || []) as any as AutoTradingTrade[];
+  return (data || []) as unknown as AutoTradingTrade[];
 }
 
 export async function createTrade(
@@ -306,7 +306,7 @@ export async function createTrade(
     return null;
   }
 
-  return data as any as AutoTradingTrade | null;
+  return data as unknown as AutoTradingTrade | null;
 }
 
 export async function closeTrade(
@@ -327,7 +327,7 @@ export async function closeTrade(
       close_reason: closeReason,
       fees_nok: feesNok,
       closed_at: new Date().toISOString(),
-    } as any)
+    } as never)
     .eq("id", tradeId);
 
   if (error) {
@@ -405,7 +405,7 @@ export async function logCircuitBreaker(
       trigger_value: triggerValue,
       action,
       resume_at: resumeAt,
-    } as any);
+    });
 
   if (error) {
     console.error("Error logging circuit breaker:", error);
@@ -444,7 +444,7 @@ export async function logProfitExtraction(
       capital_before_nok: capitalBeforeNok,
       capital_after_nok: capitalAfterNok,
       extraction_method: method,
-    } as any);
+    });
 
   if (error) {
     console.error("Error logging profit extraction:", error);
