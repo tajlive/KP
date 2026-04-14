@@ -29,8 +29,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = createSessionSchema.safeParse(body);
     if (!parsed.success) {
+      console.error("[trading-sessions/create] validation failed:", parsed.error.flatten());
       return NextResponse.json(
-        { error: "Validation failed", details: parsed.error.flatten() },
+        { error: "Validation failed", code: "VALIDATION_FAILED", details: parsed.error.flatten() },
         { status: 400 },
       );
     }
@@ -57,14 +58,14 @@ export async function POST(request: NextRequest) {
     if (mode === "live") {
       if (!profRow?.binance_connected) {
         return NextResponse.json(
-          { error: "Live krever tilkoblet Binance-konto" },
+          { error: "Live krever tilkoblet Binance-konto", code: "LIVE_BINANCE_REQUIRED" },
           { status: 403 },
         );
       }
 
       if (!canAccessLiveAutoTrading(tier)) {
         return NextResponse.json(
-          { error: "Live trading krever Bachelor-tier eller høyere" },
+          { error: "Live trading krever Bachelor-tier eller høyere", code: "LIVE_TIER_REQUIRED" },
           { status: 403 },
         );
       }
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
         | undefined;
       if (ent && !ent.auto_trade_allow_live) {
         return NextResponse.json(
-          { error: "Live trading er ikke aktivert for abonnementet ditt" },
+          { error: "Live trading er ikke aktivert for abonnementet ditt", code: "LIVE_ENTITLEMENT_REQUIRED" },
           { status: 403 },
         );
       }
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
     const maxSessions = maxActiveTradingSessions(tier, mode);
     if (maxSessions <= 0) {
       return NextResponse.json(
-        { error: "Ingen tilgang til ny sesjon i denne modusen" },
+        { error: "Ingen tilgang til ny sesjon i denne modusen", code: "NO_SESSION_ACCESS" },
         { status: 403 },
       );
     }
@@ -159,9 +160,9 @@ export async function POST(request: NextRequest) {
     const insertError = result.error;
 
     if (insertError || !session) {
-      console.error("Failed to create trading session:", insertError);
+      console.error("[trading-sessions/create] insert failed:", insertError);
       return NextResponse.json(
-        { error: "Kunne ikke opprette trading session" },
+        { error: "Kunne ikke opprette trading session", code: "CREATE_FAILED", details: insertError ? { message: insertError.message } : null },
         { status: 500 },
       );
     }
@@ -193,6 +194,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Unexpected error in create trading session:", error);
-    return NextResponse.json({ error: "Uventet feil" }, { status: 500 });
+    return NextResponse.json({ error: "Uventet feil", code: "UNEXPECTED_ERROR" }, { status: 500 });
   }
 }
