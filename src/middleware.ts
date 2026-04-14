@@ -26,9 +26,10 @@ const PROTECTED_ROUTES = [
 
 // Auth routes (redirect til dashboard hvis allerede logget inn)
 const AUTH_ROUTES = [
-  "/no/login",
-  "/no/register",
-  "/no/reset-password",
+  "/login",
+  "/register",
+  "/reset-password",
+  "/update-password",
 ];
 
 /**
@@ -39,6 +40,22 @@ function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
   return Buffer.from(array).toString("base64");
+}
+
+// Cookie domain helper - must match src/lib/supabase/server.ts for consistency
+function getCookieDomain(request: NextRequest): string | undefined {
+  const host = request.headers.get("host") || "";
+  const isWWW = host.startsWith("www.");
+  const rootDomain = isWWW ? host.replace("www.", "") : host;
+  return rootDomain.includes(":") ? undefined : `.${rootDomain}`;
+}
+
+function stripLocalePrefix(pathname: string): string {
+  const localeMatch = pathname.match(/^\/(no|en)(\/.*)?$/);
+  if (localeMatch) {
+    return localeMatch[2] || "/";
+  }
+  return pathname;
 }
 
 /**
@@ -157,6 +174,7 @@ export async function middleware(request: NextRequest) {
     },
   });
   
+  const cookieDomain = getCookieDomain(request);
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -166,7 +184,12 @@ export async function middleware(request: NextRequest) {
         getAll: () => request.cookies.getAll(),
         setAll: (cookies) => {
           cookies.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, {
+              ...options,
+              domain: cookieDomain,
+              sameSite: "none" as const,
+              secure: true,
+            });
           });
         },
       },
@@ -175,9 +198,11 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
+  const pathWithoutLocale = stripLocalePrefix(pathname);
+
   // Hvis protected route og ikke logget inn -> redirect til login
   const isProtected = PROTECTED_ROUTES.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
+    pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`)
   );
   
   if (isProtected && !user) {
@@ -188,7 +213,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Hvis auth route og allerede logget inn -> redirect til dashboard
-  const isAuthRoute = AUTH_ROUTES.some(route => pathname.startsWith(route));
+  const isAuthRoute = AUTH_ROUTES.some(route => pathWithoutLocale.startsWith(route));
   
   if (isAuthRoute && user) {
     const redirectResponse = NextResponse.redirect(new URL("/dashboard", request.url));

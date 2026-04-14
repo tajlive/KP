@@ -1,0 +1,9 @@
+Fiks src/middleware.ts:
+- Beskytt locale-prefixed protected routes: /no|/en/dashboard, profile, settings, admin
+- Utvid AUTH_ROUTES for /login /register /reset-password og locale-varianter
+- Kopier cookie options fra src/lib/supabase/server.ts: sameSite: "none", secure: true, domain via cookieDomain om nødvendig
+- Behold CSP/security headers
+- Minimale endringer i e2e/critical/auth.spec.ts kun hvis nødvendig
+- Kjør typecheck
+- Skriv kort oppsummering til mempalace/runbook-kontekst
+- Ikke rør unrelated code
