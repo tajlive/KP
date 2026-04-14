@@ -39,7 +39,7 @@ export async function PATCH(
     // Verifiser eierskap til trading session
     const { data: session, error: sessionError } = await supabase
       .from("trading_sessions")
-      .select("user_id")
+      .select("user_id, status")
       .eq("id", id)
       .single();
 
@@ -82,7 +82,7 @@ export async function PATCH(
       details: {
         session_id: id,
         new_status: status,
-        previous_status: session,
+        previous_status: session.status,
       },
     });
 
