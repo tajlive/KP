@@ -1,9 +1,49 @@
 # KIMI Agent Guide for Klarpakke
 
-**Versjon:** 2.1  
+**Versjon:** 2.2  
 **Oppdatert:** 2026-04-14  
 **For:** KIMI CLI i Klarpakke-prosjektet  
 **Mål:** Maksimal automasjon, minimal friksjon
+
+---
+
+## 🚀 Prod Deploy Pipeline (NY — ALLTID BRUK DETTE)
+
+Når brukeren skriver noe i retning av **"deploy prod"**, skal du **aldri** hoppe rett til `npm run deploy:prod`. Følg denne sekvensen slavisk:
+
+### Trinn 1: Kvalitet
+```bash
+kci       # npm run lint:gate && npm run test:unit
+```
+
+### Trinn 2: Database-sanity
+```bash
+kdb       # npm run db:status
+```
+
+### Trinn 3: Pre-deploy monitor
+```bash
+kmonitor  # curl https://www.klarpakke.no/api/health
+```
+
+### Trinn 4: Deploy
+```bash
+kprod            # Full pipeline (lint → test → db → monitor → deploy → monitor)
+# eller:
+kprod:preview    # Samme pipeline, men til preview
+```
+
+### Trinn 5: Post-deploy verifikasjon
+- Kjør `kmonitor` igjen
+- Minn brukeren på å sjekke:
+  - [Vercel Speed Insights](https://vercel.com/klarpakke/klarpakke/speed-insights)
+  - [Vercel Analytics](https://vercel.com/klarpakke/klarpakke/analytics)
+  - UptimeRobot (hvis aktivert)
+
+### MemPalace-logging etter hver deploy
+Oppdater **alltid** to filer:
+1. `.mempalace/handoffs/DEPLOY-YYYY-MM-DD-<sha>.md` — rotårsak, endrede moduler, kommandoer, resultat
+2. `.mempalace/kimi_sessions/SESSION-YYYY-MM-DD.md` — plan, faktiske steg, avvik, TODOs
 
 ---
 
