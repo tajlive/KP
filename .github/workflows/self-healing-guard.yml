@@ -19,8 +19,11 @@
 name: 🛡️ Self-Healing Guard
 
 on:
-  schedule:
-    - cron: '0 */6 * * *'  # Hver 6. time (04:00, 10:00, 16:00, 22:00 UTC)
+  # Kjører kun etter vellykket deploy til main, eller manuelt
+  workflow_run:
+    workflows: ["🚀 Deploy"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       mode:
@@ -41,8 +44,6 @@ on:
         options:
           - production
           - staging
-  repository_dispatch:
-    types: [watchdog-failed, health-degraded]
 
 concurrency:
   group: self-healing-guard
