@@ -140,24 +140,7 @@ jobs:
               return;
             }
             
-            const body = `## 🏛️ Ny MemPalace-versjon tilgjengelig
-            
-| | Versjon |
-|---|---|
-| **Installert** | ${installed} |
-| **Siste (PyPI)** | ${latest} |
-| **GitHub Release** | ${{ steps.check-version.outputs.latest }} |
-
-### Oppdatering
-\`\`\`bash
-pip install --upgrade mempalace
-\`\`\`
-
-### Release Notes
-Se [GitHub Releases](https://github.com/milla-jovovich/mempalace/releases) for detaljer.
-
----
-*Denne issuen ble opprettet automatisk av MemPalace Guard.*`;
+            const body = `## 🏛️ Ny MemPalace-versjon tilgjengelig\n\n| | Versjon |\n|---|---|\n| **Installert** | ${installed} |\n| **Siste (PyPI)** | ${latest} |\n| **GitHub Release** | ${{ steps.check-version.outputs.latest }} |\n\n### Oppdatering\n\`\`\`bash\npip install --upgrade mempalace\n\`\`\`\n\n### Release Notes\nSe [GitHub Releases](https://github.com/milla-jovovich/mempalace/releases) for detaljer.\n\n---\n*Denne issuen ble opprettet automatisk av MemPalace Guard.*`;
             
             await github.rest.issues.create({
               owner: context.repo.owner,
