@@ -76,10 +76,10 @@ export async function PATCH(
     }
 
     // Logg handlingen for audit
-    await supabase.from("activity_logs").insert({
+    await supabase.from("user_activity_logs").insert({
       user_id: user.id,
       action: "trading_session_status_changed",
-      details: {
+      metadata: {
         session_id: id,
         new_status: status,
         previous_status: session.status,

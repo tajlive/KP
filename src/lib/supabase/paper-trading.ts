@@ -59,6 +59,14 @@ export async function createPaperTradingSession(
       starting_capital_nok: 100000,
       current_capital_nok: 100000,
       started_at: new Date().toISOString(),
+      total_trades: 0,
+      winning_trades: 0,
+      losing_trades: 0,
+      total_pnl: 0,
+      strategy_config: {},
+      last_heartbeat: new Date().toISOString(),
+      initial_capital: 100000,
+      current_capital: 100000,
     })
     .select()
     .single();
@@ -84,13 +92,9 @@ export async function getPaperTradingSession(
     .eq("user_id", userId)
     .eq("mode", 'paper')
     .eq("status", 'active')
-    .single();
+    .maybeSingle();
 
   if (error) {
-    if (error.code === "PGRST116") {
-      // No session found
-      return null;
-    }
     console.error("Failed to get paper trading session:", error);
     throw new Error("Failed to get paper trading session");
   }
@@ -137,6 +141,8 @@ export async function executePaperTrade(
       price: trade.price,
       total_value: totalValue,
       fee: 0,
+      order_type: 'market',
+      is_copy: false,
       status: 'executed',
       idempotency_key: `${Date.now()}-${Math.random()}`,
       executed_at: new Date().toISOString(),
