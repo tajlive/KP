@@ -1,14 +1,13 @@
 wing: klarpakke
-version: "2.0"
+version: "2.1-fts5"
 
-# RAW MODE - M1 Mac ChromaDB workaround
-# Vector search deaktivert, bruker grep-basert søk
+# MemPalace bruker SQLite FTS5 for fulltext-søk (ChromaDB fallback for embeddings)
 storage:
   mode: raw
-  search_backend: grep
+  search_backend: sqlite-fts5
   aaak_compression: true
 
-# Rom-konfigurasjon med prioriteringer
+# Rom-konfigurasjon med prioriteringer (11 rom etter konsolidering)
 rooms:
   # HIGH PRIORITY - Kritisk kunnskap
   - name: critical_decisions
@@ -18,7 +17,7 @@ rooms:
     sources:
       - docs/adr/*.md
       - docs/*DECISION*.md
-      
+
   - name: error_patterns
     description: Feil og løsninger
     priority: high
@@ -26,7 +25,7 @@ rooms:
     sources:
       - .knowledge/errors/*.md
       - src/**/*.ts {TODO,FIXME,HACK}
-      
+
   - name: auth_system
     description: Auth-mønstre og fixes
     priority: high
@@ -34,7 +33,7 @@ rooms:
     sources:
       - docs/auth-storage.md
       - AUTH-ISSUE-DIAGNOSIS*.md
-      
+
   # MEDIUM PRIORITY - Teknisk gjeld
   - name: tech_debt
     description: TYPE_DEBT og refaktoreringsbehov
@@ -43,7 +42,7 @@ rooms:
     sources:
       - src/lib/supabase/TYPE_DEBT.md
       - docs/TYPE-DEBT-ROADMAP*.md
-      
+
   - name: api_contracts
     description: API-dokumentasjon
     priority: medium
@@ -51,7 +50,7 @@ rooms:
     sources:
       - docs/api-routes.md
       - src/app/api/**/*.ts
-      
+
   # STANDARD PRIORITY - Prosjektinfo
   - name: project_status
     description: Statusrapporter og runbooks
@@ -61,31 +60,52 @@ rooms:
       - PROJECT_STATUS.md
       - PRODUCTION-READINESS*.md
       - runbook.md
-      
+
+  - name: operations
+    description: Agent ops, debug-analysis, monitoring
+    priority: standard
+    retention: 1year
+    sources:
+      - .agent/ops/*.md
+      - docs/monitoring/*.md
+
+  - name: ux_engineering
+    description: UX/UI audit, design system, i18n
+    priority: standard
+    retention: 1year
+    sources:
+      - docs/ux/*.md
+      - .knowledge/i18n/*.md
+
+  - name: infrastructure
+    description: Deploy pipeline, DNS, Vercel, Cloudflare
+    priority: standard
+    retention: 1year
+    sources:
+      - docs/deployment/*.md
+      - .knowledge/deployment/*.md
+
   - name: kimi_sessions
     description: KIMI diary entries
     priority: standard
     retention: 1year
     auto_populate: true
-    
+
   # LOW PRIORITY - Arkiv
   - name: archive
     description: Gamle rapporter og logs
     priority: low
     retention: 3months
 
-# Søke-konfigurasjon
 search:
   fallback_to_grep: true
   grep_options: "-r -i -n --include='*.md' --include='*.ts' --include='*.tsx'"
   max_results: 10
-  
-# Knowledge Graph
+
 knowledge_graph:
   enabled: true
   auto_extract_relations: true
-  
-# Diary
+
 diary:
   enabled: true
   format: aaak
