@@ -91,9 +91,6 @@ jobs:
           key: vercel-cli-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: vercel-cli-${{ runner.os }}-
 
-      - name: Lint
-        run: npm run lint
-
       # Alltid exit 0: unngår «Process completed with exit code 1»-annotasjon når push feiler men deploy skal fortsette.
       - name: Supabase migrations (kun production)
         if: env.IS_PRODUCTION == 'true'

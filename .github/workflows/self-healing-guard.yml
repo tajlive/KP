@@ -20,7 +20,7 @@ name: 🛡️ Self-Healing Guard
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Hver time
+    - cron: '0 */6 * * *'  # Hver 6. time (04:00, 10:00, 16:00, 22:00 UTC)
   workflow_dispatch:
     inputs:
       mode:
