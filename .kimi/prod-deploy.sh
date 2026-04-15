@@ -110,7 +110,7 @@ COMMIT_MSG=$(git log -1 --format=%s)
 HANDOFF_FILE=".mempalace/handoffs/DEPLOY-$(date +%Y-%m-%d)-${COMMIT_SHA}.md"
 
 cat > "$HANDOFF_FILE" <<EOF
-# Deploy Handoff — $(date +%Y-%m-%d %H:%M)
+# Deploy Handoff — $(date '+%Y-%m-%d %H:%M')
 
 **Commit:** $COMMIT_SHA  
 **Message:** $COMMIT_MSG  
