@@ -32,6 +32,18 @@ const AUTH_ROUTES = [
   "/update-password",
 ];
 
+const CANONICAL_REDIRECTS: { [key: string]: string } = {
+  "/dashboard/activity": "/handelshistorikk",
+  "/dashboard/trading": "/dashboard/trade",
+  "/dashboard/innstillinger": "/dashboard/settings",
+  "/trade": "/dashboard/trade",
+  "/auto-trading": "/dashboard/auto-trade",
+  "/auto-trading-ai": "/dashboard/auto-trade",
+  "/innlogging": "/login",
+  "/registrer": "/register",
+  "/paper": "/paper-trading",
+};
+
 /**
  * Generate a cryptographically secure nonce for CSP
  * Returns base64-encoded 16 bytes (128 bits)
@@ -148,6 +160,19 @@ export async function middleware(request: NextRequest) {
     console.error("[CSP] Failed to generate nonce:", error);
     // Fallback to a safe default (should never happen)
     nonce = "fallback-nonce-" + Date.now();
+  }
+
+  // 0.5. Canonical redirects (før i18n routing)
+  const strippedPath = stripLocalePrefix(pathname);
+  for (const [from, to] of Object.entries(CANONICAL_REDIRECTS)) {
+    if (strippedPath === from || strippedPath.startsWith(`${from}/`)) {
+      const dest = to.startsWith("/") ? to : `/${to}`;
+      const redirectResponse = NextResponse.redirect(
+        new URL(dest, request.url),
+        308,
+      );
+      return applySecurityHeaders(redirectResponse, nonce);
+    }
   }
 
   // 1. Kjør i18n routing først (håndterer / → /no)
