@@ -39,7 +39,7 @@ const nextConfig = {
   trailingSlash: undefined,  // Let Next.js handle it automatically
 
   // Transpile packages to avoid webpack issues
-  transpilePackages: ["next-intl", "@tanstack/react-query", "styled-components"],
+  transpilePackages: ["next-intl", "@tanstack/react-query", "styled-components", "sanity", "@sanity/vision", "next-sanity"],
 
   // Use Node.js runtime (Cloudflare Pages supports this via next-on-pages)
   // Individual API routes can opt into edge runtime if needed
