@@ -1,3 +1,5 @@
+import type { Rule } from 'sanity'
+
 export default {
   name: 'faq',
   type: 'document',
@@ -7,14 +9,14 @@ export default {
       name: 'question',
       type: 'string',
       title: 'Spørsmål',
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'answer',
       type: 'array',
       title: 'Svar',
       of: [{ type: 'block' }],
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'category',
@@ -50,4 +52,4 @@ export default {
       initialValue: 0,
     },
   ],
-};
+}

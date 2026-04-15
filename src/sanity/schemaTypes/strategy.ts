@@ -1,3 +1,5 @@
+import type { Rule } from 'sanity'
+
 export default {
   name: 'strategy',
   type: 'document',
@@ -7,7 +9,7 @@ export default {
       name: 'name',
       type: 'string',
       title: 'Navn',
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'slug',
@@ -31,16 +33,14 @@ export default {
       name: 'riskLevel',
       type: 'number',
       title: 'Risiko-nivå (1-5)',
-      validation: (Rule: unknown) => Rule.min(1).max(5),
+      validation: (Rule: Rule) => Rule.min(1).max(5),
     },
     {
       name: 'indicators',
       type: 'array',
       title: 'Indikatorer',
       of: [{ type: 'string' }],
-      options: {
-        layout: 'tags',
-      },
+      options: { layout: 'tags' },
     },
     {
       name: 'icon',
@@ -67,15 +67,7 @@ export default {
       title: 'Aktiv',
       initialValue: true,
     },
-    {
-      name: 'stopLoss',
-      type: 'number',
-      title: 'Stop Loss %',
-    },
-    {
-      name: 'takeProfit',
-      type: 'number',
-      title: 'Take Profit %',
-    },
+    { name: 'stopLoss', type: 'number', title: 'Stop Loss %' },
+    { name: 'takeProfit', type: 'number', title: 'Take Profit %' },
   ],
-};
+}

@@ -1,3 +1,5 @@
+import type { Rule } from 'sanity'
+
 export default {
   name: 'tradeExplanation',
   type: 'document',
@@ -19,7 +21,7 @@ export default {
           { title: 'Sentiment Based', value: 'sentiment_based' },
         ],
       },
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'language',
@@ -66,4 +68,4 @@ export default {
       description: 'Lenke til kursleksjon',
     },
   ],
-};
+}

@@ -1,3 +1,5 @@
+import type { Rule } from 'sanity'
+
 export default {
   name: 'testimonial',
   type: 'document',
@@ -7,19 +9,15 @@ export default {
       name: 'name',
       type: 'string',
       title: 'Navn',
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
-    {
-      name: 'role',
-      type: 'string',
-      title: 'Rolle/Jobb',
-    },
+    { name: 'role', type: 'string', title: 'Rolle/Jobb' },
     {
       name: 'quote',
       type: 'text',
       title: 'Sitat',
       rows: 4,
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'avatar',
@@ -31,7 +29,7 @@ export default {
       name: 'rating',
       type: 'number',
       title: 'Vurdering (1-5)',
-      validation: (Rule: unknown) => Rule.min(1).max(5),
+      validation: (Rule: Rule) => Rule.min(1).max(5),
     },
     {
       name: 'platform',
@@ -53,4 +51,4 @@ export default {
       initialValue: true,
     },
   ],
-};
+}
