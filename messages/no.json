@@ -1129,6 +1129,14 @@
     },
     "sidebar": {
       "overview": "Oversikt",
+      "home": "Dashboard",
+      "trade": "Handel",
+      "paper": "Lekepenger",
+      "ai": "AI",
+      "history": "Historikk",
+      "courses": "Kurs",
+      "results": "Resultater",
+      "learn": "Lær",
       "autoTrade": "Auto-trading",
       "portfolio": "Portefølje",
       "trading": "Handel",
@@ -1142,7 +1150,14 @@
       "paperTrading": "Lekepenger",
       "guide": "Kom i gang",
       "mainMenu": "Hovedmeny",
-      "closeMenu": "Lukk meny"
+      "closeMenu": "Lukk meny",
+      "expandSidebar": "Utvid sidefelt",
+      "collapseSidebar": "Skjul sidefelt",
+      "sectionTrading": "Handel",
+      "language": "Språk",
+      "displayCurrency": "Valuta",
+      "mode": "Modus",
+      "breadcrumbYouAreHere": "Du er her"
     },
     "learningPath": {
       "title": "Læringsløp",
@@ -2815,6 +2830,22 @@
       "currency": "Valuta",
       "amount": "Antall",
       "value": "Verdi"
+    }
+  },
+  "toasts": {
+    "general": {
+      "error": "Noe gikk galt",
+      "saved": "Lagret"
+    },
+    "paperBot": {
+      "startFailedTitle": "Kunne ikke starte bot",
+      "networkError": "Nettverksfeil. Prøv igjen.",
+      "sessionLimitTitle": "Sesjonsgrense nådd",
+      "sessionLimitDesc": "Du kan maksimalt ha {max} aktive sesjoner",
+      "duplicateSessionTitle": "Duplikat sesjon",
+      "duplicateSessionDesc": "Du har allerede en bot som kjører for denne strategien",
+      "startedTitle": "Bot startet",
+      "startedDesc": "Din trading-bot kjører nå"
     }
   }
 }

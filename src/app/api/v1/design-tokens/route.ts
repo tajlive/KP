@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { client, isSanityConfigured } from '@/lib/sanity/client';
 
 // Cache i 60 sekunder (maksimalt for Vercel Edge)
 export const revalidate = 60;
@@ -129,21 +130,6 @@ function generateCSS(tokens: typeof DEFAULT_TOKENS): string {
 `;
 }
 
-// Lazy-load Sanity client for å unngå build-feil når PROJECT_ID mangler
-async function getSanityClient() {
-  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-  if (!projectId) return null;
-  
-  const { createClient } = await import('@sanity/client');
-  return createClient({
-    projectId,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-    apiVersion: '2024-04-11',
-    useCdn: true,
-    perspective: 'published',
-  });
-}
-
 export async function GET(request: NextRequest): Promise<NextResponse<TokensResponse | { error: string }>> {
   try {
     // Sjekk format (json eller css)
@@ -155,13 +141,9 @@ export async function GET(request: NextRequest): Promise<NextResponse<TokensResp
     let source: 'sanity' | 'default' = 'default';
     let lastUpdated = null;
     
-    // Lazy-load Sanity client
-    const sanityClient = await getSanityClient();
-    
-    if (sanityClient) {
+    if (isSanityConfigured()) {
       try {
-        const sanityTokens = await sanityClient.fetch(TOKENS_QUERY);
-        
+        const sanityTokens = await client.fetch<typeof DEFAULT_TOKENS & { lastUpdated?: string }>(TOKENS_QUERY);
         if (sanityTokens && sanityTokens.isActive) {
           tokens = {
             brandColors: sanityTokens.brandColors || DEFAULT_TOKENS.brandColors,
@@ -175,7 +157,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<TokensResp
             source: 'sanity',
           };
           source = 'sanity';
-          lastUpdated = sanityTokens.lastUpdated;
+          lastUpdated = sanityTokens.lastUpdated ?? null;
         }
       } catch (sanityError) {
         console.warn('[Design Tokens] Sanity fetch failed, using defaults:', sanityError);

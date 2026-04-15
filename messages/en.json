@@ -1220,6 +1220,14 @@
     },
     "sidebar": {
       "overview": "Overview",
+      "home": "Dashboard",
+      "trade": "Trade",
+      "paper": "Paper",
+      "ai": "AI",
+      "history": "History",
+      "courses": "Courses",
+      "results": "Results",
+      "learn": "Learn",
       "autoTrade": "Auto-trading",
       "portfolio": "Portfolio",
       "trading": "Trading",
@@ -1233,7 +1241,14 @@
       "paperTrading": "Paper Trading",
       "guide": "Get started",
       "mainMenu": "Main menu",
-      "closeMenu": "Close menu"
+      "closeMenu": "Close menu",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar",
+      "sectionTrading": "Trading",
+      "language": "Language",
+      "displayCurrency": "Currency",
+      "mode": "Mode",
+      "breadcrumbYouAreHere": "You are here"
     },
     "learningPath": {
       "title": "Learning Path",
@@ -2815,6 +2830,22 @@
       "currency": "Currency",
       "amount": "Amount",
       "value": "Value"
+    }
+  },
+  "toasts": {
+    "general": {
+      "error": "Something went wrong",
+      "saved": "Saved successfully"
+    },
+    "paperBot": {
+      "startFailedTitle": "Failed to start bot",
+      "networkError": "Network error. Please try again.",
+      "sessionLimitTitle": "Session limit reached",
+      "sessionLimitDesc": "You can only have {max} active sessions",
+      "duplicateSessionTitle": "Duplicate session",
+      "duplicateSessionDesc": "You already have a bot running for this strategy",
+      "startedTitle": "Bot started",
+      "startedDesc": "Your trading bot is now running"
     }
   }
 }
