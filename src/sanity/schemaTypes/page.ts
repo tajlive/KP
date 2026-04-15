@@ -1,3 +1,5 @@
+import type { Rule } from 'sanity'
+
 export default {
   name: 'page',
   type: 'document',
@@ -7,7 +9,7 @@ export default {
       name: 'title',
       type: 'string',
       title: 'Tittel',
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'slug',
@@ -17,7 +19,7 @@ export default {
         source: 'title',
         maxLength: 96,
       },
-      validation: (Rule: unknown) => Rule.required(),
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'metaTitle',
@@ -72,16 +74,8 @@ export default {
           name: 'cta',
           title: 'Call-to-Action',
           fields: [
-            {
-              name: 'text',
-              type: 'string',
-              title: 'Tekst',
-            },
-            {
-              name: 'link',
-              type: 'string',
-              title: 'Lenke',
-            },
+            { name: 'text', type: 'string', title: 'Tekst' },
+            { name: 'link', type: 'string', title: 'Lenke' },
             {
               name: 'style',
               type: 'string',
@@ -105,18 +99,17 @@ export default {
       initialValue: () => new Date().toISOString(),
     },
   ],
-  
   preview: {
     select: {
       title: 'title',
       slug: 'slug.current',
       language: 'language',
     },
-    prepare({ title, slug, language }: unknown) {
+    prepare(selection: { title?: string; slug?: string; language?: string }) {
       return {
-        title,
-        subtitle: `/${language}/${slug}`,
-      };
+        title: selection.title,
+        subtitle: `/${selection.language}/${selection.slug}`,
+      }
     },
   },
-};
+}

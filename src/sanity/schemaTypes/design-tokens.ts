@@ -1,18 +1,15 @@
 /**
  * DESIGN TOKENS SCHEMA
- * 
+ *
  * Styrer Tailwind CSS v4 design tokens fra Sanity CMS.
  * Endringer her reflekteres automatisk i applikasjonen.
  */
-
-import { defineType, defineField } from 'sanity';
+import { defineType, defineField } from 'sanity'
 
 export const designTokens = defineType({
   name: 'designTokens',
   title: 'Design Tokens',
   type: 'document',
-  __experimental_actions: ['update', 'publish'], // Kun oppdatering, ikke sletting
-  
   fields: [
     defineField({
       name: 'title',
@@ -21,8 +18,6 @@ export const designTokens = defineType({
       initialValue: 'Klarpakke Design Tokens',
       readOnly: true,
     }),
-    
-    // BRAND COLORS
     defineField({
       name: 'brandColors',
       title: 'Brand Farger',
@@ -33,8 +28,6 @@ export const designTokens = defineType({
         { name: 'primaryLight', title: 'Primær Lys', type: 'color', initialValue: '#dbeafe' },
       ],
     }),
-    
-    // SEMANTIC COLORS
     defineField({
       name: 'semanticColors',
       title: 'Semantiske Farger',
@@ -46,8 +39,6 @@ export const designTokens = defineType({
         { name: 'info', title: 'Info', type: 'color', initialValue: '#3b82f6' },
       ],
     }),
-    
-    // DARK MODE BACKGROUNDS
     defineField({
       name: 'darkMode',
       title: 'Dark Mode',
@@ -61,17 +52,15 @@ export const designTokens = defineType({
         { name: 'border', title: 'Kantlinje', type: 'color', initialValue: 'rgba(255,255,255,0.08)' },
       ],
     }),
-    
-    // TYPOGRAPHY
     defineField({
       name: 'typography',
       title: 'Typografi',
       type: 'object',
       fields: [
-        { 
-          name: 'fontFamily', 
-          title: 'Font Familie', 
-          type: 'string', 
+        {
+          name: 'fontFamily',
+          title: 'Font Familie',
+          type: 'string',
           initialValue: 'Inter',
           options: {
             list: [
@@ -83,8 +72,6 @@ export const designTokens = defineType({
         { name: 'baseFontSize', title: 'Base Font Størrelse (px)', type: 'number', initialValue: 16 },
       ],
     }),
-    
-    // SPACING SCALE
     defineField({
       name: 'spacing',
       title: 'Spacing',
@@ -94,8 +81,6 @@ export const designTokens = defineType({
         { name: 'scale', title: 'Multiplikator', type: 'number', initialValue: 1 },
       ],
     }),
-    
-    // BORDER RADIUS
     defineField({
       name: 'borderRadius',
       title: 'Avrunding',
@@ -106,8 +91,6 @@ export const designTokens = defineType({
         { name: 'input', title: 'Input (px)', type: 'number', initialValue: 10 },
       ],
     }),
-    
-    // SHADOWS
     defineField({
       name: 'shadows',
       title: 'Skyggar',
@@ -118,16 +101,13 @@ export const designTokens = defineType({
         { name: 'glow', title: 'Brand Glow', type: 'string', initialValue: '0 0 40px rgba(0, 82, 255, 0.3)' },
       ],
     }),
-    
-    // STATUS
     defineField({
       name: 'isActive',
       title: 'Aktiv',
       description: 'Sett til false for å bruke fallback verdier fra kode',
       type: 'boolean',
-      initialValue: false, // Sikkerhet: default false til manuelt aktivert
+      initialValue: false,
     }),
-    
     defineField({
       name: 'lastUpdated',
       title: 'Sist Oppdatert',
@@ -136,18 +116,17 @@ export const designTokens = defineType({
       initialValue: () => new Date().toISOString(),
     }),
   ],
-  
   preview: {
     select: {
       title: 'title',
       active: 'isActive',
       updated: 'lastUpdated',
     },
-    prepare({ title, active, updated }) {
+    prepare({ title, active, updated }: { title?: string; active?: boolean; updated?: string }) {
       return {
-        title: title || 'Design Tokens',
+        title: title ?? 'Design Tokens',
         subtitle: `${active ? '✅ Aktiv' : '⏸️ Inaktiv'} - ${updated ? new Date(updated).toLocaleDateString('no') : 'Aldri'}`,
-      };
+      }
     },
   },
-});
+})
