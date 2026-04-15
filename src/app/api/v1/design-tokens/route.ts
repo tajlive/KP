@@ -6,7 +6,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { client, isSanityConfigured } from '@/lib/sanity/client';
 
 // Cache i 60 sekunder (maksimalt for Vercel Edge)
 export const revalidate = 60;
@@ -141,23 +140,31 @@ export async function GET(request: NextRequest): Promise<NextResponse<TokensResp
     let source: 'sanity' | 'default' = 'default';
     let lastUpdated = null;
     
-    if (isSanityConfigured()) {
+    const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+    if (projectId) {
       try {
-        const sanityTokens = await client.fetch<typeof DEFAULT_TOKENS & { lastUpdated?: string }>(TOKENS_QUERY);
-        if (sanityTokens && sanityTokens.isActive) {
-          tokens = {
-            brandColors: sanityTokens.brandColors || DEFAULT_TOKENS.brandColors,
-            semanticColors: sanityTokens.semanticColors || DEFAULT_TOKENS.semanticColors,
-            darkMode: sanityTokens.darkMode || DEFAULT_TOKENS.darkMode,
-            typography: sanityTokens.typography || DEFAULT_TOKENS.typography,
-            spacing: sanityTokens.spacing || DEFAULT_TOKENS.spacing,
-            borderRadius: sanityTokens.borderRadius || DEFAULT_TOKENS.borderRadius,
-            shadows: sanityTokens.shadows || DEFAULT_TOKENS.shadows,
-            isActive: true,
-            source: 'sanity',
-          };
-          source = 'sanity';
-          lastUpdated = sanityTokens.lastUpdated ?? null;
+        const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+        const encodedQuery = encodeURIComponent(TOKENS_QUERY);
+        const url = `https://${projectId}.api.sanity.io/v2024-04-11/data/query/${dataset}?query=${encodedQuery}`;
+        const res = await fetch(url, { next: { revalidate: 60 } });
+        if (res.ok) {
+          const json = await res.json();
+          const sanityTokens = json.result as (typeof DEFAULT_TOKENS & { lastUpdated?: string }) | null;
+          if (sanityTokens && sanityTokens.isActive) {
+            tokens = {
+              brandColors: sanityTokens.brandColors || DEFAULT_TOKENS.brandColors,
+              semanticColors: sanityTokens.semanticColors || DEFAULT_TOKENS.semanticColors,
+              darkMode: sanityTokens.darkMode || DEFAULT_TOKENS.darkMode,
+              typography: sanityTokens.typography || DEFAULT_TOKENS.typography,
+              spacing: sanityTokens.spacing || DEFAULT_TOKENS.spacing,
+              borderRadius: sanityTokens.borderRadius || DEFAULT_TOKENS.borderRadius,
+              shadows: sanityTokens.shadows || DEFAULT_TOKENS.shadows,
+              isActive: true,
+              source: 'sanity',
+            };
+            source = 'sanity';
+            lastUpdated = sanityTokens.lastUpdated ?? null;
+          }
         }
       } catch (sanityError) {
         console.warn('[Design Tokens] Sanity fetch failed, using defaults:', sanityError);
