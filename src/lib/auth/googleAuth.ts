@@ -1,7 +1,7 @@
 'use client'
 
 import { getSupabaseClient } from '@/lib/supabase/client'
-import { getAppUrl } from './config'
+import { getAppUrl, getCallbackUrl } from './config'
 import { logAuthError, logAuthEvent, AuthErrorCode, AuthEvent } from './sentry-auth'
 
 function supabase() {
@@ -9,7 +9,7 @@ function supabase() {
 }
 
 export async function signInWithGoogle() {
-  const origin = getAppUrl()
+  const _origin = getAppUrl().trim().replace(/[\r\n]/g, '') // kept for Sentry logging
   const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'no' : 'no'
   
   logAuthEvent(AuthEvent.LOGIN_STARTED, { 
@@ -22,7 +22,7 @@ export async function signInWithGoogle() {
     const { data, error } = await (supabase() as { auth: { signInWithOAuth: (o: unknown) => Promise<{ data: unknown; error: unknown }> } }).auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/${locale}/auth/callback`,
+        redirectTo: getCallbackUrl(locale), // Uses canonical URL from config (consistent with Supabase + Google Console)
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -39,7 +39,7 @@ export async function signInWithGoogle() {
       if (errorMessage.includes('popup') || errorMessage.includes('blocked')) {
         logAuthError(AuthErrorCode.GOOGLE_OAUTH_POPUP_BLOCKED, error, { locale });
       } else {
-        logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, error, { locale, origin });
+        logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, error, { locale, origin: _origin });
       }
       
       throw error;
@@ -54,7 +54,7 @@ export async function signInWithGoogle() {
         !catchError.message.includes('blocked')) {
       logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, catchError, { 
         locale, 
-        origin,
+        origin: _origin,
         userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
       });
     }

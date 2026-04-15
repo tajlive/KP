@@ -15,20 +15,26 @@ type ValidLocale = (typeof VALID_LOCALES)[number];
 
 // App URLs - uses NEXT_PUBLIC_APP_URL from Vercel dashboard.
 // Fallback to NEXT_PUBLIC_VERCEL_URL for Preview deployments if APP_URL is missing.
+
+/** Strip whitespace/newlines that can sneak in from env vars (prevents %250A in OAuth redirects) */
+function sanitizeUrl(url: string): string {
+  return url.trim().replace(/[\r\n]/g, "");
+}
+
 export function getAppUrl(): string {
   // 1. Browser context: Always use the current origin to ensure PKCE cookies match the domain
   if (typeof window !== "undefined") {
-    return window.location.origin;
+    return sanitizeUrl(window.location.origin);
   }
 
   // 2. Explicitly configured APP_URL (Production)
   if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
+    return sanitizeUrl(process.env.NEXT_PUBLIC_APP_URL);
   }
 
   // 3. Vercel Preview deployments
   if (process.env.NEXT_PUBLIC_VERCEL_URL) {
-    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+    return sanitizeUrl(`https://${process.env.NEXT_PUBLIC_VERCEL_URL}`);
   }
 
   // 4. Default fallback
@@ -51,7 +57,7 @@ export function getAppUrl(): string {
  *    always use the canonical env var.
  */
 export function getCallbackUrl(locale: string = "no"): string {
-  const rawUrl = getAppUrl();
+  const rawUrl = sanitizeUrl(getAppUrl());
 
   // Strip path, query, hash — keep only origin (protocol + hostname + port)
   // e.g. 'https://www.klarpakke.no/auth' → 'https://www.klarpakke.no'
