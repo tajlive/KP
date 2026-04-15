@@ -128,8 +128,7 @@ function generateCSS(tokens: typeof DEFAULT_TOKENS): string {
 export async function GET(request: NextRequest): Promise<NextResponse<TokensResponse | { error: string }>> {
   try {
     // Sjekk format (json eller css)
-    const { searchParams } = new URL(request.url);
-    const format = searchParams.get('format') || 'json';
+    const format = request.nextUrl.searchParams.get('format') || 'json';
     
     // Hent tokens fra Sanity
     let tokens = DEFAULT_TOKENS;
