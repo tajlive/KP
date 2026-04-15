@@ -191,8 +191,9 @@ export async function GET(request: NextRequest): Promise<NextResponse<TokensResp
     
   } catch (error) {
     console.error('[Design Tokens API] Error:', error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: 'Failed to fetch design tokens' },
+      { error: 'Failed to fetch design tokens', debug: message },
       { status: 500 }
     );
   }
