@@ -51,3 +51,4 @@ git push origin main
 # 3. Verifiser produksjon
 npm run verify:prod
 ```
+<!-- Deploy pipeline test: 2026-04-16T17:11:19+02:00 -->
