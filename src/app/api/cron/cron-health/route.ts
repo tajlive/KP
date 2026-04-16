@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
+import { sendMonitoringAlert, trackHealthCheckFailure } from '@/lib/monitoring/sentry-alerts';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -56,17 +57,57 @@ export async function GET(req: NextRequest) {
       })
     );
 
+    // AI Decision Log Starvation Check
+    const { data: latestDecision, error: decisionError } = await db
+      .from('ai_decision_log')
+      .select('created_at')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let decisionHealthy = true;
+    let decisionMinutesAgo = Infinity;
+
+    if (!decisionError && latestDecision?.created_at) {
+      decisionMinutesAgo = (now - new Date(latestDecision.created_at).getTime()) / 1000 / 60;
+      // Alert if no AI decision has been logged for >3 hours 
+      if (decisionMinutesAgo > 180) {
+        decisionHealthy = false;
+      }
+    } else {
+      decisionHealthy = false;
+    }
+
     const allHealthy = results.every((r) => r.healthy);
+    const overallHealthy = allHealthy && decisionHealthy;
+
+    if (!overallHealthy) {
+      const failedJobs = results.filter(r => !r.healthy).map(r => `${r.job} (${r.status})`).join(', ');
+      const starvationMsg = !decisionHealthy ? `(AI Decision Log starving for ${Math.round(decisionMinutesAgo)} min)` : '';
+      
+      sendMonitoringAlert(
+        "cron_health_failure",
+        `Cron Health Alert! Failed jobs: ${failedJobs || 'None'}. ${starvationMsg}`,
+        "critical",
+        { failedJobs, decisionMinutesAgo }
+      );
+    }
+
     return NextResponse.json(
       {
-        healthy: allHealthy,
+        healthy: overallHealthy,
         checkedAt: new Date().toISOString(),
         jobs: results,
+        aiDecisionLog: {
+          healthy: decisionHealthy,
+          minutesAgo: Math.round(decisionMinutesAgo)
+        }
       },
-      { status: allHealthy ? 200 : 503 }
+      { status: overallHealthy ? 200 : 503 }
     );
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
+    trackHealthCheckFailure("cron-health-route", err);
     return NextResponse.json({ healthy: false, error: err.message }, { status: 500 });
   }
 }
