@@ -27,8 +27,12 @@ describe("createRefreshProtectedFetch", () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("passes through non-refresh requests unchanged", async () => {
-    const baseFetch = vi.fn().mockResolvedValue(
+    const baseFetch = vi.fn().mockImplementation(async () =>
       new Response(JSON.stringify({ ok: true }), { status: 200 })
     );
     const guarded = createRefreshProtectedFetch(baseFetch, { source: "browser" });
@@ -56,16 +60,15 @@ describe("createRefreshProtectedFetch", () => {
       guarded(url, { method: "POST" }),
     ]);
 
-    // Call 1 executes the refresh; calls 2 and 3 wait then retry with baseFetch.
-    // In production the retries would use the fresh token and no longer be refresh requests.
-    expect(fetchCount).toBe(3);
+    // Only one network call executes; the other callers receive the cached result.
+    expect(fetchCount).toBe(1);
     expect(r1.status).toBe(200);
     expect(r2.status).toBe(200);
     expect(r3.status).toBe(200);
   });
 
   it("opens circuit breaker after 3 failures and returns synthetic 429", async () => {
-    const baseFetch = vi.fn().mockResolvedValue(
+    const baseFetch = vi.fn().mockImplementation(async () =>
       new Response(JSON.stringify({ error: "too_many_requests" }), { status: 429 })
     );
     const guarded = createRefreshProtectedFetch(baseFetch, { source: "server" });
@@ -88,7 +91,7 @@ describe("createRefreshProtectedFetch", () => {
 
   it("resets circuit breaker after cooldown expires", async () => {
     vi.useFakeTimers();
-    const baseFetch = vi.fn().mockResolvedValue(
+    const baseFetch = vi.fn().mockImplementation(async () =>
       new Response(JSON.stringify({ error: "bad_request" }), { status: 400 })
     );
     const guarded = createRefreshProtectedFetch(baseFetch, { source: "server" });
@@ -109,8 +112,6 @@ describe("createRefreshProtectedFetch", () => {
     const res = await guarded(url, { method: "POST" });
     expect(baseFetch).toHaveBeenCalledTimes(4);
     expect(res.status).toBe(400);
-
-    vi.useRealTimers();
   });
 
   it("retries successfully after a queued refresh finishes", async () => {
@@ -130,14 +131,14 @@ describe("createRefreshProtectedFetch", () => {
 
     const [r1, r2] = await Promise.all([p1, p2]);
 
-    // First call does the fetch, second re-tries after lock release
-    expect(fetchCount).toBe(2);
+    // Only one network call; the queued caller receives the cached success result.
+    expect(fetchCount).toBe(1);
     expect(r1.status).toBe(200);
     expect(r2.status).toBe(200);
   });
 
   it("tracks failures per user key when userId is provided", async () => {
-    const baseFetch = vi.fn().mockResolvedValue(
+    const baseFetch = vi.fn().mockImplementation(async () =>
       new Response(JSON.stringify({ error: "too_many_requests" }), { status: 429 })
     );
 

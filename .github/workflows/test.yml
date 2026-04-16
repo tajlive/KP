@@ -13,8 +13,9 @@
 name: 🧪 Test
 
 on:
-  push:
-    branches: [main]
+  # Fjernet push-trigger til main for å unngå duplikat testing.
+  # PR Check kjører allerede unit-tester på push til main.
+  # E2E-tester kjører fortsatt på PR og nattlig schedule.
   pull_request:
     branches: [main]
   schedule:

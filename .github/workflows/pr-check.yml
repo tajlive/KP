@@ -81,6 +81,9 @@ jobs:
         run: npm run i18n:validate
 
   build:
+    # Kjører kun på PR for å spare GitHub Actions-minutter.
+    # På push til main bygger deploy.yml i stedet.
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: validate
