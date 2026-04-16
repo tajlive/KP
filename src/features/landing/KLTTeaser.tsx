@@ -6,10 +6,22 @@ import { BRAND } from '@/lib/design/tokens';
 
 interface KLTTeaserProps {
   locale?: string;
+  title?: string;
+  description?: string;
+  ctaText?: string;
+  ctaLink?: string;
 }
 
-export function KLTTeaser({ locale = 'no' }: KLTTeaserProps) {
-  const coursePath = `/${locale}/kurs`;
+export function KLTTeaser({
+  locale = 'no',
+  title,
+  description,
+  ctaText,
+  ctaLink,
+}: KLTTeaserProps) {
+  const coursePath = ctaLink ?? `/${locale}/kurs`;
+  const displayTitle = title ?? 'Tjen KLT gjennom kurs og konkurranser';
+  const displayCta = ctaText ?? '50 000 KLT til månedens vinner';
 
   return (
     <section className="w-full border-t border-kp-border/50 bg-kp-bg-primary">
@@ -20,12 +32,21 @@ export function KLTTeaser({ locale = 'no' }: KLTTeaserProps) {
         >
           <div className="flex items-center gap-2">
             <Coins className="w-5 h-5 text-kp-brand" />
-            <span>Tjen KLT gjennom kurs og konkurranser</span>
+            <span>{displayTitle}</span>
           </div>
-          <span className="hidden sm:inline text-slate-500">·</span>
-          <span className={`${BRAND.link} font-medium animate-pulse`}>
-            50 000 KLT til månedens vinner
-          </span>
+          {description ? (
+            <>
+              <span className="hidden sm:inline text-slate-500">·</span>
+              <span className="text-slate-400 max-w-xl text-center sm:text-left">{description}</span>
+            </>
+          ) : (
+            <>
+              <span className="hidden sm:inline text-slate-500">·</span>
+              <span className={`${BRAND.link} font-medium animate-pulse`}>
+                {displayCta}
+              </span>
+            </>
+          )}
         </Link>
       </div>
     </section>

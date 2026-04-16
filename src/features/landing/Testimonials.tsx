@@ -8,14 +8,24 @@ import { Quote, Star, ArrowRight } from "lucide-react";
 import { BRAND, RADIUS, SURFACE } from "@/lib/design/tokens";
 import { cn } from "@/lib/utils";
 
-interface TestimonialsProps {
-  language?: "no" | "en";
+interface TestimonialItem {
+  name: string;
+  role: string;
+  text: string;
+  avatar?: string;
+  rating?: number;
 }
 
-export function Testimonials({ language = "no" }: TestimonialsProps) {
+interface TestimonialsProps {
+  language?: "no" | "en";
+  items?: TestimonialItem[];
+}
+
+export function Testimonials({ language = "no", items }: TestimonialsProps) {
   const locale = useLocale();
   const tLanding = useTranslations("landing.testimonials");
   const t = translations[language].testimonials;
+  const testimonialItems = items ?? t.items;
 
   return (
     <section className="pt-20 pb-32 bg-[#050510] relative overflow-hidden">
@@ -39,7 +49,7 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {t.items.map((item, index) => {
+          {testimonialItems.map((item, index) => {
             const isEven = index % 2 === 0;
             return (
               <motion.div
@@ -84,13 +94,21 @@ export function Testimonials({ language = "no" }: TestimonialsProps) {
                 </p>
 
                 <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                  <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg">
-                    {item.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .slice(0, 2)}
-                  </div>
+                  {item.avatar ? (
+                    <img
+                      src={item.avatar}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-2xl object-cover shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg">
+                      {item.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .slice(0, 2)}
+                    </div>
+                  )}
                   <div>
                     <p className="font-bold text-white tracking-tight">
                       {item.name}

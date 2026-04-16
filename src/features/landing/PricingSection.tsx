@@ -54,7 +54,12 @@ const getDisplayPlans = () => {
   }));
 };
 
-export default function PricingSection() {
+interface PricingSectionProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export default function PricingSection({ title, subtitle }: PricingSectionProps) {
   const router = useRouter();
   const locale = useLocale();
   const { showVipps } = useVippsMarket();
@@ -67,10 +72,10 @@ export default function PricingSection() {
           <h2
             className={`text-4xl sm:text-5xl font-black ${SURFACE.TEXT} mb-4`}
           >
-            Velg Din Plan
+            {title ?? "Velg Din Plan"}
           </h2>
           <p className={`text-xl ${SURFACE.TEXT_MUTED} mb-6`}>
-            Alle planer inkluderer 14 dagers prøveperiode. Ingen binding.
+            {subtitle ?? "Alle planer inkluderer 14 dagers prøveperiode. Ingen binding."}
           </p>
         </div>
 
