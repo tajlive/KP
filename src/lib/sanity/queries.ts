@@ -20,6 +20,30 @@ export const landingContentQuery = groq`
       text,
       icon
     },
+    kltTeaser {
+      title,
+      description,
+      ctaText,
+      ctaLink
+    },
+    socialProof {
+      headline,
+      stats[] {
+        value,
+        label,
+        icon
+      },
+      perks[] {
+        title,
+        description,
+        color,
+        icon
+      }
+    },
+    pricingHeader {
+      title,
+      subtitle
+    },
     features[] {
       title,
       description,

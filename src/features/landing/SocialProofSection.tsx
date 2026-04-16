@@ -12,54 +12,76 @@ import {
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 
-export default function SocialProofSection() {
+interface SocialProofSectionProps {
+  headline?: string;
+  subheadline?: string;
+  stats?: Array<{
+    icon?: string;
+    value: string;
+    label: string;
+    color?: string;
+  }>;
+  perks?: Array<{
+    icon?: string;
+    title: string;
+    description: string;
+    color?: string;
+  }>;
+}
+
+export default function SocialProofSection({
+  headline,
+  subheadline,
+  stats: customStats,
+  perks: customPerks,
+}: SocialProofSectionProps) {
   const router = useRouter();
   const locale = useLocale();
 
-  const stats = [
+  const stats = customStats ?? [
     {
-      icon: Sparkles,
+      icon: "Sparkles",
       value: "Beta",
       label: "Lansering 2026",
       color: "text-blue-600",
     },
     {
-      icon: Users,
+      icon: "Users",
       value: "Ny!",
       label: "Aktivt community",
       color: "text-green-600",
     },
     {
-      icon: Award,
+      icon: "Award",
       value: "25+",
       label: "Kurstimer",
       color: "text-emerald-600",
     },
     {
-      icon: TrendingUp,
+      icon: "TrendingUp",
       value: "100 000 kr",
       label: "Virtuell kapital",
       color: "text-amber-600",
     },
   ];
 
-  const betaPerks = [
+  const betaPerks = customPerks ?? [
     {
-      icon: MessageSquare,
+      icon: "MessageSquare",
       title: "Direkte tilgang til grunnleggerne",
       description:
         "Få svar på spørsmål direkte fra teamet som bygger plattformen.",
       color: "from-blue-500 to-indigo-600",
     },
     {
-      icon: Target,
+      icon: "Target",
       title: "Påvirk utviklingen",
       description:
         "Dine tilbakemeldinger former fremtidige funksjoner og kurs.",
       color: "from-emerald-500 to-pink-600",
     },
     {
-      icon: Zap,
+      icon: "Zap",
       title: "Tydelige priser",
       description:
         "Student gratis. Bachelor fra 249 kr/mnd. Ingen skjulte kostnader.",
@@ -67,18 +89,31 @@ export default function SocialProofSection() {
     },
   ];
 
+  function getIcon(name: string | undefined) {
+    switch (name) {
+      case "Sparkles": return Sparkles;
+      case "Users": return Users;
+      case "Award": return Award;
+      case "TrendingUp": return TrendingUp;
+      case "MessageSquare": return MessageSquare;
+      case "Target": return Target;
+      case "Zap": return Zap;
+      default: return Sparkles;
+    }
+  }
+
   return (
     <section className="py-20 bg-linear-to-b from-white to-slate-50 dark:from-gray-900 dark:to-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
           {stats.map((stat, idx) => {
-            const Icon = stat.icon;
+            const Icon = getIcon(stat.icon);
             return (
               <div key={idx} className="text-center">
                 <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex items-center justify-center border border-blue-100 dark:border-blue-800">
                   <Icon
-                    className={`w-7 h-7 ${stat.color} dark:opacity-90`}
+                    className={`w-7 h-7 ${stat.color ?? 'text-blue-600'} dark:opacity-90`}
                     aria-hidden="true"
                   />
                 </div>
@@ -100,18 +135,18 @@ export default function SocialProofSection() {
             Vi er i beta
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-            Bli en av de første norske traderne
+            {headline ?? "Bli en av de første norske traderne"}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Klarpakke er nettopp lansert. Registrer deg nå og få eksklusive
-            fordeler som beta-bruker.
+            {subheadline ??
+              "Klarpakke er nettopp lansert. Registrer deg nå og få eksklusive fordeler som beta-bruker."}
           </p>
         </div>
 
         {/* Beta Perks Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {betaPerks.map((perk, idx) => {
-            const Icon = perk.icon;
+            const Icon = getIcon(perk.icon);
             return (
               <div
                 key={idx}
@@ -120,13 +155,13 @@ export default function SocialProofSection() {
                 {/* Gradient orb background */}
                 <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div
-                    className={`absolute top-0 right-0 w-32 h-32 bg-linear-to-br ${perk.color} blur-3xl opacity-20`}
+                    className={`absolute top-0 right-0 w-32 h-32 bg-linear-to-br ${perk.color ?? 'from-blue-500 to-indigo-600'} blur-3xl opacity-20`}
                   />
                 </div>
 
                 <div className="relative">
                   <div
-                    className={`w-12 h-12 rounded-xl bg-linear-to-br ${perk.color} flex items-center justify-center mb-4 shadow-lg`}
+                    className={`w-12 h-12 rounded-xl bg-linear-to-br ${perk.color ?? 'from-blue-500 to-indigo-600'} flex items-center justify-center mb-4 shadow-lg`}
                   >
                     <Icon className="w-6 h-6 text-white" aria-hidden="true" />
                   </div>
