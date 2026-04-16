@@ -47,7 +47,7 @@ export function OAuthDebugClient() {
   const [testResult, setTestResult] = useState<string | null>(null);
 
   const googleConfig = getGoogleConsoleConfig();
-  const allUris = getAllRedirectUris("/auth/callback");
+  const allUris = getAllRedirectUris("/callback");
 
   const fetchDiagnosis = async () => {
     setLoading(true);

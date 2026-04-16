@@ -157,6 +157,50 @@ export async function POST(request: NextRequest) {
       throw error;
     }
 
+    // Map wizard risk level to auto_trade_settings schema
+    const riskProfileMap: Record<string, string> = {
+      low: "conservative",
+      medium: "moderate",
+      high: "aggressive",
+    };
+
+    // Ensure auto_trade_settings exists so the cron job picks up this user
+    const { error: settingsErr } = await supabase
+      .from("auto_trade_settings")
+      .upsert(
+        {
+          user_id: user.id,
+          auto_trading_enabled: true,
+          risk_profile: riskProfileMap[risk_level] || "moderate",
+          max_position_percent: 10,
+          daily_loss_limit_percent: 5,
+          daily_trade_limit: 10,
+          updated_at: now,
+        },
+        { onConflict: "user_id" }
+      );
+
+    if (settingsErr) {
+      console.error("[auto-trading/paper] auto_trade_settings upsert:", settingsErr.message);
+    }
+
+    // Ensure wallet exists so portfolio page isn't empty
+    const { error: walletErr } = await supabase
+      .from("wallets")
+      .upsert(
+        {
+          user_id: user.id,
+          currency: "NOK",
+          balance: startingCapital,
+          updated_at: now,
+        },
+        { onConflict: "user_id,currency" }
+      );
+
+    if (walletErr) {
+      console.error("[auto-trading/paper] wallet upsert:", walletErr.message);
+    }
+
     return NextResponse.json<StartPaperBotResponse>({
       ok: true,
       code: "PAPER_BOT_STARTED",

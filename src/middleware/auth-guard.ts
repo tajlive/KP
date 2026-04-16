@@ -31,7 +31,7 @@ export const PUBLIC_PATHS = [
   "/login",
   "/register",
   "/glemt-passord",
-  "/auth/callback",
+  "/callback",
   "/forgot-password",
   "/reset-password",
 ] as const;
@@ -129,7 +129,7 @@ export async function handleAuthGuard(
   const pathWithoutLocale = pathname.replace(`/${locale}`, "") || "/";
 
   // Check if it's an auth callback
-  if (pathname.includes("/auth/callback")) {
+  if (pathname.includes("/callback")) {
     return response;
   }
 

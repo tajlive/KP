@@ -48,9 +48,9 @@ export function getAppUrl(): string {
  * 1. Uses new URL().origin to STRIP any path from NEXT_PUBLIC_APP_URL.
  *    If APP_URL is wrongly set to https://www.klarpakke.no/auth, this
  *    returns https://www.klarpakke.no (no path suffix).
- *    Without this: /auth + /auth/callback = /auth/auth/callback (exchange_failed)
+ *    Without this: /auth + /callback = /auth/callback (exchange_failed)
  *
- * 2. Validates locale against VALID_LOCALES to prevent /auth/auth/callback
+ * 2. Validates locale against VALID_LOCALES to prevent /auth/callback
  *    when a user lands on /auth/innlogging (locale='auth' from next-intl).
  *
  * 3. Never use window.location or request.headers for OAuth redirectTo —
@@ -75,8 +75,7 @@ export function getCallbackUrl(locale: string = "no"): string {
     ? (locale as ValidLocale)
     : "no";
 
-  // Use non-localized callback to avoid i18n redirect issues
-  return `${origin}/auth/callback?locale=${safeLocale}`;
+  return `${origin}/${safeLocale}/callback`;
 }
 
 // Supported OAuth providers

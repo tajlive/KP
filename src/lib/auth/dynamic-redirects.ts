@@ -40,7 +40,7 @@ function getBaseUrl(): string {
  * Generate all redirect URIs for auth callback
  */
 export function getAllRedirectUris(
-  path: string = "/auth/callback"
+  path: string = "/callback"
 ): RedirectUriConfig[] {
   const baseUrl = getBaseUrl();
   
@@ -73,7 +73,7 @@ export function getGoogleConsoleConfig(): GoogleConsoleConfig {
     origins.add("http://localhost:3000");
   }
   
-  const redirectUris = getAllRedirectUris("/auth/callback").map(r => r.fullUri);
+  const redirectUris = getAllRedirectUris("/callback").map(r => r.fullUri);
   
   return {
     authorizedJavaScriptOrigins: Array.from(origins).sort(),
@@ -128,7 +128,7 @@ export function isValidRedirectUri(uri: string): boolean {
     }
     
     // Must have locale prefix
-    const localeMatch = url.pathname.match(/^\/(no|en|th|zh)\/auth\/callback$/);
+    const localeMatch = url.pathname.match(/^\/(no|en|th|zh)\/callback$/);
     if (!localeMatch) {
       return false;
     }
@@ -149,7 +149,7 @@ export function isValidRedirectUri(uri: string): boolean {
  */
 export function getRedirectUriForLocale(locale: SupportedLocale = "no"): string {
   const baseUrl = getBaseUrl();
-  return `${baseUrl}/${locale}/auth/callback`;
+  return `${baseUrl}/${locale}/callback`;
 }
 
 /**

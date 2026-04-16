@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const triggerConfetti = async () => {
   if (typeof window === "undefined") return;
@@ -60,6 +61,7 @@ function CheckmarkSVG() {
 }
 
 export function OnboardingStep3() {
+  const t = useTranslations("onboarding");
   const { completeOnboarding, isLoading, riskLevel } = useOnboardingStore();
   const router = useRouter();
   const [showButton, setShowButton] = useState(false);
@@ -109,9 +111,9 @@ export function OnboardingStep3() {
           transition={{ delay: 0.6 }}
           className="flex flex-col gap-2"
         >
-          <h2 className="text-2xl font-bold text-white">Du er klar!</h2>
+          <h2 className="text-2xl font-bold text-white">{t("mobile.step3.title")}</h2>
           <p className="text-base text-white/60">
-            Roboten din er satt opp og klar til å handle for deg.
+            {t("mobile.step3.description")}
           </p>
           {riskLevel && (
             <motion.p
@@ -120,7 +122,7 @@ export function OnboardingStep3() {
               transition={{ delay: 0.8 }}
               className="mt-2 text-sm text-white/40"
             >
-              Valgt strategi:{" "}
+              {t("mobile.step3.selectedStrategy")}{" "}
               <span className="capitalize text-white/60">{riskLevel}</span>
             </motion.p>
           )}
@@ -151,10 +153,10 @@ export function OnboardingStep3() {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   />
-                  Starter...
+                  {t("mobile.step3.loading")}
                 </span>
               ) : (
-                "Åpne mitt dashboard"
+                t("mobile.step3.cta")
               )}
             </motion.button>
           </motion.div>

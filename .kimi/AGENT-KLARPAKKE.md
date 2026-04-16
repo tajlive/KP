@@ -63,6 +63,16 @@ Node: 24.x (se .nvmrc)
 
 ## KIMI Superpowers (Bruk Disse!)
 
+### 0. Auth Agent (Ved auth/innloggingsoppgaver)
+Når du jobber med OAuth, passord-reset, sessions, eller auth-middleware:
+
+```bash
+# Eksplisitt aktiver auth-agenten (KIMI CLI krever YAML agent-filer)
+kimi --agent-file .kimi/auth-agent.yaml
+```
+
+**Husk:** `.kimi/agents/klarpakke-auth-agent.md` er KIMIs system prompt, men må lastes via `.kimi/auth-agent.yaml`. Auth-regler i `AGENTS.md` injiseres alltid i default-agenten.
+
 ### 1. Automatisk Prosjekt-Kontekst
 KIMI leser automatisk:
 - `.cursorrules` – tekniske regler

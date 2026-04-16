@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
+import { useLocale, useTranslations } from "next-intl";
 
 // KLA-98: Dynamically import canvas-confetti
 let confetti: typeof import("canvas-confetti") | null = null;
@@ -31,9 +32,7 @@ interface OnboardingWizardProps {
 const TEMPLATES = [
   {
     id: "dca_trygg" as StrategyType,
-    title: "Trygg Sparing",
-    risk: "Lav",
-    desc: "Kjøper fast hver uke. Perfekt for langsiktig formue.",
+    key: "dcaTrygg",
     icon: ShieldCheck,
     color: "text-green-400",
     bg: "bg-green-500/10",
@@ -41,9 +40,7 @@ const TEMPLATES = [
   },
   {
     id: "trend_balansert" as StrategyType,
-    title: "Vekst",
-    risk: "Middels",
-    desc: "Følger markedets trender. Balansert risiko og avkastning.",
+    key: "trendBalansert",
     icon: TrendingUp,
     color: "text-blue-400",
     bg: "bg-blue-500/10",
@@ -51,9 +48,7 @@ const TEMPLATES = [
   },
   {
     id: "multisignal_aktiv" as StrategyType,
-    title: "Aggressiv",
-    risk: "Høy",
-    desc: "Aktiv trading med mange signaler. For deg som vil ha action.",
+    key: "multisignalAktiv",
     icon: Zap,
     color: "text-red-400",
     bg: "bg-red-500/10",
@@ -65,6 +60,9 @@ export default function InteractiveOnboardingWizard({
   userId,
   onComplete,
 }: OnboardingWizardProps) {
+  const locale = useLocale();
+  const t = useTranslations("onboarding");
+  const tCommon = useTranslations("common");
   const [step, setStep] = useState(1);
   const [selectedTemplate, setSelectedTemplate] = useState<StrategyType | null>(
     null,
@@ -233,10 +231,14 @@ export default function InteractiveOnboardingWizard({
       }, 3500);
     } catch (err) {
       console.error("Onboarding failed:", err);
-      toast.error("Kunne ikke fullføre oppsett. Prøv igjen.");
+      toast.error(t("interactive.error.finish"));
       setIsFinishing(false);
     }
   };
+
+  const selectedTemplateKey = TEMPLATES.find(
+    (tmpl) => tmpl.id === selectedTemplate,
+  )?.key;
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 min-h-[600px] flex flex-col items-center justify-center">
@@ -267,22 +269,22 @@ export default function InteractiveOnboardingWizard({
             </div>
             <div className="space-y-4">
               <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight">
-                Klar til å la boten <br />
+                {t("interactive.step1.title1")} <br />
                 <span className="text-blue-500 text-shadow-glow">
-                  jobbe for deg?
+                  {t("interactive.step1.title2")}
                 </span>
               </h1>
               <p className="text-slate-400 text-lg max-w-md mx-auto">
-                For å se live bevegelser i dashboardet må du først velge en
-                strategi. Vi setter opp din første paper trade på under 60
-                sekunder. Ingen ekte penger, kun ren læring.
+                {t("interactive.step1.description")}
               </p>
               <div className="bg-slate-800/50 rounded-xl p-4 text-sm text-slate-400 max-w-md mx-auto">
-                <strong className="text-blue-400">💡 Slik fungerer det:</strong>
+                <strong className="text-blue-400">
+                  {t("interactive.step1.howItWorksTitle")}
+                </strong>
                 <ol className="text-left mt-2 space-y-1 list-decimal list-inside">
-                  <li>Velg din risikoprofil nedenfor</li>
-                  <li>Velg hvor mye lekepenger du vil teste med</li>
-                  <li>Start boten og se live handler i dashboardet!</li>
+                  <li>{t("interactive.step1.list1")}</li>
+                  <li>{t("interactive.step1.list2")}</li>
+                  <li>{t("interactive.step1.list3")}</li>
                 </ol>
               </div>
             </div>
@@ -291,7 +293,7 @@ export default function InteractiveOnboardingWizard({
               onClick={() => setStep(2)}
               className="bg-blue-600 hover:bg-blue-700 h-14 px-10 text-lg font-bold rounded-2xl group"
             >
-              Kom i gang{" "}
+              {t("interactive.step1.cta")}{" "}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
@@ -307,29 +309,30 @@ export default function InteractiveOnboardingWizard({
           >
             <div className="text-center">
               <h2 className="text-3xl font-black text-white mb-2">
-                Velg din stil
+                {t("interactive.step2.title")}
               </h2>
               <p className="text-slate-500">
-                Vi har ferdige maler som passer din risikovilje.
+                {t("interactive.step2.subtitle")}
               </p>
               {preInitialized && (
                 <Badge className="mt-2 bg-green-500/20 text-green-400 border-green-500/30">
-                  <CheckCircle2 className="w-3 h-3 mr-1" /> Forhåndslastet
+                  <CheckCircle2 className="w-3 h-3 mr-1" />{" "}
+                  {t("interactive.step2.preloaded")}
                 </Badge>
               )}
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {TEMPLATES.map((t) => (
+              {TEMPLATES.map((tmpl) => (
                 <button
-                  key={t.id}
+                  key={tmpl.id}
                   onClick={() => {
-                    setSelectedTemplate(t.id);
+                    setSelectedTemplate(tmpl.id);
                     setStep(3);
                   }}
                   className={cn(
                     "relative p-6 rounded-3xl border-2 text-left transition-all hover:scale-105 hover:shadow-2xl group",
-                    selectedTemplate === t.id
+                    selectedTemplate === tmpl.id
                       ? "border-blue-500 bg-blue-500/10 shadow-blue-500/10"
                       : "border-slate-800 bg-slate-900/50",
                   )}
@@ -337,23 +340,27 @@ export default function InteractiveOnboardingWizard({
                   <div
                     className={cn(
                       "w-12 h-12 rounded-2xl flex items-center justify-center mb-6",
-                      t.bg,
-                      t.color,
+                      tmpl.bg,
+                      tmpl.color,
                     )}
                   >
-                    <t.icon className="w-6 h-6" />
+                    <tmpl.icon className="w-6 h-6" />
                   </div>
                   <Badge
-                    className={cn("mb-2 font-black text-[10px]", t.bg, t.color)}
+                    className={cn(
+                      "mb-2 font-black text-[10px]",
+                      tmpl.bg,
+                      tmpl.color,
+                    )}
                     variant="outline"
                   >
-                    {t.risk} Risiko
+                    {t(`interactive.step2.templates.${tmpl.key}.riskLabel`)}
                   </Badge>
                   <h3 className="text-xl font-bold text-white mb-2">
-                    {t.title}
+                    {t(`interactive.step2.templates.${tmpl.key}.title`)}
                   </h3>
                   <p className="text-slate-500 text-sm leading-relaxed">
-                    {t.desc}
+                    {t(`interactive.step2.templates.${tmpl.key}.desc`)}
                   </p>
                 </button>
               ))}
@@ -375,28 +382,35 @@ export default function InteractiveOnboardingWizard({
               </div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-white">
-                  Paper Trade Oppsett
+                  {t("interactive.step3.title")}
                 </h3>
                 <p className="text-slate-500 text-sm">
-                  Vi tildeler deg 100 000 NOK i lekepenger for å teste
-                  strategien.
+                  {t("interactive.step3.subtitle")}
                 </p>
               </div>
 
               <div className="bg-slate-950 rounded-2xl p-4 border border-slate-800 text-left space-y-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Mål-strategi:</span>
+                  <span className="text-slate-500">
+                    {t("interactive.step3.goalStrategy")}
+                  </span>
                   <span className="text-white font-bold">
-                    {TEMPLATES.find((t) => t.id === selectedTemplate)?.title}
+                    {selectedTemplateKey &&
+                      t(
+                        `interactive.step2.templates.${selectedTemplateKey}.title`,
+                      )}
                   </span>
                 </div>
 
                 {/* Kapital-velger */}
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Lekepenger:</span>
+                    <span className="text-slate-500">
+                      {t("interactive.step3.playMoney")}
+                    </span>
                     <span className="text-green-400 font-bold text-lg">
-                      {new Intl.NumberFormat("no-NO").format(capital)} kr
+                      {new Intl.NumberFormat(locale).format(capital)}{" "}
+                      {t("interactive.step3.currencySuffix")}
                     </span>
                   </div>
                   <Slider
@@ -408,26 +422,36 @@ export default function InteractiveOnboardingWizard({
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-slate-500">
-                    <span>1 000 kr</span>
-                    <span>100 000 kr</span>
+                    <span>
+                      {new Intl.NumberFormat(locale).format(1000)}{" "}
+                      {t("interactive.step3.currencySuffix")}
+                    </span>
+                    <span>
+                      {new Intl.NumberFormat(locale).format(100000)}{" "}
+                      {t("interactive.step3.currencySuffix")}
+                    </span>
                   </div>
                   <p className="text-xs text-slate-400">
-                    💡 Dette er lekepenger for testing. Velg beløp du ville
-                    vurdert i ekte trading.
+                    {t("interactive.step3.tooltip")}
                   </p>
                 </div>
 
                 <div className="flex justify-between text-sm pt-2 border-t border-slate-800">
-                  <span className="text-slate-500">Handelsmodus:</span>
+                  <span className="text-slate-500">
+                    {t("interactive.step3.tradingMode")}
+                  </span>
                   <span className="text-blue-400 font-bold">
-                    Simulert / Paper
+                    {t("interactive.step3.tradingModeValue")}
                   </span>
                 </div>
                 {preInitialized && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Status:</span>
+                    <span className="text-slate-500">
+                      {t("interactive.step3.status")}
+                    </span>
                     <span className="text-green-400 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Klar
+                      <CheckCircle2 className="w-3 h-3" />{" "}
+                      {t("interactive.step3.statusValue")}
                     </span>
                   </div>
                 )}
@@ -441,12 +465,12 @@ export default function InteractiveOnboardingWizard({
                 {isFinishing ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-3 animate-spin" />
-                    Initialiserer bot...
+                    {t("interactive.step3.initializing")}
                   </>
                 ) : (
                   <>
                     <Rocket className="w-5 h-5 mr-3" />
-                    Start Boten Nå
+                    {t("interactive.step3.startBot")}
                   </>
                 )}
               </Button>
@@ -460,7 +484,7 @@ export default function InteractiveOnboardingWizard({
               }}
               className="text-slate-500"
             >
-              Tilbake
+              {tCommon("back")}
             </Button>
           </motion.div>
         )}
@@ -476,13 +500,15 @@ export default function InteractiveOnboardingWizard({
               <CheckCircle2 className="w-16 h-16" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-4xl font-black text-white">Wow! 🎉</h2>
+              <h2 className="text-4xl font-black text-white">
+                {t("interactive.step4.title")}
+              </h2>
               <p className="text-slate-400 text-lg">
-                Boten har gjort sin første paper trade.
+                {t("interactive.step4.subtitle")}
               </p>
             </div>
             <div className="text-blue-400 font-bold animate-pulse">
-              Sender deg til dashboardet...
+              {t("interactive.step4.redirecting")}
             </div>
           </motion.div>
         )}

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { Button } from '@/shared/ui/button'
 import { FileWarning } from 'lucide-react'
 import * as Sentry from '@sentry/nextjs'
+import { usePathname } from 'next/navigation'
 
 export default function Error({
     error,
@@ -12,12 +13,15 @@ export default function Error({
     error: Error & { digest?: string }
     reset: () => void
 }) {
+    const pathname = usePathname() || '/no/';
+    const localeMatch = pathname.match(/^\/(no|en|th|zh)(\/|$)/);
+    const locale = localeMatch ? localeMatch[1] : 'no';
+    const isEn = locale === 'en';
+
     useEffect(() => {
-        // Log error with digest for debugging
         console.error('Locale Error - Digest:', (error as Error & { digest?: string }).digest)
         console.error('Locale error:', error)
         
-        // Send to Sentry with extra context
         Sentry.captureException(error, {
             extra: {
                 digest: (error as Error & { digest?: string }).digest,
@@ -36,13 +40,17 @@ export default function Error({
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <FileWarning className="w-8 h-8 text-red-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">Noe gikk galt</h2>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                    {isEn ? "Something went wrong" : "Noe gikk galt"}
+                </h2>
                 <p className="text-slate-600 mb-2">
-                    Vi beklager, men en uventet feil har oppstått. Vi har fått beskjed og ser på saken.
+                    {isEn
+                        ? "We're sorry, but an unexpected error occurred. We've been notified and are looking into it."
+                        : "Vi beklager, men en uventet feil har oppstått. Vi har fått beskjed og ser på saken."}
                 </p>
                 {error.digest && (
                     <p className="text-xs text-slate-400 font-mono mb-6">
-                        Feilkode: {error.digest}
+                        {isEn ? "Error code" : "Feilkode"}: {error.digest}
                     </p>
                 )}
                 <div className="flex flex-col gap-3">
@@ -50,14 +58,14 @@ export default function Error({
                         onClick={() => reset()}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full"
                     >
-                        Prøv igjen
+                        {isEn ? "Try again" : "Prøv igjen"}
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={() => window.location.href = '/'}
+                        onClick={() => window.location.href = `/${locale}`}
                         className="w-full rounded-full"
                     >
-                        Gå til forsiden
+                        {isEn ? "Go to front page" : "Gå til forsiden"}
                     </Button>
                 </div>
             </div>

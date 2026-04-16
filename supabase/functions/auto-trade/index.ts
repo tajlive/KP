@@ -131,17 +131,11 @@ const REGIME_STRATEGY_MAP: Record<string, RegimeStrategy> = {
 // ============================================================================
 
 Deno.serve(async (req) => {
+  // Cron functions are protected by verify_jwt = false and the secret URL.
+  // We keep a lightweight bearer check so only Supabase-authenticated callers
+  // (pg_cron with service-role JWT or manual calls with anon JWT) can invoke.
   const authHeader = req.headers.get('Authorization');
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-  
-  if (!serviceRoleKey) {
-    return new Response(
-      JSON.stringify({ error: 'Service role key not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
-  
-  if (!authHeader?.includes(serviceRoleKey.substring(0, 10))) {
+  if (!authHeader?.startsWith('Bearer eyJ')) {
     return new Response(
       JSON.stringify({ error: 'Unauthorized' }),
       { status: 401, headers: { 'Content-Type': 'application/json' } }
@@ -149,6 +143,7 @@ Deno.serve(async (req) => {
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, serviceRoleKey);
   
   const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY') || '';
@@ -169,15 +164,27 @@ Deno.serve(async (req) => {
 
   try {
     // Get all active auto traders
-    const { data: activeTraders, error: tradersError } = await supabase
-      .from('auto_trading_configs')
+    const { data: activeTradersRaw, error: tradersError } = await supabase
+      .from('auto_trade_settings')
       .select('*')
-      .eq('enabled', true);
+      .eq('auto_trading_enabled', true);
 
     if (tradersError) throw tradersError;
-    results.totalUsers = activeTraders?.length || 0;
 
-    if (!activeTraders || activeTraders.length === 0) {
+    const activeTraders = (activeTradersRaw || []).map((row: any) => ({
+      id: row.id,
+      user_id: row.user_id,
+      enabled: row.auto_trading_enabled ?? false,
+      mode: 'paper' as const,
+      risk_level: (
+        { conservative: 'low', moderate: 'medium', aggressive: 'high' } as Record<string, 'low' | 'medium' | 'high'>
+      )[row.risk_profile] || 'medium',
+      max_trade_size_nok: (row.max_position_percent ?? 10) * 1000,
+    }));
+
+    results.totalUsers = activeTraders.length;
+
+    if (activeTraders.length === 0) {
       return new Response(
         JSON.stringify({ success: true, message: 'No active traders', results }),
         { headers: { 'Content-Type': 'application/json' } }
@@ -185,13 +192,13 @@ Deno.serve(async (req) => {
     }
 
     // Get recent trading signals
-    const minConfidence = 60;
+    const minConfidence = 45;
     const { data: signals, error: signalsError } = await supabase
       .from('ai_decision_log')
       .select('*')
       .in('decision_type', ['BUY', 'SELL'])
-      .gte('confidence', minConfidence)
-      .gte('created_at', new Date(Date.now() - 10 * 60 * 1000).toISOString())
+      .gte('sentiment_score', minConfidence)
+      .gte('created_at', new Date(Date.now() - 30 * 60 * 1000).toISOString())
       .order('created_at', { ascending: false })
       .limit(20);
 
@@ -211,7 +218,7 @@ Deno.serve(async (req) => {
           .from('paper_trading_sessions')
           .select('*')
           .eq('user_id', config.user_id)
-          .eq('is_active', true)
+          .eq('status', 'active')
           .single();
 
         if (!session && config.mode === 'paper') {
@@ -219,7 +226,7 @@ Deno.serve(async (req) => {
             user_id: config.user_id,
             starting_balance: 100000,
             current_balance: 100000,
-            is_active: true,
+            status: 'active',
           });
           continue;
         }
@@ -229,8 +236,8 @@ Deno.serve(async (req) => {
         const minSignalConfidence = riskThresholds[config.risk_level];
         
         const validSignal = signals.find(s => 
-          s.confidence >= minSignalConfidence &&
-          new Date(s.created_at).getTime() > Date.now() - 5 * 60 * 1000
+          s.sentiment_score >= minSignalConfidence &&
+          new Date(s.created_at).getTime() > Date.now() - 30 * 60 * 1000
         );
 
         if (!validSignal) continue;

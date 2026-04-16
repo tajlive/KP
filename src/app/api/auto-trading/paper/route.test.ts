@@ -88,10 +88,16 @@ describe("POST /api/auto-trading/paper", () => {
     const insert = vi.fn(() => ({ select: selectAfterInsert }));
     const insertQuery = { insert };
 
+    const upsertQuery = {
+      upsert: vi.fn().mockResolvedValue({ error: null }),
+    };
+
     mockFrom
       .mockReturnValueOnce(profileQuery)
       .mockReturnValueOnce(countQuery)
-      .mockReturnValueOnce(insertQuery);
+      .mockReturnValueOnce(insertQuery)
+      .mockReturnValueOnce(upsertQuery)
+      .mockReturnValueOnce(upsertQuery);
 
     const response = await POST(
       createJsonRequest({

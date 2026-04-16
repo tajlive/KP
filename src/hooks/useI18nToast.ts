@@ -35,7 +35,7 @@ interface ToastOptions {
  * success("copyTrading.traderFollowed", { name: "John" });
  */
 export function useI18nToast() {
-  const t = useTranslations("toasts");
+  const t = useTranslations("common");
 
   const showToast = useCallback(
     (
@@ -128,7 +128,7 @@ export function useI18nToast() {
   // Helper for å vise standard error-melding
   const showError = useCallback(
     (fallbackMessage?: string) => {
-      return sonnerToast.error(fallbackMessage || t("general.error"));
+      return sonnerToast.error(fallbackMessage || t("toasts.general.error"));
     },
     [t],
   );
@@ -136,7 +136,7 @@ export function useI18nToast() {
   // Helper for å vise standard success-melding
   const showSuccess = useCallback(
     (fallbackMessage?: string) => {
-      return sonnerToast.success(fallbackMessage || t("general.saved"));
+      return sonnerToast.success(fallbackMessage || t("toasts.general.saved"));
     },
     [t],
   );

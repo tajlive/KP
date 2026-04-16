@@ -87,7 +87,7 @@ describe("Auth Configuration", () => {
           NEXT_PUBLIC_APP_URL: "https://www.klarpakke.no",
         };
         const { getCallbackUrl: getCb } = await import("../config");
-        expect(getCb("no")).toBe("https://www.klarpakke.no/auth/callback?locale=no");
+        expect(getCb("no")).toBe("https://www.klarpakke.no/no/callback");
       });
     });
 
@@ -99,7 +99,7 @@ describe("Auth Configuration", () => {
           NEXT_PUBLIC_APP_URL: "https://www.klarpakke.no",
         };
         const { getCallbackUrl: getCb } = await import("../config");
-        expect(getCb("en")).toBe("https://www.klarpakke.no/auth/callback?locale=en");
+        expect(getCb("en")).toBe("https://www.klarpakke.no/en/callback");
       });
     });
 
@@ -111,7 +111,7 @@ describe("Auth Configuration", () => {
           NEXT_PUBLIC_APP_URL: "https://www.klarpakke.no/",
         };
         const { getCallbackUrl: getCb } = await import("../config");
-        expect(getCb("no")).toBe("https://www.klarpakke.no/auth/callback?locale=no");
+        expect(getCb("no")).toBe("https://www.klarpakke.no/no/callback");
       });
     });
   });
@@ -164,7 +164,7 @@ describe("Auth Integration Tests", () => {
 
   it("should have valid callback URL format", () => {
     const callbackUrl = getCallbackUrl("no");
-    expect(callbackUrl).toMatch(/\/auth\/callback\?locale=no$/);
+    expect(callbackUrl).toMatch(/\/no\/callback$/);
     expect(() => new URL(callbackUrl)).not.toThrow();
   });
 });

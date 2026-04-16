@@ -38,6 +38,7 @@ import {
   TrendingUp,
   Wallet,
   Bot,
+  Brain,
   Lightbulb,
   Star,
 } from "lucide-react";
@@ -66,6 +67,7 @@ const STRATEGY_ICONS: Record<StrategyType, ReactNode> = {
   trend_balansert: <TrendingUp className="w-5 h-5" />,
   multisignal_aktiv: <Target className="w-5 h-5" />,
   grid_bot: <Grid3X3 className="w-5 h-5" />,
+  ensemble_ai: <Brain className="w-5 h-5" />,
   ai_copy: <Bot className="w-5 h-5" />,
 };
 
@@ -205,7 +207,7 @@ export default function UnifiedTradingDashboard({
       }
     } catch (err) {
       console.error("Failed to load trading data:", err);
-      showError("general.error");
+      showError("toasts.general.error");
     } finally {
       setLoading(false);
     }
@@ -350,10 +352,10 @@ export default function UnifiedTradingDashboard({
         console.warn("Manual trigger failed:", await response.text());
       }
 
-      showSuccess("strategy.started");
+      showSuccess("toasts.strategy.started");
       loadData();
     } catch (_) {
-      showToastError("strategy.startFailed");
+      showToastError("toasts.strategy.startFailed");
     } finally {
       setIsStarting(null);
     }
@@ -362,10 +364,10 @@ export default function UnifiedTradingDashboard({
   const handleStopStrategy = async (strategyType: StrategyType) => {
     try {
       await stopStrategy(strategyType, mode);
-      showSuccess("strategy.stopped");
+      showSuccess("toasts.strategy.stopped");
       loadData();
     } catch (_) {
-      showToastError("strategy.stopFailed");
+      showToastError("toasts.strategy.stopFailed");
     }
   };
 
@@ -422,9 +424,9 @@ export default function UnifiedTradingDashboard({
             loadData();
           } else if (action === "start_new" || action === "new_strategy") {
             setExpandedStrategy(null);
-            showSuccess("general.comingSoon");
+            showSuccess("toasts.general.comingSoon");
           } else if (action === "view_stats") {
-            showSuccess("general.comingSoon");
+            showSuccess("toasts.general.comingSoon");
           }
         }}
       />
@@ -1052,6 +1054,8 @@ function StrategyConfig({
   config: Record<string, unknown>;
   onChange: (c: Record<string, unknown>) => void;
 }) {
+  const tCommon = useTranslations("trading");
+
   switch (type) {
     case "dca_trygg": {
       const dcaConfig = config as {
@@ -1303,6 +1307,48 @@ function StrategyConfig({
               }
               className="w-full mt-1"
             />
+          </div>
+        </div>
+      );
+    }
+    case "ensemble_ai": {
+      const ensembleConfig = config as { maxPerTrade: number; autoAdjust: boolean };
+      return (
+        <div className="space-y-4 mt-4">
+          <div>
+            <label
+              htmlFor="ensemble-max-per-trade"
+              className="text-slate-400 text-sm"
+            >
+              Maks per trade: {ensembleConfig.maxPerTrade} NOK
+            </label>
+            <input
+              id="ensemble-max-per-trade"
+              type="range"
+              min="100"
+              max="5000"
+              step="100"
+              value={ensembleConfig.maxPerTrade}
+              title="Maks per trade"
+              onChange={(e) =>
+                onChange({ ...config, maxPerTrade: Number(e.target.value) })
+              }
+              className="w-full mt-1"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              id="ensemble-auto-adjust"
+              type="checkbox"
+              checked={ensembleConfig.autoAdjust}
+              onChange={(e) =>
+                onChange({ ...config, autoAdjust: e.target.checked })
+              }
+              className="w-4 h-4 rounded border-slate-500 bg-slate-700 text-blue-600"
+            />
+            <label htmlFor="ensemble-auto-adjust" className="text-slate-400 text-sm">
+              {tCommon("ensembleAutoAdjustWeights")}
+            </label>
           </div>
         </div>
       );

@@ -296,7 +296,7 @@ async function persistSignalToLog(
         used_fallback: signal.metadata.usedFallback,
       } as unknown as import('@/types/database.types').Json,
       decision_reason: signal.reason,
-      ...(userId && { user_id: userId }),
+      user_id: userId || '00000000-0000-0000-0000-000000000000',
       executed_at: new Date().toISOString(),
     } as any);
   } catch (err) {

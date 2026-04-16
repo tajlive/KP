@@ -49,11 +49,11 @@ describe("i18nMiddleware", () => {
     expect(res.headers.get("location")).toBe("http://localhost/no/paper-trading?mode=live");
   });
 
-  it("redirects root with ?code= to /auth/callback", async () => {
+  it("redirects root with ?code= to /callback", async () => {
     const req = new NextRequest(new URL("http://localhost/?code=abc"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(302);
-    expect(res.headers.get("location")).toBe("http://localhost/no/auth/callback?code=abc");
+    expect(res.headers.get("location")).toBe("http://localhost/no/callback?code=abc");
   });
 
   it("redirects vercel.app to canonical domain", async () => {

@@ -38,6 +38,7 @@ export function DashboardContent({
   trades,
   activeSession,
 }: DashboardContentProps) {
+  const effectiveBalance = activeSession?.current_capital_nok ?? paperBalance;
   const [isLoading, setIsLoading] = useState(true);
   const [useProDashboard, setUseProDashboard] = useState(true);
 
@@ -70,12 +71,12 @@ export function DashboardContent({
         >
           {useProDashboard ? (
             <DashboardPro 
-              paperBalance={paperBalance}
+              paperBalance={effectiveBalance}
               sessionId={activeSession?.id}
             />
           ) : (
             <CoinbaseHome
-              paperBalance={paperBalance}
+              paperBalance={effectiveBalance}
               trades={trades}
               activeSession={activeSession}
             />

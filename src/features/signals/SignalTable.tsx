@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 
 interface Signal {
   id: string;
@@ -38,6 +39,8 @@ const statusLabels: { [key: string]: string } = {
 export default function SignalTable({
   onRefresh: _onRefresh,
 }: SignalTableProps) {
+  const locale = useLocale();
+  const isEn = locale === "en";
   const [signals, setSignals] = useState<Signal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -140,16 +143,16 @@ export default function SignalTable({
           className="kp-flex kp-flex-col kp-items-center kp-justify-center p-12"
         >
           <span className="kp-spinner kp-spinner-lg text-primary" />
-          <p className="kp-text-secondary kp-mt-4">Laster signaler...</p>
+          <p className="kp-text-secondary kp-mt-4">{isEn ? "Loading signals..." : "Laster signaler..."}</p>
         </div>
       )}
 
       {/* Empty state */}
       {!isLoading && signals.length === 0 && (
         <div className="kp-card text-center p-12">
-          <p className="kp-text-secondary kp-mb-2">Ingen signaler funnet</p>
+          <p className="kp-text-secondary kp-mb-2">{isEn ? "No signals found" : "Ingen signaler funnet"}</p>
           <p className="kp-text-sm kp-text-muted">
-            Signaler vises her når de er opprettet
+            {isEn ? "Signals will appear here when created" : "Signaler vises her når de er opprettet"}
           </p>
         </div>
       )}

@@ -11,12 +11,14 @@ describe("resolveTickStrategyEngineKey", () => {
       "multi_signal",
     );
     expect(resolveTickStrategyEngineKey("grid_bot")).toBe("grid");
+    expect(resolveTickStrategyEngineKey("ensemble_ai")).toBe("ensemble_ai");
     expect(resolveTickStrategyEngineKey("ai_copy")).toBe("multi_signal");
   });
 
   it("accepts legacy cron IDs", () => {
     expect(resolveTickStrategyEngineKey("dca")).toBe("dca");
     expect(resolveTickStrategyEngineKey("trend_follow")).toBe("trend_follow");
+    expect(resolveTickStrategyEngineKey("ensemble_ai")).toBe("ensemble_ai");
   });
 
   it("returns null for unknown", () => {

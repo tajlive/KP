@@ -115,7 +115,7 @@ describe('callSonar', () => {
     );
   });
 
-  it('should use JSON mode when requested', async () => {
+  it('should NOT send response_format (Perplexity removed json_object support)', async () => {
     const mockResponse = {
       id: 'test-id',
       model: 'sonar',
@@ -145,7 +145,8 @@ describe('callSonar', () => {
 
     const callArgs = mockFetch.mock.calls[0];
     const body = JSON.parse(callArgs[1].body);
-    expect(body.response_format).toEqual({ type: 'json_object' });
+    // Perplexity API no longer accepts response_format: { type: 'json_object' }
+    expect(body.response_format).toBeUndefined();
   });
 
   it('should retry on retryable error and eventually succeed', async () => {

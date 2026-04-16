@@ -125,5 +125,118 @@
       "strategies": "Trading Strategies Available",
       "analytics": "Analytics Dashboard"
     }
+  },
+  "speedOnboarding": {
+    "timerPrefix": "Start trading in",
+    "riskProfiles": {
+      "safe": { "name": "Safe", "description": "Low risk, steady growth", "dailyLoss": "2% max daily loss" },
+      "balanced": { "name": "Balanced", "description": "Good balance between risk and return", "dailyLoss": "5% max daily loss" },
+      "offensive": { "name": "Offensive", "description": "Higher risk, higher potential", "dailyLoss": "8% max daily loss" },
+      "aggressive": { "name": "Aggressive", "description": "Max risk for experienced traders", "dailyLoss": "12% max daily loss" }
+    },
+    "step1": {
+      "title": "Choose risk profile",
+      "subtitle": "We automatically adapt your strategy"
+    },
+    "step2": {
+      "title": "Choose your coins",
+      "subtitle": "You can select multiple — DCA automatically distributes capital",
+      "startingCapital": "Your starting capital",
+      "paperTradingZeroRisk": "Paper trading — zero risk with real money",
+      "starting": "Starting...",
+      "startTrading": "START TRADING!"
+    },
+    "step3": {
+      "title": "You're all set! 🚀",
+      "line1": "Your AI bot is now trading with",
+      "line2": "in paper mode.",
+      "line3": "Check the dashboard for updates!",
+      "goToDashboard": "Go to Dashboard →",
+      "viewActivity": "View trading activity"
+    }
+  },
+  "interactive": {
+    "error": {
+      "finish": "Could not complete setup. Try again."
+    },
+    "step1": {
+      "title1": "Ready to let the bot",
+      "title2": "work for you?",
+      "description": "To see live movements in the dashboard you must first choose a strategy. We set up your first paper trade in under 60 seconds. No real money, just pure learning.",
+      "howItWorksTitle": "💡 How it works:",
+      "list1": "Choose your risk profile below",
+      "list2": "Choose how much play money you want to test with",
+      "list3": "Start the bot and see live trades in the dashboard!",
+      "cta": "Get started"
+    },
+    "step2": {
+      "title": "Choose your style",
+      "subtitle": "We have ready-made templates that match your risk appetite.",
+      "preloaded": "Preloaded",
+      "templates": {
+        "dcaTrygg": { "title": "Safe Saving", "riskLabel": "Low risk", "desc": "Buys fixed amount every week. Perfect for long-term wealth." },
+        "trendBalansert": { "title": "Growth", "riskLabel": "Medium risk", "desc": "Follows market trends. Balanced risk and return." },
+        "multisignalAktiv": { "title": "Aggressive", "riskLabel": "High risk", "desc": "Active trading with many signals. For those who want action." }
+      }
+    },
+    "step3": {
+      "title": "Paper Trade Setup",
+      "subtitle": "We give you 100,000 NOK in play money to test the strategy.",
+      "goalStrategy": "Target strategy:",
+      "playMoney": "Play money:",
+      "currencySuffix": "NOK",
+      "tooltip": "💡 This is play money for testing. Choose an amount you would consider in real trading.",
+      "tradingMode": "Trading mode:",
+      "tradingModeValue": "Simulated / Paper",
+      "status": "Status:",
+      "statusValue": "Ready",
+      "initializing": "Initializing bot...",
+      "startBot": "Start Bot Now"
+    },
+    "step4": {
+      "title": "Wow! 🎉",
+      "subtitle": "The bot has made its first paper trade.",
+      "redirecting": "Sending you to the dashboard..."
+    }
+  },
+  "mobile": {
+    "step1": {
+      "title": "Ready to let your money work for you?",
+      "description": "Klarpakke is a Norwegian robot that trades crypto automatically — safely, transparently and in Norwegian.",
+      "badges": {
+        "bankid": "BankID-secured",
+        "finanstilsynet": "Finanstilsynet",
+        "noHiddenFees": "No hidden fees"
+      },
+      "badgesAriaLabel": "Security certifications",
+      "cta": "Get started",
+      "skip": "View dashboard without setup"
+    },
+    "step2": {
+      "title": "Choose your strategy",
+      "subtitle": "You can change this at any time in the settings.",
+      "backAriaLabel": "Go back",
+      "riskLevels": {
+        "safe": {
+          "label": "Safe",
+          "description": "Suits you who want to save steadily. We rarely lose more than 3% on a single trade."
+        },
+        "balanced": {
+          "label": "Balanced",
+          "description": "A bit more speed. Some months may go down, but historically always up over time."
+        },
+        "aggressive": {
+          "label": "Aggressive",
+          "description": "High risk. Can halve the investment in 3 months — but can also double it."
+        }
+      }
+    },
+    "step3": {
+      "title": "You're ready!",
+      "description": "Your robot is set up and ready to trade for you.",
+      "selectedStrategy": "Selected strategy:",
+      "loading": "Starting...",
+      "cta": "Open my dashboard"
+    }
   }
 }

@@ -125,5 +125,118 @@
       "strategies": "Tradingstrategier tilgjengelig",
       "analytics": "Analyse-dashboard"
     }
+  },
+  "speedOnboarding": {
+    "timerPrefix": "Start trading på",
+    "riskProfiles": {
+      "safe": { "name": "Trygg", "description": "Lavt risiko, jevn vekst", "dailyLoss": "2% maks dagstap" },
+      "balanced": { "name": "Balansert", "description": "God balanse mellom risiko og avkastning", "dailyLoss": "5% maks dagstap" },
+      "offensive": { "name": "Offensiv", "description": "Høyere risiko, høyere potensial", "dailyLoss": "8% maks dagstap" },
+      "aggressive": { "name": "Aggressiv", "description": "Maks risiko for erfarne", "dailyLoss": "12% maks dagstap" }
+    },
+    "step1": {
+      "title": "Velg risikoprofil",
+      "subtitle": "Vi tilpasser strategien din automatisk"
+    },
+    "step2": {
+      "title": "Velg dine coins",
+      "subtitle": "Du kan velge flere — DCA fordeler kapitalen automatisk",
+      "startingCapital": "Din startkapital",
+      "paperTradingZeroRisk": "Paper trading — null risiko for ekte penger",
+      "starting": "Starter...",
+      "startTrading": "START TRADING!"
+    },
+    "step3": {
+      "title": "Du er i gang! 🚀",
+      "line1": "Din AI-bot handler nå med",
+      "line2": "i paper-modus.",
+      "line3": "Sjekk dashboardet for oppdateringer!",
+      "goToDashboard": "Gå til Dashboard →",
+      "viewActivity": "Se trading-aktivitet"
+    }
+  },
+  "interactive": {
+    "error": {
+      "finish": "Kunne ikke fullføre oppsett. Prøv igjen."
+    },
+    "step1": {
+      "title1": "Klar til å la boten",
+      "title2": "jobbe for deg?",
+      "description": "For å se live bevegelser i dashboardet må du først velge en strategi. Vi setter opp din første paper trade på under 60 sekunder. Ingen ekte penger, kun ren læring.",
+      "howItWorksTitle": "💡 Slik fungerer det:",
+      "list1": "Velg din risikoprofil nedenfor",
+      "list2": "Velg hvor mye lekepenger du vil teste med",
+      "list3": "Start boten og se live handler i dashboardet!",
+      "cta": "Kom i gang"
+    },
+    "step2": {
+      "title": "Velg din stil",
+      "subtitle": "Vi har ferdige maler som passer din risikovilje.",
+      "preloaded": "Forhåndslastet",
+      "templates": {
+        "dcaTrygg": { "title": "Trygg Sparing", "riskLabel": "Lav risiko", "desc": "Kjøper fast hver uke. Perfekt for langsiktig formue." },
+        "trendBalansert": { "title": "Vekst", "riskLabel": "Middels risiko", "desc": "Følger markedets trender. Balansert risiko og avkastning." },
+        "multisignalAktiv": { "title": "Aggressiv", "riskLabel": "Høy risiko", "desc": "Aktiv trading med mange signaler. For deg som vil ha action." }
+      }
+    },
+    "step3": {
+      "title": "Paper Trade Oppsett",
+      "subtitle": "Vi tildeler deg 100 000 NOK i lekepenger for å teste strategien.",
+      "goalStrategy": "Mål-strategi:",
+      "playMoney": "Lekepenger:",
+      "currencySuffix": "kr",
+      "tooltip": "💡 Dette er lekepenger for testing. Velg beløp du ville vurdert i ekte trading.",
+      "tradingMode": "Handelsmodus:",
+      "tradingModeValue": "Simulert / Paper",
+      "status": "Status:",
+      "statusValue": "Klar",
+      "initializing": "Initialiserer bot...",
+      "startBot": "Start Boten Nå"
+    },
+    "step4": {
+      "title": "Wow! 🎉",
+      "subtitle": "Boten har gjort sin første paper trade.",
+      "redirecting": "Sender deg til dashboardet..."
+    }
+  },
+  "mobile": {
+    "step1": {
+      "title": "Klar for å la pengene jobbe for deg?",
+      "description": "Klarpakke er en norsk robot som handler krypto automatisk — trygt, transparent og på norsk.",
+      "badges": {
+        "bankid": "BankID-sikret",
+        "finanstilsynet": "Finanstilsynet",
+        "noHiddenFees": "Ingen skjulte gebyrer"
+      },
+      "badgesAriaLabel": "Sikkerhetssertifiseringer",
+      "cta": "Kom i gang",
+      "skip": "Se dashbordet uten å sette opp"
+    },
+    "step2": {
+      "title": "Velg din strategi",
+      "subtitle": "Du kan endre dette når som helst i innstillingene.",
+      "backAriaLabel": "Gå tilbake",
+      "riskLevels": {
+        "safe": {
+          "label": "Trygg",
+          "description": "Passer deg som vil spare stabilt. Vi mister sjelden mer enn 3% på én handel."
+        },
+        "balanced": {
+          "label": "Balansert",
+          "description": "Litt mer fart. Noen måneder kan gå ned, men historisk sett alltid opp over tid."
+        },
+        "aggressive": {
+          "label": "Aggressiv",
+          "description": "Høy risiko. Kan halvere investeringen på 3 måneder — men kan også doble den."
+        }
+      }
+    },
+    "step3": {
+      "title": "Du er klar!",
+      "description": "Roboten din er satt opp og klar til å handle for deg.",
+      "selectedStrategy": "Valgt strategi:",
+      "loading": "Starter...",
+      "cta": "Åpne mitt dashboard"
+    }
   }
 }

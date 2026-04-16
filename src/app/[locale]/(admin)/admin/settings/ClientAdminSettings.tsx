@@ -15,6 +15,7 @@ import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export default function ClientAdminSettings() {
   const locale = useLocale();
+  const isEn = locale === 'en';
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [newPassword, setNewPassword] = useState('');
@@ -47,12 +48,12 @@ export default function ClientAdminSettings() {
     setPasswordSuccess('');
 
     if (newPassword !== confirmPassword) {
-      setPasswordError('Passordene matcher ikke');
+      setPasswordError(isEn ? 'Passwords do not match' : 'Passordene matcher ikke');
       return;
     }
 
     if (newPassword.length < 8) {
-      setPasswordError('Passordet må være minst 8 tegn');
+      setPasswordError(isEn ? 'Password must be at least 8 characters' : 'Passordet må være minst 8 tegn');
       return;
     }
 
@@ -64,7 +65,7 @@ export default function ClientAdminSettings() {
 
       if (error) throw error;
 
-      setPasswordSuccess('Passordet er oppdatert');
+      setPasswordSuccess(isEn ? 'Password updated' : 'Passordet er oppdatert');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: unknown) {
@@ -96,8 +97,8 @@ export default function ClientAdminSettings() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Innstillinger</h1>
-        <p className="text-slate-400">Administrer din admin-konto</p>
+        <h1 className="text-3xl font-bold text-white mb-2">{isEn ? 'Settings' : 'Innstillinger'}</h1>
+        <p className="text-slate-400">{isEn ? 'Manage your admin account' : 'Administrer din admin-konto'}</p>
       </div>
 
       {/* Profile Info */}
@@ -105,17 +106,17 @@ export default function ClientAdminSettings() {
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <User className="w-5 h-5 text-blue-400" />
-            Profilinformasjon
+            {isEn ? 'Profile Information' : 'Profilinformasjon'}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-slate-400">E-post</Label>
+              <Label className="text-slate-400">{isEn ? 'Email' : 'E-post'}</Label>
               <p className="text-white font-medium">{user?.email}</p>
             </div>
             <div>
-              <Label className="text-slate-400">Rolle</Label>
+              <Label className="text-slate-400">{isEn ? 'Role' : 'Rolle'}</Label>
               <div className="flex items-center gap-2 mt-1">
                 <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20">
                   {user?.user_metadata?.role || 'admin'}

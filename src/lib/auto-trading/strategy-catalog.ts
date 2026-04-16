@@ -18,6 +18,7 @@ const STRATEGY_TO_RISK_KEY: Record<ProductStrategyId, RiskLevelKey> = {
   trend_balansert: "balanced",
   multisignal_aktiv: "offensive",
   grid_bot: "balanced",
+  ensemble_ai: "balanced",
   ai_copy: "aggressive",
 };
 
@@ -27,6 +28,7 @@ const STRATEGY_TO_OPT_PROFILE: Record<ProductStrategyId, OptProfileName> = {
   trend_balansert: "moderate",
   multisignal_aktiv: "aggressive",
   grid_bot: "moderate",
+  ensemble_ai: "moderate",
   ai_copy: "dynamic",
 };
 
@@ -35,6 +37,7 @@ export const STRATEGY_UI_ORDER: ProductStrategyId[] = [
   "trend_balansert",
   "multisignal_aktiv",
   "grid_bot",
+  "ensemble_ai",
   "ai_copy",
 ];
 
@@ -63,6 +66,7 @@ export const STRATEGY_DEFS_FOR_DASHBOARD: {
   { type: "trend_balansert", risk: 3 },
   { type: "multisignal_aktiv", risk: 4 },
   { type: "grid_bot", risk: 3 },
+  { type: "ensemble_ai", risk: 3 },
   { type: "ai_copy", risk: 5 },
 ];
 
@@ -188,6 +192,12 @@ export function enrichStrategyConfigForSession(
     base.display_mode = userConfig.display_mode ?? "multi_signal_fallback";
   }
 
+  if (strategyType === "ensemble_ai") {
+    base.engine = userConfig.engine ?? "ensemble_v2";
+    base.max_per_trade = userConfig.maxPerTrade ?? 1000;
+    base.auto_adjust_weights = userConfig.autoAdjust ?? true;
+  }
+
   return base;
 }
 
@@ -219,6 +229,13 @@ export function getDefaultStrategyDashboardConfigs(): Record<
       levels: 10,
       grid_levels: 10,
       capital: 5000,
+    },
+    ensemble_ai: {
+      engine: "ensemble",
+      useLLM: true,
+      riskProfile: "balanced",
+      maxPerTrade: 1000,
+      autoAdjust: true,
     },
     ai_copy: {
       maxPerTrade: 1000,
@@ -280,6 +297,18 @@ export const STRATEGY_CATALOG_PAPER = [
     takeProfit: optProfile("grid_bot").takeProfitPercent,
   },
   {
+    id: "ensemble_ai" as const,
+    name: "Ensemble AI",
+    symbol: "BTC/USDT",
+    risk_level: 3,
+    is_active: true,
+    description:
+      "AI-drevet ensemble-strategi som kombinerer teknisk analyse, LLM og markedsregime.",
+    indicators: ["Ensemble", "LLM", "Regime"],
+    stopLoss: optProfile("ensemble_ai").stopLossPercent,
+    takeProfit: optProfile("ensemble_ai").takeProfitPercent,
+  },
+  {
     id: "ai_copy" as const,
     name: "AI Copy",
     symbol: "BTC/USDT",
@@ -302,6 +331,7 @@ export const STRATEGY_CATALOG_BUILDER = STRATEGY_UI_ORDER.map((id) => {
     trend_balansert: "Trend Balansert",
     multisignal_aktiv: "Multi-Signal Aktiv",
     grid_bot: "Grid Bot",
+    ensemble_ai: "Ensemble AI",
     ai_copy: "AI Copy Trading",
   };
   const descriptions: Record<ProductStrategyId, string> = {
@@ -309,6 +339,7 @@ export const STRATEGY_CATALOG_BUILDER = STRATEGY_UI_ORDER.map((id) => {
     trend_balansert: "Trend-following med middels risiko",
     multisignal_aktiv: "Multi-indikator strategi med høy aktivitet",
     grid_bot: "Grid trading i definerte prisområder",
+    ensemble_ai: "AI-drevet ensemble-strategi som kombinerer teknisk analyse, LLM og markedsregime",
     ai_copy:
       "Signal-fusjon med AI-vakt — ikke ekte copy-trade mot andre kontoer ennå",
   };

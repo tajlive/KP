@@ -4,30 +4,22 @@ import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const riskLevels = [
   {
     id: "safe" as const,
-    label: "Trygg",
     color: "#22c55e",
-    description:
-      "Passer deg som vil spare stabilt. Vi mister sjelden mer enn 3% på én handel.",
     returnRange: "+8–14%/år",
   },
   {
     id: "balanced" as const,
-    label: "Balansert",
     color: "#f59e0b",
-    description:
-      "Litt mer fart. Noen måneder kan gå ned, men historisk sett alltid opp over tid.",
     returnRange: "+15–30%/år",
   },
   {
     id: "aggressive" as const,
-    label: "Aggressiv",
     color: "#ef4444",
-    description:
-      "Høy risiko. Kan halvere investeringen på 3 måneder — men kan også doble den.",
     returnRange: "+30–60%/år",
   },
 ];
@@ -38,6 +30,8 @@ interface OnboardingStep2Props {
 }
 
 export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
+  const t = useTranslations("onboarding");
+  const tCommon = useTranslations("common");
   const { setRiskLevel, riskLevel } = useOnboardingStore();
   const [selected, setSelected] = useState<string | null>(riskLevel);
 
@@ -62,7 +56,7 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
           className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white/70"
           whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
           whileTap={{ scale: 0.95 }}
-          aria-label="Gå tilbake"
+          aria-label={t("mobile.step2.backAriaLabel")}
         >
           <ChevronLeft size={24} />
         </motion.button>
@@ -75,9 +69,11 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
           transition={{ delay: 0.1 }}
           className="mb-6"
         >
-          <h2 className="mb-2 text-2xl font-bold text-white">Velg din strategi</h2>
+          <h2 className="mb-2 text-2xl font-bold text-white">
+            {t("mobile.step2.title")}
+          </h2>
           <p className="text-sm text-white/50">
-            Du kan endre dette når som helst i innstillingene.
+            {t("mobile.step2.subtitle")}
           </p>
         </motion.div>
 
@@ -104,7 +100,9 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
                 />
                 <div className="flex-1">
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="font-semibold text-white">{level.label}</span>
+                    <span className="font-semibold text-white">
+                      {t(`mobile.step2.riskLevels.${level.id}.label`)}
+                    </span>
                     <span
                       className="rounded-full px-2 py-0.5 text-xs font-medium"
                       style={{
@@ -116,7 +114,7 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
                     </span>
                   </div>
                   <p className="text-sm leading-relaxed text-white/50">
-                    {level.description}
+                    {t(`mobile.step2.riskLevels.${level.id}.description`)}
                   </p>
                 </div>
               </div>
@@ -155,7 +153,7 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
             whileTap={selected ? { scale: 0.98 } : {}}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            Fortsett
+            {tCommon("next")}
           </motion.button>
         </motion.div>
       </div>

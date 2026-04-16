@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { SURFACE } from "@/lib/design/tokens";
-import HeroSection from "@/features/landing/HeroSection";
+import SanityHeroSection from "@/features/landing/SanityHeroSection";
 import { KLTTeaser } from "@/features/landing/KLTTeaser";
 import { TrustStrip } from "@/features/landing/TrustStrip";
 import { LiveProofStrip } from "@/features/landing/LiveProofStrip";
@@ -82,11 +82,23 @@ const BacktestROICoupled = dynamic(
 // ISR: Revalidate page every hour for fresh content
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Klarpakke - Bygg din økonomiske fremtid",
-  description:
-    "Lær å handle på kryptobørs med Klarpakkets kurs. Forstå markeder, risiko og strategier for å bygge din økonomiske fremtid.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const isEn = locale === "en";
+
+  return {
+    title: isEn
+      ? "Klarpakke - Build your financial future"
+      : "Klarpakke - Bygg din økonomiske fremtid",
+    description: isEn
+      ? "Learn to trade on crypto exchanges with Klarpakke courses. Understand markets, risk, and strategies to build your financial future."
+      : "Lær å handle på kryptobørs med Klarpakkets kurs. Forstå markeder, risiko og strategier for å bygge din økonomiske fremtid.",
+  };
+}
 
 interface HomePageProps {
   params: Promise<{ locale: string }>;
@@ -99,7 +111,7 @@ export default async function HomePage({ params }: HomePageProps) {
     <>
       <main className={`min-h-screen ${SURFACE.BG_LIGHT}`}>
         {/* Above-fold: Synchronous for LCP */}
-        <HeroSection locale={locale} />
+        <SanityHeroSection locale={locale} />
         <KLTTeaser locale={locale} />
         <LiveProofStrip />
         <TrustStrip locale={locale} />

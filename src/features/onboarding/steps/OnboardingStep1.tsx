@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useOnboardingStore } from "@/store/onboardingStore";
+import { useTranslations } from "next-intl";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -27,86 +28,12 @@ const itemVariants = {
   },
 };
 
-const trustBadges = [
-  {
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        className="h-4 w-4"
-        aria-hidden="true"
-      >
-        <path
-          d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="m9 12 2 2 4-4"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-    label: "BankID-sikret",
-  },
-  {
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        className="h-4 w-4"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-        <path
-          d="M12 6v6l4 2"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-    label: "Finanstilsynet",
-  },
-  {
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        className="h-4 w-4"
-        aria-hidden="true"
-      >
-        <rect
-          x="3"
-          y="3"
-          width="18"
-          height="18"
-          rx="2"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M3 9h18M9 21V9"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-    label: "Ingen skjulte gebyrer",
-  },
-];
-
 interface OnboardingStep1Props {
   onNext: () => void;
 }
 
 export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
+  const t = useTranslations("onboarding");
   const { skipToApp } = useOnboardingStore();
 
   const handleNext = () => {
@@ -138,20 +65,92 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
 
         <motion.div variants={itemVariants} className="flex flex-col gap-3">
           <h1 className="text-[2rem] font-bold leading-[1.15] tracking-tight text-white">
-            Klar for å la pengene jobbe for deg?
+            {t("mobile.step1.title")}
           </h1>
           <p className="text-base leading-relaxed text-white/60">
-            Klarpakke er en norsk robot som handler krypto automatisk — trygt,
-            transparent og på norsk.
+            {t("mobile.step1.description")}
           </p>
         </motion.div>
 
         <motion.div
           variants={itemVariants}
           className="flex flex-wrap gap-2"
-          aria-label="Sikkerhetssertifiseringer"
+          aria-label={t("mobile.step1.badgesAriaLabel")}
         >
-          {trustBadges.map((badge, index) => (
+          {[
+            {
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="m9 12 2 2 4-4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ),
+              label: t("mobile.step1.badges.bankid"),
+            },
+            {
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+                  <path
+                    d="M12 6v6l4 2"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
+              label: t("mobile.step1.badges.finanstilsynet"),
+            },
+            {
+              icon: (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="3"
+                    y="3"
+                    width="18"
+                    height="18"
+                    rx="2"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    d="M3 9h18M9 21V9"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
+              label: t("mobile.step1.badges.noHiddenFees"),
+            },
+          ].map((badge, index) => (
             <motion.div
               key={badge.label}
               className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-white/70"
@@ -185,7 +184,7 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
             whileHover={{ x: "100%" }}
             transition={{ duration: 0.5 }}
           />
-          <span className="relative">Kom i gang</span>
+          <span className="relative">{t("mobile.step1.cta")}</span>
         </motion.button>
 
         <motion.button
@@ -194,7 +193,7 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
           whileHover={{ color: "rgba(255,255,255,0.6)" }}
           whileTap={{ scale: 0.98 }}
         >
-          Se dashbordet uten å sette opp
+          {t("mobile.step1.skip")}
         </motion.button>
       </motion.div>
     </motion.div>

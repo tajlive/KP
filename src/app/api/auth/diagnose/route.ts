@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
   
   // Build expected config
   const googleConfig = getGoogleConsoleConfig();
-  const allRedirectUris = getAllRedirectUris("/auth/callback");
+  const allRedirectUris = getAllRedirectUris("/callback");
   
   // Check for mismatches
   const mismatches: Array<{

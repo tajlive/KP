@@ -105,6 +105,10 @@
     "watchdog": {
       "description": "Kjør watchdog sjekk",
       "command": "npm run test:watchdog 2>/dev/null || bash scripts/hourly-external-user-watchdog.sh"
+    },
+    "auth": {
+      "description": "Aktiver auth-spesialisert KIMI-agent",
+      "command": "kimi --agent-file .kimi/auth-agent.yaml"
     }
   }
 }

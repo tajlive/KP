@@ -105,6 +105,17 @@
       "duplicateSessionDesc": "Du har allerede en bot som kjører med denne strategien på dette paret.",
       "startedTitle": "Øvingsbot startet!",
       "startedDesc": "Boten din handler nå med lekepenger."
+    },
+    "strategy": {
+      "started": "Strategi startet",
+      "stopped": "Strategi stoppet",
+      "startFailed": "Kunne ikke starte strategi",
+      "stopFailed": "Kunne ikke stoppe strategi"
+    },
+    "general": {
+      "comingSoon": "Kommer snart",
+      "error": "Noe gikk galt",
+      "saved": "Lagret"
     }
   }
 }

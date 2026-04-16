@@ -55,13 +55,24 @@ export default async function PortfolioPage({ params }: PageProps) {
       localizedPathname(locale, "/dashboard/portfolio")
     );
 
-    // Fetch wallets (assets) and trading sessions
-    const [{ data: wallets }, { data: sessions }] = await Promise.all([
+    // Fetch wallets, portfolios, and trading sessions
+    const [
+      { data: wallets },
+      { data: portfolios },
+      { data: sessions },
+    ] = await Promise.all([
       supabase
         .from("wallets")
         .select("*")
         .eq("user_id", user.id)
         .gt("balance", 0),
+      supabase
+        .from("portfolios")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single(),
       supabase
         .from("trading_sessions")
         .select("*")
@@ -69,6 +80,21 @@ export default async function PortfolioPage({ params }: PageProps) {
         .order("started_at", { ascending: false })
         .limit(10),
     ]);
+
+    // Derive display assets: prefer wallets, fallback to portfolio record
+    const hasWallets = wallets && wallets.length > 0;
+    const displayAssets = hasWallets
+      ? wallets!.map((w) => ({ type: "wallet" as const, ...w }))
+      : portfolios
+        ? [
+            {
+              type: "portfolio" as const,
+              id: portfolios.id,
+              currency: portfolios.name || "NOK",
+              balance: Number(portfolios.current_balance || portfolios.initial_balance || 0),
+            },
+          ]
+        : [];
 
     return (
       <div className="space-y-6">
@@ -85,9 +111,9 @@ export default async function PortfolioPage({ params }: PageProps) {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          {wallets?.map((wallet) => (
+          {displayAssets.map((asset) => (
             <div
-              key={wallet.id}
+              key={asset.id}
               className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between hover:border-slate-700 transition-all group"
             >
               <div className="flex items-center gap-4">
@@ -96,7 +122,7 @@ export default async function PortfolioPage({ params }: PageProps) {
                 </div>
                 <div>
                   <h3 className="font-bold text-white text-lg">
-                    {wallet.currency}
+                    {asset.currency}
                   </h3>
                   <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">
                     {t("mainHolding")}
@@ -105,7 +131,7 @@ export default async function PortfolioPage({ params }: PageProps) {
               </div>
               <div className="text-right">
                 <p className="text-2xl font-black text-white">
-                  {wallet.balance.toFixed(6)}
+                  {asset.balance.toFixed(asset.type === "portfolio" ? 2 : 6)}
                 </p>
                 <p className="text-slate-500 text-xs font-medium">
                   {t("balance")}
@@ -114,7 +140,7 @@ export default async function PortfolioPage({ params }: PageProps) {
             </div>
           ))}
 
-          {(!wallets || wallets.length === 0) && (
+          {displayAssets.length === 0 && (
             <div className="text-center p-20 bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-800">
               <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Wallet className="w-8 h-8 text-slate-600" />

@@ -74,20 +74,12 @@ export default async function DashboardPage({
       localizedPathname(locale, "/dashboard"),
     );
 
-    const [profileRes, tradesRes, sessionsRes] = await Promise.all([
+    const [profileRes, sessionsRes] = await Promise.all([
       supabase
         .from("user_profiles")
         .select("paper_balance, tier, preferred_trading_mode")
         .eq("id", user.id)
         .single(),
-      supabase
-        .from("auto_trading_trades")
-        .select(
-          "id, symbol, side, quantity, price, status, pnl, created_at, executed_at",
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50),
       supabase
         .from("trading_sessions")
         .select(
@@ -115,17 +107,31 @@ export default async function DashboardPage({
           }
         : null;
 
+    const tradesRes = activeSession?.id
+      ? await supabase
+          .from("trades")
+          .select(
+            "trading_pair, symbol, side, quantity, price, status, realized_pnl, created_at, executed_at",
+          )
+          .eq("session_id", activeSession.id)
+          .order("created_at", { ascending: false })
+          .limit(50)
+      : { data: [] };
+
+    const primaryBalance =
+      activeSession?.current_capital_nok ?? profile?.paper_balance ?? 100000;
+
     const trades = (tradesRes.data ?? []).map((t) => ({
-      trading_pair: t.symbol,
+      trading_pair: t.trading_pair || t.symbol || "",
       side: t.side,
       quantity: t.quantity,
-      realized_pnl: t.pnl ?? null,
+      realized_pnl: t.realized_pnl ?? null,
     }));
 
     return (
       <div data-testid="dashboard-page">
         <DashboardContent
-          paperBalance={profile?.paper_balance ?? 100000}
+          paperBalance={primaryBalance}
           trades={trades}
           activeSession={activeSession}
         />

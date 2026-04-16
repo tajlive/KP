@@ -41,7 +41,7 @@ describe("OAuth Flow (Mock)", () => {
       const result = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "http://localhost:3000/auth/callback",
+          redirectTo: "http://localhost:3000/callback",
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -53,7 +53,7 @@ describe("OAuth Flow (Mock)", () => {
       expect(mockSignInWithOAuth).toHaveBeenCalledWith({
         provider: "google",
         options: {
-          redirectTo: "http://localhost:3000/auth/callback",
+          redirectTo: "http://localhost:3000/callback",
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -82,7 +82,7 @@ describe("OAuth Flow (Mock)", () => {
       const result = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "http://localhost:3000/auth/callback",
+          redirectTo: "http://localhost:3000/callback",
         },
       });
 
@@ -217,7 +217,7 @@ describe("OAuth Flow (Mock)", () => {
         "https://www.klarpakke.no",
       ];
 
-      const redirectUrl = "http://localhost:3000/auth/callback";
+      const redirectUrl = "http://localhost:3000/callback";
       const url = new URL(redirectUrl);
 
       // Assert
@@ -227,8 +227,8 @@ describe("OAuth Flow (Mock)", () => {
     it("should reject invalid redirect URLs", async () => {
       // Arrange
       const invalidUrls = [
-        "https://evil.com/auth/callback",
-        "https://phishing-klarpakke.com/auth/callback",
+        "https://evil.com/callback",
+        "https://phishing-klarpakke.com/callback",
         "javascript:void(0)",
       ];
 

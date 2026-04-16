@@ -3,7 +3,7 @@
  */
 
 import { createClient } from "@/lib/utils";
-import { getCallbackUrl, OAUTH_CONFIG, SUPPORTED_PROVIDERS } from "./config";
+import { getAppUrl, getCallbackUrl, OAUTH_CONFIG, SUPPORTED_PROVIDERS } from "./config";
 
 // OAuth sign in with proper error handling
 export async function signInWithOAuth(
@@ -234,12 +234,12 @@ export async function signOut(): Promise<{ error: Error | null }> {
 
 export async function resetPassword(
   email: string,
-  locale: string = "no",
+  _locale: string = "no",
 ): Promise<{ error: Error | null }> {
   const supabase = createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
     email.toLowerCase().trim(),
-    { redirectTo: getCallbackUrl(locale) },
+    { redirectTo: `${getAppUrl()}/no/update-password` },
   );
   return { error };
 }
@@ -262,8 +262,8 @@ export async function sendMagicLink(
 ): Promise<{ error: Error | null }> {
   const supabase = createClient();
 
-  // FIX: Route magic links through /auth/callback (PKCE exchange)
-  // Previously bypassed callback: .replace('/auth/callback', '/dashboard')
+  // FIX: Route magic links through /callback (PKCE exchange)
+  // Previously bypassed callback: .replace('/callback', '/dashboard')
   // This caused magic links to land on /dashboard without a valid session
   const { error } = await supabase.auth.signInWithOtp({
     email: email.toLowerCase().trim(),

@@ -10,6 +10,7 @@ import { resolveTickStrategyEngineKey } from "@/lib/trading/strategy-id-aliases"
 import { buildTradeReason, buildIndicatorSnapshot, resolveStrategyKey } from "@/lib/trading/build-trade-reason";
 import { div, mul } from "@/lib/decimal";
 import { createClient } from "@/lib/supabase/server";
+import { captureCronError, captureCronSuccess, generateTradeIdempotencyKey } from "@/lib/cron/cron-helpers";
 import type { TradeSide, TradingSession } from "@/types/trading";
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -353,25 +354,69 @@ async function processSession(
   session: TradingSession,
 ): Promise<TickResult> {
   const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
-  const strategy = engineKey ? strategies[engineKey] : undefined;
-  if (!strategy) {
-    return {
-      session_id: session.id,
-      action: "error",
-      error: `Unknown strategy: ${session.strategy_id}`,
-    };
-  }
-
   const pair = session.trading_pair || "BTCUSDT";
   const candles = await fetchCandles(pair, "1h", 100);
   const currentPrice = candles[candles.length - 1].close;
 
-  // Evaluate strategy
-  const signal = strategy.evaluate({
-    candles,
-    session,
-    config: session.strategy_config as Record<string, unknown>,
-  });
+  let signal: StrategySignal;
+
+  if (engineKey === "ensemble_ai") {
+    // Normalize symbol to match ai-engine storage (e.g. BTC/USDT -> BTCUSDT)
+    const symbol = pair.replace("/", "");
+    // Prefer master consensus row; fallback to any ensemble_ai signal (legacy compatibility)
+    let aiSignal = await db
+      .from("trading_signals")
+      .select("*")
+      .eq("symbol", symbol)
+      .eq("signal_type", "ensemble_ai")
+      .eq("agent_id", "ensemble_master")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then((r) => r.data);
+
+    if (!aiSignal) {
+      aiSignal = await db
+        .from("trading_signals")
+        .select("*")
+        .eq("symbol", symbol)
+        .eq("signal_type", "ensemble_ai")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then((r) => r.data);
+    }
+
+    const maxAgeMs = 2 * 60 * 60 * 1000; // 2 hours
+    const isRecent = aiSignal?.created_at
+      ? Date.now() - new Date(aiSignal.created_at).getTime() < maxAgeMs
+      : false;
+
+    if (aiSignal && isRecent && (aiSignal.action === "buy" || aiSignal.action === "sell")) {
+      signal = {
+        action: aiSignal.action,
+        positionSize: 0.01,
+        indicators: { source: "ensemble_ai", confidence: aiSignal.confidence },
+        reason: aiSignal.reasoning || "Ensemble AI signal",
+      };
+    } else {
+      signal = { action: "hold", reason: "No recent ensemble AI signal" };
+    }
+  } else {
+    const strategy = engineKey ? strategies[engineKey] : undefined;
+    if (!strategy) {
+      return {
+        session_id: session.id,
+        action: "error",
+        error: `Unknown strategy: ${session.strategy_id}`,
+      };
+    }
+    signal = strategy.evaluate({
+      candles,
+      session,
+      config: session.strategy_config as Record<string, unknown>,
+    });
+  }
 
   // Update heartbeat
   await db
@@ -542,7 +587,7 @@ async function processSession(
 
   // Execute trade
   const totalValue = mul(quantity, currentPrice);
-  const idempotencyKey = `${session.id}-${signal.action}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  const idempotencyKey = generateTradeIdempotencyKey(session.id, pair, signal.action);
 
   const { data: trade, error: tradeError } = await db
     .from("trades")
@@ -564,7 +609,6 @@ async function processSession(
       reason_code: reasonCode,
       reason_params: reasonParams as unknown as Json,
       indicator_snapshot: indicatorSnapshot as unknown as Json,
-      opened_at: new Date().toISOString(),
       executed_at: new Date().toISOString(),
     } as never)
     .select("id")
@@ -633,7 +677,11 @@ async function mirrorTradeToFollowers(
       const { error: mirrorError } = await db.from("trades").insert({
         session_id: followerSession.id,
         user_id: followerSession.user_id,
-        idempotency_key: `copy-${tradeRecord.id as string}-${followerSession.id}-${Date.now()}`,
+        idempotency_key: generateTradeIdempotencyKey(
+          followerSession.id,
+          tradeRecord.trading_pair as string,
+          tradeRecord.side as string,
+        ),
         mode: followerSession.mode,
         trading_pair: tradeRecord.trading_pair as string,
         side: tradeRecord.side as string,
@@ -764,11 +812,13 @@ export async function GET(req: NextRequest) {
       console.info("Cron tick summary:", summary);
     }
 
+    await captureCronSuccess("tick", new Date(startTime), new Date());
+
     return NextResponse.json(summary);
   } catch (err) {
     const errorMessage = (err as Error).message;
-
     console.error("Cron tick unexpected error:", err);
+    captureCronError("tick", err as Error, { durationMs: Date.now() - startTime });
 
     return NextResponse.json(
       { error: "Internal error", details: errorMessage },

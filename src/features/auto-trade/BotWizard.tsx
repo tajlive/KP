@@ -14,6 +14,7 @@ import {
   Grid3X3,
   Target,
   Bot,
+  Shield,
 } from "lucide-react";
 import { BRAND, SURFACE } from "@/lib/design/tokens";
 import {
@@ -23,6 +24,7 @@ import {
 } from "@/features/trading/PremiumTradingLayout";
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
+import { useAnimatedPrice } from "@/hooks/usePrices";
 
 interface BotWizardProps {
   userId: string;
@@ -34,6 +36,49 @@ interface BotWizardProps {
 
 function clampPaperCapital(n: number) {
   return Math.max(10_000, Math.min(1_000_000, Math.round(n)));
+}
+
+function LivePricePreview({ symbol }: { symbol: string }) {
+  const { formattedPrice, priceDirection, priceChange24h, isConnected } =
+    useAnimatedPrice(symbol);
+
+  if (!formattedPrice || formattedPrice === "$0,00") {
+    return (
+      <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/60 dark:bg-amber-900/20 p-4 text-center">
+        <p className="text-xs font-medium text-amber-700 dark:text-amber-200">
+          TODO: Replace with Live Ticker component
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
+          {symbol.replace("USDT", "")}/USDT
+        </span>
+        <span
+          className={`inline-flex h-2 w-2 rounded-full ${
+            isConnected ? "bg-green-500 animate-pulse" : "bg-red-500"
+          }`}
+        />
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="font-mono text-base font-semibold text-[#1A1D26] dark:text-white">
+          {formattedPrice}
+        </span>
+        <span
+          className={`text-xs font-medium ${
+            priceDirection === "up" ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {priceDirection === "up" ? "+" : ""}
+          {(priceChange24h || 0).toFixed(2)}%
+        </span>
+      </div>
+    </div>
+  );
 }
 
 const TIER_ORDER = ["student", "bachelor", "master", "phd", "professor"];
@@ -64,7 +109,7 @@ export function BotWizard({
   tier: rawTier,
   paperBalance,
 }: BotWizardProps) {
-  const tToast = useTranslations("toasts");
+  const tToast = useTranslations("common");
   const tSidebar = useTranslations("dashboard.sidebar");
   const router = useRouter();
   const tier = rawTier?.toLowerCase() || "student";
@@ -217,28 +262,28 @@ export function BotWizard({
       try {
         data = (await res.json()) as typeof data;
       } catch {
-        toast.error(tToast("paperBot.startFailedTitle"), {
-          description: tToast("paperBot.networkError"),
+        toast.error(tToast("toasts.paperBot.startFailedTitle"), {
+          description: tToast("toasts.paperBot.networkError"),
         });
         return;
       }
 
       if (!res.ok || !data.ok) {
         if (data.code === "PAPER_BOT_SESSION_LIMIT") {
-          toast.error(tToast("paperBot.sessionLimitTitle"), {
-            description: tToast("paperBot.sessionLimitDesc", {
+          toast.error(tToast("toasts.paperBot.sessionLimitTitle"), {
+            description: tToast("toasts.paperBot.sessionLimitDesc", {
               max: data.max_sessions ?? 0,
             }),
           });
           return;
         }
         if (data.code === "PAPER_BOT_DUPLICATE") {
-          toast.error(tToast("paperBot.duplicateSessionTitle"), {
-            description: tToast("paperBot.duplicateSessionDesc"),
+          toast.error(tToast("toasts.paperBot.duplicateSessionTitle"), {
+            description: tToast("toasts.paperBot.duplicateSessionDesc"),
           });
           return;
         }
-        toast.error(tToast("paperBot.startFailedTitle"), {
+        toast.error(tToast("toasts.paperBot.startFailedTitle"), {
           description:
             typeof data.error === "string"
               ? data.error
@@ -251,8 +296,8 @@ export function BotWizard({
 
       if (data.session_id) {
         const botPath = `/${locale}/dashboard/bot/${data.session_id}`;
-        toast.success(tToast("paperBot.startedTitle"), {
-          description: tToast("paperBot.startedDesc"),
+        toast.success(tToast("toasts.paperBot.startedTitle"), {
+          description: tToast("toasts.paperBot.startedDesc"),
         });
         router.push(botPath);
         return;
@@ -260,8 +305,8 @@ export function BotWizard({
       router.push(`/${locale}/dashboard/auto-trade`);
     } catch (err) {
       console.error(err);
-      toast.error(tToast("paperBot.startFailedTitle"), {
-        description: tToast("paperBot.networkError"),
+      toast.error(tToast("toasts.paperBot.startFailedTitle"), {
+        description: tToast("toasts.paperBot.networkError"),
       });
     } finally {
       setLoading(false);
@@ -642,8 +687,23 @@ export function BotWizard({
               ? "Etter start: boten kan være aktiv uten handel i en periode mens den venter på signal. Dette er normalt."
               : "After start: the bot can be active without trades for a period while waiting for a signal. This is normal."}
           </p>
-          {/* Primær CTA — alltid synlig (lys/mørk + over tabbar) */}
+          {/* Live price for selected pair */}
           <div className="mt-6">
+            <LivePricePreview symbol={selectedPairs[0] || "BTCUSDT"} />
+          </div>
+
+          {/* Kelly Criterion Trust Badge */}
+          <div className="mt-4 rounded-xl border border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800/50 p-4 flex items-start gap-3">
+            <Shield className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+            <p className="text-sm text-green-800 dark:text-green-200 leading-relaxed">
+              {isNo
+                ? "🛡️ Sikret av Kelly-kriteriet. Vår KI justerer automatisk risiko basert på profitt for å matematisk forhindre at du taper innsatsen din."
+                : "🛡️ Secured by the Kelly Criterion. Our AI automatically adjusts risk based on profit to mathematically prevent you from losing your stake."}
+            </p>
+          </div>
+
+          {/* Primær CTA — alltid synlig (lys/mørk + over tabbar) */}
+          <div className="mt-4">
             <button
               type="button"
               data-testid="bot-wizard-start-inline"

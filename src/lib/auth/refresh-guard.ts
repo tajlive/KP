@@ -3,18 +3,25 @@
  *
  * Intercepts Supabase `grant_type=refresh_token` requests and applies:
  * 1. Per-key mutex: only one refresh call runs at a time per process/session.
- * 2. Circuit breaker: after 3 failures (429/400), blocks further refresh
+ * 2. Result caching: waiting callers receive the SAME response (cloned)
+ *    instead of retrying with the stale refresh token.
+ * 3. Circuit breaker: after 3 failures (429/400), blocks further refresh
  *    attempts for 30s to stop spam.
- * 3. Sentry logging: every failure is logged with context.
+ * 4. Sentry logging: every failure is logged with context.
  *
  * Usage: inject via `global.fetch` in Supabase client config.
  */
 
 import { logAuthError, AuthErrorCode } from "./sentry-auth";
 
+type CachedRefreshResult =
+  | { ok: true; status: number; body: string }
+  | { ok: false; status: number; body: string };
+
 type RefreshLockState = {
   locked: boolean;
   promise: Promise<unknown> | null;
+  lastResult: CachedRefreshResult | null;
   lastFailureAt: number;
   failureCount: number;
 };
@@ -23,12 +30,14 @@ const refreshLocks = new Map<string, RefreshLockState>();
 
 const CIRCUIT_BREAKER_COOLDOWN_MS = 30_000;
 const MAX_FAILURES_BEFORE_COOLDOWN = 3;
+const LOCK_TIMEOUT_MS = 10_000;
 
 function getLockState(key: string): RefreshLockState {
   if (!refreshLocks.has(key)) {
     refreshLocks.set(key, {
       locked: false,
       promise: null,
+      lastResult: null,
       lastFailureAt: 0,
       failureCount: 0,
     });
@@ -61,6 +70,13 @@ export interface RefreshGuardContext {
   userId?: string;
   path?: string;
   source: "browser" | "server" | "middleware" | "edge";
+}
+
+function makeSyntheticResponse(result: CachedRefreshResult): Response {
+  return new Response(result.body, {
+    status: result.status,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 /**
@@ -107,23 +123,39 @@ export function createRefreshProtectedFetch(
       );
     }
 
-    // Mutex: if another refresh is in flight, wait for it then retry.
-    // By re-trying with baseFetch, the updated cookies/storage will be used,
-    // so the second call usually does not need refresh at all.
+    // If there is a cached result from a very recent refresh, return it immediately.
+    // This prevents racing tabs from re-using an already-consumed refresh token.
+    if (state.lastResult) {
+      return makeSyntheticResponse(state.lastResult);
+    }
+
+    // Mutex: if another refresh is in flight, wait for it and then return its result.
     if (state.locked && state.promise) {
+      const race = new Promise<void>((_, reject) => {
+        setTimeout(() => reject(new Error("Refresh lock timeout")), LOCK_TIMEOUT_MS);
+      });
       try {
-        await state.promise;
+        await Promise.race([state.promise, race]);
       } catch {
-        // ignore — we will retry below
+        // timeout or failure — continue below to attempt our own refresh
       }
-      return baseFetch(input, init);
+      if (state.lastResult) {
+        return makeSyntheticResponse(state.lastResult);
+      }
+      // If no result was cached (e.g. lock timed out without resolution),
+      // fall through and attempt the refresh ourselves.
     }
 
     // Acquire lock
     state.locked = true;
+    state.lastResult = null;
+
     const promise = baseFetch(input, init)
-      .then((res) => {
-        if (res.status === 429 || res.status === 400) {
+      .then(async (res) => {
+        const body = await res.text();
+        const isError = res.status === 429 || res.status === 400;
+
+        if (isError) {
           state.failureCount++;
           state.lastFailureAt = Date.now();
           logAuthError(
@@ -137,11 +169,13 @@ export function createRefreshProtectedFetch(
               status: res.status,
             },
           );
+          state.lastResult = { ok: false, status: res.status, body };
         } else if (res.ok) {
           // Reset on any success (even 2xx that isn't 200)
           state.failureCount = 0;
+          state.lastResult = { ok: true, status: res.status, body };
         }
-        return res;
+        return makeSyntheticResponse(state.lastResult!);
       })
       .catch((err) => {
         state.failureCount++;
@@ -157,10 +191,19 @@ export function createRefreshProtectedFetch(
             status: 0,
           },
         );
-        throw err;
+        const body = JSON.stringify({ message: err.message, error: "refresh_failed" });
+        state.lastResult = { ok: false, status: 0, body };
+        return makeSyntheticResponse(state.lastResult);
       })
       .finally(() => {
         state.locked = false;
+        // Keep lastResult around briefly so racing callers can consume it,
+        // but clear it after a short delay to avoid stale reuse.
+        setTimeout(() => {
+          if (state.lastResult) {
+            state.lastResult = null;
+          }
+        }, 2000);
       });
 
     state.promise = promise;

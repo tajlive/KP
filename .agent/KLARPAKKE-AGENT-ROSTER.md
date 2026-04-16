@@ -15,6 +15,7 @@ Oversikt over **anbefalte agenter** for å optimalisere og modernisere Klarpakke
 | **Research Agent**               | `agents/klarpakke-research-agent.md`                     | **🔬 Systematisk research:** Perplexity Pro før arkitekturvalg; lagrer kilder i MemPalace `critical_decisions`; triggeres av `architect`/`security` |
 | **Auto-Trade Strategy Research** | `agents/klarpakke-auto-trade-strategy-research-agent.md` | Alle strategier + presets + executor; dypere enn UI; forum/data-hypoteser; **ingen profitt-løfter**; SoT `docs/trading/AUTO-TRADE-STRATEGY-RESEARCH.md` |
 | **OAuth Sherlock**               | `agents/klarpakke-oauth-sherlock.md`                     | **🕵️ Auth-spesialist:** OAuth, session, cookies, middleware; MemPalace + web-research; systematic debugging; PKCE, Google Auth, Supabase SSR |
+| **Auth Agent**                   | `.kimi/auth-agent.yaml` (system prompt: `.kimi/agents/klarpakke-auth-agent.md`) | **🔐 Auth-spesialist:** OAuth, innlogging, session, redirects, passord-reset. Håndhever `/callback` (ikke `/auth/callback`). Kjører `oauth:check` automatisk. Aktiver med `kimi --agent-file .kimi/auth-agent.yaml` |
 | **Web Logic Analyzer**           | `agents/web-logic-analyzer.md`                           | **🧠 Logikk-spesialist:** Business logic, state management, dataflyt, conditional rendering, kompleksitetsanalyse, auth flows |
 | **UX SaaS Lead**                 | `agents/ux-saas-lead.md`                                 | Premium-sjekkliste per side/komponent                                                                                                                   |
 | **UI/UX Designer**               | `agents/ui-ux-designer.md`                               | Visuelt/interaksjon — **Klarpakke tokens** (oppdatert)                                                                                                  |
@@ -57,6 +58,7 @@ Oversikt over **anbefalte agenter** for å optimalisere og modernisere Klarpakke
 - UX/UI: `.cursor/rules/klarpakke-ux-ui-agent.mdc` — `src/components/**`, `src/app/**`
 - Live trading / trades: `.cursor/rules/klarpakke-live-trading-trades-agent.mdc` — `src/lib/trading/**`, trading API, handelshistorikk, migrasjoner
 - Auto-trade strategi: `.cursor/rules/klarpakke-auto-trade-strategy-research-agent.mdc` — `src/lib/auto-trading/**`, presets, auto-trading UI
+- Auth / OAuth: `.cursor/rules/klarpakke-auth-agent.mdc` — `src/lib/auth/**`, `src/middleware/auth*`, `src/app/**/(auth)/**`
 
 ## Dokumentasjon i repo
 

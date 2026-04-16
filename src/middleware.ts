@@ -193,7 +193,11 @@ export async function middleware(request: NextRequest) {
   
   const supabase = createServerClient(request, response);
 
-  const { data: { user } } = await supabase.auth.getUser();
+  // Use getSession() instead of getUser() in middleware to avoid server-side
+  // refresh-token races on every request (prefetch, images, etc.).
+  // getSession reads from cookies without validating against the auth server.
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   const pathWithoutLocale = stripLocalePrefix(pathname);
 

@@ -231,7 +231,7 @@ function PasswordSection() {
       if (!user?.email) return;
 
       const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+        redirectTo: `${window.location.origin}/no/update-password`,
       });
       if (error) throw error;
 

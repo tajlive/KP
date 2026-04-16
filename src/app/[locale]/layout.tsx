@@ -6,7 +6,7 @@ import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
 import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
 import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
-import { SanityTokensProvider } from "@/lib/design/useSanityTokens";
+import { getSanityTokensCSS, DEFAULT_TOKENS_CSS } from "@/lib/sanity/tokens";
 // import { SessionCleanup } from "@/features/auth/SessionCleanup";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
@@ -184,6 +184,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   // Get CSP nonce from middleware header for inline scripts
   const cspNonce = hdrs.get("x-csp-nonce") ?? undefined;
 
+  // Fetch design tokens server-side to eliminate FOUC
+  const tokensCss = await getSanityTokensCSS().catch(() => DEFAULT_TOKENS_CSS);
+
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
@@ -286,6 +289,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           crossOrigin="anonymous"
         />
         <OrganizationJsonLd />
+        {/* Server-side injected Sanity design tokens — eliminates FOUC */}
+        <style
+          id="sanity-design-tokens"
+          dangerouslySetInnerHTML={{ __html: tokensCss }}
+        />
       </head>
       <body
         className={`${inter.className} font-sans antialiased bg-kp-bg-primary text-kp-text-primary min-h-screen`}
@@ -304,12 +312,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
               <MarketingProviders>
                 <ErrorBoundary>
                   <AuthProvider>
-                    <SanityTokensProvider>
-                      <AuthHashHandler />
-                      <FeatureFlagProvider initialFlags={flags}>
-                        <LocaleMarketingShell>{children}</LocaleMarketingShell>
-                      </FeatureFlagProvider>
-                    </SanityTokensProvider>
+                    <AuthHashHandler />
+                    <FeatureFlagProvider initialFlags={flags}>
+                      <LocaleMarketingShell>{children}</LocaleMarketingShell>
+                    </FeatureFlagProvider>
                   </AuthProvider>
                 </ErrorBoundary>
               </MarketingProviders>
