@@ -2062,8 +2062,8 @@
     "binanceUpdateInfo": "Priser oppdateres fra Binance i sanntid",
     "trades": "Handler",
     "now": "Nå",
-    "confirmResetAll": "Nullstill alle øvishandelsesjoner? Alle handler slettes og saldo tilbakestilles til 100\u202f000\u00a0kr.",
-    "resetSuccess": "Øvishandel nullstilt. Saldo: 100\u202f000\u00a0kr.",
+    "confirmResetAll": "Nullstill alle øvishandelsesjoner? Alle handler slettes og saldo tilbakestilles til 100 000 kr.",
+    "resetSuccess": "Øvishandel nullstilt. Saldo: 100 000 kr.",
     "sessions": {
       "maxActiveReached": "Maks aktive sesjoner nådd. Omdirigerer...",
       "maxActiveStudent": "Du har nådd maksimalt antall aktive sesjoner for din plan."
@@ -2847,5 +2847,21 @@
       "startedTitle": "Bot startet",
       "startedDesc": "Din trading-bot kjører nå"
     }
+  },
+  "RiskSlider": {
+    "safe": "Trygg",
+    "safeDesc": "Minimal risiko. Ideell for nybegynnere.",
+    "balanced": "Balansert",
+    "balancedDesc": "Moderat risiko. God avkastning over tid.",
+    "aggressive": "Aggressiv",
+    "aggressiveDesc": "Høy risiko. Potensielt høy avkastning.",
+    "maxTrade": "Maks/hand",
+    "strategy": "Strategi",
+    "expected": "Forventet",
+    "studentPlan": "Student (gratis)",
+    "bachelorPlan": "Bachelor",
+    "masterPlan": "Master",
+    "swipe": "← Dra for å endre risikonivå →",
+    "confirm": "Bekreft valg"
   }
 }

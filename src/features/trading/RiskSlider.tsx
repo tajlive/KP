@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, PanInfo, useAnimation } from "framer-motion";
 import { Shield, Scale, Zap, ChevronRight, Check, Loader2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import { useTranslations } from "next-intl";
 
 import {
   type UIRiskLevel,
@@ -26,68 +27,52 @@ interface RiskConfig {
   labelEn: string;
   color: string;
   bgColor: string;
-  description: string;
-  descriptionEn: string;
-  maxTrade: string;
+  maxTradeKey: string;
   stopLoss: string;
-  strategy: string;
-  strategyEn: string;
+  strategyKey: string;
   returnRange: string;
-  plan: string;
-  planEn: string;
+  planKey: string;
 }
 
 const RISK_LEVELS: RiskConfig[] = [
   {
     id: "safe",
     icon: Shield,
-    label: "Trygg",
-    labelEn: "Safe",
+    label: "safe", // Using i18n key instead of literal
+    labelEn: "Safe", 
     color: "#10b981",
     bgColor: "rgba(16, 185, 129, 0.15)",
-    description: "Minimal risiko. Ideell for nybegynnere.",
-    descriptionEn: "Minimal risk. Ideal for beginners.",
-    maxTrade: "2%",
+    maxTradeKey: "maxTrade",
     stopLoss: "-3%",
-    strategy: "DCA/Spot",
-    strategyEn: "DCA/Spot",
+    strategyKey: "strategy",
     returnRange: "+8–14%/år",
-    plan: "Student (gratis)",
-    planEn: "Student (free)",
+    planKey: "studentPlan",
   },
   {
     id: "balanced",
     icon: Scale,
-    label: "Balansert",
+    label: "balanced",
     labelEn: "Balanced",
     color: "#f59e0b",
     bgColor: "rgba(245, 158, 11, 0.15)",
-    description: "Moderat risiko. God avkastning over tid.",
-    descriptionEn: "Moderate risk. Good returns over time.",
-    maxTrade: "5%",
+    maxTradeKey: "maxTrade",
     stopLoss: "-7%",
-    strategy: "DCA+RSI",
-    strategyEn: "DCA+RSI",
+    strategyKey: "strategy",
     returnRange: "+15–30%/år",
-    plan: "Bachelor",
-    planEn: "Bachelor",
+    planKey: "bachelorPlan",
   },
   {
     id: "aggressive",
     icon: Zap,
-    label: "Aggressiv",
+    label: "aggressive",
     labelEn: "Aggressive",
     color: "#ef4444",
     bgColor: "rgba(239, 68, 68, 0.15)",
-    description: "Høy risiko. Potensielt høy avkastning.",
-    descriptionEn: "High risk. Potentially high returns.",
-    maxTrade: "10%",
+    maxTradeKey: "maxTrade",
     stopLoss: "-15%",
-    strategy: "Momentum",
-    strategyEn: "Momentum",
+    strategyKey: "strategy",
     returnRange: "+30–60%/år",
-    plan: "Master",
-    planEn: "Master",
+    planKey: "masterPlan",
   },
 ];
 
@@ -106,7 +91,7 @@ interface RiskSliderProps {
 }
 
 export function RiskSlider({
-  locale = "no",
+  locale = "no", // Left as optional prop for backwards compatibility but not used inline anymore
   initialLevel = "balanced",
   onChange,
   onConfirm,
@@ -114,6 +99,7 @@ export function RiskSlider({
   onConfirmApi,
   showConfirmButton = true,
 }: RiskSliderProps) {
+  const t = useTranslations("RiskSlider");
   const [currentLevel, setCurrentLevel] = useState<UIRiskLevel>(initialLevel);
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -209,7 +195,7 @@ export function RiskSlider({
                 animate={{ opacity: 1, y: 0 }}
                 className="text-lg font-bold text-white"
               >
-                {locale === "no" ? currentConfig.label : currentConfig.labelEn}
+                {t(currentConfig.label as "safe" | "balanced" | "aggressive")}
               </motion.h3>
               <motion.p
                 key={`${currentLevel}-desc`}
@@ -217,7 +203,7 @@ export function RiskSlider({
                 animate={{ opacity: 1 }}
                 className="text-sm text-white/70"
               >
-                {locale === "no" ? currentConfig.description : currentConfig.descriptionEn}
+                {t(`${currentConfig.label}Desc` as "safeDesc" | "balancedDesc" | "aggressiveDesc")}
               </motion.p>
             </div>
           </div>
@@ -285,9 +271,11 @@ export function RiskSlider({
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="space-y-1">
                         <span className="text-gray-500 text-xs">
-                          {locale === "no" ? "Maks/hand" : "Max/trade"}
+                          {t("maxTrade")}
                         </span>
-                        <span className="block text-white font-medium">{level.maxTrade}</span>
+                        <span className="block text-white font-medium">
+                          {level.id === "safe" ? "2%" : level.id === "balanced" ? "5%" : "10%"}
+                        </span>
                       </div>
                       <div className="space-y-1">
                         <span className="text-gray-500 text-xs">Stop-loss</span>
@@ -295,15 +283,15 @@ export function RiskSlider({
                       </div>
                       <div className="space-y-1">
                         <span className="text-gray-500 text-xs">
-                          {locale === "no" ? "Strategi" : "Strategy"}
+                          {t("strategy")}
                         </span>
                         <span className="block text-white font-medium">
-                          {locale === "no" ? level.strategy : level.strategyEn}
+                           {level.id === "safe" ? "DCA/Spot" : level.id === "balanced" ? "DCA+RSI" : "Momentum"}
                         </span>
                       </div>
                       <div className="space-y-1">
                         <span className="text-gray-500 text-xs">
-                          {locale === "no" ? "Forventet" : "Expected"}
+                          {t("expected")}
                         </span>
                         <span className="block text-green-400 font-medium">{level.returnRange}</span>
                       </div>
@@ -316,7 +304,7 @@ export function RiskSlider({
                         color: level.color,
                       }}
                     >
-                      {locale === "no" ? level.plan : level.planEn}
+                      {t(level.planKey as "studentPlan" | "bachelorPlan" | "masterPlan")}
                     </div>
                   </div>
                 </div>
@@ -325,7 +313,7 @@ export function RiskSlider({
           </div>
 
           <p className="text-center text-xs text-gray-500 mt-4">
-            {locale === "no" ? "← Dra for å endre risikonivå →" : "← Swipe to change risk level →"}
+            {t("swipe")}
           </p>
         </div>
 
@@ -346,7 +334,7 @@ export function RiskSlider({
               ) : (
                 <>
                   <Check className="w-5 h-5 mr-2" />
-                  {locale === "no" ? "Bekreft valg" : "Confirm selection"}
+                  {t("confirm")}
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </>
               )}
@@ -377,7 +365,7 @@ export function RiskBadge({
       }}
     >
       <Icon className="w-3.5 h-3.5" />
-      {locale === "no" ? config.label : config.labelEn}
+      {config.label === "safe" ? "Trygg" : config.label === "balanced" ? "Balansert" : "Aggressiv"}
     </div>
   );
 }

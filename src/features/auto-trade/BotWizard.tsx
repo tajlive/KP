@@ -25,6 +25,7 @@ import {
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { useAnimatedPrice } from "@/hooks/usePrices";
+import { LivePricePreview } from "@/features/trading/LivePricePreview";
 
 interface BotWizardProps {
   userId: string;
@@ -36,49 +37,6 @@ interface BotWizardProps {
 
 function clampPaperCapital(n: number) {
   return Math.max(10_000, Math.min(1_000_000, Math.round(n)));
-}
-
-function LivePricePreview({ symbol }: { symbol: string }) {
-  const { formattedPrice, priceDirection, priceChange24h, isConnected } =
-    useAnimatedPrice(symbol);
-
-  if (!formattedPrice || formattedPrice === "$0,00") {
-    return (
-      <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/60 dark:bg-amber-900/20 p-4 text-center">
-        <p className="text-xs font-medium text-amber-700 dark:text-amber-200">
-          TODO: Replace with Live Ticker component
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
-          {symbol.replace("USDT", "")}/USDT
-        </span>
-        <span
-          className={`inline-flex h-2 w-2 rounded-full ${
-            isConnected ? "bg-green-500 animate-pulse" : "bg-red-500"
-          }`}
-        />
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="font-mono text-base font-semibold text-[#1A1D26] dark:text-white">
-          {formattedPrice}
-        </span>
-        <span
-          className={`text-xs font-medium ${
-            priceDirection === "up" ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {priceDirection === "up" ? "+" : ""}
-          {(priceChange24h || 0).toFixed(2)}%
-        </span>
-      </div>
-    </div>
-  );
 }
 
 const TIER_ORDER = ["student", "bachelor", "master", "phd", "professor"];
@@ -620,6 +578,14 @@ export function BotWizard({
                 );
               })}
             </div>
+
+            {selectedPairs.length > 0 && (
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+                {selectedPairs.map((pair) => (
+                  <LivePricePreview key={pair} symbol={pair} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -687,11 +653,6 @@ export function BotWizard({
               ? "Etter start: boten kan være aktiv uten handel i en periode mens den venter på signal. Dette er normalt."
               : "After start: the bot can be active without trades for a period while waiting for a signal. This is normal."}
           </p>
-          {/* Live price for selected pair */}
-          <div className="mt-6">
-            <LivePricePreview symbol={selectedPairs[0] || "BTCUSDT"} />
-          </div>
-
           {/* Kelly Criterion Trust Badge */}
           <div className="mt-4 rounded-xl border border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800/50 p-4 flex items-start gap-3">
             <Shield className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
@@ -700,6 +661,11 @@ export function BotWizard({
                 ? "🛡️ Sikret av Kelly-kriteriet. Vår KI justerer automatisk risiko basert på profitt for å matematisk forhindre at du taper innsatsen din."
                 : "🛡️ Secured by the Kelly Criterion. Our AI automatically adjusts risk based on profit to mathematically prevent you from losing your stake."}
             </p>
+          </div>
+
+          {/* Live price for selected pair — RIGHT ABOVE ACTION */}
+          <div className="mt-4">
+            <LivePricePreview symbol={selectedPairs[0] || "BTCUSDT"} />
           </div>
 
           {/* Primær CTA — alltid synlig (lys/mørk + over tabbar) */}
