@@ -47,6 +47,7 @@ import {
 import { getStrategyIconComponent } from "@/lib/trading/strategy-icons";
 import AdvancedStatsModal from "./AdvancedStatsModal";
 import AIDecisionPanel from "@/features/ai/AIDecisionPanel";
+import EnsembleAIDashboard from "@/features/trading/EnsembleAIDashboard";
 import { TABLE } from "@/lib/design/tokens";
 import { RobotThinkingStrip } from "@/features/trading/RobotThinkingStrip";
 import {
@@ -1177,6 +1178,12 @@ interface AIViewProps {
 }
 
 function AIView({ userId, strategyId, lang }: AIViewProps) {
+  const isEnsemble = strategyId === "ensemble_ai";
+
+  if (isEnsemble) {
+    return <EnsembleAIDashboard lang={lang} />;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

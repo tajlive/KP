@@ -16,6 +16,9 @@ npm run dev
 # Verifiser miljø
 npm run verify
 
+# Sjekk OAuth-konfigurasjon
+npm run oauth:check
+
 # Test & bygg
 npm run test:unit && npm run build
 
@@ -43,6 +46,17 @@ kimi monitor         # Sjekk prod helse
 kimi prod            # Full pipeline: ci → db → monitor → deploy → monitor
 kimi prod:preview    # Full pipeline til preview
 ```
+
+### Auth Agent (Eksplisitt aktivering)
+```bash
+# Aktiver auth-spesialisert agent manuelt
+kimi --agent-file .kimi/auth-agent.yaml
+
+# Eller bruk alias (hvis konfigurert i .kimi/commands.json)
+kimi auth            # Ekvivalent: kimi --agent-file .kimi/auth-agent.yaml
+```
+
+**Merk:** KIMI CLI har ikke domene-basert auto-aktivering av agenter. Auth-reglene injiseres automatisk i default-agenten via `AGENTS.md`, men for full auth-spesialisering må du eksplisitt laste `.kimi/auth-agent.yaml`.
 
 ---
 
@@ -75,6 +89,13 @@ kimi prod:preview    # Full pipeline til preview
 | **Minimal endring** | Kun det som må til |
 | **Verifiser først** | Sjekk før endring |
 | **GO/NO-GO** | Alltid tydelig status |
+
+### OAuth Redirect URIs (Aldri bryt)
+- **ALLTID** bruk `getCallbackUrl()` fra `@/lib/auth/config` for OAuth `redirectTo`
+- **FORBUDT** å hardkode `/auth/callback` — kodebasen bruker `/{locale}/callback` (f.eks. `/no/callback`)
+- **FORBUDT** å sende passord-reset til callback — bruk `/no/update-password`
+- **ALLTID** kjør `npm run oauth:check` før push av auth-endringer
+- **ALLTID** oppdater både Google Cloud Console og Supabase Auth URL Configuration når callback-endringer gjøres
 
 ### PL/pgSQL (Aldri bryt)
 - **DECLARE** på toppnivå, aldri nested

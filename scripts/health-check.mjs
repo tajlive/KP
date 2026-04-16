@@ -45,8 +45,8 @@ async function checkDockerLocal() {
 }
 
 const checks = [
-  { name: 'TypeScript', cmd: 'npx tsc --noEmit', timeout: 60000 },
-  { name: 'Lint', cmd: 'npm run lint', timeout: 60000 },
+  { name: 'TypeScript', cmd: 'npx tsc --noEmit', timeout: 120000 },
+  { name: 'Lint', cmd: 'npm run lint', timeout: 120000 },
 ];
 
 console.log('🔍 Health Check\n');

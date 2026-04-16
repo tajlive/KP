@@ -25,14 +25,16 @@ cp /Users/taj/klarpakke/.perplexity/mac-mcp-config.json \
    ~/Library/Application\ Support/Perplexity/mcp.json
 ```
 
+> **Merk:** KIMI-wrapperen er nå dramatisk forenklet (`run-kimi-mcp-simple.mjs`, ~100 linjer). Filer, git, shell og DB går via dedikerte MCPs, ikke via KIMI.
+
 ### Eller legg til manuelt:
 
 #### 1. KIMI (Essensiell)
 ```json
 {
-  "description": "KIMI CLI v3 - Hovedorkestrator",
+  "description": "KIMI CLI - Hovedorkestrator",
   "command": "node",
-  "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-optimized.mjs"]
+  "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-simple.mjs"]
 }
 ```
 

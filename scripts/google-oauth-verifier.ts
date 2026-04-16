@@ -158,14 +158,14 @@ async function verifyGoogleOAuth(): Promise<VerificationResult> {
     
     for (const expectedUri of expectedUris) {
       const mismatch = detectRedirectMismatch(
-        configuredUris.find(u => u.includes("/auth/callback")) || "",
+        configuredUris.find(u => u.includes("/callback")) || "",
         (expectedUri.match(/\/(no|en|th|zh)\//)?.[1] as SupportedLocale) || "no"
       );
       
       if (mismatch.isMismatch) {
         result.mismatches.push({
           type: "redirect_uri",
-          configured: configuredUris.find(u => u.includes("/auth/callback")) || "(none)",
+          configured: configuredUris.find(u => u.includes("/callback")) || "(none)",
           expected: expectedUri,
           suggestion: mismatch.suggestion || "Update redirect URI",
         });

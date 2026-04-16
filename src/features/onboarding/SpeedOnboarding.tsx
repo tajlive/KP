@@ -16,7 +16,7 @@ import {
   Zap,
   Circle,
 } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { RiskDisclaimer } from "./RiskDisclaimer";
 import { useCallback, useEffect, useState } from "react";
 
@@ -36,48 +36,48 @@ interface RiskProfile {
   fillColor: string;
 }
 
-const RISK_PROFILES: RiskProfile[] = [
+const getRiskProfiles = (t: (key: string) => string): RiskProfile[] => [
   {
     id: "safe",
-    name: "Trygg",
+    name: t("speedOnboarding.riskProfiles.safe.name"),
     color: "text-green-500",
     bg: "from-green-500/10 to-emerald-500/10",
     border: "border-green-400/40 hover:border-green-400",
-    description: "Lavt risiko, jevn vekst",
-    dailyLoss: "2% maks dagstap",
+    description: t("speedOnboarding.riskProfiles.safe.description"),
+    dailyLoss: t("speedOnboarding.riskProfiles.safe.dailyLoss"),
     icon: Shield,
     fillColor: "fill-green-500",
   },
   {
     id: "balanced",
-    name: "Balansert",
+    name: t("speedOnboarding.riskProfiles.balanced.name"),
     color: "text-blue-500",
     bg: "from-blue-500/10 to-indigo-500/10",
     border: "border-blue-400/40 hover:border-blue-400",
-    description: "God balanse mellom risiko og avkastning",
-    dailyLoss: "5% maks dagstap",
+    description: t("speedOnboarding.riskProfiles.balanced.description"),
+    dailyLoss: t("speedOnboarding.riskProfiles.balanced.dailyLoss"),
     icon: TrendingUp,
     fillColor: "fill-blue-500",
   },
   {
     id: "offensive",
-    name: "Offensiv",
+    name: t("speedOnboarding.riskProfiles.offensive.name"),
     color: "text-orange-500",
     bg: "from-orange-500/10 to-amber-500/10",
     border: "border-orange-400/40 hover:border-orange-400",
-    description: "Høyere risiko, høyere potensial",
-    dailyLoss: "8% maks dagstap",
+    description: t("speedOnboarding.riskProfiles.offensive.description"),
+    dailyLoss: t("speedOnboarding.riskProfiles.offensive.dailyLoss"),
     icon: Flame,
     fillColor: "fill-orange-500",
   },
   {
     id: "aggressive",
-    name: "Aggressiv",
+    name: t("speedOnboarding.riskProfiles.aggressive.name"),
     color: "text-red-500",
     bg: "from-red-500/10 to-rose-500/10",
     border: "border-red-400/40 hover:border-red-400",
-    description: "Maks risiko for erfarne",
-    dailyLoss: "12% maks dagstap",
+    description: t("speedOnboarding.riskProfiles.aggressive.description"),
+    dailyLoss: t("speedOnboarding.riskProfiles.aggressive.dailyLoss"),
     icon: Zap,
     fillColor: "fill-red-500",
   },
@@ -114,6 +114,8 @@ export default function SpeedOnboarding({
   onComplete?: () => void;
 }) {
   const locale = useLocale();
+  const t = useTranslations("onboarding");
+  const tCommon = useTranslations("common");
   const [step, setStep] = useState(0);
   const [selectedRisk, setSelectedRisk] = useState<string | null>(null);
   const [selectedCoins, setSelectedCoins] = useState<string[]>(["BTC"]);
@@ -217,7 +219,7 @@ export default function SpeedOnboarding({
         <div className="flex items-center justify-center gap-2 mb-6">
           <Timer className="w-4 h-4 text-blue-500" />
           <div className="text-sm font-bold text-slate-500">
-            Start trading på{" "}
+            {t("speedOnboarding.timerPrefix")}{" "}
             <span
               className={`${countdown < 15 ? "text-red-500" : "text-blue-500"}`}
             >
@@ -283,14 +285,14 @@ export default function SpeedOnboarding({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <h3 className="text-2xl font-black text-center text-slate-900 dark:text-white mb-2">
-              Velg risikoprofil
+              {t("speedOnboarding.step1.title")}
             </h3>
             <p className="text-center text-slate-500 mb-6 text-sm">
-              Vi tilpasser strategien din automatisk
+              {t("speedOnboarding.step1.subtitle")}
             </p>
 
             <div className="grid grid-cols-2 gap-3">
-              {RISK_PROFILES.map((profile) => {
+              {getRiskProfiles(t).map((profile) => {
                 const Icon = profile.icon;
                 const isSelected = selectedRisk === profile.id;
                 return (
@@ -339,7 +341,7 @@ export default function SpeedOnboarding({
               onClick={() => setStep(2)}
               className="w-full mt-6 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-base disabled:opacity-40 shadow-lg shadow-blue-600/25"
             >
-              Neste <ChevronRight className="w-4 h-4 ml-1" />
+              {tCommon("next")} <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </motion.div>
         )}
@@ -354,10 +356,10 @@ export default function SpeedOnboarding({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <h3 className="text-2xl font-black text-center text-slate-900 dark:text-white mb-2">
-              Velg dine coins
+              {t("speedOnboarding.step2.title")}
             </h3>
             <p className="text-center text-slate-500 mb-6 text-sm">
-              Du kan velge flere — DCA fordeler kapitalen automatisk
+              {t("speedOnboarding.step2.subtitle")}
             </p>
 
             <div className="space-y-3">
@@ -408,13 +410,13 @@ export default function SpeedOnboarding({
             <div className="mt-6 p-4 bg-linear-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-200 dark:border-green-800/50 text-center">
               <div className="text-xs text-green-600 font-bold uppercase tracking-wider mb-1">
                 <Bitcoin className="w-3.5 h-3.5 inline mr-1" />
-                Din startkapital
+                {t("speedOnboarding.step2.startingCapital")}
               </div>
               <div className="text-3xl font-black text-green-600">
                 100 000 <span className="text-lg">NOK</span>
               </div>
               <div className="text-[11px] text-green-500/80 mt-1">
-                Paper trading — null risiko for ekte penger
+                {t("speedOnboarding.step2.paperTradingZeroRisk")}
               </div>
             </div>
 
@@ -424,7 +426,7 @@ export default function SpeedOnboarding({
                 onClick={() => setStep(1)}
                 className="flex-1 h-12 rounded-2xl font-bold"
               >
-                Tilbake
+                {tCommon("back")}
               </Button>
               <Button
                 onClick={handleStart}
@@ -432,11 +434,11 @@ export default function SpeedOnboarding({
                 className="flex-[2] h-12 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-2xl font-bold text-base shadow-xl shadow-green-500/30"
               >
                 {isStarting ? (
-                  <span className="animate-pulse">Starter...</span>
+                  <span className="animate-pulse">{t("speedOnboarding.step2.starting")}</span>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5 mr-2" />
-                    START TRADING!
+                    {t("speedOnboarding.step2.startTrading")}
                   </>
                 )}
               </Button>
@@ -462,12 +464,12 @@ export default function SpeedOnboarding({
             </motion.div>
 
             <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-2">
-              Du er i gang! 🚀
+              {t("speedOnboarding.step3.title")}
             </h3>
             <p className="text-slate-500 mb-6">
-              Din AI-bot handler nå med <strong>100K NOK</strong> i paper-modus.
+              {t("speedOnboarding.step3.line1")} <strong>100K NOK</strong> {t("speedOnboarding.step3.line2")}
               <br />
-              Sjekk dashboardet for oppdateringer!
+              {t("speedOnboarding.step3.line3")}
             </p>
 
             <div className="flex flex-col gap-3">
@@ -477,7 +479,7 @@ export default function SpeedOnboarding({
                 }
                 className="h-14 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl text-lg font-bold shadow-xl shadow-blue-600/25"
               >
-                Gå til Dashboard →
+                {t("speedOnboarding.step3.goToDashboard")}
               </Button>
               <Button
                 variant="ghost"
@@ -486,7 +488,7 @@ export default function SpeedOnboarding({
                 }
                 className="text-slate-500 text-sm"
               >
-                Se trading-aktivitet
+                {t("speedOnboarding.step3.viewActivity")}
               </Button>
             </div>
           </motion.div>

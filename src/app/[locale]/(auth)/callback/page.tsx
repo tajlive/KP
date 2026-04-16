@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
   const pathname = usePathname();
   const handledRef = useRef(false);
 
-  // Hent locale fra URL-path (/no/auth/callback → 'no')
+  // Hent locale fra URL-path (/no/callback → 'no')
   const locale = pathname?.split("/")[1] || "no";
 
   useEffect(() => {

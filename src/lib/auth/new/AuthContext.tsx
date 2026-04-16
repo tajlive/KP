@@ -43,12 +43,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const supabase = createClient();
 
-    // Hent initial user
-    const getUser = async () => {
+    // Hent initial session (getSession refreshes expired tokens, getUser does not)
+    const initAuth = async () => {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser();
+        const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
-        setUser(user);
+        setUser(session?.user ?? null);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    getUser();
+    initAuth();
 
     // Lytt på auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

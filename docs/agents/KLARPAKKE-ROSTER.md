@@ -15,6 +15,7 @@
 | CI, MCP, Linear, verify                                 | `klarpakke-automation-orchestrator.md`                |
 | **Live trading + handler + bevis + ansvar**             | **`klarpakke-live-trading-trades-agent.md`**          |
 | **Auto-trade strategier (forskning/tuning/forum+data)** | **`klarpakke-auto-trade-strategy-research-agent.md`** |
+| **Auth / OAuth / Sessions**                             | **`.kimi/auth-agent.yaml`** (aktiver: `kimi --agent-file .kimi/auth-agent.yaml`) |
 | Cron, webhooks                                          | `automation-expert.md`                                |
 
 ## Arbeidsflyt

@@ -57,7 +57,7 @@ context_files:
   - src/middleware/auth.ts
   - src/middleware/auth-guard.ts
   - src/middleware/oauth.ts
-  - src/app/[locale]/auth/callback/route.ts
+  - src/app/[locale]/(auth)/callback/page.tsx
   - src/lib/auth/config.ts
   - src/lib/auth/googleAuth.ts
   - AUTH-ISSUE-DIAGNOSIS-2026-04-08.md
@@ -146,7 +146,7 @@ grep -r "auth\|session" src/middleware/ --include="*.ts"
    └─→ accounts.google.com → Consent
    
 3. Callback to App
-   └─→ /auth/callback?code=...&state=...
+   └─→ /no/callback?code=...&state=...
    
 4. Session Exchange
    └─→ exchangeCodeForSession(code)
@@ -345,7 +345,7 @@ supabase.auth.getSession()
 **Record and analyze:**
 ```bash
 # Look for patterns like:
-# 1. /auth/callback called
+# 1. /no/callback called
 # 2. Multiple /api/auth/session requests
 # 3. Redirect loop pattern
 ```
@@ -596,8 +596,13 @@ src/
 │   └── i18n.ts              # Locale routing (affects auth URLs)
 │
 ├── app/[locale]/
-│   ├── auth/callback/
-│   │   └── route.ts         # OAuth callback handler
+│   ├── (auth)/
+│   │   ├── callback/
+│   │   │   └── page.tsx     # OAuth callback handler
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   └── register/
+│   │       └── page.tsx
 │   └── (auth)/
 │       ├── login/
 │       │   └── InnloggingClient.tsx

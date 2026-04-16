@@ -210,12 +210,9 @@ async function makeSonarRequest(
     search_context: searchContext,
   };
 
-  // Add response_format for JSON mode if requested
-  if (options.jsonMode) {
-    requestBody.response_format = {
-      type: 'json_object',
-    };
-  }
+  // Perplexity API no longer accepts response_format: { type: 'json_object' }.
+  // We rely on the prompt to request JSON output instead.
+
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);

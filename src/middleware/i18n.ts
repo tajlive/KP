@@ -52,7 +52,7 @@ export function i18nMiddleware(
   // 2. PKCE callback on root with ?code=
   if (strippedPath === "/" && request.nextUrl.searchParams.has("code")) {
     const url = request.nextUrl.clone();
-    url.pathname = localizedPathname(locale, "/auth/callback");
+    url.pathname = localizedPathname(locale, "/callback");
     return NextResponse.redirect(url, 302);
   }
 

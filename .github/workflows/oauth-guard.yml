@@ -1,0 +1,57 @@
+name: OAuth Guard
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/lib/auth/**'
+      - 'src/middleware/**'
+      - 'src/app/**/(auth)/**'
+      - 'src/app/**/auth/**'
+      - '.env*'
+      - 'scripts/oauth-guard.ts'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/lib/auth/**'
+      - 'src/middleware/**'
+      - 'src/app/**/(auth)/**'
+      - 'src/app/**/auth/**'
+      - '.env*'
+      - 'scripts/oauth-guard.ts'
+
+jobs:
+  oauth-guard:
+    name: Check OAuth Redirect URI Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run OAuth Guard
+        run: npx tsx scripts/oauth-guard.ts --json
+        env:
+          # Optional: set service key to also validate remote Supabase config
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+
+      - name: Comment PR on failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ **OAuth Guard failed**\n\nThis PR introduces inconsistent OAuth redirect URIs.\n\nRun \`npm run oauth:check\` locally to see details, or \`npm run oauth:fix\` to auto-fix code issues.\n\nCommon causes:\n- Hardcoded \`/auth/callback\` instead of \`/no/callback\`\n- Password recovery redirect going to callback instead of \`/no/update-password\`\n- Corrupted \`NEXT_PUBLIC_APP_URL\` in env files`
+            })

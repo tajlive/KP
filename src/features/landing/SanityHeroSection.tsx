@@ -4,7 +4,7 @@ import { Sparkles, ArrowRight } from 'lucide-react';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';
 import { BadgePremium } from '@/shared/ui/BadgePremium';
 import { motion } from 'framer-motion';
-import { client, isSanityConfigured } from '@/lib/sanity/client';
+import { safeFetch } from '@/lib/sanity/client';
 import { landingContentQuery } from '@/lib/sanity/queries';
 import { Skeleton } from '@/shared/ui/skeleton';
 
@@ -16,37 +16,37 @@ interface LandingContent {
   features: Array<{ title: string; description: string; icon: string }>;
 }
 
-// Fallback data (hardcoded as backup)
-const fallbackContent: LandingContent = {
-  heroTitle: {
-    line1: 'Lær å trade krypto',
-    line2: 'med AI som mentor',
-  },
-  heroSubtitle: 'Fra nybegynner til proff med papirhandel, AI-analyse og automatisk trading. Gratis å starte.',
-  heroCta: {
-    text: 'Start gratis',
-    link: '/register',
-  },
-  trustBadges: [
-    { text: 'Alltid gratis å prøve', icon: '✓' },
-    { text: 'Ingen kort påkrevd', icon: '✓' },
-    { text: 'Kanseller når som helst', icon: '✓' },
-  ],
-  features: [],
-};
+function getFallbackContent(locale: string): LandingContent {
+  const isEn = locale === 'en';
+  return {
+    heroTitle: {
+      line1: isEn ? 'Learn to trade crypto' : 'Lær å trade krypto',
+      line2: isEn ? 'with AI as your mentor' : 'med AI som mentor',
+    },
+    heroSubtitle: isEn
+      ? 'From beginner to pro with paper trading, AI analysis, and automated trading. Free to start.'
+      : 'Fra nybegynner til proff med papirhandel, AI-analyse og automatisk trading. Gratis å starte.',
+    heroCta: {
+      text: isEn ? 'Start free' : 'Start gratis',
+      link: '/register',
+    },
+    trustBadges: [
+      { text: isEn ? 'Always free to try' : 'Alltid gratis å prøve', icon: '✓' },
+      { text: isEn ? 'No card required' : 'Ingen kort påkrevd', icon: '✓' },
+      { text: isEn ? 'Cancel anytime' : 'Kanseller når som helst', icon: '✓' },
+    ],
+    features: [],
+  };
+}
 
 async function getLandingContent(language: string): Promise<LandingContent> {
-  if (!isSanityConfigured()) {
-    return fallbackContent;
-  }
-  
-  try {
-    const content = await client.fetch<LandingContent>(landingContentQuery, { language });
-    return content || fallbackContent;
-  } catch (error) {
-    console.error('Failed to fetch landing content from Sanity:', error);
-    return fallbackContent;
-  }
+  const fallback = getFallbackContent(language);
+  return safeFetch<LandingContent>(
+    landingContentQuery,
+    { language },
+    fallback,
+    { next: { revalidate: 60, tags: ['sanity', 'sanity:landing', 'sanity:landingContent'] } }
+  );
 }
 
 interface SanityHeroSectionProps {

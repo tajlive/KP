@@ -9,7 +9,7 @@
     "kimi": {
       "description": "🧠 KIMI CLI v3 - Hovedorkestrator for Klarpakke-utvikling",
       "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-optimized.mjs"]
+      "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-simple.mjs"]
     },
     "filesystem": {
       "description": "📁 Filsystem - Direkte filoperasjoner uten KIMI-kall",

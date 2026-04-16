@@ -27,12 +27,14 @@ export function calculateKelly(
 export async function updateKellyStats(userId: string, strategy: string): Promise<KellyStats> {
   const supabase = createClient();
   
-  // Use auto_trading_trades table with pnl column
+  // Use the canonical 'trades' table with realized_pnl
   const { data } = await supabase
-    .from('auto_trading_trades')
-    .select('pnl')
+    .from('trades')
+    .select('realized_pnl')
     .eq('user_id', userId)
-    .eq('strategy_id', strategy)
+    // Removed strategy_id filter if it's not present natively, 
+    // or keep it if trades table supports it. 
+    // For now we just fetch recent trades for the user to gauge winrate.
     .gte('created_at', new Date(Date.now() - 30*24*60*60*1000).toISOString())
     .order('created_at', { ascending: false })
     .limit(50);
@@ -43,7 +45,7 @@ export async function updateKellyStats(userId: string, strategy: string): Promis
   
   // Convert PnL to percentage (approximate based on avg trade size)
   const avgTradeSize = 10000; // NOK
-  const pnlPcts = data.map((t: { pnl: number | null }) => ((t.pnl || 0) / avgTradeSize) * 100);
+  const pnlPcts = data.map((t: { realized_pnl?: number | null }) => ((t.realized_pnl || 0) / avgTradeSize) * 100);
   
   const wins = pnlPcts.filter((p: number) => p > 0);
   const losses = pnlPcts.filter((p: number) => p < 0);

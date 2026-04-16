@@ -30,9 +30,11 @@ export function initSentry(): void {
         return null;
       }
       
-      // Ignore expected auth errors
+      // Ignore expected auth errors and Supabase Auth recovery noise
       if (event.exception?.values?.[0]?.value?.includes('JWT expired') ||
-          event.exception?.values?.[0]?.value?.includes('Invalid Refresh Token')) {
+          event.exception?.values?.[0]?.value?.includes('Invalid Refresh Token') ||
+          event.exception?.values?.[0]?.value?.includes('circuit breaker') ||
+          event.exception?.values?.[0]?.value?.includes('Lock broken')) {
         return null;
       }
       

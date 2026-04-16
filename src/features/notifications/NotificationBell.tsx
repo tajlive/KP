@@ -99,8 +99,8 @@ export function NotificationBell() {
               <Link
                 href={`/${locale}/profile/notifications`}
                 className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                title="Innstillinger"
-                aria-label="Varslingsinnstillinger"
+                title={locale === "en" ? "Settings" : "Innstillinger"}
+                aria-label={locale === "en" ? "Notification settings" : "Varslingsinnstillinger"}
               >
                 <Settings className="w-4 h-4" />
               </Link>
@@ -143,7 +143,7 @@ export function NotificationBell() {
             {notifications.length === 0 ? (
               <div className="py-12 text-center">
                 <BellOff className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <p className="text-slate-500 text-sm">Ingen varsler ennå</p>
+                <p className="text-slate-500 text-sm">{locale === "en" ? "No notifications yet" : "Ingen varsler ennå"}</p>
               </div>
             ) : (
               <div className="divide-y divide-white/5">

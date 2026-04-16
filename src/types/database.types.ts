@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       _session_migration_map: {
@@ -189,6 +164,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_agent_stats: {
+        Row: {
+          agent_id: string
+          avg_r_multiple: number | null
+          id: string
+          last_updated_at: string
+          max_drawdown: number | null
+          sharpe_like_score: number | null
+          symbol: string
+          timeframe: string
+          trades_count: number
+          win_rate: number | null
+        }
+        Insert: {
+          agent_id: string
+          avg_r_multiple?: number | null
+          id?: string
+          last_updated_at?: string
+          max_drawdown?: number | null
+          sharpe_like_score?: number | null
+          symbol: string
+          timeframe?: string
+          trades_count?: number
+          win_rate?: number | null
+        }
+        Update: {
+          agent_id?: string
+          avg_r_multiple?: number | null
+          id?: string
+          last_updated_at?: string
+          max_drawdown?: number | null
+          sharpe_like_score?: number | null
+          symbol?: string
+          timeframe?: string
+          trades_count?: number
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
       ai_analysis_logs: {
         Row: {
           executed: boolean | null
@@ -324,6 +338,75 @@ export type Database = {
           sonar_sentiment?: string | null
           symbol?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      ai_feature_store: {
+        Row: {
+          as_of: string
+          checksum: string | null
+          created_at: string
+          features: Json
+          id: string
+          source: string | null
+          symbol: string
+          timeframe: string
+        }
+        Insert: {
+          as_of?: string
+          checksum?: string | null
+          created_at?: string
+          features?: Json
+          id?: string
+          source?: string | null
+          symbol: string
+          timeframe?: string
+        }
+        Update: {
+          as_of?: string
+          checksum?: string | null
+          created_at?: string
+          features?: Json
+          id?: string
+          source?: string | null
+          symbol?: string
+          timeframe?: string
+        }
+        Relationships: []
+      }
+      ai_signal_outcomes: {
+        Row: {
+          created_at: string
+          holding_time_seconds: number | null
+          id: string
+          pnl: number | null
+          r_multiple: number | null
+          signal_id: string | null
+          sl_hit: boolean | null
+          tp_hit: boolean | null
+          trade_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          holding_time_seconds?: number | null
+          id?: string
+          pnl?: number | null
+          r_multiple?: number | null
+          signal_id?: string | null
+          sl_hit?: boolean | null
+          tp_hit?: boolean | null
+          trade_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          holding_time_seconds?: number | null
+          id?: string
+          pnl?: number | null
+          r_multiple?: number | null
+          signal_id?: string | null
+          sl_hit?: boolean | null
+          tp_hit?: boolean | null
+          trade_id?: string | null
         }
         Relationships: []
       }
@@ -2623,6 +2706,36 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      cron_job_runs: {
+        Row: {
+          created_at: string
+          error_summary: string | null
+          finished_at: string | null
+          id: string
+          job_name: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_summary?: string | null
+          finished_at?: string | null
+          id?: string
+          job_name: string
+          started_at?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          error_summary?: string | null
+          finished_at?: string | null
+          id?: string
+          job_name?: string
+          started_at?: string | null
+          status?: string
         }
         Relationships: []
       }
@@ -6685,12 +6798,18 @@ export type Database = {
       trading_signals: {
         Row: {
           action: string | null
+          agent_id: string | null
+          agent_meta: Json | null
+          agent_weight: number | null
           asset_name: string | null
           confidence: number | null
           created_at: string | null
+          ensemble_run_id: string | null
           entry_price: number | null
           expires_at: string | null
+          feature_version: string | null
           id: string
+          model_version: string | null
           reasoning: string | null
           risk_level: number | null
           signal_type: string | null
@@ -6701,12 +6820,18 @@ export type Database = {
         }
         Insert: {
           action?: string | null
+          agent_id?: string | null
+          agent_meta?: Json | null
+          agent_weight?: number | null
           asset_name?: string | null
           confidence?: number | null
           created_at?: string | null
+          ensemble_run_id?: string | null
           entry_price?: number | null
           expires_at?: string | null
+          feature_version?: string | null
           id?: string
+          model_version?: string | null
           reasoning?: string | null
           risk_level?: number | null
           signal_type?: string | null
@@ -6717,12 +6842,18 @@ export type Database = {
         }
         Update: {
           action?: string | null
+          agent_id?: string | null
+          agent_meta?: Json | null
+          agent_weight?: number | null
           asset_name?: string | null
           confidence?: number | null
           created_at?: string | null
+          ensemble_run_id?: string | null
           entry_price?: number | null
           expires_at?: string | null
+          feature_version?: string | null
           id?: string
+          model_version?: string | null
           reasoning?: string | null
           risk_level?: number | null
           signal_type?: string | null
@@ -9136,9 +9267,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       notification_channel_v2: ["push", "email", "sms", "in_app"],

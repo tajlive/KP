@@ -32,6 +32,7 @@ export type StrategyType =
   | "trend_balansert"
   | "multisignal_aktiv"
   | "grid_bot"
+  | "ensemble_ai"
   | "ai_copy";
 
 export interface Trade {

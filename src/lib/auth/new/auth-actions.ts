@@ -10,6 +10,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
+import { getAppUrl, getCallbackUrl } from "@/lib/auth/config";
 
 // ============================================
 // EMAIL/PASSWORD AUTH
@@ -44,7 +45,7 @@ export async function signUpWithEmail(formData: FormData) {
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/callback`,
+      emailRedirectTo: getCallbackUrl("no"),
     },
   });
 
@@ -71,7 +72,7 @@ export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/callback`,
+      redirectTo: getCallbackUrl("no"),
       queryParams: {
         access_type: "offline",
         prompt: "consent",
@@ -95,7 +96,7 @@ export async function signInWithMicrosoft() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "azure",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/callback`,
+      redirectTo: getCallbackUrl("no"),
       scopes: "email profile openid",
     },
   });
@@ -119,7 +120,7 @@ export async function sendPasswordReset(formData: FormData) {
   const email = formData.get("email") as string;
   
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/no/update-password`,
+    redirectTo: `${getAppUrl()}/no/update-password`,
   });
 
   if (error) {

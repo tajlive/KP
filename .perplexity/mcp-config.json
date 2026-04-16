@@ -1,31 +1,11 @@
 {
   "mcpServers": {
-    "klarpakke": {
-      "command": "node",
-      "args": ["./klarpakke-mcp/dist/index.js"],
-      "env": {
-        "NEXT_PUBLIC_SUPABASE_URL": "${NEXT_PUBLIC_SUPABASE_URL}",
-        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}",
-        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
-      }
-    },
     "kimi": {
-      "command": "node",
-      "args": ["scripts/run-kimi-mcp-optimized.mjs"],
+      "command": "npx",
+      "args": ["tsx", "/Users/taj/klarpakke/scripts/kimi-mcp-server.ts"],
       "cwd": "/Users/taj/klarpakke",
       "env": {
-        "PATH": "${PATH}:/Users/taj/.local/bin",
-        "DEBUG": "${DEBUG:-0}"
-      }
-    },
-    "klarpakke_kimi": {
-      "transport": "stdio",
-      "command": "kimi",
-      "args": ["--acp"],
-      "cwd": "/Users/taj/klarpakke",
-      "env": {
-        "PATH": "${PATH}:/Users/taj/.local/bin",
-        "DEBUG": "${DEBUG:-0}"
+        "PATH": "${PATH}:/Users/taj/.local/bin"
       }
     }
   }

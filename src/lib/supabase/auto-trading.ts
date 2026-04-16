@@ -12,6 +12,23 @@ export interface AutoTradingConfig {
   updated_at: string;
 }
 
+// DB stores risk_profile as conservative/moderate/aggressive,
+// but the app interface uses low/medium/high.
+const riskLevelToProfile = {
+  low: "conservative",
+  medium: "moderate",
+  high: "aggressive",
+} as const;
+
+const riskProfileToLevel: Record<
+  "conservative" | "moderate" | "aggressive",
+  "low" | "medium" | "high"
+> = {
+  conservative: "low",
+  moderate: "medium",
+  aggressive: "high",
+};
+
 export interface TradingSignal {
   id: string;
   symbol: string;
@@ -49,8 +66,12 @@ export async function getAutoTradingConfig(
     id: data.id,
     user_id: data.user_id,
     enabled: data.auto_trading_enabled ?? false,
-    mode: (data.risk_profile as "paper" | "live") || "paper",
-    risk_level: (data.risk_profile as "low" | "medium" | "high") || "medium",
+    mode: "paper",
+    risk_level:
+      riskProfileToLevel[
+        (data.risk_profile as "conservative" | "moderate" | "aggressive") ||
+          "moderate"
+      ],
     max_trade_size_nok: data.max_position_percent * 1000, // Approximate conversion
     created_at: data.created_at ?? "",
     updated_at: data.updated_at ?? "",
@@ -75,7 +96,8 @@ export async function upsertAutoTradingConfig(
       .from("auto_trade_settings")
       .update({
         auto_trading_enabled: config.enabled,
-        risk_profile: config.risk_level,
+        risk_profile:
+          riskLevelToProfile[(config.risk_level as "low" | "medium" | "high") || "medium"],
         max_position_percent: config.max_trade_size_nok
           ? config.max_trade_size_nok / 1000
           : undefined,
@@ -94,8 +116,12 @@ export async function upsertAutoTradingConfig(
       id: data.id,
       user_id: data.user_id,
       enabled: data.auto_trading_enabled ?? false,
-      mode: (data.risk_profile as "paper" | "live") || "paper",
-      risk_level: (data.risk_profile as "low" | "medium" | "high") || "medium",
+      mode: "paper",
+      risk_level:
+        riskProfileToLevel[
+          (data.risk_profile as "conservative" | "moderate" | "aggressive") ||
+            "moderate"
+        ],
       max_trade_size_nok: data.max_position_percent * 1000,
       created_at: data.created_at ?? "",
       updated_at: data.updated_at ?? "",
@@ -107,7 +133,8 @@ export async function upsertAutoTradingConfig(
       .insert({
         user_id: userId,
         auto_trading_enabled: config.enabled ?? false,
-        risk_profile: config.risk_level ?? "medium",
+        risk_profile:
+          riskLevelToProfile[(config.risk_level as "low" | "medium" | "high") || "medium"],
         max_position_percent: config.max_trade_size_nok
           ? config.max_trade_size_nok / 1000
           : 10,
@@ -126,8 +153,12 @@ export async function upsertAutoTradingConfig(
       id: data.id,
       user_id: data.user_id,
       enabled: data.auto_trading_enabled ?? false,
-      mode: (data.risk_profile as "paper" | "live") || "paper",
-      risk_level: (data.risk_profile as "low" | "medium" | "high") || "medium",
+      mode: "paper",
+      risk_level:
+        riskProfileToLevel[
+          (data.risk_profile as "conservative" | "moderate" | "aggressive") ||
+            "moderate"
+        ],
       max_trade_size_nok: data.max_position_percent * 1000,
       created_at: data.created_at ?? "",
       updated_at: data.updated_at ?? "",
@@ -185,8 +216,12 @@ export async function getActiveAutoTraders(): Promise<AutoTradingConfig[]> {
     id: item.id,
     user_id: item.user_id,
     enabled: item.auto_trading_enabled ?? false,
-    mode: (item.risk_profile as "paper" | "live") || "paper",
-    risk_level: (item.risk_profile as "low" | "medium" | "high") || "medium",
+    mode: "paper",
+    risk_level:
+      riskProfileToLevel[
+        (item.risk_profile as "conservative" | "moderate" | "aggressive") ||
+          "moderate"
+      ],
     max_trade_size_nok: item.max_position_percent * 1000,
     created_at: item.created_at ?? "",
     updated_at: item.updated_at ?? "",
@@ -206,7 +241,7 @@ export async function getRecentTradingSignals(
     .from("ai_decision_log")
     .select("*")
     .in("decision_type", ["BUY", "SELL"])
-    .gte("confidence", minConfidence)
+    .gte("sentiment_score", minConfidence)
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -215,15 +250,54 @@ export async function getRecentTradingSignals(
     throw new Error("Failed to get trading signals");
   }
 
-  return (data || []).map((item: Tables<"ai_decision_log">) => ({
-    id: item.id,
-    symbol: item.symbol,
-    action: item.decision_type.toLowerCase() as "buy" | "sell",
-    confidence: item.sentiment_score ?? 0,
-    price: 0, // Not directly available in ai_decision_log
-    reasoning: item.decision_reason || "",
-    created_at: item.created_at ?? "",
-  }));
+  // Extract prices from analysis_data where ai-engine stores them,
+  // then batch-fetch any missing prices from Binance
+  const signals = (data || []).map((item: Tables<"ai_decision_log">) => {
+    const analysisData = item.analysis_data as Record<string, unknown> | null;
+    const storedPrice = analysisData?.current_price as number | undefined;
+    return {
+      id: item.id,
+      symbol: item.symbol,
+      action: item.decision_type.toLowerCase() as "buy" | "sell",
+      confidence: item.sentiment_score ?? 0,
+      price: storedPrice ?? 0,
+      reasoning: item.decision_reason || "",
+      created_at: item.created_at ?? "",
+    };
+  });
+
+  // Fetch missing prices from Binance for signals that don't have them
+  const symbolsNeedingPrice = [...new Set(
+    signals.filter((s) => s.price === 0).map((s) => s.symbol),
+  )];
+
+  if (symbolsNeedingPrice.length > 0) {
+    const priceMap = new Map<string, number>();
+    await Promise.all(
+      symbolsNeedingPrice.map(async (sym) => {
+        try {
+          const res = await fetch(
+            `https://api.binance.com/api/v3/ticker/price?symbol=${sym}`,
+            { signal: AbortSignal.timeout(5000) },
+          );
+          if (res.ok) {
+            const json = await res.json();
+            priceMap.set(sym, parseFloat(json.price));
+          }
+        } catch {
+          console.warn(`Failed to fetch price for ${sym}`);
+        }
+      }),
+    );
+
+    for (const signal of signals) {
+      if (signal.price === 0) {
+        signal.price = priceMap.get(signal.symbol) ?? 0;
+      }
+    }
+  }
+
+  return signals.filter((s) => s.price > 0);
 }
 
 /**
@@ -241,8 +315,13 @@ export async function logAutoTrade(
   const { error } = await supabase.from("auto_trade_log").insert({
     user_id: userId,
     symbol: signal.symbol,
-    action: signal.action.toUpperCase(),
-    status: success ? "completed" : "failed",
+    action: signal.action.toLowerCase(),
+    amount_nok: signal.price * (signal.confidence / 100),
+    price_at_action: signal.price,
+    reason: signal.reasoning,
+    sentiment_score: signal.confidence,
+    is_paper: config.mode === "paper",
+    status: success ? "executed" : "failed",
     error_message: errorMessage,
   });
 

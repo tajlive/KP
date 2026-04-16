@@ -1,4 +1,5 @@
 import { createClient } from 'next-sanity';
+import { draftMode } from 'next/headers';
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
@@ -27,9 +28,14 @@ export const previewClient = createClient({
   token: process.env.SANITY_API_READ_TOKEN,
 });
 
-// Helper to get the right client
-export const getClient = (preview = false) => 
-  preview ? previewClient : client;
+/**
+ * Get the correct client based on draft mode.
+ * Must be called from an async server context.
+ */
+export async function getSanityClient() {
+  const isDraft = await draftMode().then(d => d.isEnabled).catch(() => false);
+  return isDraft ? previewClient : client;
+}
 
 // Helper to check if Sanity is configured
 export const isSanityConfigured = () => {
@@ -40,14 +46,17 @@ export const isSanityConfigured = () => {
 export async function safeFetch<T>(
   query: string,
   params: { [key: string]: unknown } = {},
-  fallback: T
+  fallback: T,
+  options?: { next?: { revalidate?: number | false; tags?: string[] } }
 ): Promise<T> {
   try {
     if (!isSanityConfigured()) {
       console.warn('Sanity not configured, using fallback data');
       return fallback;
     }
-    return await client.fetch<T>(query, params);
+    const sanityClient = await getSanityClient();
+    const result = await sanityClient.fetch<T>(query, params, options);
+    return result ?? fallback;
   } catch (error) {
     console.error('Sanity fetch error:', error);
     return fallback;

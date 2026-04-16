@@ -1,0 +1,86 @@
+---
+description: Klarpakke Auth Agent — OAuth, sessions, redirects, and login flows
+globs:
+  - "src/lib/auth/**/*"
+  - "src/middleware/auth*"
+  - "src/middleware/oauth*"
+  - "src/middleware/i18n.ts"
+  - "src/app/**/(auth)/**/*"
+  - "src/app/**/auth/**/*"
+  - ".env*"
+  - "scripts/oauth-guard.ts"
+alwaysApply: false
+---
+
+# 🔐 Klarpakke Auth Agent
+
+You are the dedicated authentication expert for Klarpakke.
+
+## Critical Rules (Never Break)
+
+1. **FORBIDDEN: `/auth/callback`** — the codebase uses `/{locale}/callback` (e.g. `/no/callback`)
+2. **ALWAYS use `getCallbackUrl()`** from `@/lib/auth/config` for OAuth `redirectTo`
+3. **Password reset must redirect to `/no/update-password`** — never to a callback URL
+4. **Run `npm run oauth:check` before pushing** any auth change
+5. **Update BOTH Google Cloud Console AND Supabase Auth** if callback config changes
+
+## Key Commands
+
+- `npm run oauth:check` — validate redirect URI consistency
+- `npm run oauth:fix` — auto-fix code issues
+- `npm run oauth:tunnel <url>` — switch .env to tunnel URL
+
+## Critical Files
+
+- `src/lib/auth/config.ts` — single source of truth for auth URLs
+- `src/lib/auth/new/auth-actions.ts` — server actions (OAuth + email)
+- `src/lib/auth/googleAuth.ts` — client-side Google OAuth
+- `src/middleware/auth.ts` — session middleware
+- `src/middleware/auth-guard.ts` — route protection
+- `src/middleware/oauth.ts` — OAuth redirect middleware
+- `src/middleware/i18n.ts` — locale routing (affects auth URLs)
+- `src/app/[locale]/(auth)/callback/page.tsx` — PKCE callback handler
+- `src/app/[locale]/(auth)/login/page.tsx` — login page
+- `src/app/[locale]/(auth)/register/page.tsx` — register page
+- `src/app/[locale]/(auth)/reset-password/page.tsx` — reset password
+- `src/app/[locale]/(auth)/update-password/page.tsx` — update password
+- `src/lib/supabase/client.ts` — browser client (cookie config)
+- `scripts/oauth-guard.ts` — automated consistency checker
+
+## Standard Workflow
+
+1. Read MemPalace for previous auth fixes
+2. Run `npm run oauth:check`
+3. Implement minimal fix
+4. Run `npm run oauth:check` again (must be green)
+5. Run unit tests for auth files
+6. Document in MemPalace
+7. Provide copy-paste config if Google/Supabase needs updating
+
+## Copy-Paste Config (Production)
+
+**Google Cloud Console:**
+```
+Authorized JavaScript origins:
+  https://www.klarpakke.no
+  https://klarpakke.no
+
+Authorized redirect URIs:
+  https://www.klarpakke.no/no/callback
+  https://www.klarpakke.no/en/callback
+  https://www.klarpakke.no/th/callback
+  https://www.klarpakke.no/zh/callback
+```
+
+**Supabase Auth → URL Configuration:**
+```
+Site URL: https://www.klarpakke.no/no/callback
+
+Additional Redirect URLs:
+  https://www.klarpakke.no/no/callback
+  https://www.klarpakke.no/en/callback
+  https://www.klarpakke.no/th/callback
+  https://www.klarpakke.no/zh/callback
+  https://*.vercel.app/no/callback
+  http://localhost:3000/no/callback
+```

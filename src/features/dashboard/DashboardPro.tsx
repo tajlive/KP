@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
 import { motion } from "framer-motion";
+import { Bot, TrendingUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 
@@ -33,6 +36,8 @@ interface UserStats {
 
 export function DashboardPro({ paperBalance = 100000, sessionId }: DashboardProProps) {
   const { user } = useAuth();
+  const locale = useLocale();
+  const isNo = locale === "no";
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<UserStats>({
     totalTrades: 0,
@@ -117,6 +122,71 @@ export function DashboardPro({ paperBalance = 100000, sessionId }: DashboardProP
           >
             <SimplifiedHero balance={stats.currentCapital} changePct={totalReturn} />
           </motion.div>
+
+          {/* CTA: Start bot when no active session */}
+          {!sessionId && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white shadow-lg"
+            >
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-white/20 rounded-xl">
+                    <Bot className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-lg">
+                      {isNo ? "Ingen aktive bot-er" : "No active bots"}
+                    </p>
+                    <p className="text-sm text-white/80">
+                      {isNo
+                        ? "Start din første auto-trading strategi i dag."
+                        : "Start your first auto-trading strategy today."}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/${locale}/dashboard/auto-trade`}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-blue-600 hover:bg-white/90 transition-colors whitespace-nowrap"
+                >
+                  {isNo ? "Utforsk strategier" : "Explore strategies"}
+                </Link>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Idle Funds Nudge */}
+          {stats.currentCapital > 0 && !sessionId && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="rounded-2xl border border-amber-300/50 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 p-5 shadow-sm"
+            >
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-amber-500/20 rounded-xl">
+                    <TrendingUp className="w-6 h-6 text-amber-700 dark:text-amber-300" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#1A1D26] dark:text-white">
+                      {isNo
+                        ? "Du har ubrukte midler. La KI-en vår investere gradvis over tid med DCA, eller tjen renter."
+                        : "You have idle funds. Let our AI invest gradually over time with DCA, or earn yield."}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/${locale}/dashboard/auto-trade`}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-amber-700 transition-colors whitespace-nowrap"
+                >
+                  {isNo ? "Aktiver Auto-Invest" : "Activate Auto-Invest"}
+                </Link>
+              </div>
+            </motion.div>
+          )}
 
           {/* First trade prompt */}
           {stats.totalTrades === 0 && <FirstTradePrompt />}

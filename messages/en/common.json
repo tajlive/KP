@@ -105,6 +105,17 @@
       "duplicateSessionDesc": "You already have a bot running this strategy on this pair.",
       "startedTitle": "Paper bot started!",
       "startedDesc": "Your bot is now trading with virtual money."
+    },
+    "strategy": {
+      "started": "Strategy started",
+      "stopped": "Strategy stopped",
+      "startFailed": "Could not start strategy",
+      "stopFailed": "Could not stop strategy"
+    },
+    "general": {
+      "comingSoon": "Coming soon",
+      "error": "Something went wrong",
+      "saved": "Saved"
     }
   }
 }

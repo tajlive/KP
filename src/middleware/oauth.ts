@@ -7,7 +7,7 @@ export function handleOAuthRedirect(request: NextRequest): NextResponse | null {
 
   const code = searchParams.get("code");
   const error = searchParams.get("error");
-  const isAuthCallback = pathname.includes("/auth/callback");
+  const isAuthCallback = pathname.includes("/callback");
 
   // If already on auth callback, don't redirect
   if (isAuthCallback) {
@@ -20,7 +20,7 @@ export function handleOAuthRedirect(request: NextRequest): NextResponse | null {
     const localePart = parts[1];
     const locale = SUPPORTED_LOCALES.includes(localePart as typeof SUPPORTED_LOCALES[number]) ? localePart : "no";
 
-    const callbackUrl = new URL(`/${locale}/auth/callback`, request.url);
+    const callbackUrl = new URL(`/${locale}/callback`, request.url);
     if (code) callbackUrl.searchParams.set("code", code);
     if (error) callbackUrl.searchParams.set("error", error);
 

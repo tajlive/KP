@@ -163,7 +163,7 @@ Threshold: confidence > 80 to execute.`;
           { role: 'system', content: 'You are a quantitative trading assistant. Respond with valid JSON only.' },
           { role: 'user', content: prompt },
         ],
-        max_tokens: 256,
+        max_tokens: 512,
         temperature: 0.2,
       }),
     });
@@ -175,9 +175,13 @@ Threshold: confidence > 80 to execute.`;
     const json = await res.json();
     const text = json.choices?.[0]?.message?.content ?? '';
 
-    // Extract JSON from possible markdown
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(text);
+    // Extract JSON from possible markdown blocks
+    const cleaned = text
+      .replace(/```json\s*/gi, '')
+      .replace(/```\s*/g, '')
+      .trim();
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(cleaned);
 
     const signal = String(parsed.signal || 'HOLD').toUpperCase() as EnsembleAction;
     const confidence = Math.min(100, Math.max(0, Number(parsed.confidence || 50)));
@@ -263,8 +267,8 @@ export async function generateEnsembleSignal(
   );
 
   let action: EnsembleAction = 'HOLD';
-  if (finalScore >= 80) action = 'BUY';
-  else if (finalScore <= 20) action = 'SELL';
+  if (finalScore >= 65) action = 'BUY';
+  else if (finalScore <= 35) action = 'SELL';
 
   // Build reasoning string
   const reasoning = [

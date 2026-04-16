@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
+import { useLocale } from "next-intl";
 import {
   TrendingUp,
   TrendingDown,
@@ -198,11 +199,13 @@ function TradeItem({ trade }: { trade: TimelineTrade }) {
 }
 
 export function TradeTimeline({ trades, className }: TradeTimelineProps) {
+  const locale = useLocale();
+  const isEn = locale === "en";
   if (trades.length === 0) {
     return (
       <div className={cn("text-center py-8 text-gray-500", className)}>
-        <p>Ingen trades ennå</p>
-        <p className="text-sm mt-1">Trades vil vises her når de skjer</p>
+        <p>{isEn ? "No trades yet" : "Ingen trades ennå"}</p>
+        <p className="text-sm mt-1">{isEn ? "Trades will appear here when they happen" : "Trades vil vises her når de skjer"}</p>
       </div>
     );
   }

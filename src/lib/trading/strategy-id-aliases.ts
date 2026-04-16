@@ -13,7 +13,8 @@ export type TickStrategyEngineKey =
   | "dca"
   | "trend_follow"
   | "multi_signal"
-  | "grid";
+  | "grid"
+  | "ensemble_ai";
 
 /** UI/produkt-ID → tick-motor (samme sett som `StrategyType` i trading-api) */
 export const STRATEGY_ID_TO_TICK_ENGINE = {
@@ -21,6 +22,7 @@ export const STRATEGY_ID_TO_TICK_ENGINE = {
   trend_balansert: "trend_follow",
   multisignal_aktiv: "multi_signal",
   grid_bot: "grid",
+  ensemble_ai: "ensemble_ai",
   // Ingen dedikert copy-motor i tick ennå — bruker multi_signal som teknisk fallback
   // (hypotese-/signal-logikk likner; copy-filtrering er P1).
   ai_copy: "multi_signal",
@@ -34,6 +36,7 @@ const LEGACY_ALIASES: Record<string, TickStrategyEngineKey> = {
   trend_follow: "trend_follow",
   multi_signal: "multi_signal",
   grid: "grid",
+  ensemble_ai: "ensemble_ai",
   // Korte aliases fra auto-trading/paper
   multi: "multi_signal",
   trend: "trend_follow",

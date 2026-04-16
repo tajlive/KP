@@ -5,6 +5,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getMTFAlignmentScore } from "../_shared/multi-timeframe.ts";
+import { captureEdgeFunctionError } from "../_shared/sentry.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -519,6 +520,7 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("Signal engine error:", err);
+    await captureEdgeFunctionError("signal-engine", err);
     if (supabase) {
       const { error: healthError } = await supabase.from("bot_health").upsert(
         {
