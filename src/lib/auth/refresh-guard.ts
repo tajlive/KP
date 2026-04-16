@@ -169,8 +169,11 @@ export function createRefreshProtectedFetch(
               status: res.status,
             },
           );
-          state.lastResult = { ok: false, status: res.status, body };
-        } else if (res.ok) {
+          // Don't cache errors — each failure must count toward the circuit breaker
+          return makeSyntheticResponse({ ok: false, status: res.status, body });
+        }
+
+        if (res.ok) {
           // Reset on any success (even 2xx that isn't 200)
           state.failureCount = 0;
           state.lastResult = { ok: true, status: res.status, body };
@@ -192,8 +195,8 @@ export function createRefreshProtectedFetch(
           },
         );
         const body = JSON.stringify({ message: err.message, error: "refresh_failed" });
-        state.lastResult = { ok: false, status: 0, body };
-        return makeSyntheticResponse(state.lastResult);
+        // Don't cache network errors — let the next caller retry independently
+        return makeSyntheticResponse({ ok: false, status: 503, body });
       })
       .finally(() => {
         state.locked = false;
