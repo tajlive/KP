@@ -1,11 +1,11 @@
-# KIMI Aliaser for Zsh — v2.1 (2026-04-14)
+# KIMI Aliaser for Zsh — v2.2 (2026-04-16)
 # Legg til i ~/.zshrc: source /Users/taj/klarpakke/.kimi/aliases.zsh
 
 # Prosjekt
 alias kp='cd /Users/taj/klarpakke'
 alias kstart='cat /Users/taj/klarpakke/.kimi/QUICKSTART.md && /Users/taj/klarpakke/.kimi/autostart.sh'
 
-# KIMI kommandoer
+# KIMI kommandoer (source of truth: package.json)
 alias khealth='npm run health:prod:gate'
 alias kverify='npm run verify'
 alias kdev='npm run dev'
@@ -26,15 +26,25 @@ alias kprod:preview='bash /Users/taj/klarpakke/.kimi/prod-deploy.sh --preview'
 alias kci='npm run lint:gate && npm run test:unit'
 alias kmonitor='curl -s https://www.klarpakke.no/api/health | jq -r ".status" || echo "unreachable"'
 
+# Architect mode (lead agent)
+alias karch='kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml'
+alias kplan='bash .kimi/AGENT_ORCHESTRATOR.sh plan'
+alias kexec='bash .kimi/AGENT_ORCHESTRATOR.sh execute'
+
+# Swarm
+alias kswarm='npm run swarm:review'
+alias ksec='npm run swarm:security'
+alias karchitect='npm run swarm:architect'
+
 # Auth (nytt etter refresh-guard)
 alias kauth:test='npm run test:unit -- src/lib/auth/__tests__'
 alias kauth:e2e='npx playwright test e2e/auth/refresh-token.spec.ts'
 
-# MemPalace (FTS5)
-alias kwake='mempalace wake-up --wing klarpakke'
-alias know='mempalace search'
-alias krooms='mempalace status | grep "ROOM:"'
-alias kdiary='mempalace status | grep "WING:"
+# MemPalace (trygge aliaser — skader ikke hvis mempalace ikke er installert)
+alias kwake='command -v mempalace >/dev/null 2>&1 && mempalace wake-up --wing klarpakke || echo "mempalace not available"'
+alias know='command -v mempalace >/dev/null 2>&1 && mempalace search || echo "mempalace not available"'
+alias krooms='command -v mempalace >/dev/null 2>&1 && mempalace status | grep "ROOM:" || echo "mempalace not available"'
+alias kdiary='command -v mempalace >/dev/null 2>&1 && mempalace status | grep "WING:" || echo "mempalace not available"'
 
 # Legacy MemPalace scripts (fungerer fortsatt)
 alias diary='./scripts/mempalace-diary.sh'
@@ -42,8 +52,8 @@ alias dwrite='./scripts/mempalace-diary.sh write'
 alias dread='./scripts/mempalace-diary.sh read'
 
 # Kontekst
-alias kcontext='.kimi/context-predictor.sh'
-alias kskills='cat .kimi/skills-quickref.md'
+alias kcontext='bash .kimi/context-predictor.sh'
+alias kskills='cat .kimi/skills-activation.yaml | head -40'
 
 # Git shortcuts
 alias gs='git status'
@@ -58,7 +68,7 @@ alias gd='git diff'
 alias knode='nvm use 24.14.1 2>/dev/null || nvm install 24.14.1'
 
 # Utils
-alias kstats='echo "MemPalace drawers: $(mempalace status 2>/dev/null | grep "drawers" | grep -o "[0-9]*")" && echo "Last commit: $(git log -1 --format=%s 2>/dev/null)"'
+alias kstats='echo "Branch: $(git branch --show-current 2>/dev/null)" && echo "Last commit: $(git log -1 --format=%s 2>/dev/null)" && echo "Node: $(node -v 2>/dev/null || echo unknown)"'
 
 # Funksjon for KIMI startup
 kimi_startup() {
@@ -69,10 +79,10 @@ kimi_startup() {
       nvm use >/dev/null 2>&1
     fi
     clear
-    echo "🏛️  KIMI + MemPalace Activated (FTS5)"
+    echo "🏛️  KIMI + MemPalace Activated"
     echo "Node: $(node -v 2>/dev/null || echo 'unknown')"
     echo "======================================"
-    kwake 2>/dev/null | tail -15
+    kwake 2>/dev/null | tail -15 || true
     echo ""
     echo "Type 'kstart' for full quickstart guide"
 }

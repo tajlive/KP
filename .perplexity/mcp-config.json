@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "kimi": {
-      "command": "npx",
-      "args": ["tsx", "/Users/taj/klarpakke/scripts/kimi-mcp-server.ts"],
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp.mjs"],
       "cwd": "/Users/taj/klarpakke",
       "env": {
         "PATH": "${PATH}:/Users/taj/.local/bin"

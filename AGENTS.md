@@ -44,19 +44,29 @@ kimi deploy          # npm run deploy:prod
 kimi ci              # npm run lint:gate && npm run test:unit
 kimi monitor         # Sjekk prod helse
 kimi prod            # Full pipeline: ci → db → monitor → deploy → monitor
+kimi architect       # Aktiver lead architect agent
 kimi prod:preview    # Full pipeline til preview
+```
+
+### Lead Architect Agent (Anbefalt for alle større oppgaver)
+```bash
+# Aktiver lead architect agent — denne har full kontekst på Klarpakke
+kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml
+
+# Eller bruk alias
+kimi architect       # Ekvivalent: kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml
 ```
 
 ### Auth Agent (Eksplisitt aktivering)
 ```bash
 # Aktiver auth-spesialisert agent manuelt
-kimi --agent-file .kimi/auth-agent.yaml
+kimi --agent-file .kimi/agents/auth-agent.yaml
 
 # Eller bruk alias (hvis konfigurert i .kimi/commands.json)
-kimi auth            # Ekvivalent: kimi --agent-file .kimi/auth-agent.yaml
+kimi auth            # Ekvivalent: kimi --agent-file .kimi/agents/auth-agent.yaml
 ```
 
-**Merk:** KIMI CLI har ikke domene-basert auto-aktivering av agenter. Auth-reglene injiseres automatisk i default-agenten via `AGENTS.md`, men for full auth-spesialisering må du eksplisitt laste `.kimi/auth-agent.yaml`.
+**Merk:** KIMI CLI har ikke domene-basert auto-aktivering av agenter. Auth-reglene injiseres automatisk i default-agenten via `AGENTS.md`, men for full auth-spesialisering må du eksplisitt laste `.kimi/agents/auth-agent.yaml`.
 
 ---
 

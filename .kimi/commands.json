@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "version": "2.1",
+    "version": "2.2",
     "project": "Klarpakke",
-    "description": "KIMI CLI command aliases for Klarpakke — updated 2026-04-14",
-    "updated_for": "auth refresh-guard + MemPalace FTS5"
+    "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-04-16",
+    "updated_for": "auth refresh-guard + skills-activation cleanup"
   },
   "commands": {
     "health": {
@@ -94,21 +94,33 @@
       "description": "Verifiser MCP konfigurasjon",
       "command": "npm run mcp:validate 2>/dev/null || node scripts/validate-mcp-config.mjs"
     },
-    "mempalace:search": {
-      "description": "Søk i MemPalace (FTS5)",
-      "command": "mempalace search"
-    },
-    "mempalace:wake": {
-      "description": "MemPalace wake-up for klarpakke",
-      "command": "mempalace wake-up --wing klarpakke"
-    },
     "watchdog": {
       "description": "Kjør watchdog sjekk",
       "command": "npm run test:watchdog 2>/dev/null || bash scripts/hourly-external-user-watchdog.sh"
     },
     "auth": {
       "description": "Aktiver auth-spesialisert KIMI-agent",
-      "command": "kimi --agent-file .kimi/auth-agent.yaml"
+      "command": "kimi --agent-file .kimi/agents/auth-agent.yaml"
+    },
+    "architect": {
+      "description": "Aktiver lead architect agent for Klarpakke",
+      "command": "kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml"
+    },
+    "plan": {
+      "description": "Lag en arkitekt-plan for en oppgave",
+      "command": "bash .kimi/AGENT_ORCHESTRATOR.sh plan"
+    },
+    "swarm:review": {
+      "description": "Kjør full swarm QA på git diff",
+      "command": "npm run swarm:review"
+    },
+    "swarm:security": {
+      "description": "Kjør security-fokusert swarm QA",
+      "command": "npm run swarm:security"
+    },
+    "skills": {
+      "description": "Vis skills-activation mapping",
+      "command": "cat .kimi/skills-activation.yaml | head -40"
     }
   }
 }
