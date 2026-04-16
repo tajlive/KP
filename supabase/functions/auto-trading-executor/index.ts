@@ -66,7 +66,7 @@ async function startTrading(supabase: any, userId: string) {
   }
 
   const { data: config } = await supabase
-    .from('user_auto_trading_configs')
+    .from('auto_trade_settings')
     .select('*')
     .eq('user_id', userId)
     .single()
@@ -100,10 +100,10 @@ async function startTrading(supabase: any, userId: string) {
     .insert({
       user_id: userId,
       status: 'ACTIVE',
-      phase: config.phase,
-      initial_balance: config.max_capital,
-      current_balance: config.max_capital,
-      peak_balance: config.max_capital,
+      phase: config.risk_profile,
+      initial_balance: 100000,
+      current_balance: 100000,
+      peak_balance: 100000,
       referral_code: BINANCE_REFERRAL_CODE
     })
     .select()

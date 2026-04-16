@@ -177,6 +177,22 @@
       "schedule": "*/30 * * * *"
     },
     {
+      "path": "/api/cron/auto-trade",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/mifid2-export",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/outbox-recovery",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/sync-prices",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/daily-summary",
       "schedule": "0 6 * * *"
     }

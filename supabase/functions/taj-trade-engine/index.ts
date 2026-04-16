@@ -77,10 +77,10 @@ serve(async (req: Request) => {
     }
 
     const { data: configs, error: configError } = (await supabaseClient
-      .from("user_auto_trading_configs")
+      .from("auto_trade_settings")
       .select(`*, user:user_id(email)`)
-      .eq("is_enabled", true)) as {
-      data: AutoTradingConfig[] | null;
+      .eq("auto_trading_enabled", true)) as {
+      data: any[] | null;
       error: any;
     };
 
