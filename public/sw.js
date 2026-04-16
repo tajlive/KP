@@ -4,7 +4,7 @@
  * Cache-strategi: Network first, fallback til cache
  */
 
-const CACHE_VERSION = "1";
+const CACHE_VERSION = "2";
 const CACHE_NAME = `klarpakke-v${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
