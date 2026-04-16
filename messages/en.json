@@ -2062,8 +2062,8 @@
     "binanceUpdateInfo": "Prices are updated from Binance in real time",
     "trades": "Trades",
     "now": "Now",
-    "confirmResetAll": "Reset all paper trading sessions? All trades will be deleted and balance reset to 100\u202f000\u00a0kr.",
-    "resetSuccess": "Paper trading reset. Balance: 100\u202f000\u00a0kr.",
+    "confirmResetAll": "Reset all paper trading sessions? All trades will be deleted and balance reset to 100 000 kr.",
+    "resetSuccess": "Paper trading reset. Balance: 100 000 kr.",
     "sessions": {
       "maxActiveReached": "Max active sessions reached. Redirecting...",
       "maxActiveStudent": "You have reached the maximum number of active sessions for your plan."
@@ -2847,5 +2847,21 @@
       "startedTitle": "Bot started",
       "startedDesc": "Your trading bot is now running"
     }
+  },
+  "RiskSlider": {
+    "safe": "Safe",
+    "safeDesc": "Minimal risk. Ideal for beginners.",
+    "balanced": "Balanced",
+    "balancedDesc": "Moderate risk. Good returns over time.",
+    "aggressive": "Aggressive",
+    "aggressiveDesc": "High risk. Potentially high returns.",
+    "maxTrade": "Max/trade",
+    "strategy": "Strategy",
+    "expected": "Expected",
+    "studentPlan": "Student (free)",
+    "bachelorPlan": "Bachelor",
+    "masterPlan": "Master",
+    "swipe": "← Swipe to change risk level →",
+    "confirm": "Confirm selection"
   }
 }
