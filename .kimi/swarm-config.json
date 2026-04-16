@@ -1,7 +1,7 @@
 {
   "name": "Klarpakke Swarm",
-  "version": "1.0.0",
-  "description": "Multi-agent swarm for høyeste kvalitet",
+  "version": "2.0.0",
+  "description": "Multi-agent swarm for world-class quality",
   "platform": "darwin-arm64",
   "swarm": {
     "coordinator": "kimi",
@@ -53,10 +53,12 @@
       }
     ],
     "workflows": {
-      "feature": ["analyzer", "architect", "tester", "knowledge"],
-      "bugfix": ["analyzer", "tester", "knowledge"],
-      "refactor": ["analyzer", "architect", "tester", "knowledge"],
-      "security": ["security", "analyzer", "tester", "knowledge"]
+      "feature": ["analyzer", "architect", "tester", "security", "knowledge"],
+      "bugfix": ["analyzer", "tester", "security", "knowledge"],
+      "refactor": ["analyzer", "architect", "tester", "security", "knowledge"],
+      "security": ["security", "analyzer", "tester", "knowledge"],
+      "architect": ["architect", "analyzer", "knowledge"],
+      "review": ["analyzer", "architect", "tester", "security", "knowledge"]
     }
   },
   "quality_gates": {

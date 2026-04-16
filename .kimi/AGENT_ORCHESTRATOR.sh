@@ -1,27 +1,28 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# 🤖 AGENT ORCHESTRATOR - Automatisert KIMI/Gemini/Antigravity Samarbeid
+# 🤖 AGENT ORCHESTRATOR v2 — Real KIMI + Swarm + MemPalace Integration
 # ═══════════════════════════════════════════════════════════════════════════════
-# Bruk: agent-orchestrator <mode> [args]
+# Bruk: bash .kimi/AGENT_ORCHESTRATOR.sh <mode> [args]
 #
 # Modes:
-#   plan    "beskrivelse"  → Send til Gemini/Antigravity for planlegging
-#   execute <task-file>     → KIMI utfører plan fra fil
-#   swarm   <files>         → Kjør swarm QA på filer
-#   handoff <from> <to>     → Automatisk handoff mellom agenter
-#   status                  → Vis status for alle agenter
+#   plan    "beskrivelse"  → Lag pre-fylt plan med kontekst
+#   execute <task-file>     → KIMI utfører plan med architect agent
+#   swarm   [files]         → Kjør faktisk Swarm QA på git diff eller filer
+#   handoff <from> <to>     → Lag handoff-dokument
+#   status                  → Vis status for agenter + MemPalace
 # ═══════════════════════════════════════════════════════════════════════════════
 
-set -e
+set -euo pipefail
 
-# Konfigurasjon
-MEMPALACE_PATH="${MEMPALACE_PATH:-$HOME/klarpakke/.mempalace}"
+KP_DIR="/Users/taj/klarpakke"
+cd "$KP_DIR"
+
+MEMPALACE_PATH="${MEMPALACE_PATH:-$KP_DIR/.mempalace}"
 HANDOFF_PATH="$MEMPALACE_PATH/handoffs"
 DIARY_PATH="$MEMPALACE_PATH/kimi_sessions"
 PLAN_PATH="$MEMPALACE_PATH/plans"
 mkdir -p "$HANDOFF_PATH" "$DIARY_PATH" "$PLAN_PATH"
 
-# Farger
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -35,11 +36,7 @@ success() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[!]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1"; }
 gemini() { echo -e "${PURPLE}[GEMINI]${NC} $1"; }
-kimi() { echo -e "${CYAN}[KIMI]${NC} $1"; }
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# HJELPEFUNKSJONER
-# ═══════════════════════════════════════════════════════════════════════════════
+kimi_label() { echo -e "${CYAN}[KIMI]${NC} $1"; }
 
 generate_task_id() {
     echo "TASK-$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2 | tr '[:lower:]' '[:upper:]')"
@@ -47,7 +44,7 @@ generate_task_id() {
 
 detect_agents() {
     local task="$1"
-    bash "$(dirname $0)/agent-selector.sh" "$task" 2>/dev/null | grep "ANBEFALT AGENT:" | sed 's/.*ANBEFALT AGENT: //'
+    bash .kimi/agent-selector.sh "$task" 2>/dev/null | grep -E "ANBEFALT AGENT|WORKFLOW|PRIORITET" | sed 's/^/  /' || echo "  (none)"
 }
 
 get_timestamp() {
@@ -55,243 +52,222 @@ get_timestamp() {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# MODE: PLAN (Send til Gemini/Antigravity)
+# MODE: PLAN
 # ═══════════════════════════════════════════════════════════════════════════════
 
 cmd_plan() {
     local description="$1"
-    
     if [ -z "$description" ]; then
         error "Mangler beskrivelse. Bruk: agent-orchestrator plan 'implementer ny feature'"
         exit 1
     fi
-    
-    local task_id=$(generate_task_id)
+
+    local task_id
+    task_id=$(generate_task_id)
     local plan_file="$PLAN_PATH/${task_id}.md"
-    
-    log "Starter planlegging med Gemini/Antigravity..."
-    log "Task ID: $task_id"
-    
-    # Opprett plan-fil med metadata
+
+    log "Oppretter plan: $task_id"
+
+    # Gather context
+    local domain
+    domain=$(bash .kimi/context-predictor.sh --json 2>/dev/null | grep '"domain"' | sed 's/.*: "\([^"]*\)".*/\1/' || echo "general")
+    local skills
+    skills=$(bash .kimi/context-predictor.sh --json 2>/dev/null | grep '"predicted_skills"' | sed 's/.*: "\([^"]*\)".*/\1/' || echo "clean-code")
+
+    local mp_context=""
+    if command -v mempalace >/dev/null 2>&1; then
+        mp_context=$(mempalace search "recent decisions" --wing klarpakke --limit 3 2>/dev/null | head -20 || echo "")
+    fi
+
+    local recent_files
+    recent_files=$(git diff --name-only HEAD~3..HEAD 2>/dev/null | head -8 | sed 's/^/  - /' || echo "  (none)")
+
     cat > "$plan_file" << EOF
 # Task Plan: $task_id
 
 **Status:** 🟡 PLANNING  
 **Created:** $(get_timestamp)  
-**Description:** $description
+**Description:** $description  
+**Domain:** $domain  
+**Skills:** $skills
 
 ## Detected Agents
 $(detect_agents "$description")
 
-## Plan (Genereres av Gemini/Antigravity)
+## MemPalace Context
+\`\`\`
+${mp_context:-Ingen nylige beslutninger funnet}
+\`\`\`
 
-<!-- 
-INSTRUKSJON TIL GEMINI/ANTIGRAVITY:
-1. Les denne filen
-2. Analyser oppgaven
-3. Fyll ut seksjonene under
-4. Lagre filen
-5. Kjør: agent-orchestrator execute $plan_file
--->
+## Recent Files
+$recent_files
 
-### 1. Executive Summary
-_[Beskriv hva som skal gjøres på 2-3 setninger]_
+## 1. Executive Summary
+$description
 
-### 2. Arkitektur
-_[Beskriv tekniske valg og ADR-referanser]_
+## 2. Arkitektur
+_Referanser til ADR og prinsipper som gjelder for $domain_
 
-### 3. Files to Create/Modify
-- [ ] `path/to/file.ts` - _beskrivelse_
+## 3. Files to Create/Modify
+- [ ] _TBD_
 
-### 4. Implementation Steps
-1. _[Steg 1]_
-2. _[Steg 2]_
-3. _[Steg 3]_
+## 4. Implementation Steps
+1. _TBD_
+2. _TBD_
+3. _TBD_
 
-### 5. Testing Strategy
+## 5. Testing Strategy
 - [ ] Unit tests
 - [ ] Integration tests
 - [ ] E2E tests
 
-### 6. Risks & Mitigations
+## 6. Risks & Mitigations
 | Risk | Mitigation |
 |------|------------|
-| _[Risiko]_ | _[Tiltak]_ |
+| _TBD_ | _TBD_ |
 
 ---
 
-**Next Action:** Fyll ut planen og kjør \`agent-orchestrator execute $plan_file\`
+**Next Action:** Kjør \`bash .kimi/AGENT_ORCHESTRATOR.sh execute $plan_file\`
 EOF
 
-    success "Plan-fil opprettet: $plan_file"
-    
-    gemini "Klar for planlegging!"
-    echo ""
-    echo "📋 INSTRUKSJON:"
-    echo "   1. Åpne: $plan_file"
-    echo "   2. Fyll ut alle seksjoner"
-    echo "   3. Kjør: agent-orchestrator execute $plan_file"
-    echo ""
-    
-    # Logg til MemPalace
-    echo "$(get_timestamp) | PLAN | $task_id | $description" >> "$DIARY_PATH/orchestrator.log"
+    success "Plan opprettet: $plan_file"
+    echo "$plan_file"
+
+    # Logg
+    echo "$(get_timestamp) | PLAN | $task_id | $description | domain=$domain" >> "$DIARY_PATH/orchestrator.log"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# MODE: EXECUTE (KIMI utfører plan)
+# MODE: EXECUTE
 # ═══════════════════════════════════════════════════════════════════════════════
 
 cmd_execute() {
     local plan_file="$1"
-    
     if [ -z "$plan_file" ]; then
         error "Mangler plan-fil. Bruk: agent-orchestrator execute <plan-file.md>"
         exit 1
     fi
-    
     if [ ! -f "$plan_file" ]; then
-        # Prøv å finne i PLAN_PATH
         plan_file="$PLAN_PATH/$plan_file"
         if [ ! -f "$plan_file" ]; then
             error "Plan-fil ikke funnet: $1"
             exit 1
         fi
     fi
-    
-    local task_id=$(basename "$plan_file" .md)
-    
-    log "KIMI starter utførelse av: $task_id"
-    
-    # Les planen
-    kimi "Leser plan fra: $plan_file"
-    
-    # Oppdater status
-    sed -i '' 's/**Status:** 🟡 PLANNING/**Status:** 🔵 IN_PROGRESS/' "$plan_file" 2>/dev/null || \
-    sed -i 's/**Status:** 🟡 PLANNING/**Status:** 🔵 IN_PROGRESS/' "$plan_file"
-    
-    # Utfør planen (simulert - i praksis ville KIMI gjort dette)
+
+    local task_id
+    task_id=$(basename "$plan_file" .md)
+    log "KIMI starter utførelse: $task_id"
+
+    # Update status
+    if command -v sed >/dev/null 2>&1; then
+        sed -i '' 's/**Status:** 🟡 PLANNING/**Status:** 🔵 IN_PROGRESS/' "$plan_file" 2>/dev/null || \
+        sed -i 's/**Status:** 🟡 PLANNING/**Status:** 🔵 IN_PROGRESS/' "$plan_file" || true
+    fi
+
+    # Pre-checks
     log "Kjører pre-execution checks..."
     npm run verify 2>/dev/null || warn "Verify had issues, continuing..."
-    
-    # Etter utførelse, kjør swarm
+
+    # Invoke KIMI architect agent
+    kimi_label "Executing plan with architect agent..."
+    if command -v kimi >/dev/null 2>&1; then
+        # Pass the plan file path as instruction to KIMI
+        kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml -- "Read and execute this plan: $plan_file"
+    else
+        warn "kimi CLI not found — manual execution required"
+        echo "Run: kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml -- \"Execute $plan_file\""
+    fi
+
+    # Post-execution swarm
     log "Kjører Swarm QA..."
-    cmd_swarm "$(grep -oE 'src/[a-zA-Z0-9/_-]+\.(ts|tsx)' "$plan_file" | head -5 | tr '\n' ' ')"
-    
-    # Oppdater status
-    sed -i '' 's/**Status:** 🔵 IN_PROGRESS/**Status:** ✅ COMPLETED/' "$plan_file" 2>/dev/null || \
-    sed -i 's/**Status:** 🔵 IN_PROGRESS/**Status:** ✅ COMPLETED/' "$plan_file"
-    
+    local files_from_plan
+    files_from_plan=$(grep -oE 'src/[a-zA-Z0-9/_-]+\.(ts|tsx|sql)' "$plan_file" | head -10 | tr '\n' ' ')
+    if [ -n "$files_from_plan" ]; then
+        cmd_swarm "$files_from_plan"
+    else
+        cmd_swarm ""
+    fi
+
+    # Update status
+    if command -v sed >/dev/null 2>&1; then
+        sed -i '' 's/**Status:** 🔵 IN_PROGRESS/**Status:** ✅ COMPLETED/' "$plan_file" 2>/dev/null || \
+        sed -i 's/**Status:** 🔵 IN_PROGRESS/**Status:** ✅ COMPLETED/' "$plan_file" || true
+    fi
+
     success "Utførelse fullført: $task_id"
-    
-    # Logg til MemPalace
     echo "$(get_timestamp) | EXECUTE | $task_id | Completed" >> "$DIARY_PATH/orchestrator.log"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# MODE: SWARM (Quality Assurance)
+# MODE: SWARM
 # ═══════════════════════════════════════════════════════════════════════════════
 
 cmd_swarm() {
-    local files="$1"
-    
+    local files="${1:-}"
+
     if [ -z "$files" ]; then
-        error "Mangler filer. Bruk: agent-orchestrator swarm 'file1.ts file2.ts'"
+        # Auto-collect from git diff
+        files=$(git diff --name-only HEAD 2>/dev/null | grep -E '\.(ts|tsx|js|jsx|sql|json|yaml|md)$' | tr '\n' ' ' || true)
+    fi
+
+    if [ -z "$files" ]; then
+        error "Ingen filer å sjekke. Angi filer eller ha uncommitted changes."
         exit 1
     fi
-    
-    log "Starter Swarm QA..."
-    
-    # Simulert swarm-sjekk
-    echo ""
-    echo "🔍 Swarm Agents Analysis:"
-    echo "═══════════════════════════════════════════════════════════════"
-    
-    # Analyzer
-    echo -e "${CYAN}[Analyzer]${NC} Checking complexity..."
-    sleep 0.5
-    echo "  ✓ Complexity: 8/15 (OK)"
-    
-    # Architect
-    echo -e "${CYAN}[Architect]${NC} Checking ADR compliance..."
-    sleep 0.5
-    echo "  ✓ ADR KLA-91: Compliant"
-    
-    # Tester
-    echo -e "${CYAN}[Tester]${NC} Checking test coverage..."
-    sleep 0.5
-    echo "  ✓ Coverage: 85% (OK)"
-    
-    # Knowledge
-    echo -e "${CYAN}[Knowledge]${NC} Syncing to MemPalace..."
-    echo "  ✓ Patterns logged"
-    echo ""
-    
-    success "Swarm QA passed!"
+
+    log "Starter Swarm QA på: $files"
+    npm run swarm:review -- $files
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# MODE: HANDOFF (Automatisk overlevering)
+# MODE: HANDOFF
 # ═══════════════════════════════════════════════════════════════════════════════
 
 cmd_handoff() {
     local from_agent="$1"
     local to_agent="$2"
-    local context="$3"
-    
+    local context="${3:-Generell overlevering}"
+
     if [ -z "$from_agent" ] || [ -z "$to_agent" ]; then
         error "Mangler agenter. Bruk: agent-orchestrator handoff <from> <to> [context]"
-        echo ""
-        echo "Eksempler:"
-        echo "  agent-orchestrator handoff gemini kimi 'Implementer plan for auth-fix'"
-        echo "  agent-orchestrator handoff kimi perplexity 'Review trading implementation'"
         exit 1
     fi
-    
+
     local handoff_id="HANDOFF-$(date +%Y%m%d-%H%M%S)"
     local handoff_file="$HANDOFF_PATH/${handoff_id}.md"
-    
-    log "Oppretter handoff: $from_agent → $to_agent"
-    
-    # Hent siste fra MemPalace
-    local last_entries=$(tail -10 "$DIARY_PATH/orchestrator.log" 2>/dev/null || echo "Ingen tidligere entries")
-    
+
+    local last_entries
+    last_entries=$(tail -10 "$DIARY_PATH/orchestrator.log" 2>/dev/null || echo "Ingen tidligere entries")
+
     cat > "$handoff_file" << EOF
 # Agent Handoff: $handoff_id
 
 **From:** $from_agent  
 **To:** $to_agent  
 **Time:** $(get_timestamp)  
-**Context:** ${context:-"Generell overlevering"}
+**Context:** $context
 
-## Recent Activity (from MemPalace)
+## Recent Activity
 \`\`\`
 $last_entries
 \`\`\`
 
-## Status
-- [ ] $from_agent har fullført
-- [ ] $to_agent har lest kontekst
-- [ ] $to_agent bekrefter forståelse
+## Decisions Made
+- _[Fyll inn av $from_agent]_
 
-## Action Items
-1. _[Fyll inn av $from_agent]_
-2. _[Fyll inn av $to_agent]_
+## Open Questions
+- _[Fyll inn]_
 
-## Notes
-_[Valgfrie notater]_
+## Next Steps
+1. _[Fyll inn av $to_agent]_
 
 ---
-**Next:** $to_agent skal nå ta over.
+**Status:** 🟡 Ready for $to_agent
 EOF
 
     success "Handoff opprettet: $handoff_file"
-    
-    echo ""
-    echo "📋 Neste steg:"
-    echo "   1. $from_agent: Fyll ut 'Action Items'"
-    echo "   2. $from_agent: Kjør: echo 'Done' >> $handoff_file"
-    echo "   3. $to_agent: Les $handoff_file"
-    echo ""
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -299,129 +275,54 @@ EOF
 # ═══════════════════════════════════════════════════════════════════════════════
 
 cmd_status() {
-    log "Agent System Status"
-    echo "═══════════════════════════════════════════════════════════════"
+    log "System Status"
     echo ""
-    
-    # MemPalace status
-    echo "🗄️  MemPalace:"
-    echo "   Path: $MEMPALACE_PATH"
-    echo "   Handoffs: $(ls -1 "$HANDOFF_PATH" 2>/dev/null | wc -l) filer"
-    echo "   Plans: $(ls -1 "$PLAN_PATH" 2>/dev/null | wc -l) filer"
-    echo "   Diary entries: $(wc -l < "$DIARY_PATH/orchestrator.log" 2>/dev/null || echo 0)"
+    echo "Git branch: $(git branch --show-current 2>/dev/null || echo 'N/A')"
+    echo "Last commit: $(git log -1 --oneline 2>/dev/null || echo 'N/A')"
     echo ""
-    
-    # Siste aktivitet
-    echo "📊 Siste aktivitet:"
-    tail -5 "$DIARY_PATH/orchestrator.log" 2>/dev/null || echo "   Ingen aktivitet enda"
+    echo "Active plans: $(ls -1 "$PLAN_PATH" 2>/dev/null | wc -l | tr -d ' ')"
+    echo "Handoffs: $(ls -1 "$HANDOFF_PATH" 2>/dev/null | wc -l | tr -d ' ')"
+    echo "Orchestrator logs: $(wc -l < "$DIARY_PATH/orchestrator.log" 2>/dev/null | tr -d ' ' || echo 0)"
     echo ""
-    
-    # Aktive handoffs
-    echo "🔄 Aktive handoffs:"
-    ls -1t "$HANDOFF_PATH"/*.md 2>/dev/null | head -3 | while read f; do
-        echo "   • $(basename "$f")"
-    done || echo "   Ingen aktive handoffs"
-    echo ""
-    
-    # Agenter status
-    echo "🤖 Agenter:"
-    echo "   $(gemini "Gemini/Antigravity") - Planlegging, analyse"
-    echo "   $(kimi "KIMI CLI") - Utførelse, deploy"
-    echo "   $(echo -e "${YELLOW}[MemPalace]${NC}") - Shared memory"
-    echo ""
-    
-    success "Status check complete"
+    if command -v mempalace >/dev/null 2>&1; then
+        (mempalace status 2>/dev/null || echo "MemPalace status unavailable") | head -10
+    else
+        echo "MemPalace: not in PATH"
+    fi
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# HJELP
+# MAIN
 # ═══════════════════════════════════════════════════════════════════════════════
 
-cmd_help() {
-    cat << 'EOF'
-🤖 AGENT ORCHESTRATOR - Automatisert AI-samarbeid
-═══════════════════════════════════════════════════════════════════════
+MODE="${1:-}"
+shift || true
 
-Bruk: agent-orchestrator <command> [args]
-
-KOMMANDOER:
-
-  plan "beskrivelse"     Send oppgave til Gemini/Antigravity for planlegging
-  execute <plan-file>    KIMI utfører plan fra fil
-  swarm "filer"          Kjør Swarm QA på spesifiserte filer
-  handoff <fra> <til>    Opprett handoff mellom agenter
-  status                 Vis systemstatus
-  help                   Vis denne hjelpen
-
-EKSEMPLER:
-
-  # Planlegg ny feature
-  agent-orchestrator plan "Implementer mean reversion trading strategy"
-
-  # Utfør eksisterende plan
-  agent-orchestrator execute TASK-20240411-143022-A1B2.md
-
-  # Kjør QA på filer
-  agent-orchestrator swarm "src/lib/trading/strategy.ts src/app/api/trade.ts"
-
-  # Handoff fra Gemini til KIMI
-  agent-orchestrator handoff gemini kimi "Auth fix klar for implementering"
-
-  # Sjekk systemstatus
-  agent-orchestrator status
-
-INTEGRASJON:
-
-  Dette scriptet integrerer med:
-  • Gemini/Antigravity - Planlegging og analyse
-  • KIMI CLI - Utførelse og deploy
-  • MemPalace - Shared memory og handoffs
-  • Swarm - Quality assurance
-
-KONFIGURASJON:
-
-  MEMPALACE_PATH    Standard: ~/klarpakke/.mempalace
-  Settes i .env.local eller eksporteres
-
-═══════════════════════════════════════════════════════════════════════
-EOF
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# HOVEDPROGRAM
-# ═══════════════════════════════════════════════════════════════════════════════
-
-COMMAND=${1:-help}
-
-# Debug: vis hva som kalles
-# echo "Debug: COMMAND=$COMMAND, args=$@"
-
-case "$COMMAND" in
+case "$MODE" in
     plan)
-        shift
-        cmd_plan "$@"
+        cmd_plan "$1"
         ;;
     execute)
-        shift
-        cmd_execute "$@"
+        cmd_execute "$1"
         ;;
     swarm)
-        shift
-        cmd_swarm "$@"
+        cmd_swarm "$*"
         ;;
     handoff)
-        shift
-        cmd_handoff "$@"
+        cmd_handoff "$1" "$2" "$3"
         ;;
     status)
         cmd_status
         ;;
-    help|--help|-h)
-        cmd_help
-        ;;
     *)
-        error "Ukjent kommando: $COMMAND"
-        cmd_help
+        echo "🤖 Klarpakke Agent Orchestrator v2"
+        echo ""
+        echo "Usage:"
+        echo "  bash .kimi/AGENT_ORCHESTRATOR.sh plan   'description'"
+        echo "  bash .kimi/AGENT_ORCHESTRATOR.sh execute <plan-file.md>"
+        echo "  bash .kimi/AGENT_ORCHESTRATOR.sh swarm  [files...]"
+        echo "  bash .kimi/AGENT_ORCHESTRATOR.sh handoff <from> <to> [context]"
+        echo "  bash .kimi/AGENT_ORCHESTRATOR.sh status"
         exit 1
         ;;
 esac

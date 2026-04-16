@@ -1,19 +1,22 @@
 #!/bin/bash
-# KIMI Autostart Sequence — v2.1 (FTS5-optimisert)
+# KIMI Autostart Sequence — v2.3 (2026-04-16)
 # Kjør ved hver KIMI oppstart for maksimal optimalisering
 
-set -e
+set -euo pipefail
+
+KP_DIR="/Users/taj/klarpakke"
+cd "$KP_DIR"
+
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
 
 echo ""
 echo "🚀 KIMI Autostart Sequence"
 echo "=========================="
 echo ""
-
-# Farger
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
 
 # 1. Git Status
 echo -e "${BLUE}📊 Git Status:${NC}"
@@ -25,57 +28,34 @@ else
 fi
 echo ""
 
-# 2. MemPalace Wake-up (FTS5)
-echo -e "${BLUE}🏛️  MemPalace Wake-up (FTS5):${NC}"
-WAKE_OUTPUT=$(mempalace wake-up --wing klarpakke 2>/dev/null | tail -20 || echo "")
-if [ -n "$WAKE_OUTPUT" ]; then
-    echo "$WAKE_OUTPUT" | head -12 | sed 's/^/  /'
+# 2. MemPalace Wake-up
+echo -e "${BLUE}🏛️  MemPalace Context:${NC}"
+if command -v mempalace >/dev/null 2>&1; then
+    mempalace wake-up --wing klarpakke 2>/dev/null | tail -12 | sed 's/^/  /' || echo "  (wake-up returned non-zero)"
+    echo ""
+    echo -e "  ${CYAN}Recent decisions:${NC}"
+    mempalace search "decision" --wing klarpakke 2>/dev/null | head -6 | sed 's/^/    /' || true
 else
-    echo "  Using local knowledge graph..."
+    echo "  ℹ️  mempalace not in PATH — skipping"
 fi
 echo ""
 
 # 3. Domain Detection & Skills
 echo -e "${BLUE}🛠️  Context Detection:${NC}"
 if [ -f ".kimi/context-predictor.sh" ]; then
-    DOMAIN=$(.kimi/context-predictor.sh --json 2>/dev/null | grep -o '"domain": "[^"]*"' | cut -d'"' -f4 || echo "general")
-    echo "  Domain: ${YELLOW}$DOMAIN${NC}"
-    
-    case "$DOMAIN" in
-        auth)
-            echo "  Skills: vulnerability-scanner, security-testing"
-            echo "  Rooms: auth_system, auth, error_patterns"
-            ;;
-        trading)
-            echo "  Skills: crypto-specialist, api-patterns"
-            echo "  Rooms: critical_decisions, api_contracts"
-            ;;
-        api)
-            echo "  Skills: api-patterns, rate-limiting"
-            echo "  Rooms: api_contracts"
-            ;;
-        ui)
-            echo "  Skills: frontend-design, nextjs-react-expert"
-            echo "  Rooms: ux_engineering"
-            ;;
-        *)
-            echo "  Skills: clean-code, testing-patterns"
-            echo "  Rooms: critical_decisions"
-            ;;
-    esac
+    bash .kimi/context-predictor.sh
 else
     echo "  Domain: general (predictor not available)"
 fi
 echo ""
 
-# 4. Recent Activity
-echo -e "${BLUE}📖 Recent Activity:${NC}"
-DIARY_COUNT=$(find ~/.mempalace/palace -name "diary" -o -name "kimi_sessions" 2>/dev/null | wc -l || echo "0")
-if [ "$DIARY_COUNT" -gt 0 ]; then
-    echo "  Diary wings active: $DIARY_COUNT"
-    mempalace status 2>/dev/null | grep "drawers" | sed 's/^/  /' || echo "  Status available"
+# 4. Swarm / Architect status
+echo -e "${BLUE}🐝 Swarm Status:${NC}"
+if [ -f ".knowledge/session/swarm-report-latest.json" ]; then
+    SWARM_STATUS=$(cat .knowledge/session/swarm-report-latest.json 2>/dev/null | grep '"swarm_status"' | head -1 | sed 's/.*: "\([^"]*\)".*/\1/' || echo "unknown")
+    echo "  Last swarm run: $SWARM_STATUS"
 else
-    echo "  No recent diary entries"
+    echo "  No recent swarm runs"
 fi
 echo ""
 
@@ -91,10 +71,14 @@ echo -e "${GREEN}✅ KIMI Ready!${NC}"
 echo "=========================="
 echo ""
 echo "Quick commands:"
-echo "  mempalace search \"auth\"         # Search memory (FTS5)"
-echo "  mempalace wake-up --wing klarpakke  # Full context"
+if command -v mempalace >/dev/null 2>&1; then
+    echo "  mempalace search \"auth\"         # Search memory"
+    echo "  mempalace wake-up --wing klarpakke  # Full context"
+fi
+echo "  bash .kimi/kimi-architect.sh "task"  # Lead architect mode"
+echo "  npm run swarm:review            # Run swarm QA"
 echo "  npm run verify                  # Check environment"
 echo "  npm run dev                     # Start dev server"
 echo ""
-echo "YOLO mode: ACTIVE | MemPalace: FTS5 | Skills: AUTO"
+echo "YOLO mode: ACTIVE | Skills: AUTO | Architect: READY"
 echo ""

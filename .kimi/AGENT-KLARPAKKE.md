@@ -68,10 +68,10 @@ Når du jobber med OAuth, passord-reset, sessions, eller auth-middleware:
 
 ```bash
 # Eksplisitt aktiver auth-agenten (KIMI CLI krever YAML agent-filer)
-kimi --agent-file .kimi/auth-agent.yaml
+kimi --agent-file .kimi/agents/auth-agent.yaml
 ```
 
-**Husk:** `.kimi/agents/klarpakke-auth-agent.md` er KIMIs system prompt, men må lastes via `.kimi/auth-agent.yaml`. Auth-regler i `AGENTS.md` injiseres alltid i default-agenten.
+**Husk:** `.kimi/agents/klarpakke-auth-agent.md` er KIMIs system prompt, men må lastes via `.kimi/agents/auth-agent.yaml`. Auth-regler i `AGENTS.md` injiseres alltid i default-agenten.
 
 ### 1. Automatisk Prosjekt-Kontekst
 KIMI leser automatisk:
