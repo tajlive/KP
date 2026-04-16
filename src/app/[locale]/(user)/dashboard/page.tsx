@@ -115,13 +115,22 @@ export default async function DashboardPage({
           )
           .eq("session_id", activeSession.id)
           .order("created_at", { ascending: false })
-          .limit(50)
+          .limit(100)
       : { data: [] };
 
-    const primaryBalance =
-      activeSession?.current_capital_nok ?? profile?.paper_balance ?? 100000;
+    const tradesData = tradesRes.data ?? [];
+    const winningTrades = tradesData.filter((t) => (t.realized_pnl || 0) > 0);
+    const totalPnl = tradesData.reduce((sum, t) => sum + (t.realized_pnl || 0), 0);
+    
+    const stats = {
+      totalTrades: tradesData.length,
+      winRate: tradesData.length ? Math.round((winningTrades.length / tradesData.length) * 100) : 0,
+      totalPnl,
+      currentCapital: activeSession?.current_capital_nok ?? profile?.paper_balance ?? 100000,
+      startingCapital: activeSession?.starting_capital_nok ?? 100000,
+    };
 
-    const trades = (tradesRes.data ?? []).map((t) => ({
+    const trades = tradesData.map((t) => ({
       trading_pair: t.trading_pair || t.symbol || "",
       side: t.side,
       quantity: t.quantity,
@@ -131,9 +140,10 @@ export default async function DashboardPage({
     return (
       <div data-testid="dashboard-page">
         <DashboardContent
-          paperBalance={primaryBalance}
+          paperBalance={stats.currentCapital}
           trades={trades}
           activeSession={activeSession}
+          stats={stats}
         />
       </div>
     );

@@ -69,6 +69,7 @@ export function BotWizard({
 }: BotWizardProps) {
   const tToast = useTranslations("common");
   const tSidebar = useTranslations("dashboard.sidebar");
+  const t = useTranslations("BotWizard");
   const router = useRouter();
   const tier = rawTier?.toLowerCase() || "student";
   const [step, setStep] = useState(1);
@@ -107,16 +108,13 @@ export function BotWizard({
     setStartingCapital((prev) => clampPaperCapital(prev));
   }, []);
 
-  const isNo = locale === "no";
   const coinLimit = TIER_COIN_LIMIT[tier] ?? 3;
 
   const STRATEGIES = [
     {
       id: "dca",
       name: "DCA",
-      description: isNo
-        ? "Dollar Cost Averaging — kjøp automatisk til fast tid"
-        : "Dollar Cost Averaging — buy automatically on schedule",
+      description: t("strategyDcaDesc"),
       Icon: BarChart2,
       tier: "student",
       recommended: true,
@@ -124,36 +122,28 @@ export function BotWizard({
     {
       id: "trend",
       name: "Trend Following",
-      description: isNo
-        ? "Følg markedstrenden med teknisk analyse"
-        : "Follow market trends with technical analysis",
+      description: t("strategyTrendDesc"),
       Icon: TrendingUp,
       tier: "bachelor",
     },
     {
       id: "grid",
       name: "Grid Trading",
-      description: isNo
-        ? "Kjøp lavt, selg høyt i et prisbånd"
-        : "Buy low, sell high within a price range",
+      description: t("strategyGridDesc"),
       Icon: Grid3X3,
       tier: "bachelor",
     },
     {
       id: "multi",
       name: "Multi-Signal",
-      description: isNo
-        ? "Kombiner flere indikatorer for signaler"
-        : "Combine multiple indicators for signals",
+      description: t("strategyMultiDesc"),
       Icon: Target,
       tier: "master",
     },
     {
       id: "ai-copy",
       name: "AI Copy Trading",
-      description: isNo
-        ? "Kopier topphandlernes strategier med AI"
-        : "Copy top traders with AI",
+      description: t("strategyAiDesc"),
       Icon: Bot,
       tier: "master",
     },
@@ -167,20 +157,20 @@ export function BotWizard({
   }[] = [
     {
       value: "low",
-      label: isNo ? "Lav risiko" : "Low risk",
-      description: isNo ? "Sakte og stabil vekst" : "Slow and steady growth",
+      label: t("riskLowLabel"),
+      description: t("riskLowDesc"),
       color: "#22C55E",
     },
     {
       value: "medium",
-      label: isNo ? "Middels risiko" : "Medium risk",
-      description: isNo ? "Balansert" : "Balanced",
+      label: t("riskMedLabel"),
+      description: t("riskMedDesc"),
       color: "#F59E0B",
     },
     {
       value: "high",
-      label: isNo ? "Høy risiko" : "High risk",
-      description: isNo ? "Aggressiv strategi" : "Aggressive strategy",
+      label: t("riskHighLabel"),
+      description: t("riskHighDesc"),
       color: "#EF4444",
     },
   ];
@@ -272,9 +262,9 @@ export function BotWizard({
   };
 
   const stepLabels = [
-    isNo ? "Strategi" : "Strategy",
-    isNo ? "Beløp & valuta" : "Amount & coins",
-    isNo ? "Start" : "Start",
+    t("stepStrategy"),
+    t("stepAmount"),
+    t("stepStart"),
   ];
   const CAPITAL_PRESETS = [50_000, 100_000, 250_000, 500_000, 1_000_000];
 
@@ -309,27 +299,21 @@ export function BotWizard({
 
       <PremiumTradingHero
         eyebrow="Auto-trade"
-        title={isNo ? "Start trading-bot" : "Start trading bot"}
-        subtitle={
-          isNo
-            ? "Sett strategi, risiko og kapital. Boten starter i Lekepenger og viser handler fortløpende i historikken."
-            : "Set strategy, risk and capital. The bot starts in Paper trading and updates trade history continuously."
-        }
+        title={t("startBotTitle")}
+        subtitle={t("startBotSubtitle")}
       />
 
       {tier === "student" && (
         <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-[#E8F0FE] dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 px-4 py-3">
           <p className="text-sm text-[#1A1D26] dark:text-slate-200">
-            {isNo
-              ? "Du har 1 strategi inkludert. Oppgrader for flere strategier og flere valutaer."
-              : "You get 1 strategy included. Upgrade for more strategies and coins."}
+            {t("upgradeNotice")}
           </p>
           <Link
             href={`/${locale}/priser`}
             className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-[#0052FF] px-3 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
           >
             <Sparkles className="h-4 w-4" />
-            {isNo ? "Se planer" : "See plans"}
+            {t("seePlans")}
           </Link>
         </div>
       )}
@@ -385,16 +369,12 @@ export function BotWizard({
       {step === 1 && (
         <div className="relative z-10">
           <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-1">
-            {isNo ? "Velg strategi" : "Choose strategy"}
+            {t("chooseStrategy")}
           </h2>
           <p className="text-sm text-[#5E6478] dark:text-slate-400 mb-4">
             {selectedStrategy
-              ? isNo
-                ? `${selectedStrategy.name} er valgt — trykk Neste for å fortsette`
-                : `${selectedStrategy.name} selected — tap Next to continue`
-              : isNo
-                ? "Klikk på en strategi for å velge"
-                : "Tap a strategy to select"}
+              ? t("strategySelected", { name: selectedStrategy.name })
+              : t("clickToSelect")}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {STRATEGIES.map((s) => {
@@ -423,21 +403,16 @@ export function BotWizard({
                 >
                   {s.recommended && (
                     <span className="absolute top-3 right-3 bg-[#DCFCE7] text-[#16A34A] text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                      {isNo ? "Anbefalt" : "Recommended"}
+                      {t("recommended")}
                     </span>
                   )}
                   {locked && (
                     <span
                       className="absolute top-3 right-3 flex items-center gap-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-[11px] font-semibold px-2 py-1 rounded-md"
-                      title={
-                        isNo
-                          ? `Oppgrader til ${s.tier} for å bruke denne strategien`
-                          : `Upgrade to ${s.tier} to use this strategy`
-                      }
+                      title={t("requiresTier", { tier: s.tier.charAt(0).toUpperCase() + s.tier.slice(1) })}
                     >
                       <Lock className="w-3.5 h-3.5 shrink-0" />
-                      {isNo ? "Krever" : "Requires"}{" "}
-                      {s.tier.charAt(0).toUpperCase() + s.tier.slice(1)}
+                      {t("requiresTier", { tier: s.tier.charAt(0).toUpperCase() + s.tier.slice(1) })}
                     </span>
                   )}
                   <span className="block mb-3 text-[#0052FF]">
@@ -461,7 +436,7 @@ export function BotWizard({
         <div className="space-y-8">
           <div>
             <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
-              {isNo ? "Velg risikonivå" : "Choose risk level"}
+              {t("chooseRisk")}
             </h2>
             <div className="space-y-3">
               {RISK_OPTIONS.map((r) => {
@@ -497,12 +472,10 @@ export function BotWizard({
 
           <div>
             <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-1">
-              {isNo ? "Startkapital (lekepenger)" : "Starting capital (paper)"}
+              {t("startingCapital")}
             </h2>
             <p className="text-xs text-[#5E6478] dark:text-slate-400 mb-3">
-              {isNo
-                ? "Beløpet boten handler med i papirmodus."
-                : "Amount the bot trades with in paper mode."}
+              {t("startingCapitalDesc")}
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
               {CAPITAL_PRESETS.map((preset) => {
@@ -531,7 +504,7 @@ export function BotWizard({
                 htmlFor="capital-input"
                 className="text-sm text-[#5E6478] dark:text-slate-400 shrink-0"
               >
-                {isNo ? "Eget beløp:" : "Custom amount:"}
+                {t("customAmount")}
               </label>
               <input
                 id="capital-input"
@@ -551,12 +524,10 @@ export function BotWizard({
 
           <div>
             <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-1">
-              {isNo ? "Velg kryptovaluta" : "Select coins"}
+              {t("selectCoins")}
             </h2>
             <p className="text-xs text-[#5E6478] dark:text-slate-400 mb-4">
-              {isNo
-                ? `Maks ${coinLimit} valutaer for ${tier.charAt(0).toUpperCase() + tier.slice(1)}-nivå`
-                : `Max ${coinLimit} coins for ${tier.charAt(0).toUpperCase() + tier.slice(1)} tier`}
+              {t("maxCoinsNotice", { limit: coinLimit, tier: tier.charAt(0).toUpperCase() + tier.slice(1) })}
             </p>
             <div className="flex flex-wrap gap-2">
               {COINS.map((coin) => {
@@ -594,12 +565,12 @@ export function BotWizard({
       {step === 3 && (
         <div>
           <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
-            {isNo ? "Oppsummering" : "Summary"}
+            {t("summary")}
           </h2>
           <PremiumPanel className="space-y-4 p-6">
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478] dark:text-slate-400">
-                {isNo ? "Strategi" : "Strategy"}
+                {t("stepStrategy")}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
                 {selectedStrategy?.Icon != null ? (
@@ -611,26 +582,16 @@ export function BotWizard({
             <div className="h-px bg-[#E2E5EC] dark:bg-slate-700" />
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478] dark:text-slate-400">
-                {isNo ? "Risikonivå" : "Risk level"}
+                {t("chooseRisk")}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26] dark:text-white capitalize">
-                {riskLevel === "low"
-                  ? isNo
-                    ? "Lav"
-                    : "Low"
-                  : riskLevel === "medium"
-                    ? isNo
-                      ? "Middels"
-                      : "Medium"
-                    : isNo
-                      ? "Høy"
-                      : "High"}
+                {t(riskLevel)}
               </span>
             </div>
             <div className="h-px bg-[#E2E5EC] dark:bg-slate-700" />
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478] dark:text-slate-400">
-                {isNo ? "Valutaer" : "Coins"}
+                {t("selectCoins")}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
                 {selectedPairs.map((p) => p.replace("USDT", "")).join(", ")}
@@ -639,9 +600,7 @@ export function BotWizard({
             <div className="h-px bg-[#E2E5EC] dark:bg-slate-700" />
             <div className="flex justify-between items-center">
               <span className="text-sm text-[#5E6478] dark:text-slate-400">
-                {isNo
-                  ? "Startkapital (lekepenger)"
-                  : "Starting capital (paper)"}
+                {t("startingCapital")}
               </span>
               <span className="text-sm font-semibold text-[#1A1D26] dark:text-white">
                 {startingCapital.toLocaleString("nb-NO")} kr
@@ -649,17 +608,13 @@ export function BotWizard({
             </div>
           </PremiumPanel>
           <p className="mt-3 text-xs text-[#5E6478] dark:text-slate-400">
-            {isNo
-              ? "Etter start: boten kan være aktiv uten handel i en periode mens den venter på signal. Dette er normalt."
-              : "After start: the bot can be active without trades for a period while waiting for a signal. This is normal."}
+            {t("waitingForSignal")}
           </p>
           {/* Kelly Criterion Trust Badge */}
           <div className="mt-4 rounded-xl border border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800/50 p-4 flex items-start gap-3">
             <Shield className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
             <p className="text-sm text-green-800 dark:text-green-200 leading-relaxed">
-              {isNo
-                ? "🛡️ Sikret av Kelly-kriteriet. Vår KI justerer automatisk risiko basert på profitt for å matematisk forhindre at du taper innsatsen din."
-                : "🛡️ Secured by the Kelly Criterion. Our AI automatically adjusts risk based on profit to mathematically prevent you from losing your stake."}
+              {t("kellyNotice")}
             </p>
           </div>
 
@@ -678,12 +633,8 @@ export function BotWizard({
               className={`${BRAND.primary} w-full font-semibold rounded-xl px-6 py-3.5 min-h-[52px] touch-manipulation transition-colors disabled:opacity-60 shadow-sm`}
             >
               {loading
-                ? isNo
-                  ? "Starter..."
-                  : "Starting..."
-                : isNo
-                  ? "Start bot"
-                  : "Start bot"}
+                ? t("starting")
+                : t("startBotAction")}
             </button>
           </div>
         </div>
@@ -697,7 +648,7 @@ export function BotWizard({
             onClick={() => setStep(step - 1)}
             className="border border-[#E2E5EC] dark:border-slate-600 text-[#5E6478] dark:text-slate-300 rounded-xl px-5 py-3 font-semibold transition-colors hover:bg-[#F7F8FA] dark:hover:bg-slate-800 min-h-[48px] shrink-0 touch-manipulation cursor-pointer"
           >
-            {isNo ? "Tilbake" : "Back"}
+            {t("back")}
           </button>
         ) : (
           <span className="w-0 shrink-0" aria-hidden />
@@ -709,7 +660,7 @@ export function BotWizard({
             onClick={() => setStep(step + 1)}
             className="bg-[#0052FF] hover:bg-[#0047E0] text-white font-semibold rounded-xl px-6 py-3 transition-colors min-h-[48px] shrink-0 touch-manipulation cursor-pointer active:scale-[0.98] ml-auto"
           >
-            {isNo ? "Neste" : "Next"}
+            {t("next")}
           </button>
         ) : null}
       </div>

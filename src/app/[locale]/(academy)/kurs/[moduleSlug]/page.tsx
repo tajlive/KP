@@ -15,6 +15,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Progress } from "@/shared/ui/progress";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
   params: Promise<{ locale: string; moduleSlug: string }>;
@@ -92,25 +93,7 @@ export default async function ModulePage({ params }: PageProps) {
       ? Math.round((completedCount / lessons.length) * 100)
       : 0;
 
-  const t = {
-    backToCourses: locale === "no" ? "Tilbake til kurs" : "Back to courses",
-    lessons: locale === "no" ? "leksjoner" : "lessons",
-    minutes: locale === "no" ? "minutter" : "minutes",
-    completed: locale === "no" ? "Fullført" : "Completed",
-    inProgress: locale === "no" ? "Pågående" : "In Progress",
-    notStarted: locale === "no" ? "Ikke startet" : "Not started",
-    startLesson: locale === "no" ? "Start leksjon" : "Start lesson",
-    continueLesson: locale === "no" ? "Fortsett" : "Continue",
-    reviewLesson: locale === "no" ? "Se gjennom" : "Review",
-    required: locale === "no" ? "Obligatorisk" : "Required",
-    optional: locale === "no" ? "Valgfritt" : "Optional",
-    progress: locale === "no" ? "Fremgang" : "Progress",
-    of: locale === "no" ? "av" : "of",
-    loginRequired:
-      locale === "no"
-        ? "Logg inn for å spore fremgang"
-        : "Log in to track progress",
-  };
+  const t = await getTranslations("ModulePage");
 
   const title = locale === "no" ? module.title_no : module.title_en;
   const description =
@@ -123,18 +106,7 @@ export default async function ModulePage({ params }: PageProps) {
         ? "bg-blue-100 text-blue-700"
         : "bg-purple-100 text-purple-700";
 
-  const difficultyLabel =
-    module.difficulty === "beginner"
-      ? locale === "no"
-        ? "Nybegynner"
-        : "Beginner"
-      : module.difficulty === "intermediate"
-        ? locale === "no"
-          ? "Middels"
-          : "Intermediate"
-        : locale === "no"
-          ? "Avansert"
-          : "Advanced";
+  const difficultyLabel = t(module.difficulty as "beginner" | "intermediate" | "advanced");
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -144,7 +116,7 @@ export default async function ModulePage({ params }: PageProps) {
         className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-4 h-4 mr-1" />
-        {t.backToCourses}
+        {t("backToCourses")}
       </Link>
 
       {/* Header */}
@@ -163,7 +135,7 @@ export default async function ModulePage({ params }: PageProps) {
                   className="bg-amber-100 text-amber-700"
                 >
                   <Lock className="w-3 h-3 mr-1" />
-                  {t.required}
+                  {t("required")}
                 </Badge>
               )}
             </div>
@@ -176,15 +148,14 @@ export default async function ModulePage({ params }: PageProps) {
           <Card className="mt-6">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{t.progress}</span>
+                <span className="font-medium">{t("progress")}</span>
                 <span className="text-sm text-muted-foreground">
-                  {completedCount} {t.of} {lessons.length} {t.lessons}
+                  {completedCount} {t("of")} {lessons.length} {t("lessons")}
                 </span>
               </div>
               <Progress value={progressPercentage} className="h-2" />
               <p className="text-sm text-muted-foreground mt-2">
-                {progressPercentage}%{" "}
-                {locale === "no" ? "fullført" : "completed"}
+                {t("percentageCompleted", { percentage: progressPercentage })}
               </p>
             </CardContent>
           </Card>
@@ -194,7 +165,7 @@ export default async function ModulePage({ params }: PageProps) {
       {/* Lessons list */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">
-          {lessons.length} {t.lessons}
+          {t("lessonCount", { count: lessons.length })}
         </h2>
 
         {lessons.map((lesson, index) => {
@@ -235,14 +206,14 @@ export default async function ModulePage({ params }: PageProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm text-muted-foreground">
-                        {t.lessons} {index + 1}
+                        {t("lessonNumber", { number: index + 1 })}
                       </span>
                       {isCompleted && (
                         <Badge
                           variant="secondary"
                           className="bg-green-100 text-green-700"
                         >
-                          {t.completed}
+                          {t("completed")}
                         </Badge>
                       )}
                       {isInProgress && (
@@ -250,7 +221,7 @@ export default async function ModulePage({ params }: PageProps) {
                           variant="secondary"
                           className="bg-blue-100 text-blue-700"
                         >
-                          {t.inProgress}
+                          {t("inProgress")}
                         </Badge>
                       )}
                     </div>
@@ -260,11 +231,11 @@ export default async function ModulePage({ params }: PageProps) {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        {lesson.estimated_minutes} {t.minutes}
+                        {lesson.estimated_minutes} {t("minutes")}
                       </span>
                       <span className="flex items-center gap-1">
                         <BookOpen className="w-4 h-4" />
-                        {locale === "no" ? "Med quiz" : "With quiz"}
+                        {t("withQuiz")}
                       </span>
                     </div>
                   </div>
@@ -278,10 +249,10 @@ export default async function ModulePage({ params }: PageProps) {
                       size="sm"
                     >
                       {isCompleted
-                        ? t.reviewLesson
+                        ? t("reviewLesson")
                         : isInProgress
-                          ? t.continueLesson
-                          : t.startLesson}
+                          ? t("continueLesson")
+                          : t("startLesson")}
                     </Button>
                   </Link>
                 </div>
@@ -298,9 +269,9 @@ export default async function ModulePage({ params }: PageProps) {
           data-testid="course-module-login-prompt"
         >
           <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground mb-4">{t.loginRequired}</p>
+            <p className="text-muted-foreground mb-4">{t("loginRequired")}</p>
             <Link href={`/${locale}/innlogging`}>
-              <Button>{locale === "no" ? "Logg inn" : "Log in"}</Button>
+              <Button>{t("loginButton")}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -320,6 +291,8 @@ export async function generateMetadata({ params }: PageProps) {
     .eq("is_published", true)
     .single();
 
+  const t = await getTranslations("ModulePage");
+
   const title = module
     ? locale === "no"
       ? module.title_no
@@ -329,10 +302,7 @@ export async function generateMetadata({ params }: PageProps) {
       : "Course";
 
   return {
-    title: `${title} | Klarpakke`,
-    description:
-      locale === "no"
-        ? "Lær krypto-trading med strukturte kurs"
-        : "Learn crypto trading with structured courses",
+    title: t("metadataTitle", { title }),
+    description: t("metadataDescription"),
   };
 }

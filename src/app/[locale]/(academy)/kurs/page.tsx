@@ -11,6 +11,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -83,29 +84,7 @@ export default async function KursPage({ params }: PageProps) {
 
   const modules = await getModulesWithProgress(user?.id);
 
-  const t = {
-    title: locale === "no" ? "Kurs" : "Courses",
-    subtitle:
-      locale === "no"
-        ? "Lær krypto-trading fra grunnen av"
-        : "Learn crypto trading from scratch",
-    required:
-      locale === "no"
-        ? "Obligatorisk før lekepenger"
-        : "Required before paper trading",
-    optional: locale === "no" ? "Valgfritt" : "Optional",
-    startModule: locale === "no" ? "Start modul" : "Start module",
-    continue: locale === "no" ? "Fortsett" : "Continue",
-    completed: locale === "no" ? "Fullført" : "Completed",
-    minutes: locale === "no" ? "min" : "min",
-    beginner: locale === "no" ? "Nybegynner" : "Beginner",
-    intermediate: locale === "no" ? "Middels" : "Intermediate",
-    advanced: locale === "no" ? "Avansert" : "Advanced",
-    requiredBanner:
-      locale === "no"
-        ? "Fullfør obligatorisk kurs for å låse opp lekepenger"
-        : "Complete required course to unlock paper trading",
-  };
+  const t = await getTranslations("KursPage");
 
   const requiredModules = modules.filter((m) => m.is_required);
   const optionalModules = modules.filter((m) => !m.is_required);
@@ -117,9 +96,9 @@ export default async function KursPage({ params }: PageProps) {
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">{t.title}</h1>
+        <h1 className="text-4xl font-bold mb-4">{t("title")}</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          {t.subtitle}
+          {t("subtitle")}
         </p>
       </div>
 
@@ -127,7 +106,7 @@ export default async function KursPage({ params }: PageProps) {
       {user && !allRequiredCompleted && requiredModules.length > 0 && (
         <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-8 flex items-center gap-3">
           <Lock className="w-5 h-5 text-amber-600" />
-          <p className="text-amber-800 dark:text-amber-200">{t.requiredBanner}</p>
+          <p className="text-amber-800 dark:text-amber-200">{t("requiredBanner")}</p>
         </div>
       )}
 
@@ -136,7 +115,7 @@ export default async function KursPage({ params }: PageProps) {
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-6">
             <Lock className="w-5 h-5 text-primary" />
-            <h2 className="text-2xl font-semibold">{t.required}</h2>
+            <h2 className="text-2xl font-semibold">{t("required")}</h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -145,7 +124,7 @@ export default async function KursPage({ params }: PageProps) {
                 key={module.id}
                 module={module}
                 locale={locale}
-                translations={t}
+                t={t}
               />
             ))}
           </div>
@@ -157,7 +136,7 @@ export default async function KursPage({ params }: PageProps) {
         <div>
           <div className="flex items-center gap-2 mb-6">
             <BookOpen className="w-5 h-5 text-muted-foreground" />
-            <h2 className="text-2xl font-semibold">{t.optional}</h2>
+            <h2 className="text-2xl font-semibold">{t("optional")}</h2>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -166,7 +145,7 @@ export default async function KursPage({ params }: PageProps) {
                 key={module.id}
                 module={module}
                 locale={locale}
-                translations={t}
+                t={t}
               />
             ))}
           </div>
@@ -178,9 +157,7 @@ export default async function KursPage({ params }: PageProps) {
         <div className="text-center py-12">
           <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground">
-            {locale === "no"
-              ? "Ingen kurs tilgjengelig ennå."
-              : "No courses available yet."}
+            {t("noCourses")}
           </p>
         </div>
       )}
@@ -204,10 +181,10 @@ interface ModuleCardProps {
     completed: boolean;
   };
   locale: string;
-  translations: Record<string, string>;
+  t: any;
 }
 
-function ModuleCard({ module, locale, translations }: ModuleCardProps) {
+function ModuleCard({ module, locale, t }: ModuleCardProps) {
   const title = locale === "no" ? module.title_no : module.title_en;
   const description =
     (locale === "no" ? module.description_no : module.description_en) || "";
@@ -221,10 +198,10 @@ function ModuleCard({ module, locale, translations }: ModuleCardProps) {
 
   const difficultyLabel =
     module.difficulty === "beginner"
-      ? translations.beginner
+      ? t("beginner")
       : module.difficulty === "intermediate"
-        ? translations.intermediate
-        : translations.advanced;
+        ? t("intermediate")
+        : t("advanced");
 
   return (
     <Card className={`${module.completed ? "border-green-200" : ""}`}>
@@ -242,7 +219,7 @@ function ModuleCard({ module, locale, translations }: ModuleCardProps) {
                   className="mt-1 bg-green-100 text-green-700"
                 >
                   <CheckCircle2 className="w-3 h-3 mr-1" />
-                  {translations.completed}
+                  {t("completed")}
                 </Badge>
               )}
             </div>
@@ -259,7 +236,7 @@ function ModuleCard({ module, locale, translations }: ModuleCardProps) {
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
             <span>
-              {module.estimated_minutes} {translations.minutes}
+              {module.estimated_minutes} {t("minutes")}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -274,10 +251,10 @@ function ModuleCard({ module, locale, translations }: ModuleCardProps) {
             variant={module.completed ? "outline" : "default"}
           >
             {module.completed
-              ? translations.completed
+              ? t("completed")
               : module.progress > 0
-                ? translations.continue
-                : translations.startModule}
+                ? t("continue")
+                : t("startModule")}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </Link>
@@ -288,26 +265,22 @@ function ModuleCard({ module, locale, translations }: ModuleCardProps) {
 
 export async function generateMetadata({ params }: PageProps) {
   const { locale } = await params;
-  const title = locale === "no" ? "Kurs | Klarpakke" : "Courses | Klarpakke";
-  const description =
-    locale === "no"
-      ? "Lær krypto-trading fra grunnen av"
-      : "Learn crypto trading from scratch";
-  const baseUrl = "https://www.klarpakke.no";
+  const t = await getTranslations("KursPage");
+
   return {
-    title,
-    description,
+    title: t("metadataTitle"),
+    description: t("metadataDescription"),
     openGraph: {
-      title,
-      description,
+      title: t("metadataTitle"),
+      description: t("metadataDescription"),
       type: "website",
-      url: `${baseUrl}/${locale}/kurs`,
+      url: `https://www.klarpakke.no/${locale}/kurs`,
       images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Klarpakke" }],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: t("metadataTitle"),
+      description: t("metadataDescription"),
     },
   };
 }

@@ -9,6 +9,7 @@ import { ProgressBar } from "@/features/kurs/ProgressBar";
 import { LessonQuiz } from "@/features/kurs/LessonQuiz";
 import { markLessonComplete } from "@/lib/courses/actions";
 import ReactMarkdown from "react-markdown";
+import { getTranslations } from "next-intl/server";
 
 interface PageProps {
   params: Promise<{
@@ -179,22 +180,8 @@ export default async function LessonPage({ params }: PageProps) {
   const isCompleted = userProgress?.status === "completed";
   const completedCount = completedLessonIds.length;
 
-  const t = {
-    backToModule: locale === "no" ? "Tilbake til modul" : "Back to module",
-    lesson: locale === "no" ? "Leksjon" : "Lesson",
-    of: locale === "no" ? "av" : "of",
-    minutes: locale === "no" ? "minutter" : "minutes",
-    completed: locale === "no" ? "Fullført" : "Completed",
-    previous: locale === "no" ? "Forrige" : "Previous",
-    next: locale === "no" ? "Neste" : "Next",
-    finishModule: locale === "no" ? "Fullfør modul" : "Finish module",
-    quiz: locale === "no" ? "Quiz" : "Quiz",
-    loginRequired:
-      locale === "no"
-        ? "Logg inn for å ta quiz og spare fremgang"
-        : "Log in to take quiz and save progress",
-    completeLesson: locale === "no" ? "Fullfør leksjon" : "Complete lesson",
-  };
+  const t = await getTranslations("LessonPage");
+
 
   const title = locale === "no" ? lesson.title_no : lesson.title_en;
   const rawContent = locale === "no" ? lesson.content_no : lesson.content_en;
@@ -219,7 +206,7 @@ export default async function LessonPage({ params }: PageProps) {
         className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6"
       >
         <ArrowLeft className="w-4 h-4 mr-1" />
-        {t.backToModule}
+        {t("backToModule")}
       </Link>
 
       {/* Progress bar */}
@@ -234,12 +221,12 @@ export default async function LessonPage({ params }: PageProps) {
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <Badge variant="secondary">
-            {t.lesson} {currentIndex + 1} {t.of} {allLessons.length}
+            {t("lesson")} {currentIndex + 1} {t("of")} {allLessons.length}
           </Badge>
           {isCompleted && (
             <Badge className="bg-green-100 text-green-700">
               <CheckCircle2 className="w-3 h-3 mr-1" />
-              {t.completed}
+              {t("completed")}
             </Badge>
           )}
         </div>
@@ -247,11 +234,11 @@ export default async function LessonPage({ params }: PageProps) {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
-            {lesson.estimated_minutes} {t.minutes}
+            {lesson.estimated_minutes} {t("minutes")}
           </span>
           <span className="flex items-center gap-1">
             <BookOpen className="w-4 h-4" />
-            {questions.length} {t.quiz}
+            {questions.length} {t("quiz")}
           </span>
         </div>
       </div>
@@ -269,7 +256,7 @@ export default async function LessonPage({ params }: PageProps) {
       {questions.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">
-            {locale === "no" ? "Test kunnskapen din" : "Test your knowledge"}
+            {t("testKnowledge")}
           </h2>
           {user ? (
             <LessonQuiz
@@ -282,9 +269,9 @@ export default async function LessonPage({ params }: PageProps) {
           ) : (
             <Card className="bg-muted/50">
               <CardContent className="p-6 text-center">
-                <p className="text-muted-foreground mb-4">{t.loginRequired}</p>
+                <p className="text-muted-foreground mb-4">{t("loginRequired")}</p>
                 <Link href={`/${locale}/innlogging`}>
-                  <Button>{locale === "no" ? "Logg inn" : "Log in"}</Button>
+                  <Button>{t("loginButton")}</Button>
                 </Link>
               </CardContent>
             </Card>
@@ -300,7 +287,7 @@ export default async function LessonPage({ params }: PageProps) {
           >
             <Button variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              {t.previous}
+              {t("previous")}
             </Button>
           </Link>
         ) : (
@@ -312,7 +299,7 @@ export default async function LessonPage({ params }: PageProps) {
             href={`/${locale}/kurs/${moduleSlug}/leksjon/${nextLesson.slug}`}
           >
             <Button>
-              {t.next}
+              {t("next")}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
@@ -320,7 +307,7 @@ export default async function LessonPage({ params }: PageProps) {
           <Link href={`/${locale}/kurs/${moduleSlug}`}>
             <Button variant="default">
               <CheckCircle2 className="w-4 h-4 mr-2" />
-              {t.finishModule}
+              {t("finishModule")}
             </Button>
           </Link>
         )}
@@ -340,9 +327,11 @@ export async function generateMetadata({ params }: PageProps) {
     .eq("is_published", true)
     .single();
 
+  const t = await getTranslations("LessonPage");
+
   if (!module) {
     return {
-      title: locale === "no" ? "Leksjon | Klarpakke" : "Lesson | Klarpakke",
+      title: t("metadataTitle", { title: t("lesson") }),
     };
   }
 
@@ -358,15 +347,10 @@ export async function generateMetadata({ params }: PageProps) {
     ? locale === "no"
       ? lesson.title_no
       : lesson.title_en
-    : locale === "no"
-      ? "Leksjon"
-      : "Lesson";
+    : t("lesson");
 
   return {
-    title: `${title} | Klarpakke`,
-    description:
-      locale === "no"
-        ? "Lær krypto-trading med strukturte leksjoner"
-        : "Learn crypto trading with structured lessons",
+    title: t("metadataTitle", { title }),
+    description: t("metadataDescription"),
   };
 }
