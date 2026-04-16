@@ -319,22 +319,98 @@ async function executeTradeWithLock(
   }
   
   trace.riskCheckPassed = true;
-  const finalTrade = riskCheck.adjustedTrade || {
+  
+  // ========================================================================
+  // 3.6 Slippage Estimation & Enforcement (Phase 3)
+  // ========================================================================
+  const maxSlippageBps = request.metadata?.maxSlippageBps || 50; // Default 0.5%
+  const executionNotional = (request.quantity * request.price) / (request.price || 1); // Notional in USD/BTC terms
+  
+  // Simulation: Estimate slippage based on notional and typical depth
+  // In production, this would call getOrderBookDepth(symbol, side, amount)
+  const estimatedSlippageBps = (executionNotional / 100000) * 5; // 5 bps per $100k
+  
+  if (estimatedSlippageBps > maxSlippageBps) {
+    const errorMsg = `Trade Aborted: Estimated slippage (${estimatedSlippageBps.toFixed(2)} bps) exceeds limit (${maxSlippageBps} bps).`;
+    console.warn(`[executeTradeSafe] ${errorMsg}`);
+    
+    // @ts-ignore - trace structure adjustment
+    trace.success = false;
+    // @ts-ignore - trace structure adjustment
+    trace.error = errorMsg;
+    
+    return {
+      success: false,
+      error: errorMsg,
+      auditStatus: 'failed',
+    };
+  }
+  
+  console.log(`[executeTradeSafe] Slippage OK: Estimated ${estimatedSlippageBps.toFixed(2)} bps`);
+
+  // ========================================================================
+  // 4. Execution Logic (Simulation for Paper, Exchange Call for Live)
+  // ========================================================================
+  let adjustedQuantity = riskCheck.adjustedTrade?.quantity ?? request.quantity;
+  const regime = request.signalContext?.regime as any || 'unclear';
+
+  // Apply Regime-Aware Safety Multipliers (Secondary enforcer)
+  // These are intentionally conservative to act as a fail-safe.
+  const regimeSafetyMultipliers: Record<string, number> = {
+    bull: 1.0,      // Allow full trade
+    bear: 0.8,      // 20% reduction
+    range: 1.0,     // Standard
+    'high-vol': 0.3, // 70% reduction (Capital preservation)
+    unclear: 0.7    // 30% reduction
+  };
+
+  const safetyMultiplier = regimeSafetyMultipliers[regime] || 1.0;
+  if (safetyMultiplier < 1.0) {
+    adjustedQuantity *= safetyMultiplier;
+    console.log(`[executeTradeSafe] Regime Safety Gate: scaling quantity to ${safetyMultiplier * 100}% due to ${regime} regime`);
+  }
+  
+  // Apply partial exit logic if side is SELL and we have a signal context
+  if (request.side === 'sell' && request.signalContext) {
+    const exitRatio = riskKernel.calculateExitRatio(request.signalContext.confidence * 100);
+    if (exitRatio < 1.0) {
+      adjustedQuantity *= exitRatio;
+      console.log(`[executeTradeSafe] Partial exit triggered: reducing quantity by ${(1 - exitRatio) * 100}% (confidence: ${request.signalContext.confidence})`);
+    }
+  }
+
+  const finalTrade = {
     side: request.side,
-    quantity: request.quantity,
+    quantity: adjustedQuantity,
     price: request.price,
-    notional: orderValueUsdt,
+    notional: adjustedQuantity * request.price,
     leverage: 1,
   };
 
   // ========================================================================
-  // 4. Audit Intent – MUST SUCCEED or BLOCK
+  // 4. Audit Intent & Slippage Estimation
   // ========================================================================
   const auditor = new ExecutionAuditor();
-  const orderId = `order-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   const tradeId = crypto.randomUUID();
   
-  const mockL2Snapshot = createL2Snapshot(
+  // Fetch real order book for slippage estimation
+  const tradeExecutor = await ExecutorFactory.create(supabase, request.userId, request.mode, session?.id ?? request.sessionId ?? '');
+  let orderBook: import("../order-executor").OrderBookSnapshot | null = null;
+  try {
+    orderBook = await tradeExecutor.fetchOrderBook(request.symbol, 20);
+  } catch (obError) {
+    console.warn(`[executeTradeSafe] Failed to fetch order book for ${request.symbol}:`, obError);
+  }
+
+  const slippageReport = orderBook 
+    ? estimateSlippage(orderBook, finalTrade.quantity, finalTrade.side)
+    : { estimatedPrice: finalTrade.price, slippageBps: request.symbol.includes('BTC') ? 5 : 15 }; // Pair-aware fallback
+
+  const l2Snapshot = orderBook ? {
+    bids: orderBook.bids.map(b => [b.price, b.quantity] as [number, number]),
+    asks: orderBook.asks.map(a => [a.price, a.quantity] as [number, number]),
+    timestamp: orderBook.timestamp
+  } : createL2Snapshot(
     [[request.price * 0.999, 10], [request.price * 0.998, 20]],
     [[request.price * 1.001, 10], [request.price * 1.002, 20]]
   );
@@ -351,15 +427,15 @@ async function executeTradeWithLock(
     timeInForce: 'GTC',
     strategy: request.signalContext?.strategy || 'unknown',
     regime: request.signalContext?.regime || 'unknown',
-    l2Snapshot: mockL2Snapshot,
+    l2Snapshot,
     venueScores: [],
-    selectedVenue: 'Bybit',
+    selectedVenue: request.mode === 'live' ? 'Binance' : 'Paper',
     expectedFill: {
-      price: finalTrade.price,
+      price: slippageReport.estimatedPrice,
       quantity: finalTrade.quantity,
-      slippageBps: 5,
-      fees: finalTrade.notional * 0.00055,
-      confidence: 0.95,
+      slippageBps: slippageReport.slippageBps,
+      fees: finalTrade.notional * (request.mode === 'live' ? 0.001 : 0.0005), // Dynamic fee: 0.1% live, 0.05% paper
+      confidence: orderBook ? 0.98 : 0.5,
       estimatedTime: 100
     }
   });
@@ -432,8 +508,7 @@ async function executeTradeWithLock(
   // ========================================================================
   // 6. Execute Trade
   // ========================================================================
-  const executor = await ExecutorFactory.create(supabase, request.userId, request.mode, session?.id ?? request.sessionId ?? '');
-  const execResult = await executor.executeOrder({
+  const execResult = await tradeExecutor.executeOrder({
     symbol: request.symbol,
     side: finalTrade.side,
     quantity: finalTrade.quantity,
@@ -540,7 +615,7 @@ async function executeTradeWithLock(
       ? execResult.executedQuantity * execResult.executedPrice 
       : -(execResult.executedQuantity * execResult.executedPrice);
     
-    riskStateManager.recordTrade(pnl, execResult.executedQuantity * execResult.executedPrice);
+    riskStateManager.recordTrade(pnl, execResult.executedQuantity * execResult.executedPrice, request.side);
     
     // DETERMINISTIC DUAL-WRITE: Prøv Redis først, så DB
     const redisKey = `risk:state:${request.userId}`;
@@ -682,3 +757,41 @@ async function executeTradeWithLock(
 // ============================================================================
 
 // Helper functions are now imported from execute-trade-helpers.ts
+
+/**
+ * Estimate slippage based on order book depth
+ */
+function estimateSlippage(
+  orderBook: import("../order-executor").OrderBookSnapshot,
+  quantity: number,
+  side: 'buy' | 'sell'
+): { estimatedPrice: number; slippageBps: number } {
+  const levels = side === 'buy' ? orderBook.asks : orderBook.bids;
+  let remainingQty = quantity;
+  let totalPrice = 0;
+  
+  const midPrice = (orderBook.bids[0]?.price + orderBook.asks[0]?.price) / 2 || levels[0]?.price;
+
+  for (const level of levels) {
+    const fillQty = Math.min(remainingQty, level.quantity);
+    totalPrice += fillQty * level.price;
+    remainingQty -= fillQty;
+    
+    if (remainingQty <= 0) break;
+  }
+  
+  // If order book is too thin, assume extra slippage for the remainder
+  if (remainingQty > 0) {
+    const lastLevelPrice = levels[levels.length - 1]?.price || midPrice;
+    totalPrice += remainingQty * lastLevelPrice * (side === 'buy' ? 1.02 : 0.98);
+  }
+  
+  const avgPrice = totalPrice / quantity;
+  const slippage = Math.abs(avgPrice - midPrice) / midPrice;
+  const slippageBps = Math.round(slippage * 10000);
+  
+  return {
+    estimatedPrice: avgPrice,
+    slippageBps: Math.max(1, slippageBps)
+  };
+}

@@ -440,9 +440,33 @@ Deno.serve(async (req) => {
           signal_type: toTradingSignalType(sig.strategy_type),
           status: "active",
         })
-        .then((r) => {
+        .then((r: any) => {
           if (r.error) console.warn("trading_signals insert:", r.error.message);
         });
+
+      // Unified logging til ai_decision_log for autotrader engine (KLA-214)
+      if (strategy.user_id) {
+        await supabase
+          .from("ai_decision_log")
+          .insert({
+            user_id: strategy.user_id,
+            symbol: sig.symbol,
+            decision_type: sig.action,
+            sentiment_score: Math.round((sig.confidence ?? 0) * 100),
+            decision_reason: sig.reason,
+            analysis_data: {
+              strategy_type: strategy.strategy_type,
+              entry_price: sig.entry_price,
+              stop_loss: sig.stop_loss,
+              take_profit: sig.take_profit,
+              original_confidence: sig.confidence
+            },
+            executed_at: new Date().toISOString()
+          })
+          .then((r: any) => {
+            if (r.error) console.warn("ai_decision_log insert:", r.error.message);
+          });
+      }
 
       // Opprett trade automatisk (kun paper-modus) — unified trades-tabell (KLA-214)
       if (

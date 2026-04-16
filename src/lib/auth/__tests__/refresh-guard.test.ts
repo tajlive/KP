@@ -80,7 +80,7 @@ describe("createRefreshProtectedFetch", () => {
     await guarded(url, { method: "POST" });
 
     expect(baseFetch).toHaveBeenCalledTimes(3);
-    expect(isRefreshCircuitOpen("server:unknown")).toBe(true);
+    expect(isRefreshCircuitOpen("server:global")).toBe(true);
 
     // 4th call should be short-circuited
     const res = await guarded(url, { method: "POST" });
@@ -101,12 +101,12 @@ describe("createRefreshProtectedFetch", () => {
     await guarded(url, { method: "POST" });
     await guarded(url, { method: "POST" });
 
-    expect(isRefreshCircuitOpen("server:unknown")).toBe(true);
+    expect(isRefreshCircuitOpen("server:global")).toBe(true);
 
     // Advance past cooldown
     vi.advanceTimersByTime(31_000);
 
-    expect(isRefreshCircuitOpen("server:unknown")).toBe(false);
+    expect(isRefreshCircuitOpen("server:global")).toBe(false);
 
     // Next call should hit the network again
     const res = await guarded(url, { method: "POST" });
