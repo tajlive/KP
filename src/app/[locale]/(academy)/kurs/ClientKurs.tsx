@@ -10,7 +10,7 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -43,6 +43,7 @@ function getLevelKey(level: string): string {
 
 export default function ClientKurs() {
   const locale = useLocale();
+  const t = useTranslations("ClientKurs");
   const data = getCoursesData(locale);
   const courses = data.courses;
   const [filter, setFilter] = useState<string>("all");
@@ -50,47 +51,19 @@ export default function ClientKurs() {
   const filters = [
     {
       key: "all",
-      label:
-        locale === "no"
-          ? "Alle"
-          : locale === "th"
-            ? "ทั้งหมด"
-            : locale === "zh"
-              ? "全部"
-              : "All",
+      label: t("all"),
     },
     {
       key: "beginner",
-      label:
-        locale === "no"
-          ? "Nybegynner"
-          : locale === "th"
-            ? "เริ่มต้น"
-            : locale === "zh"
-              ? "初学者"
-              : "Beginner",
+      label: t("beginner"),
     },
     {
       key: "intermediate",
-      label:
-        locale === "no"
-          ? "Middels"
-          : locale === "th"
-            ? "ปานกลาง"
-            : locale === "zh"
-              ? "中级"
-              : "Intermediate",
+      label: t("intermediate"),
     },
     {
       key: "advanced",
-      label:
-        locale === "no"
-          ? "Avansert"
-          : locale === "th"
-            ? "ขั้นสูง"
-            : locale === "zh"
-              ? "高级"
-              : "Advanced",
+      label: t("advanced"),
     },
   ];
 
@@ -161,13 +134,7 @@ export default function ClientKurs() {
                 {data.metadata.stats.activeStudents}
               </span>
               <span className="text-sm text-slate-500">
-                {locale === "no"
-                  ? "aktive studenter"
-                  : locale === "th"
-                    ? "นักเรียน"
-                    : locale === "zh"
-                      ? "活跃学生"
-                      : "active students"}
+                {t("activeStudents")}
               </span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm">
@@ -176,13 +143,7 @@ export default function ClientKurs() {
                 {data.metadata.stats.totalLessons}
               </span>
               <span className="text-sm text-slate-500">
-                {locale === "no"
-                  ? "leksjoner"
-                  : locale === "th"
-                    ? "บทเรียน"
-                    : locale === "zh"
-                      ? "课程"
-                      : "lessons"}
+                {t("lessonsLabel")}
               </span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm">
@@ -191,13 +152,7 @@ export default function ClientKurs() {
                 {data.metadata.stats.averageRating}
               </span>
               <span className="text-sm text-slate-500">
-                {locale === "no"
-                  ? "snitt-rating"
-                  : locale === "th"
-                    ? "คะแนนเฉลี่ย"
-                    : locale === "zh"
-                      ? "平均评分"
-                      : "avg rating"}
+                {t("avgRating")}
               </span>
             </div>
           </motion.div>
@@ -249,13 +204,7 @@ export default function ClientKurs() {
                       {course.featured && (
                         <div className="absolute top-4 right-4 z-10">
                           <span className="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full uppercase tracking-wide shadow-sm">
-                            {locale === "no"
-                              ? "Populær"
-                              : locale === "th"
-                                ? "ยอดนิยม"
-                                : locale === "zh"
-                                  ? "热门"
-                                  : "Popular"}
+                            {t("popular")}
                           </span>
                         </div>
                       )}
@@ -309,14 +258,7 @@ export default function ClientKurs() {
                           </div>
                           <div className="flex items-center gap-1.5">
                             <BookOpen className="h-3.5 w-3.5" />
-                            {course.modules}{" "}
-                            {locale === "no"
-                              ? "moduler"
-                              : locale === "th"
-                                ? "โมดูล"
-                                : locale === "zh"
-                                  ? "模块"
-                                  : "modules"}
+                            {course.modules} {t("moduler")}
                           </div>
                           <div className="flex items-center gap-1.5">
                             <Star className="h-3.5 w-3.5 text-yellow-500" />
@@ -329,20 +271,8 @@ export default function ClientKurs() {
                           <div className="flex items-center gap-1 text-xs text-slate-400">
                             <Users className="h-3.5 w-3.5" />
                             {course.students
-                              ? `${(course.students as number).toLocaleString()} ${locale === "no"
-                                  ? "studenter"
-                                  : locale === "th"
-                                    ? "นักเรียน"
-                                    : locale === "zh"
-                                      ? "学生"
-                                      : "students"}`
-                              : locale === "no"
-                                ? "Åpent for alle"
-                                : locale === "th"
-                                  ? "เปิดสำหรับทุกคน"
-                                  : locale === "zh"
-                                    ? "对所有人开放"
-                                    : "Open to all"}
+                              ? t("studenterCount", { count: course.students })
+                              : t("openForAll")}
                           </div>
                           <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 group-hover:gap-2 transition-all">
                             {course.cta}
@@ -362,13 +292,7 @@ export default function ClientKurs() {
             <div className="text-center py-16">
               <GraduationCap className="h-12 w-12 mx-auto text-slate-300 dark:text-gray-600 mb-4" />
               <p className="text-slate-500 dark:text-slate-400">
-                {locale === "no"
-                  ? "Ingen kurs i denne kategorien ennå."
-                  : locale === "th"
-                    ? "ยังไม่มีคอร์สในหมวดนี้"
-                    : locale === "zh"
-                      ? "该分类暂无课程"
-                      : "No courses in this category yet."}
+                {t("noFilteredResults")}
               </p>
             </div>
           )}

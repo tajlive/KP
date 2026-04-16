@@ -15,6 +15,7 @@ import {
   ChevronRight,
   RefreshCw
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { generateExplanation } from "@/lib/trader-explanations";
 import type { TradeReasonCode, TradeSide, TradeReasonParams, IndicatorSnapshot } from "@/types/trading";
 
@@ -80,7 +81,7 @@ const MOOD_STYLES = {
   },
 };
 
-function formatTimeAgo(timestamp: string, locale: "no" | "en"): string {
+function formatTimeAgo(timestamp: string, t: any): string {
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -88,17 +89,10 @@ function formatTimeAgo(timestamp: string, locale: "no" | "en"): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (locale === "no") {
-    if (diffMins < 1) return "akkurat nå";
-    if (diffMins < 60) return `${diffMins} min siden`;
-    if (diffHours < 24) return `${diffHours} t siden`;
-    return `${diffDays} d siden`;
-  } else {
-    if (diffMins < 1) return "just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
-  }
+  if (diffMins < 1) return t("justNow");
+  if (diffMins < 60) return t("minsAgo", { count: diffMins });
+  if (diffHours < 24) return t("hoursAgo", { count: diffHours });
+  return t("daysAgo", { count: diffDays });
 }
 
 function formatPrice(price: number): string {
@@ -112,10 +106,12 @@ function formatPrice(price: number): string {
 
 function EventCard({ 
   event, 
-  locale 
+  locale,
+  t
 }: { 
   event: TradeEvent; 
   locale: "no" | "en";
+  t: any;
 }) {
   const explanation = generateExplanation({
     reasonCode: event.reasonCode,
@@ -139,7 +135,7 @@ function EventCard({
       {/* Timestamp badge */}
       <div className="absolute top-2 right-2 flex items-center gap-1 text-xs text-slate-500">
         <Clock className="w-3 h-3" />
-        {formatTimeAgo(event.timestamp, locale)}
+        {formatTimeAgo(event.timestamp, t)}
       </div>
 
       <div className="flex items-start gap-3">
@@ -155,7 +151,7 @@ function EventCard({
               {explanation.title}
             </span>
             <span className={`text-xs px-2 py-0.5 rounded-full ${styles.bg} ${styles.text}`}>
-              {isBuy ? "Kjøp" : "Salg"}
+              {isBuy ? t("buy") : t("sell")}
             </span>
           </div>
 
@@ -190,9 +186,11 @@ function EventCard({
 // Mini chart with trade markers
 function MiniChartWithMarkers({ 
   events, 
+  t,
   className = "" 
 }: { 
   events: TradeEvent[]; 
+  t: any;
   className?: string;
 }) {
   // Generate mock price data for visualization
@@ -278,11 +276,11 @@ function MiniChartWithMarkers({
       <div className="absolute bottom-2 left-2 flex items-center gap-3 text-xs">
         <span className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          Kjøp
+          {t("buy")}
         </span>
         <span className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-red-500" />
-          Salg
+          {t("sell")}
         </span>
       </div>
     </div>
@@ -297,6 +295,7 @@ export function TradeEventFeed({
   showChartMarkers = true,
   locale = "no",
 }: TradeEventFeedProps) {
+  const t = useTranslations("TradeEventFeed");
   const [events, setEvents] = useState<TradeEvent[]>(propEvents || []);
   const [loading, setLoading] = useState(!propEvents);
   const [error, setError] = useState<string | null>(null);
@@ -366,7 +365,7 @@ export function TradeEventFeed({
       <div className={`bg-slate-900 border border-red-500/30 rounded-2xl p-6 ${className}`}>
         <div className="flex items-center gap-2 text-red-400">
           <AlertCircle className="w-5 h-5" />
-          <span>Kunne ikke laste handler</span>
+          <span>{t("failedToLoad")}</span>
         </div>
       </div>
     );
@@ -380,11 +379,11 @@ export function TradeEventFeed({
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-blue-500" />
             <h3 className="font-semibold text-white">
-              {locale === "no" ? "Siste handler" : "Recent trades"}
+              {t("recentTrades")}
             </h3>
           </div>
           <button className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 transition-colors">
-            {locale === "no" ? "Se alle" : "View all"}
+            {t("viewAll")}
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -392,23 +391,21 @@ export function TradeEventFeed({
 
       {/* Chart with markers */}
       {showChartMarkers && events.length > 0 && (
-        <MiniChartWithMarkers events={events} className="border-b border-slate-800" />
+        <MiniChartWithMarkers events={events} t={t} className="border-b border-slate-800" />
       )}
 
       {/* Events list */}
       <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
-        <AnimatePresence mode="popLayout">
           {events.length === 0 ? (
             <div className="text-center py-8 text-slate-500">
               <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>{locale === "no" ? "Ingen handler ennå" : "No trades yet"}</p>
+              <p>{t("noTradesYet")}</p>
             </div>
           ) : (
             events.map(event => (
-              <EventCard key={event.id} event={event} locale={locale} />
+              <EventCard key={event.id} event={event} locale={locale} t={t} />
             ))
           )}
-        </AnimatePresence>
       </div>
     </div>
   );

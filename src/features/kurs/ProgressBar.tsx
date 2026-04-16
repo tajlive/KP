@@ -2,6 +2,7 @@
 
 import { Progress } from "@/shared/ui/progress";
 import { CheckCircle2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ProgressBarProps {
   current: number;
@@ -16,14 +17,10 @@ export function ProgressBar({
   moduleTitle,
   locale,
 }: ProgressBarProps) {
+  const t = useTranslations("ProgressBar");
   const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
 
-  const completedText =
-    locale === "no"
-      ? `${current} av ${total} leksjoner fullført`
-      : locale === "en"
-        ? `${current} of ${total} lessons completed`
-        : `${current} / ${total}`;
+  const completedText = t("completedText", { current, total });
 
   return (
     <div className="bg-card border rounded-lg p-4 mb-6">

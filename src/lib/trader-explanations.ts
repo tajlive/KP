@@ -272,9 +272,9 @@ const EXPLANATION_TEMPLATES: Record<TradeReasonCode, ExplanationTemplate> = {
 /**
  * Formater tall på norsk (f.eks. 1250.50 → "1 250,50")
  */
-function formatNumber(value: number | undefined | null, decimals = 2): string {
+function formatNumber(value: number | undefined | null, locale: Locale, decimals = 2): string {
   if (value === undefined || value === null) return "-";
-  return value.toLocaleString("nb-NO", {
+  return value.toLocaleString(locale === "no" ? "nb-NO" : "en-US", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   });
@@ -283,9 +283,9 @@ function formatNumber(value: number | undefined | null, decimals = 2): string {
 /**
  * Formater prosent på norsk (f.eks. 2.5 → "2,5 %")
  */
-function formatPercent(value: number | undefined | null): string {
+function formatPercent(value: number | undefined | null, locale: Locale): string {
   if (value === undefined || value === null) return "-";
-  return `${value.toLocaleString("nb-NO", { maximumFractionDigits: 1 })} %`;
+  return `${value.toLocaleString(locale === "no" ? "nb-NO" : "en-US", { maximumFractionDigits: 1 })} %`;
 }
 
 /**
@@ -294,7 +294,8 @@ function formatPercent(value: number | undefined | null): string {
 function interpolateTemplate(
   template: string,
   params: TradeReasonParams | null,
-  indicators: IndicatorSnapshot | null
+  indicators: IndicatorSnapshot | null,
+  locale: Locale
 ): string {
   if (!params && !indicators) return template;
   
@@ -303,10 +304,10 @@ function interpolateTemplate(
   // Params interpolation
   if (params) {
     if (params.profitPct !== undefined) {
-      result = result.replace("{{profit}}", formatPercent(params.profitPct));
+      result = result.replace("{{profit}}", formatPercent(params.profitPct, locale));
     }
     if (params.lossPct !== undefined) {
-      result = result.replace("{{loss}}", formatPercent(params.lossPct));
+      result = result.replace("{{loss}}", formatPercent(params.lossPct, locale));
     }
     if (params.rsi !== undefined) {
       result = result.replace("{{rsi}}", Math.round(params.rsi).toString());
@@ -355,8 +356,8 @@ export function generateExplanation(
   const localized = template[locale];
   
   // Interpoler med parametere
-  const title = interpolateTemplate(localized.title, reasonParams ?? null, indicatorSnapshot ?? null);
-  const body = interpolateTemplate(localized.body, reasonParams ?? null, indicatorSnapshot ?? null);
+  const title = interpolateTemplate(localized.title, reasonParams ?? null, indicatorSnapshot ?? null, locale);
+  const body = interpolateTemplate(localized.body, reasonParams ?? null, indicatorSnapshot ?? null, locale);
   
   return {
     title,

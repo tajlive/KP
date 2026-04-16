@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, XCircle, ChevronRight, Trophy, RotateCcw } from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import { useTranslations } from "next-intl";
 import { submitQuizAnswer } from "@/lib/courses/actions";
 import { cn } from "@/lib/utils";
 
@@ -34,9 +35,10 @@ export function LessonQuiz({
   questions,
   lessonId,
   userId,
-  locale,
+  locale, // Keeping for props compatibility but mostly unused now for strings
   onComplete,
 }: LessonQuizProps) {
+  const t = useTranslations("LessonQuiz");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -113,17 +115,13 @@ export function LessonQuiz({
                 <Trophy className="w-8 h-8 text-green-600" />
               </div>
               <h3 className="text-2xl font-bold text-green-700 mb-2">
-                {locale === "no" ? "Gratulerer!" : "Congratulations!"}
+                {t("congratulations")}
               </h3>
               <p className="text-muted-foreground mb-4">
-                {locale === "no"
-                  ? `Du besto quizen med ${percentage}% (${score} av ${questions.length} riktige)`
-                  : `You passed the quiz with ${percentage}% (${score} of ${questions.length} correct)`}
+                {t("passedMessage", { percentage, score, total: questions.length })}
               </p>
               <p className="text-sm text-green-600">
-                {locale === "no"
-                  ? "Leksjonen er nå markert som fullført!"
-                  : "Lesson is now marked as completed!"}
+                {t("lessonCompleted")}
               </p>
             </>
           ) : (
@@ -132,16 +130,14 @@ export function LessonQuiz({
                 <RotateCcw className="w-8 h-8 text-yellow-600" />
               </div>
               <h3 className="text-2xl font-bold text-yellow-700 mb-2">
-                {locale === "no" ? "Ikke bestått" : "Not passed"}
+                {t("failed")}
               </h3>
               <p className="text-muted-foreground mb-4">
-                {locale === "no"
-                  ? `Du fikk ${percentage}% (${score} av ${questions.length} riktige). Du trenger 80% for å bestå.`
-                  : `You got ${percentage}% (${score} of ${questions.length} correct). You need 80% to pass.`}
+                {t("failedMessage", { percentage, score, total: questions.length })}
               </p>
               <Button onClick={handleRetry} variant="outline">
                 <RotateCcw className="w-4 h-4 mr-2" />
-                {locale === "no" ? "Prøv igjen" : "Try again"}
+                {t("tryAgain")}
               </Button>
             </>
           )}
@@ -161,12 +157,8 @@ export function LessonQuiz({
       ? currentQuestion.explanation_no
       : currentQuestion.explanation_en;
 
-  const progressText =
-    locale === "no"
-      ? `Spørsmål ${currentIndex + 1} av ${questions.length}`
-      : `Question ${currentIndex + 1} of ${questions.length}`;
-
-  const scoreText = locale === "no" ? `Poeng: ${score}` : `Score: ${score}`;
+  const progressText = t("progress", { current: currentIndex + 1, total: questions.length });
+  const scoreText = t("score", { score });
 
   return (
     <div className="bg-card border rounded-lg p-6 mt-8">
@@ -253,13 +245,7 @@ export function LessonQuiz({
                   isCorrect ? "text-green-700" : "text-yellow-700"
                 )}
               >
-                {isCorrect
-                  ? locale === "no"
-                    ? "Riktig!"
-                    : "Correct!"
-                  : locale === "no"
-                    ? "Ikke helt riktig"
-                    : "Not quite right"}
+                {isCorrect ? t("correct") : t("incorrect")}
               </p>
               <p className="text-sm mt-1 text-muted-foreground">
                 {explanationText}
@@ -272,17 +258,11 @@ export function LessonQuiz({
       <div className="mt-6 flex justify-end">
         {!isSubmitted ? (
           <Button onClick={handleSubmit} disabled={!selectedOption}>
-            {locale === "no" ? "Svar" : "Submit Answer"}
+            {t("submit")}
           </Button>
         ) : (
           <Button onClick={handleNext}>
-            {isLastQuestion
-              ? locale === "no"
-                ? "Se resultat"
-                : "See results"
-              : locale === "no"
-                ? "Neste"
-                : "Next"}
+            {isLastQuestion ? t("seeResults") : t("next")}
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
         )}

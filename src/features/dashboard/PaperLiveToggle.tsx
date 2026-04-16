@@ -4,6 +4,7 @@ import { Lock } from "lucide-react";
 import Link from "next/link";
 import { BRAND } from "@/lib/design/tokens";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface PaperLiveToggleProps {
@@ -19,6 +20,7 @@ export function PaperLiveToggle({
   tier,
   locale,
 }: PaperLiveToggleProps) {
+  const t = useTranslations("PaperLiveToggle");
   const [showUpgradeHint, setShowUpgradeHint] = useState(false);
 
   return (
@@ -37,7 +39,7 @@ export function PaperLiveToggle({
           )}
         >
           <span className="w-2 h-2 rounded-full bg-[#16A34A]" />
-          {locale === "no" ? "Lekepenger" : "Virtual"}
+          {t("paper")}
         </button>
         <button
           onClick={() => {
@@ -57,7 +59,7 @@ export function PaperLiveToggle({
           )}
         >
           {tier === "student" && <Lock className="w-3.5 h-3.5" />}
-          {locale === "no" ? "Ekte krypto" : "Live"}
+          {t("live")}
         </button>
       </div>
       {showUpgradeHint && tier === "student" && (
@@ -66,9 +68,7 @@ export function PaperLiveToggle({
             href={`/${locale}/priser`}
             className={`${BRAND.link} hover:underline`}
           >
-            {locale === "no"
-              ? "Oppgrader til Bachelor for ekte trading"
-              : "Upgrade to Bachelor for live trading"}
+            {t("upgradeHint")}
           </Link>
         </p>
       )}
