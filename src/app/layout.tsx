@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   publisher: "Klarpakke AS",
   metadataBase: new URL("https://www.klarpakke.no"),
   alternates: {
+    canonical: "/",
     languages: {
       no: "/",
       en: "/en/",
