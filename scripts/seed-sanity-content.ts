@@ -1,334 +1,265 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env tsx
 /**
- * Seed Sanity CMS with Klarpakke content
+ * Sanity Content Seed Script
  *
- * Usage:
+ * Populerer Sanity med FAQ + testimonials for Klarpakke.
+ * Idempotent — bruker createOrReplace med stabile _id-er.
+ *
+ * Krevde env-vars (i .env.local):
+ *   NEXT_PUBLIC_SANITY_PROJECT_ID
+ *   NEXT_PUBLIC_SANITY_DATASET        (typisk "production")
+ *   SANITY_API_WRITE_TOKEN            (write-token fra sanity.io/manage)
+ *
+ * Kjør:
  *   npx tsx scripts/seed-sanity-content.ts
- *
- * Requires SANITY_API_WRITE_TOKEN in .env.local
  */
 
-import { readFileSync, existsSync } from 'fs';
-import { resolve } from 'path';
+import { createClient } from "@sanity/client";
 
-// ─── Load .env.local ──────────────────────────────────────────────────────
-function loadEnvLocal(): Record<string, string> {
-  const envPath = resolve(process.cwd(), '.env.local');
-  const env: Record<string, string> = {};
-  if (!existsSync(envPath)) return env;
-  const lines = readFileSync(envPath, 'utf8').split('\n');
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const eq = trimmed.indexOf('=');
-    if (eq > 0) {
-      const key = trimmed.slice(0, eq).trim();
-      let value = trimmed.slice(eq + 1).trim();
-      if (value.startsWith('"') && value.endsWith('"')) {
-        value = value.slice(1, -1).replace(/\\"/g, '"');
-      } else if (value.startsWith("'") && value.endsWith("'")) {
-        value = value.slice(1, -1).replace(/\\'/g, "'");
-      }
-      env[key] = value;
-    }
-  }
-  return env;
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+const token = process.env.SANITY_API_WRITE_TOKEN;
+
+if (!projectId) {
+  console.error("❌ Missing NEXT_PUBLIC_SANITY_PROJECT_ID");
+  process.exit(1);
 }
-
-const localEnv = loadEnvLocal();
-for (const [k, v] of Object.entries(localEnv)) {
-  if (!process.env[k]) process.env[k] = v;
-}
-
-// ─── Config ───────────────────────────────────────────────────────────────
-const PROJECT_ID = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '63qn23si';
-const DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-const API_VERSION = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07';
-const WRITE_TOKEN = process.env.SANITY_API_WRITE_TOKEN;
-
-const BASE_URL = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}`;
-
-if (!WRITE_TOKEN) {
-  console.error('❌ SANITY_API_WRITE_TOKEN is not set');
-  console.error('   Add it to .env.local and run again.');
+if (!token) {
+  console.error("❌ Missing SANITY_API_WRITE_TOKEN");
   process.exit(1);
 }
 
-// ─── Portable Text helper ─────────────────────────────────────────────────
-function pt(text: string): Array<{ _type: string; children: Array<{ _type: string; text: string }> }> {
+const client = createClient({
+  projectId,
+  dataset,
+  apiVersion: "2024-04-07",
+  useCdn: false,
+  token,
+});
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function block(text: string) {
   return [
     {
-      _type: 'block',
-      children: [{ _type: 'span', text }],
+      _type: "block",
+      children: [{ _type: "span", text }],
     },
   ];
 }
 
-// ─── Data: Norwegian FAQs ─────────────────────────────────────────────────
-const faqsNo = [
+// ---------------------------------------------------------------------------
+// FAQ — Norsk
+// ---------------------------------------------------------------------------
+
+const faqNo = [
   {
-    _type: 'faq',
-    question: 'Hva er Klarpakke?',
-    answer: pt(
-      'Klarpakke er en AI-drevet plattform for kryptotrading. Vi hjelper deg å lære trading med papirhandel (lekepenger), AI-analyser og automatisk trading — helt uten risiko i starten.'
+    _type: "faq",
+    _id: "faq.no.hva-er-klarpakke",
+    question: "Hva er Klarpakke?",
+    answer: block(
+      "Klarpakke er en norsk trading-plattform som kombinerer AI-drevne signaler, automatiserte strategier og opplæring. Du kan øve med lekepenger (paper trading) før du går live."
     ),
-    category: 'general',
-    language: 'no',
+    category: "general",
+    language: "no",
     order: 1,
   },
   {
-    _type: 'faq',
-    question: 'Er det gratis å bruke?',
-    answer: pt(
-      'Ja, det er gratis å registrere seg og bruke papirhandel. For live trading og avanserte AI-funksjoner trenger du en betalt plan. Du kan teste alt før du betaler.'
+    _type: "faq",
+    _id: "faq.no.trygt-koble-bors",
+    question: "Er det trygt å koble til børsen?",
+    answer: block(
+      "Ja. Vi bruker API-nøkler med lese- og handelsrettigheter, aldri uttak. Nøklene krypteres og lagres sikkert. Du beholder alltid full kontroll over dine midler."
     ),
-    category: 'billing',
-    language: 'no',
+    category: "security",
+    language: "no",
     order: 2,
   },
   {
-    _type: 'faq',
-    question: 'Hva er papirhandel?',
-    answer: pt(
-      'Papirhandel lar deg trade med virtuelle penger i stedet for ekte kapital. Du får sanntids markedsdata og kan teste strategier uten å risikere egne penger.'
+    _type: "faq",
+    _id: "faq.no.hva-koster-det",
+    question: "Hva koster det?",
+    answer: block(
+      "Vi har flere abonnementsnivåer. Student-pakken er gratis og inkluderer paper trading og basis-signaler. Oppgrader til Master, PhD eller Professor for live trading og avanserte funksjoner."
     ),
-    category: 'trading',
-    language: 'no',
+    category: "billing",
+    language: "no",
     order: 3,
   },
   {
-    _type: 'faq',
-    question: 'Hvilke krypto kan jeg trade?',
-    answer: pt(
-      'Klarpakke støtter de største kryptovalutaene via Binance: BTC, ETH, SOL, ADA, XRP, DOGE og mange flere. Vi legger til nye par kontinuerlig.'
+    _type: "faq",
+    _id: "faq.no.kan-jeg-miste-penger",
+    question: "Kan jeg miste penger?",
+    answer: block(
+      "Ja, all trading innebærer risiko. Derfor anbefaler vi å starte med paper trading. Sett aldri inn mer enn du kan tåle å tape, og bruk våre risikostyringsverktøy."
     ),
-    category: 'trading',
-    language: 'no',
+    category: "trading",
+    language: "no",
     order: 4,
   },
   {
-    _type: 'faq',
-    question: 'Er pengene mine trygge?',
-    answer: pt(
-      'Vi bruker bank-grade kryptering og to-faktor-autentisering. API-nøkler lagres kryptert i databasen, og vi har aldri tilgang til å ta ut penger fra din konto.'
+    _type: "faq",
+    _id: "faq.no.hvilke-borser",
+    question: "Hvilke børser støttes?",
+    answer: block(
+      "Vi støtter Binance og Coinbase i dag. Flere børser kommer. Du kobler til via API-nøkler på under to minutter."
     ),
-    category: 'security',
-    language: 'no',
+    category: "general",
+    language: "no",
     order: 5,
   },
   {
-    _type: 'faq',
-    question: 'Hvordan fungerer AI-tradingen?',
-    answer: pt(
-      'Vår AI analyserer markedsdata, tekniske indikatorer og sentiment i sanntid. Basert på din valgte strategi og risikoprofil, genererer den kjøps- og salgssignaler automatisk.'
+    _type: "faq",
+    _id: "faq.no.ai-signaler",
+    question: "Hvordan fungerer AI-signalene?",
+    answer: block(
+      "Vår AI analyserer markedsdata, sentiment og tekniske indikatorer i sanntid. Signalene gir kjøps- og salgsanbefalinger med forklaring, ikke finansiell rådgivning."
     ),
-    category: 'technical',
-    language: 'no',
+    category: "trading",
+    language: "no",
     order: 6,
   },
 ];
 
-// ─── Data: English FAQs ───────────────────────────────────────────────────
-const faqsEn = [
+// ---------------------------------------------------------------------------
+// FAQ — Engelsk
+// ---------------------------------------------------------------------------
+
+const faqEn = [
   {
-    _type: 'faq',
-    question: 'What is Klarpakke?',
-    answer: pt(
-      'Klarpakke is an AI-powered crypto trading platform. We help you learn trading with paper trading (virtual money), AI analysis, and automated trading — with zero risk to start.'
+    _type: "faq",
+    _id: "faq.en.what-is-klarpakke",
+    question: "What is Klarpakke?",
+    answer: block(
+      "Klarpakke is a Norwegian trading platform combining AI-driven signals, automated strategies, and education. You can practice with paper trading before going live."
     ),
-    category: 'general',
-    language: 'en',
+    category: "general",
+    language: "en",
     order: 1,
   },
   {
-    _type: 'faq',
-    question: 'Is it free to use?',
-    answer: pt(
-      'Yes, registration and paper trading are free. Live trading and advanced AI features require a paid plan. You can test everything before paying.'
+    _type: "faq",
+    _id: "faq.en.safe-to-connect",
+    question: "Is it safe to connect my exchange?",
+    answer: block(
+      "Yes. We use API keys with read and trade permissions only, never withdrawal. Keys are encrypted and stored securely. You always retain full control of your funds."
     ),
-    category: 'billing',
-    language: 'en',
+    category: "security",
+    language: "en",
     order: 2,
   },
   {
-    _type: 'faq',
-    question: 'What is paper trading?',
-    answer: pt(
-      'Paper trading lets you trade with virtual money instead of real capital. You get real-time market data and can test strategies without risking your own funds.'
+    _type: "faq",
+    _id: "faq.en.what-does-it-cost",
+    question: "What does it cost?",
+    answer: block(
+      "We offer several subscription tiers. The Student plan is free and includes paper trading and basic signals. Upgrade to Master, PhD, or Professor for live trading and advanced features."
     ),
-    category: 'trading',
-    language: 'en',
+    category: "billing",
+    language: "en",
     order: 3,
   },
   {
-    _type: 'faq',
-    question: 'Which cryptocurrencies can I trade?',
-    answer: pt(
-      'Klarpakke supports major cryptocurrencies via Binance: BTC, ETH, SOL, ADA, XRP, DOGE and many more. We continuously add new trading pairs.'
+    _type: "faq",
+    _id: "faq.en.can-i-lose-money",
+    question: "Can I lose money?",
+    answer: block(
+      "Yes, all trading involves risk. That's why we recommend starting with paper trading. Never deposit more than you can afford to lose, and use our risk management tools."
     ),
-    category: 'trading',
-    language: 'en',
+    category: "trading",
+    language: "en",
     order: 4,
   },
   {
-    _type: 'faq',
-    question: 'Is my money safe?',
-    answer: pt(
-      'We use bank-grade encryption and two-factor authentication. API keys are stored encrypted in our database, and we never have access to withdraw funds from your account.'
+    _type: "faq",
+    _id: "faq.en.which-exchanges",
+    question: "Which exchanges are supported?",
+    answer: block(
+      "We support Binance and Coinbase today. More exchanges are coming. You connect via API keys in under two minutes."
     ),
-    category: 'security',
-    language: 'en',
+    category: "general",
+    language: "en",
     order: 5,
   },
   {
-    _type: 'faq',
-    question: 'How does AI trading work?',
-    answer: pt(
-      'Our AI analyzes market data, technical indicators, and sentiment in real-time. Based on your chosen strategy and risk profile, it automatically generates buy and sell signals.'
+    _type: "faq",
+    _id: "faq.en.ai-signals",
+    question: "How do the AI signals work?",
+    answer: block(
+      "Our AI analyses market data, sentiment, and technical indicators in real time. The signals provide buy and sell recommendations with explanations, not financial advice."
     ),
-    category: 'technical',
-    language: 'en',
+    category: "trading",
+    language: "en",
     order: 6,
   },
 ];
 
-// ─── Data: Testimonials ───────────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Testimonials
+// ---------------------------------------------------------------------------
+
 const testimonials = [
   {
-    _type: 'testimonial',
-    name: 'Martin Holm',
-    role: 'Day trader, Oslo',
+    _type: "testimonial",
+    _id: "testimonial.anders-h",
+    name: "Anders H.",
+    role: "Privatinvestor",
     quote:
-      'Gikk fra å tape penger på impulsive trades til å ha en klar strategi. AI-signalerne gir meg selvtillit når jeg går inn i markedet. Papirhandelen reddet meg fra flere dyre feil.',
+      "Etter tre måneder med paper trading følte jeg meg klar for live. Klarpakkes AI-signaler har hjulpet meg å ta bedre beslutninger, og jeg har lært utrolig mye om risikostyring.",
     rating: 5,
-    platform: 'direct',
+    platform: "direct",
     isActive: true,
   },
   {
-    _type: 'testimonial',
-    name: 'Sarah Chen',
-    role: 'Software engineer, Bergen',
+    _type: "testimonial",
+    _id: "testimonial.marte-l",
+    name: "Marte L.",
+    role: "Økonomistudent",
     quote:
-      'Som teknisk person liker jeg å forstå dataen bak beslutningene. Klarpakke gir meg transparens jeg ikke fant andre steder. Backtesting-funksjonen er genial for å validere strategier.',
+      "Jeg var skeptisk til automatisk trading, men paper-trading-funksjonen ga meg trygghet. Nå bruker jeg både manuelle og automatiske strategier, og resultatene er bedre enn forventet.",
     rating: 5,
-    platform: 'trustpilot',
+    platform: "direct",
     isActive: true,
   },
   {
-    _type: 'testimonial',
-    name: 'Erik Nilsen',
-    role: 'Pensjonist, Trondheim',
+    _type: "testimonial",
+    _id: "testimonial.erik-b",
+    name: "Erik B.",
+    role: "Tech-entreprenør",
     quote:
-      'Trodde krypto var for komplisert for meg. Papirhandelen lærte meg grunnleggende uten stress. Nå bruker jeg auto-trading og har hatt stabil avkastning i 4 måneder.',
+      "God plattform med solid AI. Jeg skulle ønske det var flere børser tilgjengelig, men Binace-integrasjonen fungerer sømløst. Kundeservicen er også rask og kompetent.",
     rating: 4,
-    platform: 'google',
+    platform: "direct",
     isActive: true,
   },
 ];
 
-// ─── Sanity API helpers ───────────────────────────────────────────────────
-async function query(groq: string, params: Record<string, any> = {}): Promise<any[]> {
-  const encoded = encodeURIComponent(groq);
-  let url = `${BASE_URL}/data/query/${DATASET}?query=${encoded}`;
-  for (const [k, v] of Object.entries(params)) {
-    url += `&$${k}=${encodeURIComponent(JSON.stringify(v))}`;
-  }
+// ---------------------------------------------------------------------------
+// Seed
+// ---------------------------------------------------------------------------
 
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${WRITE_TOKEN}` },
-  });
+async function seed() {
+  console.log("🌱 Seeding Sanity content…");
+  console.log(`   Project: ${projectId} | Dataset: ${dataset}`);
 
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(`Sanity query ${res.status}: ${JSON.stringify(data)}`);
-  }
-  return data.result || [];
-}
+  const allDocs = [...faqNo, ...faqEn, ...testimonials];
 
-async function mutate(documents: any[]) {
-  const mutations = documents.map((doc) => ({ create: doc }));
-
-  const res = await fetch(`${BASE_URL}/data/mutate/${DATASET}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${WRITE_TOKEN}`,
-    },
-    body: JSON.stringify({ mutations }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(`Sanity mutate ${res.status}: ${JSON.stringify(data)}`);
-  }
-
-  return data;
-}
-
-// ─── Deduplication helpers ────────────────────────────────────────────────
-async function getExistingFaqs(language: string): Promise<Set<string>> {
-  const result = await query(
-    `*[_type == "faq" && language == $language]{question}`,
-    { language }
-  );
-  return new Set(result.map((r: any) => r.question));
-}
-
-async function getExistingTestimonials(): Promise<Set<string>> {
-  const result = await query(`*[_type == "testimonial"]{name, quote}`);
-  return new Set(result.map((r: any) => `${r.name}:${r.quote?.substring(0, 40)}`));
-}
-
-// ─── Main ─────────────────────────────────────────────────────────────────
-async function main() {
-  console.log(`🎨 Seeding Sanity: ${PROJECT_ID}.${DATASET}`);
-
-  try {
-    // 1. Norwegian FAQs — dedupe
-    console.log(`   Checking existing Norwegian FAQs...`);
-    const existingNo = await getExistingFaqs('no');
-    const faqsNoFiltered = faqsNo.filter((f) => !existingNo.has(f.question));
-    if (faqsNoFiltered.length === 0) {
-      console.log(`   ⏭️  All ${faqsNo.length} Norwegian FAQs already exist`);
-    } else {
-      console.log(`   Creating ${faqsNoFiltered.length}/${faqsNo.length} Norwegian FAQs...`);
-      const faqNoResult = await mutate(faqsNoFiltered);
-      console.log(`   ✅ ${faqNoResult.results?.length || 0} FAQ-no created`);
+  for (const doc of allDocs) {
+    try {
+      await client.createOrReplace(doc);
+      console.log(`   ✅ ${doc._id}`);
+    } catch (err) {
+      console.error(`   ❌ ${doc._id}:`, err);
+      process.exitCode = 1;
     }
-
-    // 2. English FAQs — dedupe
-    console.log(`   Checking existing English FAQs...`);
-    const existingEn = await getExistingFaqs('en');
-    const faqsEnFiltered = faqsEn.filter((f) => !existingEn.has(f.question));
-    if (faqsEnFiltered.length === 0) {
-      console.log(`   ⏭️  All ${faqsEn.length} English FAQs already exist`);
-    } else {
-      console.log(`   Creating ${faqsEnFiltered.length}/${faqsEn.length} English FAQs...`);
-      const faqEnResult = await mutate(faqsEnFiltered);
-      console.log(`   ✅ ${faqEnResult.results?.length || 0} FAQ-en created`);
-    }
-
-    // 3. Testimonials — dedupe by name+quote prefix
-    console.log(`   Checking existing testimonials...`);
-    const existingT = await getExistingTestimonials();
-    const testimonialsFiltered = testimonials.filter(
-      (t) => !existingT.has(`${t.name}:${t.quote.substring(0, 40)}`)
-    );
-    if (testimonialsFiltered.length === 0) {
-      console.log(`   ⏭️  All ${testimonials.length} testimonials already exist`);
-    } else {
-      console.log(`   Creating ${testimonialsFiltered.length}/${testimonials.length} testimonials...`);
-      const testimonialResult = await mutate(testimonialsFiltered);
-      console.log(`   ✅ ${testimonialResult.results?.length || 0} testimonials created`);
-    }
-
-    console.log('\n🎉 Done! Content seeded successfully.');
-    console.log('   Run npm run dev and check /studio to verify.');
-  } catch (err: any) {
-    console.error('\n❌ Seed failed:', err.message);
-    process.exit(1);
   }
+
+  console.log("\n🎉 Seed complete.");
+  console.log(`   ${faqNo.length} FAQ (no)`);
+  console.log(`   ${faqEn.length} FAQ (en)`);
+  console.log(`   ${testimonials.length} testimonials`);
 }
 
-main();
+seed();

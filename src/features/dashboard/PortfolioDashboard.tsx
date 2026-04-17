@@ -508,12 +508,12 @@ export default function PortfolioDashboard({
             {t("marketDesk.livePricesHeading")}
           </span>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-1 lg:grid lg:grid-cols-3 lg:overflow-visible">
+        <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory lg:grid lg:grid-cols-3 lg:overflow-visible">
           {pricesLoading && liveCoins.length === 0 ? (
             [1, 2, 3].map((i) => (
               <div
                 key={i}
-                className={`${cardBase} min-w-[200px] flex-shrink-0 lg:min-w-0 h-[88px] animate-pulse bg-[#F1F3F9]`}
+                className={`${cardBase} min-w-[200px] flex-shrink-0 snap-start lg:min-w-0 h-[88px] animate-pulse bg-[#F1F3F9]`}
               />
             ))
           ) : pricesError ? (
@@ -535,7 +535,7 @@ export default function PortfolioDashboard({
             liveCoins.map((coin) => (
               <div
                 key={coin.symbol}
-                className={`${cardBase} min-w-[200px] flex-shrink-0 lg:min-w-0`}
+                className={`${cardBase} min-w-[200px] flex-shrink-0 snap-start lg:min-w-0`}
               >
                 <div className="flex items-center gap-3">
                   <div
