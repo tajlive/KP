@@ -52,11 +52,12 @@ interface CtaEvent {
   user_id: string | null;
 }
 
-export default async function MarketingCtaAdminPage() {
+export default async function MarketingCtaAdminPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const isAdmin = await checkAdminAccess();
 
   if (!isAdmin) {
-    redirect("/no/login?next=/no/admin/marketing/ctas");
+    redirect(`/${locale}/login?next=/${locale}/admin/marketing/ctas`);
   }
 
   // Fetch initial data

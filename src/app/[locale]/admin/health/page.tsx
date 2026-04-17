@@ -102,11 +102,12 @@ async function getHealthData() {
   }
 }
 
-export default async function HealthDashboardPage() {
+export default async function HealthDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const isAdmin = await checkAdminAccess();
-  
+
   if (!isAdmin) {
-    redirect("/no/login?next=/no/admin/health");
+    redirect(`/${locale}/login?next=/${locale}/admin/health`);
   }
   
   const initialData = await getHealthData();
