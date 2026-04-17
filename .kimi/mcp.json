@@ -1,0 +1,84 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "node",
+      "args": ["scripts/run-official-supabase-mcp.mjs"]
+    },
+    "supabase-db": {
+      "command": "node",
+      "args": ["scripts/run-supabase-mcp.mjs"]
+    },
+    "github": {
+      "command": "node",
+      "args": ["scripts/run-github-mcp.mjs"]
+    },
+    "linear": {
+      "command": "node",
+      "args": ["scripts/run-linear-mcp.mjs"]
+    },
+    "vercel": {
+      "command": "node",
+      "args": ["scripts/run-vercel-mcp.mjs"]
+    },
+    "filesystem": {
+      "command": "node",
+      "args": ["scripts/run-filesystem-mcp.mjs"]
+    },
+    "context7": {
+      "command": "node",
+      "args": ["scripts/run-context7-mcp.mjs"]
+    },
+    "perplexity": {
+      "command": "node",
+      "args": ["scripts/run-perplexity-mcp.mjs"]
+    },
+    "opik": {
+      "command": "node",
+      "args": ["scripts/run-opik-mcp.mjs"]
+    },
+    "sentry": {
+      "command": "node",
+      "args": ["scripts/run-sentry-mcp.mjs"]
+    },
+    "stripe": {
+      "command": "node",
+      "args": ["scripts/run-stripe-mcp.mjs"]
+    },
+    "vipps": {
+      "command": "node",
+      "args": ["scripts/run-vipps-mcp.mjs"]
+    },
+    "klarpakke": {
+      "command": "node",
+      "args": ["scripts/run-klarpakke-mcp.mjs"]
+    },
+    "resend": {
+      "command": "node",
+      "args": ["scripts/run-resend-mcp.mjs"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@0.20.3", "--no-usage-statistics"]
+    },
+    "cloudflare": {
+      "command": "node",
+      "args": ["scripts/run-cloudflare-mcp.mjs"]
+    },
+    "mempalace": {
+      "command": "node",
+      "args": ["scripts/run-mempalace-mcp.mjs"]
+    },
+    "binance": {
+      "command": "node",
+      "args": ["scripts/run-binance-mcp.mjs"]
+    },
+    "openai": {
+      "command": "node",
+      "args": ["scripts/run-openai-mcp.mjs"]
+    }
+  }
+}

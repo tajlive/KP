@@ -52,13 +52,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+- name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🔍 MCP Config Validation
         run: npm run mcp:validate-config
@@ -80,13 +75,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+- name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🔗 Test MCP Connections
         run: npm run test:mcp
@@ -110,13 +100,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+- name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 📊 Generate MCP Health Report
         run: |

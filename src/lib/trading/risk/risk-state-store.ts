@@ -196,6 +196,7 @@ export class RiskStateStore {
       dailyPnl: 0,
       openPositions: 0,
       openNotional: 0,
+      currentNotional: 0,
       currentLeverage: 0,
       consecutiveLosses: 0,
       tradesToday: 0,

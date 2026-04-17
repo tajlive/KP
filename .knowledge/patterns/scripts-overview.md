@@ -1,4 +1,4 @@
-# Scripts Oversikt - 2026-04-14
+# Scripts Oversikt - 2026-04-16
 
 | Script | Beskrivelse |
 |--------|-------------|

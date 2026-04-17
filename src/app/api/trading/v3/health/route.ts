@@ -195,7 +195,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const kernel = createRiskKernel(limits);
     const result = kernel.checkTrade(
       { side: 'buy', quantity: 100, price: 100, notional: 10000, leverage: 1 },
-      { equity: 100000, peakEquity: 100000, dailyPnl: 0, openPositions: 0, openNotional: 0, currentLeverage: 0, consecutiveLosses: 0, tradesToday: 0, tradesThisHour: 0, volatilitySpikeActive: false, volatilityCooldownEnd: null, consecutiveLossCooldownEnd: null, manualBlock: false, lastTradeTime: null, currentTime: new Date() }
+      { equity: 100000, peakEquity: 100000, dailyPnl: 0, openPositions: 0, openNotional: 0, currentNotional: 0, currentLeverage: 0, consecutiveLosses: 0, tradesToday: 0, tradesThisHour: 0, volatilitySpikeActive: false, volatilityCooldownEnd: null, consecutiveLossCooldownEnd: null, manualBlock: false, lastTradeTime: null, currentTime: new Date() }
     );
     
     results.checks.riskKernel.latency = Date.now() - checkStart;

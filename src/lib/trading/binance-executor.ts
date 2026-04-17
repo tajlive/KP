@@ -21,8 +21,9 @@ import type {
   OrderResult,
   BalanceInfo,
   Position,
+  OrderBookSnapshot,
 } from './order-executor';
-import { fetchBinancePrice, calculateFee } from './order-executor';
+import { fetchBinancePrice, calculateFee, fetchBinanceDepth } from './order-executor';
 import { binanceCircuitBreaker, CircuitBreakerOpenError } from './circuit-breaker';
 
 interface BinanceApiKeys {
@@ -285,5 +286,12 @@ export class BinanceExecutor implements OrderExecutor {
    */
   async getMarketPrice(symbol: string): Promise<number> {
     return fetchBinancePrice(symbol);
+  }
+
+  /**
+   * Get current order book (depth)
+   */
+  async fetchOrderBook(symbol: string, limit: number = 20): Promise<OrderBookSnapshot> {
+    return fetchBinanceDepth(symbol, limit);
   }
 }

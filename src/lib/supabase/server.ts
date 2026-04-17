@@ -6,7 +6,6 @@ import {
 } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 
 // Cookie domain helper - must match auth-guard.ts for consistency
 function getCookieDomain(request: NextRequest): string | undefined {
@@ -61,11 +60,6 @@ export function createServerClient(
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-  const protectedFetch = createRefreshProtectedFetch(globalThis.fetch, {
-    source: request ? "middleware" : "server",
-    path: request?.nextUrl?.pathname,
-  });
-
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {
     const cookieDomain = getCookieDomain(request);
@@ -86,7 +80,7 @@ export function createServerClient(
         },
       },
       global: {
-        fetch: protectedFetch,
+        fetch: globalThis.fetch,
       },
     });
   }
@@ -112,7 +106,7 @@ export function createServerClient(
         },
       },
       global: {
-        fetch: protectedFetch,
+        fetch: globalThis.fetch,
       },
     });
   })();

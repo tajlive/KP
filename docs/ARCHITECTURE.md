@@ -160,6 +160,7 @@ src/app/
 | `strategy-runner`  | Kjør trading-strategier             | Scheduler/pg_cron                                                                   |
 | `signal-engine`    | Generer trading-signaler (Binance)  | pg_cron (hver time); skriver til `bot_signals` + `trading_signals` (dashboard-feed) |
 | `binance-connect`  | Valider og test Binance API         | HTTP                                                                                |
+| `position-monitor` | Overvåker SL/TP/Trailing-Stop        | pg_cron (hvert minutt); bruker shared `risk-engine.ts`                              |
 
 ---
 
@@ -243,6 +244,20 @@ src/app/
 - action (TEXT)
 - details (JSONB)
 - executed_at (TIMESTAMPTZ)
+```
+
+**strategy_performance**
+
+```sql
+- id (UUID, PK)
+- user_id (UUID, FK)
+- strategy_id (UUID, FK)
+- win_rate (DECIMAL)
+- avg_win_pct (DECIMAL)
+- avg_loss_pct (DECIMAL)
+- kelly_fraction (DECIMAL)
+- last_calculated_at (TIMESTAMPTZ)
+-- RLS: Bruker ser kun egen statistikk
 ```
 
 ---

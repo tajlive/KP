@@ -156,7 +156,7 @@ export default defineConfig({
     baseURL:
       process.env.PLAYWRIGHT_TEST_BASE_URL ||
       process.env.BASE_URL ||
-      "http://localhost:3001",
+      "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -366,8 +366,8 @@ export default defineConfig({
     if (process.env.CI || process.env.TEST_AGAINST_PROD) return undefined;
     if (base && !base.includes("localhost")) return undefined;
     return {
-      command: "npm run dev -- --port 3001",
-      url: "http://localhost:3001",
+      command: "npm run dev -- --port 3000",
+      url: "http://localhost:3000",
       // Gjenbruk kun når eksplisitt ønsket; ellers henger E2E på en gammel dev-server uten nye /api/*-ruter (404).
       reuseExistingServer: process.env.PLAYWRIGHT_REUSE_EXISTING_SERVER === "1",
       timeout: 180_000,

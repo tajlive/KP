@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-04-16T17:42:32.751Z",
+  "file": ".github/workflows/deploy.yml",
+  "type": "review",
+  "lines": 228,
+  "swarm_status": "approved",
+  "agents": [
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "architect",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "proceed"
+    },
+    {
+      "agent": "security",
+      "approval": "proceed"
+    }
+  ]
+}

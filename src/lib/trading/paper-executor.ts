@@ -19,8 +19,9 @@ import type {
   OrderParams,
   OrderResult,
   Position,
+  OrderBookSnapshot,
 } from "./order-executor";
-import { calculateFee, fetchBinancePrice } from "./order-executor";
+import { calculateFee, fetchBinancePrice, fetchBinanceDepth } from "./order-executor";
 
 export class PaperExecutor implements OrderExecutor {
   constructor(
@@ -227,5 +228,12 @@ export class PaperExecutor implements OrderExecutor {
    */
   async getMarketPrice(symbol: string): Promise<number> {
     return fetchBinancePrice(symbol);
+  }
+
+  /**
+   * Get current order book (depth)
+   */
+  async fetchOrderBook(symbol: string, limit: number = 20): Promise<OrderBookSnapshot> {
+    return fetchBinanceDepth(symbol, limit);
   }
 }

@@ -1,0 +1,20 @@
+name: 'Setup Klarpakke Environment'
+description: 'Sets up Node.js from .nvmrc and installs dependencies with caching'
+inputs:
+  install:
+    description: 'Whether to run npm ci'
+    required: false
+    default: 'true'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v5
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      if: ${{ inputs.install == 'true' }}
+      shell: bash
+      run: npm ci --legacy-peer-deps

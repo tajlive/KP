@@ -50,41 +50,41 @@ export async function POST(req: NextRequest) {
     const docType = json._type as string | undefined;
 
     // Revalidate general Sanity cache tag
-    revalidateTag('sanity');
+    revalidateTag('sanity', 'default');
 
     // Revalidate specific tags based on document type
     if (docType) {
-      revalidateTag(`sanity:${docType}`);
+      revalidateTag(`sanity:${docType}`, 'default');
     }
 
     // Design tokens specifically
     if (docType === 'designTokens') {
-      revalidateTag('sanity:designTokens');
+      revalidateTag('sanity:designTokens', 'default');
     }
 
     // Also revalidate landing page specifically for landingContent changes
     if (docType === 'landingContent') {
-      revalidateTag('sanity:landing');
+      revalidateTag('sanity:landing', 'default');
     }
 
     // Revalidate strategy pages
     if (docType === 'strategy') {
-      revalidateTag('sanity:strategy');
+      revalidateTag('sanity:strategy', 'default');
     }
 
     // Revalidate FAQ pages
     if (docType === 'faq') {
-      revalidateTag('sanity:faq');
+      revalidateTag('sanity:faq', 'default');
     }
 
     // Revalidate testimonials
     if (docType === 'testimonial') {
-      revalidateTag('sanity:testimonial');
+      revalidateTag('sanity:testimonial', 'default');
     }
 
     // Revalidate dynamic pages
     if (docType === 'page') {
-      revalidateTag('sanity:page');
+      revalidateTag('sanity:page', 'default');
     }
 
     return NextResponse.json({

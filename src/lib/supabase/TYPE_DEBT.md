@@ -66,8 +66,8 @@ These are **non-blocking**:
 
 ```bash
 # Tasks:
-- [ ] Add auto_trading_trades to generated types
-- [ ] Add auto_trading_sessions columns (win_rate, etc.)
+- [x] Add auto_trading_trades to generated types (Deprecated in Dashboard favor of 'trades')
+- [x] Add auto_trading_sessions columns (win_rate, etc.)
 - [ ] Fix mistake-analyzer.ts type casting
 - [ ] Fix binance-historical-data.ts types
 ```

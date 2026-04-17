@@ -20,3 +20,10 @@ Enhance the dashboard and bot wizard to increase engagement and trust based on m
 3. **Verification**
    - Run `npm run type-check` and `npm run lint`.
    - Ensure these new components are visually cohesive with the existing `@coinbase/cds-web` design system used in Klarpakke.
+
+---
+## Resolution (2026-04-16)
+- [x] **Idle Funds Nudge:** Implemented in DashboardPro.tsx. Logic handles effectiveBalance > 0 && !sessionId.
+- [x] **Kelly Trust Badge:** Implemented in BotWizard.tsx (Step 3).
+- [x] **Infrastructure:** All workflows standardized to use the setup-klarpakke composite action.
+- [x] **Verification:** Code reviewed and aligned with CDS-web design system.

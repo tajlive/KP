@@ -4,7 +4,7 @@
  * Verifies mutex + circuit breaker behaviour for Supabase refresh-token requests.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   createRefreshProtectedFetch,
   resetRefreshCircuitBreaker,

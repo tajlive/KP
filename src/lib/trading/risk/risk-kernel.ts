@@ -95,7 +95,8 @@ export interface RiskState {
   peakEquity: number;
   dailyPnl: number;
   openPositions: number;
-  openNotional: number;
+  openNotional: number;      // Absolute value
+  currentNotional: number;   // Signed value (positive for long, negative for short)
   currentLeverage: number;
   
   // Trade history
@@ -178,15 +179,18 @@ export class RiskKernel {
       return { allowed: false, violations };
     }
     
-    // Check 3: Consecutive loss cooldown
-    const cooldownCheck = this.checkConsecutiveLossCooldown(state);
+    // Check 3: Consecutive loss cooldown (Asymmetric)
+    const isRiskReducing = (state.currentNotional > 0 && proposedTrade.side === 'sell') || 
+                          (state.currentNotional < 0 && proposedTrade.side === 'buy');
+    
+    const cooldownCheck = this.checkConsecutiveLossCooldown(state, isRiskReducing);
     if (!cooldownCheck.allowed) {
       violations.push(this.createViolation('consecutiveLossCooldown', 'warning', 0, state.consecutiveLosses, 'blocked'));
       return { allowed: false, violations };
     }
     
-    // Check 4: Volatility circuit breaker
-    const volatilityCheck = this.checkVolatilityCircuitBreaker(state);
+    // Check 4: Volatility circuit breaker (Asymmetric)
+    const volatilityCheck = this.checkVolatilityCircuitBreaker(state, isRiskReducing);
     if (!volatilityCheck.allowed) {
       violations.push(this.createViolation('volatilityCircuitBreaker', 'warning', this.limits.volatilityThreshold, 0, 'blocked'));
       return { allowed: false, violations };
@@ -276,7 +280,9 @@ export class RiskKernel {
     return { allowed: drawdown < this.limits.maxDrawdownPercent };
   }
   
-  private checkConsecutiveLossCooldown(state: RiskState): { allowed: boolean } {
+  private checkConsecutiveLossCooldown(state: RiskState, isRiskReducing: boolean = false): { allowed: boolean } {
+    if (isRiskReducing) return { allowed: true };
+    
     if (state.consecutiveLosses < this.limits.maxConsecutiveLosses) {
       return { allowed: true };
     }
@@ -288,7 +294,9 @@ export class RiskKernel {
     return { allowed: state.currentTime >= state.consecutiveLossCooldownEnd };
   }
   
-  private checkVolatilityCircuitBreaker(state: RiskState): { allowed: boolean } {
+  private checkVolatilityCircuitBreaker(state: RiskState, isRiskReducing: boolean = false): { allowed: boolean } {
+    if (isRiskReducing) return { allowed: true };
+    
     if (!state.volatilitySpikeActive) {
       return { allowed: true };
     }
@@ -622,6 +630,54 @@ export class RiskKernel {
   updateATRExitConfig(config: Partial<ATRExitConfig>): void {
     this.limits.atrExit = { ...this.limits.atrExit, ...config };
   }
+
+  /**
+   * Calculate exit ratio based on signal strength
+   * 
+   * @param score - Signal score (0-100 for composite, or signal confidence)
+   * @returns 1.0 for full exit, 0.5 for partial exit
+   */
+  calculateExitRatio(score: number): number {
+    // If score is very high/low (strong conviction), full exit
+    if (score >= 80 || score <= 20) return 1.0;
+    
+    // Moderate conviction triggers partial exit (50%)
+    return 0.5;
+  }
+
+  /**
+   * Evaluate tiered take-profit targets
+   * 
+   * @param params - { currentPrice, entryPrice, side, targets: Array<{price: number, ratio: number, hit: boolean}> }
+   * @returns { shouldExit: boolean, exitRatio: number, targetIndex: number | null }
+   */
+  evaluateTieredExits(params: {
+    currentPrice: number;
+    entryPrice: number;
+    side: 'long' | 'short';
+    targets: Array<{ price: number; ratio: number; hit: boolean }>;
+  }): { shouldExit: boolean; exitRatio: number; targetIndex: number | null } {
+    const { currentPrice, side, targets } = params;
+    
+    for (let i = 0; i < targets.length; i++) {
+      const target = targets[i];
+      if (target.hit) continue; // Already hit this target
+      
+      const targetHit = side === 'long'
+        ? currentPrice >= target.price
+        : currentPrice <= target.price;
+        
+      if (targetHit) {
+        return {
+          shouldExit: true,
+          exitRatio: target.ratio,
+          targetIndex: i
+        };
+      }
+    }
+    
+    return { shouldExit: false, exitRatio: 0, targetIndex: null };
+  }
 }
 
 /**
@@ -645,6 +701,7 @@ export class RiskStateManager {
       dailyPnl: 0,
       openPositions: 0,
       openNotional: 0,
+      currentNotional: 0,
       currentLeverage: 0,
       consecutiveLosses: 0,
       tradesToday: 0,
@@ -667,7 +724,7 @@ export class RiskStateManager {
     }
   }
   
-  recordTrade(pnl: number, notional: number): void {
+  recordTrade(pnl: number, notional: number, side: 'buy' | 'sell' = 'buy'): void {
     this.state.dailyPnl += pnl;
     this.state.equity += pnl;
     this.state.tradesToday++;
@@ -681,8 +738,12 @@ export class RiskStateManager {
     }
     
     // Update open positions/notional
-    this.state.openNotional += notional;
-    this.state.openPositions = this.state.openNotional > 0 ? 1 : 0;
+    // We assume 'buy' adds to long (positive) and 'sell' adds to short (negative)
+    // or reduces long.
+    const signedNotional = side === 'buy' ? notional : -notional;
+    this.state.currentNotional += signedNotional;
+    this.state.openNotional = Math.abs(this.state.currentNotional);
+    this.state.openPositions = this.state.openNotional > 0.1 ? 1 : 0; // Using 0.1 dust threshold
   }
   
   getState(): RiskState {
