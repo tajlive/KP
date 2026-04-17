@@ -47,11 +47,12 @@ async function checkAdminAccess() {
   }
 }
 
-export default async function DeployAdminPage() {
+export default async function DeployAdminPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const isAdmin = await checkAdminAccess();
-  
+
   if (!isAdmin) {
-    redirect("/no/login?next=/no/admin/deploy");
+    redirect(`/${locale}/login?next=/${locale}/admin/deploy`);
   }
   
   return <DeployDashboard />;

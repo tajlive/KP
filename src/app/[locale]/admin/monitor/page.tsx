@@ -109,11 +109,12 @@ async function getInitialMetrics() {
   }
 }
 
-export default async function MonitorPage() {
+export default async function MonitorPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const isAdmin = await checkAdminAccess();
-  
+
   if (!isAdmin) {
-    redirect("/no/login?next=/no/admin/monitor");
+    redirect(`/${locale}/login?next=/${locale}/admin/monitor`);
   }
   
   const initialMetrics = await getInitialMetrics();
