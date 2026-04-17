@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { withAuth } from '@/lib/api-auth';
 import { UnfollowSchema } from '@/lib/schemas';
+import type { Database } from '@/types/database.types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,9 +22,12 @@ export const DELETE = withAuth(async (req: NextRequest, { user }) => {
 
     const db = createClient();
 
+    const patch: Database["public"]["Tables"]["copy_trading_follows"]["Update"] = {
+      is_active: false,
+    };
     const { data, error } = await db
       .from('copy_trading_follows')
-      .update({ is_active: false, updated_at: new Date().toISOString() } as any).eq('id', parsed.data.follow_id)
+      .update(patch).eq('id', parsed.data.follow_id)
       .eq('follower_id', user.id) // Only own follows
       .select()
       .single();

@@ -207,7 +207,7 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const updates: { [key: string]: unknown } = {
+  const updates: { status: string; stopped_at?: string } = {
     status: newStatus,
   };
 
@@ -217,7 +217,7 @@ export async function PATCH(request: NextRequest) {
 
   const { data: session, error } = await supabase
     .from("trading_sessions")
-    .update(updates as any).eq("id", session_id)
+    .update(updates).eq("id", session_id)
     .eq("user_id", user.id)
     .select()
     .single();

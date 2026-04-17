@@ -67,11 +67,11 @@ export async function POST(request: NextRequest) {
         ? { status: "stopped", stopped_at: new Date().toISOString() }
         : action === "pause"
           ? { status: "paused" }
-          : { status: "active" } as { [key: string]: string };
+          : { status: "active" };
 
     const { error } = await serviceClient
       .from("trading_sessions")
-      .update(updates as any).eq("id", sessionId);
+      .update(updates).eq("id", sessionId);
 
     if (error) throw error;
 

@@ -181,7 +181,7 @@ interface ModuleCardProps {
     completed: boolean;
   };
   locale: string;
-  t: any;
+  t: (key: string) => string;
 }
 
 function ModuleCard({ module, locale, t }: ModuleCardProps) {
