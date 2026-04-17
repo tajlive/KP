@@ -2,7 +2,15 @@
  * Trading Strategies for Paper Trading
  */
 
-import { MarketData } from './data';
+export interface MarketData {
+  date: string;
+  timestamp: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
 
 export type StrategyType = 'ma_crossover' | 'rsi' | 'macd' | 'bollinger' | 'breakout' | 'ai_ml';
 
