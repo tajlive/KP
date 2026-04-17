@@ -12,10 +12,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { localizedPathname } from "@/middleware/locale-path";
 
 export function AuthHashHandler() {
   const router = useRouter();
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +111,7 @@ export function AuthHashHandler() {
           window.history.replaceState(null, "", window.location.pathname);
           
           // Redirect til dashboard
-          router.push("/no/dashboard");
+          router.push(localizedPathname(locale, "/dashboard"));
           router.refresh();
         } else {
           console.warn("[AuthHashHandler] No session found after all attempts");
@@ -135,7 +138,7 @@ export function AuthHashHandler() {
           <button
             onClick={() => {
               setError(null);
-              router.push("/no/login");
+              router.push(localizedPathname(locale, "/login"));
             }}
             className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
           >

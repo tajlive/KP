@@ -41,6 +41,7 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
   const [currentValue, setCurrentValue] = useState(0);
   const [changePercent, setChangePercent] = useState(0);
   const [startingValue, setStartingValue] = useState(100000);
+  const [hasData, setHasData] = useState(false);
 
   const fetchPortfolioData = async () => {
     setLoading(true);
@@ -68,8 +69,8 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
       const { data: sessions, error: sessionError } = await sessionQuery;
 
       if (sessionError || !sessions || sessions.length === 0) {
-        // Fallback: generer mock-data
-        generateMockData();
+        setHasData(false);
+        setLoading(false);
         return;
       }
 
@@ -89,9 +90,18 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
         .order("created_at", { ascending: true });
 
       if (tradesError) {
-        generateMockData();
+        setHasData(false);
+        setLoading(false);
         return;
       }
+
+      if (!trades || trades.length === 0) {
+        setHasData(false);
+        setLoading(false);
+        return;
+      }
+
+      setHasData(true);
 
       // Bygg porteføljedata
       const chartData = buildPortfolioData(
@@ -111,7 +121,7 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
       }
     } catch (error) {
       console.error("PortfolioChart error:", error);
-      generateMockData();
+      setHasData(false);
     } finally {
       setLoading(false);
     }
@@ -163,36 +173,6 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
     return data;
   };
 
-  const generateMockData = () => {
-    const mockData: ChartDataPoint[] = [];
-    const now = new Date();
-    let value = 100000;
-
-    for (let i = 30; i >= 0; i--) {
-      const date = new Date(now);
-      date.setDate(date.getDate() - i);
-      value = value * (1 + (Math.random() - 0.45) * 0.02);
-
-      mockData.push({
-        date: date.toISOString().split("T")[0],
-        value: Math.round(value),
-        formattedDate: date.toLocaleDateString("nb-NO", {
-          month: "short",
-          day: "numeric",
-        }),
-      });
-    }
-
-    setData(mockData);
-    setCurrentValue(mockData[mockData.length - 1].value);
-    const change =
-      ((mockData[mockData.length - 1].value - mockData[0].value) /
-        mockData[0].value) *
-      100;
-    setChangePercent(change);
-    setLoading(false);
-  };
-
   useEffect(() => {
     fetchPortfolioData();
   }, [selectedPeriod, userId, sessionId]);
@@ -228,6 +208,20 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
       >
         <div className="h-8 w-48 bg-slate-700 rounded mb-4" />
         <div className="h-[250px] bg-slate-800 rounded" />
+      </motion.div>
+    );
+  }
+
+  if (!hasData) {
+    return (
+      <motion.div
+        className="h-[350px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col items-center justify-center text-muted-foreground"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-lg font-medium text-slate-300">Ingen handelshistorikk ennå</p>
+        <p className="text-sm text-slate-500 mt-1">Start din første øvingssesjon for å se grafen</p>
       </motion.div>
     );
   }

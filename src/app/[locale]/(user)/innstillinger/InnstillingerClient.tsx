@@ -221,6 +221,7 @@ function EmailPrefsSection() {
 
 function PasswordSection() {
   const supabase = createClient();
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -233,7 +234,7 @@ function PasswordSection() {
       if (!user?.email) return;
 
       const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: `${window.location.origin}/no/update-password`,
+        redirectTo: `${window.location.origin}/${locale}/update-password`,
       });
       if (error) throw error;
 

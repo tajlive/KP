@@ -26,6 +26,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { effectivePnlDelta } from "@/lib/trading/build-trading-analytics";
 
 interface AdvancedStatsModalProps {
@@ -89,6 +90,7 @@ export default function AdvancedStatsModal({
   const [loading, setLoading] = useState(false);
   const [loadingBacktest, setLoadingBacktest] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const t = useTranslations("trading.advancedStats");
 
   const fetchStats = useCallback(async () => {
     setLoading(true);
@@ -251,7 +253,7 @@ export default function AdvancedStatsModal({
 
       if (error) {
         console.error("Backtest error:", error);
-        alert("Kunne ikke kjøre backtest. Prøv igjen senere.");
+        alert(t("errorRunBacktest"));
         return;
       }
 
@@ -260,11 +262,11 @@ export default function AdvancedStatsModal({
         // Switch to backtest tab to show results
         setActiveTab("backtest");
       } else {
-        alert(data?.error || "Backtest feilet");
+        alert(data?.error || t("backtestFailed"));
       }
     } catch (error) {
       console.error("Failed to run backtest:", error);
-      alert("Backtest-funksjonen er ikke tilgjengelig ennå. Kontakt support.");
+      alert(t("backtestUnavailable"));
     } finally {
       setLoadingBacktest(false);
     }
@@ -311,27 +313,27 @@ export default function AdvancedStatsModal({
         ) : stats ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
             <TabsList className="bg-slate-800 border-slate-700">
-              <TabsTrigger value="overview">Oversikt</TabsTrigger>
-              <TabsTrigger value="performance">Ytelse</TabsTrigger>
+              <TabsTrigger value="overview">{t("tabOverview")}</TabsTrigger>
+              <TabsTrigger value="performance">{t("tabPerformance")}</TabsTrigger>
               <TabsTrigger value="signals" className="gap-1">
                 <Zap className="w-3 h-3" /> Signaler
               </TabsTrigger>
               <TabsTrigger value="backtest" className="gap-1">
                 <Activity className="w-3 h-3" /> Backtest
               </TabsTrigger>
-              <TabsTrigger value="history">Historikk</TabsTrigger>
+              <TabsTrigger value="history">{t("tabHistory")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
               {/* Key Metrics */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
-                  title="Totalt handler"
+                  title={t("statTotalTrades")}
                   value={stats.totalTrades.toString()}
                   icon={Calendar}
                 />
                 <StatCard
-                  title="Win Rate"
+                  title={t("statWinRate")}
                   value={`${stats.winRate.toFixed(1)}%`}
                   icon={Percent}
                   color={
@@ -339,7 +341,7 @@ export default function AdvancedStatsModal({
                   }
                 />
                 <StatCard
-                  title="Profit Factor"
+                  title={t("statProfitFactor")}
                   value={stats.profitFactor.toFixed(2)}
                   icon={TrendingUp}
                   color={
@@ -347,7 +349,7 @@ export default function AdvancedStatsModal({
                   }
                 />
                 <StatCard
-                  title="Max Drawdown"
+                  title={t("statMaxDrawdown")}
                   value={formatNOK(stats.maxDrawdown)}
                   icon={TrendingDown}
                   color="text-red-400"
@@ -356,16 +358,16 @@ export default function AdvancedStatsModal({
 
               {/* Trade Stats */}
               <div className="bg-slate-800 rounded-xl p-6">
-                <h3 className="text-lg font-bold mb-4">Handelsstatistikk</h3>
+                <h3 className="text-lg font-bold mb-4">{t("sectionTradeStats")}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div>
-                    <p className="text-slate-400 text-sm">Vinnende handler</p>
+                    <p className="text-slate-400 text-sm">{t("labelWinningTrades")}</p>
                     <p className="text-2xl font-bold text-green-400">
                       {stats.winningTrades}
                     </p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm">Tapende handler</p>
+                    <p className="text-slate-400 text-sm">{t("labelLosingTrades")}</p>
                     <p className="text-2xl font-bold text-red-400">
                       {stats.losingTrades}
                     </p>
@@ -387,13 +389,13 @@ export default function AdvancedStatsModal({
                     </p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm">Beste trade</p>
+                    <p className="text-slate-400 text-sm">{t("labelBestTrade")}</p>
                     <p className="text-2xl font-bold text-green-400">
                       {formatNOK(stats.bestTrade)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm">Verste trade</p>
+                    <p className="text-slate-400 text-sm">{t("labelWorstTrade")}</p>
                     <p className="text-2xl font-bold text-red-400">
                       {formatNOK(stats.worstTrade)}
                     </p>
@@ -447,7 +449,7 @@ export default function AdvancedStatsModal({
             <TabsContent value="history" className="space-y-6">
               {/* Monthly P&L */}
               <div className="bg-slate-800 rounded-xl p-6">
-                <h3 className="text-lg font-bold mb-4">Månedlig P&L</h3>
+                <h3 className="text-lg font-bold mb-4">{t("monthlyPnLTitle")}</h3>
                 {stats.monthlyPnl.length > 0 ? (
                   <div className="space-y-3">
                     {stats.monthlyPnl.map((month) => (
@@ -563,7 +565,7 @@ export default function AdvancedStatsModal({
                 ) : (
                   <div className="text-center py-12">
                     <Zap className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                    <p className="text-slate-400">Ingen signaler ennå</p>
+                    <p className="text-slate-400">{t("emptySignals")}</p>
                     <p className="text-sm text-slate-500">
                       Signalene vises her når boten genererer nye anbefalinger
                     </p>
@@ -673,7 +675,7 @@ export default function AdvancedStatsModal({
                               </p>
                             </div>
                             <div className="bg-slate-800 rounded-lg p-3">
-                              <p className="text-xs text-slate-400">Win Rate</p>
+                              <p className="text-xs text-slate-400">{t("labelWinRate")}</p>
                               <p className="text-lg font-bold text-blue-400">
                                 {(winRate * 100).toFixed(0)}%
                               </p>
@@ -717,7 +719,7 @@ export default function AdvancedStatsModal({
                 ) : (
                   <div className="text-center py-12">
                     <Activity className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                    <p className="text-slate-400">Ingen backtester ennå</p>
+                    <p className="text-slate-400">{t("emptyBacktests")}</p>
                     <p className="text-sm text-slate-500 mb-4">
                       Kjør en backtest for å se hvordan strategien ville ha
                       prestert historisk

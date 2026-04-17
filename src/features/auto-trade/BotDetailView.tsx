@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
   TrendingUp,
@@ -129,6 +130,7 @@ function formatDuration(startDate: string) {
 const cardBase = `bg-white dark:bg-slate-900 ${RADIUS.card} border border-[#E2E5EC] dark:border-slate-800 ${SHADOW.card} p-5`;
 
 export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
+  const t = useTranslations("trading.botDetail");
   const no = locale === "no";
 
   const totalPnl = trades.reduce((sum: number, t: Trade) => {
@@ -161,13 +163,13 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
         className={`inline-flex items-center gap-1.5 text-sm font-medium ${BRAND.link}`}
       >
         <ArrowLeft className="w-4 h-4" />
-        {no ? "Tilbake" : "Back"}
+        {t("back")}
       </Link>
 
       <PremiumTradingHero
-        eyebrow={no ? "Bot-detaljer" : "Bot details"}
+        eyebrow={t("botDetails")}
         title={session.name ?? "Trading Bot"}
-        subtitle={`${session.mode === "paper" ? (no ? "Lekepenger" : "Paper trading") : "Live trading"} · ${no ? "Startet" : "Started"} ${new Date(
+        subtitle={`${session.mode === "paper" ? (t("paperTrading")) : "Live trading"} · ${t("started")} ${new Date(
           session.created_at,
         ).toLocaleDateString(locale === "no" ? "nb-NO" : "en-US", {
           day: "numeric",
@@ -197,7 +199,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
               href={`/${locale}/handelshistorikk`}
               className={`inline-flex text-sm font-medium ${BRAND.link}`}
             >
-              {no ? "Åpne handelshistorikk" : "Open trade history"} →
+              {t("openTradeHistory")} →
             </Link>
           </div>
         </PremiumPanel>
@@ -232,7 +234,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           <div className="flex items-center gap-2 mb-2">
             <Activity className="w-4 h-4 text-[#0052FF]" />
             <span className="text-sm text-[#8E95A9] dark:text-slate-400">
-              {no ? "Handler" : "Trades"}
+              {t("trades")}
             </span>
           </div>
           <p
@@ -242,7 +244,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
             {trades.length}
           </p>
           <p className="text-xs text-[#8E95A9] dark:text-slate-500 mt-1">
-            {no ? "Totalt" : "Total"}
+            {t("total")}
           </p>
         </div>
 
@@ -260,7 +262,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
             {winRate.toFixed(0)}%
           </p>
           <p className="text-xs text-[#8E95A9] dark:text-slate-500 mt-1">
-            {winningTrades}/{closedTrades} {no ? "handler" : "trades"}
+            {winningTrades}/{closedTrades} {t("trades1")}
           </p>
         </div>
 
@@ -268,7 +270,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-[#0052FF]" />
             <span className="text-sm text-[#8E95A9] dark:text-slate-400">
-              {no ? "Kjøretid" : "Runtime"}
+              {t("runtime")}
             </span>
           </div>
           <p
@@ -291,14 +293,14 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
 
       <PremiumPanel>
         <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-3">
-          {no ? "Equity graf" : "Equity chart"}
+          {t("equityChart")}
         </h2>
         <div
           className={`h-[200px] rounded-lg ${SURFACE.BG_LIGHT} dark:bg-slate-950 flex items-center justify-center border border-[#E2E5EC] dark:border-slate-800`}
         >
           <div className="text-center px-6">
             <p className="text-sm font-medium text-[#1A1D26] dark:text-slate-200">
-              {no ? "Equity-forhåndsvisning" : "Equity preview"}
+              {t("equityPreview")}
             </p>
             <p className="mt-1 text-xs text-[#8E95A9] dark:text-slate-400">
               {no
@@ -311,12 +313,12 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
 
       <PremiumPanel>
         <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
-          {no ? "Handelshistorikk" : "Trade history"}
+          {t("tradeHistory")}
         </h2>
         {trades.length === 0 ? (
           <div className="py-8 text-center">
             <p className="text-sm text-[#8E95A9] dark:text-slate-400">
-              {no ? "Ingen handler ennå" : "No trades yet"}
+              {t("noTradesYet")}
             </p>
           </div>
         ) : (
@@ -325,19 +327,19 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
               <thead>
                 <tr className="border-b border-[#E2E5EC] dark:border-slate-700">
                   <th className="text-left text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-5">
-                    {no ? "Tid" : "Time"}
+                    {t("time")}
                   </th>
                   <th className="text-left text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
-                    {no ? "Par" : "Pair"}
+                    {t("pair")}
                   </th>
                   <th className="text-left text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
-                    {no ? "Side" : "Side"}
+                    {t("side")}
                   </th>
                   <th className="text-right text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
-                    {no ? "Mengde" : "Quantity"}
+                    {t("quantity")}
                   </th>
                   <th className="text-right text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-3">
-                    {no ? "Pris" : "Price"}
+                    {t("price")}
                   </th>
                   <th className="text-right text-xs font-medium text-[#8E95A9] dark:text-slate-400 uppercase tracking-wider pb-3 px-5">
                     P&L
@@ -379,7 +381,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
                             buy ? "text-[#16A34A]" : "text-[#DC2626]"
                           }`}
                         >
-                          {buy ? (no ? "Kjøp" : "Buy") : no ? "Selg" : "Sell"}
+                          {buy ? t("buy") : t("sell")}
                         </span>
                       </td>
                       <td
@@ -419,12 +421,12 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
 
       <PremiumPanel>
         <h2 className="text-lg font-semibold text-[#1A1D26] dark:text-white mb-4">
-          {no ? "Strategiinfo" : "Strategy info"}
+          {t("strategyInfo")}
         </h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
           <div>
             <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
-              {no ? "Strategi" : "Strategy"}
+              {t("strategy")}
             </dt>
             <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
               {sessionStrategyLabel(session)}
@@ -432,7 +434,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           </div>
           <div>
             <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
-              {no ? "Risikonivå" : "Risk level"}
+              {t("riskLevel")}
             </dt>
             <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
               {(() => {
@@ -449,7 +451,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           </div>
           <div>
             <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
-              {no ? "Aktive par" : "Active pairs"}
+              {t("activePairs")}
             </dt>
             <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
               {sessionPairsLine(session)}
@@ -457,7 +459,7 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           </div>
           <div>
             <dt className="text-xs font-medium text-[#8E95A9] dark:text-slate-500 uppercase tracking-wider">
-              {no ? "Startet" : "Started"}
+              {t("started")}
             </dt>
             <dd className="text-sm font-medium text-[#1A1D26] dark:text-white mt-1">
               {new Date(session.created_at).toLocaleDateString(

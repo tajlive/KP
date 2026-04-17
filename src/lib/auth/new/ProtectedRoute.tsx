@@ -8,7 +8,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { useAuth } from "./AuthContext";
+import { localizedPathname } from "@/middleware/locale-path";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -18,12 +20,13 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const locale = useLocale();
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/no/login");
+      router.push(localizedPathname(locale, "/login"));
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, locale]);
 
   if (loading) {
     return fallback || (

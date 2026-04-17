@@ -29,9 +29,7 @@ export async function generateMetadata({ params }: DynamicPageProps): Promise<Me
   );
 
   if (!page) {
-    return {
-      title: locale === 'en' ? 'Page not found' : 'Side ikke funnet',
-    };
+    notFound();
   }
 
   return {

@@ -2,6 +2,8 @@
 
 import { useState, forwardRef, useImperativeHandle } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { localizedPathname } from '@/middleware/locale-path';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Play, TrendingUp, TrendingDown, BarChart3, ArrowRight, AlertCircle, Info } from 'lucide-react';
@@ -40,6 +42,7 @@ export interface LandingBacktestTeaserRef {
 export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
   function LandingBacktestTeaser(_, ref) {
     const router = useRouter();
+  const locale = useLocale();
     const [riskProfile, setRiskProfile] = useState<UIRiskProfile>('balansert');
     const [amount, setAmount] = useState<number>(50000);
     const [months, setMonths] = useState<number>(12);
@@ -320,7 +323,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                   {/* CTA */}
                   <div className="px-6 pb-6">
                     <ButtonPremium
-                      onClick={() => router.push('/no/signup')}
+                      onClick={() => router.push(localizedPathname(locale, '/signup'))}
                       icon={<ArrowRight className="w-4 h-4" />}
                       iconPosition="right"
                       glow

@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Rocket, X, TrendingUp, Shield, Zap, Crown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { localizedPathname } from "@/middleware/locale-path";
 
 interface UpgradeGateProps {
   children: React.ReactNode;
@@ -43,6 +45,7 @@ export function UpgradeGate({
   });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const locale = useLocale();
 
   useEffect(() => {
     const checkUserStats = async () => {
@@ -200,7 +203,7 @@ export function UpgradeGate({
 
               {/* CTA */}
               <button
-                onClick={() => router.push("/no/priser")}
+                onClick={() => router.push(localizedPathname(locale, "/priser"))}
                 className="w-full py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-xl text-white font-bold text-lg hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/25"
               >
                 Start live trading

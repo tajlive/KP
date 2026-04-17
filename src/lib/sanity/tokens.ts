@@ -83,7 +83,7 @@ export async function getSanityTokensCSS(): Promise<string> {
   }
 
   try {
-    const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2026-04-15';
+    const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-04-07';
     const encodedQuery = encodeURIComponent(TOKENS_QUERY);
     const url = `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}?query=${encodedQuery}`;
     const res = await fetch(url, { 

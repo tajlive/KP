@@ -7,14 +7,29 @@ interface SocialProofProps {
 }
 
 export function SocialProof({ locale }: SocialProofProps) {
-  const [userCount, setUserCount] = useState(423);
+  const [userCount, setUserCount] = useState<number | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setUserCount((prev) => prev + Math.floor(Math.random() * 3) - 1);
-    }, 5000);
-    return () => clearInterval(interval);
+    const fetchActiveUsers = async () => {
+      try {
+        const res = await fetch('/api/stats/active-users');
+        const data = await res.json();
+        if (res.ok && typeof data.count === 'number' && data.count > 0) {
+          setUserCount(data.count);
+        } else {
+          setUserCount(null);
+        }
+      } catch {
+        setUserCount(null);
+      }
+    };
+
+    fetchActiveUsers();
   }, []);
+
+  if (userCount === null) {
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-between bg-white rounded-xl border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-3">

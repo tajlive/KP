@@ -95,7 +95,7 @@ export function RecentTradesTable({
               <button
                 key={m}
                 onClick={() => onModeFilterChange(m)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
                   modeFilter === m
                     ? "bg-kp-brand text-white"
                     : "bg-kp-bg-tertiary text-kp-text-secondary hover:bg-kp-brand-hover"
@@ -108,8 +108,8 @@ export function RecentTradesTable({
         </div>
       )}
 
-      {/* Table - Responsive with horizontal scroll on mobile */}
-      <div className="bg-kp-bg-tertiary/50 rounded-xl border border-kp-border overflow-hidden">
+      {/* Table - Desktop */}
+      <div className="hidden sm:block bg-kp-bg-tertiary/50 rounded-xl border border-kp-border overflow-hidden">
         <div className="overflow-x-auto">
           {/* Header */}
           <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-kp-bg-tertiary text-xs font-medium text-kp-text-muted uppercase tracking-wider min-w-[600px]">
@@ -151,7 +151,7 @@ export function RecentTradesTable({
                         {formatTime(trade.created_at)}
                       </span>
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                        className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
                           trade.mode === "live"
                             ? "bg-kp-success text-kp-success"
                             : "bg-kp-brand-subtle text-kp-brand"
@@ -216,6 +216,75 @@ export function RecentTradesTable({
             </AnimatePresence>
           </div>
         </div>
+      </div>
+
+      {/* Cards - Mobile */}
+      <div className="sm:hidden space-y-2">
+        <AnimatePresence>
+          {filteredTrades.map((trade) => {
+            const isSelected = selectedTradeId === trade.id;
+            const isBuy = trade.side === "buy";
+            const hasPnL = trade.realized_pnl !== null && trade.realized_pnl !== undefined;
+
+            return (
+              <motion.div
+                key={trade.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, x: 100 }}
+                onClick={() => onSelectTrade?.(trade.id)}
+                className={`bg-kp-bg-tertiary/50 rounded-xl border border-kp-border p-4 cursor-pointer transition-all ${
+                  isSelected ? "bg-kp-brand-subtle border-kp-brand" : ""
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-kp-text-primary font-semibold">{trade.symbol}</span>
+                    <span
+                      className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                        trade.mode === "live"
+                          ? "bg-kp-success text-kp-success"
+                          : "bg-kp-brand-subtle text-kp-brand"
+                      }`}
+                    >
+                      {trade.mode === "live" ? t("filterLive") : t("paperShort")}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    {hasPnL ? formatPnL(trade.realized_pnl) : <span className="text-kp-text-muted">—</span>}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1.5">
+                    {isBuy ? (
+                      <>
+                        <TrendingUp className="w-4 h-4 text-kp-success" />
+                        <span className="text-kp-success font-medium">{t("buy")}</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="w-4 h-4 text-kp-danger" />
+                        <span className="text-kp-danger font-medium">{t("sell")}</span>
+                      </>
+                    )}
+                    <span className="text-kp-text-muted text-xs">• {formatTime(trade.created_at)}</span>
+                  </div>
+                  <span className="text-kp-text-secondary text-xs tabular-nums">
+                    {t("sizeFormat", {
+                      quantity: trade.quantity.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
+                        maximumFractionDigits: 4,
+                      }),
+                      price: trade.price.toLocaleString(isNorwegian ? "nb-NO" : "en-US", { maximumFractionDigits: 0 }),
+                    })}
+                  </span>
+                </div>
+                <div className="text-kp-text-muted text-xs truncate mt-1">
+                  {getStrategyName(trade)}
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
 
       {/* Footer with count */}

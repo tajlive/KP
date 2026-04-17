@@ -248,17 +248,11 @@ export function CopyTradingCard() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-gray-50 rounded-lg text-center">
-                    <Trophy className="w-5 h-5 mx-auto mb-1 text-amber-500" />
-                    <p className="text-lg font-bold">12</p>
-                    <p className="text-xs text-gray-500">Topp-tradere</p>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-lg text-center">
-                    <TrendingUp className="w-5 h-5 mx-auto mb-1 text-green-500" />
-                    <p className="text-lg font-bold">+24.5%</p>
-                    <p className="text-xs text-gray-500">Snitt avkastning</p>
-                  </div>
+                <div className="p-4 bg-gray-50 rounded-lg text-center">
+                  <p className="text-sm text-gray-600">Ingen aktive kopieringer</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Finn en trader å kopiere fra Leaderboard.
+                  </p>
                 </div>
               )}
 
