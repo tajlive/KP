@@ -95,7 +95,7 @@ function buildCSPHeader(_nonce: string): string {
     "form-action 'self'",
     "frame-ancestors 'none'",
     `connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://plausible.io https://o4509555622608896.ingest.de.sentry.io${isDev ? " ws://localhost:* ws://127.0.0.1:* wss://localhost:* wss://127.0.0.1:*" : ""}`,
-    "frame-src https://vercel.live",
+    "frame-src 'self' https://vercel.live",
     "upgrade-insecure-requests",
   ];
 
@@ -141,12 +141,19 @@ function applySecurityHeaders(response: NextResponse, nonce: string): NextRespon
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Redirect /no/studio and /en/studio -> /studio (Sanity Studio is locale-independent)
+  if (pathname === "/no/studio" || pathname === "/en/studio" || pathname.startsWith("/no/studio/") || pathname.startsWith("/en/studio/")) {
+    const newPath = pathname.replace(/^\/(no|en)\/studio/, "/studio");
+    return NextResponse.redirect(new URL(newPath, request.url));
+  }
+
   // Skip i18n for static files, API routes, and auth routes (they don't use locale prefix)
   // Must be done BEFORE calling handleI18n to prevent redirect loops
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/auth/") ||
+    pathname.startsWith("/studio") ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml" ||
     pathname === "/manifest.json"
@@ -269,7 +276,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Matcher alt unntatt statiske filer, API routes, auth routes, og SEO/PWA-filer
-    "/((?!/_next/static|/_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|/api/|/auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Matcher alt unntatt statiske filer, API routes, auth routes, studio, og SEO/PWA-filer
+    "/((?!/_next/static|/_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|/api/|/auth/|/studio|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

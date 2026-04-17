@@ -44,20 +44,25 @@ class SanityMCP {
 
   async api(path, options = {}) {
     const url = `${BASE_URL}${path}`;
-    const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers
+    const makeRequest = async (useToken) => {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+      };
+      if (useToken && READ_TOKEN) {
+        headers['Authorization'] = `Bearer ${READ_TOKEN}`;
+      }
+      return fetch(url, { ...options, headers });
     };
-    if (READ_TOKEN) {
-      headers['Authorization'] = `Bearer ${READ_TOKEN}`;
+
+    let res = await makeRequest(true);
+    let data = await res.json().catch(() => null);
+
+    // If token is invalid, retry without auth (public datasets work without token)
+    if (!res.ok && res.status === 401 && READ_TOKEN) {
+      res = await makeRequest(false);
+      data = await res.json().catch(() => null);
     }
-
-    const res = await fetch(url, {
-      ...options,
-      headers
-    });
-
-    const data = await res.json().catch(() => null);
 
     if (!res.ok) {
       const msg = data?.message || data?.error?.description || res.statusText;
