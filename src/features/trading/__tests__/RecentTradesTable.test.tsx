@@ -66,6 +66,8 @@ const messages = {
       modePaper: "lekepenger",
       modeLive: "live",
       paperShort: "Øv",
+      liveShort: "Live",
+      sizeFormat: "{quantity} @ {price} kr",
     },
   },
 };

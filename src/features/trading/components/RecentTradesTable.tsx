@@ -38,10 +38,14 @@ export function RecentTradesTable({
     if (pnl === null || pnl === undefined) return "—";
     const isProfit = pnl >= 0;
     const sign = isProfit ? "+" : "";
+    const formatted = new Intl.NumberFormat(isNorwegian ? "nb-NO" : "en-US", {
+      style: "currency",
+      currency: "NOK",
+      maximumFractionDigits: 0,
+    }).format(Math.abs(pnl));
     return (
       <span className={isProfit ? "text-kp-success" : "text-kp-danger"}>
-        {sign}
-        {pnl.toLocaleString(isNorwegian ? "nb-NO" : "en-US", { maximumFractionDigits: 0 })} kr
+        {sign}{formatted}
       </span>
     );
   };
@@ -189,10 +193,12 @@ export function RecentTradesTable({
                     {/* Size */}
                     <div className="col-span-2 text-right">
                       <span className="text-kp-text-secondary text-sm tabular-nums">
-                        {trade.quantity.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
-                          maximumFractionDigits: 4,
-                        })}{" "}
-                        @ {trade.price.toLocaleString(isNorwegian ? "nb-NO" : "en-US", { maximumFractionDigits: 0 })} kr
+                        {t("sizeFormat", {
+                          quantity: trade.quantity.toLocaleString(isNorwegian ? "nb-NO" : "en-US", {
+                            maximumFractionDigits: 4,
+                          }),
+                          price: trade.price.toLocaleString(isNorwegian ? "nb-NO" : "en-US", { maximumFractionDigits: 0 }),
+                        })}
                       </span>
                     </div>
 

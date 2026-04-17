@@ -309,7 +309,10 @@
     "sell": "Sell",
     "showingCount": "Showing {count} trades",
     "modePaper": "paper",
-    "modeLive": "live"
+    "modeLive": "live",
+    "paperShort": "Paper",
+    "liveShort": "Live",
+    "sizeFormat": "{quantity} @ {price} kr"
   },
   "orderEntry": {
     "title": "New Trade",
@@ -625,5 +628,6 @@
       "startingCapital": "Starting Capital",
       "pnl": "P&L"
     }
-  }
+  },
+  "ensembleAutoAdjustWeights": "Auto-adjust weights"
 }
