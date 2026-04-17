@@ -8,7 +8,6 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@/lib/supabase/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing.config";
 
@@ -170,11 +169,24 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(response, nonce);
   }
 
-  // Studio: skip i18n AND skip CSP headers (iframe required by Sanity Studio)
+  // Studio: skip i18n, skip CSP/X-Frame, but keep other security headers
   if (pathname.startsWith("/studio")) {
-    return NextResponse.next({
+    let nonce: string;
+    try {
+      nonce = generateNonce();
+    } catch {
+      nonce = "fallback-nonce-" + Date.now();
+    }
+    const response = NextResponse.next({
       request: { headers: request.headers },
     });
+    // Keep basic security headers, skip CSP and X-Frame-Options
+    response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()");
+    response.headers.set("X-DNS-Prefetch-Control", "on");
+    response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
+    return response;
   }
 
   // Generate nonce for this request

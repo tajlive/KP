@@ -374,6 +374,13 @@ const nextConfig = {
           },
         ],
       },
+      // Studio: allow iframe loading (Sanity Studio uses internal iframes)
+      {
+        source: "/studio/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
       // NOTE: Cache-Control headers moved to vercel.json to avoid Next.js warning
       // Vercel handles caching optimally via vercel.json config
     ];

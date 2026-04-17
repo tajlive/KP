@@ -11,7 +11,7 @@ export default async function StudioPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/no/login')
   }
 
   return <Studio />

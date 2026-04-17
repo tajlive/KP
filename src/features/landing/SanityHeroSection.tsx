@@ -1,9 +1,7 @@
-import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';
 import { BadgePremium } from '@/shared/ui/BadgePremium';
-import { motion } from 'framer-motion';
 import { safeFetch } from '@/lib/sanity/client';
 import { landingContentQuery } from '@/lib/sanity/queries';
 import { Skeleton } from '@/shared/ui/skeleton';
