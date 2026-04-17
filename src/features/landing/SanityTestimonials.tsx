@@ -12,11 +12,7 @@ interface SanityTestimonial {
   platform?: string;
 }
 
-interface SanityTestimonialsProps {
-  locale?: string;
-}
-
-async function getTestimonials(language: string): Promise<SanityTestimonial[]> {
+async function getTestimonials(): Promise<SanityTestimonial[]> {
   return safeFetch<SanityTestimonial[]>(
     activeTestimonialsQuery,
     {},
@@ -25,8 +21,8 @@ async function getTestimonials(language: string): Promise<SanityTestimonial[]> {
   );
 }
 
-export default async function SanityTestimonials({ locale = 'no' }: SanityTestimonialsProps) {
-  const rawItems = await getTestimonials(locale);
+export default async function SanityTestimonials() {
+  const rawItems = await getTestimonials();
 
   const items = rawItems.map((t) => ({
     name: t.name,
@@ -36,5 +32,5 @@ export default async function SanityTestimonials({ locale = 'no' }: SanityTestim
     rating: t.rating,
   }));
 
-  return <Testimonials language={locale as 'no' | 'en'} items={items.length > 0 ? items : undefined} />;
+  return <Testimonials items={items.length > 0 ? items : undefined} />;
 }
