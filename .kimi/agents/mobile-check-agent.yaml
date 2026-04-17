@@ -1,0 +1,5 @@
+version: 1
+agent:
+  extend: default
+  name: klarpakke-mobile-check-agent
+  system_prompt_path: ./mobile-check-agent.md

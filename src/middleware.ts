@@ -141,7 +141,10 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/api/") ||
-    pathname.startsWith("/auth/")
+    pathname.startsWith("/auth/") ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml" ||
+    pathname === "/manifest.json"
   ) {
     // For auth routes, just apply security headers and pass through
     let nonce: string;
@@ -261,7 +264,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Matcher alt unntatt statiske filer, API routes, og auth routes
-    "/((?!/_next/static|/_next/image|favicon.ico|/api/|/auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Matcher alt unntatt statiske filer, API routes, auth routes, og SEO/PWA-filer
+    "/((?!/_next/static|/_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|/api/|/auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

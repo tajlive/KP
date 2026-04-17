@@ -19,9 +19,8 @@ export const metadata: Metadata = {
   authors: [{ name: "Klarpakke AS" }],
   creator: "Klarpakke AS",
   publisher: "Klarpakke AS",
-  metadataBase: new URL("https://klarpakke.no"),
+  metadataBase: new URL("https://www.klarpakke.no"),
   alternates: {
-    canonical: "/",
     languages: {
       no: "/",
       en: "/en/",
