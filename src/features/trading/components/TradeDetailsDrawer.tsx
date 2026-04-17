@@ -342,7 +342,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                   </div>
                   <button
                     onClick={onClose}
-                    className="p-3 w-6 h-6 hover:bg-kp-brand-hover rounded-lg transition-colors flex items-center justify-center"
+                    className="p-3 h-12 w-12 hover:bg-kp-brand-hover rounded-lg transition-colors flex items-center justify-center"
                     aria-label={t("close")}
                   >
                     <X className="w-5 h-5 text-kp-text-muted" />
