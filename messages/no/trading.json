@@ -10,7 +10,7 @@
   "paperModeDescription": "Øv med virtuell kapital",
   "liveModeDescription": "Handel med ekte penger",
   "switchToLiveTitle": "Bytt til Live Trading?",
-  "switchToLiveWarning": "Du er i ferd med å bytte til live trading med ekte penger.",
+  "switchToLiveWarning": "Du er i ferd med å bytte til ekte handel med ekte penger.",
   "switchToPaperTitle": "Bytt til lekepenger?",
   "switchToPaperWarning": "Du bytter tilbake til lekepenger.",
   "switchToPaperNote": "Åpne live posisjoner forblir aktive på Binance. Du kan bytte tilbake til live når som helst.",
@@ -24,7 +24,7 @@
   "apiKeyPermissionsDesc": "Kun spot trading og lesing. IKKE aktiver uttak (withdraw).",
   "later": "Senere",
   "cancel": "Avbryt",
-  "confirmSwitchToLive": "Ja, bytt til Live Trading",
+  "confirmSwitchToLive": "Ja, bytt til ekte handel",
   "confirmSwitchToPaper": "Bytt til lekepenger",
   "liveWarningRealMoney": "Du handler nå med EKTE penger",
   "liveWarningLosses": "Tap er reelle, ikke simulerte",
@@ -37,10 +37,10 @@
   "stressLevelModerate": "Moderat stress - Hold deg til planen",
   "stressLevelHigh": "Høy stress - Vurder å ta en pause",
   "stressLevelExtreme": "EKSTREM stress - STOPP og revurder strategien",
-  "stressTriggerTitle": "Stress-Trigger Detektert",
-  "stressTriggerDescription": "I live trading ville du nå føle:",
-  "stressTriggerImpulsivity": "Impulsivitet (vil stenge tapende trades for tidlig)",
-  "stressTriggerOvertrading": "Overtrading (vil \"vinne tilbake\" tapene)",
+  "stressTriggerTitle": "Stressutløser oppdaget",
+  "stressTriggerDescription": "I ekte handel ville du nå føle:",
+  "stressTriggerImpulsivity": "Impulsivitet (vil stenge tapende handler for tidlig)",
+  "stressTriggerOvertrading": "Overhandel (vil «vinne tilbake» tapene)",
   "stressTriggerFOMO": "Fear of Missing Out (FOMO)",
   "stressTriggerAdvice": "Ta en pause. Revurder strategien. Dette er hvorfor du øver med lekepenger.",
   "transitionGuide": {
@@ -51,11 +51,11 @@
     "almostReady": "Nesten klar",
     "ready": "Klar for Live!",
     "checkpoint1": "50+ handler med lekepenger",
-    "checkpoint2": "Konsekvent Profitabilitet",
+    "checkpoint2": "Konsekvent lønnsomhet",
     "checkpoint3": "Risikostyring under Kontroll",
     "checkpoint4": "Disiplin (Avg Hold Time)",
     "recommendation": "Anbefalt strategi:",
-    "step1": "Start med SMÅ beløp (50-100 kr per trade)",
+    "step1": "Start med SMÅ beløp (50–100 kr per handel)",
     "step2": "Fortsett å trade med lekepenger samtidig",
     "step3": "Øk gradvis når du føler deg komfortabel",
     "step4": "Forvent at emosjonene vil være forskjellige"
@@ -63,7 +63,7 @@
   "paperTradingInfo": "Lekepenger-modus",
   "paperTradingDescription": "Du handler med lekepenger (virtuelle penger). Slippage og gebyrer er simulert for realistisk øving.",
   "liveTradingInfo": "Live Trading Mode",
-  "liveTradingDescription": "Du handler med ekte penger på Binance. Alle trades er reelle.",
+  "liveTradingDescription": "Du handler med ekte penger på Binance. Alle handler er reelle.",
   "balance": "Saldo",
   "available": "Tilgjengelig",
   "buy": "Kjøp",
@@ -80,7 +80,7 @@
     "titleCount": "Åpne Posisjoner ({count})",
     "empty": {
       "title": "Ingen åpne posisjoner",
-      "description": "Start trading ved å åpne din første posisjon"
+      "description": "Start å handle ved å åpne din første posisjon"
     },
     "columns": {
       "symbol": "Symbol",
@@ -191,7 +191,7 @@
     "totalValue": "Total verdi",
     "cash": "Cash",
     "pnl": "P&L",
-    "winRate": "Win rate",
+    "winRate": "Vinnrate",
     "chartLoading": "Laster graf…"
   },
   "activeStrategiesPanel": {
@@ -292,7 +292,7 @@
   "recentTrades": {
     "title": "Siste handler",
     "empty": "Ingen handler å vise",
-    "emptyAll": "Start trading for å se handler her",
+    "emptyAll": "Start å handle for å se handler her",
     "emptyPaper": "Ingen øvingshandler ennå",
     "emptyLive": "Ingen live-handler ennå",
     "filter": "Vis",
@@ -309,7 +309,10 @@
     "sell": "Salg",
     "showingCount": "Viser {count} handler",
     "modePaper": "lekepenger",
-    "modeLive": "live"
+    "modeLive": "live",
+    "paperShort": "Øv",
+    "liveShort": "Live",
+    "sizeFormat": "{quantity} @ {price} kr"
   },
   "orderEntry": {
     "title": "Ny Handel",
@@ -356,7 +359,7 @@
       "btcAllocation": "BTC-fordeling"
     },
     "trend": {
-      "riskPerTrade": "Risiko per trade",
+      "riskPerTrade": "Risiko per handel",
       "stopLoss": "Stop-loss"
     },
     "multisignal": {
@@ -374,7 +377,7 @@
       "capital": "Kapital"
     },
     "aiCopy": {
-      "maxPerTrade": "Maks per trade",
+      "maxPerTrade": "Maks per handel",
       "maxLoss": "Maks tap"
     },
     "unit": {
@@ -394,7 +397,7 @@
         "moreLikely": [
           "Å unngå falske signaler",
           "Færre, men mer solide handler",
-          "Lavere trading-frekens (2–5 per dag)"
+          "Lavere handelsfrekvens (2–5 per dag)"
         ],
         "lessLikely": [
           "Å fange med et momentum fra start",
@@ -600,7 +603,7 @@
       "dailyResult": "Daglig Resultat",
       "weeklyResult": "Ukentlig Resultat",
       "monthlyResult": "Månedlig Resultat",
-      "winRate": "Gjennomsnittlig Win Rate",
+      "winRate": "Gjennomsnittlig vinnrate",
       "quickActions": "Hurtighandlinger",
       "newStrategy": "Ny Strategi",
       "newStrategyDesc": "Utforsk markedsplassen",
@@ -625,5 +628,6 @@
       "startingCapital": "Startkapital",
       "pnl": "P&L"
     }
-  }
+  },
+  "ensembleAutoAdjustWeights": "Juster vekter automatisk"
 }
