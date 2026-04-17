@@ -9,6 +9,7 @@ export function ConditionalFooter() {
   const pathname = usePathname();
 
   // Hide footer on authenticated app pages (dashboard, admin, trading screens)
+  // pathname includes /no/dashboard etc — substring match is correct here
   const isAppRoute = APP_ROUTES.some((route) =>
     (pathname ?? "/").includes(route),
   );

@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { PaymentTrustLogos } from './PaymentTrustLogos';
 import { useVippsMarket } from '@/shared/providers/VippsMarketProvider';
 import { GlassCard } from '@/shared/ui/GlassCard';
+import { hrefWithLocale } from '@/i18n/href-with-locale';
 
 export function Footer() {
   const [currentYear, setCurrentYear] = useState(2026);
@@ -63,7 +64,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            <Link href="/" className="inline-block mb-4">
+            <Link href={hrefWithLocale(locale, '/')} className="inline-block mb-4">
               <span className="text-2xl font-bold text-kp-text-primary">Klarpakke</span>
             </Link>
             <p className="text-sm text-kp-text-tertiary mb-6 max-w-xs">
@@ -96,7 +97,7 @@ export function Footer() {
               {footerLinks.product.map((link) => (
                 <li key={link.href}>
                   <Link
-                    href={`/${locale}${link.href}`}
+                    href={hrefWithLocale(locale, link.href)}
                     className="text-sm text-kp-text-tertiary hover:text-kp-text-primary transition-colors"
                   >
                     {link.label}
@@ -114,7 +115,7 @@ export function Footer() {
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link
-                    href={`/${locale}${link.href}`}
+                    href={hrefWithLocale(locale, link.href)}
                     className="text-sm text-kp-text-tertiary hover:text-kp-text-primary transition-colors"
                   >
                     {link.label}
@@ -132,7 +133,7 @@ export function Footer() {
               {footerLinks.legal.map((link) => (
                 <li key={link.href}>
                   <Link
-                    href={`/${locale}${link.href}`}
+                    href={hrefWithLocale(locale, link.href)}
                     className="text-sm text-kp-text-tertiary hover:text-kp-text-primary transition-colors"
                   >
                     {link.label}
