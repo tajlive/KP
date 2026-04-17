@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient, createClient } from "@/lib/supabase/server";
 import { canAccessLiveAutoTrading, type TierSlug } from "@/types/subscription";
 import { normalizeTier } from "@/lib/pricing/tiers";
-import type { Database } from "@/types/database.types";
+import type { Database, Json } from "@/types/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
@@ -171,9 +171,9 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase
       .from("user_profiles")
       .update({
-        trading_mode: mode,
+        preferred_trading_mode: mode,
         updated_at: new Date().toISOString(),
-      } as any).eq("id", user.id);
+      } as { preferred_trading_mode: string; updated_at: string }).eq("id", user.id);
 
     if (error) {
       console.error("Error updating trading mode:", error);
@@ -186,9 +186,9 @@ export async function POST(request: NextRequest) {
     const { error: auditErr } = await supabase.from("audit_logs").insert({
       user_id: user.id,
       action: "TRADING_MODE_CHANGED",
-      details: { new_mode: mode },
-      created_at: new Date().toISOString(),
-    } as any);
+      metadata: { new_mode: mode } as Json,
+      timestamp: new Date().toISOString(),
+    });
     if (auditErr) {
       console.warn(
         "[trading/mode] audit_logs insert skipped:",

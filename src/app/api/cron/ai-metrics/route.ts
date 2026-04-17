@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     // Also try to get price from the signal itself if stored in meta
     for (const row of unresolvedRows) {
       if (latestPriceMap.has(row.symbol)) continue;
-      const meta = (row as any).agent_meta as Record<string, unknown> | null;
+      const meta = (row as unknown as { agent_meta?: Record<string, unknown> | null }).agent_meta;
       const price = typeof meta?.price_at_signal === 'number' ? meta.price_at_signal : null;
       if (price) latestPriceMap.set(row.symbol, price);
     }
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
     for (const row of unresolvedRows) {
       const evalPrice = latestPriceMap.get(row.symbol);
       if (!evalPrice) continue;
-      const meta = (row as any).agent_meta as Record<string, unknown> | null;
+      const meta = (row as unknown as { agent_meta?: Record<string, unknown> | null }).agent_meta;
       const signalPrice = typeof meta?.price_at_signal === 'number' ? meta.price_at_signal : null;
       const entryPrice = signalPrice ?? evalPrice;
 
@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (outcomeInserts.length > 0) {
-      const { error: outcomeErr } = await db.from('ai_signal_outcomes').insert(outcomeInserts as any);
+      const { error: outcomeErr } = await db.from('ai_signal_outcomes').insert(outcomeInserts);
       if (outcomeErr) throw new Error(`Failed inserting outcomes: ${outcomeErr.message}`);
     }
 
@@ -110,15 +110,16 @@ export async function GET(req: NextRequest) {
       { wins: number; losses: number; neutrals: number; totalPnL: number; count: number; symbol: string }
     >();
 
-    for (const row of (agentRows ?? []) as any[]) {
-      const agentId = row.trading_signals?.agent_id as string | undefined;
-      const symbol = row.trading_signals?.symbol as string | undefined;
+    for (const row of agentRows ?? []) {
+      const r = row as { trading_signals?: { agent_id?: string | null; symbol?: string | null } | null; pnl_pct?: number | null; outcome?: string | null };
+      const agentId = r.trading_signals?.agent_id ?? undefined;
+      const symbol = r.trading_signals?.symbol ?? undefined;
       if (!agentId) continue;
       const s = statsMap.get(agentId) ?? { wins: 0, losses: 0, neutrals: 0, totalPnL: 0, count: 0, symbol: symbol ?? '' };
       s.count += 1;
-      s.totalPnL += (row.pnl_pct as number) ?? 0;
-      if (row.outcome === 'win') s.wins += 1;
-      else if (row.outcome === 'loss') s.losses += 1;
+      s.totalPnL += r.pnl_pct ?? 0;
+      if (r.outcome === 'win') s.wins += 1;
+      else if (r.outcome === 'loss') s.losses += 1;
       else s.neutrals += 1;
       if (symbol && !s.symbol) s.symbol = symbol;
       statsMap.set(agentId, s);
@@ -154,7 +155,7 @@ export async function GET(req: NextRequest) {
     if (statInserts.length > 0) {
       const { error: upsertErr } = await db
         .from('ai_agent_stats')
-        .upsert(statInserts as any, { onConflict: 'agent_id,timeframe' });
+        .upsert(statInserts, { onConflict: 'agent_id,timeframe' });
       if (upsertErr) throw new Error(`Failed upserting stats: ${upsertErr.message}`);
     }
 
