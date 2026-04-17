@@ -208,9 +208,12 @@ export function DashboardPro({
                   Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support.
                 </p>
               </div>
-              <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity whitespace-nowrap">
+              <Link
+                href={`/${locale}/priser`}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity whitespace-nowrap inline-flex items-center justify-center"
+              >
                 Se priser
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>

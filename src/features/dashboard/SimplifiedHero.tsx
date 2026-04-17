@@ -28,9 +28,10 @@ export function SimplifiedHero({ balance, changePct }: Props) {
       </div>
       <Link href={`/${locale}/dashboard/trade?mode=paper`}>
         <Button
+          asChild
           className={`${BRAND.gradient} mt-6 px-8 py-6 text-lg font-semibold rounded-xl`}
         >
-          Start trading
+          <span>Start trading</span>
         </Button>
       </Link>
     </div>
