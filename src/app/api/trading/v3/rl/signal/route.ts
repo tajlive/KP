@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       .single();
     
     const fearGreedIndex = fearGreed?.value ?? 50;
-    const fearGreedTrend = ((fearGreed?.trend as any) as number) ?? 0;
+    const fearGreedTrend = Number(fearGreed?.trend) || 0;
     
     // Get latest technical indicators
     const { data: indicators } = await supabase

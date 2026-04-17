@@ -1,7 +1,6 @@
 import { requireAuth } from "@/lib/auth-guard";
 import { Metadata } from "next";
 import { BotDetailView } from "@/features/auto-trade/BotDetailView";
-import type { Trade } from "@/types/trading";
 
 export const dynamic = "force-dynamic";
 
@@ -55,7 +54,7 @@ export default async function BotDetailPage({
           typeof BotDetailView
         >[0]["session"]
       }
-      trades={(tradesRes.data ?? []) as any}
+      trades={(tradesRes.data ?? []) as never}
       locale={locale}
     />
   );

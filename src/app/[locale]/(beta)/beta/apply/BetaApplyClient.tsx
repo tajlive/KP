@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/utils";
+import type { Database } from "@/types/database.types";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
@@ -76,12 +77,13 @@ export default function BetaApplyClient({
 
       if (error) throw error;
 
+      const patch: Database["public"]["Tables"]["beta_applications"]["Update"] = {
+        application_status: "approved",
+        updated_at: new Date().toISOString(),
+      };
       await supabase
         .from("beta_applications")
-        .update({
-          application_status: "approved",
-          reviewed_at: new Date().toISOString(),
-        } as any).eq("user_id", user.id);
+        .update(patch).eq("user_id", user.id);
 
       setSubmitted(true);
 

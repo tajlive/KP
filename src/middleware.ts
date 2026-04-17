@@ -147,31 +147,34 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(newPath, request.url));
   }
 
-  // Skip i18n for static files, API routes, and auth routes (they don't use locale prefix)
+  // Skip i18n for static files, API routes, auth routes, and studio (they don't use locale prefix)
   // Must be done BEFORE calling handleI18n to prevent redirect loops
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/auth/") ||
-    pathname.startsWith("/studio") ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml" ||
     pathname === "/manifest.json"
   ) {
-    // For auth routes, just apply security headers and pass through
+    // Apply security headers and pass through without i18n processing
     let nonce: string;
     try {
       nonce = generateNonce();
     } catch {
       nonce = "fallback-nonce-" + Date.now();
     }
-    // Use NextResponse.next() to pass through without any i18n processing
     const response = NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
+      request: { headers: request.headers },
     });
     return applySecurityHeaders(response, nonce);
+  }
+
+  // Studio: skip i18n AND skip CSP headers (iframe required by Sanity Studio)
+  if (pathname.startsWith("/studio")) {
+    return NextResponse.next({
+      request: { headers: request.headers },
+    });
   }
 
   // Generate nonce for this request
