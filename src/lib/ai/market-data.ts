@@ -206,37 +206,10 @@ export function subscribeToPriceUpdates(
 /**
  * Hent historiske priser (gratis via CoinLore)
  */
-export async function getHistoricalPrices(symbol: string, days: number = 7): Promise<number[]> {
-  try {
-    // First get coin ID
-    const allCoins = await fetch('https://api.coinlore.net/api/tickers/?limit=5000');
-    const allData = await allCoins.json();
-    const coin = allData.data.find((c: CoinData) => c.symbol === symbol.toUpperCase());
-
-    if (!coin) throw new Error('Coin not found');
-
-    // Get historical data
-    const response = await fetch(`https://api.coinlore.net/api/coin/markets/?id=${coin.id}`);
-    const data = await response.json();
-
-    // Return mock history if API doesn't provide it
-    return generateMockHistory(days);
-  } catch (error) {
-    console.error('Failed to fetch historical prices:', error);
-    return generateMockHistory(days);
-  }
-}
-
-function generateMockHistory(days: number): number[] {
-  const prices: number[] = [];
-  let price = 50000; // Starting price
-
-  for (let i = 0; i < days * 24; i++) {
-    price = price * (1 + (Math.random() - 0.5) * 0.02);
-    prices.push(price);
-  }
-
-  return prices;
+export async function getHistoricalPrices(_symbol: string, _days: number = 7): Promise<number[]> {
+  // CoinLore API does not provide hourly historical price data.
+  // Returning empty array allows callers to fall back to WebSocket prices.
+  return [];
 }
 
 /**

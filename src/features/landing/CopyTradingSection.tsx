@@ -13,32 +13,17 @@ interface LeaderboardData {
   tier?: string;
 }
 
-const MOCK_TRADERS = [
-  {
-    name: "Nordic Whale",
-    profit: "+184%",
-    trades: 1420,
-    winRate: "78%",
-    level: "Pro",
-  },
-  {
-    name: "Crypto King",
-    profit: "+122%",
-    trades: 856,
-    winRate: "64%",
-    level: "Active",
-  },
-  {
-    name: "Algo Master",
-    profit: "+98%",
-    trades: 2104,
-    winRate: "82%",
-    level: "Expert",
-  },
-];
+interface Trader {
+  name: string;
+  profit: string;
+  trades: number;
+  winRate: string;
+  level: string;
+}
 
 export function CopyTradingSection() {
-  const [topTraders, setTopTraders] = useState(MOCK_TRADERS);
+  const [topTraders, setTopTraders] = useState<Trader[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLeaderboard() {
@@ -46,23 +31,30 @@ export function CopyTradingSection() {
         const res = await fetch(
           "/api/auto-trading/leaderboard?timeframe=all_time&limit=3",
         );
-        if (!res.ok) return;
+        if (!res.ok) {
+          setTopTraders([]);
+          return;
+        }
         const data = await res.json();
         if (data.leaderboard?.length > 0) {
           setTopTraders(
-            data.leaderboard.map((e: LeaderboardData, i: number) => ({
-              name: e.username || MOCK_TRADERS[i]?.name || `Trader${i}`,
+            data.leaderboard.map((e: LeaderboardData) => ({
+              name: e.username || "Trader",
               profit: `+${((e.totalPnl || 0) / 1000).toFixed(1)}%`,
-              trades: e.totalTrades || MOCK_TRADERS[i]?.trades || 0,
-              winRate: `${e.winRate || MOCK_TRADERS[i]?.winRate}%`,
+              trades: e.totalTrades || 0,
+              winRate: `${e.winRate || 0}%`,
               level: e.tier
                 ? e.tier.charAt(0).toUpperCase() + e.tier.slice(1)
-                : MOCK_TRADERS[i]?.level,
+                : "Trader",
             })),
           );
+        } else {
+          setTopTraders([]);
         }
       } catch {
-        // Keep mock data on error
+        setTopTraders([]);
+      } finally {
+        setLoading(false);
       }
     }
     fetchLeaderboard();
@@ -120,7 +112,35 @@ export function CopyTradingSection() {
             </span>
           </div>
 
-          {topTraders.map((trader, i) => (
+          {loading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex items-center justify-between animate-pulse"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-slate-200" />
+                    <div className="space-y-2">
+                      <div className="h-4 w-24 bg-slate-200 rounded" />
+                      <div className="h-3 w-16 bg-slate-200 rounded" />
+                    </div>
+                  </div>
+                  <div className="h-4 w-12 bg-slate-200 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : topTraders.length === 0 ? (
+            <div className="bg-slate-50 border border-slate-100 p-8 rounded-2xl text-center">
+              <p className="text-sm text-slate-500">
+                Ingen tradere tilgjengelig for øyeblikket.
+              </p>
+              <p className="text-xs text-slate-400 mt-1">
+                Sjekk tilbake senere for oppdatert leaderboard.
+              </p>
+            </div>
+          ) : (
+            topTraders.map((trader, i) => (
             <motion.div
               key={i}
               whileHover={{ x: 10 }}
@@ -153,7 +173,7 @@ export function CopyTradingSection() {
                 </Button>
               </div>
             </motion.div>
-          ))}
+          )))}
 
           <div className="bg-blue-600/5 p-4 rounded-2xl border border-blue-600/10 text-center">
             <p className="text-xs text-blue-600 font-medium">
