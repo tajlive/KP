@@ -15,6 +15,7 @@ const config = {
     // Styles
     './src/styles/**/*.css',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {

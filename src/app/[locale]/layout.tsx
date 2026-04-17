@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { preconnect, prefetchDNS } from "react-dom";
 import { headers } from "next/headers";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
@@ -178,8 +179,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     : null;
   const showVippsMarket = shouldShowVippsForRequest(hdrs);
 
-  // Hent feature flags fra Edge Config (server-side)
-  const flags = await getFlagsAsync();
+  // Vi fjerner await her oppe slik at html og head strømmes til nettleseren umiddelbart!
+  // Flaggene hentes asynkront i AsyncFeatureFlagProvider i body i stedet.
 
   // Get CSP nonce from middleware header for inline scripts
   const cspNonce = hdrs.get("x-csp-nonce") ?? undefined;
@@ -190,6 +191,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
+
+  // Modern React 19 preconnects (flyttet til toppen av streaming-buffer)
+  preconnect("https://api.binance.com", { crossOrigin: "anonymous" });
+  prefetchDNS("https://api.binance.com");
+  if (supabaseHost) {
+    preconnect(supabaseHost, { crossOrigin: "anonymous" });
+    prefetchDNS(supabaseHost);
+  }
+  preconnect("https://fonts.googleapis.com");
+  preconnect("https://fonts.gstatic.com", { crossOrigin: "anonymous" });
 
   return (
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
@@ -264,30 +275,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         {/* Resource Hints for External APIs */}
         {/* Preload critical above-fold assets */}
         <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
-        
-        {/* Resource Hints for External APIs */}
-        <link rel="dns-prefetch" href="https://api.binance.com" />
-        <link
-          rel="preconnect"
-          href="https://api.binance.com"
-          crossOrigin="anonymous"
-        />
-        {supabaseHost && (
-          <>
-            <link rel="dns-prefetch" href={supabaseHost} />
-            <link
-              rel="preconnect"
-              href={supabaseHost}
-              crossOrigin="anonymous"
-            />
-          </>
-        )}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
         <OrganizationJsonLd />
         {/* Server-side injected Sanity design tokens — eliminates FOUC */}
         <style
@@ -313,9 +300,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                 <ErrorBoundary>
                   <AuthProvider>
                     <AuthHashHandler />
-                    <FeatureFlagProvider initialFlags={flags}>
+                    <AsyncFeatureFlagProvider>
                       <LocaleMarketingShell>{children}</LocaleMarketingShell>
-                    </FeatureFlagProvider>
+                    </AsyncFeatureFlagProvider>
                   </AuthProvider>
                 </ErrorBoundary>
               </MarketingProviders>
@@ -328,5 +315,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <SpeedInsights />
       </body>
     </html>
+  );
+}
+
+async function AsyncFeatureFlagProvider({ children }: { children: React.ReactNode }) {
+  const flags = await getFlagsAsync();
+  return (
+    <FeatureFlagProvider initialFlags={flags}>
+      {children}
+    </FeatureFlagProvider>
   );
 }

@@ -47,7 +47,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
       coursePreview,
       threeSteps,
       legal,
-      tax
+      tax,
+      tradeHistory,
+      toasts
     ] = await Promise.all([
       import(`../messages/${validLocale}/common.json`)
         .then((m) => m.default)
@@ -133,6 +135,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
       import(`../messages/${validLocale}/tax.json`)
         .then((m) => m.default)
         .catch(() => import("../messages/en/tax.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/tradeHistory.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/tradeHistory.json").then((m) => m.default)),
+      import(`../messages/${validLocale}/toasts.json`)
+        .then((m) => m.default)
+        .catch(() => import("../messages/en/toasts.json").then((m) => m.default)),
     ]);
 
     const splits: Record<string, any> = {
@@ -163,7 +171,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
       coursePreview,
       threeSteps,
       legal,
-      tax
+      tax,
+      tradeHistory,
+      toasts
     };
 
     function deepMerge(target: any, source: any): any {
@@ -203,6 +213,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       },
     };
   } catch (err) {
+    console.error("[i18n.ts] FATAL ERROR LOADING MESSAGES:", err);
     // Fallback so production never crashes with "Locale Error" (digest)
     const common = await import("../messages/no/common.json")
       .then((m) => m.default)
