@@ -1,21 +1,16 @@
-name: Verify OAuth Configuration
+name: 🔐 Auth Safety & Verification
 
 on:
-  push:
+  pull_request:
     branches: [main, develop]
     paths:
       - 'src/lib/auth/**'
-      - 'src/app/auth/**'
-      - 'src/middleware/auth.ts'
+      - 'src/app/**/auth/**'
+      - 'src/middleware/**'
       - 'scripts/google-oauth-verifier.ts'
+      - 'scripts/oauth-guard.ts'
+      - '.env*'
       - '.github/workflows/verify-oauth.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'src/lib/auth/**'
-      - 'src/app/auth/**'
-      - 'src/middleware/auth.ts'
-      - 'scripts/google-oauth-verifier.ts'
   workflow_dispatch:
     inputs:
       environment:
@@ -27,9 +22,28 @@ on:
           - staging
           - production
 
+concurrency:
+  group: auth-verify-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # 1. Consistency Guard (Fast check)
+  consistency-guard:
+    name: OAuth Consistency Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
+      - name: Consistency Check
+        run: npx tsx scripts/oauth-guard.ts --json
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+
+  # 2. Remote Verification (Deep check)
   verify-oauth:
     name: Verify OAuth Config (${{ matrix.environment }})
+    needs: consistency-guard
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -43,13 +57,8 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
 
       - name: Setup environment
         run: |

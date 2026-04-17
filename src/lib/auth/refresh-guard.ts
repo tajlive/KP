@@ -1,15 +1,9 @@
 /**
  * Refresh Guard - Prevents refresh-token storms and gotrue lock races
  *
- * Intercepts Supabase `grant_type=refresh_token` requests and applies:
- * 1. Per-key mutex: only one refresh call runs at a time per process/session.
- * 2. Result caching: waiting callers receive the SAME response (cloned)
- *    instead of retrying with the stale refresh token.
- * 3. Circuit breaker: after 3 failures (429/400), blocks further refresh
- *    attempts for 30s to stop spam.
- * 4. Sentry logging: every failure is logged with context.
- *
- * Usage: inject via `global.fetch` in Supabase client config.
+ * Implements a cross-tab mutex using the Web Locks API (navigator.locks) if available,
+ * falling back to a process-level mutex. This ensures only one refresh call
+ * happens at a time across all instances of the application.
  */
 
 import { logAuthError, AuthErrorCode } from "./sentry-auth";
@@ -31,6 +25,7 @@ const refreshLocks = new Map<string, RefreshLockState>();
 const CIRCUIT_BREAKER_COOLDOWN_MS = 30_000;
 const MAX_FAILURES_BEFORE_COOLDOWN = 3;
 const LOCK_TIMEOUT_MS = 10_000;
+const CROSS_TAB_LOCK_NAME = "sb-auth-token-refresh-lock";
 
 function getLockState(key: string): RefreshLockState {
   if (!refreshLocks.has(key)) {
@@ -52,7 +47,6 @@ export function isRefreshCircuitOpen(key: string): boolean {
     if (elapsed < CIRCUIT_BREAKER_COOLDOWN_MS) {
       return true;
     }
-    // Cooldown expired — reset counter
     state.failureCount = 0;
   }
   return false;
@@ -70,6 +64,7 @@ export interface RefreshGuardContext {
   userId?: string;
   path?: string;
   source: "browser" | "server" | "middleware" | "edge";
+  [key: string]: unknown;
 }
 
 function makeSyntheticResponse(result: CachedRefreshResult): Response {
@@ -95,22 +90,11 @@ export function createRefreshProtectedFetch(
       return baseFetch(input, init);
     }
 
-    const key = context.userId || `${context.source}:${context.path || "unknown"}`;
+    const key = context.userId || `${context.source}:global`;
     const state = getLockState(key);
 
-    // Circuit breaker: synthesise 429 so callers fail fast
+    // 1. Circuit breaker
     if (isRefreshCircuitOpen(key)) {
-      logAuthError(
-        AuthErrorCode.REFRESH_TOKEN_FAILED,
-        new Error("Refresh circuit breaker open"),
-        {
-          userId: context.userId,
-          path: context.path,
-          source: context.source,
-          attemptCount: state.failureCount,
-          status: 429,
-        },
-      );
       return new Response(
         JSON.stringify({
           message: "Refresh rate limited by client circuit breaker",
@@ -123,93 +107,94 @@ export function createRefreshProtectedFetch(
       );
     }
 
-    // If there is a cached result from a very recent refresh, return it immediately.
-    // This prevents racing tabs from re-using an already-consumed refresh token.
-    if (state.lastResult) {
-      return makeSyntheticResponse(state.lastResult);
+    // 2. Cross-tab synchronization via Web Locks API (Browser only)
+    if (context.source === "browser" && typeof navigator !== "undefined" && navigator.locks) {
+      return navigator.locks.request(CROSS_TAB_LOCK_NAME, { ifAvailable: false }, async () => {
+        // Now that we have the lock, check if another instance already updated the session.
+        // We can't easily check localStorage here without specific keys, but performing
+        // the fetch within the lock ensures we are serialized.
+        return performRefresh(baseFetch, input, init, state, context);
+      });
     }
 
-    // Mutex: if another refresh is in flight, wait for it and then return its result.
+    // 3. Process-level mutex (Server/Fallback)
     if (state.locked && state.promise) {
-      const race = new Promise<void>((_, reject) => {
-        setTimeout(() => reject(new Error("Refresh lock timeout")), LOCK_TIMEOUT_MS);
-      });
       try {
-        await Promise.race([state.promise, race]);
+        await Promise.race([
+          state.promise,
+          new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), LOCK_TIMEOUT_MS)),
+        ]);
       } catch {
-        // timeout or failure — continue below to attempt our own refresh
+        // ignore timeout/error, attempt own refresh
       }
       if (state.lastResult) {
         return makeSyntheticResponse(state.lastResult);
       }
-      // If no result was cached (e.g. lock timed out without resolution),
-      // fall through and attempt the refresh ourselves.
     }
 
-    // Acquire lock
-    state.locked = true;
-    state.lastResult = null;
+    return performRefresh(baseFetch, input, init, state, context);
+  };
+}
 
-    const promise = baseFetch(input, init)
-      .then(async (res) => {
-        const body = await res.text();
-        const isError = res.status === 429 || res.status === 400;
+/**
+ * Internal helper to actually execute the refresh call with locking logic
+ */
+async function performRefresh(
+  baseFetch: typeof fetch,
+  input: string | Request | URL,
+  init: RequestInit | undefined,
+  state: RefreshLockState,
+  context: RefreshGuardContext,
+): Promise<Response> {
+  // If a result was just cached by a previous lock holder, use it.
+  if (state.lastResult) {
+    return makeSyntheticResponse(state.lastResult);
+  }
 
-        if (isError) {
-          state.failureCount++;
-          state.lastFailureAt = Date.now();
-          logAuthError(
-            AuthErrorCode.REFRESH_TOKEN_FAILED,
-            new Error(`Refresh token request failed with status ${res.status}`),
-            {
-              userId: context.userId,
-              path: context.path,
-              source: context.source,
-              attemptCount: state.failureCount,
-              status: res.status,
-            },
-          );
-          // Don't cache errors — each failure must count toward the circuit breaker
-          return makeSyntheticResponse({ ok: false, status: res.status, body });
-        }
+  state.locked = true;
+  state.lastResult = null;
 
-        if (res.ok) {
-          // Reset on any success (even 2xx that isn't 200)
-          state.failureCount = 0;
-          state.lastResult = { ok: true, status: res.status, body };
-        }
-        return makeSyntheticResponse(state.lastResult!);
-      })
-      .catch((err) => {
+  const promise = baseFetch(input, init)
+    .then(async (res) => {
+      const body = await res.text();
+      const isError = res.status >= 400;
+
+      if (isError) {
         state.failureCount++;
         state.lastFailureAt = Date.now();
-        logAuthError(
-          AuthErrorCode.REFRESH_TOKEN_FAILED,
-          err,
-          {
-            userId: context.userId,
-            path: context.path,
-            source: context.source,
+        
+        // Log errors but treat "Already Used" as a special case that potentially
+        // doesn't need a heavy error report if suppressed via locks.
+        if (!body.includes("Already Used")) {
+          logAuthError(AuthErrorCode.REFRESH_TOKEN_FAILED, new Error(`Refresh status ${res.status}`), {
+            ...context,
             attemptCount: state.failureCount,
-            status: 0,
-          },
-        );
-        const body = JSON.stringify({ message: err.message, error: "refresh_failed" });
-        // Don't cache network errors — let the next caller retry independently
-        return makeSyntheticResponse({ ok: false, status: 503, body });
-      })
-      .finally(() => {
-        state.locked = false;
-        // Keep lastResult around briefly so racing callers can consume it,
-        // but clear it after a short delay to avoid stale reuse.
-        setTimeout(() => {
-          if (state.lastResult) {
-            state.lastResult = null;
-          }
-        }, 2000);
-      });
+            body: body.slice(0, 200),
+          });
+        }
+        
+        return { ok: false, status: res.status, body };
+      }
 
-    state.promise = promise;
-    return promise;
-  };
+      state.failureCount = 0;
+      state.lastResult = { ok: true, status: res.status, body };
+      return state.lastResult;
+    })
+    .catch((err) => {
+      state.failureCount++;
+      state.lastFailureAt = Date.now();
+      logAuthError(AuthErrorCode.REFRESH_TOKEN_FAILED, err, context);
+      return { ok: false, status: 503, body: JSON.stringify({ error: err.message }) };
+    })
+    .finally(() => {
+      state.locked = false;
+      // Clear cache after 2s to allow for late-arriving concurrent calls
+      setTimeout(() => {
+        state.lastResult = null;
+      }, 2000);
+    });
+
+  state.promise = promise as Promise<CachedRefreshResult>;
+  const result = await (promise as Promise<CachedRefreshResult>);
+  return makeSyntheticResponse(result);
 }

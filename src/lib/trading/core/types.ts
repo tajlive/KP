@@ -31,6 +31,9 @@ export interface ExecuteTradeRequest {
   mode: TradingMode;
   botId?: string;
   signalContext?: TradeSignalContext;
+  metadata?: {
+    maxSlippageBps?: number;
+  };
 }
 
 export interface ExecuteTradeResult {

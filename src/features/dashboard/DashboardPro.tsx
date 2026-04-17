@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { motion } from "framer-motion";
-import { Bot, TrendingUp } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { Bot, TrendingUp, Sparkles, Zap, Target, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth/new/AuthContext";
 
 // Nye WOW-komponenter
@@ -21,11 +19,6 @@ import { DailyChallenge } from "@/features/gamification/DailyChallenge";
 import { FirstTradePrompt } from "./FirstTradePrompt";
 import { SimplifiedHero } from "./SimplifiedHero";
 
-interface DashboardProProps {
-  paperBalance?: number;
-  sessionId?: string;
-}
-
 interface UserStats {
   totalTrades: number;
   winRate: number;
@@ -34,80 +27,28 @@ interface UserStats {
   startingCapital: number;
 }
 
-export function DashboardPro({ paperBalance = 100000, sessionId }: DashboardProProps) {
+interface DashboardProProps {
+  paperBalance?: number;
+  sessionId?: string;
+  trades?: any[];
+  initialStats?: UserStats;
+}
+
+export function DashboardPro({ 
+  paperBalance = 100000, 
+  sessionId,
+  initialStats 
+}: DashboardProProps) {
   const { user } = useAuth();
   const locale = useLocale();
   const isNo = locale === "no";
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<UserStats>({
+  const stats = initialStats || {
     totalTrades: 0,
     winRate: 0,
     totalPnl: 0,
     currentCapital: paperBalance,
     startingCapital: 100000,
-  });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (!user?.id) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const supabase = createClient();
-
-        // Hent session
-        const { data: session } = await supabase
-          .from("trading_sessions")
-          .select("id, current_capital_nok, starting_capital_nok, total_pnl")
-          .eq("user_id", user.id)
-          .eq("mode", "paper")
-          .eq("status", "active")
-          .order("updated_at", { ascending: false })
-          .limit(1)
-          .single();
-
-        // Hent trades
-        const { data: trades } = await supabase
-          .from("trades")
-          .select("realized_pnl")
-          .eq("user_id", user.id)
-          .limit(100);
-
-        const winningTrades = trades?.filter((t) => (t.realized_pnl || 0) > 0) || [];
-        const totalPnl = trades?.reduce((sum, t) => sum + (t.realized_pnl || 0), 0) || 0;
-
-        setStats({
-          totalTrades: trades?.length || 0,
-          winRate: trades?.length ? Math.round((winningTrades.length / trades.length) * 100) : 0,
-          totalPnl,
-          currentCapital: session?.current_capital_nok || paperBalance,
-          startingCapital: session?.starting_capital_nok || 100000,
-        });
-      } catch (error) {
-        console.error("DashboardPro error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, [user?.id, paperBalance]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <div className="h-32 bg-slate-900 rounded-2xl animate-pulse" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 h-96 bg-slate-900 rounded-2xl animate-pulse" />
-            <div className="h-96 bg-slate-900 rounded-2xl animate-pulse" />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  };
 
   const totalReturn = ((stats.currentCapital - stats.startingCapital) / stats.startingCapital) * 100;
 
@@ -126,32 +67,37 @@ export function DashboardPro({ paperBalance = 100000, sessionId }: DashboardProP
           {/* CTA: Start bot when no active session */}
           {!sessionId && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white shadow-lg"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0052FF] via-[#7000FF] to-[#D100FF] p-8 shadow-[0_20px_50px_rgba(112,0,255,0.3)] mb-8"
             >
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-white/20 rounded-xl">
-                    <Bot className="w-6 h-6 text-white" />
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl" />
+              
+              <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-5">
+                  <div className="p-4 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20 shadow-inner">
+                    <Bot className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <p className="font-semibold text-lg">
-                      {isNo ? "Ingen aktive bot-er" : "No active bots"}
-                    </p>
-                    <p className="text-sm text-white/80">
+                    <h2 className="text-2xl font-bold text-white tracking-tight">
+                      {isNo ? "Eksplosiv vekst venter" : "Explosive growth awaits"}
+                    </h2>
+                    <p className="text-blue-50/80 mt-1 max-w-md">
                       {isNo
-                        ? "Start din første auto-trading strategi i dag."
-                        : "Start your first auto-trading strategy today."}
+                        ? "Du har ingen aktive trading-strategier. La vår KI jobbe for deg mens du sover."
+                        : "You have no active trading strategies. Let our AI work for you while you sleep."}
                     </p>
                   </div>
                 </div>
                 <Link
                   href={`/${locale}/dashboard/auto-trade`}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-blue-600 hover:bg-white/90 transition-colors whitespace-nowrap"
+                  className="group relative inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 text-base font-black text-[#0052FF] hover:bg-white/95 transition-all shadow-[0_10px_20px_rgba(0,0,0,0.1)] active:scale-95"
                 >
-                  {isNo ? "Utforsk strategier" : "Explore strategies"}
+                  <Sparkles className="w-5 h-5 text-purple-600 animate-pulse" />
+                  {isNo ? "Utforsk Strategier" : "Explore Strategies"}
                 </Link>
               </div>
             </motion.div>
@@ -199,7 +145,37 @@ export function DashboardPro({ paperBalance = 100000, sessionId }: DashboardProP
               <PortfolioChart userId={user?.id} sessionId={sessionId} />
 
               {/* Stats Grid */}
-              <StatsGrid />
+              <StatsGrid stats={[
+                {
+                  label: isNo ? "Total avkastning" : "Total Return",
+                  value: `${stats.totalPnl > 0 ? "+" : ""}${stats.totalPnl.toLocaleString()} kr`,
+                  subtext: isNo ? "Akkumulert profitt" : "Accumulated profit",
+                  trend: stats.totalPnl >= 0 ? "up" : "down",
+                  icon: TrendingUp,
+                  highlight: true,
+                },
+                {
+                  label: "Win rate",
+                  value: `${stats.winRate}%`,
+                  subtext: isNo ? `${stats.totalTrades} trades totalt` : `${stats.totalTrades} trades total`,
+                  trend: stats.winRate >= 50 ? "up" : "down",
+                  icon: Target,
+                },
+                {
+                  label: isNo ? "Kontobalanse" : "Account Balance",
+                  value: `${Math.round(stats.currentCapital).toLocaleString()} kr`,
+                  subtext: isNo ? "Tilgjengelig kapital" : "Available capital",
+                  trend: "neutral",
+                  icon: Wallet,
+                },
+                {
+                   label: isNo ? "Antall trades" : "Trade Count",
+                   value: stats.totalTrades.toString(),
+                   subtext: isNo ? "Fullførte handler" : "Completed trades",
+                   trend: "neutral",
+                   icon: Zap,
+                }
+              ]} />
 
               {/* Beat the Market */}
               <BeatTheMarket yourReturn={totalReturn} />

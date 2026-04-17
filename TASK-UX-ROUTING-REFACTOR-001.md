@@ -24,3 +24,11 @@ Fix the broken user flows by establishing a clear distinction between the "Dashb
 5. **Verification**
    - Run `npm run type-check` and `npm run lint`.
    - Ensure the Next.js build passes.
+
+---
+## Resolution (2026-04-16)
+- [x] **Routing Standardization:** Cleaned up `config.ts` and `dashboard-links.ts`. Pointed all trading flows to `/dashboard/auto-trade`.
+- [x] **Live Prices:** Created shared `LivePricePreview.tsx` component.
+- [x] **Bot Wizard:** Added live price context to Step 2 (Selection) so users don't "trade blind".
+- [x] **Bot Detail:** Added live heart-beat ticker to the bot overview page.
+- [x] **Clean Nav:** Removed legacy `paper-trading` links to prevent broken user flows.

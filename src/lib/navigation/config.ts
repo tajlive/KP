@@ -37,13 +37,6 @@ export const AUTH_NAV_CONFIG: NavItem[] = [
     roles: ['auth'] 
   },
   { 
-    key: 'paper', 
-    href: '/dashboard/paper-trading', 
-    labelKey: 'dashboard.sidebar.paper', 
-    icon: 'Gamepad2',
-    roles: ['auth'] 
-  },
-  { 
     key: 'autoTrade', 
     href: '/dashboard/auto-trade', 
     labelKey: 'dashboard.sidebar.autoTrade', 

@@ -29,6 +29,15 @@ on:
           - vacuum
           - stats-update
 
+concurrency:
+  group: db-maintenance-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -39,19 +48,14 @@ jobs:
   index-analysis:
     name: 📊 Index Analysis
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'index-analysis'
+    timeout-minutes: 15
+    if: github.event_name == 'schedule' || github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'index-analysis'
     
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🔍 Run Index Analysis
         id: index-analysis
@@ -89,19 +93,14 @@ jobs:
   rls-optimization:
     name: 🔐 RLS Optimization Check
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'rls-optimization'
+    timeout-minutes: 15
+    if: github.event_name == 'schedule' || github.event.inputs.maintenance_type == 'all' || github.event.inputs.maintenance_type == 'rls-optimization'
     
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🔐 Analyze RLS Policies
         id: rls-analysis

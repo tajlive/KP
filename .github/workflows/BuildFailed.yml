@@ -11,6 +11,10 @@ name: BuildFailed
 on:
   workflow_dispatch:
 
+concurrency:
+  group: build-failed-suppressor
+  cancel-in-progress: true
+
 jobs:
   noop:
     runs-on: ubuntu-latest

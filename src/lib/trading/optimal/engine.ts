@@ -92,7 +92,7 @@ export async function executeOptimalTrade(
       positionSizeNOK: 0,
       positionSizeUSD: 0,
       kellyFraction: 0,
-      kellyStats: { winrate: 0.5, avgWin: 2, avgLoss: 1 },
+      kellyStats: { winrate: 0.5, avgWin: 2, avgLoss: 1, sampleSize: 30 },
       atr: {
         atr: 0,
         stopPrice: 0,

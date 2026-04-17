@@ -1,8 +1,9 @@
 // Position Monitor Edge Function — Sprint 11
-// Overvåker åpne paper-ordrer og trigger stop-loss / take-profit
+// Overvåker åpne paper-ordrer og trigger stop-loss / take-profit / trailing-stop
 // Kjøres av pg_cron hvert minutt
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { evaluatePositionExits } from '../_shared/risk-engine.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -47,45 +48,102 @@ Deno.serve(async (req) => {
       }
     }
 
+    // 2. Fetch Active Regime (for Yield Hunger / Safety)
+    const { data: regimeData } = await supabase
+      .from('regime_cache' as any)
+      .select('regime')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const currentRegime = (regimeData?.regime as any) || 'unclear';
+
     for (const pos of positions ?? []) {
       const sym = pos.trading_pair ?? 'BTCUSDT'
       const currentPrice = priceCache[sym]
       if (!currentPrice) continue
 
       const signal = pos.strategy_signal as Record<string, any> | null
-      const stopLoss = signal?.stop_loss ?? null
-      const takeProfit = signal?.take_profit ?? null
+      const metadata = pos.metadata || {};
+      
+      // ========================================================================
+      // Tiered Take Profit Evaluation (Phase 3)
+      // ========================================================================
+      const tpTargets = metadata.tp_targets || [];
+      if (tpTargets.length > 0) {
+        const { shouldExit: hitTier, exitRatio, targetIndex } = evaluatePositionExits.evaluateTieredExits({
+          currentPrice,
+          entryPrice: parseFloat(pos.price),
+          side: pos.side === 'BUY' ? 'long' : 'short',
+          targets: tpTargets
+        });
 
-      let shouldClose = false
-      let closeReason = ''
+        if (hitTier && targetIndex !== null) {
+          const partialQty = pos.quantity * exitRatio;
+          const partialNok = pos.amount_nok * exitRatio;
 
-      if (stopLoss != null) {
-        if (pos.side === 'BUY' && currentPrice <= stopLoss) {
-          shouldClose = true
-          closeReason = `STOP-LOSS: ${currentPrice.toFixed(2)} <= SL ${stopLoss}`
-        } else if (pos.side === 'SELL' && currentPrice >= stopLoss) {
-          shouldClose = true
-          closeReason = `STOP-LOSS: ${currentPrice.toFixed(2)} >= SL ${stopLoss}`
+          console.log(`[position-monitor] TIER HIT! Closing ${exitRatio * 100}% of ${pos.id} at ${currentPrice}`);
+
+          // 1. Mark target as hit
+          tpTargets[targetIndex].hit = true;
+          
+          // 2. Insert closed trade record for the partial exit
+          await supabase.from('trades').insert({
+            user_id: pos.user_id,
+            strategy_id: pos.strategy_id,
+            mode: pos.mode,
+            symbol: sym,
+            side: pos.side === 'BUY' ? 'sell' : 'buy',
+            quantity: partialQty,
+            amount_nok: partialNok,
+            entry_price: parseFloat(pos.price),
+            exit_price: currentPrice,
+            status: 'closed',
+            exit_reason: `Tiered TP ${targetIndex + 1}`,
+            metadata: { parent_trade_id: pos.id, tier: targetIndex + 1 }
+          });
+
+          // 3. Update parent trade (reduce quantity)
+          const newQty = pos.quantity - partialQty;
+          const newNok = pos.amount_nok - partialNok;
+          
+          await supabase.from('trades').update({
+            quantity: newQty,
+            amount_nok: newNok,
+            metadata: { ...metadata, tp_targets: tpTargets }
+          }).eq('id', pos.id);
+
+          triggered++;
+          continue; // Move to next position (don't evaluate full exit yet)
         }
       }
 
-      if (!shouldClose && takeProfit != null) {
-        if (pos.side === 'BUY' && currentPrice >= takeProfit) {
-          shouldClose = true
-          closeReason = `TAKE-PROFIT: ${currentPrice.toFixed(2)} >= TP ${takeProfit}`
-        } else if (pos.side === 'SELL' && currentPrice <= takeProfit) {
-          shouldClose = true
-          closeReason = `TAKE-PROFIT: ${currentPrice.toFixed(2)} <= TP ${takeProfit}`
+      // ========================================================================
+      // Standard Risk Engine Evaluation (SL / Full TP / Trailing)
+      // ========================================================================
+      const { shouldExit, reason: exitReason, pnlPercent } = evaluatePositionExits({
+        side: pos.side === 'BUY' ? 'long' : 'short',
+        entryPrice: parseFloat(pos.price),
+        currentPrice: currentPrice,
+        stopLoss: signal?.stop_loss ?? null,
+        takeProfit: signal?.take_profit ?? null,
+        trailingStop: signal?.trailing_stop ?? null,
+        highestPrice: metadata.highest_price || parseFloat(pos.price),
+        lowestPrice: metadata.lowest_price || parseFloat(pos.price),
+      })
+
+      if (!shouldExit) {
+        // Update high/low watermark for trailing stop
+        const newMetadata = {
+          ...metadata,
+          highest_price: Math.max(metadata.highest_price || parseFloat(pos.price), currentPrice),
+          lowest_price: Math.min(metadata.lowest_price || parseFloat(pos.price), currentPrice),
         }
+        
+        await supabase.from('trades').update({ metadata: newMetadata }).eq('id', pos.id)
+        continue
       }
-
-      if (!shouldClose) continue
-
-      const entryPrice = parseFloat(pos.price)
-      const pnlPct =
-        pos.side === 'BUY'
-          ? ((currentPrice - entryPrice) / entryPrice) * 100
-          : ((entryPrice - currentPrice) / entryPrice) * 100
+      
+      const pnlPct = pnlPercent
 
       try {
         await supabase
@@ -93,24 +151,82 @@ Deno.serve(async (req) => {
           .update({
             status: 'closed',
             realized_pnl: pnlPct,
+            exit_price: currentPrice,
+            closed_at: new Date().toISOString()
           })
           .eq('id', pos.id)
 
         await supabase.from('bot_health').insert({
           event_type: pnlPct >= 0 ? 'TRADE_CLOSED_PROFIT' : 'TRADE_CLOSED_LOSS',
           user_id: pos.user_id,
-          message: closeReason,
+          message: exitReason,
           details: {
             order_id: pos.id,
             symbol: sym,
             pnl_pct: parseFloat(pnlPct.toFixed(2)),
-            entry_price: entryPrice,
+            entry_price: parseFloat(pos.price),
             exit_price: currentPrice,
           },
         })
 
+        // ========================================================================
+        // Update Strategy Performance Stats (For Kelly sizing)
+        // ========================================================================
+        const { data: currentStats } = await supabase
+          .from('strategy_performance' as any)
+          .select('win_rate, avg_win_pct, avg_loss_pct, total_trades')
+          .eq('user_id', pos.user_id)
+          .eq('strategy_id', pos.strategy_id)
+          .maybeSingle();
+
+        const n = currentStats?.total_trades || 0;
+        const oldWinRate = currentStats?.win_rate || 0.5;
+        const newWinRate = pnlPct >= 0 
+          ? (oldWinRate * n + 1) / (n + 1) 
+          : (oldWinRate * n) / (n + 1);
+
+        const oldAvgWin = currentStats?.avg_win_pct || 2.5;
+        const oldAvgLoss = currentStats?.avg_loss_pct || 1.5;
+        
+        let newAvgWin = oldAvgWin;
+        let newAvgLoss = oldAvgLoss;
+        
+        if (pnlPct >= 0) {
+          const wins = Math.round(oldWinRate * n);
+          newAvgWin = (oldAvgWin * wins + pnlPct) / (wins + 1);
+        } else {
+          const losses = n - Math.round(oldWinRate * n);
+          newAvgLoss = (oldAvgLoss * losses + Math.abs(pnlPct)) / (losses + 1);
+        }
+
+        await supabase.from('strategy_performance' as any).upsert({
+          user_id: pos.user_id,
+          strategy_id: pos.strategy_id,
+          win_rate: newWinRate,
+          avg_win_pct: newAvgWin,
+          avg_loss_pct: newAvgLoss,
+          total_trades: n + 1,
+          updated_at: new Date().toISOString()
+        });
+
+        // ========================================================================
+        // Smart Yield Nudge (Phase 2)
+        // ========================================================================
+        if (currentRegime === 'bear' || currentRegime === 'high-vol') {
+          await supabase.from('bot_health').insert({
+            event_type: 'YIELD_HINT',
+            user_id: pos.user_id,
+            message: `Markedet er i ${currentRegime}-regime. Vurder Smart Yield for passiv rente mens du venter på bedre entry.`,
+            details: {
+              suggested_action: 'MOVE_TO_YIELD',
+              current_regime: currentRegime,
+              idle_capital_hint: true
+            }
+          });
+        }
+
         triggered++
-        closedResults.push({ order_id: pos.id, symbol: sym, reason: closeReason, pnl_pct: parseFloat(pnlPct.toFixed(2)) })
+        closedResults.push({ order_id: pos.id, symbol: sym, reason: exitReason, pnl_pct: parseFloat(pnlPct.toFixed(2)) })
       } catch (closeErr) {
         console.error(`Feil ved lukking av posisjon ${pos.id}:`, closeErr)
       }

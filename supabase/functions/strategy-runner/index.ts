@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
+import { evaluatePositionExits } from "../_shared/risk-engine.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -31,6 +32,75 @@ async function getBTCPrice(): Promise<number> {
   return parseFloat(data.price);
 }
 
+/**
+ * Fetch current market regime from cache or default.
+ */
+async function getCurrentRegime(): Promise<MarketRegime> {
+  const { data } = await supabase
+    .from('regime_cache' as any)
+    .select('regime')
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  
+  return (data?.regime as MarketRegime) || 'unclear';
+}
+
+/**
+ * Smart Yield Automation (Phase 3)
+ * Moves idle cash to yield_balance during dangerous regimes.
+ */
+async function runSmartYieldAutomation(portfolio: Portfolio, regime: MarketRegime) {
+  if (regime !== 'bear' && regime !== 'high-vol') return;
+  
+  // If cash > 1000 NOK, move 50% to yield to earn "simulated" interest
+  if (portfolio.cash_balance > 1000) {
+    const moveAmount = portfolio.cash_balance * 0.5;
+    
+    const { error } = await supabase
+      .from('user_portfolios')
+      .update({
+        cash_balance: portfolio.cash_balance - moveAmount,
+        yield_balance: (portfolio as any).yield_balance + moveAmount,
+        last_yield_move: new Date().toISOString()
+      } as any)
+      .eq('id', portfolio.id);
+      
+    if (!error) {
+      await supabase.from('bot_health').insert({
+        event_type: 'YIELD_MOVE',
+        user_id: portfolio.user_id,
+        message: `Automatisk flytt av ${moveAmount.toFixed(0)} NOK til Smart Yield pga ${regime}-regime.`,
+        details: { amount: moveAmount, regime }
+      });
+      console.log(`[strategy-runner] Smart Yield: Moved ${moveAmount} for user ${portfolio.user_id}`);
+    }
+  }
+}
+
+/**
+ * Fetch historical performance for Kelly calculation.
+ */
+async function getKellyStats(userId: string, strategyId: string): Promise<KellyStats> {
+  const { data } = await supabase
+    .from('strategy_performance' as any)
+    .select('win_rate, avg_win_pct, avg_loss_pct')
+    .eq('user_id', userId)
+    .eq('strategy_id', strategyId)
+    .maybeSingle();
+  
+  if (!data) {
+    return { winrate: 0.52, avgWin: 2.5, avgLoss: 1.5, sampleSize: 0 };
+  }
+  
+  return {
+    winrate: Number(data.win_rate),
+    avgWin: Number(data.avg_win_pct),
+    avgLoss: Number(data.avg_loss_pct),
+    sampleSize: 0 // Not needed for calculation
+  };
+}
+
 // Get NOK/USD rate (simplified - in production use a real forex API)
 async function getNOKRate(): Promise<number> {
   return 10.7; // Approximate rate
@@ -49,24 +119,33 @@ async function executeTrade(
   let amountNOK = 0;
   let amountBTC = 0;
 
+  // Initialize Position Sizing
+  const regime = await getCurrentRegime();
+  const stats = await getKellyStats(strategy.user_id, strategy.id);
+  const kellyFraction = calculateKelly(stats, strategy.config.riskProfile || 'balanced', regime);
+
+  console.log(`[strategy-runner] Regime: ${regime}, Kelly Fraction: ${(kellyFraction * 100).toFixed(2)}%`);
+
   switch (strategy.strategy_type) {
     case "dca_trygg":
       amountNOK = config.weeklyAmount || 1000;
       break;
     case "trend_balansert":
-      const riskPerTrade = config.riskPerTrade || 2;
-      amountNOK = (portfolio.cash_balance * riskPerTrade) / 100;
+      // Use Dynamic Kelly Sizing
+      amountNOK = portfolio.cash_balance * kellyFraction;
+      // Safety clamp: Ensure minimum trade size
+      if (amountNOK < 500 && portfolio.cash_balance > 500) amountNOK = 500;
       break;
     case "grid_bot":
       amountNOK = (config.capital || 5000) / (config.levels || 10);
       break;
     default:
-      amountNOK = Math.min(1000, portfolio.cash_balance * 0.02);
+      amountNOK = portfolio.cash_balance * kellyFraction;
   }
 
   // Ensure we don't exceed cash balance
   if (side === "buy" && amountNOK > portfolio.cash_balance) {
-    amountNOK = portfolio.cash_balance * 0.9;
+    amountNOK = portfolio.cash_balance * 0.95;
   }
 
   amountBTC = amountNOK / nokRate / price;
@@ -188,6 +267,13 @@ async function runTrend(
       .eq("side", "buy");
 
     if (!openTrades.data?.length) {
+      // REGIME SAFETY GATE (Phase 2)
+      const regime = await getCurrentRegime();
+      if (regime === 'bear' || regime === 'high-vol') {
+        console.log(`[strategy-runner] Trend SKIP: Blocking buy entry due to ${regime} regime`);
+        return null;
+      }
+
       return await executeTrade(
         strategy,
         portfolio,
@@ -209,12 +295,23 @@ async function runTrend(
       .eq("side", "buy");
 
     for (const trade of openTrades.data || []) {
-      const pnl = ((price - trade.entry_price) / trade.entry_price) * 100;
+      const pnlPct = ((price - trade.entry_price) / trade.entry_price) * 100;
+      const strategySignal = trade.strategy_signal as any || {};
 
-      // Sell if stop loss hit or death cross
-      const stopLoss = strategy.config.stopLoss || 10;
-      if (pnl < -stopLoss || ma50 < ma200) {
-        await closeTrade(trade, price, nokRate, pnl);
+      // Check centralized risk engine (ATR levels + Trailing Stop)
+      const { shouldExit, reason } = evaluatePositionExits({
+        side: 'long', 
+        entryPrice: trade.entry_price,
+        currentPrice: price,
+        stopLoss: strategySignal.stop_loss || strategy.config.stopLoss || 10,
+        takeProfit: strategySignal.take_profit || strategy.config.takeProfit || 20,
+        trailingStop: strategySignal.trailing_stop || null,
+        highestPrice: trade.metadata?.highest_price || trade.entry_price,
+        lowestPrice: trade.metadata?.lowest_price || trade.entry_price,
+      });
+
+      if (shouldExit || ma50 < ma200) {
+        await closeTrade(trade, price, nokRate, pnlPct, shouldExit ? reason : "Trend: Death cross");
       }
     }
   }
@@ -227,6 +324,7 @@ async function closeTrade(
   exitPrice: number,
   nokRate: number,
   pnlPct: number,
+  exitReason: string = "Signal Exit"
 ) {
   const pnl = trade.amount_nok * (pnlPct / 100);
 
@@ -238,6 +336,7 @@ async function closeTrade(
       pnl,
       pnl_pct: pnlPct,
       closed_at: new Date().toISOString(),
+      exit_reason: exitReason
     })
     .eq("id", trade.id);
 
@@ -430,10 +529,11 @@ serve(async (req) => {
       });
     }
 
-    // Get current prices
-    const [btcPrice, nokRate] = await Promise.all([
+    // Get current prices and regime (once per run)
+    const [btcPrice, nokRate, currentRegime] = await Promise.all([
       getBTCPrice(),
       getNOKRate(),
+      getCurrentRegime(),
     ]);
 
     // Execute each strategy
@@ -450,12 +550,16 @@ serve(async (req) => {
 
         if (!portfolio) continue;
 
+        // Smart Yield Check (Phase 3)
+        await runSmartYieldAutomation(portfolio, currentRegime);
+
         let trade = null;
         switch (strategy.strategy_type) {
           case "dca_trygg":
             trade = await runDCA(strategy, portfolio, btcPrice, nokRate);
             break;
           case "trend_balansert":
+            // Pass the already fetched regime to avoid double-fetching inside executeTrade
             trade = await runTrend(strategy, portfolio, btcPrice, nokRate);
             break;
           case "grid_bot":

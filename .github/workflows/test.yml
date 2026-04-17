@@ -61,13 +61,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: ⚡ Run Unit Tests (Shard ${{ matrix.shard }}/${{ github.event_name == 'schedule' && 4 || 2 }})
         run: npm run test:unit -- --shard=${{ matrix.shard }}/${{ github.event_name == 'schedule' && 4 || 2 }}
@@ -87,13 +82,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🎭 Install Playwright
         run: npx playwright install chromium
@@ -135,13 +125,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🎭 Install Playwright
         run: npx playwright install chromium
@@ -189,13 +174,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
-      
-      - name: 📦 Install
-        run: npm ci --legacy-peer-deps
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🎭 Install Playwright
         run: npx playwright install chromium firefox webkit

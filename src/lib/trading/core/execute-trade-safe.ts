@@ -406,11 +406,10 @@ async function executeTradeWithLock(
     ? estimateSlippage(orderBook, finalTrade.quantity, finalTrade.side)
     : { estimatedPrice: finalTrade.price, slippageBps: request.symbol.includes('BTC') ? 5 : 15 }; // Pair-aware fallback
 
-  const l2Snapshot = orderBook ? {
-    bids: orderBook.bids.map(b => [b.price, b.quantity] as [number, number]),
-    asks: orderBook.asks.map(a => [a.price, a.quantity] as [number, number]),
-    timestamp: orderBook.timestamp
-  } : createL2Snapshot(
+  const l2Snapshot = orderBook ? createL2Snapshot(
+    orderBook.bids.map(b => [b.price, b.quantity] as [number, number]),
+    orderBook.asks.map(a => [a.price, a.quantity] as [number, number])
+  ) : createL2Snapshot(
     [[request.price * 0.999, 10], [request.price * 0.998, 20]],
     [[request.price * 1.001, 10], [request.price * 1.002, 20]]
   );

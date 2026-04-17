@@ -23,9 +23,9 @@ export const designTokens = defineType({
       title: 'Brand Farger',
       type: 'object',
       fields: [
-        { name: 'primary', title: 'Primær', type: 'color', initialValue: '#0052FF' },
-        { name: 'primaryHover', title: 'Primær Hover', type: 'color', initialValue: '#0047E0' },
-        { name: 'primaryLight', title: 'Primær Lys', type: 'color', initialValue: '#dbeafe' },
+        { name: 'primary', title: 'Primær', type: 'string', initialValue: '#0052FF' },
+        { name: 'primaryHover', title: 'Primær Hover', type: 'string', initialValue: '#0047E0' },
+        { name: 'primaryLight', title: 'Primær Lys', type: 'string', initialValue: '#dbeafe' },
       ],
     }),
     defineField({
@@ -33,10 +33,10 @@ export const designTokens = defineType({
       title: 'Semantiske Farger',
       type: 'object',
       fields: [
-        { name: 'success', title: 'Suksess', type: 'color', initialValue: '#22c55e' },
-        { name: 'warning', title: 'Advarsel', type: 'color', initialValue: '#f59e0b' },
-        { name: 'error', title: 'Feil', type: 'color', initialValue: '#ef4444' },
-        { name: 'info', title: 'Info', type: 'color', initialValue: '#3b82f6' },
+        { name: 'success', title: 'Suksess', type: 'string', initialValue: '#22c55e' },
+        { name: 'warning', title: 'Advarsel', type: 'string', initialValue: '#f59e0b' },
+        { name: 'error', title: 'Feil', type: 'string', initialValue: '#ef4444' },
+        { name: 'info', title: 'Info', type: 'string', initialValue: '#3b82f6' },
       ],
     }),
     defineField({
@@ -44,12 +44,12 @@ export const designTokens = defineType({
       title: 'Dark Mode',
       type: 'object',
       fields: [
-        { name: 'bgPrimary', title: 'Bakgrunn Primær', type: 'color', initialValue: '#0a0b0d' },
-        { name: 'bgSecondary', title: 'Bakgrunn Sekundær', type: 'color', initialValue: '#161719' },
-        { name: 'bgElevated', title: 'Bakgrunn Hevet', type: 'color', initialValue: '#1a1c24' },
-        { name: 'textPrimary', title: 'Tekst Primær', type: 'color', initialValue: '#f1f5f9' },
-        { name: 'textSecondary', title: 'Tekst Sekundær', type: 'color', initialValue: '#94a3b8' },
-        { name: 'border', title: 'Kantlinje', type: 'color', initialValue: 'rgba(255,255,255,0.08)' },
+        { name: 'bgPrimary', title: 'Bakgrunn Primær', type: 'string', initialValue: '#0a0b0d' },
+        { name: 'bgSecondary', title: 'Bakgrunn Sekundær', type: 'string', initialValue: '#161719' },
+        { name: 'bgElevated', title: 'Bakgrunn Hevet', type: 'string', initialValue: '#1a1c24' },
+        { name: 'textPrimary', title: 'Tekst Primær', type: 'string', initialValue: '#f1f5f9' },
+        { name: 'textSecondary', title: 'Tekst Sekundær', type: 'string', initialValue: '#94a3b8' },
+        { name: 'border', title: 'Kantlinje', type: 'string', initialValue: 'rgba(255,255,255,0.08)' },
       ],
     }),
     defineField({

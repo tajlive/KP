@@ -54,6 +54,13 @@ function generateNonce(): string {
   return Buffer.from(array).toString("base64");
 }
 
+function getCookieDomain(request: NextRequest): string | undefined {
+  const host = request.headers.get("host") || "";
+  const isWWW = host.startsWith("www.");
+  const rootDomain = isWWW ? host.replace("www.", "") : host;
+  return rootDomain.includes(":") ? undefined : `.${rootDomain}`;
+}
+
 function stripLocalePrefix(pathname: string): string {
   const localeMatch = pathname.match(/^\/(no|en)(\/.*)?$/);
   if (localeMatch) {
@@ -184,21 +191,43 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(i18nResponse, nonce);
   }
 
-  // 2. Auth håndtering - create a response to modify cookies on
-  const response = NextResponse.next({
+  // 2. Auth håndtering - vi må oppdatere både request.cookies og response for at Server Components skal få nye rekvisitt
+  let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
   
-  const supabase = createServerClient(request, response);
+  const { createServerClient } = await import('@supabase/ssr');
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({
+            request,
+          });
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, {
+              ...options,
+              domain: getCookieDomain(request),
+              sameSite: "none",
+              secure: true,
+            });
+          });
+        },
+      },
+    }
+  );
 
-  // Use getSession() instead of getUser() in middleware to avoid server-side
-  // refresh-token races on every request (prefetch, images, etc.).
-  // getSession reads from cookies without validating against the auth server.
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user ?? null;
-
+  // Bruk getUser() — den auto-refresher utgått JWT og trigger setAll().
+  const { data: { user } } = await supabase.auth.getUser();
   const pathWithoutLocale = stripLocalePrefix(pathname);
 
   // Hvis protected route og ikke logget inn -> redirect til login

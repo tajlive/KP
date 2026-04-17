@@ -13,6 +13,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
   }
 
   try {
+    // Load consolidated legacy messages as base fallback
+    const consolidated = await import(`../messages/${validLocale}.json`)
+      .then((m) => m.default)
+      .catch(() => import("../messages/en.json").then((m) => m.default));
+
     // Load all consolidated namespaces for the locale
     const [
       common,
@@ -130,38 +135,60 @@ export default getRequestConfig(async ({ requestLocale }) => {
         .catch(() => import("../messages/en/tax.json").then((m) => m.default)),
     ]);
 
+    const splits: Record<string, any> = {
+      common,
+      metadata,
+      navigation,
+      footer,
+      auth,
+      dashboard,
+      trading,
+      account,
+      marketplace,
+      notifications,
+      onboarding,
+      landing,
+      errors,
+      admin,
+      components,
+      simulator,
+      education,
+      checkout,
+      pricing,
+      about,
+      competition,
+      helpPage: help,
+      quizPage: quiz,
+      strategyMarketplace,
+      coursePreview,
+      threeSteps,
+      legal,
+      tax
+    };
+
+    function deepMerge(target: any, source: any): any {
+      if (typeof target !== 'object' || target === null) return source;
+      if (typeof source !== 'object' || source === null) return source;
+      
+      const output = { ...target };
+      Object.keys(source).forEach(key => {
+        if (
+          typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key]) &&
+          typeof target[key] === 'object' && target[key] !== null && !Array.isArray(target[key])
+        ) {
+          output[key] = deepMerge(target[key], source[key]);
+        } else {
+          output[key] = source[key];
+        }
+      });
+      return output;
+    }
+
+    const mergedMessages = deepMerge(consolidated || {}, splits);
+
     return {
       locale: validLocale,
-      messages: {
-        common,
-        metadata,
-        navigation,
-        footer,
-        auth,
-        dashboard,
-        trading,
-        account,
-        marketplace,
-        notifications,
-        onboarding,
-        landing,
-        errors,
-        admin,
-        components,
-        simulator,
-        education,
-        checkout,
-        pricing,
-        about,
-        competition,
-        helpPage: help,
-        quizPage: quiz,
-        strategyMarketplace,
-        coursePreview,
-        threeSteps,
-        legal,
-        tax
-      },
+      messages: mergedMessages,
       // Error handling - don't crash on missing messages
       onError(error) {
         if (error.code === "INSUFFICIENT_PATH") {

@@ -8,6 +8,17 @@
  * Pattern: Strategy Pattern + Factory Pattern
  */
 
+export interface OrderBookLevel {
+  price: number;
+  quantity: number;
+}
+
+export interface OrderBookSnapshot {
+  bids: OrderBookLevel[];
+  asks: OrderBookLevel[];
+  timestamp: Date;
+}
+
 export interface OrderParams {
   symbol: string;                    // e.g., 'BTCUSDT'
   side: 'buy' | 'sell';
@@ -76,6 +87,11 @@ export interface OrderExecutor {
    * Get current market price for a symbol
    */
   getMarketPrice(symbol: string): Promise<number>;
+
+  /**
+   * Get current order book for a symbol
+   */
+  fetchOrderBook(symbol: string, limit?: number): Promise<OrderBookSnapshot>;
 }
 
 /**
@@ -103,6 +119,37 @@ export async function fetchBinancePrice(symbol: string): Promise<number> {
   } catch (error) {
     clearTimeout(timeoutId);
     throw new Error(`Failed to fetch price for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Helper: Fetch depth (order book) from Binance public API
+ */
+export async function fetchBinanceDepth(symbol: string, limit: number = 20): Promise<OrderBookSnapshot> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const response = await fetch(
+      `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`,
+      { signal: controller.signal }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Binance API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      bids: data.bids.map(([p, q]: [string, string]) => ({ price: parseFloat(p), quantity: parseFloat(q) })),
+      asks: data.asks.map(([p, q]: [string, string]) => ({ price: parseFloat(p), quantity: parseFloat(q) })),
+      timestamp: new Date()
+    };
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw new Error(`Failed to fetch depth for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

@@ -231,7 +231,7 @@ function computeKellySizing(
   avgLossPct: number,
   riskProfile: 'conservative' | 'balanced' | 'aggressive'
 ): { kellyPct: number; maxRiskPct: number } {
-  const stats = { winrate: winRate, avgWin: avgWinPct, avgLoss: avgLossPct };
+  const stats = { winrate: winRate, avgWin: avgWinPct, avgLoss: avgLossPct, sampleSize: 100 };
   const kelly = calculateKelly(stats, riskProfile);
   return {
     kellyPct: kelly,

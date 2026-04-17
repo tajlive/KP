@@ -25,7 +25,7 @@ export function Testimonials({ language = "no", items }: TestimonialsProps) {
   const locale = useLocale();
   const tLanding = useTranslations("landing.testimonials");
   const t = translations[language].testimonials;
-  const testimonialItems = items ?? t.items;
+  const testimonialItems = items ?? (t.items as TestimonialItem[]);
 
   return (
     <section className="pt-20 pb-32 bg-[#050510] relative overflow-hidden">

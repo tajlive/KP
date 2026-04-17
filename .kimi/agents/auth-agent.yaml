@@ -2,4 +2,4 @@ version: 1
 agent:
   extend: default
   name: klarpakke-auth-agent
-  system_prompt_path: ./agents/klarpakke-auth-agent.md
+  system_prompt_path: ./klarpakke-auth-agent.md

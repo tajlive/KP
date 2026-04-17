@@ -52,10 +52,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
         with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
+          install: 'false'
       
       - name: 🔗 Supabase Link
         id: link
@@ -91,10 +91,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
         with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
+          install: 'false'
       
       - name: 🔗 Supabase Link
         id: link
@@ -127,10 +127,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-          cache: "npm"
+      - name: 🏗️ Setup Environment
+        uses: ./.github/actions/setup-klarpakke
       
       - name: 🔗 Supabase Link
         env:

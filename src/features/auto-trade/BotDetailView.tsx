@@ -14,6 +14,7 @@ import {
   PremiumTradingHero,
   PremiumTradingShell,
 } from "@/features/trading/PremiumTradingLayout";
+import { LivePricePreview } from "@/features/trading/LivePricePreview";
 
 interface Trade {
   id: string;
@@ -174,6 +175,10 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           year: "numeric",
         })}`}
       />
+
+      <div className="mb-6">
+        <LivePricePreview symbol={session.trading_pair ?? session.symbol ?? "BTCUSDT"} />
+      </div>
 
       {session.status === "active" && trades.length === 0 && (
         <PremiumPanel>

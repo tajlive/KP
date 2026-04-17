@@ -1,151 +1,38 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# MEMPALACE GUARD - Dokumentasjonsovervåkning + Versjonssjekk
-# ═══════════════════════════════════════════════════════════════════════════════
-# Sjekker at all dokumentasjon er oppdatert og konsistent
-# Sjekker daglig for nye MemPalace-versjoner fra GitHub/PyPI
-# ═══════════════════════════════════════════════════════════════════════════════
-
 name: 🏛️ Mempalace Guard
 
 on:
-  schedule:
-    - cron: '0 9 * * *'  # Hver dag kl 09:00 UTC (dokumentasjon)
-    - cron: '0 7 * * *'  # Hver dag kl 07:00 UTC (versjonssjekk)
   push:
+    branches: [ main ]
     paths:
       - 'docs/**'
-      - '*.md'
+      - 'src/lib/trading/**'
+      - 'supabase/functions/**'
   pull_request:
-    paths:
-      - 'docs/**'
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   guard:
-    name: 🔍 Scan Documentation
+    name: Validate Knowledge & Docs
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Trenger git history
-      
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: '.nvmrc'
-      
-      - name: 🏛️ Run Mempalace Guard
-        run: node scripts/mempalace-guard.mjs
-        id: guard
-        continue-on-error: true
-      
-      - name: 📝 Create Issue on Failure
-        if: steps.guard.outcome == 'failure'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const title = '🏛️ Mempalace Guard: Documentation Needs Attention';
-            const body = `## Documentation Issues Detected
-            
-            Run: ${context.runId}
-            Date: ${new Date().toISOString()}
-            
-            Please run \`node scripts/mempalace-guard.mjs\` locally to see details.
-            
-            ### Common Fixes:
-            - Update outdated files
-            - Fix broken links
-            - Add missing documentation
-            - Review code references`;
-            
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title,
-              body,
-              labels: ['documentation', 'maintenance']
-            });
-      
-      - name: 💬 PR Comment
-        if: github.event_name == 'pull_request' && steps.guard.outcome == 'failure'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: '🏛️ **Mempalace Guard** detected documentation issues. Please check the logs.'
-            });
+          fetch-depth: 0
 
-  # ═══════════════════════════════════════════════════════════════════════════════
-  # MEMPALACE VERSJONSSJEKK - Sjekker for nye versjoner daglig
-  # ═══════════════════════════════════════════════════════════════════════════════
-  version-check:
-    name: 📦 Check MemPalace Updates
-    runs-on: ubuntu-latest
-    if: github.event.schedule == '0 7 * * *' || github.event_name == 'workflow_dispatch'
-    
-    steps:
-      - name: 🔍 Check Latest MemPalace Version
-        id: check-version
-        run: |
-          # Hent siste versjon fra GitHub releases
-          LATEST=$(curl -s https://api.github.com/repos/milla-jovovich/mempalace/releases/latest | jq -r '.tag_name')
-          echo "latest=$LATEST" >> $GITHUB_OUTPUT
-          
-          # Hent siste versjon fra PyPI
-          PYPI_VERSION=$(curl -s https://pypi.org/pypi/mempalace/json | jq -r '.info.version')
-          echo "pypi=$PYPI_VERSION" >> $GITHUB_OUTPUT
-          
-          echo "📦 MemPalace siste versjoner:"
-          echo "   GitHub: $LATEST"
-          echo "   PyPI:   $PYPI_VERSION"
-      
-      - name: 📋 Check Installed Version
-        id: installed
-        run: |
-          # Sjekk om mempalace er installert
-          if command -v mempalace &> /dev/null; then
-            INSTALLED=$(pip show mempalace | grep Version | cut -d' ' -f2)
-            echo "version=$INSTALLED" >> $GITHUB_OUTPUT
-            echo "installed=true" >> $GITHUB_OUTPUT
-            echo "✅ MemPalace installert: v$INSTALLED"
-          else
-            echo "installed=false" >> $GITHUB_OUTPUT
-            echo "⚠️ MemPalace ikke installert"
-          fi
-      
-      - name: 🔔 Create Update Notification
-        if: steps.installed.outputs.installed == 'true' && steps.installed.outputs.version != steps.check-version.outputs.pypi
-        uses: actions/github-script@v7
+      - name: Setup Node.js
+        uses: actions/checkout@f4
         with:
-          script: |
-            const installed = '${{ steps.installed.outputs.version }}';
-            const latest = '${{ steps.check-version.outputs.pypi }}';
-            
-            // Sjekk om det allerede finnes en åpen issue for denne versjonen
-            const issues = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: 'mempalace,update',
-              state: 'open'
-            });
-            
-            const title = `🏛️ MemPalace ${latest} tilgjengelig (du har ${installed})`;
-            const existingIssue = issues.data.find(i => i.title.includes(`MemPalace ${latest}`));
-            
-            if (existingIssue) {
-              console.log(`Issue already exists: #${existingIssue.number}`);
-              return;
-            }
-            
-            const body = `## 🏛️ Ny MemPalace-versjon tilgjengelig\n\n| | Versjon |\n|---|---|\n| **Installert** | ${installed} |\n| **Siste (PyPI)** | ${latest} |\n| **GitHub Release** | ${{ steps.check-version.outputs.latest }} |\n\n### Oppdatering\n\`\`\`bash\npip install --upgrade mempalace\n\`\`\`\n\n### Release Notes\nSe [GitHub Releases](https://github.com/milla-jovovich/mempalace/releases) for detaljer.\n\n---\n*Denne issuen ble opprettet automatisk av MemPalace Guard.*`;
-            
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title,
-              body,
-              labels: ['mempalace', 'update', 'maintenance']
-            });
+          node-version: '20'
+
+      - name: Run Mempalace Guard
+        run: node scripts/mempalace-guard.mjs
+        continue-on-error: false
+
+      - name: Check for Code-Doc Drift
+        run: |
+          # Sjekk om kritiske filer har endret seg uten at docs er oppdatert
+          # Dette er en enkel sjekk, scripts/mempalace-guard.mjs gjør dypere analyse
+          echo "Scanning for architectural drift..."
+          node scripts/mempalace-guard.mjs --strict

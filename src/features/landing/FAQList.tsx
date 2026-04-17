@@ -5,7 +5,7 @@ import { ChevronDown, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 
-interface FAQ {
+export interface FAQ {
   question: string;
   answer: string;
 }

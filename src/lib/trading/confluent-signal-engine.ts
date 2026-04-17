@@ -61,23 +61,46 @@ export interface ConfluentSignalOptions {
 // ============================================================================
 
 // Weights for different factors in final score calculation
-// These can be overridden via environment variables for easy tuning
-const FACTOR_WEIGHTS = {
-  technical: parseFloat(process.env.SIGNAL_WEIGHT_TECHNICAL || '0.5'),
-  narrative: parseFloat(process.env.SIGNAL_WEIGHT_NARRATIVE || '0.25'),
-  regime: parseFloat(process.env.SIGNAL_WEIGHT_REGIME || '0.25'),
-};
+// These are adjusted dynamically based on market regime
+function getWeightsByRegime(regime: MarketRegime | 'unclear' = 'unclear'): {
+  technical: number;
+  narrative: number;
+  regime: number;
+} {
+  // Base weights from environment or defaults
+  const baseWeights = {
+    technical: parseFloat(process.env.SIGNAL_WEIGHT_TECHNICAL || '0.5'),
+    narrative: parseFloat(process.env.SIGNAL_WEIGHT_NARRATIVE || '0.25'),
+    regime: parseFloat(process.env.SIGNAL_WEIGHT_REGIME || '0.25'),
+  };
 
-// Ensure weights sum to 1
-const totalWeight = FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.narrative + FACTOR_WEIGHTS.regime;
-if (Math.abs(totalWeight - 1) > 0.01) {
-  logger.warn(
-    `[ConfluentSignalEngine] Factor weights do not sum to 1 (${totalWeight}). ` +
-      'Normalizing...'
-  );
-  FACTOR_WEIGHTS.technical /= totalWeight;
-  FACTOR_WEIGHTS.narrative /= totalWeight;
-  FACTOR_WEIGHTS.regime /= totalWeight;
+  // Dynamic adjustments based on market regime
+  switch (regime) {
+    case 'bull':
+    case 'bear':
+      // Trending market: AI/Narrative and Regime matter more (follow the trend)
+      return {
+        technical: 0.35,
+        narrative: 0.35,
+        regime: 0.30,
+      };
+    case 'range':
+      // Sideways market: Technicals (RSI/Support/Resistance) are more reliable
+      return {
+        technical: 0.60,
+        narrative: 0.20,
+        regime: 0.20,
+      };
+    case 'unclear':
+    default:
+      // Default: Use base weights but ensure normalization
+      const total = baseWeights.technical + baseWeights.narrative + baseWeights.regime;
+      return {
+        technical: baseWeights.technical / total,
+        narrative: baseWeights.narrative / total,
+        regime: baseWeights.regime / total,
+      };
+  }
 }
 
 // Risk thresholds
@@ -200,32 +223,51 @@ function calculateCompositeScore(
   narrativeScore: number,
   regimeScore: number,
   hasNarrative: boolean,
-  hasRegime: boolean
+  hasRegime: boolean,
+  regime: MarketRegime | 'unclear' = 'unclear',
+  narrativeSentiment: number = 0
 ): number {
   if (!hasNarrative && !hasRegime) {
     return technicalScore;
   }
 
+  const weights = getWeightsByRegime(regime);
+
+  let score: number;
+
   if (!hasNarrative) {
     // Technical + Regime only
-    const techWeight = FACTOR_WEIGHTS.technical / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.regime);
-    const regimeWeight = FACTOR_WEIGHTS.regime / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.regime);
-    return technicalScore * techWeight + regimeScore * regimeWeight;
-  }
-
-  if (!hasRegime) {
+    const totalW = weights.technical + weights.regime;
+    const techWeight = weights.technical / totalW;
+    const regimeWeight = weights.regime / totalW;
+    score = technicalScore * techWeight + regimeScore * regimeWeight;
+  } else if (!hasRegime) {
     // Technical + Narrative only
-    const techWeight = FACTOR_WEIGHTS.technical / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.narrative);
-    const narrativeWeight = FACTOR_WEIGHTS.narrative / (FACTOR_WEIGHTS.technical + FACTOR_WEIGHTS.narrative);
-    return technicalScore * techWeight + narrativeScore * narrativeWeight;
+    const totalW = weights.technical + weights.narrative;
+    const techWeight = weights.technical / totalW;
+    const narrativeWeight = weights.narrative / totalW;
+    score = technicalScore * techWeight + narrativeScore * narrativeWeight;
+  } else {
+    // All three factors
+    score = (
+      technicalScore * weights.technical +
+      narrativeScore * weights.narrative +
+      regimeScore * weights.regime
+    );
   }
 
-  // All three factors
-  return (
-    technicalScore * FACTOR_WEIGHTS.technical +
-    narrativeScore * FACTOR_WEIGHTS.narrative +
-    regimeScore * FACTOR_WEIGHTS.regime
-  );
+  // Confidence Boost: If Narrative Sentiment and Regime are perfectly aligned
+  // Bullish Alignment: sentiment > 0.6 AND regime === 'bull'
+  // Bearish Alignment: sentiment < -0.6 AND regime === 'bear'
+  const isBullAligned = narrativeSentiment > 0.6 && regime === 'bull';
+  const isBearAligned = narrativeSentiment < -0.6 && regime === 'bear';
+
+  if (isBullAligned || isBearAligned) {
+    // Boost by 10% (max 100)
+    score = Math.min(100, score * 1.1);
+  }
+
+  return score;
 }
 
 /**
@@ -401,7 +443,9 @@ export async function generateConfluentSignal(
     narrativeScore,
     regimeScore,
     narrativeResult !== null,
-    regimeResult !== null
+    regimeResult !== null,
+    regimeResult?.regime ?? 'unclear',
+    narrativeResult?.sentiment ?? 0
   );
 
   // 6. Calculate risk level
