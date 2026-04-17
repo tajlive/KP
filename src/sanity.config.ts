@@ -11,4 +11,8 @@ export default defineConfig({
   dataset,
   schema,
   plugins: [structureTool({structure}), visionTool({defaultApiVersion: apiVersion})],
+  document: {
+    // Disable preview iframe in embedded mode to prevent self-referencing loop
+    productionUrl: undefined,
+  },
 })
