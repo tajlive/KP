@@ -2,11 +2,11 @@
 
 import { useLocale } from "next-intl";
 import Link from "next/link";
+import { hrefWithLocale } from "@/i18n/href-with-locale";
 
 export function MinimalFooter() {
   const locale = useLocale();
   const currentYear = new Date().getFullYear();
-  const path = (p: string) => (locale === "no" ? p : `/${locale}${p}`);
 
   return (
     <footer className="border-t border-slate-800 py-8">
@@ -24,13 +24,13 @@ export function MinimalFooter() {
           {/* Legal links */}
           <div className="flex items-center justify-center gap-6">
             <Link
-              href={path("/personvern")}
+              href={hrefWithLocale(locale, "/personvern")}
               className="font-lexend text-slate-400 hover:text-slate-200 text-sm transition-colors"
             >
               Personvern
             </Link>
             <Link
-              href={path("/vilkar")}
+              href={hrefWithLocale(locale, "/vilkar")}
               className="font-lexend text-slate-400 hover:text-slate-200 text-sm transition-colors"
             >
               Vilkår
