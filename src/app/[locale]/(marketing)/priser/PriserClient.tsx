@@ -10,25 +10,6 @@ import { useVippsMarket } from "@/shared/providers/VippsMarketProvider";
 import { getPriserPlans } from "./priser-plans";
 import { PrimaryCtaSection } from "@/features/marketing/components";
 
-const legacyFaqs = [
-  {
-    q: "Kan jeg bytte plan senere?",
-    a: "Ja, du kan oppgradere eller nedgradere når som helst. Endringer trer i kraft ved neste faktureringsperiode.",
-  },
-  {
-    q: "Hva er forskjellen på paper og live trading?",
-    a: "Lekepenger er risikofri øving med 100 000 kr. Live trading bruker ekte penger på Binance.",
-  },
-  {
-    q: "Kan jeg få refusjon?",
-    a: "Ja, vi tilbyr 30-dagers pengene-tilbake-garanti. Ikke fornøyd? Få full refusjon.",
-  },
-  {
-    q: "Er det bindingstid?",
-    a: "Nei, ingen bindingstid. Du kan si opp når som helst.",
-  },
-];
-
 function getTierFeatures(
   tStudy: ReturnType<typeof useTranslations<"studieprogram">>,
   slug: string,
@@ -48,6 +29,12 @@ export default function PriserClient() {
   const locale = useLocale();
   const plans = getPriserPlans();
 
+  const legacyFaqs = [
+    { q: t("faq.q2"), a: t("faq.a2") },
+    { q: t("faq.q3"), a: t("faq.a3") },
+    { q: t("faq.q4"), a: t("faq.a4") },
+    { q: t("faq.q5"), a: t("faq.a5") },
+  ];
   const kltFaq = { q: t("faqKlt.q"), a: t("faqKlt.a") };
   const faqs = [kltFaq, ...legacyFaqs];
 
@@ -62,9 +49,7 @@ export default function PriserClient() {
           {t("hero.subtitle")}
         </p>
         <p className="text-sm text-slate-500 mt-4">
-          {locale === "no"
-            ? "Listepris i NOK. I kassen kan du velge NOK, EUR eller USD."
-            : "Prices shown in NOK. At checkout you can pay in NOK, EUR, or USD."}
+          {t("hero.currencyNote")}
         </p>
       </div>
 
@@ -162,7 +147,7 @@ export default function PriserClient() {
                   )}
                   {plan.price === "0" && (
                     <span className="text-slate-500 text-sm">
-                      {locale === "no" ? "for alltid" : "forever"}
+                      {t("freeForever")}
                     </span>
                   )}
                 </div>
