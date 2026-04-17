@@ -88,20 +88,20 @@ export async function POST(request: NextRequest) {
     let sessionsUpdated = 0;
 
     if (sync_trading_sessions) {
-      const patch: Record<string, number | string> = {
+      const patch = {
         current_capital_nok: balance_nok,
         current_capital: balance_nok,
         updated_at: now,
-      };
-      if (reset_session_baseline) {
-        patch.starting_capital_nok = balance_nok;
-        patch.initial_capital = balance_nok;
-        patch.total_pnl = 0;
-      }
+        ...(reset_session_baseline ? {
+          starting_capital_nok: balance_nok,
+          initial_capital: balance_nok,
+          total_pnl: 0,
+        } : {}),
+      } as { current_capital_nok: number; current_capital: number; updated_at: string; starting_capital_nok?: number; initial_capital?: number; total_pnl?: number };
 
       const { data: updated, error: sessErr } = await db
         .from("trading_sessions")
-        .update(patch as any).eq("user_id", user_id)
+        .update(patch).eq("user_id", user_id)
         .eq("mode", "paper")
         .eq("status", "active")
         .select("id");
@@ -113,18 +113,18 @@ export async function POST(request: NextRequest) {
       sessionsUpdated = updated?.length ?? 0;
     }
 
-    const paperLegacyPatch: { [key: string]: number | string | null } = {
+    const paperLegacyPatch = {
       current_balance: balance_nok,
       updated_at: now,
-    };
-    if (reset_session_baseline) {
-      paperLegacyPatch.starting_balance = balance_nok;
-      paperLegacyPatch.total_pnl = 0;
-    }
+      ...(reset_session_baseline ? {
+        starting_balance: balance_nok,
+        total_pnl: 0,
+      } : {}),
+    } as { current_balance: number; updated_at: string; starting_balance?: number; total_pnl?: number };
 
     const { error: ptsErr } = await db
       .from("paper_trading_sessions")
-      .update(paperLegacyPatch as any).eq("user_id", user_id);
+      .update(paperLegacyPatch).eq("user_id", user_id);
 
     if (ptsErr) {
       console.warn("[admin user-paper-balance] paper_trading_sessions", ptsErr);
