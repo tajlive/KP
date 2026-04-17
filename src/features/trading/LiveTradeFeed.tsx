@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 
 interface LiveTrade {
   id: string;
@@ -97,6 +98,7 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
   const [trades, setTrades] = useState<LiveTrade[]>(MOCK_TRADES);
   const [activeTraders, setActiveTraders] = useState(142);
   const locale = useLocale();
+  const router = useRouter();
   const dateLocale = locale === "no" ? nb : enUS;
   const supabaseRef = useRef(createClient());
 
@@ -238,7 +240,10 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
 
       {/* Footer med CTA */}
       <div className="p-4 bg-slate-800/30 border-t border-slate-700">
-        <button className="w-full py-2.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm font-medium transition-colors">
+        <button
+          onClick={() => router.push(`/${locale}/dashboard/resultater`)}
+          className="w-full py-2.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm font-medium transition-colors"
+        >
           Se alle handler →
         </button>
       </div>
