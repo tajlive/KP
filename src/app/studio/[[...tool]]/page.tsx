@@ -4,7 +4,6 @@ import { createServerClient } from '@/lib/supabase/server'
 import Studio from './Studio'
 
 export { metadata, viewport }
-export const dynamic = 'force-static'
 
 export default async function StudioPage() {
   // Protect Studio — require authenticated user
