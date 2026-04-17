@@ -46,23 +46,6 @@ const DashboardSignalPreview = dynamic(
   { loading: () => <MarketDeskSignalSkeleton /> },
 );
 
-function SocialProofRowSkeleton() {
-  return (
-    <div
-      className="h-[52px] w-full rounded-xl animate-pulse bg-white border border-[#E2E5EC] shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
-      aria-hidden
-    />
-  );
-}
-
-const SocialProof = dynamic(
-  () =>
-    import("@/features/dashboard/SocialProof").then((m) => ({
-      default: m.SocialProof,
-    })),
-  { loading: () => <SocialProofRowSkeleton /> },
-);
-
 const FirstTradeCard = dynamic(
   () => import("@/features/dashboard/FirstTradeCard"),
   {
@@ -894,8 +877,6 @@ export default function PortfolioDashboard({
           </div>
         </div>
       </div>
-
-      <SocialProof locale={locale} />
 
       {/* Widget 5: AI Market Brief */}
       <div className={`${cardBase} animate-fade-in-up stagger-4`}>
