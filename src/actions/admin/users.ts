@@ -31,6 +31,7 @@ export async function grantFounderStatus(userId: string) {
     // 3. Update role
     const { error: updateError } = await supabase
       .from("user_profiles")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .update({ role: "founder", is_founder: true } as any)
       .eq("id", userId);
 
@@ -95,6 +96,7 @@ export async function banUser(userId: string, reason: string) {
     // 2. Update status
     const { error } = await supabase
       .from("user_profiles")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .update({
         status: "banned",
         banned_at: new Date().toISOString(),

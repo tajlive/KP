@@ -58,6 +58,8 @@ export default function AIMarketBrief() {
     }
   };
 
+  const refetch = () => fetchBrief();
+
   useEffect(() => {
     fetchBrief();
   }, []);
@@ -77,7 +79,14 @@ export default function AIMarketBrief() {
     );
   }
 
-  if (!brief) return null;
+  if (!brief) {
+    return (
+      <div className="rounded-md border border-destructive/30 p-4 text-sm text-muted-foreground">
+        Kunne ikke laste markedsrapport.
+        <button onClick={() => refetch()} className="ml-2 underline">Prøv igjen</button>
+      </div>
+    );
+  }
 
   const config = sentimentConfig[brief.sentiment];
   if (!config) return null;

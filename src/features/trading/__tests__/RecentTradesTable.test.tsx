@@ -96,10 +96,10 @@ describe("RecentTradesTable", () => {
   it("renders trades with correct data", () => {
     renderWithI18n(<RecentTradesTable {...defaultProps} />);
 
-    expect(screen.getByText("BTC")).toBeInTheDocument();
-    expect(screen.getByText("ETH")).toBeInTheDocument();
-    expect(screen.getByText("Kjøp")).toBeInTheDocument();
-    expect(screen.getByText("Salg")).toBeInTheDocument();
+    expect(screen.getAllByText("BTC").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("ETH").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Kjøp").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Salg").length).toBeGreaterThanOrEqual(1);
   });
 
   it("calls onSelectTrade when a row is clicked", () => {
@@ -115,16 +115,16 @@ describe("RecentTradesTable", () => {
   it("shows mode badges correctly", () => {
     renderWithI18n(<RecentTradesTable {...defaultProps} />);
 
-    // Sjekk at vi har både "Øv" og "Live" badges
-    expect(screen.getByText("Øv")).toBeInTheDocument();
-    expect(screen.getByText("Live")).toBeInTheDocument();
+    // Sjekk at vi har både "Øv" og "Live" badges (vises både i tabell og mobilkort)
+    expect(screen.getAllByText("Øv").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Live").length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows PnL for trades with realized_pnl", () => {
     renderWithI18n(<RecentTradesTable {...defaultProps} />);
 
-    // ETH-salg har +5,000 kr PnL
-    expect(screen.getByText("+5 000 kr")).toBeInTheDocument();
+    // ETH-salg har +5,000 kr PnL (vises både i tabell og mobilkort)
+    expect(screen.getAllByText("+5 000 kr").length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows filter buttons when onModeFilterChange is provided", () => {
@@ -166,13 +166,13 @@ describe("RecentTradesTable", () => {
 
     // Sjekk at selectedTradeId er satt - vi kan ikke lett sjekke styling
     // men vi kan sjekke at komponenten rendrer uten feil
-    expect(screen.getByText("BTC")).toBeInTheDocument();
+    expect(screen.getAllByText("BTC").length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows correct strategy names", () => {
     renderWithI18n(<RecentTradesTable {...defaultProps} />);
 
-    expect(screen.getByText("dca_trygg")).toBeInTheDocument();
-    expect(screen.getByText("trend_balansert")).toBeInTheDocument();
+    expect(screen.getAllByText("dca_trygg").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("trend_balansert").length).toBeGreaterThanOrEqual(1);
   });
 });

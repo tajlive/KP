@@ -69,6 +69,11 @@ function stripLocalePrefix(pathname: string): string {
   return pathname;
 }
 
+function getLocaleFromPathname(pathname: string): string {
+  const localeMatch = pathname.match(/^\/(no|en)(\/.*)?$/);
+  return localeMatch ? localeMatch[1] : "no";
+}
+
 /**
  * Build CSP header with nonce
  * Replaces 'unsafe-inline' with nonce-based approach
@@ -239,7 +244,7 @@ export async function middleware(request: NextRequest) {
   );
   
   if (isProtected && !user) {
-    const loginUrl = new URL("/no/login", request.url);
+    const loginUrl = new URL(`/${getLocaleFromPathname(pathname)}/login`, request.url);
     loginUrl.searchParams.set("next", pathname);
     const redirectResponse = NextResponse.redirect(loginUrl);
     return applySecurityHeaders(redirectResponse, nonce);

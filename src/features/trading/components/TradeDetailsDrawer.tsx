@@ -304,7 +304,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full sm:max-w-lg bg-kp-bg-secondary border-l border-kp-border z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full sm:max-w-lg bg-kp-bg-secondary border-l border-kp-border z-50 overflow-y-auto pt-[max(1rem,env(safe-area-inset-top))]"
           >
             {loading ? (
               <div className="flex items-center justify-center h-full">
@@ -342,7 +342,7 @@ export function TradeDetailsDrawer({ tradeId, onClose }: TradeDetailsDrawerProps
                   </div>
                   <button
                     onClick={onClose}
-                    className="p-2 hover:bg-kp-brand-hover rounded-lg transition-colors"
+                    className="p-3 w-6 h-6 hover:bg-kp-brand-hover rounded-lg transition-colors flex items-center justify-center"
                     aria-label={t("close")}
                   >
                     <X className="w-5 h-5 text-kp-text-muted" />

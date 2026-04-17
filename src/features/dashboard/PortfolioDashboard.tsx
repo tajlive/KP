@@ -435,7 +435,7 @@ export default function PortfolioDashboard({
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-0.5 border",
+                "text-xs font-bold uppercase tracking-wider rounded-full px-2.5 py-0.5 border",
                 effectiveMode === "live"
                   ? "bg-amber-500/20 border-amber-400/40 text-amber-100"
                   : "bg-white/15 border-white/30 text-white",
@@ -467,7 +467,7 @@ export default function PortfolioDashboard({
           {formatNOK(locale, displayBalance)}
         </p>
         <div className="mt-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/50 mb-1.5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-1.5">
             {t("portfolioHero.periodLabel")}
           </p>
           <div
@@ -589,7 +589,7 @@ export default function PortfolioDashboard({
         </div>
       </div>
       {(liveCoins.length > 0 || !pricesError) && (
-        <p className="text-[10px] text-[#8E95A9] animate-fade-in-up stagger-2 -mt-1 leading-relaxed">
+        <p className="text-xs text-[#8E95A9] animate-fade-in-up stagger-2 -mt-1 leading-relaxed">
           {t("dataSource.prices")}{" "}
           <span className="text-[#8E95A9]/80">
             {t("dataSource.pricesEducational")}
@@ -774,7 +774,7 @@ export default function PortfolioDashboard({
                     {t("marketDesk.recentTrades")}
                   </h3>
                   {hasRecentActivity && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/25">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/25">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       {t("signalPreview.liveBadge")}
                     </span>
@@ -787,7 +787,7 @@ export default function PortfolioDashboard({
                     onClick={() => void runManualIntegritySync()}
                     disabled={manualIntegritySync}
                     className={cn(
-                      "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition-colors hover:border-indigo-500/35 hover:bg-indigo-500/10 hover:text-white disabled:opacity-50",
+                      "inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition-colors hover:border-indigo-500/35 hover:bg-indigo-500/10 hover:text-white disabled:opacity-50",
                     )}
                     aria-label={t("marketDesk.integritySyncAria")}
                     title={t("marketDesk.integritySyncAria")}
@@ -848,7 +848,7 @@ export default function PortfolioDashboard({
                           </span>
                           <span
                             className={cn(
-                              "text-[9px] font-bold uppercase tracking-wide rounded px-1.5 py-0.5 border shrink-0",
+                              "text-xs font-bold uppercase tracking-wide rounded px-1.5 py-0.5 border shrink-0",
                               String(trade.mode).toLowerCase() === "live"
                                 ? "border-amber-500/35 text-amber-300/95 bg-amber-500/10"
                                 : "border-slate-500/40 text-slate-400 bg-slate-800/60",
@@ -878,7 +878,7 @@ export default function PortfolioDashboard({
                             )}
                         </p>
                       </div>
-                      <span className="text-[10px] text-slate-500 tabular-nums shrink-0 text-right min-w-[3.5rem]">
+                      <span className="text-xs text-slate-500 tabular-nums shrink-0 text-right min-w-[3.5rem]">
                         {trade.created_at
                           ? formatRelativeTimeShort(
                               new Date(trade.created_at),
@@ -998,7 +998,7 @@ export default function PortfolioDashboard({
                     activeSession.total_pnl ?? activeSession.pnl ?? 0,
                   )}
                 </p>
-                <p className="text-[10px] text-[#8E95A9]">
+                <p className="text-xs text-[#8E95A9]">
                   {no ? "P&L sesjon" : "Session P&L"}
                 </p>
               </div>
@@ -1024,7 +1024,7 @@ export default function PortfolioDashboard({
         </div>
       ) : (
         <Link
-          href={hrefWithLocale(locale, "/dashboard/bot/new")}
+          href={hrefWithLocale(locale, "/dashboard/trade")}
           className="block rounded-xl border-2 border-dashed border-[#E2E5EC] p-5 text-center hover:border-[#0052FF]/40 hover:bg-[#0052FF]/[0.02] transition-all group animate-fade-in-up stagger-6"
         >
           <div className="w-10 h-10 rounded-xl bg-[#0052FF]/10 flex items-center justify-center mx-auto">

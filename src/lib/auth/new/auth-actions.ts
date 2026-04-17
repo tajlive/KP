@@ -40,12 +40,13 @@ export async function signUpWithEmail(formData: FormData) {
   
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const locale = await getLocale();
   
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: getCallbackUrl("no"),
+      emailRedirectTo: getCallbackUrl(locale),
     },
   });
 
@@ -68,11 +69,12 @@ export async function signOut() {
 
 export async function signInWithGoogle() {
   const supabase = await createServerClient();
+  const locale = await getLocale();
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: getCallbackUrl("no"),
+      redirectTo: getCallbackUrl(locale),
       queryParams: {
         access_type: "offline",
         prompt: "consent",
@@ -92,11 +94,12 @@ export async function signInWithGoogle() {
 
 export async function signInWithMicrosoft() {
   const supabase = await createServerClient();
+  const locale = await getLocale();
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "azure",
     options: {
-      redirectTo: getCallbackUrl("no"),
+      redirectTo: getCallbackUrl(locale),
       scopes: "email profile openid",
     },
   });
@@ -116,11 +119,12 @@ export async function signInWithMicrosoft() {
 
 export async function sendPasswordReset(formData: FormData) {
   const supabase = await createServerClient();
+  const locale = await getLocale();
   
   const email = formData.get("email") as string;
   
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${getAppUrl()}/no/update-password`,
+    redirectTo: `${getAppUrl()}/${locale}/update-password`,
   });
 
   if (error) {

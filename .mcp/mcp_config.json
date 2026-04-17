@@ -94,6 +94,12 @@
       }
     },
     
+    "sanity": {
+      "description": "Sanity MCP - CMS queries, documents, schema types",
+      "command": "node",
+      "args": ["scripts/run-sanity-mcp.mjs"]
+    },
+    
     "playwright": {
       "description": "Playwright MCP - browser automation",
       "command": "npx",

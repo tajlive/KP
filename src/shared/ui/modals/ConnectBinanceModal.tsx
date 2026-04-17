@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useTradingMode } from '@/lib/hooks/useTradingMode';
 import { Button } from '@/shared/ui/button';
 import {
@@ -33,6 +34,7 @@ interface ConnectBinanceModalProps {
 }
 
 export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProps) {
+  const t = useTranslations("trading.connectBinanceModal");
   const { connectBinance, isLoading, error } = useTradingMode();
   const [step, setStep] = useState<'intro' | 'form' | 'verifying' | 'success'>('intro');
   const [apiKey, setApiKey] = useState('');
@@ -168,7 +170,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                   id="api-key"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Paste your Binance API Key"
+                  placeholder={t("apiKeyPlaceholder")}
                   className="font-mono"
                 />
               </div>
@@ -181,7 +183,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                     type={showSecret ? 'text' : 'password'}
                     value={apiSecret}
                     onChange={(e) => setApiSecret(e.target.value)}
-                    placeholder="Paste your Binance API Secret"
+                    placeholder={t("apiSecretPlaceholder")}
                     className="font-mono pr-10"
                   />
                   <button

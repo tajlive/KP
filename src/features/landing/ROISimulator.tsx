@@ -4,9 +4,12 @@ import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 import { ButtonPremium } from '@/shared/ui/ButtonPremium';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { localizedPathname } from '@/middleware/locale-path';
 
 export function ROISimulator() {
   const router = useRouter();
+  const locale = useLocale();
 
   return (
     <section className="py-16 lg:py-24 bg-kp-bg-primary" id="roi-calculator">
@@ -34,14 +37,14 @@ export function ROISimulator() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <ButtonPremium 
-              onClick={() => router.push('/no/signup')}
+              onClick={() => router.push(localizedPathname(locale, '/signup'))}
               className="text-lg px-8 py-4"
             >
               Opprett gratis konto
             </ButtonPremium>
             <ButtonPremium 
               variant="secondary"
-              onClick={() => router.push('/no/priser')}
+              onClick={() => router.push(localizedPathname(locale, '/priser'))}
               className="text-lg px-8 py-4"
             >
               Se priser

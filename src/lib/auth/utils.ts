@@ -138,7 +138,7 @@ export async function testAuthConfig(): Promise<{
   if (!checks.supabaseKey)
     errors.push("NEXT_PUBLIC_SUPABASE_ANON_KEY is not configured");
 
-  checks.appUrl = getCallbackUrl("no");
+  checks.appUrl = getCallbackUrl("no"); // test config uses default locale
 
   try {
     const supabase = createClient();
@@ -239,7 +239,7 @@ export async function resetPassword(
   const supabase = createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
     email.toLowerCase().trim(),
-    { redirectTo: `${getAppUrl()}/no/update-password` },
+    { redirectTo: `${getAppUrl()}/${_locale}/update-password` },
   );
   return { error };
 }

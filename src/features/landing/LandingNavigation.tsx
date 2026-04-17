@@ -29,7 +29,7 @@ export function LandingNavigation() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-100 bg-slate-950/50 backdrop-blur-xl border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-100 bg-slate-950/50 backdrop-blur-xl border-b border-white/5 pt-[env(safe-area-inset-top,0px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link href={l("/")} className="flex items-center gap-3 group">
@@ -89,7 +89,7 @@ export function LandingNavigation() {
               type="button"
               onClick={() => setIsOpen(!isOpen)}
               aria-label={isOpen ? t("closeMenu") : t("openMenu")}
-              className="text-white p-2 hover:bg-white/5 rounded-xl transition-colors"
+              className="text-white p-2.5 hover:bg-white/5 rounded-xl transition-colors"
             >
               {isOpen ? (
                 <X className="w-6 h-6" />

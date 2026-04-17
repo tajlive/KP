@@ -140,7 +140,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<TokensResp
       try {
         const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
         const encodedQuery = encodeURIComponent(TOKENS_QUERY);
-        const url = `https://${projectId}.api.sanity.io/v2024-04-11/data/query/${dataset}?query=${encodedQuery}`;
+        const url = `https://${projectId}.api.sanity.io/v2024-04-07/data/query/${dataset}?query=${encodedQuery}`;
         const res = await fetch(url, { next: { revalidate: 60 } });
         if (res.ok) {
           const json = await res.json();
