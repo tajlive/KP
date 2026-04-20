@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: smoke
-    if: github.event.inputs.test_type == 'critical' || github.event.inputs.test_type == 'full' || github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.event.inputs.test_type == 'critical' || github.event.inputs.test_type == 'full' || github.event_name == 'pull_request'
     
     strategy:
       matrix:
