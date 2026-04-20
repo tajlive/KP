@@ -53,16 +53,39 @@ on:
 **Timeout:** 5 minutter  
 **Formål:** Finn ubrukte dependencies
 
-### 4. 🚀 Manual Deploy (`.github/workflows/manual-deploy.yml`)
-**Trigger:** Kun manuell (`workflow_dispatch`)  
-**Timeout:** 10 minutter  
-**Formål:** Deploy til preview eller produksjon
+### 4. 🚀 Deploy (`.github/workflows/deploy.yml`)
+**Trigger:** 
+- `push` til `main` (auto-deploy til produksjon)
+- `workflow_run` etter vellykket PR Check (backup)
+- Manuell (`workflow_dispatch`) for preview/produksjon
+**Timeout:** 30 minutter  
+**Formål:** Fullt automatisert deploy til Vercel med health check, rollback og Cloudflare purge
 
 ---
 
 **Repo:** [https://github.com/tajlive/KP](https://github.com/tajlive/KP)  
 **Full GitHub-oppsett (description, branch protection, secrets):** [.github/GITHUB_SETUP.md](../GITHUB_SETUP.md)  
 **Feilretting når CI feiler:** Se seksjon 7 i [GITHUB_SETUP.md](../GITHUB_SETUP.md#7-feilretting-når-ci-feiler).
+
+---
+
+## 🔄 Auto-deploy flyt
+
+```
+git push origin main
+    ↓
+GitHub Actions: 🚀 Deploy
+    ↓
+Build (next build)
+    ↓
+Deploy til Vercel (npx vercel deploy --prod)
+    ↓
+Health check (www.klarpakke.no/api/health)
+    ↓
+Cloudflare cache purge
+    ↓
+Slack notification (success/failure)
+```
 
 ---
 
