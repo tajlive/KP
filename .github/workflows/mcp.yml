@@ -51,13 +51,13 @@ jobs:
     
     steps:
       - uses: actions/checkout@v5
-      
-- name: 🏗️ Setup Environment
+
+      - name: 🏗️ Setup Environment
         uses: ./.github/actions/setup-klarpakke
-      
+
       - name: 🔍 MCP Config Validation
         run: npm run mcp:validate-config
-      
+
       - name: 🔍 MCP Environment Check
         run: npm run mcp:check-supabase-env
         continue-on-error: true
@@ -74,10 +74,10 @@ jobs:
     
     steps:
       - uses: actions/checkout@v5
-      
-- name: 🏗️ Setup Environment
+
+      - name: 🏗️ Setup Environment
         uses: ./.github/actions/setup-klarpakke
-      
+
       - name: 🔗 Test MCP Connections
         run: npm run test:mcp
         env:
@@ -99,10 +99,10 @@ jobs:
     
     steps:
       - uses: actions/checkout@v5
-      
-- name: 🏗️ Setup Environment
+
+      - name: 🏗️ Setup Environment
         uses: ./.github/actions/setup-klarpakke
-      
+
       - name: 📊 Generate MCP Health Report
         run: |
           echo "## MCP Daily Health Check" >> $GITHUB_STEP_SUMMARY

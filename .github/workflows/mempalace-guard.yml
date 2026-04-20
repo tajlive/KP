@@ -22,9 +22,10 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/checkout@f4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Run Mempalace Guard
         run: node scripts/mempalace-guard.mjs
