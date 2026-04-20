@@ -62,8 +62,7 @@ jobs:
         with:
           path: |
             .next/cache
-            .turbo
-          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs', 'vercel.json') }}
           restore-keys: |
             next-${{ runner.os }}-
 
@@ -104,8 +103,7 @@ jobs:
         with:
           path: |
             .next/cache
-            .turbo
-          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs') }}
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json', 'next.config.mjs', 'vercel.json') }}
           restore-keys: |
             next-${{ runner.os }}-
 

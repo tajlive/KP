@@ -18,7 +18,7 @@ import type { Database, Json } from "@/types/database.types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+// maxDuration arves fra vercel.json (300s) — overstyr ikke her
 
 // Types
 interface Candle {
