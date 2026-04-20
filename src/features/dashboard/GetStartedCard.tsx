@@ -8,7 +8,7 @@
 
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { X, BookOpen, TrendingUp, BarChart3, ArrowRight } from "lucide-react";
+import { X, BookOpen, TrendingUp, BarChart3, ArrowRight, CheckCircle2, Circle, UserPlus, Trophy, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -19,6 +19,8 @@ interface GetStartedCardProps {
   userId: string;
   completedLessons: string[];
   onDismiss?: () => void;
+  onboardingCompleted?: boolean;
+  totalTrades?: number;
 }
 
 interface GetStartedItem {
@@ -77,6 +79,13 @@ const getStartedItems: Omit<GetStartedItem, "completed">[] = [
   },
 ];
 
+interface ChecklistItem {
+  id: string;
+  label: Record<string, string>;
+  href?: string;
+  completed: boolean;
+}
+
 export function shouldShowGetStartedCard(
   completedLessons: string[],
   dismissed: boolean,
@@ -91,6 +100,8 @@ export default function GetStartedCard({
   userId,
   completedLessons,
   onDismiss,
+  onboardingCompleted = false,
+  totalTrades = 0,
 }: GetStartedCardProps) {
   const { locale } = useParams();
   const lang = (locale as string) || "no";
@@ -177,6 +188,42 @@ export default function GetStartedCard({
   ).length;
   const progress = Math.round((completedCount / getStartedItems.length) * 100);
 
+  // Build onboarding checklist
+  const checklist: ChecklistItem[] = [
+    {
+      id: "create-account",
+      label: { no: "Opprett konto", en: "Create account" },
+      completed: true,
+    },
+    {
+      id: "complete-onboarding",
+      label: { no: "Fullfør onboarding", en: "Complete onboarding" },
+      completed: onboardingCompleted,
+    },
+    {
+      id: "first-trade",
+      label: { no: "Gjør første trade", en: "Make first trade" },
+      href: `/${locale}/dashboard/trade?mode=paper`,
+      completed: totalTrades > 0,
+    },
+    {
+      id: "leaderboard",
+      label: { no: "Utforsk leaderboard", en: "Explore leaderboard" },
+      href: `/${locale}/leaderboard`,
+      completed: false,
+    },
+    {
+      id: "invite-friend",
+      label: { no: "Inviter en venn", en: "Invite a friend" },
+      href: `/${locale}/dashboard/referral`,
+      completed: false,
+    },
+  ];
+
+  const checklistCompleted = checklist.filter((c) => c.completed).length;
+  const checklistTotal = checklist.length;
+  const checklistProgress = Math.round((checklistCompleted / checklistTotal) * 100);
+
   // KRITISK: Unngå React #418 — vis ingenting før mounted
   if (!mounted || !isVisible || isLoading) return null;
 
@@ -195,7 +242,7 @@ export default function GetStartedCard({
               <motion.div
                 className="h-full bg-linear-to-r from-blue-500 to-blue-400"
                 initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
+                animate={{ width: `${checklistProgress}%` }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               />
             </div>
@@ -209,8 +256,8 @@ export default function GetStartedCard({
                   </CardTitle>
                   <p className="text-slate-400 text-sm mt-1">
                     {lang === "en"
-                      ? `Complete these ${getStartedItems.length} steps to master trading`
-                      : `Fullfør disse ${getStartedItems.length} stegene for å mestre trading`}
+                      ? `Complete these ${checklistTotal} steps to master trading`
+                      : `Fullfør disse ${checklistTotal} stegene for å mestre trading`}
                   </p>
                 </div>
                 <Button
@@ -225,92 +272,138 @@ export default function GetStartedCard({
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-3">
-              {getStartedItems.map((item, index) => {
-                const isCompleted = completedLessons.includes(item.id);
-                return (
-                  <Link key={item.id} href={`/${locale}${item.href}`}>
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className={`
-                        group flex items-center gap-4 p-4 rounded-2xl 
-                        transition-all duration-200 cursor-pointer
-                        ${
-                          isCompleted
-                            ? "bg-green-500/10 border border-green-500/20"
-                            : "bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800 hover:border-slate-600"
-                        }
-                      `}
-                    >
-                      {/* Ikon */}
-                      <div
-                        className={`
-                        w-12 h-12 rounded-xl flex items-center justify-center
-                        ${isCompleted ? "bg-green-500/20" : "bg-slate-700"}
-                      `}
-                      >
-                        {isCompleted ? (
-                          <svg
-                            className="w-6 h-6 text-green-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+            <CardContent className="space-y-5">
+              {/* Checklist */}
+              <div className="space-y-2">
+                {checklist.map((item, index) => {
+                  const isCompleted = item.completed;
+                  const label = item.label[lang as keyof typeof item.label] || item.label.no;
+                  return (
+                    <div key={item.id}>
+                      {item.href && !isCompleted ? (
+                        <Link href={item.href}>
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="group flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800 hover:border-slate-600"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        ) : (
-                          item?.icon || null
-                        )}
-                      </div>
+                            {isCompleted ? (
+                              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                            ) : (
+                              <Circle className="w-5 h-5 text-slate-500 group-hover:text-blue-400 shrink-0 transition-colors" />
+                            )}
+                            <span className={`text-sm font-medium ${isCompleted ? "text-slate-500 line-through" : "text-slate-200 group-hover:text-white"}`}>
+                              {label}
+                            </span>
+                            {!isCompleted && (
+                              <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white ml-auto group-hover:translate-x-0.5 transition-all" />
+                            )}
+                          </motion.div>
+                        </Link>
+                      ) : (
+                        <motion.div
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/20 border border-slate-800/50"
+                        >
+                          {isCompleted ? (
+                            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                          ) : (
+                            <Circle className="w-5 h-5 text-slate-600 shrink-0" />
+                          )}
+                          <span className={`text-sm font-medium ${isCompleted ? "text-slate-500 line-through" : "text-slate-500"}`}>
+                            {label}
+                          </span>
+                        </motion.div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
 
-                      {/* Innhold */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h4
+              {/* Divider */}
+              <div className="border-t border-slate-800 pt-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  {lang === "en" ? "Learn more" : "Lær mer"}
+                </p>
+
+                {/* Learning items */}
+                <div className="space-y-2">
+                  {getStartedItems.map((item, index) => {
+                    const isCompleted = completedLessons.includes(item.id);
+                    return (
+                      <Link key={item.id} href={`/${locale}${item.href}`}>
+                        <motion.div
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className={`
+                            group flex items-center gap-3 p-3 rounded-xl 
+                            transition-all duration-200 cursor-pointer
+                            ${
+                              isCompleted
+                                ? "bg-green-500/10 border border-green-500/20"
+                                : "bg-slate-800/30 border border-slate-700/30 hover:bg-slate-800 hover:border-slate-600"
+                            }
+                          `}
+                        >
+                          <div
                             className={`
-                            font-bold text-sm truncate
-                            ${isCompleted ? "text-green-400 line-through" : "text-white"}
+                            w-9 h-9 rounded-lg flex items-center justify-center shrink-0
+                            ${isCompleted ? "bg-green-500/20" : "bg-slate-700"}
                           `}
                           >
-                            {item.title[lang as keyof typeof item.title] || item.title.no}
-                          </h4>
-                          {!isCompleted && (
-                            <span className="text-xs text-slate-500 whitespace-nowrap">
-                              {item.duration}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">
-                          {item.description[lang as keyof typeof item.description] || item.description.no}
-                        </p>
-                      </div>
+                            {isCompleted ? (
+                              <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            ) : (
+                              item?.icon || null
+                            )}
+                          </div>
 
-                      {/* Pil eller checkmark */}
-                      <div className="text-slate-500 group-hover:text-white transition-colors">
-                        {isCompleted ? (
-                          <span className="text-xs text-green-400 font-medium">
-                            {lang === "en" ? "Done" : "Ferdig"}
-                          </span>
-                        ) : (
-                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        )}
-                      </div>
-                    </motion.div>
-                  </Link>
-                );
-              })}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4
+                                className={`
+                                font-bold text-xs truncate
+                                ${isCompleted ? "text-green-400 line-through" : "text-white"}
+                              `}
+                              >
+                                {item.title[lang as keyof typeof item.title] || item.title.no}
+                              </h4>
+                              {!isCompleted && (
+                                <span className="text-[10px] text-slate-500 whitespace-nowrap">
+                                  {item.duration}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-slate-400 text-[11px] mt-0.5 line-clamp-1">
+                              {item.description[lang as keyof typeof item.description] || item.description.no}
+                            </p>
+                          </div>
+
+                          <div className="text-slate-500 group-hover:text-white transition-colors shrink-0">
+                            {isCompleted ? (
+                              <span className="text-[10px] text-green-400 font-medium">
+                                {lang === "en" ? "Done" : "Ferdig"}
+                              </span>
+                            ) : (
+                              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                            )}
+                          </div>
+                        </motion.div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
 
               {/* CTA */}
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center justify-between pt-1">
                 <p className="text-xs text-slate-500">
-                  {completedCount}/{getStartedItems.length}{" "}
+                  {checklistCompleted}/{checklistTotal}{" "}
                   {lang === "en" ? "completed" : "fullført"}
                 </p>
                 <Button

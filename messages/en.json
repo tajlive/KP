@@ -1287,6 +1287,60 @@
       "feature1": "Automatic 24/7 trading",
       "feature2": "Real-time market analysis",
       "feature3": "Risk management and stop-loss"
+    },
+    "newUserHero": {
+      "badge": "New student",
+      "welcome": "Welcome, {name}!",
+      "defaultName": "trader",
+      "subtitle": "Let's get you started with your first trading bot.",
+      "step1": "Choose strategy",
+      "step2": "Start paper bot",
+      "step3": "Track results",
+      "cta": "Start your first bot",
+      "demoHint": "You're trading with 100,000 NOK virtual capital"
+    },
+    "firstTradeReward": {
+      "title": "Congratulations on your first trade!",
+      "subtitle": "+200 KLT",
+      "description": "Keep trading to earn more rewards.",
+      "dismiss": "Dismiss",
+      "stats": "{count} trade(s) completed"
+    },
+    "paperToLive": {
+      "title": "Paper trading progress",
+      "progress": "{current}/{target} trades completed",
+      "unlockText": "Complete {remaining} more trades to unlock live trading preview",
+      "unlocked": "Live trading preview unlocked!",
+      "winningTrades": "{count} winners"
+    },
+    "emptyBotState": {
+      "title": "Choose your first strategy",
+      "subtitle": "Select a strategy to get started with paper trading",
+      "dca": {
+        "name": "DCA",
+        "description": "Dollar-Cost Averaging: Build positions gradually over time"
+      },
+      "grid": {
+        "name": "Grid Trading",
+        "description": "Buy low and sell high within a price range"
+      },
+      "trend": {
+        "name": "Trend Following",
+        "description": "Follow market trends for maximum returns"
+      },
+      "select": "Select",
+      "safetyHint": "All strategies start with paper trading"
+    },
+    "getStarted": {
+      "title": "Get Started",
+      "subtitle": "Complete these steps to master trading",
+      "checklist": {
+        "createAccount": "Create account",
+        "completeOnboarding": "Complete onboarding",
+        "firstTrade": "Make first trade",
+        "leaderboard": "Explore leaderboard",
+        "inviteFriend": "Invite a friend"
+      }
     }
   },
   "footer": {
@@ -1951,7 +2005,52 @@
     "setRiskProfileDesc": "Choose between conservative, balanced, or offensive strategy",
     "goToDashboard": "Go to Dashboard",
     "fastRegistration": "Lightning fast registration!",
-    "totalTime": "Total time: under 2 minutes"
+    "totalTime": "Total time: under 2 minutes",
+    "speedOnboarding": {
+      "riskProfiles": {
+        "safe": {
+          "name": "Safe",
+          "description": "Minimal risk, gradual growth",
+          "dailyLoss": "Max 2% daily loss"
+        },
+        "balanced": {
+          "name": "Balanced",
+          "description": "Moderate risk and return",
+          "dailyLoss": "Max 5% daily loss"
+        },
+        "offensive": {
+          "name": "Offensive",
+          "description": "Higher risk, greater potential",
+          "dailyLoss": "Max 10% daily loss"
+        },
+        "aggressive": {
+          "name": "Aggressive",
+          "description": "Maximum potential, high risk",
+          "dailyLoss": "Max 15% daily loss"
+        }
+      },
+      "timerPrefix": "Time left:",
+      "step1": {
+        "title": "Choose risk profile",
+        "subtitle": "How much risk are you comfortable with?"
+      },
+      "step2": {
+        "title": "Choose your coins",
+        "subtitle": "Which cryptocurrencies do you want to trade?",
+        "startingCapital": "Starting capital",
+        "paperTradingZeroRisk": "100% risk-free with paper trading",
+        "startTrading": "Start trading",
+        "starting": "Starting..."
+      },
+      "step3": {
+        "title": "You're ready!",
+        "line1": "Your paper trading account with",
+        "line2": "is active.",
+        "line3": "Go to the dashboard to track your results.",
+        "goToDashboard": "Go to dashboard",
+        "viewActivity": "View activity"
+      }
+    }
   },
   "orderHistory": {
     "title": "Order History",

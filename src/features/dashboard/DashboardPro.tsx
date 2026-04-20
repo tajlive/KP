@@ -19,25 +19,39 @@ import { DailyChallenge } from "@/features/gamification/DailyChallenge";
 import { FirstTradePrompt } from "./FirstTradePrompt";
 import { SimplifiedHero } from "./SimplifiedHero";
 
+// Nye onboarding & retention komponenter
+import { NewUserHero } from "./NewUserHero";
+import { FirstTradeReward } from "./FirstTradeReward";
+import { PaperToLiveProgress } from "./PaperToLiveProgress";
+import { EmptyBotState } from "./EmptyBotState";
+import GetStartedCard from "./GetStartedCard";
+
 interface UserStats {
   totalTrades: number;
   winRate: number;
   totalPnl: number;
   currentCapital: number;
   startingCapital: number;
+  winningTrades?: number;
 }
 
 interface DashboardProProps {
   paperBalance?: number;
   sessionId?: string;
-  trades?: any[];
+  sessionMode?: string;
+  trades?: unknown[];
   initialStats?: UserStats;
+  onboardingCompleted?: boolean;
+  userName?: string;
 }
 
 export function DashboardPro({ 
   paperBalance = 100000, 
   sessionId,
-  initialStats 
+  sessionMode = "paper",
+  initialStats,
+  onboardingCompleted = false,
+  userName,
 }: DashboardProProps) {
   const { user } = useAuth();
   const locale = useLocale();
@@ -48,9 +62,11 @@ export function DashboardPro({
     totalPnl: 0,
     currentCapital: paperBalance,
     startingCapital: 100000,
+    winningTrades: 0,
   };
 
   const totalReturn = ((stats.currentCapital - stats.startingCapital) / stats.startingCapital) * 100;
+  const isPaperMode = !sessionId || sessionMode === "paper";
 
   return (
     <UpgradeGate triggerTradesCount={5}>
@@ -63,6 +79,24 @@ export function DashboardPro({
           >
             <SimplifiedHero balance={stats.currentCapital} changePct={totalReturn} />
           </motion.div>
+
+          {/* New User Hero - shown after onboarding, before first trade */}
+          {onboardingCompleted && stats.totalTrades === 0 && (
+            <NewUserHero userName={userName} />
+          )}
+
+          {/* First Trade Reward - shown after first trade (once) */}
+          <FirstTradeReward totalTrades={stats.totalTrades} />
+
+          {/* Get Started Checklist Card */}
+          {user?.id && (
+            <GetStartedCard
+              userId={user.id}
+              completedLessons={[]}
+              onboardingCompleted={onboardingCompleted}
+              totalTrades={stats.totalTrades}
+            />
+          )}
 
           {/* CTA: Start bot when no active session */}
           {!sessionId && (
@@ -103,6 +137,9 @@ export function DashboardPro({
             </motion.div>
           )}
 
+          {/* Empty Bot State with strategy cards */}
+          {!sessionId && <EmptyBotState />}
+
           {/* Idle Funds Nudge */}
           {stats.currentCapital > 0 && !sessionId && (
             <motion.div
@@ -136,6 +173,14 @@ export function DashboardPro({
 
           {/* First trade prompt */}
           {stats.totalTrades === 0 && <FirstTradePrompt />}
+
+          {/* Paper to Live Progress */}
+          {isPaperMode && (
+            <PaperToLiveProgress
+              totalTrades={stats.totalTrades}
+              winningTrades={stats.winningTrades}
+            />
+          )}
 
           {/* Main grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
