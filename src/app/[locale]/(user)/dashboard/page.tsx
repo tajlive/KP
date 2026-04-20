@@ -77,7 +77,7 @@ export default async function DashboardPage({
     const [profileRes, sessionsRes] = await Promise.all([
       supabase
         .from("user_profiles")
-        .select("paper_balance, tier, preferred_trading_mode")
+        .select("paper_balance, tier, preferred_trading_mode, onboarding_completed, onboarding_step, display_name")
         .eq("id", user.id)
         .single(),
       supabase
@@ -128,6 +128,7 @@ export default async function DashboardPage({
       totalPnl,
       currentCapital: activeSession?.current_capital_nok ?? profile?.paper_balance ?? 100000,
       startingCapital: activeSession?.starting_capital_nok ?? 100000,
+      winningTrades: winningTrades.length,
     };
 
     const trades = tradesData.map((t) => ({
@@ -144,6 +145,8 @@ export default async function DashboardPage({
           trades={trades}
           activeSession={activeSession}
           stats={stats}
+          onboardingCompleted={profile?.onboarding_completed ?? false}
+          userName={profile?.display_name ?? ""}
         />
       </div>
     );

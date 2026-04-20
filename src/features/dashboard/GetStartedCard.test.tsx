@@ -57,6 +57,8 @@ describe("GetStartedCard", () => {
       userId: "user-123",
       completedLessons: [] as string[],
       onDismiss: vi.fn(),
+      onboardingCompleted: true,
+      totalTrades: 0,
     };
 
     it("renders all three get started items", async () => {
@@ -66,7 +68,10 @@ describe("GetStartedCard", () => {
         expect(screen.getByText("Kom i gang")).toBeInTheDocument();
       });
       
-      expect(screen.getByText("Hva er automatisk trading?")).toBeInTheDocument();
+      // "Lær mer"-seksjon med de 3 leksjonene
+      await waitFor(() => {
+        expect(screen.getByText("Hva er automatisk trading?")).toBeInTheDocument();
+      });
       expect(screen.getByText("Forstå DCA-strategien")).toBeInTheDocument();
       expect(screen.getByText("Slik leser du dashboard-tallene")).toBeInTheDocument();
     });
@@ -81,10 +86,11 @@ describe("GetStartedCard", () => {
     });
 
     it("shows progress indicator", async () => {
-      render(<GetStartedCard {...defaultProps} completedLessons={["auto-trading-intro"]} />);
+      // onboardingCompleted=true, totalTrades=0 → "Opprett konto" + "Fullfør onboarding" = 2/5
+      render(<GetStartedCard {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText("1/3 fullført")).toBeInTheDocument();
+        expect(screen.getByText("2/5 fullført")).toBeInTheDocument();
       });
     });
 

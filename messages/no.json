@@ -1287,6 +1287,60 @@
       "feature1": "Automatisk handel døgnet rundt",
       "feature2": "Sanntids markedsanalyse",
       "feature3": "Risikostyring og stop-loss"
+    },
+    "newUserHero": {
+      "badge": "Ny student",
+      "welcome": "Velkommen, {name}!",
+      "defaultName": "trader",
+      "subtitle": "La oss få deg i gang med din første trading-bot.",
+      "step1": "Velg strategi",
+      "step2": "Start paper bot",
+      "step3": "Følg med på resultater",
+      "cta": "Start din første bot",
+      "demoHint": "Du handler med 100 000 NOK virtuell kapital"
+    },
+    "firstTradeReward": {
+      "title": "Gratulerer med din første handel!",
+      "subtitle": "+200 KLT",
+      "description": "Fortsett å handle for å samle flere belønninger.",
+      "dismiss": "Lukk",
+      "stats": "{count} trade(s) fullført"
+    },
+    "paperToLive": {
+      "title": "Paper trading fremgang",
+      "progress": "{current}/{target} trades fullført",
+      "unlockText": "Fullfør {remaining} trades for å låse opp live trading preview",
+      "unlocked": "Live trading preview er ulåst!",
+      "winningTrades": "{count} vinners"
+    },
+    "emptyBotState": {
+      "title": "Velg din første strategi",
+      "subtitle": "Velg en strategi for å komme i gang med paper trading",
+      "dca": {
+        "name": "DCA",
+        "description": "Dollar-Cost Averaging: Bygg posisjoner gradvis over tid"
+      },
+      "grid": {
+        "name": "Grid Trading",
+        "description": "Kjøp lavt og selg høyt innenfor et prisområde"
+      },
+      "trend": {
+        "name": "Trend Following",
+        "description": "Følg markedstrendene for maksimal avkastning"
+      },
+      "select": "Velg",
+      "safetyHint": "Alle strategier starter med lekepenger"
+    },
+    "getStarted": {
+      "title": "Kom i gang",
+      "subtitle": "Fullfør disse stegene for å mestre trading",
+      "checklist": {
+        "createAccount": "Opprett konto",
+        "completeOnboarding": "Fullfør onboarding",
+        "firstTrade": "Gjør første trade",
+        "leaderboard": "Utforsk leaderboard",
+        "inviteFriend": "Inviter en venn"
+      }
     }
   },
   "footer": {
@@ -1951,7 +2005,52 @@
     "setRiskProfileDesc": "Velg mellom konservativ, balansert eller offensiv strategi",
     "goToDashboard": "Gå til Dashboard",
     "fastRegistration": "Lynrask registrering!",
-    "totalTime": "Total tid: under 2 minutter"
+    "totalTime": "Total tid: under 2 minutter",
+    "speedOnboarding": {
+      "riskProfiles": {
+        "safe": {
+          "name": "Sikker",
+          "description": "Minimal risiko, gradvis vekst",
+          "dailyLoss": "Maks 2% daglig tap"
+        },
+        "balanced": {
+          "name": "Balansert",
+          "description": "Moderat risiko og avkastning",
+          "dailyLoss": "Maks 5% daglig tap"
+        },
+        "offensive": {
+          "name": "Offensiv",
+          "description": "Høyere risiko, større potensial",
+          "dailyLoss": "Maks 10% daglig tap"
+        },
+        "aggressive": {
+          "name": "Aggressiv",
+          "description": "Maksimalt potensial, høy risiko",
+          "dailyLoss": "Maks 15% daglig tap"
+        }
+      },
+      "timerPrefix": "Tid igjen:",
+      "step1": {
+        "title": "Velg risikoprofil",
+        "subtitle": "Hvor mye risiko er du komfortabel med?"
+      },
+      "step2": {
+        "title": "Velg dine coins",
+        "subtitle": "Hvilke kryptovalutaer vil du trade?",
+        "startingCapital": "Startkapital",
+        "paperTradingZeroRisk": "100% risikofritt med lekepenger",
+        "startTrading": "Start trading",
+        "starting": "Starter..."
+      },
+      "step3": {
+        "title": "Du er klar!",
+        "line1": "Din paper trading-konto med",
+        "line2": "er aktiv.",
+        "line3": "Gå til dashboardet for å følge med på resultatene.",
+        "goToDashboard": "Gå til dashboard",
+        "viewActivity": "Se aktivitet"
+      }
+    }
   },
   "orderHistory": {
     "title": "Ordrehistorikk",

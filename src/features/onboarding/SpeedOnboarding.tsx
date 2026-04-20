@@ -187,6 +187,17 @@ export default function SpeedOnboarding({
         // Save preferences
         await supabase.from("user_trading_config").upsert(updatePayload as any);
 
+        // FIX: Also update user_profiles onboarding status
+        await supabase
+          .from("user_profiles")
+          .update({
+            onboarding_completed: true,
+            onboarding_step: 5,
+            onboarding_completed_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+
         // Start paper trading session
         await fetch("/api/auto-trading/paper", {
           method: "POST",

@@ -36,7 +36,10 @@ export interface DashboardContentProps {
     totalPnl: number;
     currentCapital: number;
     startingCapital: number;
+    winningTrades?: number;
   };
+  onboardingCompleted?: boolean;
+  userName?: string;
 }
 
 export function DashboardContent({
@@ -44,6 +47,8 @@ export function DashboardContent({
   trades,
   activeSession,
   stats,
+  onboardingCompleted,
+  userName,
 }: DashboardContentProps) {
   const effectiveBalance = activeSession?.current_capital_nok ?? paperBalance;
   const [useProDashboard] = useState(true);
@@ -59,8 +64,11 @@ export function DashboardContent({
           <DashboardPro 
             paperBalance={effectiveBalance}
             sessionId={activeSession?.id}
+            sessionMode={activeSession?.mode ?? "paper"}
             initialStats={stats}
             trades={trades}
+            onboardingCompleted={onboardingCompleted}
+            userName={userName}
           />
         ) : (
           <CoinbaseHome
