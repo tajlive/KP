@@ -201,24 +201,9 @@ export async function checkAuth(): Promise<boolean> {
       return false;
     }
 
-    // Check if token is expired
-    const expiresAt = session.expires_at;
-    if (expiresAt && expiresAt * 1000 < Date.now()) {
-      console.warn('[Auth] Token expired, attempting refresh...');
-      
-      // Try to refresh
-      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-      
-      if (refreshError || !refreshData.session) {
-        console.error('[Auth] Token refresh failed:', refreshError);
-        await handleAuthFailure();
-        return false;
-      }
-      
-      console.log('[Auth] Token refreshed successfully');
-      return true;
-    }
-
+    // NOTE: With @supabase/ssr, getSession() handles auto-refresh internally.
+    // Explicit refreshSession() is a race-condition bomb — do NOT add it back.
+    // If session exists here, it's valid (or was just refreshed by the client).
     return true;
   } catch (err) {
     console.error('[Auth] Error checking auth state:', err);

@@ -173,3 +173,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
+
+// Also support POST for pg_cron triggering
+export const POST = GET;

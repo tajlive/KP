@@ -142,3 +142,6 @@ async function generateRTS27(store: unknown, periodStart: Date, periodEnd: Date)
 async function submitToRegulator(reports: Mifid2Report[]) {
   return reports.map(r => ({ reportId: r.reportId, success: true }));
 }
+
+// Also support POST for pg_cron triggering
+export const POST = GET;

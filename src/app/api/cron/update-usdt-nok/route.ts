@@ -55,3 +55,6 @@ export async function GET(req: Request) {
     );
   }
 }
+
+// Also support POST for pg_cron triggering
+export const POST = GET;

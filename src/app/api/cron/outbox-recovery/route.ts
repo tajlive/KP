@@ -143,3 +143,6 @@ async function sendAlert(
   // TODO: Send to external alerting system (PagerDuty, Slack, etc.)
   console.error(`[ALERT:${alert.severity}] ${alert.component}: ${alert.message}`);
 }
+
+// Also support POST for pg_cron triggering
+export const POST = GET;
