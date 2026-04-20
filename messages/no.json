@@ -3199,5 +3199,21 @@
       "trustPaper": "Dette er en Klarpakke paper/demo-profil. Resultat er ikke garantert fremover.",
       "trustRisk": "Risikovurdering er forenklet og erstatter ikke egen research."
     }
+  },
+  "pnlBreakdown": {
+    "title": "Slik forstår du resultatene dine",
+    "capitalTitle": "Kapital",
+    "allocated": "Allokert i bot",
+    "available": "Tilgjengelig lekepenger",
+    "cashFlowTitle": "Penger inn og ut",
+    "buyTotal": "Kjøp (penger ut)",
+    "sellTotal": "Salg (penger inn)",
+    "fees": "Gebyrer",
+    "netCashFlow": "Netto cash flow",
+    "pnlTitle": "Gevinst / tap",
+    "realized": "Realisert",
+    "unrealized": "Urealisert",
+    "hint": "Realisert gevinst/tap vises når en posisjon lukkes. Urealisert viser verdiendring på åpne posisjoner. Cash flow er netto penger inn og ut fra handler.",
+    "empty": "Ingen handler å vise ennå. Start en bot for å se resultater."
   }
 }

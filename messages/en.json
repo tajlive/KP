@@ -3199,5 +3199,21 @@
       "trustPaper": "This is a Klarpakke paper/demo profile. Past results do not guarantee future returns.",
       "trustRisk": "Risk labels are simplified and do not replace your own research."
     }
+  },
+  "pnlBreakdown": {
+    "title": "Understanding your results",
+    "capitalTitle": "Capital",
+    "allocated": "Allocated to bot",
+    "available": "Available paper money",
+    "cashFlowTitle": "Money in and out",
+    "buyTotal": "Buys (money out)",
+    "sellTotal": "Sells (money in)",
+    "fees": "Fees",
+    "netCashFlow": "Net cash flow",
+    "pnlTitle": "Profit / Loss",
+    "realized": "Realized",
+    "unrealized": "Unrealized",
+    "hint": "Realized P&L shows when a position is closed. Unrealized shows value change on open positions. Cash flow is net money in and out from trades.",
+    "empty": "No trades to show yet. Start a bot to see results."
   }
 }
