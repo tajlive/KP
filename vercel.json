@@ -139,68 +139,11 @@
       ]
     }
   ],
-  "crons": [
-    {
-      "path": "/api/cron/keepalive",
-      "schedule": "0 6 */5 * *"
-    },
-    {
-      "path": "/api/cron/update-usdt-nok",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/feature-loader",
-      "schedule": "15 * * * *"
-    },
-    {
-      "path": "/api/cron/ai-engine",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/cron/ai-metrics",
-      "schedule": "0 */4 * * *"
-    },
-    {
-      "path": "/api/cron/cron-health",
-      "schedule": "*/30 * * * *"
-    },
-    {
-      "path": "/api/cron/tick",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/health-check",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/cron/signal-health-selfcheck",
-      "schedule": "*/30 * * * *"
-    },
-    {
-      "path": "/api/cron/auto-trade",
-      "schedule": "*/10 * * * *"
-    },
-    {
-      "path": "/api/cron/mifid2-export",
-      "schedule": "0 1 * * *"
-    },
-    {
-      "path": "/api/cron/outbox-recovery",
-      "schedule": "*/10 * * * *"
-    },
-    {
-      "path": "/api/cron/sync-prices",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/daily-summary",
-      "schedule": "0 6 * * *"
-    }
-  ],
+
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1",
-      "NODE_OPTIONS": "--max-old-space-size=8192"
+      "NODE_OPTIONS": "--max-old-space-size=2816"
     }
   }
 }
