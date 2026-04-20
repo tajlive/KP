@@ -27,6 +27,7 @@ import { StreakBadge } from "./StreakBadge";
 import { winRateFromRealizedTrades } from "@/lib/trading/win-rate-from-trades";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { reportTradingIntegrityManualSync } from "@/lib/sentry";
+import PnlBreakdown from "./PnlBreakdown";
 
 /** Code-split: PremiumSignalRow + framer-motion + signal-fetch */
 function MarketDeskSignalSkeleton() {
@@ -339,6 +340,32 @@ export default function PortfolioDashboard({
     return COIN_GRADIENTS[key] ?? "from-gray-400 to-gray-500";
   };
 
+  // P&L Breakdown calculations (must be after positionList and priceForSymbol)
+  const pnlBreakdown = useMemo(() => {
+    const buys = periodTrades.filter((t) => isBuyTrade(t));
+    const sells = periodTrades.filter((t) => !isBuyTrade(t));
+    const totalBuyValue = buys.reduce((sum, t) => sum + normalizeTradeAmount(t), 0);
+    const totalSellValue = sells.reduce((sum, t) => sum + normalizeTradeAmount(t), 0);
+    const totalFees = periodTrades.reduce((sum, t) => sum + (Number(t.fee) || 0), 0);
+    const realizedPnl = periodTrades.reduce(
+      (sum, t) => sum + (t.realized_pnl != null ? Number(t.realized_pnl) : 0),
+      0,
+    );
+    // Unrealized: current value of open positions minus cost basis
+    const unrealizedPnl = positionList.reduce((sum, pos) => {
+      const price = priceForSymbol(pos.symbol);
+      const currentValue = pos.qty * price;
+      return sum + (currentValue - pos.value);
+    }, 0);
+    return {
+      totalBuyValue,
+      totalSellValue,
+      totalFees,
+      realizedPnl,
+      unrealizedPnl,
+    };
+  }, [periodTrades, positionList]);
+
   const recentTrades = displayTrades.slice(0, 6);
   const hasRecentActivity = recentTrades.some(
     (t) =>
@@ -629,6 +656,23 @@ export default function PortfolioDashboard({
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* P&L Breakdown: forklar tallene til brukeren */}
+      {(tradeCountDisplay > 0 || liveTrades.length > 0) && (
+        <div className="animate-fade-in-up stagger-2">
+          <PnlBreakdown
+            startingCapital={sessionStarting}
+            currentCapital={sessionCapital ?? paperBalance}
+            paperBalance={paperBalance}
+            totalBuyValue={pnlBreakdown.totalBuyValue}
+            totalSellValue={pnlBreakdown.totalSellValue}
+            totalFees={pnlBreakdown.totalFees}
+            realizedPnl={pnlBreakdown.realizedPnl}
+            unrealizedPnl={pnlBreakdown.unrealizedPnl}
+            tradeCount={tradeCountDisplay}
+          />
         </div>
       )}
 

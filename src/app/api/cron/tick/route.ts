@@ -587,6 +587,19 @@ async function processSession(
   });
   const indicatorSnapshot = buildIndicatorSnapshot(candles, (signal.indicators as unknown as Record<string, unknown>) || null);
 
+  // Calculate realized P&L for sell trades using session.open_position
+  let realizedPnl: number | undefined;
+  if (signal.action === "sell" && session.open_position) {
+    const entryPrice = session.open_position.entry_price;
+    const positionQty = session.open_position.quantity || 0;
+    const matchedQty = Math.min(quantity, positionQty);
+    if (matchedQty > 0 && entryPrice > 0) {
+      realizedPnl = (currentPrice - entryPrice) * matchedQty;
+      // Round to 2 decimals for NOK display
+      realizedPnl = Math.round(realizedPnl * 100) / 100;
+    }
+  }
+
   // Execute trade
   const totalValue = mul(quantity, currentPrice);
   const idempotencyKey = generateTradeIdempotencyKey(session.id, pair, signal.action);
@@ -606,6 +619,7 @@ async function processSession(
       total_value: totalValue,
       fee: session.mode === "live" ? mul(totalValue, 0.001) : 0,
       status: "filled",
+      realized_pnl: realizedPnl,
       strategy_signal: { ...signal.indicators, stop_loss: stopLossPrice },
       // Explanation data
       reason_code: reasonCode,
