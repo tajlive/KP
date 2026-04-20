@@ -1,18 +1,30 @@
-# 🚨 KRITISK BESLUTNING — Deploy-konvensjon for Klarpakke
-> Skrevet: 2026-04-15 | Eier: Tomar | Må leses av ALLE agenter (Kimi + Perplexity) FØR enhver deploy
+# 🚨 DEPLOY-KONVENSJON — Klarpakke
+> Oppdatert: 2026-04-20 | Eier: Tomar | Auto-deploy aktiv via GitHub Actions + Vercel CLI
 
-## ⛔ ALDRI bruk GitHub-push som deploy-mekanisme
+## ✅ Auto-deploy er AKTIVT
 
-**GitHub → Vercel-integrasjonen er DEAKTIVERT / upålitelig.**  
-Siste 6+ commits ble CANCELED i Vercel automatisk bygg.  
-Rotårsak: concurrent build-limit, betalingsgrense eller webhook-feil.
+**Git push til `main` trigger automatisk deploy til produksjon via GitHub Actions.**
+
+Arkitektur:
+- `push` → `main` → GitHub Actions `🚀 Deploy` → `npm run build` → `npx vercel deploy --prod` → health check → Cloudflare purge
+- `workflow_run` etter `✅ PR Check` beholdes som backup-trigger
+- `workflow_dispatch` beholdes for manuell deploy/preview
+
+### Historisk kontekst (pre-2026-04-20):
+Native GitHub → Vercel-integrasjon var deaktivert pga canceled builds (concurrent build-limit/webhook-feil).  
+Løsning: GitHub Actions med Vercel CLI gir full kontroll over bygg, validering, rollback og notifications.
 
 ---
 
-## ✅ ALLTID bruk Vercel CLI (kprod) for deploy til produksjon
+## ✅ Deploy-flyt (GitHub Actions auto-deploy)
 
-### Riktig deploy-flyt (OBLIGATORISK rekkefølge):
+### Automatisk (standard):
+```bash
+git push origin main
+# → GitHub Actions bygger, deployer, verifiserer automatisk
+```
 
+### Manuell (nødscenario / preview):
 ```bash
 # Steg 1 — DB-status
 npx supabase db status
@@ -20,17 +32,12 @@ npx supabase db status
 # Steg 2 — CI-pipeline (lint + tester)
 npm run lint:gate && npm run test:unit
 
-# Steg 3 — Health check pre-deploy
-# (kimi_monitor check=full)
+# Steg 3 — Deploy via GitHub Actions (manuell trigger)
+# Gå til https://github.com/tajlive/KP/actions/workflows/deploy.yml
+# → Run workflow → velg environment
 
-# Steg 4 — Deploy til Vercel (IKKE git push!)
+# ELLER direkte Vercel CLI (kun nødscenario)
 npx vercel --prod
-
-# Steg 5 — Health check post-deploy
-# (kimi_monitor check=prod)
-
-# Steg 6 — Git push (ETTER vellykket deploy, kun for versjonskontroll)
-git push origin main
 ```
 
 ### Vercel deploy kommandoer:
@@ -48,17 +55,21 @@ git push origin main
 - Manuell `npx vercel --prod` er eneste pålitelige deploy-metode inntil integrasjonen er fikset
 
 ## For Kimi:
-- Bruk `kimi_deploy target=prod` (som kaller `npx vercel --prod` internt)
-- IKKE avslutt session med bare `git push origin main` uten Vercel deploy
+- **Standard**: `git push origin main` er tilstrekkelig — GitHub Actions håndterer resten
+- **Manuell**: `kimi_deploy target=prod` (Vercel CLI) kun ved nødscenario
 - Logg alltid deploy-URL i handoff-fil
+- Verifiser med `https://www.klarpakke.no/api/health` etter deploy
 
 ## For Perplexity:
-- Ved spørsmål om deploy → henvis ALLTID til `npx vercel --prod` eller `kimi_deploy`
-- Git push alene = IKKE deployet til produksjon
-- Valider med kimi_monitor etter deploy
+- Ved spørsmål om deploy → `git push origin main` trigger auto-deploy
+- GitHub Actions bygger, deployer og verifiserer automatisk
+- Manuell deploy: henvis til GitHub Actions → `🚀 Deploy` → Run workflow
 
 ---
 
-## Status på GitHub→Vercel-integrasjon
-- [ ] TODO: Undersøk i Vercel Dashboard → Project Settings → Git → check build status
-- [ ] TODO: Vurder om integrasjonen skal re-aktiveres eller forbli deaktivert
+## Status
+- [x] Auto-deploy via GitHub Actions + Vercel CLI — AKTIV (2026-04-20)
+- [x] `push` trigger på `main` — aktivert i `.github/workflows/deploy.yml`
+- [x] `workflow_run` backup etter PR Check — beholdes
+- [x] Native Vercel Git-integrasjon — fortsatt deaktivert (bruker GitHub Actions i stedet)
+- [x] TypeScript strict gate — `ignoreBuildErrors: false`, deploy feiler raskt hvis build feiler

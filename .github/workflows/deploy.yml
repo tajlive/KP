@@ -1,12 +1,15 @@
-# SIST OPPDATERT: 2026-04-10 - Vercel optimalisering
+# SIST OPPDATERT: 2026-04-20 - Full auto-deploy via push til main
 # ============================================================================
-# DEPLOY — Automatisk ved merge til main + manuell trigger
+# DEPLOY — Automatisk ved push til main + workflow_run backup + manuell trigger
 # ============================================================================
 
 name: 🚀 Deploy
 
 on:
-  # Plan B (no branch protection): only deploy after green PR Check on main
+  # Auto-deploy: push til main trigger deploy umiddelbart
+  push:
+    branches: [main]
+  # Backup: deploy etter vellykket PR Check (hvis push av en eller annen grunn ikke trigger)
   workflow_run:
     workflows: ["✅ PR Check"]
     branches: [main]
@@ -37,11 +40,12 @@ jobs:
     timeout-minutes: 30
     if: |
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success')
 
     env:
-      IS_PRODUCTION: ${{ github.event_name == 'workflow_run' || github.event.inputs.environment == 'production' }}
+      IS_PRODUCTION: ${{ github.event_name == 'push' || github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production') }}
 
     steps:
       - name: Resolve deploy ref (Plan B)
