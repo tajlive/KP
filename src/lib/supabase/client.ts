@@ -36,8 +36,8 @@ export const CONFIG_ERROR_MSG =
 export function getSupabaseClient(): SupabaseClient {
   if (_client) return _client;
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
   const isPlaceholder =
     !url ||
     !key ||
@@ -67,7 +67,7 @@ export function getSupabaseClient(): SupabaseClient {
       },
       auth: {
         persistSession: true,
-        detectSessionInUrl: true,
+        detectSessionInUrl: false, // AuthHashHandler handles hash parsing exclusively
       },
     });
     

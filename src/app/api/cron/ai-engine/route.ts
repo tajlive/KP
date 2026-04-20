@@ -212,3 +212,6 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+// Also support POST for pg_cron triggering
+export const POST = GET;

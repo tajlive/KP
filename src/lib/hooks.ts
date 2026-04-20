@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase/client';
 
 /**
  * Hook for å lytte på Supabase auth-endringer
@@ -14,6 +14,7 @@ export function useAuth() {
   useEffect(() => {
     const checkUser = async () => {
       try {
+        const supabase = getSupabaseClient();
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -27,6 +28,7 @@ export function useAuth() {
 
     checkUser();
 
+    const supabase = getSupabaseClient();
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -50,6 +52,7 @@ export function useSignals(filter?: { status?: string; direction?: string }) {
   const fetchSignals = useCallback(async () => {
     try {
       setIsLoading(true);
+      const supabase = getSupabaseClient();
       let query = supabase.from('signals').select('*');
 
       if (filter?.status) {
@@ -80,6 +83,7 @@ export function useSignals(filter?: { status?: string; direction?: string }) {
 
   // Real-time subscription
   useEffect(() => {
+    const supabase = getSupabaseClient();
     const channel = supabase
       .channel('signals-realtime')
       .on(

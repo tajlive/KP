@@ -110,3 +110,6 @@ export async function GET(request: Request): Promise<NextResponse> {
     checks: results,
   });
 }
+
+// Also support POST for pg_cron triggering
+export const POST = GET;

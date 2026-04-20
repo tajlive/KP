@@ -111,3 +111,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ healthy: false, error: err.message }, { status: 500 });
   }
 }
+
+// Also support POST for pg_cron triggering
+export const POST = GET;

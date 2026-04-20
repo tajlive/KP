@@ -83,9 +83,9 @@ describe('checkAuth', () => {
     expect(result).toBe(true);
   });
 
-  it('should return false for expired session', async () => {
+  it('should return true when session exists (getSession handles refresh)', async () => {
     const mockSession = {
-      expires_at: Math.floor(Date.now() / 1000) - 3600, // 1 hour ago
+      expires_at: Math.floor(Date.now() / 1000) - 3600, // 1 hour ago — @supabase/ssr auto-refreshes
     };
     vi.mocked(supabaseClient.getSupabaseClient).mockReturnValue({
       auth: {
@@ -93,15 +93,11 @@ describe('checkAuth', () => {
           data: { session: mockSession },
           error: null,
         }),
-        refreshSession: vi.fn().mockResolvedValue({
-          data: { session: null },
-          error: new Error('Refresh failed'),
-        }),
       },
     } as any);
 
     const result = await checkAuth();
-    expect(result).toBe(false);
+    expect(result).toBe(true);
   });
 
   it('should return false when no session exists', async () => {

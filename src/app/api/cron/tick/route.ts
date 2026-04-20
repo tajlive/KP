@@ -352,6 +352,7 @@ async function fetchCandles(
 async function processSession(
   db: SupabaseClient<Database>,
   session: TradingSession,
+  userRiskConfig?: RiskConfig,
 ): Promise<TickResult> {
   const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
   const pair = session.trading_pair || "BTCUSDT";
@@ -501,6 +502,24 @@ async function processSession(
     return { session_id: session.id, action: "heartbeat" };
   }
 
+  // For grid strategy: cap positionSize by maxPositionSizePercent
+  const stratCfg = (session.strategy_config as Record<string, unknown>) ?? {};
+  const DEFAULTS: RiskConfig = {
+    maxPositionSizePercent: 10,
+    stopLossPercent: 1,
+    trailingStopLossPercent: 1.5,
+    maxDailyLossPercent: 5,
+    maxDailyTrades: 10,
+    maxDrawdownPercent: 15,
+    maxLeverage: 1,
+  };
+  const riskConfig: RiskConfig = userRiskConfig || (stratCfg.risk_config as RiskConfig) || DEFAULTS;
+
+  if (engineKey === "grid" && signal.positionSize) {
+    const maxGridPos = riskConfig.maxPositionSizePercent / 100;
+    signal.positionSize = Math.min(signal.positionSize, maxGridPos);
+  }
+
   // Calculate trade details
   const positionSize = signal.positionSize ?? 0.1;
   const tradeAmount = session.current_capital * positionSize;
@@ -509,23 +528,6 @@ async function processSession(
   if (quantity <= 0) {
     return { session_id: session.id, action: "hold" };
   }
-
-  // ==========================================================================
-  // CRITICAL: RISK MANAGEMENT CHECK
-  // Read risk config from strategy_config (not separate risk_config column)
-  // ==========================================================================
-  const stratCfg = (session.strategy_config as Record<string, unknown>) ?? {};
-  const DEFAULTS: RiskConfig = {
-    maxPositionSizePercent: 2,
-    stopLossPercent: 1,
-    trailingStopLossPercent: 1.5,
-    maxDailyLossPercent: 5,
-    maxDailyTrades: 10,
-    maxDrawdownPercent: 15,
-    maxLeverage: 1,
-  };
-  const riskConfig: RiskConfig =
-    (stratCfg.risk_config as RiskConfig) || DEFAULTS;
 
   const riskManager = new RiskManager(riskConfig);
 
@@ -753,6 +755,27 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ processed: 0, message: "No active sessions" });
     }
 
+    // Fetch user risk configs in one query to avoid N+1
+    const userIds = [...new Set(sessions.map((s) => s.user_id))];
+    const { data: autoSettings } = await db
+      .from("auto_trade_settings")
+      .select("user_id, risk_profile, max_position_percent")
+      .in("user_id", userIds);
+
+    const riskConfigMap = new Map<string, RiskConfig>();
+    for (const setting of autoSettings || []) {
+      const maxPos = (setting.max_position_percent as number) ?? 10;
+      riskConfigMap.set(setting.user_id as string, {
+        maxPositionSizePercent: maxPos,
+        stopLossPercent: 1,
+        trailingStopLossPercent: 1.5,
+        maxDailyLossPercent: 5,
+        maxDailyTrades: 10,
+        maxDrawdownPercent: 15,
+        maxLeverage: 1,
+      });
+    }
+
     const results: TickResult[] = [];
 
     for (const session of sessions as unknown as TradingSession[]) {
@@ -765,7 +788,7 @@ export async function GET(req: NextRequest) {
       }
 
       try {
-        const result = await processSession(db, session);
+        const result = await processSession(db, session, riskConfigMap.get(session.user_id));
         results.push(result);
 
         // If this was a real trade (not hold/heartbeat), mirror to copy sessions

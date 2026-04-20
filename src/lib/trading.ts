@@ -1,4 +1,6 @@
-import { supabase } from "./supabase";
+import { getSupabaseClient } from "./supabase/client";
+
+const supabase = getSupabaseClient();
 import type { Trade, PortfolioItem, Wallet, TradingStats } from "@/types";
 
 // Trading fee (0.1% - matching Binance)
