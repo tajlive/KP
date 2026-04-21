@@ -352,7 +352,7 @@ async function executeTradeWithLock(
   // 4. Execution Logic (Simulation for Paper, Exchange Call for Live)
   // ========================================================================
   let adjustedQuantity = riskCheck.adjustedTrade?.quantity ?? request.quantity;
-  const regime = request.signalContext?.regime as any || 'unclear';
+  const regime = (request.signalContext?.regime as string) || 'unclear';
 
   // Apply Regime-Aware Safety Multipliers (Secondary enforcer)
   // These are intentionally conservative to act as a fail-safe.
@@ -542,7 +542,7 @@ async function executeTradeWithLock(
   // ========================================================================
   const nowIso = new Date().toISOString();
   
-  const { data: trade, error: tradeError } = await supabase
+  const { data: trade, error: tradeError } = await (supabase as any)
     .from("trades")
     .insert({
       id: tradeId,
@@ -570,7 +570,7 @@ async function executeTradeWithLock(
         degraded_mode: degradedMode,
         degradation_reason: degradationReason,
       }
-    } as any)
+    })
     .select()
     .single();
 

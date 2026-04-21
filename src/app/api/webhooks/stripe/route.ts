@@ -440,7 +440,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
           ? new Date(subWithPeriod.current_period_end * 1000).toISOString()
           : undefined,
         updated_at: new Date().toISOString(),
-      } as any).eq("stripe_subscription_id", subscription.id);
+      }).eq("stripe_subscription_id", subscription.id);
 
     if (error) {
       console.error("[Stripe Webhook] Feil ved subscription update:", error);
@@ -493,9 +493,9 @@ async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
     await supabase
       .from("subscriptions")
       .update({
-        status: "cancelled",
+        status: "cancelled" as string,
         updated_at: new Date().toISOString(),
-      } as any).eq("stripe_subscription_id", subscription.id);
+      }).eq("stripe_subscription_id", subscription.id);
 
     // Nedgrader bruker til free
     if (sub?.user_id) {

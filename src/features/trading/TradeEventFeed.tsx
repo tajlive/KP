@@ -81,7 +81,7 @@ const MOOD_STYLES = {
   },
 };
 
-function formatTimeAgo(timestamp: string, t: any): string {
+function formatTimeAgo(timestamp: string, t: (key: string, values?: Record<string, string | number | Date>) => string): string {
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -111,7 +111,7 @@ function EventCard({
 }: { 
   event: TradeEvent; 
   locale: "no" | "en";
-  t: any;
+  t: (key: string, values?: Record<string, string | number | Date>) => string;
 }) {
   const explanation = generateExplanation({
     reasonCode: event.reasonCode,
@@ -190,7 +190,7 @@ function MiniChartWithMarkers({
   className = "" 
 }: { 
   events: TradeEvent[]; 
-  t: any;
+  t: (key: string, values?: Record<string, string | number | Date>) => string;
   className?: string;
 }) {
   // Generate mock price data for visualization

@@ -54,9 +54,9 @@ export function useThemePreference() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        await supabase
+        await (supabase as any)
           .from("user_profiles")
-          .update({ ui_theme: newTheme, updated_at: new Date().toISOString() } as any)
+          .update({ ui_theme: newTheme, updated_at: new Date().toISOString() })
           .eq("id", user.id);
       } catch {
         // Silently fail - localStorage fungerer fortsatt

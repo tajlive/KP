@@ -62,6 +62,13 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
         </Button>
         <Button
           variant="outline"
+          className="w-full border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300"
+          onClick={() => router.push(`/${locale}/copy-trading`)}
+        >
+          Oppdag tradere å kopiere
+        </Button>
+        <Button
+          variant="outline"
           className="w-full"
           onClick={() => router.push(`/${locale}/dashboard/trade?mode=live`)}
         >

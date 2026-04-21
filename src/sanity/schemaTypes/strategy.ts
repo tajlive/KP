@@ -4,6 +4,22 @@ export default {
   name: 'strategy',
   type: 'document',
   title: 'Trading Strategi',
+  preview: {
+    select: {
+      title: 'name',
+      riskLevel: 'riskLevel',
+      icon: 'icon',
+      active: 'isActive',
+    },
+    prepare({ title, riskLevel, icon, active }: { title?: string; riskLevel?: number; icon?: string; active?: boolean }) {
+      const risk = riskLevel ? `Risiko ${'▓'.repeat(riskLevel)}${'░'.repeat(5 - riskLevel)}` : ''
+      const status = active === false ? ' — ⏸️ Inaktiv' : ' — ✅ Aktiv'
+      return {
+        title: `${icon ?? '🤖'} ${title ?? 'Ukjent strategi'}`,
+        subtitle: `${risk}${status}`,
+      }
+    },
+  },
   fields: [
     {
       name: 'name',

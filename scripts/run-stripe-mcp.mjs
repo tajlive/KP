@@ -6,6 +6,7 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 import fs from "fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -39,8 +40,7 @@ if (!env.STRIPE_SECRET_KEY) {
 }
 
 if (!env.STRIPE_SECRET_KEY) {
-  console.error("[run-stripe-mcp] STRIPE_SECRET_KEY mangler i .env.local, .env.production eller .env.production.local");
-  process.exit(1);
+  gracefulExit(["STRIPE_SECRET_KEY"], "run-stripe-mcp");
 }
 
 const child = spawn(

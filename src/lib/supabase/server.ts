@@ -26,8 +26,8 @@ type SupabaseCookie = {
  * Use in API routes and Server Actions that need full DB access.
  */
 export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
   if (!url || !key) {
     throw new Error("Missing Supabase environment variables");
@@ -57,8 +57,8 @@ export function createServerClient(
   request?: NextRequest,
   response?: NextResponse,
 ): SupabaseClient<Database> | Promise<SupabaseClient<Database>> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim();
 
   // Route Handler path — synchronous, needs request + response for cookie handling
   if (request && response) {

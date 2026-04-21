@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { CoinbaseHome } from "@/features/coinbase/CoinbaseHome";
 import { DashboardPro } from "./DashboardPro";
+import { RiskMetricsPanel } from "./RiskMetricsPanel";
 
 type TradeRow = {
   trading_pair: string;
@@ -76,6 +77,13 @@ export function DashboardContent({
             trades={trades}
             activeSession={activeSession}
           />
+        )}
+        {useProDashboard && (
+          <div className="bg-slate-950 px-4 md:px-8 pb-8">
+            <div className="max-w-7xl mx-auto">
+              <RiskMetricsPanel />
+            </div>
+          </div>
         )}
       </motion.div>
     </div>

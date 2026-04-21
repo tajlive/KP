@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "version": "2.2",
+    "version": "2.3",
     "project": "Klarpakke",
-    "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-04-16",
-    "updated_for": "auth refresh-guard + skills-activation cleanup"
+    "description": "KIMI CLI command aliases for Klarpakke — optimized 2026-04-19",
+    "updated_for": "MCP config consolidation + security hardening"
   },
   "commands": {
     "health": {
@@ -91,24 +91,40 @@
       "command": "curl -s https://www.klarpakke.no/api/health | jq -r '.status' || echo 'unreachable'"
     },
     "mcp:check": {
-      "description": "Verifiser MCP konfigurasjon",
-      "command": "npm run mcp:validate 2>/dev/null || node scripts/validate-mcp-config.mjs"
+      "description": "Verifiser alle MCP-tilkoblinger",
+      "command": "for s in mempalace perplexity supabase supabase-db context7; do echo \"=== $s ===\"; kimi mcp test $s 2>&1 | tail -5; done"
+    },
+    "mcp:list": {
+      "description": "List aktive MCP-servere",
+      "command": "kimi mcp list"
     },
     "watchdog": {
       "description": "Kjør watchdog sjekk",
       "command": "npm run test:watchdog 2>/dev/null || bash scripts/hourly-external-user-watchdog.sh"
     },
     "auth": {
-      "description": "Aktiver auth-spesialisert KIMI-agent",
-      "command": "kimi --agent-file .kimi/agents/auth-agent.yaml"
+      "description": "Aktiver auth-spesialisert KIMI-agent med full MCP",
+      "command": "kimi --agent-file .kimi/agents/auth-agent.yaml --mcp-config-file .kimi/mcp.json"
     },
     "mobile": {
       "description": "Aktiver mobil-sjekk agent for Klarpakke",
-      "command": "kimi --agent-file .kimi/agents/mobile-check-agent.yaml"
+      "command": "kimi --agent-file .kimi/agents/mobile-check-agent.yaml --mcp-config-file .kimi/mcp.json"
     },
     "architect": {
       "description": "Aktiver lead architect agent for Klarpakke",
-      "command": "kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml"
+      "command": "kimi --agent-file .kimi/agents/klarpakke-architect-agent.yaml --mcp-config-file .kimi/mcp.json"
+    },
+    "sanity": {
+      "description": "Aktiver Sanity-spesialisert agent for Klarpakke",
+      "command": "kimi --agent-file .kimi/agents/klarpakke-sanity-agent.md --mcp-config-file .kimi/mcp.json"
+    },
+    "sanity:token": {
+      "description": "Hjelp til å generere Sanity API-tokens",
+      "command": "echo 'Generer tokens på: https://www.sanity.io/manage/project/63qn23si/api' && echo '1. Klikk Tokens → Add API token' && echo '2. Viewer role for read, Editor role for write' && echo '3. Kopier token til .env.local som SANITY_API_READ_TOKEN / SANITY_API_WRITE_TOKEN'"
+    },
+    "mempalace": {
+      "description": "Aktiver MemPalace memory-arkitekt agent (k2.6-optimalisert)",
+      "command": "kimi --agent-file .kimi/agents/mempalace-agent.yaml --mcp-config-file .kimi/mcp.json"
     },
     "plan": {
       "description": "Lag en arkitekt-plan for en oppgave",

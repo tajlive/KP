@@ -46,10 +46,12 @@
         "id": "knowledge",
         "name": "Knowledge Keeper",
         "trigger": "post-task",
-        "model": "claude-sonnet-4",
-        "context_window": 200000,
-        "specialty": "MemPalace sync, decision logging",
-        "prompt_file": ".kimi/swarm/knowledge.md"
+        "model": "kimi-code/kimi-for-coding",
+        "context_window": 262144,
+        "specialty": "MemPalace sync, decision logging, KG maintenance",
+        "prompt_file": ".kimi/swarm/knowledge.md",
+        "mcp_profile": "minimal",
+        "mempalace_tools": ["search", "kg_batch", "write_diary", "auto_tag"]
       }
     ],
     "workflows": {

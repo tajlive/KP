@@ -116,22 +116,23 @@ Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + ni
 
 ## MCP-optimalisering (KIMI CLI)
 
-> Oppdatert: 2026-04-19 | v2.5-minimal for KIMI CLI v1.36.0
+> Oppdatert: 2026-04-21 | v2.6-minimal for KIMI CLI v1.37.0 + k2.6
 
-### KIMI CLI v1.36.0 endringer (påvirker oss)
+### KIMI CLI v1.37.0 + k2.6 endringer (påvirker oss)
 - **`max_steps_per_turn` økt til 500** (fra 100) — KIMI kan nå kjøre lengre oppgaver uten avbrudd
 - **MCP startup er asynkron** med progress indicators — raskere shell-oppstart
 - **`--quiet` flagg** bekreftet for stdin-piping (brukes av `run-kimi-mcp-simple.mjs`)
 - **`show_thinking_stream` default true** — thinking vises automatisk
+- **k2.6 modell**: 262k kontekst, thinking, video_in, image_in — utnytt til store KG-grafer
 
 ### Profiler
 Tre MCP-configurasjoner for ulike arbeidsmodus:
 
 | Profil | Servere | Bruk |
 |---|---|---|
-| **minimal** | 6 | Daglig koding + Perplexity research |
-| **medium** | 9 | Deploy, research, testing |
-| **full** | 18 | Alle integrasjoner |
+| **minimal** | 7 | Daglig koding + MemPalace + Perplexity |
+| **medium** | 10 | Deploy, research, testing + MemPalace |
+| **full** | 18 | Alle integrasjoner + MemPalace v3 |
 
 Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
 
@@ -172,11 +173,94 @@ kimi
 > Sjekk at "perplexity" vises grønt i MCP-statuslinjen
 ```
 
-## Kjente workarounds
+## MemPalace — Prosjektminne v3.0 (KIMI k2.6)
 
+> Oppdatert: 2026-04-21 | MemPalace MCP v3.0 | Zero-dep in-memory FTS | Alle agenter integrert
+
+### Rask verifisering
+```bash
+# Sjekk MemPalace-status
+kimi
+> "sjekk mempalace status"
+
+# Søk i kunnskap
+node scripts/mempalace-search.mjs "auth pattern"
+
+# Agent-kommandoer
+kimi --agent-file .kimi/agents/mempalace-agent.yaml
+# eller: kimi mempalace  (hvis alias konfigurert)
+```
+
+### MemPalace MCP v3.0 — Nytt
+- **Zero-dependency**: Ingen ChromaDB, ingen M1-timeout
+- **In-memory FTS**: Bygger indeks ved startup (async, ikke-blokkerende)
+- **LRU-cache**: 100 entries for raskt gjentatt søk
+- **12 verktøy** (fra 8): `search`, `semantic_search`, `recent_context`, `kg_query`, `kg_add`, `kg_batch`, `kg_find_path`, `read_diary`, `write_diary`, `get_status`, `get_room_info`, `auto_tag`
+- **k2.6-optimalisert**: Batch-operasjoner, 1200 chars snippets, 262k kontekst-utnyttelse
+
+### Agent: `mempalace`
+YAML: `.kimi/agents/mempalace-agent.yaml`  
+Prompt: `.kimi/agents/mempalace-agent.md`
+
+Spesialisert på:
+- Knowledge retrieval før alle oppgaver
+- KG-vedlikehold og batch-operasjoner
+- Memory hygiene (deduplisering, TTL)
+- Cross-domain linking (auth ↔ trading ↔ deploy)
+
+### Rom-struktur
+| Rom | Path | Innhold |
+|---|---|---|
+| Knowledge | `.knowledge/` | ADR-er, patterns, API-kontrakter |
+| Diary | `.kimi/diary.jsonl` | Strukturerte sesjonslogger |
+| Handoffs | `.mempalace/handoffs/` | Deploy/fix-overleveringer |
+| Plans | `.mempalace/plans/` | Task-planer |
+| Docs | `docs/` | Arkitektur, setup-guides |
+| Memory | `memory/` | Ustrukturert minne |
+
+### Agenter med MemPalace-integrasjon (v3.0)
+
+Alle agenter er oppdatert til å bruke MemPalace MCP v3.0-verktøy med korrekte verktøynavn.
+
+| Agent | YAML | Fokus | KG-entiteter |
+|---|---|---|---|
+| **mempalace** | `.kimi/agents/mempalace-agent.yaml` | Memory-arkitektur, KG-vedlikehold | Alle domener |
+| **architect** | `.kimi/agents/klarpakke-architect-agent.yaml` | Full-stack arkitektur | `auth-system`, `trading-engine`, `deployment`, `infra` |
+| **auth** | `.kimi/agents/auth-agent.yaml` | OAuth, session, RLS | `auth-system`, `oauth`, `session`, `refresh-token`, `middleware` |
+| **sanity** | `.kimi/agents/sanity-agent.yaml` | CMS, schema, tokens | `sanity-cms`, `design-tokens`, `groq`, `studio`, `webhooks` |
+| **mobile** | `.kimi/agents/mobile-check-agent.yaml` | Mobil, PWA, Lighthouse | `mobile-ui`, `pwa`, `responsive`, `performance`, `lighthouse` |
+
+**Aktivering:**
+```bash
+kimi --agent-file .kimi/agents/<agent>-agent.yaml
+# eller via alias (commands.json):
+kimi architect   # Lead architect
+kimi auth        # Auth-ekspert
+kimi sanity      # Sanity-ekspert
+kimi mempalace   # Memory-arkitekt
+kimi mobile      # Mobil-sjekk
+```
+
+**Felles MemPalace-protokoll for alle agenter:**
+1. **FØR oppgave:** `search()` + `recent_context(hours=48)` + `kg_query(entity=..., depth=2)`
+2. **ETTER oppgave:** `kg_add()` / `kg_batch()` + `write_diary()` + `auto_tag()`
+
+### Knowledge Graph (KG) — Kritiske entiteter
+- `auth-system` — OAuth, session, refresh-token, RLS
+- `trading-engine` — Strategier, Binance-adapter, sikkerhet
+- `deployment` — Vercel, Supabase, cron-jobs
+- `testing` — Playwright, Vitest, E2E
+- `infra` — DB-migrasjoner, Edge Functions
+
+### Diary-format (JSONL)
+```json
+{"ts":"2026-04-21T12:00:00Z","type":"FEAT","task":"...","status":"GO","rating":4,"agent":"kimi","tags":["auth"]}
+```
+
+### Workaround (eldre)
 | Problem | Løsning | Dato |
 |---|---|---|
-| Mempalace timeout på M1 Mac | ChromaDB-problem, kjør manuelt: `npm run mempalace:sync` | 2026-04-18 |
+| ~~Mempalace timeout på M1 Mac~~ | **LØST** — v3.0 bruker zero-dep in-memory FTS | 2026-04-21 |
 | pg SSL self-signed cert | `ssl: { rejectUnauthorized: false }` i pg.Client | 2026-04-18 |
 | REST exec_sql 404 | Funksjonen heter `exec_sql`, ikke `execute_sql` | 2026-04-18 |
 | ALTER DATABASE postgres | Permission denied i Supabase — bruk Vault i stedet | 2026-04-18 |

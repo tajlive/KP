@@ -98,10 +98,10 @@ export async function POST(request: NextRequest) {
       date: new Date(t.created_at),
       symbol: t.symbol || 'BTC/USDT',
       side: t.side?.toLowerCase() as 'buy' | 'sell',
-      quantity: parseFloat(((t.quantity as any) as string) || '0'),
-      price: parseFloat(((t.price as any) as string) || '0'),
-      fees: parseFloat(((t.fee as any) as string) || '0'),
-      total: parseFloat(((t.total as any) as string) || '0'),
+      quantity: parseFloat(((t.quantity as unknown) as string) || '0'),
+      price: parseFloat(((t.price as unknown) as string) || '0'),
+      fees: parseFloat(((t.fee as unknown) as string) || '0'),
+      total: parseFloat(((t.total as unknown) as string) || '0'),
       currency: 'USD'
     }));
     

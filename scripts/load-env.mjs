@@ -45,6 +45,8 @@ export function loadEnvLocal() {
             } else if (value.startsWith("'") && value.endsWith("'")) {
               value = value.slice(1, -1).replace(/\\'/g, "'");
             }
+            // Defensiv trim etter quote-stripping (forhindrer trailing newline-bugs)
+            value = value.trim();
             
             // Kun sett hvis ikke allerede definert (prioriter eksisterende env)
             // Siden .env.local kommer sist, vil den overstyre .env.mcp.local

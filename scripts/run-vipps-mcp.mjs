@@ -6,6 +6,7 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 import fs from "fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -32,8 +33,7 @@ if (missingInLocal.length) {
 
 const stillMissing = required.filter((k) => !env[k]);
 if (stillMissing.length) {
-  console.error("[run-vipps-mcp] Mangler i .env.local eller .env.production:", stillMissing.join(", "));
-  process.exit(1);
+  gracefulExit(stillMissing, "run-vipps-mcp");
 }
 
 const serverPath = resolve(__dirname, "vipps-mcp-server.mjs");

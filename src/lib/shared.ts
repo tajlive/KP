@@ -67,6 +67,14 @@ export interface OpenPosition {
   quantity: number;
   entry_price: number;
   entry_time: string;
+  /** FIFO lot-tracking for correct cost basis (added 2026-04) */
+  lots?: Array<{
+    id: string;
+    quantity: number;
+    entryPrice: number;
+    timestamp: string;
+    originalQuantity: number;
+  }>;
 }
 
 export interface Trade {

@@ -1,0 +1,62 @@
+name: Sanity Guard
+
+on:
+  push:
+    paths:
+      - 'src/sanity/**'
+      - 'src/sanity.config.ts'
+      - 'sanity.cli.ts'
+      - 'scripts/sanity-check.mjs'
+      - 'scripts/sanity-auto-setup.mjs'
+      - '.env*'
+  pull_request:
+    paths:
+      - 'src/sanity/**'
+      - 'src/sanity.config.ts'
+      - 'sanity.cli.ts'
+      - 'scripts/sanity-check.mjs'
+  schedule:
+    - cron: '0 2 * * *'  # Nightly 02:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: sanity-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sanity-guard:
+    name: Sanity Config Guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install deps
+        run: npm ci --prefer-offline --ignore-scripts
+
+      - name: Sanity Guard (strict)
+        run: node scripts/sanity-check.mjs --json
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
+          NEXT_PUBLIC_SANITY_API_VERSION: ${{ secrets.NEXT_PUBLIC_SANITY_API_VERSION }}
+          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET }}
+
+      - name: Sanity Guard Summary
+        if: always()
+        run: |
+          echo '### Sanity Guard' >> $GITHUB_STEP_SUMMARY
+          node scripts/sanity-check.mjs --json | jq -r 'if .ok then "✅ 0 errors" else "❌ " + (.error_count|tostring) + " errors" end' >> $GITHUB_STEP_SUMMARY || true
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
+          NEXT_PUBLIC_SANITY_API_VERSION: ${{ secrets.NEXT_PUBLIC_SANITY_API_VERSION }}
+          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET }}

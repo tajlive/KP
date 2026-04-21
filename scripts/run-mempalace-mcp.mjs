@@ -307,7 +307,11 @@ class MempalaceMCP {
 
     switch (method) {
       case 'initialize':
-        return { serverInfo: this.serverInfo };
+        return {
+          protocolVersion: '2024-11-05',
+          capabilities: { tools: { listChanged: false } },
+          serverInfo: this.serverInfo
+        };
 
       case 'tools/list':
         return {
@@ -441,6 +445,12 @@ process.stdin.setEncoding('utf8');
 
 let buffer = '';
 
+// Send notifications/initialized after startup (no id field — MCP spec)
+process.stdout.write(JSON.stringify({
+  jsonrpc: '2.0',
+  method: 'notifications/initialized'
+}) + '\n');
+
 process.stdin.on('data', async (chunk) => {
   buffer += chunk;
 
@@ -453,18 +463,20 @@ process.stdin.on('data', async (chunk) => {
     try {
       const req = JSON.parse(line);
       const result = await mcp.handleRequest(req);
-      process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: req.id, result }) + '\n');
+      // id must be string or int — never null (MCP spec)
+      process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: req.id ?? 0, result }) + '\n');
     } catch (err) {
+      const reqId = (() => { try { return JSON.parse(line)?.id ?? 0; } catch { return 0; } })();
       process.stdout.write(JSON.stringify({
         jsonrpc: '2.0',
-        id: null,
+        id: reqId,
         error: { code: -32000, message: err.message }
       }) + '\n');
     }
   }
 });
 
-console.error('🏛️  Mempalace MCP Server started (FTS5)');
+console.error('\u{1F3DB}\uFE0F  Mempalace MCP Server started (FTS5)');
 console.error(`   Wing: ${mcp.config.wing}`);
 console.error(`   Backend: ${mcp.config.storage?.search_backend || 'sqlite-fts5'}`);
 console.error(`   Rooms: ${mcp.config.rooms.length}`);

@@ -108,7 +108,7 @@ export class RiskStateStore {
       }
       
       if (data) {
-        const persisted = (data.state as any) as PersistedRiskState;
+        const persisted = (data.state as unknown) as PersistedRiskState;
         
         // Cache in Redis for next read
         await this.redis.set(redisKey, JSON.stringify(persisted), this.redisTtl);
@@ -285,7 +285,7 @@ export class RiskStateStore {
         return [];
       }
       
-      return data?.map(d => (d.state as any) as PersistedRiskState) || [];
+      return data?.map(d => (d.state as unknown) as PersistedRiskState) || [];
       
     } catch (error) {
       console.error('[RiskStateStore] Error getting all states:', error);

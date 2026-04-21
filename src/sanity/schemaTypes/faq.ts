@@ -4,6 +4,21 @@ export default {
   name: 'faq',
   type: 'document',
   title: 'FAQ',
+  preview: {
+    select: {
+      title: 'question',
+      subtitle: 'category',
+      active: 'language',
+    },
+    prepare({ title, subtitle, active }: { title?: string; subtitle?: string; active?: string }) {
+      const cat = subtitle ? `[${subtitle}] ` : ''
+      const lang = active === 'en' ? '🇬🇧' : '🇳🇴'
+      return {
+        title: title ?? 'Ukjent spørsmål',
+        subtitle: `${lang} ${cat}`,
+      }
+    },
+  },
   fields: [
     {
       name: 'question',

@@ -57,9 +57,7 @@
     "lastUpdated": "Last updated: {date}",
     "fallbackData": "⚠️ Live data unavailable, showing cache"
   },
-  "search": {
-    "placeholder": "Search users..."
-  },
+  "search": "Search",
   "systemHealth": {
     "title": "System Health",
     "lastChecked": "Last checked",
@@ -120,7 +118,6 @@
   "loggingIn": "Logging in...",
   "login": "Log in",
   "resetPassword": "Reset password",
-  "search": "Search",
   "searchUsers": "Search users",
   "selectTier": "Select tier",
   "usersPage": {

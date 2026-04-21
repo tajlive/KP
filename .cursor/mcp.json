@@ -6,136 +6,160 @@
       "for": "KIMI CLI",
       "description": "Full MCP-konfigurasjon for Klarpakke - alle integrasjoner aktivert"
     },
-    
     "supabase": {
       "description": "Offisiell Supabase MCP - Management API, projekter, Edge Functions",
       "command": "node",
-      "args": ["scripts/run-official-supabase-mcp.mjs"]
+      "args": [
+        "scripts/run-official-supabase-mcp.mjs"
+      ]
     },
-    
     "supabase-db": {
       "description": "Supabase Postgres MCP - SQL queries, tabeller, migrasjoner",
       "command": "node",
-      "args": ["scripts/run-supabase-mcp.mjs"]
+      "args": [
+        "scripts/run-supabase-mcp.mjs"
+      ]
     },
-    
     "github": {
       "description": "GitHub MCP - repo, issues, pull requests",
       "command": "node",
-      "args": ["scripts/run-github-mcp.mjs"]
+      "args": [
+        "scripts/run-github-mcp.mjs"
+      ]
     },
-    
     "linear": {
       "description": "Linear MCP - issues, projects, teams",
       "command": "node",
-      "args": ["scripts/run-linear-mcp.mjs"]
+      "args": [
+        "scripts/run-linear-mcp.mjs"
+      ]
     },
-    
     "vercel": {
       "description": "Vercel MCP - deployments, projects, domains",
       "command": "node",
-      "args": ["scripts/run-vercel-mcp.mjs"]
+      "args": [
+        "scripts/run-vercel-mcp.mjs"
+      ]
     },
-    
     "filesystem": {
       "description": "Filesystem MCP - filoperasjoner i prosjektet",
       "command": "node",
-      "args": ["scripts/run-filesystem-mcp.mjs"]
+      "args": [
+        "scripts/run-filesystem-mcp.mjs"
+      ]
     },
-    
     "context7": {
       "description": "Context7 MCP - bibliotekdokumentasjon",
       "command": "node",
-      "args": ["scripts/run-context7-mcp.mjs"]
+      "args": [
+        "scripts/run-context7-mcp.mjs"
+      ]
     },
-    
     "perplexity": {
-      "description": "Perplexity MCP - AI-søk",
+      "description": "Perplexity MCP - AI-s\u00f8k",
       "command": "node",
-      "args": ["scripts/run-perplexity-mcp.mjs"]
+      "args": [
+        "scripts/run-perplexity-mcp.mjs"
+      ]
     },
-    
     "opik": {
       "description": "Opik MCP - LLM observability, traces, metrics (krever OPIK_API_KEY)",
       "command": "node",
-      "args": ["scripts/run-opik-mcp.mjs"]
+      "args": [
+        "scripts/run-opik-mcp.mjs"
+      ]
     },
-    
     "sentry": {
       "description": "Sentry MCP - error tracking, issues, releases",
       "command": "node",
-      "args": ["scripts/run-sentry-mcp.mjs"]
+      "args": [
+        "scripts/run-sentry-mcp.mjs"
+      ]
     },
-    
     "stripe": {
       "description": "Stripe MCP - payments, subscriptions, billing",
       "command": "node",
-      "args": ["scripts/run-stripe-mcp.mjs"]
+      "args": [
+        "scripts/run-stripe-mcp.mjs"
+      ]
     },
-    
     "vipps": {
       "description": "Vipps MCP - Norwegian payment processing",
       "command": "node",
-      "args": ["scripts/run-vipps-mcp.mjs"]
+      "args": [
+        "scripts/run-vipps-mcp.mjs"
+      ]
     },
-    
     "klarpakke": {
-      "description": "Klarpakke Supabase MCP — DB-spørringer via Edge Function",
+      "description": "Klarpakke Supabase MCP \u2014 DB-sp\u00f8rringer via Edge Function",
       "command": "node",
-      "args": ["scripts/run-klarpakke-mcp.mjs"]
+      "args": [
+        "scripts/run-klarpakke-mcp.mjs"
+      ]
     },
-    
     "resend": {
       "description": "Resend MCP - epostutsendelse",
       "command": "npx",
-      "args": ["-y", "resend-mcp@2.2.0"],
+      "args": [
+        "-y",
+        "resend-mcp@2.2.0"
+      ],
       "env": {
         "RESEND_API_KEY": "${RESEND_API_KEY}"
       }
     },
-    
     "sanity": {
-      "description": "Sanity MCP - CMS queries, documents, schema types",
+      "description": "Sanity MCP v2 \u2014 CMS read + write",
       "command": "node",
-      "args": ["scripts/run-sanity-mcp.mjs"]
+      "args": [
+        "scripts/run-sanity-mcp-v2.mjs"
+      ]
     },
-    
     "playwright": {
       "description": "Playwright MCP - browser automation",
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
     },
-    
     "chrome-devtools": {
       "description": "Chrome DevTools MCP - debugging",
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@0.20.3", "--no-usage-statistics"]
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@0.20.3",
+        "--no-usage-statistics"
+      ]
     },
-    
     "cloudflare": {
       "description": "Cloudflare MCP - DNS, CDN, Workers, Pages, SSL",
       "command": "node",
-      "args": ["scripts/run-cloudflare-mcp.mjs"]
+      "args": [
+        "scripts/run-cloudflare-mcp.mjs"
+      ]
     },
-    
     "mempalace": {
       "description": "Mempalace MCP - prosjektkunnskap, knowledge graph, diary",
       "command": "node",
-      "args": ["scripts/run-mempalace-mcp.mjs"]
+      "args": [
+        "scripts/run-mempalace-mcp.mjs"
+      ]
     },
-    
     "binance": {
       "description": "Binance MCP - trading, markedsdata, konto (krever BINANCE_API_KEY)",
       "command": "node",
-      "args": ["scripts/run-binance-mcp.mjs"]
+      "args": [
+        "scripts/run-binance-mcp.mjs"
+      ]
     },
-    
     "openai": {
       "description": "OpenAI MCP - chat, embeddings, assistants (krever OPENAI_API_KEY)",
       "command": "node",
-      "args": ["scripts/run-openai-mcp.mjs"]
+      "args": [
+        "scripts/run-openai-mcp.mjs"
+      ]
     },
-    
     "_disabled": {
       "klarpakke-remote-mcp-old": {
         "reason": "Erstattet av 'klarpakke' MCP",

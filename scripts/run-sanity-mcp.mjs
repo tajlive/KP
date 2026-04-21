@@ -110,11 +110,9 @@ class SanityMCP {
     switch (method) {
       case 'initialize':
         return {
-          serverInfo: this.serverInfo,
-          projectId: PROJECT_ID,
-          dataset: DATASET,
-          apiVersion: API_VERSION,
-          hasReadToken: !!READ_TOKEN
+          protocolVersion: '2024-11-05',
+          capabilities: { tools: { listChanged: false } },
+          serverInfo: this.serverInfo
         };
 
       case 'tools/list':
@@ -185,6 +183,10 @@ class SanityMCP {
             throw new Error(`Ukjent tool: ${name}`);
         }
 
+      case 'notifications/initialized':
+        // MCP lifecycle notification — ignorer, ikke send respons
+        return undefined;
+
       default:
         throw new Error(`Ukjent method: ${method}`);
     }
@@ -207,16 +209,35 @@ process.stdin.on('data', async (chunk) => {
   for (const line of lines) {
     if (!line.trim()) continue;
 
+    let req;
     try {
-      const req = JSON.parse(line);
-      const result = await mcp.handleRequest(req);
-      process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: req.id, result }) + '\n');
+      req = JSON.parse(line);
     } catch (err) {
       process.stdout.write(JSON.stringify({
         jsonrpc: '2.0',
         id: null,
-        error: { code: -32000, message: err.message }
+        error: { code: -32700, message: 'Parse error: ' + err.message }
       }) + '\n');
+      continue;
+    }
+
+    try {
+      const result = await mcp.handleRequest(req);
+      // Ikke send respons for notifications (de har ingen id)
+      if (req.id !== undefined && req.id !== null) {
+        process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: req.id, result }) + '\n');
+      }
+    } catch (err) {
+      // Ikke send error-respons for notifications (de har ingen id)
+      if (req.id !== undefined && req.id !== null) {
+        process.stdout.write(JSON.stringify({
+          jsonrpc: '2.0',
+          id: req.id,
+          error: { code: -32000, message: err.message }
+        }) + '\n');
+      } else {
+        console.error('Notification error:', err.message);
+      }
     }
   }
 });

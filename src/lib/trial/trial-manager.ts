@@ -123,12 +123,12 @@ async function startTrial(userId: string): Promise<TrialStatus> {
   const expiresAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // +14 dager
   
   // Oppdater profile (trial-felter kan mangle i generert type)
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from('user_profiles')
     .update({
       trial_started_at: now.toISOString(),
       trial_expires_at: expiresAt.toISOString(),
-    } as any)
+    })
     .eq('id', userId);
   
   if (error) {
@@ -147,11 +147,11 @@ async function startTrial(userId: string): Promise<TrialStatus> {
   
   // Log trial start event (for analytics)
   try {
-    await supabase.from('events').insert({
+    await (supabase as any).from('events').insert({
       user_id: userId,
       event_type: 'trial_started',
       event_data: { trial_days: 14, expires_at: expiresAt.toISOString() },
-    } as any);
+    });
   } catch (logError) {
     console.error('Failed to log trial start:', logError);
   }

@@ -46,8 +46,8 @@ const TOKENS_QUERY = `*[_type == "designTokens" && isActive == true][0] {
   lastUpdated
 }`;
 
-function generateCSS(tokens: Record<string, any>): string {
-  const { brandColors, semanticColors, darkMode, typography, spacing, borderRadius, shadows } = tokens;
+function generateCSS(tokens: Record<string, unknown>): string {
+  const { brandColors, semanticColors, darkMode, typography, spacing, borderRadius, shadows } = tokens as Record<string, Record<string, string>>;
 
   return `
 :root {
@@ -98,7 +98,7 @@ export async function getSanityTokensCSS(): Promise<string> {
     }
 
     const json = await res.json();
-    const tokens = json.result as Record<string, any> | null;
+    const tokens = json.result as Record<string, unknown> | null;
 
     if (tokens && tokens.isActive) {
       return generateCSS(tokens);

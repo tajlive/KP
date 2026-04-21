@@ -1,0 +1,9 @@
+version: 1
+agent:
+  extend: default
+  name: mempalace
+  system_prompt_path: ./mempalace-agent.md
+  # KIMI k2.6-spesifikke innstillinger
+  model: kimi-code/kimi-for-coding
+  thinking: true
+  max_context_size: 262144

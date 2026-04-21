@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
         {
           user_id: user.id,
           course_id: courseId,
-          progress_percentage: 0,
-          completed: false,
-          enrolled_at: new Date().toISOString(),
-        } as any,
+          progress_percent: 0,
+          is_completed: false,
+          started_at: new Date().toISOString(),
+        } as never,
         {
           onConflict: "user_id,course_id",
         },

@@ -129,10 +129,26 @@
   "speedOnboarding": {
     "timerPrefix": "Start trading på",
     "riskProfiles": {
-      "safe": { "name": "Trygg", "description": "Lavt risiko, jevn vekst", "dailyLoss": "2% maks dagstap" },
-      "balanced": { "name": "Balansert", "description": "God balanse mellom risiko og avkastning", "dailyLoss": "5% maks dagstap" },
-      "offensive": { "name": "Offensiv", "description": "Høyere risiko, høyere potensial", "dailyLoss": "8% maks dagstap" },
-      "aggressive": { "name": "Aggressiv", "description": "Maks risiko for erfarne", "dailyLoss": "12% maks dagstap" }
+      "safe": {
+        "name": "Trygg",
+        "description": "Lavt risiko, jevn vekst",
+        "dailyLoss": "2% maks dagstap"
+      },
+      "balanced": {
+        "name": "Balansert",
+        "description": "God balanse mellom risiko og avkastning",
+        "dailyLoss": "5% maks dagstap"
+      },
+      "offensive": {
+        "name": "Offensiv",
+        "description": "Høyere risiko, høyere potensial",
+        "dailyLoss": "8% maks dagstap"
+      },
+      "aggressive": {
+        "name": "Aggressiv",
+        "description": "Maks risiko for erfarne",
+        "dailyLoss": "12% maks dagstap"
+      }
     },
     "step1": {
       "title": "Velg risikoprofil",
@@ -174,9 +190,21 @@
       "subtitle": "Vi har ferdige maler som passer din risikovilje.",
       "preloaded": "Forhåndslastet",
       "templates": {
-        "dcaTrygg": { "title": "Trygg Sparing", "riskLabel": "Lav risiko", "desc": "Kjøper fast hver uke. Perfekt for langsiktig formue." },
-        "trendBalansert": { "title": "Vekst", "riskLabel": "Middels risiko", "desc": "Følger markedets trender. Balansert risiko og avkastning." },
-        "multisignalAktiv": { "title": "Aggressiv", "riskLabel": "Høy risiko", "desc": "Aktiv trading med mange signaler. For deg som vil ha action." }
+        "dcaTrygg": {
+          "title": "Trygg Sparing",
+          "riskLabel": "Lav risiko",
+          "desc": "Kjøper fast hver uke. Perfekt for langsiktig formue."
+        },
+        "trendBalansert": {
+          "title": "Vekst",
+          "riskLabel": "Middels risiko",
+          "desc": "Følger markedets trender. Balansert risiko og avkastning."
+        },
+        "multisignalAktiv": {
+          "title": "Aggressiv",
+          "riskLabel": "Høy risiko",
+          "desc": "Aktiv trading med mange signaler. For deg som vil ha action."
+        }
       }
     },
     "step3": {
