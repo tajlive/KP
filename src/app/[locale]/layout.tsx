@@ -24,7 +24,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FeatureFlagProvider } from "@/lib/feature-flags";
 import { getFlagsAsync } from "@/lib/flags";
 import Script from "next/script";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import { SURFACE } from "@/lib/design/tokens";
 import { CdsProvider } from "@/app/providers/CdsProvider";
 import "../globals.css";
@@ -77,10 +77,10 @@ import "../globals.css";
  * - Font loading: Minimal FOUT for Inter (swap)
  */
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-inter", // Keep variable name to avoid refactoring CSS
   preload: true,
   adjustFontFallback: true,
   fallback: [
@@ -203,7 +203,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   preconnect("https://fonts.gstatic.com", { crossOrigin: "anonymous" });
 
   return (
-    <html lang={locale} className={inter.variable} suppressHydrationWarning>
+    <html lang={locale} className={outfit.variable} suppressHydrationWarning>
       <head suppressHydrationWarning>
         {metaDescription != null ? (
           <meta name="description" content={metaDescription} />
@@ -283,7 +283,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         />
       </head>
       <body
-        className={`${inter.className} font-sans antialiased bg-kp-bg-primary text-kp-text-primary min-h-screen`}
+        className={`${outfit.className} font-sans antialiased bg-kp-bg-primary text-kp-text-primary min-h-screen`}
         suppressHydrationWarning
       >
         <ThemeProvider
