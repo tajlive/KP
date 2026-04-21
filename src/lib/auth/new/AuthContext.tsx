@@ -42,17 +42,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initialFetchRef.current = true;
 
     const supabase = createClient();
+    let isMounted = true;
 
     // Hent initial session (getSession refreshes expired tokens, getUser does not)
     const initAuth = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
+        if (!isMounted) return;
         if (error) throw error;
         setUser(session?.user ?? null);
       } catch (err) {
+        if (!isMounted) return;
         setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -60,13 +63,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Lytt på auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
+        if (!isMounted) return;
         setUser(session?.user ?? null);
         setLoading(false);
       }
     );
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);

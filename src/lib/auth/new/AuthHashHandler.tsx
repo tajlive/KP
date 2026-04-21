@@ -24,6 +24,11 @@ export function AuthHashHandler() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip on callback page — callback/page.tsx handles PKCE exchange exclusively
+    if (typeof window !== "undefined" && window.location.pathname.includes("/callback")) {
+      return;
+    }
+
     // Sjekk for error i URL (f.eks. access_denied fra OAuth)
     const urlError = searchParams.get("error");
     const errorDescription = searchParams.get("error_description");

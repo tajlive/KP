@@ -9,40 +9,54 @@
  * - Error-redirect til /{locale}/login?error=... istedenfor inline feil
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+
+// Module-level guard — survives React Strict Mode double-mounting
+const handledCodes = new Set<string>();
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const handledRef = useRef(false);
 
   // Hent locale fra URL-path (/no/callback → 'no')
   const locale = pathname?.split("/")[1] || "no";
 
   useEffect(() => {
-    // Strict Mode guard: kjør bare én gang
-    if (handledRef.current) return;
-    handledRef.current = true;
+    // Read params directly from URL for stability (avoids re-fire on searchParams ref change)
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
+    const errorParam = url.searchParams.get("error");
+    const errorDescription = url.searchParams.get("error_description");
+    const cacheKey = `${code || errorParam || "none"}-${pathname}`;
+
+    // Guard 1: Module-level — survives React Strict Mode remounts
+    if (handledCodes.has(cacheKey)) return;
+
+    // Guard 2: sessionStorage — survives page reloads within same tab session
+    const storageKey = `pkce-handled-${cacheKey}`;
+    if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(storageKey)) {
+      return;
+    }
+
+    handledCodes.add(cacheKey);
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem(storageKey, Date.now().toString());
+    }
 
     const handleCallback = async () => {
       const supabase = createClient();
 
-      // 1. Google/Supabase returnerte en feil (access_denied, etc.)
-      const errorParam = searchParams.get("error");
-      const errorDescription = searchParams.get("error_description");
-
+      // 1. OAuth provider returnerte en feil (access_denied, etc.)
       if (errorParam) {
         const msg = encodeURIComponent(errorDescription || errorParam);
         router.replace(`/${locale}/login?error=${msg}`);
         return;
       }
 
-      // 2. PKCE: Exchange authorization code for session
-      const code = searchParams.get("code");
-
+      // 2. PKCE: Exchange authorization code for session (rate-limited by Supabase — guard above prevents duplicates)
       if (code) {
         const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
@@ -69,7 +83,8 @@ export default function AuthCallbackPage() {
     };
 
     handleCallback();
-  }, [router, searchParams, locale]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Alltid vis spinner (redirect skjer i useEffect)
   return (

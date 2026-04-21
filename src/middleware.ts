@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing.config";
+import { createRefreshProtectedFetch } from "./lib/auth/refresh-guard";
 
 
 // Opprett next-intl middleware
@@ -252,6 +253,9 @@ export async function middleware(request: NextRequest) {
             });
           });
         },
+      },
+      global: {
+        fetch: createRefreshProtectedFetch(fetch, { source: "middleware", path: pathname }),
       },
     }
   );

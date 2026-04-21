@@ -3,6 +3,9 @@
 # =============================================================================
 node_modules/
 .pnp
+
+# MCP lokal config med API-nøkkel
+config/perplexity-local-mcp.json
 .pnp.js
 .yarn/install-state.gz
 package-lock.json
@@ -241,3 +244,7 @@ supabase/sql-scripts/grant-professor-tom-arne.sql
 storybook-static
 .env.vercel
 .env.local.save
+config/perplexity-local-mcp.json
+
+# Vercel CLI env files
+.env.vercel-check
