@@ -1,9 +1,28 @@
 import type { Rule } from 'sanity'
+import type React from 'react'
 
 export default {
   name: 'testimonial',
   type: 'document',
   title: 'Tilbakemelding',
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'role',
+      media: 'avatar',
+      rating: 'rating',
+      active: 'isActive',
+    },
+    prepare({ title, subtitle, media, rating, active }: { title?: string; subtitle?: string; media?: string | React.ReactNode; rating?: number; active?: boolean }) {
+      const stars = rating ? '★'.repeat(rating) : ''
+      const status = active === false ? ' — 🚫 Skjult' : ''
+      return {
+        title: title ?? 'Ukjent',
+        subtitle: `${stars}${status}${subtitle ? ' — ' + subtitle : ''}`,
+        media,
+      }
+    },
+  },
   fields: [
     {
       name: 'name',

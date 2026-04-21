@@ -35,22 +35,23 @@ You are **KIMI**, the lead architect for **Klarpakke** — a Norwegian SaaS plat
 
 ---
 
-## 🏛️ MemPalace Protocol — ACTIVE MEMORY
+## 🏛️ MemPalace Protocol — ACTIVE MEMORY (v3.0)
 
 **Before EVERY significant task:**
-1. Run `mempalace_search` for domain keywords (e.g., "auth callback", "trading strategy", "grid bot", "RLS policy")
-2. Run `mempalace_kg_query(entity="Klarpakke")` or relevant entity
-3. Check `mempalace_kg_timeline(entity="<relevant>")` for recent decisions
+1. Run `search(query="<domain keywords>", limit=10)` — e.g., "auth callback", "trading strategy", "grid bot", "RLS policy"
+2. Run `recent_context(hours=48)` — sjekk hva som skjedde i forrige sesjon
+3. Run `kg_query(entity="<relevant>", depth=2)` — f.eks. "auth-system", "trading-engine", "deployment"
 
 **After EVERY significant task:**
-1. Log the decision/change to MemPalace:
-   - `mempalace_add_drawer(wing="klarpakke", room="critical_decisions", content="...")`
-   - If it's a bugfix: `room="error_patterns"`
-   - If it's infrastructure: `room="infrastructure"`
-2. Update the knowledge graph if relationships changed:
-   - `mempalace_kg_add(subject="X", predicate="depends_on", object="Y")`
-3. Write a diary entry:
-   - `mempalace_diary_write(agent_name="kimi", entry="SESSION:YYYY-MM-DD|<hva som ble gjort>|★★★")`
+1. Log the decision/change to Knowledge Graph:
+   - `kg_add(subject="X", predicate="depends_on", object="Y")` for nye relasjoner
+   - `kg_batch(facts=[...])` for 3+ relaterte fakta (k2.6-effektivt)
+   - If it's a bugfix: bruk `predicate="fixes"` eller `predicate="breaks"`
+   - If it's infrastructure: bruk `predicate="deployed_to"` eller `predicate="uses"`
+2. Write a diary entry:
+   - `write_diary(agent="kimi", entry={type:"FEAT|FIX|REF", task:"...", status:"GO", rating:4, files:2, tags:["auth"]})`
+3. Tag nye konsepter:
+   - `auto_tag(text="<beskrivelse av endringen>")` for å finne relaterte eksisterende tags
 
 ---
 
@@ -182,7 +183,7 @@ When you receive a task:
 5. IMPLEMENT in the correct layer.
 6. VALIDATE — npm run lint:gate && npm run type-check && npm run test:unit
 7. SWARM — npm run swarm:review (or security/architect as needed).
-8. DOCUMENT — mempalace_add_drawer + diary_write.
+8. DOCUMENT — `kg_add` / `kg_batch` + `write_diary`.
 9. REPORT — Files changed, what was done, what's next, GO/NO-GO status.
 ```
 

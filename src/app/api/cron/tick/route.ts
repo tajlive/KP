@@ -15,6 +15,11 @@ import type { TradeSide, TradingSession } from "@/types/trading";
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/types/database.types";
+import {
+  createLedger, addLot, sellFIFO, getWeightedEntryPrice,
+  getTotalQuantity, migrateFromLegacy, toLegacyPosition,
+  type LedgerState,
+} from "@/lib/trading/position-ledger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -587,16 +592,27 @@ async function processSession(
   });
   const indicatorSnapshot = buildIndicatorSnapshot(candles, (signal.indicators as unknown as Record<string, unknown>) || null);
 
-  // Calculate realized P&L for sell trades using session.open_position
+  // Calculate realized P&L for sell trades using FIFO cost basis
   let realizedPnl: number | undefined;
+  let updatedLedgerState: LedgerState | null = null;
   if (signal.action === "sell" && session.open_position) {
-    const entryPrice = session.open_position.entry_price;
-    const positionQty = session.open_position.quantity || 0;
+    // Build FIFO ledger: use lots if available, otherwise migrate from legacy
+    const ledger: LedgerState = session.open_position.lots
+      ? { side: session.open_position.side || "long", lots: session.open_position.lots as LedgerState["lots"] }
+      : migrateFromLegacy(session.open_position);
+
+    const positionQty = getTotalQuantity(ledger);
     const matchedQty = Math.min(quantity, positionQty);
-    if (matchedQty > 0 && entryPrice > 0) {
-      realizedPnl = (currentPrice - entryPrice) * matchedQty;
-      // Round to 2 decimals for NOK display
-      realizedPnl = Math.round(realizedPnl * 100) / 100;
+    if (matchedQty > 0) {
+      try {
+        const sellResult = sellFIFO(ledger, matchedQty, currentPrice);
+        realizedPnl = sellResult.realizedPnl;
+        updatedLedgerState = { ...ledger, lots: sellResult.remainingLots };
+      } catch {
+        // Fallback to simple P&L if FIFO fails (e.g., insufficient quantity edge case)
+        const entryPrice = session.open_position.entry_price;
+        realizedPnl = Math.round((currentPrice - entryPrice) * matchedQty * 100) / 100;
+      }
     }
   }
 
@@ -640,12 +656,52 @@ async function processSession(
     throw new Error(`Trade insert failed: ${tradeError.message}`);
   }
 
+  // Update session position state with FIFO lots
+  if (signal.action === "buy") {
+    // Build ledger from current position (or create new)
+    const ledger: LedgerState = session.open_position?.lots
+      ? { side: session.open_position.side || "long", lots: session.open_position.lots as LedgerState["lots"] }
+      : session.open_position
+        ? migrateFromLegacy(session.open_position)
+        : createLedger("long");
+
+    const updatedLedger = addLot(ledger, quantity, currentPrice);
+    const legacyPos = toLegacyPosition(updatedLedger);
+
+    if (legacyPos) {
+      await db
+        .from("trading_sessions")
+        .update({
+          open_position: {
+            ...legacyPos,
+            highest_price: session.open_position?.highest_price ?? currentPrice,
+          },
+        } as never)
+        .eq("id", session.id);
+    }
+  } else if (signal.action === "sell" && updatedLedgerState) {
+    // Update with remaining lots after FIFO sell
+    const legacyPos = toLegacyPosition(updatedLedgerState);
+    await db
+      .from("trading_sessions")
+      .update({
+        open_position: legacyPos
+          ? {
+              ...legacyPos,
+              highest_price: session.open_position?.highest_price,
+            }
+          : null,
+      } as never)
+      .eq("id", session.id);
+  }
+
   // Log successful trade
   console.info("Trade executed:", {
     session_id: session.id,
     trade_id: trade?.id,
     side: signal.action,
     amount: tradeAmount,
+    fifo_lots: updatedLedgerState?.lots.length ?? 0,
   });
 
   return {

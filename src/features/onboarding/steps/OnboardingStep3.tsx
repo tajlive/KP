@@ -88,6 +88,12 @@ export function OnboardingStep3() {
     router.replace("/dashboard");
   };
 
+  const handleDiscoverTraders = async () => {
+    navigator.vibrate?.([30, 20]);
+    await completeOnboarding();
+    router.replace("/copy-trading");
+  };
+
   return (
     <div className="flex h-full flex-col justify-between px-5 py-8">
       <div className="flex flex-col items-center gap-6 pt-16 text-center">
@@ -158,6 +164,18 @@ export function OnboardingStep3() {
               ) : (
                 t("mobile.step3.cta")
               )}
+            </motion.button>
+
+            <motion.button
+              onClick={handleDiscoverTraders}
+              disabled={isLoading}
+              className="w-full rounded-2xl border border-white/20 py-3.5 text-base font-semibold text-white/80
+                         hover:bg-white/5 hover:text-white disabled:opacity-60 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              {t("mobile.step3.discoverCta", { defaultValue: "Oppdag tradere å kopiere" })}
             </motion.button>
           </motion.div>
         )}

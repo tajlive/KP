@@ -6,6 +6,7 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -13,13 +14,12 @@ const root = resolve(__dirname, "..");
 const env = loadEnvLocal();
 
 if (!env.LINEAR_API_KEY) {
-  console.error("[run-linear-mcp] LINEAR_API_KEY ikke satt i .env.local");
-  process.exit(1);
+  gracefulExit(["LINEAR_API_KEY"], "run-linear-mcp");
 }
 
 const child = spawn(
   "npx",
-  ["-y", "@linear/mcp@latest"],
+  ["-y", "@mseep/linear-mcp"],
   { env, stdio: "inherit", cwd: root }
 );
 

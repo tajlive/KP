@@ -129,10 +129,26 @@
   "speedOnboarding": {
     "timerPrefix": "Start trading in",
     "riskProfiles": {
-      "safe": { "name": "Safe", "description": "Low risk, steady growth", "dailyLoss": "2% max daily loss" },
-      "balanced": { "name": "Balanced", "description": "Good balance between risk and return", "dailyLoss": "5% max daily loss" },
-      "offensive": { "name": "Offensive", "description": "Higher risk, higher potential", "dailyLoss": "8% max daily loss" },
-      "aggressive": { "name": "Aggressive", "description": "Max risk for experienced traders", "dailyLoss": "12% max daily loss" }
+      "safe": {
+        "name": "Safe",
+        "description": "Low risk, steady growth",
+        "dailyLoss": "2% max daily loss"
+      },
+      "balanced": {
+        "name": "Balanced",
+        "description": "Good balance between risk and return",
+        "dailyLoss": "5% max daily loss"
+      },
+      "offensive": {
+        "name": "Offensive",
+        "description": "Higher risk, higher potential",
+        "dailyLoss": "8% max daily loss"
+      },
+      "aggressive": {
+        "name": "Aggressive",
+        "description": "Max risk for experienced traders",
+        "dailyLoss": "12% max daily loss"
+      }
     },
     "step1": {
       "title": "Choose risk profile",
@@ -174,9 +190,21 @@
       "subtitle": "We have ready-made templates that match your risk appetite.",
       "preloaded": "Preloaded",
       "templates": {
-        "dcaTrygg": { "title": "Safe Saving", "riskLabel": "Low risk", "desc": "Buys fixed amount every week. Perfect for long-term wealth." },
-        "trendBalansert": { "title": "Growth", "riskLabel": "Medium risk", "desc": "Follows market trends. Balanced risk and return." },
-        "multisignalAktiv": { "title": "Aggressive", "riskLabel": "High risk", "desc": "Active trading with many signals. For those who want action." }
+        "dcaTrygg": {
+          "title": "Safe Saving",
+          "riskLabel": "Low risk",
+          "desc": "Buys fixed amount every week. Perfect for long-term wealth."
+        },
+        "trendBalansert": {
+          "title": "Growth",
+          "riskLabel": "Medium risk",
+          "desc": "Follows market trends. Balanced risk and return."
+        },
+        "multisignalAktiv": {
+          "title": "Aggressive",
+          "riskLabel": "High risk",
+          "desc": "Active trading with many signals. For those who want action."
+        }
       }
     },
     "step3": {

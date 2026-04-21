@@ -15,6 +15,7 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -23,13 +24,7 @@ const env = loadEnvLocal();
 
 // Sjekk at KLARPAKKE_MCP_TOKEN er satt
 if (!env.KLARPAKKE_MCP_TOKEN) {
-  console.error("[run-klarpakke-mcp] KLARPAKKE_MCP_TOKEN ikke satt i .env.local");
-  console.error("[run-klarpakke-mcp] Sett tokenet for å aktivere Supabase MCP:");
-  console.error("");
-  console.error("  echo 'KLARPAKKE_MCP_TOKEN=sb_xxx_...' >> .env.local");
-  console.error("");
-  console.error("[run-klarpakke-mcp] Token finnes i Supabase Dashboard → Edge Functions → klarpakke-mcp");
-  process.exit(1);
+  gracefulExit(["KLARPAKKE_MCP_TOKEN"], "run-klarpakke-mcp");
 }
 
 // MCP endpoint URL

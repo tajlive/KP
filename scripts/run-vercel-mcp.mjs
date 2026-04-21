@@ -6,6 +6,7 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -14,13 +15,13 @@ const root = resolve(__dirname, "..");
 const env = loadEnvLocal();
 
 if (!env.VERCEL_TOKEN) {
-  console.error("[run-vercel-mcp] VERCEL_TOKEN ikke satt i .env.local");
-  process.exit(1);
+  gracefulExit(["VERCEL_TOKEN"], "run-vercel-mcp");
 }
 
+// vercel-mcp@0.0.7 forventer VERCEL_API_KEY som kommando-linje argument
 const child = spawn(
   "npx",
-  ["-y", "vercel-mcp@latest"],
+  ["-y", "vercel-mcp@latest", `VERCEL_API_KEY=${env.VERCEL_TOKEN}`],
   { env, stdio: "inherit", cwd: root }
 );
 

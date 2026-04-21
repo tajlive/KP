@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import TraderRecommendations from "./TraderRecommendations";
 
 function formatNokForLocale(locale: string, n: number) {
   const tag = locale === "en" ? "en-GB" : "no-NO";
@@ -87,6 +88,11 @@ export default function CopyTradingDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* AI Recommendations — alltid øverst, spesielt viktig på mobil */}
+      <Suspense fallback={null}>
+        <TraderRecommendations />
+      </Suspense>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

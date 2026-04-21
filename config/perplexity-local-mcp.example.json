@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "klarpakke-kimi-bridge": {
+      "url": "http://localhost:3100/mcp",
+      "transport": "http",
+      "apiKey": "${MCP_API_KEY}",
+      "description": "KIMI bridge for Klarpakke — kimi_code, kimi_ci, kimi_db_status, kimi_monitor_full",
+      "autoApprove": ["kimi_db_status", "kimi_monitor_full"]
+    }
+  }
+}

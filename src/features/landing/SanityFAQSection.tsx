@@ -13,7 +13,7 @@ interface SanityFAQSectionProps {
   locale?: string;
 }
 
-async function getFallbackFAQs(t: any): Promise<SanityFAQ[]> {
+async function getFallbackFAQs(t: (key: string) => string): Promise<SanityFAQ[]> {
   return [
     {
       _id: 'fallback-1',
@@ -37,9 +37,9 @@ function blocksToPlainText(blocks: unknown): string {
   if (typeof blocks === 'string') return blocks;
   if (!Array.isArray(blocks)) return '';
   return blocks
-    .map((block: any) => {
+    .map((block: { _type?: string; children?: Array<{ text?: string }> }) => {
       if (block._type === 'block' && Array.isArray(block.children)) {
-        return block.children.map((child: any) => child.text || '').join('');
+        return block.children.map((child: { text?: string }) => child.text || '').join('');
       }
       return '';
     })

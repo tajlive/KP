@@ -173,7 +173,7 @@ export class AuditStore {
     }
     
     const records: AuditQueryResult[] = (data || []).map(row => ({
-      evidence: (row.payload as any) as ExecutionEvidence,
+      evidence: (row.payload as unknown) as ExecutionEvidence,
       s3Path: row.s3_path ?? undefined,
       retrievedFrom: row.s3_path ? 'both' : 'supabase'
     }));
@@ -270,7 +270,7 @@ export class AuditStore {
       let errors = 0;
       
       for (const record of data || []) {
-        const evidence = (record.payload as any) as ExecutionEvidence;
+        const evidence = (record.payload as unknown) as ExecutionEvidence;
         
         // Write to S3
         const s3Result = await this.persistToS3(evidence);

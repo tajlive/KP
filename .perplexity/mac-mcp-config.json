@@ -1,55 +1,56 @@
 {
   "_meta": {
-    "version": "1.0",
-    "for": "Perplexity Mac Desktop",
+    "version": "2.0",
+    "for": "Perplexity Mac Desktop + KIMI CLI v1.36.0",
     "project": "Klarpakke",
-    "lastOptimized": "2026-04-06"
+    "lastOptimized": "2026-04-19",
+    "description": "Perplexity Desktop kan kalle KIMI og lokale verktøy. KIMI v1.36.0 med async MCP startup og 500 max_steps."
   },
   "mcpServers": {
     "kimi": {
-      "description": "🧠 KIMI CLI v3 - Hovedorkestrator for Klarpakke-utvikling",
+      "description": "🧠 KIMI CLI v1.36.0 — Hovedorkestrator for Klarpakke-utvikling",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-simple.mjs"]
     },
     "filesystem": {
-      "description": "📁 Filsystem - Direkte filoperasjoner uten KIMI-kall",
+      "description": "📁 Filsystem — Direkte filoperasjoner uten KIMI-kall",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-filesystem-mcp.mjs"]
     },
     "github": {
-      "description": "🔀 GitHub - Repo, issues, PRs for tajlive/KP",
+      "description": "🔀 GitHub — Repo, issues, PRs for tajlive/KP",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-github-mcp.mjs"]
     },
     "supabase": {
-      "description": "🗄️ Supabase - DB, Edge Functions, auth",
+      "description": "🗄️ Supabase — DB, Edge Functions, auth",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-official-supabase-mcp.mjs"]
     },
     "vercel": {
-      "description": "▲ Vercel - Deployments, domains, logs",
+      "description": "▲ Vercel — Deployments, domains, logs",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-vercel-mcp.mjs"]
     },
     "context7": {
-      "description": "📚 Context7 - Bibliotekdokumentasjon",
+      "description": "📚 Context7 — Bibliotekdokumentasjon",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-context7-mcp.mjs"]
     }
   },
   "_optional": {
     "linear": {
-      "description": "📋 Linear - Issues (valgfritt, aktiver ved behov)",
+      "description": "📋 Linear — Issues (valgfritt, aktiver ved behov)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-linear-mcp.mjs"]
     },
     "playwright": {
-      "description": "🎭 Playwright - E2E testing (valgfritt)",
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "description": "🎭 Playwright — E2E testing (valgfritt, krever lokal install)",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/node_modules/@playwright/mcp/cli.js"]
     },
     "perplexity": {
-      "description": "🔍 Perplexity MCP - AI-søk (valgfritt)",
+      "description": "🔍 Perplexity MCP — AI-søk (valgfritt, krever PERPLEXITY_API_KEY)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"]
     }

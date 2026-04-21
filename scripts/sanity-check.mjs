@@ -6,6 +6,7 @@
  *   node scripts/sanity-check.mjs           # Check only
  *   node scripts/sanity-check.mjs --fix     # Auto-fix code issues
  *   node scripts/sanity-check.mjs --json    # CI-friendly output
+ *   node scripts/sanity-check.mjs --strict  # Hard fail on warnings too
  */
 
 import * as fs from "fs";
@@ -18,6 +19,7 @@ const ENV_FILES = [".env.local", ".env.production", ".env"];
 const EXPECTED_API_VERSION = "2024-04-07";
 const EXPECTED_PROJECT_ID = "63qn23si";
 const EXPECTED_DATASET = "production";
+const EXPECTED_BASE_PATH = "/studio";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 const C = {
@@ -33,6 +35,7 @@ const C = {
 const args = process.argv.slice(2);
 const shouldFix = args.includes("--fix");
 const jsonMode = args.includes("--json");
+const strictMode = args.includes("--strict");
 
 const issues = [];
 const fixesApplied = [];
@@ -48,10 +51,12 @@ function addIssue(file, line, severity, message, fix) {
 // ─── Env Checks ───────────────────────────────────────────────────────────
 function checkEnvFiles() {
   const hasLocalEnv = fs.existsSync(path.resolve(ROOT_DIR, ".env.local"));
+  let foundAnyEnv = false;
 
   for (const envFile of ENV_FILES) {
     const envPath = path.resolve(ROOT_DIR, envFile);
     if (!fs.existsSync(envPath)) continue;
+    foundAnyEnv = true;
 
     const content = fs.readFileSync(envPath, "utf8");
 
@@ -73,28 +78,78 @@ function checkEnvFiles() {
       }
     }
 
-    // Check optional but recommended vars
+    // Check production-required vars (errors, not warnings)
     if (!content.includes("SANITY_API_READ_TOKEN")) {
-      addIssue(envFile, 0, "warning", `Missing SANITY_API_READ_TOKEN in ${envFile} (needed for preview mode)`);
+      addIssue(envFile, 0, "error", `Missing SANITY_API_READ_TOKEN in ${envFile} (required for preview mode)`);
     }
     if (!content.includes("SANITY_WEBHOOK_SECRET")) {
-      addIssue(envFile, 0, "warning", `Missing SANITY_WEBHOOK_SECRET in ${envFile} (needed for cache revalidation)`);
+      addIssue(envFile, 0, "error", `Missing SANITY_WEBHOOK_SECRET in ${envFile} (required for cache revalidation)`);
     }
 
-    // Check API version consistency
+    // Hard fail on API version mismatch
     const versionMatch = content.match(/NEXT_PUBLIC_SANITY_API_VERSION\s*=\s*["']?([^\n"']+)["']?/);
     if (versionMatch && versionMatch[1] !== EXPECTED_API_VERSION) {
-      addIssue(envFile, 0, "warning", `API version mismatch: ${versionMatch[1]} (expected ${EXPECTED_API_VERSION})`);
+      addIssue(envFile, 0, "error", `API version mismatch: ${versionMatch[1]} (expected ${EXPECTED_API_VERSION})`);
     }
 
-    // Check project ID consistency
+    // Hard fail on project ID mismatch
     const projectMatch = content.match(/NEXT_PUBLIC_SANITY_PROJECT_ID\s*=\s*["']?([^\n"']+)["']?/);
     if (projectMatch) {
-      const actualProjectId = projectMatch[1].replace(/\\n$/, ""); // fix escaped newlines
+      const actualProjectId = projectMatch[1].replace(/\\n$/, "");
       if (actualProjectId !== EXPECTED_PROJECT_ID) {
         addIssue(envFile, 0, "error", `Project ID mismatch: ${actualProjectId} (expected ${EXPECTED_PROJECT_ID})`);
       }
     }
+
+    // Hard fail on dataset mismatch
+    const datasetMatch = content.match(/NEXT_PUBLIC_SANITY_DATASET\s*=\s*["']?([^\n"']+)["']?/);
+    if (datasetMatch && datasetMatch[1] !== EXPECTED_DATASET) {
+      addIssue(envFile, 0, "error", `Dataset mismatch: ${datasetMatch[1]} (expected ${EXPECTED_DATASET})`);
+    }
+  }
+
+  if (!foundAnyEnv) {
+    addIssue("env", 0, "error", `No env file found (checked: ${ENV_FILES.join(", ")})`);
+  }
+}
+
+// ─── Config Consistency Checks ────────────────────────────────────────────
+function checkConfigConsistency() {
+  const configPath = path.join(SRC_DIR, "sanity.config.ts");
+  const cliPath = path.resolve(ROOT_DIR, "sanity.cli.ts");
+
+  if (fs.existsSync(configPath)) {
+    const content = fs.readFileSync(configPath, "utf8");
+
+    if (!content.includes(`basePath: '${EXPECTED_BASE_PATH}'`) && !content.includes(`basePath: "${EXPECTED_BASE_PATH}"`)) {
+      addIssue("src/sanity.config.ts", 0, "error", `basePath must be ${EXPECTED_BASE_PATH} for embedded studio`);
+    }
+
+    if (!content.includes("productionUrl: undefined")) {
+      addIssue("src/sanity.config.ts", 0, "warning", `productionUrl should be undefined to prevent iframe loop`);
+    }
+
+    if (!content.includes("structureTool")) {
+      addIssue("src/sanity.config.ts", 0, "error", `structureTool is missing`);
+    }
+
+    if (!content.includes("visionTool")) {
+      addIssue("src/sanity.config.ts", 0, "error", `visionTool is missing`);
+    }
+  } else {
+    addIssue("src/sanity.config.ts", 0, "error", `sanity.config.ts is missing`);
+  }
+
+  if (fs.existsSync(cliPath)) {
+    const content = fs.readFileSync(cliPath, "utf8");
+    if (!content.includes(EXPECTED_PROJECT_ID)) {
+      addIssue("sanity.cli.ts", 0, "error", `CLI config projectId does not match expected ${EXPECTED_PROJECT_ID}`);
+    }
+    if (!content.includes(EXPECTED_DATASET)) {
+      addIssue("sanity.cli.ts", 0, "error", `CLI config dataset does not match expected ${EXPECTED_DATASET}`);
+    }
+  } else {
+    addIssue("sanity.cli.ts", 0, "warning", `sanity.cli.ts is missing`);
   }
 }
 
@@ -118,6 +173,7 @@ function checkSourceCode() {
     "run-sanity-mcp.mjs",
     "sanity-check.mjs",
     "migrate-to-sanity.ts",
+    "sanity.config.ts",
   ];
 
   for (const file of walkDir(SRC_DIR)) {
@@ -163,6 +219,9 @@ function checkCriticalFiles() {
     if (!content.includes("safeFetch")) {
       addIssue("src/lib/sanity/client.ts", 0, "error", `safeFetch helper is missing`);
     }
+    if (!content.includes("isSanityConfigured")) {
+      addIssue("src/lib/sanity/client.ts", 0, "warning", `isSanityConfigured helper is missing`);
+    }
   } else {
     addIssue("src/lib/sanity/client.ts", 0, "error", `client.ts is missing`);
   }
@@ -184,8 +243,21 @@ function checkCriticalFiles() {
     if (!content.includes("SANITY_WEBHOOK_SECRET")) {
       addIssue("src/app/api/webhooks/sanity/route.ts", 0, "error", `SANITY_WEBHOOK_SECRET is not referenced`);
     }
+    if (!content.includes("revalidateTag")) {
+      addIssue("src/app/api/webhooks/sanity/route.ts", 0, "error", `revalidateTag is missing — cache will not be cleared`);
+    }
   } else {
-    addIssue("src/app/api/webhooks/sanity/route.ts", 0, "warning", `Webhook route is missing`);
+    addIssue("src/app/api/webhooks/sanity/route.ts", 0, "error", `Webhook route is missing`);
+  }
+
+  const envPath = path.join(SRC_DIR, "sanity", "env.ts");
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, "utf8");
+    if (!content.includes("assertValue")) {
+      addIssue("src/sanity/env.ts", 0, "warning", `assertValue helper is missing`);
+    }
+  } else {
+    addIssue("src/sanity/env.ts", 0, "error", `env.ts is missing`);
   }
 }
 
@@ -244,18 +316,24 @@ function printReport() {
   log(`   CORS Origins:  http://localhost:3000, https://www.klarpakke.no, https://klarpakke.no`);
   log(`   Webhook URL:   https://www.klarpakke.no/api/webhooks/sanity`);
   log(`   Studio URL:    https://www.klarpakke.no/studio (embedded)`);
+  log(`   Dataset:       ${EXPECTED_DATASET}`);
+  log(`   API Version:   ${EXPECTED_API_VERSION}`);
+  log(`   Base Path:     ${EXPECTED_BASE_PATH}`);
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────
 function main() {
   checkEnvFiles();
+  checkConfigConsistency();
   checkSourceCode();
   checkCriticalFiles();
   applyFixes();
   printReport();
 
   const hasErrors = issues.some((i) => i.severity === "error");
-  process.exit(hasErrors ? 1 : 0);
+  const hasWarnings = issues.some((i) => i.severity === "warning");
+  const shouldFail = hasErrors || (strictMode && hasWarnings);
+  process.exit(shouldFail ? 1 : 0);
 }
 
 main();

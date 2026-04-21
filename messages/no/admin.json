@@ -57,9 +57,7 @@
     "lastUpdated": "Sist oppdatert: {date}",
     "fallbackData": "⚠️ Live-data utilgjengelig, viser cache"
   },
-  "search": {
-    "placeholder": "Søk brukere..."
-  },
+  "search": "Søk",
   "systemHealth": {
     "title": "System Helse",
     "lastChecked": "Sist sjekket",
@@ -120,7 +118,6 @@
   "loggingIn": "Logger inn...",
   "login": "Logg inn",
   "resetPassword": "Tilbakestill passord",
-  "search": "Søk",
   "searchUsers": "Søk brukere",
   "selectTier": "Velg nivå",
   "usersPage": {

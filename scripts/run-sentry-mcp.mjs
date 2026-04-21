@@ -6,29 +6,25 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
 const env = loadEnvLocal();
 
-if (!env.SENTRY_AUTH_TOKEN) {
-  console.error("[run-sentry-mcp] SENTRY_AUTH_TOKEN mangler i .env.local");
-  process.exit(1);
+const sentryMissing = ["SENTRY_AUTH_TOKEN", "SENTRY_ORG"].filter((k) => !env[k]);
+if (sentryMissing.length) {
+  gracefulExit(sentryMissing, "run-sentry-mcp");
 }
 
-if (!env.SENTRY_ORG) {
-  console.error("[run-sentry-mcp] SENTRY_ORG mangler i .env.local");
-  process.exit(1);
-}
-
+// sentry-mcp krever --access-token parameter
 const child = spawn(
   "npx",
-  ["-y", "@sentry/mcp-server@latest"],
+  ["-y", "@sentry/mcp-server@latest", "--access-token", env.SENTRY_AUTH_TOKEN],
   { 
     env: { 
-      ...env, 
-      SENTRY_AUTH_TOKEN: env.SENTRY_AUTH_TOKEN,
+      ...env,
       SENTRY_ORG: env.SENTRY_ORG,
       SENTRY_PROJECT: env.SENTRY_PROJECT || "klarpakke-production"
     }, 

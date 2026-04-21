@@ -42,15 +42,22 @@ src/lib/supabase/client.ts          # Browser client (cookie config)
 scripts/oauth-guard.ts              # Automated consistency checker
 ```
 
-## 🧠 MemPalace
+## 🧠 MemPalace (v3.0)
 
 Før du gjør endringer, søk alltid:
-- `mempalace_search(query="OAuth redirect_uri")`
-- `mempalace_search(query="auth callback")`
-- `mempalace_kg_query(entity="OAuth")`
+- `search(query="OAuth redirect_uri", limit=5)`
+- `search(query="auth callback", limit=5)`
+- `kg_query(entity="auth-system", depth=2)`
+- `recent_context(hours=72)` — sjekk siste auth-endringer
 
 Etter endringer, dokumenter:
-- `mempalace_add_drawer(content="<hva som ble endret og hvorfor>", wing="klarpakke", room="auth_system")`
+- `kg_add(subject="auth-system", predicate="uses", object="<ny komponent>")`
+- `kg_batch(facts=[{subject:"OAuth", predicate:"redirects_to", object:"/no/callback"}, ...])` for komplekse endringer
+- `write_diary(agent="auth", entry={type:"FIX|SEC", task:"<hva som ble endret>", status:"GO", rating:4, tags:["auth","oauth"]})`
+
+**Kritiske KG-entiteter for auth:**
+- `auth-system`, `oauth`, `session`, `refresh-token`, `middleware`, `RLS`
+- Vanlige relasjoner: `uses`, `depends_on`, `fixes`, `breaks`
 
 ## 🔄 Standard Arbeidsflyt
 

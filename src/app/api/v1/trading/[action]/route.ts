@@ -552,7 +552,7 @@ async function handleOrder(
       created_at: new Date().toISOString(),
       // idempotency_key is required per schema
       idempotency_key: `${user.id}-${Date.now()}-${Math.random().toString(36).substring(7)}`,
-    } as any)
+    })
     .select()
     .single();
 

@@ -131,6 +131,18 @@ patterns:
       - performance-profiling
     priority: medium
 
+  "scripts/run-mempalace-mcp-v2.mjs":
+    skills:
+      - api-patterns
+      - performance-profiling
+    priority: medium
+
+  ".mempalace/**/*.md":
+    skills:
+      - mempalace
+      - documentation-templates
+    priority: high
+
 # Task-type → skills mapping
 task_types:
   feature:
@@ -161,6 +173,10 @@ task_types:
   documentation:
     - documentation-templates
 
+  mempalace:
+    - mempalace
+    - documentation-templates
+
 # Auto-trigger conditions
 auto_trigger:
   on_error:
@@ -183,3 +199,9 @@ auto_trigger:
       - vulnerability-scanner
       - api-patterns/security-testing
       - testing-patterns
+
+  on_mempalace_task:
+    pattern: "mempalace|memory|knowledge|diary|handoff|sync"
+    skills:
+      - mempalace
+    agent: mempalace

@@ -281,7 +281,7 @@ async function sendEmergencyAlert(
       `Lukkede posisjoner: ${closedPositions}\n\n` +
       `Tid: ${new Date().toISOString()}`,
     acknowledged: false,
-  } as any);
+  });
 
   // Emergency alert stored in DB — admin notified via dashboard
 }

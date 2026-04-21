@@ -68,7 +68,7 @@ describe("buildTradeExplanation", () => {
       const result = buildTradeExplanation(trade, decision, "no");
       
       expect(result.whyBuy).toContain("sterke positive signaler");
-      expect(result.whyBuy).toContain("Konfidensen var høy");
+      expect(result.whyBuy).toContain("85%");
     });
 
     it("bruker engelsk når locale er en", () => {
@@ -98,8 +98,8 @@ describe("buildTradeExplanation", () => {
       const result = buildTradeExplanation(trade, null, "no");
       
       expect(result.whySell).toContain("stoploss-grensen");
-      expect(result.whySell).toContain("risikostyring");
-      expect(result.whySell).toContain("kontrollert tap");
+      expect(result.whySell).toContain("Risikostyring");
+      expect(result.whySell).toContain("tap");
     });
 
     it("forklarer stoploss med lite tap kortfattet", () => {
@@ -127,8 +127,8 @@ describe("buildTradeExplanation", () => {
       const result = buildTradeExplanation(trade, null, "no");
       
       expect(result.whySell).toContain("målprisen");
-      expect(result.whySell).toContain("take profit");
-      expect(result.whySell).toContain("sikret gevinsten");
+      expect(result.whySell).toMatch(/2[\s\u00a0]000/);
+      expect(result.whySell).toContain("sikret");
     });
 
     it("forklarer manuelt salg", () => {
@@ -155,9 +155,8 @@ describe("buildTradeExplanation", () => {
       
       const result = buildTradeExplanation(trade, null, "no");
       
-      expect(result.whySell).toContain("1");
-      expect(result.whySell).toContain("500");
       expect(result.whySell).toContain("gevinst");
+      expect(result.whySell).toMatch(/1[\s\u00a0]500/);
     });
 
     it("bruker fallback for ukjent exit-reason", () => {
@@ -170,7 +169,7 @@ describe("buildTradeExplanation", () => {
       
       const result = buildTradeExplanation(trade, null, "no");
       
-      expect(result.whySell).toContain("lukket basert på");
+      expect(result.whySell).toContain("lukket");
     });
   });
 

@@ -58,7 +58,7 @@ export function calculateKelly(
 export async function updateKellyStats(userId: string, strategy?: string): Promise<KellyStats> {
   const supabase = createClient();
   
-  let query = supabase
+  const query = supabase
     .from('trades')
     .select('realized_pnl, quantity, price')
     .eq('user_id', userId)
@@ -109,8 +109,8 @@ export async function saveKellyStats(
 ) {
   const supabase = createClient();
   
-  const { error } = await supabase
-    .from('strategy_performance' as any) // Table to be created in migration
+  const { error } = await (supabase as any)
+    .from('strategy_performance') // Table to be created in migration
     .upsert({
       user_id: userId,
       strategy_id: strategy,

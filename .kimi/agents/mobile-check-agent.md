@@ -84,14 +84,33 @@ Les disse filene først dersom du skal foreslå kodeendringer:
 | `playwright.config.ts` (linje 259+) | Mobile device-prosjekter |
 | `.lighthouserc.json` | Lighthouse asserts |
 
+## 🧠 MemPalace (v3.0)
+
+Før du kjører sjekker, søk alltid:
+- `search(query="mobile responsive", limit=5)`
+- `search(query="PWA manifest", limit=5)`
+- `search(query="BottomTabs", limit=5)`
+- `kg_query(entity="mobile-ui", depth=1)`
+- `recent_context(hours=72)` — sjekk siste mobil-relaterte endringer
+
+Etter sjekker, dokumenter:
+- `kg_add(subject="mobile-ui", predicate="status", object="GO|NO-GO")` for hver kategori
+- `write_diary(agent="mobile", entry={type:"ANALYSIS", task:"<hva som ble sjekket>", status:"GO", rating:3, tags:["mobile","lighthouse","pwa"]})`
+
+**Kritiske KG-entiteter for mobil:**
+- `mobile-ui`, `pwa`, `responsive`, `performance`, `lighthouse`
+- Vanlige relasjoner: `status`, `depends_on`, `breaks`, `uses`
+
 ## Arbeidsflyt
 
-1. **Kjør tester** — E2E mobile + Lighthouse mobile
-2. **Mål TTFB** — curl med mobil UA
-3. **Sjekk PWA** — manifest + viewport + install-prompt
-4. **Inspektér kode** — BottomTabs, sidebar, landing-responsive
-5. **Rapporter** — tabell med GO/NO-GO per kategori
-6. **Fix (kun ved eksplisitt bestilling)** — minimal endring, verifiser med `npm run type-check`
+1. **Query MemPalace** — `search` + `recent_context` for mobil-historikk
+2. **Kjør tester** — E2E mobile + Lighthouse mobile
+3. **Mål TTFB** — curl med mobil UA
+4. **Sjekk PWA** — manifest + viewport + install-prompt
+5. **Inspektér kode** — BottomTabs, sidebar, landing-responsive
+6. **Rapporter** — tabell med GO/NO-GO per kategori
+7. **Dokumenter i MemPalace** — `kg_add` + `write_diary`
+8. **Fix (kun ved eksplisitt bestilling)** — minimal endring, verifiser med `npm run type-check`
 
 ## Rapporteringsmal
 

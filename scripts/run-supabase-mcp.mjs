@@ -6,6 +6,7 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -15,8 +16,8 @@ const env = loadEnvLocal();
 
 // Sjekk at vi har det vi trenger
 if (!env.DATABASE_URL && !env.POSTGRES_URL) {
-  console.error("[run-supabase-mcp] DATABASE_URL eller POSTGRES_URL ikke satt i .env.local");
-  process.exit(1);
+  gracefulExit(["DATABASE_URL", "POSTGRES_URL"], "run-supabase-mcp");
+  process.exit(0);
 }
 
 // Bruk POSTGRES_URL som fallback for DATABASE_URL

@@ -1,5 +1,12 @@
 version: 1
 agent:
   extend: default
-  name: klarpakke-sanity-agent
+  name: klarpakke-sanity-editor
   system_prompt_path: ./klarpakke-sanity-agent.md
+  description: |
+    Sanity CMS redigeringsagent for Klarpakke. Kan lese OG skrive direkte
+    til Sanity API via MCP. Bruk denne agenten for alt CMS-innhold:
+    landing page, FAQ, testimonials, strategier, trade explanations.
+    
+    VIL DU REDIGERE? Si: "Aktiver sanity-agent" eller bruk:
+    kimi --agent-file .kimi/agents/sanity-agent.yaml

@@ -145,6 +145,14 @@ export interface OpenPosition {
   entry_price: number;
   entry_time: string;
   highest_price?: number; // Trailing TP: tracks peak price since entry
+  /** FIFO lot-tracking for correct cost basis (added 2026-04) */
+  lots?: Array<{
+    id: string;
+    quantity: number;
+    entryPrice: number;
+    timestamp: string;
+    originalQuantity: number;
+  }>;
 }
 
 /**

@@ -6,6 +6,7 @@ import { spawn } from "child_process";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import { loadEnvLocal } from "./load-env.mjs";
+import { gracefulExit } from "./mcp-graceful-exit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -13,8 +14,7 @@ const root = resolve(__dirname, "..");
 const env = loadEnvLocal();
 
 if (!env.SUPABASE_ACCESS_TOKEN) {
-  console.error("[run-official-supabase-mcp] SUPABASE_ACCESS_TOKEN mangler i .env.local");
-  process.exit(1);
+  gracefulExit(["SUPABASE_ACCESS_TOKEN"], "run-official-supabase-mcp");
 }
 
 let projectRef = env.SUPABASE_PROJECT_REF?.trim();

@@ -114,11 +114,11 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
             className="mb-6"
           >
             <GlassCard variant="elevated" className="p-4">
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 {/* Risk Profile */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-kp-text-secondary">Strategi:</label>
-                  <div className="flex gap-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  <label className="text-sm text-kp-text-secondary shrink-0">Strategi:</label>
+                  <div className="flex gap-1 flex-wrap">
                     {(Object.keys(UI_TO_PRESET_MAP) as UIRiskProfile[]).map((profile) => (
                       <button
                         key={profile}
@@ -136,12 +136,12 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                 </div>
 
                 {/* Amount */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-kp-text-secondary">Beløp:</label>
+                <div className="flex items-center gap-2 min-w-0">
+                  <label className="text-sm text-kp-text-secondary shrink-0">Beløp:</label>
                   <select
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
-                    className="bg-kp-surface border border-kp-border rounded-lg px-3 py-2 text-sm text-kp-text-primary"
+                    className="bg-kp-surface border border-kp-border rounded-lg px-3 py-2 text-sm text-kp-text-primary min-w-0 min-h-[44px]"
                   >
                     <option value={10000}>10 000 kr</option>
                     <option value={25000}>25 000 kr</option>
@@ -151,12 +151,12 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                 </div>
 
                 {/* Months */}
-                <div className="flex items-center gap-2">
-                  <label className="text-sm text-kp-text-secondary">Periode:</label>
+                <div className="flex items-center gap-2 min-w-0">
+                  <label className="text-sm text-kp-text-secondary shrink-0">Periode:</label>
                   <select
                     value={months}
                     onChange={(e) => setMonths(Number(e.target.value))}
-                    className="bg-kp-surface border border-kp-border rounded-lg px-3 py-2 text-sm text-kp-text-primary"
+                    className="bg-kp-surface border border-kp-border rounded-lg px-3 py-2 text-sm text-kp-text-primary min-w-0 min-h-[44px]"
                   >
                     <option value={3}>3 måneder</option>
                     <option value={6}>6 måneder</option>

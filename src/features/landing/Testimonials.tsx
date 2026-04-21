@@ -2,6 +2,7 @@
 
 import { translations } from "@/lib/i18n/translations";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Quote, Star, ArrowRight } from "lucide-react";
@@ -95,9 +96,11 @@ export function Testimonials({ language = "no", items }: TestimonialsProps) {
 
                 <div className="flex items-center gap-4 pt-6 border-t border-white/5">
                   {item.avatar ? (
-                    <img
+                    <Image
                       src={item.avatar}
                       alt={item.name}
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-2xl object-cover shadow-lg"
                     />
                   ) : (

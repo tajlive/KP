@@ -22,30 +22,44 @@ const ROOT = path.join(__dirname, "..");
 
 /** Names referenced by .github/workflows/* — only these are ever sent to GitHub. */
 const ALLOWLIST = [
+  // Supabase
   "SUPABASE_ACCESS_TOKEN",
   "SUPABASE_PROJECT_REF",
   "SUPABASE_PROJECT_ID",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "SUPABASE_JWT_SECRET",
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "POSTGRES_URL_NON_POOLING",
+  "DATABASE_URL",
+  // Vercel
   "VERCEL_TOKEN",
   "VERCEL_ORG_ID",
   "VERCEL_PROJECT_ID",
-  "NEXT_PUBLIC_SUPABASE_URL",
-  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-  "SUPABASE_SERVICE_ROLE_KEY",
-  "SENTRY_AUTH_TOKEN",
+  // Cron
   "CRON_SECRET",
+  "CRON_API_KEY",
+  // Monitoring
+  "SENTRY_AUTH_TOKEN",
+  // Services
   "RESEND_API_KEY",
   "STRIPE_SECRET_KEY",
   "CLOUDFLARE_API_TOKEN",
   "CLOUDFLARE_ZONE_ID",
-  "DATABASE_URL",
-  "SNYK_TOKEN",
-  "SLACK_WEBHOOK_URL",
+  // Sanity
+  "SANITY_API_READ_TOKEN",
+  "SANITY_API_WRITE_TOKEN",
+  "SANITY_WEBHOOK_SECRET",
+  // E2E testing
   "E2E_USER_EMAIL",
   "E2E_USER_PASSWORD",
   "TEST_USER_EMAIL",
   "TEST_USER_PASSWORD",
   "TEST_USER_B_EMAIL",
   "TEST_USER_B_PASSWORD",
+  // Misc
+  "SNYK_TOKEN",
+  "SLACK_WEBHOOK_URL",
 ];
 
 /** Lokale / personlige nøkler — aldri til repo-secrets via dette scriptet. */
