@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { requireAuth } from "@/lib/auth-guard";
 import { localizedPathname } from "@/middleware/locale-path";
 import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
+import { PositionLotsCard } from "@/features/dashboard/PositionLotsCard";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -161,6 +162,8 @@ export default async function PortfolioPage({ params }: PageProps) {
             </div>
           )}
         </div>
+
+        <PositionLotsCard locale={locale} />
       </div>
     );
   } catch (error) {

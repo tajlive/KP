@@ -14,6 +14,9 @@
  * @module lib/trading/backtestEngine
  */
 
+import { calculateAllRiskMetrics, type RiskMetricsSummary } from "./risk-metrics";
+import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -60,6 +63,8 @@ export interface BacktestMetrics {
   avgTradeDurationDays: number;
   /** Volatilitet (annualisert) */
   volatility: number;
+  /** Advanced risk metrics (opt-in) */
+  riskMetrics?: RiskMetricsSummary;
 }
 
 export interface BacktestScenarios {
@@ -85,6 +90,8 @@ export interface BacktestResult {
   endValueNOK: number;
   /** Valutakurs USD/NOK brukt */
   usdNokRate: number;
+  /** Monte Carlo simulation (opt-in) */
+  monteCarlo?: MonteCarloResult;
 }
 
 export interface BacktestInput {
@@ -96,6 +103,8 @@ export interface BacktestInput {
   months: number;
   /** USD/NOK kurs (valgfri, default 10.8) */
   usdNokRate?: number;
+  /** Include Monte Carlo simulation (default false, adds ~1-2s) */
+  includeMonteCarloSim?: boolean;
 }
 
 export type RiskProfile = 'konservativ' | 'balansert' | 'aggressiv';
@@ -378,6 +387,16 @@ export function runBacktest(
       ? trades.reduce((sum, t) => sum + (t.exitTime - t.entryTime) / (1000 * 60 * 60 * 24), 0) / trades.length
       : 0,
     volatility: volatility * 100,
+    // Advanced risk metrics
+    riskMetrics: dailyReturns.length >= 2
+      ? calculateAllRiskMetrics(
+          dailyReturns,
+          trades,
+          equityCurve.map(e => e.equity),
+          totalReturnPct / 100,
+          maxDrawdown,
+        )
+      : undefined,
   };
   
   return {
@@ -444,6 +463,16 @@ export async function calculateBacktest(input: BacktestInput): Promise<BacktestR
   // Kjør backtest
   const backtest = runBacktest(candles, config, initialCapitalUSD);
   
+  // Run Monte Carlo simulation if requested
+  let monteCarlo: MonteCarloResult | undefined;
+  if (input.includeMonteCarloSim && backtest.trades.length >= 3) {
+    monteCarlo = runMonteCarlo(backtest.trades, {
+      simulations: 10_000,
+      initialCapital: initialCapitalUSD,
+      ruinThresholdPct: 0.5,
+    });
+  }
+  
   // Beregn NOK-verdier
   const endValueNOK = (initialCapitalUSD * (1 + backtest.metrics.totalReturnPct / 100)) * usdNokRate;
   
@@ -453,6 +482,7 @@ export async function calculateBacktest(input: BacktestInput): Promise<BacktestR
     endValueNOK,
     usdNokRate,
     alpha: backtest.metrics.totalReturnPct - backtest.buyHoldReturn,
+    monteCarlo,
   };
 }
 

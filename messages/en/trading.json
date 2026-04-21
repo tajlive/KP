@@ -758,6 +758,20 @@
     "successDesc": "Your Binance account is now connected. You can now switch to Live Trading mode.",
     "startTrading": "Start Trading"
   },
+  "monteCarlo": {
+    "title": "Monte Carlo Simulation",
+    "probabilityOfProfit": "Probability of Profit",
+    "probabilityOfRuin": "Probability of Ruin",
+    "medianReturn": "Median Return",
+    "meanReturn": "Mean Return",
+    "confidenceInterval": "95% Confidence Interval",
+    "riskSummary": "Risk Summary",
+    "ci95Range": "95% CI Range",
+    "maxConsecutiveLosses": "Max Consecutive Losses",
+    "avgMaxConsecutiveLosses": "Avg Max Consecutive Losses",
+    "simulationsRun": "Simulations Run",
+    "return": "Return"
+  },
   "advancedStats": {
     "triggerText": "Advanced statistics",
     "dialogTitle": "Advanced Statistics",
@@ -802,5 +816,36 @@
     "errorRunBacktest": "Could not run backtest. Please try again later.",
     "backtestFailed": "Backtest failed",
     "backtestUnavailable": "The backtest function is not available yet. Contact support."
+  },
+  "riskMetrics": {
+    "title": "Risk Metrics",
+    "panelTooltip": "Advanced risk measures based on actual trading history",
+    "sortinoRatio": "Sortino Ratio",
+    "sortinoTooltip": "Risk-adjusted return — only penalizes downside volatility. Higher is better.",
+    "calmarRatio": "Calmar Ratio",
+    "calmarTooltip": "Annual return divided by max drawdown. Higher is better.",
+    "var95": "VaR 95%",
+    "var95Tooltip": "Worst expected daily loss at 95% confidence. Less negative is better.",
+    "maxConsecutiveLosses": "Max Consecutive Losses",
+    "maxConsecutiveLossesTooltip": "Largest streak of losing trades in a row. Lower is better.",
+    "omegaRatio": "Omega Ratio",
+    "omegaTooltip": "Probability-weighted gains over losses. Higher is better.",
+    "gainPainRatio": "Gain/Pain Ratio",
+    "gainPainTooltip": "Sum of gains divided by sum of losses. Above 1 is profitable."
+  },
+  "positionLots": {
+    "title": "Open Position",
+    "totalUnrealizedPnL": "Total Unrealized P&L",
+    "lot": "Lot",
+    "entryPrice": "Entry Price",
+    "quantity": "Quantity",
+    "age": "Age",
+    "unrealizedPnL": "Unrealized P&L",
+    "summary": "Summary",
+    "totalQuantity": "Total Quantity",
+    "weightedEntry": "Weighted Avg Entry",
+    "noPosition": "No open position",
+    "loading": "Loading position...",
+    "error": "Could not load position"
   }
 }

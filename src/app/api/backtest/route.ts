@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchHistoricalData, runBacktest, generateSignalsFromLog, StrategyType, RiskProfile, STRATEGY_MAP } from '@/lib/backtest/engine';
 import { createServerClient } from "@/lib/supabase/server";
+import { runMonteCarlo } from '@/lib/trading/monte-carlo';
 import { z } from 'zod';
 
 const BacktestSchema = z.object({
@@ -18,6 +19,7 @@ const BacktestSchema = z.object({
   smaFast: z.number().min(5).max(50).optional(),
   smaSlow: z.number().min(20).max(200).optional(),
   maxPositionPct: z.number().min(0.1).max(1.0).optional(),
+  includeMonteCarlo: z.boolean().optional().default(false),
 });
 
 export const dynamic = 'force-dynamic';
@@ -44,6 +46,7 @@ export async function POST(request: NextRequest) {
       smaFast,
       smaSlow,
       maxPositionPct,
+      includeMonteCarlo,
     } = validation.data;
     
     // Determine strategy parameters
@@ -118,6 +121,15 @@ export async function POST(request: NextRequest) {
       smaSlow: finalSmaSlow,
       maxPositionPct: finalMaxPositionPct,
     }, externalSignals);
+
+    // Optional Monte Carlo simulation
+    let monteCarlo = undefined;
+    if (includeMonteCarlo && result.trades.length >= 3) {
+      monteCarlo = runMonteCarlo(
+        result.trades as unknown as import('@/lib/trading/backtestEngine').BacktestTrade[],
+        { simulations: 10_000, initialCapital, ruinThresholdPct: 0.5 }
+      );
+    }
     
     // Save to Supabase if authenticated - TODO: re-enable after migration (KLA-240)
     // if (user) {
@@ -126,6 +138,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       ...result,
+      monteCarlo,
       strategyName,
       symbol: finalSymbol,
       period,
