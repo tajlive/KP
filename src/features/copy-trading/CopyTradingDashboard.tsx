@@ -222,8 +222,8 @@ export default function CopyTradingDashboard() {
                 data-testid="copy-trading-followed-row"
                 layout
                 className="flex items-center gap-3.5 p-4
-                           bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl
-                           rounded-2xl border border-gray-200/50 dark:border-gray-800/50
+                           -mx-4 rounded-none border-x-0 border-y border-gray-200/50 sm:mx-0 sm:rounded-2xl sm:border sm:border-gray-200/50
+                           bg-white/80 dark:bg-gray-900/80 dark:border-gray-800/50 backdrop-blur-xl
                            shadow-sm"
               >
                 {/* Avatar */}

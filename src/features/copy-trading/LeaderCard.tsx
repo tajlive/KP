@@ -8,7 +8,9 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { LeaderComparisonStrip } from "./LeaderComparisonStrip";
 import { TrendDelta } from "./TrendDelta";
+import { QuickFollowSheet } from "./QuickFollowSheet";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 type TimeframeKey = "7d" | "30d" | "90d";
 
@@ -41,6 +43,7 @@ export function LeaderCard({
 }: LeaderCardProps) {
   const t = useTranslations("copyTrading.discover");
   const reduceMotion = useReducedMotion();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const staggerDelay = reduceMotion
     ? 0
     : Math.min(index, STAGGER_CAP - 1) * STAGGER_STEP;
@@ -69,7 +72,7 @@ export function LeaderCard({
       whileHover={
         reduceMotion ? undefined : { y: -3, transition: { duration: 0.2 } }
       }
-      className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-[border-color,box-shadow] duration-300 hover:border-indigo-500/30 hover:shadow-[0_12px_48px_rgba(99,102,241,0.12)]"
+      className="group relative flex w-[88vw] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-900/80 p-5 shadow-[0_8px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-[border-color,box-shadow] duration-300 hover:border-indigo-500/30 hover:shadow-[0_12px_48px_rgba(99,102,241,0.12)] sm:w-auto"
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
@@ -173,19 +176,43 @@ export function LeaderCard({
         {t("riskHint")}
       </p>
 
-      <Button
-        asChild
-        className="relative mt-4 w-full rounded-2xl bg-brand-500 font-semibold text-white hover:bg-brand-600"
-      >
-        <Link
-          href={hrefWithLocale(
-            locale,
-            `/copy-trading/traders/${leader.traderHrefId}`,
-          )}
+      {/* CTAs: primær 'Kopier nå' + sekundær 'Se profil' */}
+      <div className="relative mt-4 flex flex-col gap-2">
+        {leader.is_following ? (
+          <div className="flex h-[48px] items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-[14px] font-semibold text-emerald-300">
+            {t("alreadyFollowing")}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsSheetOpen(true)}
+            className="h-[48px] w-full rounded-2xl bg-brand-500 text-[14px] font-bold text-white shadow-md shadow-brand-500/20 transition-all active:scale-[0.98] hover:bg-brand-600"
+          >
+            {t("copyNow")}
+          </button>
+        )}
+        <Button
+          asChild
+          variant="ghost"
+          className="h-[44px] w-full rounded-2xl border border-white/10 text-[13px] font-medium text-slate-300 hover:bg-white/5 hover:text-white"
         >
-          {t("viewProfile")}
-        </Link>
-      </Button>
+          <Link
+            href={hrefWithLocale(
+              locale,
+              `/copy-trading/traders/${leader.traderHrefId}`,
+            )}
+          >
+            {t("viewProfile")}
+          </Link>
+        </Button>
+      </div>
+
+      <QuickFollowSheet
+        leaderId={leader.leaderAuthUserId}
+        leaderName={leader.display_name}
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+      />
     </m.article>
   );
 }
