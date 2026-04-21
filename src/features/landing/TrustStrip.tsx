@@ -6,8 +6,7 @@
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { GlassCard } from '@/shared/ui/GlassCard';
-import { Shield, Zap, Users } from 'lucide-react';
-import { UserCountStat } from './UserCountStat';
+import { Shield, Zap } from 'lucide-react';
 
 interface TrustStripProps {
   locale?: string;
@@ -26,17 +25,10 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
     },
     {
       label: t('stats.signals'),
-      value: '24/7',
+      value: t('stats.alwaysOn'),
       suffix: '',
       description: t('stats.signalsDesc'),
       icon: <Zap className="w-5 h-5" />,
-    },
-    {
-      label: t('stats.community'),
-      value: t('stats.growing'),
-      suffix: '',
-      description: t('stats.communityDesc'),
-      icon: <Users className="w-5 h-5" />,
     },
   ];
 
@@ -63,15 +55,8 @@ export async function TrustStrip({ locale = 'no' }: TrustStripProps) {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Stats Grid */}
+        {/* Stats Grid — only verifiable claims, no platform numbers */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
-          {/* Dynamic User Count - First Card */}
-          <UserCountStat
-            label={t('stats.activeUsers')}
-            description={t('stats.activeUsersDesc')}
-          />
-
-          {/* Other Stats */}
           {stats.map((stat) => (
             <GlassCard
               key={stat.label}

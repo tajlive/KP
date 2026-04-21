@@ -22,7 +22,8 @@ interface UserStatsErrorResponse {
   cachedAt: string;
 }
 
-const FALLBACK_COUNT = 100000; // 100K fallback
+// No fallback — we never show fabricated user counts.
+// If the DB query fails, we return the real error or 0.
 
 export async function GET() {
   const cachedAt = new Date().toISOString();
@@ -30,7 +31,6 @@ export async function GET() {
   try {
     const supabase = createClient();
 
-    // Query count of users created in last 90 days
     const { data, error } = await supabase
       .from('user_profiles')
       .select('id', { count: 'exact', head: true })
@@ -38,28 +38,16 @@ export async function GET() {
 
     if (error) {
       console.error('User stats API error:', error);
-      // Return fallback data on error with 200 status
-      return NextResponse.json<UserStatsErrorResponse>(
-        {
-          count: FALLBACK_COUNT,
-          error: 'Failed to fetch user count',
-          cachedAt,
-        },
-        {
-          headers: {
-            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-          },
-        }
+      return NextResponse.json(
+        { count: 0, error: error.message, cachedAt },
+        { status: 500 }
       );
     }
 
     const count = data?.length ?? 0;
 
     return NextResponse.json<UserStatsResponse>(
-      {
-        count,
-        cachedAt,
-      },
+      { count, cachedAt },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
@@ -68,18 +56,13 @@ export async function GET() {
     );
   } catch (error) {
     console.error('User stats API unexpected error:', error);
-    // Return fallback data on any unexpected error
-    return NextResponse.json<UserStatsErrorResponse>(
+    return NextResponse.json(
       {
-        count: FALLBACK_COUNT,
+        count: 0,
         error: error instanceof Error ? error.message : 'Unknown error',
         cachedAt,
       },
-      {
-        headers: {
-          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-        },
-      }
+      { status: 500 }
     );
   }
 }

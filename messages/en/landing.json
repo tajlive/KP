@@ -203,7 +203,6 @@
   "demoWidget": {
     "title": "Real-time feel — zero real money",
     "subtitle": "Hit buy and sell in the demo below. Prices tick like a live market — with no downside.",
-    "liveBadge": "Live simulation",
     "portfolio": "Portfolio",
     "positionLabel": "Position",
     "buy": "Buy BTC",
@@ -211,7 +210,8 @@
     "overlay": "Sign up to trade with real data",
     "overlayCta": "Start for free",
     "overlayLoggedIn": "Try full paper trading in the app — same feel, still no real money at risk",
-    "overlayLoggedInCta": "Go to paper trading"
+    "overlayLoggedInCta": "Go to paper trading",
+    "demoBadge": "Live simulation"
   },
   "aiTools": {
     "badge": "AI tools",
@@ -274,7 +274,8 @@
       "signalsDesc": "Trade around the clock",
       "growing": "Growing",
       "community": "Norwegian community",
-      "communityDesc": "Norwegian traders helping each other"
+      "communityDesc": "Norwegian traders helping each other",
+      "alwaysOn": "Always on"
     },
     "payment": {
       "secure": "Secure payment via"

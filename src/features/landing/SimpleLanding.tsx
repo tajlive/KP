@@ -106,7 +106,7 @@ export default function SimpleLanding() {
               {
                 icon: <TrendingUp className="w-5 h-5 text-blue-400" aria-hidden />,
                 title: 'Automatisert handel',
-                desc: 'Boten handler for deg 24/7',
+                desc: 'Strategiene kjører automatisk',
               },
               {
                 icon: <Shield className="w-5 h-5 text-green-400" aria-hidden />,
@@ -115,8 +115,8 @@ export default function SimpleLanding() {
               },
               {
                 icon: <Zap className="w-5 h-5 text-yellow-400" aria-hidden />,
-                title: 'Klar på 5 minutter',
-                desc: 'Koble til Coinbase og start',
+                title: 'Rask oppstart',
+                desc: 'Koble til Binance og start',
               },
             ].map((f) => (
               <div

@@ -191,10 +191,6 @@ export function FeaturesBentoGrid() {
             icon={<Bot className="w-7 h-7 text-kp-brand" />}
             title="Handelsboten handler mens du sover"
             description="Våre algoritmer analyserer markedet kontinuerlig og utfører handler automatisk basert på din strategi. Du bestemmer risikonivået — boten gjør jobben."
-            stats={[
-              { value: "24/7", label: "Overvåking" },
-              { value: "<2s", label: "Responstid" },
-            ]}
             delay={0.1}
           />
 

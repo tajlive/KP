@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, TrendingUp, Trophy } from 'lucide-react';
+import { TrendingUp, Trophy } from 'lucide-react';
 
 interface StatsData {
   active_paper_traders: number;
@@ -48,22 +48,13 @@ export function LiveProofStrip() {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-wrap items-center justify-center gap-6 md:gap-10 text-sm"
         >
-          {/* Active traders */}
+          {/* Paper-trading stats — clearly marked as simulated */}
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-kp-brand" />
-            <span className="text-kp-text-secondary">
-              {loading || !stats ? (
-                <span className="inline-block w-16 h-4 bg-kp-surface-highlight animate-pulse rounded" />
-              ) : stats.hasEnoughData ? (
-                <>
-                  <span className="font-semibold text-kp-text-primary">
-                    {stats.active_paper_traders}
-                  </span>{' '}
-                  aktive tradere
-                </>
-              ) : (
-                <span className="text-kp-text-tertiary">Tidlig beta — voksende</span>
-              )}
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider bg-amber-400/10 px-2 py-0.5 rounded">
+              SIMULERT
+            </span>
+            <span className="text-kp-text-tertiary text-xs">
+              Papirhandel — ikke ekte penger
             </span>
           </div>
 
@@ -113,7 +104,7 @@ export function LiveProofStrip() {
           {/* Disclaimer */}
           <div className="hidden md:flex items-center gap-1 text-xs text-kp-text-tertiary border-l border-kp-border pl-6">
             <span>⚠️</span>
-            <span>Historiske resultater. Ingen garanti.</span>
+            <span>Historiske resultater fra papirhandel. Ingen garanti.</span>
           </div>
         </motion.div>
 

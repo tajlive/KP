@@ -177,7 +177,7 @@ export function CopyTradingSection() {
 
           <div className="bg-blue-600/5 p-4 rounded-2xl border border-blue-600/10 text-center">
             <p className="text-xs text-blue-600 font-medium">
-              Join 2,400+ andre brukere som kopierer strategier i dag.
+              Resultater fra papirhandel. Ingen garanti for fremtidig avkastning.
             </p>
           </div>
         </div>
