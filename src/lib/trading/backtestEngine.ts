@@ -16,6 +16,7 @@
 
 import { calculateAllRiskMetrics, type RiskMetricsSummary } from "./risk-metrics";
 import { runMonteCarlo, type MonteCarloResult } from "./monte-carlo";
+import { runWalkForward, type WalkForwardResult } from "./walk-forward";
 
 // ============================================================================
 // TYPES
@@ -92,6 +93,8 @@ export interface BacktestResult {
   usdNokRate: number;
   /** Monte Carlo simulation (opt-in) */
   monteCarlo?: MonteCarloResult;
+  /** Walk-forward analysis (opt-in) */
+  walkForward?: WalkForwardResult;
 }
 
 export interface BacktestInput {
@@ -105,6 +108,8 @@ export interface BacktestInput {
   usdNokRate?: number;
   /** Include Monte Carlo simulation (default false, adds ~1-2s) */
   includeMonteCarloSim?: boolean;
+  /** Include walk-forward analysis (default false, adds ~2-5s) */
+  includeWalkForward?: boolean;
 }
 
 export type RiskProfile = 'konservativ' | 'balansert' | 'aggressiv';
@@ -472,6 +477,16 @@ export async function calculateBacktest(input: BacktestInput): Promise<BacktestR
       ruinThresholdPct: 0.5,
     });
   }
+
+  // Run walk-forward analysis if requested
+  let walkForward: WalkForwardResult | undefined;
+  if (input.includeWalkForward && candles.length >= 300) {
+    walkForward = runWalkForward(candles, config, initialCapitalUSD, {
+      numWindows: 5,
+      inSamplePct: 0.7,
+      minCandlesPerWindow: 60,
+    });
+  }
   
   // Beregn NOK-verdier
   const endValueNOK = (initialCapitalUSD * (1 + backtest.metrics.totalReturnPct / 100)) * usdNokRate;
@@ -483,6 +498,7 @@ export async function calculateBacktest(input: BacktestInput): Promise<BacktestR
     usdNokRate,
     alpha: backtest.metrics.totalReturnPct - backtest.buyHoldReturn,
     monteCarlo,
+    walkForward,
   };
 }
 
