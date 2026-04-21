@@ -17,6 +17,7 @@ import { DailyChallenge } from "@/features/gamification/DailyChallenge";
 // Eksisterende komponenter
 import { SimplifiedHero } from "./SimplifiedHero";
 import { SmartActions } from "./SmartActions";
+import { AutoTradingConfigCard } from "./AutoTradingConfigCard";
 
 // Nye onboarding & retention komponenter
 import { NewUserHero } from "./NewUserHero";
@@ -163,6 +164,9 @@ export function DashboardPro({
 
             {/* Right column - 1/3 width */}
             <div className="space-y-6">
+              {/* Trading Mode & Risk Settings */}
+              <AutoTradingConfigCard />
+
               {/* Live Trade Feed */}
               <LiveTradeFeed limit={8} />
 
