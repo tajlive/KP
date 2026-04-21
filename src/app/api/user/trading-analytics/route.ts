@@ -58,6 +58,17 @@ const responseSchema = z.object({
   ),
   bestDay: z.object({ day: z.string(), pnl: z.number() }).nullable(),
   worstDay: z.object({ day: z.string(), pnl: z.number() }).nullable(),
+  riskMetrics: z.object({
+    sortinoRatio: z.number(),
+    calmarRatio: z.number(),
+    var95: z.number(),
+    var99: z.number(),
+    expectedShortfall95: z.number(),
+    omegaRatio: z.number(),
+    maxConsecutiveLosses: z.number(),
+    avgTimeToRecovery: z.number(),
+    gainPainRatio: z.number(),
+  }),
 });
 
 function getAuthUser(request: NextRequest) {
@@ -119,6 +130,7 @@ export async function GET(request: NextRequest) {
       winLossSlices: built.winLossSlices,
       bestDay: built.bestDay,
       worstDay: built.worstDay,
+      riskMetrics: built.riskMetrics,
     };
 
     const check = responseSchema.safeParse(body);

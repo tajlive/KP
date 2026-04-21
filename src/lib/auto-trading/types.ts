@@ -130,6 +130,23 @@ export interface AutoTradingSession {
   total_pnl_pct: number;
   max_drawdown_pct: number;
 
+  // Position tracking (FIFO ledger, same as paper trading)
+  open_position?: {
+    side: "long" | "short";
+    quantity: number;
+    entry_price: number;
+    entry_time: string;
+    highest_price?: number;
+    lowest_price?: number;
+    lots?: Array<{
+      id: string;
+      quantity: number;
+      entryPrice: number;
+      timestamp: string;
+      originalQuantity: number;
+    }>;
+  } | null;
+
   // Status
   status: SessionStatus;
   pause_reason?: string;

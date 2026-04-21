@@ -6,6 +6,15 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/utils";
 import type { BinanceTicker } from "@/types/database";
+import {
+  createLedger,
+  addLot,
+  sellFIFO,
+  migrateFromLegacy,
+  toLegacyPosition,
+  getTotalQuantity,
+  type LedgerState,
+} from "@/lib/trading/position-ledger";
 
 // WebSocket base URLs
 const WS_BASE_URLS = {
@@ -338,22 +347,66 @@ export class AutoTradingWebSocket {
         entry_price: number;
         symbol: string;
         id: string;
+        session_id: string;
+        user_id: string;
+        quantity: number;
       };
       // If this is a closing order (SELL for LONG, BUY for SHORT)
       const isClosingOrder =
         (t.side === "LONG" && update.side === "SELL") ||
         (t.side === "SHORT" && update.side === "BUY");
 
+      // Fetch active session for FIFO tracking
+      const { data: session } = await supabase
+        .from("trading_sessions")
+        .select("id, open_position")
+        .eq("id", t.session_id)
+        .single();
+
+      if (!session) {
+        console.warn("[live-fifo] No session found for trade", t.id);
+      }
+
+      const sessionPos = (session?.open_position || null) as
+        | { side: "long" | "short"; quantity: number; entry_price: number; entry_time: string; highest_price?: number; lots?: LedgerState["lots"] }
+        | null;
+
+      const ledger: LedgerState = sessionPos?.lots
+        ? { side: sessionPos.side, lots: sessionPos.lots }
+        : sessionPos
+          ? migrateFromLegacy(sessionPos)
+          : createLedger(t.side === "LONG" ? "long" : "short");
+
       if (isClosingOrder && t.status === "OPEN") {
-        // Calculate PnL
+        // Use FIFO for P&L calculation
         const exitPrice = update.price;
-        const pnl =
-          t.side === "LONG"
-            ? (exitPrice - t.entry_price) * update.executedQty
-            : (t.entry_price - exitPrice) * update.executedQty;
+        const qtyToClose = Math.min(update.executedQty, getTotalQuantity(ledger));
+
+        let pnl: number;
+        let updatedLedger: LedgerState | null = null;
+
+        if (qtyToClose > 0) {
+          try {
+            const sellResult = sellFIFO(ledger, qtyToClose, exitPrice);
+            pnl = sellResult.realizedPnl;
+            updatedLedger = { ...ledger, lots: sellResult.remainingLots };
+          } catch {
+            // Fallback to simple P&L if FIFO fails
+            pnl =
+              t.side === "LONG"
+                ? (exitPrice - t.entry_price) * update.executedQty
+                : (t.entry_price - exitPrice) * update.executedQty;
+          }
+        } else {
+          // Fallback: no position to match against
+          pnl =
+            t.side === "LONG"
+              ? (exitPrice - t.entry_price) * update.executedQty
+              : (t.entry_price - exitPrice) * update.executedQty;
+        }
 
         // Update trade as closed
-        await supabase
+        await (supabase as any)
           .from("trades")
           .update({
             status: "CLOSED",
@@ -362,9 +415,25 @@ export class AutoTradingWebSocket {
             closed_at: new Date().toISOString(),
             closed_reason: "MARKET_CLOSE",
             binance_close_order_id: update.orderId,
-          } as any)
+          })
           .eq("id", t.id)
           .select();
+
+        // Update session position with remaining lots (or null if empty)
+        if (session) {
+          const legacyPos = updatedLedger ? toLegacyPosition(updatedLedger) : null;
+          await supabase
+            .from("trading_sessions")
+            .update({
+              open_position: legacyPos
+                ? {
+                    ...legacyPos,
+                    highest_price: sessionPos?.highest_price,
+                  }
+                : null,
+            } as never)
+            .eq("id", session.id);
+        }
 
         // Create notification
         await supabase.from("notifications").insert({
@@ -375,6 +444,32 @@ export class AutoTradingWebSocket {
           priority: "medium",
           read: false,
         } as never);
+      } else if (!isClosingOrder && update.side === "BUY" && t.side === "LONG") {
+        // Opening buy: add lot to FIFO ledger
+        const buyPrice = update.price || t.entry_price;
+        const buyQty = update.executedQty || t.quantity;
+
+        const updatedLedger = addLot(ledger, buyQty, buyPrice);
+        const legacyPos = toLegacyPosition(updatedLedger);
+
+        if (legacyPos && session) {
+          await supabase
+            .from("trading_sessions")
+            .update({
+              open_position: {
+                ...legacyPos,
+                highest_price: sessionPos?.highest_price ?? buyPrice,
+              },
+            } as never)
+            .eq("id", session.id);
+        }
+
+        console.info("[live-fifo] Buy lot added:", {
+          session_id: session?.id,
+          qty: buyQty,
+          price: buyPrice,
+          lots: legacyPos?.lots?.length ?? 0,
+        });
       }
     } catch (error) {
       console.error("Failed to handle order filled:", error);

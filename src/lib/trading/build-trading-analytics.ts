@@ -2,6 +2,7 @@ import {
   aggregateTradeHistoryStats,
   type TradeHistoryAggregates,
 } from "@/lib/trading/trade-history-aggregates";
+import { calculateAllRiskMetrics } from "./risk-metrics";
 
 export type TradeAnalyticsInput = {
   id: string;
@@ -75,6 +76,17 @@ export type TradingAnalyticsPayload = {
   }[];
   bestDay: { day: string; pnl: number } | null;
   worstDay: { day: string; pnl: number } | null;
+  riskMetrics: {
+    sortinoRatio: number;
+    calmarRatio: number;
+    var95: number;
+    var99: number;
+    expectedShortfall95: number;
+    omegaRatio: number;
+    maxConsecutiveLosses: number;
+    avgTimeToRecovery: number;
+    gainPainRatio: number;
+  };
 };
 
 const WIN_COLOR = "#10b981";
@@ -82,9 +94,27 @@ const LOSS_COLOR = "#f43f5e";
 const NEUTRAL_COLOR = "#64748b";
 const UNKNOWN_COLOR = "#475569";
 
+function safeMetric(n: number): number {
+  if (!Number.isFinite(n)) return n > 0 ? 99.99 : 0;
+  return Math.round(n * 1000) / 1000;
+}
+
+function computeMaxDrawdown(equityCurve: number[]): number {
+  if (equityCurve.length < 2) return 0;
+  let peak = equityCurve[0];
+  let maxDD = 0;
+  for (const eq of equityCurve) {
+    if (eq > peak) peak = eq;
+    const dd = (peak - eq) / peak;
+    if (dd > maxDD) maxDD = dd;
+  }
+  return maxDD;
+}
+
 export function buildTradingAnalytics(
   trades: TradeAnalyticsInput[],
   generatedAt = new Date().toISOString(),
+  startingCapital = 100000,
 ): TradingAnalyticsPayload {
   const sorted = [...trades].sort((a, b) => tradeMillis(a) - tradeMillis(b));
 
@@ -195,6 +225,48 @@ export function buildTradingAnalytics(
     if (!worstDay || d.pnl < worstDay.pnl) worstDay = d;
   }
 
+  // Build daily equity curve and returns for risk metrics
+  const dailyEquity: number[] = [];
+  let equity = startingCapital;
+  for (const d of dailyPnl) {
+    equity += d.pnl;
+    dailyEquity.push(Math.round(equity * 100) / 100);
+  }
+
+  const dailyReturns = dailyPnl.map((d, i) => {
+    const prevEquity = i === 0 ? startingCapital : dailyEquity[i - 1];
+    return prevEquity !== 0 ? Math.round((d.pnl / prevEquity) * 1e6) / 1e6 : 0;
+  });
+
+  const maxDrawdown = computeMaxDrawdown(dailyEquity);
+  const finalEquity = dailyEquity[dailyEquity.length - 1] ?? startingCapital;
+  const numDays = Math.max(dailyPnl.length, 1);
+  const totalReturn = (finalEquity - startingCapital) / startingCapital;
+  const annualizedReturn = totalReturn * (365 / numDays);
+
+  const tradePnls = sorted.map((row) => ({ pnl: effectivePnlDelta(row) }));
+
+  const raw = calculateAllRiskMetrics(
+    dailyReturns,
+    tradePnls,
+    dailyEquity,
+    annualizedReturn,
+    maxDrawdown,
+    0.03,
+  );
+
+  const riskMetrics = {
+    sortinoRatio: safeMetric(raw.sortinoRatio),
+    calmarRatio: safeMetric(raw.calmarRatio),
+    var95: safeMetric(raw.var95),
+    var99: safeMetric(raw.var99),
+    expectedShortfall95: safeMetric(raw.expectedShortfall95),
+    omegaRatio: safeMetric(raw.omegaRatio),
+    maxConsecutiveLosses: raw.maxConsecutiveLosses,
+    avgTimeToRecovery: Math.round(raw.avgTimeToRecoveryPeriods * 10) / 10,
+    gainPainRatio: safeMetric(raw.gainPainRatio),
+  };
+
   return {
     generatedAt,
     tradeCount: sorted.length,
@@ -206,5 +278,6 @@ export function buildTradingAnalytics(
     winLossSlices,
     bestDay,
     worstDay,
+    riskMetrics,
   };
 }

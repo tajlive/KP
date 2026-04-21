@@ -758,6 +758,20 @@
     "successDesc": "Binance-kontoen din er nå tilkoblet. Du kan nå bytte til Live Trading-modus.",
     "startTrading": "Start trading"
   },
+  "monteCarlo": {
+    "title": "Monte Carlo-simulering",
+    "probabilityOfProfit": "Sannsynlighet for profitt",
+    "probabilityOfRuin": "Sannsynlighet for ruin",
+    "medianReturn": "Median avkastning",
+    "meanReturn": "Gjennomsnittlig avkastning",
+    "confidenceInterval": "95 % konfidensintervall",
+    "riskSummary": "Risiko-oppsummering",
+    "ci95Range": "95 % CI-intervall",
+    "maxConsecutiveLosses": "Maks tap på rad",
+    "avgMaxConsecutiveLosses": "Gj.snitt maks tap på rad",
+    "simulationsRun": "Simuleringer kjørt",
+    "return": "Avkastning"
+  },
   "advancedStats": {
     "triggerText": "Avansert statistikk",
     "dialogTitle": "Avansert Statistikk",
@@ -802,5 +816,36 @@
     "errorRunBacktest": "Kunne ikke kjøre backtest. Prøv igjen senere.",
     "backtestFailed": "Backtest feilet",
     "backtestUnavailable": "Backtest-funksjonen er ikke tilgjengelig ennå. Kontakt support."
+  },
+  "riskMetrics": {
+    "title": "Risikometrikker",
+    "panelTooltip": "Avanserte risikomålinger basert på faktisk handelshistorikk",
+    "sortinoRatio": "Sortino-ratio",
+    "sortinoTooltip": "Risikojustert avkastning — kun straffer nedsidevolatilitet. Høyere er bedre.",
+    "calmarRatio": "Calmar-ratio",
+    "calmarTooltip": "Årlig avkastning delt på maks drawdown. Høyere er bedre.",
+    "var95": "VaR 95%",
+    "var95Tooltip": "Verste forventede daglige tap med 95% konfidens. Mindre negativt er bedre.",
+    "maxConsecutiveLosses": "Maks tap på rad",
+    "maxConsecutiveLossesTooltip": "Største antall tapende handler på rad. Lavere er bedre.",
+    "omegaRatio": "Omega-ratio",
+    "omegaTooltip": "Sannsynlighetsvektede gevinster delt på tap. Høyere er bedre.",
+    "gainPainRatio": "Gain/Pain-ratio",
+    "gainPainTooltip": "Sum gevinster delt på sum tap. Over 1 er lønnsomt."
+  },
+  "positionLots": {
+    "title": "Åpen posisjon",
+    "totalUnrealizedPnL": "Total urealisert P&L",
+    "lot": "Lot",
+    "entryPrice": "Inngangspris",
+    "quantity": "Antall",
+    "age": "Alder",
+    "unrealizedPnL": "Urealisert P&L",
+    "summary": "Sammendrag",
+    "totalQuantity": "Total antall",
+    "weightedEntry": "Vektet snitt inngang",
+    "noPosition": "Ingen åpen posisjon",
+    "loading": "Laster posisjon...",
+    "error": "Kunne ikke laste posisjon"
   }
 }

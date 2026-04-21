@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { Switch } from "@/shared/ui/switch";
 import { SymbolToggles } from "./components";
 
 // Dynamisk import av chart-komponenter med SSR: false
@@ -49,6 +50,29 @@ const LatestSignalCard = dynamic(
     loading: () => <Skeleton className="h-32 w-full rounded-xl" />,
   }
 );
+
+const MonteCarloPanel = dynamic(
+  () => import("./components").then((mod) => mod.MonteCarloPanel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-80 w-full animate-pulse rounded-lg bg-slate-800" />
+    ),
+  }
+);
+
+interface MonteCarloData {
+  probabilityOfProfit: number;
+  probabilityOfRuin: number;
+  medianReturn: number;
+  meanReturn: number;
+  confidenceInterval95: [number, number];
+  percentiles: Record<number, number>;
+  maxConsecutiveLosses: number;
+  avgMaxConsecutiveLosses: number;
+  simulationsRun: number;
+  executionTimeMs: number;
+}
 
 interface BacktestMetrics {
   totalReturnPct: number;
@@ -101,13 +125,15 @@ export default function MetricsPage() {
     equityCurve: EquityPoint[];
     strategyName: string;
     symbol: string;
+    monteCarlo?: MonteCarloData;
   } | null>(null);
   const [signals, setSignals] = useState<EnsembleSignal[]>([]);
   const [loading, setLoading] = useState(true);
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [error, setError] = useState<string | null>(null);
+  const [includeMonteCarlo, setIncludeMonteCarlo] = useState(false);
 
-  const runBacktest = async (sym: string) => {
+  const runBacktest = async (sym: string, withMonteCarlo = includeMonteCarlo) => {
     setLoading(true);
     setError(null);
     try {
@@ -121,6 +147,7 @@ export default function MetricsPage() {
           interval: "1h",
           period: 90,
           initialCapital: 10000,
+          includeMonteCarlo: withMonteCarlo,
         }),
       });
 
@@ -138,6 +165,7 @@ export default function MetricsPage() {
         equityCurve: data.equityCurve,
         strategyName: data.strategyName || "Ensemble AI",
         symbol: data.symbol,
+        monteCarlo: data.monteCarlo,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Ukjent feil";
@@ -175,6 +203,12 @@ export default function MetricsPage() {
     runBacktest(symbol);
   }, [symbol]);
 
+  useEffect(() => {
+    if (backtest) {
+      runBacktest(symbol, includeMonteCarlo);
+    }
+  }, [includeMonteCarlo]);
+
   // Transformer data til chart-format med deterministisk datoformatering
   const equityData = useMemo(() => {
     if (!backtest?.equityCurve) return [];
@@ -202,7 +236,24 @@ export default function MetricsPage() {
             Ensemble backtests & live signal quality
           </p>
         </div>
-        <SymbolToggles selected={symbol} onSelect={setSymbol} />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Switch
+              id="monte-carlo-toggle"
+              checked={includeMonteCarlo}
+              onCheckedChange={setIncludeMonteCarlo}
+            />
+            <label
+              htmlFor="monte-carlo-toggle"
+              className="text-sm text-muted-foreground cursor-pointer"
+            >
+              {includeMonteCarlo
+                ? "Kjør Monte Carlo (10 000 simuleringer)"
+                : "Run Monte Carlo (10,000 simulations)"}
+            </label>
+          </div>
+          <SymbolToggles selected={symbol} onSelect={setSymbol} />
+        </div>
       </div>
 
       {error && (
@@ -234,6 +285,10 @@ export default function MetricsPage() {
             <EquityChart data={equityData} />
             <SignalCompositionChart data={scoreData} />
           </div>
+
+          {backtest.monteCarlo && (
+            <MonteCarloPanel data={backtest.monteCarlo} />
+          )}
         </>
       )}
 
