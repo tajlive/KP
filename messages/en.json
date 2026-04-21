@@ -3189,7 +3189,9 @@
       "resultsLine": "{visible} shown · {total} loaded for this period",
       "resultsMeta": "In database: {bots} curated bots considered · {profiles} public profiles",
       "ariaTimeframe": "Choose performance period",
-      "ariaFilter": "Filter list"
+      "ariaFilter": "Filter list",
+      "copyNow": "Copy now",
+      "alreadyFollowing": "✓ Already following"
     },
     "nav": {
       "mine": "Overview",
@@ -3198,6 +3200,23 @@
     "profile": {
       "trustPaper": "This is a Klarpakke paper/demo profile. Past results do not guarantee future returns.",
       "trustRisk": "Risk labels are simplified and do not replace your own research."
+    },
+    "quickFollow": {
+      "title": "Copy trader",
+      "subtitle": "You are copying {name}",
+      "sheetAriaLabel": "Copy {name}",
+      "allocLabel": "Max amount per trade",
+      "allocHint": "Minimum {min} NOK",
+      "sizingLabel": "Trade size",
+      "sizingPropTitle": "Proportional",
+      "sizingPropHint": "Scales with trader",
+      "sizingFixedTitle": "Fixed amount",
+      "sizingFixedHint": "Same size always",
+      "cta": "Start copying",
+      "following": "Starting copy...",
+      "close": "Close",
+      "errorGeneric": "Something went wrong. Try again.",
+      "disclaimer": "Copy trading involves risk. Past performance is not indicative of future returns."
     }
   },
   "pnlBreakdown": {

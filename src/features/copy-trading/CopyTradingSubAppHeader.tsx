@@ -22,7 +22,7 @@ export function CopyTradingSubAppHeader() {
 
   const tabClass = (active: boolean) =>
     cn(
-      "rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors",
+      "min-h-[44px] flex items-center justify-center rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors",
       active ? "bg-white/10 text-white" : "text-slate-400 hover:text-white",
     );
 

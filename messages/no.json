@@ -3189,7 +3189,9 @@
       "resultsLine": "{visible} vises · {total} hentet for valgt periode",
       "resultsMeta": "I databasen: {bots} kuraterte bots vurdert · {profiles} offentlige profiler",
       "ariaTimeframe": "Velg resultatperiode",
-      "ariaFilter": "Filtrer liste"
+      "ariaFilter": "Filtrer liste",
+      "copyNow": "Kopier nå",
+      "alreadyFollowing": "✓ Følger allerede"
     },
     "nav": {
       "mine": "Oversikt",
@@ -3198,6 +3200,23 @@
     "profile": {
       "trustPaper": "Dette er en Klarpakke paper/demo-profil. Resultat er ikke garantert fremover.",
       "trustRisk": "Risikovurdering er forenklet og erstatter ikke egen research."
+    },
+    "quickFollow": {
+      "title": "Kopier trader",
+      "subtitle": "Du kopierer {name}",
+      "sheetAriaLabel": "Kopier {name}",
+      "allocLabel": "Maks beløp per handel",
+      "allocHint": "Minimum {min} kr",
+      "sizingLabel": "Handelsstørrelse",
+      "sizingPropTitle": "Proporsjonal",
+      "sizingPropHint": "Skalerer med trader",
+      "sizingFixedTitle": "Fast beløp",
+      "sizingFixedHint": "Samme størrelse alltid",
+      "cta": "Begynn å kopiere",
+      "following": "Starter kopiering...",
+      "close": "Lukk",
+      "errorGeneric": "Noe gikk galt. Prøv igjen.",
+      "disclaimer": "Kopihandel innebærer risiko. Historisk avkastning er ingen garanti."
     }
   },
   "pnlBreakdown": {

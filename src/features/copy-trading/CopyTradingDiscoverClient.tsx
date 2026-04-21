@@ -253,7 +253,7 @@ export function CopyTradingDiscoverClient() {
           <>
             <div
               className={cn(
-                "grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+                "flex w-full snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto pb-6 sm:grid sm:overflow-visible sm:grid-cols-2 lg:grid-cols-3",
                 refreshing && "opacity-60 transition-opacity",
               )}
               aria-busy={refreshing}
