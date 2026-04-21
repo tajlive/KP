@@ -49,7 +49,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (!isMounted) return;
-        if (error) throw error;
+        if (error) {
+          // If refresh token is invalid (revoked/expired), clear session and redirect
+          if (error.message?.includes("Invalid Refresh Token")) {
+            await supabase.auth.signOut();
+            if (isMounted) {
+              setUser(null);
+              setError(null);
+              setLoading(false);
+            }
+            // Soft redirect to login without full reload if possible
+            const locale = window.location.pathname.split("/")[1] || "no";
+            window.location.replace(`/${locale}/login?error=session_expired`);
+            return;
+          }
+          throw error;
+        }
         setUser(session?.user ?? null);
       } catch (err) {
         if (!isMounted) return;

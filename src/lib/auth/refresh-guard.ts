@@ -93,15 +93,16 @@ export function createRefreshProtectedFetch(
     const key = context.userId || `${context.source}:global`;
     const state = getLockState(key);
 
-    // 1. Circuit breaker
+    // 1. Circuit breaker — return 400 (not 429) so Supabase gotrue-js
+    // treats it as a permanent auth error and does NOT retry.
     if (isRefreshCircuitOpen(key)) {
       return new Response(
         JSON.stringify({
-          message: "Refresh rate limited by client circuit breaker",
-          error: "refresh_rate_limited",
+          error: "invalid_grant",
+          error_description: "Refresh rate limited by client circuit breaker",
         }),
         {
-          status: 429,
+          status: 400,
           headers: { "content-type": "application/json" },
         },
       );
