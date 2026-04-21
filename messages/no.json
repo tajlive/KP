@@ -1341,7 +1341,9 @@
         "leaderboard": "Utforsk leaderboard",
         "inviteFriend": "Inviter en venn"
       }
-    }
+    },
+    "cash": "Cash",
+    "pnl": "P&L"
   },
   "footer": {
     "product": "Produkt",
@@ -2452,7 +2454,11 @@
       "changePassword": "Endre passord",
       "save": "Lagre endringer",
       "saved": "Endringer lagret!",
-      "error": "Kunne ikke lagre endringer"
+      "error": "Kunne ikke lagre endringer",
+      "fullNamePlaceholder": "Skriv inn ditt fulle navn",
+      "avatarPlaceholder": "https://eksempel.com/bilde.jpg",
+      "namePlaceholder": "Navn",
+      "avatarUrlPlaceholder": "URL til profilbilde"
     },
     "api": {
       "title": "API Innstillinger",
@@ -2502,7 +2508,17 @@
           "step7": "7. Lim inn over og test tilkoblingen",
           "warning": "⚠️ Aldri del dine API-nøkler med noen. Hold dem sikre."
         }
-      }
+      },
+      "labelPlaceholder": "F.eks. Hovedkonto",
+      "apiKeyPlaceholder": "Skriv inn din Binance API-nøkkel",
+      "apiSecretPlaceholder": "Skriv inn din Binance API Secret",
+      "deleteError": "Feil ved sletting",
+      "loadError": "Kunne ikke laste API-nøkler",
+      "saveSuccess": "API-nøkkel lagret!",
+      "saveError": "Kunne ikke lagre API-nøkkel",
+      "deleteSuccess": "API-nøkkel slettet",
+      "referralCopied": "Referral link kopiert!",
+      "copyKeys": "Kopier nøklene"
     },
     "notifications": {
       "title": "Varselinnstillinger",
@@ -2511,9 +2527,37 @@
       "trading": "Trading-varsler",
       "positionOpened": "Når en posisjon åpnes",
       "positionClosed": "Når en posisjon lukkes",
-      "priceAlerts": "Prisvarsler",
+      "priceAlerts": "Prisalarmer",
       "courseUpdates": "Kursoppdateringer",
-      "newsletter": "Nyhetsbrev"
+      "newsletter": "Nyhetsbrev",
+      "browserNotSupported": "Din nettleser støtter ikke push-varslinger.",
+      "pushNotifications": "Push-varslinger",
+      "pushDescription": "Få beskjed om viktige hendelser direkte på enheten din.",
+      "whatToNotify": "Hva vil du varsles om?",
+      "priceAlertsDesc": "Når dine valutaer når målpris",
+      "tradingSignals": "Trading-signaler",
+      "tradingSignalsDesc": "Nye kjøps- og salgsanbefalinger",
+      "stopLossTakeProfit": "Stop-loss / Take-profit",
+      "stopLossTakeProfitDesc": "Kritiske handler (alltid på)",
+      "transactions": "Transaksjoner",
+      "transactionsDesc": "Innskudd, uttak, handler",
+      "portfolioUpdates": "Porteføljeoppdateringer",
+      "portfolioUpdatesDesc": "Daglig oppsummering",
+      "marketNews": "Markedsnyheter",
+      "marketNewsDesc": "Viktige hendelser",
+      "competitions": "Konkurranser",
+      "competitionsDesc": "Leaderboard, ligaer",
+      "quietHours": "Stille timer",
+      "quietHoursDesc": "Ingen varsler på kvelden (unntatt kritiske)",
+      "from": "Fra",
+      "to": "Til",
+      "saved": "Innstillinger lagret!",
+      "saveError": "Kunne ikke lagre innstillinger",
+      "updateError": "Kunne ikke oppdatere varslinger",
+      "permissionDenied": "Du må godta varsler i nettleseren",
+      "vapidMissing": "VAPID key mangler i konfigurasjon",
+      "pushEnabled": "Push-varslinger aktivert! 🔔",
+      "pushDisabled": "Push-varslinger deaktivert"
     },
     "security": {
       "title": "Sikkerhet",
@@ -2532,6 +2576,32 @@
       "themeLight": "Lys",
       "themeDark": "Mørk",
       "themeAuto": "Automatisk"
+    },
+    "accessibility": {
+      "title": "♿ Tilgjengelighet",
+      "fontSize": "Tekststørrelse",
+      "fontSizeNormal": "Normal (20px)",
+      "fontSizeLarge": "Stor (24px)",
+      "fontSizeHint": "\"Store bokstaver\"-modus for bedre lesbarhet",
+      "highContrast": "Høy kontrast",
+      "highContrastDesc": "Svart bakgrunn + hvit tekst for synshemmede",
+      "highContrastOn": "Slå på høy kontrast",
+      "highContrastOff": "Slå av høy kontrast",
+      "previewTitle": "Forhåndsvisning:",
+      "previewText": "Dette er hvordan teksten vil se ut.",
+      "previewNote": "Normal tekst er minimum 20px for \"bestemor-test\" godkjenning."
+    },
+    "theme": {
+      "system": "System",
+      "systemDesc": "Følger enhetens innstillinger",
+      "light": "Lyst",
+      "lightDesc": "Lys bakgrunn med mørk tekst",
+      "dark": "Mørkt",
+      "darkDesc": "Mørk bakgrunn med lys tekst",
+      "selected": "Valgt",
+      "preview": "Forhåndsvisning",
+      "darkModeActive": "Mørk modus aktiv",
+      "lightModeActive": "Lys modus aktiv"
     }
   },
   "simulator": {
@@ -2906,7 +2976,37 @@
     "noPositions": "Ingen åpne posisjoner",
     "unrealizedPnL": "Urealisert P&L",
     "realizedPnL": "Realisert P&L",
-    "closePosition": "Lukk posisjon"
+    "closePosition": "Lukk posisjon",
+    "selectStrategy": "Velg strategi",
+    "paperModeHint": "💡 Paper mode — ingen ekte penger",
+    "closeStrategy": "Lukk strategi",
+    "selectStrategyAria": "Velg {name}",
+    "activeStatus": "Aktiv",
+    "notStarted": "Ikke startet",
+    "startStrategy": "Start strategi",
+    "stopStrategy": "Stopp strategi",
+    "starting": "Starter...",
+    "aggressiveness": "Aggressivitet",
+    "riskProfile": "Risikoprofil",
+    "conservativeOption": "Forsiktig",
+    "normalOption": "Normal",
+    "aggressiveOption": "Aggressiv",
+    "marketIntelligence": "Markedsintelligens",
+    "marketDataLoadError": "Kunne ikke laste markedsdata",
+    "marketRegime": "Markedsregime",
+    "activeAdjustment": "Aktiv justering",
+    "liveTrades": "Live handler",
+    "recentActivity": "Siste aktivitet fra fellesskapet",
+    "noTradesYet": "Ingen handler ennå",
+    "seeAllTrades": "Se alle handler →",
+    "activeTraders": "{count} aktive tradere",
+    "buyAction": "Kjøpte",
+    "sellAction": "Solgte",
+    "liveAiInsights": "Live AI Innsikt (Sonar)",
+    "sonarLoadError": "Kunne ikke laste inn Sonar AI analyse.",
+    "upgradeForMore": "Oppgrader for flere analyser",
+    "upgradeDesc": "Få live Sonar-analyser for ETH, SOL og over 20+ andre kryptoassets.",
+    "welcomeStart": "Velkommen! Start en strategi for å begynne."
   },
   "wallet": {
     "title": "Lommebok",
@@ -3217,7 +3317,18 @@
       "close": "Lukk",
       "errorGeneric": "Noe gikk galt. Prøv igjen.",
       "disclaimer": "Kopihandel innebærer risiko. Historisk avkastning er ingen garanti."
-    }
+    },
+    "topTraders": "👑 Topp tradere",
+    "thisMonthBest": "Denne månedens beste",
+    "seeAll": "Se alle",
+    "traderNotFound": "Trader ikke funnet",
+    "backToLeaderboard": "Tilbake til ledertavlen",
+    "totalTradesLabel": "Totalt handler",
+    "noPublicStrategies": "Ingen offentlige strategier ennå",
+    "copyRequiresSubscription": "Kopier trading krever et betalt abonnement",
+    "followLimitReached": "Du kan følge maks {limit} tradere på ditt nivå",
+    "couldNotCopy": "Kunne ikke kopiere trader",
+    "nowCopying": "Du kopierer nå {name}!"
   },
   "pnlBreakdown": {
     "title": "Slik forstår du resultatene dine",
@@ -3234,5 +3345,18 @@
     "unrealized": "Urealisert",
     "hint": "Realisert gevinst/tap vises når en posisjon lukkes. Urealisert viser verdiendring på åpne posisjoner. Cash flow er netto penger inn og ut fra handler.",
     "empty": "Ingen handler å vise ennå. Start en bot for å se resultater."
+  },
+  "chat": {
+    "placeholder": "Skriv et spørsmål...",
+    "moonshotPlaceholder": "Spør om krypto..."
+  },
+  "marketplace": {
+    "loadError": "Kunne ikke laste markedet",
+    "subscribeSuccess": "Strategi abonnert! Gå til dashboard for å se den.",
+    "subscribeError": "Kunne ikke abonnere på strategi",
+    "riskLevelPlaceholder": "Risiko nivå",
+    "sortByPlaceholder": "Sorter etter",
+    "reviewLabel": "Skriv din anmeldelse",
+    "reviewPlaceholder": "Skriv din anmeldelse (valgfritt)…"
   }
 }

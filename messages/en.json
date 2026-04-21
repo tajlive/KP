@@ -1341,7 +1341,9 @@
         "leaderboard": "Explore leaderboard",
         "inviteFriend": "Invite a friend"
       }
-    }
+    },
+    "cash": "Cash",
+    "pnl": "P&L"
   },
   "footer": {
     "product": "Product",
@@ -2452,7 +2454,11 @@
       "changePassword": "Change password",
       "save": "Save changes",
       "saved": "Changes saved!",
-      "error": "Could not save changes"
+      "error": "Could not save changes",
+      "fullNamePlaceholder": "Enter your full name",
+      "avatarPlaceholder": "https://example.com/image.jpg",
+      "namePlaceholder": "Name",
+      "avatarUrlPlaceholder": "Profile picture URL"
     },
     "api": {
       "title": "API Settings",
@@ -2502,7 +2508,17 @@
           "step7": "7. Paste above and test the connection",
           "warning": "⚠️ Never share your API keys with anyone. Keep them secure."
         }
-      }
+      },
+      "labelPlaceholder": "E.g. Main Account",
+      "apiKeyPlaceholder": "Enter your Binance API key",
+      "apiSecretPlaceholder": "Enter your Binance API Secret",
+      "deleteError": "Error during deletion",
+      "loadError": "Could not load API keys",
+      "saveSuccess": "API key saved!",
+      "saveError": "Could not save API key",
+      "deleteSuccess": "API key deleted",
+      "referralCopied": "Referral link copied!",
+      "copyKeys": "Copy keys"
     },
     "notifications": {
       "title": "Notification Settings",
@@ -2511,9 +2527,37 @@
       "trading": "Trading notifications",
       "positionOpened": "When a position opens",
       "positionClosed": "When a position closes",
-      "priceAlerts": "Price alerts",
+      "priceAlerts": "Price Alerts",
       "courseUpdates": "Course updates",
-      "newsletter": "Newsletter"
+      "newsletter": "Newsletter",
+      "browserNotSupported": "Your browser does not support push notifications.",
+      "pushNotifications": "Push Notifications",
+      "pushDescription": "Get notified about important events directly on your device.",
+      "whatToNotify": "What would you like to be notified about?",
+      "priceAlertsDesc": "When your currencies reach target price",
+      "tradingSignals": "Trading Signals",
+      "tradingSignalsDesc": "New buy and sell recommendations",
+      "stopLossTakeProfit": "Stop-loss / Take-profit",
+      "stopLossTakeProfitDesc": "Critical trades (always on)",
+      "transactions": "Transactions",
+      "transactionsDesc": "Deposits, withdrawals, trades",
+      "portfolioUpdates": "Portfolio Updates",
+      "portfolioUpdatesDesc": "Daily summary",
+      "marketNews": "Market News",
+      "marketNewsDesc": "Important events",
+      "competitions": "Competitions",
+      "competitionsDesc": "Leaderboard, leagues",
+      "quietHours": "Quiet Hours",
+      "quietHoursDesc": "No notifications in the evening (except critical)",
+      "from": "From",
+      "to": "To",
+      "saved": "Settings saved!",
+      "saveError": "Could not save settings",
+      "updateError": "Could not update notifications",
+      "permissionDenied": "You must allow notifications in your browser",
+      "vapidMissing": "VAPID key missing in configuration",
+      "pushEnabled": "Push notifications enabled! 🔔",
+      "pushDisabled": "Push notifications disabled"
     },
     "security": {
       "title": "Security",
@@ -2532,6 +2576,32 @@
       "themeLight": "Light",
       "themeDark": "Dark",
       "themeAuto": "Auto"
+    },
+    "accessibility": {
+      "title": "♿ Accessibility",
+      "fontSize": "Font Size",
+      "fontSizeNormal": "Normal (20px)",
+      "fontSizeLarge": "Large (24px)",
+      "fontSizeHint": "\"Large letters\" mode for better readability",
+      "highContrast": "High Contrast",
+      "highContrastDesc": "Black background + white text for visually impaired",
+      "highContrastOn": "Turn on high contrast",
+      "highContrastOff": "Turn off high contrast",
+      "previewTitle": "Preview:",
+      "previewText": "This is how the text will look.",
+      "previewNote": "Normal text is minimum 20px for \"grandma test\" approval."
+    },
+    "theme": {
+      "system": "System",
+      "systemDesc": "Follows device settings",
+      "light": "Light",
+      "lightDesc": "Light background with dark text",
+      "dark": "Dark",
+      "darkDesc": "Dark background with light text",
+      "selected": "Selected",
+      "preview": "Preview",
+      "darkModeActive": "Dark mode active",
+      "lightModeActive": "Light mode active"
     }
   },
   "simulator": {
@@ -2906,7 +2976,37 @@
         "name": "AI Copy",
         "description": "Copies top traders filtered by AI."
       }
-    }
+    },
+    "selectStrategy": "Select Strategy",
+    "paperModeHint": "💡 Paper mode — no real money",
+    "closeStrategy": "Close strategy",
+    "selectStrategyAria": "Select {name}",
+    "activeStatus": "Active",
+    "notStarted": "Not started",
+    "startStrategy": "Start strategy",
+    "stopStrategy": "Stop strategy",
+    "starting": "Starting...",
+    "aggressiveness": "Aggressiveness",
+    "riskProfile": "Risk Profile",
+    "conservativeOption": "Conservative",
+    "normalOption": "Normal",
+    "aggressiveOption": "Aggressive",
+    "marketIntelligence": "Market Intelligence",
+    "marketDataLoadError": "Could not load market data",
+    "marketRegime": "Market Regime",
+    "activeAdjustment": "Active Adjustment",
+    "liveTrades": "Live Trades",
+    "recentActivity": "Recent community activity",
+    "noTradesYet": "No trades yet",
+    "seeAllTrades": "See all trades →",
+    "activeTraders": "{count} active traders",
+    "buyAction": "Bought",
+    "sellAction": "Sold",
+    "liveAiInsights": "Live AI Insights (Sonar)",
+    "sonarLoadError": "Could not load Sonar AI analysis.",
+    "upgradeForMore": "Upgrade for more analyses",
+    "upgradeDesc": "Get live Sonar analyses for ETH, SOL and 20+ other crypto assets.",
+    "welcomeStart": "Welcome! Start a strategy to begin."
   },
   "wallet": {
     "title": "Wallet",
@@ -3217,7 +3317,18 @@
       "close": "Close",
       "errorGeneric": "Something went wrong. Try again.",
       "disclaimer": "Copy trading involves risk. Past performance is not indicative of future returns."
-    }
+    },
+    "topTraders": "👑 Top Traders",
+    "thisMonthBest": "This month's best",
+    "seeAll": "See all",
+    "traderNotFound": "Trader not found",
+    "backToLeaderboard": "Back to leaderboard",
+    "totalTradesLabel": "Total trades",
+    "noPublicStrategies": "No public strategies yet",
+    "copyRequiresSubscription": "Copy trading requires a paid subscription",
+    "followLimitReached": "You can follow max {limit} traders at your level",
+    "couldNotCopy": "Could not copy trader",
+    "nowCopying": "You are now copying {name}!"
   },
   "pnlBreakdown": {
     "title": "Understanding your results",
@@ -3234,5 +3345,18 @@
     "unrealized": "Unrealized",
     "hint": "Realized P&L shows when a position is closed. Unrealized shows value change on open positions. Cash flow is net money in and out from trades.",
     "empty": "No trades to show yet. Start a bot to see results."
+  },
+  "chat": {
+    "placeholder": "Ask a question...",
+    "moonshotPlaceholder": "Ask about crypto..."
+  },
+  "marketplace": {
+    "loadError": "Could not load marketplace",
+    "subscribeSuccess": "Strategy subscribed! Go to dashboard to see it.",
+    "subscribeError": "Could not subscribe to strategy",
+    "riskLevelPlaceholder": "Risk level",
+    "sortByPlaceholder": "Sort by",
+    "reviewLabel": "Write your review",
+    "reviewPlaceholder": "Write your review (optional)…"
   }
 }

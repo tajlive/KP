@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 interface LiveTrade {
@@ -40,6 +40,7 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
   const [activeTraders, setActiveTraders] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const locale = useLocale();
+  const t = useTranslations("trading");
   const router = useRouter();
   const dateLocale = locale === "no" ? nb : enUS;
   const supabaseRef = useRef(createClient());
@@ -233,8 +234,8 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Live handler</h3>
-              <p className="text-slate-500 text-xs">Siste aktivitet fra fellesskapet</p>
+              <h3 className="font-bold text-white">{t("liveTrades")}</h3>
+              <p className="text-slate-500 text-xs">{t("recentActivity")}</p>
             </div>
           </div>
 
@@ -242,7 +243,7 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
             <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
               <span className="text-sm text-emerald-400 font-medium">
-                {activeTraders} aktive tradere
+                {t("activeTraders", { count: activeTraders })}
               </span>
             </div>
           )}
@@ -252,7 +253,7 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
       <div className="max-h-[400px] overflow-y-auto">
         {trades.length === 0 ? (
           <div className="p-8 text-center text-slate-400">
-            <p>Ingen handler ennå</p>
+            <p>{t("noTradesYet")}</p>
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
@@ -294,7 +295,7 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
                           trade.side === "buy" ? "text-emerald-400" : "text-red-400"
                         }`}
                       >
-                        {trade.side === "buy" ? "Kjøpte" : "Solgte"}
+                        {trade.side === "buy" ? t("buyAction") : t("sellAction")}
                       </span>
                       <span className="text-slate-400">{trade.symbol}</span>
                       <span className="text-slate-600">•</span>
@@ -328,7 +329,7 @@ export function LiveTradeFeed({ limit = 10, showHeader = true }: LiveTradeFeedPr
           onClick={() => router.push(`/${locale}/dashboard/resultater`)}
           className="w-full py-2.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm font-medium transition-colors"
         >
-          Se alle handler →
+          {t("seeAllTrades")}
         </button>
       </div>
     </motion.div>

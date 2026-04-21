@@ -1161,20 +1161,20 @@ function StrategyConfig({
               htmlFor="multi-aggressiveness"
               className="text-slate-400 text-sm"
             >
-              Aggressivitet
+              {tCommon("aggressiveness")}
             </label>
             <select
               id="multi-aggressiveness"
               value={multiConfig.aggressiveness}
-              title="Aggressivitet"
+              title={tCommon("aggressiveness")}
               onChange={(e) =>
                 onChange({ ...config, aggressiveness: e.target.value })
               }
               className="w-full mt-1 bg-slate-600 text-white rounded px-3 py-2"
             >
-              <option value="forsiktig">Forsiktig</option>
-              <option value="normal">Normal</option>
-              <option value="aggressiv">Aggressiv</option>
+              <option value="forsiktig">{tCommon("conservativeOption")}</option>
+              <option value="normal">{tCommon("normalOption")}</option>
+              <option value="aggressiv">{tCommon("aggressiveOption")}</option>
             </select>
           </div>
         </div>

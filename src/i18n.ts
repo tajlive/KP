@@ -13,10 +13,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
   }
 
   try {
-    // Load consolidated legacy messages as base fallback
-    const consolidated = await import(`../messages/${validLocale}.json`)
+    // Load Norwegian (defaultLocale) as base layer — ensures all keys exist
+    const baseNo = await import("../messages/no.json")
+      .then((m) => m.default)
+      .catch(() => ({}));
+
+    // Load target locale and merge over Norwegian base
+    const targetConsolidated = await import(`../messages/${validLocale}.json`)
       .then((m) => m.default)
       .catch(() => import("../messages/en.json").then((m) => m.default));
+
+    const consolidated = deepMerge(baseNo, targetConsolidated);
 
     // Load all consolidated namespaces for the locale
     const [
@@ -143,7 +150,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         .catch(() => import("../messages/en/toasts.json").then((m) => m.default)),
     ]);
 
-    const splits: Record<string, any> = {
+    const splits: Record<string, unknown> = {
       common,
       metadata,
       navigation,
@@ -176,25 +183,24 @@ export default getRequestConfig(async ({ requestLocale }) => {
       toasts
     };
 
-    function deepMerge(target: any, source: any): any {
-      if (typeof target !== 'object' || target === null) return source;
-      if (typeof source !== 'object' || source === null) return source;
-      
+    function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
       const output = { ...target };
       Object.keys(source).forEach(key => {
+        const sVal = source[key];
+        const tVal = target[key];
         if (
-          typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key]) &&
-          typeof target[key] === 'object' && target[key] !== null && !Array.isArray(target[key])
+          typeof sVal === 'object' && sVal !== null && !Array.isArray(sVal) &&
+          typeof tVal === 'object' && tVal !== null && !Array.isArray(tVal)
         ) {
-          output[key] = deepMerge(target[key], source[key]);
+          output[key] = deepMerge(tVal as Record<string, unknown>, sVal as Record<string, unknown>);
         } else {
-          output[key] = source[key];
+          output[key] = sVal;
         }
       });
       return output;
     }
 
-    const mergedMessages = deepMerge(consolidated || {}, splits);
+    const mergedMessages = deepMerge((consolidated || {}) as Record<string, unknown>, splits);
 
     return {
       locale: validLocale,

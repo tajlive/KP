@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // Types
@@ -173,6 +174,7 @@ export function MarketIntelligencePanel({
   className,
   refreshInterval = 300000, // 5 minutes default
 }: MarketIntelligencePanelProps) {
+  const t = useTranslations("trading");
   const [data, setData] = useState<MarketIntelligenceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -212,7 +214,7 @@ export function MarketIntelligencePanel({
         <CardHeader>
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-muted-foreground" />
-            <CardTitle className="text-lg">Markedsintelligens</CardTitle>
+            <CardTitle className="text-lg">{t("marketIntelligence")}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -230,11 +232,11 @@ export function MarketIntelligencePanel({
         <CardHeader>
           <div className="flex items-center gap-2 text-red-600">
             <AlertCircle className="h-5 w-5" />
-            <CardTitle className="text-lg">Markedsintelligens</CardTitle>
+            <CardTitle className="text-lg">{t("marketIntelligence")}</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">Kunne ikke laste markedsdata</p>
+          <p className="text-sm text-muted-foreground mb-4">{t("marketDataLoadError")}</p>
           <Button onClick={fetchData} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Prøv igjen
@@ -256,7 +258,7 @@ export function MarketIntelligencePanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-[#0052FF]" />
-            <CardTitle className="text-lg">Markedsintelligens</CardTitle>
+            <CardTitle className="text-lg">{t("marketIntelligence")}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-xs">
@@ -313,7 +315,7 @@ export function MarketIntelligencePanel({
           )}>
             <div className="flex items-center gap-2 mb-3">
               <Activity className="h-4 w-4" />
-              <span className="text-sm font-medium">Markedsregime</span>
+              <span className="text-sm font-medium">{t("marketRegime")}</span>
             </div>
             
             <div className="flex items-center gap-3 mb-2">
@@ -410,7 +412,7 @@ export function MarketIntelligencePanel({
         <div className="p-4 bg-muted/50 rounded-lg">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheck className="h-4 w-4 text-[#0052FF]" />
-            <span className="text-sm font-medium">Aktiv justering</span>
+            <span className="text-sm font-medium">{t("activeAdjustment")}</span>
           </div>
           
           <div className="grid grid-cols-3 gap-4 text-sm">

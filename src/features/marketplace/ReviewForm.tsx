@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Send, Star } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface ReviewFormProps {
   listingId: string;
@@ -15,6 +16,7 @@ export default function ReviewForm({
   onSubmit,
   onClose: _onClose,
 }: ReviewFormProps) {
+  const t = useTranslations("marketplace");
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
@@ -117,13 +119,13 @@ export default function ReviewForm({
 
         {/* Text input */}
         <label htmlFor="review-text" className="sr-only">
-          Skriv din anmeldelse
+          {t("reviewLabel")}
         </label>
         <textarea
           id="review-text"
           value={reviewText}
           onChange={(e) => setReviewText(e.target.value)}
-          placeholder="Skriv din anmeldelse (valgfritt)…"
+          placeholder={t("reviewPlaceholder")}
           rows={3}
           className="w-full px-4 py-3 text-[15px]
                      bg-gray-50 dark:bg-gray-900

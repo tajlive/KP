@@ -6,6 +6,7 @@ import { Bell, BellOff, Loader2, Moon, TrendingUp, Wallet, Trophy, Newspaper, Al
 import { Button } from '@/shared/ui/button'
 import { Switch } from '@/shared/ui/switch'
 import { toast } from 'sonner'
+import { useTranslations } from "next-intl";
 
 // Helper to convert VAPID key
 function urlBase64ToUint8Array(base64String: string) {
@@ -52,6 +53,7 @@ const defaultPrefs: NotificationPrefs = {
 }
 
 export default function NotificationSettings() {
+    const t = useTranslations("settings.notifications");
     const [isSubscribed, setIsSubscribed] = useState(false)
     const [loading, setLoading] = useState(true)
     const [isSupported, setIsSupported] = useState(false)
@@ -96,20 +98,20 @@ export default function NotificationSettings() {
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
-                const { error } = await supabase
+                const { error } = await (supabase as any)
                     .from('notification_preferences')
                     .upsert({
                         user_id: user.id,
                         ...newPrefs,
                         updated_at: new Date().toISOString(),
-                    } as any)
+                    })
                 
                 if (error) throw error
                 setPrefs(newPrefs)
-                toast.success('Innstillinger lagret!')
+                toast.success(t('saved'))
             }
         } catch (error) {
-            toast.error('Kunne ikke lagre innstillinger')
+            toast.error(t('saveError'))
         } finally {
             setSaving(false)
         }
@@ -137,7 +139,7 @@ export default function NotificationSettings() {
             }
         } catch (error) {
             console.error('Subscription error:', error)
-            toast.error('Kunne ikke oppdatere varslinger')
+            toast.error(t('updateError'))
         } finally {
             setLoading(false)
         }
@@ -146,7 +148,7 @@ export default function NotificationSettings() {
     async function subscribe() {
         const permission = await Notification.requestPermission()
         if (permission !== 'granted') {
-            toast.error('Du må godta varsler i nettleseren')
+            toast.error(t('permissionDenied'))
             return
         }
 
@@ -154,7 +156,7 @@ export default function NotificationSettings() {
         const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
         if (!vapidKey) {
-            toast.error('VAPID key mangler i konfigurasjon')
+            toast.error(t('vapidMissing'))
             return
         }
 
@@ -170,23 +172,23 @@ export default function NotificationSettings() {
             if (!keys?.p256dh || !keys?.auth) {
                 throw new Error('Push subscription keys missing');
             }
-            await supabase.from('push_subscriptions').insert({
+            await (supabase as any).from('push_subscriptions').insert({
                 user_id: user.id,
                 endpoint: subscription.endpoint,
                 p256dh: keys.p256dh,
                 auth: keys.auth
-            } as any)
+            })
 
             // Create notification preferences if not exists
-            await supabase.from('notification_preferences').upsert({
+            await (supabase as any).from('notification_preferences').upsert({
                 user_id: user.id,
                 ...prefs,
                 push_notifications: true,
-            } as any)
+            })
         }
 
         setIsSubscribed(true)
-        toast.success('Push-varslinger aktivert! 🔔')
+        toast.success(t('pushEnabled'))
     }
 
     async function unsubscribe() {
@@ -206,7 +208,7 @@ export default function NotificationSettings() {
         }
 
         setIsSubscribed(false)
-        toast.success('Push-varslinger deaktivert')
+        toast.success(t('pushDisabled'))
     }
 
     const togglePref = (key: keyof NotificationPrefs) => {
@@ -217,7 +219,7 @@ export default function NotificationSettings() {
     if (!isSupported) {
         return (
             <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-400 text-sm">
-                Din nettleser støtter ikke push-varslinger.
+                {t('browserNotSupported')}
             </div>
         )
     }
@@ -252,15 +254,15 @@ export default function NotificationSettings() {
             {isSubscribed && (
                 <>
                     <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                        <h4 className="text-white font-medium mb-4">Hva vil du varsles om?</h4>
+                        <h4 className="text-white font-medium mb-4">{t('whatToNotify')}</h4>
                         
                         <div className="space-y-4">
                             <div className="flex items-center justify-between py-2">
                                 <div className="flex items-center gap-3">
                                     <TrendingUp className="w-5 h-5 text-green-400" />
                                     <div>
-                                        <p className="text-white text-sm">Prisalarmer</p>
-                                        <p className="text-slate-500 text-xs">Når dine valutaer når målpris</p>
+                                        <p className="text-white text-sm">{t('priceAlerts')}</p>
+                                        <p className="text-slate-500 text-xs">{t('priceAlertsDesc')}</p>
                                     </div>
                                 </div>
                                 <Switch
@@ -274,8 +276,8 @@ export default function NotificationSettings() {
                                 <div className="flex items-center gap-3">
                                     <Bell className="w-5 h-5 text-blue-400" />
                                     <div>
-                                        <p className="text-white text-sm">Trading-signaler</p>
-                                        <p className="text-slate-500 text-xs">Nye kjøps- og salgsanbefalinger</p>
+                                        <p className="text-white text-sm">{t('tradingSignals')}</p>
+                                        <p className="text-slate-500 text-xs">{t('tradingSignalsDesc')}</p>
                                     </div>
                                 </div>
                                 <Switch
@@ -289,8 +291,8 @@ export default function NotificationSettings() {
                                 <div className="flex items-center gap-3">
                                     <AlertTriangle className="w-5 h-5 text-red-400" />
                                     <div>
-                                        <p className="text-white text-sm">Stop-loss / Take-profit</p>
-                                        <p className="text-slate-500 text-xs">Kritiske handler (alltid på)</p>
+                                        <p className="text-white text-sm">{t('stopLossTakeProfit')}</p>
+                                        <p className="text-slate-500 text-xs">{t('stopLossTakeProfitDesc')}</p>
                                     </div>
                                 </div>
                                 <Switch
@@ -304,8 +306,8 @@ export default function NotificationSettings() {
                                 <div className="flex items-center gap-3">
                                     <DollarSign className="w-5 h-5 text-yellow-400" />
                                     <div>
-                                        <p className="text-white text-sm">Transaksjoner</p>
-                                        <p className="text-slate-500 text-xs">Innskudd, uttak, handler</p>
+                                        <p className="text-white text-sm">{t('transactions')}</p>
+                                        <p className="text-slate-500 text-xs">{t('transactionsDesc')}</p>
                                     </div>
                                 </div>
                                 <Switch
@@ -319,8 +321,8 @@ export default function NotificationSettings() {
                                 <div className="flex items-center gap-3">
                                     <Wallet className="w-5 h-5 text-emerald-400" />
                                     <div>
-                                        <p className="text-white text-sm">Porteføljeoppdateringer</p>
-                                        <p className="text-slate-500 text-xs">Daglig oppsummering</p>
+                                        <p className="text-white text-sm">{t('portfolioUpdates')}</p>
+                                        <p className="text-slate-500 text-xs">{t('portfolioUpdatesDesc')}</p>
                                     </div>
                                 </div>
                                 <Switch
@@ -334,8 +336,8 @@ export default function NotificationSettings() {
                                 <div className="flex items-center gap-3">
                                     <Newspaper className="w-5 h-5 text-orange-400" />
                                     <div>
-                                        <p className="text-white text-sm">Markedsnyheter</p>
-                                        <p className="text-slate-500 text-xs">Viktige hendelser</p>
+                                        <p className="text-white text-sm">{t('marketNews')}</p>
+                                        <p className="text-slate-500 text-xs">{t('marketNewsDesc')}</p>
                                     </div>
                                 </div>
                                 <Switch
@@ -349,8 +351,8 @@ export default function NotificationSettings() {
                                 <div className="flex items-center gap-3">
                                     <Trophy className="w-5 h-5 text-amber-400" />
                                     <div>
-                                        <p className="text-white text-sm">Konkurranser</p>
-                                        <p className="text-slate-500 text-xs">Leaderboard, ligaer</p>
+                                        <p className="text-white text-sm">{t('competitions')}</p>
+                                        <p className="text-slate-500 text-xs">{t('competitionsDesc')}</p>
                                     </div>
                                 </div>
                                 <Switch
@@ -368,8 +370,8 @@ export default function NotificationSettings() {
                             <div className="flex items-center gap-3">
                                 <Moon className="w-5 h-5 text-indigo-400" />
                                 <div>
-                                    <p className="text-white font-medium">Stille timer</p>
-                                    <p className="text-slate-500 text-xs">Ingen varsler på kvelden (unntatt kritiske)</p>
+                                    <p className="text-white font-medium">{t('quietHours')}</p>
+                                    <p className="text-slate-500 text-xs">{t('quietHoursDesc')}</p>
                                 </div>
                             </div>
                             <Switch
@@ -382,7 +384,7 @@ export default function NotificationSettings() {
                         {prefs.quiet_hours_enabled && (
                             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-800">
                                 <div className="flex-1">
-                                    <label htmlFor="quiet-hours-start" className="text-slate-400 text-xs">Fra</label>
+                                    <label htmlFor="quiet-hours-start" className="text-slate-400 text-xs">{t('from')}</label>
                                     <input
                                         id="quiet-hours-start"
                                         type="time"
@@ -394,9 +396,9 @@ export default function NotificationSettings() {
                                         className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white mt-1"
                                     />
                                 </div>
-                                <div className="text-slate-500">til</div>
+                                <div className="text-slate-500">{t('to')}</div>
                                 <div className="flex-1">
-                                    <label htmlFor="quiet-hours-end" className="text-slate-400 text-xs">Til</label>
+                                    <label htmlFor="quiet-hours-end" className="text-slate-400 text-xs">{t('to')}</label>
                                     <input
                                         id="quiet-hours-end"
                                         type="time"

@@ -29,6 +29,7 @@ import {
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface ApiKey {
   id: string;
@@ -48,6 +49,7 @@ interface ApiKey {
 import { BINANCE_REFERRAL } from "@/lib/constants/binance";
 
 export function ExchangeApiSettings() {
+  const t = useTranslations("settings.api");
   const supabase = createClient();
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,7 +84,7 @@ export function ExchangeApiSettings() {
       setApiKeys(((data || []) as ApiKey[]));
     } catch (error) {
       console.error("Error loading API keys:", error);
-      toast.error("Kunne ikke laste API-nøkler");
+      toast.error(t("loadError"));
     } finally {
       setLoading(false);
     }
@@ -155,7 +157,7 @@ export function ExchangeApiSettings() {
 
       if (error) throw error;
 
-      toast.success("API-nøkkel lagret!");
+      toast.success(t("saveSuccess"));
       setForm({
         label: "Hovedkonto",
         apiKey: "",
@@ -167,7 +169,7 @@ export function ExchangeApiSettings() {
       setActiveTab("list");
     } catch (error) {
       console.error("Save error:", error);
-      toast.error("Kunne ikke lagre API-nøkkel");
+      toast.error(t("saveError"));
     } finally {
       setLoading(false);
     }
@@ -181,15 +183,15 @@ export function ExchangeApiSettings() {
       const { error } = await supabase.from("api_keys").delete().eq("id", id);
       if (error) throw error;
       await loadApiKeys();
-      toast.success("API-nøkkel slettet");
+      toast.success(t("deleteSuccess"));
     } catch (_error) {
-      toast.error("Feil ved sletting");
+      toast.error(t("deleteError"));
     }
   };
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(BINANCE_REFERRAL.link);
-    toast.success("Referral link kopiert!");
+    toast.success(t("referralCopied"));
   };
 
   const binanceKeys = apiKeys.filter((k) => k.exchange.includes("binance"));
@@ -427,7 +429,7 @@ export function ExchangeApiSettings() {
                     onChange={(e) =>
                       setForm({ ...form, label: e.target.value })
                     }
-                    placeholder="F.eks. Hovedkonto"
+                    placeholder={t("labelPlaceholder")}
                     className="bg-slate-800 border-slate-700 text-white"
                   />
                 </div>
@@ -444,7 +446,7 @@ export function ExchangeApiSettings() {
                     onChange={(e) =>
                       setForm({ ...form, apiKey: e.target.value })
                     }
-                    placeholder="Skriv inn din Binance API Key"
+                    placeholder={t("apiKeyPlaceholder")}
                     className={`bg-slate-800 border-slate-700 text-white font-mono text-sm ${
                       errors.apiKey ? "border-red-500" : ""
                     }`}
@@ -470,7 +472,7 @@ export function ExchangeApiSettings() {
                       onChange={(e) =>
                         setForm({ ...form, apiSecret: e.target.value })
                       }
-                      placeholder="Skriv inn din Binance API Secret"
+                      placeholder={t("apiSecretPlaceholder")}
                       className="bg-slate-800 border-slate-700 text-white font-mono text-sm pr-10"
                     />
                     <button
@@ -665,7 +667,7 @@ export function ExchangeApiSettings() {
                     <span className="text-blue-400 font-bold">6</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white">Kopier nøklene</h4>
+                    <h4 className="font-semibold text-white">{t("copyKeys")}</h4>
                     <p className="text-sm text-slate-400">
                       Kopier både API Key og Secret Key (vises kun én gang!)
                     </p>

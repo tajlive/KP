@@ -43,7 +43,7 @@ export function TopAIInsightsRow() {
       <div className="flex items-center gap-2 mb-2">
         <Sparkles className="w-5 h-5 text-purple-400" />
         <h2 className="text-lg font-semibold text-white">
-          Live AI Innsikt (Sonar)
+          {t("liveAiInsights")}
         </h2>
       </div>
 
@@ -60,15 +60,15 @@ export function TopAIInsightsRow() {
         ) : (
           <div className="bg-slate-800/80 rounded-xl p-6 flex flex-col items-center justify-center text-center border border-slate-700 h-[240px]">
             <AlertCircle className="w-8 h-8 text-slate-500 mb-2" />
-            <p className="text-slate-400 text-sm">Kunne ikke laste inn Sonar AI analyse.</p>
+            <p className="text-slate-400 text-sm">{t("sonarLoadError")}</p>
           </div>
         )}
         
         {/* Placeholder for second asset, e.g. ETH, leaving it static here to save API limits initially, or showing gamification context */}
         <div className="bg-slate-800/50 rounded-xl p-6 flex flex-col items-center justify-center border border-slate-700/50 border-dashed">
           <Sparkles className="w-8 h-8 text-slate-600 mb-3" />
-          <p className="text-slate-400 font-medium">Oppgrader for flere analyser</p>
-          <p className="text-slate-500 text-xs mt-1 max-w-[200px] text-center">Få live Sonar-analyser for ETH, SOL og over 20+ andre kryptoassets.</p>
+          <p className="text-slate-400 font-medium">{t("upgradeForMore")}</p>
+          <p className="text-slate-500 text-xs mt-1 max-w-[200px] text-center">{t("upgradeDesc")}</p>
         </div>
       </div>
     </div>
