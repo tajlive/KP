@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { CoinbaseHome } from "@/features/coinbase/CoinbaseHome";
 import { DashboardPro } from "./DashboardPro";
 import { RiskMetricsPanel } from "./RiskMetricsPanel";
 
@@ -27,6 +25,26 @@ type ActiveSession = {
   updated_at: string | null;
 } | null;
 
+export interface DashboardCmsData {
+  heroCtaText?: string;
+  heroCtaLink?: string;
+  smartActions?: Array<{
+    condition: string;
+    title: string;
+    description?: string;
+    ctaText: string;
+    ctaLink: string;
+    icon?: string;
+    color?: string;
+  }>;
+  upgradeBanner?: {
+    title?: string;
+    description?: string;
+    ctaText?: string;
+    ctaLink?: string;
+  };
+}
+
 export interface DashboardContentProps {
   paperBalance: number;
   trades: TradeRow[];
@@ -41,6 +59,7 @@ export interface DashboardContentProps {
   };
   onboardingCompleted?: boolean;
   userName?: string;
+  cmsData?: DashboardCmsData | null;
 }
 
 export function DashboardContent({
@@ -50,9 +69,9 @@ export function DashboardContent({
   stats,
   onboardingCompleted,
   userName,
+  cmsData,
 }: DashboardContentProps) {
   const effectiveBalance = activeSession?.current_capital_nok ?? paperBalance;
-  const [useProDashboard] = useState(true);
 
   return (
     <div suppressHydrationWarning>
@@ -61,30 +80,21 @@ export function DashboardContent({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.25 }}
       >
-        {useProDashboard ? (
-          <DashboardPro 
-            paperBalance={effectiveBalance}
-            sessionId={activeSession?.id}
-            sessionMode={activeSession?.mode ?? "paper"}
-            initialStats={stats}
-            trades={trades}
-            onboardingCompleted={onboardingCompleted}
-            userName={userName}
-          />
-        ) : (
-          <CoinbaseHome
-            paperBalance={effectiveBalance}
-            trades={trades}
-            activeSession={activeSession}
-          />
-        )}
-        {useProDashboard && (
-          <div className="bg-slate-950 px-4 md:px-8 pb-8">
-            <div className="max-w-7xl mx-auto">
-              <RiskMetricsPanel />
-            </div>
+        <DashboardPro
+          paperBalance={effectiveBalance}
+          sessionId={activeSession?.id}
+          sessionMode={activeSession?.mode ?? "paper"}
+          initialStats={stats}
+          trades={trades}
+          onboardingCompleted={onboardingCompleted}
+          userName={userName}
+          cmsData={cmsData}
+        />
+        <div className="bg-slate-950 px-4 md:px-8 pb-8">
+          <div className="max-w-7xl mx-auto">
+            <RiskMetricsPanel />
           </div>
-        )}
+        </div>
       </motion.div>
     </div>
   );

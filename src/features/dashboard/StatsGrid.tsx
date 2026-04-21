@@ -112,7 +112,7 @@ export function StatsGrid({ stats = DEFAULT_STATS }: StatsGridProps) {
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {stats.map((stat, index) => (
         <motion.div
           key={stat.label}

@@ -91,6 +91,9 @@ export function createServerClient(
     const cookieStore = await cookies();
     return createSSRServerClient<Database>(url, key, {
       cookieEncoding: "raw",
+      auth: {
+        autoRefreshToken: false, // RSC cannot write cookies back — never refresh here
+      },
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll: (cookiesToSet: SupabaseCookie[]) => {
@@ -99,9 +102,10 @@ export function createServerClient(
               const { name, value, options } = cookie;
               cookieStore.set(name, value, options);
             });
-          } catch {
+          } catch (err) {
             // Next.js 15+: cookieStore.set er ikke tillatt i RSC — sesjonsoppdatering skjer i middleware/route.
             // getUser() kan fortsatt trigge Supabase refresh-kall som forsøker setAll; ignorer her.
+            console.warn("[RSC] Failed to persist refreshed auth cookies:", err);
           }
         },
       },

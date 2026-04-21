@@ -53,6 +53,33 @@ export const landingContentQuery = groq`
 `;
 
 // =============================================================================
+// DASHBOARD QUERIES
+// =============================================================================
+
+export const dashboardContentQuery = groq`
+  *[_type == "dashboardContent" && language == $language][0] {
+    _id,
+    heroCtaText,
+    heroCtaLink,
+    smartActions[] {
+      condition,
+      title,
+      description,
+      ctaText,
+      ctaLink,
+      icon,
+      color
+    },
+    upgradeBanner {
+      title,
+      description,
+      ctaText,
+      ctaLink
+    }
+  }
+`;
+
+// =============================================================================
 // STRATEGY QUERIES
 // =============================================================================
 

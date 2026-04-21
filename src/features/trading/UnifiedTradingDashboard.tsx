@@ -21,6 +21,7 @@ import {
   type TradingMode,
   type UserStrategy,
 } from "@/lib/trading-api";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { TRADING_INTEGRITY_SYNC } from "@/lib/trading/trading-integrity-sync";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -182,17 +183,7 @@ export default function UnifiedTradingDashboard({
       // KLA-55 + KLA-70: Show wizard if no active strategies and user hasn't completed setup
       if (userId && active.length === 0 && !hasLocalSetup(userId)) {
         // Check onboarding_progress for server-side persistence
-        const { createBrowserClient } = await import("@supabase/ssr");
-        const { safeStorage } = await import("@/lib/supabase/safe-storage");
-        const sb = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          {
-            auth: {
-              storage: safeStorage,
-            },
-          },
-        );
+        const sb = getSupabaseClient();
         const { data: progress } = await sb
           .from("onboarding_progress")
           .select("is_completed")
@@ -246,17 +237,7 @@ export default function UnifiedTradingDashboard({
   useEffect(() => {
     if (!userId) {
       const getUser = async () => {
-        const { createBrowserClient } = await import("@supabase/ssr");
-        const { safeStorage } = await import("@/lib/supabase/safe-storage");
-        const supabase = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          {
-            auth: {
-              storage: safeStorage,
-            },
-          },
-        );
+        const supabase = getSupabaseClient();
         const {
           data: { user },
         } = await supabase.auth.getUser();

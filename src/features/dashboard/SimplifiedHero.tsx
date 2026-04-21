@@ -8,9 +8,11 @@ import { useLocale } from "next-intl";
 interface Props {
   balance: number;
   changePct: number;
+  ctaText?: string;
+  ctaLink?: string;
 }
 
-export function SimplifiedHero({ balance, changePct }: Props) {
+export function SimplifiedHero({ balance, changePct, ctaText, ctaLink }: Props) {
   const locale = useLocale();
 
   return (
@@ -24,14 +26,14 @@ export function SimplifiedHero({ balance, changePct }: Props) {
         }`}
       >
         {changePct > 0 ? "+" : ""}
-        {changePct.toFixed(2)}% denne uken
+        {changePct.toFixed(2)}%
       </div>
-      <Link href={`/${locale}/dashboard/trade?mode=paper`}>
+      <Link href={ctaLink ?? `/${locale}/dashboard/trade?mode=paper`}>
         <Button
           asChild
           className={`${BRAND.gradient} mt-6 px-8 py-6 text-lg font-semibold rounded-xl`}
         >
-          <span>Start trading</span>
+          <span>{ctaText ?? "Start trading"}</span>
         </Button>
       </Link>
     </div>

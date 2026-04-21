@@ -1,0 +1,9 @@
+{
+  "auth-system": [
+    {
+      "predicate": "fixed",
+      "object": "supabase-429-multiple-client-refresh-loop",
+      "validFrom": "2026-04-21T20:53:02.552Z"
+    }
+  ]
+}
