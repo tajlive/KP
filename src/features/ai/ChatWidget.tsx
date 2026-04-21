@@ -19,6 +19,7 @@ import {
   Bot,
   Loader2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/utils/error";
@@ -40,6 +41,7 @@ const TYPING_CONFIG = {
 };
 
 function ChatWidgetInner() {
+  const t = useTranslations("chat");
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -447,7 +449,7 @@ function ChatWidgetInner() {
                     value={input}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
-                    placeholder="Skriv et spørsmål..."
+                    placeholder={t("placeholder")}
                     disabled={isLoading}
                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-4 py-6 bg-slate-950/50 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500/50 rounded-2xl transition-all shadow-inner focus:bg-slate-900/90 h-auto"
                   />

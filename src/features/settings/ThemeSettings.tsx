@@ -3,41 +3,42 @@
 import { useThemePreference, type ThemePreference } from "@/lib/hooks/useThemePreference";
 import { useState, useEffect } from "react";
 import { Monitor, Sun, Moon, Check } from "lucide-react";
-
-const themeOptions: { 
-  value: ThemePreference; 
-  label: string; 
-  description: string;
-  icon: React.ReactNode;
-}[] = [
-  { 
-    value: "system", 
-    label: "System", 
-    description: "Følger enhetens innstillinger",
-    icon: <Monitor className="w-5 h-5" /> 
-  },
-  { 
-    value: "light", 
-    label: "Lyst", 
-    description: "Lys bakgrunn med mørk tekst",
-    icon: <Sun className="w-5 h-5" /> 
-  },
-  { 
-    value: "dark", 
-    label: "Mørkt", 
-    description: "Mørk bakgrunn med lys tekst",
-    icon: <Moon className="w-5 h-5" /> 
-  },
-];
+import { useTranslations } from "next-intl";
 
 export function ThemeSettings() {
+  const t = useTranslations("settings.theme");
   const { theme, setTheme, resolvedTheme } = useThemePreference();
   const [mounted, setMounted] = useState(false);
 
-  // Unngå hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const themeOptions: { 
+    value: ThemePreference; 
+    label: string; 
+    description: string;
+    icon: React.ReactNode;
+  }[] = [
+    { 
+      value: "system", 
+      label: t("system"), 
+      description: t("systemDesc"),
+      icon: <Monitor className="w-5 h-5" /> 
+    },
+    { 
+      value: "light", 
+      label: t("light"), 
+      description: t("lightDesc"),
+      icon: <Sun className="w-5 h-5" /> 
+    },
+    { 
+      value: "dark", 
+      label: t("dark"), 
+      description: t("darkDesc"),
+      icon: <Moon className="w-5 h-5" /> 
+    },
+  ];
 
   if (!mounted) {
     return (
@@ -96,7 +97,7 @@ export function ThemeSettings() {
             {isSelected && (
               <div className="flex items-center gap-1.5 text-kp-brand">
                 <Check className="w-4 h-4" />
-                <span className="text-sm font-medium">Valgt</span>
+                <span className="text-sm font-medium">{t("selected")}</span>
               </div>
             )}
           </button>
@@ -105,14 +106,14 @@ export function ThemeSettings() {
 
       {/* Preview av nåværende tema */}
       <div className="mt-4 p-4 rounded-xl bg-kp-bg-primary border border-kp-border">
-        <p className="text-xs text-kp-text-muted uppercase tracking-wider mb-2">Forhåndsvisning</p>
+        <p className="text-xs text-kp-text-muted uppercase tracking-wider mb-2">{t("preview")}</p>
         <div className="flex items-center gap-2">
           <div className={`
             w-3 h-3 rounded-full
             ${resolvedTheme === "dark" ? "bg-kp-brand" : "bg-amber-400"}
           `} />
           <span className="text-sm text-kp-text-secondary">
-            {resolvedTheme === "dark" ? "Mørk modus aktiv" : "Lys modus aktiv"}
+            {resolvedTheme === "dark" ? t("darkModeActive") : t("lightModeActive")}
           </span>
         </div>
       </div>

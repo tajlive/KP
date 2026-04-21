@@ -1,6 +1,7 @@
 "use client";
 
 import { BarChart3, DollarSign, TrendingUp, Wallet } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Portfolio {
   total_value: number;
@@ -18,11 +19,13 @@ export function PortfolioSection({
   portfolio,
   formatNOK,
 }: PortfolioSectionProps) {
+  const t = useTranslations("dashboard");
+
   if (!portfolio) {
     return (
       <div className="bg-slate-800 rounded-xl p-6 text-center">
         <p className="text-slate-400">
-          Velkommen! Start en strategi for å begynne.
+          {t("welcomeStart")}
         </p>
       </div>
     );
@@ -35,7 +38,7 @@ export function PortfolioSection({
       <div className="bg-slate-800 rounded-xl p-4" data-testid="portfolio-total-value">
         <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
           <Wallet className="w-4 h-4" />
-          <span>Total verdi</span>
+          <span>{t("totalValue")}</span>
         </div>
         <p className="text-2xl font-bold text-white">
           {formatNOK(portfolio.total_value)}
@@ -45,7 +48,7 @@ export function PortfolioSection({
       <div className="bg-slate-800 rounded-xl p-4" data-testid="portfolio-cash">
         <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
           <DollarSign className="w-4 h-4" />
-          <span>Cash</span>
+          <span>{t("cash")}</span>
         </div>
         <p className="text-2xl font-bold text-white">
           {formatNOK(portfolio.cash_balance)}
@@ -55,7 +58,7 @@ export function PortfolioSection({
       <div className="bg-slate-800 rounded-xl p-4" data-testid="portfolio-pnl">
         <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
           <BarChart3 className="w-4 h-4" />
-          <span>P&L</span>
+          <span>{t("pnl")}</span>
         </div>
         <p
           className={`text-2xl font-bold ${isProfit ? "text-green-400" : "text-red-400"}`}
@@ -68,7 +71,7 @@ export function PortfolioSection({
       <div className="bg-slate-800 rounded-xl p-4" data-testid="portfolio-winrate">
         <div className="flex items-center gap-2 text-slate-400 text-sm mb-1">
           <TrendingUp className="w-4 h-4" />
-          <span>Win Rate</span>
+          <span>{t("winRate")}</span>
         </div>
         <p className="text-2xl font-bold text-white">
           {(portfolio.win_rate ?? 0).toFixed(1)}%

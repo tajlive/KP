@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Crown, TrendingUp, Users, ArrowRight, Star } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Trader {
   id: string;
@@ -85,6 +86,7 @@ interface TopTradersPreviewProps {
 }
 
 export function TopTradersPreview({ onCopyTrader }: TopTradersPreviewProps) {
+  const t = useTranslations("copyTrading");
   const [selectedTrader, setSelectedTrader] = useState<string | null>(null);
   const [hoveredTrader, setHoveredTrader] = useState<string | null>(null);
 
@@ -109,13 +111,13 @@ export function TopTradersPreview({ onCopyTrader }: TopTradersPreviewProps) {
             <Crown className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">👑 Topp tradere</h3>
-            <p className="text-slate-500 text-sm">Denne månedens beste</p>
+            <h3 className="text-xl font-bold text-white">{t("topTraders")}</h3>
+            <p className="text-slate-500 text-sm">{t("thisMonthBest")}</p>
           </div>
         </div>
 
         <button className="flex items-center gap-1 text-blue-400 text-sm hover:text-blue-300 transition-colors group">
-          Se alle
+          {t("seeAll")}
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>

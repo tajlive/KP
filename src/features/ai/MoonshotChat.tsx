@@ -9,6 +9,7 @@ import { useMoonshot } from "@/hooks/useMoonshot";
 import { TypingMessage, StaticMessage } from "./TypingMessage";
 import { AlertTriangle, Bot, Send, Sparkles, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Message {
   id: string;
@@ -31,6 +32,7 @@ interface Props {
 }
 
 export function MoonshotChat({ context, initialMessage }: Props) {
+  const t = useTranslations("chat");
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -224,7 +226,7 @@ export function MoonshotChat({ context, initialMessage }: Props) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="Spør om krypto..."
+              placeholder={t("moonshotPlaceholder")}
               disabled={isLoading}
               className="flex-1"
             />

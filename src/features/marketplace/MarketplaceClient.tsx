@@ -12,6 +12,7 @@ import {
 } from "@/shared/ui/select";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -58,6 +59,7 @@ type SortBy = "performance" | "newest" | "rating" | "price";
 type RiskLevel = "all" | "low" | "medium" | "high";
 
 export default function MarketplaceClient() {
+  const t = useTranslations("marketplace");
   const { locale } = useParams();
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -94,7 +96,7 @@ export default function MarketplaceClient() {
       setTotal(data.total || 0);
     } catch (error) {
       console.error("Error fetching listings:", error);
-      toast.error("Kunne ikke laste markedet");
+      toast.error(t("loadError"));
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +121,7 @@ export default function MarketplaceClient() {
       }
 
       const data = await response.json();
-      toast.success("Strategi abonnert! Gå til dashboard for å se den.");
+      toast.success(t("subscribeSuccess"));
 
       // Redirect to dashboard after short delay
       setTimeout(() => {
@@ -127,7 +129,7 @@ export default function MarketplaceClient() {
       }, 1500);
     } catch (error) {
       console.error("Error subscribing:", error);
-      toast.error("Kunne ikke abonnere på strategi");
+      toast.error(t("subscribeError"));
     } finally {
       setSubscribingId(null);
     }
@@ -190,7 +192,7 @@ export default function MarketplaceClient() {
             onValueChange={(v) => setRiskFilter(v as RiskLevel)}
           >
             <SelectTrigger className="w-[140px] border-0 bg-transparent text-slate-300 focus:ring-0">
-              <SelectValue placeholder="Risiko nivå" />
+              <SelectValue placeholder={t("riskLevelPlaceholder")} />
             </SelectTrigger>
             <SelectContent className="bg-slate-900 border-slate-800">
               <SelectItem value="all">Alle risikonivåer</SelectItem>
@@ -205,7 +207,7 @@ export default function MarketplaceClient() {
           <BarChart3 className="w-4 h-4 text-slate-400 ml-2" />
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
             <SelectTrigger className="w-[180px] border-0 bg-transparent text-slate-300 focus:ring-0">
-              <SelectValue placeholder="Sorter etter" />
+              <SelectValue placeholder={t("sortByPlaceholder")} />
             </SelectTrigger>
             <SelectContent className="bg-slate-900 border-slate-800">
               <SelectItem value="performance">Beste ytelse</SelectItem>

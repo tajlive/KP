@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
+import { useTranslations } from "next-intl";
 
 type UserProfilesUpdate =
   Database["public"]["Tables"]["user_profiles"]["Update"];
@@ -13,6 +14,7 @@ type ProfileA11yFields = {
 };
 
 export default function AccessibilitySettings() {
+  const t = useTranslations("settings.accessibility");
   const supabase = createClient();
   const [fontSize, setFontSize] = useState<"normal" | "large">("normal");
   const [highContrast, setHighContrast] = useState(false);
@@ -120,7 +122,7 @@ export default function AccessibilitySettings() {
   return (
     <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
       <h3 className="text-xl font-semibold text-white mb-6">
-        ♿ Tilgjengelighet
+        {t("title")}
       </h3>
 
       <div className="space-y-8">
@@ -130,7 +132,7 @@ export default function AccessibilitySettings() {
             id="a11y-font-size-label"
             className="block text-sm font-medium text-gray-300 mb-3"
           >
-            Tekststørrelse
+            {t("fontSize")}
           </span>
           <div className="flex gap-3 flex-wrap">
             <button
@@ -141,7 +143,7 @@ export default function AccessibilitySettings() {
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
               }`}
             >
-              Normal (20px)
+              {t("fontSizeNormal")}
             </button>
             <button
               onClick={() => saveFontSize("large")}
@@ -151,11 +153,11 @@ export default function AccessibilitySettings() {
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
               }`}
             >
-              Stor (24px)
+              {t("fontSizeLarge")}
             </button>
           </div>
           <p className="text-sm text-gray-500 mt-2">
-            "Store bokstaver"-modus for bedre lesbarhet
+            {t("fontSizeHint")}
           </p>
         </div>
 
@@ -166,9 +168,9 @@ export default function AccessibilitySettings() {
             className="flex items-center justify-between cursor-pointer"
           >
             <div>
-              <div className="font-medium text-white mb-1">Høy kontrast</div>
+              <div className="font-medium text-white mb-1">{t("highContrast")}</div>
               <p className="text-sm text-gray-400">
-                Svart bakgrunn + hvit tekst for synshemmede
+                {t("highContrastDesc")}
               </p>
             </div>
             <button
@@ -176,7 +178,7 @@ export default function AccessibilitySettings() {
               type="button"
               onClick={() => saveHighContrast(!highContrast)}
               aria-label={
-                highContrast ? "Slå av høy kontrast" : "Slå på høy kontrast"
+                highContrast ? t("highContrastOff") : t("highContrastOn")
               }
               className={`min-h-[44px] min-w-[64px] relative rounded-full transition-colors ${
                 highContrast ? "bg-green-600" : "bg-gray-600"
@@ -194,11 +196,10 @@ export default function AccessibilitySettings() {
         {/* Preview */}
         <div className="bg-gray-700 p-4 rounded-lg">
           <p className="text-lg mb-2 text-white">
-            <strong>Forhåndsvisning:</strong> Dette er hvordan teksten vil se
-            ut.
+            <strong>{t("previewTitle")}</strong> {t("previewText")}
           </p>
           <p className="text-base text-gray-300">
-            Normal tekst er minimum 20px for "bestemor-test" godkjenning.
+            {t("previewNote")}
           </p>
         </div>
       </div>

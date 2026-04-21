@@ -4,6 +4,7 @@ import { StrategyType, TradingMode, UserStrategy } from "@/lib/trading-api";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronUp, Play, Square } from "lucide-react";
 import { StrategyConfig } from "./StrategyConfig";
+import { useTranslations } from "next-intl";
 
 interface StrategySelectorSectionProps {
   strategies: {
@@ -46,16 +47,17 @@ export function StrategySelectorSection({
   mode,
   isStarting,
 }: StrategySelectorSectionProps) {
+  const t = useTranslations("trading");
   const isActive = (type: StrategyType) =>
     activeStrategies.some((s) => s.strategy_id === type);
 
   return (
     <div className="bg-slate-800 rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-white mb-4">Velg strategi</h2>
+      <h2 className="text-lg font-semibold text-white mb-4">{t("selectStrategy")}</h2>
 
       {mode === "paper" && (
         <p className="text-blue-400 text-sm mb-4">
-          💡 Paper mode — ingen ekte penger
+          {t("paperModeHint")}
         </p>
       )}
 
@@ -83,7 +85,7 @@ export function StrategySelectorSection({
                   }
                 }}
                 aria-expanded={expanded}
-                aria-label={expanded ? "Lukk strategi" : `Velg ${strategy.name}`}
+                aria-label={expanded ? t("closeStrategy") : t("selectStrategyAria", { name: strategy.name })}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{strategy.icon}</span>
@@ -116,10 +118,10 @@ export function StrategySelectorSection({
                   {active ? (
                     <span className="flex items-center gap-1 text-green-400 text-sm">
                       <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                      Aktiv
+                      {t("activeStatus")}
                     </span>
                   ) : (
-                    <span className="text-slate-500 text-sm">Ikke startet</span>
+                    <span className="text-slate-500 text-sm">{t("notStarted")}</span>
                   )}
                   {expanded ? (
                     <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -155,7 +157,7 @@ export function StrategySelectorSection({
                             className="flex-1 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition flex items-center justify-center gap-2"
                           >
                             <Square className="w-4 h-4" />
-                            Stopp strategi
+                            {t("stopStrategy")}
                           </button>
                         ) : (
                           <button
@@ -166,12 +168,12 @@ export function StrategySelectorSection({
                             {isStarting === strategy.type ? (
                               <>
                                 <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-                                Starter...
+                                {t("starting")}
                               </>
                             ) : (
                               <>
                                 <Play className="w-4 h-4" />
-                                Start strategi
+                                {t("startStrategy")}
                               </>
                             )}
                           </button>

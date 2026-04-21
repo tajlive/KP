@@ -4,6 +4,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { createClient } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import {
   Award,
@@ -52,6 +53,7 @@ const TIER_COLORS: Record<TierSlug, string> = {
 };
 
 function ProfileTabContent() {
+  const t = useTranslations("settings.profile");
   const router = useRouter();
   const pathname = usePathname();
   const [authChecked, setAuthChecked] = useState(false);
@@ -164,7 +166,7 @@ function ProfileTabContent() {
             <input
               id="fullName"
               title="Fullt navn"
-              placeholder="Skriv inn ditt fulle navn"
+              placeholder={t("fullNamePlaceholder")}
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setFullName(e.target.value)}
             />
@@ -177,7 +179,7 @@ function ProfileTabContent() {
             <input
               id="avatarUrl"
               title="Avatar URL"
-              placeholder="https://eksempel.com/bilde.jpg"
+              placeholder={t("avatarPlaceholder")}
               className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
               onChange={(e) => setAvatarUrl(e.target.value)}
             />
@@ -413,7 +415,7 @@ function ProfileTabContent() {
           <input
             id="profileName"
             title="Ditt navn"
-            placeholder="Navn"
+            placeholder={t("namePlaceholder")}
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.full_name ?? ""}
             onBlur={(e) => patch({ full_name: e.target.value })}
@@ -427,7 +429,7 @@ function ProfileTabContent() {
           <input
             id="profileAvatar"
             title="Profilbilde URL"
-            placeholder="URL til profilbilde"
+            placeholder={t("avatarUrlPlaceholder")}
             className="w-full border border-slate-700 bg-slate-800 rounded px-3 py-2 mt-1 text-white"
             defaultValue={profile.avatar_url ?? ""}
             onBlur={(e) => patch({ avatar_url: e.target.value })}

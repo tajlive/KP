@@ -7,6 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Trader {
   encryptedUid: string;
@@ -43,6 +44,7 @@ export function TraderLeaderboard({
   onUnfollow,
   isPaperMode = true,
 }: TraderLeaderboardProps) {
+  const t = useTranslations("copyTrading");
   const [traders, setTraders] = useState<Trader[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -247,7 +249,7 @@ export function TraderLeaderboard({
                       </p>
                     </div>
                     <div>
-                      <p className="text-slate-500 text-xs">Win rate</p>
+                      <p className="text-slate-500 text-xs">{t("winRate")}</p>
                       <p className="text-white font-medium">
                         {trader.winRate.toFixed(0)}%
                       </p>

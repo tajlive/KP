@@ -63,6 +63,7 @@ export default function CreatorProfileClient({
 }: CreatorProfileClientProps) {
   const { locale } = useParams();
   const tProfile = useTranslations("copyTrading.profile");
+  const t = useTranslations("copyTrading");
   const [profile, setProfile] = useState<TraderProfile | null>(null);
   const [publicStrategies, setPublicStrategies] = useState<PublicStrategy[]>(
     [],
@@ -345,11 +346,11 @@ export default function CreatorProfileClient({
       if (!response.ok) {
         const error = await response.json();
         if (error.code === "TIER_REQUIRED") {
-          toast.error("Kopier trading krever et betalt abonnement");
+          toast.error(t("copyRequiresSubscription"));
           return;
         }
         if (error.code === "FOLLOW_LIMIT_REACHED") {
-          toast.error(`Du kan følge maks ${error.limit} tradere på ditt nivå`);
+          toast.error(t("followLimitReached", { limit: error.limit }));
           return;
         }
         throw new Error(error.error || "Failed to follow trader");
@@ -357,10 +358,10 @@ export default function CreatorProfileClient({
 
       setIsFollowing(true);
       void useCopyStore.getState().fetchFollowing();
-      toast.success(`Du kopierer nå ${profile?.displayName}!`);
+      toast.success(t("nowCopying", { name: profile?.displayName ?? "" }));
     } catch (error) {
       console.error("Error following trader:", error);
-      toast.error("Kunne ikke kopiere trader");
+      toast.error(t("couldNotCopy"));
     }
   };
 
@@ -386,7 +387,7 @@ export default function CreatorProfileClient({
       <div className="max-w-4xl mx-auto p-6 text-center">
         <p className="text-slate-400">Trader ikke funnet</p>
         <Link href={`/${locale}/copy-trading`}>
-          <Button className="mt-4">Tilbake til ledertavlen</Button>
+          <Button className="mt-4">{t("backToLeaderboard")}</Button>
         </Link>
       </div>
     );
@@ -401,7 +402,7 @@ export default function CreatorProfileClient({
           className="text-slate-400 hover:text-white -ml-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Tilbake til ledertavlen
+          {t("backToLeaderboard")}
         </Button>
       </Link>
 
@@ -536,7 +537,7 @@ export default function CreatorProfileClient({
             <div className="text-2xl font-black text-white">
               {profile.totalTrades}
             </div>
-            <div className="text-sm text-slate-500">Totalt handler</div>
+            <div className="text-sm text-slate-500">{t("totalTradesLabel")}</div>
           </div>
         </div>
       </motion.div>
@@ -551,7 +552,7 @@ export default function CreatorProfileClient({
           <Card className="bg-slate-900 border-slate-800">
             <CardContent className="p-8 text-center">
               <BarChart3 className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400">Ingen offentlige strategier ennå</p>
+              <p className="text-slate-400">{t("noPublicStrategies")}</p>
             </CardContent>
           </Card>
         ) : (
