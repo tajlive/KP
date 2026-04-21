@@ -103,5 +103,17 @@
     "q": "Hva er KLT-poeng?",
     "a": "KLT (Klarpakke Learning Tokens) er poeng du tjener ved å lære og engasjere deg. Bruk dem til å konkurrere og låse opp premier."
   },
-  "freeForever": "for alltid"
+  "freeForever": "for alltid",
+  "pricing": {
+    "plans": {
+      "professor": {
+        "description": "For profesjonelle tradere som vil ha full tilgang og personlig oppfølging."
+      }
+    }
+  },
+  "plans": {
+    "professor": {
+      "description": "For profesjonelle tradere som vil ha full tilgang og personlig oppfølging."
+    }
+  }
 }

@@ -1,0 +1,54 @@
+{
+  "tradingResults": {
+    "errorLoad": "Could not load trading results",
+    "mode": {
+      "paper": "Paper",
+      "live": "Live",
+      "unknown": "Unknown"
+    },
+    "outcome": {
+      "win": "Win",
+      "loss": "Loss",
+      "breakeven": "Break-even",
+      "unknown": "Unknown"
+    },
+    "a": "Trading Results.a",
+    "eyebrow": "Results",
+    "title": "Trading Results",
+    "subtitle": "Your trading history and performance",
+    "kpi": {
+      "trades": "Trades",
+      "totalPnl": "Total P&L",
+      "winRate": "Win Rate",
+      "bestDay": "Best day",
+      "totalPnlHint": "Total realized profit/loss"
+    },
+    "intervalHint": "Select time period",
+    "exportCsv": "Export CSV",
+    "refresh": "Refresh",
+    "openHistory": "Open history",
+    "notYetLoaded": "No data loaded yet",
+    "charts": {
+      "cumulativeTitle": "Cumulative Title",
+      "cumulativeHint": "Cumulative Hint",
+      "cumulativeSeries": "Cumulative Series",
+      "outcomeTitle": "Outcome Title",
+      "outcomeHint": "Outcome Hint",
+      "dailyTitle": "Daily Title",
+      "dailyHint": "Daily Hint",
+      "dailySeries": "Daily Series",
+      "pairsTitle": "Pairs Title",
+      "pairsHint": "Pairs Hint",
+      "pairPnl": "Pair Pnl",
+      "modeTitle": "Mode Title",
+      "modeHint": "Mode Hint"
+    },
+    "empty": {
+      "needTrades": "Need Trades",
+      "noOutcomes": "No Outcomes",
+      "needDaily": "Need Daily",
+      "needPairs": "Need Pairs",
+      "needModes": "Need Modes"
+    }
+  }
+}

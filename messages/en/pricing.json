@@ -103,5 +103,17 @@
     "q": "What are KLT points?",
     "a": "KLT (Klarpakke Learning Tokens) are points you earn by learning and engaging. Use them to compete and unlock rewards."
   },
-  "freeForever": "forever"
+  "freeForever": "forever",
+  "pricing": {
+    "plans": {
+      "professor": {
+        "description": "For professional traders who want full access and personal follow-up."
+      }
+    }
+  },
+  "plans": {
+    "professor": {
+      "description": "For professional traders who want full access and personal follow-up."
+    }
+  }
 }
