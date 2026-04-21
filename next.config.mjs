@@ -376,7 +376,7 @@ const nextConfig = {
       },
       // Studio: allow iframe loading (Sanity Studio uses internal iframes)
       {
-        source: "/studio/:path*",
+        source: "/studio(.*)",
         headers: [
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
         ],
