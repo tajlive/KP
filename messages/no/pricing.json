@@ -90,7 +90,18 @@
     "a5": "Nei, ingen bindingstid. Du kan si opp når som helst."
   },
   "hero": {
+    "title": "Velg din læringsreise",
+    "subtitle": "Fra nybegynner til ekspert. Start gratis og oppgrader når du er klar.",
     "currencyNote": "Listepris i NOK. I kassen kan du velge NOK, EUR eller USD."
+  },
+  "klt": {
+    "title": "Tjen KLT-poeng mens du lærer",
+    "body": "KLT er Klarpakke sine belønningspoeng. Fullfør kurs, ta quizer og konkurrer på ledertavlen.",
+    "linkLeaderboard": "Se ledertavlen →"
+  },
+  "faqKlt": {
+    "q": "Hva er KLT-poeng?",
+    "a": "KLT (Klarpakke Learning Tokens) er poeng du tjener ved å lære og engasjere deg. Bruk dem til å konkurrere og låse opp premier."
   },
   "freeForever": "for alltid"
 }
