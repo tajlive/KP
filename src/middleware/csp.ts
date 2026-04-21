@@ -139,7 +139,7 @@ export const cspMiddleware: MiddlewareFn = (
           ]
         : []),
     ],
-    "frame-src": ["https://vercel.live"],
+    "frame-src": ["'self'", "https://vercel.live"],
     "upgrade-insecure-requests": [],
   };
 
