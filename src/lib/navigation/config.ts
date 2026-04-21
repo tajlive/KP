@@ -110,6 +110,8 @@ export const GUEST_NAV_CONFIG: NavItem[] = [
 ];
 
 // Mobil-bottom-tabs (maks 5 items)
+// Layout: home | copy | trade | auto | profile
+// Inspirert av BingX/Binance — copy trading synlig på første nivå
 export const MOBILE_BOTTOM_TABS: NavItem[] = [
   { 
     key: 'home', 
@@ -120,10 +122,10 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
     mobileOnly: true,
   },
   { 
-    key: 'autoTrade', 
-    href: '/dashboard/auto-trade', 
-    labelKey: 'dashboard.sidebar.autoTrade', 
-    icon: 'Bot',
+    key: 'copyTrading', 
+    href: '/copy-trading', 
+    labelKey: 'dashboard.sidebar.copyTrading', 
+    icon: 'Copy',
     roles: ['auth'],
     mobileOnly: true,
   },
@@ -136,10 +138,10 @@ export const MOBILE_BOTTOM_TABS: NavItem[] = [
     mobileOnly: true,
   },
   { 
-    key: 'courses', 
-    href: '/kurs', 
-    labelKey: 'navigation.courses', 
-    icon: 'BookOpen',
+    key: 'autoTrade', 
+    href: '/dashboard/auto-trade', 
+    labelKey: 'dashboard.sidebar.autoTrade', 
+    icon: 'Bot',
     roles: ['auth'],
     mobileOnly: true,
   },
