@@ -2,7 +2,8 @@
  * Singleton Supabase browser client
  * 
  * KRITISK: Aldri opprett flere instanser — én per browser-session.
- * Token refresh håndteres av refresh-guard (mutex + circuit breaker) og AuthContext.
+ * Invalid refresh token detection: wraps getSession/getUser to sign out
+ * immediately and block subsequent auth calls, preventing retry storms.
  * 
  * @usage
  * import { getSupabaseClient } from '@/lib/supabase/client'
@@ -74,6 +75,35 @@ export function getSupabaseClient(): SupabaseClient {
       },
     });
     
+    // Guard against retry storms when refresh token is invalid
+    let invalidTokenDetected = false;
+
+    const originalGetSession = _client.auth.getSession.bind(_client.auth);
+    _client.auth.getSession = async () => {
+      if (invalidTokenDetected) {
+        return { data: { session: null }, error: null } as Awaited<ReturnType<typeof originalGetSession>>;
+      }
+      const result = await originalGetSession();
+      if (result.error?.message?.includes("Invalid Refresh Token")) {
+        invalidTokenDetected = true;
+        await _client!.auth.signOut();
+      }
+      return result;
+    };
+
+    const originalGetUser = _client.auth.getUser.bind(_client.auth);
+    _client.auth.getUser = async () => {
+      if (invalidTokenDetected) {
+        return { data: { user: null }, error: null } as unknown as Awaited<ReturnType<typeof originalGetUser>>;
+      }
+      const result = await originalGetUser();
+      if (result.error?.message?.includes("Invalid Refresh Token")) {
+        invalidTokenDetected = true;
+        await _client!.auth.signOut();
+      }
+      return result;
+    };
+
     // Minimal auth state listener - only for logging
     _client.auth.onAuthStateChange((event, session) => {
       if (process.env.NODE_ENV === 'development') {
