@@ -11,6 +11,7 @@
 
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
+import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 
 type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>;
 
@@ -60,14 +61,17 @@ export function getSupabaseClient(): SupabaseClient {
         secure: true,
         domain: getBrowserCookieDomain(),
       },
-      global: {
-        headers: {
-          "x-client-info": "klarpakke/1.0",
-        },
-      },
+
       auth: {
         persistSession: true,
         detectSessionInUrl: false, // AuthHashHandler handles hash parsing exclusively
+        autoRefreshToken: false,   // AuthContext handles explicit refresh to prevent storms
+      },
+      global: {
+        fetch: createRefreshProtectedFetch(fetch, { source: "browser" }),
+        headers: {
+          "x-client-info": "klarpakke/1.0",
+        },
       },
     });
     

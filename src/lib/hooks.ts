@@ -4,44 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { getSupabaseClient } from './supabase/client';
 
 /**
- * Hook for å lytte på Supabase auth-endringer
- */
-export function useAuth() {
-  const [user, setUser] = useState<unknown>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const supabase = getSupabaseClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        setUser(user || null);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to get user'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkUser();
-
-    const supabase = getSupabaseClient();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => subscription?.unsubscribe();
-  }, []);
-
-  return { user, isLoading, error };
-}
-
-/**
  * Hook for å hente signaler med real-time updates
  */
 export function useSignals(filter?: { status?: string; direction?: string }) {
