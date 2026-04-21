@@ -44,24 +44,14 @@ function Counter({
 export function SocialProof({ language = "no" }: SocialProofProps) {
   const stats = [
     {
-      label: language === "no" ? "Brukere" : "Users",
-      value: 1200,
-      suffix: "+",
-    },
-    {
-      label: language === "no" ? "Kurstimer" : "Course Hours",
+      label: language === "no" ? "Kurstimer med video" : "Course hours",
       value: 25,
       suffix: "+",
     },
     {
-      label: language === "no" ? "Virtuell kapital" : "Virtual Capital",
+      label: language === "no" ? "Lekepenger å øve med" : "Virtual capital to practice",
       value: 100000,
       suffix: " kr",
-    },
-    {
-      label: language === "no" ? "Kundetilfredshet" : "Customer Satisfaction",
-      value: 98,
-      suffix: "%",
     },
   ];
 

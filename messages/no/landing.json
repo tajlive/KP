@@ -203,7 +203,6 @@
   "demoWidget": {
     "title": "Sanntidsfølelse — uten en krone på spill",
     "subtitle": "Kjøp og selg i demoen under. Prisen tikker som i et ekte marked — helt risikofritt.",
-    "liveBadge": "Live simulering",
     "portfolio": "Portefølje",
     "positionLabel": "Posisjon",
     "buy": "Kjøp BTC",
@@ -211,7 +210,8 @@
     "overlay": "Registrer deg for å handle med ekte data",
     "overlayCta": "Start gratis nå",
     "overlayLoggedIn": "Prøv full papirhandel i appen — samme følelse, fortsatt uten ekte penger",
-    "overlayLoggedInCta": "Gå til papirhandel"
+    "overlayLoggedInCta": "Gå til papirhandel",
+    "demoBadge": "Live simulering"
   },
   "testimonials": {
     "title": "Hva våre brukere sier",
@@ -253,7 +253,8 @@
       "signalsDesc": "Handel rundt klokken",
       "growing": "Voksende",
       "community": "Norsk fellesskap",
-      "communityDesc": "Norske tradere hjelper hverandre"
+      "communityDesc": "Norske tradere hjelper hverandre",
+      "alwaysOn": "Alltid på"
     },
     "payment": {
       "secure": "Trygg betaling via"

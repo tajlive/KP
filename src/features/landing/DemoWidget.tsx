@@ -117,12 +117,11 @@ export function DemoWidget() {
       />
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <div className="mb-10 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#0052FF]/35 bg-[#0052FF]/10 px-3 py-1.5 text-xs font-semibold text-[#3d7aff]">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-400">
             <span className="relative flex h-2 w-2">
-              <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
             </span>
-            {t("liveBadge")}
+            {t("demoBadge")}
           </div>
           <h2 className="mb-3 text-3xl font-black tracking-tight text-white sm:text-4xl">
             {t("title")}
@@ -150,6 +149,7 @@ export function DemoWidget() {
                 </div>
                 <div className="min-w-0">
                   <div className="font-bold text-white">BTC / USDT</div>
+                  <div className="text-xs text-amber-400 font-medium">SIMULERT PRIS</div>
                   <div
                     className={`font-semibold tabular-nums text-sm ${priceUp ? "text-emerald-400" : "text-red-400"}`}
                   >

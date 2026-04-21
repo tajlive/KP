@@ -149,14 +149,8 @@ export function LeaderboardPreview({ entries }: LeaderboardPreviewProps) {
   const locale = useLocale();
   const t = useTranslations("landing.leaderboard");
 
-  // Default mock data if no entries provided
-  const defaultEntries: LeaderboardEntry[] = [
-    { rank: 1, username: "Trader***", return: 45.2, klt: 50000 },
-    { rank: 2, username: "Crypto**", return: 38.7, klt: 30000 },
-    { rank: 3, username: "Hodl****", return: 32.1, klt: 20000 },
-  ];
-
-  const displayEntries = entries || defaultEntries;
+  // No fake default data — we don't display fabricated numbers.
+  const displayEntries = entries ?? [];
 
   return (
     <section className="py-20 bg-[#050510] relative overflow-hidden">
@@ -190,9 +184,19 @@ export function LeaderboardPreview({ entries }: LeaderboardPreviewProps) {
 
         {/* Podium cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
-          {displayEntries.map((entry, index) => (
-            <PodiumCard key={entry.rank} entry={entry} index={index} />
-          ))}
+          {displayEntries.length > 0 ? (
+            displayEntries.map((entry, index) => (
+              <PodiumCard key={entry.rank} entry={entry} index={index} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-kp-text-muted text-lg">
+                {locale === "no"
+                  ? "Leaderboard er tomt. Bli den første til å delta!"
+                  : "Leaderboard is empty. Be the first to join!"}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* CTAs */}

@@ -38,32 +38,9 @@ export default function SocialProofSection({
   const router = useRouter();
   const locale = useLocale();
 
-  const stats = customStats ?? [
-    {
-      icon: "Sparkles",
-      value: "Beta",
-      label: "Lansering 2026",
-      color: "text-blue-600",
-    },
-    {
-      icon: "Users",
-      value: "Ny!",
-      label: "Aktivt community",
-      color: "text-green-600",
-    },
-    {
-      icon: "Award",
-      value: "25+",
-      label: "Kurstimer",
-      color: "text-emerald-600",
-    },
-    {
-      icon: "TrendingUp",
-      value: "100 000 kr",
-      label: "Virtuell kapital",
-      color: "text-amber-600",
-    },
-  ];
+  // Stats removed — we don't sell with unverifiable platform numbers.
+  // See AGENTS.md / trust-policy for details.
+  const stats = customStats ?? [];
 
   const betaPerks = customPerks ?? [
     {
