@@ -1,0 +1,54 @@
+{
+  "tradingResults": {
+    "errorLoad": "Kunne ikke laste trading-resultater",
+    "mode": {
+      "paper": "Paper",
+      "live": "Live",
+      "unknown": "Ukjent"
+    },
+    "outcome": {
+      "win": "Vinst",
+      "loss": "Tap",
+      "breakeven": "Break-even",
+      "unknown": "Ukjent"
+    },
+    "a": "A",
+    "eyebrow": "Resultater",
+    "title": "Trading-resultater",
+    "subtitle": "Din trading-historikk og ytelse",
+    "kpi": {
+      "trades": "Trader",
+      "totalPnl": "Total P&L",
+      "winRate": "Win Rate",
+      "bestDay": "Beste dag",
+      "totalPnlHint": "Total realisert gevinst/tap"
+    },
+    "intervalHint": "Velg tidsperiode",
+    "exportCsv": "Eksporter CSV",
+    "refresh": "Oppdater",
+    "openHistory": "Åpne historikk",
+    "notYetLoaded": "Ingen data lastet ennå",
+    "charts": {
+      "cumulativeTitle": "Cumulative Title",
+      "cumulativeHint": "Cumulative Hint",
+      "cumulativeSeries": "Cumulative Series",
+      "outcomeTitle": "Outcome Title",
+      "outcomeHint": "Outcome Hint",
+      "dailyTitle": "Daily Title",
+      "dailyHint": "Daily Hint",
+      "dailySeries": "Daily Series",
+      "pairsTitle": "Pairs Title",
+      "pairsHint": "Pairs Hint",
+      "pairPnl": "Pair Pnl",
+      "modeTitle": "Mode Title",
+      "modeHint": "Mode Hint"
+    },
+    "empty": {
+      "needTrades": "Need Trades",
+      "noOutcomes": "No Outcomes",
+      "needDaily": "Need Daily",
+      "needPairs": "Need Pairs",
+      "needModes": "Need Modes"
+    }
+  }
+}

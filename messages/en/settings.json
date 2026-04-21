@@ -1,0 +1,85 @@
+{
+  "settings": {
+    "accessibility": {
+      "title": "Accessibility",
+      "fontSize": "Font Size",
+      "fontSizeNormal": "Normal",
+      "fontSizeLarge": "Large",
+      "fontSizeHint": "Choose the font size that suits you best.",
+      "highContrast": "High Contrast",
+      "highContrastDesc": "Increases contrast for better readability.",
+      "highContrastOff": "Turn off high contrast",
+      "highContrastOn": "Turn on high contrast",
+      "previewTitle": "Preview",
+      "previewText": "This is an example of how the text will look.",
+      "previewNote": "Changes take effect immediately."
+    },
+    "api": {
+      "loadError": "Could not load API keys",
+      "saveSuccess": "API key saved",
+      "saveError": "Could not save API key",
+      "deleteSuccess": "API key deleted",
+      "deleteError": "Could not delete API key",
+      "referralCopied": "Referral link copied!",
+      "labelPlaceholder": "Label",
+      "apiKeyPlaceholder": "API Key",
+      "apiSecretPlaceholder": "API Secret",
+      "copyKeys": "Copy keys"
+    },
+    "notifications": {
+      "saved": "Settings saved",
+      "saveError": "Could not save settings",
+      "updateError": "Could not update",
+      "permissionDenied": "Permission denied. Enable notifications in your browser.",
+      "vapidMissing": "Push notifications are not configured.",
+      "pushEnabled": "Push notifications enabled",
+      "pushDisabled": "Push notifications disabled",
+      "browserNotSupported": "Your browser does not support push notifications.",
+      "whatToNotify": "What do you want to be notified about?",
+      "priceAlerts": "Price Alerts",
+      "priceAlertsDesc": "Get notified when the price reaches a level.",
+      "tradingSignals": "Trading Signals",
+      "tradingSignalsDesc": "Get notified about new trading signals.",
+      "stopLossTakeProfit": "Stop Loss / Take Profit",
+      "stopLossTakeProfitDesc": "Get notified when SL or TP is hit.",
+      "transactions": "Transactions",
+      "transactionsDesc": "Get notified about new transactions.",
+      "portfolioUpdates": "Portfolio Updates",
+      "portfolioUpdatesDesc": "Get notified about portfolio changes.",
+      "marketNews": "Market News",
+      "marketNewsDesc": "Get notified about important market news.",
+      "competitions": "Competitions",
+      "competitionsDesc": "Get notified about competitions and leaderboard.",
+      "quietHours": "Quiet Hours",
+      "quietHoursDesc": "No notifications during this time.",
+      "from": "From",
+      "to": "To"
+    },
+    "theme": {
+      "system": "System",
+      "systemDesc": "Follow system settings",
+      "light": "Light",
+      "lightDesc": "Light theme for daytime",
+      "dark": "Dark",
+      "darkDesc": "Dark theme for nighttime",
+      "selected": "Selected",
+      "preview": "Preview",
+      "darkModeActive": "Dark mode is active",
+      "lightModeActive": "Light mode is active"
+    },
+    "profile": {
+      "fullNamePlaceholder": "Full name",
+      "avatarPlaceholder": "Add profile picture",
+      "namePlaceholder": "Name",
+      "avatarUrlPlaceholder": "Profile picture URL"
+    },
+    "billing": {
+      "error": "Could not load subscription info",
+      "title": "Subscription",
+      "description": "Manage your subscription and payment methods.",
+      "loading": "Loading subscription info...",
+      "cta": "Upgrade",
+      "sectionTitle": "Your plan"
+    }
+  }
+}
