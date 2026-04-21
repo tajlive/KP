@@ -105,6 +105,12 @@ export function AuthHashHandler() {
 
         if (sessionError) {
           console.error("[AuthHashHandler] Session error:", sessionError);
+          // If refresh token is invalid, clear auth state and redirect to login
+          if (sessionError.message?.includes("Invalid Refresh Token")) {
+            await supabase.auth.signOut();
+            router.replace(`/${locale}/login?error=session_expired`);
+            return;
+          }
           setError("Kunne ikke etablere session. Prøv igjen.");
           setIsProcessing(false);
           return;

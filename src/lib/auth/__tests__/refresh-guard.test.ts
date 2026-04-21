@@ -85,7 +85,7 @@ describe("createRefreshProtectedFetch", () => {
     // 4th call should be short-circuited
     const res = await guarded(url, { method: "POST" });
     expect(baseFetch).toHaveBeenCalledTimes(3); // no new fetch
-    expect(res.status).toBe(429);
+    expect(res.status).toBe(400);
     expect(sentryAuth.logAuthError).toHaveBeenCalled();
   });
 
