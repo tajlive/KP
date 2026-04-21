@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { MOBILE_BOTTOM_TABS } from "@/lib/navigation/config";
 
-type TabId = "home" | "paper" | "trade" | "courses" | "profile";
+type TabId = "home" | "copyTrading" | "trade" | "autoTrade" | "profile";
 
 interface Tab {
   id: TabId;
@@ -108,6 +108,20 @@ const WalletFilled = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const CopyIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" />
+  </svg>
+);
+
+const CopyFilled = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 const MenuIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="3" y1="12" x2="21" y2="12" />
@@ -132,6 +146,7 @@ const ICON_MAP: Record<string, { icon: React.FC<{ className?: string }>, filledI
   BookOpen: { icon: GraduationCapIcon, filledIcon: GraduationCapFilled },
   User: { icon: UserIcon, filledIcon: UserFilled },
   Bot: { icon: BotIcon, filledIcon: BotFilled },
+  Copy: { icon: CopyIcon, filledIcon: CopyFilled },
 };
 
 // Build tabs from nav config
