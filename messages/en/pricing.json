@@ -90,7 +90,18 @@
     "a5": "No commitment. You can cancel at any time."
   },
   "hero": {
+    "title": "Choose your learning journey",
+    "subtitle": "From beginner to expert. Start free and upgrade when you're ready.",
     "currencyNote": "Prices shown in NOK. At checkout you can pay in NOK, EUR, or USD."
+  },
+  "klt": {
+    "title": "Earn KLT points while you learn",
+    "body": "KLT is Klarpakke's reward points. Complete courses, take quizzes, and compete on the leaderboard.",
+    "linkLeaderboard": "View leaderboard →"
+  },
+  "faqKlt": {
+    "q": "What are KLT points?",
+    "a": "KLT (Klarpakke Learning Tokens) are points you earn by learning and engaging. Use them to compete and unlock rewards."
   },
   "freeForever": "forever"
 }
