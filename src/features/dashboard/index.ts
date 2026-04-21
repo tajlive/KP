@@ -4,7 +4,6 @@ export { DashboardPro } from "./DashboardPro";
 
 // Chart & Stats
 export { PortfolioChart } from "./PortfolioChart";
-export { BeatTheMarket } from "./BeatTheMarket";
 export { StatsGrid, StatsGridMini } from "./StatsGrid";
 
 // Existing components

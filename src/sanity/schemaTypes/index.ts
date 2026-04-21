@@ -7,11 +7,13 @@ import tradeExplanation from './trade-explanation'
 import faq from './faq'
 import testimonial from './testimonial'
 import { designTokens } from './design-tokens'
+import dashboardContent from './dashboard-content'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     page,
     landingContent,
+    dashboardContent,
     strategy,
     tradeExplanation,
     faq,

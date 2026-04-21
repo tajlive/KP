@@ -46,6 +46,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Hent initial session (getSession refreshes expired tokens, getUser does not)
     const initAuth = async () => {
+      // Skip auth init if user is already on an error page (prevents infinite loop)
+      const search = typeof window !== "undefined" ? window.location.search : "";
+      if (search.includes("error=session_expired") || search.includes("error=access_denied")) {
+        if (isMounted) {
+          setUser(null);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (!isMounted) return;

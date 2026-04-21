@@ -23,8 +23,19 @@ type SupabaseClient = ReturnType<typeof createBrowserClient<Database>>;
 let _client: SupabaseClient | null = null;
 
 // Module-level guard — shared across all getSupabaseClient() calls
-let invalidTokenDetected = false;
+// Persisted in sessionStorage so it survives full page reloads (prevents refresh loops)
+const SESSION_STORAGE_KEY = "sb_invalid_token_guard";
+let invalidTokenDetected =
+  typeof window !== "undefined" && sessionStorage.getItem(SESSION_STORAGE_KEY) === "1";
 let refreshPromise: Promise<Response> | null = null;
+
+/** Reset the invalid token guard (call after successful login) */
+export function resetInvalidTokenGuard(): void {
+  invalidTokenDetected = false;
+  if (typeof window !== "undefined") {
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  }
+}
 
 function getBrowserCookieDomain(): string | undefined {
   if (typeof window === "undefined") return undefined;
@@ -132,6 +143,9 @@ export function getSupabaseClient(): SupabaseClient {
               // Set the flag immediately so the next concurrent call is blocked.
               if (response.status === 400) {
                 invalidTokenDetected = true;
+                if (typeof window !== "undefined") {
+                  sessionStorage.setItem(SESSION_STORAGE_KEY, "1");
+                }
               }
               refreshPromise = null;
               return response;
@@ -173,8 +187,14 @@ export function getSupabaseClient(): SupabaseClient {
       return originalGetUser();
     };
 
-    // Minimal auth state listener - only for logging
+    // Auth state listener — reset invalid token guard on successful auth events
     _client.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        invalidTokenDetected = false;
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        }
+      }
       if (process.env.NODE_ENV === "development") {
         console.log(
           `[Supabase] Auth event: ${event}`,

@@ -6,6 +6,8 @@ import { DashboardContent } from "@/features/dashboard/DashboardContent";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
+import { client } from "@/lib/sanity/client";
+import { dashboardContentQuery } from "@/lib/sanity/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -121,7 +123,7 @@ export default async function DashboardPage({
     const tradesData = tradesRes.data ?? [];
     const winningTrades = tradesData.filter((t) => (t.realized_pnl || 0) > 0);
     const totalPnl = tradesData.reduce((sum, t) => sum + (t.realized_pnl || 0), 0);
-    
+
     const stats = {
       totalTrades: tradesData.length,
       winRate: tradesData.length ? Math.round((winningTrades.length / tradesData.length) * 100) : 0,
@@ -138,6 +140,14 @@ export default async function DashboardPage({
       realized_pnl: t.realized_pnl ?? null,
     }));
 
+    // Hent dashboard-innhold fra Sanity (fallback til defaults hvis ikke konfigurert)
+    let cmsData = null;
+    try {
+      cmsData = await client.fetch(dashboardContentQuery, { language: locale });
+    } catch {
+      // Sanity ikke konfigurert — bruk defaults i komponentene
+    }
+
     return (
       <div data-testid="dashboard-page">
         <DashboardContent
@@ -147,6 +157,7 @@ export default async function DashboardPage({
           stats={stats}
           onboardingCompleted={profile?.onboarding_completed ?? false}
           userName={profile?.display_name ?? ""}
+          cmsData={cmsData}
         />
       </div>
     );

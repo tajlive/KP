@@ -1,7 +1,5 @@
 "use client";
-import { createBrowserClient } from "@supabase/ssr";
-import { safeStorage } from "@/lib/supabase/safe-storage";
-import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import type { Database, Json } from "@/types/database.types";
 import {
   enrichStrategyConfigForSession,
@@ -11,18 +9,7 @@ import {
 } from "@/lib/auto-trading/strategy-catalog";
 import type { ProductStrategyId } from "@/lib/trading/strategy-id-aliases";
 
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      storage: safeStorage,
-    },
-    global: {
-      fetch: createRefreshProtectedFetch(globalThis.fetch, { source: "browser" }),
-    },
-  },
-);
+const supabase = getSupabaseClient();
 
 type TradesRow = Database["public"]["Tables"]["trades"]["Row"];
 
@@ -226,21 +213,21 @@ export async function getActiveStrategies(
   return data.map((session) => ({
     id: session.id,
     strategy_id: session.strategy_id as StrategyType,
-    strategy_config: session.strategy_config || {},
+    strategy_config: (session.strategy_config || {}) as Record<string, unknown>,
     is_active: session.status === "active",
-    mode: session.mode,
-    trading_pair: session.trading_pair,
+    mode: session.mode as TradingMode,
+    trading_pair: session.trading_pair ?? "",
     current_capital: Number(
       session.current_capital_nok ?? session.current_capital ?? 0,
     ),
     initial_capital: Number(
       session.starting_capital_nok ?? session.initial_capital ?? 0,
     ),
-    total_trades: session.total_trades,
-    winning_trades: session.winning_trades,
-    total_pnl: session.total_pnl,
-    started_at: session.started_at,
-    status: session.status,
+    total_trades: session.total_trades ?? 0,
+    winning_trades: session.winning_trades ?? 0,
+    total_pnl: session.total_pnl ?? 0,
+    started_at: session.started_at ?? null,
+    status: session.status as UserStrategy["status"],
   }));
 }
 
@@ -260,21 +247,21 @@ export async function getAllStrategies(
   return data.map((session) => ({
     id: session.id,
     strategy_id: session.strategy_id as StrategyType,
-    strategy_config: session.strategy_config || {},
+    strategy_config: (session.strategy_config || {}) as Record<string, unknown>,
     is_active: session.status === "active",
-    mode: session.mode,
-    trading_pair: session.trading_pair,
+    mode: session.mode as TradingMode,
+    trading_pair: session.trading_pair ?? "",
     current_capital: Number(
       session.current_capital_nok ?? session.current_capital ?? 0,
     ),
     initial_capital: Number(
       session.starting_capital_nok ?? session.initial_capital ?? 0,
     ),
-    total_trades: session.total_trades,
-    winning_trades: session.winning_trades,
-    total_pnl: session.total_pnl,
-    started_at: session.started_at,
-    status: session.status,
+    total_trades: session.total_trades ?? 0,
+    winning_trades: session.winning_trades ?? 0,
+    total_pnl: session.total_pnl ?? 0,
+    started_at: session.started_at ?? null,
+    status: session.status as UserStrategy["status"],
   }));
 }
 
@@ -325,17 +312,17 @@ export async function startStrategy(
   return {
     id: data.id,
     strategy_id: data.strategy_id as StrategyType,
-    strategy_config: data.strategy_config || {},
+    strategy_config: (data.strategy_config || {}) as Record<string, unknown>,
     is_active: true,
-    mode: data.mode,
-    trading_pair: data.trading_pair,
-    current_capital: data.current_capital,
-    initial_capital: data.initial_capital,
-    total_trades: data.total_trades,
-    winning_trades: data.winning_trades,
-    total_pnl: data.total_pnl,
-    started_at: data.started_at,
-    status: data.status,
+    mode: data.mode as TradingMode,
+    trading_pair: data.trading_pair ?? "",
+    current_capital: Number(data.current_capital ?? 0),
+    initial_capital: Number(data.initial_capital ?? 0),
+    total_trades: data.total_trades ?? 0,
+    winning_trades: data.winning_trades ?? 0,
+    total_pnl: data.total_pnl ?? 0,
+    started_at: data.started_at ?? null,
+    status: data.status as UserStrategy["status"],
   };
 }
 
@@ -454,7 +441,7 @@ export async function createPaperTrade(
       status: trade.status,
       realized_pnl: trade.realized_pnl,
       is_copy: trade.is_copy || false,
-      strategy_signal: trade.strategy_signal,
+      strategy_signal: trade.strategy_signal as unknown as Json,
       executed_at: trade.executed_at || new Date().toISOString(),
     })
     .select()

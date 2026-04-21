@@ -6,9 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { createBrowserClient } from "@supabase/ssr";
-import { safeStorage } from "@/lib/supabase/safe-storage";
-import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { Bot, Pause, Play, ArrowRight, AlertTriangle } from "lucide-react";
 
 export interface TradingSession {
@@ -30,23 +28,13 @@ interface BotStatusCardProps {
   initialSession: TradingSession | null;
 }
 
+const supabase = getSupabaseClient();
+
 export function BotStatusCard({ initialSession }: BotStatusCardProps) {
   const t = useTranslations();
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) ?? "no";
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        storage: safeStorage,
-      },
-      global: {
-        fetch: createRefreshProtectedFetch(globalThis.fetch, { source: "browser" }),
-      },
-    },
-  );
   const [session, setSession] = useState<TradingSession | null>(initialSession);
   const [loading, setLoading] = useState(false);
 

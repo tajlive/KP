@@ -1,21 +1,8 @@
 "use client";
-import { createBrowserClient } from "@supabase/ssr";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import type { StrategyType } from "./trading-api";
-import { safeStorage } from "@/lib/supabase/safe-storage";
-import { createRefreshProtectedFetch } from "@/lib/auth/refresh-guard";
 
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      storage: safeStorage,
-    },
-    global: {
-      fetch: createRefreshProtectedFetch(globalThis.fetch, { source: "browser" }),
-    },
-  }
-);
+const supabase = getSupabaseClient();
 
 export async function triggerStrategyRun(
   strategyType: StrategyType,
