@@ -276,11 +276,12 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(redirectResponse, nonce);
   }
 
-  // Hvis auth route og allerede logget inn -> redirect til dashboard
+  // Hvis auth route og allerede logget inn -> redirect til dashboard (med locale prefix)
   const isAuthRoute = AUTH_ROUTES.some(route => pathWithoutLocale.startsWith(route));
   
   if (isAuthRoute && user) {
-    const redirectResponse = NextResponse.redirect(new URL("/dashboard", request.url));
+    const locale = getLocaleFromPathname(pathname);
+    const redirectResponse = NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
     return applySecurityHeaders(redirectResponse, nonce);
   }
 

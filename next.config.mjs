@@ -259,7 +259,6 @@ const nextConfig = {
       { source: "/terms", destination: "/en/terms", permanent: true },
       { source: "/blog", destination: "/en/blog", permanent: true },
       { source: "/blog/:path*", destination: "/en/blog/:path*", permanent: true },
-      { source: "/dashboard", destination: "/en/dashboard", permanent: true },
       // Typo: Norwegian "dashbord" → correct path "dashboard"
       { source: "/dashbord", destination: "/no/dashboard", permanent: true },
       { source: "/:locale/dashbord", destination: "/:locale/dashboard", permanent: true },
