@@ -860,45 +860,6 @@ export type Database = {
         }
         Relationships: []
       }
-      auto_trades: {
-        Row: {
-          amount: number
-          created_at: string | null
-          id: string
-          price: number | null
-          side: string
-          status: string | null
-          strategy_id: string | null
-          symbol: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string | null
-          id?: string
-          price?: number | null
-          side: string
-          status?: string | null
-          strategy_id?: string | null
-          symbol: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string | null
-          id?: string
-          price?: number | null
-          side?: string
-          status?: string | null
-          strategy_id?: string | null
-          symbol?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       auto_trading_backtests: {
         Row: {
           created_at: string | null
@@ -1365,63 +1326,6 @@ export type Database = {
           take_profit_pct?: number | null
           timeframe?: string | null
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      auto_trading_trades: {
-        Row: {
-          binance_order_id: string | null
-          created_at: string | null
-          error_message: string | null
-          executed_at: string | null
-          fee: number | null
-          id: string
-          idempotency_key: string
-          pnl: number | null
-          price: number
-          quantity: number
-          side: string
-          status: string
-          strategy_id: string | null
-          symbol: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          binance_order_id?: string | null
-          created_at?: string | null
-          error_message?: string | null
-          executed_at?: string | null
-          fee?: number | null
-          id?: string
-          idempotency_key: string
-          pnl?: number | null
-          price: number
-          quantity: number
-          side: string
-          status?: string
-          strategy_id?: string | null
-          symbol: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          binance_order_id?: string | null
-          created_at?: string | null
-          error_message?: string | null
-          executed_at?: string | null
-          fee?: number | null
-          id?: string
-          idempotency_key?: string
-          pnl?: number | null
-          price?: number
-          quantity?: number
-          side?: string
-          status?: string
-          strategy_id?: string | null
-          symbol?: string
-          updated_at?: string | null
-          user_id?: string
         }
         Relationships: []
       }
@@ -4420,45 +4324,6 @@ export type Database = {
           },
         ]
       }
-      paper_trading_sessions: {
-        Row: {
-          created_at: string | null
-          current_balance: number | null
-          id: string
-          starting_balance: number | null
-          status: string | null
-          total_pnl: number | null
-          total_trades: number | null
-          updated_at: string | null
-          user_id: string
-          winning_trades: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          current_balance?: number | null
-          id?: string
-          starting_balance?: number | null
-          status?: string | null
-          total_pnl?: number | null
-          total_trades?: number | null
-          updated_at?: string | null
-          user_id: string
-          winning_trades?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          current_balance?: number | null
-          id?: string
-          starting_balance?: number | null
-          status?: string | null
-          total_pnl?: number | null
-          total_trades?: number | null
-          updated_at?: string | null
-          user_id?: string
-          winning_trades?: number | null
-        }
-        Relationships: []
-      }
       payment_history: {
         Row: {
           amount_ore: number
@@ -5647,6 +5512,39 @@ export type Database = {
         }
         Relationships: []
       }
+      strategy_performance: {
+        Row: {
+          avg_loss_pct: number | null
+          avg_win_pct: number | null
+          kelly_fraction: number | null
+          sample_size: number | null
+          strategy_id: string
+          updated_at: string | null
+          user_id: string
+          win_rate: number | null
+        }
+        Insert: {
+          avg_loss_pct?: number | null
+          avg_win_pct?: number | null
+          kelly_fraction?: number | null
+          sample_size?: number | null
+          strategy_id: string
+          updated_at?: string | null
+          user_id: string
+          win_rate?: number | null
+        }
+        Update: {
+          avg_loss_pct?: number | null
+          avg_win_pct?: number | null
+          kelly_fraction?: number | null
+          sample_size?: number | null
+          strategy_id?: string
+          updated_at?: string | null
+          user_id?: string
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
       strategy_reviews: {
         Row: {
           created_at: string | null
@@ -6670,6 +6568,8 @@ export type Database = {
       }
       trading_sessions: {
         Row: {
+          archived: boolean | null
+          archived_at: string | null
           copied_from_listing_id: string | null
           copy_source_session_id: string | null
           crash_count: number
@@ -6704,6 +6604,8 @@ export type Database = {
           winning_trades: number
         }
         Insert: {
+          archived?: boolean | null
+          archived_at?: string | null
           copied_from_listing_id?: string | null
           copy_source_session_id?: string | null
           crash_count?: number
@@ -6738,6 +6640,8 @@ export type Database = {
           winning_trades?: number
         }
         Update: {
+          archived?: boolean | null
+          archived_at?: string | null
           copied_from_listing_id?: string | null
           copy_source_session_id?: string | null
           crash_count?: number
@@ -7638,6 +7542,7 @@ export type Database = {
           daily_pnl: number | null
           id: string
           invested_value: number | null
+          last_yield_move: string | null
           mode: string
           total_pnl: number | null
           total_trades: number | null
@@ -7645,12 +7550,14 @@ export type Database = {
           updated_at: string | null
           user_id: string | null
           win_rate: number | null
+          yield_balance: number | null
         }
         Insert: {
           cash_balance?: number | null
           daily_pnl?: number | null
           id?: string
           invested_value?: number | null
+          last_yield_move?: string | null
           mode?: string
           total_pnl?: number | null
           total_trades?: number | null
@@ -7658,12 +7565,14 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
           win_rate?: number | null
+          yield_balance?: number | null
         }
         Update: {
           cash_balance?: number | null
           daily_pnl?: number | null
           id?: string
           invested_value?: number | null
+          last_yield_move?: string | null
           mode?: string
           total_pnl?: number | null
           total_trades?: number | null
@@ -7671,6 +7580,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
           win_rate?: number | null
+          yield_balance?: number | null
         }
         Relationships: []
       }
@@ -8273,6 +8183,28 @@ export type Database = {
           registered: number | null
           total_contacts: number | null
           unsubscribed: number | null
+        }
+        Relationships: []
+      }
+      klarpakke_cron_failures: {
+        Row: {
+          jobname: string | null
+          return_message: string | null
+          start_time: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
+      klarpakke_cron_status: {
+        Row: {
+          active: boolean | null
+          duration_sec: number | null
+          end_time: string | null
+          jobname: string | null
+          return_message: string | null
+          schedule: string | null
+          start_time: string | null
+          status: string | null
         }
         Relationships: []
       }
@@ -8927,6 +8859,7 @@ export type Database = {
       is_bot_healthy: { Args: { p_bot_id: string }; Returns: boolean }
       is_service_role: { Args: never; Returns: boolean }
       is_trading_allowed: { Args: never; Returns: boolean }
+      klarpakke_trigger_cron: { Args: { path: string }; Returns: undefined }
       level_norsk: { Args: { lvl: string }; Returns: string }
       log_backtest_telemetry: {
         Args: {
