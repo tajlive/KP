@@ -4,7 +4,7 @@
  * Runs after deployment to verify critical systems:
  * - Active sessions
  * - Database connectivity
- * - auto_trades table health
+ * - trades table health
  * - Edge function status
  * 
  * Trigger: HTTP GET/POST
@@ -23,7 +23,7 @@ interface HealthCheckResult {
       active_sessions?: number;
       message?: string;
     };
-    auto_trades: {
+    trades: {
       status: "ok" | "warning" | "error";
       count: number;
       recent_trades?: number;
@@ -61,7 +61,7 @@ async function runHealthCheck(supabase: ReturnType<typeof createClient>): Promis
     status: "healthy",
     checks: {
       database: { status: "ok", latency_ms: 0 },
-      auto_trades: { status: "ok", count: 0 },
+      trades: { status: "ok", count: 0 },
       auth: { status: "ok" },
     },
     alerts: [],
@@ -99,21 +99,21 @@ async function runHealthCheck(supabase: ReturnType<typeof createClient>): Promis
     result.alerts.push(`Database check failed: ${result.checks.database.message}`);
   }
 
-  // Check 2: auto_trades table health
+  // Check 2: trades table health
   try {
     const { count: totalTrades, error: countError } = await supabase
-      .from("auto_trades")
+      .from("trades")
       .select("*", { count: "exact", head: true });
 
     if (countError) {
       throw countError;
     }
 
-    result.checks.auto_trades.count = totalTrades ?? 0;
+    result.checks.trades.count = totalTrades ?? 0;
 
     // Check for recent trades (last hour)
     const { count: recentTrades, error: recentError } = await supabase
-      .from("auto_trades")
+      .from("trades")
       .select("*", { count: "exact", head: true })
       .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString());
 
@@ -121,25 +121,25 @@ async function runHealthCheck(supabase: ReturnType<typeof createClient>): Promis
       throw recentError;
     }
 
-    result.checks.auto_trades.recent_trades = recentTrades ?? 0;
+    result.checks.trades.recent_trades = recentTrades ?? 0;
 
     // Determine status
-    if (result.checks.auto_trades.count === 0) {
-      result.checks.auto_trades.status = "warning";
-      result.checks.auto_trades.message = "No auto_trades records found";
-      result.alerts.push("auto_trades table is empty - trading may not be functioning");
-    } else if (result.checks.auto_trades.recent_trades === 0) {
-      result.checks.auto_trades.status = "warning";
-      result.checks.auto_trades.message = "No trades in last hour";
-      result.alerts.push("No recent auto_trades - check trading scheduler");
+    if (result.checks.trades.count === 0) {
+      result.checks.trades.status = "warning";
+      result.checks.trades.message = "No trades records found";
+      result.alerts.push("trades table is empty - trading may not be functioning");
+    } else if (result.checks.trades.recent_trades === 0) {
+      result.checks.trades.status = "warning";
+      result.checks.trades.message = "No trades in last hour";
+      result.alerts.push("No recent trades - check trading scheduler");
     } else {
-      result.checks.auto_trades.status = "ok";
+      result.checks.trades.status = "ok";
     }
 
   } catch (error) {
-    result.checks.auto_trades.status = "error";
-    result.checks.auto_trades.message = error instanceof Error ? error.message : "auto_trades error";
-    result.alerts.push(`auto_trades check failed: ${result.checks.auto_trades.message}`);
+    result.checks.trades.status = "error";
+    result.checks.trades.message = error instanceof Error ? error.message : "trades error";
+    result.alerts.push(`trades check failed: ${result.checks.trades.message}`);
   }
 
   // Check 3: Auth provider status (via settings check)

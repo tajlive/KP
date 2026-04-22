@@ -16,18 +16,26 @@ serve(async (req) => {
 
     // SQL statements
     const statements = [
-      `CREATE TABLE IF NOT EXISTS paper_trading_sessions (
+      `CREATE TABLE IF NOT EXISTS trading_sessions (
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
         user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-        starting_balance DECIMAL(20,8) DEFAULT 100000.00,
-        current_balance DECIMAL(20,8) DEFAULT 100000.00,
+        mode TEXT DEFAULT 'paper',
+        strategy_id TEXT DEFAULT 'manual',
+        trading_pair TEXT DEFAULT 'BTCUSDT',
+        starting_capital_nok DECIMAL(20,8) DEFAULT 100000.00,
+        current_capital_nok DECIMAL(20,8) DEFAULT 100000.00,
+        initial_capital DECIMAL(20,8) DEFAULT 100000.00,
+        current_capital DECIMAL(20,8) DEFAULT 100000.00,
         total_pnl DECIMAL(20,8) DEFAULT 0,
         total_trades INTEGER DEFAULT 0,
         winning_trades INTEGER DEFAULT 0,
-        status TEXT CHECK (status IN ('active', 'paused', 'completed')) DEFAULT 'active',
+        losing_trades INTEGER DEFAULT 0,
+        status TEXT CHECK (status IN ('active', 'paused', 'stopped', 'crashed')) DEFAULT 'active',
+        strategy_config JSONB DEFAULT '{}',
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW(),
-        UNIQUE(user_id, status)
+        started_at TIMESTAMPTZ DEFAULT NOW(),
+        last_heartbeat TIMESTAMPTZ DEFAULT NOW()
       );`,
       
       `CREATE TABLE IF NOT EXISTS risk_profiles (
@@ -55,7 +63,7 @@ serve(async (req) => {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       );`,
       
-      `ALTER TABLE paper_trading_sessions ENABLE ROW LEVEL SECURITY;`,
+      `ALTER TABLE trading_sessions ENABLE ROW LEVEL SECURITY;`,
       `ALTER TABLE risk_profiles ENABLE ROW LEVEL SECURITY;`,
       `ALTER TABLE auto_trading_configs ENABLE ROW LEVEL SECURITY;`,
     ];

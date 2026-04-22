@@ -113,19 +113,19 @@ serve(async (req) => {
 
       // 4. Get current trade count
       const { count: tradeCount } = await supabase
-        .from('auto_trades')
+        .from('trades')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', targetUserId);
 
       // 5. Get symbols traded
       const { data: symbols } = await supabase
-        .from('auto_trades')
-        .select('symbol')
+        .from('trades')
+        .select('trading_pair')
         .eq('user_id', targetUserId)
         .order('executed_at', { ascending: false })
         .limit(100);
 
-      const uniqueSymbols = [...new Set(symbols?.map(s => s.symbol) || [])];
+      const uniqueSymbols = [...new Set(symbols?.map(s => s.trading_pair) || [])];
 
       return new Response(
         JSON.stringify({

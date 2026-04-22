@@ -2,7 +2,9 @@ import { createServerClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 // POST /api/trading/trigger
-// Manually triggers the strategy runner (for immediate feedback when user starts a strategy)
+// Manually triggers prioritization of user's active sessions for next tick cycle.
+// Actual trade execution happens via the tick cron (/api/cron/tick) which runs
+// every 5 minutes and processes all active trading_sessions.
 export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.next();
@@ -17,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     const { data: sessions, error: sessError } = await supabase
       .from("trading_sessions")
-      .select("*")
+      .select("id")
       .eq("user_id", user.id)
       .eq("status", "active");
 
@@ -26,31 +28,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "No active strategies for user" });
     }
 
-    // Call the Edge Function using the validated user's access token
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const functionUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/strategy-runner`;
+    // Prioritize user's sessions for the next tick by resetting last_tick_at.
+    // The tick cron sorts by last_tick_at ASC with nulls first, so this
+    // ensures the user's sessions are processed in the upcoming cycle.
+    const sessionIds = sessions.map((s) => s.id);
+    const now = new Date().toISOString();
+    const { error: updateError } = await supabase
+      .from("trading_sessions")
+      .update({ last_tick_at: null, last_heartbeat: now })
+      .in("id", sessionIds);
 
-    const edgeResponse = await fetch(functionUrl, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${session?.access_token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!edgeResponse.ok) {
-      const error = await edgeResponse.text();
-      throw new Error(`Edge function error: ${error}`);
+    if (updateError) {
+      console.error("[trading/trigger] Failed to prioritize sessions:", updateError);
     }
-
-    const result = await edgeResponse.json();
 
     return NextResponse.json({
       success: true,
-      message: "Strategy runner triggered",
-      result,
+      message: "Sessions prioritized for next tick cycle",
+      sessionsPrioritized: sessionIds.length,
     });
   } catch (error) {
     console.error("Trigger error:", error);
@@ -67,6 +62,6 @@ export async function GET() {
   return NextResponse.json({
     status: "ready",
     endpoint: "POST /api/trading/trigger",
-    description: "Manually trigger strategy runner for immediate execution",
+    description: "Prioritize user sessions for next tick cycle",
   });
 }
