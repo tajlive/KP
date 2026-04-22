@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import type { Database } from "@/lib/database.types";
+import type { Database } from "@/types/database.types";
 import type { Wallet, PortfolioItem, TradingStats } from "@/types";
 
 type Trade = Database["public"]["Tables"]["trades"]["Row"];

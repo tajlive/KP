@@ -108,50 +108,6 @@
       }
     }
   },
-  "adminDashboard": {
-    "title": "Admin Dashboard",
-    "verifying": "Verifiserer tilgang...",
-    "noAccess": {
-      "title": "Ingen tilgang",
-      "backToHome": "Tilbake til forsiden"
-    },
-    "header": {
-      "subtitle": "{email} • Kampanje-oversikt"
-    },
-    "campaign": {
-      "title": "Kampanje Mål",
-      "spotsFilled": "{total} av 100 plasser fylt"
-    },
-    "stats": {
-      "totalRegistered": "Totalt registrert",
-      "spotsLeft": "{remaining} plasser igjen",
-      "signedUpToday": "Påmeldt i dag",
-      "last24Hours": "Siste 24 timer",
-      "totalClicks": "Total klikk",
-      "allChannels": "Fra alle kanaler",
-      "conversion": "Konvertering",
-      "clickToReg": "Klikk → Registrering",
-      "activeUsers": "Aktive brukere",
-      "paperTrading": "Lekepenger",
-      "autoTrading": "Auto Trading"
-    },
-    "trafficSources": {
-      "title": "Trafikk Kilder",
-      "direct": "Direkte"
-    },
-    "funnel": {
-      "title": "Konvertering",
-      "falloff": "{count} falloff ({rate}%)",
-      "noData": "Ingen data ennå"
-    },
-    "footer": {
-      "lastUpdated": "Sist oppdatert: {date}",
-      "fallbackData": "⚠️ Live-data utilgjengelig, viser cache"
-    },
-    "search": {
-      "placeholder": "Søk brukere..."
-    }
-  },
   "auth": {
     "title": "Studentportal",
     "signIn": "Logg inn",
@@ -413,74 +369,6 @@
         "name": "AI Copy",
         "description": "Kopier AI-genererte signaler"
       }
-    }
-  },
-  "autoTrading": {
-    "title": "AI Auto-Trading",
-    "subtitle": "AI-basert auto-trading",
-    "status": {
-      "title": "Status",
-      "active": "Aktiv",
-      "paused": "Pauset",
-      "activeDescription": "AI analyserer markedet hvert 5. minutt",
-      "pausedDescription": "Klikk for å starte AI auto-trading"
-    },
-    "stats": {
-      "totalDecisions": "Totale Beslutninger",
-      "buy": "Kjøp",
-      "sell": "Salg",
-      "hold": "Vent",
-      "avgConfidence": "Gj. Confidence",
-      "lastRun": "Siste analyse"
-    },
-    "config": {
-      "title": "Konfigurasjon",
-      "riskLevel": "Risikonivå",
-      "safe": "Sikker",
-      "moderate": "Moderat",
-      "aggressive": "Aggressiv",
-      "symbols": "Symboler",
-      "minConfidence": "Minimum Confidence"
-    },
-    "recentDecisions": {
-      "title": "Siste Beslutninger",
-      "empty": "Ingen beslutninger ennå",
-      "emptyDescription": "Start AI for å se analyser",
-      "target": "Target",
-      "stop": "Stop",
-      "rsi": "RSI"
-    },
-    "howItWorks": {
-      "title": "Hvordan Det Fungerer (100% Gratis)",
-      "step1": {
-        "title": "Markedsdata",
-        "description": "CoinLore API (gratis, 14,000+ coins)",
-        "detail": "Real-time priser og markedsinformasjon"
-      },
-      "step2": {
-        "title": "Sentiment Analyse",
-        "description": "Hugging Face + Reddit (gratis)",
-        "detail": "Analyserer nyheter og sosiale medier"
-      },
-      "step3": {
-        "title": "AI Prediksjon",
-        "description": "Cloudflare Workers AI (10,000 req/dag gratis)",
-        "detail": "Kombinerer teknisk analyse med sentiment"
-      },
-      "step4": {
-        "title": "Auto-Execution",
-        "description": "Lekepenger (gratis øving)",
-        "detail": "Øv med lekepenger før live trading"
-      },
-      "warning": "Viktig: Dette er gratis AI for analyse. All trading skjer først med lekepenger. Ingen betalte API-er brukes. Cloudflare Workers AI gir 10,000 gratis requests per dag."
-    },
-    "actions": {
-      "runNow": "Kjør nå",
-      "start": "Start AI",
-      "stop": "Stopp AI"
-    },
-    "errors": {
-      "notAuthenticated": "Du må være logget inn for å bruke AI auto-trading"
     }
   },
   "autoTradingPage": {
@@ -939,6 +827,8 @@
       "title": "Porteføljepuls",
       "totalValue": "Total Verdi",
       "dailyChange": "Dagens Endring",
+      "shares": "aksjer",
+      "avg": "snitt",
       "paperMode": "Lekepenger",
       "liveMode": "Live-handel",
       "systemOnline": "Systemet er aktivt",

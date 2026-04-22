@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { MOBILE_BOTTOM_TABS } from "@/lib/navigation/config";
+import { useHaptic } from "@/hooks/use-haptic";
 
 type TabId = "home" | "copyTrading" | "trade" | "autoTrade" | "profile";
 
@@ -161,8 +162,9 @@ const TABS: Tab[] = MOBILE_BOTTOM_TABS.map(navItem => {
   };
 });
 
-const ACTIVE_COLOR = "#2563eb";
+const ACTIVE_COLOR = "#3b82f6";
 const INACTIVE_COLOR = "#6b7280";
+const ACTIVE_GLOW = "rgba(59,130,246,0.25)";
 
 export function BottomTabs() {
   const router = useRouter();
@@ -230,13 +232,12 @@ export function BottomTabs() {
     };
   }, []);
 
+  const haptic = useHaptic();
+
   const handleTabPress = (tab: Tab) => {
     if (tab.id === activeTab) return;
 
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
-
+    haptic("medium");
     setActiveTab(tab.id);
     router.push(`/${locale}${tab.href}`);
   };
@@ -264,39 +265,40 @@ export function BottomTabs() {
               <motion.button
                 key={tab.id}
                 onClick={() => handleTabPress(tab)}
-                className="relative flex flex-col items-center justify-center min-w-[64px] min-h-[48px] py-2 px-3 rounded-xl transition-colors touch-manipulation"
-                whileTap={{ scale: 0.95 }}
+                className="relative flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1.5 px-2 rounded-2xl transition-colors touch-manipulation"
+                whileTap={{ scale: 0.92 }}
                 aria-label={t(tab.labelKey)}
                 aria-current={isActive ? "page" : undefined}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-blue-600/10 rounded-xl"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    className="absolute inset-0 rounded-2xl"
+                    style={{ backgroundColor: ACTIVE_GLOW }}
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
                 )}
 
                 <motion.div
                   animate={{
                     color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR,
-                    scale: isActive ? 1.1 : 1,
+                    scale: isActive ? 1.15 : 1,
+                    y: isActive ? -2 : 0,
                   }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-5 h-5" />
                 </motion.div>
 
-                {/* Label - vises kun for aktiv tab */}
+                {/* Label — alltid synlig (Robinhood/Binance pattern) */}
                 <motion.span
                   initial={false}
                   animate={{
-                    opacity: isActive ? 1 : 0,
-                    y: isActive ? 0 : 4,
-                    height: isActive ? "auto" : 0,
+                    opacity: isActive ? 1 : 0.7,
+                    y: isActive ? 0 : 1,
                   }}
-                  transition={{ duration: 0.2 }}
-                  className="text-[10px] font-medium mt-1 overflow-hidden"
+                  transition={{ duration: 0.15 }}
+                  className="text-[9px] font-semibold mt-0.5 leading-tight"
                   style={{ color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR }}
                 >
                   {t(tab.labelKey)}

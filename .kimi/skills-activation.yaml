@@ -1,7 +1,7 @@
-# KIMI Skills Auto-Activation — v2.1 (2026-04-14)
+# KIMI Skills Auto-Activation — v2.2 (2026-04-22)
 # Aktiverer relevante skills basert på filtype og kontekst
 
-version: "2.1"
+version: "2.2"
 
 # Mapping: filpattern → skills
 patterns:
@@ -125,13 +125,7 @@ patterns:
     priority: low
 
   # MemPalace / Infrastructure
-  "scripts/run-mempalace-mcp.mjs":
-    skills:
-      - api-patterns
-      - performance-profiling
-    priority: medium
-
-  "scripts/run-mempalace-mcp-v2.mjs":
+  "scripts/run-mempalace-mcp*.mjs":
     skills:
       - api-patterns
       - performance-profiling
@@ -140,6 +134,14 @@ patterns:
   ".mempalace/**/*.md":
     skills:
       - mempalace
+      - documentation-templates
+    priority: high
+
+  # Super Editor (agent)
+  ".kimi/agents/super-editor-agent.md":
+    skills:
+      - frontend-design
+      - nextjs-react-expert
       - documentation-templates
     priority: high
 
@@ -205,3 +207,10 @@ auto_trigger:
     skills:
       - mempalace
     agent: mempalace
+
+  on_editor_task:
+    pattern: "editor|edit.*page|cms.*edit|sanity.*edit"
+    skills:
+      - frontend-design
+      - nextjs-react-expert
+    agent: super-editor

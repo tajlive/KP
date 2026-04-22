@@ -635,3 +635,65 @@ button,
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* ============================================
+   PWA MOBILE GESTURE OPTIMIZATION (2026-04-23)
+   Perplexity Pro research: Robinhood/Coinbase/Revolut patterns
+   ============================================ */
+
+/* Prevent double-tap zoom, enable fast-tap on mobile */
+html {
+  touch-action: manipulation;
+}
+
+/* Disable text selection on body (enable on inputs) */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Re-enable selection on interactive text elements */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Scroll containment for bottom sheets / modals */
+[data-scrollable="true"],
+.scroll-contain {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Portfolio lists: allow vertical scroll + pinch zoom, disable double-tap */
+.portfolio-list,
+[data-portfolio-list="true"] {
+  touch-action: pan-y pinch-zoom;
+  overscroll-behavior: contain;
+}
+
+/* Bottom sheet scroll lock */
+.bottom-sheet-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area for notched devices */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbar but keep functionality (mobile aesthetic) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

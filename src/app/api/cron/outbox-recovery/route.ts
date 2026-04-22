@@ -13,7 +13,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { OutboxRecovery } from "@/lib/trading/core/outbox-recovery";
 import { NextRequest, NextResponse } from "next/server";
-import type { Json } from "@/types/supabase";
+import type { Json } from "@/types/database.types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

@@ -108,50 +108,6 @@
       }
     }
   },
-  "adminDashboard": {
-    "title": "Admin Dashboard",
-    "verifying": "Verifying access...",
-    "noAccess": {
-      "title": "Access Denied",
-      "backToHome": "Back to homepage"
-    },
-    "header": {
-      "subtitle": "{email} • Campaign Overview"
-    },
-    "campaign": {
-      "title": "Campaign Goal",
-      "spotsFilled": "{total} of 100 spots filled"
-    },
-    "stats": {
-      "totalRegistered": "Total Registered",
-      "spotsLeft": "{remaining} spots left",
-      "signedUpToday": "Signed up today",
-      "last24Hours": "Last 24 hours",
-      "totalClicks": "Total Clicks",
-      "allChannels": "From all channels",
-      "conversion": "Conversion",
-      "clickToReg": "Click → Registration",
-      "activeUsers": "Active users",
-      "paperTrading": "Paper Trading",
-      "autoTrading": "Auto Trading"
-    },
-    "trafficSources": {
-      "title": "Traffic Sources",
-      "direct": "Direct"
-    },
-    "funnel": {
-      "title": "Conversion Funnel",
-      "falloff": "{count} falloff ({rate}%)",
-      "noData": "No data yet"
-    },
-    "footer": {
-      "lastUpdated": "Last updated: {date}",
-      "fallbackData": "⚠️ Live data unavailable, showing cache"
-    },
-    "search": {
-      "placeholder": "Search users..."
-    }
-  },
   "auth": {
     "title": "Student Portal",
     "signIn": "Log in",
@@ -413,74 +369,6 @@
         "name": "AI Copy",
         "description": "Copy AI-generated signals"
       }
-    }
-  },
-  "autoTrading": {
-    "title": "AI Auto-Trading",
-    "subtitle": "AI-based auto-trading",
-    "status": {
-      "title": "Status",
-      "active": "Active",
-      "paused": "Paused",
-      "activeDescription": "AI analyzes the market every 5 minutes",
-      "pausedDescription": "Click to start AI auto-trading"
-    },
-    "stats": {
-      "totalDecisions": "Total Decisions",
-      "buy": "Buy",
-      "sell": "Sell",
-      "hold": "Hold",
-      "avgConfidence": "Avg. Confidence",
-      "lastRun": "Last analysis"
-    },
-    "config": {
-      "title": "Configuration",
-      "riskLevel": "Risk Level",
-      "safe": "Safe",
-      "moderate": "Moderate",
-      "aggressive": "Aggressive",
-      "symbols": "Symbols",
-      "minConfidence": "Minimum Confidence"
-    },
-    "recentDecisions": {
-      "title": "Recent Decisions",
-      "empty": "No decisions yet",
-      "emptyDescription": "Start AI to see analyses",
-      "target": "Target",
-      "stop": "Stop",
-      "rsi": "RSI"
-    },
-    "howItWorks": {
-      "title": "How It Works (100% Free)",
-      "step1": {
-        "title": "Market Data",
-        "description": "CoinLore API (free, 14,000+ coins)",
-        "detail": "Real-time prices and market information"
-      },
-      "step2": {
-        "title": "Sentiment Analysis",
-        "description": "Hugging Face + Reddit (free)",
-        "detail": "Analyzes news and social media"
-      },
-      "step3": {
-        "title": "AI Prediction",
-        "description": "Cloudflare Workers AI (10,000 req/day free)",
-        "detail": "Combines technical analysis with sentiment"
-      },
-      "step4": {
-        "title": "Auto-Execution",
-        "description": "Paper trading (free practice)",
-        "detail": "Practice with virtual capital before live trading"
-      },
-      "warning": "Important: This is free AI for analysis. All trading starts in paper mode. No paid APIs used. Cloudflare Workers AI provides 10,000 free requests per day."
-    },
-    "actions": {
-      "runNow": "Run Now",
-      "start": "Start AI",
-      "stop": "Stop AI"
-    },
-    "errors": {
-      "notAuthenticated": "You must be logged in to use AI auto-trading"
     }
   },
   "autoTradingPage": {
@@ -939,6 +827,8 @@
       "title": "Market Pulse",
       "totalValue": "Total Value",
       "dailyChange": "24h Change",
+      "shares": "shares",
+      "avg": "avg",
       "paperMode": "Paper Trading",
       "liveMode": "Live Trading",
       "systemOnline": "System Online",
