@@ -148,6 +148,24 @@ serve(async (req) => {
 
     const userId = user.id;
 
+    // Find or create active live trading session for this user
+    const { data: liveSession, error: sessionError } = await supabase
+      .from("trading_sessions")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("mode", "live")
+      .eq("status", "active")
+      .single();
+
+    if (sessionError || !liveSession) {
+      return new Response(
+        JSON.stringify({ error: "No active live trading session found. Please start live trading first." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const sessionId = liveSession.id;
+
     // Log sync start
     const { data: syncLog } = await supabase
       .from("trade_sync_log")
@@ -204,26 +222,28 @@ serve(async (req) => {
 
     for (const trade of binanceTrades) {
       try {
+        const totalValue = parseFloat(trade.quoteQty);
         const { error: insertError } = await supabase
-          .from("auto_trades")
+          .from("trades")
           .upsert(
             {
+              session_id: sessionId,
               user_id: userId,
-              binance_trade_id: trade.id.toString(),
-              binance_order_id: trade.orderId.toString(),
-              symbol: trade.symbol,
+              mode: "live",
+              trading_pair: trade.symbol,
               side: trade.isBuyer ? "buy" : "sell",
+              order_type: "market",
               quantity: parseFloat(trade.qty),
-              quantity_nok: parseFloat(trade.quoteQty),
-              price_per_unit: parseFloat(trade.price),
-              current_price: parseFloat(trade.price),
-              status: "closed", // Binance myTrades returns completed trades
+              price: parseFloat(trade.price),
+              total_value: totalValue,
+              fee: totalValue * 0.001, // 0.1% Binance fee
+              status: "filled",
+              binance_order_id: trade.orderId.toString(),
+              idempotency_key: `binance-${trade.id.toString()}`,
               executed_at: new Date(trade.time).toISOString(),
-              pnl_nok: 0, // Will calculate from fee
-              pnl_percent: 0,
             },
             {
-              onConflict: "binance_trade_id",
+              onConflict: "idempotency_key",
             }
           );
 
@@ -241,49 +261,37 @@ serve(async (req) => {
 
     // Calculate portfolio summary
     const { data: allTrades } = await supabase
-      .from("auto_trades")
+      .from("trades")
       .select("*")
-      .eq("user_id", userId);
+      .eq("user_id", userId)
+      .eq("mode", "live");
 
     if (allTrades) {
-      const openTrades = allTrades.filter((t: any) => t.status === "open");
-      const closedTrades = allTrades.filter((t: any) => t.status === "closed");
+      const totalValue = allTrades.reduce(
+        (sum: number, t: any) => sum + (parseFloat(t.total_value) || 0),
+        0
+      );
+      const totalFee = allTrades.reduce(
+        (sum: number, t: any) => sum + (parseFloat(t.fee) || 0),
+        0
+      );
+      const realizedPnl = allTrades.reduce(
+        (sum: number, t: any) => sum + (parseFloat(t.realized_pnl) || 0),
+        0
+      );
 
-      const totalValue = openTrades.reduce(
-        (sum: number, t: any) => sum + (t.quantity * (t.current_price || 0)),
-        0
-      );
-      const closedProfit = closedTrades.reduce(
-        (sum: number, t: any) => sum + (t.pnl_nok || 0),
-        0
-      );
-      const openProfit = openTrades.reduce(
-        (sum: number, t: any) => sum + (t.pnl_nok || 0),
-        0
-      );
-      const totalProfit = closedProfit + openProfit;
-      const totalProfitPercent =
-        allTrades.length > 0
-          ? ((totalProfit / (allTrades[0].quantity_nok * allTrades.length)) * 100).toFixed(2)
-          : 0;
-
-      const winRate =
-        closedTrades.length > 0
-          ? (closedTrades.filter((t: any) => t.pnl_nok > 0).length /
-              closedTrades.length) *
-            100
-          : 0;
+      const winRate = 0; // TODO: calculate from realized_pnl when sell trades are tracked
 
       // Update portfolio summary
       await supabase.from("portfolio_summary").upsert(
         {
           user_id: userId,
           total_value_nok: totalValue,
-          total_profit_nok: totalProfit,
-          total_profit_percent: parseFloat(totalProfitPercent as any),
+          total_profit_nok: realizedPnl,
+          total_profit_percent: 0,
           total_trades: allTrades.length,
-          open_trades: openTrades.length,
-          closed_trades: closedTrades.length,
+          open_trades: 0,
+          closed_trades: allTrades.length,
           win_rate: winRate,
           last_synced_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

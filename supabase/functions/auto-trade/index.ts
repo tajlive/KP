@@ -215,18 +215,32 @@ Deno.serve(async (req) => {
     for (const config of activeTraders as AutoTradingConfig[]) {
       try {
         const { data: session } = await supabase
-          .from('paper_trading_sessions')
+          .from('trading_sessions')
           .select('*')
           .eq('user_id', config.user_id)
+          .eq('mode', config.mode)
           .eq('status', 'active')
           .single();
 
         if (!session && config.mode === 'paper') {
-          await supabase.from('paper_trading_sessions').insert({
+          await supabase.from('trading_sessions').insert({
             user_id: config.user_id,
-            starting_balance: 100000,
-            current_balance: 100000,
+            mode: 'paper',
             status: 'active',
+            strategy_id: 'ensemble_ai',
+            trading_pair: 'BTCUSDT',
+            risk_level: 'medium',
+            starting_capital_nok: 100000,
+            current_capital_nok: 100000,
+            initial_capital: 100000,
+            current_capital: 100000,
+            total_trades: 0,
+            winning_trades: 0,
+            losing_trades: 0,
+            total_pnl: 0,
+            strategy_config: {},
+            started_at: new Date().toISOString(),
+            last_heartbeat: new Date().toISOString(),
           });
           continue;
         }
@@ -435,27 +449,37 @@ Deno.serve(async (req) => {
         if (config.mode === 'paper' && session) {
           const totalValue = quantity * validSignal.price;
           
-          if (validSignal.decision_type === 'BUY' && session.current_balance < totalValue) {
+          const currentBalance = session.current_capital_nok ?? session.current_capital ?? 0;
+          if (validSignal.decision_type === 'BUY' && currentBalance < totalValue) {
             continue;
           }
 
           const newBalance = validSignal.decision_type === 'BUY'
-            ? session.current_balance - totalValue
-            : session.current_balance + totalValue;
+            ? currentBalance - totalValue
+            : currentBalance + totalValue;
 
-          await supabase.from('paper_trades').insert({
+          await supabase.from('trades').insert({
             session_id: session.id,
-            symbol: validSignal.symbol,
+            user_id: config.user_id,
+            mode: config.mode,
+            trading_pair: validSignal.symbol,
             side: validSignal.decision_type.toLowerCase(),
+            order_type: 'market',
             quantity,
             price: validSignal.price,
             total_value: totalValue,
+            fee: totalValue * 0.001,
+            status: 'filled',
+            is_copy: false,
+            idempotency_key: `${session.id}-${validSignal.decision_type.toLowerCase()}-${Date.now()}`,
+            executed_at: new Date().toISOString(),
           });
 
           await supabase
-            .from('paper_trading_sessions')
+            .from('trading_sessions')
             .update({
-              current_balance: newBalance,
+              current_capital_nok: newBalance,
+              current_capital: newBalance,
               updated_at: new Date().toISOString(),
             })
             .eq('id', session.id);
@@ -590,13 +614,18 @@ async function logDecision(
 
 async function countOpenPositions(supabase: any, userId: string, symbol: string): Promise<number> {
   try {
-    const { count } = await supabase
-      .from('paper_trades')
-      .select('*', { count: 'exact', head: true })
-      .eq('symbol', symbol)
-      .eq('side', 'buy')
-      .is('closed_at', null);
-    return count || 0;
+    // In unified schema, open position is tracked via trading_sessions.open_position JSON
+    const { data: session } = await supabase
+      .from('trading_sessions')
+      .select('open_position')
+      .eq('user_id', userId)
+      .eq('mode', 'paper')
+      .eq('status', 'active')
+      .single();
+    if (session?.open_position) {
+      return 1;
+    }
+    return 0;
   } catch (e) {
     return 0;
   }

@@ -85,10 +85,10 @@ async function generateDailyReport(): Promise<DailyReportData> {
 
   // 1. Aktive brukere
   const { data: activePaperUsers } = await supabase
-    .from("paper_trading_sessions")
+    .from("trading_sessions")
     .select("user_id", { count: "exact", head: true })
     .gte("created_at", yesterdayIso)
-    .eq("is_active", true);
+    .eq("status", "active");
 
   const { data: activeAutoUsers } = await supabase
     .from("auto_trade_log")
