@@ -3,7 +3,7 @@
 import { BacktestPanel } from "@/features/backtest";
 import { getAppUrl } from "@/lib/auth/config";
 import { createClient } from "@/lib/utils";
-import { Profile, Trade } from "@/types/database";
+import { Profile } from "@/types/database";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -119,21 +119,21 @@ export default function BetaDashboardClient({
 
       const today = new Date().toISOString().split("T")[0];
       const { data: trades } = await supabase
-        .from("auto_trades")
-        .select("*")
+        .from("trades")
+        .select("realized_pnl, created_at")
         .eq("user_id", user.id)
-        .gte("executed_at", today);
+        .gte("created_at", today + "T00:00:00");
 
       if (trades) {
         const profit = trades
-          .filter((t: Trade) => (t.pnl_nok || 0) > 0)
-          .reduce((sum: number, t: Trade) => sum + (t.pnl_nok || 0), 0);
+          .filter((t) => (t.realized_pnl || 0) > 0)
+          .reduce((sum, t) => sum + (t.realized_pnl || 0), 0);
 
         const loss = trades
-          .filter((t: Trade) => (t.pnl_nok || 0) < 0)
-          .reduce((sum: number, t: Trade) => sum + Math.abs(t.pnl_nok || 0), 0);
+          .filter((t) => (t.realized_pnl || 0) < 0)
+          .reduce((sum, t) => sum + Math.abs(t.realized_pnl || 0), 0);
 
-        const wins = trades.filter((t: Trade) => (t.pnl_nok || 0) > 0).length;
+        const wins = trades.filter((t) => (t.realized_pnl || 0) > 0).length;
         const total = trades.length;
 
         setStats({

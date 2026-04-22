@@ -24,25 +24,6 @@ import {
 import { toast } from "sonner";
 import type { Database } from "@/types/database.types";
 
-type DbWithAutoTradesLegacy = Database & {
-  public: Database["public"] & {
-    Tables: Database["public"]["Tables"] & {
-      auto_trades_legacy: {
-        Row: { id: string };
-        Insert: never;
-        Update: never;
-        Relationships: [];
-      };
-    };
-  };
-};
-
-function fromAutoTradesLegacy(db: SupabaseClient<Database>) {
-  return (db as unknown as SupabaseClient<DbWithAutoTradesLegacy>).from(
-    "auto_trades_legacy",
-  );
-}
-
 interface SyncLog {
   id: string;
   user_id: string;
@@ -113,9 +94,9 @@ export default function SyncStatusPage() {
         .select("*", { count: "exact", head: true });
 
       // Get total trades
-      const { count: tradesCount } = await fromAutoTradesLegacy(
-        supabase,
-      ).select("*", { count: "exact", head: true });
+      const { count: tradesCount } = await supabase
+        .from("trades")
+        .select("*", { count: "exact", head: true });
 
       setStats({
         totalUsers: profiles?.length || 0,

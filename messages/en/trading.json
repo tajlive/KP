@@ -314,45 +314,6 @@
     "liveShort": "Live",
     "sizeFormat": "{quantity} @ {price} kr"
   },
-  "orderEntry": {
-    "title": "New Trade",
-    "symbolPrice": "{symbol} @ ${price}",
-    "side": {
-      "long": "BUY (LONG)",
-      "short": "SELL (SHORT)"
-    },
-    "quantity": {
-      "label": "Quantity",
-      "placeholder": "0.00",
-      "value": "Value: ${value}",
-      "max": "Max"
-    },
-    "leverage": {
-      "label": "Leverage: {value}x"
-    },
-    "stopLoss": {
-      "label": "Stop Loss",
-      "placeholder": "$0.00"
-    },
-    "takeProfit": {
-      "label": "Take Profit",
-      "placeholder": "$0.00"
-    },
-    "summary": {
-      "margin": "Margin Required",
-      "fee": "Trading Fee (0.1%)",
-      "total": "Total"
-    },
-    "submit": {
-      "long": "BUY {symbol}",
-      "short": "SELL {symbol}",
-      "submitting": "Opening position..."
-    },
-    "errors": {
-      "insufficientMargin": "Insufficient margin available",
-      "enterQuantity": "Please enter quantity"
-    }
-  },
   "strategyConfig": {
     "dca": {
       "weeklyAmount": "Weekly Amount",

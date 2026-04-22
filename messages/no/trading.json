@@ -314,45 +314,6 @@
     "liveShort": "Live",
     "sizeFormat": "{quantity} @ {price} kr"
   },
-  "orderEntry": {
-    "title": "Ny Handel",
-    "symbolPrice": "{symbol} @ ${price}",
-    "side": {
-      "long": "KJØP (LONG)",
-      "short": "SELG (SHORT)"
-    },
-    "quantity": {
-      "label": "Antall (stk)",
-      "placeholder": "0.00",
-      "value": "Verdi: ${value}",
-      "max": "Maks"
-    },
-    "leverage": {
-      "label": "Leverage: {value}x"
-    },
-    "stopLoss": {
-      "label": "Stop Loss",
-      "placeholder": "$0.00"
-    },
-    "takeProfit": {
-      "label": "Take Profit",
-      "placeholder": "$0.00"
-    },
-    "summary": {
-      "margin": "Margin påkrevd",
-      "fee": "Handelsgebyr (0.1%)",
-      "total": "Total"
-    },
-    "submit": {
-      "long": "KJØP {symbol}",
-      "short": "SELG {symbol}",
-      "submitting": "Åpner posisjon..."
-    },
-    "errors": {
-      "insufficientMargin": "Ikke nok margin tilgjengelig",
-      "enterQuantity": "Vennligst fyll inn antall"
-    }
-  },
   "strategyConfig": {
     "dca": {
       "weeklyAmount": "Ukentlig beløp",

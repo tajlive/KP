@@ -424,7 +424,7 @@ gh pr create --web
 |--------------|-----------|--------------|
 | Landingsside | `src/features/landing/` | `HeroSection.tsx` |
 | Dashboard | `src/features/dashboard/` | `DashboardContent.tsx` |
-| Trading UI | `src/features/trading/` | `OrderEntry.tsx` |
+| Trading UI | `src/features/trading/` | `UnifiedTradingDashboard.tsx` |
 | Tekster | `messages/no/` | `landing.json` |
 | Farger | `src/globals.css` | CSS variabler |
 | Knapp-stil | `src/shared/ui/` | `ButtonPremium.tsx` |

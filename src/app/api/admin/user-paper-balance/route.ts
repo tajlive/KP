@@ -20,7 +20,7 @@ const bodySchema = z.object({
 });
 
 /**
- * Admin: sett brukers lekepenger (profil + valgfritt paper-økter / legacy paper_trading_sessions).
+ * Admin: sett brukers lekepenger (profil + aktive paper trading_sessions).
  */
 export async function POST(request: NextRequest) {
   const auth = await verifyAdminAccess();
@@ -111,23 +111,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: sessErr.message }, { status: 500 });
       }
       sessionsUpdated = updated?.length ?? 0;
-    }
-
-    const paperLegacyPatch = {
-      current_balance: balance_nok,
-      updated_at: now,
-      ...(reset_session_baseline ? {
-        starting_balance: balance_nok,
-        total_pnl: 0,
-      } : {}),
-    } as { current_balance: number; updated_at: string; starting_balance?: number; total_pnl?: number };
-
-    const { error: ptsErr } = await db
-      .from("paper_trading_sessions")
-      .update(paperLegacyPatch).eq("user_id", user_id);
-
-    if (ptsErr) {
-      console.warn("[admin user-paper-balance] paper_trading_sessions", ptsErr);
     }
 
     await logAdminAudit(db, {
