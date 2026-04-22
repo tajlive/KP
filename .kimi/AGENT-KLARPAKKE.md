@@ -1,8 +1,8 @@
 # KIMI Agent Guide for Klarpakke
 
-**Versjon:** 2.2  
-**Oppdatert:** 2026-04-14  
-**For:** KIMI CLI i Klarpakke-prosjektet  
+**Versjon:** 2.3  
+**Oppdatert:** 2026-04-22  
+**For:** KIMI CLI v1.38.0 + k2.6 i Klarpakke-prosjektet  
 **Mål:** Maksimal automasjon, minimal friksjon
 
 ---

@@ -342,6 +342,16 @@
       "predicate": "structure",
       "object": "messages-locale-filename.json",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "removed_namespace",
+      "object": "adminDashboard",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "removed_namespace",
+      "object": "autoTrading",
+      "validFrom": "2026-04-23"
     }
   ],
   "testing-suite": [
@@ -527,6 +537,171 @@
       "predicate": "rooms",
       "object": "knowledge-diary-handoffs-plans-docs-memory",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "mobile-ui": [
+    {
+      "predicate": "has_component",
+      "object": "useHaptic-hook",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "MobileBottomSheet",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "SwipeAction",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "MobileTradingCard",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "BottomTabs-v2",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "inspired_by",
+      "object": "Robinhood-Coinbase-Revolut",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "uses_library",
+      "object": "vaul-framer-motion",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_pattern",
+      "object": "haptic-feedback",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_pattern",
+      "object": "bottom-sheet-order-preview",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_pattern",
+      "object": "swipe-to-action",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "usePullToRefresh-hook",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "PullToRefreshIndicator",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_pattern",
+      "object": "ios-haptic-webkit",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_pattern",
+      "object": "day-range-indicator",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_pattern",
+      "object": "pwa-touch-optimization",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "research_source",
+      "object": "Perplexity-Pro-2026-04-23",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "integrated_in",
+      "object": "PortfolioDashboard",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "MobilePositionList",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has_component",
+      "object": "DesktopPositionList",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "uses_pattern",
+      "object": "responsive-mobile-desktop",
+      "validFrom": "2026-04-23"
+    }
+  ],
+  "KAOS": [
+    {
+      "predicate": "version",
+      "object": "v1.0-planned",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "includes",
+      "object": "MemPalace-Plan-State",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "includes",
+      "object": "Swarm-Dynamic-Router",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "includes",
+      "object": "MCP-Auto-Profile",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "research_integration",
+      "object": "Perplexity-Mobile-UX-Research",
+      "validFrom": "2026-04-23"
+    }
+  ],
+  "types-system": [
+    {
+      "predicate": "removed_file",
+      "object": "supabase-generated.ts",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "consolidated_to",
+      "object": "database.types.ts",
+      "validFrom": "2026-04-23"
+    }
+  ],
+  "cleanup": [
+    {
+      "predicate": "removed_duplicates",
+      "object": "6-files-2-namespaces",
+      "validFrom": "2026-04-23"
+    }
+  ],
+  "PortfolioDashboard": [
+    {
+      "predicate": "uses",
+      "object": "MobileTradingCard",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "uses",
+      "object": "SwipeAction",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "uses",
+      "object": "PullToRefresh",
+      "validFrom": "2026-04-23"
     }
   ]
 }

@@ -116,12 +116,14 @@ Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + ni
 
 ## MCP-optimalisering (KIMI CLI)
 
-> Oppdatert: 2026-04-21 | v2.6-minimal for KIMI CLI v1.37.0 + k2.6
+> Oppdatert: 2026-04-22 | v2.6-minimal for KIMI CLI v1.38.0 + k2.6
 
-### KIMI CLI v1.37.0 + k2.6 endringer (påvirker oss)
-- **`max_steps_per_turn` økt til 500** (fra 100) — KIMI kan nå kjøre lengre oppgaver uten avbrudd
+### KIMI CLI v1.38.0 + k2.6 endringer (påvirker oss)
+- **`max_steps_per_turn` økt til 500** — KIMI kan kjøre lengre oppgaver uten avbrudd
+- **`reserved_context_size` = 60000** — ekstra margin for KG-batchoperasjoner
+- **`tool_call_timeout_ms` = 180000** — tilstrekkelig for MemPalace FTS-indeksering
 - **MCP startup er asynkron** med progress indicators — raskere shell-oppstart
-- **`--quiet` flagg** bekreftet for stdin-piping (brukes av `run-kimi-mcp-simple.mjs`)
+- **`--quiet` flagg** bekreftet for stdin-piping
 - **`show_thinking_stream` default true** — thinking vises automatisk
 - **k2.6 modell**: 262k kontekst, thinking, video_in, image_in — utnytt til store KG-grafer
 

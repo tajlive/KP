@@ -28,6 +28,10 @@ import { winRateFromRealizedTrades } from "@/lib/trading/win-rate-from-trades";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
 import { reportTradingIntegrityManualSync } from "@/lib/sentry";
 import PnlBreakdown from "./PnlBreakdown";
+import {
+  MobilePositionList,
+  DesktopPositionList,
+} from "./MobilePositionList";
 
 /** Code-split: PremiumSignalRow + framer-motion + signal-fetch */
 function MarketDeskSignalSkeleton() {
@@ -731,58 +735,24 @@ export default function PortfolioDashboard({
                   {t("marketDesk.seeAll")}
                 </Link>
               </div>
-              {positionList.length === 0 ? (
-                <div className="py-8 text-center">
-                  <p className="text-slate-500 text-sm">
-                    {t("marketDesk.noPositions")}
-                  </p>
-                </div>
-              ) : (
-                <ul className="space-y-2">
-                  {positionList.map((pos: Position) => {
-                    const price = priceForSymbol(pos.symbol);
-                    const pnlPct =
-                      pos.value !== 0
-                        ? ((pos.qty * price - pos.value) / pos.value) * 100
-                        : 0;
-                    const shortSym = pos.symbol.replace("USDT", "");
-                    return (
-                      <li
-                        key={pos.symbol}
-                        className={`${MARKET_DESK.row} flex items-center gap-3`}
-                      >
-                        <div
-                          className={`w-9 h-9 rounded-full bg-gradient-to-br ${gradientForSymbol(pos.symbol)} flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-inner`}
-                        >
-                          {shortSym[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-100">
-                            {shortSym}
-                          </p>
-                          <p className="text-xs text-slate-500 tabular-nums">
-                            {pos.qty.toFixed(4)} {shortSym}
-                          </p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p
-                            className="text-sm font-medium text-slate-100 tabular-nums"
-                            style={{ fontVariantNumeric: "tabular-nums" }}
-                          >
-                            {formatNOK(locale, pos.qty * price)}
-                          </p>
-                          <p
-                            className={`text-xs font-semibold tabular-nums ${pnlPct >= 0 ? "text-emerald-400" : "text-red-400"}`}
-                          >
-                            {pnlPct >= 0 ? "+" : ""}
-                            {pnlPct.toFixed(1)}%
-                          </p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+              <MobilePositionList
+                positions={positionList}
+                priceForSymbol={priceForSymbol}
+                gradientForSymbol={gradientForSymbol}
+                formatNOK={formatNOK}
+                onRefresh={async () => {
+                  await Promise.all([
+                    refreshPrices(),
+                    runManualIntegritySync(),
+                  ]);
+                }}
+              />
+              <DesktopPositionList
+                positions={positionList}
+                priceForSymbol={priceForSymbol}
+                gradientForSymbol={gradientForSymbol}
+                formatNOK={formatNOK}
+              />
             </div>
 
             <div className={MARKET_DESK.innerCard}>
