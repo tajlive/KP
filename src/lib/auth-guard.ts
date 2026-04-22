@@ -20,18 +20,28 @@ export async function requireAuth(locale: string = "no", nextPath?: string) {
   });
 
   const supabase = await createServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+
+  // Use getSession first (reads cookies locally, no network call) to avoid
+  // race conditions where middleware sees auth but server component doesn't.
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  let user = session?.user ?? null;
+
+  // Fallback to getUser() if session is missing but cookies exist
+  if (!user) {
+    const { data: { user: authUser }, error } = await supabase.auth.getUser();
+    user = authUser ?? null;
+    if (error) {
+      console.error("🔥 REQUIRE AUTH - getUser error:", error.message);
+    }
+  }
 
   console.error("🔥 REQUIRE AUTH - RESULT:", {
     hasUser: !!user,
     userId: user?.id?.slice(0, 8),
-    error: error?.message,
+    sessionError: sessionError?.message,
   });
 
-  if (error || !user) {
+  if (!user) {
     console.warn("🔥 REQUIRE AUTH - REDIRECTING TO LOGIN");
     const base = localizedPathname(locale, "/login");
     const loginUrl = `${base}${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`;

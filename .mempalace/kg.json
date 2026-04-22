@@ -4,6 +4,529 @@
       "predicate": "fixed",
       "object": "supabase-429-multiple-client-refresh-loop",
       "validFrom": "2026-04-21T20:53:02.552Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "supabase-gotrue-ssr",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "provider",
+      "object": "google-oauth",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "pattern",
+      "object": "singleton-browser-client",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "guard",
+      "object": "refresh-token-race-fix",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "guard",
+      "object": "invalid-token-intercept-fetch-level",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "redirect",
+      "object": "locale-callback-pattern",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "rls",
+      "object": "user_id-policies",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "trading-engine": [
+    {
+      "predicate": "has",
+      "object": "paper-live-parity-fee-slippage-min-order",
+      "validFrom": "2026-04-22T01:36:06.372Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "unified-executeTrade-core",
+      "validFrom": "2026-04-22T01:36:06.373Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "OrderEntry-dead-code",
+      "validFrom": "2026-04-22T01:36:06.373Z"
+    },
+    {
+      "predicate": "dropped",
+      "object": "auto_trades-table",
+      "validFrom": "2026-04-22T01:36:06.373Z"
+    },
+    {
+      "predicate": "dropped",
+      "object": "auto_trading_trades-table",
+      "validFrom": "2026-04-22T01:36:06.373Z"
+    },
+    {
+      "predicate": "dropped",
+      "object": "paper_trading_sessions-table",
+      "validFrom": "2026-04-22T01:36:06.373Z"
+    },
+    {
+      "predicate": "dropped",
+      "object": "live_trades-table",
+      "validFrom": "2026-04-22T01:36:06.373Z"
+    },
+    {
+      "predicate": "strategies",
+      "object": "DCA-TrendFollow-MultiSignal-Grid-ensemble_ai",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "risk",
+      "object": "per-trade-max-5pct",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "risk",
+      "object": "stop-loss-auto",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "risk",
+      "object": "portfolio-allocator",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "pnl",
+      "object": "FIFO-ledger-realized",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "analytics",
+      "object": "monte-carlo-simulation",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "tables",
+      "object": "trading_sessions-trades-unified",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "mode",
+      "object": "paper-live-copy",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "tick-cron": [
+    {
+      "predicate": "applies",
+      "object": "slippage-0.05pct-for-paper",
+      "validFrom": "2026-04-22T01:36:06.374Z"
+    },
+    {
+      "predicate": "applies",
+      "object": "fee-0.1pct-for-paper",
+      "validFrom": "2026-04-22T01:36:06.375Z"
+    },
+    {
+      "predicate": "enforces",
+      "object": "min-order-10usd-for-paper",
+      "validFrom": "2026-04-22T01:36:06.375Z"
+    },
+    {
+      "predicate": "frequency",
+      "object": "per-candle-interval",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "processes",
+      "object": "all-active-sessions-loop",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "source",
+      "object": "trading_signals-ensemble_ai",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "paper-trading": [
+    {
+      "predicate": "uses",
+      "object": "same-AI-signals-as-live",
+      "validFrom": "2026-04-22T01:36:06.378Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "ensemble_ai-from-trading_signals",
+      "validFrom": "2026-04-22T01:36:06.378Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "Binance-mainnet-prices",
+      "validFrom": "2026-04-22T01:36:06.378Z"
+    },
+    {
+      "predicate": "balance",
+      "object": "virtual-usdt-10000",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "parity",
+      "object": "live-identical-signals-risk",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "difference",
+      "object": "simulated-execution-fee-slippage",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "deployment": [
+    {
+      "predicate": "deployed",
+      "object": "www.klarpakke.no-2026-04-22",
+      "validFrom": "2026-04-22T01:36:06.378Z"
+    },
+    {
+      "predicate": "tests",
+      "object": "679-passed",
+      "validFrom": "2026-04-22T01:36:06.378Z"
+    }
+  ],
+  "supabase-db": [
+    {
+      "predicate": "type",
+      "object": "postgres-15",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "hosting",
+      "object": "supabase-fra1",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "pg_cron-14-jobs",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "pg_net-0.19.5",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "vault-hardened-secrets",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "migration",
+      "object": "supabase-cli-db-push",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "rls",
+      "object": "enabled-all-tables",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "vercel-hosting": [
+    {
+      "predicate": "region",
+      "object": "fra1",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "app",
+      "object": "www.klarpakke.no",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "build",
+      "object": "nextjs-15-static-export",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "ci",
+      "object": "github-actions-auto-deploy",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "cron",
+      "object": "pg_cron-primary-not-vercel",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "sanity-cms": [
+    {
+      "predicate": "projectId",
+      "object": "63qn23si",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "dataset",
+      "object": "production",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "basePath",
+      "object": "/studio",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "productionUrl",
+      "object": "undefined",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "schema",
+      "object": "dashboardContent",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "webhook",
+      "object": "revalidateTag-cache-invalidation",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "nextjs-framework": [
+    {
+      "predicate": "version",
+      "object": "15.x",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "react",
+      "object": "19",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "typescript",
+      "object": "5.9-strict",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "routing",
+      "object": "app-router-i18n-locale",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "auth",
+      "object": "supabase-ssr-client-pattern",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "env",
+      "object": "multiple-dotenv-templates",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "i18n-system": [
+    {
+      "predicate": "library",
+      "object": "next-intl",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "locales",
+      "object": "no-en",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "fallback",
+      "object": "no-base-layer",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "structure",
+      "object": "messages-locale-filename.json",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "testing-suite": [
+    {
+      "predicate": "unit",
+      "object": "vitest-679-tests",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "e2e",
+      "object": "playwright-visual-regression",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "coverage",
+      "object": "allure-reporting",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "pre-commit",
+      "object": "secret-scan-ast-verify-tsc-column-guard",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "cron-system": [
+    {
+      "predicate": "primary",
+      "object": "pg_cron-supabase",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "count",
+      "object": "14-active-jobs",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "trigger",
+      "object": "klarpakke_trigger_cron",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "vault",
+      "object": "VERCEL_APP_URL-CRON_SECRET",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "fallback",
+      "object": "current_setting-app-settings",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "verify",
+      "object": "npm-run-cron-verify",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "binance-api": [
+    {
+      "predicate": "use-case",
+      "object": "price-feed-mainnet",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "use-case",
+      "object": "candle-data-tick-cron",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "fee",
+      "object": "0.1pct-taker",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "min-order",
+      "object": "10-usd",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "copy-trading": [
+    {
+      "predicate": "mirror",
+      "object": "leader-trades-to-followers",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "fee",
+      "object": "0.1pct-all-modes",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "risk-management": [
+    {
+      "predicate": "max-drawdown",
+      "object": "configurable-per-strategy",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "position-size",
+      "object": "kelly-criterion-based",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "stop-loss",
+      "object": "auto-trailing",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "mifid-compliance": [
+    {
+      "predicate": "export",
+      "object": "automated-csv",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "trigger",
+      "object": "pg_cron-scheduled",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "stripe-payments": [
+    {
+      "predicate": "integration",
+      "object": "checkout-subscription",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "tiers",
+      "object": "basic-pro-enterprise",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "pwa-mobile": [
+    {
+      "predicate": "nav",
+      "object": "bottom-tabs-copy-trading",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "lighthouse",
+      "object": "audited-regularly",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "deploy-pipeline": [
+    {
+      "predicate": "gate",
+      "object": "lint-typecheck-test-build",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "auto",
+      "object": "github-actions-push-trigger",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "health",
+      "object": "post-deploy-verify",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    }
+  ],
+  "mempalace": [
+    {
+      "predicate": "version",
+      "object": "3.1.0",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "backend",
+      "object": "in-memory-FTS-zero-dep",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "cache",
+      "object": "LRU-100-entries",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "kg",
+      "object": "entity-relationship-graph",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "rooms",
+      "object": "knowledge-diary-handoffs-plans-docs-memory",
+      "validFrom": "2026-04-22T01:47:04.573810Z"
     }
   ]
 }

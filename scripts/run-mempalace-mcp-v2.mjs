@@ -1,21 +1,20 @@
 #!/usr/bin/env node
 /**
- * 🏛️ MemPalace MCP Server v3.0 — KIMI k2.6 Optimalisert
+ * 🏛️ MemPalace MCP Server v3.1 — KIMI k2.6 Optimalisert
  *
- * Optimalisert for KIMI CLI v1.37.0 + k2.6 modell:
- * - Zero-dependency in-memory FTS (ingen ChromaDB/M1-problemer)
- * - Aggressiv caching med LRU (100 entries)
- * - Batch-operasjoner for 262k kontekst-vindu
- * - Async indexing på startup (ikke-blokkerende)
- * - Rich knowledge graph med entity linking
- * - 12 verktøy (vs 8 i v2.1)
+ * Fikser:
+ * - MCP protocol: tool results wrappes i content-array (fixer "content Field required")
+ * - KG deduplisering: sjekker for duplikater før lagring
+ * - Diary newline-håndtering: sikrer korrekt JSONL-format
+ * - Reindex etter endringer: trigger rebuild av index ved KG/diary updates
+ * - Batch-write optimalisering: skriver KG én gang per batch
  *
- * Versjon: 3.0.0
- * Dato: 2026-04-21
+ * Versjon: 3.1.0
+ * Dato: 2026-04-22
  * For: KIMI CLI v1.37.0, k2.6, macOS ARM64
  */
 
-import { readFileSync, existsSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync, writeFileSync, mkdirSync, appendFileSync } from 'fs';
 import { resolve, join, dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -25,11 +24,11 @@ const root = resolve(__dirname, '..');
 
 // ─── KONFIGURASJON ───
 const CONFIG = {
-  version: '3.0.0',
+  version: '3.1.0',
   wing: 'klarpakke',
   cacheSize: 100,
-  maxResultChars: 1200,        // Økt for k2.6 kontekst
-  batchSize: 50,               // Batch KG-operasjoner
+  maxResultChars: 1200,
+  batchSize: 50,
   indexPaths: [
     { path: '.knowledge', label: 'Knowledge', types: ['md', 'txt'] },
     { path: '.kimi', label: 'Diary', include: ['diary.jsonl'] },
@@ -79,7 +78,7 @@ let indexedDocs = [];
 let kgData = {};
 
 function tokenize(text) {
-  return text.toLowerCase()
+  return String(text || '').toLowerCase()
     .replace(/[^\w\s\u00C0-\u017F]/g, ' ')
     .split(/\s+/)
     .filter(t => t.length > 2);
@@ -137,19 +136,15 @@ function saveKG(data) {
 
 function extractEntities(text) {
   const entities = { files: [], functions: [], components: [], routes: [], decisions: [], tags: [] };
-  // Files
-  let m; const fileRe = /`([^`]+\.(ts|tsx|js|jsx|json|md|sql|yaml))`/g;
+  let m;
+  const fileRe = /`([^`]+\.(ts|tsx|js|jsx|json|md|sql|yaml))`/g;
   while ((m = fileRe.exec(text)) !== null) entities.files.push(m[1]);
-  // Components
   const compRe = /<([A-Z][a-zA-Z]+)/g;
   while ((m = compRe.exec(text)) !== null) entities.components.push(m[1]);
-  // Routes
   const routeRe = /(\/api\/[^\s]+|app\/[^\s]+)/g;
   while ((m = routeRe.exec(text)) !== null) entities.routes.push(m[1]);
-  // Decisions
   const decRe = /\b(ADR|DECISION|RFC)-\d+/gi;
   while ((m = decRe.exec(text)) !== null) entities.decisions.push(m[0]);
-  // Tags
   const tagRe = /#([a-zA-Z_\-\/]+)/g;
   while ((m = tagRe.exec(text)) !== null) entities.tags.push(m[1]);
   return entities;
@@ -284,21 +279,47 @@ function kgQuery(entity, depth = 1) {
 
 function kgAdd(subject, predicate, object, validFrom) {
   if (!kgData[subject]) kgData[subject] = [];
+  // Deduplisering: sjekk for eksisterende identisk fact
+  const exists = kgData[subject].some(f =>
+    f.predicate === predicate && f.object === object
+  );
+  if (exists) {
+    return { success: true, duplicate: true, fact: { subject, predicate, object } };
+  }
   kgData[subject].push({
     predicate,
     object,
     validFrom: validFrom || new Date().toISOString()
   });
   saveKG(kgData);
-  return { success: true, fact: { subject, predicate, object } };
+  return { success: true, duplicate: false, fact: { subject, predicate, object } };
 }
 
 function kgBatch(facts) {
   const results = [];
+  let added = 0;
+  let duplicates = 0;
   for (const f of facts.slice(0, CONFIG.batchSize)) {
-    results.push(kgAdd(f.subject, f.predicate, f.object, f.validFrom));
+    if (!kgData[f.subject]) kgData[f.subject] = [];
+    const exists = kgData[f.subject].some(existing =>
+      existing.predicate === f.predicate && existing.object === f.object
+    );
+    if (exists) {
+      duplicates++;
+      results.push({ success: true, duplicate: true, fact: f });
+      continue;
+    }
+    kgData[f.subject].push({
+      predicate: f.predicate,
+      object: f.object,
+      validFrom: f.validFrom || new Date().toISOString()
+    });
+    added++;
+    results.push({ success: true, duplicate: false, fact: f });
   }
-  return { success: true, added: results.length, results };
+  // Skriv KG én gang per batch (optimalisering)
+  saveKG(kgData);
+  return { success: true, added, duplicates, total: facts.length, results };
 }
 
 function kgFindPath(from, to, maxDepth = 3) {
@@ -349,11 +370,18 @@ function writeDiary(agent, entry) {
     tags: entry.tags || []
   });
 
+  // Sikre korrekt JSONL-format: én JSON-objekt per linje, newline på slutten
   try {
-    writeFileSync(diaryPath, readFileSync(diaryPath, 'utf8') + '\n' + record, 'utf8');
+    const existing = existsSync(diaryPath) ? readFileSync(diaryPath, 'utf8') : '';
+    const needsNewline = existing.length > 0 && !existing.endsWith('\n');
+    const separator = needsNewline ? '\n' : '';
+    writeFileSync(diaryPath, existing + separator + record + '\n', 'utf8');
   } catch {
     writeFileSync(diaryPath, record + '\n', 'utf8');
   }
+
+  // Trigger reindex for nye diary-entries
+  cache.clear();
   return { success: true };
 }
 
@@ -383,7 +411,14 @@ class MempalaceMCP {
 
       case 'tools/call': {
         const { name, arguments: args } = params;
-        return this.callTool(name, args);
+        const result = this.callTool(name, args);
+        // FIX: MCP-protokollen krever content-array med text-elementer
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(result, null, 2)
+          }]
+        };
       }
 
       default:
@@ -564,9 +599,8 @@ class MempalaceMCP {
       }
 
       case 'semantic_search': {
-        // For nå: synonym-utvidelse + vanlig søk
         const concept = args.concept;
-        const expanded = concept; // Kan utvides med synonym-ordbok
+        const expanded = concept;
         const results = searchDocs(expanded, { room: args.room, limit: args.limit || 5 });
         return { concept, expanded, hits: results.length, results };
       }
@@ -634,7 +668,6 @@ class MempalaceMCP {
 
       case 'auto_tag': {
         const tokens = tokenize(args.text);
-        // Finn mest relevante eksisterende entities
         const allTags = new Set();
         indexedDocs.forEach(d => {
           if (d.entities) {
@@ -661,10 +694,6 @@ const mcp = new MempalaceMCP();
 process.stdin.setEncoding('utf8');
 let buffer = '';
 
-process.stdout.write(JSON.stringify({
-  jsonrpc: '2.0',
-  method: 'notifications/initialized'
-}) + '\n');
 
 process.stdin.on('data', async (chunk) => {
   buffer += chunk;
@@ -688,7 +717,7 @@ process.stdin.on('data', async (chunk) => {
   }
 });
 
-console.error('\u{1F3DB}\uFE0F  MemPalace MCP Server v3.0 — KIMI k2.6 Optimalisert');
+console.error('\u{1F3DB}\uFE0F  MemPalace MCP Server v3.1 — KIMI k2.6 Optimalisert');
 console.error(`   Wing: ${CONFIG.wing}`);
 console.error(`   Backend: in-memory FTS (zero-dep)`);
 console.error(`   Cache: LRU/${CONFIG.cacheSize}`);

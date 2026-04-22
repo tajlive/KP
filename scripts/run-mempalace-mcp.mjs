@@ -445,11 +445,6 @@ process.stdin.setEncoding('utf8');
 
 let buffer = '';
 
-// Send notifications/initialized after startup (no id field — MCP spec)
-process.stdout.write(JSON.stringify({
-  jsonrpc: '2.0',
-  method: 'notifications/initialized'
-}) + '\n');
 
 process.stdin.on('data', async (chunk) => {
   buffer += chunk;

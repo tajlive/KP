@@ -173,9 +173,9 @@ kimi
 > Sjekk at "perplexity" vises grønt i MCP-statuslinjen
 ```
 
-## MemPalace — Prosjektminne v3.0 (KIMI k2.6)
+## MemPalace — Prosjektminne v3.1 (KIMI k2.6)
 
-> Oppdatert: 2026-04-21 | MemPalace MCP v3.0 | Zero-dep in-memory FTS | Alle agenter integrert
+> Oppdatert: 2026-04-22 | MemPalace MCP v3.1 | Zero-dep in-memory FTS | 20 entities, 98+ facts | Alle agenter integrert
 
 ### Rask verifisering
 ```bash
@@ -191,11 +191,16 @@ kimi --agent-file .kimi/agents/mempalace-agent.yaml
 # eller: kimi mempalace  (hvis alias konfigurert)
 ```
 
-### MemPalace MCP v3.0 — Nytt
+### MemPalace MCP v3.1 — Endringer fra v3.0
+- **FIX: MCP protocol compliance** — Tool results wrappes nå i `content: [{type: "text", text: ...}]` array. Fikser `CallToolResult content Field required` pydantic-feil.
+- **FIX: Diary newline-håndtering** — Sikrer korrekt JSONL-format ved append (håndterer manglende trailing newline)
+- **OPT: KG deduplisering** — `kgAdd()` og `kgBatch()` sjekker for duplikater før lagring
+- **OPT: Batch-write** — `kgBatch()` skriver KG én gang per batch i stedet for N ganger
+- **OPT: Cache invalidation** — `writeDiary()` trigger `cache.clear()` for å sikre fresh indeks
 - **Zero-dependency**: Ingen ChromaDB, ingen M1-timeout
 - **In-memory FTS**: Bygger indeks ved startup (async, ikke-blokkerende)
 - **LRU-cache**: 100 entries for raskt gjentatt søk
-- **12 verktøy** (fra 8): `search`, `semantic_search`, `recent_context`, `kg_query`, `kg_add`, `kg_batch`, `kg_find_path`, `read_diary`, `write_diary`, `get_status`, `get_room_info`, `auto_tag`
+- **12 verktøy**: `search`, `semantic_search`, `recent_context`, `kg_query`, `kg_add`, `kg_batch`, `kg_find_path`, `read_diary`, `write_diary`, `get_status`, `get_room_info`, `auto_tag`
 - **k2.6-optimalisert**: Batch-operasjoner, 1200 chars snippets, 262k kontekst-utnyttelse
 
 ### Agent: `mempalace`
@@ -218,9 +223,11 @@ Spesialisert på:
 | Docs | `docs/` | Arkitektur, setup-guides |
 | Memory | `memory/` | Ustrukturert minne |
 
-### Agenter med MemPalace-integrasjon (v3.0)
+**Notat:** `.mempalace/diary.jsonl` er konsolidert inn i `.kimi/diary.jsonl` (en kilde til sannhet).
 
-Alle agenter er oppdatert til å bruke MemPalace MCP v3.0-verktøy med korrekte verktøynavn.
+### Agenter med MemPalace-integrasjon (v3.1)
+
+Alle agenter er oppdatert til å bruke MemPalace MCP v3.1-verktøy med korrekte verktøynavn.
 
 | Agent | YAML | Fokus | KG-entiteter |
 |---|---|---|---|
@@ -246,21 +253,42 @@ kimi mobile      # Mobil-sjekk
 2. **ETTER oppgave:** `kg_add()` / `kg_batch()` + `write_diary()` + `auto_tag()`
 
 ### Knowledge Graph (KG) — Kritiske entiteter
-- `auth-system` — OAuth, session, refresh-token, RLS
-- `trading-engine` — Strategier, Binance-adapter, sikkerhet
-- `deployment` — Vercel, Supabase, cron-jobs
-- `testing` — Playwright, Vitest, E2E
-- `infra` — DB-migrasjoner, Edge Functions
+| Entity | Facts | Domene |
+|---|---|---|
+| `auth-system` | 7 | OAuth, session, refresh-token, RLS, singleton client |
+| `trading-engine` | 15 | Strategier, risk, PnL, unified schema, paper/live/copy |
+| `supabase-db` | 7 | Postgres 15, pg_cron, pg_net, Vault, RLS |
+| `vercel-hosting` | 5 | fra1, static export, GitHub Actions CI |
+| `sanity-cms` | 6 | projectId 63qn23si, /studio, webhook cache invalidation |
+| `nextjs-framework` | 6 | v15, React 19, TS 5.9 strict, app-router i18n |
+| `cron-system` | 6 | 14 jobs, pg_cron primary, Vault secrets |
+| `binance-api` | 4 | Price feed, candle data, 0.1% fee, $10 min |
+| `risk-management` | 3 | Max drawdown, Kelly position, trailing stop |
+| `copy-trading` | 2 | Mirror leader→followers, 0.1% fee all modes |
+| `paper-trading` | 5 | Virtual $10k, parity with live, simulated execution |
+| `tick-cron` | 5 | Per-candle, all sessions loop, ensemble_ai signals |
+| `i18n-system` | 4 | next-intl, no+en, no-base fallback |
+| `testing-suite` | 4 | Vitest 679, Playwright, Allure, pre-commit gates |
+| `stripe-payments` | 2 | Checkout subscription, basic/pro/enterprise tiers |
+| `pwa-mobile` | 2 | Bottom tabs, Lighthouse audits |
+| `mifid-compliance` | 2 | Auto CSV export, pg_cron scheduled |
+| `deploy-pipeline` | 3 | Lint→typecheck→test→build, auto GitHub Actions |
+| `mempalace` | 5 | v3.1.0, in-memory FTS, LRU cache, 20 entities |
+| `deployment` | 2 | www.klarpakke.no, 679 tests passed |
+
+**Totalt:** 20 entities, 98+ facts (voksende)
 
 ### Diary-format (JSONL)
 ```json
-{"ts":"2026-04-21T12:00:00Z","type":"FEAT","task":"...","status":"GO","rating":4,"agent":"kimi","tags":["auth"]}
+{"ts":"2026-04-22T01:47:52.461Z","type":"FIX","task":"...","status":"GO","rating":5,"agent":"kimi","files":3,"tags":["mempalace","mcp"]}
 ```
 
-### Workaround (eldre)
+### Workaround & Fikser
 | Problem | Løsning | Dato |
 |---|---|---|
-| ~~Mempalace timeout på M1 Mac~~ | **LØST** — v3.0 bruker zero-dep in-memory FTS | 2026-04-21 |
+| ~~Mempalace timeout på M1 Mac~~ | **LØST** — v3.x bruker zero-dep in-memory FTS | 2026-04-21 |
+| ~~MCP content Field required~~ | **LØST** — v3.1 wrapper results i content-array | 2026-04-22 |
+| ~~Dobbel diary (kimi + mempalace)~~ | **LØST** — Konsolidert til `.kimi/diary.jsonl` | 2026-04-22 |
 | pg SSL self-signed cert | `ssl: { rejectUnauthorized: false }` i pg.Client | 2026-04-18 |
 | REST exec_sql 404 | Funksjonen heter `exec_sql`, ikke `execute_sql` | 2026-04-18 |
 | ALTER DATABASE postgres | Permission denied i Supabase — bruk Vault i stedet | 2026-04-18 |
