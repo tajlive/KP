@@ -3,7 +3,7 @@
  * 
  * Real-time metrics for:
  * - Active sessions
- * - auto_trades performance
+ * - trades performance
  * - Database latency
  * - Vercel Speed Insights
  * 

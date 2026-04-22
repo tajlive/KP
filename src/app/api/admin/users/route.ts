@@ -158,7 +158,6 @@ export async function POST(request: NextRequest) {
         "portfolios",
         "user_settings",
         "user_notification_settings",
-        "paper_trading_sessions",
         "risk_profiles",
       ],
     });

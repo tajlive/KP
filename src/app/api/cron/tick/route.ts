@@ -528,7 +528,19 @@ async function processSession(
   // Calculate trade details
   const positionSize = signal.positionSize ?? 0.1;
   const tradeAmount = session.current_capital * positionSize;
-  const quantity = div(tradeAmount, currentPrice);
+
+  // Minimum order value ($10) — same for paper and live
+  if (tradeAmount < 10) {
+    return { session_id: session.id, action: "hold" };
+  }
+
+  // Apply slippage (0.05%) — same for paper and live
+  const slippage = 0.0005;
+  const executedPrice = signal.action === "buy"
+    ? mul(currentPrice, 1 + slippage)
+    : mul(currentPrice, 1 - slippage);
+
+  const quantity = div(tradeAmount, executedPrice);
 
   if (quantity <= 0) {
     return { session_id: session.id, action: "hold" };
@@ -617,7 +629,7 @@ async function processSession(
   }
 
   // Execute trade
-  const totalValue = mul(quantity, currentPrice);
+  const totalValue = mul(quantity, executedPrice);
   const idempotencyKey = generateTradeIdempotencyKey(session.id, pair, signal.action);
 
   const { data: trade, error: tradeError } = await db
@@ -631,9 +643,9 @@ async function processSession(
       side: signal.action as TradeSide,
       order_type: "market",
       quantity,
-      price: currentPrice,
+      price: executedPrice,
       total_value: totalValue,
-      fee: session.mode === "live" ? mul(totalValue, 0.001) : 0,
+      fee: mul(totalValue, 0.001),
       status: "filled",
       realized_pnl: realizedPnl,
       strategy_signal: { ...signal.indicators, stop_loss: stopLossPrice },
@@ -761,8 +773,7 @@ async function mirrorTradeToFollowers(
         quantity: followerQuantity,
         price: tradePrice,
         total_value: followerTradeAmount,
-        fee:
-          followerSession.mode === "live" ? mul(followerTradeAmount, 0.001) : 0,
+        fee: mul(followerTradeAmount, 0.001),
         status: "filled",
         strategy_signal: {
           ...(tradeRecord.strategy_signal as Record<string, unknown>),

@@ -110,7 +110,7 @@
 
 ### Phase 3: Components (~4–5 days)
 
-- Trading: `PositionsTable`, `TradeHistory`, `ProfessionalChart`, `PortfolioStats`, `OrderEntry`
+- Trading: `PositionsTable`, `TradeHistory`, `ProfessionalChart`, `PortfolioStats`
 - Dashboard: `BinanceAPISettings`, `BotStatusCard`, `TradingModeToggle`
 - Marketplace: `StrategyDetailPage`, `CreatorDashboard`, `CopyTradingDashboard`
 - Landing: `ComparisonSection`, `SocialProofSection`, `FAQSection`

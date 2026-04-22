@@ -32,7 +32,7 @@ interface HealthCheck {
   status: "healthy" | "degraded" | "critical";
   checks: {
     database: { status: string; latency_ms: number; message?: string };
-    auto_trades: { status: string; count: number; message?: string };
+    trades: { status: string; count: number; message?: string };
     auth: { status: string; message?: string };
   };
   alerts: string[];
@@ -135,7 +135,7 @@ export function DeployDashboard() {
           status: "ok",
           latency_ms: 45,
         },
-        auto_trades: {
+        trades: {
           status: "ok",
           count: 1247,
         },
@@ -361,9 +361,9 @@ export function DeployDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-2">
-                        {getStatusIcon(healthData.checks.auto_trades.status)}
+                        {getStatusIcon(healthData.checks.trades.status)}
                         <span className="text-2xl font-bold">
-                          {healthData.checks.auto_trades.count}
+                          {healthData.checks.trades.count}
                         </span>
                       </div>
                     </CardContent>

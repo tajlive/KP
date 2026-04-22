@@ -7,7 +7,7 @@ import { createServerClient, createClient } from "@/lib/supabase/server";
 import { getTierLevel, normalizeTier } from "@/lib/pricing/tier-level";
 import { NextRequest, NextResponse } from "next/server";
 
-// Unified trade type (from trades or auto_trades)
+// Unified trade type (from trades)
 interface Trade {
   id: string;
   symbol: string;
@@ -20,38 +20,22 @@ interface Trade {
   realized_pnl: number | null;
 }
 
-function normalizeTradesRow(
-  row: Record<string, unknown>,
-  source: "trades" | "auto_trades",
-): Trade {
-  if (source === "trades") {
-    const symbol = String(row.trading_pair ?? row.symbol ?? "")
-      .toUpperCase()
-      .replace("/", "");
-    const price = Number(row.price ?? 0);
-    const qty = Number(row.quantity ?? 0);
-    const execAt = row.executed_at ?? row.created_at;
-    return {
-      id: String(row.id),
-      symbol,
-      side: String(row.side ?? "").toLowerCase(),
-      quantity: qty,
-      entry_price: price,
-      exit_price: price,
-      executed_at: execAt ? String(execAt) : null,
-      commission: Number(row.fee ?? 0),
-      realized_pnl: row.realized_pnl != null ? Number(row.realized_pnl) : null,
-    };
-  }
+function normalizeTradesRow(row: Record<string, unknown>): Trade {
+  const symbol = String(row.trading_pair ?? row.symbol ?? "")
+    .toUpperCase()
+    .replace("/", "");
+  const price = Number(row.price ?? 0);
+  const qty = Number(row.quantity ?? 0);
+  const execAt = row.executed_at ?? row.created_at;
   return {
     id: String(row.id),
-    symbol: String(row.symbol ?? "").toUpperCase(),
+    symbol,
     side: String(row.side ?? "").toLowerCase(),
-    quantity: row.quantity != null ? Number(row.quantity) : null,
-    entry_price: row.entry_price != null ? Number(row.entry_price) : null,
-    exit_price: row.exit_price != null ? Number(row.exit_price) : null,
-    executed_at: row.executed_at ? String(row.executed_at) : null,
-    commission: row.commission != null ? Number(row.commission) : null,
+    quantity: qty,
+    entry_price: price,
+    exit_price: price,
+    executed_at: execAt ? String(execAt) : null,
+    commission: Number(row.fee ?? 0),
     realized_pnl: row.realized_pnl != null ? Number(row.realized_pnl) : null,
   };
 }
@@ -145,43 +129,27 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch trades from BOTH trades (manual) and auto_trades
+    // Fetch trades from unified trades table
     const startDate = `${year}-01-01`;
     const endDate = `${year}-12-31T23:59:59.999Z`;
 
-    const [manualRes, autoRes] = await Promise.all([
-      supabase
-        .from("trades")
-        .select(
-          "id, trading_pair, side, quantity, price, total_value, fee, realized_pnl, executed_at, created_at",
-        )
-        .eq("user_id", user.id)
-        .gte("created_at", startDate)
-        .lte("created_at", endDate)
-        .order("created_at", { ascending: true }),
-      supabase
-        .from("auto_trades")
-        .select("*")
-        .eq("user_id", user.id)
-        .gte("executed_at", startDate)
-        .lte("executed_at", endDate)
-        .order("executed_at", { ascending: true }),
-    ]);
+    const { data: tradeRows, error: tradesErr } = await supabase
+      .from("trades")
+      .select(
+        "id, trading_pair, side, quantity, price, total_value, fee, realized_pnl, executed_at, created_at",
+      )
+      .eq("user_id", user.id)
+      .gte("created_at", startDate)
+      .lte("created_at", endDate)
+      .order("created_at", { ascending: true });
 
-    if (manualRes.error) {
-      console.error("Error fetching manual trades:", manualRes.error);
-    }
-    if (autoRes.error) {
-      console.error("Error fetching auto_trades:", autoRes.error);
+    if (tradesErr) {
+      console.error("Error fetching trades:", tradesErr);
     }
 
-    const manualRows = (manualRes.data ?? []) as Record<string, unknown>[];
-    const autoRows = (autoRes.data ?? []) as Record<string, unknown>[];
+    const rows = (tradeRows ?? []) as Record<string, unknown>[];
 
-    const allTrades: Trade[] = [
-      ...manualRows.map((r) => normalizeTradesRow(r, "trades")),
-      ...autoRows.map((r) => normalizeTradesRow(r, "auto_trades")),
-    ]
+    const allTrades: Trade[] = rows.map((r) => normalizeTradesRow(r))
       .filter((t) => {
         const d = t.executed_at ?? null;
         if (!d) return false;
