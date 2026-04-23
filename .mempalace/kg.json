@@ -180,6 +180,41 @@
       "predicate": "difference",
       "object": "simulated-execution-fee-slippage",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "demo_created",
+      "object": "demo1-leader",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "demo_created",
+      "object": "demo2-follower",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "demo_created",
+      "object": "demo3-follower",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "demo_trades_count",
+      "object": "7-DCA-trades",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "demo_copy_trading",
+      "object": "demo2-follows-demo1",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "demo_copy_trading",
+      "object": "demo3-follows-demo1",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "demo_strategy",
+      "object": "dca_trygg",
+      "validFrom": "2026-04-23"
     }
   ],
   "deployment": [
@@ -229,6 +264,31 @@
       "predicate": "rls",
       "object": "enabled-all-tables",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "balance_sync_root-cause",
+      "object": "portfolios.current_balance NOT synced with user_profiles.paper_balance — two separate data sources shown in UI",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "balance_sync_affected-users",
+      "object": "6 users with portfolios, all had current_balance=1M regardless of paper_balance",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "balance_sync_fix",
+      "object": "portfolio/page.tsx now fetches user_profiles.paper_balance and uses it as source of truth",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "balance_sync_db-fix",
+      "object": "Updated portfolios.current_balance for tomarnejensen from 1M to 100M NOK",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "balance_sync_other-places",
+      "object": "Only 1 place used portfolios.current_balance: src/app/[locale]/(user)/dashboard/portfolio/page.tsx. All other pages use user_profiles.paper_balance.",
+      "validFrom": "2026-04-23T07:59:09.716Z"
     }
   ],
   "vercel-hosting": [
@@ -320,6 +380,66 @@
       "predicate": "env",
       "object": "multiple-dotenv-templates",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "types_removed_file",
+      "object": "supabase-generated.ts",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "types_consolidated_to",
+      "object": "database.types.ts",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "ui_audit_found",
+      "object": "25 guesswork components across src/components, src/shared/ui, src/features, src/app",
+      "validFrom": "2026-04-23T00:03:14.995Z"
+    },
+    {
+      "predicate": "ui_audit_worst-offender",
+      "object": "PortfolioDashboard.tsx: 1000+ lines, mixes business logic with JSX, hardcoded hex colors, brittle symbol heuristic",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_worst-offender",
+      "object": "UnifiedTradingDashboard.tsx: unknown props, unsafe casts, localStorage without try/catch, business logic mixed with presentation",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_worst-offender",
+      "object": "ErrorBoundary: 3 duplicate implementations, unguarded window access, hardcoded light-mode colors in dark app",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_worst-offender",
+      "object": "ConnectBinanceModal: all UI text hardcoded English despite Norwegian primary locale",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_landing-page-issues",
+      "object": "duplicate meta description, missing data-testid, 10+ files with hardcoded Norwegian, no aria-hidden on decorative SVGs, missing ssr:true on dynamic imports",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_duplicate-patterns",
+      "object": "Button (button.tsx + ButtonPremium), Card (card.tsx + GlassCard), EmptyState (EmptyState.tsx + empty.tsx)",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_mobile-v1-assessment",
+      "object": "Solid: haptic hook, swipe-action, pull-to-refresh, bottom-tabs — all deterministic with explicit state. Weak: Sparkline + formatCurrency in same file, hardcoded range colors, symbol.slice(0,2) avatar heuristic",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_vs-2026-standard",
+      "object": "Missing: WebGL charts, edge-native PWA 2.0, passive biometric auth, WCAG 2.1 AA embedded in tokens, deterministic rendering with memoized selectors, risk-based progressive disclosure",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "ui_audit_design-tokens-assessment",
+      "object": "Tier 1+2+3 structure exists but not enforced. SURFACE.BG uses arbitrary values bg-[#0a0b0d] instead of CSS vars. No contrast ratio validation. No touch-target minimums in tokens.",
+      "validFrom": "2026-04-23T00:03:14.996Z"
     }
   ],
   "i18n-system": [
@@ -542,6 +662,31 @@
       "predicate": "rooms",
       "object": "knowledge-diary-handoffs-plans-docs-memory",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "kaos_version",
+      "object": "v1.0-planned",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "kaos_includes",
+      "object": "MemPalace-Plan-State",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "kaos_includes",
+      "object": "Swarm-Dynamic-Router",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "kaos_includes",
+      "object": "MCP-Auto-Profile",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "kaos_research_integration",
+      "object": "Perplexity-Mobile-UX-Research",
+      "validFrom": "2026-04-23"
     }
   ],
   "mobile-ui": [
@@ -644,227 +789,54 @@
       "predicate": "uses_pattern",
       "object": "responsive-mobile-desktop",
       "validFrom": "2026-04-23"
-    }
-  ],
-  "KAOS": [
-    {
-      "predicate": "version",
-      "object": "v1.0-planned",
-      "validFrom": "2026-04-23"
     },
     {
-      "predicate": "includes",
-      "object": "MemPalace-Plan-State",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "includes",
-      "object": "Swarm-Dynamic-Router",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "includes",
-      "object": "MCP-Auto-Profile",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "research_integration",
-      "object": "Perplexity-Mobile-UX-Research",
-      "validFrom": "2026-04-23"
-    }
-  ],
-  "types-system": [
-    {
-      "predicate": "removed_file",
-      "object": "supabase-generated.ts",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "consolidated_to",
-      "object": "database.types.ts",
-      "validFrom": "2026-04-23"
-    }
-  ],
-  "cleanup": [
-    {
-      "predicate": "removed_duplicates",
-      "object": "6-files-2-namespaces",
-      "validFrom": "2026-04-23"
-    }
-  ],
-  "PortfolioDashboard": [
-    {
-      "predicate": "uses",
+      "predicate": "portfolio_dashboard_uses",
       "object": "MobileTradingCard",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "uses",
+      "predicate": "portfolio_dashboard_uses",
       "object": "SwipeAction",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "uses",
+      "predicate": "portfolio_dashboard_uses",
       "object": "PullToRefresh",
       "validFrom": "2026-04-23"
-    }
-  ],
-  "demo-users": [
-    {
-      "predicate": "created",
-      "object": "demo1-leader",
-      "validFrom": "2026-04-23"
     },
     {
-      "predicate": "created",
-      "object": "demo2-follower",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "created",
-      "object": "demo3-follower",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "trades_count",
-      "object": "7-DCA-trades",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "copy_trading",
-      "object": "demo2-follows-demo1",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "copy_trading",
-      "object": "demo3-follows-demo1",
-      "validFrom": "2026-04-23"
-    },
-    {
-      "predicate": "strategy",
-      "object": "dca_trygg",
-      "validFrom": "2026-04-23"
-    }
-  ],
-  "deploy": [
-    {
-      "predicate": "status",
-      "object": "pushed-to-main",
-      "validFrom": "2026-04-23"
-    }
-  ],
-  "ui-audit-2026-04-23": [
-    {
-      "predicate": "found",
-      "object": "25 guesswork components across src/components, src/shared/ui, src/features, src/app",
-      "validFrom": "2026-04-23T00:03:14.995Z"
-    },
-    {
-      "predicate": "worst-offender",
-      "object": "PortfolioDashboard.tsx: 1000+ lines, mixes business logic with JSX, hardcoded hex colors, brittle symbol heuristic",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "worst-offender",
-      "object": "UnifiedTradingDashboard.tsx: unknown props, unsafe casts, localStorage without try/catch, business logic mixed with presentation",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "worst-offender",
-      "object": "ErrorBoundary: 3 duplicate implementations, unguarded window access, hardcoded light-mode colors in dark app",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "worst-offender",
-      "object": "ConnectBinanceModal: all UI text hardcoded English despite Norwegian primary locale",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "landing-page-issues",
-      "object": "duplicate meta description, missing data-testid, 10+ files with hardcoded Norwegian, no aria-hidden on decorative SVGs, missing ssr:true on dynamic imports",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "duplicate-patterns",
-      "object": "Button (button.tsx + ButtonPremium), Card (card.tsx + GlassCard), EmptyState (EmptyState.tsx + empty.tsx)",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "mobile-v1-assessment",
-      "object": "Solid: haptic hook, swipe-action, pull-to-refresh, bottom-tabs — all deterministic with explicit state. Weak: Sparkline + formatCurrency in same file, hardcoded range colors, symbol.slice(0,2) avatar heuristic",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "vs-2026-standard",
-      "object": "Missing: WebGL charts, edge-native PWA 2.0, passive biometric auth, WCAG 2.1 AA embedded in tokens, deterministic rendering with memoized selectors, risk-based progressive disclosure",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    },
-    {
-      "predicate": "design-tokens-assessment",
-      "object": "Tier 1+2+3 structure exists but not enforced. SURFACE.BG uses arbitrary values bg-[#0a0b0d] instead of CSS vars. No contrast ratio validation. No touch-target minimums in tokens.",
-      "validFrom": "2026-04-23T00:03:14.996Z"
-    }
-  ],
-  "portfolio-balance-sync": [
-    {
-      "predicate": "root-cause",
-      "object": "portfolios.current_balance NOT synced with user_profiles.paper_balance — two separate data sources shown in UI",
-      "validFrom": "2026-04-23T07:59:09.716Z"
-    },
-    {
-      "predicate": "affected-users",
-      "object": "6 users with portfolios, all had current_balance=1M regardless of paper_balance",
-      "validFrom": "2026-04-23T07:59:09.716Z"
-    },
-    {
-      "predicate": "fix",
-      "object": "portfolio/page.tsx now fetches user_profiles.paper_balance and uses it as source of truth",
-      "validFrom": "2026-04-23T07:59:09.716Z"
-    },
-    {
-      "predicate": "db-fix",
-      "object": "Updated portfolios.current_balance for tomarnejensen from 1M to 100M NOK",
-      "validFrom": "2026-04-23T07:59:09.716Z"
-    },
-    {
-      "predicate": "other-places",
-      "object": "Only 1 place used portfolios.current_balance: src/app/[locale]/(user)/dashboard/portfolio/page.tsx. All other pages use user_profiles.paper_balance.",
-      "validFrom": "2026-04-23T07:59:09.716Z"
-    }
-  ],
-  "ui-modernization-2026-04-23": [
-    {
-      "predicate": "research_source",
+      "predicate": "modernization_research_source",
       "object": "Perplexity-Pro-competitor-analysis-2025-2026",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "research_source",
+      "predicate": "modernization_research_source",
       "object": "existing-competitor-analysis-march-2026",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "research_source",
+      "predicate": "modernization_research_source",
       "object": "Dashboard-Redesign-Plan-2026-04-21",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "status",
+      "predicate": "modernization_status",
       "object": "analysis-complete-ready-for-implementation",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "key_competitors",
+      "predicate": "modernization_key_competitors",
       "object": "Coinbase-Robinhood-eToro-Binance-Kraken-Revolut-Firi-Bybit-Crypto.com-Wise",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "top_patterns",
+      "predicate": "modernization_top_patterns",
       "object": "bento-layouts-AI-analytics-dark-light-mode-social-copy-trading-minimal-hero",
       "validFrom": "2026-04-23"
     },
     {
-      "predicate": "priority_action",
+      "predicate": "modernization_priority_action",
       "object": "execute-Dashboard-Redesign-Plan-phases-A-through-F",
       "validFrom": "2026-04-23"
     }
