@@ -10,7 +10,9 @@ function normalizePath(strippedPath: string): string {
 /** Paths where streamed generateMetadata arrives too late for Lighthouse SEO audits */
 export function isEarlyMetaDescriptionPath(strippedPath: string): boolean {
   const path = normalizePath(strippedPath);
-  if (path === "/") return true;
+  // NOTE: "/" (landing) is EXCLUDED because page.tsx has generateMetadata()
+  // which Next.js renders as <meta name="description">. Adding early meta
+  // here creates a DUPLICATE tag. See: e2e/smoke/launch-critical.spec.ts
   if (path === "/priser" || path.startsWith("/priser/")) return true;
   if (path === "/login" || path.startsWith("/login/")) return true;
   return false;
