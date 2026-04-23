@@ -72,10 +72,10 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-blue-500" />
-            Connect Binance Account
+            {t("title")}
           </DialogTitle>
           <DialogDescription>
-            Link your Binance account to enable live trading with real crypto.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -92,12 +92,12 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
               <Alert className="bg-blue-50 border-blue-200">
                 <Shield className="w-4 h-4 text-blue-500" />
                 <AlertDescription className="text-blue-700">
-                  <strong>Your security is our priority:</strong>
+                  <strong>{t("securityTitle")}</strong>
                   <ul className="mt-2 space-y-1 text-sm list-disc list-inside">
-                    <li>API keys are encrypted with AES-256</li>
-                    <li>We never store keys in plain text</li>
-                    <li>Keys are never sent to frontend after storage</li>
-                    <li>You can disconnect at any time</li>
+                    <li>{t("security1")}</li>
+                    <li>{t("security2")}</li>
+                    <li>{t("security3")}</li>
+                    <li>{t("security4")}</li>
                   </ul>
                 </AlertDescription>
               </Alert>
@@ -106,28 +106,28 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
               <Alert variant="destructive">
                 <AlertTriangle className="w-4 h-4" />
                 <AlertDescription>
-                  <strong>Important:</strong> When creating your API key on Binance, 
-                  <span className="font-bold text-red-600"> NEVER enable "Withdraw" permission</span>. 
-                  Only "Enable Reading" and "Enable Spot & Margin Trading" should be enabled.
+                  <strong>{t("warningTitle")}</strong>{" "}
+                  {t("warningText")}
                 </AlertDescription>
               </Alert>
 
               {/* Steps */}
               <div className="space-y-3">
-                <h4 className="font-medium text-gray-900">How to create your API key:</h4>
+                <h4 className="font-medium text-gray-900">{t("stepsTitle")}</h4>
                 <ol className="space-y-2 text-sm text-gray-600 list-decimal list-inside">
-                  <li>Log in to your Binance account</li>
-                  <li>Go to API Management</li>
-                  <li>Create a new API key</li>
+                  <li>{t("step1")}</li>
+                  <li>{t("step2")}</li>
+                  <li>{t("step3")}</li>
                   <li>
-                    <span className="text-red-600 font-medium">Important:</span> Only enable:
+                    <span className="text-red-600 font-medium">{t("step4Important")}</span>{" "}
+                    {t("step4OnlyEnable")}
                     <ul className="ml-6 mt-1 space-y-1 list-disc">
-                      <li>✅ Enable Reading</li>
-                      <li>✅ Enable Spot & Margin Trading</li>
-                      <li>❌ Enable Withdrawals (MUST be disabled)</li>
+                      <li>{t("step4Reading")}</li>
+                      <li>{t("step4Trading")}</li>
+                      <li>{t("step4Withdrawals")}</li>
                     </ul>
                   </li>
-                  <li>Copy and paste your API Key and Secret below</li>
+                  <li>{t("step5")}</li>
                 </ol>
               </div>
 
@@ -135,7 +135,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                 onClick={() => setStep('form')}
                 className="w-full"
               >
-                I understand, continue
+                {t("continue")}
               </Button>
 
               <Button
@@ -144,7 +144,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                 className="w-full"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Go to Binance API Management
+                {t("goToBinance")}
               </Button>
             </motion.div>
           )}
@@ -165,7 +165,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="api-key">API Key</Label>
+                <Label htmlFor="api-key">{t("apiKeyLabel")}</Label>
                 <Input
                   id="api-key"
                   value={apiKey}
@@ -176,7 +176,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="api-secret">API Secret</Label>
+                <Label htmlFor="api-secret">{t("apiSecretLabel")}</Label>
                 <div className="relative">
                   <Input
                     id="api-secret"
@@ -195,7 +195,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                   </button>
                 </div>
                 <p className="text-xs text-gray-500">
-                  Your API Secret is encrypted before storage and never shown again.
+                  {t("secretHint")}
                 </p>
               </div>
 
@@ -208,7 +208,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                     onCheckedChange={(checked) => setNoWithdrawPermission(checked as boolean)}
                   />
                   <Label htmlFor="no-withdraw" className="text-sm font-normal cursor-pointer">
-                    I confirm my API key does NOT have "Withdraw" permission enabled
+                    {t("noWithdrawConfirm")}
                   </Label>
                 </div>
 
@@ -219,7 +219,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                     onCheckedChange={(checked) => setUnderstandRisks(checked as boolean)}
                   />
                   <Label htmlFor="understand-risks" className="text-sm font-normal cursor-pointer">
-                    I understand that live trading involves real money and risks
+                    {t("understandRisks")}
                   </Label>
                 </div>
               </div>
@@ -230,7 +230,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                   onClick={() => setStep('intro')}
                   className="flex-1"
                 >
-                  Back
+                  {t("back")}
                 </Button>
                 <Button
                   onClick={handleSubmit}
@@ -242,7 +242,7 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
                   ) : (
                     <Lock className="w-4 h-4 mr-2" />
                   )}
-                  Connect Securely
+                  {t("connectSecurely")}
                 </Button>
               </div>
             </motion.div>
@@ -257,9 +257,9 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
               className="py-8 text-center space-y-4"
             >
               <RefreshCw className="w-12 h-12 animate-spin mx-auto text-blue-500" />
-              <p className="text-lg font-medium">Verifying your API key...</p>
+              <p className="text-lg font-medium">{t("verifyingTitle")}</p>
               <p className="text-sm text-gray-500">
-                This may take a few seconds. We&apos;re checking your API permissions with Binance.
+                {t("verifyingDesc")}
               </p>
             </motion.div>
           )}
@@ -273,12 +273,12 @@ export function ConnectBinanceModal({ isOpen, onClose }: ConnectBinanceModalProp
               className="py-8 text-center space-y-4"
             >
               <CheckCircle2 className="w-16 h-16 mx-auto text-green-500" />
-              <h3 className="text-xl font-bold text-green-600">Connected Successfully!</h3>
+              <h3 className="text-xl font-bold text-green-600">{t("successTitle")}</h3>
               <p className="text-gray-600">
-                Your Binance account is now connected. You can now switch to Live Trading mode.
+                {t("successDesc")}
               </p>
               <Button onClick={handleClose} className="w-full">
-                Start Trading
+                {t("startTrading")}
               </Button>
             </motion.div>
           )}
