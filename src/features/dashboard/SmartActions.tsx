@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { TrendingUp, Bot, Shield, ArrowRight, type LucideIcon } from "lucide-react";
+import {
+  TrendingUp,
+  Bot,
+  Shield,
+  ArrowRight,
+  type LucideIcon,
+} from "lucide-react";
 import type { DashboardCmsData } from "./DashboardContent";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -11,7 +17,10 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Shield,
 };
 
-const COLOR_MAP: Record<string, { bg: string; border: string; icon: string; text: string }> = {
+const COLOR_MAP: Record<
+  string,
+  { bg: string; border: string; icon: string; text: string }
+> = {
   blue: {
     bg: "bg-blue-500/10",
     border: "border-blue-500/30 hover:border-blue-500/50",
@@ -45,7 +54,6 @@ interface SmartActionsProps {
 }
 
 export function SmartActions({ userState, locale, cmsData }: SmartActionsProps) {
-  // Bruk CMS-data hvis tilgjengelig, ellers defaults
   const actions =
     cmsData?.smartActions?.filter((a) => a.condition === userState) ??
     getDefaultActions(userState, locale);
@@ -57,43 +65,71 @@ export function SmartActions({ userState, locale, cmsData }: SmartActionsProps) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.15 }}
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
     >
-      {actions.map((action, i) => {
-        const color = COLOR_MAP[action.color ?? "blue"] ?? COLOR_MAP.blue;
-        const Icon = ICON_MAP[action.icon ?? "TrendingUp"] ?? TrendingUp;
-
-        return (
-          <Link key={i} href={action.ctaLink} className="group block">
-            <div
-              className={`relative overflow-hidden rounded-2xl border ${color.border} ${color.bg} p-5 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-white text-base">{action.title}</h4>
-                  {action.description && (
-                    <p className="text-sm text-slate-400 mt-1 line-clamp-2">{action.description}</p>
-                  )}
-                  <div className={`mt-3 inline-flex items-center gap-1.5 text-sm font-semibold ${color.text} group-hover:gap-2.5 transition-all`}>
-                    {action.ctaText}
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
-                </div>
-                <div className={`p-2.5 rounded-xl ${color.bg} shrink-0`}>
-                  <Icon className={`w-5 h-5 ${color.icon}`} />
-                </div>
-              </div>
-            </div>
-          </Link>
-        );
-      })}
+      {/* Desktop: grid | Mobile: horizontal scroll */}
+      <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {actions.map((action, i) => (
+          <ActionCard key={i} action={action} />
+        ))}
+      </div>
+      <div className="flex sm:hidden gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory">
+        {actions.map((action, i) => (
+          <div key={i} className="snap-start shrink-0 w-[85vw] max-w-[320px]">
+            <ActionCard action={action} />
+          </div>
+        ))}
+      </div>
     </motion.div>
+  );
+}
+
+function ActionCard({
+  action,
+}: {
+  action: {
+    title: string;
+    description?: string;
+    ctaText: string;
+    ctaLink: string;
+    icon?: string;
+    color?: string;
+  };
+}) {
+  const color = COLOR_MAP[action.color ?? "blue"] ?? COLOR_MAP.blue;
+  const Icon = ICON_MAP[action.icon ?? "TrendingUp"] ?? TrendingUp;
+
+  return (
+    <Link href={action.ctaLink} className="group block">
+      <div
+        className={`relative overflow-hidden rounded-2xl border ${color.border} ${color.bg} p-5 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg h-full`}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h4 className="font-bold text-white text-base">{action.title}</h4>
+            {action.description && (
+              <p className="text-sm text-slate-400 mt-1 line-clamp-2">
+                {action.description}
+              </p>
+            )}
+            <div
+              className={`mt-3 inline-flex items-center gap-1.5 text-sm font-semibold ${color.text} group-hover:gap-2.5 transition-all`}
+            >
+              {action.ctaText}
+              <ArrowRight className="w-4 h-4" />
+            </div>
+          </div>
+          <div className={`p-2.5 rounded-xl ${color.bg} shrink-0`}>
+            <Icon className={`w-5 h-5 ${color.icon}`} />
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
 
 function getDefaultActions(
   userState: string,
-  locale: string,
+  locale: string
 ): Array<{
   condition: string;
   title: string;
