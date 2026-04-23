@@ -238,6 +238,7 @@ Alle agenter er oppdatert til å bruke MemPalace MCP v3.1-verktøy med korrekte 
 | **auth** | `.kimi/agents/auth-agent.yaml` | OAuth, session, RLS | `auth-system`, `oauth`, `session`, `refresh-token`, `middleware` |
 | **sanity** | `.kimi/agents/sanity-agent.yaml` | CMS, schema, tokens | `sanity-cms`, `design-tokens`, `groq`, `studio`, `webhooks` |
 | **mobile** | `.kimi/agents/mobile-check-agent.yaml` | Mobil, PWA, Lighthouse | `mobile-ui`, `pwa`, `responsive`, `performance`, `lighthouse` |
+| **super-editor** | `.kimi/agents/super-editor-agent.yaml` | CMS + kode-redigering, screenshots | `sanity-cms`, `design-tokens`, `studio`, `frontend`, `tailwind` |
 
 **Aktivering:**
 ```bash
@@ -248,6 +249,7 @@ kimi auth        # Auth-ekspert
 kimi sanity      # Sanity-ekspert
 kimi mempalace   # Memory-arkitekt
 kimi mobile      # Mobil-sjekk
+kimi super-editor # Super-redaktør (CMS + kode)
 ```
 
 **Felles MemPalace-protokoll for alle agenter:**
