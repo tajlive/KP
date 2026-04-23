@@ -56,11 +56,12 @@ export default async function PortfolioPage({ params }: PageProps) {
       localizedPathname(locale, "/dashboard/portfolio")
     );
 
-    // Fetch wallets, portfolios, and trading sessions
+    // Fetch wallets, portfolios, trading sessions, AND user profile
     const [
       { data: wallets },
       { data: portfolios },
       { data: sessions },
+      { data: profile },
     ] = await Promise.all([
       supabase
         .from("wallets")
@@ -80,10 +81,20 @@ export default async function PortfolioPage({ params }: PageProps) {
         .eq("user_id", user.id)
         .order("started_at", { ascending: false })
         .limit(10),
+      supabase
+        .from("user_profiles")
+        .select("paper_balance")
+        .eq("id", user.id)
+        .single(),
     ]);
 
-    // Derive display assets: prefer wallets, fallback to portfolio record
+    // Derive display assets: prefer wallets, fallback to portfolio record.
+    // CRITICAL FIX: Use user_profiles.paper_balance as the source of truth
+    // for portfolio balance. The portfolios table is NOT kept in sync with
+    // paper_balance updates, causing displayed sums to differ between
+    // /dashboard and /dashboard/portfolio.
     const hasWallets = wallets && wallets.length > 0;
+    const paperBalance = Number(profile?.paper_balance ?? 0);
     const displayAssets = hasWallets
       ? wallets!.map((w) => ({ type: "wallet" as const, ...w }))
       : portfolios
@@ -92,7 +103,7 @@ export default async function PortfolioPage({ params }: PageProps) {
               type: "portfolio" as const,
               id: portfolios.id,
               currency: portfolios.name || "NOK",
-              balance: Number(portfolios.current_balance || portfolios.initial_balance || 0),
+              balance: paperBalance > 0 ? paperBalance : Number(portfolios.current_balance || portfolios.initial_balance || 0),
             },
           ]
         : [];
