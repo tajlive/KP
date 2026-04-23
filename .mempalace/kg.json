@@ -440,6 +440,11 @@
       "predicate": "fee",
       "object": "0.1pct-all-modes",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "research_source",
+      "object": "Perplexity-Pro-2026-04-23",
+      "validFrom": "2026-04-23"
     }
   ],
   "risk-management": [
@@ -702,6 +707,102 @@
       "predicate": "uses",
       "object": "PullToRefresh",
       "validFrom": "2026-04-23"
+    }
+  ],
+  "demo-users": [
+    {
+      "predicate": "created",
+      "object": "demo1-leader",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "created",
+      "object": "demo2-follower",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "created",
+      "object": "demo3-follower",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "trades_count",
+      "object": "7-DCA-trades",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "copy_trading",
+      "object": "demo2-follows-demo1",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "copy_trading",
+      "object": "demo3-follows-demo1",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "strategy",
+      "object": "dca_trygg",
+      "validFrom": "2026-04-23"
+    }
+  ],
+  "deploy": [
+    {
+      "predicate": "status",
+      "object": "pushed-to-main",
+      "validFrom": "2026-04-23"
+    }
+  ],
+  "ui-audit-2026-04-23": [
+    {
+      "predicate": "found",
+      "object": "25 guesswork components across src/components, src/shared/ui, src/features, src/app",
+      "validFrom": "2026-04-23T00:03:14.995Z"
+    },
+    {
+      "predicate": "worst-offender",
+      "object": "PortfolioDashboard.tsx: 1000+ lines, mixes business logic with JSX, hardcoded hex colors, brittle symbol heuristic",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "worst-offender",
+      "object": "UnifiedTradingDashboard.tsx: unknown props, unsafe casts, localStorage without try/catch, business logic mixed with presentation",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "worst-offender",
+      "object": "ErrorBoundary: 3 duplicate implementations, unguarded window access, hardcoded light-mode colors in dark app",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "worst-offender",
+      "object": "ConnectBinanceModal: all UI text hardcoded English despite Norwegian primary locale",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "landing-page-issues",
+      "object": "duplicate meta description, missing data-testid, 10+ files with hardcoded Norwegian, no aria-hidden on decorative SVGs, missing ssr:true on dynamic imports",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "duplicate-patterns",
+      "object": "Button (button.tsx + ButtonPremium), Card (card.tsx + GlassCard), EmptyState (EmptyState.tsx + empty.tsx)",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "mobile-v1-assessment",
+      "object": "Solid: haptic hook, swipe-action, pull-to-refresh, bottom-tabs — all deterministic with explicit state. Weak: Sparkline + formatCurrency in same file, hardcoded range colors, symbol.slice(0,2) avatar heuristic",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "vs-2026-standard",
+      "object": "Missing: WebGL charts, edge-native PWA 2.0, passive biometric auth, WCAG 2.1 AA embedded in tokens, deterministic rendering with memoized selectors, risk-based progressive disclosure",
+      "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "design-tokens-assessment",
+      "object": "Tier 1+2+3 structure exists but not enforced. SURFACE.BG uses arbitrary values bg-[#0a0b0d] instead of CSS vars. No contrast ratio validation. No touch-target minimums in tokens.",
+      "validFrom": "2026-04-23T00:03:14.996Z"
     }
   ]
 }
