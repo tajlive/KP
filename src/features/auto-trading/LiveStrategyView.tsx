@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentErrorBoundary } from "@/shared/error/ComponentErrorBoundary";
+import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -326,7 +326,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
         <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* KLA-108: Refactored and Lazy Loaded Charts */}
-            <ComponentErrorBoundary name="Interaktive Grafer">
+            <ErrorBoundary name="Interaktive Grafer">
               <StrategyCharts
                 chartData={chartData}
                 equityData={equityData}
@@ -336,7 +336,7 @@ export function LiveStrategyView({ strategy, onBack }: LiveStrategyViewProps) {
                 buyDots={buyDots}
                 sellDots={sellDots}
               />
-            </ComponentErrorBoundary>
+            </ErrorBoundary>
 
             {/* Right: Stats */}
             <div className="space-y-4">
