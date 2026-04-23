@@ -2,10 +2,12 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { AlertTriangle } from "lucide-react";
-import { Component, type ReactNode } from "react";
+import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
+  name?: string;
+  fallback?: ReactNode;
 }
 
 interface State {
@@ -22,10 +24,26 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    const componentName = this.props.name || "Unknown";
+
+    // Log to console for dev debugging
+    if (process.env.NODE_ENV === "development") {
+      console.error(
+        `ErrorBoundary [${componentName}] caught error:`,
+        error,
+        errorInfo
+      );
+    }
+
+    // Report to Sentry
     Sentry.captureException(error, {
       extra: {
         componentStack: errorInfo.componentStack,
+        componentName,
+      },
+      tags: {
+        component: componentName,
       },
     });
   }
@@ -40,98 +58,35 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      // Allow custom fallback (e.g. for component-level boundaries)
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      // Full-page error fallback
       return (
-        <div
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#0a0b0d",
-            padding: "24px",
-          }}
-        >
-          <div
-            style={{
-              textAlign: "center",
-              maxWidth: "400px",
-            }}
-          >
+        <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6">
+          <div className="text-center max-w-sm">
             <AlertTriangle
               size={48}
-              color="#ef4444"
-              style={{ margin: "0 auto 24px" }}
+              className="text-red-500 mx-auto mb-6"
             />
-            <h1
-              style={{
-                fontSize: "18px",
-                fontWeight: 700,
-                color: "white",
-                marginBottom: "12px",
-              }}
-            >
+            <h1 className="text-lg font-bold text-white mb-3">
               Noe gikk galt
             </h1>
-            <p
-              style={{
-                fontSize: "14px",
-                color: "#9ca3af",
-                marginBottom: "24px",
-                lineHeight: 1.6,
-              }}
-            >
+            <p className="text-sm text-gray-400 mb-6 leading-relaxed">
               Vi er varslet og jobber med det. Prøv å laste siden på nytt.
             </p>
-            <div
-              style={{
-                display: "flex",
-                gap: "12px",
-                justifyContent: "center",
-              }}
-            >
+            <div className="flex gap-3 justify-center">
               <button
                 onClick={this.handleReload}
-                style={{
-                  padding: "12px 24px",
-                  backgroundColor: "#2563eb",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "10px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "background-color 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#1d4ed8";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2563eb";
-                }}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 Last inn på nytt
               </button>
               <button
                 onClick={this.handleGoHome}
-                style={{
-                  padding: "12px 24px",
-                  backgroundColor: "transparent",
-                  color: "#9ca3af",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  borderRadius: "10px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "white";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "#9ca3af";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
-                }}
+                className="px-6 py-3 bg-transparent text-gray-400 hover:text-white border border-white/20 hover:border-white/40 rounded-lg text-sm font-medium transition-all"
               >
                 Gå til forsiden
               </button>
