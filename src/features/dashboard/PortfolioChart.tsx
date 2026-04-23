@@ -34,6 +34,38 @@ const TIME_PERIODS = [
   { key: "ALL", label: "Alt", days: 0 },
 ] as const;
 
+function SkeletonChart() {
+  return (
+    <div className="h-[380px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 md:p-6 border border-slate-700">
+      {/* Header skeleton */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="space-y-2">
+          <div className="h-4 w-24 bg-slate-700 rounded animate-pulse" />
+          <div className="h-8 w-40 bg-slate-700 rounded animate-pulse" />
+          <div className="h-3 w-32 bg-slate-700 rounded animate-pulse" />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-8 w-8 bg-slate-700 rounded-lg animate-pulse" />
+          <div className="h-8 w-48 bg-slate-700 rounded-lg animate-pulse" />
+        </div>
+      </div>
+      {/* Chart area skeleton */}
+      <div className="h-[250px] flex items-end gap-2 px-2">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex-1 bg-slate-700/50 rounded-t animate-pulse"
+            style={{
+              height: `${20 + Math.random() * 60}%`,
+              animationDelay: `${i * 0.05}s`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
   const [data, setData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +82,6 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
       const period = TIME_PERIODS.find((p) => p.key === selectedPeriod);
       const daysBack = period?.days || 30;
 
-      // Hent trading session
       let sessionQuery = supabase
         .from("trading_sessions")
         .select("id, starting_capital_nok, current_capital_nok, started_at");
@@ -78,7 +109,6 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
       setStartingValue(Number(session.starting_capital_nok) || 100000);
       setCurrentValue(Number(session.current_capital_nok) || 100000);
 
-      // Hent trades for perioden
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysBack);
 
@@ -103,7 +133,6 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
 
       setHasData(true);
 
-      // Bygg porteføljedata
       const chartData = buildPortfolioData(
         trades || [],
         Number(session.starting_capital_nok) || 100000,
@@ -112,7 +141,6 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
 
       setData(chartData);
 
-      // Beregn endring
       if (chartData.length > 0) {
         const first = chartData[0].value;
         const last = chartData[chartData.length - 1].value;
@@ -138,18 +166,13 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
     daysBack: number
   ): ChartDataPoint[] => {
     const data: ChartDataPoint[] = [];
-    const now = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - daysBack);
 
-    let currentCapital = startCapital;
-
-    // Lag datapunkter for hver dag
     for (let i = 0; i <= daysBack; i++) {
       const date = new Date(startDate);
       date.setDate(date.getDate() + i);
 
-      // Summer trades frem til denne datoen
       const tradesUpToDate = trades.filter(
         (t) => new Date(t.created_at) <= date
       );
@@ -158,7 +181,7 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
         return sum + (t.realized_pnl || 0);
       }, 0);
 
-      currentCapital = startCapital + totalPnl;
+      const currentCapital = startCapital + totalPnl;
 
       data.push({
         date: date.toISOString().split("T")[0],
@@ -185,11 +208,19 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
     }).format(value);
   };
 
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChartDataPoint; value: number }> }) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{ payload: ChartDataPoint; value: number }>;
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl">
-          <p className="text-slate-400 text-xs mb-1">{payload[0].payload.formattedDate}</p>
+          <p className="text-slate-400 text-xs mb-1">
+            {payload[0].payload.formattedDate}
+          </p>
           <p className="text-white font-bold text-lg">
             {formatCurrency(payload[0].value)}
           </p>
@@ -200,44 +231,39 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
   };
 
   if (loading) {
-    return (
-      <motion.div
-        className="h-[350px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700 animate-pulse"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <div className="h-8 w-48 bg-slate-700 rounded mb-4" />
-        <div className="h-[250px] bg-slate-800 rounded" />
-      </motion.div>
-    );
+    return <SkeletonChart />;
   }
 
   if (!hasData) {
     return (
       <motion.div
-        className="h-[350px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col items-center justify-center text-muted-foreground"
+        className="h-[380px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col items-center justify-center text-muted-foreground"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-lg font-medium text-slate-300">Ingen handelshistorikk ennå</p>
-        <p className="text-sm text-slate-500 mt-1">Start din første øvingssesjon for å se grafen</p>
+        <p className="text-lg font-medium text-slate-300">
+          Ingen handelshistorikk ennå
+        </p>
+        <p className="text-sm text-slate-500 mt-1">
+          Start din første øvingssesjon for å se grafen
+        </p>
       </motion.div>
     );
   }
 
   return (
     <motion.div
-      className="h-[380px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700"
+      className="h-[380px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 md:p-6 border border-slate-700"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
         <div>
           <p className="text-slate-400 text-sm mb-1">Din portefølje</p>
           <div className="flex items-center gap-3">
-            <p className="text-3xl font-bold text-white">
+            <p className="text-2xl sm:text-3xl font-bold text-white">
               {formatCurrency(currentValue)}
             </p>
             <div
@@ -261,20 +287,20 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={fetchPortfolioData}
-            className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-700 rounded-lg transition-colors shrink-0"
             title="Oppdater"
           >
             <RefreshCw className="w-4 h-4 text-slate-400" />
           </button>
-          <div className="flex gap-1">
+          <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
             {TIME_PERIODS.map((period) => (
               <button
                 key={period.key}
                 onClick={() => setSelectedPeriod(period.key)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   selectedPeriod === period.key
                     ? "bg-blue-500 text-white"
                     : "bg-slate-700 text-slate-300 hover:bg-slate-600"
@@ -289,14 +315,21 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
 
       <div className="h-[250px]">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <AreaChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#0052FF" stopOpacity={0.3} />
                 <stop offset="95%" stopColor="#0052FF" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#1e293b"
+              vertical={false}
+            />
             <XAxis
               dataKey="formattedDate"
               axisLine={false}
@@ -304,10 +337,7 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
               tick={{ fill: "#64748b", fontSize: 11 }}
               minTickGap={30}
             />
-            <YAxis
-              hide
-              domain={["auto", "auto"]}
-            />
+            <YAxis hide domain={["auto", "auto"]} />
             <Tooltip content={<CustomTooltip />} />
             <Area
               type="monotone"

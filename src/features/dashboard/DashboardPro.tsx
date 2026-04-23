@@ -10,7 +10,6 @@ import { useAuth } from "@/lib/auth/new/AuthContext";
 import { PortfolioChart } from "./PortfolioChart";
 import { StatsGrid } from "./StatsGrid";
 import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
-import { UpgradeGate } from "@/features/payments/UpgradeGate";
 import { TopTradersPreview } from "@/features/copy-trading/TopTradersPreview";
 import { DailyChallenge } from "@/features/gamification/DailyChallenge";
 
@@ -93,6 +92,7 @@ export function DashboardPro({
               changePct={totalReturn}
               ctaText={cmsData?.heroCtaText}
               ctaLink={cmsData?.heroCtaLink}
+              sessionMode={isPaperMode ? "paper" : "live"}
             />
           </motion.div>
 
@@ -185,7 +185,7 @@ export function DashboardPro({
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
                 <h3 className="text-xl font-bold text-white">
-                  {cmsData?.upgradeBanner?.title ?? "🚀 Klar for neste nivå?"}
+                  {cmsData?.upgradeBanner?.title ?? "Klar for neste nivå?"}
                 </h3>
                 <p className="text-slate-400 mt-1">
                   {cmsData?.upgradeBanner?.description ?? "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support."}

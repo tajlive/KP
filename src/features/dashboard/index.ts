@@ -8,7 +8,6 @@ export { StatsGrid, StatsGridMini } from "./StatsGrid";
 
 // Existing components
 export { SimplifiedHero } from "./SimplifiedHero";
-export { FirstTradePrompt } from "./FirstTradePrompt";
 export { AdvancedSection } from "./AdvancedSection";
 export { LivePnLWidget } from "./LivePnLWidget";
 export { PaperTradingCard } from "./PaperTradingCard";

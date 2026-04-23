@@ -804,5 +804,69 @@
       "object": "Tier 1+2+3 structure exists but not enforced. SURFACE.BG uses arbitrary values bg-[#0a0b0d] instead of CSS vars. No contrast ratio validation. No touch-target minimums in tokens.",
       "validFrom": "2026-04-23T00:03:14.996Z"
     }
+  ],
+  "portfolio-balance-sync": [
+    {
+      "predicate": "root-cause",
+      "object": "portfolios.current_balance NOT synced with user_profiles.paper_balance — two separate data sources shown in UI",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "affected-users",
+      "object": "6 users with portfolios, all had current_balance=1M regardless of paper_balance",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "fix",
+      "object": "portfolio/page.tsx now fetches user_profiles.paper_balance and uses it as source of truth",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "db-fix",
+      "object": "Updated portfolios.current_balance for tomarnejensen from 1M to 100M NOK",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    },
+    {
+      "predicate": "other-places",
+      "object": "Only 1 place used portfolios.current_balance: src/app/[locale]/(user)/dashboard/portfolio/page.tsx. All other pages use user_profiles.paper_balance.",
+      "validFrom": "2026-04-23T07:59:09.716Z"
+    }
+  ],
+  "ui-modernization-2026-04-23": [
+    {
+      "predicate": "research_source",
+      "object": "Perplexity-Pro-competitor-analysis-2025-2026",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "research_source",
+      "object": "existing-competitor-analysis-march-2026",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "research_source",
+      "object": "Dashboard-Redesign-Plan-2026-04-21",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "status",
+      "object": "analysis-complete-ready-for-implementation",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "key_competitors",
+      "object": "Coinbase-Robinhood-eToro-Binance-Kraken-Revolut-Firi-Bybit-Crypto.com-Wise",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "top_patterns",
+      "object": "bento-layouts-AI-analytics-dark-light-mode-social-copy-trading-minimal-hero",
+      "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "priority_action",
+      "object": "execute-Dashboard-Redesign-Plan-phases-A-through-F",
+      "validFrom": "2026-04-23"
+    }
   ]
 }
