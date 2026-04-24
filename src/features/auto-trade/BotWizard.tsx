@@ -45,8 +45,8 @@ const TIER_COIN_LIMIT: { [key: string]: number } = {
   student: 3,
   bachelor: 5,
   master: 10,
-  phd: 10,
-  professor: 10,
+  phd: 11,
+  professor: 11,
 };
 
 const COINS = [...PAPER_TRADING_UI_SYMBOLS];

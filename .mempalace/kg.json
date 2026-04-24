@@ -116,6 +116,26 @@
       "predicate": "mode",
       "object": "paper-live-copy",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "strategy-alias-mapping",
+      "object": "ai-copy→multi_signal via LEGACY_ALIASES in strategy-id-aliases.ts",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "strategy-alias-mapping",
+      "object": "trend→trend_follow via LEGACY_ALIASES in strategy-id-aliases.ts",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "strategy-alias-mapping",
+      "object": "multi→multi_signal via LEGACY_ALIASES in strategy-id-aliases.ts",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "cron-strategies",
+      "object": "dca-trend_follow-multi_signal-grid + ensemble_ai special path via trading_signals table",
+      "validFrom": "2026-04-24T19:49:00.000Z"
     }
   ],
   "tick-cron": [
@@ -440,6 +460,11 @@
       "predicate": "ui_audit_design-tokens-assessment",
       "object": "Tier 1+2+3 structure exists but not enforced. SURFACE.BG uses arbitrary values bg-[#0a0b0d] instead of CSS vars. No contrast ratio validation. No touch-target minimums in tokens.",
       "validFrom": "2026-04-23T00:03:14.996Z"
+    },
+    {
+      "predicate": "pattern",
+      "object": "All dashboard prices must convert USDT→NOK via /api/fx/usdt-nok before display — consistent NOK currency across all trading UI",
+      "validFrom": "2026-04-24T19:49:00.000Z"
     }
   ],
   "i18n-system": [
@@ -839,6 +864,80 @@
       "predicate": "modernization_priority_action",
       "object": "execute-Dashboard-Redesign-Plan-phases-A-through-F",
       "validFrom": "2026-04-23"
+    }
+  ],
+  "auto-trade": [
+    {
+      "predicate": "ui-component",
+      "object": "BotWizard 3-step wizard: strategy→risk/capital/coins→review/start",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "ui-component",
+      "object": "BotDetailView with pause/resume/stop via PATCH /api/trading-sessions/{id}/status",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "ui-component",
+      "object": "LivePricePreview with showInNok prop for NOK price display",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "backend-endpoint",
+      "object": "POST /api/auto-trading/paper creates trading_sessions with validated strategy_id",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "tier-limits",
+      "object": "student: 3 coins, dca only; bachelor: 5 coins, dca+trend+grid; master: 10 coins, all strategies",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "page-enhancement",
+      "object": "auto-trade page shows active bot banner with links to BotDetailView",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "fixed-bug",
+      "object": "ai-copy strategy ID caused Unknown strategy error in cron tick — fixed by adding LEGACY_ALIAS mapping",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "fixed-bug",
+      "object": "createPaperTradingSession used user_auto_trading_configs.strategy_id (risk profile offensive) as engine strategy — fixed to default dca",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "fixed-bug",
+      "object": "LivePricePreview displayed USD prices in auto-trade wizard — fixed with showInNok prop fetching /api/fx/usdt-nok",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "fixed-bug",
+      "object": "BotDetailView had no pause/resume/stop controls — added handleStatusChange calling PATCH /api/trading-sessions/{id}/status",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "files-changed",
+      "object": "src/lib/trading/strategy-id-aliases.ts, src/features/trading/LivePricePreview.tsx, src/features/auto-trade/BotWizard.tsx, src/features/auto-trade/BotDetailView.tsx, src/lib/supabase/paper-trading.ts, src/app/[locale]/(user)/dashboard/auto-trade/page.tsx",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "test-added",
+      "object": "strategy-id-aliases.test.ts: maps BotWizard ai-copy to multi_signal engine",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    }
+  ],
+  "user_auto_trading_configs": [
+    {
+      "predicate": "field-semantics",
+      "object": "strategy_id is RISK PROFILE (offensive/conservative), NOT trading engine strategy — must not use as strategy_id in trading_sessions",
+      "validFrom": "2026-04-24T19:49:00.000Z"
+    },
+    {
+      "predicate": "valid-field",
+      "object": "trading_capital_nok and risk_level are the usable fields for session creation",
+      "validFrom": "2026-04-24T19:49:00.000Z"
     }
   ]
 }

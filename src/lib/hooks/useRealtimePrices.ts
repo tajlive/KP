@@ -18,6 +18,10 @@ const COIN_NAMES: { [key: string]: string } = {
   ADAUSDT: "Cardano",
   XRPUSDT: "XRP",
   DOGEUSDT: "Dogecoin",
+  AVAXUSDT: "Avalanche",
+  DOTUSDT: "Polkadot",
+  LINKUSDT: "Chainlink",
+  MATICUSDT: "Polygon",
 };
 
 const POLL_MS = 15_000; // Reduced from 5s to 15s to save Vercel Hobby plan resources

@@ -14,4 +14,5 @@ export const PAPER_TRADING_UI_SYMBOLS: readonly string[] = [
   "DOTUSDT",
   "LINKUSDT",
   "DOGEUSDT",
+  "MATICUSDT",
 ];

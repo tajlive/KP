@@ -11,6 +11,7 @@
 
 import { PriceWebSocket } from "@/lib/auto-trading/binance-websocket";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
 import { useEffect, useState } from "react";
 
 // Local type definition since coin_prices may not be in generated schema
@@ -30,13 +31,8 @@ interface CoinPrice {
 }
 
 // KLA-105: Priority symbols for real-time WebSocket updates
-const PRIORITY_SYMBOLS = [
-  "BTCUSDT",
-  "ETHUSDT",
-  "SOLUSDT",
-  "BNBUSDT",
-  "DOGEUSDT",
-];
+// Uses canonical UI symbols so all tradable assets get WebSocket prices
+const PRIORITY_SYMBOLS = [...PAPER_TRADING_UI_SYMBOLS];
 
 export function usePrices() {
   const [prices, setPrices] = useState<Record<string, CoinPrice>>({});
