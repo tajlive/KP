@@ -202,6 +202,20 @@ export default function PortfolioDashboard({
     refresh: refreshPrices,
   } = useRealtimePrices(DASHBOARD_SYMBOLS);
 
+  const [usdtNokRate, setUsdtNokRate] = useState(10.8);
+  useEffect(() => {
+    fetch("/api/fx/usdt-nok")
+      .then((r) => r.json())
+      .then((data) => {
+        if (typeof data.rate === "number" && data.rate > 0) {
+          setUsdtNokRate(data.rate);
+        }
+      })
+      .catch(() => {
+        // ignore
+      });
+  }, []);
+
   // Live trades: server snapshot + realtime (JWT via subscribeToTrades — RLS krever setAuth)
   const [liveTrades, setLiveTrades] = useState<Trade[]>(trades);
   useEffect(() => {
@@ -337,7 +351,7 @@ export default function PortfolioDashboard({
 
   const priceForSymbol = (sym: string) => {
     const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
-    return liveCoins.find((c) => c.symbol === key)?.price ?? 0;
+    return (liveCoins.find((c) => c.symbol === key)?.price ?? 0) * usdtNokRate;
   };
   const gradientForSymbol = (sym: string) => {
     const key = sym.length <= 4 && !sym.includes("USDT") ? `${sym}USDT` : sym;
@@ -588,7 +602,7 @@ export default function PortfolioDashboard({
                     className="text-base font-semibold text-[#1A1D26]"
                     style={{ fontVariantNumeric: "tabular-nums" }}
                   >
-                    {formatNOK(locale, coin.price)}
+                    {formatNOK(locale, coin.price * usdtNokRate)}
                   </p>
                   <span
                     className={`text-sm font-medium tabular-nums ${coin.change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}

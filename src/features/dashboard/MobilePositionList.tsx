@@ -136,7 +136,7 @@ export function MobilePositionList({
                 quantity={pos.qty}
                 avgPrice={avgPrice}
                 currentPrice={price}
-                currency="USD"
+                currency="NOK"
                 changePercent={pnlPercent}
                 onPress={() => {
                   haptic("light");
