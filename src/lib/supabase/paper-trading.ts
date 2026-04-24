@@ -48,13 +48,28 @@ export async function createPaperTradingSession(
   supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession> {
+  // Respect user's auto-trading config if enabled (YOLO fix)
+  let strategyId = 'manual';
+  try {
+    const { data: cfg } = await supabase
+      .from("user_auto_trading_configs")
+      .select("strategy_id, is_enabled")
+      .eq("user_id", userId)
+      .single();
+    if (cfg?.is_enabled && cfg?.strategy_id) {
+      strategyId = cfg.strategy_id;
+    }
+  } catch {
+    // ignore config fetch errors
+  }
+
   const { data, error } = await supabase
     .from("trading_sessions")
     .insert({
       user_id: userId,
       trading_pair: 'BTCUSDT',
       mode: 'paper',
-      strategy_id: 'manual',
+      strategy_id: strategyId,
       status: 'active',
       starting_capital_nok: 100000,
       current_capital_nok: 100000,

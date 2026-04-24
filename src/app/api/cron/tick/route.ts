@@ -860,6 +860,12 @@ export async function GET(req: NextRequest) {
     const results: TickResult[] = [];
 
     for (const session of sessions as unknown as TradingSession[]) {
+      // Skip manual sessions — these are user-driven and not processed by auto-trading cron
+      if (session.strategy_id === "manual") {
+        results.push({ session_id: session.id, action: "heartbeat" });
+        continue;
+      }
+
       // Timeout protection
       if (Date.now() - startTime > 55_000) {
         console.warn(
