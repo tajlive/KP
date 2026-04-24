@@ -14,7 +14,7 @@ export function getStripe(): Stripe {
       throw new Error('STRIPE_SECRET_KEY is not defined')
     }
     stripeClient = new Stripe(key, {
-      apiVersion: '2026-03-25.dahlia',
+      apiVersion: '2026-04-22.dahlia',
     })
   }
   return stripeClient
