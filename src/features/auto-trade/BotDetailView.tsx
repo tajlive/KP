@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
   Activity,
   Clock,
+  Pause,
+  Play,
+  Square,
 } from "lucide-react";
 import { BRAND, SURFACE, SHADOW, RADIUS } from "@/lib/design/tokens";
 import {
@@ -129,9 +134,38 @@ function formatDuration(startDate: string) {
 
 const cardBase = `bg-white dark:bg-slate-900 ${RADIUS.card} border border-[#E2E5EC] dark:border-slate-800 ${SHADOW.card} p-5`;
 
-export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
+export function BotDetailView({ session: initialSession, trades, locale }: BotDetailViewProps) {
   const t = useTranslations("trading.botDetail");
   const no = locale === "no";
+  const router = useRouter();
+  const [session, setSession] = useState<Session>(initialSession);
+  const [loading, setLoading] = useState(false);
+
+  const handleStatusChange = useCallback(
+    async (newStatus: "active" | "paused" | "stopped") => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `/api/trading-sessions/${session.id}/status`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: newStatus }),
+          },
+        );
+        if (!response.ok) throw new Error("Failed to update status");
+        const data = await response.json();
+        if (data.session) {
+          setSession((prev) => ({ ...prev, ...data.session }));
+        }
+      } catch (err) {
+        console.error("Status change failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session.id],
+  );
 
   const totalPnl = trades.reduce((sum: number, t: Trade) => {
     const p = tradePnl(t);
@@ -177,6 +211,42 @@ export function BotDetailView({ session, trades, locale }: BotDetailViewProps) {
           year: "numeric",
         })}`}
       />
+
+      {/* Bot Actions */}
+      {session.status !== "stopped" && (
+        <div className="flex flex-wrap items-center gap-2">
+          {session.status === "active" ? (
+            <button
+              type="button"
+              onClick={() => handleStatusChange("paused")}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[#E2E5EC] dark:border-slate-600 px-4 py-2.5 text-sm font-semibold text-[#5E6478] dark:text-slate-300 hover:bg-[#F7F8FA] dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
+            >
+              <Pause className="w-4 h-4" />
+              {no ? "Pause bot" : "Pause bot"}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => handleStatusChange("active")}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#0052FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0047E0] transition-colors disabled:opacity-50"
+            >
+              <Play className="w-4 h-4" />
+              {no ? "Gjenoppta" : "Resume"}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => handleStatusChange("stopped")}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 px-4 py-2.5 text-sm font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50"
+          >
+            <Square className="w-4 h-4" />
+            {no ? "Stopp bot" : "Stop bot"}
+          </button>
+        </div>
+      )}
 
       <div className="mb-6">
         <LivePricePreview symbol={session.trading_pair ?? session.symbol ?? "BTCUSDT"} />

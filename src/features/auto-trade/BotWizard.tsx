@@ -553,7 +553,7 @@ export function BotWizard({
             {selectedPairs.length > 0 && (
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
                 {selectedPairs.map((pair) => (
-                  <LivePricePreview key={pair} symbol={pair} />
+                  <LivePricePreview key={pair} symbol={pair} showInNok />
                 ))}
               </div>
             )}
@@ -620,7 +620,7 @@ export function BotWizard({
 
           {/* Live price for selected pair — RIGHT ABOVE ACTION */}
           <div className="mt-4">
-            <LivePricePreview symbol={selectedPairs[0] || "BTCUSDT"} />
+            <LivePricePreview symbol={selectedPairs[0] || "BTCUSDT"} showInNok />
           </div>
 
           {/* Primær CTA — alltid synlig (lys/mørk + over tabbar) */}

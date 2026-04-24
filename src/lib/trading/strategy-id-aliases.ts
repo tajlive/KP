@@ -40,6 +40,7 @@ const LEGACY_ALIASES: Record<string, TickStrategyEngineKey> = {
   // Korte aliases fra auto-trading/paper
   multi: "multi_signal",
   trend: "trend_follow",
+  "ai-copy": "multi_signal",
 };
 
 export function resolveTickStrategyEngineKey(

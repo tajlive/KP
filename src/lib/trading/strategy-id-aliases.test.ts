@@ -21,6 +21,12 @@ describe("resolveTickStrategyEngineKey", () => {
     expect(resolveTickStrategyEngineKey("ensemble_ai")).toBe("ensemble_ai");
   });
 
+  it("maps BotWizard ai-copy to multi_signal engine", () => {
+    expect(resolveTickStrategyEngineKey("ai-copy")).toBe("multi_signal");
+    expect(resolveTickStrategyEngineKey("trend")).toBe("trend_follow");
+    expect(resolveTickStrategyEngineKey("multi")).toBe("multi_signal");
+  });
+
   it("returns null for unknown", () => {
     expect(resolveTickStrategyEngineKey("nope")).toBeNull();
     expect(resolveTickStrategyEngineKey("")).toBeNull();
