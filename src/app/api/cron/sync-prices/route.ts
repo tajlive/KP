@@ -15,6 +15,7 @@ const TRACKED_SYMBOLS = [
   "DOGEUSDT",
   "AVAXUSDT",
   "DOTUSDT",
+  "LINKUSDT",
   "MATICUSDT",
 ];
 
