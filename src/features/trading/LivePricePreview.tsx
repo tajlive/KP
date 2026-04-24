@@ -1,15 +1,38 @@
 "use client";
 
 import { useAnimatedPrice } from "@/hooks/usePrices";
+import { useState, useEffect } from "react";
 
 interface LivePricePreviewProps {
   symbol: string;
   className?: string;
+  showInNok?: boolean;
 }
 
-export function LivePricePreview({ symbol, className = "" }: LivePricePreviewProps) {
-  const { formattedPrice, priceDirection, priceChange24h, isConnected } =
+function useUsdtNokRate() {
+  const [rate, setRate] = useState(9.77);
+  useEffect(() => {
+    fetch("/api/fx/usdt-nok")
+      .then((r) => r.json())
+      .then((d) => setRate(d.rate || 9.77))
+      .catch(() => setRate(9.77));
+  }, []);
+  return rate;
+}
+
+export function LivePricePreview({ symbol, className = "", showInNok = false }: LivePricePreviewProps) {
+  const { price, priceDirection, priceChange24h, isConnected } =
     useAnimatedPrice(symbol);
+  const usdtNokRate = useUsdtNokRate();
+
+  const displayPrice = showInNok && price > 0 ? price * usdtNokRate : price;
+  const formattedPrice = displayPrice > 0
+    ? new Intl.NumberFormat("no-NO", {
+        style: "currency",
+        currency: showInNok ? "NOK" : "USD",
+        maximumFractionDigits: displayPrice >= 1000 ? 0 : 2,
+      }).format(displayPrice)
+    : "";
 
   if (!formattedPrice || formattedPrice.includes("0,00") || formattedPrice.includes("0.00")) {
     return (

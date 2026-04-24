@@ -48,16 +48,21 @@ export async function createPaperTradingSession(
   supabase: Supa,
   userId: string,
 ): Promise<PaperTradingSession> {
-  // Respect user's auto-trading config if enabled (YOLO fix)
-  let strategyId = 'manual';
+  // Respect user's auto-trading config if enabled.
+  // NOTE: user_auto_trading_configs.strategy_id is a risk PROFILE
+  // (e.g. "offensive"), NOT a trading engine strategy.  We map it to
+  // the default engine strategy "dca".  The real strategy choice
+  // happens via BotWizard which POSTs to /api/auto-trading/paper.
+  const strategyId = 'dca';
+  let startingCapital = 100000;
   try {
     const { data: cfg } = await supabase
       .from("user_auto_trading_configs")
-      .select("strategy_id, is_enabled")
+      .select("strategy_id, is_enabled, trading_capital_nok, risk_level")
       .eq("user_id", userId)
       .single();
-    if (cfg?.is_enabled && cfg?.strategy_id) {
-      strategyId = cfg.strategy_id;
+    if (cfg?.is_enabled && cfg?.trading_capital_nok) {
+      startingCapital = cfg.trading_capital_nok;
     }
   } catch {
     // ignore config fetch errors
@@ -71,8 +76,8 @@ export async function createPaperTradingSession(
       mode: 'paper',
       strategy_id: strategyId,
       status: 'active',
-      starting_capital_nok: 100000,
-      current_capital_nok: 100000,
+      starting_capital_nok: startingCapital,
+      current_capital_nok: startingCapital,
       started_at: new Date().toISOString(),
       total_trades: 0,
       winning_trades: 0,
@@ -80,8 +85,8 @@ export async function createPaperTradingSession(
       total_pnl: 0,
       strategy_config: {},
       last_heartbeat: new Date().toISOString(),
-      initial_capital: 100000,
-      current_capital: 100000,
+      initial_capital: startingCapital,
+      current_capital: startingCapital,
     })
     .select()
     .single();
