@@ -104,8 +104,9 @@ export function useTrading(userId?: string) {
       setError(null);
       try {
         const supabase = getSupabaseClient();
-        const rpc = supabase.rpc as unknown as ExecuteTradeRpcFn;
-        const { error: tradeError } = await rpc("execute_trade", {
+        const { error: tradeError } = await (
+          supabase as unknown as { rpc: ExecuteTradeRpcFn }
+        ).rpc("execute_trade", {
           p_user_id: userId,
           p_symbol: symbol,
           p_type: "buy",
@@ -134,8 +135,9 @@ export function useTrading(userId?: string) {
       setError(null);
       try {
         const supabase = getSupabaseClient();
-        const rpc = supabase.rpc as unknown as ExecuteTradeRpcFn;
-        const { error: tradeError } = await rpc("execute_trade", {
+        const { error: tradeError } = await (
+          supabase as unknown as { rpc: ExecuteTradeRpcFn }
+        ).rpc("execute_trade", {
           p_user_id: userId,
           p_symbol: symbol,
           p_type: "sell",

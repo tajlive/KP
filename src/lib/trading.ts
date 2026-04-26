@@ -77,8 +77,9 @@ export const executeBuy = async (
     }
 
     // Execute trade via RPC
-    const rpc = supabase.rpc as unknown as ExecuteTradeRpc;
-    const { data: result, error: tradeError } = await rpc("execute_trade", {
+    const { data: result, error: tradeError } = await (
+      supabase as unknown as { rpc: ExecuteTradeRpc }
+    ).rpc("execute_trade", {
       p_user_id: userId,
       p_symbol: symbol,
       p_type: "buy",
@@ -146,8 +147,9 @@ export const executeSell = async (
     }
 
     // Execute trade via RPC
-    const rpc = supabase.rpc as unknown as ExecuteTradeRpc;
-    const { data: result, error: tradeError } = await rpc("execute_trade", {
+    const { data: result, error: tradeError } = await (
+      supabase as unknown as { rpc: ExecuteTradeRpc }
+    ).rpc("execute_trade", {
       p_user_id: userId,
       p_symbol: symbol,
       p_type: "sell",
@@ -255,8 +257,8 @@ export const getTrades = async (
 export const getTradingStats = async (
   userId: string,
 ): Promise<TradingStats | null> => {
-  const fromTradingStats = supabase.from as unknown as TradingStatsFromFn;
-  const { data, error } = await fromTradingStats("trading_stats")
+  const { data, error } = await (supabase as unknown as { from: TradingStatsFromFn })
+    .from("trading_stats")
     .select("*")
     .eq("user_id", userId)
     .single();
@@ -403,8 +405,9 @@ export const triggerPanicButton = async (
   error?: string;
 }> => {
   try {
-    const rpc = supabase.rpc as unknown as TriggerPanicRpc;
-    const { data: result, error } = await rpc("trigger_panic_button", {
+    const { data: result, error } = await (
+      supabase as unknown as { rpc: TriggerPanicRpc }
+    ).rpc("trigger_panic_button", {
       p_user_id: userId,
       p_reason: reason || "User triggered panic",
     });

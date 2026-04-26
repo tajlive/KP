@@ -406,8 +406,13 @@ export class AutoTradingWebSocket {
         }
 
         // Update trade as closed
-        await (supabase as any)
-          .from("trades")
+        await (supabase.from("trades") as unknown as {
+          update: (values: Record<string, unknown>) => {
+            eq: (column: string, value: string) => {
+              select: () => Promise<unknown>;
+            };
+          };
+        })
           .update({
             status: "CLOSED",
             exit_price: exitPrice,
