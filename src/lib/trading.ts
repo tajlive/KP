@@ -257,7 +257,7 @@ export const getTrades = async (
 export const getTradingStats = async (
   userId: string,
 ): Promise<TradingStats | null> => {
-  const { data, error } = await (supabase as unknown as { from: TradingStatsFromFn })
+  const { data, error } = await supabase
     .from("trading_stats")
     .select("*")
     .eq("user_id", userId)

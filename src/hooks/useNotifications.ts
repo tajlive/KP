@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { RealtimeChannel } from "@supabase/realtime-js";
 import { createClient } from "@/lib/utils";
 import {
   isPushSupported,
@@ -39,10 +40,6 @@ export function useNotifications() {
   const [loading, setLoading] = useState(true);
 
   const supabase = createClient();
-  type MarkNotificationsReadRpc = (
-    fn: "mark_notifications_read",
-    args: { p_notification_ids: string[] | null },
-  ) => Promise<{ error: { message: string } | null }>;
 
   // Initialize
   useEffect(() => {
@@ -146,8 +143,7 @@ export function useNotifications() {
   // Mark notifications as read
   const markAsRead = async (notificationIds?: string[]) => {
     try {
-      const rpc = supabase.rpc as unknown as MarkNotificationsReadRpc;
-      const { error } = await rpc("mark_notifications_read", {
+        const { error } = await (supabase as unknown as { rpc: (name: string, params?: Record<string, unknown>) => Promise<{ data: unknown; error: { message: string } | null }> }).rpc("mark_notifications_read", {
         p_notification_ids: notificationIds || null,
       });
 
@@ -179,19 +175,9 @@ export function useNotifications() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return false;
-      const notificationPreferencesFrom = supabase.from as unknown as (
-        table: "notification_preferences",
-      ) => {
-        upsert: (
-          payload: Record<string, unknown>,
-        ) => Promise<{ error: { message: string } | null }>;
-      };
-      const { error } = await notificationPreferencesFrom(
-        "notification_preferences",
-      ).upsert({ ...preferences, ...newPrefs, user_id: user.id } as Record<
-        string,
-        unknown
-      >);
+      const { error } = await supabase
+        .from("notification_preferences")
+        .upsert({ ...preferences, ...newPrefs, user_id: user.id } as never);
 
       if (error) throw error;
 
@@ -204,9 +190,12 @@ export function useNotifications() {
   };
 
   // Real-time subscription for new notifications
+  const channelRef = useRef<RealtimeChannel | null>(null);
+
   useEffect(() => {
+    const channelName = `notifications-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const subscription = supabase
-      .channel("notifications")
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
@@ -224,8 +213,13 @@ export function useNotifications() {
       )
       .subscribe();
 
+    channelRef.current = subscription;
+
     return () => {
-      subscription.unsubscribe();
+      if (channelRef.current) {
+        void supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
   }, [supabase]);
 

@@ -168,16 +168,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Logg aktivitet (activity_logs finnes ikke i genererte typer i alle miljøer)
-    const activityLogsFrom = supabase.from as unknown as (
-      table: "activity_logs",
-    ) => {
-      insert: (payload: {
-        user_id: string;
-        action: string;
-        details: Record<string, unknown>;
-      }) => Promise<{ error: { message: string } | null }>;
-    };
-    await activityLogsFrom("activity_logs").insert({
+    await supabase.from("activity_logs" as never).insert({
       user_id: user.id,
       action: "paper_trading_session_created",
       details: {
@@ -185,7 +176,7 @@ export async function POST(request: NextRequest) {
         trading_pair: trading_pair.toUpperCase(),
         starting_capital_nok: capital,
       },
-    });
+    } as never);
 
     return NextResponse.json({
       success: true,

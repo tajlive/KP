@@ -173,7 +173,7 @@ export function useTradingMode() {
 
         const { encryptedKey, encryptedSecret } = await encryptResponse.json();
 
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from("user_profiles")
           .update({
             binance_connected: true,
@@ -221,14 +221,14 @@ export function useTradingMode() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("user_profiles")
         .update({
           binance_connected: false,
           binance_api_key_id: null,
           binance_api_secret_id: null,
           trading_mode: "paper",
-        })
+        } as never)
         .eq("id", user.id);
 
       if (error) throw error;

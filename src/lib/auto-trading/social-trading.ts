@@ -46,7 +46,7 @@ export async function followStrategy(
       starting_capital_nok: capitalNok,
       current_capital_nok: capitalNok,
       status: "ACTIVE",
-    } as any);
+    } as never);
 
   if (sessionError) throw sessionError;
 

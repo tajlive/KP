@@ -151,7 +151,7 @@ export async function createDefaultRiskConfig(userId: string): Promise<void> {
       stop_loss_percentage: 5,
       take_profit_percentage: 10,
       max_position_size_usd: 1000,
-    } as unknown);
+    } as never);
   
   if (error) {
     console.error('[Risk] Error creating default risk config:', error);

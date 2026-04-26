@@ -542,7 +542,7 @@ async function executeTradeWithLock(
   // ========================================================================
   const nowIso = new Date().toISOString();
   
-  const { data: trade, error: tradeError } = await (supabase as any)
+  const { data: trade, error: tradeError } = await supabase
     .from("trades")
     .insert({
       id: tradeId,
@@ -570,7 +570,7 @@ async function executeTradeWithLock(
         degraded_mode: degradedMode,
         degradation_reason: degradationReason,
       }
-    })
+    } as never)
     .select()
     .single();
 

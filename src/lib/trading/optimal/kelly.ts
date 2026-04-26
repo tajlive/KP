@@ -109,8 +109,8 @@ export async function saveKellyStats(
 ) {
   const supabase = createClient();
   
-  const { error } = await (supabase as unknown)
-    .from('strategy_performance') // Table to be created in migration
+  const { error } = await supabase
+    .from('strategy_performance')
     .upsert({
       user_id: userId,
       strategy_id: strategy,

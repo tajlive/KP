@@ -39,7 +39,7 @@ export function useProfileQuery() {
       const payload = { ...updates, updated_at: new Date().toISOString() };
       const { data, error } = await supabase
         .from("user_profiles")
-        .update(payload as any)
+        .update(payload as never)
         .eq("id", user.id)
         .select()
         .single();
