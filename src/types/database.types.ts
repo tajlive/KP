@@ -8618,6 +8618,17 @@ export type Database = {
           win_rate: number
         }[]
       }
+      get_dashboard_metrics: {
+        Args: { p_mode: string; p_statuses: string[]; p_user_id: string }
+        Returns: {
+          losing_trades: number
+          starting_capital: number
+          total_capital: number
+          total_pnl: number
+          total_trades: number
+          winning_trades: number
+        }[]
+      }
       get_emergency_status: {
         Args: never
         Returns: {

@@ -76,69 +76,13 @@ export default async function DashboardPage({
       localizedPathname(locale, "/dashboard"),
     );
 
-    const [profileRes, sessionsRes] = await Promise.all([
-      supabase
-        .from("user_profiles")
-        .select("paper_balance, tier, preferred_trading_mode, onboarding_completed, onboarding_step, display_name")
-        .eq("id", user.id)
-        .single(),
-      supabase
-        .from("trading_sessions")
-        .select(
-          "id, mode, status, strategy_id, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades, created_at, updated_at",
-        )
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .order("updated_at", { ascending: false })
-        .limit(8),
-    ]);
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("paper_balance, tier, preferred_trading_mode, onboarding_completed, onboarding_step, display_name")
+      .eq("id", user.id)
+      .single();
 
-    const profile = profileRes.data;
-    const pref = profile?.preferred_trading_mode === "live" ? "live" : "paper";
-    const activeList = sessionsRes.data ?? [];
-    const picked =
-      activeList.find((s) => s.mode === pref) ?? activeList[0] ?? null;
-    const session = picked;
-    const activeSession =
-      session != null
-        ? {
-            ...session,
-            current_capital_nok:
-              session.current_capital_nok ?? session.starting_capital_nok ?? 0,
-            starting_capital_nok: session.starting_capital_nok ?? 0,
-          }
-        : null;
-
-    const tradesRes = activeSession?.id
-      ? await supabase
-          .from("trades")
-          .select(
-            "trading_pair, symbol, side, quantity, price, status, realized_pnl, created_at, executed_at",
-          )
-          .eq("session_id", activeSession.id)
-          .order("created_at", { ascending: false })
-          .limit(100)
-      : { data: [] };
-
-    const tradesData = tradesRes.data ?? [];
-    const winningTrades = tradesData.filter((t) => (t.realized_pnl || 0) > 0);
-    const totalPnl = tradesData.reduce((sum, t) => sum + (t.realized_pnl || 0), 0);
-
-    const stats = {
-      totalTrades: tradesData.length,
-      winRate: tradesData.length ? Math.round((winningTrades.length / tradesData.length) * 100) : 0,
-      totalPnl,
-      currentCapital: activeSession?.current_capital_nok ?? profile?.paper_balance ?? 100000,
-      startingCapital: activeSession?.starting_capital_nok ?? 100000,
-      winningTrades: winningTrades.length,
-    };
-
-    const trades = tradesData.map((t) => ({
-      trading_pair: t.trading_pair || t.symbol || "",
-      side: t.side,
-      quantity: t.quantity,
-      realized_pnl: t.realized_pnl ?? null,
-    }));
+    const preferredTradingMode = profile?.preferred_trading_mode === "live" ? "live" : "paper";
 
     // Hent dashboard-innhold fra Sanity (fallback til defaults hvis ikke konfigurert)
     let cmsData = null;
@@ -151,10 +95,8 @@ export default async function DashboardPage({
     return (
       <div data-testid="dashboard-page">
         <DashboardContent
-          paperBalance={stats.currentCapital}
-          trades={trades}
-          activeSession={activeSession}
-          stats={stats}
+          userId={user.id}
+          preferredTradingMode={preferredTradingMode}
           onboardingCompleted={profile?.onboarding_completed ?? false}
           userName={profile?.display_name ?? ""}
           cmsData={cmsData}

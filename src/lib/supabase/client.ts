@@ -214,6 +214,16 @@ export function getSupabaseClient(): SupabaseClient {
     throw err;
   }
 
+  // Safety valve: if server refreshed tokens, don't let stale guard block auth
+  if (typeof window !== "undefined" && invalidTokenDetected) {
+    const hasAuthCookies = document.cookie
+      .split(";")
+      .some((c) => c.trim().startsWith("sb-"));
+    if (hasAuthCookies) {
+      resetInvalidTokenGuard();
+    }
+  }
+
   return _client;
 }
 
