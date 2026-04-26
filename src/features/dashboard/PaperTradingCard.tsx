@@ -64,7 +64,7 @@ export function PaperTradingCard() {
     const timeoutId = setTimeout(() => timeoutController.abort(), FETCH_TIMEOUT_MS);
 
     try {
-      const response = await fetch("/api/paper-trading/balance", {
+      const response = await fetch("/api/dashboard/metrics?mode=paper", {
         signal: AbortSignal.any([signal, timeoutController.signal]),
       });
 
@@ -75,8 +75,32 @@ export function PaperTradingCard() {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const data: BalanceData = await response.json();
-      return data;
+      const json = (await response.json()) as {
+        ok?: boolean;
+        data?: {
+          totalCapital?: number;
+          startingCapital?: number;
+          totalPnl?: number;
+        };
+      };
+
+      if (!json.ok || !json.data) {
+        return { success: false };
+      }
+
+      const { totalCapital = 0, startingCapital = 0, totalPnl = 0 } = json.data;
+      const pnlPercentage = startingCapital > 0 ? (totalPnl / startingCapital) * 100 : 0;
+
+      return {
+        success: true,
+        balance: {
+          starting: startingCapital,
+          current: totalCapital,
+          pnl: totalPnl,
+          pnlPercentage,
+          isPositive: totalPnl >= 0,
+        },
+      };
     } finally {
       clearTimeout(timeoutId);
     }
@@ -126,7 +150,7 @@ export function PaperTradingCard() {
       Sentry.captureException(error, {
         tags: {
           component: "PaperTradingCard",
-          endpoint: "paper-trading/balance",
+          endpoint: "dashboard/metrics?mode=paper",
           errorType: errorMsg.includes("timeout") ? "network_timeout" : "network_error",
         },
         extra: {
