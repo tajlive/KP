@@ -205,7 +205,7 @@ export function DashboardPro({
         )}
 
         {/* Smart Actions — context-aware CTA-kort */}
-        <SmartActions userState={userState} locale={locale} cmsData={cmsData} />
+        <SmartActions userState={userState} cmsData={cmsData} />
 
         {/* Paper to Live Progress */}
         {isPaperMode && (
