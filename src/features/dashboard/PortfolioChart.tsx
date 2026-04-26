@@ -23,6 +23,7 @@ interface ChartDataPoint {
 interface PortfolioChartProps {
   userId?: string;
   sessionId?: string;
+  mode?: "paper" | "live";
 }
 
 const TIME_PERIODS = [
@@ -66,7 +67,7 @@ function SkeletonChart() {
   );
 }
 
-export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
+export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioChartProps) {
   const [data, setData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState("1M");
@@ -91,7 +92,7 @@ export function PortfolioChart({ userId, sessionId }: PortfolioChartProps) {
       } else if (userId) {
         sessionQuery = sessionQuery
           .eq("user_id", userId)
-          .eq("mode", "paper")
+          .eq("mode", mode)
           .eq("status", "active")
           .order("updated_at", { ascending: false })
           .limit(1);

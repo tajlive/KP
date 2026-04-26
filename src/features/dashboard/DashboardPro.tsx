@@ -36,7 +36,7 @@ import type { DashboardCmsData } from "./DashboardContent";
 
 interface DashboardProProps {
   userId?: string;
-  preferredTradingMode?: string;
+  preferredTradingMode?: "paper" | "live";
   stats?: UserStats | null;
   isLoading?: boolean;
   isError?: boolean;
@@ -121,8 +121,8 @@ export function DashboardPro({
     totalTrades: 0,
     winRate: 0,
     totalPnl: 0,
-    currentCapital: 100000,
-    startingCapital: 100000,
+    currentCapital: 0,
+    startingCapital: 0,
     winningTrades: 0,
   };
 
@@ -220,7 +220,7 @@ export function DashboardPro({
           {/* Left column - 2/3 width */}
           <div className="lg:col-span-2 space-y-6">
             {/* Portfolio Chart */}
-            <PortfolioChart userId={userId} />
+            <PortfolioChart userId={userId} mode={preferredTradingMode} />
 
             {/* Stats Grid */}
             {isError ? (
