@@ -1,6 +1,11 @@
 // ============================================================================
 // GET /api/dashboard/bot-status
 // KLA-100: Returns real-time bot status for the dashboard
+//
+// ⚠️ DEPRECATED (2026-04-26): P&L aggregates here are NOT the source of truth.
+// Use /api/dashboard/metrics for unified dashboard metrics (totalPnl,
+// totalTrades, winRate, totalCapital). This route is kept for backward
+// compatibility for bot-status metadata only.
 // ============================================================================
 
 import { CACHE_TTL, withCache } from "@/lib/cache";

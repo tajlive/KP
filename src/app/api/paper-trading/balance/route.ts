@@ -4,6 +4,10 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 
+// ⚠️ DEPRECATED (2026-04-26): Capital/PnL aggregates here are NOT the source of truth.
+// Use /api/dashboard/metrics?mode=paper for unified dashboard metrics.
+// This route is kept for backward compatibility for session-level balance details.
+
 const DEFAULT_BALANCE = {
   balance: {
     starting: 100000,

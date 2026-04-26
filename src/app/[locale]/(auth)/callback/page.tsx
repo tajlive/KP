@@ -83,7 +83,7 @@ export default function AuthCallbackPage() {
     };
 
     handleCallback();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
   // Alltid vis spinner (redirect skjer i useEffect)

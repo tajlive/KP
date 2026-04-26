@@ -1,29 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { DashboardPro } from "./DashboardPro";
 import { RiskMetricsPanel } from "./RiskMetricsPanel";
-
-type TradeRow = {
-  trading_pair: string;
-  side: string;
-  quantity: number | null;
-  realized_pnl: number | null;
-};
-
-type ActiveSession = {
-  id: string;
-  mode: string;
-  status: string;
-  strategy_id: string | null;
-  current_capital_nok: number;
-  starting_capital_nok: number;
-  total_pnl: number | null;
-  total_trades: number | null;
-  winning_trades: number | null;
-  created_at: string | null;
-  updated_at: string | null;
-} | null;
+import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
+import { computeUserState } from "@/hooks/useUserState";
+import { AdaptiveDashboard } from "./AdaptiveDashboard";
+import type { DashboardMode } from "@/hooks/useDashboardMetrics";
 
 export interface DashboardCmsData {
   heroCtaText?: string;
@@ -46,32 +28,43 @@ export interface DashboardCmsData {
 }
 
 export interface DashboardContentProps {
-  paperBalance: number;
-  trades: TradeRow[];
-  activeSession?: ActiveSession;
-  stats?: {
-    totalTrades: number;
-    winRate: number;
-    totalPnl: number;
-    currentCapital: number;
-    startingCapital: number;
-    winningTrades?: number;
-  };
+  userId: string;
+  preferredTradingMode?: DashboardMode;
   onboardingCompleted?: boolean;
   userName?: string;
   cmsData?: DashboardCmsData | null;
 }
 
 export function DashboardContent({
-  paperBalance,
-  trades,
-  activeSession,
-  stats,
-  onboardingCompleted,
+  userId,
+  preferredTradingMode = "paper",
+  onboardingCompleted = false,
   userName,
   cmsData,
 }: DashboardContentProps) {
-  const effectiveBalance = activeSession?.current_capital_nok ?? paperBalance;
+  const { data, isLoading, isError, error, refetch } = useDashboardMetrics(
+    preferredTradingMode,
+    "active_and_completed",
+  );
+
+  const userState = computeUserState({
+    tradesCount: data?.totalTrades ?? 0,
+    signupDays: 30, // TODO: fetch from user_profiles.created_at
+    totalPnlPct: data && data.startingCapital > 0
+      ? ((data.totalCapital - data.startingCapital) / data.startingCapital) * 100
+      : 0,
+  }).state;
+
+  const stats = data
+    ? {
+        totalTrades: data.totalTrades,
+        winRate: Math.round(data.winRate * 100),
+        totalPnl: data.totalPnl,
+        currentCapital: data.totalCapital,
+        startingCapital: data.startingCapital,
+        winningTrades: data.winningTrades,
+      }
+    : null;
 
   return (
     <div suppressHydrationWarning>
@@ -79,17 +72,23 @@ export function DashboardContent({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.25 }}
+        className="bg-slate-950 min-h-screen"
       >
-        <DashboardPro
-          paperBalance={effectiveBalance}
-          sessionId={activeSession?.id}
-          sessionMode={activeSession?.mode ?? "paper"}
-          initialStats={stats}
-          trades={trades}
-          onboardingCompleted={onboardingCompleted}
-          userName={userName}
-          cmsData={cmsData}
-        />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4">
+          <AdaptiveDashboard
+            userId={userId}
+            userState={userState}
+            userName={userName}
+            preferredTradingMode={preferredTradingMode}
+            stats={stats}
+            isLoading={isLoading}
+            isError={isError}
+            errorMessage={error?.message}
+            onRetry={refetch}
+            cmsData={cmsData}
+          />
+        </div>
+
         <div className="bg-slate-950 px-4 md:px-8 pb-8">
           <div className="max-w-7xl mx-auto">
             <RiskMetricsPanel />

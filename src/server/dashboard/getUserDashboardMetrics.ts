@@ -1,0 +1,306 @@
+/**
+ * @file getUserDashboardMetrics.ts
+ * @description SINGLE SOURCE OF TRUTH for dashboard metrics aggregation.
+ *
+ * ALL dashboard cards showing P&L, trade count, win rate, and total capital
+ * MUST go through this function. Do NOT compute aggregates ad-hoc in pages
+ * or API routes.
+ *
+ * Historical context (2026-04-26):
+ * - Previously `dashboard/page.tsx` only looked at the single most-recent
+ *   ACTIVE session and its trades, so completed sessions were invisible.
+ * - `bot-status` summed ALL user trades with no session/mode filter.
+ * - `paper-trading/balance` derived P&L from session capital deltas.
+ * - P0 unified those paths into one consistent filter set.
+ * - P2 (2026-04-26) moved aggregation from TypeScript memory-loop to
+ *   PostgreSQL RPC (`get_dashboard_metrics`) for O(1) network cost.
+ */
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.types";
+
+export type DashboardMode = "paper" | "live";
+
+export type SessionScope = "all" | "active" | "active_and_completed";
+
+export interface DashboardMetricsInput {
+  /** Authenticated Supabase client (SSR or service-role). */
+  supabaseClient: SupabaseClient<Database>;
+  userId: string;
+  mode: DashboardMode;
+  /** Which sessions to include when aggregating trades. */
+  sessionScope?: SessionScope;
+}
+
+export interface DashboardMetrics {
+  /** Aggregated realised P&L for the chosen scope (NOK). */
+  totalPnl: number;
+  /** Number of trades for the chosen scope. */
+  totalTrades: number;
+  /** 0–1 fraction (e.g. 0.65 = 65 %). */
+  winRate: number;
+  /** Best available capital figure for the mode (NOK). */
+  totalCapital: number;
+  /** Starting capital for the active session, or default. */
+  startingCapital: number;
+  /** Number of winning trades. */
+  winningTrades: number;
+  /** Number of losing trades. */
+  losingTrades: number;
+}
+
+export class DashboardMetricsError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+  ) {
+    super(message);
+    this.name = "DashboardMetricsError";
+  }
+}
+
+/** Maps a session-scope enum to the set of statuses that should be included. */
+function sessionStatusesForScope(scope: SessionScope): string[] {
+  switch (scope) {
+    case "active":
+      return ["active"];
+    case "active_and_completed":
+      return ["active", "stopped"];
+    case "all":
+      // All non-archived sessions are included; archived acts as soft-delete.
+      return ["active", "paused", "crashed", "stopped"];
+  }
+}
+
+/**
+ * Returns unified dashboard metrics for a single user + mode.
+ *
+ * Implementation strategy:
+ * 1. PRIMARY: PostgreSQL RPC `get_dashboard_metrics` — single query, O(1) network.
+ * 2. FALLBACK: TypeScript aggregation if RPC is unavailable (e.g. local dev without migration).
+ */
+export async function getUserDashboardMetrics(
+  input: DashboardMetricsInput,
+): Promise<DashboardMetrics> {
+  const { supabaseClient, userId, mode, sessionScope = "active_and_completed" } = input;
+
+  // ------------------------------------------------------------------
+  // 1. Attempt PostgreSQL RPC (enterprise path)
+  // ------------------------------------------------------------------
+  const statuses = sessionStatusesForScope(sessionScope);
+
+  try {
+    const { data: rpcRows, error: rpcError } = await supabaseClient.rpc(
+      "get_dashboard_metrics",
+      {
+        p_user_id: userId,
+        p_mode: mode,
+        p_statuses: statuses,
+      },
+    );
+
+    if (rpcError) {
+      throw new DashboardMetricsError(
+        `RPC aggregation failed: ${rpcError.message}`,
+        "RPC_AGGREGATION_FAILED",
+      );
+    }
+
+    const row = rpcRows?.[0];
+    if (!row) {
+      // No data returned — valid state (no sessions/trades).
+      return await fallbackMetrics(supabaseClient, userId, mode);
+    }
+
+    const totalPnl = Number(row.total_pnl ?? 0);
+    const totalTrades = Number(row.total_trades ?? 0);
+    const winningTrades = Number(row.winning_trades ?? 0);
+    const losingTrades = Number(row.losing_trades ?? 0);
+    let totalCapital = Number(row.total_capital ?? 0);
+    let startingCapital = Number(row.starting_capital ?? 0);
+
+    // Fallback to profile if no capital data exists
+    if (totalCapital === 0 && mode === "paper") {
+      const fallback = await getProfileFallback(supabaseClient, userId);
+      totalCapital = fallback.totalCapital;
+      startingCapital = fallback.startingCapital;
+    }
+
+    const winRate =
+      winningTrades + losingTrades > 0
+        ? winningTrades / (winningTrades + losingTrades)
+        : 0;
+
+    return {
+      totalPnl: Math.round(totalPnl * 100) / 100,
+      totalTrades,
+      winRate: Math.round(winRate * 100) / 100,
+      totalCapital: Math.round(totalCapital * 100) / 100,
+      startingCapital: Math.round(startingCapital * 100) / 100,
+      winningTrades,
+      losingTrades,
+    };
+  } catch (error) {
+    // If RPC throws (e.g. function does not exist), fall back to TypeScript aggregation
+    if (
+      error instanceof DashboardMetricsError &&
+      error.code === "RPC_AGGREGATION_FAILED"
+    ) {
+      console.warn(
+        "[getUserDashboardMetrics] RPC unavailable, falling back to TS aggregation:",
+        error.message,
+      );
+      return tsAggregationFallback(input);
+    }
+    throw error;
+  }
+}
+
+/** Fetch paper_balance fallback from user_profiles. */
+async function getProfileFallback(
+  supabaseClient: SupabaseClient<Database>,
+  userId: string,
+): Promise<{ totalCapital: number; startingCapital: number }> {
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("user_profiles")
+    .select("paper_balance")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (profileError) {
+    console.warn("[getUserDashboardMetrics] profile fetch failed:", profileError.message);
+  }
+
+  return {
+    totalCapital: profile?.paper_balance ?? 100_000,
+    startingCapital: 100_000,
+  };
+}
+
+/** Complete fallback when RPC returns no rows (no sessions exist). */
+async function fallbackMetrics(
+  supabaseClient: SupabaseClient<Database>,
+  userId: string,
+  mode: DashboardMode,
+): Promise<DashboardMetrics> {
+  if (mode === "paper") {
+    const fb = await getProfileFallback(supabaseClient, userId);
+    return {
+      totalPnl: 0,
+      totalTrades: 0,
+      winRate: 0,
+      totalCapital: fb.totalCapital,
+      startingCapital: fb.startingCapital,
+      winningTrades: 0,
+      losingTrades: 0,
+    };
+  }
+
+  return {
+    totalPnl: 0,
+    totalTrades: 0,
+    winRate: 0,
+    totalCapital: 0,
+    startingCapital: 0,
+    winningTrades: 0,
+    losingTrades: 0,
+  };
+}
+
+// ============================================================================
+// TypeScript fallback (kept for backward compatibility / local dev without RPC)
+// ============================================================================
+
+async function tsAggregationFallback(
+  input: DashboardMetricsInput,
+): Promise<DashboardMetrics> {
+  const { supabaseClient, userId, mode, sessionScope = "active_and_completed" } = input;
+
+  const statuses = sessionStatusesForScope(sessionScope);
+
+  const { data: sessions, error: sessionsError } = await supabaseClient
+    .from("trading_sessions")
+    .select("id, current_capital_nok, starting_capital_nok, status")
+    .eq("user_id", userId)
+    .eq("mode", mode)
+    .is("archived", false)
+    .in("status", statuses);
+
+  if (sessionsError) {
+    throw new DashboardMetricsError(
+      `Failed to fetch trading sessions: ${sessionsError.message}`,
+      "SESSIONS_QUERY_FAILED",
+    );
+  }
+
+  const sessionIds = (sessions ?? []).map((s) => s.id);
+
+  let totalTrades = 0;
+  let totalPnl = 0;
+  let winningTrades = 0;
+  let losingTrades = 0;
+
+  if (sessionIds.length > 0) {
+    const CHUNK_SIZE = 500;
+    for (let i = 0; i < sessionIds.length; i += CHUNK_SIZE) {
+      const chunk = sessionIds.slice(i, i + CHUNK_SIZE);
+
+      const { data: tradeRows, error: tradesError } = await supabaseClient
+        .from("trades")
+        .select("realized_pnl")
+        .in("session_id", chunk)
+        .eq("user_id", userId)
+        .eq("mode", mode)
+        .not("status", "in", '("cancelled","failed")');
+
+      if (tradesError) {
+        throw new DashboardMetricsError(
+          `Failed to fetch trades: ${tradesError.message}`,
+          "TRADES_QUERY_FAILED",
+        );
+      }
+
+      for (const t of tradeRows ?? []) {
+        totalTrades += 1;
+        const pnl = t.realized_pnl ?? 0;
+        totalPnl += pnl;
+        if (pnl > 0) {
+          winningTrades += 1;
+        } else if (pnl < 0) {
+          losingTrades += 1;
+        }
+      }
+    }
+  }
+
+  let totalCapital = (sessions ?? []).reduce(
+    (sum, s) => sum + (s.current_capital_nok ?? 0),
+    0,
+  );
+
+  let startingCapital = (sessions ?? []).reduce(
+    (sum, s) => sum + (s.starting_capital_nok ?? 0),
+    0,
+  );
+
+  if (totalCapital === 0 && mode === "paper") {
+    const fb = await getProfileFallback(supabaseClient, userId);
+    totalCapital = fb.totalCapital;
+    startingCapital = fb.startingCapital;
+  }
+
+  const winRate =
+    winningTrades + losingTrades > 0
+      ? winningTrades / (winningTrades + losingTrades)
+      : 0;
+
+  return {
+    totalPnl: Math.round(totalPnl * 100) / 100,
+    totalTrades,
+    winRate: Math.round(winRate * 100) / 100,
+    totalCapital: Math.round(totalCapital * 100) / 100,
+    startingCapital: Math.round(startingCapital * 100) / 100,
+    winningTrades,
+    losingTrades,
+  };
+}
