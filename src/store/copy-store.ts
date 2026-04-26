@@ -341,7 +341,7 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
 
     await supabase
       .from("copy_trading_follows")
-      .update(updates as any).eq("leader_id", leaderId)
+      .update(updates as unknown).eq("leader_id", leaderId)
       .eq("follower_id", user.id);
 
     await get().fetchFollowing();

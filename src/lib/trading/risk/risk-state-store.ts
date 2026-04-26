@@ -162,7 +162,7 @@ export class RiskStateStore {
           user_id: userId,
           state: persisted as unknown as object,
           updated_at: new Date().toISOString()
-        } as any, {
+        } as unknown, {
           onConflict: 'user_id'
         });
       
