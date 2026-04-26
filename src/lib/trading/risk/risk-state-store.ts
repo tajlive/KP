@@ -160,9 +160,9 @@ export class RiskStateStore {
         .from('risk_state')
         .upsert({
           user_id: userId,
-          state: persisted as unknown as object,
+          state: persisted as never,
           updated_at: new Date().toISOString()
-        } as unknown, {
+        }, {
           onConflict: 'user_id'
         });
       

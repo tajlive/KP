@@ -94,13 +94,13 @@ export async function banUser(userId: string, reason: string) {
     if (!auth.ok) throw new Error(auth.error);
 
     // 2. Update status
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from("user_profiles")
       .update({
         status: "banned",
         banned_at: new Date().toISOString(),
         ban_reason: reason,
-      })
+      } as never)
       .eq("id", userId);
 
     if (error) throw error;

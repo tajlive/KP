@@ -98,13 +98,13 @@ export default function NotificationSettings() {
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
-                const { error } = await (supabase as any)
+                const { error } = await supabase
                     .from('notification_preferences')
                     .upsert({
                         user_id: user.id,
                         ...newPrefs,
                         updated_at: new Date().toISOString(),
-                    })
+                    } as never)
                 
                 if (error) throw error
                 setPrefs(newPrefs)
@@ -172,19 +172,19 @@ export default function NotificationSettings() {
             if (!keys?.p256dh || !keys?.auth) {
                 throw new Error('Push subscription keys missing');
             }
-            await (supabase as any).from('push_subscriptions').insert({
+            await supabase.from('push_subscriptions').insert({
                 user_id: user.id,
                 endpoint: subscription.endpoint,
                 p256dh: keys.p256dh,
                 auth: keys.auth
-            })
+            } as never)
 
             // Create notification preferences if not exists
-            await (supabase as any).from('notification_preferences').upsert({
+            await supabase.from('notification_preferences').upsert({
                 user_id: user.id,
                 ...prefs,
                 push_notifications: true,
-            })
+            } as never)
         }
 
         setIsSubscribed(true)

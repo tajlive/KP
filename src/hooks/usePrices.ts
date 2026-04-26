@@ -12,7 +12,8 @@
 import { PriceWebSocket } from "@/lib/auto-trading/binance-websocket";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { PAPER_TRADING_UI_SYMBOLS } from "@/lib/trading/paper-ui-symbols";
-import { useEffect, useState } from "react";
+import { RealtimeChannel } from "@supabase/realtime-js";
+import { useEffect, useState, useRef } from "react";
 
 // Local type definition since coin_prices may not be in generated schema
 interface CoinPrice {
@@ -39,18 +40,15 @@ export function usePrices() {
   const [loading, setLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
 
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const wsRef = useRef<PriceWebSocket | null>(null);
+
   useEffect(() => {
     const supabase = getSupabaseClient();
-    const fromCoinPrices = supabase.from as unknown as (
-      table: "coin_prices",
-    ) => {
-      select: (columns: "*") => Promise<{ data: CoinPrice[] | null }>;
-    };
-
     const fetchPrices = async () => {
       setLoading(true);
       // Using local adapter: table exists in remote schema but can drift in local generated types.
-      const { data } = await fromCoinPrices("coin_prices").select("*");
+      const { data } = await supabase.from("coin_prices").select("*");
 
       const priceMap = ((data || []) as unknown as CoinPrice[]).reduce(
         (acc: Record<string, CoinPrice>, price) => {
@@ -68,8 +66,9 @@ export function usePrices() {
     fetchPrices();
 
     // 1. Supabase Real-time subscription (Backup/Other symbols)
+    const channelName = `prices-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const channel = supabase
-      .channel("prices")
+      .channel(channelName)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "coin_prices" },
@@ -113,9 +112,18 @@ export function usePrices() {
 
     ws.connect();
 
+    channelRef.current = channel;
+    wsRef.current = ws;
+
     return () => {
-      supabase.removeChannel(channel);
-      ws.disconnect();
+      if (channelRef.current) {
+        void supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      if (wsRef.current) {
+        wsRef.current.disconnect();
+        wsRef.current = null;
+      }
     };
   }, []); // Empty deps - singleton client is stable
 

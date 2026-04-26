@@ -30,19 +30,8 @@ export async function GET(request: NextRequest) {
     }
 
     const supabase = createClient();
-    const currentDatabaseRpc = supabase.rpc as unknown as (
-      fn: "current_database_name",
-    ) => {
-      single: () => Promise<{
-        data: string | null;
-        error: { message: string } | null;
-      }>;
-    };
-
     // Hent database-navn fra connection
-    const { data: dbInfo, error: dbError } = await currentDatabaseRpc(
-      "current_database_name",
-    ).single();
+    const { data: dbInfo, error: dbError } = await (supabase as unknown as { rpc: (name: string, params?: Record<string, unknown>) => { single: () => Promise<{ data: unknown; error: { message: string } | null }> } }).rpc("current_database_name").single();
 
     // Enkel query for å holde tilkoblingen aktiv
     const { error } = await supabase

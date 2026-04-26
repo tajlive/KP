@@ -185,7 +185,7 @@ export default function SpeedOnboarding({
         }
 
         // Save preferences
-        await supabase.from("user_trading_config").upsert(updatePayload as any);
+        await supabase.from("user_trading_config").upsert(updatePayload as never);
 
         // FIX: Also update user_profiles onboarding status
         await supabase
