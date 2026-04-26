@@ -24,70 +24,10 @@ interface StatItem {
 }
 
 interface StatsGridProps {
-  stats?: StatItem[];
+  stats: StatItem[];
 }
 
-const DEFAULT_STATS: StatItem[] = [
-  {
-    label: "Total avkastning",
-    value: "+24.5%",
-    subtext: "+12,450 kr",
-    trend: "up",
-    icon: TrendingUp,
-    highlight: true,
-  },
-  {
-    label: "Win rate",
-    value: "73%",
-    subtext: "11 av 15 trades",
-    trend: "up",
-    icon: Target,
-  },
-  {
-    label: "Sharpe ratio",
-    value: "1.8",
-    subtext: "Utmerket",
-    trend: "up",
-    icon: Activity,
-  },
-  {
-    label: "Maks drawdown",
-    value: "-5.2%",
-    subtext: "God risikostyring",
-    trend: "down",
-    icon: Shield,
-  },
-  {
-    label: "Gj.snitt vinner",
-    value: "+8.3%",
-    subtext: "Per vinnende trade",
-    trend: "up",
-    icon: Trophy,
-  },
-  {
-    label: "Gj.snitt taper",
-    value: "-2.1%",
-    subtext: "Kontrollert tap",
-    trend: "neutral",
-    icon: AlertTriangle,
-  },
-  {
-    label: "Profit factor",
-    value: "2.4",
-    subtext: "Gevinst/tap ratio",
-    trend: "up",
-    icon: BarChart3,
-  },
-  {
-    label: "Antall trades",
-    value: "15",
-    subtext: "Siste 30 dager",
-    trend: "neutral",
-    icon: Zap,
-  },
-];
-
-export function StatsGrid({ stats = DEFAULT_STATS }: StatsGridProps) {
+export function StatsGrid({ stats }: StatsGridProps) {
   const getTrendColor = (trend: string) => {
     switch (trend) {
       case "up":
@@ -157,7 +97,7 @@ export function StatsGrid({ stats = DEFAULT_STATS }: StatsGridProps) {
 }
 
 // Mini versjon for kompakte dashboards
-export function StatsGridMini({ stats = DEFAULT_STATS }: StatsGridProps) {
+export function StatsGridMini({ stats }: StatsGridProps) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {stats.slice(0, 4).map((stat, index) => (

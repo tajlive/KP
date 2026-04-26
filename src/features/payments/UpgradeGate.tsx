@@ -38,9 +38,9 @@ export function UpgradeGate({
   const [showGate, setShowGate] = useState(false);
   const [stats, setStats] = useState<UserStats>({
     tradesCount: 0,
-    winRate: 73,
-    totalReturn: 12.4,
-    totalProfit: 2450,
+    winRate: 0,
+    totalReturn: 0,
+    totalProfit: 0,
     currentTier: "student",
   });
   const [loading, setLoading] = useState(true);
@@ -79,11 +79,14 @@ export function UpgradeGate({
 
         const winningTrades = trades?.filter((t) => (t.realized_pnl || 0) > 0) || [];
         const totalPnl = trades?.reduce((sum, t) => sum + (t.realized_pnl || 0), 0) || 0;
+        const currentBalance = profile?.paper_balance || 0;
+        const startingBalance = currentBalance - totalPnl;
+        const totalReturn = startingBalance > 0 ? (totalPnl / startingBalance) * 100 : 0;
 
         setStats({
           tradesCount: tradesCount || 0,
           winRate: trades?.length ? Math.round((winningTrades.length / trades.length) * 100) : 0,
-          totalReturn: 12.4, // Mock data
+          totalReturn: Math.round(totalReturn * 10) / 10,
           totalProfit: Math.round(totalPnl),
           currentTier: profile?.tier || "student",
         });
