@@ -7,7 +7,7 @@ import type { UserState } from "@/hooks/useUserState";
 import { SimplifiedHero } from "./SimplifiedHero";
 import { StatsGrid } from "./StatsGrid";
 import { AITip } from "./AITip";
-import { SmartActionsRow } from "./SmartActionsRow";
+import { SmartActions } from "./SmartActions";
 import { DemoChart } from "./DemoChart";
 import { DashboardPro } from "./DashboardPro";
 import type { DashboardCmsData } from "./DashboardContent";
@@ -99,7 +99,7 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
 
       <OnboardingProgress step={isLive ? 3 : 1} />
 
-      <SmartActionsRow userState="NyBruker" />
+      <SmartActions userState="NyBruker" compact />
 
       <DemoChart />
     </motion.div>
@@ -173,7 +173,7 @@ function OnboardedView({ stats, userName, preferredTradingMode }: { stats: UserS
         </>
       )}
 
-      <SmartActionsRow userState="Onboarded" />
+      <SmartActions userState="Onboarded" compact />
     </motion.div>
   );
 }

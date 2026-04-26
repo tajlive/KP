@@ -7,14 +7,22 @@ import {
   Bot,
   Shield,
   ArrowRight,
+  Copy,
+  Zap,
+  BookOpen,
   type LucideIcon,
 } from "lucide-react";
+import { useLocale } from "next-intl";
 import type { DashboardCmsData } from "./DashboardContent";
+import type { UserState } from "@/hooks/useUserState";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   TrendingUp,
   Bot,
   Shield,
+  Copy,
+  Zap,
+  BookOpen,
 };
 
 const COLOR_MAP: Record<
@@ -47,16 +55,42 @@ const COLOR_MAP: Record<
   },
 };
 
-interface SmartActionsProps {
-  userState: "newUser" | "noSession" | "paperMode" | "liveMode";
-  locale: string;
-  cmsData?: DashboardCmsData | null;
+/** Map old + new userState values to a canonical action key. */
+function canonicalUserState(
+  state: "newUser" | "noSession" | "paperMode" | "liveMode" | UserState
+): "newUser" | "noSession" | "paperMode" | "liveMode" {
+  switch (state) {
+    case "NyBruker":
+    case "newUser":
+      return "newUser";
+    case "Onboarded":
+    case "noSession":
+      return "noSession";
+    case "AktivTrader":
+    case "paperMode":
+      return "paperMode";
+    case "PowerUser":
+    case "liveMode":
+      return "liveMode";
+    default:
+      return "newUser";
+  }
 }
 
-export function SmartActions({ userState, locale, cmsData }: SmartActionsProps) {
+interface SmartActionsProps {
+  userState: "newUser" | "noSession" | "paperMode" | "liveMode" | UserState;
+  cmsData?: DashboardCmsData | null;
+  /** Compact 3-column grid (used by AdaptiveDashboard). Default: responsive grid/scroll. */
+  compact?: boolean;
+}
+
+export function SmartActions({ userState, cmsData, compact = false }: SmartActionsProps) {
+  const locale = useLocale();
+  const canonical = canonicalUserState(userState);
+
   const actions =
-    cmsData?.smartActions?.filter((a) => a.condition === userState) ??
-    getDefaultActions(userState, locale);
+    cmsData?.smartActions?.filter((a) => a.condition === canonical) ??
+    getDefaultActions(canonical, locale);
 
   if (actions.length === 0) return null;
 
@@ -66,25 +100,36 @@ export function SmartActions({ userState, locale, cmsData }: SmartActionsProps) 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.15 }}
     >
-      {/* Desktop: grid | Mobile: horizontal scroll */}
-      <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {actions.map((action, i) => (
-          <ActionCard key={i} action={action} />
-        ))}
-      </div>
-      <div className="flex sm:hidden gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory">
-        {actions.map((action, i) => (
-          <div key={i} className="snap-start shrink-0 w-[85vw] max-w-[320px]">
-            <ActionCard action={action} />
+      {compact ? (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {actions.map((action, i) => (
+            <CompactActionCard key={i} action={action} index={i} locale={locale} />
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* Desktop: grid | Mobile: horizontal scroll */}
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {actions.map((action, i) => (
+              <ActionCard key={i} action={action} locale={locale} />
+            ))}
           </div>
-        ))}
-      </div>
+          <div className="flex sm:hidden gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory">
+            {actions.map((action, i) => (
+              <div key={i} className="snap-start shrink-0 w-[85vw] max-w-[320px]">
+                <ActionCard action={action} locale={locale} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </motion.div>
   );
 }
 
 function ActionCard({
   action,
+  locale,
 }: {
   action: {
     title: string;
@@ -94,12 +139,13 @@ function ActionCard({
     icon?: string;
     color?: string;
   };
+  locale: string;
 }) {
   const color = COLOR_MAP[action.color ?? "blue"] ?? COLOR_MAP.blue;
   const Icon = ICON_MAP[action.icon ?? "TrendingUp"] ?? TrendingUp;
 
   return (
-    <Link href={action.ctaLink} className="group block">
+    <Link href={`/${locale}${action.ctaLink}`} className="group block">
       <div
         className={`relative overflow-hidden rounded-2xl border ${color.border} ${color.bg} p-5 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg h-full`}
       >
@@ -127,6 +173,56 @@ function ActionCard({
   );
 }
 
+function CompactActionCard({
+  action,
+  index,
+  locale,
+}: {
+  action: {
+    title: string;
+    description?: string;
+    ctaText: string;
+    ctaLink: string;
+    icon?: string;
+    color?: string;
+  };
+  index: number;
+  locale: string;
+}) {
+  const color = COLOR_MAP[action.color ?? "blue"] ?? COLOR_MAP.blue;
+  const Icon = ICON_MAP[action.icon ?? "TrendingUp"] ?? TrendingUp;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.08 }}
+    >
+      <Link href={`/${locale}${action.ctaLink}`} className="group block h-full">
+        <div
+          className={`relative h-full rounded-2xl border ${color.border} ${color.bg} bg-gradient-to-br p-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg`}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-white text-sm">{action.title}</h4>
+              {action.description && (
+                <p className="text-xs text-white/60 mt-1 line-clamp-2">{action.description}</p>
+              )}
+              <div className="mt-2.5 inline-flex items-center gap-1 text-xs font-medium text-white/80 group-hover:gap-1.5 transition-all">
+                {action.ctaText}
+                <ArrowRight className="w-3 h-3" />
+              </div>
+            </div>
+            <div className="p-2 rounded-xl bg-white/5 shrink-0">
+              <Icon className="w-4 h-4 text-white/70" />
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
 function getDefaultActions(
   userState: string,
   locale: string
@@ -151,7 +247,7 @@ function getDefaultActions(
             ? "Øv deg risikofritt med 100 000 kr i virtuell kapital."
             : "Practice risk-free with 100,000 NOK in virtual capital.",
           ctaText: isNo ? "Kom i gang" : "Get Started",
-          ctaLink: `/${locale}/dashboard/trade?mode=paper`,
+          ctaLink: "/dashboard/trade?mode=paper",
           icon: "TrendingUp",
           color: "blue",
         },
@@ -165,7 +261,7 @@ function getDefaultActions(
             ? "La vår KI handle for deg mens du sover."
             : "Let our AI trade for you while you sleep.",
           ctaText: isNo ? "Utforsk strategier" : "Explore Strategies",
-          ctaLink: `/${locale}/dashboard/auto-trade`,
+          ctaLink: "/dashboard/auto-trade",
           icon: "Bot",
           color: "purple",
         },
@@ -179,7 +275,7 @@ function getDefaultActions(
             ? "Klar for ekte trading? Oppgrader til live-modus."
             : "Ready for real trading? Upgrade to live mode.",
           ctaText: isNo ? "Aktiver Live" : "Activate Live",
-          ctaLink: `/${locale}/dashboard/trade?mode=live`,
+          ctaLink: "/dashboard/trade?mode=live",
           icon: "Shield",
           color: "green",
         },
@@ -193,7 +289,7 @@ function getDefaultActions(
             ? "Se resultater og juster strategien for bedre avkastning."
             : "Review results and tune your strategy for better returns.",
           ctaText: isNo ? "Se resultater" : "View Results",
-          ctaLink: `/${locale}/dashboard/resultater`,
+          ctaLink: "/dashboard/resultater",
           icon: "TrendingUp",
           color: "blue",
         },
