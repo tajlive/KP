@@ -18,7 +18,7 @@ import { SmartActions } from "./SmartActions";
 import { AutoTradingConfigCard } from "./AutoTradingConfigCard";
 
 // Nye onboarding & retention komponenter
-import { NewUserHero } from "./NewUserHero";
+
 import { FirstTradeReward } from "./FirstTradeReward";
 import { PaperToLiveProgress } from "./PaperToLiveProgress";
 import GetStartedCard from "./GetStartedCard";
@@ -185,11 +185,6 @@ export function DashboardPro({
             sessionMode={isPaperMode ? "paper" : "live"}
           />
         </motion.div>
-
-        {/* New User Hero - shown after onboarding, before first trade */}
-        {onboardingCompleted && effectiveStats.totalTrades === 0 && !isLoading && (
-          <NewUserHero userName={userName} />
-        )}
 
         {/* First Trade Reward - shown after first trade (once) */}
         <FirstTradeReward totalTrades={effectiveStats.totalTrades} />
