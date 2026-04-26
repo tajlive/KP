@@ -32,7 +32,6 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
   const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
-  const [paperSessionId, setPaperSessionId] = useState<string | null>(null);
   const { showSuccess } = useTradeSuccess();
   const [lastTrade, setLastTrade] = useState<{
     symbol: string;
@@ -44,18 +43,15 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
 
   const fetchBalance = async () => {
     try {
-      const response = await fetch("/api/paper-trading/balance");
+      const response = await fetch("/api/dashboard/metrics?mode=paper");
       if (response.ok) {
-        const data = (await response.json()) as {
-          balance?: { current: number };
-          session_id?: string;
+        const json = (await response.json()) as {
+          ok?: boolean;
+          data?: { totalCapital?: number };
         };
-        if (data.balance?.current != null) {
-          setBalance(data.balance.current);
+        if (json.ok && json.data?.totalCapital != null) {
+          setBalance(json.data.totalCapital);
         }
-        setPaperSessionId(
-          typeof data.session_id === "string" ? data.session_id : null,
-        );
       }
     } catch (error) {
       console.error("Failed to fetch balance:", error);
@@ -119,7 +115,7 @@ export function PaperTradeButton({ symbol, currentPrice }: Props) {
           side,
           quantity: qty,
           price: currentPrice,
-          ...(paperSessionId ? { session_id: paperSessionId } : {}),
+          // session_id auto-resolved by execute endpoint for paper mode
         } satisfies {
           symbol: string;
           side: "buy" | "sell";
