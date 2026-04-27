@@ -104,7 +104,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
             {item.pnl.toLocaleString()} NOK
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            {item.trades} {isNo ? "trades" : "trades"}
+            {item.trades} {isNo ? "handler" : "trades"}
           </p>
         </div>
       );
@@ -122,7 +122,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-            {isNo ? "Asset Allokering" : "Asset Allocation"}
+            {isNo ? "Aktivaallokering" : "Asset Allocation"}
           </h3>
           <button
             onClick={() => setShowInfo(!showInfo)}

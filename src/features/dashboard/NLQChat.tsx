@@ -34,6 +34,38 @@ export function NLQChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Focus trap + Escape to close
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        return;
+      }
+      // Simple focus trap
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    // Focus input on open
+    setTimeout(() => inputRef.current?.focus(), 100);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   const quickQuestions = isNo ? QUICK_QUESTIONS_NO : QUICK_QUESTIONS_EN;
 
@@ -112,6 +144,10 @@ export function NLQChat() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={isNo ? "Trading Assistent" : "Trading Assistant"}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -143,7 +179,7 @@ export function NLQChat() {
             </div>
 
             {/* Messages */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3" aria-live="polite" aria-atomic="false">
               {messages.length === 0 && (
                 <div className="space-y-3">
                   <p className="text-xs text-slate-500 text-center">
@@ -189,6 +225,7 @@ export function NLQChat() {
                     <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]" />
                     <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]" />
                     <div className="h-2 w-2 animate-bounce rounded-full bg-slate-400" />
+                    <span className="sr-only">{isNo ? "Venter på svar..." : "Waiting for response..."}</span>
                   </div>
                 </div>
               )}
@@ -200,6 +237,7 @@ export function NLQChat() {
               className="flex items-center gap-2 border-t border-gray-200 px-3 py-3 dark:border-slate-700"
             >
               <input
+                ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

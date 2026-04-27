@@ -36,17 +36,27 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000 }: AdvancedAn
   const [analytics, setAnalytics] = useState<TradingAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isExpanded || hasFetched) return;
 
     setLoading(true);
+    setFetchError(null);
     fetch("/api/user/trading-analytics")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((data) => {
         if (data.ok) {
           setAnalytics(data as TradingAnalytics);
+        } else {
+          setFetchError(isNo ? "Kunne ikke laste analyse-data." : "Could not load analytics data.");
         }
+      })
+      .catch(() => {
+        setFetchError(isNo ? "Kunne ikke laste analyse-data. Prøv igjen." : "Could not load analytics data. Please try again.");
       })
       .finally(() => {
         setLoading(false);
@@ -58,7 +68,9 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000 }: AdvancedAn
     <div className="mt-6">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full py-4 flex items-center justify-center gap-2 bg-gray-100 dark:bg-slate-800/50 hover:bg-slate-800 rounded-xl border border-slate-700/50 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-white transition-all duration-200"
+        aria-expanded={isExpanded}
+        aria-controls="advanced-analytics-panel"
+        className="w-full py-4 flex items-center justify-center gap-2 bg-gray-100 dark:bg-slate-800/50 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all duration-200"
       >
         <BarChart3 className="w-4 h-4" />
         <span className="font-medium text-sm">
@@ -74,12 +86,27 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000 }: AdvancedAn
 
       {isExpanded && (
         <motion.div
+          id="advanced-analytics-panel"
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.3 }}
           className="overflow-hidden"
         >
+          {fetchError && (
+            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-center">
+              <p className="text-red-300 text-sm">{fetchError}</p>
+              <button
+                onClick={() => {
+                  setHasFetched(false);
+                  setFetchError(null);
+                }}
+                className="mt-2 text-xs text-blue-400 hover:text-blue-300 underline"
+              >
+                {isNo ? "Prøv igjen" : "Try again"}
+              </button>
+            </div>
+          )}
           <div className="pt-6 space-y-6">
             {/* Enterprise analytics grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -17,11 +17,11 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
   const [entryPrice, setEntryPrice] = useState(50000);
   const [showInfo, setShowInfo] = useState(false);
 
-  // Calculations
+  // Calculations (guarded against division by zero)
   const riskAmount = accountBalance * (riskPercent / 100);
   const positionSize = riskAmount / (stopLossPercent / 100);
-  const units = positionSize / entryPrice;
-  const leverage = positionSize / accountBalance;
+  const units = entryPrice > 0 ? positionSize / entryPrice : 0;
+  const leverage = accountBalance > 0 ? positionSize / accountBalance : 0;
 
   const isOverLeveraged = leverage > 5;
   const isRiskTooHigh = riskPercent > 2;
