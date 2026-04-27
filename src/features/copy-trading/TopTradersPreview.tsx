@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Crown, TrendingUp, Users, ArrowRight, Star } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { QuickFollowSheet } from "./QuickFollowSheet";
 
 interface Trader {
   id: string;
@@ -89,12 +90,18 @@ export function TopTradersPreview({ onCopyTrader }: TopTradersPreviewProps) {
   const t = useTranslations("copyTrading");
   const [selectedTrader, setSelectedTrader] = useState<string | null>(null);
   const [hoveredTrader, setHoveredTrader] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetTrader, setSheetTrader] = useState<Trader | null>(null);
 
   const handleCopy = (traderId: string) => {
     setSelectedTrader(traderId);
     onCopyTrader?.(traderId);
-    // Simuler API call
     setTimeout(() => setSelectedTrader(null), 2000);
+  };
+
+  const openQuickFollow = (trader: Trader) => {
+    setSheetTrader(trader);
+    setSheetOpen(true);
   };
 
   return (
@@ -186,7 +193,7 @@ export function TopTradersPreview({ onCopyTrader }: TopTradersPreviewProps) {
 
               {/* Copy button */}
               <button
-                onClick={() => handleCopy(trader.id)}
+                onClick={() => openQuickFollow(trader)}
                 disabled={selectedTrader === trader.id}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   selectedTrader === trader.id
@@ -194,7 +201,7 @@ export function TopTradersPreview({ onCopyTrader }: TopTradersPreviewProps) {
                     : "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
                 }`}
               >
-                {selectedTrader === trader.id ? "✓ Kopiert!" : "Kopier"}
+                {selectedTrader === trader.id ? "✓ Følger!" : t("copy")}
               </button>
             </div>
 
@@ -222,6 +229,20 @@ export function TopTradersPreview({ onCopyTrader }: TopTradersPreviewProps) {
           </motion.div>
         ))}
       </div>
+
+      {/* Quick Follow Sheet */}
+      {sheetTrader && (
+        <QuickFollowSheet
+          leaderId={sheetTrader.id}
+          leaderName={sheetTrader.name}
+          isOpen={sheetOpen}
+          onClose={() => {
+            setSheetOpen(false);
+            setSheetTrader(null);
+          }}
+          onSuccess={() => handleCopy(sheetTrader.id)}
+        />
+      )}
 
       {/* CTA */}
       <motion.div

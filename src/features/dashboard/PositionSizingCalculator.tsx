@@ -28,7 +28,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
 
   return (
     <motion.div
-      className="bg-slate-900 rounded-2xl p-5 border border-slate-700"
+      className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -36,13 +36,13 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Calculator className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
             {isNo ? "Posisjonskalkulator" : "Position Sizing Calculator"}
           </h3>
         </div>
         <button
           onClick={() => setShowInfo(!showInfo)}
-          className="text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-300 transition-colors"
         >
           <Info className="w-3.5 h-3.5" />
         </button>
@@ -63,8 +63,8 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
       <div className="space-y-4">
         {/* Account Balance (read-only or editable) */}
         <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
-          <span className="text-xs text-slate-400">{isNo ? "Kontobalanse" : "Account Balance"}</span>
-          <span className="text-sm font-bold text-white">
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Kontobalanse" : "Account Balance"}</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white">
             {accountBalance.toLocaleString()} NOK
           </span>
         </div>
@@ -72,7 +72,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         {/* Risk % */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs text-slate-400">
+            <label className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
               {isNo ? "Risiko per trade" : "Risk per trade"}
             </label>
             <span
@@ -109,10 +109,10 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         {/* Stop Loss % */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs text-slate-400">
+            <label className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
               {isNo ? "Stop-loss %" : "Stop-loss %"}
             </label>
-            <span className="text-xs font-bold text-white">{stopLossPercent}%</span>
+            <span className="text-xs font-bold text-slate-900 dark:text-white">{stopLossPercent}%</span>
           </div>
           <input
             type="range"
@@ -127,14 +127,14 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
 
         {/* Entry Price */}
         <div>
-          <label className="text-xs text-slate-400 block mb-1.5">
+          <label className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block mb-1.5">
             {isNo ? "Inngangspris (NOK)" : "Entry price (NOK)"}
           </label>
           <input
             type="number"
             value={entryPrice}
             onChange={(e) => setEntryPrice(parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
       </div>
@@ -142,19 +142,19 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
       {/* Results */}
       <div className="mt-5 p-4 bg-slate-800 rounded-xl space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400">{isNo ? "Risiko-beløp" : "Risk amount"}</span>
-          <span className="text-sm font-bold text-white">{riskAmount.toLocaleString()} NOK</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Risiko-beløp" : "Risk amount"}</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white">{riskAmount.toLocaleString()} NOK</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400">{isNo ? "Posisjonsstørrelse" : "Position size"}</span>
-          <span className="text-sm font-bold text-white">{positionSize.toLocaleString()} NOK</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Posisjonsstørrelse" : "Position size"}</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white">{positionSize.toLocaleString()} NOK</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400">{isNo ? "Enheter" : "Units"}</span>
-          <span className="text-sm font-bold text-white">{units.toFixed(4)}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Enheter" : "Units"}</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white">{units.toFixed(4)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400">{isNo ? "Effektiv gearing" : "Effective leverage"}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Effektiv gearing" : "Effective leverage"}</span>
           <span
             className={`text-sm font-bold ${
               isOverLeveraged ? "text-red-400" : "text-emerald-400"
@@ -178,7 +178,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
       <div className="mt-3 text-center">
         <p className="text-[10px] text-slate-600">
           {isNo ? "Formel:" : "Formula:"}{" "}
-          <span className="font-mono text-slate-500">
+          <span className="font-mono text-slate-400 dark:text-slate-500">
             Pos = (Bal × Risk%) / Stop%
           </span>
         </p>

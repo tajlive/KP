@@ -119,7 +119,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
 
   return (
     <motion.div
-      className="bg-slate-900 rounded-2xl p-5 border border-slate-700"
+      className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -128,7 +128,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             {getTimeIcon(timeOfDay)}
-            <h2 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {getGreeting(timeOfDay, isNo)}
               {userName ? `, ${userName}` : ""}
             </h2>
@@ -136,12 +136,12 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
 
           <div className="flex items-center gap-3 flex-wrap">
             {performanceMsg && (
-              <span className="text-sm text-slate-300">{performanceMsg}</span>
+              <span className="text-sm text-slate-600 dark:text-slate-300">{performanceMsg}</span>
             )}
 
             {market && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700">
-                <span className="text-xs text-slate-400">{market.symbol}</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{market.symbol}</span>
                 {market.changePct >= 0 ? (
                   <TrendingUp className="w-3 h-3 text-emerald-400" />
                 ) : (
@@ -165,7 +165,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
           <div className="hidden sm:flex items-center gap-4">
             {totalPnl !== undefined && (
               <div className="text-right">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   {isNo ? "P&L" : "P&L"}
                 </p>
                 <p
@@ -180,7 +180,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
             )}
             {winRate !== undefined && (
               <div className="text-right">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   {isNo ? "Win Rate" : "Win Rate"}
                 </p>
                 <p
