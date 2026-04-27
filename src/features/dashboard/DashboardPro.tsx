@@ -18,10 +18,14 @@ import { SmartActions } from "./SmartActions";
 import { AutoTradingConfigCard } from "./AutoTradingConfigCard";
 
 // Nye onboarding & retention komponenter
-
 import { FirstTradeReward } from "./FirstTradeReward";
 import { PaperToLiveProgress } from "./PaperToLiveProgress";
 import GetStartedCard from "./GetStartedCard";
+
+// Enterprise 2026 komponenter
+import { PersonalizedGreeting } from "./PersonalizedGreeting";
+import { ExplainStatButton } from "./ExplainStatButton";
+import { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
 
 interface UserStats {
   totalTrades: number;
@@ -172,6 +176,13 @@ export function DashboardPro({
   return (
     <div className="min-h-screen bg-slate-950 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* Personalized Greeting — Enterprise 2026 */}
+        <PersonalizedGreeting
+          userName={userName}
+          totalPnl={effectiveStats.totalPnl}
+          winRate={effectiveStats.winRate}
+        />
+
         {/* Hero - Simplified balance */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -229,7 +240,14 @@ export function DashboardPro({
             ) : effectiveStats.totalTrades === 0 ? (
               <EmptyState />
             ) : (
-              <StatsGrid stats={statItems} />
+              <div className="space-y-2">
+                <StatsGrid stats={statItems} />
+                <div className="flex items-center gap-3 px-1">
+                  <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
+                  <ExplainStatButton statType="winRate" value={effectiveStats.winRate} />
+                  <ExplainStatButton statType="balance" value={effectiveStats.currentCapital} />
+                </div>
+              </div>
             )}
 
             {/* Scope label */}
@@ -257,6 +275,9 @@ export function DashboardPro({
             <TopTradersPreview />
           </div>
         </div>
+
+        {/* Advanced Analytics — Enterprise 2026 */}
+        <AdvancedAnalyticsSection accountBalance={effectiveStats.currentCapital} />
 
         {/* Upgrade Banner — CMS-drevet */}
         <motion.div
