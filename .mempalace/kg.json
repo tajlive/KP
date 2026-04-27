@@ -660,6 +660,16 @@
       "predicate": "health",
       "object": "post-deploy-verify",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "SWC-darwin-arm64-CI-failure",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "status",
+      "object": "production-ready-2026-04-26",
+      "validFrom": "2026-04-26T21:02:09.750Z"
     }
   ],
   "mempalace": [
@@ -938,6 +948,383 @@
       "predicate": "valid-field",
       "object": "trading_capital_nok and risk_level are the usable fields for session creation",
       "validFrom": "2026-04-24T19:49:00.000Z"
+    }
+  ],
+  "supabase-client": [
+    {
+      "predicate": "has-bug-pattern",
+      "object": "method-detachment-loses-this-binding",
+      "validFrom": "2026-04-25T00:20:00Z"
+    },
+    {
+      "predicate": "affected-methods",
+      "object": "from + rpc across 11 call sites",
+      "validFrom": "2026-04-25T00:20:00Z"
+    }
+  ],
+  "supabase-from": [
+    {
+      "predicate": "fixed-in",
+      "object": "usePrices.ts, useNotifications.ts, src/lib/trading.ts, trading-sessions/create/route.ts",
+      "validFrom": "2026-04-25T00:20:00Z"
+    }
+  ],
+  "supabase-rpc": [
+    {
+      "predicate": "fixed-in",
+      "object": "useNotifications.ts, useTrading.ts, src/lib/trading.ts (3x), cron/keepalive/route.ts",
+      "validFrom": "2026-04-25T00:20:00Z"
+    }
+  ],
+  "realtime-channel": [
+    {
+      "predicate": "hardened-with",
+      "object": "unique-channel-names-per-instance + useRef cleanup tracking",
+      "validFrom": "2026-04-25T00:20:00Z"
+    }
+  ],
+  "auth-redirect-loop": [
+    {
+      "predicate": "root-cause",
+      "object": "invalidTokenDetected sessionStorage flag blocked client getSession while middleware refreshed tokens server-side",
+      "validFrom": "2026-04-25T00:20:00Z"
+    },
+    {
+      "predicate": "fixed-with",
+      "object": "cookie-check safety valve in getSupabaseClient clears guard when sb-* cookies present",
+      "validFrom": "2026-04-25T00:20:00Z"
+    }
+  ],
+  "hotfix-batch-2026-04-25": [
+    {
+      "predicate": "status",
+      "object": "deployed-preview",
+      "validFrom": "2026-04-25T00:20:00Z"
+    }
+  ],
+  "dashboard-metrics": [
+    {
+      "predicate": "has",
+      "object": "unified-aggregator-getUserDashboardMetrics.ts",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "endpoint",
+      "object": "/api/dashboard/metrics/route.ts",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "hook",
+      "object": "useDashboardMetrics.ts",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "verified-user",
+      "object": "tomarnejensen@gmail.com:12-trades-71000-pnl",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "filter",
+      "object": "user_id+mode+archived=false+status IN(active,paused,crashed,stopped)+trade_status NOT IN(cancelled,failed)",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "gap",
+      "object": "no-caching-no-rate-limit-no-observability",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "gap",
+      "object": "totalCapital uses MAX instead of SUM",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "gap",
+      "object": "no-realtime-sync",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "gap",
+      "object": "memory-aggregation-instead-of-sql-rpc",
+      "validFrom": "2026-04-26T20:00:00Z"
+    },
+    {
+      "predicate": "optimized",
+      "object": "enterprise-2026-P1",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "fix",
+      "object": "totalCapital MAX→SUM (enterprise semantics)",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "fix",
+      "object": "caching via withCache + CACHE_TTL.USER_PROFILE (5min)",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "fix",
+      "object": "rate limiting via rateLimitMiddleware (Redis + memory fallback)",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "fix",
+      "object": "Sentry observability + structured logging + slow-query warnings",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "fix",
+      "object": "realtime sync via useRealtime on trades INSERT (1.5s debounce)",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "gap-closed",
+      "object": "no-caching-no-rate-limit-no-observability",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "gap-closed",
+      "object": "totalCapital uses MAX instead of SUM",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "gap-closed",
+      "object": "no-realtime-sync",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "verified-user",
+      "object": "tomarnejensen@gmail.com: SUM=100602463.89 starting=100560000 pnl=71000 trades=12",
+      "validFrom": "2026-04-26T20:30:00Z"
+    },
+    {
+      "predicate": "deployed",
+      "object": "PostgreSQL RPC get_dashboard_metrics(UUID, TEXT, TEXT[])",
+      "validFrom": "2026-04-26T20:45:00Z"
+    },
+    {
+      "predicate": "optimized",
+      "object": "O(1) network cost via RPC vs O(N) memory loop",
+      "validFrom": "2026-04-26T20:45:00Z"
+    },
+    {
+      "predicate": "has",
+      "object": "TS fallback when RPC unavailable (backward compatibility)",
+      "validFrom": "2026-04-26T20:45:00Z"
+    },
+    {
+      "predicate": "test",
+      "object": "integration test against real DB for tomarnejensen@gmail.com",
+      "validFrom": "2026-04-26T20:45:00Z"
+    },
+    {
+      "predicate": "verified-rpc",
+      "object": "tomarnejensen@gmail.com:12-trades-71000-pnl-SUM-100602463.89",
+      "validFrom": "2026-04-26T20:45:00Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "PostgreSQL-RPC-get_dashboard_metrics",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "has",
+      "object": "API-route-with-caching-rate-limiting",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    }
+  ],
+  "dashboard-ui": [
+    {
+      "predicate": "status",
+      "object": "not-enterprise-ready-2026",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "has_gap",
+      "object": "no-ai-insight",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "has_gap",
+      "object": "no-adaptive-ui",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "has_gap",
+      "object": "basic-charting-only",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "has_gap",
+      "object": "no-risk-management-viz",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "has_gap",
+      "object": "no-social-collaboration",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "competitor_baseline",
+      "object": "TradingView-eToro-Robinhood-Alpaca-IBKR",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "has_existing_plan",
+      "object": "DASHBOARD-REDESIGN-2026-04-21",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "has_existing_plan",
+      "object": "MOBILE-MODERNIZATION-2026-04-23",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "mobile_completion",
+      "object": "40-percent",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    }
+  ],
+  "enterprise-ui-2026": [
+    {
+      "predicate": "key_trend",
+      "object": "MX-design-machine-experience",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "key_trend",
+      "object": "adaptive-hierarchical-dashboards",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "key_trend",
+      "object": "AI-generated-insights-and-NLQ",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "key_trend",
+      "object": "advanced-data-viz-heatmaps-orderflow",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    },
+    {
+      "predicate": "key_trend",
+      "object": "WCAG-2.2-AA-baseline",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    }
+  ],
+  "klarpakke": [
+    {
+      "predicate": "analysis_report",
+      "object": "ENTERPRISE-UI-ANALYSIS-2026-04-26",
+      "validFrom": "2026-04-26T18:58:59.552Z"
+    }
+  ],
+  "dashboard": [
+    {
+      "predicate": "has",
+      "object": "adaptive-v2-4-state-layout",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "AITip-rule-based-insights",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "DemoChart-synthetic-sparkline",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "SmartActions-merged-CMS-support",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "has",
+      "object": "PortfolioChart-live-mode-support",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "DEFAULT_STATS-mock-data",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "UpgradeGate-hardcoded-mock-values",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "PaperTradingCard.ENHANCED-duplicate",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "SmartActionsRow-merged-into-SmartActions",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "PaperLiveToggle-unused",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "TradingModeToggle-dashboard-unused",
+      "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "backup-files-src-i18n-paper-trading-vercel",
+      "validFrom": "2026-04-26T21:02:09.750Z"
+    },
+    {
+      "predicate": "remaining-debt",
+      "object": "NewUserHero-standalone-vs-inline",
+      "validFrom": "2026-04-26T21:02:09.750Z"
+    },
+    {
+      "predicate": "remaining-debt",
+      "object": "UnifiedTradingDashboard-inline-TradingModeToggle",
+      "validFrom": "2026-04-26T21:02:09.750Z"
+    },
+    {
+      "predicate": "remaining-debt",
+      "object": "deprecated-api-paper-trading-routes",
+      "validFrom": "2026-04-26T21:02:09.750Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "standalone-NewUserHero-merged-into-AdaptiveDashboard",
+      "validFrom": "2026-04-26T21:18:05.086Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "deprecated-api-paper-trading-trade-route",
+      "validFrom": "2026-04-26T21:18:05.086Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "paper-trading-balance-route-backup-FIXED",
+      "validFrom": "2026-04-26T21:18:05.086Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "deprecated-api-paper-trading-balance-route",
+      "validFrom": "2026-04-26T21:25:41.840Z"
+    },
+    {
+      "predicate": "migrated",
+      "object": "PaperTradeButton-to-dashboard-metrics",
+      "validFrom": "2026-04-26T21:25:41.840Z"
+    },
+    {
+      "predicate": "migrated",
+      "object": "PaperTradingCard-to-dashboard-metrics",
+      "validFrom": "2026-04-26T21:25:41.840Z"
     }
   ]
 }

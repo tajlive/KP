@@ -47,6 +47,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useTradingMode } from "@/lib/hooks/useTradingMode";
+import TradingModeToggle from "./TradingModeToggle";
 import { CurrencySwitcher } from "./CurrencySwitcher";
 import InteractiveOnboardingWizard from "../onboarding/InteractiveOnboardingWizard";
 import BotStatusDashboard from "./BotStatusDashboard";
@@ -449,10 +450,10 @@ export default function UnifiedTradingDashboard({
             <CurrencySwitcher layoutId="unified-trading-currency" />
             <TradingModeToggle
               mode={mode}
-              setMode={setMode}
+              onToggle={setMode}
               paperLabel={tTrading("paperModeShort")}
               liveLabel={tTrading("liveModeShort")}
-              toggleAria={tTrading("toggleAria")}
+              ariaLabel={tTrading("toggleAria")}
             />
           </div>
         </div>
@@ -548,53 +549,6 @@ export default function UnifiedTradingDashboard({
           mode={mode}
           isStarting={isStarting}
         />
-      </div>
-    </div>
-  );
-}
-
-function TradingModeToggle({
-  mode,
-  setMode,
-  paperLabel,
-  liveLabel,
-  toggleAria,
-}: {
-  mode: TradingMode;
-  setMode: (m: TradingMode) => void;
-  paperLabel: string;
-  liveLabel: string;
-  toggleAria: string;
-}) {
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      className={`relative w-[200px] h-10 ${SURFACE.BG_ELEVATED} rounded-full p-1 flex cursor-pointer border ${SURFACE.BORDER}`}
-      onClick={() => setMode(mode === "paper" ? "live" : "paper")}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          setMode(mode === "paper" ? "live" : "paper");
-        }
-      }}
-      aria-label={toggleAria}
-    >
-      <motion.div
-        className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-linear-to-r from-[#0052FF] to-[#0047E0]"
-        animate={{ x: mode === "live" ? "100%" : "0%" }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        style={{ left: 4 }}
-      />
-      <div className="flex-1 flex items-center justify-center relative z-10 text-sm font-medium">
-        <span className={mode === "paper" ? "text-white" : "text-slate-400"}>
-          {paperLabel}
-        </span>
-      </div>
-      <div className="flex-1 flex items-center justify-center relative z-10 text-sm font-medium">
-        <span className={mode === "live" ? "text-white" : "text-slate-400"}>
-          {liveLabel}
-        </span>
       </div>
     </div>
   );
