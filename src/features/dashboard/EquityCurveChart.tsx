@@ -37,7 +37,7 @@ function EmptyState() {
   const isNo = locale === "no";
   return (
     <div className="h-[280px] w-full bg-slate-900 rounded-2xl border border-slate-700 flex items-center justify-center">
-      <p className="text-slate-500 text-sm">
+      <p className="text-slate-400 dark:text-slate-500 text-sm">
         {isNo ? "Ikke nok data for equity curve" : "Not enough data for equity curve"}
       </p>
     </div>
@@ -76,7 +76,7 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
       const point = payload[0].payload;
       return (
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl">
-          <p className="text-slate-400 text-xs mb-1">{point.label}</p>
+          <p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 text-xs mb-1">{point.label}</p>
           <p
             className={`font-bold text-lg ${
               point.cumulative >= 0 ? "text-emerald-400" : "text-red-400"
@@ -92,7 +92,7 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
 
   return (
     <motion.div
-      className="bg-slate-900 rounded-2xl p-5 border border-slate-700"
+      className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -100,19 +100,19 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
               {isNo ? "Equity Curve" : "Equity Curve"}
             </h3>
             <button
               onClick={() => setShowInfo(!showInfo)}
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-300 transition-colors"
               aria-label={isNo ? "Hva er equity curve?" : "What is equity curve?"}
             >
               <Info className="w-3.5 h-3.5" />
             </button>
           </div>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-2xl font-bold text-white">
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">
               {formatCurrency(lastValue)}
             </span>
             <span
@@ -133,11 +133,11 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
           </div>
         </div>
         <div className="text-right">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
             {isNo ? "Max" : "Max"}:{" "}
             <span className="text-emerald-400">{formatCurrency(maxPnl)}</span>
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
             {isNo ? "Min" : "Min"}:{" "}
             <span className="text-red-400">{formatCurrency(minPnl)}</span>
           </p>

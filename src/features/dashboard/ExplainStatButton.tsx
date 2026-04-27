@@ -160,7 +160,7 @@ export function ExplainStatButton({ statType, value, context }: ExplainStatButto
     <div className="relative inline-block">
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-blue-400 transition-colors"
+        className="inline-flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 hover:text-blue-400 transition-colors"
         aria-label={isNo ? `Forklar ${explanation.title}` : `Explain ${explanation.title}`}
       >
         <HelpCircle className="w-3.5 h-3.5" />
@@ -182,25 +182,25 @@ export function ExplainStatButton({ statType, value, context }: ExplainStatButto
               className="absolute z-50 left-0 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-4"
             >
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold text-white">{explanation.title}</h4>
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{explanation.title}</h4>
                 <button
                   onClick={() => setOpen(false)}
-                  className="text-slate-500 hover:text-slate-300"
+                  className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-300"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <p className="text-xs text-slate-400 mb-3">{explanation.short}</p>
-              <p className="text-xs text-slate-300 mb-3 leading-relaxed">
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-3">{explanation.short}</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
                 {explanation.detailed}
               </p>
 
               <div className="p-2.5 bg-slate-800 rounded-lg mb-3">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">
                   {isNo ? "Benchmark" : "Benchmark"}
                 </p>
-                <p className="text-xs text-slate-400">{explanation.benchmark}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{explanation.benchmark}</p>
               </div>
 
               <div className="p-2.5 bg-blue-500/10 border border-blue-500/20 rounded-lg">

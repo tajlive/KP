@@ -26,7 +26,7 @@ function EmptyState() {
   const isNo = locale === "no";
   return (
     <div className="h-[320px] w-full bg-slate-900 rounded-2xl border border-slate-700 flex items-center justify-center">
-      <p className="text-slate-500 text-sm">
+      <p className="text-slate-400 dark:text-slate-500 text-sm">
         {isNo ? "Ikke nok data for heatmap" : "Not enough data for heatmap"}
       </p>
     </div>
@@ -79,7 +79,7 @@ function groupByWeeks(data: DailyPnl[]): Array<Array<{ day: string; pnl: number 
 }
 
 function getColorClass(pnl: number | null, maxPnl: number): string {
-  if (pnl === null) return "bg-slate-800/50";
+  if (pnl === null) return "bg-gray-100 dark:bg-slate-800/50";
   if (pnl === 0) return "bg-slate-700";
 
   const intensity = Math.min(Math.abs(pnl) / Math.max(maxPnl * 0.6, 1), 1);
@@ -127,7 +127,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
 
   return (
     <motion.div
-      className="bg-slate-900 rounded-2xl p-5 border border-slate-700"
+      className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -135,17 +135,17 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
               {isNo ? "Daglig P&L Heatmap" : "Daily P&L Heatmap"}
             </h3>
             <button
               onClick={() => setShowInfo(!showInfo)}
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-300 transition-colors"
             >
               <Info className="w-3.5 h-3.5" />
             </button>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
             {isNo
               ? `${winningDays} grønne · ${losingDays} røde · ${winRate.toFixed(0)}% win rate`
               : `${winningDays} green · ${losingDays} red · ${winRate.toFixed(0)}% win rate`}
@@ -159,9 +159,9 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
               disabled={currentPage === 0}
               className="p-1 rounded hover:bg-slate-700 disabled:opacity-30 transition-colors"
             >
-              <ChevronLeft className="w-4 h-4 text-slate-400" />
+              <ChevronLeft className="w-4 h-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
             </button>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-400 dark:text-slate-500">
               {currentPage + 1}/{totalPages}
             </span>
             <button
@@ -169,7 +169,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
               disabled={currentPage >= totalPages - 1}
               className="p-1 rounded hover:bg-slate-700 disabled:opacity-30 transition-colors"
             >
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+              <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
             </button>
           </div>
         )}
@@ -203,7 +203,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
       <div className="space-y-1 mt-1">
         {dayLabels.map((label, dayIndex) => (
           <div key={label} className="flex items-center gap-1">
-            <span className="w-8 text-[10px] text-slate-500 text-right pr-1">{label}</span>
+            <span className="w-8 text-[10px] text-slate-400 dark:text-slate-500 text-right pr-1">{label}</span>
             <div className="flex gap-1 flex-1">
               {visibleWeeks.map((week, wi) => {
                 const day = week[dayIndex];
@@ -230,7 +230,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
 
       {/* Legend */}
       <div className="flex items-center justify-center gap-3 mt-4">
-        <span className="text-[10px] text-slate-500">{isNo ? "Tap" : "Loss"}</span>
+        <span className="text-[10px] text-slate-400 dark:text-slate-500">{isNo ? "Tap" : "Loss"}</span>
         <div className="flex gap-0.5">
           {["bg-red-800/70", "bg-red-700", "bg-red-600", "bg-red-500"].map((c) => (
             <div key={c} className={`w-4 h-3 rounded-sm ${c}`} />
@@ -240,7 +240,7 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
             <div key={c} className={`w-4 h-3 rounded-sm ${c}`} />
           ))}
         </div>
-        <span className="text-[10px] text-slate-500">{isNo ? "Gevinst" : "Win"}</span>
+        <span className="text-[10px] text-slate-400 dark:text-slate-500">{isNo ? "Gevinst" : "Win"}</span>
       </div>
     </motion.div>
   );

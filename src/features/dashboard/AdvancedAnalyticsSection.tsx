@@ -58,7 +58,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000 }: AdvancedAn
     <div className="mt-6">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full py-4 flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 rounded-xl border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-200"
+        className="w-full py-4 flex items-center justify-center gap-2 bg-gray-100 dark:bg-slate-800/50 hover:bg-slate-800 rounded-xl border border-slate-700/50 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-white transition-all duration-200"
       >
         <BarChart3 className="w-4 h-4" />
         <span className="font-medium text-sm">
@@ -103,8 +103,8 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000 }: AdvancedAn
 
             {/* Risk metrics with explanations */}
             {analytics?.riskMetrics && (
-              <div className="bg-slate-900 rounded-2xl p-5 border border-slate-700">
-                <h3 className="text-sm font-semibold text-white mb-4">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm">
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">
                   {isNo ? "Risk Metrics" : "Risk Metrics"}
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -148,10 +148,10 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000 }: AdvancedAn
                   ].map((metric) => (
                     <div
                       key={metric.label}
-                      className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50"
+                      className="bg-gray-100 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-700/50"
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-slate-400">{metric.label}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{metric.label}</span>
                       </div>
                       <p
                         className={`text-lg font-bold ${

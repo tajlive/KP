@@ -39,7 +39,7 @@ function EmptyState() {
   const isNo = locale === "no";
   return (
     <div className="h-[280px] w-full bg-slate-900 rounded-2xl border border-slate-700 flex items-center justify-center">
-      <p className="text-slate-500 text-sm">
+      <p className="text-slate-400 dark:text-slate-500 text-sm">
         {isNo ? "Ingen pair-data tilgjengelig" : "No pair data available"}
       </p>
     </div>
@@ -94,7 +94,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
       const item = payload[0].payload;
       return (
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl min-w-[140px]">
-          <p className="text-white font-semibold text-sm">{item.name}</p>
+          <p className="text-slate-900 dark:text-white font-semibold text-sm">{item.name}</p>
           <p
             className={`text-sm font-medium ${
               item.pnl >= 0 ? "text-emerald-400" : "text-red-400"
@@ -103,7 +103,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
             {item.pnl >= 0 ? "+" : ""}
             {item.pnl.toLocaleString()} NOK
           </p>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             {item.trades} {isNo ? "trades" : "trades"}
           </p>
         </div>
@@ -114,25 +114,25 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
 
   return (
     <motion.div
-      className="bg-slate-900 rounded-2xl p-5 border border-slate-700"
+      className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-white">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
             {isNo ? "Asset Allokering" : "Asset Allocation"}
           </h3>
           <button
             onClick={() => setShowInfo(!showInfo)}
-            className="text-slate-500 hover:text-slate-300 transition-colors"
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-300 transition-colors"
           >
             <Info className="w-3.5 h-3.5" />
           </button>
         </div>
         <div className="flex items-center gap-1.5">
-          <Wallet className="w-3.5 h-3.5 text-slate-500" />
+          <Wallet className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
           <span
             className={`text-sm font-bold ${
               totalPnl >= 0 ? "text-emerald-400" : "text-red-400"
@@ -205,7 +205,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
-                  <span className="text-slate-300 text-xs">{item.name}</span>
+                  <span className="text-slate-600 dark:text-slate-300 text-xs">{item.name}</span>
                 </div>
                 <div className="text-right">
                   <span

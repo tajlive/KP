@@ -53,7 +53,7 @@ interface DashboardProProps {
 
 function StatSkeleton() {
   return (
-    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 animate-pulse">
+    <div className="bg-white dark:bg-slate-800/50 rounded-xl p-4 border border-gray-200 dark:border-slate-700/50 shadow-sm animate-pulse">
       <div className="h-4 w-4 bg-slate-700 rounded mb-2" />
       <div className="h-8 w-24 bg-slate-700 rounded mb-1" />
       <div className="h-3 w-16 bg-slate-700 rounded" />
@@ -174,7 +174,7 @@ export function DashboardPro({
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Personalized Greeting — Enterprise 2026 */}
         <PersonalizedGreeting
