@@ -147,8 +147,8 @@ export function WinLossHeatmap({ data, loading }: WinLossHeatmapProps) {
           </div>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
             {isNo
-              ? `${winningDays} grønne · ${losingDays} røde · ${winRate.toFixed(0)}% win rate`
-              : `${winningDays} green · ${losingDays} red · ${winRate.toFixed(0)}% win rate`}
+              ? `${winningDays} grønne · ${losingDays} røde · ${winRate.toFixed(0)}% vinnrate`
+              : `${winningDays} green · ${losingDays} red · ${winRate.toFixed(0)}% vinnrate`}
           </p>
         </div>
 

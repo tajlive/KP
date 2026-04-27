@@ -116,6 +116,24 @@ function getExplanation(statType: StatType, value: number | undefined, isNo: boo
               : "Within acceptable limits. Keep monitoring.",
       };
     }
+    case "sharpe": {
+      const v = value ?? 0;
+      return {
+        title: t ? "Sharpe Ratio" : "Sharpe Ratio",
+        short: t
+          ? "Risikojustert avkastning — hvor mye profitt per enhet risk."
+          : "Risk-adjusted return — how much profit per unit of risk.",
+        detailed: t
+          ? `Sharpe ratio på ${v.toFixed(2)} indikerer din risikojusterte avkastning. Over 1.0 er godt, over 2.0 er svært godt.`
+          : `A Sharpe ratio of ${v.toFixed(2)} indicates your risk-adjusted return. Above 1.0 is good, above 2.0 is excellent.`,
+        benchmark: t
+          ? "Godt: >1.0 | Svært godt: >2.0 | Fantastisk: >3.0"
+          : "Good: >1.0 | Very good: >2.0 | Excellent: >3.0",
+        action: v >= 1
+          ? t ? "Sterkt! Fortsett din nåværende strategi." : "Strong! Keep your current strategy."
+          : t ? "Vurder å redusere volatilitet eller øke konsistente gevinster." : "Consider reducing volatility or increasing consistent gains.",
+      };
+    }
     case "pnl": {
       const v = value ?? 0;
       return {

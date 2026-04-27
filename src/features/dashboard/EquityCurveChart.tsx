@@ -101,7 +101,7 @@ export function EquityCurveChart({ data, loading }: EquityCurveChartProps) {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-              {isNo ? "Equity Curve" : "Equity Curve"}
+              {isNo ? "Egenkapitalkurve" : "Equity Curve"}
             </h3>
             <button
               onClick={() => setShowInfo(!showInfo)}

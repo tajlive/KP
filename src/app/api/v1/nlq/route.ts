@@ -68,9 +68,10 @@ async function buildAnswer(
   intent: string,
   timeframe: "day" | "week" | "month" | "all" | undefined,
   userId: string,
-  supabase: Awaited<ReturnType<typeof createServerClient>>
+  supabase: Awaited<ReturnType<typeof createServerClient>>,
+  locale: string = "no",
 ): Promise<NlqResponse> {
-  const isNo = true;
+  const isNo = locale === "no" || locale === "nb" || locale === "nn";
 
   const { data: rows, error } = await supabase
     .from("trades")
@@ -278,8 +279,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Query is required" }, { status: 400 });
     }
 
+    const locale = request.headers.get("accept-language")?.split(",")[0]?.split("-")[0] ?? "no";
     const { intent, timeframe } = parseQuery(query);
-    const response = await buildAnswer(intent, timeframe, user.id, supabaseClient);
+    const response = await buildAnswer(intent, timeframe, user.id, supabaseClient, locale);
 
     return NextResponse.json(response, {
       headers: { "Cache-Control": "private, no-store, max-age=0" },

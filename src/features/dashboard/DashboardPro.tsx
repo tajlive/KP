@@ -157,10 +157,10 @@ export function DashboardPro({
       highlight: true,
     },
     {
-      label: "Win rate",
+      label: isNo ? "Vinnrate" : "Win rate",
       value: `${effectiveStats.winRate}%`,
       subtext: isNo
-        ? `${effectiveStats.totalTrades} trades totalt`
+        ? `${effectiveStats.totalTrades} handler totalt`
         : `${effectiveStats.totalTrades} trades total`,
       trend: effectiveStats.winRate >= 50 ? ("up" as const) : ("down" as const),
       icon: Target,
