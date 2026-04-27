@@ -50,22 +50,28 @@ function getTimeIcon(timeOfDay: string) {
   }
 }
 
-/** Simulated market context — in production, fetch from /api/market/snapshot */
+/** Fetch real market context from /api/market/snapshot */
 function useMarketContext(): MarketContext | null {
   const [context, setContext] = useState<MarketContext | null>(null);
 
   useEffect(() => {
-    // TODO: Replace with real API call to /api/market/snapshot
-    // For now, rotate between a few major assets with realistic-looking data
-    const assets: MarketContext[] = [
-      { symbol: "BTC", changePct: 2.4 },
-      { symbol: "ETH", changePct: -1.2 },
-      { symbol: "SOL", changePct: 5.1 },
-      { symbol: "S&P 500", changePct: 0.8 },
-    ];
-    // Deterministic "random" based on day of month
-    const dayOfMonth = new Date().getDate();
-    setContext(assets[dayOfMonth % assets.length]);
+    fetch("/api/market/snapshot")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.assets && data.assets.length > 0) {
+          // Pick the asset with the highest absolute movement for "interesting" context
+          const top = data.assets.reduce((best: typeof data.assets[0], current: typeof data.assets[0]) =>
+            Math.abs(current.change24hPct) > Math.abs(best.change24hPct) ? current : best
+          );
+          setContext({
+            symbol: top.symbol,
+            changePct: top.change24hPct,
+          });
+        }
+      })
+      .catch(() => {
+        // Silent fallback — no market context shown
+      });
   }, []);
 
   return context;
