@@ -26,6 +26,7 @@ import GetStartedCard from "./GetStartedCard";
 import { PersonalizedGreeting } from "./PersonalizedGreeting";
 import { ExplainStatButton } from "./ExplainStatButton";
 import { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
+import { NLQChat } from "./NLQChat";
 
 interface UserStats {
   totalTrades: number;
@@ -279,9 +280,12 @@ export function DashboardPro({
         {/* Advanced Analytics — Enterprise 2026 */}
         <AdvancedAnalyticsSection accountBalance={effectiveStats.currentCapital} />
 
+        {/* NLQ Chat — Enterprise 2026 */}
+        <NLQChat />
+
         {/* Upgrade Banner — CMS-drevet */}
         <motion.div
-          className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-slate-700"
+          className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-gray-200 dark:border-slate-700"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
