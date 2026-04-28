@@ -72,7 +72,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         {/* Risk % */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
+            <label htmlFor="risk-per-trade" className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
               {isNo ? "Risiko per trade" : "Risk per trade"}
             </label>
             <span
@@ -84,6 +84,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
             </span>
           </div>
           <input
+            id="risk-per-trade"
             type="range"
             min={0.1}
             max={5}
@@ -109,12 +110,13 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         {/* Stop Loss % */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
+            <label htmlFor="stop-loss-percent" className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
               {isNo ? "Stop-loss %" : "Stop-loss %"}
             </label>
             <span className="text-xs font-bold text-slate-900 dark:text-white">{stopLossPercent}%</span>
           </div>
           <input
+            id="stop-loss-percent"
             type="range"
             min={0.5}
             max={10}
@@ -127,10 +129,11 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
 
         {/* Entry Price */}
         <div>
-          <label className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block mb-1.5">
+          <label htmlFor="entry-price" className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block mb-1.5">
             {isNo ? "Inngangspris (NOK)" : "Entry price (NOK)"}
           </label>
           <input
+            id="entry-price"
             type="number"
             value={entryPrice}
             onChange={(e) => setEntryPrice(parseFloat(e.target.value) || 0)}
