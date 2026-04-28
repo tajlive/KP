@@ -4,21 +4,20 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
+  pool: "threads",
+  poolOptions: {
+    threads: {
+      singleThread: false,
+      useAtomics: true,
+      isolate: false, // Raskere, men deler minne mellom tester
+    },
+  },
+
   test: {
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
-    
-    // Optimalisering for hastighet
-    pool: "threads",
-    poolOptions: {
-      threads: {
-        singleThread: false,
-        useAtomics: true,
-        isolate: false, // Raskere, men deler minne mellom tester
-      },
-    },
-    
+
     // Parallelisering
     fileParallelism: true,
     maxConcurrency: 8,

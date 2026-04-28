@@ -190,7 +190,11 @@ export function ExplainStatButton({ statType, value, context }: ExplainStatButto
           <>
             <div
               className="fixed inset-0 z-40"
+              role="button"
+              tabIndex={0}
+              aria-label="Lukk"
               onClick={() => setOpen(false)}
+              onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 4 }}
