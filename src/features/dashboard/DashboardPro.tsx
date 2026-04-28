@@ -28,6 +28,9 @@ import { ExplainStatButton } from "./ExplainStatButton";
 import { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
 import { NLQChat } from "./NLQChat";
 
+// Adaptive state machine
+import { computeUserState, type UserState } from "@/hooks/useUserState";
+
 interface UserStats {
   totalTrades: number;
   winRate: number;
@@ -138,14 +141,13 @@ export function DashboardPro({
         100
       : 0;
 
-  // Bestem brukertilstand for SmartActions
-  const userState = isLoading
-    ? "newUser"
-    : effectiveStats.totalTrades === 0
-      ? "newUser"
-      : isPaperMode
-        ? "paperMode"
-        : "liveMode";
+  // Adaptive user state — konsolidert til én maskin (NyBruker / Onboarded / AktivTrader / PowerUser)
+  const { state: userState } = computeUserState({
+    tradesCount: effectiveStats.totalTrades,
+    // signupDays proxy: anta 0 hvis ingen trades, ellers 7+ (de har kommet forbi onboarding)
+    signupDays: effectiveStats.totalTrades === 0 ? 0 : 7,
+    totalPnlPct: totalReturn,
+  });
 
   const statItems = [
     {
@@ -198,8 +200,10 @@ export function DashboardPro({
           />
         </motion.div>
 
-        {/* First Trade Reward - shown after first trade (once) */}
-        <FirstTradeReward totalTrades={effectiveStats.totalTrades} />
+        {/* First Trade Reward — kun for Onboarded+ */}
+        {userState !== "NyBruker" && (
+          <FirstTradeReward totalTrades={effectiveStats.totalTrades} />
+        )}
 
         {/* Get Started Checklist Card */}
         {userId && (
@@ -214,8 +218,8 @@ export function DashboardPro({
         {/* Smart Actions — context-aware CTA-kort */}
         <SmartActions userState={userState} cmsData={cmsData} />
 
-        {/* Paper to Live Progress */}
-        {isPaperMode && (
+        {/* Paper to Live Progress — kun for AktivTrader+ i paper mode */}
+        {isPaperMode && userState !== "NyBruker" && userState !== "Onboarded" && (
           <PaperToLiveProgress
             totalTrades={effectiveStats.totalTrades}
             winningTrades={effectiveStats.winningTrades}
@@ -226,29 +230,33 @@ export function DashboardPro({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left column - 2/3 width */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Portfolio Chart */}
+            {/* Portfolio Chart — vis for alle, men tom for nye brukere */}
             <PortfolioChart userId={userId} mode={preferredTradingMode} />
 
-            {/* Stats Grid */}
-            {isError ? (
-              <ErrorCard message={errorMessage} onRetry={onRetry} />
-            ) : isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <StatSkeleton />
-                <StatSkeleton />
-                <StatSkeleton />
-              </div>
-            ) : effectiveStats.totalTrades === 0 ? (
-              <EmptyState />
-            ) : (
-              <div className="space-y-2">
-                <StatsGrid stats={statItems} />
-                <div className="flex items-center gap-3 px-1">
-                  <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
-                  <ExplainStatButton statType="winRate" value={effectiveStats.winRate} />
-                  <ExplainStatButton statType="balance" value={effectiveStats.currentCapital} />
-                </div>
-              </div>
+            {/* Stats Grid — skjult for helt nye brukere */}
+            {userState !== "NyBruker" && (
+              <>
+                {isError ? (
+                  <ErrorCard message={errorMessage} onRetry={onRetry} />
+                ) : isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <StatSkeleton />
+                    <StatSkeleton />
+                    <StatSkeleton />
+                  </div>
+                ) : effectiveStats.totalTrades === 0 ? (
+                  <EmptyState />
+                ) : (
+                  <div className="space-y-2">
+                    <StatsGrid stats={statItems} />
+                    <div className="flex items-center gap-3 px-1">
+                      <ExplainStatButton statType="totalReturn" value={effectiveStats.totalPnl} />
+                      <ExplainStatButton statType="winRate" value={effectiveStats.winRate} />
+                      <ExplainStatButton statType="balance" value={effectiveStats.currentCapital} />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Scope label */}
@@ -260,8 +268,8 @@ export function DashboardPro({
               </p>
             )}
 
-            {/* Daily Challenge */}
-            <DailyChallenge userId={userId} />
+            {/* Daily Challenge — kun for brukere som er kommet i gang */}
+            {userState !== "NyBruker" && <DailyChallenge userId={userId} />}
           </div>
 
           {/* Right column - 1/3 width */}
@@ -269,19 +277,28 @@ export function DashboardPro({
             {/* Trading Mode & Risk Settings */}
             <AutoTradingConfigCard />
 
-            {/* Live Trade Feed */}
-            <LiveTradeFeed limit={8} />
+            {/* Live Trade Feed — kun for aktive tradere */}
+            {userState !== "NyBruker" && userState !== "Onboarded" && (
+              <LiveTradeFeed limit={8} />
+            )}
 
-            {/* Top Traders */}
-            <TopTradersPreview />
+            {/* Top Traders — kun for AktivTrader+ */}
+            {userState === "AktivTrader" || userState === "PowerUser" ? (
+              <TopTradersPreview />
+            ) : null}
           </div>
         </div>
 
-        {/* Advanced Analytics — Enterprise 2026 */}
-        <AdvancedAnalyticsSection accountBalance={effectiveStats.currentCapital} />
+        {/* Advanced Analytics — Enterprise 2026. Kun for PowerUser (auto-expanded) og AktivTrader (collapsed). */}
+        {(userState === "AktivTrader" || userState === "PowerUser") && (
+          <AdvancedAnalyticsSection
+            accountBalance={effectiveStats.currentCapital}
+            defaultExpanded={userState === "PowerUser"}
+          />
+        )}
 
-        {/* NLQ Chat — Enterprise 2026 */}
-        <NLQChat />
+        {/* NLQ Chat — Enterprise 2026. Kun for PowerUser. */}
+        {userState === "PowerUser" && <NLQChat />}
 
         {/* Upgrade Banner — CMS-drevet */}
         <motion.div
