@@ -65,4 +65,18 @@ describe("i18nMiddleware", () => {
     expect(res.status).toBe(308);
     expect(res.headers.get("location")).toBe("https://www.klarpakke.no/some-path");
   });
+
+  it("redirects /no/no/priser to /no/priser (duplicate locale)", async () => {
+    const req = new NextRequest(new URL("http://localhost/no/no/priser"));
+    const res = await i18nMiddleware(req);
+    expect(res.status).toBe(308);
+    expect(res.headers.get("location")).toBe("http://localhost/no/priser");
+  });
+
+  it("redirects /en/en/dashboard to /en/dashboard (duplicate locale)", async () => {
+    const req = new NextRequest(new URL("http://localhost/en/en/dashboard"));
+    const res = await i18nMiddleware(req);
+    expect(res.status).toBe(308);
+    expect(res.headers.get("location")).toBe("http://localhost/en/dashboard");
+  });
 });

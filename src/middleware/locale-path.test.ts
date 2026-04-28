@@ -28,4 +28,18 @@ describe("parseLocalePath + settings", () => {
       strippedPath: "/settings",
     });
   });
+
+  it("/no/no/priser → locale no, strippedPath /no/priser (duplicate locale)", () => {
+    expect(parseLocalePath("/no/no/priser")).toEqual({
+      locale: "no",
+      strippedPath: "/no/priser",
+    });
+  });
+
+  it("/en/en/dashboard → locale en, strippedPath /en/dashboard (duplicate locale)", () => {
+    expect(parseLocalePath("/en/en/dashboard")).toEqual({
+      locale: "en",
+      strippedPath: "/en/dashboard",
+    });
+  });
 });

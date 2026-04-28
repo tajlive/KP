@@ -3,7 +3,7 @@
  * Default locale (no) may omit the /no prefix; th/zh kept for legacy URLs.
  */
 
-const LOCALE_RE = /^(no|en|th|zh)$/;
+export const LOCALE_RE = /^(no|en|th|zh)$/;
 
 import { routing } from "@/i18n/routing.config";
 
