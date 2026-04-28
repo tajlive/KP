@@ -200,7 +200,23 @@ export async function middleware(request: NextRequest) {
     nonce = "fallback-nonce-" + Date.now();
   }
 
-  // 0.5. Canonical redirects (før i18n routing)
+  // 0.5. Detect duplicate locale prefix (e.g. /no/no/priser → /no/priser)
+  const localeMatch = pathname.match(/^\/(no|en|th|zh)(\/.*)?$/);
+  if (localeMatch) {
+    const afterFirstLocale = localeMatch[2] || "/";
+    const secondMatch = afterFirstLocale.match(/^\/(no|en|th|zh)(\/.*)?$/);
+    if (secondMatch) {
+      const locale = localeMatch[1];
+      const corrected = secondMatch[2] || "/";
+      const redirectResponse = NextResponse.redirect(
+        new URL(`/${locale}${corrected}`, request.url),
+        308,
+      );
+      return applySecurityHeaders(redirectResponse, nonce);
+    }
+  }
+
+  // 0.6. Canonical redirects (før i18n routing)
   const strippedPath = stripLocalePrefix(pathname);
   for (const [from, to] of Object.entries(CANONICAL_REDIRECTS)) {
     if (strippedPath === from || strippedPath.startsWith(`${from}/`)) {
