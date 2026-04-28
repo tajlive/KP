@@ -1,11 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { chatWithAI, SYSTEM_PROMPTS } from "@/lib/ai/providers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 3600; // Cache for 1 hour
-
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+export const revalidate = 3600;
 
 interface MarketBrief {
   summary: string;
@@ -14,11 +13,51 @@ interface MarketBrief {
   generated_at: string;
 }
 
+const MARKET_SYSTEM_PROMPT = `${SYSTEM_PROMPTS.MARKET_ANALYST}
+
+Du er en krypto markedsanalytiker for Klarpakke. Skriv en kort, profesjonell markedsoppsummering på norsk.
+
+Returner ALLTID JSON i dette formatet (ingen markdown, ingen forklaring):
+{
+  "summary": "2-3 setninger maks",
+  "sentiment": "bullish" | "bearish" | "neutral",
+  "highlights": ["3 korte punkter"]
+}`;
+
+function parseMarketJson(text: string): MarketBrief {
+  try {
+    // Try to extract JSON from potential markdown code blocks
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonText = jsonMatch ? jsonMatch[0] : text;
+    const parsed = JSON.parse(jsonText);
+
+    return {
+      summary: String(parsed.summary || "").trim(),
+      sentiment: ["bullish", "bearish", "neutral"].includes(parsed.sentiment)
+        ? (parsed.sentiment as "bullish" | "bearish" | "neutral")
+        : "neutral",
+      highlights: Array.isArray(parsed.highlights)
+        ? parsed.highlights.slice(0, 3).map(String)
+        : [],
+      generated_at: new Date().toISOString(),
+    };
+  } catch {
+    // If JSON parsing fails, create a structured response from the text
+    const lines = text.split("\n").filter((l) => l.trim().length > 0);
+    return {
+      summary: lines.slice(0, 2).join(" ") || text.slice(0, 200),
+      sentiment: "neutral",
+      highlights: lines.slice(2, 5).length > 0 ? lines.slice(2, 5) : ["Markedsanalyse tilgjengelig"],
+      generated_at: new Date().toISOString(),
+    };
+  }
+}
+
 export async function GET() {
   try {
     const db = createClient();
 
-    // Check cache first (refresh every hour)
+    // Check cache first
     const { data: cached } = await db
       .from("ai_cache")
       .select("value")
@@ -30,82 +69,56 @@ export async function GET() {
       return NextResponse.json(cached.value as unknown as MarketBrief);
     }
 
-    // No OPENAI key = return a static brief
-    if (!OPENAI_API_KEY) {
-      const fallback: MarketBrief = {
-        summary:
-          "AI Market Brief er ikke konfigurert ennå. Sett OPENAI_API_KEY i miljøvariabler.",
-        sentiment: "neutral",
-        highlights: ["Konfigurer OPENAI_API_KEY for live AI-analyse"],
-        generated_at: new Date().toISOString(),
-      };
-      return NextResponse.json(fallback);
-    }
-
-    // Fetch latest prices from Binance public API (no auth needed)
+    // Fetch latest prices from Binance
     const pricesRes = await fetch(
       'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]',
-      { next: { revalidate: 300 } },
+      { next: { revalidate: 300 } }
     );
     const priceData = await pricesRes.json();
 
     const marketContext = priceData
       .map(
-        (t: {
-          symbol: string;
-          lastPrice: string;
-          priceChangePercent: string;
-        }) =>
-          `${t.symbol}: $${parseFloat(t.lastPrice).toLocaleString()} (${parseFloat(t.priceChangePercent) > 0 ? "+" : ""}${t.priceChangePercent}%)`,
+        (t: { symbol: string; lastPrice: string; priceChangePercent: string }) =>
+          `${t.symbol}: $${parseFloat(t.lastPrice).toLocaleString()} (${parseFloat(t.priceChangePercent) > 0 ? "+" : ""}${t.priceChangePercent}%)`
       )
       .join(", ");
 
-    // Call OpenAI
-    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        temperature: 0.7,
-        max_tokens: 300,
-        response_format: { type: "json_object" },
+    // Call AI via unified provider (KIMI/NVIDIA with fallback)
+    let brief: MarketBrief;
+    try {
+      const aiResponse = await chatWithAI({
+        systemPrompt: MARKET_SYSTEM_PROMPT,
         messages: [
           {
-            role: "system",
-            content: `You are a crypto market analyst for Klarpakke, a Norwegian crypto trading platform. Write a brief, professional market summary in Norwegian. Return JSON: { "summary": "2-3 sentences max", "sentiment": "bullish" | "bearish" | "neutral", "highlights": ["3 short bullet points"] }`,
-          },
-          {
             role: "user",
-            content: `Dagens markedsdata (24t): ${marketContext}. Gi en kort oppsummering.`,
+            content: `Dagens markedsdata (24t): ${marketContext}. Gi en kort oppsummering som JSON.`,
           },
         ],
-      }),
-    });
+        temperature: 0.5,
+        maxTokens: 300,
+      });
 
-    const aiData = await aiRes.json();
-    const content = JSON.parse(aiData.choices[0].message.content);
+      brief = parseMarketJson(aiResponse.content);
+    } catch {
+      // AI unavailable — return graceful fallback with market data
+      brief = {
+        summary: `BTC er ${marketContext.includes("BTCUSDT") ? "i fokus" : "på markedet"}. Sjekk porteføljen din for oppdaterte priser.`,
+        sentiment: "neutral",
+        highlights: ["Markedsdata hentet fra Binance", "AI-analyse midlertidig utilgjengelig", "Priser oppdateres hvert 5. minutt"],
+        generated_at: new Date().toISOString(),
+      };
+    }
 
-    const brief: MarketBrief = {
-      summary: content.summary,
-      sentiment: content.sentiment,
-      highlights: content.highlights,
-      generated_at: new Date().toISOString(),
-    };
-
+    // Cache result
     const expiresAt = new Date(Date.now() + 3600_000).toISOString();
-    await db
-      .from("ai_cache")
-      .upsert(
-        {
-          cache_key: "market_brief",
-          value: brief as unknown as import("@/types/database.types").Json,
-          expires_at: expiresAt,
-        },
-        { onConflict: "cache_key" },
-      );
+    await db.from("ai_cache").upsert(
+      {
+        cache_key: "market_brief",
+        value: brief as unknown as import("@/types/database.types").Json,
+        expires_at: expiresAt,
+      },
+      { onConflict: "cache_key" }
+    );
 
     return NextResponse.json(brief);
   } catch (err) {
@@ -117,7 +130,7 @@ export async function GET() {
         highlights: [],
         generated_at: new Date().toISOString(),
       },
-      { status: 200 }, // Graceful fallback, no 500
+      { status: 200 }
     );
   }
 }

@@ -24,6 +24,8 @@ export interface FeatureFlags {
   signalEngineKillSwitch: boolean;
   /** Sonar UI-funksjonalitet */
   sonarUi: boolean;
+  /** AI Insight — prediktiv innsikt i dashboard */
+  aiInsight: boolean;
 }
 
 const DEFAULT_FLAGS: FeatureFlags = {
@@ -35,6 +37,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   maintenanceMode: false,
   signalEngineKillSwitch: false,
   sonarUi: process.env.NEXT_PUBLIC_SONAR_UI_ENABLED === 'true',
+  aiInsight: process.env.NEXT_PUBLIC_AI_INSIGHT_ENABLED !== 'false', // default ON
 };
 
 /** Sync variant - brukes på klienten */
