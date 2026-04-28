@@ -30,6 +30,9 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // Admin: Strict (privileged operations)
   admin: { max: 30, window: 60, keyPrefix: "rl:admin" },
   
+  // AI: Strict (expensive operations, per-user)
+  ai: { max: 10, window: 60, keyPrefix: "rl:ai" },
+  
   // Internal/health: Whitelisted (no limit)
   internal: { max: 1000, window: 60, keyPrefix: "rl:internal" },
   
@@ -63,6 +66,7 @@ function getRateLimitCategory(pathname: string): keyof typeof RATE_LIMITS {
   if (pathname.startsWith("/api/trading") || pathname.startsWith("/api/trading-sessions/")) return "trading";
   if (pathname.startsWith("/api/market/")) return "market";
   if (pathname.startsWith("/api/cron/")) return "internal"; // Cron has its own auth
+  if (pathname.startsWith("/api/ai/")) return "ai";
   return "default";
 }
 
