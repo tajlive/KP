@@ -27,6 +27,8 @@ import { PersonalizedGreeting } from "./PersonalizedGreeting";
 import { ExplainStatButton } from "./ExplainStatButton";
 import { AdvancedAnalyticsSection } from "./AdvancedAnalyticsSection";
 import { NLQChat } from "./NLQChat";
+import { AIInsightCard } from "./AIInsightCard";
+import { FeatureGate } from "@/lib/feature-flags";
 
 // Adaptive state machine
 import { computeUserState, type UserState } from "@/hooks/useUserState";
@@ -274,6 +276,13 @@ export function DashboardPro({
 
           {/* Right column - 1/3 width */}
           <div className="space-y-6">
+            {/* AI Insight — Enterprise 2026. Kun for AktivTrader+. Bak feature flag. */}
+            {(userState === "AktivTrader" || userState === "PowerUser") && (
+              <FeatureGate flag="aiInsight">
+                <AIInsightCard />
+              </FeatureGate>
+            )}
+
             {/* Trading Mode & Risk Settings */}
             <AutoTradingConfigCard />
 
