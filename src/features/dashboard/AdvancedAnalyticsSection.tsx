@@ -27,12 +27,13 @@ interface TradingAnalytics {
 
 interface AdvancedAnalyticsSectionProps {
   accountBalance?: number;
+  defaultExpanded?: boolean;
 }
 
-export function AdvancedAnalyticsSection({ accountBalance = 100000 }: AdvancedAnalyticsSectionProps) {
+export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpanded = false }: AdvancedAnalyticsSectionProps) {
   const locale = useLocale();
   const isNo = locale === "no";
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [analytics, setAnalytics] = useState<TradingAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
