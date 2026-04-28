@@ -9,11 +9,6 @@ on:
   # Auto-deploy: push til main trigger deploy umiddelbart
   push:
     branches: [main]
-  # Backup: deploy etter vellykket PR Check (hvis push av en eller annen grunn ikke trigger)
-  workflow_run:
-    workflows: ["✅ PR Check"]
-    branches: [main]
-    types: [completed]
   workflow_dispatch:
     inputs:
       environment:
@@ -44,9 +39,7 @@ jobs:
     timeout-minutes: 45
     if: |
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'push' ||
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success')
+      github.event_name == 'push'
 
     env:
       IS_PRODUCTION: ${{ github.event_name == 'push' || github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production') }}

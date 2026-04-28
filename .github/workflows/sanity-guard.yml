@@ -16,7 +16,7 @@ on:
       - 'sanity.cli.ts'
       - 'scripts/sanity-check.mjs'
   schedule:
-    - cron: '0 2 * * *'  # Nightly 02:00 UTC
+    - cron: '0 2 * * 0'  # Søndag 02:00 UTC
   workflow_dispatch:
 
 concurrency:

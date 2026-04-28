@@ -2,8 +2,8 @@ name: Cron Health Check
 
 on:
   schedule:
-    # Kjører hvert 30. minutt
-    - cron: '*/30 * * * *'
+    # Kjører hver 4. time
+    - cron: '0 */4 * * *'
   # Tillat manuell kjøring fra GitHub UI
   workflow_dispatch:
 

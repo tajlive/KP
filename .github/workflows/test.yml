@@ -19,7 +19,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 3 * * *'  # Nattlig kl 03:00 UTC
+    - cron: '0 3 * * 0'  # Søndag kl 03:00 UTC
   workflow_dispatch:
     inputs:
       test_type:
