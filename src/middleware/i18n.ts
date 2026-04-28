@@ -4,6 +4,7 @@ import { routing } from "@/i18n/routing.config";
 import {
   localizedPathname,
   parseLocalePath,
+  LOCALE_RE,
 } from "./locale-path";
 
 export const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
@@ -48,6 +49,20 @@ export function i18nMiddleware(
   }
 
   const { locale, strippedPath } = parseLocalePath(pathname);
+
+  // Detect duplicate locale prefix (e.g. /no/no/priser → /no/priser)
+  const strippedSegments = strippedPath.split("/").filter(Boolean);
+  if (strippedSegments.length > 0 && LOCALE_RE.test(strippedSegments[0]!)) {
+    const duplicateLocale = strippedSegments[0]!;
+    const corrected = strippedPath.replace(
+      new RegExp(`^/${duplicateLocale}(/?|$)`),
+      "/",
+    );
+    return NextResponse.redirect(
+      new URL(localizedPathname(locale, corrected), request.url),
+      308,
+    );
+  }
 
   // 2. PKCE callback on root with ?code=
   if (strippedPath === "/" && request.nextUrl.searchParams.has("code")) {
