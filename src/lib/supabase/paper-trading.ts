@@ -296,12 +296,17 @@ export async function getOrCreatePaperTradingSession(
     const duplicateIds = duplicates.map((s: { id: string }) => s.id);
     const { error: stopErr } = await supabase
       .from('trading_sessions')
-      .update({ status: 'stopped', updated_at: new Date().toISOString() })
+      .update({
+        status: 'stopped',
+        updated_at: new Date().toISOString(),
+        archived: true,
+        archived_at: new Date().toISOString(),
+      })
       .in('id', duplicateIds);
     if (stopErr) {
       console.error('[paper-trading] getOrCreate dedup error:', stopErr.message);
     } else {
-      console.log(`[paper-trading] Stoppet ${duplicates.length} duplikat(er) for user ${userId}`);
+      console.log(`[paper-trading] Stoppet og arkivert ${duplicates.length} duplikat(er) for user ${userId}`);
     }
   }
 

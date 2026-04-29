@@ -154,6 +154,8 @@ export interface AutoTradingSession {
   paused_at?: string;
   stopped_at?: string;
   stop_reason?: string;
+  archived?: boolean;
+  archived_at?: string;
 
   // Timestamps
   started_at: string;

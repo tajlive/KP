@@ -207,12 +207,19 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const updates: { status: string; stopped_at?: string } = {
+  const updates: {
+    status: string;
+    stopped_at?: string;
+    archived?: boolean;
+    archived_at?: string;
+  } = {
     status: newStatus,
   };
 
   if (action === "stop") {
     updates.stopped_at = new Date().toISOString();
+    updates.archived = true;
+    updates.archived_at = new Date().toISOString();
   }
 
   const { data: session, error } = await supabase
