@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL || "https://www.klarpakke.no";
-    const returnUrl = `${baseUrl.replace(/\/$/, "")}${hrefWithLocale(locale, "/innstillinger")}`;
+    const returnUrl = `${baseUrl.replace(/\/$/, "")}${hrefWithLocale(locale, "/dashboard/settings")}`;
 
     const session = await getStripe().billingPortal.sessions.create({
       customer: customerId,

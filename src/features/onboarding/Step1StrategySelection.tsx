@@ -3,7 +3,7 @@
 import { Badge } from "@/shared/ui/badge";
 import { Card } from "@/shared/ui/card";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { STRATEGIES } from "./constants";
 
 const cardVariants = {
@@ -31,7 +31,7 @@ export function Step1StrategySelection({
         const isSelected = selectedStrategy === strategy.id;
 
         return (
-          <motion.div
+          <m.div
             key={strategy.id}
             custom={i}
             variants={cardVariants}
@@ -67,7 +67,7 @@ export function Step1StrategySelection({
                 </Badge>
               </div>
             </Card>
-          </motion.div>
+          </m.div>
         );
       })}
     </div>

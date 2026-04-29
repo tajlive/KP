@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import Link from "next/link";
 import { useOnboardingProgress } from "@/hooks/useOnboardingProgress";
@@ -24,7 +24,7 @@ export function MicroLearning() {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div
+      <m.div
         key={activeTip.id}
         initial={{ opacity: 0, y: -20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -92,7 +92,7 @@ export function MicroLearning() {
 
         {/* Progress bar */}
         <div className="mt-4 h-1 w-full rounded-full bg-white/10">
-          <motion.div
+          <m.div
             initial={{ width: 0 }}
             animate={{
               width: `${(currentStep / totalTips) * 100}%`,
@@ -101,7 +101,7 @@ export function MicroLearning() {
             className="h-full rounded-full bg-brand-500"
           />
         </div>
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 }

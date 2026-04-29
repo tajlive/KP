@@ -31,8 +31,8 @@ export function PaperToLiveProgress({
       <Card
         className={`overflow-hidden ${
           isUnlocked
-            ? "border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-slate-900 to-slate-900"
-            : "border-slate-700 bg-slate-900"
+            ? "border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-gray-50 to-gray-50 dark:via-slate-900 dark:to-slate-900"
+            : "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"
         }`}
       >
         <CardContent className="p-5">
@@ -40,26 +40,26 @@ export function PaperToLiveProgress({
             <div className="flex items-center gap-2">
               <div
                 className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                  isUnlocked ? "bg-emerald-500/20" : "bg-slate-800"
+                  isUnlocked ? "bg-emerald-500/20" : "bg-gray-100 dark:bg-slate-800"
                 }`}
               >
                 {isUnlocked ? (
-                  <Zap className="w-4 h-4 text-emerald-400" />
+                  <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <Lock className="w-4 h-4 text-slate-400" />
+                  <Lock className="w-4 h-4 text-gray-500 dark:text-slate-400" />
                 )}
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                   {t("title")}
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-gray-500 dark:text-slate-400">
                   {t("progress", { current: totalTrades, target: TARGET_TRADES })}
                 </p>
               </div>
             </div>
             {winningTrades !== undefined && winningTrades > 0 && (
-              <div className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">
+              <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">
                 <TrendingUp className="w-3 h-3" />
                 <span>
                   {t("winningTrades", { count: winningTrades })}
@@ -69,16 +69,16 @@ export function PaperToLiveProgress({
           </div>
 
           <div className="space-y-2">
-            <Progress value={progress} className="h-2 bg-slate-800" />
+            <Progress value={progress} className="h-2 bg-gray-200 dark:bg-slate-800" />
             <div className="flex items-center justify-between">
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-gray-400 dark:text-slate-500">
                 {isUnlocked
                   ? t("unlocked")
                   : t("unlockText", { remaining })}
               </p>
               <span
                 className={`text-xs font-bold ${
-                  isUnlocked ? "text-emerald-400" : "text-slate-400"
+                  isUnlocked ? "text-emerald-600 dark:text-emerald-400" : "text-gray-500 dark:text-slate-400"
                 }`}
               >
                 {Math.round(progress)}%

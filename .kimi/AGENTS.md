@@ -116,12 +116,14 @@ Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + ni
 
 ## MCP-optimalisering (KIMI CLI)
 
-> Oppdatert: 2026-04-22 | v2.6-minimal for KIMI CLI v1.38.0 + k2.6
+> Oppdatert: 2026-04-28 | v2.6-minimal for KIMI CLI v1.40.0 + k2.6
 
-### KIMI CLI v1.38.0 + k2.6 endringer (påvirker oss)
-- **`max_steps_per_turn` økt til 500** — KIMI kan kjøre lengre oppgaver uten avbrudd
-- **`reserved_context_size` = 60000** — ekstra margin for KG-batchoperasjoner
-- **`tool_call_timeout_ms` = 180000** — tilstrekkelig for MemPalace FTS-indeksering
+### KIMI CLI v1.40.0 + k2.6 endringer (påvirker oss)
+- **`max_steps_per_turn` økt til 750** — KIMI kan kjøre lengre oppgaver uten avbrudd
+- **`reserved_context_size` = 45000** — optimalisert margin (ned fra 60000)
+- **`compaction_trigger_ratio` = 0.92** — mindre frekvent komprimering
+- **`tool_call_timeout_ms` = 120000** — tilstrekkelig for MemPalace FTS-indeksering
+- **`merge_all_available_skills` = true** — auto-aktiverer prosjekt-skills
 - **MCP startup er asynkron** med progress indicators — raskere shell-oppstart
 - **`--quiet` flagg** bekreftet for stdin-piping
 - **`show_thinking_stream` default true** — thinking vises automatisk
@@ -144,6 +146,12 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
 3. **Broken initialize-respons**: `cloudflare`, `openai`, `binance`, `sanity` returnerte ugyldig MCP-protokoll (manglet `protocolVersion` + `capabilities`). Fikset.
 4. **klarpakke MCP fjernet**: Remote Edge Function var treg/ustabil. Bruk `supabase-db` istedenfor.
 5. **Perplexity lagt til minimal**: Research-flyt mellom KIMI og Perplexity Desktop krever `perplexity` MCP i aktiv config.
+
+### MemPalace v3.1.1 — KIMI CLI v1.40.0-kompatibel
+- **Ping/heartbeat-støtte**: Svarer på MCP `ping`-forespørsler
+- **Graceful shutdown**: Fanger SIGTERM/SIGINT, flusher KG til disk
+- **Robust transport**: Forbedret JSON-parse feilhåndtering
+- **Zero-dep**: Ingen eksterne avhengigheter — <1s oppstart
 
 ### Perplexity Desktop ↔ KIMI dataflyt
 ```
@@ -175,9 +183,9 @@ kimi
 > Sjekk at "perplexity" vises grønt i MCP-statuslinjen
 ```
 
-## MemPalace — Prosjektminne v3.1 (KIMI k2.6)
+## MemPalace — Prosjektminne v3.1.1 (KIMI CLI v1.40.0 + k2.6)
 
-> Oppdatert: 2026-04-22 | MemPalace MCP v3.1 | Zero-dep in-memory FTS | 20 entities, 98+ facts | Alle agenter integrert
+> Oppdatert: 2026-04-28 | MemPalace MCP v3.1.1 | Zero-dep in-memory FTS | 20 entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.40.0-optimalisert
 
 ### Rask verifisering
 ```bash
@@ -193,13 +201,16 @@ kimi --agent-file .kimi/agents/mempalace-agent.yaml
 # eller: kimi mempalace  (hvis alias konfigurert)
 ```
 
-### MemPalace MCP v3.1 — Endringer fra v3.0
-- **FIX: MCP protocol compliance** — Tool results wrappes nå i `content: [{type: "text", text: ...}]` array. Fikser `CallToolResult content Field required` pydantic-feil.
-- **FIX: Diary newline-håndtering** — Sikrer korrekt JSONL-format ved append (håndterer manglende trailing newline)
+### MemPalace MCP v3.1.1 — Endringer fra v3.1
+- **KIMI CLI v1.40.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
+- **Robust transport**: Forbedret JSON-parse feilhåndtering — logger ikke kræsj
+- **Graceful shutdown**: SIGTERM/SIGINT fanger og flusher KG til disk
+- **FIX: MCP protocol compliance** — Tool results wrappes i `content: [{type: "text", text: ...}]` array
+- **FIX: Diary newline-håndtering** — Sikrer korrekt JSONL-format ved append
 - **OPT: KG deduplisering** — `kgAdd()` og `kgBatch()` sjekker for duplikater før lagring
-- **OPT: Batch-write** — `kgBatch()` skriver KG én gang per batch i stedet for N ganger
-- **OPT: Cache invalidation** — `writeDiary()` trigger `cache.clear()` for å sikre fresh indeks
-- **Zero-dependency**: Ingen ChromaDB, ingen M1-timeout
+- **OPT: Batch-write** — `kgBatch()` skriver KG én gang per batch
+- **OPT: Cache invalidation** — `writeDiary()` trigger `cache.clear()` for fresh indeks
+- **Zero-dependency**: Ingen ChromaDB, ingen M1-timeout — <1s oppstart
 - **In-memory FTS**: Bygger indeks ved startup (async, ikke-blokkerende)
 - **LRU-cache**: 100 entries for raskt gjentatt søk
 - **12 verktøy**: `search`, `semantic_search`, `recent_context`, `kg_query`, `kg_add`, `kg_batch`, `kg_find_path`, `read_diary`, `write_diary`, `get_status`, `get_room_info`, `auto_tag`
@@ -214,6 +225,36 @@ Spesialisert på:
 - KG-vedlikehold og batch-operasjoner
 - Memory hygiene (deduplisering, TTL)
 - Cross-domain linking (auth ↔ trading ↔ deploy)
+
+### Verify Agent — Post-Change Verification
+
+> **Oppdatert:** 2026-04-29 | Automatisk verifisering etter routing/file-endringer
+
+**Bakgrunn:** Menneskelige agenter (inkludert KIMI) gjør ofte feil etter endringer:
+- **Feilaktige redirect-påstander** — hevder `/innstillinger` → `/profile?tab=settings`, men glemmer at `CANONICAL_REDIRECTS` har `/dashboard/innstillinger` → `/dashboard/settings`
+- **Foreldreløse filer** — sletter `page.tsx` men lar `layout.tsx` + `Client.tsx` ligge igjen
+- **Stale type cache** — `.next/types/*.ts` importerer slettede filer → `tsc` feiler til cache tømmes
+
+**Scripts:**
+```bash
+# Hurtigverifisering etter endringer
+node scripts/verify/verify-claims.mjs       # Sjekker redirects + orphans
+node scripts/verify/check-stale-types.mjs   # Sjekker .next/types cache
+node scripts/verify/run-all.mjs             # Kjør ALT (claims + types + lint + typecheck + test)
+```
+
+**Verifiseringsregler (ALLTID etter routing/file-endringer):**
+1. **Kryssverifiser alle path-varianter** — `/innstillinger`, `/dashboard/innstillinger`, `/:locale/innstillinger` er ulike paths
+2. **Sjekk CANONICAL_REDIRECTS + standalone rules + next.config** — tre lag med redirects
+3. **Søk etter imports av slettede filer** — `grep -r "OldComponentName" src/`
+4. **Tøm .next cache** — `rm -rf .next` før `tsc --noEmit` etter file deletion
+5. **Oppdater alle referanser** — Stripe return URLs, nav links, hrefs, osv.
+
+**Aktivering:**
+```bash
+kimi --agent-file .kimi/agents/verify-agent.yaml
+# eller: kimi verify  (hvis alias konfigurert)
+```
 
 ### Rom-struktur
 | Rom | Path | Innhold |
@@ -239,6 +280,7 @@ Alle agenter er oppdatert til å bruke MemPalace MCP v3.1-verktøy med korrekte 
 | **sanity** | `.kimi/agents/sanity-agent.yaml` | CMS, schema, tokens | `sanity-cms`, `design-tokens`, `groq`, `studio`, `webhooks` |
 | **mobile** | `.kimi/agents/mobile-check-agent.yaml` | Mobil, PWA, Lighthouse | `mobile-ui`, `pwa`, `responsive`, `performance`, `lighthouse` |
 | **super-editor** | `.kimi/agents/super-editor-agent.yaml` | CMS + kode-redigering, screenshots | `sanity-cms`, `design-tokens`, `studio`, `frontend`, `tailwind` |
+| **verify** | `.kimi/agents/verify-agent.yaml` | Post-change verification, redirect auditing, orphaned file detection | `routing`, `redirects`, `file-deletion` |
 
 **Aktivering:**
 ```bash
@@ -250,6 +292,7 @@ kimi sanity      # Sanity-ekspert
 kimi mempalace   # Memory-arkitekt
 kimi mobile      # Mobil-sjekk
 kimi super-editor # Super-redaktør (CMS + kode)
+kimi verify      # Post-change verifisering
 ```
 
 **Felles MemPalace-protokoll for alle agenter:**

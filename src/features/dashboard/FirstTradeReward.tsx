@@ -44,7 +44,7 @@ export function FirstTradeReward({ totalTrades }: FirstTradeRewardProps) {
           exit={{ opacity: 0, scale: 0.9, y: -20 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
-          <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-slate-900 to-slate-900 overflow-hidden relative">
+          <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-gray-50 to-gray-50 dark:via-slate-900 dark:to-slate-900 overflow-hidden relative">
             {/* Confetti particles */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               {Array.from({ length: 12 }).map((_, i) => (
@@ -83,16 +83,16 @@ export function FirstTradeReward({ totalTrades }: FirstTradeRewardProps) {
                     <PartyPopper className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                       {t("title")}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <Coins className="w-4 h-4 text-amber-400" />
-                      <span className="text-lg font-bold text-amber-400">
+                      <Coins className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                      <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
                         {t("subtitle")}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
                       {t("description")}
                     </p>
                   </div>
@@ -102,15 +102,15 @@ export function FirstTradeReward({ totalTrades }: FirstTradeRewardProps) {
                   variant="ghost"
                   size="icon"
                   onClick={handleDismiss}
-                  className="text-slate-400 hover:text-white hover:bg-slate-800 rounded-full shrink-0"
+                  className="text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full shrink-0"
                   aria-label={t("dismiss")}
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
 
-              <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-800/50 rounded-lg px-3 py-2">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="mt-4 flex items-center gap-2 text-xs text-gray-500 dark:text-slate-500 bg-gray-100 dark:bg-slate-800/50 rounded-lg px-3 py-2">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>{t("stats", { count: totalTrades })}</span>
               </div>
             </CardContent>

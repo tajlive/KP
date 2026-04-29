@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     } = await getAuthUser(request);
 
     if (authError || !user) {
+      console.error("[GET /api/trading/position] Auth failed:", authError?.message || "No user");
       return NextResponse.json(
         { ok: false, error: "Unauthorized" },
         { status: 401 },
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
 
     if (sessionError) {
-      console.error("[GET /api/trading/position]", sessionError.message);
+      console.error("[GET /api/trading/position] Session query error:", sessionError.message);
       return NextResponse.json(
         { ok: false, error: sessionError.message },
         { status: 500 },
@@ -58,6 +59,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!session || !session.open_position) {
+      // No active position — this is a normal state, not an error
       return NextResponse.json(
         {
           ok: true,
@@ -153,6 +155,8 @@ export async function GET(request: NextRequest) {
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+    const stack = e instanceof Error ? e.stack : "";
+    console.error("[GET /api/trading/position] CRITICAL ERROR:", msg, stack);
+    return NextResponse.json({ ok: false, error: msg, stack }, { status: 500 });
   }
 }

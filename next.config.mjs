@@ -238,40 +238,42 @@ const nextConfig = {
       // { source: "/:locale/innlogging", destination: "/:locale/login", permanent: true },
       { source: "/signup", destination: "/register", permanent: true },
       { source: "/:locale/signup", destination: "/:locale/register", permanent: true },
-      { source: "/autotrade", destination: "/auto", permanent: true },
-      { source: "/:locale/autotrade", destination: "/:locale/auto", permanent: true },
-      { source: "/autotrade/:path*", destination: "/auto/:path*", permanent: true },
-      { source: "/:locale/autotrade/:path*", destination: "/:locale/auto/:path*", permanent: true },
+      { source: "/autotrade", destination: "/no/dashboard/auto-trade", permanent: true },
+      { source: "/:locale/autotrade", destination: "/:locale/dashboard/auto-trade", permanent: true },
       // Paper-trading redirects - COMMENTED OUT to fix API routes
       // { source: "/paper-trading", destination: "/paper", permanent: true },
       // { source: "/:locale/paper-trading", destination: "/:locale/paper", permanent: true },
       // { source: "/paper-trading/:path*", destination: "/paper/:path*", permanent: true },
       // { source: "/:locale/paper-trading/:path*", destination: "/:locale/paper/:path*", permanent: true },
 
-      // Legacy English root URLs → /en/ prefix
-      { source: "/pricing", destination: "/en/pricing", permanent: true },
-      { source: "/courses", destination: "/en/courses", permanent: true },
-      { source: "/courses/:path*", destination: "/en/courses/:path*", permanent: true },
-      { source: "/course/:path*", destination: "/en/course/:path*", permanent: true },
-      { source: "/about", destination: "/en/about", permanent: true },
-      { source: "/contact", destination: "/en/contact", permanent: true },
-      { source: "/privacy", destination: "/en/privacy", permanent: true },
-      { source: "/terms", destination: "/en/terms", permanent: true },
-      { source: "/blog", destination: "/en/blog", permanent: true },
-      { source: "/blog/:path*", destination: "/en/blog/:path*", permanent: true },
+      // Legacy English root URLs → actual Norwegian pages (localePrefix: "always")
+      { source: "/pricing", destination: "/no/priser", permanent: true },
+      { source: "/courses", destination: "/no/kurs", permanent: true },
+      { source: "/courses/:path*", destination: "/no/kurs/:path*", permanent: true },
+      { source: "/course/:path*", destination: "/no/kurs/:path*", permanent: true },
+      { source: "/about", destination: "/no/om-oss", permanent: true },
+      { source: "/contact", destination: "/no/kontakt", permanent: true },
+      { source: "/privacy", destination: "/no/personvern", permanent: true },
+      { source: "/terms", destination: "/no/vilkar", permanent: true },
+      // /blog — no blog pages exist yet; redirect to landing
+      { source: "/blog", destination: "/no", permanent: false },
+      { source: "/blog/:path*", destination: "/no", permanent: false },
       // Typo: Norwegian "dashbord" → correct path "dashboard"
       { source: "/dashbord", destination: "/no/dashboard", permanent: true },
       { source: "/:locale/dashbord", destination: "/:locale/dashboard", permanent: true },
-      { source: "/marketplace", destination: "/en/marketplace", permanent: true },
-      { source: "/settings", destination: "/innstillinger", permanent: true },
-      { source: "/trading", destination: "/en/trading", permanent: true },
-      { source: "/portfolio", destination: "/en/portfolio", permanent: true },
+      { source: "/marketplace", destination: "/no/marketplace", permanent: true },
+      // /settings handled by middleware → /profile?tab=settings (linje 91)
+      // Fallback if middleware is bypassed:
+      { source: "/settings", destination: "/no/profile?tab=settings", permanent: true },
+      { source: "/om", destination: "/no/om-oss", permanent: true },
+      { source: "/trading", destination: "/no/dashboard/trade", permanent: true },
+      { source: "/portfolio", destination: "/no/dashboard/portfolio", permanent: true },
       
-      // Legacy auto-trade paths → dashboard
-      { source: "/auto-trade", destination: "/dashboard/trading", permanent: true },
-      { source: "/auto-trade/:path*", destination: "/dashboard/trading", permanent: true },
-      { source: "/auto-trading", destination: "/dashboard/trading", permanent: true },
-      { source: "/auto-trading-ai", destination: "/dashboard/trading", permanent: true },
+      // Legacy auto-trade paths → dashboard/auto-trade (direct, no chain)
+      { source: "/auto-trade", destination: "/no/dashboard/auto-trade", permanent: true },
+      { source: "/auto-trade/:path*", destination: "/no/dashboard/auto-trade", permanent: true },
+      // /auto-trading and /auto-trading-ai handled by middleware CANONICAL_REDIRECTS
+      // (middleware runs first → /dashboard/auto-trade). No need to duplicate here.
 
       // Consolidated routes
       { source: "/admin-dashboard", destination: "/admin", permanent: true },
@@ -286,29 +288,25 @@ const nextConfig = {
       { source: "/:locale/beta-testing", destination: "/:locale/beta", permanent: true },
       { source: "/signals", destination: "/dashboard", permanent: true },
       { source: "/:locale/signals", destination: "/:locale/dashboard", permanent: true },
-      { source: "/simulator", destination: "/paper", permanent: true },
+      { source: "/simulator", destination: "/no/paper-trading", permanent: true },
       
       // API v1 Consolidation (Script 04 - Phase 1)
-      // Trading APIs (exclude v3 which is new)
-      { source: "/api/trading/execute", destination: "/api/v1/trading/execute", permanent: true },
-      { source: "/api/trading/sessions/:path*", destination: "/api/v1/trading/sessions/:path*", permanent: true },
-      { source: "/api/trading/mode", destination: "/api/v1/trading/mode", permanent: true },
-      // Paper-trading API - removed redirect, routes now exist at /api/paper-trading/*
-      // { source: "/api/paper-trading/:path*", destination: "/api/v1/trading/:path*?mode=paper", permanent: true },
-      // Webhooks (except Stripe - keep original for signature verification)
-      { source: "/api/webhooks/resend/:path*", destination: "/api/v1/webhooks/resend/:path*", permanent: true },
+      // NOTE: Direct route.ts files still exist at the old paths, so these
+      // redirects are dead code (Next.js serves the file, not the redirect).
+      // Kept as comments for documentation until old route files are removed.
+      // { source: "/api/trading/execute", destination: "/api/v1/trading/execute", permanent: true },
+      // { source: "/api/trading/sessions/:path*", destination: "/api/v1/trading/sessions/:path*", permanent: true },
+      // { source: "/api/trading/mode", destination: "/api/v1/trading/mode", permanent: true },
+      // { source: "/api/webhooks/resend/:path*", destination: "/api/v1/webhooks/resend/:path*", permanent: true },
+      // { source: "/api/cron/daily-summary", destination: "/api/v1/cron/daily-summary", permanent: true },
+      // { source: "/api/cron/update-usdt-nok", destination: "/api/v1/cron/update-usdt-nok", permanent: true },
+      // { source: "/api/cron/keepalive", destination: "/api/v1/cron/keepalive", permanent: true },
+      // { source: "/api/notifications/:path*", destination: "/api/v1/notifications/:path*", permanent: true },
+      // Webhooks/github — no direct route.ts exists, keep redirect
       { source: "/api/webhooks/github/:path*", destination: "/api/v1/webhooks/github/:path*", permanent: true },
-      // Cron jobs — ONLY redirect the 3 jobs actually implemented in v1 controller
-      { source: "/api/cron/daily-summary", destination: "/api/v1/cron/daily-summary", permanent: true },
-      { source: "/api/cron/daily-summary/:path*", destination: "/api/v1/cron/daily-summary/:path*", permanent: true },
-      { source: "/api/cron/update-usdt-nok", destination: "/api/v1/cron/update-usdt-nok", permanent: true },
-      { source: "/api/cron/update-usdt-nok/:path*", destination: "/api/v1/cron/update-usdt-nok/:path*", permanent: true },
-      { source: "/api/cron/keepalive", destination: "/api/v1/cron/keepalive", permanent: true },
-      { source: "/api/cron/keepalive/:path*", destination: "/api/v1/cron/keepalive/:path*", permanent: true },
-      // Notifications
-      { source: "/api/notifications/:path*", destination: "/api/v1/notifications/:path*", permanent: true },
       { source: "/:locale/simulator", destination: "/:locale/paper-trading", permanent: true },
-      { source: "/:locale/settings", destination: "/:locale/innstillinger", permanent: true },
+      { source: "/:locale/settings", destination: "/:locale/profile?tab=settings", permanent: true },
+      { source: "/:locale/om", destination: "/:locale/om-oss", permanent: true },
     ];
   },
 

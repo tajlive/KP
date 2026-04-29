@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/shared/ui/button";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Clock } from "lucide-react";
 
 interface Step2CountdownProps {
@@ -13,13 +13,13 @@ export function Step2Countdown({ time, onComplete }: Step2CountdownProps) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900/50 p-8">
       <div className="mb-6 flex justify-center">
-        <motion.div
+        <m.div
           className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20"
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
           <Clock className="h-10 w-10 text-emerald-400" />
-        </motion.div>
+        </m.div>
       </div>
 
       <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-500">

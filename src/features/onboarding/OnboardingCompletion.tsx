@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/shared/ui/button";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Check, ChevronRight, Shield } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 
@@ -14,7 +14,7 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
   const locale = (useParams()?.locale as string) ?? "no";
 
   return (
-    <motion.div
+    <m.div
       key="completion"
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -23,7 +23,7 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
     >
       <div className="pointer-events-none absolute inset-0 bg-emerald-500/5" />
 
-      <motion.div
+      <m.div
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{
@@ -35,14 +35,14 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
         className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-emerald-500 to-teal-500 shadow-xl"
       >
         <Check className="h-12 w-12 text-white stroke-[3px]" />
-      </motion.div>
+      </m.div>
 
       <h2 className="mb-2 text-3xl font-bold text-white">Gratulerer! 🎉</h2>
       <p className="mb-6 text-slate-400">
         Du har fullført onboarding og er klar for live trading.
       </p>
 
-      <motion.div
+      <m.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -50,7 +50,7 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
       >
         <Shield className="h-4 w-4" />
         🌱 Sertifisert nybegynner
-      </motion.div>
+      </m.div>
 
       <div className="flex flex-col gap-3">
         <Button
@@ -75,6 +75,6 @@ export function OnboardingCompletion({ onClose }: OnboardingCompletionProps) {
           Prøv live trading
         </Button>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

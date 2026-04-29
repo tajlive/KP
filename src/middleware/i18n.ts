@@ -87,13 +87,13 @@ export function i18nMiddleware(
     return NextResponse.redirect(url, 308);
   }
 
-  // 4. English alias /settings -> innstillinger
+  // 4. English alias /settings -> profile settings tab
   if (strippedPath === "/settings" || strippedPath.startsWith("/settings/")) {
     const tail =
       strippedPath === "/settings"
         ? ""
         : strippedPath.slice("/settings".length);
-    const target = `/innstillinger${tail}`;
+    const target = `/profile?tab=settings${tail}`;
     return NextResponse.redirect(
       new URL(localizedPathname(locale, target), request.url),
       308,
@@ -102,14 +102,14 @@ export function i18nMiddleware(
 
   // KLA-238: Profile consolidation redirects (temporary 307)
   if (strippedPath === "/konto" || strippedPath.startsWith("/konto/")) {
-    const target = "/profile/wallet";
+    const target = "/profile?tab=wallet";
     return NextResponse.redirect(
       new URL(localizedPathname(locale, target), request.url),
       307,
     );
   }
   if (strippedPath === "/innstillinger" || strippedPath.startsWith("/innstillinger/")) {
-    const target = "/profile/settings";
+    const target = "/profile?tab=settings";
     return NextResponse.redirect(
       new URL(localizedPathname(locale, target), request.url),
       307,

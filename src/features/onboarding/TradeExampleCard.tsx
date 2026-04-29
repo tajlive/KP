@@ -2,7 +2,7 @@
 
 import { Badge } from "@/shared/ui/badge";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Shield, Sparkles } from "lucide-react";
 import { MockTrade } from "./types";
 
@@ -13,7 +13,7 @@ interface TradeExampleCardProps {
 
 export function TradeExampleCard({ trade, isWin }: TradeExampleCardProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -56,7 +56,7 @@ export function TradeExampleCard({ trade, isWin }: TradeExampleCardProps) {
         <Badge variant="outline">{trade.strategy}</Badge>
       </div>
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
         transition={{ delay: 0.8 }}
@@ -64,10 +64,10 @@ export function TradeExampleCard({ trade, isWin }: TradeExampleCardProps) {
       >
         <span className="font-semibold text-slate-200">AI forklaring: </span>
         {trade.aiExplanation}
-      </motion.div>
+      </m.div>
 
       {isWin && (
-        <motion.div
+        <m.div
           className="mt-3 flex items-center gap-2 text-emerald-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -77,11 +77,11 @@ export function TradeExampleCard({ trade, isWin }: TradeExampleCardProps) {
           <span className="text-sm font-medium">
             Bra trekk! Strategien fungerte som forventet.
           </span>
-        </motion.div>
+        </m.div>
       )}
 
       {!isWin && (
-        <motion.div
+        <m.div
           className="mt-3 flex items-center gap-2 text-amber-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -91,8 +91,8 @@ export function TradeExampleCard({ trade, isWin }: TradeExampleCardProps) {
           <span className="text-sm font-medium">
             Risikostyring fungerte - tapet var kontrollert.
           </span>
-        </motion.div>
+        </m.div>
       )}
-    </motion.div>
+    </m.div>
   );
 }

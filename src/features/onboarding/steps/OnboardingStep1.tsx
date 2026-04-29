@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useTranslations } from "next-intl";
 
@@ -47,32 +47,32 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
   };
 
   return (
-    <motion.div
+    <m.div
       className="flex h-full flex-col justify-between px-5 py-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       <div className="flex flex-col gap-6 pt-8">
-        <motion.div variants={itemVariants} className="flex items-center gap-2">
+        <m.div variants={itemVariants} className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2563eb]">
             <span className="text-sm font-bold text-white">K</span>
           </div>
           <span className="text-lg font-semibold tracking-tight text-white">
             Klarpakke
           </span>
-        </motion.div>
+        </m.div>
 
-        <motion.div variants={itemVariants} className="flex flex-col gap-3">
+        <m.div variants={itemVariants} className="flex flex-col gap-3">
           <h1 className="text-[2rem] font-bold leading-[1.15] tracking-tight text-white">
             {t("mobile.step1.title")}
           </h1>
           <p className="text-base leading-relaxed text-white/60">
             {t("mobile.step1.description")}
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           variants={itemVariants}
           className="flex flex-wrap gap-2"
           aria-label={t("mobile.step1.badgesAriaLabel")}
@@ -151,7 +151,7 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
               label: t("mobile.step1.badges.noHiddenFees"),
             },
           ].map((badge, index) => (
-            <motion.div
+            <m.div
               key={badge.label}
               className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-white/70"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -161,41 +161,41 @@ export function OnboardingStep1({ onNext }: OnboardingStep1Props) {
             >
               {badge.icon}
               {badge.label}
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
 
-      <motion.div
+      <m.div
         variants={itemVariants}
         className="flex flex-col gap-3"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}
       >
-        <motion.button
+        <m.button
           onClick={handleNext}
           className="relative w-full overflow-hidden rounded-2xl bg-[#2563eb] py-4 text-base font-semibold text-white"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
-          <motion.span
+          <m.span
             className="absolute inset-0 bg-white/20"
             initial={{ x: "-100%" }}
             whileHover={{ x: "100%" }}
             transition={{ duration: 0.5 }}
           />
           <span className="relative">{t("mobile.step1.cta")}</span>
-        </motion.button>
+        </m.button>
 
-        <motion.button
+        <m.button
           onClick={handleSkip}
           className="w-full py-3 text-sm font-medium text-white/40"
           whileHover={{ color: "rgba(255,255,255,0.6)" }}
           whileTap={{ scale: 0.98 }}
         >
           {t("mobile.step1.skip")}
-        </motion.button>
-      </motion.div>
-    </motion.div>
+        </m.button>
+      </m.div>
+    </m.div>
   );
 }

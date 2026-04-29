@@ -293,5 +293,32 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-**Sist oppdatert:** 2026-04-11  
-**Versjon:** 2.1 (+Agent Collaboration)
+**Sist oppdatert:** 2026-04-28  
+**Versjon:** 2.2 (+KIMI CLI v1.40.0 + MemPalace v3.1.1)
+
+---
+
+## ⚡ KIMI CLI v1.40.0 Optimaliseringer (2026-04-28)
+
+### Kontekst-tuning
+```toml
+max_steps_per_turn = 750              # økt fra 500
+reserved_context_size = 45000         # ned fra 60000 → +15k arbeidsminne
+compaction_trigger_ratio = 0.92       # opp fra 0.88 → mindre komprimering
+agent_task_timeout_s = 1800           # 30 min for lange oppgaver
+tool_call_timeout_ms = 120000         # 2 min — raskere fail
+merge_all_available_skills = true     # auto-aktiver skills
+```
+
+### MemPalace v3.1.1 — Aktiv bruk
+- **FØR oppgave:** `search()` + `recent_context(hours=48)` + `kg_query(entity=..., depth=2)`
+- **ETTER oppgave:** `kg_add()` / `kg_batch()` + `write_diary()` + `auto_tag()`
+- **Exit-hook:** `~/.kimi/hooks/mempalace-exit-save.sh` lagrer samtale ved avslutning
+- **MCP-profiler:** `kimi-mcp minimal|medium|full` — bytt etter behov
+
+### Rask diagnose
+```bash
+kimi --version                    # skal vise 1.40.0
+kimi mcp list                     # sjekk at mempalace er grønn
+npm run mempalace:status          # eller: node scripts/mempalace-search.mjs "test"
+```

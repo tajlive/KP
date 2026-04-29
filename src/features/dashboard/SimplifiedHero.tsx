@@ -56,7 +56,7 @@ export function SimplifiedHero({
       </div>
 
       {/* Balance */}
-      <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight">
+      <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white tracking-tight">
         {new Intl.NumberFormat(locale === "no" ? "nb-NO" : "en-US", {
           style: "currency",
           currency: "NOK",

@@ -236,9 +236,9 @@ export default function GetStartedCard({
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="bg-linear-to-br from-blue-900/20 via-slate-900 to-slate-900 border-blue-500/20 rounded-3xl overflow-hidden shadow-xl relative">
+          <Card className="bg-linear-to-br from-blue-900/20 via-gray-50 to-gray-50 dark:via-slate-900 dark:to-slate-900 border-blue-500/20 rounded-3xl overflow-hidden shadow-xl relative">
             {/* Progress bar på toppen */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-slate-800">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 dark:bg-slate-800">
               <motion.div
                 className="h-full bg-linear-to-r from-blue-500 to-blue-400"
                 initial={{ width: 0 }}
@@ -250,11 +250,11 @@ export default function GetStartedCard({
             <CardHeader className="pb-2 pt-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-xl font-bold text-white flex items-center gap-2">
+                  <CardTitle className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <span className="text-2xl">🚀</span>
                     {lang === "en" ? "Get Started" : "Kom i gang"}
                   </CardTitle>
-                  <p className="text-slate-400 text-sm mt-1">
+                  <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">
                     {lang === "en"
                       ? `Complete these ${checklistTotal} steps to master trading`
                       : `Fullfør disse ${checklistTotal} stegene for å mestre trading`}
@@ -264,7 +264,7 @@ export default function GetStartedCard({
                   variant="ghost"
                   size="icon"
                   onClick={handleDismiss}
-                  className="text-slate-400 hover:text-white hover:bg-slate-800 rounded-full"
+                  className="text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full"
                   aria-label={lang === "en" ? "Dismiss" : "Lukk"}
                 >
                   <X className="w-4 h-4" />
@@ -286,18 +286,18 @@ export default function GetStartedCard({
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="group flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800 hover:border-slate-600"
+                            className="group flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer bg-gray-100/40 dark:bg-slate-800/40 border border-gray-200 dark:border-slate-700/50 hover:bg-gray-100 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-600"
                           >
                             {isCompleted ? (
-                              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                             ) : (
-                              <Circle className="w-5 h-5 text-slate-500 group-hover:text-blue-400 shrink-0 transition-colors" />
+                              <Circle className="w-5 h-5 text-gray-500 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 shrink-0 transition-colors" />
                             )}
-                            <span className={`text-sm font-medium ${isCompleted ? "text-slate-500 line-through" : "text-slate-200 group-hover:text-white"}`}>
+                            <span className={`text-sm font-medium ${isCompleted ? "text-gray-500 dark:text-slate-500 line-through" : "text-gray-700 dark:text-slate-200 group-hover:text-gray-900 dark:group-hover:text-white"}`}>
                               {label}
                             </span>
                             {!isCompleted && (
-                              <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white ml-auto group-hover:translate-x-0.5 transition-all" />
+                              <ArrowRight className="w-4 h-4 text-gray-500 dark:text-slate-500 group-hover:text-gray-900 dark:group-hover:text-white ml-auto group-hover:translate-x-0.5 transition-all" />
                             )}
                           </motion.div>
                         </Link>
@@ -306,7 +306,7 @@ export default function GetStartedCard({
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/20 border border-slate-800/50"
+                          className="flex items-center gap-3 p-3 rounded-xl bg-gray-100/20 dark:bg-slate-800/20 border border-gray-200 dark:border-slate-800/50"
                         >
                           {isCompleted ? (
                             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
@@ -324,8 +324,8 @@ export default function GetStartedCard({
               </div>
 
               {/* Divider */}
-              <div className="border-t border-slate-800 pt-4">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1">
+              <div className="border-t border-gray-200 dark:border-slate-800 pt-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1">
                   <Sparkles className="w-3 h-3" />
                   {lang === "en" ? "Learn more" : "Lær mer"}
                 </p>
@@ -346,18 +346,18 @@ export default function GetStartedCard({
                             ${
                               isCompleted
                                 ? "bg-green-500/10 border border-green-500/20"
-                                : "bg-slate-800/30 border border-slate-700/30 hover:bg-slate-800 hover:border-slate-600"
+                                : "bg-gray-100/30 dark:bg-slate-800/30 border border-gray-200 dark:border-slate-700/30 hover:bg-gray-100 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-600"
                             }
                           `}
                         >
                           <div
                             className={`
                             w-9 h-9 rounded-lg flex items-center justify-center shrink-0
-                            ${isCompleted ? "bg-green-500/20" : "bg-slate-700"}
+                            ${isCompleted ? "bg-green-500/20" : "bg-gray-200 dark:bg-slate-700"}
                           `}
                           >
                             {isCompleted ? (
-                              <CheckCircle2 className="w-4 h-4 text-green-400" />
+                              <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                             ) : (
                               item?.icon || null
                             )}
@@ -368,25 +368,25 @@ export default function GetStartedCard({
                               <h4
                                 className={`
                                 font-bold text-xs truncate
-                                ${isCompleted ? "text-green-400 line-through" : "text-white"}
+                                ${isCompleted ? "text-green-600 dark:text-green-400 line-through" : "text-gray-900 dark:text-white"}
                               `}
                               >
                                 {item.title[lang as keyof typeof item.title] || item.title.no}
                               </h4>
                               {!isCompleted && (
-                                <span className="text-[10px] text-slate-500 whitespace-nowrap">
+                                <span className="text-[10px] text-gray-500 dark:text-slate-500 whitespace-nowrap">
                                   {item.duration}
                                 </span>
                               )}
                             </div>
-                            <p className="text-slate-400 text-[11px] mt-0.5 line-clamp-1">
+                            <p className="text-gray-500 dark:text-slate-400 text-[11px] mt-0.5 line-clamp-1">
                               {item.description[lang as keyof typeof item.description] || item.description.no}
                             </p>
                           </div>
 
-                          <div className="text-slate-500 group-hover:text-white transition-colors shrink-0">
+                          <div className="text-gray-500 dark:text-slate-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors shrink-0">
                             {isCompleted ? (
-                              <span className="text-[10px] text-green-400 font-medium">
+                              <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">
                                 {lang === "en" ? "Done" : "Ferdig"}
                               </span>
                             ) : (
@@ -402,7 +402,7 @@ export default function GetStartedCard({
 
               {/* CTA */}
               <div className="flex items-center justify-between pt-1">
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-gray-500 dark:text-slate-500">
                   {checklistCompleted}/{checklistTotal}{" "}
                   {lang === "en" ? "completed" : "fullført"}
                 </p>
@@ -410,7 +410,7 @@ export default function GetStartedCard({
                   variant="ghost"
                   size="sm"
                   onClick={handleDismiss}
-                  className="text-slate-400 hover:text-slate-300 text-xs"
+                  className="text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 text-xs"
                 >
                   {lang === "en" ? "I'll do this later" : "Jeg tar det senere"}
                 </Button>

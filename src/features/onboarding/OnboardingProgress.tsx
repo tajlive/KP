@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface OnboardingProgressProps {
   currentStep: number;
@@ -39,7 +39,7 @@ export function OnboardingProgress({
       >
         {Array.from({ length: totalSteps }).map((_, i) => (
           <div key={i} className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-            <motion.div
+            <m.div
               className="h-full rounded-full bg-[#2563eb]"
               initial={false}
               animate={{

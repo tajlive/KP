@@ -21,11 +21,11 @@ describe("i18nMiddleware", () => {
     vi.clearAllMocks();
   });
 
-  it("redirects /settings to /innstillinger", async () => {
+  it("redirects /settings to /profile?tab=settings", async () => {
     const req = new NextRequest(new URL("http://localhost/settings"));
     const res = await i18nMiddleware(req);
     expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe("http://localhost/no/innstillinger");
+    expect(res.headers.get("location")).toBe("http://localhost/no/profile?tab=settings");
   });
 
   it("redirects /innlogging to /login", async () => {

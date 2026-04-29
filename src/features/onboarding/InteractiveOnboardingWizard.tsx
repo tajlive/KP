@@ -5,7 +5,7 @@ import { Button } from "@/shared/ui/button";
 import { Slider } from "@/shared/ui/slider";
 import { StrategyType, createPaperTrade } from "@/lib/trading-api";
 import { cn, createClient } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import {
   ArrowRight,
   BarChart3,
@@ -257,7 +257,7 @@ export default function InteractiveOnboardingWizard({
 
       <AnimatePresence mode="wait">
         {step === 1 && (
-          <motion.div
+          <m.div
             key="step1"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -296,11 +296,11 @@ export default function InteractiveOnboardingWizard({
               {t("interactive.step1.cta")}{" "}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-          </motion.div>
+          </m.div>
         )}
 
         {step === 2 && (
-          <motion.div
+          <m.div
             key="step2"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -365,11 +365,11 @@ export default function InteractiveOnboardingWizard({
                 </button>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         )}
 
         {step === 3 && (
-          <motion.div
+          <m.div
             key="step3"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -486,11 +486,11 @@ export default function InteractiveOnboardingWizard({
             >
               {tCommon("back")}
             </Button>
-          </motion.div>
+          </m.div>
         )}
 
         {step === 4 && (
-          <motion.div
+          <m.div
             key="step4"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -510,7 +510,7 @@ export default function InteractiveOnboardingWizard({
             <div className="text-blue-400 font-bold animate-pulse">
               {t("interactive.step4.redirecting")}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

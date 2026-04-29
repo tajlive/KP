@@ -722,6 +722,21 @@
       "predicate": "kaos_research_integration",
       "object": "Perplexity-Mobile-UX-Research",
       "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "upgraded_to",
+      "object": "v3.1.1-kimi-v1.40.0-compatible",
+      "validFrom": "2026-04-28T19:30:00.000Z"
+    },
+    {
+      "predicate": "version",
+      "object": "3.1.1",
+      "validFrom": "2026-04-29T13:00:00.000Z"
+    },
+    {
+      "predicate": "cache_health",
+      "object": "LRU-operational-0-current-session",
+      "validFrom": "2026-04-29T13:00:00.000Z"
     }
   ],
   "mobile-ui": [
@@ -1132,6 +1147,21 @@
       "predicate": "has",
       "object": "API-route-with-caching-rate-limiting",
       "validFrom": "2026-04-26T20:55:06.149Z"
+    },
+    {
+      "predicate": "has-integration-test",
+      "object": "getUserDashboardMetrics.integration.test.ts",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "integration-test-status",
+      "object": "outdated-2026-04-29",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "computation-verified",
+      "object": "RPC-matches-raw-tables",
+      "validFrom": "2026-04-29T14:40:28.972Z"
     }
   ],
   "dashboard-ui": [
@@ -1325,6 +1355,350 @@
       "predicate": "migrated",
       "object": "PaperTradingCard-to-dashboard-metrics",
       "validFrom": "2026-04-26T21:25:41.840Z"
+    },
+    {
+      "predicate": "has",
+      "object": "computeUserState-4-state-machine-NyBruker-Onboarded-AktivTrader-PowerUser",
+      "validFrom": "2026-04-28T10:28:00.000Z"
+    },
+    {
+      "predicate": "has",
+      "object": "AIInsightCard-3-tab-risk-performance-strategy",
+      "validFrom": "2026-04-28T11:23:00.000Z"
+    },
+    {
+      "predicate": "has",
+      "object": "NLQChat-floating-assistant-natural-language-queries",
+      "validFrom": "2026-04-27T13:56:00.000Z"
+    },
+    {
+      "predicate": "has",
+      "object": "AdvancedAnalyticsSection-expandable-risk-metrics-charts",
+      "validFrom": "2026-04-27T17:54:00.000Z"
+    },
+    {
+      "predicate": "has",
+      "object": "FeatureGate-aiInsight-flag-controlled",
+      "validFrom": "2026-04-28T11:23:00.000Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "light-mode-full-12-components-dark-prefix",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "mobile-chart-height-300px-sm-380px",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "has",
+      "object": "e2e-dashboard-pro-spec-6-tests-critical",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "has",
+      "object": "e2e-dashboard-mobile-spec-6-tests-mobile",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "resolved",
+      "object": "NewUserHero-standalone-vs-inline-merged-into-AdaptiveDashboard-2026-04-26",
+      "validFrom": "2026-04-26T21:18:05.086Z"
+    },
+    {
+      "predicate": "resolved",
+      "object": "deprecated-api-paper-trading-routes-all-migrated-2026-04-26",
+      "validFrom": "2026-04-26T21:25:41.840Z"
+    },
+    {
+      "predicate": "status",
+      "object": "total-30-facts-15-historical-15-current",
+      "validFrom": "2026-04-29T13:15:00.000Z"
+    }
+  ],
+  "kimi-cli": [
+    {
+      "predicate": "optimized_to",
+      "object": "v1.40.0-max_steps-750-compaction-0.92",
+      "validFrom": "2026-04-28T19:30:00.000Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "mempalace-v3.1.1-graceful-shutdown",
+      "validFrom": "2026-04-28T19:30:00.000Z"
+    }
+  ],
+  "enterprise-2026": [
+    {
+      "predicate": "scope",
+      "object": "DashboardPro-adaptive-UI-WOW-experience",
+      "validFrom": "2026-04-27T13:38:00.000Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "AI-Gateway-api-ai-insight-rate-limited-cached",
+      "validFrom": "2026-04-28T10:56:00.000Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "PersonalizedGreeting-time-of-day-market-context",
+      "validFrom": "2026-04-27T13:38:00.000Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "ExplainStatButton-educational-tooltips-benchmarks",
+      "validFrom": "2026-04-27T13:38:00.000Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "TopTradersPreview-QuickFollowSheet-copy-trading",
+      "validFrom": "2026-04-27T13:56:00.000Z"
+    },
+    {
+      "predicate": "status",
+      "object": "light-mode-complete-mobil-polish-complete-e2e-written",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "is",
+      "object": "dashboard-feature-set-not-tier",
+      "validFrom": "2026-04-29T14:34:12.093Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "ai-insight",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "advanced-analytics",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "nlq-chat",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "copy-trading",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "light-mode",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "includes",
+      "object": "adaptive-ui",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    }
+  ],
+  "light-mode": [
+    {
+      "predicate": "system",
+      "object": "next-themes-class-based-darkMode",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "tokens",
+      "object": "kp-tokens-sanity-css-root-default-dark-override",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "pattern",
+      "object": "gray-100-default-slate-800-dark-prefix",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "components_updated",
+      "object": "12-total-StatsGrid-PortfolioChart-AIInsightCard-ExplainStatButton-AdvancedAnalyticsSection-DashboardPro-PersonalizedGreeting-SimplifiedHero-FirstTradeReward-GetStartedCard-PaperToLiveProgress-AutoTradingConfigCard",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "mobile_fixes",
+      "object": "PortfolioChart-height-300px-AIInsightCard-tab-scroll",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    }
+  ],
+  "e2e-testing": [
+    {
+      "predicate": "framework",
+      "object": "Playwright-1.40-critical-mobile-smoke-regression",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "new_specs",
+      "object": "dashboard-pro-6-tests-AIInsightCard-NLQChat-AutoTradingConfigCard-AdvancedAnalyticsSection-GetStartedCard",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "new_specs",
+      "object": "dashboard-mobile-6-tests-responsive-PortfolioChart-SmartActions-AIInsightCard-NLQChat-AutoTradingConfigCard",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    },
+    {
+      "predicate": "pattern",
+      "object": "skip-on-redirect-to-login-conditional-component-visibility",
+      "validFrom": "2026-04-29T13:10:00.000Z"
+    }
+  ],
+  "verify-claims": [
+    {
+      "predicate": "has-script",
+      "object": "scripts/verify/verify-claims.mjs",
+      "validFrom": "2026-04-29T14:10:52.898Z"
+    },
+    {
+      "predicate": "has-script",
+      "object": "scripts/verify/check-stale-types.mjs",
+      "validFrom": "2026-04-29T14:10:52.899Z"
+    },
+    {
+      "predicate": "has-script",
+      "object": "scripts/verify/run-all.mjs",
+      "validFrom": "2026-04-29T14:10:52.899Z"
+    },
+    {
+      "predicate": "configured-as-agent",
+      "object": ".kimi/agents/verify-agent.yaml",
+      "validFrom": "2026-04-29T14:10:52.899Z"
+    },
+    {
+      "predicate": "catches",
+      "object": "incorrect-redirect-claims",
+      "validFrom": "2026-04-29T14:10:52.899Z"
+    },
+    {
+      "predicate": "catches",
+      "object": "orphaned-files",
+      "validFrom": "2026-04-29T14:10:52.899Z"
+    },
+    {
+      "predicate": "catches",
+      "object": "stale-type-cache",
+      "validFrom": "2026-04-29T14:10:52.899Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "integration-test-robust-computation",
+      "validFrom": "2026-04-29T14:40:28.972Z"
+    }
+  ],
+  "routing": [
+    {
+      "predicate": "has-verification-tool",
+      "object": "verify-claims",
+      "validFrom": "2026-04-29T14:10:52.899Z"
+    }
+  ],
+  "tomarnejensen@gmail.com": [
+    {
+      "predicate": "has-tier",
+      "object": "professor",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "has-user-state",
+      "object": "AktivTrader",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "paper-total-pnl",
+      "object": "71000-NOK",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "paper-total-trades",
+      "object": "14",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "paper-win-rate",
+      "object": "100-percent",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "paper-total-capital",
+      "object": "100858428.89-NOK",
+      "validFrom": "2026-04-29T14:34:12.095Z"
+    },
+    {
+      "predicate": "display_name",
+      "object": "Tomar",
+      "validFrom": "2026-04-29T14:40:28.972Z"
+    },
+    {
+      "predicate": "full_name",
+      "object": "Tom Arne",
+      "validFrom": "2026-04-29T14:40:28.972Z"
+    },
+    {
+      "predicate": "role",
+      "object": "admin",
+      "validFrom": "2026-04-29T14:40:28.972Z"
+    },
+    {
+      "predicate": "subscription_status",
+      "object": "active",
+      "validFrom": "2026-04-29T14:40:28.972Z"
+    },
+    {
+      "predicate": "onboarding_completed",
+      "object": "true",
+      "validFrom": "2026-04-29T14:40:28.972Z"
+    }
+  ],
+  "quality-gates": [
+    {
+      "predicate": "status-2026-04-29",
+      "object": "lint-0-typecheck-0-tests-695-passed-2-skipped",
+      "validFrom": "2026-04-29T14:40:28.972Z"
+    }
+  ],
+  "portfolio-page": [
+    {
+      "predicate": "fixed",
+      "object": "individual-try-catch-per-query",
+      "validFrom": "2026-04-29T14:55:09.129Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "maybeSingle-instead-of-single",
+      "validFrom": "2026-04-29T14:55:09.129Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "error-detail-in-fallback-UI",
+      "validFrom": "2026-04-29T14:55:09.129Z"
+    }
+  ],
+  "api-trading-position": [
+    {
+      "predicate": "fixed",
+      "object": "enhanced-error-logging",
+      "validFrom": "2026-04-29T14:55:09.129Z"
+    }
+  ],
+  "position-lots-card": [
+    {
+      "predicate": "fixed",
+      "object": "error-message-display",
+      "validFrom": "2026-04-29T14:55:09.129Z"
+    }
+  ],
+  "portfolio": [
+    {
+      "predicate": "has-bug",
+      "object": "position-loading-failed-in-production",
+      "validFrom": "2026-04-29T14:55:09.130Z"
+    },
+    {
+      "predicate": "fix-status",
+      "object": "robust-error-handling-deployed",
+      "validFrom": "2026-04-29T14:55:09.130Z"
     }
   ]
 }

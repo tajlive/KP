@@ -101,8 +101,8 @@ function EmptyState() {
   const isNo = locale === "no";
 
   return (
-    <div className="bg-slate-800/50 rounded-xl p-6 text-center border border-slate-700/50">
-      <p className="text-slate-400 text-sm">
+    <div className="bg-gray-100 dark:bg-slate-800/50 rounded-xl p-6 text-center border border-gray-200 dark:border-slate-700/50">
+      <p className="text-gray-500 dark:text-slate-400 text-sm">
         {isNo
           ? "Ingen handler ennå for valgt modus. Start en ny session for å se statistikk."
           : "No trades yet for the selected mode. Start a new session to see statistics."}
@@ -318,10 +318,10 @@ export function DashboardPro({
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 {cmsData?.upgradeBanner?.title ?? "Klar for neste nivå?"}
               </h3>
-              <p className="text-slate-400 mt-1">
+              <p className="text-gray-500 dark:text-slate-400 mt-1">
                 {cmsData?.upgradeBanner?.description ??
                   "Oppgrader til Bachelor for live trading, avanserte strategier og prioritet support."}
               </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useState } from "react";
@@ -51,7 +51,7 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 pt-4">
-        <motion.button
+        <m.button
           onClick={onBack}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white/70"
           whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
@@ -59,11 +59,11 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
           aria-label={t("mobile.step2.backAriaLabel")}
         >
           <ChevronLeft size={24} />
-        </motion.button>
+        </m.button>
       </div>
 
       <div className="flex flex-1 flex-col px-5 py-6">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -75,11 +75,11 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
           <p className="text-sm text-white/50">
             {t("mobile.step2.subtitle")}
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="flex flex-1 flex-col gap-3">
           {riskLevels.map((level, index) => (
-            <motion.button
+            <m.button
               key={level.id}
               onClick={() => handleSelect(level.id)}
               className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all ${
@@ -120,7 +120,7 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
               </div>
 
               {selected === level.id && (
-                <motion.div
+                <m.div
                   layoutId="selectedRing"
                   className="pointer-events-none absolute inset-0 rounded-2xl border-2"
                   style={{ borderColor: level.color }}
@@ -130,18 +130,18 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-            </motion.button>
+            </m.button>
           ))}
         </div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="mt-6"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
         >
-          <motion.button
+          <m.button
             onClick={handleNext}
             disabled={!selected}
             className={`relative w-full overflow-hidden rounded-2xl py-4 text-base font-semibold ${
@@ -154,8 +154,8 @@ export function OnboardingStep2({ onNext, onBack }: OnboardingStep2Props) {
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             {tCommon("next")}
-          </motion.button>
-        </motion.div>
+          </m.button>
+        </m.div>
       </div>
     </div>
   );
