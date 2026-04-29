@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertTriangle, BookOpen, CheckCircle2, Shield } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useState } from 'react';
 
 interface RiskDisclaimerProps {
@@ -53,7 +53,7 @@ export function RiskDisclaimer({ onAccept }: RiskDisclaimerProps) {
     setChecked((prev) => prev.map((v, idx) => (idx === i ? !v : v)));
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mx-auto max-w-lg space-y-6"
@@ -72,7 +72,7 @@ export function RiskDisclaimer({ onAccept }: RiskDisclaimerProps) {
 
       <div className="space-y-3">
         {RISK_FACTS.map((fact, i) => (
-          <motion.div
+          <m.div
             key={i}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -88,7 +88,7 @@ export function RiskDisclaimer({ onAccept }: RiskDisclaimerProps) {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         ))}
       </div>
 
@@ -138,6 +138,6 @@ export function RiskDisclaimer({ onAccept }: RiskDisclaimerProps) {
         Klarpakke er en læringsplattform og gir ikke finansiell rådgivning.
         All trading skjer på eget ansvar.
       </p>
-    </motion.div>
+    </m.div>
   );
 }

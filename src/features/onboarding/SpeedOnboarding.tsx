@@ -3,7 +3,7 @@
 import { Button } from "@/shared/ui/button";
 import { createClient } from "@/lib/utils";
 import confetti from "canvas-confetti";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import {
   Bitcoin,
   ChevronRight,
@@ -238,7 +238,7 @@ export default function SpeedOnboarding({
             </span>
           </div>
           <div className="w-32 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-            <motion.div
+            <m.div
               className="h-full bg-linear-to-r from-blue-500 to-indigo-500 rounded-full"
               initial={{ width: "100%" }}
               animate={{ width: `${(countdown / 60) * 100}%` }}
@@ -275,7 +275,7 @@ export default function SpeedOnboarding({
       <AnimatePresence mode="wait">
         {/* ─── Step 0: Risk Disclaimer ─── */}
         {step === 0 && (
-          <motion.div
+          <m.div
             key="step0"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -283,12 +283,12 @@ export default function SpeedOnboarding({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <RiskDisclaimer onAccept={() => setStep(1)} locale={locale} />
-          </motion.div>
+          </m.div>
         )}
 
         {/* ─── Step 1: Risk Profile ─── */}
         {step === 1 && (
-          <motion.div
+          <m.div
             key="step1"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -307,7 +307,7 @@ export default function SpeedOnboarding({
                 const Icon = profile.icon;
                 const isSelected = selectedRisk === profile.id;
                 return (
-                  <motion.button
+                  <m.button
                     key={profile.id}
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
@@ -319,7 +319,7 @@ export default function SpeedOnboarding({
                     }`}
                   >
                     {isSelected && (
-                      <motion.div
+                      <m.div
                         layoutId="riskSelect"
                         className="absolute inset-0 rounded-2xl border-2 border-current opacity-50 pointer-events-none"
                         style={{
@@ -342,7 +342,7 @@ export default function SpeedOnboarding({
                     >
                       {profile.dailyLoss}
                     </div>
-                  </motion.button>
+                  </m.button>
                 );
               })}
             </div>
@@ -354,12 +354,12 @@ export default function SpeedOnboarding({
             >
               {tCommon("next")} <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
-          </motion.div>
+          </m.div>
         )}
 
         {/* ─── Step 2: Coins ─── */}
         {step === 2 && (
-          <motion.div
+          <m.div
             key="step2"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -377,7 +377,7 @@ export default function SpeedOnboarding({
               {COINS.map((coin) => {
                 const isSelected = selectedCoins.includes(coin.id);
                 return (
-                  <motion.button
+                  <m.button
                     key={coin.id}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -412,7 +412,7 @@ export default function SpeedOnboarding({
                         <span className="text-white text-xs">✓</span>
                       )}
                     </div>
-                  </motion.button>
+                  </m.button>
                 );
               })}
             </div>
@@ -454,25 +454,25 @@ export default function SpeedOnboarding({
                 )}
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         )}
 
         {/* ─── Step 3: Success! ─── */}
         {step === 3 && (
-          <motion.div
+          <m.div
             key="step3"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className="text-center py-8"
           >
-            <motion.div
+            <m.div
               animate={{ rotate: [0, 15, -15, 0] }}
               transition={{ repeat: 2, duration: 0.5 }}
               className="text-6xl mb-4"
             >
               <PartyPopper className="w-16 h-16 mx-auto text-amber-500" />
-            </motion.div>
+            </m.div>
 
             <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-2">
               {t("speedOnboarding.step3.title")}
@@ -502,7 +502,7 @@ export default function SpeedOnboarding({
                 {t("speedOnboarding.step3.viewActivity")}
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

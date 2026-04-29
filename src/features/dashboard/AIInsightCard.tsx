@@ -107,10 +107,10 @@ export function AIInsightCard() {
             <Sparkles className="w-5 h-5 text-purple-400" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-base">
+            <h3 className="font-bold text-gray-900 dark:text-white text-base">
               {isNo ? "AI-innsikt" : "AI Insight"}
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-gray-500 dark:text-slate-400">
               {isNo
                 ? "Professor Kimi analyserer dine handler"
                 : "Professor Kimi analyzes your trades"}
@@ -118,7 +118,7 @@ export function AIInsightCard() {
           </div>
         </div>
         <ChevronDown
-          className={`w-5 h-5 text-slate-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+          className={`w-5 h-5 text-gray-500 dark:text-slate-400 transition-transform ${expanded ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -132,7 +132,7 @@ export function AIInsightCard() {
             className="overflow-hidden"
           >
             {/* Tabs */}
-            <div className="flex gap-1 px-5 pb-3">
+            <div className="flex gap-1 px-5 pb-3 overflow-x-auto">
               {TABS.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.key;
@@ -140,10 +140,10 @@ export function AIInsightCard() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                       isActive
-                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                        : "text-slate-400 hover:text-slate-300 hover:bg-slate-800/50"
+                        ? "bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30"
+                        : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800/50"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -157,9 +157,9 @@ export function AIInsightCard() {
             <div className="px-5 pb-5">
               {loading && !current ? (
                 <div className="space-y-3 animate-pulse">
-                  <div className="h-4 bg-slate-700 rounded w-3/4" />
-                  <div className="h-4 bg-slate-700 rounded w-full" />
-                  <div className="h-4 bg-slate-700 rounded w-5/6" />
+                  <div className="h-4 bg-gray-300 dark:bg-slate-700 rounded w-3/4" />
+                  <div className="h-4 bg-gray-300 dark:bg-slate-700 rounded w-full" />
+                  <div className="h-4 bg-gray-300 dark:bg-slate-700 rounded w-5/6" />
                 </div>
               ) : error ? (
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
@@ -181,8 +181,8 @@ export function AIInsightCard() {
               ) : current ? (
                 <div className="space-y-4">
                   {/* Insight text */}
-                  <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                    <p className="text-sm text-slate-200 leading-relaxed">{current.insight}</p>
+                  <div className="p-4 rounded-xl bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/50">
+                    <p className="text-sm text-gray-800 dark:text-slate-200 leading-relaxed">{current.insight}</p>
                     <div className="flex items-center gap-2 mt-3">
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -190,7 +190,7 @@ export function AIInsightCard() {
                             ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                             : current.confidence === "medium"
                             ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                            : "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+                            : "bg-gray-300/10 text-gray-500 dark:text-slate-400 border border-gray-300/20 dark:border-slate-500/20"
                         }`}
                       >
                         {current.confidence === "high"
@@ -206,7 +206,7 @@ export function AIInsightCard() {
                           : "Low confidence"}
                       </span>
                       {current.cached && (
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-gray-400 dark:text-slate-500">
                           {isNo ? "(cachet)" : "(cached)"}
                         </span>
                       )}
@@ -236,7 +236,7 @@ export function AIInsightCard() {
                     />
                   </div>
 
-                  <p className="text-xs text-slate-500 text-center">
+                  <p className="text-xs text-gray-400 dark:text-slate-500 text-center">
                     {isNo
                       ? "Dette er utdanning, ikke finansiell rådgivning."
                       : "This is education, not financial advice."}
@@ -268,8 +268,8 @@ function MetricBox({
       : "text-slate-400";
 
   return (
-    <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-700/30 text-center">
-      <p className="text-xs text-slate-500 mb-1">{label}</p>
+    <div className="p-3 rounded-xl bg-gray-100 dark:bg-slate-800/30 border border-gray-200 dark:border-slate-700/30 text-center">
+      <p className="text-xs text-gray-500 dark:text-slate-500 mb-1">{label}</p>
       <p className={`text-lg font-bold ${trendColor}`}>{value}</p>
     </div>
   );

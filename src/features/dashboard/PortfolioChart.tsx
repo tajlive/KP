@@ -37,17 +37,17 @@ const TIME_PERIODS = [
 
 function SkeletonChart() {
   return (
-    <div className="h-[380px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 md:p-6 border border-slate-700">
+    <div className="h-[300px] sm:h-[380px] w-full bg-gray-100 dark:bg-slate-800 rounded-2xl p-5 md:p-6 border border-gray-200 dark:border-slate-700">
       {/* Header skeleton */}
       <div className="flex justify-between items-start mb-4">
         <div className="space-y-2">
-          <div className="h-4 w-24 bg-slate-700 rounded animate-pulse" />
-          <div className="h-8 w-40 bg-slate-700 rounded animate-pulse" />
-          <div className="h-3 w-32 bg-slate-700 rounded animate-pulse" />
+          <div className="h-4 w-24 bg-gray-300 dark:bg-slate-700 rounded animate-pulse" />
+          <div className="h-8 w-40 bg-gray-300 dark:bg-slate-700 rounded animate-pulse" />
+          <div className="h-3 w-32 bg-gray-300 dark:bg-slate-700 rounded animate-pulse" />
         </div>
         <div className="flex gap-2">
-          <div className="h-8 w-8 bg-slate-700 rounded-lg animate-pulse" />
-          <div className="h-8 w-48 bg-slate-700 rounded-lg animate-pulse" />
+          <div className="h-8 w-8 bg-gray-300 dark:bg-slate-700 rounded-lg animate-pulse" />
+          <div className="h-8 w-48 bg-gray-300 dark:bg-slate-700 rounded-lg animate-pulse" />
         </div>
       </div>
       {/* Chart area skeleton */}
@@ -55,7 +55,7 @@ function SkeletonChart() {
         {Array.from({ length: 12 }).map((_, i) => (
           <div
             key={i}
-            className="flex-1 bg-slate-700/50 rounded-t animate-pulse"
+            className="flex-1 bg-gray-300/50 dark:bg-slate-700/50 rounded-t animate-pulse"
             style={{
               height: `${20 + Math.random() * 60}%`,
               animationDelay: `${i * 0.05}s`,
@@ -218,11 +218,11 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
   }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl">
-          <p className="text-slate-400 text-xs mb-1">
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-3 shadow-xl">
+          <p className="text-gray-500 dark:text-slate-400 text-xs mb-1">
             {payload[0].payload.formattedDate}
           </p>
-          <p className="text-white font-bold text-lg">
+          <p className="text-gray-900 dark:text-white font-bold text-lg">
             {formatCurrency(payload[0].value)}
           </p>
         </div>
@@ -238,15 +238,15 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
   if (!hasData) {
     return (
       <motion.div
-        className="h-[380px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col items-center justify-center text-muted-foreground"
+        className="h-[300px] sm:h-[380px] w-full bg-gray-100 dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 flex flex-col items-center justify-center text-muted-foreground"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-lg font-medium text-slate-300">
+        <p className="text-lg font-medium text-gray-700 dark:text-slate-300">
           Ingen handelshistorikk ennå
         </p>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-slate-500 mt-1">
           Start din første øvingssesjon for å se grafen
         </p>
       </motion.div>
@@ -255,16 +255,16 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
 
   return (
     <motion.div
-      className="h-[380px] w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 md:p-6 border border-slate-700"
+      className="h-[300px] sm:h-[380px] w-full bg-gray-100 dark:bg-slate-800 rounded-2xl p-5 md:p-6 border border-gray-200 dark:border-slate-700"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
         <div>
-          <p className="text-slate-400 text-sm mb-1">Din portefølje</p>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mb-1">Din portefølje</p>
           <div className="flex items-center gap-3">
-            <p className="text-2xl sm:text-3xl font-bold text-white">
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               {formatCurrency(currentValue)}
             </p>
             <div
@@ -283,7 +283,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
               {changePercent.toFixed(1)}%
             </div>
           </div>
-          <p className="text-slate-500 text-xs mt-1">
+          <p className="text-gray-400 dark:text-slate-500 text-xs mt-1">
             Startet med {formatCurrency(startingValue)}
           </p>
         </div>
@@ -291,10 +291,10 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={fetchPortfolioData}
-            className="p-2 hover:bg-slate-700 rounded-lg transition-colors shrink-0"
+            className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0"
             title="Oppdater"
           >
-            <RefreshCw className="w-4 h-4 text-slate-400" />
+            <RefreshCw className="w-4 h-4 text-gray-400 dark:text-slate-400" />
           </button>
           <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
             {TIME_PERIODS.map((period) => (
@@ -304,7 +304,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
                 className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   selectedPeriod === period.key
                     ? "bg-blue-500 text-white"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    : "bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-600"
                 }`}
               >
                 {period.label}

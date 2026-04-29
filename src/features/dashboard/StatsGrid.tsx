@@ -31,11 +31,11 @@ export function StatsGrid({ stats }: StatsGridProps) {
   const getTrendColor = (trend: string) => {
     switch (trend) {
       case "up":
-        return "text-emerald-400";
+        return "text-emerald-600 dark:text-emerald-400";
       case "down":
-        return "text-red-400";
+        return "text-red-600 dark:text-red-400";
       default:
-        return "text-slate-400";
+        return "text-gray-500 dark:text-slate-400";
     }
   };
 
@@ -43,11 +43,11 @@ export function StatsGrid({ stats }: StatsGridProps) {
     if (highlight) return "bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-blue-500/30";
     switch (trend) {
       case "up":
-        return "bg-slate-800/50 hover:bg-emerald-500/10";
+        return "bg-white dark:bg-slate-800/50 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 border-gray-200 dark:border-slate-700/50";
       case "down":
-        return "bg-slate-800/50 hover:bg-red-500/10";
+        return "bg-white dark:bg-slate-800/50 hover:bg-red-50 dark:hover:bg-red-500/10 border-gray-200 dark:border-slate-700/50";
       default:
-        return "bg-slate-800/50";
+        return "bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700/50";
     }
   };
 
@@ -59,7 +59,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
           className={`${getBgColor(
             stat.trend,
             stat.highlight
-          )} rounded-xl p-4 border border-slate-700/50 transition-all duration-200 cursor-pointer`}
+          )} rounded-xl p-4 border transition-all duration-200 cursor-pointer`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -68,7 +68,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
           <div className="flex items-center justify-between mb-2">
             <stat.icon
               className={`w-4 h-4 ${
-                stat.highlight ? "text-blue-400" : "text-slate-500"
+                stat.highlight ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-slate-500"
               }`}
             />
             {stat.trend === "up" && !stat.highlight && (
@@ -81,15 +81,15 @@ export function StatsGrid({ stats }: StatsGridProps) {
 
           <p
             className={`text-2xl font-bold ${
-              stat.highlight ? "text-white" : getTrendColor(stat.trend)
+              stat.highlight ? "text-gray-900 dark:text-white" : getTrendColor(stat.trend)
             }`}
           >
             {stat.value}
           </p>
 
-          <p className="text-slate-400 text-xs mt-1 truncate">{stat.label}</p>
+          <p className="text-gray-500 dark:text-slate-400 text-xs mt-1 truncate">{stat.label}</p>
 
-          <p className="text-slate-500 text-[10px] mt-0.5">{stat.subtext}</p>
+          <p className="text-gray-400 dark:text-slate-500 text-[10px] mt-0.5">{stat.subtext}</p>
         </motion.div>
       ))}
     </div>
@@ -103,18 +103,18 @@ export function StatsGridMini({ stats }: StatsGridProps) {
       {stats.slice(0, 4).map((stat, index) => (
         <motion.div
           key={stat.label}
-          className="bg-slate-900 rounded-lg p-3 border border-slate-800"
+          className="bg-gray-100 dark:bg-slate-900 rounded-lg p-3 border border-gray-200 dark:border-slate-800"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: index * 0.1 }}
         >
           <div className="flex items-center gap-2 mb-1">
-            <stat.icon className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-slate-500 text-xs">{stat.label}</span>
+            <stat.icon className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
+            <span className="text-gray-500 dark:text-slate-500 text-xs">{stat.label}</span>
           </div>
           <p
             className={`text-lg font-bold ${
-              stat.trend === "up" ? "text-emerald-400" : "text-white"
+              stat.trend === "up" ? "text-emerald-600 dark:text-emerald-400" : "text-gray-900 dark:text-white"
             }`}
           >
             {stat.value}

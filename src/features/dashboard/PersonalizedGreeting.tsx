@@ -120,7 +120,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
   }, []);
 
   if (!mounted) {
-    return <div className="h-16 bg-slate-900/50 rounded-xl animate-pulse" />;
+    return <div className="h-16 bg-gray-200/50 dark:bg-slate-900/50 rounded-xl animate-pulse" />;
   }
 
   return (
@@ -146,16 +146,16 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
             )}
 
             {market && (
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700">
-                <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{market.symbol}</span>
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+                <span className="text-xs text-gray-500 dark:text-slate-400">{market.symbol}</span>
                 {market.changePct >= 0 ? (
-                  <TrendingUp className="w-3 h-3 text-emerald-400" />
+                  <TrendingUp className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <TrendingDown className="w-3 h-3 text-red-400" />
+                  <TrendingDown className="w-3 h-3 text-red-600 dark:text-red-400" />
                 )}
                 <span
                   className={`text-xs font-medium ${
-                    market.changePct >= 0 ? "text-emerald-400" : "text-red-400"
+                    market.changePct >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {market.changePct >= 0 ? "+" : ""}
@@ -176,7 +176,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
                 </p>
                 <p
                   className={`text-sm font-bold ${
-                    totalPnl >= 0 ? "text-emerald-400" : "text-red-400"
+                    totalPnl >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {totalPnl >= 0 ? "+" : ""}
@@ -191,7 +191,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
                 </p>
                 <p
                   className={`text-sm font-bold ${
-                    winRate >= 50 ? "text-emerald-400" : "text-amber-400"
+                    winRate >= 50 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"
                   }`}
                 >
                   {winRate}%

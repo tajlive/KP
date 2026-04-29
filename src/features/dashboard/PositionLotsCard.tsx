@@ -80,9 +80,12 @@ export function PositionLotsCard({ locale }: PositionLotsCardProps) {
 
   if (error) {
     return (
-      <div className="bg-slate-900 border border-red-700/30 rounded-2xl p-6 flex items-center gap-3">
-        <AlertCircle className="w-5 h-5 text-red-400" />
-        <p className="text-red-300">{t("error")}</p>
+      <div className="bg-slate-900 border border-red-700/30 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-2">
+          <AlertCircle className="w-5 h-5 text-red-400" />
+          <p className="text-red-300">{t("error")}</p>
+        </div>
+        <p className="text-xs text-red-400/60 font-mono">{error}</p>
       </div>
     );
   }

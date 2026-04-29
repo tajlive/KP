@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { OnboardingStep1 } from "./steps/OnboardingStep1";
 import { OnboardingStep2 } from "./steps/OnboardingStep2";
@@ -67,7 +67,7 @@ export function OnboardingFlow() {
 
       <div className="relative flex-1 overflow-hidden">
         <AnimatePresence mode="wait" custom={direction} initial={false}>
-          <motion.div
+          <m.div
             key={step}
             custom={direction}
             variants={stepVariants}
@@ -85,7 +85,7 @@ export function OnboardingFlow() {
               />
             )}
             {step === 3 && <OnboardingStep3 />}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </div>
     </div>

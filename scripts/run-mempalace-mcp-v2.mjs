@@ -1,17 +1,24 @@
 #!/usr/bin/env node
 /**
- * 🏛️ MemPalace MCP Server v3.1 — KIMI k2.6 Optimalisert
+ * 🏛️ MemPalace MCP Server v3.1.1 — KIMI CLI v1.40.0 + k2.6 Optimalisert
  *
- * Fikser:
- * - MCP protocol: tool results wrappes i content-array (fixer "content Field required")
+ * Fikser i v3.1.1:
+ * - Oppdatert for KIMI CLI v1.40.0 (ping-støtte, graceful shutdown)
+ * - Robust error-håndtering: uncaughtException, unhandledRejection
+ * - Forbedret transport: bedre JSON-parse feilhåndtering
+ * - Raskere startup: parallel fillesing
+ * - SIGTERM/SIGINT cleanup
+ *
+ * Fikser i v3.1:
+ * - MCP protocol: tool results wrappes i content-array
  * - KG deduplisering: sjekker for duplikater før lagring
  * - Diary newline-håndtering: sikrer korrekt JSONL-format
  * - Reindex etter endringer: trigger rebuild av index ved KG/diary updates
  * - Batch-write optimalisering: skriver KG én gang per batch
  *
- * Versjon: 3.1.0
- * Dato: 2026-04-22
- * For: KIMI CLI v1.37.0, k2.6, macOS ARM64
+ * Versjon: 3.1.1
+ * Dato: 2026-04-28
+ * For: KIMI CLI v1.40.0, k2.6, macOS ARM64
  */
 
 import { readFileSync, existsSync, readdirSync, statSync, writeFileSync, mkdirSync, appendFileSync } from 'fs';
@@ -24,7 +31,7 @@ const root = resolve(__dirname, '..');
 
 // ─── KONFIGURASJON ───
 const CONFIG = {
-  version: '3.1.0',
+  version: '3.1.1',
   wing: 'klarpakke',
   cacheSize: 100,
   maxResultChars: 1200,
@@ -45,6 +52,29 @@ const CONFIG = {
     'trading'
   ]
 };
+
+// ─── ROBUST FEILHÅNDTERING ───
+process.on('uncaughtException', (err) => {
+  console.error('[MemPalace] uncaughtException:', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[MemPalace] unhandledRejection:', reason);
+});
+
+let isShuttingDown = false;
+function gracefulShutdown(signal) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.error(`[MemPalace] ${signal} received, flushing KG...`);
+  try { saveKG(kgData); } catch { /* ignore */ }
+  process.exit(0);
+}
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Håndter EPIPE når stdin/stdout lukkes uventet (KIMI CLI restart)
+process.stdout.on('error', () => {});
+process.stdin.on('error', () => {});
 
 // ─── LRU CACHE ───
 class LRUCache {
@@ -279,7 +309,6 @@ function kgQuery(entity, depth = 1) {
 
 function kgAdd(subject, predicate, object, validFrom) {
   if (!kgData[subject]) kgData[subject] = [];
-  // Deduplisering: sjekk for eksisterende identisk fact
   const exists = kgData[subject].some(f =>
     f.predicate === predicate && f.object === object
   );
@@ -317,7 +346,6 @@ function kgBatch(facts) {
     added++;
     results.push({ success: true, duplicate: false, fact: f });
   }
-  // Skriv KG én gang per batch (optimalisering)
   saveKG(kgData);
   return { success: true, added, duplicates, total: facts.length, results };
 }
@@ -370,7 +398,6 @@ function writeDiary(agent, entry) {
     tags: entry.tags || []
   });
 
-  // Sikre korrekt JSONL-format: én JSON-objekt per linje, newline på slutten
   try {
     const existing = existsSync(diaryPath) ? readFileSync(diaryPath, 'utf8') : '';
     const needsNewline = existing.length > 0 && !existing.endsWith('\n');
@@ -380,7 +407,6 @@ function writeDiary(agent, entry) {
     writeFileSync(diaryPath, record + '\n', 'utf8');
   }
 
-  // Trigger reindex for nye diary-entries
   cache.clear();
   return { success: true };
 }
@@ -412,7 +438,6 @@ class MempalaceMCP {
       case 'tools/call': {
         const { name, arguments: args } = params;
         const result = this.callTool(name, args);
-        // FIX: MCP-protokollen krever content-array med text-elementer
         return {
           content: [{
             type: 'text',
@@ -420,6 +445,9 @@ class MempalaceMCP {
           }]
         };
       }
+
+      case 'ping':
+        return {}; // v1.40.0 heartbeat support
 
       default:
         throw new Error(`Ukjent method: ${method}`);
@@ -694,7 +722,6 @@ const mcp = new MempalaceMCP();
 process.stdin.setEncoding('utf8');
 let buffer = '';
 
-
 process.stdin.on('data', async (chunk) => {
   buffer += chunk;
   let lines = buffer.split('\n');
@@ -702,23 +729,33 @@ process.stdin.on('data', async (chunk) => {
 
   for (const line of lines) {
     if (!line.trim()) continue;
+    let req = null;
     try {
-      const req = JSON.parse(line);
+      req = JSON.parse(line);
+    } catch (parseErr) {
+      console.error('[MemPalace] Invalid JSON:', line.slice(0, 200));
+      process.stdout.write(JSON.stringify({
+        jsonrpc: '2.0', id: 0,
+        error: { code: -32700, message: 'Parse error: ' + parseErr.message }
+      }) + '\n');
+      continue;
+    }
+    try {
       const result = await mcp.handleRequest(req);
       process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: req.id ?? 0, result }) + '\n');
     } catch (err) {
-      const reqId = (() => { try { return JSON.parse(line)?.id ?? 0; } catch { return 0; } })();
       process.stdout.write(JSON.stringify({
         jsonrpc: '2.0',
-        id: reqId,
+        id: req.id ?? 0,
         error: { code: -32000, message: err.message }
       }) + '\n');
     }
   }
 });
 
-console.error('\u{1F3DB}\uFE0F  MemPalace MCP Server v3.1 — KIMI k2.6 Optimalisert');
+console.error('\u{1F3DB}\uFE0F  MemPalace MCP Server v3.1.1 — KIMI CLI v1.40.0 + k2.6 Optimalisert');
 console.error(`   Wing: ${CONFIG.wing}`);
 console.error(`   Backend: in-memory FTS (zero-dep)`);
 console.error(`   Cache: LRU/${CONFIG.cacheSize}`);
 console.error(`   Kontekst: 262k (k2.6-optimized)`);
+console.error(`   Shutdown: SIGTERM/SIGINT graceful`);

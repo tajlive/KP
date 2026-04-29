@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -34,7 +34,7 @@ function CheckmarkSVG() {
       className="h-14 w-14"
       aria-hidden="true"
     >
-      <motion.circle
+      <m.circle
         cx="26"
         cy="26"
         r="24"
@@ -45,7 +45,7 @@ function CheckmarkSVG() {
         animate={{ pathLength: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       />
-      <motion.path
+      <m.path
         d="M14 26l8 8 16-16"
         stroke="#2563eb"
         strokeWidth="3"
@@ -97,7 +97,7 @@ export function OnboardingStep3() {
   return (
     <div className="flex h-full flex-col justify-between px-5 py-8">
       <div className="flex flex-col items-center gap-6 pt-16 text-center">
-        <motion.div
+        <m.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{
@@ -109,9 +109,9 @@ export function OnboardingStep3() {
           className="flex h-20 w-20 items-center justify-center rounded-full bg-[#2563eb]/10"
         >
           <CheckmarkSVG />
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
@@ -122,7 +122,7 @@ export function OnboardingStep3() {
             {t("mobile.step3.description")}
           </p>
           {riskLevel && (
-            <motion.p
+            <m.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
@@ -130,21 +130,21 @@ export function OnboardingStep3() {
             >
               {t("mobile.step3.selectedStrategy")}{" "}
               <span className="capitalize text-white/60">{riskLevel}</span>
-            </motion.p>
+            </m.p>
           )}
-        </motion.div>
+        </m.div>
       </div>
 
       <AnimatePresence>
         {showButton && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 30 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}
           >
-            <motion.button
+            <m.button
               onClick={handleStart}
               disabled={isLoading}
               className="relative w-full overflow-hidden rounded-2xl bg-[#2563eb] py-4 text-base font-semibold text-white disabled:opacity-60"
@@ -154,7 +154,7 @@ export function OnboardingStep3() {
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <motion.span
+                  <m.span
                     className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -164,9 +164,9 @@ export function OnboardingStep3() {
               ) : (
                 t("mobile.step3.cta")
               )}
-            </motion.button>
+            </m.button>
 
-            <motion.button
+            <m.button
               onClick={handleDiscoverTraders}
               disabled={isLoading}
               className="w-full rounded-2xl border border-white/20 py-3.5 text-base font-semibold text-white/80
@@ -176,8 +176,8 @@ export function OnboardingStep3() {
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
               {t("mobile.step3.discoverCta", { defaultValue: "Oppdag tradere å kopiere" })}
-            </motion.button>
-          </motion.div>
+            </m.button>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

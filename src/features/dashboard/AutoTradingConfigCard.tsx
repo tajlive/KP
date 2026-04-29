@@ -132,27 +132,27 @@ export function AutoTradingConfigCard() {
 
   if (loading) {
     return (
-      <Card className="bg-slate-900 border-slate-800">
+      <Card className="bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
+          <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Bot className="h-5 w-5" />
             Auto-Trading
           </CardTitle>
-          <CardDescription className="text-slate-400">Laster...</CardDescription>
+          <CardDescription className="text-gray-500 dark:text-slate-400">Laster...</CardDescription>
         </CardHeader>
-        <CardContent className="h-40 animate-pulse bg-slate-800 rounded" />
+        <CardContent className="h-40 animate-pulse bg-gray-200 dark:bg-slate-800 rounded" />
       </Card>
     );
   }
 
   return (
-    <Card className="bg-slate-900 border-slate-800">
+    <Card className="bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-white">
+        <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <Bot className="h-5 w-5" />
           Auto-Trading
         </CardTitle>
-        <CardDescription className="text-slate-400">
+        <CardDescription className="text-gray-500 dark:text-slate-400">
           La AI handle på dine vegne basert på markedsanalyse
         </CardDescription>
       </CardHeader>
@@ -160,10 +160,10 @@ export function AutoTradingConfigCard() {
         {/* Enable/Disable Toggle */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="auto-trading" className="text-base font-medium text-white">
+            <Label htmlFor="auto-trading" className="text-base font-medium text-gray-900 dark:text-white">
               Auto-Trading
             </Label>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-gray-500 dark:text-slate-400">
               {config.enabled ? 'Aktivert - AI handler automatisk' : 'Deaktivert - Manuell handel'}
             </p>
           </div>
@@ -176,7 +176,7 @@ export function AutoTradingConfigCard() {
 
         {/* Mode Toggle */}
         <div className="space-y-3">
-          <Label className="text-sm font-medium text-white">Handelsmodus</Label>
+          <Label className="text-sm font-medium text-gray-900 dark:text-white">Handelsmodus</Label>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -185,7 +185,7 @@ export function AutoTradingConfigCard() {
               onClick={() => setConfig({ ...config, mode: 'paper' })}
               className={config.mode === 'paper' 
                 ? "flex-1 bg-blue-600 hover:bg-blue-700 text-white" 
-                : "flex-1 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
+                : "flex-1 bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white"
               }
             >
               <Shield className="h-4 w-4 mr-2" />
@@ -198,7 +198,7 @@ export function AutoTradingConfigCard() {
               onClick={() => setConfig({ ...config, mode: 'live' })}
               className={config.mode === 'live' 
                 ? "flex-1 bg-blue-600 hover:bg-blue-700 text-white" 
-                : "flex-1 bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
+                : "flex-1 bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white"
               }
             >
               <TrendingUp className="h-4 w-4 mr-2" />
@@ -206,7 +206,7 @@ export function AutoTradingConfigCard() {
             </Button>
           </div>
           {config.mode === 'paper' ? (
-            <p className="text-xs text-slate-400 flex items-start gap-1">
+            <p className="text-xs text-gray-500 dark:text-slate-400 flex items-start gap-1">
               <Shield className="h-3 w-3 mt-0.5" />
               Lekepenger bruker simulerte penger. Ingen ekte tap.
             </p>
@@ -221,7 +221,7 @@ export function AutoTradingConfigCard() {
         {/* Risk Level */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-white">Risikonivå</Label>
+            <Label className="text-sm font-medium text-gray-900 dark:text-white">Risikonivå</Label>
             <span className={cn("text-xs font-medium", currentRiskLevel?.color)}>
               {currentRiskLevel?.label}
             </span>
@@ -241,13 +241,13 @@ export function AutoTradingConfigCard() {
                       : risk.value === 'medium'
                       ? 'bg-yellow-500'
                       : 'bg-red-500'
-                    : 'bg-slate-700 hover:bg-slate-600'
+                    : 'bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600'
                 )}
                 title={risk.description}
               />
             ))}
           </div>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-gray-500 dark:text-slate-400">
             {currentRiskLevel?.description}
           </p>
         </div>
@@ -255,8 +255,8 @@ export function AutoTradingConfigCard() {
         {/* Max Trade Size */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-white">Maks handelsstørrelse</Label>
-            <span className="text-sm font-medium text-slate-200">
+            <Label className="text-sm font-medium text-gray-900 dark:text-white">Maks handelsstørrelse</Label>
+            <span className="text-sm font-medium text-gray-700 dark:text-slate-200">
               {config.max_trade_size_nok.toLocaleString('nb-NO')} NOK
             </span>
           </div>

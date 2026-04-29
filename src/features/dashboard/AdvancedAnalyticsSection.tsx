@@ -179,7 +179,7 @@ export function AdvancedAnalyticsSection({ accountBalance = 100000, defaultExpan
                       className="bg-gray-100 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-700/50"
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{metric.label}</span>
+                        <span className="text-xs text-gray-500 dark:text-slate-400">{metric.label}</span>
                       </div>
                       <p
                         className={`text-lg font-bold ${
