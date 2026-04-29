@@ -60,13 +60,26 @@ export async function PATCH(
       );
     }
 
-    // Oppdater status
+    // Oppdater status — arkiver ved stopp for å holde totalene rene
+    const updates: {
+      status: string;
+      updated_at: string;
+      archived?: boolean;
+      archived_at?: string;
+      stopped_at?: string;
+    } = {
+      status,
+      updated_at: new Date().toISOString(),
+    };
+    if (status === "stopped") {
+      updates.archived = true;
+      updates.archived_at = new Date().toISOString();
+      updates.stopped_at = new Date().toISOString();
+    }
+
     const { data: updatedSession, error: updateError } = await supabase
       .from("trading_sessions")
-      .update({
-        status,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updates)
       .eq("id", id)
       .select()
       .single();

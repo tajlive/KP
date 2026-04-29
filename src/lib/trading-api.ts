@@ -277,10 +277,16 @@ export async function startStrategy(
   const initialCapital = parseInitialCapitalFromConfig(config);
   const strategy_config = enrichStrategyConfigForSession(productId, config);
 
-  // First, deactivate any existing active session for this mode
+  // Archive any existing active session for this mode before creating a new one.
+  // This prevents zombie sessions from accumulating.
   await supabase
     .from("trading_sessions")
-    .update({ status: "stopped", stopped_at: new Date().toISOString() })
+    .update({
+      status: "stopped",
+      stopped_at: new Date().toISOString(),
+      archived: true,
+      archived_at: new Date().toISOString(),
+    })
     .eq("user_id", user.id)
     .eq("mode", mode)
     .eq("status", "active");
@@ -337,6 +343,8 @@ export async function stopStrategy(
       status: "stopped",
       stopped_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      archived: true,
+      archived_at: new Date().toISOString(),
     })
     .eq("user_id", user.id)
     .eq("mode", mode)

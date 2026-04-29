@@ -247,10 +247,14 @@ export async function pauseSession(
 }
 
 export async function stopSession(sessionId: string): Promise<boolean> {
+  // Archive the session so its capital is no longer counted in totals.
+  // The active session remains the canonical source of truth.
   return await updateSession(sessionId, {
     status: "STOPPED",
     ended_at: new Date().toISOString(),
-  });
+    archived: true,
+    archived_at: new Date().toISOString(),
+  } as Partial<AutoTradingSession>);
 }
 
 // ============================================================
