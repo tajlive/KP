@@ -69,7 +69,7 @@ export default async function PortfolioPage({ params }: PageProps) {
     // Each query is wrapped individually so one failure doesn't break everything
     let wallets: { id: string; currency: string; balance: number }[] | null = null;
     let portfolios: { id: string; name: string | null; current_balance: number | null; initial_balance: number | null } | null = null;
-    let sessions: { id: string; trading_pair: string; current_capital_nok: number | null }[] | null = null;
+    let sessions: { id: string; trading_pair: string; current_capital_nok: number | null; starting_capital_nok: number | null; status: string }[] | null = null;
     let profile: { paper_balance: number | null } | null = null;
 
     // Query 1: Wallets
@@ -106,14 +106,15 @@ export default async function PortfolioPage({ params }: PageProps) {
       errorLog.push(`Portfolios query exception: ${e instanceof Error ? e.message : String(e)}`);
     }
 
-    // Query 3: Trading sessions
+    // Query 3: Trading sessions (active + stopped for capital calc)
     try {
       const { data, error } = await supabase
         .from("trading_sessions")
-        .select("id, trading_pair, current_capital_nok")
+        .select("id, trading_pair, current_capital_nok, starting_capital_nok, status")
         .eq("user_id", user.id)
-        .order("started_at", { ascending: false })
-        .limit(10);
+        .is("archived", false)
+        .in("status", ["active", "stopped"])
+        .order("started_at", { ascending: false });
       if (error) {
         errorLog.push(`Sessions query error: ${error.message} (${error.code})`);
       } else {
@@ -150,25 +151,63 @@ export default async function PortfolioPage({ params }: PageProps) {
       );
     }
 
-    // Derive display assets: prefer wallets, fallback to portfolio record.
-    // CRITICAL FIX: Use user_profiles.paper_balance as the source of truth
-    // for portfolio balance. The portfolios table is NOT kept in sync with
-    // paper_balance updates, causing displayed sums to differ between
-    // /dashboard and /dashboard/portfolio.
+    // Calculate total capital from trading sessions (SAME as dashboard)
+    const totalCapital = (sessions ?? []).reduce(
+      (sum, s) => sum + Number(s.current_capital_nok ?? 0),
+      0,
+    );
+    const totalStarting = (sessions ?? []).reduce(
+      (sum, s) => sum + Number(s.starting_capital_nok ?? 0),
+      0,
+    );
+    const totalReturn = totalStarting > 0
+      ? ((totalCapital - totalStarting) / totalStarting) * 100
+      : 0;
+
+    // Derive display assets.
+    // PRIMARY: Total capital from all trading sessions (matches /dashboard)
+    // SECONDARY: Wallet balance as "available cash" (tilgjengelig)
+    const hasSessions = sessions && sessions.length > 0;
     const hasWallets = wallets && wallets.length > 0;
-    const paperBalance = Number(profile?.paper_balance ?? 0);
-    const displayAssets = hasWallets
-      ? wallets!.map((w) => ({ type: "wallet" as const, ...w }))
-      : portfolios
-        ? [
-            {
-              type: "portfolio" as const,
-              id: portfolios.id,
-              currency: portfolios.name || "NOK",
-              balance: paperBalance > 0 ? paperBalance : Number(portfolios.current_balance || portfolios.initial_balance || 0),
-            },
-          ]
-        : [];
+    const walletBalance = hasWallets ? Number(wallets![0].balance ?? 0) : 0;
+
+    const displayAssets: Array<{
+      id: string;
+      currency: string;
+      balance: number;
+      type: "total" | "wallet" | "portfolio";
+      label?: string;
+    }> = [];
+
+    if (hasSessions && totalCapital > 0) {
+      displayAssets.push({
+        type: "total",
+        id: "total-capital",
+        currency: "Total Portefølje",
+        balance: totalCapital,
+        label: totalReturn >= 0 ? `+${totalReturn.toFixed(2)}%` : `${totalReturn.toFixed(2)}%`,
+      });
+    }
+
+    if (hasWallets && walletBalance > 0) {
+      displayAssets.push({
+        type: "wallet",
+        id: wallets![0].id,
+        currency: wallets![0].currency,
+        balance: walletBalance,
+        label: "Tilgjengelig",
+      });
+    }
+
+    if (displayAssets.length === 0 && portfolios) {
+      const paperBalance = Number(profile?.paper_balance ?? 0);
+      displayAssets.push({
+        type: "portfolio",
+        id: portfolios.id,
+        currency: portfolios.name || "NOK",
+        balance: paperBalance > 0 ? paperBalance : Number(portfolios.current_balance || portfolios.initial_balance || 0),
+      });
+    }
 
     return (
       <div className="space-y-6">
@@ -188,27 +227,37 @@ export default async function PortfolioPage({ params }: PageProps) {
           {displayAssets.map((asset) => (
             <div
               key={asset.id}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between hover:border-slate-700 transition-all group"
+              className={`rounded-2xl p-6 flex items-center justify-between transition-all group ${
+                asset.type === "total"
+                  ? "bg-blue-900/20 border border-blue-700/30 hover:border-blue-600/40"
+                  : "bg-slate-900 border border-slate-800 hover:border-slate-700"
+              }`}
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                  <Wallet className="w-6 h-6 text-slate-400 group-hover:text-blue-500" />
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
+                  asset.type === "total"
+                    ? "bg-blue-800/30 group-hover:bg-blue-600/30"
+                    : "bg-slate-800 group-hover:bg-blue-600/20"
+                }`}>
+                  <Wallet className={`w-6 h-6 ${
+                    asset.type === "total" ? "text-blue-400 group-hover:text-blue-300" : "text-slate-400 group-hover:text-blue-500"
+                  }`} />
                 </div>
                 <div>
                   <h3 className="font-bold text-white text-lg">
                     {asset.currency}
                   </h3>
                   <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">
-                    {t("mainHolding")}
+                    {asset.label || t("mainHolding")}
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-black text-white">
-                  {asset.balance.toFixed(asset.type === "portfolio" ? 2 : 6)}
+                  {asset.balance.toLocaleString("no-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kr
                 </p>
                 <p className="text-slate-500 text-xs font-medium">
-                  {t("balance")}
+                  {asset.type === "total" ? "Total verdi" : t("balance")}
                 </p>
               </div>
             </div>
