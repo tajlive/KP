@@ -30,7 +30,7 @@
         "auth": {
           "types": ["src/types/auth.ts"],
           "core": ["src/lib/auth/*.ts"],
-          "middleware": ["src/middleware.ts"]
+          "middleware": ["src/proxy.ts"]
         }
       },
       "refresh_interval": "realtime"
@@ -46,7 +46,7 @@
   "shortcuts": {
     "@auth": {
       "description": "Auth system kontekst",
-      "files": ["src/lib/auth/", "src/middleware.ts", "src/types/auth.ts"],
+      "files": ["src/lib/auth/", "src/proxy.ts", "src/types/auth.ts"],
       "docs": ["docs/security/auth-flow.md"]
     },
     "@trading": {

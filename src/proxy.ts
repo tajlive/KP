@@ -138,7 +138,7 @@ function applySecurityHeaders(response: NextResponse, nonce: string): NextRespon
   return response;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Redirect /no/studio and /en/studio -> /studio (Sanity Studio is locale-independent)
