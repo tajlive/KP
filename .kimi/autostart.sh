@@ -1,5 +1,5 @@
 #!/bin/bash
-# KIMI Autostart Sequence — v2.3 (2026-04-16)
+# KIMI Autostart Sequence — v3.0 (2026-04-30)
 # Kjør ved hver KIMI oppstart for maksimal optimalisering
 
 set -euo pipefail
@@ -28,15 +28,12 @@ else
 fi
 echo ""
 
-# 2. MemPalace Wake-up
+# 2. MemPalace Wake-up (v3.1.1 MCP)
 echo -e "${BLUE}🏛️  MemPalace Context:${NC}"
-if command -v mempalace >/dev/null 2>&1; then
-    mempalace wake-up --wing klarpakke 2>/dev/null | tail -12 | sed 's/^/  /' || echo "  (wake-up returned non-zero)"
-    echo ""
-    echo -e "  ${CYAN}Recent decisions:${NC}"
-    mempalace search "decision" --wing klarpakke 2>/dev/null | head -6 | sed 's/^/    /' || true
+if [ -f "scripts/mempalace-status.mjs" ]; then
+    node scripts/mempalace-status.mjs 2>/dev/null || echo "  (status script returned non-zero)"
 else
-    echo "  ℹ️  mempalace not in PATH — skipping"
+    echo "  ℹ️  mempalace-status.mjs not found"
 fi
 echo ""
 
@@ -66,19 +63,27 @@ echo "  Branch: $(git branch --show-current 2>/dev/null || echo 'N/A')"
 echo "  Last commit: $(git log -1 --format=%h 2>/dev/null || echo 'N/A')"
 echo ""
 
-# 6. Ready Message
+# 6. MCP Status
+echo -e "${BLUE}🔌 MCP Servers:${NC}"
+if [ -f "$HOME/.kimi/mcp.json" ]; then
+    MCP_COUNT=$(grep -c '"command"' "$HOME/.kimi/mcp.json" 2>/dev/null || echo "0")
+    echo "  Active profile: $(basename $(readlink "$HOME/.kimi/mcp.json" 2>/dev/null) || echo 'mcp.json') ($MCP_COUNT servers)"
+else
+    echo "  No MCP config found"
+fi
+echo ""
+
+# 7. Ready Message
 echo -e "${GREEN}✅ KIMI Ready!${NC}"
 echo "=========================="
 echo ""
 echo "Quick commands:"
-if command -v mempalace >/dev/null 2>&1; then
-    echo "  mempalace search \"auth\"         # Search memory"
-    echo "  mempalace wake-up --wing klarpakke  # Full context"
-fi
-echo "  bash .kimi/kimi-architect.sh "task"  # Lead architect mode"
-echo "  npm run swarm:review            # Run swarm QA"
-echo "  npm run verify                  # Check environment"
-echo "  npm run dev                     # Start dev server"
+echo "  node scripts/mempalace-status.mjs  # MemPalace status"
+echo "  node scripts/mempalace-search.mjs  # Search memory"
+echo "  bash .kimi/kimi-architect.sh task  # Lead architect mode"
+echo "  npm run swarm:review               # Run swarm QA"
+echo "  npm run verify                     # Check environment"
+echo "  npm run dev                        # Start dev server"
 echo ""
 echo "YOLO mode: ACTIVE | Skills: AUTO | Architect: READY"
 echo ""
