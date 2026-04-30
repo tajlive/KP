@@ -152,6 +152,8 @@ export function LeaderboardPreview({ entries }: LeaderboardPreviewProps) {
   // No fake default data — we don't display fabricated numbers.
   const displayEntries = entries ?? [];
 
+  if (displayEntries.length === 0) return null;
+
   return (
     <section className="py-20 bg-[#050510] relative overflow-hidden">
       {/* Background effects */}
