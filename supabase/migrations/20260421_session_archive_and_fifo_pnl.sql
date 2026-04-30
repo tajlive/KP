@@ -1,3 +1,4 @@
+-- legacy-accepted: 8-sifret timestamp, deployet til prod 2026-04. Se AGENTS.md.
 -- Migration: Session archiving + realized_pnl for paper trades
 -- Date: 2026-04-21
 -- Approach: Use session.open_position for single-position P&L calc at sell time
