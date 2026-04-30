@@ -1,3 +1,4 @@
+-- legacy-accepted: 8-sifret timestamp, deployet til prod 2026-04. Se AGENTS.md.
 -- ============================================================
 -- 2026-04-20: Fix pg_net schema reference in klarpakke_trigger_cron
 --

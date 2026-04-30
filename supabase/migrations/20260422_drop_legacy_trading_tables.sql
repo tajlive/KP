@@ -1,3 +1,4 @@
+-- legacy-accepted: 8-sifret timestamp, deployet til prod 2026-04. Se AGENTS.md.
 -- Migration: Drop legacy trading tables superseded by unified schema
 -- Date: 2026-04-22
 --

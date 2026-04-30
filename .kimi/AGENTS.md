@@ -145,6 +145,19 @@ node scripts/validate-migrations.mjs supabase/migrations/20990101000000_min_fil.
 3. Test migrasjoner lokalt før push: `supabase db push --linked --dry-run`
 4. `ANALYZE`-tabellen etter store indeks-endringer
 
+### Akseptert teknisk gjeld (8-sifrede timestamps)
+
+> Disse filene ble deployet til produksjon før validator v2.0 og 14-sifret konvensjon.
+> De trigger ⚠️ Warning (ikke ❌ BLOCK) i full scan.
+
+| Fil | Status | Begrunnelse |
+|-----|--------|-------------|
+| `20260426_dashboard_metrics_rpc.sql` | legacy-accepted | Deployet til prod 2026-04 |
+| `20260424_sync_balances_on_trade_trigger.sql` | legacy-accepted | Deployet til prod 2026-04 |
+| `20260422_drop_legacy_trading_tables.sql` | legacy-accepted | Deployet til prod 2026-04 |
+| `20260421_session_archive_and_fifo_pnl.sql` | legacy-accepted | Deployet til prod 2026-04 |
+| `20260420_fix_pg_net_schema.sql` | legacy-accepted | Deployet til prod 2026-04 |
+
 ## Sanity drift
 
 > Oppdatert: 2026-04-18 | Embedded studio på /studio

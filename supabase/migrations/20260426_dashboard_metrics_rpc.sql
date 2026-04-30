@@ -1,3 +1,4 @@
+-- legacy-accepted: 8-sifret timestamp, deployet til prod 2026-04. Se AGENTS.md.
 -- ============================================================================
 -- RPC: get_dashboard_metrics
 -- Enterprise-grade single-query aggregation for dashboard metrics.

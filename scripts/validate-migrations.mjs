@@ -36,6 +36,15 @@ const MIGRATIONS_DIR = join(process.cwd(), 'supabase', 'migrations');
 
 const LEGACY_PREFIXES = ['001', '002', '003', '004', '005', '006', '007', '999'];
 
+// 8-sifrede timestamps deployet til prod før validator v2.0 — tillates med warning
+const LEGACY_ACCEPTED = new Set([
+  '20260420_fix_pg_net_schema.sql',
+  '20260421_session_archive_and_fifo_pnl.sql',
+  '20260422_drop_legacy_trading_tables.sql',
+  '20260424_sync_balances_on_trade_trigger.sql',
+  '20260426_dashboard_metrics_rpc.sql',
+]);
+
 // Funksjoner som KAN ha flere overloads (whitelist)
 const ALLOWED_OVERLOADS = new Set([]);
 
@@ -316,11 +325,15 @@ async function main() {
     if (LEGACY_PREFIXES.includes(version)) {
       warnings.push(`Legacy-prefix ${version}: ${file} (unngå for nye migrasjoner)`);
     } else if (!isValidTimestamp(version)) {
-      errors.push(
+      const msg =
         `Ugyldig timestamp-prefix "${version}" i ${file}\n` +
         `    MÅ være 14 siffer: YYYYMMDDHHMMSS (f.eks. 20260430193000)\n` +
-        `    Supabase CLI bruker prefix som versjonsnøkkel i schema_migrations.`
-      );
+        `    Supabase CLI bruker prefix som versjonsnøkkel i schema_migrations.`;
+      if (LEGACY_ACCEPTED.has(file)) {
+        warnings.push(`[Legacy-accepted] ${msg}`);
+      } else {
+        errors.push(msg);
+      }
     }
 
     // Les innhold

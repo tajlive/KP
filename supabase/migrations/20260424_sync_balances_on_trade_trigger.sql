@@ -1,3 +1,4 @@
+-- legacy-accepted: 8-sifret timestamp, deployet til prod 2026-04. Se AGENTS.md.
 -- Migration: Extend trigger_update_session_state to sync paper_balance, wallets, and portfolios
 -- Date: 2026-04-24
 -- Author: KIMI
