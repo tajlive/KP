@@ -86,6 +86,44 @@ WHERE created > NOW() - INTERVAL '2 hours' GROUP BY status_code;
 - SSL fix: `rejectUnauthorized: false` i pg-klienten
 - REST fix: `/rpc/exec_sql` (ikke `execute_sql`)
 
+## Migrasjonskonvensjoner (Supabase)
+
+> Oppdatert: 2026-04-30 | `scripts/validate-migrations.mjs` v2.0 | CI + pre-commit integrert
+
+### Filnavnformat
+- **MÅ** bruke 14-sifret timestamp: `YYYYMMDDHHMMSS_beskrivelse.sql`
+- **EKSEMPEL**: `20260430193000_fix_user_index.sql`
+- **FORBUDT**: `20260420_fix.sql` (8 siffer — gir duplikat-versjonskonflikt i schema_migrations)
+- **UNNTAK**: Legacy-migrasjoner (`001_`, `002_`, ..., `999_`) beholdes for historikk
+
+### Hvorfor 14 siffer?
+Supabase CLI bruker `YYYYYMMDDHHMMSS` fra filnavnet som `version` i `supabase_migrations.schema_migrations`. To filer med samme prefix får samme versjon og blokkerer `db push` med `duplicate key value violates unique constraint`.
+
+### Funksjonssignaturer
+- **ALDRIG** la to migrasjoner definere samme funksjon med ulike signaturer
+- **ALLTID** bruk `DROP FUNCTION IF EXISTS navn(param_type, ...)` før `CREATE FUNCTION` hvis du endrer signatur
+- **ALLTID** bruk `CREATE OR REPLACE FUNCTION` for idempotent oppdatering (samme signatur)
+
+### Verktøy
+```bash
+# Valider ALLE migrasjoner
+npm run db:validate-migrations
+
+# Valider kun staged filer (pre-commit)
+node scripts/validate-migrations.mjs --staged
+```
+
+### CI/Hook-integrasjon
+- **Pre-commit**: Kjører automatisk når `supabase/migrations/` endres
+- **GitHub Actions** (db.yml): Kjører på PR og push til main
+- **db-status-gate.mjs**: Kjøres etter validering i CI
+
+### Retningslinjer
+1. Én migrasjon = én ansvarsområde (ikke bland urelaterte endringer)
+2. Migrasjoner skal være idempotente der mulig (`IF EXISTS` / `OR REPLACE`)
+3. Test migrasjoner lokalt før push: `supabase db push --linked --dry-run`
+4. `ANALYZE`-tabellen etter store indeks-endringer
+
 ## Sanity drift
 
 > Oppdatert: 2026-04-18 | Embedded studio på /studio
