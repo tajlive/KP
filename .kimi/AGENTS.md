@@ -88,7 +88,7 @@ WHERE created > NOW() - INTERVAL '2 hours' GROUP BY status_code;
 
 ## Migrasjonskonvensjoner (Supabase)
 
-> Oppdatert: 2026-04-30 | `scripts/validate-migrations.mjs` v2.0 | CI + pre-commit integrert
+> Oppdatert: 2026-04-30 | `scripts/validate-migrations.mjs` v2.1 | CI + pre-commit integrert | Idempotens-guard på plass
 
 ### Filnavnformat
 - **MÅ** bruke 14-sifret timestamp: `YYYYMMDDHHMMSS_beskrivelse.sql`
@@ -104,6 +104,24 @@ Supabase CLI bruker `YYYYYMMDDHHMMSS` fra filnavnet som `version` i `supabase_mi
 - **ALLTID** bruk `DROP FUNCTION IF EXISTS navn(param_type, ...)` før `CREATE FUNCTION` hvis du endrer signatur
 - **ALLTID** bruk `CREATE OR REPLACE FUNCTION` for idempotent oppdatering (samme signatur)
 
+### Idempotens-krav (valideres automatisk)
+
+| Mønster | Korrekt | Feil | Severity (nye filer) |
+|---------|---------|------|---------------------|
+| DROP TABLE | `DROP TABLE IF EXISTS` | `DROP TABLE navn;` | ❌ BLOCK |
+| DROP FUNCTION | `DROP FUNCTION IF EXISTS` | `DROP FUNCTION navn(...);` | ❌ BLOCK |
+| DROP INDEX | `DROP INDEX IF EXISTS` | `DROP INDEX navn;` | ❌ BLOCK |
+| ALTER TABLE DROP COLUMN | — | `ALTER TABLE navn DROP COLUMN kol;` | ❌ BLOCK |
+| CREATE TABLE | `CREATE TABLE IF NOT EXISTS` | `CREATE TABLE navn (...);` | ⚠️ Warning |
+| CREATE FUNCTION | `CREATE OR REPLACE FUNCTION` | `CREATE FUNCTION navn(...);` | ⚠️ Warning |
+| CREATE INDEX | `CREATE INDEX IF NOT EXISTS` | `CREATE INDEX navn ...;` | ⚠️ Warning |
+| TRUNCATE TABLE | — | `TRUNCATE TABLE navn;` | ⚠️ Warning |
+
+**Tre-lags forsvar:**
+1. **Nye filer** (staged / eksplisitt): Destruktiv DDL = hard BLOCK. Idempotens = warning.
+2. **Full scan** (CI main): Historiske feil nedgraderes til warnings (unntatt duplikat-versjoner).
+3. **Pre-commit hook**: Kjører `--staged`, blokkerer commit ved BLOCK-nivå feil.
+
 ### Verktøy
 ```bash
 # Valider ALLE migrasjoner
@@ -111,6 +129,9 @@ npm run db:validate-migrations
 
 # Valider kun staged filer (pre-commit)
 node scripts/validate-migrations.mjs --staged
+
+# Valider spesifikke filer
+node scripts/validate-migrations.mjs supabase/migrations/20990101000000_min_fil.sql
 ```
 
 ### CI/Hook-integrasjon
