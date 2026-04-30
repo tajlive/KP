@@ -100,7 +100,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
               </span>
             </h2>
             <p className="text-kp-text-secondary max-w-xl mx-auto">
-              Estimater fra backtesting 2019–2024. Se hvordan strategien har prestert 
+              Estimater fra backtesting 2019–2026. Se hvordan strategien har prestert 
               i ulike markedssykluser.
             </p>
           </motion.div>
@@ -314,7 +314,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                           Krypto innebærer risiko for tap av kapital.
                         </p>
                         <p>
-                          Estimater fra backtesting 2019–2024 med {estimate.preset.strategyLabel}.
+                          Estimater fra backtesting 2019–2026 med {estimate.preset.strategyLabel}.
                         </p>
                       </div>
                     </div>
@@ -349,7 +349,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                 Klikk "Kjør test" for å se estimert ytelse
               </p>
               <p className="text-sm text-kp-text-tertiary mt-2">
-                Basert på backtesting 2019–2024 • Ingen registrering nødvendig
+                Basert på backtesting 2019–2026 • Ingen registrering nødvendig
               </p>
             </motion.div>
           )}

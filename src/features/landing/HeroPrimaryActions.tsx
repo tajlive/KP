@@ -23,6 +23,7 @@ export function HeroPrimaryActions({
   if (user) {
     return (
       <>
+        <p className="text-muted">Gratis i 14 dager, så kr 199/mnd</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
           <Link
             href={dashboardHref}
@@ -63,6 +64,7 @@ export function HeroPrimaryActions({
 
   return (
     <>
+      <p className="text-muted">Gratis i 14 dager, så kr 199/mnd</p>
       <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
         <Link
           href={signupHref}

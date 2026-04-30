@@ -10,7 +10,7 @@ export function TrustBadges({ language = "no" }: TrustBadgesProps) {
   const partners = [
     { name: "Binance", logo: "B" },
     { name: "TradingView", logo: "TV" },
-    { name: "Coinbase", logo: "C" },
+    { name: "Binance", logo: "B" },
     { name: "ByBit", logo: "BB" },
   ];
 
