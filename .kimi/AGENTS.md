@@ -106,16 +106,16 @@ Supabase CLI bruker `YYYYYMMDDHHMMSS` fra filnavnet som `version` i `supabase_mi
 
 ### Idempotens-krav (valideres automatisk)
 
-| Mønster | Korrekt | Feil | Severity (nye filer) |
-|---------|---------|------|---------------------|
-| DROP TABLE | `DROP TABLE IF EXISTS` | `DROP TABLE navn;` | ❌ BLOCK |
-| DROP FUNCTION | `DROP FUNCTION IF EXISTS` | `DROP FUNCTION navn(...);` | ❌ BLOCK |
-| DROP INDEX | `DROP INDEX IF EXISTS` | `DROP INDEX navn;` | ❌ BLOCK |
-| ALTER TABLE DROP COLUMN | — | `ALTER TABLE navn DROP COLUMN kol;` | ❌ BLOCK |
-| CREATE TABLE | `CREATE TABLE IF NOT EXISTS` | `CREATE TABLE navn (...);` | ⚠️ Warning |
-| CREATE FUNCTION | `CREATE OR REPLACE FUNCTION` | `CREATE FUNCTION navn(...);` | ⚠️ Warning |
-| CREATE INDEX | `CREATE INDEX IF NOT EXISTS` | `CREATE INDEX navn ...;` | ⚠️ Warning |
-| TRUNCATE TABLE | — | `TRUNCATE TABLE navn;` | ⚠️ Warning |
+| Mønster | Korrekt | Feil | Severity (nye filer) | Full scan |
+|---------|---------|------|---------------------|-----------|
+| DROP TABLE | `DROP TABLE IF EXISTS` | `DROP TABLE navn;` | ❌ BLOCK | ⚠️ Warning |
+| DROP FUNCTION | `DROP FUNCTION IF EXISTS` | `DROP FUNCTION navn(...);` | ❌ BLOCK | ⚠️ Warning |
+| DROP INDEX | `DROP INDEX IF EXISTS` | `DROP INDEX navn;` | ❌ BLOCK | ⚠️ Warning |
+| ALTER TABLE DROP COLUMN | — | `ALTER TABLE navn DROP COLUMN kol;` | ❌ BLOCK | ⚠️ Warning |
+| CREATE TABLE | `CREATE TABLE IF NOT EXISTS` | `CREATE TABLE navn (...);` | ❌ BLOCK | ⚠️ Warning |
+| CREATE FUNCTION | `CREATE OR REPLACE FUNCTION` | `CREATE FUNCTION navn(...);` | ❌ BLOCK | ⚠️ Warning |
+| CREATE INDEX | `CREATE INDEX IF NOT EXISTS` | `CREATE INDEX navn ...;` | ❌ BLOCK | ⚠️ Warning |
+| TRUNCATE TABLE | — | `TRUNCATE TABLE navn;` | ❌ BLOCK | ⚠️ Warning |
 
 **Tre-lags forsvar:**
 1. **Nye filer** (staged / eksplisitt): Destruktiv DDL = hard BLOCK. Idempotens = warning.
