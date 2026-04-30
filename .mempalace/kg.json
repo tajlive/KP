@@ -1415,6 +1415,11 @@
       "predicate": "status",
       "object": "total-30-facts-15-historical-15-current",
       "validFrom": "2026-04-29T13:15:00.000Z"
+    },
+    {
+      "predicate": "capital-source",
+      "object": "get_dashboard_metrics-RPC",
+      "validFrom": "2026-04-29T15:20:33.693Z"
     }
   ],
   "kimi-cli": [
@@ -1649,6 +1654,26 @@
       "predicate": "onboarding_completed",
       "object": "true",
       "validFrom": "2026-04-29T14:40:28.972Z"
+    },
+    {
+      "predicate": "dashboard-total-capital",
+      "object": "101248418.89-NOK",
+      "validFrom": "2026-04-29T15:20:33.693Z"
+    },
+    {
+      "predicate": "portfolio-wallet-balance",
+      "object": "94995-NOK",
+      "validFrom": "2026-04-29T15:20:33.693Z"
+    },
+    {
+      "predicate": "total-return",
+      "object": "0.0034-percent",
+      "validFrom": "2026-04-29T15:20:33.693Z"
+    },
+    {
+      "predicate": "realized-pnl",
+      "object": "71000-NOK",
+      "validFrom": "2026-04-29T15:20:33.693Z"
     }
   ],
   "quality-gates": [
@@ -1673,6 +1698,16 @@
       "predicate": "fixed",
       "object": "error-detail-in-fallback-UI",
       "validFrom": "2026-04-29T14:55:09.129Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "capital-mismatch-dashboard-vs-portfolio",
+      "validFrom": "2026-04-29T15:20:33.693Z"
+    },
+    {
+      "predicate": "now-shows",
+      "object": "total-capital-from-trading-sessions",
+      "validFrom": "2026-04-29T15:20:33.693Z"
     }
   ],
   "api-trading-position": [
@@ -1699,6 +1734,75 @@
       "predicate": "fix-status",
       "object": "robust-error-handling-deployed",
       "validFrom": "2026-04-29T14:55:09.130Z"
+    },
+    {
+      "predicate": "capital-source",
+      "object": "trading-sessions-sum-active-stopped",
+      "validFrom": "2026-04-29T15:20:33.693Z"
+    }
+  ],
+  "auto-trading": [
+    {
+      "predicate": "status",
+      "object": "enabled-for-tomarnejensen",
+      "validFrom": "2026-04-29T15:20:33.693Z"
+    },
+    {
+      "predicate": "created-sessions",
+      "object": "4-new-today-2026-04-29",
+      "validFrom": "2026-04-29T15:20:33.693Z"
+    }
+  ],
+  "mac-cleanup": [
+    {
+      "predicate": "removed",
+      "object": "auto-cleanup-cron.sh from crontab (broken hourly cron)",
+      "validFrom": "2026-04-30T07:19:58.593Z"
+    },
+    {
+      "predicate": "deleted",
+      "object": ".next/ cache (2GB freed)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "removed",
+      "object": "13 inactive LaunchAgents (PostgreSQL, Ollama, GitHub runner, MCP bridge, OpenClaw, Perplexity, Edge updater, Vault)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "emptied",
+      "object": "cron-mail /var/mail/taj (1.4MB error messages)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "deleted",
+      "object": "Ollama models (~11GB freed, now 12K)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "stopped",
+      "object": "Vault dev server (PID 1836)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "stopped",
+      "object": "OpenClaw processes (PID 1819)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "retained",
+      "object": "daily-health-check.sh cron (02:00 daily)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "retained",
+      "object": "monthly-backup.sh cron (1st of month 04:00)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
+    },
+    {
+      "predicate": "retained",
+      "object": "mempalace clean cron (Sunday 03:00)",
+      "validFrom": "2026-04-30T07:19:58.595Z"
     }
   ]
 }

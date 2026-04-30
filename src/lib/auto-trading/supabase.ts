@@ -196,6 +196,24 @@ export async function createSession(
   startingCapital: number,
   allocatedCapitalPct: number,
 ): Promise<AutoTradingSession | null> {
+  // Archive existing active sessions for this user to prevent duplicate
+  // active sessions (root cause of capital mismatch).
+  const { error: archiveError } = await supabase
+    .from("trading_sessions")
+    .update({
+      status: "stopped",
+      stopped_at: new Date().toISOString(),
+      archived: true,
+      archived_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .is("archived", false);
+
+  if (archiveError) {
+    console.error("Error archiving old sessions:", archiveError);
+  }
+
   const { data, error } = await supabase
     .from("trading_sessions") // ← var: auto_trading_sessions
     .insert({
