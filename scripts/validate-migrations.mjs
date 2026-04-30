@@ -373,10 +373,10 @@ async function main() {
 
     const idempotencyIssues = checkIdempotency(content, file);
     for (const issue of idempotencyIssues) {
-      // Idempotens-issues er advarsler (warnings), ikke hard block
-      // Unntak: TRUNCATE kan være kritisk — behold som advarsel i første omgang
-      warnings.push(
-        `Idempotens/advarsel i ${file}:${issue.line}\n` +
+      // Idempotens-issues behandles som errors (BLOCK for nye filer)
+      // Nedgraderes til [Historisk] warning i full scan via isFullScan-logikken
+      errors.push(
+        `Idempotens i ${file}:${issue.line}\n` +
         `    ${issue.message}\n` +
         `    Fix: ${issue.fix}`
       );
@@ -390,17 +390,17 @@ async function main() {
   let displayWarnings = warnings;
 
   if (isFullScan) {
+    const alwaysBlock = [];
     const historicalErrors = [];
-    const currentErrors = [];
     for (const e of errors) {
-      // Duplikat-versjoner er ALLTID blocking
+      // Duplikat-versjoner er ALLTID blocking uavhengig av full scan
       if (e.includes('Duplikat migrasjonsversjon')) {
-        currentErrors.push(e);
+        alwaysBlock.push(e);
       } else {
         historicalErrors.push(e);
       }
     }
-    displayErrors = currentErrors;
+    displayErrors = alwaysBlock;
     displayWarnings = [...warnings, ...historicalErrors.map((e) => `[Historisk] ${e}`)];
   }
 
