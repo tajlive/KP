@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 /**
- * 🏛️ MemPalace Status — v3.1.1
+ * 🏛️ MemPalace Status — v3.2.0
  * Viser MemPalace-status ved KIMI-oppstart.
  * Leser .mempalace/kg.json og .kimi/diary.jsonl direkte.
+ * Skriver ACTIVE_SESSION med session_id for idempotent exit-flush.
  */
 
-import { readFileSync, existsSync, statSync } from 'fs';
+import { readFileSync, existsSync, statSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 
 const root = process.cwd();
 const kgPath = resolve(root, '.mempalace/kg.json');
 const diaryPath = resolve(root, '.kimi/diary.jsonl');
+const activeSession = resolve(process.env.HOME || '/Users/taj', '.kimi/ACTIVE_SESSION');
 
 function formatDate(iso) {
   if (!iso) return 'N/A';
@@ -18,10 +20,15 @@ function formatDate(iso) {
   return d.toLocaleString('no-NO', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+function nowISO() {
+  return new Date().toISOString();
+}
+
 // ─── KG STATUS ───
 let entityCount = 0;
 let factCount = 0;
 let kgAge = 'N/A';
+let kgSize = 0;
 
 if (existsSync(kgPath)) {
   try {
@@ -30,6 +37,7 @@ if (existsSync(kgPath)) {
     factCount = Object.values(kg).reduce((sum, facts) => sum + (Array.isArray(facts) ? facts.length : 0), 0);
     const stat = statSync(kgPath);
     kgAge = formatDate(stat.mtime);
+    kgSize = stat.size;
   } catch (e) {
     // ignore
   }
@@ -51,19 +59,29 @@ if (existsSync(diaryPath)) {
   }
 }
 
+// ─── SESSION ID ───
+const sessionId = `kp-${Date.now()}-${process.pid}`;
+try {
+  mkdirSync(resolve(activeSession, '..'), { recursive: true });
+  writeFileSync(activeSession, `start_timestamp=${Date.now()}\nsession_id=${sessionId}\n`, 'utf8');
+} catch {
+  // ignore — session tracking is best-effort
+}
+
 // ─── PRINT ───
 console.log('');
 console.log('🏛️  MemPalace v3.1.1');
 console.log('───────────────────────');
 console.log(`  Entities: ${entityCount}  |  Facts: ${factCount}`);
-console.log(`  KG last saved: ${kgAge}`);
-console.log(`  Diary entries: ${diaryCount}`);
+console.log(`  KG:       ${kgSize.toLocaleString('no-NO')} bytes, saved ${kgAge}`);
+console.log(`  Diary:    ${diaryCount} entries`);
 if (lastEntry) {
   const status = lastEntry.status || '?';
   const type = lastEntry.type || '?';
   const task = lastEntry.task || lastEntry.desc || '?';
   const rating = lastEntry.rating ? '★'.repeat(lastEntry.rating) : '';
-  console.log(`  Last: [${type}] ${task.slice(0, 40)}${task.length > 40 ? '...' : ''} ${status} ${rating}`);
+  console.log(`  Last:     [${type}] ${task.slice(0, 40)}${task.length > 40 ? '...' : ''} ${status} ${rating}`);
 }
+console.log(`  Session:  ${sessionId}`);
 console.log('───────────────────────');
 console.log('');
