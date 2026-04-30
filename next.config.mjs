@@ -262,8 +262,8 @@ const nextConfig = {
       { source: "/dashbord", destination: "/no/dashboard", permanent: true },
       { source: "/:locale/dashbord", destination: "/:locale/dashboard", permanent: true },
       { source: "/marketplace", destination: "/no/marketplace", permanent: true },
-      // /settings handled by middleware → /profile?tab=settings (linje 91)
-      // Fallback if middleware is bypassed:
+      // /settings handled by proxy → /profile?tab=settings (linje 91)
+      // Fallback if proxy is bypassed:
       { source: "/settings", destination: "/no/profile?tab=settings", permanent: true },
       { source: "/om", destination: "/no/om-oss", permanent: true },
       { source: "/trading", destination: "/no/dashboard/trade", permanent: true },
@@ -272,8 +272,8 @@ const nextConfig = {
       // Legacy auto-trade paths → dashboard/auto-trade (direct, no chain)
       { source: "/auto-trade", destination: "/no/dashboard/auto-trade", permanent: true },
       { source: "/auto-trade/:path*", destination: "/no/dashboard/auto-trade", permanent: true },
-      // /auto-trading and /auto-trading-ai handled by middleware CANONICAL_REDIRECTS
-      // (middleware runs first → /dashboard/auto-trade). No need to duplicate here.
+      // /auto-trading and /auto-trading-ai handled by proxy CANONICAL_REDIRECTS
+      // (proxy runs first → /dashboard/auto-trade). No need to duplicate here.
 
       // Consolidated routes
       { source: "/admin-dashboard", destination: "/admin", permanent: true },
@@ -316,14 +316,14 @@ const nextConfig = {
   },
 
   // Headers (optimized for security and performance)
-  // NOTE: Content-Security-Policy is now handled by middleware (src/middleware.ts)
+  // NOTE: Content-Security-Policy is now handled by proxy (src/proxy.ts)
   // with nonce-based approach instead of 'unsafe-inline' for enhanced security
   async headers() {
     return [
       {
         source: "/:path*",
         headers: [
-          // CSP header removed - handled by middleware with nonce-based approach
+          // CSP header removed - handled by proxy with nonce-based approach
           {
             key: "X-Frame-Options",
             value: "DENY",
