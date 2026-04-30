@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 /**
  * 🏛️ MemPalace Exit Flush — v3.2.0
- * Idempotent, verifiserende, structured-logging exit-save for MemPalace MCP.
+ * Idempotent, session-bundet, verifiserende, structured-logging exit-save.
  *
  * Designprinsipper:
- * - Idempotens: ACTIVE_SESSION er atomic lock; fjernes kun ved første vellykket flush
+ * - Session-binding: leser /tmp/kimi_session.json for session_id + started_at
+ * - Idempotens: /tmp/kimi_flush_done_<session_id> er atomic lock
  * - Verifisering: kg.json + diary.jsonl sjekkes for eksistens, størrelse, mtime, parsebarhet
- * - Logging: strukturert JSONL til ~/.kimi/logs/mempalace.jsonl
- * - Defensiv: aldri kræsj; alltid logg; alltid returner 0
+ * - MCP-shutdown: SIGTERM til MemPalace MCP-prosess
+ * - Logging: strukturert JSONL til .kimi/logs/mempalace.jsonl
+ * - Defensiv: aldri kræsj; alltid logg; returnerer 0/1/2
  */
 
 import {
@@ -17,18 +19,18 @@ import {
   writeFileSync,
   appendFileSync,
   mkdirSync,
-  unlinkSync,
 } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
+const SESSION_FILE = "/tmp/kimi_session.json";
+const LOG_PATH = resolve(root, ".kimi/logs/mempalace.jsonl");
 const KG_PATH = resolve(root, ".mempalace/kg.json");
 const DIARY_PATH = resolve(root, ".kimi/diary.jsonl");
-const ACTIVE_SESSION = resolve(process.env.HOME || "/Users/taj", ".kimi/ACTIVE_SESSION");
-const LOG_PATH = resolve(process.env.HOME || "/Users/taj", ".kimi/logs/mempalace.jsonl");
 
 // ─── UTILS ───
 
@@ -49,100 +51,108 @@ function writeLog(entry) {
   try {
     appendFileSync(LOG_PATH, JSON.stringify(entry) + "\n", "utf8");
   } catch {
-    /* ignore — logging must not break flush */
+    /* ignore */
   }
 }
 
-function parseSessionFile() {
-  if (!existsSync(ACTIVE_SESSION)) return null;
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}kb`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)}mb`;
+}
+
+function formatAge(ms) {
+  if (ms < 1000) return `${Math.round(ms)}ms`;
+  if (ms < 60000) return `${Math.round(ms / 1000)}s`;
+  return `${Math.round(ms / 60000)}m`;
+}
+
+function findMempalacePids() {
   try {
-    const raw = readFileSync(ACTIVE_SESSION, "utf8").trim();
-    const lines = raw.split("\n");
-    const result = {};
-    for (const line of lines) {
-      const [k, ...v] = line.split("=");
-      if (k && v.length > 0) result[k.trim()] = v.join("=").trim();
+    const output = execSync(
+      "ps aux | grep -i mempalace | grep -v grep | grep -v 'exit-flush' | grep -v 'test-' | awk '{print $2}'",
+      { encoding: "utf8", timeout: 1000 }
+    );
+    return output
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => !isNaN(n) && n > 0);
+  } catch {
+    return [];
+  }
+}
+
+function sendSigtermToMcp() {
+  const pids = findMempalacePids();
+  let killed = false;
+  for (const pid of pids) {
+    try {
+      process.kill(pid, "SIGTERM");
+      killed = true;
+    } catch {
+      // ignore
     }
-    return result.start_timestamp && result.session_id ? result : null;
-  } catch {
-    return null;
   }
+  if (killed) {
+    try {
+      execSync("sleep 0.5", { timeout: 2000 });
+    } catch {
+      // ignore
+    }
+  }
+  return { pids, killed };
 }
 
-function removeSessionFile() {
-  try {
-    if (existsSync(ACTIVE_SESSION)) unlinkSync(ACTIVE_SESSION);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function verifyJsonFile(path, minSize = 2) {
+function verifyFile(path, name, startedAt) {
   const out = {
+    name,
     exists: false,
     size: 0,
     age_ms: null,
-    parseable: false,
-    entities: null,
+    valid: false,
+    updated_this_session: false,
     error: null,
   };
+
   if (!existsSync(path)) {
-    out.error = "file_not_found";
+    out.error = "not_found";
     return out;
   }
   out.exists = true;
+
   const stat = statSync(path);
   out.size = stat.size;
   out.age_ms = Date.now() - stat.mtimeMs;
-  if (stat.size < minSize) {
-    out.error = "file_too_small";
+
+  if (stat.size === 0) {
+    out.error = "empty_file";
     return out;
   }
+
+  if (startedAt && stat.mtimeMs > startedAt) {
+    out.updated_this_session = true;
+  }
+
   try {
     const data = readFileSync(path, "utf8");
-    const parsed = JSON.parse(data);
-    out.parseable = true;
-    out.entities = Object.keys(parsed).length;
-  } catch (e) {
-    out.error = `parse_error: ${e.message}`;
-  }
-  return out;
-}
-
-function verifyJsonlFile(path, minSize = 2) {
-  const out = {
-    exists: false,
-    size: 0,
-    age_ms: null,
-    parseable: false,
-    lines: null,
-    lastEntry: null,
-    error: null,
-  };
-  if (!existsSync(path)) {
-    out.error = "file_not_found";
-    return out;
-  }
-  out.exists = true;
-  const stat = statSync(path);
-  out.size = stat.size;
-  out.age_ms = Date.now() - stat.mtimeMs;
-  if (stat.size < minSize) {
-    out.error = "file_too_small";
-    return out;
-  }
-  try {
-    const data = readFileSync(path, "utf8").trim();
-    const lines = data.split("\n").filter(Boolean);
-    out.lines = lines.length;
-    if (lines.length > 0) {
-      out.lastEntry = JSON.parse(lines[lines.length - 1]);
-      out.parseable = true;
+    if (path.endsWith(".json")) {
+      JSON.parse(data);
+    } else if (path.endsWith(".jsonl")) {
+      const lines = data.trim().split("\n").filter(Boolean);
+      if (lines.length === 0) {
+        out.error = "no_lines";
+        return out;
+      }
+      // Verify last line is valid JSON
+      JSON.parse(lines[lines.length - 1]);
     }
+    out.valid = true;
   } catch (e) {
-    out.error = `parse_error: ${e.message}`;
+    out.error = `corrupt: ${e.message}`;
   }
+
   return out;
 }
 
@@ -150,94 +160,134 @@ function verifyJsonlFile(path, minSize = 2) {
 
 const start = Date.now();
 const pid = process.pid;
-const source = process.env.MEMPALACE_FLUSH_SOURCE || "unknown";
 
-const session = parseSessionFile();
-
-// Idempotens: ingen ACTIVE_SESSION = allerede flushed
-if (!session) {
-  const entry = {
-    ts: nowISO(),
-    phase: "exit",
-    status: "noop",
-    duration_ms: Date.now() - start,
-    source,
-    pid,
-    session_id: null,
-    file_state: null,
-    error: "session_already_flushed_or_never_started",
-  };
-  writeLog(entry);
-  console.log("🏛️  MemPalace Exit Flush — NOOP (session already flushed or never started)");
-  process.exit(0);
+// a) Les session-fil
+let session = null;
+if (existsSync(SESSION_FILE)) {
+  try {
+    session = JSON.parse(readFileSync(SESSION_FILE, "utf8"));
+  } catch (e) {
+    session = null;
+  }
 }
 
-const sessionId = session.session_id || "unknown";
-const sessionStart = parseInt(session.start_timestamp, 10) || 0;
+const sessionId = session?.session_id || null;
+const startedAt = session?.started_at || 0;
 
-// Verifiser filer
-const kg = verifyJsonFile(KG_PATH);
-const diary = verifyJsonlFile(DIARY_PATH);
+// b) IDEMPOTENS-guard
+if (sessionId) {
+  const doneMarker = `/tmp/kimi_flush_done_${sessionId}`;
+  if (existsSync(doneMarker)) {
+    writeLog({
+      ts: nowISO(),
+      phase: "exit",
+      session_id: sessionId,
+      pid,
+      duration_ms: Date.now() - start,
+      status: "ok",
+      files: [],
+      idempotent_skip: true,
+    });
+    console.log("🏛️  MemPalace Exit Flush — already flushed this session");
+    process.exit(0);
+  }
+  try {
+    writeFileSync(doneMarker, "", "utf8");
+  } catch {
+    // ignore — best effort
+  }
+}
 
-// Sjekk at filer er nyere enn session start
-const kgNewerThanSession = kg.age_ms !== null && statSync(KG_PATH).mtimeMs >= sessionStart;
-const diaryNewerThanSession = diary.age_ms !== null && statSync(DIARY_PATH).mtimeMs >= sessionStart;
+// c) MemPalace MCP SIGTERM
+const mcpStatus = sendSigtermToMcp();
 
-// Bestem status
+// d) Verifisering
+const files = [
+  verifyFile(KG_PATH, "KG", startedAt),
+  verifyFile(DIARY_PATH, "Diary", startedAt),
+];
+
+const allExist = files.every((f) => f.exists);
+const allValid = files.every((f) => f.valid);
+const allUpdated = files.every((f) => f.updated_this_session);
+
 let status = "ok";
 let error = null;
-if (!kg.exists || !diary.exists) {
-  status = "warn";
-  error = `kg_exists=${kg.exists}, diary_exists=${diary.exists}`;
-} else if (!kg.parseable || !diary.parseable) {
-  status = "error";
-  error = `kg_parseable=${kg.parseable}, diary_parseable=${diary.parseable}`;
-} else if (!kgNewerThanSession && !diaryNewerThanSession) {
-  status = "warn";
-  error = "files_older_than_session_start";
+
+if (!session) {
+  status = "degraded";
+  error = "session_file_missing";
+} else if (!allExist) {
+  status = "failed";
+  error = "missing_files";
+} else if (!allValid) {
+  status = "failed";
+  error = "corrupt_files";
+} else if (!allUpdated) {
+  status = "failed";
+  error = "files_not_updated_this_session";
 }
 
-// Fjern ACTIVE_SESSION (atomic unlock)
-const removed = removeSessionFile();
-if (!removed) {
-  status = status === "ok" ? "warn" : status;
-  error = error ? `${error}; failed_to_remove_active_session` : "failed_to_remove_active_session";
-}
+const durationMs = Date.now() - start;
 
-// Logg
-const entry = {
+// e) Structured logging
+writeLog({
   ts: nowISO(),
   phase: "exit",
-  status,
-  duration_ms: Date.now() - start,
-  source,
-  pid,
   session_id: sessionId,
-  file_state: {
-    kg_exists: kg.exists,
-    kg_size: kg.size,
-    kg_age_ms: kg.age_ms,
-    kg_entities: kg.entities,
-    kg_newer_than_session: kgNewerThanSession,
-    diary_exists: diary.exists,
-    diary_size: diary.size,
-    diary_age_ms: diary.age_ms,
-    diary_lines: diary.lines,
-    diary_newer_than_session: diaryNewerThanSession,
-  },
-  error,
-};
-writeLog(entry);
+  pid,
+  duration_ms: durationMs,
+  status,
+  files: files.map((f) => ({
+    name: f.name,
+    exists: f.exists,
+    size: f.size,
+    age_ms: f.age_ms,
+    valid: f.valid,
+    error: f.error,
+  })),
+  idempotent_skip: false,
+  mcp_killed: mcpStatus.killed,
+  mcp_pids: mcpStatus.pids,
+});
 
-// Console output
+// f) Human-readable output
+const timeStr = new Date().toLocaleTimeString("no-NO", {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
+
 console.log("");
-console.log("🏛️  MemPalace Exit Flush");
-console.log(`   Session: ${sessionId}`);
-console.log(`   Source:  ${source}`);
-console.log(`   Status:  ${status}${error ? ` (${error})` : ""}`);
-console.log("   ───────────────────────");
-console.log(`   KG:      ${kg.exists ? "✅" : "❌"} ${kg.size.toLocaleString("no-NO")} bytes, ${kg.entities ?? "?"} entities${kg.age_ms !== null ? ` (${Math.round(kg.age_ms / 1000)}s old)` : ""}`);
-console.log(`   Diary:   ${diary.exists ? "✅" : "❌"} ${diary.size.toLocaleString("no-NO")} bytes, ${diary.lines ?? "?"} lines${diary.age_ms !== null ? ` (${Math.round(diary.age_ms / 1000)}s old)` : ""}`);
+console.log(`🏛️  MemPalace Exit Flush — ${timeStr}`);
+console.log("─────────────────────────────");
+console.log(`  Session: ${sessionId || "unknown"}`);
+console.log(`  MCP:     ${mcpStatus.killed ? "SIGTERM sent" : "not running"}`);
+
+for (const f of files) {
+  const icon = f.valid && f.updated_this_session ? "✅" : f.exists ? "⚠️" : "❌";
+  const info = f.exists
+    ? `${formatBytes(f.size)}, ${formatAge(f.age_ms)} old`
+    : "not found";
+  const extra = [];
+  if (!f.updated_this_session && f.exists) extra.push("not updated this session");
+  if (f.error) extra.push(f.error);
+  const extraStr = extra.length ? ` | ${extra.join(", ")}` : "";
+  console.log(`  ${f.name}:   ${icon} ${info}${extraStr}`);
+}
+
+console.log("──────────────────────────");
+
+if (status === "ok") {
+  console.log("✅ MemPalace safe — exiting");
+} else if (status === "degraded") {
+  console.log("⚠️  MemPalace degraded — session file missing, continuing");
+} else {
+  console.log("❌ MemPalace flush FAILED — check .kimi/logs/mempalace.jsonl");
+}
 console.log("");
 
+// Returkoder
+if (!session) process.exit(2);
+if (status === "failed") process.exit(1);
 process.exit(0);
