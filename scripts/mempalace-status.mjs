@@ -2,43 +2,86 @@
 /**
  * 🏛️ MemPalace Status — v3.2.0
  * Viser MemPalace-status ved KIMI-oppstart.
- * Leser .mempalace/kg.json og .kimi/diary.jsonl direkte.
- * Skriver ACTIVE_SESSION med session_id for idempotent exit-flush.
+ * Skriver session-fil, viser KG/diary-stats, MCP-servere.
+ * Logger til .kimi/logs/mempalace.jsonl med phase: "start".
  */
 
-import { readFileSync, existsSync, statSync, writeFileSync, mkdirSync } from 'fs';
-import { resolve } from 'path';
+import { readFileSync, existsSync, statSync, writeFileSync, appendFileSync, mkdirSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
-const root = process.cwd();
-const kgPath = resolve(root, '.mempalace/kg.json');
-const diaryPath = resolve(root, '.kimi/diary.jsonl');
-const activeSession = resolve(process.env.HOME || '/Users/taj', '.kimi/ACTIVE_SESSION');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = resolve(__dirname, "..");
+
+const kgPath = resolve(root, ".mempalace/kg.json");
+const diaryPath = resolve(root, ".kimi/diary.jsonl");
+const mcpConfigPath = resolve(process.env.HOME || "/Users/taj", ".kimi/mcp.json");
+const logPath = resolve(root, ".kimi/logs/mempalace.jsonl");
+const sessionFile = "/tmp/kimi_session.json";
 
 function formatDate(iso) {
-  if (!iso) return 'N/A';
+  if (!iso) return "N/A";
   const d = new Date(iso);
-  return d.toLocaleString('no-NO', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString("no-NO", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function nowISO() {
   return new Date().toISOString();
 }
 
+function ensureDir(p) {
+  try {
+    mkdirSync(dirname(p), { recursive: true });
+  } catch {
+    /* ignore */
+  }
+}
+
+function writeLog(entry) {
+  ensureDir(logPath);
+  try {
+    appendFileSync(logPath, JSON.stringify(entry) + "\n", "utf8");
+  } catch {
+    /* ignore */
+  }
+}
+
+// ─── SESSION START (inline, samme logikk som mempalace-session-start.mjs) ───
+const sessionId = crypto.randomUUID();
+const startedAt = Date.now();
+const pid = process.pid;
+
+const sessionData = { session_id: sessionId, started_at: startedAt, pid };
+try {
+  writeFileSync(sessionFile, JSON.stringify(sessionData, null, 2), "utf8");
+} catch {
+  // best effort
+}
+
 // ─── KG STATUS ───
 let entityCount = 0;
 let factCount = 0;
-let kgAge = 'N/A';
+let kgAge = "N/A";
 let kgSize = 0;
 
 if (existsSync(kgPath)) {
   try {
-    const kg = JSON.parse(readFileSync(kgPath, 'utf8'));
+    const kg = JSON.parse(readFileSync(kgPath, "utf8"));
     entityCount = Object.keys(kg).length;
-    factCount = Object.values(kg).reduce((sum, facts) => sum + (Array.isArray(facts) ? facts.length : 0), 0);
+    factCount = Object.values(kg).reduce(
+      (sum, facts) => sum + (Array.isArray(facts) ? facts.length : 0),
+      0
+    );
     const stat = statSync(kgPath);
     kgAge = formatDate(stat.mtime);
     kgSize = stat.size;
-  } catch (e) {
+  } catch {
     // ignore
   }
 }
@@ -49,39 +92,68 @@ let lastEntry = null;
 
 if (existsSync(diaryPath)) {
   try {
-    const lines = readFileSync(diaryPath, 'utf8').trim().split('\n').filter(Boolean);
+    const lines = readFileSync(diaryPath, "utf8")
+      .trim()
+      .split("\n")
+      .filter(Boolean);
     diaryCount = lines.length;
     if (lines.length > 0) {
       lastEntry = JSON.parse(lines[lines.length - 1]);
     }
-  } catch (e) {
+  } catch {
     // ignore
   }
 }
 
-// ─── SESSION ID ───
-const sessionId = `kp-${Date.now()}-${process.pid}`;
+// ─── MCP SERVERE ───
+let mcpServers = [];
 try {
-  mkdirSync(resolve(activeSession, '..'), { recursive: true });
-  writeFileSync(activeSession, `start_timestamp=${Date.now()}\nsession_id=${sessionId}\n`, 'utf8');
+  if (existsSync(mcpConfigPath)) {
+    const mcpConfig = JSON.parse(readFileSync(mcpConfigPath, "utf8"));
+    // Støtter flere formater: { mcpServers: {} }, { servers: {} }, etc.
+    const servers =
+      mcpConfig.mcpServers ||
+      mcpConfig.servers ||
+      mcpConfig.MCPServers ||
+      {};
+    mcpServers = Object.keys(servers).filter((k) => servers[k]);
+  }
 } catch {
-  // ignore — session tracking is best-effort
+  // ignore
 }
 
+// ─── LOGG START ───
+writeLog({
+  ts: nowISO(),
+  phase: "start",
+  session_id: sessionId,
+  pid,
+  status: "ok",
+  stats: {
+    entities: entityCount,
+    facts: factCount,
+    diary_entries: diaryCount,
+    mcp_servers: mcpServers.length,
+  },
+});
+
 // ─── PRINT ───
-console.log('');
-console.log('🏛️  MemPalace v3.1.1');
-console.log('───────────────────────');
+console.log("");
+console.log("🏛️  MemPalace v3.2.0");
+console.log("───────────────────────");
 console.log(`  Entities: ${entityCount}  |  Facts: ${factCount}`);
-console.log(`  KG:       ${kgSize.toLocaleString('no-NO')} bytes, saved ${kgAge}`);
+console.log(`  KG:       ${kgSize.toLocaleString("no-NO")} bytes, saved ${kgAge}`);
 console.log(`  Diary:    ${diaryCount} entries`);
 if (lastEntry) {
-  const status = lastEntry.status || '?';
-  const type = lastEntry.type || '?';
-  const task = lastEntry.task || lastEntry.desc || '?';
-  const rating = lastEntry.rating ? '★'.repeat(lastEntry.rating) : '';
-  console.log(`  Last:     [${type}] ${task.slice(0, 40)}${task.length > 40 ? '...' : ''} ${status} ${rating}`);
+  const status = lastEntry.status || "?";
+  const type = lastEntry.type || "?";
+  const task = lastEntry.task || lastEntry.desc || "?";
+  const rating = lastEntry.rating ? "★".repeat(lastEntry.rating) : "";
+  console.log(
+    `  Last:     [${type}] ${task.slice(0, 40)}${task.length > 40 ? "..." : ""} ${status} ${rating}`
+  );
 }
+console.log(`  MCP:      ${mcpServers.length} server${mcpServers.length === 1 ? "" : "e"}${mcpServers.length > 0 ? " (" + mcpServers.join(", ") + ")" : ""}`);
 console.log(`  Session:  ${sessionId}`);
-console.log('───────────────────────');
-console.log('');
+console.log("───────────────────────");
+console.log("");
