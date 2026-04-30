@@ -42,12 +42,42 @@ env:
 
 jobs:
   # ═══════════════════════════════════════════════════════════════
+  # MIGRATION VALIDATE — Lokale sjekker uten DB-tilkobling
+  # ═══════════════════════════════════════════════════════════════
+  validate:
+    name: 🔒 Migrasjonsvalidering
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: 🔒 Valider migrasjoner
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # På PR: sjekk kun endrede migrasjonsfiler
+            git fetch origin ${{ github.base_ref }} --depth=1
+            CHANGED=$(git diff --name-only origin/${{ github.base_ref }} -- supabase/migrations/ | xargs -I {} basename {})
+            if [ -n "$CHANGED" ]; then
+              echo "🔍 Sjekker endrede migrasjoner:"
+              echo "$CHANGED"
+              node scripts/validate-migrations.mjs $CHANGED
+            else
+              echo "✅ Ingen migrasjonsendringer i PR"
+            fi
+          else
+            # På push til main: sjekk alle
+            node scripts/validate-migrations.mjs
+          fi
+
+  # ═══════════════════════════════════════════════════════════════
   # DB STATUS — Sjekker migrasjonsstatus
   # ═══════════════════════════════════════════════════════════════
   status:
     name: 📊 DB Status
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: validate
     
     steps:
       - uses: actions/checkout@v5

@@ -1,56 +1,281 @@
 #!/usr/bin/env node
 /**
- * Validerer migrasjonsfiler uten DB-tilkobling.
- * Sjekker: unike versjoner, filnavnformat (YYYYMMDDHHMMSS_navn.sql), grunnleggende SQL.
+ * 🔒 Migrasjonsvalidator — v2.0
  *
- * Brukes i CI (pr-check) når supabase/migrations/ endres.
+ * Sjekker UTEN DB-tilkobling:
+ * 1. Filnavnformat: MÅ være YYYYMMDDHHMMSS_beskrivelse.sql (14 siffer)
+ * 2. Unike versjoner: Ingen duplikate timestamp-prefix
+ * 3. Funksjonskollisjoner: Samme funksjonsnavn med ulike signaturer på tvers av filer
+ * 4. SQL-kvalitet: Ikke tomme filer, ingen binært innhold
+ *
+ * Brukes i:
+ *   - CI (GitHub Actions db.yml)
+ *   - Pre-commit hook
+ *   - Pre-push hook
+ *   - Manuelt: npm run db:validate-migrations
+ *
+ * Bruk:
+ *   node scripts/validate-migrations.mjs              # Sjekk ALLE
+ *   node scripts/validate-migrations.mjs --staged     # Sjekk kun staged filer
+ *   node scripts/validate-migrations.mjs file1.sql    # Sjekk spesifikke filer
+ *
+ * Exit-koder:
+ *   0 = alt OK
+ *   1 = valideringsfeil
  */
 
 import { readdir, readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, basename } from 'path';
+import { spawnSync } from 'child_process';
 
 const MIGRATIONS_DIR = join(process.cwd(), 'supabase', 'migrations');
 
-// Aksepterer både YYYYMMDDHHMMSS_navn.sql og YYYYMMDD_navn.sql, samt legacy (001_, 999_)
-const VERSION_REGEX = /^(\d+)_[\w-]+\.sql$/;
+// ─── KONFIGURASJON ───
+
+const LEGACY_PREFIXES = ['001', '002', '003', '004', '005', '006', '007', '999'];
+
+// Funksjoner som KAN ha flere overloads (whitelist)
+const ALLOWED_OVERLOADS = new Set([]);
+
+// ─── HJELPEFUNKSJONER ───
+
+function getStagedMigrationFiles() {
+  const result = spawnSync('git', ['diff', '--cached', '--name-only', '--diff-filter=ACMR'], {
+    encoding: 'utf8',
+  });
+  return (result.stdout || '')
+    .split('\n')
+    .filter((f) => f.startsWith('supabase/migrations/') && f.endsWith('.sql'))
+    .map((f) => basename(f));
+}
+
+function getAllMigrationFiles() {
+  return readdir(MIGRATIONS_DIR).then((files) =>
+    files.filter((f) => f.endsWith('.sql'))
+  );
+}
+
+function extractVersion(filename) {
+  const m = filename.match(/^(\d+)_[\w-]+\.sql$/);
+  return m ? m[1] : null;
+}
+
+function isValidTimestamp(version) {
+  if (!/^\d{14}$/.test(version)) return false;
+
+  const year = parseInt(version.slice(0, 4), 10);
+  const month = parseInt(version.slice(4, 6), 10);
+  const day = parseInt(version.slice(6, 8), 10);
+  const hour = parseInt(version.slice(8, 10), 10);
+  const minute = parseInt(version.slice(10, 12), 10);
+  const second = parseInt(version.slice(12, 14), 10);
+
+  if (year < 2024 || year > 2100) return false;
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+  if (hour > 23) return false;
+  if (minute > 59) return false;
+  if (second > 59) return false;
+
+  return true;
+}
+
+function extractFunctionSignatures(sql) {
+  const signatures = [];
+  const regex = /CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+(?:public\.)?(\w+)\s*\(([^)]*)\)/gi;
+
+  let match;
+  while ((match = regex.exec(sql)) !== null) {
+    const funcName = match[1].toLowerCase();
+    const argsRaw = match[2].trim();
+
+    const argTypes = argsRaw
+      .split(',')
+      .map((arg) => {
+        const parts = arg.trim().split(/\s+/);
+        return parts.length >= 2 ? parts[parts.length - 1].toLowerCase() : parts[0]?.toLowerCase();
+      })
+      .filter(Boolean);
+
+    signatures.push({
+      funcName,
+      argTypes,
+      signatureKey: `${funcName}(${argTypes.join(',')})`,
+      argCount: argTypes.length,
+    });
+  }
+
+  return signatures;
+}
+
+// ─── HOVEDVALIDERING ───
 
 async function main() {
+  const args = process.argv.slice(2);
+  const checkStagedOnly = args.includes('--staged');
+  const explicitFiles = args.filter((a) => !a.startsWith('--'));
+
+  let filesToCheck;
+  let allFiles;
+
+  if (explicitFiles.length > 0) {
+    filesToCheck = explicitFiles.map((f) => basename(f));
+    allFiles = await getAllMigrationFiles();
+  } else if (checkStagedOnly) {
+    filesToCheck = getStagedMigrationFiles();
+    allFiles = await getAllMigrationFiles();
+    if (filesToCheck.length === 0) {
+      console.log('✅ Ingen staged migrasjonsfiler — ingenting å validere');
+      process.exit(0);
+    }
+  } else {
+    allFiles = await getAllMigrationFiles();
+    filesToCheck = allFiles;
+  }
+
   const errors = [];
-  const files = await readdir(MIGRATIONS_DIR).catch(() => []);
+  const warnings = [];
+  const versions = new Map(); // version -> filename (sjekk kun blant alle filer)
+  const functionRegistry = new Map(); // funcName -> [{file, signatureKey}]
 
-  const migrations = files.filter((f) => f.endsWith('.sql'));
-  const versions = new Set();
+  // Bygg fullstendig versjonskart fra ALLE filer (for duplikat-sjekk)
+  for (const file of allFiles) {
+    const version = extractVersion(file);
+    if (version) {
+      if (versions.has(version)) {
+        // Kun rapporter duplikat hvis minst én av filene skal sjekkes
+        if (filesToCheck.includes(file) || filesToCheck.includes(versions.get(version))) {
+          errors.push(
+            `Duplikat migrasjonsversjon "${version}":\n` +
+            `    ${versions.get(version)}\n` +
+            `    ${file}\n` +
+            `  Supabase CLI bruker "${version}" som primærnøkkel. ` +
+            `Rename én av filene til et unikt YYYYMMDDHHMMSS-prefix.`
+          );
+        }
+      } else {
+        versions.set(version, file);
+      }
+    }
+  }
 
-  for (const file of migrations) {
-    const m = file.match(VERSION_REGEX);
-    if (!m) {
-      errors.push(`Ugyldig filnavn: ${file} (må matche <tall>_navn.sql)`);
+  // Bygg fullstendig funksjonsregister fra ALLE filer
+  for (const file of allFiles) {
+    const path = join(MIGRATIONS_DIR, file);
+    const content = await readFile(path, 'utf-8').catch(() => '');
+    const signatures = extractFunctionSignatures(content);
+    for (const sig of signatures) {
+      if (!functionRegistry.has(sig.funcName)) {
+        functionRegistry.set(sig.funcName, []);
+      }
+      functionRegistry.get(sig.funcName).push({
+        file,
+        signatureKey: sig.signatureKey,
+        argTypes: sig.argTypes,
+      });
+    }
+  }
+
+  // Valider spesifikke filer
+  for (const file of filesToCheck) {
+    const version = extractVersion(file);
+
+    if (!version) {
+      errors.push(`Ugyldig filnavn: ${file} (må matche <timestamp>_navn.sql)`);
       continue;
     }
 
-    const version = m[1];
-    if (versions.has(version)) {
-      errors.push(`Duplikat versjon ${version}: ${file}`);
+    // Sjekk timestamp-format
+    if (LEGACY_PREFIXES.includes(version)) {
+      warnings.push(`Legacy-prefix ${version}: ${file} (unngå for nye migrasjoner)`);
+    } else if (!isValidTimestamp(version)) {
+      errors.push(
+        `Ugyldig timestamp-prefix "${version}" i ${file}\n` +
+        `    MÅ være 14 siffer: YYYYMMDDHHMMSS (f.eks. 20260430193000)\n` +
+        `    Supabase CLI bruker prefix som versjonsnøkkel i schema_migrations.`
+      );
     }
-    versions.add(version);
 
+    // Les innhold
     const path = join(MIGRATIONS_DIR, file);
     const content = await readFile(path, 'utf-8').catch(() => '');
+
     if (!content || content.trim().length === 0) {
-      errors.push(`Tom eller ugyldig fil: ${file}`);
+      errors.push(`Tom eller ulesbar fil: ${file}`);
+      continue;
     }
     if (content.includes('\x00')) {
       errors.push(`Binært innhold i fil: ${file}`);
     }
+
+    // Sjekk funksjonskollisjoner for funksjoner definert i DENNE filen
+    const mySignatures = extractFunctionSignatures(content);
+    for (const sig of mySignatures) {
+      if (ALLOWED_OVERLOADS.has(sig.funcName)) continue;
+
+      const allOccurrences = functionRegistry.get(sig.funcName) || [];
+      if (allOccurrences.length <= 1) continue;
+
+      const otherOccurrences = allOccurrences.filter((o) => o.file !== file);
+      if (otherOccurrences.length === 0) continue;
+
+      const mySigKey = sig.signatureKey;
+      const hasDifferentSignature = otherOccurrences.some((o) => o.signatureKey !== mySigKey);
+
+      if (hasDifferentSignature) {
+        const details = allOccurrences
+          .map((o) => `    ${o.file}: ${o.signatureKey}`)
+          .join('\n');
+        errors.push(
+          `Funksjonssignatur-kollisjon for "${sig.funcName}":\n${details}\n` +
+          `    Flere migrasjoner definerer samme funksjon med ulike signaturer.\n` +
+          `    Fix: Bruk DROP FUNCTION IF EXISTS før CREATE, eller konsolider.`
+        );
+      }
+    }
   }
 
-  if (errors.length > 0) {
+  // ─── OUTPUT ───
+  // I full-scan-modus (ikke --staged): nedgrader historiske formater til warnings
+  const isFullScan = !checkStagedOnly && explicitFiles.length === 0;
+  let displayErrors = errors;
+  let displayWarnings = warnings;
+
+  if (isFullScan) {
+    const historicalErrors = [];
+    const currentErrors = [];
+    for (const e of errors) {
+      // Duplikat-versjoner er ALLTID blocking
+      if (e.includes('Duplikat migrasjonsversjon')) {
+        currentErrors.push(e);
+      } else {
+        historicalErrors.push(e);
+      }
+    }
+    displayErrors = currentErrors;
+    displayWarnings = [...warnings, ...historicalErrors.map((e) => `[Historisk] ${e}`)];
+  }
+
+  const hasErrors = displayErrors.length > 0;
+  const hasWarnings = displayWarnings.length > 0;
+
+  if (hasWarnings) {
+    console.warn('⚠️  Migrasjonsadvarsler:\n');
+    displayWarnings.forEach((w) => console.warn('  -', w.replace(/\n/g, '\n    ')));
+    console.warn('');
+  }
+
+  if (hasErrors) {
     console.error('❌ Migrasjonsvalidering feilet:\n');
-    errors.forEach((e) => console.error('  -', e));
+    displayErrors.forEach((e) => console.error('  -', e.replace(/\n/g, '\n    ')));
+    console.error(`\n📚 Se: scripts/validate-migrations.mjs og AGENTS.md#migrasjonskonvensjoner`);
     process.exit(1);
   }
 
-  console.log(`✅ ${migrations.length} migrasjonsfiler validert`);
+  console.log(`✅ ${filesToCheck.length} migrasjonsfiler validert (ingen feil)`);
+  if (hasWarnings) {
+    console.log(`⚠️  ${displayWarnings.length} advarsel(er) — se over`);
+  }
 }
 
 main();

@@ -17,8 +17,19 @@ has_staged_in_path() {
 # 1. Secrets-sjekk (alltid)
 # ============================================================================
 
-echo "🔍 [1/4] Sjekker secrets i staged filer..."
+echo "🔍 [1/6] Sjekker secrets i staged filer..."
 bash scripts/check-secrets-staged.sh || exit 1
+
+# ============================================================================
+# 2. Migrasjonsvalidering (kun hvis supabase/migrations endres)
+# ============================================================================
+
+if has_staged_in_path "^supabase/migrations/"; then
+  echo "🔍 [2/6] Migrasjonsvalidering (staged filer)..."
+  node scripts/validate-migrations.mjs --staged || exit 1
+else
+  echo "⏭️  [2/6] Ingen migrasjonsendringer — skipper validering"
+fi
 
 # ============================================================================
 # 2. AST/Type-verifisering for kritiske paths (kun hvis relevant)
@@ -35,7 +46,7 @@ for path in $CRITICAL_PATHS; do
 done
 
 if [ "$NEEDS_AST_CHECK" = true ]; then
-  echo "🔍 [2/4] AST/type-verifisering (ts-morph)..."
+  echo "🔍 [3/6] AST/type-verifisering (ts-morph)..."
   npm run verify:ts-ast 2>&1
   AST_EXIT=$?
   if [ $AST_EXIT -ne 0 ]; then
@@ -46,14 +57,14 @@ if [ "$NEEDS_AST_CHECK" = true ]; then
     exit 1
   fi
 else
-  echo "⏭️  [2/4] Ingen kritiske paths endret — skipper AST-verifisering"
+  echo "⏭️  [3/6] Ingen kritiske paths endret — skipper AST-verifisering"
 fi
 
 # ============================================================================
 # 3. Full TypeScript-sjekk (alltid)
 # ============================================================================
 
-echo "🔍 [3/4] TypeScript-sjekk (tsc --noEmit)..."
+echo "🔍 [4/6] TypeScript-sjekk (tsc --noEmit)..."
 npx tsc --noEmit 2>&1
 TSC_EXIT=$?
 if [ $TSC_EXIT -ne 0 ]; then
@@ -73,7 +84,7 @@ fi
 # 4. Supabase kolonne-guard (alltid)
 # ============================================================================
 
-echo "🔍 [4/4] Supabase kolonne-guard..."
+echo "🔍 [5/6] Supabase kolonne-guard..."
 node scripts/guard-supabase-columns.mjs
 GUARD_EXIT=$?
 if [ $GUARD_EXIT -ne 0 ]; then
@@ -87,7 +98,7 @@ fi
 # 5. MemPalace Auto-Capture (valgfritt)
 # ============================================================================
 
-echo "🏛️  [5/5] MemPalace auto-capture..."
+echo "🏛️  [6/6] MemPalace auto-capture..."
 node scripts/mempalace-auto-capture.mjs
 
 echo "✅ Pre-commit: Alt OK. Committer..."
