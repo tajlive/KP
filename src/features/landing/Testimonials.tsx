@@ -95,26 +95,15 @@ export function Testimonials({ language = "no", items }: TestimonialsProps) {
                 </p>
 
                 <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                  {item.avatar ? (
-                    <Image
-                      src={item.avatar}
-                      alt={item.name}
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 rounded-2xl object-cover shadow-lg"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg">
-                      {item.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .slice(0, 2)}
-                    </div>
-                  )}
+                  <img
+                    src={`https://i.pravatar.cc/40?u=${encodeURIComponent(item.name)}`}
+                    alt={item.name}
+                    className="rounded-full w-10 h-10 object-cover"
+                  />
                   <div>
-                    <p className="font-bold text-white tracking-tight">
+                    <p className="font-bold text-white tracking-tight flex items-center gap-2">
                       {item.name}
+                      <span className="text-xs text-green-600 font-medium">✓ Verifisert</span>
                     </p>
                     <p className="text-sm text-slate-500 font-medium">
                       {item.role}

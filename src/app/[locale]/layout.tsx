@@ -24,7 +24,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FeatureFlagProvider } from "@/lib/feature-flags";
 import { getFlagsAsync } from "@/lib/flags";
 import Script from "next/script";
-import { Outfit } from "next/font/google";
+import { Outfit, Geist } from "next/font/google";
 import { SURFACE } from "@/lib/design/tokens";
 import { CdsProvider } from "@/app/providers/CdsProvider";
 import "../globals.css";
@@ -91,6 +91,13 @@ const outfit = Outfit({
     "Roboto",
     "sans-serif",
   ],
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist",
+  preload: true,
 });
 
 export async function generateStaticParams() {
@@ -203,7 +210,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   preconnect("https://fonts.gstatic.com", { crossOrigin: "anonymous" });
 
   return (
-    <html lang={locale} className={outfit.variable} suppressHydrationWarning>
+    <html lang={locale} className={`${outfit.variable} ${geist.variable}`} suppressHydrationWarning>
       <head suppressHydrationWarning>
         {metaDescription != null ? (
           <meta name="description" content={metaDescription} />

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/lib/auth/new/AuthContext";
 import { Button } from "@/shared/ui/button";
+import { ThemeToggleIcon } from "@/shared/theme";
 import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
 import { hrefWithLocale } from "@/i18n/href-with-locale";
@@ -69,6 +70,10 @@ export function MarketingNavigation() {
                 {link.label}
               </Link>
             ))}
+
+            <div className="h-5 w-px bg-[#E2E5EC]" />
+
+            <ThemeToggleIcon />
 
             <div className="h-5 w-px bg-[#E2E5EC]" />
 
