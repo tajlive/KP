@@ -15,13 +15,13 @@ interface GlassCardProps {
 
 const variants = {
   default: 'bg-kp-bg-card backdrop-blur-glass border border-kp-border',
-  elevated: 'bg-kp-bg-card backdrop-blur-glass border border-kp-border-hover shadow-glass',
+  elevated: 'bg-kp-bg-card backdrop-blur-glass border border-kp-border-hover shadow-[0_4px_16px_hsl(0_0%_0%/0.08)]',
   subtle: 'bg-kp-surface-highlight border border-kp-border',
   glow: 'bg-kp-bg-card backdrop-blur-glass border border-kp-brand/20 shadow-glow-brand',
 };
 
 const hoverEffects = {
-  lift: 'hover:-translate-y-1 hover:shadow-glass-hover transition-all duration-300',
+  lift: 'hover:-translate-y-0.5 hover:shadow-xl transition-all duration-200',
   glow: 'hover:border-kp-brand/30 hover:shadow-glow-brand transition-all duration-300',
   none: '',
 };

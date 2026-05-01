@@ -87,7 +87,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
           </div>
 
           {/* Main Headline - FROM SANITY */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-kp-text-primary tracking-tight leading-[1.1] mb-6">
+          <h1 className="text-[clamp(3rem,7vw,7rem)] font-extrabold tracking-tight text-kp-text-primary leading-[1.1] mb-6">
             {content.heroTitle.line1}
             <span className="block mt-2 bg-gradient-to-r from-kp-brand via-kp-brand-light to-purple-400 bg-clip-text text-transparent">
               {content.heroTitle.line2}
@@ -104,7 +104,7 @@ export default async function SanityHeroSection({ locale = 'no' }: SanityHeroSec
             <ButtonPremium 
               size="lg" 
               glow
-              className="w-full sm:w-auto min-w-[240px]"
+              className="w-full sm:w-auto min-w-[240px] hover:scale-[1.02] transition-all duration-200"
               icon={<ArrowRight className="w-5 h-5" />}
               iconPosition="right">
               <a href={content.heroCta.link}>
