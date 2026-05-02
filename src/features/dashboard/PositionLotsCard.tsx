@@ -37,13 +37,22 @@ export function PositionLotsCard({ locale }: PositionLotsCardProps) {
 
   useEffect(() => {
     let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
-    async function fetchPosition() {
+    async function fetchPosition(attempt = 1) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         const res = await fetch("/api/trading/position", {
-          signal: AbortSignal.timeout(10000),
+          credentials: "include",
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
+
         if (!res.ok) {
+          const body = await res.text().catch(() => "");
+          console.error(`[PositionLotsCard] HTTP ${res.status}:`, body);
           throw new Error(`HTTP ${res.status}`);
         }
         const json = (await res.json()) as PositionData;
@@ -52,11 +61,19 @@ export function PositionLotsCard({ locale }: PositionLotsCardProps) {
           setError(null);
         }
       } catch (e) {
+        const msg = e instanceof Error ? e.message : "Unknown error";
+        console.error(`[PositionLotsCard] fetch failed (attempt ${attempt}):`, msg);
+
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Unknown error");
+          if (attempt < 2) {
+            // Retry once after 2 seconds
+            retryTimer = setTimeout(() => fetchPosition(attempt + 1), 2000);
+            return;
+          }
+          setError(msg);
         }
       } finally {
-        if (!cancelled) {
+        if (!cancelled && (!retryTimer || attempt >= 2)) {
           setLoading(false);
         }
       }
@@ -66,6 +83,7 @@ export function PositionLotsCard({ locale }: PositionLotsCardProps) {
 
     return () => {
       cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
     };
   }, []);
 
