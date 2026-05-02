@@ -10,12 +10,6 @@ import {
 
 export const dynamic = "force-dynamic";
 
-function getAuthUser(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = createServerClient(request, response);
-  return supabase.auth.getUser();
-}
-
 interface OpenPosition {
   side?: "long" | "short";
   lots?: Lot[];
@@ -28,10 +22,13 @@ interface OpenPosition {
 
 export async function GET(request: NextRequest) {
   try {
+    // Create a response object to capture refreshed auth cookies
+    const authResponse = NextResponse.next();
+    const authSupabase = createServerClient(request, authResponse);
     const {
       data: { user },
       error: authError,
-    } = await getAuthUser(request);
+    } = await authSupabase.auth.getUser();
 
     if (authError || !user) {
       console.error("[GET /api/trading/position] Auth failed:", authError?.message || "No user");
@@ -139,7 +136,7 @@ export async function GET(request: NextRequest) {
       0,
     );
 
-    return NextResponse.json(
+    const jsonResponse = NextResponse.json(
       {
         ok: true,
         symbol,
@@ -155,6 +152,14 @@ export async function GET(request: NextRequest) {
         },
       },
     );
+
+    // Copy any refreshed auth cookies to the JSON response so the browser
+    // receives updated session tokens (critical for auto-refresh flow)
+    authResponse.cookies.getAll().forEach((cookie) => {
+      jsonResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+
+    return jsonResponse;
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     const stack = e instanceof Error ? e.stack : "";
