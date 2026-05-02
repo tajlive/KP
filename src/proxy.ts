@@ -94,7 +94,7 @@ function buildCSPHeader(_nonce: string): string {
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
-    `connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://vercel.live https://plausible.io https://o4509555622608896.ingest.de.sentry.io${isDev ? " ws://localhost:* ws://127.0.0.1:* wss://localhost:* wss://127.0.0.1:*" : ""}`,
+    `connect-src 'self' https://vuxbjlykgmzskxbclquf.supabase.co wss://vuxbjlykgmzskxbclquf.supabase.co https://api.binance.com wss://stream.binance.com:9443 https://*.sanity.io wss://*.sanity.io https://vercel.live https://plausible.io https://o4509555622608896.ingest.de.sentry.io${isDev ? " ws://localhost:* ws://127.0.0.1:* wss://localhost:* wss://127.0.0.1:*" : ""}`,
     "frame-src 'self' https://vercel.live",
     "upgrade-insecure-requests",
   ];
