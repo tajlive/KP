@@ -66,6 +66,66 @@ kimi --agent-file .kimi/agents/auth-agent.yaml
 kimi auth            # Ekvivalent: kimi --agent-file .kimi/agents/auth-agent.yaml
 ```
 
+---
+
+## 🧠 Smart Verktøy (NYTT — 2026-05-01)
+
+> Kontekst-bevisst oppstart, auto-agent-valg, og smart exit.
+
+### `kimi-smart-start` — Kontekst-brief ved oppstart
+```bash
+# Generer brief basert på git status + MemPalace + tid
+kimi-smart-start
+
+# Kompakt modus — kun 3 linjer (branch, agent, verify)
+kimi-smart-start --fast
+
+# Kopier til clipboard (lim inn i KIMI)
+kimi-smart-start | pbcopy
+```
+Inkluderer: branch, siste commits, endrede filer, domene-gjetting, anbefalt agent, MCP-profil, og nylig diary.
+
+### `kimi-suggest-agent` — Auto-agent basert på git-diff
+```bash
+# Foreslår riktig agent + verifisering + swarm-review
+kimi-suggest-agent
+
+# Kompakt modus — kun agent + verify/swarm-anbefaling
+kimi-suggest-agent --fast
+```
+Analyserer endrede filer mot skills-activation.yaml og foreslår:
+- Riktig agent (auth, trading, architect, sanity, etc.)
+- MCP-profil (minimal/medium/full)
+- Verifisering (hvis >3 filer / >50 linjer)
+- Swarm review (hvis >5 filer / >100 linjer)
+
+**Global kompakt modus:** Sett `KIMI_COMPACT=1` før `kimi` for å kjøre begge i `--fast` modus automatisk:
+```bash
+KIMI_COMPACT=1 kimi
+```
+
+### Pre-loaded Context
+```bash
+# Kritisk prosjektkunnskap (3k tokens)
+cat .kimi/PROJECT_CONTEXT.md
+
+# Lim inn i KIMI ved session-start, eller referer:
+# @.kimi/PROJECT_CONTEXT.md
+```
+
+### Smart SessionEnd Hook
+Når KIMI-økten avsluttes:
+1. MemPalace flush (eksisterende)
+2. Git-diff-analyse → anbefaler verify/swarm
+3. Session-summary skrives til `.kimi/session-summaries/`
+
+```bash
+# Hvis >3 filer endret:
+#   → Anbefalt: node scripts/verify/verify-claims.mjs
+# Hvis >5 filer endret:
+#   → Anbefalt: npm run swarm:review
+```
+
 **Merk:** KIMI CLI har ikke domene-basert auto-aktivering av agenter. Auth-reglene injiseres automatisk i default-agenten via `AGENTS.md`, men for full auth-spesialisering må du eksplisitt laste `.kimi/agents/auth-agent.yaml`.
 
 ---
@@ -110,6 +170,25 @@ kimi auth            # Ekvivalent: kimi --agent-file .kimi/agents/auth-agent.yam
 ### PL/pgSQL (Aldri bryt)
 - **DECLARE** på toppnivå, aldri nested
 - **EXCEPTION WHEN OTHERS** skal ALLTID ha `RAISE WARNING`
+
+### Agent Tenke-Disiplin (ALLTID)
+> **Mål:** Match Claude Opus 4.7 sin reasoning-dybde ved å tvinge systematisk tenking.
+
+1. **Les før du skriver** — Bruk `ReadFile` / `Grep` for å forstå eksisterende kode FØR du foreslår endringer.
+2. **Tenk steg-for-steg** — Forklar din plan i tekst før du utfører den. Identifiser risikoer og edge cases.
+3. **Selv-verifisering** — Etter kodeendringer, stil deg selv:
+   - *"Bryter dette noen regler i AGENTS.md?"*
+   - *"Har jeg oppdatert alle kallere hvis signaturen endret seg?"*
+   - *"Er denne endringen virkelig minimal?"*
+4. **Post-change verify** — Ved >3 filer endret eller >50 linjer:
+   ```bash
+   node scripts/verify/run-all.mjs
+   ```
+   Hvis det feiler, fiks FØR du rapporterer GO.
+5. **Kontekst-bevissthet** — Vi har 262k tokens (ikke 1M som Opus). Vær selektiv:
+   - Bruk `Grep` før `ReadFile` for å finne riktige filer.
+   - Bruk MemPalace `search()` før du drar inn store dokumenter.
+   - Unngå å lese hele filer hvis du kun trenger 20 linjer (bruk `line_offset` + `n_lines`).
 
 ---
 
@@ -298,17 +377,26 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-## ⚡ KIMI CLI v1.40.0 Optimaliseringer (2026-04-28)
+## ⚡ KIMI CLI v1.40.0 Optimaliseringer (2026-05-01)
 
 ### Kontekst-tuning
 ```toml
 max_steps_per_turn = 750              # økt fra 500
-reserved_context_size = 45000         # ned fra 60000 → +15k arbeidsminne
-compaction_trigger_ratio = 0.92       # opp fra 0.88 → mindre komprimering
+max_retries_per_step = 5              # økt fra 3 → mer robusthet
+max_ralph_iterations = 2              # NY — aktiverer self-improvement loop
+reserved_context_size = 40000         # ned fra 45000 → +5k arbeidsminne
+compaction_trigger_ratio = 0.94       # opp fra 0.92 → enda mindre komprimering
 agent_task_timeout_s = 1800           # 30 min for lange oppgaver
 tool_call_timeout_ms = 120000         # 2 min — raskere fail
 merge_all_available_skills = true     # auto-aktiver skills
 ```
+
+### Ralph Loop (Self-Improvement)
+> `max_ralph_iterations = 2` aktiverer KIMI CLI sin innebygde forbedrings-loop.
+> Modellen itererer på samme oppgave og forbedrer svaret til den outputter `<choice>STOP</choice>`
+> eller når iterasjonsgrensen nås. Tilsvarende Claude Code's `/ultrareview`.
+>
+> **Merk:** Øker latency med ~20-40%, men forbedrer kvaliteten på komplekse oppgaver betydelig.
 
 ### MemPalace v3.1.1 — Aktiv bruk
 - **FØR oppgave:** `search()` + `recent_context(hours=48)` + `kg_query(entity=..., depth=2)`
