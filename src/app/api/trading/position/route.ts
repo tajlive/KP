@@ -48,6 +48,8 @@ export async function GET(request: NextRequest) {
       .select("trading_pair, open_position")
       .eq("user_id", user.id)
       .eq("status", "active")
+      .order("updated_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (sessionError) {
