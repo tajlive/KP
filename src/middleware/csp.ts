@@ -127,6 +127,8 @@ export const cspMiddleware: MiddlewareFn = (
       "wss://vuxbjlykgmzskxbclquf.supabase.co",
       "https://api.binance.com",
       "wss://stream.binance.com:9443",
+      "https://*.sanity.io",
+      "wss://*.sanity.io",
       "https://vercel.live",
       "https://plausible.io",
       "https://o4509555622608896.ingest.de.sentry.io",
