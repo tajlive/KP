@@ -11,8 +11,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { NavigationData } from "./NavigationServer";
 
-export function MarketingNavigation() {
+interface MarketingNavigationProps {
+  navData: NavigationData;
+}
+
+export function MarketingNavigation({ navData }: MarketingNavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
   const locale = useLocale();
@@ -21,12 +26,10 @@ export function MarketingNavigation() {
 
   const l = (path: string) => hrefWithLocale(locale, path === "/" ? "/" : path);
 
-  const mainLinks = [
-    { path: "/kurs", label: t("navLearn") },
-    { path: "/paper-trading", label: t("navTrade") },
-    { path: "/auto-trading", label: t("navBots") },
-    { path: "/priser", label: t("navPricing") },
-  ];
+  // Bruk Sanity-data hvis tilgjengelig, ellers fallback
+  const mainLinks = user
+    ? navData.loggedInLinks.map((link) => ({ path: link.path, label: link.label }))
+    : navData.loggedOutLinks.map((link) => ({ path: link.path, label: link.label }));
 
   return (
     <nav

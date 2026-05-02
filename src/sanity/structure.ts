@@ -7,10 +7,11 @@ import {
   HelpCircleIcon,
   ColorWheelIcon,
   DocumentIcon,
+  LinkIcon,
 } from '@sanity/icons'
 
 // Singleton-typer (kun ett dokument per type)
-const SINGLETONS = ['landingContent', 'designTokens']
+const SINGLETONS = ['landingContent', 'designTokens', 'dashboardContent']
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -25,6 +26,17 @@ export const structure: StructureResolver = (S) =>
             .schemaType('landingContent')
             .documentId('landingContent')
             .title('Landingsside Innhold')
+        ),
+
+      // ─── Dashboard (singleton) ───────────────────────────────────
+      S.listItem()
+        .title('📊 Dashboard Innhold')
+        .icon(HomeIcon)
+        .child(
+          S.document()
+            .schemaType('dashboardContent')
+            .documentId('dashboardContent')
+            .title('Dashboard Innhold')
         ),
 
       S.divider(),
@@ -57,6 +69,17 @@ export const structure: StructureResolver = (S) =>
         .title('📝 Trade Forklaringer')
         .icon(ComposeIcon)
         .child(S.documentTypeList('tradeExplanation').title('Trade Forklaringer')),
+
+      // ─── Navigasjon (singleton) ──────────────────────────────────
+      S.listItem()
+        .title('🔗 Navigasjon')
+        .icon(LinkIcon)
+        .child(
+          S.document()
+            .schemaType('navigation')
+            .documentId('navigation')
+            .title('Navigasjon')
+        ),
 
       S.divider(),
 

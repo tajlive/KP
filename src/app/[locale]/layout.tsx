@@ -8,6 +8,9 @@ import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
 import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
 import { getSanityTokensCSS, DEFAULT_TOKENS_CSS } from "@/lib/sanity/tokens";
+import { client } from "@/lib/sanity/client";
+import { navigationQuery } from "@/lib/sanity/queries";
+import type { NavigationData } from "@/shared/layout/NavigationServer";
 // import { SessionCleanup } from "@/features/auth/SessionCleanup";
 import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
 import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
@@ -21,6 +24,7 @@ import { ThemeProvider } from "@/shared/theme";
 import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SanityLive } from "@/sanity/lib/live";
 import { FeatureFlagProvider } from "@/lib/feature-flags";
 import { getFlagsAsync } from "@/lib/flags";
 import Script from "next/script";
@@ -195,6 +199,39 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   // Fetch design tokens server-side to eliminate FOUC
   const tokensCss = await getSanityTokensCSS().catch(() => DEFAULT_TOKENS_CSS);
 
+  // Fetch navigation from Sanity (with fallback)
+  let navData: NavigationData = {
+    loggedOutLinks: [
+      { label: 'Lær', path: '/kurs', order: 0 },
+      { label: 'Trade', path: '/paper-trading', order: 1 },
+      { label: 'Bots', path: '/auto-trading', order: 2 },
+      { label: 'Priser', path: '/priser', order: 3 },
+    ],
+    loggedInLinks: [
+      { label: 'Dashboard', path: '/dashboard', order: 0 },
+      { label: 'Portefølje', path: '/dashboard/portfolio', order: 1 },
+      { label: 'Trade', path: '/dashboard/trade', order: 2 },
+      { label: 'Bots', path: '/dashboard/auto-trade', order: 3 },
+      { label: 'Lær', path: '/kurs', order: 4 },
+      { label: 'Priser', path: '/priser', order: 5 },
+    ],
+  };
+  try {
+    const result = await client.fetch(
+      navigationQuery,
+      {},
+      { next: { tags: ['sanity:navigation'] } }
+    );
+    if (result) {
+      navData = {
+        loggedOutLinks: result.loggedOutLinks || navData.loggedOutLinks,
+        loggedInLinks: result.loggedInLinks || navData.loggedInLinks,
+      };
+    }
+  } catch {
+    // Bruk fallback
+  }
+
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : null;
@@ -308,7 +345,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
                   <AuthProvider>
                     <AuthHashHandler />
                     <AsyncFeatureFlagProvider>
-                      <LocaleMarketingShell>{children}</LocaleMarketingShell>
+                      <LocaleMarketingShell navData={navData}>{children}</LocaleMarketingShell>
                     </AsyncFeatureFlagProvider>
                   </AuthProvider>
                 </ErrorBoundary>
@@ -320,6 +357,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <PlausibleScript />
         <Analytics />
         <SpeedInsights />
+        <SanityLive />
       </body>
     </html>
   );

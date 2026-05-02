@@ -312,7 +312,8 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Matcher alt unntatt statiske filer, API routes, auth routes, studio, og SEO/PWA-filer
-    "/((?!/_next/static|/_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|/api/|/auth/|/studio|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Matcher alt unntatt: _next (static assets), API, auth, studio, SEO/PWA-filer,
+    // og filer med filendelse (bilder, fonter, osv.)
+    "/((?!_next|api/|auth/|studio|favicon|robots|sitemap|manifest|.*\\.).*)",
   ],
 };

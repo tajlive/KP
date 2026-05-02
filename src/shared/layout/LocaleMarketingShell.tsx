@@ -2,6 +2,7 @@
 
 import { ConditionalFooter } from "@/features/landing/ConditionalFooter";
 import { MarketingNavigation } from "@/shared/layout/MarketingNavigation";
+import type { NavigationData } from "@/shared/layout/NavigationServer";
 import { isGuestAuthRoute, parseLocalePath } from "@/middleware/locale-path";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
@@ -54,9 +55,11 @@ function strippedPathFromPostAuthTarget(raw: string | null): string | null {
 
 function MarketingShellLayout({
   hideMarketing,
+  navData,
   children,
 }: {
   hideMarketing: boolean;
+  navData: NavigationData;
   children: ReactNode;
 }) {
   if (hideMarketing) {
@@ -66,14 +69,14 @@ function MarketingShellLayout({
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <MarketingNavigation />
+      <MarketingNavigation navData={navData} />
       <main className="flex-1">{children}</main>
       <ConditionalFooter />
     </div>
   );
 }
 
-function LocaleMarketingShellInner({ children }: { children: ReactNode }) {
+function LocaleMarketingShellInner({ navData, children }: { navData: NavigationData; children: ReactNode }) {
   const pathname = usePathname() ?? "/";
   const searchParams = useSearchParams();
   const { strippedPath } = parseLocalePath(pathname);
@@ -89,37 +92,39 @@ function LocaleMarketingShellInner({ children }: { children: ReactNode }) {
   }
 
   return (
-    <MarketingShellLayout hideMarketing={hideMarketing}>
+    <MarketingShellLayout hideMarketing={hideMarketing} navData={navData}>
       {children}
     </MarketingShellLayout>
   );
 }
 
 /** Fallback uten searchParams (unngår hydration mismatch / static krav) */
-function LocaleMarketingShellFallback({ children }: { children: ReactNode }) {
+function LocaleMarketingShellFallback({ navData, children }: { navData: NavigationData; children: ReactNode }) {
   const pathname = usePathname() ?? "/";
   const { strippedPath } = parseLocalePath(pathname);
   const hideMarketing = shouldHideMarketingShell(strippedPath);
 
   return (
-    <MarketingShellLayout hideMarketing={hideMarketing}>
+    <MarketingShellLayout hideMarketing={hideMarketing} navData={navData}>
       {children}
     </MarketingShellLayout>
   );
 }
 
 export function LocaleMarketingShell({
+  navData,
   children,
 }: {
+  navData: NavigationData;
   children: React.ReactNode;
 }) {
   return (
     <Suspense
       fallback={
-        <LocaleMarketingShellFallback>{children}</LocaleMarketingShellFallback>
+        <LocaleMarketingShellFallback navData={navData}>{children}</LocaleMarketingShellFallback>
       }
     >
-      <LocaleMarketingShellInner>{children}</LocaleMarketingShellInner>
+      <LocaleMarketingShellInner navData={navData}>{children}</LocaleMarketingShellInner>
     </Suspense>
   );
 }

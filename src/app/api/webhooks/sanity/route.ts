@@ -87,6 +87,11 @@ export async function POST(req: NextRequest) {
       revalidateTag('sanity:page', 'default');
     }
 
+    // Revalidate navigation
+    if (docType === 'navigation') {
+      revalidateTag('sanity:navigation', 'default');
+    }
+
     return NextResponse.json({
       revalidated: true,
       type: docType,

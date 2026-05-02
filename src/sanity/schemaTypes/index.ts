@@ -8,6 +8,7 @@ import faq from './faq'
 import testimonial from './testimonial'
 import { designTokens } from './design-tokens'
 import dashboardContent from './dashboard-content'
+import navigation from './navigation'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -19,5 +20,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     faq,
     testimonial,
     designTokens,
+    navigation,
   ],
 }

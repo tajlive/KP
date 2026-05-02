@@ -217,3 +217,23 @@ export const dynamicPageQuery = groq`
     }
   }
 `;
+
+// =============================================================================
+// NAVIGATION QUERY
+// =============================================================================
+
+export const navigationQuery = groq`
+  *[_type == "navigation" && _id == "navigation"][0] {
+    _id,
+    loggedOutLinks[] | order(order asc) {
+      label,
+      path,
+      order
+    },
+    loggedInLinks[] | order(order asc) {
+      label,
+      path,
+      order
+    }
+  }
+`;
