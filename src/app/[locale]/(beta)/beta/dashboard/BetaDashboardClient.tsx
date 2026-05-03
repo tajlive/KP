@@ -9,7 +9,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Wallet, BarChart3, Bot, Zap, Trophy } from "lucide-react";
+import { Wallet, BarChart3, Trophy } from "lucide-react";
 
 interface BetaStats {
   todayTrades: number;
@@ -256,30 +256,6 @@ export default function BetaDashboardClient({
             </div>
             <h2 className="text-2xl font-bold mb-2">{t("paperTrading")}</h2>
             <p className="text-green-100">{t("paperTradingDesc")}</p>
-          </Link>
-
-          <Link
-            href={`/${params.locale}/beta/ai-copilot`}
-            className="bg-linear-to-br from-emerald-500 to-emerald-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
-              <Bot className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">{t("aiCopilot")}</h2>
-            <p className="text-emerald-100">
-              {t("aiCopilotDesc")}
-            </p>
-          </Link>
-
-          <Link
-            href={`/${params.locale}/beta/auto-trade`}
-            className={`bg-linear-to-br from-orange-500 to-orange-700 text-white rounded-2xl p-8 hover:shadow-xl transition-all ${!exchangeConnected && "opacity-50 pointer-events-none"}`}
-          >
-            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
-              <Zap className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">{t("autoTrade")}</h2>
-            <p className="text-orange-100">{t("autoTradeDesc")}</p>
           </Link>
 
           <Link
