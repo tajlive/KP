@@ -185,8 +185,6 @@ export async function POST(req: Request) {
 
     // ==================== PERPLEXITY PRO ====================
     if (usePerplexity) {
-      console.info("Using Perplexity PRO");
-      
       const response = await chatWithPerplexity(messages, {
         model: body.model || PERPLEXITY_MODELS.PRO,
         temperature,

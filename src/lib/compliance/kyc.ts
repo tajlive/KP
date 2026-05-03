@@ -205,7 +205,6 @@ async function triggerScreening(userId: string): Promise<void> {
   // - ComplyAdvantage
   
   // For now, mock implementation
-  console.log(`[KYC] Triggered screening for user ${userId}`);
 }
 
 /**

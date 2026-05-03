@@ -60,10 +60,6 @@ export function track<T extends AnalyticsEvent>(event: T): void {
   const eventKey = `${event.name}:${JSON.stringify(event.props)}`;
   if (!dedupe(eventKey)) return;
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[Analytics]', event.name, event.props);
-  }
-
   if (window.plausible) {
     window.plausible(event.name, { 
       props: event.props as Record<string, string | number | boolean> 

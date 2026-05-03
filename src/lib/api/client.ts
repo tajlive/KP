@@ -22,9 +22,6 @@ export class ApiError extends Error {
  */
 function clearAuthState(): void {
   if (typeof window === 'undefined') return;
-
-  console.log('[Auth] Clearing expired auth state...');
-
   // Clear all Supabase auth cookies
   const cookiesToClear = [
     'sb-vuxbjlykgmzskxbclquf-auth-token',
@@ -79,8 +76,6 @@ function clearAuthState(): void {
   } catch {
     // Ignore sessionStorage errors
   }
-
-  console.log('[Auth] Auth state cleared');
 }
 
 /**
@@ -88,14 +83,10 @@ function clearAuthState(): void {
  */
 async function handleAuthFailure(): Promise<void> {
   if (typeof window === 'undefined') return;
-
-  console.log('[Auth] Handling auth failure...');
-
   // First, try to sign out from Supabase to clear server-side session
   try {
     const supabase = getSupabaseClient();
     await supabase.auth.signOut({ scope: 'local' });
-    console.log('[Auth] Supabase signOut completed');
   } catch (err) {
     console.warn('[Auth] Supabase signOut failed:', err);
   }
@@ -106,16 +97,12 @@ async function handleAuthFailure(): Promise<void> {
   // Prevent redirect loops - check if we're already on login page
   const currentPath = window.location.pathname;
   if (currentPath.includes('/login') || currentPath.includes('/auth')) {
-    console.log('[Auth] Already on login page, skipping redirect');
     return;
   }
 
   // Redirect to login with return URL
   const returnUrl = encodeURIComponent(currentPath + window.location.search);
   const loginUrl = `/login?next=${returnUrl}&expired=1`;
-  
-  console.log('[Auth] Redirecting to:', loginUrl);
-  
   // Use replace to prevent back button from returning to broken state
   window.location.replace(loginUrl);
 }
@@ -215,8 +202,6 @@ export async function checkAuth(): Promise<boolean> {
  * Force logout - clears everything and redirects
  */
 export async function forceLogout(redirectTo: string = '/login'): Promise<void> {
-  console.log('[Auth] Force logout initiated');
-  
   try {
     const supabase = getSupabaseClient();
     await supabase.auth.signOut({ scope: 'global' });

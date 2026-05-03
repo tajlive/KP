@@ -42,15 +42,9 @@ export function AuthHashHandler() {
 
     // Sjekk om det er auth-data i URL-hashen
     const hash = window.location.hash;
-    console.log("[AuthHashHandler] Checking hash:", hash ? "Found hash" : "No hash");
-    
     if (!hash || !hash.includes("access_token=")) {
-      console.log("[AuthHashHandler] No access_token in hash, skipping");
       return;
     }
-
-    console.log("[AuthHashHandler] Found access_token in hash, processing...");
-
     const handleAuthHash = async () => {
       setIsProcessing(true);
       setError(null);
@@ -59,36 +53,21 @@ export function AuthHashHandler() {
       try {
         // Vent litt for å la Supabase klienten prosessere hash
         // (detectSessionInUrl: true skal gjøre dette automatisk)
-        console.log("[AuthHashHandler] Waiting for Supabase to process hash...");
         await new Promise(resolve => setTimeout(resolve, 500));
         
         // Sjekk om session allerede er satt av detectSessionInUrl
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         let session = initialSession;
-
-        console.log("[AuthHashHandler] Initial session check:", session ? "Found" : "Not found", sessionError ? "Error: " + sessionError.message : "No error");
-
         // Hvis fortsatt ingen session, prøv å parse hash manuelt
         if (!session && hash.includes("access_token=")) {
-          console.log("[AuthHashHandler] Trying manual hash parsing...");
-          
           // Parse hash parameters
           const hashParams = new URLSearchParams(hash.substring(1));
           const accessToken = hashParams.get("access_token");
           const refreshToken = hashParams.get("refresh_token");
           const expiresIn = hashParams.get("expires_in");
           const tokenType = hashParams.get("token_type");
-          
-          console.log("[AuthHashHandler] Parsed tokens:", {
-            hasAccessToken: !!accessToken,
-            hasRefreshToken: !!refreshToken,
-            expiresIn,
-            tokenType
-          });
-          
           if (accessToken) {
             // Sett session manuelt
-            console.log("[AuthHashHandler] Setting session manually...");
             const { data, error: setError } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken || "",
@@ -97,7 +76,6 @@ export function AuthHashHandler() {
             if (setError) {
               console.error("[AuthHashHandler] setSession error:", setError);
             } else {
-              console.log("[AuthHashHandler] setSession success:", data.session ? "Has session" : "No session");
               session = data.session;
             }
           }
@@ -117,7 +95,6 @@ export function AuthHashHandler() {
         }
 
         if (session) {
-          console.log("[AuthHashHandler] Session established, redirecting to dashboard...");
           // Fjern hash fra URL uten å trigge page reload
           window.history.replaceState(null, "", window.location.pathname);
           

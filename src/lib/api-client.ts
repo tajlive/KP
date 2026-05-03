@@ -18,9 +18,6 @@ interface ApiOptions extends RequestInit {
  */
 function clearAllAuthCookies(): void {
   if (typeof window === 'undefined') return;
-
-  console.log('[Auth] Clearing all auth cookies...');
-
   // Get all cookies
   const allCookies = document.cookie.split(';');
   
@@ -70,8 +67,6 @@ function clearAllAuthCookies(): void {
       // Ignore
     }
   });
-
-  console.log('[Auth] Cookies cleared');
 }
 
 /**
@@ -84,9 +79,6 @@ async function handleAuthFailure(): Promise<void> {
   if (window.location.pathname.includes('/login')) {
     return;
   }
-
-  console.log('[Auth] Handling failure - signing out and redirecting...');
-
   // Sign out from Supabase
   try {
     const supabase = getSupabaseClient();
@@ -101,9 +93,6 @@ async function handleAuthFailure(): Promise<void> {
   // Redirect to login
   const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
   const loginUrl = `/login?next=${returnUrl}&expired=1`;
-  
-  console.log('[Auth] Redirecting to:', loginUrl);
-  
   // Use replace to prevent back button issues
   window.location.replace(loginUrl);
 }
@@ -221,8 +210,6 @@ export async function checkAuth(): Promise<boolean> {
  * Force logout - clears everything
  */
 export async function forceLogout(redirectTo: string = '/login'): Promise<void> {
-  console.log('[Auth] Force logout');
-  
   try {
     const supabase = getSupabaseClient();
     await supabase.auth.signOut({ scope: 'global' });

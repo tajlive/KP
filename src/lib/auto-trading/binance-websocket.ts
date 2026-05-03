@@ -115,7 +115,6 @@ export class AutoTradingWebSocket {
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
-        console.info("Auto-trading WebSocket connected");
         this.reconnectAttempts = 0;
         this.startPingInterval();
       };
@@ -134,7 +133,6 @@ export class AutoTradingWebSocket {
       };
 
       this.ws.onclose = () => {
-        console.info("WebSocket closed");
         this.stopPingInterval();
         this.attemptReconnect();
       };
@@ -231,8 +229,6 @@ export class AutoTradingWebSocket {
     }
 
     this.reconnectAttempts++;
-    console.info(`Reconnecting... Attempt ${this.reconnectAttempts}`);
-
     setTimeout(() => {
       this.connect();
     }, this.reconnectDelay * this.reconnectAttempts);
@@ -258,7 +254,6 @@ export class AutoTradingWebSocket {
         this.handleBalanceUpdate(data as BalanceUpdateData);
         break;
       default:
-        console.info("Unknown event type:", eventType);
     }
   }
 
@@ -277,9 +272,6 @@ export class AutoTradingWebSocket {
       commission: parseFloat(data.n || "0"),
       commissionAsset: data.N || "",
     };
-
-    console.info("Order update:", orderUpdate);
-
     // Update database
     this.updateOrderInDatabase(orderUpdate);
 
@@ -468,13 +460,6 @@ export class AutoTradingWebSocket {
             } as never)
             .eq("id", session.id);
         }
-
-        console.info("[live-fifo] Buy lot added:", {
-          session_id: session?.id,
-          qty: buyQty,
-          price: buyPrice,
-          lots: legacyPos?.lots?.length ?? 0,
-        });
       }
     } catch (error) {
       console.error("Failed to handle order filled:", error);
@@ -485,7 +470,6 @@ export class AutoTradingWebSocket {
    * Handle account position update
    */
   private handleAccountUpdate(data: AccountPositionData): void {
-    console.info("Account update:", data);
     // Update balances in database if needed
   }
 
@@ -493,7 +477,6 @@ export class AutoTradingWebSocket {
    * Handle balance update
    */
   private handleBalanceUpdate(data: BalanceUpdateData): void {
-    console.info("Balance update:", data);
   }
 
   /**
@@ -571,7 +554,6 @@ export class PriceWebSocket {
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
-      console.info("Price WebSocket connected");
       this.reconnectAttempts = 0;
     };
 

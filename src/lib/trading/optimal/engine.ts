@@ -65,13 +65,6 @@ export async function executeOptimalTrade(
     
     // 5. Log optimal trade (skipped - table not in generated types)
     // TODO: Regenerate Supabase types after migration
-    console.log('Optimal trade calculated:', {
-      userId: params.userId,
-      symbol: params.symbol,
-      kellyFraction,
-      positionSizeNOK
-    });
-    
     return {
       success: true,
       positionSizeNOK,
@@ -155,7 +148,6 @@ export async function calculateOptimalTradePreview(
 // Get optimal trade history for a user
 export async function getOptimalTradeHistory(userId: string, limit = 10) {
   // TODO: Implement after regenerating types
-  console.log('Trade history fetch skipped (table not in types)');
   return [];
 }
 

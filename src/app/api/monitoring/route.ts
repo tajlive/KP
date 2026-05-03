@@ -33,8 +33,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       reports.forEach((report) => {
         if (report.type.includes('error')) {
           console.error('[Monitoring]', report);
-        } else {
-          console.info('[Monitoring]', report);
         }
       });
       return NextResponse.json({ success: true });
@@ -43,16 +41,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // In production, log structured format for Cloudflare
     reports.forEach((report) => {
       const sanitizedReport = sanitizeReport(report);
-      
-      console.info(JSON.stringify({
-        level: report.type.includes('error') ? 'error' : 'info',
-        service: 'klarpakke-monitoring',
-        ...sanitizedReport,
-        cf: {
-          rayId: request.headers.get('cf-ray'),
-          country: request.headers.get('cf-ipcountry'),
-        },
-      }));
     });
 
     return NextResponse.json({ 

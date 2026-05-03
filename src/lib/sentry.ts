@@ -44,7 +44,6 @@ export function logMessage(
   context?: Record<string, unknown>,
 ) {
   if (process.env.NODE_ENV !== "production") {
-    console.log(`[Sentry ${level}]`, message, context);
     return;
   }
 
@@ -191,7 +190,6 @@ export function trackCriticalAction(
  */
 export function testSentry() {
   if (process.env.NODE_ENV !== "production") {
-    console.log("🧪 Sentry test: Skippet (ikke produksjon)");
     return;
   }
 
@@ -203,6 +201,4 @@ export function testSentry() {
   // Log en test error (ikke kritisk)
   const testError = new Error("Test error - can be ignored");
   logError(testError, { test: true }, "warning");
-
-  console.log("✅ Sentry test sent! Check your Sentry dashboard.");
 }

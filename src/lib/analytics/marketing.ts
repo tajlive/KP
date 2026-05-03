@@ -158,6 +158,5 @@ export async function trackMarketingEvent(
 export async function fetchFunnelSummary(_days: number = 30) {
   // This function requires regenerated types after migration
   // Implementation uses direct query in dashboard component instead
-  console.log("[Analytics] Use direct query in dashboard for now");
   return null;
 }

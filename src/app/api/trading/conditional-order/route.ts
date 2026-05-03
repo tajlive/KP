@@ -151,10 +151,6 @@ export async function POST(request: NextRequest) {
     // For live trading, also submit to Binance
     if (session.mode === "live") {
       // TODO: Submit OCO order to Binance
-      console.log(
-        "Live conditional order would be submitted to Binance:",
-        orderData,
-      );
     }
 
     // Store in database
@@ -306,7 +302,6 @@ export async function DELETE(request: NextRequest) {
     // For live trading, also cancel on Binance
     if (order.mode === "live") {
       // TODO: Cancel order on Binance
-      console.log("Would cancel order on Binance:", order_id);
     }
 
     // Update status to cancelled

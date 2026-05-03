@@ -195,12 +195,7 @@ export function getSupabaseClient(): SupabaseClient {
           sessionStorage.removeItem(SESSION_STORAGE_KEY);
         }
       }
-      if (process.env.NODE_ENV === "development") {
-        console.log(
-          `[Supabase] Auth event: ${event}`,
-          session ? "has session" : "no session",
-        );
-      }
+      /* development log removed */
     });
   } catch (err) {
     if (

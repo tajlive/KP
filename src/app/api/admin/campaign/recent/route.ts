@@ -23,7 +23,6 @@ export async function GET(request: Request) {
   const supabase = getSupabaseClient();
   
   if (!supabase) {
-    console.info('No Supabase connection, returning fallback users');
     return NextResponse.json({
       users: [
         { id: '1', name: 'Ola Nordmann', email: 'ola@example.com', source: 'linkedin', time_ago: 'nå nettopp' },

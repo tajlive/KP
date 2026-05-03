@@ -313,6 +313,5 @@ export async function logRiskViolations(
  */
 export async function queueForRetry(userId: string, state: unknown): Promise<void> {
   // Outbox pattern: Add to queue for retry
-  console.log(`[executeTradeSafe] Queued state for retry: ${userId}`);
   // Actual implementation would use Bull, SQS, etc.
 }

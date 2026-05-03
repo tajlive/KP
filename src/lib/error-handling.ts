@@ -258,7 +258,6 @@ export const logger = {
     console.warn(message, context);
   },
   info: (message: string, context?: Record<string, unknown>) => {
-    console.info(message, context);
   },
 };
 

@@ -57,9 +57,6 @@ export async function POST(req: NextRequest) {
     
     const event = JSON.parse(payload);
     const { type, data } = event;
-    
-    console.info(`[Resend Webhook] Event: ${type}`, data);
-    
     const supabase = getSupabase();
     
     switch (type) {
@@ -89,7 +86,6 @@ export async function POST(req: NextRequest) {
       
       case 'email.delivery_delayed': {
         // Email delivery delayed (temporary issue)
-        console.info(`[Resend Webhook] Delivery delayed for ${data.id}`);
         break;
       }
       
@@ -130,26 +126,21 @@ export async function POST(req: NextRequest) {
             .from('email_preferences')
             .update({ marketing_emails: false })
             .eq('user_id', logEntry.user_id);
-          
-          console.info(`[Resend Webhook] Disabled marketing emails for user ${logEntry.user_id}`);
         }
         break;
       }
       
       case 'email.opened': {
         // User opened email
-        console.info(`[Resend Webhook] Email opened: ${data.id}`);
         break;
       }
       
       case 'email.clicked': {
         // User clicked link in email
-        console.info(`[Resend Webhook] Link clicked in email: ${data.id}, link: ${data.link}`);
         break;
       }
       
       default:
-        console.info(`[Resend Webhook] Unhandled event type: ${type}`);
     }
     
     return NextResponse.json({ received: true });

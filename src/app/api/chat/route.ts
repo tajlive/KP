@@ -20,9 +20,6 @@ export async function POST(req: Request) {
         { status: 503 },
       );
     }
-
-    console.info("Calling Perplexity API with", messages.length, "messages");
-
     // Call Perplexity API directly
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",

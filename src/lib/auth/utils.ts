@@ -156,10 +156,8 @@ export async function testAuthConfig(): Promise<{
 }
 
 // Log auth event for debugging
-export function logAuthEvent(event: string, details?: Record<string, unknown>) {
-  if (process.env.NODE_ENV === "development") {
-    console.info(`[Auth] ${event}`, details || "");
-  }
+export function logAuthEvent(_event: string, _details?: Record<string, unknown>) {
+  /* Intentionally empty — logging removed in production */
 }
 
 // ============================================

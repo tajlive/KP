@@ -23,7 +23,6 @@ export async function GET() {
   
   // If no Supabase connection, return fallback
   if (!supabase) {
-    console.info('No Supabase connection, returning fallback data');
     return NextResponse.json({
       ...CAMPAIGN_CONFIG.DEFAULT_STATS,
       channels: { linkedin: 12, email: 15, facebook: 8, direct: 12 },
@@ -85,9 +84,6 @@ export async function GET() {
     const totalUsers = total || 0;
     const remaining = Math.max(0, 100 - totalUsers);
     const percentage = Math.min(100, (totalUsers / 100) * 100);
-
-    console.info('Campaign stats:', { total: totalUsers, today: todayCount, week: weekCount });
-
     return NextResponse.json({
       total: totalUsers,
       today: todayCount || 0,

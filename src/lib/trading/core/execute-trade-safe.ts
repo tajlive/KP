@@ -345,9 +345,6 @@ async function executeTradeWithLock(
       auditStatus: 'failed',
     };
   }
-  
-  console.log(`[executeTradeSafe] Slippage OK: Estimated ${estimatedSlippageBps.toFixed(2)} bps`);
-
   // ========================================================================
   // 4. Execution Logic (Simulation for Paper, Exchange Call for Live)
   // ========================================================================
@@ -367,7 +364,6 @@ async function executeTradeWithLock(
   const safetyMultiplier = regimeSafetyMultipliers[regime] || 1.0;
   if (safetyMultiplier < 1.0) {
     adjustedQuantity *= safetyMultiplier;
-    console.log(`[executeTradeSafe] Regime Safety Gate: scaling quantity to ${safetyMultiplier * 100}% due to ${regime} regime`);
   }
   
   // Apply partial exit logic if side is SELL and we have a signal context
@@ -375,7 +371,6 @@ async function executeTradeWithLock(
     const exitRatio = riskKernel.calculateExitRatio(request.signalContext.confidence * 100);
     if (exitRatio < 1.0) {
       adjustedQuantity *= exitRatio;
-      console.log(`[executeTradeSafe] Partial exit triggered: reducing quantity by ${(1 - exitRatio) * 100}% (confidence: ${request.signalContext.confidence})`);
     }
   }
 

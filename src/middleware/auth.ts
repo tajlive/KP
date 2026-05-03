@@ -66,11 +66,6 @@ export async function authMiddleware(
     const error = request.nextUrl.searchParams.get("error");
     const locale = parseLocalePath(pathname).locale;
     
-    // Log OAuth callback for debugging
-    if (process.env.NODE_ENV === "development" || error) {
-      console.log(`[Auth Callback] ${error ? "ERROR" : "SUCCESS"} - Locale: ${locale}, Has code: ${!!code}, Error: ${error || "none"}`);
-    }
-    
     // Log to Sentry in production if there's an error
     if (error && process.env.NODE_ENV === "production") {
       console.error(`[Auth Callback] OAuth error: ${error}`, {

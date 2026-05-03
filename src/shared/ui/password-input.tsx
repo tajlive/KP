@@ -21,10 +21,7 @@ export function PasswordInput({ label, error, className, id: idProp, ...props }:
         setIsClient(true)
         setShowPassword(false)
         
-        if (process.env.NODE_ENV === 'development') {
-             
-            console.log('[PasswordInput] Mounted - visibility reset to hidden')
-        }
+        /* dev log removed */
     }, [])
 
     return (
@@ -47,10 +44,7 @@ export function PasswordInput({ label, error, className, id: idProp, ...props }:
                     onClick={() => {
                         setShowPassword(prev => {
                             const next = !prev
-                            if (process.env.NODE_ENV === 'development') {
-                                 
-                                console.log(`[PasswordInput] Toggle clicked - new state: ${next ? 'visible' : 'hidden'}`)
-                            }
+                            /* dev log removed */
                             return next
                         })
                     }}

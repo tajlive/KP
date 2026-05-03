@@ -122,9 +122,6 @@ export function logAuthEvent(
     extra: context,
   });
   
-  if (process.env.NODE_ENV === "development") {
-    console.info(`[Auth Event] ${event}:`, context);
-  }
 }
 
 /**

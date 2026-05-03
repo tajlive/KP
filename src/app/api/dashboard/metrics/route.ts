@@ -129,13 +129,6 @@ export async function GET(
     const durationMs = Date.now() - startTime;
 
     // ── 5. Structured logging ────────────────────────────────────────
-    console.info(
-      `[dashboard-metrics] user=${user.id.slice(0, 8)} mode=${mode} ` +
-        `scope=${sessionScope} sessions=${metrics.totalTrades > 0 ? "yes" : "no"} ` +
-        `trades=${metrics.totalTrades} pnl=${metrics.totalPnl} ` +
-        `durationMs=${durationMs} requestId=${requestId}`,
-    );
-
     // ── 6. Warn if slow ──────────────────────────────────────────────
     if (durationMs > 1000) {
       Sentry.captureMessage(

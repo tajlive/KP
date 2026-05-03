@@ -317,8 +317,6 @@ export async function getOrCreatePaperTradingSession(
       .in('id', duplicateIds);
     if (stopErr) {
       console.error('[paper-trading] getOrCreate dedup error:', stopErr.message);
-    } else {
-      console.log(`[paper-trading] Stoppet og arkivert ${duplicateIds.length} duplikat(er) for user ${userId}`);
     }
   }
 
@@ -342,8 +340,6 @@ export async function getOrCreatePaperTradingSession(
       .eq('id', (newest as unknown as { id: string }).id);
     if (patchErr) {
       console.error('[paper-trading] getOrCreate soft-migration error:', patchErr.message);
-    } else {
-      console.log(`[paper-trading] Soft-migrert rad ${(newest as { id: string }).id} med ${Object.keys(needsUpdate).length} felt`);
     }
   }
 

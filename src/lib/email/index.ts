@@ -596,9 +596,6 @@ export async function sendTemplatedEmail(
     if (!skipPreferences) {
       const shouldSend = await shouldSendEmail(userId, type);
       if (!shouldSend) {
-        console.info(
-          `[Email] Skipped ${type} for user ${userId} (preferences)`,
-        );
         return { success: true };
       }
     }
@@ -712,8 +709,6 @@ export async function sendTemplatedEmail(
       console.error("[Email] Resend error:", error);
       return { success: false, error: error.message };
     }
-
-    console.info(`[Email] Sent ${type} to ${user.email} (${result?.id})`);
     return { success: true };
   } catch (error) {
     console.error("[Email] Unexpected error:", error);
@@ -741,8 +736,6 @@ export async function queueEmail(
       console.error("[Email] Queue error:", error);
       return { success: false, error: error.message };
     }
-
-    console.info(`[Email] Queued ${options.type} for user ${options.userId}`);
     return { success: true };
   } catch (error) {
     console.error("[Email] Queue unexpected error:", error);

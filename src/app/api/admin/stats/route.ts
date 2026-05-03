@@ -41,7 +41,6 @@ export async function GET() {
 
   // If no Supabase connection, return fallback
   if (!supabase) {
-    console.info("No Supabase connection, returning fallback data");
     return NextResponse.json({
       totalUsers: CAMPAIGN_CONFIG.CURRENT_REGISTERED,
       totalSignups: CAMPAIGN_CONFIG.CURRENT_REGISTERED,
@@ -236,18 +235,6 @@ export async function GET() {
     const totalUsersCount = totalUsers || 0;
     const remaining = Math.max(0, 100 - totalSignupsCount);
     const percentage = Math.min(100, (totalSignupsCount / 100) * 100);
-
-    console.info("Admin stats:", {
-      totalUsers: totalUsersCount,
-      totalSignups: totalSignupsCount,
-      signupsToday,
-      signupsWeek,
-      paperTradingUsers,
-      autoTradingUsers,
-      clickCount,
-      conversionRate,
-    });
-
     return NextResponse.json({
       totalUsers: totalUsersCount,
       totalSignups: totalApplications || totalSignupsCount, // Use applications if available, otherwise signups

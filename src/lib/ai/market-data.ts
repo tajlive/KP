@@ -177,7 +177,6 @@ export function subscribeToPriceUpdates(
   );
 
   ws.onopen = () => {
-    console.info(`✅ Connected to Binance WebSocket for ${symbol}`);
   };
 
   ws.onmessage = (event) => {
@@ -197,7 +196,6 @@ export function subscribeToPriceUpdates(
   };
 
   ws.onclose = () => {
-    console.info(`🔌 Disconnected from Binance WebSocket for ${symbol}`);
   };
 
   return ws;

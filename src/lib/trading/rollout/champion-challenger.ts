@@ -232,7 +232,6 @@ export class ChampionChallengerRollout {
    */
   clearRollback(cohort: BetaCohort): void {
     this.rollbackState.delete(cohort);
-    console.info(`[Rollout] Rollback cleared for ${cohort}`);
   }
   
   /**

@@ -14,7 +14,6 @@ export const logger = {
   },
 
   info: (...args: unknown[]) => {
-    console.info('[Klarpakke INFO]', ...args);
   },
 
   warn: (...args: unknown[]) => {

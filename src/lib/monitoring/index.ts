@@ -32,8 +32,6 @@ export async function logHealthMetrics(
 ) {
   // TODO: KLA-XXX - Opprett health_check_metrics tabell i Supabase
   // Deaktivert midlertidig pga manglende DB-tabell
-   
-  console.log("[Monitoring] Health metrics logging disabled - table not created yet");
 }
 
 /**
@@ -45,8 +43,6 @@ export function trackApiPerformance(
   statusCode: number
 ) {
   // Log til console for nå - kan utvides til å sende til Datadog/ Grafana
-  console.log(`[API Performance] ${endpoint}: ${durationMs}ms (HTTP ${statusCode})`);
-  
   // Alert hvis veldig treg
   if (durationMs > 5000) {
     console.warn(`[API Performance] SLOW: ${endpoint} took ${durationMs}ms`);

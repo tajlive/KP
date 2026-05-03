@@ -40,8 +40,6 @@ export async function sendEmail({
       console.error('[Email] Feil ved sending:', error)
       return { success: false, error }
     }
-    
-    console.info('[Email] Sendt:', data?.id)
     return { success: true, id: data?.id }
   } catch (error) {
     console.error('[Email] Exception:', error)
