@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Handels-UI layout-kontrakt (kort):

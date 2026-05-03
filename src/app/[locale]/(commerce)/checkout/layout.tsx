@@ -1,4 +1,3 @@
-"use client";
 
 import { AuthProvider } from "@/lib/auth/new/AuthContext";
 import { ToastProvider } from "@/providers/ToastProvider";
