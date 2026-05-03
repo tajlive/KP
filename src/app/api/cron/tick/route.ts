@@ -134,10 +134,12 @@ async function processSession(
   db: SupabaseClient<Database>,
   session: TradingSession,
   userRiskConfig?: RiskConfig,
+  preFetchedCandles?: Candle[],
 ): Promise<TickResult> {
   const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
   const pair = session.trading_pair || "BTCUSDT";
-  const candles = await fetchCandles(pair, "1h", 100);
+  // OPTIMIZATION: Use pre-fetched candles if available, else fetch individually
+  const candles = preFetchedCandles ?? await fetchCandles(pair, "1h", 100);
   const currentPrice = candles[candles.length - 1].close;
 
   let signal: StrategySignal;
@@ -703,6 +705,24 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // OPTIMIZATION 1: Pre-fetch candles for all unique symbols
+    // Reduces N separate API calls to 1 call per unique symbol
+    const uniqueSymbols = new Map<string, Candle[]>();
+    const symbolList = [...new Set(sessions.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))];
+    
+    await Promise.all(
+      symbolList.map(async (symbol) => {
+        try {
+          const candles = await fetchCandles(symbol, "1h", 100);
+          uniqueSymbols.set(symbol, candles);
+        } catch (err) {
+          console.error(`[Tick] Failed to fetch candles for ${symbol}:`, err);
+        }
+      }),
+    );
+    
+    console.info(`[Tick] Pre-fetched candles for ${uniqueSymbols.size}/${symbolList.length} unique symbols (${sessions.length} total sessions)`);
+
     const results: TickResult[] = [];
 
     for (const session of sessions as unknown as TradingSession[]) {
@@ -721,7 +741,13 @@ export async function GET(req: NextRequest) {
       }
 
       try {
-        const result = await processSession(db, session, riskConfigMap.get(session.user_id));
+        const symbolKey = session.trading_pair?.replace("/", "") || "BTCUSDT";
+        const result = await processSession(
+          db,
+          session,
+          riskConfigMap.get(session.user_id),
+          uniqueSymbols.get(symbolKey),
+        );
         results.push(result);
 
         // If this was a real trade (not hold/heartbeat), mirror to copy sessions

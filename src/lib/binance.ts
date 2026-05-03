@@ -111,6 +111,23 @@ export const getTickerPrice = async (symbol?: string): Promise<TickerPriceRespon
   return response.json();
 };
 
+/**
+ * Batch price fetch — optimal for multiple symbols in one call
+ * Uses Binance's symbols parameter to reduce N requests to 1
+ */
+export const getTickerPrices = async (symbols: string[]): Promise<TickerPriceResponse[]> => {
+  if (symbols.length === 0) return [];
+  if (symbols.length === 1) {
+    const result = await getTickerPrice(symbols[0]);
+    return Array.isArray(result) ? result : [result];
+  }
+  const encoded = encodeURIComponent(JSON.stringify(symbols));
+  const url = `${BINANCE_API_BASE}/api/v3/ticker/price?symbols=${encoded}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Failed to fetch batch prices');
+  return response.json();
+};
+
 export const getKlines = async (
   symbol: string,
   interval: string = '1h',
