@@ -9,7 +9,7 @@
 -- Must drop first because we changed the return type (added columns, renamed total_capital)
 DROP FUNCTION IF EXISTS get_dashboard_metrics(UUID, TEXT, TEXT[]);
 
-CREATE FUNCTION get_dashboard_metrics(
+CREATE OR REPLACE FUNCTION get_dashboard_metrics(
   p_user_id UUID,
   p_mode TEXT,
   p_statuses TEXT[]

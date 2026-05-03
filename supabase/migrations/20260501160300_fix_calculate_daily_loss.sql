@@ -9,6 +9,7 @@
 DROP FUNCTION IF EXISTS public.calculate_daily_loss(UUID, UUID);
 DROP FUNCTION IF EXISTS public.calculate_daily_loss(UUID);
 DROP FUNCTION IF EXISTS public.calculate_daily_loss();
+DROP FUNCTION IF EXISTS public.calculate_daily_loss(UUID, DATE);
 
 CREATE OR REPLACE FUNCTION public.calculate_daily_loss(
   p_user_id UUID,
