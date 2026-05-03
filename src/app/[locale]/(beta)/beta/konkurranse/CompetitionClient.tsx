@@ -121,7 +121,7 @@ export default function CompetitionClient({
         if (confirm(tComp('copyStrategy', { name: entry.user_display_name }) + '\n\n' + tComp('copyStrategyDesc', { risk: entry.risk_level.toUpperCase() }))) {
             try {
                 await startAutoTrade(entry.risk_level)
-                router.push(`/${params.locale}/beta/auto-trade`)
+                router.push(`/${params.locale}/dashboard/auto-trade`)
             } catch (_error) {
                 toast.error(tComp('copyError'))
             }
