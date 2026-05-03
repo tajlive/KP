@@ -54,9 +54,6 @@ export default function AdminLayout({
       const RETRY_DELAY = 500; // ms
 
       try {
-        console.info(
-          `[Admin Layout] Checking admin access (attempt ${retryCount + 1})...`,
-        );
         const supabase = createClient();
 
         // First try to get session (more reliable than getUser)
@@ -79,13 +76,10 @@ export default function AdminLayout({
         }
 
         if (!user) {
-          console.info("[Admin Layout] No user found");
           if (retryCount < MAX_RETRIES) {
-            console.info(`[Admin Layout] Retrying in ${RETRY_DELAY}ms...`);
             setTimeout(() => checkAdmin(retryCount + 1), RETRY_DELAY);
             return;
           }
-          console.info("[Admin Layout] Redirecting to login");
           const supportedLocales = ["no", "en", "th", "zh"];
           const safeLocale = supportedLocales.includes(locale) ? locale : "no";
           router.push(
@@ -93,8 +87,6 @@ export default function AdminLayout({
           );
           return;
         }
-
-        console.info("[Admin Layout] User found:", user.email);
         setUserEmail(user.email || "");
 
         // Fallback allowlist (synk med server: env ADMIN_EMAIL_ALLOWLIST + verify-admin-access)
@@ -110,37 +102,21 @@ export default function AdminLayout({
         if (error) {
           console.error("[Admin Layout] Profile fetch error:", error);
         }
-
-        console.info(
-          "[Admin Layout] User role:",
-          userData?.role,
-          "| Whitelisted:",
-          isWhitelisted,
-        );
-
         // Allow access if either role is admin OR email is whitelisted
         const hasAdminAccess = userData?.role === "admin" || isWhitelisted;
 
         if (!hasAdminAccess) {
-          console.info(
-            "[Admin Layout] User is not admin, redirecting to dashboard",
-          );
           router.push(`/${locale}/dashboard?error=not_admin`);
           return;
         }
 
         // If whitelisted but role is not admin, try to update it
         if (isWhitelisted && userData?.role !== "admin") {
-          console.info(
-            "[Admin Layout] User whitelisted but role not set, updating...",
-          );
           await supabase
             .from("user_profiles")
             .update({ role: "admin", updated_at: new Date().toISOString() })
             .eq("id", user.id);
         }
-
-        console.info("[Admin Layout] Admin access granted");
         setIsAdmin(true);
         setLoading(false);
       } catch (err) {

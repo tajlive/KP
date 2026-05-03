@@ -67,7 +67,6 @@ export class AutoTrader {
 
       // Only execute if above minimum trade size
       if (totalValue < 1000) {
-        console.log(`Trade value ${totalValue} below minimum`);
         return false;
       }
 
@@ -82,7 +81,6 @@ export class AutoTrader {
         });
       } else {
         // Live trading would go here
-        console.log(`Live trade not implemented yet: ${signal.action} ${quantity} ${signal.symbol}`);
         return false;
       }
 
@@ -101,7 +99,6 @@ export class AutoTrader {
     // - Push notification
     // - Email
     // - In-app notification
-    console.log(`Auto trade notification for user ${this.config.user_id}:`, trade);
   }
 }
 
@@ -133,7 +130,6 @@ export async function runAutoTradingCycle(supabase?: Supa): Promise<{
     const signals = await getRecentTradingSignals(20, 70);
 
     if (signals.length === 0) {
-      console.log('No trading signals available');
       return results;
     }
 

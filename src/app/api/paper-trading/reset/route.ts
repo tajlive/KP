@@ -79,9 +79,6 @@ export async function POST(request: NextRequest) {
         { status: 500 },
       );
     }
-
-    console.log(`[paper-trading/reset] Nullstilte ${sessions.length} sesjon(er) for user ${user.id}`);
-
     return NextResponse.json({
       success: true,
       reset: sessions.length,

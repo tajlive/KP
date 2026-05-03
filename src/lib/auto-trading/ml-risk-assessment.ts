@@ -411,11 +411,6 @@ export interface TradeOutcome {
 export function recordTradeOutcome(outcome: TradeOutcome): void {
   // In production, this would feed into model retraining
   // For now, just log for analysis
-  console.info('Trade outcome recorded:', {
-    prediction: outcome.predictedSuccess,
-    actual: outcome.wasProfitable ? 'win' : 'loss',
-    return: outcome.actualReturn
-  })
 }
 
 /**

@@ -84,7 +84,6 @@ export function usePushNotifications(userId: string | null): PushState {
         }, { onConflict: 'endpoint' })
 
       setIsSubscribed(true)
-      console.info('Push subscription successful')
     } catch (error) {
       console.error('Error subscribing to push:', error)
       throw error
@@ -109,7 +108,6 @@ export function usePushNotifications(userId: string | null): PushState {
           .eq('endpoint', subscription.endpoint)
 
         setIsSubscribed(false)
-        console.info('Push unsubscription successful')
       }
     } catch (error) {
       console.error('Error unsubscribing from push:', error)

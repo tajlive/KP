@@ -335,7 +335,6 @@ class BinanceWebSocket {
       const ws = new WebSocket(wsUrl);
       
       ws.onopen = () => {
-        console.info(`[BinanceWebSocket] Connected to ${streamKey}`);
       };
       
       ws.onmessage = (event) => {
@@ -352,7 +351,6 @@ class BinanceWebSocket {
       };
       
       ws.onclose = () => {
-        console.info(`[BinanceWebSocket] Disconnected from ${streamKey}`);
         // Auto-reconnect logic could be added here
         this.customConnections.delete(streamKey);
       };

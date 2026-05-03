@@ -126,8 +126,6 @@ export class OutboxRecovery {
    * Prosesser én item
    */
   private async processItem(item: OutboxItem): Promise<{ success: boolean; error?: string }> {
-    console.log(`[OutboxRecovery] Processing ${item.type} (attempt ${item.attempts + 1}/${this.maxAttempts})`);
-
     try {
       switch (item.type) {
         case 'RISK_STATE_SYNC':

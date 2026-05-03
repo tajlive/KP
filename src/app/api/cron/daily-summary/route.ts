@@ -162,11 +162,6 @@ export async function GET(req: NextRequest) {
 
       sent += 1;
     }
-
-    console.info(
-      `[Daily Summary] sent=${sent} skipped=${skipped} windowHours=${SUMMARY_LOOKBACK_HOURS}`,
-    );
-
     return NextResponse.json({ ok: true, sent, skipped });
   } catch (error) {
     console.error("[Daily Summary]:", error);

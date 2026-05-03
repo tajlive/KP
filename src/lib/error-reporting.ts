@@ -31,8 +31,6 @@ export function initGlobalErrorHandling() {
   // DISABLED: This function caused infinite API call loops when database was unavailable
   // The fetch wrapper would report API errors, but if error-report API also failed,
   // it would create cascading failures.
-  
-  console.info('[Global Error Handling] DISABLED to prevent infinite loops');
   return;
   
   /*

@@ -481,7 +481,6 @@ class WebSocketManager {
     this.circuitResetTimer = setTimeout(() => {
       this.circuitOpen = false;
       this.consecutiveFailures = 0;
-      console.info("[WebSocketManager] Circuit breaker reset, attempting reconnect");
       this.connect();
     }, CIRCUIT_BREAKER_RESET_MS);
   }

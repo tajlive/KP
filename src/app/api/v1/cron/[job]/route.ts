@@ -86,8 +86,6 @@ export async function POST(
     }
 
     const duration = Date.now() - startTime;
-    console.log(`[v1/cron/${job}] Completed in ${duration}ms`);
-
     return NextResponse.json({
       ok: true,
       job,

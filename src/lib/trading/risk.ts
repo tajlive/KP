@@ -80,13 +80,6 @@ export async function validateRiskConfig(userId: string): Promise<TradingRiskCon
       'Must be greater than 0.'
     );
   }
-  
-  console.info('[Risk] Config validated for user:', userId, {
-    risk_level: config.risk_level,
-    max_leverage: config.max_leverage,
-    max_position_size: config.max_position_size_usd,
-  });
-  
   return config;
 }
 
@@ -157,6 +150,4 @@ export async function createDefaultRiskConfig(userId: string): Promise<void> {
     console.error('[Risk] Error creating default risk config:', error);
     throw error;
   }
-  
-  console.info('[Risk] Default config created for user:', userId);
 }

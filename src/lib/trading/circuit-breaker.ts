@@ -194,12 +194,10 @@ export class CircuitBreaker {
       console.warn(`[CircuitBreaker:${this.options.name}] OPENED (failures: ${this.failures})`);
     } else if (newState === 'HALF_OPEN') {
       this.consecutiveSuccesses = 0;
-      console.log(`[CircuitBreaker:${this.options.name}] Testing (HALF_OPEN)`);
     } else if (newState === 'CLOSED') {
       this.failures = 0;
       this.consecutiveSuccesses = 0;
       this.nextAttempt = undefined;
-      console.log(`[CircuitBreaker:${this.options.name}] CLOSED (healthy)`);
     }
 
     // Log state transition for monitoring
@@ -215,7 +213,6 @@ export class CircuitBreaker {
 
   private logStateTransition(from: CircuitState, to: CircuitState): void {
     // Could emit to monitoring system, Sentry, etc.
-    console.log(`[CircuitBreaker:${this.options.name}] ${from} -> ${to}`);
   }
 }
 

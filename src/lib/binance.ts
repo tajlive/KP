@@ -212,7 +212,6 @@ class BinanceWebSocket {
     this.subscribedStreams = new Set(streams);
 
     this.ws.onopen = () => {
-      console.info('Binance WebSocket connected');
       this.reconnectAttempts = 0;
     };
 
@@ -226,7 +225,6 @@ class BinanceWebSocket {
     };
 
     this.ws.onclose = () => {
-      console.info('WebSocket closed');
       this.attemptReconnect(streams);
     };
   }
@@ -248,7 +246,6 @@ class BinanceWebSocket {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
       setTimeout(() => {
-        console.info(`Reconnecting... Attempt ${this.reconnectAttempts}`);
         this.connect(streams);
       }, this.reconnectDelay * this.reconnectAttempts);
     }

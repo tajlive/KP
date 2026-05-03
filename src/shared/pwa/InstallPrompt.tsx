@@ -218,7 +218,6 @@ export function useServiceWorker() {
     navigator.serviceWorker
       .register("/sw.js")
       .then((registration) => {
-        console.log("[PWA] Service Worker registered:", registration.scope);
         setIsReady(true);
       })
       .catch((err) => {

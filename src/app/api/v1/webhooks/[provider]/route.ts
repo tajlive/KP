@@ -146,11 +146,6 @@ async function handleGitHubWebhook(body: string, headers: Headers) {
     }
 
     const payload = JSON.parse(body);
-    console.log(`[v1/webhooks/github] ${event} event`, {
-      repo: payload.repository?.full_name,
-      sender: payload.sender?.login,
-    });
-
     return NextResponse.json({ received: true, event });
   } catch (error) {
     console.error("[v1/webhooks/github]", error);

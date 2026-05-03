@@ -94,10 +94,6 @@ export function getBinanceClient(): ReturnType<typeof Binance> {
         wsFutures: "wss://stream.binancefuture.com/ws",
       }),
     });
-
-    console.info(
-      `[Binance] Client initialized (${testnet ? "TESTNET" : "PRODUCTION"})`,
-    );
   }
 
   return client;
@@ -181,14 +177,6 @@ export async function placeOrder(params: {
   timeInForce?: "GTC" | "IOC" | "FOK";
 }) {
   // Extra safety: Log all orders
-  console.info("[Binance] Placing order:", {
-    symbol: params.symbol,
-    side: params.side,
-    type: params.type,
-    quantity: params.quantity,
-    timestamp: new Date().toISOString(),
-  });
-
   await rateLimiter.checkLimit(1); // Order placement has weight 1
   const client = getBinanceClient();
 
@@ -216,12 +204,6 @@ export async function placeOrder(params: {
       order: (params: BinanceOrderParams) => Promise<BinanceOrderResult>;
     };
     const order = await orderClient.order(orderParams);
-
-    console.info("[Binance] Order placed successfully:", {
-      orderId: order.orderId,
-      status: order.status,
-    });
-
     return order;
   } catch (error) {
     console.error("[Binance] Order failed:", error);

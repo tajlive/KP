@@ -128,9 +128,6 @@ export async function executeRebalancing(
   for (const trade of trades) {
     // I produksjon: Kall binance-executor for hver trade
     // Foreløpig: Logg bare
-    console.info(
-      `Rebalancing: ${trade.action} ${trade.symbol} for ${trade.amount} NOK`,
-    );
     executed++;
   }
 

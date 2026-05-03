@@ -449,9 +449,6 @@ export class AuditStore {
       //     'evidence-hash': evidence.hash
       //   }
       // }));
-      
-      console.log(`[AuditStore] Mock S3 write: ${key}`);
-      
       return { success: true, path: `s3://${this.config.s3.bucket}/${key}` };
       
     } catch (error) {

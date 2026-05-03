@@ -60,7 +60,5 @@ export function logApi(
     console.error(line);
   } else if (level === "warn") {
     console.warn(line);
-  } else {
-    console.info(line);
   }
 }

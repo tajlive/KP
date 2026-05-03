@@ -201,8 +201,6 @@ export async function transitionBotStatus(
       console.error("[BotHealth] Failed to transition status:", error);
       return false;
     }
-
-    console.log(`[BotHealth] Bot ${botId} transitioned: ${current?.status} -> ${newStatus}${reason ? ` (${reason})` : ""}`);
     return true;
   } catch (error) {
     console.error("[BotHealth] Unexpected error transitioning status:", error);

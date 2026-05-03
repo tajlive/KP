@@ -121,7 +121,6 @@ export function useLearningProgress(): LearningProgressState {
         setEarnedBadges(prev => [...prev, newBadge]);
         
         // Send toast/notification about new badge (implemented in future version)
-        console.info(`🎉 Nytt badge oppnådd: ${track.badgeLabel}`);
       }
     });
   }, [completedLessonIds, earnedBadges, isLoaded]);

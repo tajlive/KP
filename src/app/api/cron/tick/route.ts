@@ -106,16 +106,6 @@ async function executeLiveTrade(
       console.error(`[LiveTrade] Binance order failed for user ${userId}:`, result.error);
       return null;
     }
-
-    console.info(`[LiveTrade] Order executed for user ${userId}:`, {
-      orderId: result.orderId,
-      symbol: binanceSymbol,
-      side,
-      executedPrice: result.executedPrice,
-      executedQuantity: result.executedQuantity,
-      fee: result.fee,
-    });
-
     return {
       executedPrice: result.executedPrice,
       binanceOrderId: result.orderId,
@@ -526,17 +516,6 @@ async function processSession(
   }
 
   // Log successful trade
-  console.info("Trade executed:", {
-    session_id: session.id,
-    trade_id: trade?.id,
-    mode: session.mode,
-    side: signal.action,
-    amount: tradeAmount,
-    price: finalExecutedPrice,
-    binance_order_id: liveResult?.binanceOrderId ?? null,
-    fifo_lots: updatedLedgerState?.lots.length ?? 0,
-  });
-
   return {
     session_id: session.id,
     action: signal.action,
@@ -609,10 +588,6 @@ async function mirrorTradeToFollowers(
         console.warn(
           `Failed to mirror trade ${trade.id} to follower ${followerSession.id}:`,
           mirrorError.message,
-        );
-      } else {
-        console.info(
-          `Trade ${trade.id} mirrored to copy session ${followerSession.id}`,
         );
       }
     }
@@ -720,9 +695,6 @@ export async function GET(req: NextRequest) {
         }
       }),
     );
-    
-    console.info(`[Tick] Pre-fetched candles for ${uniqueSymbols.size}/${symbolList.length} unique symbols (${sessions.length} total sessions)`);
-
     const results: TickResult[] = [];
 
     for (const session of sessions as unknown as TradingSession[]) {
@@ -788,11 +760,6 @@ export async function GET(req: NextRequest) {
       duration_ms: Date.now() - startTime,
       results,
     };
-
-    // Log summary to Sentry if there are issues
-    if (summary.errors > 0 || summary.risk_blocked > 0) {
-      console.info("Cron tick summary:", summary);
-    }
 
     await captureCronSuccess("tick", new Date(startTime), new Date());
 

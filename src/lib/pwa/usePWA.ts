@@ -35,7 +35,6 @@ export function usePWA(): PWAState {
     // Note: We do NOT call preventDefault() here to allow the native banner to show
     // The browser will automatically show the banner when criteria are met
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      console.info("Got beforeinstallprompt event");
       // Store the event for custom install button, but don't prevent default
       // This allows both native banner AND custom button to work
       setDeferredPrompt(e);
@@ -43,7 +42,6 @@ export function usePWA(): PWAState {
 
     // Listen for appinstalled
     const handleAppInstalled = () => {
-      console.info("App was installed");
       setDeferredPrompt(null);
       setIsInstalled(true);
     };
@@ -85,7 +83,6 @@ export function usePWA(): PWAState {
 
   const installPrompt = useCallback(async () => {
     if (!deferredPrompt) {
-      console.info("No install prompt available");
       return;
     }
 
@@ -93,11 +90,7 @@ export function usePWA(): PWAState {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === "accepted") {
-      console.info("User accepted install prompt");
-    } else {
-      console.info("User dismissed install prompt");
-    }
+    // User choice handled: " + outcome
 
     setDeferredPrompt(null);
   }, [deferredPrompt]);

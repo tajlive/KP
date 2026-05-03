@@ -48,8 +48,6 @@ export function useABTest(testName: string): Variant {
       
       localStorage.setItem(`ab_test_${testName}`, JSON.stringify(test));
       setVariant(newVariant);
-      
-      console.info(`[A/B Test] Assigned variant '${newVariant}' for test '${testName}'`);
     }
   }, [testName]);
 
@@ -74,8 +72,6 @@ export function trackConversion(testName: string, conversionType: string) {
       conversion_type: conversionType,
     });
   }
-  
-  console.info('[A/B Test] Conversion:', { testName, variant: test.variant, conversionType });
 }
 
 /**

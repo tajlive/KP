@@ -323,7 +323,6 @@ class PriceFallback {
     this.circuitResetTimer = setTimeout(() => {
       this.circuitOpen = false;
       this.consecutiveFailures = 0;
-      console.info("[PriceFallback] Circuit breaker reset");
     }, CIRCUIT_BREAKER_TIMEOUT_MS);
   }
 

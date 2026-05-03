@@ -71,9 +71,6 @@ export async function copyTrade(originalTrade: AutoTradingTrade) {
     .eq("status", "ACTIVE");
 
   if (followersError || !followers) return;
-
-  console.info(`Copying trade for ${followers.length} followers`);
-
   for (const follower of followers as {
     user_id: string;
     id: string;

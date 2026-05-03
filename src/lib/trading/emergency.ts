@@ -172,11 +172,6 @@ export async function panicCloseAllPositions(): Promise<number> {
     if (!openPositions || openPositions.length === 0) {
       return 0;
     }
-
-    console.info(
-      `[Emergency] Panic closing ${openPositions.length} positions...`,
-    );
-
     // Lukk hver posisjon med MARKET order (session row: trading_pair, open_position)
     for (const row of openPositions) {
       const position = row as unknown as {
@@ -211,10 +206,6 @@ export async function panicCloseAllPositions(): Promise<number> {
         // Fortsett med neste posisjon
       }
     }
-
-    console.info(
-      `[Emergency] Closed ${closedCount}/${openPositions.length} positions`,
-    );
     return closedCount;
   } catch (error) {
     console.error("[Emergency] Panic close failed:", error);

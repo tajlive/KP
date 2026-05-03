@@ -67,25 +67,16 @@ export class AutoTradingEngine {
    */
   async start(onDecision?: (decision: TradeDecision) => void, onError?: (error: Error) => void): Promise<void> {
     if (this.isRunning) {
-      console.info('🤖 AI Auto-Trading already running');
       return;
     }
 
     if (!this.config.enabled) {
-      console.info('⏸️ AI Auto-Trading is disabled');
       return;
     }
 
     this.onDecisionCallback = onDecision;
     this.onErrorCallback = onError;
     this.isRunning = true;
-
-    console.info('🤖 AI Auto-Trading started');
-    console.info(`   Symbols: ${this.config.symbols.join(', ')}`);
-    console.info(`   Risk Level: ${this.config.riskLevel}`);
-    console.info(`   Max Trades/Day: ${this.config.maxTradesPerDay}`);
-    console.info(`   AI Enabled: ${this.config.useAI ? 'Yes (Cloudflare)' : 'No (Rule-based)'}`);
-
     // Setup WebSocket connections for real-time prices
     this.setupPriceWebSockets();
 
@@ -110,8 +101,6 @@ export class AutoTradingEngine {
     // Close all WebSocket connections
     this.wsConnections.forEach((ws) => ws.close());
     this.wsConnections.clear();
-
-    console.info('🛑 AI Auto-Trading stopped');
   }
 
   /**
@@ -356,9 +345,6 @@ export class AutoTradingEngine {
         .eq('user_id', this.config.userId)
         .eq('symbol', decision.symbol)
         .eq('timestamp', decision.timestamp);
-
-      console.info(`✅ Trade executed: ${decision.action} ${decision.symbol} @ $${decision.targetPrice}`);
-
       return { success: true };
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Trade execution failed';
