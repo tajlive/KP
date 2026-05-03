@@ -1,4 +1,3 @@
-"use client";
 
 import { GraduationCap, PlayCircle, CheckCircle } from "lucide-react";
 import Link from "next/link";

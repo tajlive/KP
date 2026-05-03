@@ -1,4 +1,3 @@
-"use client";
 
 import { useVippsMarket } from "@/shared/providers/VippsMarketProvider";
 import { FAQList } from "./FAQList";

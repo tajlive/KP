@@ -1,4 +1,3 @@
-"use client";
 
 import { CopyTradingSubAppHeader } from "@/features/copy-trading/CopyTradingSubAppHeader";
 import { AuthProvider } from "@/lib/auth/new/AuthContext";

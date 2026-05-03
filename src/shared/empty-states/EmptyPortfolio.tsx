@@ -1,4 +1,3 @@
-"use client";
 
 import { Wallet, ArrowRight, TrendingUp, Sparkles } from "lucide-react";
 import { Button } from "@/shared/ui/button";
