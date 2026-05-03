@@ -1,27 +1,16 @@
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing.config";
+import { CANONICAL_REDIRECTS } from "@/lib/routing/canonical-redirects";
 import {
   localizedPathname,
   parseLocalePath,
   LOCALE_RE,
 } from "./locale-path";
 
-export const SUPPORTED_LOCALES = ["no", "en", "th", "zh"] as const;
+export const SUPPORTED_LOCALES = ["no", "en"] as const;
 
 const handleI18nRouting = createMiddleware(routing);
-
-const CANONICAL_REDIRECTS: { [key: string]: string } = {
-  "/dashboard/activity": "/handelshistorikk",
-  "/dashboard/trading": "/dashboard/trade",
-  "/dashboard/innstillinger": "/dashboard/settings",
-  "/trade": "/dashboard/trade",
-  "/auto-trading": "/dashboard/auto-trade",
-  "/auto-trading-ai": "/dashboard/auto-trade",
-  "/innlogging": "/login",
-  "/registrer": "/register",
-  "/paper": "/paper-trading",
-};
 
 export function i18nMiddleware(
   request: NextRequest,

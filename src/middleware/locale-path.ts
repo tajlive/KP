@@ -16,14 +16,7 @@ export function localizedPathname(
   strippedPath: string,
 ): string {
   const path = strippedPath.startsWith("/") ? strippedPath : `/${strippedPath}`;
-  // With localePrefix: "always", all locales including default get /{locale} prefix
-  if (routing.localePrefix === "always") {
-    return `/${locale}${path}`;
-  }
-  // legacy: localePrefix: "as-needed" (default locale without prefix)
-  if (locale === "no") {
-    return path;
-  }
+  // localePrefix: "always" — all locales including default get /{locale} prefix
   return `/${locale}${path}`;
 }
 
