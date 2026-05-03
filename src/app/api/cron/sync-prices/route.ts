@@ -43,10 +43,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch from Binance API
-    const response = await fetch("https://api.binance.com/api/v3/ticker/24hr", {
-      next: { revalidate: 0 },
-    });
+    // Fetch from Binance API — OPTIMIZED: request only tracked symbols
+    // Weight: 2-4 instead of 40 for all symbols
+    const encodedSymbols = encodeURIComponent(JSON.stringify(TRACKED_SYMBOLS));
+    const response = await fetch(
+      `https://api.binance.com/api/v3/ticker/24hr?symbols=${encodedSymbols}`,
+      { next: { revalidate: 0 } },
+    );
 
     if (!response.ok) {
       throw new Error(`Binance API error: ${response.status}`);
@@ -54,9 +57,7 @@ export async function GET(request: NextRequest) {
 
     const tickers: BinanceTicker[] = await response.json();
 
-    const updates = tickers
-      .filter((t) => TRACKED_SYMBOLS.includes(t.symbol))
-      .map((t) => ({
+    const updates = tickers.map((t) => ({
         symbol: t.symbol,
         name: t.symbol.replace("USDT", ""),
         price: parseFloat(t.lastPrice),
