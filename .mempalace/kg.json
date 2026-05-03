@@ -235,6 +235,11 @@
       "predicate": "demo_strategy",
       "object": "dca_trygg",
       "validFrom": "2026-04-23"
+    },
+    {
+      "predicate": "has",
+      "object": "5 active bots",
+      "validFrom": "2026-05-03T13:04:30.817Z"
     }
   ],
   "deployment": [
@@ -1843,6 +1848,62 @@
       "predicate": "retained",
       "object": "mempalace clean cron (Sunday 03:00)",
       "validFrom": "2026-04-30T07:19:58.595Z"
+    }
+  ],
+  "BTCUSDT": [
+    {
+      "predicate": "uses",
+      "object": "DCA strategy",
+      "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "ETHUSDT": [
+    {
+      "predicate": "uses",
+      "object": "Trend SMA 20/50 strategy",
+      "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "SOLUSDT": [
+    {
+      "predicate": "uses",
+      "object": "Multi-signal strategy",
+      "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "DOGEUSDT": [
+    {
+      "predicate": "uses",
+      "object": "Grid strategy",
+      "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "AVAXUSDT": [
+    {
+      "predicate": "uses",
+      "object": "Ensemble AI strategy",
+      "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "paper-balance": [
+    {
+      "predicate": "reset-to",
+      "object": "500000 NOK",
+      "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "multi-bot": [
+    {
+      "predicate": "dedup-fixed-in",
+      "object": "getOrCreatePaperTradingSession",
+      "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "ETH-trend": [
+    {
+      "predicate": "backtest-return",
+      "object": "+4.69% over 4 years",
+      "validFrom": "2026-05-03T13:04:30.818Z"
     }
   ]
 }
