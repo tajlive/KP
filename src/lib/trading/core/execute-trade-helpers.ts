@@ -67,7 +67,6 @@ export async function buildSystemHealth(
     try {
       const { getRiskStateStore } = await import('@/lib/trading/risk/risk-state-store');
       const store = getRiskStateStore();
-      // @ts-ignore - accessing internal redis
       await store['redis'].get('health:check');
     } catch {
       failedServices.push('redis');

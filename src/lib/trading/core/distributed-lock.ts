@@ -76,7 +76,6 @@ export async function acquireLock(
   const store = getRiskStateStore();
   
   // Access Redis through the store (using internal Redis client)
-  // @ts-ignore - accessing private redis client
   const redis = store['redis'] as {
     set(key: string, value: string, ttl?: number): Promise<void>;
     get(key: string): Promise<string | null>;
@@ -146,7 +145,6 @@ export async function releaseLock(
 ): Promise<boolean> {
   const store = getRiskStateStore();
   
-  // @ts-ignore - accessing private redis client
   const redis = store['redis'] as {
     get(key: string): Promise<string | null>;
     del(key: string): Promise<void>;
@@ -197,7 +195,6 @@ export async function extendLock(
 ): Promise<boolean> {
   const store = getRiskStateStore();
   
-  // @ts-ignore - accessing private redis client
   const redis = store['redis'] as {
     get(key: string): Promise<string | null>;
     set(key: string, value: string, ttl?: number): Promise<void>;
@@ -280,7 +277,6 @@ export async function getLockInfo(
 ): Promise<{ lockId: string; acquiredAt: Date; expiresAt: Date } | null> {
   const store = getRiskStateStore();
   
-  // @ts-ignore - accessing private redis client
   const redis = store['redis'] as {
     get(key: string): Promise<string | null>;
   };
