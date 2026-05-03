@@ -14,7 +14,9 @@ const SYMBOLS = [
   'DOTUSDT', 'LINKUSDT', 'AVAXUSDT', 'MATICUSDT', 'DOGEUSDT',
 ];
 
-async function fetchHourlyCandles(symbol: string, limit = 100) {
+// OPTIMIZED: Only fetch 55 candles — computeFeatures needs max 50 (SMA50)
+// Saves 45% of klines API weight vs 100 candles
+async function fetchHourlyCandles(symbol: string, limit = 55) {
   const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=${limit}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error(`Binance API error: ${res.status} for ${symbol}`);
