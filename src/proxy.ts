@@ -32,17 +32,7 @@ const AUTH_ROUTES = [
   "/update-password",
 ];
 
-const CANONICAL_REDIRECTS: { [key: string]: string } = {
-  "/dashboard/activity": "/handelshistorikk",
-  "/dashboard/trading": "/dashboard/trade",
-  "/dashboard/innstillinger": "/dashboard/settings",
-  "/trade": "/dashboard/trade",
-  "/auto-trading": "/dashboard/auto-trade",
-  "/auto-trading-ai": "/dashboard/auto-trade",
-  "/innlogging": "/login",
-  "/registrer": "/register",
-  "/paper": "/paper-trading",
-};
+import { CANONICAL_REDIRECTS } from "@/lib/routing/canonical-redirects";
 
 /**
  * Generate a cryptographically secure nonce for CSP

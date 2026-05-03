@@ -284,29 +284,22 @@ const nextConfig = {
       { source: "/:locale/super-admin", destination: "/:locale/admin", permanent: true },
       
       // Deleted routes → redirect to appropriate pages
-      { source: "/beta-testing", destination: "/beta", permanent: true },
-      { source: "/:locale/beta-testing", destination: "/:locale/beta", permanent: true },
+      { source: "/beta-testing", destination: "/no/dashboard", permanent: true },
+      { source: "/:locale/beta-testing", destination: "/:locale/dashboard", permanent: true },
       { source: "/signals", destination: "/dashboard", permanent: true },
       { source: "/:locale/signals", destination: "/:locale/dashboard", permanent: true },
       { source: "/simulator", destination: "/no/paper-trading", permanent: true },
       
       // API v1 Consolidation (Script 04 - Phase 1)
-      // NOTE: Direct route.ts files still exist at the old paths, so these
-      // redirects are dead code (Next.js serves the file, not the redirect).
-      // Kept as comments for documentation until old route files are removed.
-      // { source: "/api/trading/execute", destination: "/api/v1/trading/execute", permanent: true },
-      // { source: "/api/trading/sessions/:path*", destination: "/api/v1/trading/sessions/:path*", permanent: true },
-      // { source: "/api/trading/mode", destination: "/api/v1/trading/mode", permanent: true },
-      // { source: "/api/webhooks/resend/:path*", destination: "/api/v1/webhooks/resend/:path*", permanent: true },
-      // { source: "/api/cron/daily-summary", destination: "/api/v1/cron/daily-summary", permanent: true },
-      // { source: "/api/cron/update-usdt-nok", destination: "/api/v1/cron/update-usdt-nok", permanent: true },
-      // { source: "/api/cron/keepalive", destination: "/api/v1/cron/keepalive", permanent: true },
-      // { source: "/api/notifications/:path*", destination: "/api/v1/notifications/:path*", permanent: true },
       // Webhooks/github — no direct route.ts exists, keep redirect
       { source: "/api/webhooks/github/:path*", destination: "/api/v1/webhooks/github/:path*", permanent: true },
       { source: "/:locale/simulator", destination: "/:locale/paper-trading", permanent: true },
       { source: "/:locale/settings", destination: "/:locale/profile?tab=settings", permanent: true },
       { source: "/:locale/om", destination: "/:locale/om-oss", permanent: true },
+      { source: "/konto", destination: "/no/profile?tab=wallet", permanent: true },
+      { source: "/:locale/konto", destination: "/:locale/profile?tab=wallet", permanent: true },
+      { source: "/innstillinger", destination: "/no/profile?tab=settings", permanent: true },
+      { source: "/:locale/innstillinger", destination: "/:locale/profile?tab=settings", permanent: true },
     ];
   },
 
