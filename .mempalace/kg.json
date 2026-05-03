@@ -578,6 +578,36 @@
       "predicate": "min-order",
       "object": "10-usd",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "optimized_by",
+      "object": "pre-fetch candles (90% reduction)",
+      "validFrom": "2026-05-03T18:39:19.368Z"
+    },
+    {
+      "predicate": "optimized_by",
+      "object": "batch ticker/price fetch",
+      "validFrom": "2026-05-03T18:39:19.368Z"
+    },
+    {
+      "predicate": "optimized_by",
+      "object": "sync-prices tracked-only (weight 40→2-4)",
+      "validFrom": "2026-05-03T18:39:19.369Z"
+    },
+    {
+      "predicate": "optimized_by",
+      "object": "eliminate redundant /ticker/price calls",
+      "validFrom": "2026-05-03T18:39:19.369Z"
+    },
+    {
+      "predicate": "optimized_by",
+      "object": "reduce candles 100→55 for feature-loader + ai-engine",
+      "validFrom": "2026-05-03T18:39:19.369Z"
+    },
+    {
+      "predicate": "total_reduction",
+      "object": "~60% fewer API calls daily",
+      "validFrom": "2026-05-03T18:39:19.369Z"
     }
   ],
   "copy-trading": [
@@ -1642,6 +1672,36 @@
       "predicate": "has-verification-tool",
       "object": "verify-claims",
       "validFrom": "2026-04-29T14:10:52.899Z"
+    },
+    {
+      "predicate": "has_canonical_redirects",
+      "object": "src/lib/routing/canonical-redirects.ts (single source of truth)",
+      "validFrom": "2026-05-03T18:39:19.371Z"
+    },
+    {
+      "predicate": "fixed_redirect",
+      "object": "/beta-testing → /dashboard (was 404 to deleted /beta)",
+      "validFrom": "2026-05-03T18:39:19.371Z"
+    },
+    {
+      "predicate": "fixed_redirect",
+      "object": "/dashboard/innstillinger → /profile?tab=settings",
+      "validFrom": "2026-05-03T18:39:19.371Z"
+    },
+    {
+      "predicate": "added_redirects",
+      "object": "/konto and /innstillinger in next.config.mjs",
+      "validFrom": "2026-05-03T18:39:19.371Z"
+    },
+    {
+      "predicate": "cleaned",
+      "object": "dead localePrefix: as-needed code in locale-path.ts",
+      "validFrom": "2026-05-03T18:39:19.371Z"
+    },
+    {
+      "predicate": "cleaned",
+      "object": "8 commented-out legacy API redirects in next.config",
+      "validFrom": "2026-05-03T18:39:19.371Z"
     }
   ],
   "tomarnejensen@gmail.com": [
@@ -1904,6 +1964,20 @@
       "predicate": "backtest-return",
       "object": "+4.69% over 4 years",
       "validFrom": "2026-05-03T13:04:30.818Z"
+    }
+  ],
+  "beta-folder": [
+    {
+      "predicate": "deleted",
+      "object": "entire src/app/[locale]/(beta)/ folder (1,712 lines)",
+      "validFrom": "2026-05-03T18:39:19.370Z"
+    }
+  ],
+  "CompetitionClient": [
+    {
+      "predicate": "moved_to",
+      "object": "src/features/leaderboard/CompetitionClient.tsx",
+      "validFrom": "2026-05-03T18:39:19.371Z"
     }
   ]
 }
