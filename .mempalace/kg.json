@@ -1432,6 +1432,46 @@
       "predicate": "uses",
       "object": "mempalace-v3.1.1-graceful-shutdown",
       "validFrom": "2026-04-28T19:30:00.000Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "ralph-loop-max_ralph_iterations-2",
+      "validFrom": "2026-05-01T15:30:00.000Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "max_retries_per_step-5",
+      "validFrom": "2026-05-01T15:30:00.000Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "reserved_context_size-40000",
+      "validFrom": "2026-05-01T15:30:00.000Z"
+    },
+    {
+      "predicate": "uses",
+      "object": "compaction_trigger_ratio-0.94",
+      "validFrom": "2026-05-01T15:30:00.000Z"
+    },
+    {
+      "predicate": "has_rule",
+      "object": "agent-thinking-discipline-5-rules",
+      "validFrom": "2026-05-01T15:30:00.000Z"
+    },
+    {
+      "predicate": "has_component",
+      "object": "verify-agent-thinking-discipline",
+      "validFrom": "2026-05-01T15:30:00.000Z"
+    },
+    {
+      "predicate": "has_component",
+      "object": "autostart-v5.0-parallel-compact",
+      "validFrom": "2026-05-01T15:30:00.000Z"
+    },
+    {
+      "predicate": "supersedes",
+      "object": "v1.40.0-max_steps-750-compaction-0.92",
+      "validFrom": "2026-05-01T15:30:00.000Z"
     }
   ],
   "enterprise-2026": [

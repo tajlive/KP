@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "period": "Last 30 days",
+    "days": 30,
+    "initialCapital": 100000,
+    "interval": "1h",
+    "feeRate": 0.001,
+    "slippagePct": 0.05,
+    "runAt": "2026-05-03T12:08:19.305Z"
+  },
+  "results": [
+    {
+      "name": "DCA/DOGE",
+      "symbol": "DOGEUSDT",
+      "strategy": "DCA",
+      "returnPct": 0.4875116755840136,
+      "sharpe": 0.49737995496269655,
+      "maxDD": 0.48803336857053065,
+      "winRate": 54.166666666666664,
+      "trades": 24,
+      "profitFactor": 1.6860719541368134,
+      "avgDuration": 1.2569444444444444,
+      "buyHoldReturn": 19.458748767393445,
+      "alpha": -18.97123709180943
+    },
+    {
+      "name": "Trend/LINK",
+      "symbol": "LINKUSDT",
+      "strategy": "SMA_CROSSOVER",
+      "returnPct": -0.9723916499676852,
+      "sharpe": -1.276617129005389,
+      "maxDD": 1.134640352678507,
+      "winRate": 16.666666666666664,
+      "trades": 6,
+      "profitFactor": 0.007249994503269256,
+      "avgDuration": 2.145833333333333,
+      "buyHoldReturn": 5.638665132336021,
+      "alpha": -6.611056782303706
+    },
+    {
+      "name": "Grid/MATIC",
+      "symbol": "MATICUSDT",
+      "strategy": "GRID",
+      "returnPct": 0,
+      "sharpe": null,
+      "maxDD": 0,
+      "winRate": 0,
+      "trades": 0,
+      "profitFactor": 0,
+      "avgDuration": 0,
+      "buyHoldReturn": 0,
+      "alpha": 0
+    },
+    {
+      "name": "Multi/DOT",
+      "symbol": "DOTUSDT",
+      "strategy": "MULTI_SIGNAL",
+      "returnPct": -1.1654666706981078,
+      "sharpe": -0.6638625264017672,
+      "maxDD": 2.301383144836459,
+      "winRate": 31.76470588235294,
+      "trades": 85,
+      "profitFactor": 0.8031363223576796,
+      "avgDuration": 0.3710784313725491,
+      "buyHoldReturn": -3.107569721115532,
+      "alpha": 1.9421030504174241
+    },
+    {
+      "name": "AI-Copy/AVAX",
+      "symbol": "AVAXUSDT",
+      "strategy": "MULTI_SIGNAL",
+      "returnPct": -0.3481431661518436,
+      "sharpe": -0.21577757244761125,
+      "maxDD": 1.5430421340000506,
+      "winRate": 44.44444444444444,
+      "trades": 81,
+      "profitFactor": 1.0275365429451493,
+      "avgDuration": 0.38734567901234573,
+      "buyHoldReturn": 1.4492753623188293,
+      "alpha": -1.797418528470673
+    }
+  ]
+}

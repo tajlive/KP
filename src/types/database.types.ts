@@ -8623,10 +8623,12 @@ export type Database = {
         Returns: {
           losing_trades: number
           starting_capital: number
-          total_capital: number
+          total_deployed_capital: number
           total_pnl: number
           total_trades: number
           winning_trades: number
+          session_count: number
+          avg_session_capital: number
         }[]
       }
       get_emergency_status: {

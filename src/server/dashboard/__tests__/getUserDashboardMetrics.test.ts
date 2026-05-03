@@ -24,7 +24,7 @@ interface MockOpts {
     total_trades: number | null;
     winning_trades: number | null;
     losing_trades: number | null;
-    total_capital: number | null;
+    total_deployed_capital: number | null;
     starting_capital: number | null;
   } | null;
   rpcError?: { message: string } | null;
@@ -131,7 +131,7 @@ describe("getUserDashboardMetrics", () => {
         total_trades: 4,
         winning_trades: 2,
         losing_trades: 1,
-        total_capital: 105000,
+        total_deployed_capital: 105000,
         starting_capital: 100000,
       },
     });
@@ -159,7 +159,7 @@ describe("getUserDashboardMetrics", () => {
         total_trades: 0,
         winning_trades: 0,
         losing_trades: 0,
-        total_capital: 100000,
+        total_deployed_capital: 100000,
         starting_capital: 100000,
       },
     });
@@ -184,7 +184,7 @@ describe("getUserDashboardMetrics", () => {
         total_trades: 1,
         winning_trades: 1,
         losing_trades: 0,
-        total_capital: 200000,
+        total_deployed_capital: 200000,
         starting_capital: 150000,
       },
     });

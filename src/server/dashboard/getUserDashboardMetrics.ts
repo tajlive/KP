@@ -116,7 +116,7 @@ export async function getUserDashboardMetrics(
     const totalTrades = Number(row.total_trades ?? 0);
     const winningTrades = Number(row.winning_trades ?? 0);
     const losingTrades = Number(row.losing_trades ?? 0);
-    let totalCapital = Number(row.total_capital ?? 0);
+    let totalCapital = Number(row.total_deployed_capital ?? 0);
     let startingCapital = Number(row.starting_capital ?? 0);
 
     // Fallback to profile if no capital data exists

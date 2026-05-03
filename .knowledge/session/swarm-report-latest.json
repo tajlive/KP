@@ -1,0 +1,123 @@
+{
+  "workflow": "review",
+  "files": [
+    ".perplexity/mac-mcp-config.json",
+    ".perplexity/mcp_config.json"
+  ],
+  "timestamp": "2026-05-01T12:48:13.746Z",
+  "summary": {
+    "passes": 10,
+    "warns": 0,
+    "blocks": 0
+  },
+  "results": [
+    {
+      "file": ".perplexity/mac-mcp-config.json",
+      "agents": [
+        {
+          "agent": "analyzer",
+          "complexity_score": 2,
+          "lines": 75,
+          "risks": [],
+          "suggestions": [],
+          "approval": "proceed"
+        },
+        {
+          "agent": "architect",
+          "adr_compliance": [
+            "KLA-91"
+          ],
+          "violations": [],
+          "boundary_check": "pass",
+          "approval": "proceed"
+        },
+        {
+          "agent": "tester",
+          "test_level": "P2",
+          "scenarios": [
+            "Basic functionality"
+          ],
+          "coverage_target": 80,
+          "has_test_file": false,
+          "approval": "proceed"
+        },
+        {
+          "agent": "security",
+          "findings": [],
+          "checked": [
+            "auth",
+            "api",
+            "db",
+            "trading",
+            "secrets"
+          ],
+          "approval": "proceed"
+        },
+        {
+          "agent": "knowledge",
+          "files_created": [
+            "session/2026-05-01T12-48-13-744Z-mac-mcp-config-json.json"
+          ],
+          "patterns_identified": [],
+          "mem_palace_synced": false,
+          "wake_up_updated": false,
+          "approval": "proceed"
+        }
+      ]
+    },
+    {
+      "file": ".perplexity/mcp_config.json",
+      "agents": [
+        {
+          "agent": "analyzer",
+          "complexity_score": 2,
+          "lines": 47,
+          "risks": [],
+          "suggestions": [],
+          "approval": "proceed"
+        },
+        {
+          "agent": "architect",
+          "adr_compliance": [
+            "KLA-91"
+          ],
+          "violations": [],
+          "boundary_check": "pass",
+          "approval": "proceed"
+        },
+        {
+          "agent": "tester",
+          "test_level": "P2",
+          "scenarios": [
+            "Basic functionality"
+          ],
+          "coverage_target": 80,
+          "has_test_file": false,
+          "approval": "proceed"
+        },
+        {
+          "agent": "security",
+          "findings": [],
+          "checked": [
+            "auth",
+            "api",
+            "db",
+            "trading",
+            "secrets"
+          ],
+          "approval": "proceed"
+        },
+        {
+          "agent": "knowledge",
+          "files_created": [
+            "session/2026-05-01T12-48-13-746Z-mcp_config-json.json"
+          ],
+          "patterns_identified": [],
+          "mem_palace_synced": false,
+          "wake_up_updated": false,
+          "approval": "proceed"
+        }
+      ]
+    }
+  ]
+}

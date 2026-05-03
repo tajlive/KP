@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchHistoricalData, runBacktest, generateSignalsFromLog, StrategyType, RiskProfile, STRATEGY_MAP } from '@/lib/backtest/engine';
+import { fetchHistoricalData, runBacktest, generateSignalsFromLog, StrategyType, RiskProfile, STRATEGY_MAP, STRATEGY_METHODOLOGY } from '@/lib/backtest/engine';
 import { createServerClient } from "@/lib/supabase/server";
 import { runMonteCarlo } from '@/lib/trading/monte-carlo';
 import { z } from 'zod';
@@ -12,9 +12,9 @@ import { z } from 'zod';
 const BacktestSchema = z.object({
   symbol: z.string().regex(/^[A-Z]{3,10}USDT$/).optional(),
   interval: z.enum(['1d', '4h', '1h']).default('1d'),
-  strategy: z.enum(['SMA_CROSSOVER', 'RSI_MEAN_REVERSION', 'AI_SIGNALS', 'ENSEMBLE_AI']).default('SMA_CROSSOVER'),
+  strategy: z.enum(['SMA_CROSSOVER', 'RSI_MEAN_REVERSION', 'AI_SIGNALS', 'ENSEMBLE_AI', 'DCA', 'GRID', 'MULTI_SIGNAL']).default('SMA_CROSSOVER'),
   initialCapital: z.number().min(1000).max(1000000).default(10000),
-  period: z.number().min(7).max(1095).default(365), // Days - up to 3 years
+  period: z.number().min(7).max(1460).default(365), // Days - up to 4 years
   riskProfile: z.enum(['konservativ', 'balansert', 'aggressiv']).optional(),
   smaFast: z.number().min(5).max(50).optional(),
   smaSlow: z.number().min(20).max(200).optional(),
@@ -142,6 +142,7 @@ export async function POST(request: NextRequest) {
       strategyName,
       symbol: finalSymbol,
       period,
+      methodology: STRATEGY_METHODOLOGY[strategy as keyof typeof STRATEGY_METHODOLOGY] || null,
       disclaimer: 'Historisk avkastning er ingen garanti for fremtidig avkastning',
     });
   } catch (error) {
