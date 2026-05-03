@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 /**
- * 🏛️ MemPalace Auto-Capture
- * Kjører ved commit for å automatisk dokumentere endringer i:
- * - Database (migrations)
- * - i18n (nye/endrede nøkler)
- * - API (nye ruter)
- * - Trading (kritiske filer)
+ * 🏛️ MemPalace Auto-Capture v2.0 (2026-05-03)
+ * Kjører ved commit for å automatisk dokumentere endringer.
+ * Utvidet med routing, cleanup, binance, config, frontend kategorier.
  */
 
 import { execSync } from 'child_process';
@@ -42,7 +39,36 @@ function analyzeChanges(files) {
     i18n: files.filter(f => f.includes('messages/') && f.endsWith('.json')),
     api: files.filter(f => f.startsWith('src/app/api/')),
     trading: files.filter(f => f.includes('lib/trading/') || f.includes('features/trading/')),
-    scripts: files.filter(f => f.startsWith('scripts/'))
+    scripts: files.filter(f => f.startsWith('scripts/')),
+    // NYTT v2.0 — kategorier som tidligere falt gjennom:
+    routing: files.filter(f =>
+      f.includes('middleware/') ||
+      f.includes('routing/') ||
+      f === 'next.config.mjs' ||
+      f === 'next.config.ts' ||
+      f.includes('i18n/')
+    ),
+    cleanup: files.filter(f =>
+      f.includes('(beta)') ||
+      f.includes('(onboarding)') ||
+      f.includes('/archive/') ||
+      f.includes('/legacy/')
+    ),
+    binance: files.filter(f =>
+      f.includes('binance') &&
+      !f.includes('.test.') &&
+      !f.includes('__tests__')
+    ),
+    config: files.filter(f =>
+      f.endsWith('.config.mjs') ||
+      f.endsWith('.config.ts') ||
+      f.endsWith('.config.js')
+    ),
+    frontend: files.filter(f =>
+      (f.startsWith('src/components/') || f.startsWith('src/features/')) &&
+      !f.includes('features/trading/')
+    ),
+    hooks: files.filter(f => f.startsWith('src/hooks/') || f.startsWith('src/lib/hooks/')),
   };
 
   const types = [];
@@ -51,6 +77,12 @@ function analyzeChanges(files) {
   if (changes.api.length) types.push('API');
   if (changes.trading.length) types.push('Trading');
   if (changes.scripts.length) types.push('Scripts');
+  if (changes.routing.length) types.push('Routing');
+  if (changes.cleanup.length) types.push('Cleanup');
+  if (changes.binance.length) types.push('Binance');
+  if (changes.config.length) types.push('Config');
+  if (changes.frontend.length) types.push('Frontend');
+  if (changes.hooks.length) types.push('Hooks');
 
   return { changes, types: types.join(',') };
 }
