@@ -111,39 +111,33 @@ export async function fetchMarketSnapshot(symbol: string): Promise<MarketSnapsho
   const startTime = Date.now();
   
   try {
-    // Fetch ticker price (last traded price)
-    const pricePromise = fetch(
-      `https://api.binance.com/api/v3/ticker/price?symbol=${symbol.toUpperCase()}`,
-      { next: { revalidate: 0 } }
-    );
-    
+    // OPTIMIZED: /ticker/24hr already includes lastPrice — skip separate /ticker/price call
     // Fetch order book (top of book)
     const bookPromise = fetch(
       `https://api.binance.com/api/v3/depth?symbol=${symbol.toUpperCase()}&limit=5`,
       { next: { revalidate: 0 } }
     );
-    
-    // Fetch 24h stats (volume, price change)
+
+    // Fetch 24h stats (includes lastPrice, volume, price change)
     const statsPromise = fetch(
       `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol.toUpperCase()}`,
       { next: { revalidate: 0 } }
     );
-    
-    const [priceRes, bookRes, statsRes] = await Promise.all([
-      pricePromise, bookPromise, statsPromise
+
+    const [bookRes, statsRes] = await Promise.all([
+      bookPromise, statsPromise
     ]);
-    
-    if (!priceRes.ok || !bookRes.ok || !statsRes.ok) {
+
+    if (!bookRes.ok || !statsRes.ok) {
       throw new Error('Failed to fetch market data from Binance');
     }
-    
-    const [priceData, bookData, statsData] = await Promise.all([
-      priceRes.json(),
+
+    const [bookData, statsData] = await Promise.all([
       bookRes.json(),
       statsRes.json()
     ]);
-    
-    const currentPrice = parseFloat(priceData.price);
+
+    const currentPrice = parseFloat(statsData.lastPrice);
     const bestBid = parseFloat(bookData.bids[0][0]);
     const bestAsk = parseFloat(bookData.asks[0][0]);
     const spread = bestAsk - bestBid;

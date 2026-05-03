@@ -7,6 +7,8 @@
  * Based on TradingView and professional simulator implementations.
  */
 
+import { getTicker24h } from "@/lib/binance";
+
 export interface SlippageParams {
   symbol: string;
   side: 'buy' | 'sell';
@@ -128,16 +130,10 @@ export function wouldLimitOrderFill(
  */
 export async function fetchMarketVolatility(symbol: string): Promise<number> {
   try {
-    // Try to fetch 24h price change from Binance
-    const response = await fetch(
-      `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol.toUpperCase()}`
-    );
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch volatility data');
-    }
-
-    const data = await response.json();
+    // OPTIMIZED: Use centralized Binance client (consistent error handling, caching)
+    const data = await getTicker24h(symbol.toUpperCase()) as {
+      priceChangePercent: string;
+    };
     
     // Calculate volatility based on price change percentage
     const priceChangePercent = Math.abs(parseFloat(data.priceChangePercent) || 0);
