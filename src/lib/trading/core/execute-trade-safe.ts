@@ -334,9 +334,9 @@ async function executeTradeWithLock(
     const errorMsg = `Trade Aborted: Estimated slippage (${estimatedSlippageBps.toFixed(2)} bps) exceeds limit (${maxSlippageBps} bps).`;
     console.warn(`[executeTradeSafe] ${errorMsg}`);
     
-    // @ts-ignore - trace structure adjustment
+    // @ts-expect-error - trace structure adjustment (success/error not in ExecutionTrace type)
     trace.success = false;
-    // @ts-ignore - trace structure adjustment
+    // @ts-expect-error - trace structure adjustment
     trace.error = errorMsg;
     
     return {
