@@ -160,7 +160,18 @@ node scripts/validate-migrations.mjs supabase/migrations/20990101000000_min_fil.
 
 ## Sanity drift
 
-> Oppdatert: 2026-04-18 | Embedded studio på /studio
+> Oppdatert: 2026-05-01 | Dual studio (embedded + deployed) | Content Agent aktiv
+
+### Konfigurasjonsarkitektur (TO config-filer — bevisst duplisering)
+
+| Fil | Formål | Env-variabler |
+|-----|--------|---------------|
+| `src/sanity.config.ts` | Embedded Next.js Studio (`/studio`) | ✅ Fra `src/sanity/env.ts` |
+| `sanity.config.ts` (root) | Sanity CLI (`sanity deploy`) | ❌ Hardkodede fallbacks |
+
+**Hvorfor to filer:** Sanity CLI leser kun fra project root og har ikke tilgang til Next.js env-variabler ved byggtid. Begge filer importerer `schema` og `structure` fra `src/sanity/` — plugins og schema er én kilde til sannhet.
+
+**Regel:** Endringer i plugins/schema skal ALLTID speiles i begge config-filer.
 
 ### Rask verifisering
 ```bash
@@ -168,27 +179,32 @@ npm run sanity:verify      # Normal sjekk
 npm run sanity:guard       # Strict — hard fail på warnings
 npm run sanity:guard:json  # CI-output
 npm run sanity:bootstrap   # Auto-fix
+npm run sanity:deploy      # Deploy til klarpakke.sanity.studio
 ```
 
 ### Prinsipper
 - **basePath** skal ALLTID være `/studio` (embedded mode)
 - **productionUrl** skal ALLTID være `undefined` (forhindrer iframe-loop)
-- **projectId/dataset/apiVersion** skal matche på tvers av `env.ts`, `sanity.config.ts`, `sanity.cli.ts`
-- **SANITY_WEBHOOK_SECRET** og **SANITY_API_READ_TOKEN** er påkrevd i produksjon
+- **projectId/dataset/apiVersion** skal matche på tvers av `env.ts`, begge `sanity.config.ts`, `sanity.cli.ts`
+- **SANITY_WEBHOOK_SECRET**, **SANITY_API_READ_TOKEN**, **SANITY_API_WRITE_TOKEN** er påkrevd i produksjon
+- **SANITY_API_WRITE_TOKEN** skal IKKE ha quotes i `.env.local`
+- `@sanity/assist` (Content Agent) er installert — krever manuell aktivering i Sanity Manage for org `oIReB3llt`
 - Alt som kan automatiseres i Sanity skal automatiseres
 
 ### P0 ved feil
-1. Embedded studio knekt → sjekk `basePath` og `productionUrl`
-2. Webhook signatur feiler → sjekk `SANITY_WEBHOOK_SECRET`
-3. Cache blir ikke invalidert → sjekk `revalidateTag` i `src/app/api/webhooks/sanity/route.ts`
-4. Mismatch projectId/dataset → kjør `npm run sanity:guard`
+1. Embedded studio knekt → sjekk `basePath` og `productionUrl`, og middleware matcher regex
+2. Deployed studio knekt → sjekk browser cache, kjør `sanity deploy` på nytt
+3. Webhook signatur feiler → sjekk `SANITY_WEBHOOK_SECRET`
+4. Cache blir ikke invalidert → sjekk `revalidateTag` i `src/app/api/webhooks/sanity/route.ts`
+5. Mismatch projectId/dataset → kjør `npm run sanity:guard`
+6. Content Agent viser "Studio action required" → aktiver manuelt i Sanity Manage
 
 ### GitHub Actions
 Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + nightly.
 
 ## MCP-optimalisering (KIMI CLI)
 
-> Oppdatert: 2026-04-28 | v2.6-minimal for KIMI CLI v1.40.0 + k2.6
+> Oppdatert: 2026-05-01 | v2.6-minimal for KIMI CLI v1.40.0 + k2.6 | Aktiv config synkronisert
 
 ### KIMI CLI v1.40.0 + k2.6 endringer (påvirker oss)
 - **`max_steps_per_turn` økt til 750** — KIMI kan kjøre lengre oppgaver uten avbrudd

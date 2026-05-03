@@ -289,11 +289,23 @@ export async function getOrCreatePaperTradingSession(
     return createPaperTradingSession(supabase, userId);
   }
 
-  // Behold nyeste, sett resten til stopped
-  const [newest, ...duplicates] = allActive;
+  // Multi-bot support: only stop true duplicates (same pair + same strategy).
+  // Do NOT stop sessions with different pairs or strategies.
+  const [newest, ...rest] = allActive;
 
-  if (duplicates.length > 0) {
-    const duplicateIds = duplicates.map((s: { id: string }) => s.id);
+  // Group by (trading_pair, strategy_id) and keep only newest per group
+  const seen = new Set<string>();
+  const duplicateIds: string[] = [];
+  for (const s of allActive) {
+    const key = `${s.trading_pair}:${s.strategy_id}`;
+    if (seen.has(key)) {
+      duplicateIds.push(s.id);
+    } else {
+      seen.add(key);
+    }
+  }
+
+  if (duplicateIds.length > 0) {
     const { error: stopErr } = await supabase
       .from('trading_sessions')
       .update({
@@ -306,7 +318,7 @@ export async function getOrCreatePaperTradingSession(
     if (stopErr) {
       console.error('[paper-trading] getOrCreate dedup error:', stopErr.message);
     } else {
-      console.log(`[paper-trading] Stoppet og arkivert ${duplicates.length} duplikat(er) for user ${userId}`);
+      console.log(`[paper-trading] Stoppet og arkivert ${duplicateIds.length} duplikat(er) for user ${userId}`);
     }
   }
 

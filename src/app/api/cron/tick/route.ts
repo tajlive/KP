@@ -11,6 +11,7 @@ import { buildTradeReason, buildIndicatorSnapshot, resolveStrategyKey } from "@/
 import { div, mul } from "@/lib/decimal";
 import { createClient } from "@/lib/supabase/server";
 import { captureCronError, captureCronSuccess, generateTradeIdempotencyKey } from "@/lib/cron/cron-helpers";
+import { ExecutorFactory } from "@/lib/trading/executor-factory";
 import type { TradeSide, TradingSession } from "@/types/trading";
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -20,301 +21,19 @@ import {
   getTotalQuantity, migrateFromLegacy, toLegacyPosition,
   type LedgerState,
 } from "@/lib/trading/position-ledger";
+import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 // maxDuration arves fra vercel.json (300s) — overstyr ikke her
 
-// Types
-interface Candle {
-  time: number;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
-
-interface StrategyInput {
-  candles: Candle[];
-  session: TradingSession;
-  config: Record<string, unknown>;
-}
-
-interface StrategySignal {
-  action: "buy" | "sell" | "hold";
-  positionSize?: number;
-  indicators?: Record<string, unknown>;
-  reason?: string;
-}
-
-interface StrategyEngine {
-  evaluate(input: StrategyInput): StrategySignal;
-}
-
 interface TickResult {
   session_id: string;
-  action: "buy" | "sell" | "hold" | "error" | "heartbeat" | "risk_blocked";
+  action: "buy" | "sell" | "hold" | "error" | "heartbeat" | "risk_blocked" | "live_trade_failed";
   error?: string;
   trade_id?: string;
   risk_reason?: string;
 }
-
-// Technical Indicators
-function sma(data: number[], period: number): number {
-  const slice = data.slice(-period);
-  return slice.reduce((sum, v) => sum + v, 0) / slice.length;
-}
-
-function ema(data: number[], period: number): number[] {
-  const k = 2 / (period + 1);
-  const result: number[] = [data[0]];
-  for (let i = 1; i < data.length; i++) {
-    result.push(data[i] * k + result[i - 1] * (1 - k));
-  }
-  return result;
-}
-
-function rsi(closes: number[], period: number = 14): number {
-  const changes = [];
-  for (let i = 1; i < closes.length; i++) {
-    changes.push(closes[i] - closes[i - 1]);
-  }
-  const gains = changes.slice(-period).filter((c) => c > 0);
-  const losses = changes
-    .slice(-period)
-    .filter((c) => c < 0)
-    .map(Math.abs);
-  const avgGain =
-    gains.length > 0 ? gains.reduce((s, v) => s + v, 0) / period : 0;
-  const avgLoss =
-    losses.length > 0 ? losses.reduce((s, v) => s + v, 0) / period : 0;
-  if (avgLoss === 0) return 100;
-  const rs = avgGain / avgLoss;
-  return 100 - 100 / (1 + rs);
-}
-
-function macd(
-  closes: number[],
-  fast: number = 12,
-  slow: number = 26,
-  signalPeriod: number = 9,
-) {
-  const fastEMA = ema(closes, fast);
-  const slowEMA = ema(closes, slow);
-  const macdLine = fastEMA.map((f, i) => f - slowEMA[i]);
-  const signalLine = ema(macdLine, signalPeriod);
-  const last = macdLine.length - 1;
-  return {
-    macd: macdLine[last],
-    signal: signalLine[last],
-    histogram: macdLine[last] - signalLine[last],
-  };
-}
-
-// Strategy Implementations
-class DCAStrategy implements StrategyEngine {
-  evaluate(input: StrategyInput): StrategySignal {
-    const { session, config, candles } = input;
-    const intervalMinutes = (config.interval_minutes as number) ?? 30; // Redusert fra 60
-    let positionSize = (config.position_size as number) ?? 0.05; // Økt fra 0.02
-    const lastTick = session.last_tick_at
-      ? new Date(session.last_tick_at).getTime()
-      : 0;
-    const now = Date.now();
-    const minutesSinceLast = (now - lastTick) / 60_000;
-
-    if (minutesSinceLast < intervalMinutes) {
-      return {
-        action: "hold",
-        reason: `Waiting ${Math.round(intervalMinutes - minutesSinceLast)} min`,
-      };
-    }
-
-    // Volatility-Harvesting: buy more in dips, less in FOMO
-    const closes = candles.map((c) => c.close);
-    if (closes.length >= 24) {
-      const price24hAgo = closes[closes.length - 24];
-      const currentPriceNow = closes[closes.length - 1];
-      const change24h = ((currentPriceNow - price24hAgo) / price24hAgo) * 100;
-      if (change24h <= -5)
-        positionSize *= 3; // Big dip → 3x buy
-      else if (change24h <= -3)
-        positionSize *= 2; // Medium dip → 2x buy
-      else if (change24h >= 5) positionSize *= 0.5; // FOMO → halve buy
-    }
-
-    if (!session.open_position) {
-      return {
-        action: "buy",
-        positionSize,
-        indicators: {
-          strategy: "dca",
-          interval: intervalMinutes,
-          volatility_adjusted: true,
-        },
-      };
-    }
-
-    const profitTarget = (config.profit_target_pct as number) ?? 5;
-    const currentPrice = candles[candles.length - 1].close;
-    const entryPrice = session.open_position.entry_price;
-    const pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100;
-
-    if (pnlPct >= profitTarget)
-      return {
-        action: "sell",
-        indicators: { pnl_pct: pnlPct, target: profitTarget },
-      };
-
-    const stopLoss = (config.stop_loss_pct as number) ?? -10;
-    if (pnlPct <= stopLoss)
-      return {
-        action: "sell",
-        indicators: { pnl_pct: pnlPct, stop_loss: stopLoss },
-      };
-
-    return { action: "hold" };
-  }
-}
-
-class TrendFollowStrategy implements StrategyEngine {
-  evaluate(input: StrategyInput): StrategySignal {
-    const { candles, session, config } = input;
-    const fastPeriod = (config.fast_period as number) ?? 8;  // Raskere: 8 istedenfor 12
-    const slowPeriod = (config.slow_period as number) ?? 21; // Raskere: 21 istedenfor 26
-
-    if (candles.length < slowPeriod + 2) {
-      return { action: "hold", reason: "Insufficient candle data" };
-    }
-
-    const closes = candles.map((c) => c.close);
-    const fastSMA = sma(closes, fastPeriod);
-    const slowSMA = sma(closes, slowPeriod);
-    const prevFastSMA = sma(closes.slice(0, -1), fastPeriod);
-    const prevSlowSMA = sma(closes.slice(0, -1), slowPeriod);
-
-    const crossedAbove = prevFastSMA <= prevSlowSMA && fastSMA > slowSMA;
-    const crossedBelow = prevFastSMA >= prevSlowSMA && fastSMA < slowSMA;
-    const indicators = {
-      fast_sma: fastSMA,
-      slow_sma: slowSMA,
-      crossedAbove,
-      crossedBelow,
-    };
-
-    if (crossedAbove && !session.open_position) {
-      return { action: "buy", positionSize: 0.1, indicators };
-    }
-
-    if (crossedBelow && session.open_position) {
-      return { action: "sell", indicators };
-    }
-
-    return { action: "hold", indicators };
-  }
-}
-
-class MultiSignalStrategy implements StrategyEngine {
-  evaluate(input: StrategyInput): StrategySignal {
-    const { candles, session } = input;
-    const closes = candles.map((c) => c.close);
-
-    if (closes.length < 20) {
-      return { action: "hold", reason: "Insufficient data" };
-    }
-
-    const rsiValue = rsi(closes, 14);
-    const { macd: macdLine, signal: signalLine } = macd(closes, 12, 26, 9);
-    const indicators = { rsi: rsiValue, macd: macdLine, signal: signalLine };
-
-    // Mer aggressive signal-terskler
-    let buySignals = 0;
-    if (rsiValue < 45) buySignals++; // Endret fra 30
-    if (macdLine > signalLine) buySignals++;
-    if (closes[closes.length - 1] > closes[closes.length - 5]) buySignals++; // Price momentum
-
-    let sellSignals = 0;
-    if (rsiValue > 55) sellSignals++; // Endret fra 70
-    if (macdLine < signalLine) sellSignals++;
-
-    if (buySignals >= 2 && !session.open_position) {
-      return {
-        action: "buy",
-        positionSize: 0.1,
-        indicators: { ...indicators, buy_signals: buySignals },
-      };
-    }
-
-    if (sellSignals >= 2 && session.open_position) {
-      return {
-        action: "sell",
-        indicators: { ...indicators, sell_signals: sellSignals },
-      };
-    }
-
-    return { action: "hold", indicators };
-  }
-}
-
-// Grid Bot Engine — real grid trading with price levels
-class GridBotEngine implements StrategyEngine {
-  evaluate(input: StrategyInput): StrategySignal {
-    const { candles, session, config } = input;
-    const currentPrice = candles[candles.length - 1].close;
-    const upper =
-      (config.upper_price as number) ??
-      (config.upperPrice as number) ??
-      currentPrice * 1.1;
-    const lower =
-      (config.lower_price as number) ??
-      (config.lowerPrice as number) ??
-      currentPrice * 0.9;
-    const levels =
-      (config.grid_levels as number) ?? (config.levels as number) ?? 10;
-    const gridSize = (upper - lower) / levels;
-
-    if (currentPrice > upper || currentPrice < lower) {
-      return { action: "hold", reason: "Price outside grid range" };
-    }
-
-    const currentLevel = Math.floor((currentPrice - lower) / gridSize);
-    const gridBuyPrice = lower + gridSize * currentLevel;
-    const gridSellPrice = gridBuyPrice + gridSize;
-
-    // Buy if near grid buy level (within 0.5%)
-    if (!session.open_position && currentPrice <= gridBuyPrice * 1.005) {
-      return {
-        action: "buy",
-        positionSize: 1 / levels,
-        indicators: {
-          grid_level: currentLevel,
-          buy_at: gridBuyPrice,
-          sell_at: gridSellPrice,
-        },
-        reason: `Grid buy at level ${currentLevel} ($${gridBuyPrice.toFixed(0)})`,
-      };
-    }
-
-    // Sell if near grid sell level (within 0.5%)
-    if (session.open_position && currentPrice >= gridSellPrice * 0.995) {
-      return {
-        action: "sell",
-        indicators: { grid_level: currentLevel, sell_at: gridSellPrice },
-        reason: `Grid sell at level ${currentLevel} ($${gridSellPrice.toFixed(0)})`,
-      };
-    }
-
-    return { action: "hold", indicators: { grid_level: currentLevel } };
-  }
-}
-
-const strategies: Record<string, StrategyEngine> = {
-  dca: new DCAStrategy(),
-  trend_follow: new TrendFollowStrategy(),
-  multi_signal: new MultiSignalStrategy(),
-  grid: new GridBotEngine(),
-};
 
 // Price Data Fetcher — ALWAYS uses Binance mainnet for paper/live parity
 async function fetchCandles(
@@ -348,6 +67,63 @@ async function fetchCandles(
   } catch (err) {
     console.error("Binance API fetch failed:", err);
     throw new Error(`BINANCE_API_UNAVAILABLE: ${(err as Error).message}`);
+  }
+}
+
+/**
+ * Execute a live trade on Binance using user's API keys.
+ * Uses ExecutorFactory for consistent key decryption and tier validation.
+ * Returns null if anything fails — live trades must NEVER silently fall back.
+ */
+async function executeLiveTrade(
+  db: SupabaseClient<Database>,
+  userId: string,
+  pair: string,
+  side: 'buy' | 'sell',
+  quantity: number,
+): Promise<{ executedPrice: number; binanceOrderId: string; fee: number } | null> {
+  try {
+    // 1. Validate user can trade live (tier + connected)
+    const canTrade = await ExecutorFactory.canTradeLive(db, userId);
+    if (!canTrade) {
+      console.warn(`[LiveTrade] User ${userId} not authorized for live trading`);
+      return null;
+    }
+
+    // 2. Create executor via factory (handles key decryption)
+    const executor = await ExecutorFactory.create(db, userId, 'live');
+
+    // 3. Execute on Binance
+    const binanceSymbol = pair.replace('/', '');
+    const result = await executor.executeOrder({
+      symbol: binanceSymbol,
+      side,
+      quantity,
+      orderType: 'market',
+    });
+
+    if (!result.success) {
+      console.error(`[LiveTrade] Binance order failed for user ${userId}:`, result.error);
+      return null;
+    }
+
+    console.info(`[LiveTrade] Order executed for user ${userId}:`, {
+      orderId: result.orderId,
+      symbol: binanceSymbol,
+      side,
+      executedPrice: result.executedPrice,
+      executedQuantity: result.executedQuantity,
+      fee: result.fee,
+    });
+
+    return {
+      executedPrice: result.executedPrice,
+      binanceOrderId: result.orderId,
+      fee: result.fee,
+    };
+  } catch (err) {
+    console.error(`[LiveTrade] Unexpected error for user ${userId}:`, err);
+    return null;
   }
 }
 
@@ -409,7 +185,7 @@ async function processSession(
       signal = { action: "hold", reason: "No recent ensemble AI signal" };
     }
   } else {
-    const strategy = engineKey ? strategies[engineKey] : undefined;
+    const strategy = engineKey ? resolveStrategy(engineKey) : undefined;
     if (!strategy) {
       return {
         session_id: session.id,
@@ -438,7 +214,7 @@ async function processSession(
     const highest = session.open_position.highest_price ?? entryPrice;
     const trailingPct =
       ((session.strategy_config as Record<string, unknown>)
-        ?.trailing_stop_pct as number) ?? 5;
+        ?.trailing_stop_pct as number) ?? 2.5;
 
     // Update highest price tracking
     if (currentPrice > highest) {
@@ -459,6 +235,15 @@ async function processSession(
       // Trigger trailing take-profit sell
       signal.action = "sell";
       signal.reason = `Trailing TP: dropped ${dropFromPeak.toFixed(1)}% from peak $${highest.toFixed(0)}`;
+    }
+
+    // Time-based exit: Sell after 7 days if position is not profitable
+    const entryTime = new Date(session.open_position.entry_time).getTime();
+    const daysInPosition = (Date.now() - entryTime) / (1000 * 60 * 60 * 24);
+    const timeExitDays = ((session.strategy_config as Record<string, unknown>)?.time_exit_days as number) ?? 7;
+    if (daysInPosition >= timeExitDays && currentPrice <= entryPrice) {
+      signal.action = "sell";
+      signal.reason = `Time-based exit: position held ${daysInPosition.toFixed(1)} days without profit — cutting loss`;
     }
 
     // Partial Take-Profit: Sell portions at predefined targets
@@ -592,6 +377,31 @@ async function processSession(
     direction: signal.action === "buy" ? "LONG" : "SHORT",
   });
 
+  // ─── LIVE TRADING EXECUTION ──────────────────────────────────────────
+  let liveResult: { executedPrice: number; binanceOrderId: string; fee: number } | null = null;
+  if (session.mode === "live") {
+    liveResult = await executeLiveTrade(db, session.user_id, pair, signal.action as 'buy' | 'sell', quantity);
+
+    if (!liveResult) {
+      console.warn(`[Tick] Live trade blocked for session ${session.id}: Binance execution failed`);
+
+      // Log failure to trading_logs so user sees it
+      await db.from("trading_logs").insert({
+        session_id: session.id,
+        user_id: session.user_id,
+        action: "live_trade_failed",
+        details: { reason: "Binance execution failed", signal: signal.action, requested_amount: tradeAmount } as never,
+      } as never);
+
+      return {
+        session_id: session.id,
+        action: "live_trade_failed",
+        risk_reason: "Binance execution failed",
+      };
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────
+
   // Build reason code and indicator snapshot for trade explanation
   const strategyKey = resolveStrategyKey(session.strategy_id);
   const { reasonCode, reasonParams } = buildTradeReason({
@@ -629,7 +439,10 @@ async function processSession(
   }
 
   // Execute trade
-  const totalValue = mul(quantity, executedPrice);
+  // For live mode, use Binance actuals; for paper, use simulated
+  const finalExecutedPrice = liveResult ? liveResult.executedPrice : executedPrice;
+  const finalFee = liveResult ? liveResult.fee : mul(mul(quantity, executedPrice), 0.001);
+  const totalValue = mul(quantity, finalExecutedPrice);
   const idempotencyKey = generateTradeIdempotencyKey(session.id, pair, signal.action);
 
   const { data: trade, error: tradeError } = await db
@@ -643,11 +456,12 @@ async function processSession(
       side: signal.action as TradeSide,
       order_type: "market",
       quantity,
-      price: executedPrice,
+      price: finalExecutedPrice,
       total_value: totalValue,
-      fee: mul(totalValue, 0.001),
+      fee: finalFee,
       status: "filled",
       realized_pnl: realizedPnl,
+      binance_order_id: liveResult?.binanceOrderId ?? null,
       strategy_signal: { ...signal.indicators, stop_loss: stopLossPrice },
       // Explanation data
       reason_code: reasonCode,
@@ -677,7 +491,9 @@ async function processSession(
         ? migrateFromLegacy(session.open_position)
         : createLedger("long");
 
-    const updatedLedger = addLot(ledger, quantity, currentPrice);
+    // For live trades, use actual Binance executed price as cost basis
+    const entryPriceForLot = liveResult ? liveResult.executedPrice : currentPrice;
+    const updatedLedger = addLot(ledger, quantity, entryPriceForLot);
     const legacyPos = toLegacyPosition(updatedLedger);
 
     if (legacyPos) {
@@ -686,7 +502,7 @@ async function processSession(
         .update({
           open_position: {
             ...legacyPos,
-            highest_price: session.open_position?.highest_price ?? currentPrice,
+            highest_price: session.open_position?.highest_price ?? entryPriceForLot,
           },
         } as never)
         .eq("id", session.id);
@@ -711,8 +527,11 @@ async function processSession(
   console.info("Trade executed:", {
     session_id: session.id,
     trade_id: trade?.id,
+    mode: session.mode,
     side: signal.action,
     amount: tradeAmount,
+    price: finalExecutedPrice,
+    binance_order_id: liveResult?.binanceOrderId ?? null,
     fifo_lots: updatedLedgerState?.lots.length ?? 0,
   });
 
@@ -834,6 +653,33 @@ export async function GET(req: NextRequest) {
 
     if (!sessions || sessions.length === 0) {
       return NextResponse.json({ processed: 0, message: "No active sessions" });
+    }
+
+    // Portfolio-level circuit breaker: stop ALL trading if user's paper balance
+    // has dropped 5% or more from initial across all sessions
+    const userPortfolioMap = new Map<string, { initial: number; current: number }>();
+    for (const s of sessions) {
+      const existing = userPortfolioMap.get(s.user_id) || { initial: 0, current: 0 };
+      existing.initial += s.initial_capital;
+      existing.current += s.current_capital;
+      userPortfolioMap.set(s.user_id, existing);
+    }
+
+    for (const [userId, portfolio] of userPortfolioMap) {
+      const drawdown = ((portfolio.initial - portfolio.current) / portfolio.initial) * 100;
+      if (drawdown >= 5) {
+        console.warn(`[PORTFOLIO STOP] User ${userId}: drawdown ${drawdown.toFixed(2)}% ≥ 5%. Stopping ALL sessions.`);
+        await db.from("trading_logs").insert({
+          user_id: userId,
+          action: "portfolio_stop",
+          details: { drawdown, initial: portfolio.initial, current: portfolio.current, reason: "Portfolio drawdown ≥ 5%" } as never,
+        } as never);
+        // Stop all sessions for this user
+        await db.from("trading_sessions")
+          .update({ status: "stopped" })
+          .eq("user_id", userId)
+          .eq("status", "active");
+      }
     }
 
     // Fetch user risk configs in one query to avoid N+1

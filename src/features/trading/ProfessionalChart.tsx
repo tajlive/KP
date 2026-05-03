@@ -10,10 +10,24 @@ import {
   Time,
   LineStyle,
   CandlestickSeries,
+  SeriesMarker,
 } from 'lightweight-charts';
 import { useTradingStore } from '@/store/tradingStore';
-import { TrendingUp, TrendingDown, Maximize2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { createClient } from '@/lib/supabase/client';
+import { buildTradeExplanation } from '@/lib/trading/build-trade-reason';
+import type { TradeReasonCode, TradeReasonParams } from '@/types/trading';
+import { TrendingUp, TrendingDown, Maximize2, Info, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface TradeMarker {
+  time: number;
+  side: 'buy' | 'sell';
+  price: number;
+  reason?: string;
+  pnl?: number;
+  reasonCode?: TradeReasonCode;
+  reasonParams?: TradeReasonParams;
+}
 
 // Binance kline data structure
 interface BinanceKline {
@@ -62,6 +76,49 @@ export default function ProfessionalChart() {
 
   const currentMarket = marketData[selectedSymbol];
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [trades, setTrades] = useState<TradeMarker[]>([]);
+  const [selectedTrade, setSelectedTrade] = useState<TradeMarker | null>(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+
+  // Fetch user's trades for this symbol
+  useEffect(() => {
+    async function fetchTrades() {
+      try {
+        const supabase = createClient();
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData.session) return;
+
+        const { data: tradeData } = await supabase
+          .from('trades')
+          .select('executed_at, side, price, realized_pnl, strategy_signal, reason_code, reason_params')
+          .eq('trading_pair', selectedSymbol.replace('/', ''))
+          .order('executed_at', { ascending: false })
+          .limit(50);
+
+        if (tradeData) {
+          const markers: TradeMarker[] = tradeData.map((t) => {
+            const reasonCode = (t.reason_code as TradeReasonCode) || 'UNKNOWN';
+            const reasonParams = (t.reason_params as TradeReasonParams) || {};
+            const explanation = buildTradeExplanation(reasonCode, reasonParams);
+            
+            return {
+              time: Math.floor(new Date(t.executed_at).getTime() / 1000),
+              side: t.side as 'buy' | 'sell',
+              price: Number(t.price),
+              reason: explanation.description,
+              pnl: t.realized_pnl ? Number(t.realized_pnl) : undefined,
+              reasonCode,
+              reasonParams,
+            };
+          });
+          setTrades(markers.reverse());
+        }
+      } catch (err) {
+        console.error('Failed to fetch trades for chart:', err);
+      }
+    }
+    fetchTrades();
+  }, [selectedSymbol]);
 
   // Initialize chart
   useEffect(() => {
@@ -142,6 +199,19 @@ export default function ProfessionalChart() {
 
     candlestickSeriesRef.current = candlestickSeries;
 
+    // Click handler for trade markers
+    chart.subscribeClick((param) => {
+      if (!param.time || !param.point) return;
+      const clickTime = param.time as number;
+      
+      // Find closest trade within 5 minutes
+      const closestTrade = trades.find((t) => Math.abs(t.time - clickTime) < 300);
+      if (closestTrade) {
+        setSelectedTrade(closestTrade);
+        setShowExplanation(true);
+      }
+    });
+
     // Fetch historical data
     fetchChartData(selectedSymbol, selectedTimeframe);
 
@@ -163,6 +233,31 @@ export default function ProfessionalChart() {
     };
   }, [selectedSymbol, selectedTimeframe, isFullscreen]);
 
+  // Update markers when trades change (after initial chart load)
+  useEffect(() => {
+    if (!candlestickSeriesRef.current || trades.length === 0) return;
+    
+    const chartMarkers: SeriesMarker<Time>[] = trades.map((trade) => {
+      const explanation = trade.reasonCode 
+        ? buildTradeExplanation(trade.reasonCode, trade.reasonParams || {})
+        : null;
+      const emoji = explanation?.emoji || (trade.side === 'buy' ? '🟢' : '🔴');
+      const shortTitle = explanation?.title || (trade.side === 'buy' ? 'Kjøp' : 'Salg');
+      const confidence = explanation?.confidence || 1;
+      
+      return {
+        time: trade.time as Time,
+        position: trade.side === 'buy' ? 'belowBar' : 'aboveBar',
+        color: trade.side === 'buy' ? '#10B981' : '#EF4444',
+        shape: trade.side === 'buy' ? 'arrowUp' : 'arrowDown',
+        text: `${emoji} ${shortTitle}`,
+        size: confidence,
+      };
+    });
+    
+    (candlestickSeriesRef.current as unknown as { setMarkers: (m: SeriesMarker<Time>[]) => void }).setMarkers(chartMarkers);
+  }, [trades]);
+
   const fetchChartData = async (symbol: string, interval: string) => {
     if (!candlestickSeriesRef.current) return;
 
@@ -182,6 +277,29 @@ export default function ProfessionalChart() {
       }));
 
       candlestickSeriesRef.current.setData(candlesticks);
+
+      // Add trade markers
+      if (trades.length > 0) {
+        const chartMarkers: SeriesMarker<Time>[] = trades.map((trade) => {
+          const explanation = trade.reasonCode 
+            ? buildTradeExplanation(trade.reasonCode, trade.reasonParams || {})
+            : null;
+          const emoji = explanation?.emoji || (trade.side === 'buy' ? '🟢' : '🔴');
+          const shortTitle = explanation?.title || (trade.side === 'buy' ? 'Kjøp' : 'Salg');
+          const confidence = explanation?.confidence || 1;
+          
+          return {
+            time: trade.time as Time,
+            position: trade.side === 'buy' ? 'belowBar' : 'aboveBar',
+            color: trade.side === 'buy' ? '#10B981' : '#EF4444',
+            shape: trade.side === 'buy' ? 'arrowUp' : 'arrowDown',
+            text: `${emoji} ${shortTitle}`,
+            size: confidence,
+          };
+        });
+        (candlestickSeriesRef.current as unknown as { setMarkers: (m: SeriesMarker<Time>[]) => void }).setMarkers(chartMarkers);
+      }
+
       chartRef.current?.timeScale().fitContent();
 
     } catch (error) {
@@ -304,6 +422,116 @@ export default function ProfessionalChart() {
           </div>
         )}
       </div>
+
+      {/* Trade Explanation Panel */}
+      <AnimatePresence>
+        {trades.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="border-t border-gray-200 dark:border-gray-800"
+          >
+            <div className="p-3 bg-gray-50 dark:bg-gray-800/50">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Siste handler
+                </h4>
+                <button
+                  onClick={() => setShowExplanation(!showExplanation)}
+                  className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors"
+                >
+                  <Info className="w-3 h-3" />
+                  {showExplanation ? 'Skjul forklaring' : 'Hvorfor dette skjer'}
+                </button>
+              </div>
+              
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {trades.slice(-5).map((trade, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedTrade(selectedTrade?.time === trade.time ? null : trade)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                      trade.side === 'buy'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                        : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
+                    } ${selectedTrade?.time === trade.time ? 'ring-2 ring-blue-500/50' : ''}`}
+                  >
+                    {trade.side === 'buy' ? (
+                      <ArrowUpCircle className="w-3.5 h-3.5" />
+                    ) : (
+                      <ArrowDownCircle className="w-3.5 h-3.5" />
+                    )}
+                    <span>{trade.side === 'buy' ? 'Kjøp' : 'Salg'}</span>
+                    <span className="text-gray-400">@</span>
+                    <span>${trade.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    {trade.pnl !== undefined && (
+                      <span className={trade.pnl >= 0 ? 'text-emerald-500' : 'text-red-500'}>
+                        {trade.pnl >= 0 ? '+' : ''}{trade.pnl.toFixed(0)} NOK
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              
+              {showExplanation && selectedTrade && (
+                <motion.div
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-2 p-3 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
+                >
+                  {(() => {
+                    const explanation = selectedTrade.reasonCode 
+                      ? buildTradeExplanation(selectedTrade.reasonCode, selectedTrade.reasonParams || {})
+                      : null;
+                    return explanation ? (
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-lg">{explanation.emoji}</span>
+                          <span className="text-sm font-bold text-gray-900 dark:text-white">
+                            {explanation.title}
+                          </span>
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                            explanation.confidence === 3 
+                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                              : explanation.confidence === 2
+                              ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300'
+                              : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                          }`}>
+                            {explanation.confidence === 3 ? 'Sterkt signal' : explanation.confidence === 2 ? 'Moderat' : 'Svakt'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                          {explanation.description}
+                        </p>
+                        {explanation.tip && (
+                          <p className="text-xs text-blue-600 dark:text-blue-400 mt-2 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+                            💡 {explanation.tip}
+                          </p>
+                        )}
+                        {selectedTrade.pnl !== undefined && (
+                          <p className={`text-sm font-semibold mt-2 ${
+                            selectedTrade.pnl >= 0 ? 'text-emerald-600' : 'text-red-600'
+                          }`}>
+                            {selectedTrade.pnl >= 0 ? '✅' : '🛑'} Realisert P&L: {selectedTrade.pnl >= 0 ? '+' : ''}{selectedTrade.pnl.toFixed(0)} NOK
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <span className="font-semibold">
+                          {selectedTrade.side === 'buy' ? 'Kjøpssignal:' : 'Salgsignal:'}
+                        </span>{' '}
+                        {selectedTrade.reason || 'Teknisk indikator utløst'}
+                      </p>
+                    );
+                  })()}
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Chart */}
       <div ref={chartContainerRef} className="w-full" />

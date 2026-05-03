@@ -1,4 +1,4 @@
-# Scripts Oversikt - 2026-04-16
+# Scripts Oversikt - 2026-05-01
 
 | Script | Beskrivelse |
 |--------|-------------|
@@ -19,6 +19,7 @@
 | backup-db.sh | ============================================================================= |
 | batch-commit.sh | ═══════════════════════════════════════════════════════════════════════════════ |
 | beta-full-deploy-local.sh | Run the unified deploy script from package.json |
+| bootstrap-github-secrets.sh | bootstrap-github-secrets.sh |
 | build-knowledge-graph.sh | Build Knowledge Graph for Klarpakke |
 | check-db-consistency.sh | ============================================================================= |
 | check-deploy-status.sh | ===================================================== |
@@ -26,7 +27,6 @@
 | check-missing-modules.mjs | Klarpakke Missing Modules Checker |
 | check-oauth-config.mjs | OAuth Configuration Diagnostic Script |
 | check-secrets-staged.sh | Sjekker at ingen hemmeligheter er i staged filer. Kjører ved pre-commit. |
-| check-secrets.sh | ============================================================================= |
 
 ## Kategorier
 - **Deploy:** *deploy*, *vercel*, *prod*

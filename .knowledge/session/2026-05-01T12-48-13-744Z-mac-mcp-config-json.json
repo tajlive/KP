@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-01T12:48:13.744Z",
+  "file": ".perplexity/mac-mcp-config.json",
+  "type": "review",
+  "lines": 75,
+  "swarm_status": "approved",
+  "agents": [
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "architect",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "proceed"
+    },
+    {
+      "agent": "security",
+      "approval": "proceed"
+    }
+  ]
+}

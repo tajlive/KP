@@ -1,14 +1,14 @@
 {
   "_meta": {
-    "version": "2.0",
-    "for": "Perplexity Mac Desktop + KIMI CLI v1.36.0",
+    "version": "2.1",
+    "for": "Perplexity Mac Desktop + KIMI CLI v1.40.0 + k2.6",
     "project": "Klarpakke",
-    "lastOptimized": "2026-04-19",
-    "description": "Perplexity Desktop kan kalle KIMI og lokale verktøy. KIMI v1.36.0 med async MCP startup og 500 max_steps."
+    "lastOptimized": "2026-04-30",
+    "description": "Perplexity Desktop kan kalle KIMI og lokale verktøy. KIMI v1.40.0 med async MCP startup, 750 max_steps, 262k kontekst."
   },
   "mcpServers": {
     "kimi": {
-      "description": "🧠 KIMI CLI v1.36.0 — Hovedorkestrator for Klarpakke-utvikling",
+      "description": "🧠 KIMI CLI v1.40.0 — Hovedorkestrator (750 steps/turn, 262k kontekst, k2.6)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-simple.mjs"]
     },
@@ -23,7 +23,7 @@
       "args": ["/Users/taj/klarpakke/scripts/run-github-mcp.mjs"]
     },
     "supabase": {
-      "description": "🗄️ Supabase — DB, Edge Functions, auth",
+      "description": "🗄️ Supabase — DB, Edge Functions, auth (offisiell MCP-server)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-official-supabase-mcp.mjs"]
     },
@@ -33,14 +33,24 @@
       "args": ["/Users/taj/klarpakke/scripts/run-vercel-mcp.mjs"]
     },
     "context7": {
-      "description": "📚 Context7 — Bibliotekdokumentasjon",
+      "description": "📚 Context7 — Bibliotekdokumentasjon (krever CONTEXT7_API_KEY i .env.local)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-context7-mcp.mjs"]
+    },
+    "mempalace": {
+      "description": "🏛️ MemPalace v3.1.1 — Prosjektkunnskap, KG, diary (zero-dep, <1s oppstart)",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-mempalace-mcp-v2.mjs"]
+    },
+    "sanity": {
+      "description": "🎨 Sanity CMS v2 — Read + write (krever SANITY_API_READ_TOKEN / SANITY_API_WRITE_TOKEN)",
+      "command": "node",
+      "args": ["/Users/taj/klarpakke/scripts/run-sanity-mcp-v2.mjs"]
     }
   },
   "_optional": {
     "linear": {
-      "description": "📋 Linear — Issues (valgfritt, aktiver ved behov)",
+      "description": "📋 Linear — Issues (valgfritt, krever LINEAR_API_KEY)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-linear-mcp.mjs"]
     },
@@ -50,9 +60,15 @@
       "args": ["/Users/taj/klarpakke/node_modules/@playwright/mcp/cli.js"]
     },
     "perplexity": {
-      "description": "🔍 Perplexity MCP — AI-søk (valgfritt, krever PERPLEXITY_API_KEY)",
+      "description": "🔍 Perplexity MCP — AI-søk og research (valgfritt, krever PERPLEXITY_API_KEY)",
       "command": "node",
       "args": ["/Users/taj/klarpakke/scripts/run-perplexity-mcp.mjs"]
+    }
+  },
+  "_removed": {
+    "klarpakke": {
+      "reason": "Remote Edge Function var treg/ustabil. Bruk supabase-db eller supabase i stedet.",
+      "replacement": "supabase"
     }
   }
 }

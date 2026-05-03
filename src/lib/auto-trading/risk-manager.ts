@@ -86,8 +86,8 @@ export class RiskManager {
       };
     }
 
-    // 5. Check symbol exposure
-    if (symbol) {
+    // 5. Check symbol exposure (only for BUY/LONG — sell reduces exposure)
+    if (symbol && params.direction === "LONG") {
       const symbolExposure = await this.getSymbolExposure(sessionId, symbol);
       const maxSymbolExposure = this.config.maxPositionSizePercent * 2;
       if (symbolExposure + positionSizePercent > maxSymbolExposure) {

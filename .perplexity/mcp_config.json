@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "version": "2.6-minimal",
-    "lastOptimized": "2026-04-22",
-    "for": "KIMI CLI v1.38.0 + k2.6",
-    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere. Mempalace v3 (zero-dep) inkludert for prosjektkunnskap.",
-    "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote). Mempalace v3 zero-dep in-memory — ingen M1-timeout. Perplexity beholdt."
+    "version": "2.1-minimal",
+    "lastOptimized": "2026-04-30",
+    "for": "KIMI CLI v1.40.0 + k2.6",
+    "description": "MINIMAL MCP-konfigurasjon — 7 raske servere. Mempalace v3.1 (zero-dep) inkludert for prosjektkunnskap.",
+    "note": "Fjernet: npx-servere (playwright, chrome-devtools, resend), klarpakke (remote). Mempalace v3.1 zero-dep in-memory — ingen M1-timeout. Perplexity beholdt."
   },
   "mcpServers": {
     "filesystem": {
