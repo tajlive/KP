@@ -156,47 +156,78 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    const { data, error } = await supabase
+    // Check for existing active session for this pair — if found (e.g. default
+    // session created by trigger), UPDATE it instead of failing with 23505.
+    const { data: existingSession } = await supabase
       .from("trading_sessions")
-      .insert({
-        user_id: user.id,
-        mode: "paper",
-        status: "active",
-        strategy_id: strategy,
-        strategy_config: strategyConfig as Record<string, unknown> as never,
-        starting_capital_nok: startingCapital,
-        current_capital_nok: startingCapital,
-        trading_pair: pairs[0] || "BTCUSDT",
-        initial_capital: startingCapital,
-        current_capital: startingCapital,
-        total_trades: 0,
-        winning_trades: 0,
-        losing_trades: 0,
-        total_pnl: 0,
-        started_at: now,
-        last_heartbeat: now,
-        created_at: now,
-        updated_at: now,
-      })
       .select("id")
-      .single();
+      .eq("user_id", user.id)
+      .eq("mode", "paper")
+      .eq("status", "active")
+      .eq("trading_pair", pairs[0] || "BTCUSDT")
+      .maybeSingle();
 
-    if (error) {
-      // Supabase returns code '23505' for unique constraint violations
-      const pgCode = (error as { code?: string }).code;
-      if (pgCode === "23505") {
-        return NextResponse.json<StartPaperBotResponse>(
-          {
-            ok: false,
-            code: "PAPER_BOT_DUPLICATE",
-            message: "Du har allerede en aktiv sesjon for dette paret og strategien.",
-            error: "Du har allerede en aktiv sesjon for dette paret og strategien.",
-            next_step: "retry",
-          },
-          { status: 409 },
-        );
+    let sessionId: string;
+
+    if (existingSession) {
+      // Update existing default session with new strategy/config
+      const { data: updated, error: updateErr } = await supabase
+        .from("trading_sessions")
+        .update({
+          strategy_id: strategy,
+          strategy_config: strategyConfig as Record<string, unknown> as never,
+          starting_capital_nok: startingCapital,
+          current_capital_nok: startingCapital,
+          initial_capital: startingCapital,
+          current_capital: startingCapital,
+          total_trades: 0,
+          winning_trades: 0,
+          losing_trades: 0,
+          total_pnl: 0,
+          started_at: now,
+          last_heartbeat: now,
+          updated_at: now,
+        })
+        .eq("id", existingSession.id)
+        .select("id")
+        .single();
+
+      if (updateErr) {
+        console.error("[auto-trading/paper] update existing session:", updateErr.message);
+        throw updateErr;
       }
-      throw error;
+      sessionId = updated.id;
+    } else {
+      // No existing session — create new
+      const { data: inserted, error } = await supabase
+        .from("trading_sessions")
+        .insert({
+          user_id: user.id,
+          mode: "paper",
+          status: "active",
+          strategy_id: strategy,
+          strategy_config: strategyConfig as Record<string, unknown> as never,
+          starting_capital_nok: startingCapital,
+          current_capital_nok: startingCapital,
+          trading_pair: pairs[0] || "BTCUSDT",
+          initial_capital: startingCapital,
+          current_capital: startingCapital,
+          total_trades: 0,
+          winning_trades: 0,
+          losing_trades: 0,
+          total_pnl: 0,
+          started_at: now,
+          last_heartbeat: now,
+          created_at: now,
+          updated_at: now,
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        throw error;
+      }
+      sessionId = inserted.id;
     }
 
     // Map wizard risk level to auto_trade_settings schema
@@ -248,7 +279,7 @@ export async function POST(request: NextRequest) {
       ok: true,
       code: "PAPER_BOT_STARTED",
       message: "Paper bot started successfully",
-      session_id: data.id,
+      session_id: sessionId,
       next_step: "open_bot_details",
     });
   } catch (error) {
