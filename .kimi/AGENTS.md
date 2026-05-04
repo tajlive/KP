@@ -208,8 +208,8 @@ Workflow: `.github/workflows/sanity-guard.yml` — trigger på Sanity-filer + ni
 
 ### KIMI CLI v1.40.0 + k2.6 endringer (påvirker oss)
 - **`max_steps_per_turn` økt til 750** — KIMI kan kjøre lengre oppgaver uten avbrudd
-- **`reserved_context_size` = 45000** — optimalisert margin (ned fra 60000)
-- **`compaction_trigger_ratio` = 0.92** — mindre frekvent komprimering
+- **`reserved_context_size` = 40000** — optimalisert margin (ned fra 60000, deretter 45000)
+- **`compaction_trigger_ratio` = 0.94** — enda mindre frekvent komprimering (opp fra 0.92)
 - **`tool_call_timeout_ms` = 120000** — tilstrekkelig for MemPalace FTS-indeksering
 - **`merge_all_available_skills` = true** — auto-aktiverer prosjekt-skills
 - **MCP startup er asynkron** med progress indicators — raskere shell-oppstart
@@ -277,9 +277,9 @@ kimi
 > Sjekk at "perplexity" vises grønt i MCP-statuslinjen
 ```
 
-## MemPalace — Prosjektminne v3.2.0 (KIMI CLI v1.40.0 + k2.6)
+## MemPalace — Prosjektminne v3.3.0 SUPERKIMI (KIMI CLI v1.40.0 + k2.6)
 
-> Oppdatert: 2026-05-04 | MemPalace MCP v3.2.0 | Zero-dep in-memory FTS med inverted index | 58+ entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.40.0-optimalisert
+> Oppdatert: 2026-05-04 | MemPalace MCP v3.3.0 | TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens | 78+ entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.40.0-optimalisert
 
 ### Rask verifisering
 ```bash
