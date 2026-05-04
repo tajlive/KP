@@ -87,6 +87,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "**.coingecko.com",
       },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
     ],
   },
 

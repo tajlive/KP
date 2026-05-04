@@ -218,7 +218,7 @@ apt-get install ripgrep  # Linux
 - Del opp i mindre `kimi_batch`-operasjoner
 
 ### Perplexity finner ikke MCP
-1. Sjekk at stien er korrekt: `scripts/run-kimi-mcp-optimized.mjs`
+1. Sjekk at stien er korrekt: `scripts/mcp-smoke-test.mjs`
 2. Restart Perplexity helt (Cmd+Q)
 3. Sjekk at mcp.json er gyldig JSON
 

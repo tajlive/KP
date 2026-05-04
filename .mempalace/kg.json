@@ -1979,5 +1979,139 @@
       "object": "src/features/leaderboard/CompetitionClient.tsx",
       "validFrom": "2026-05-03T18:39:19.371Z"
     }
+  ],
+  "modernization": [
+    {
+      "predicate": "completed",
+      "object": "week-1-component-splitting",
+      "validFrom": "2026-05-04"
+    },
+    {
+      "predicate": "completed",
+      "object": "week-2-server-components",
+      "validFrom": "2026-05-04"
+    },
+    {
+      "predicate": "completed",
+      "object": "week-3-realtime-subscriptions",
+      "validFrom": "2026-05-04"
+    },
+    {
+      "predicate": "completed",
+      "object": "week-4-bundle-optimization",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "UnifiedTradingDashboard": [
+    {
+      "predicate": "refactored",
+      "object": "330-lines-from-1294",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "TradingResultsDashboard": [
+    {
+      "predicate": "refactored",
+      "object": "311-lines-from-692",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "TradingResultsCharts": [
+    {
+      "predicate": "lazy-loaded",
+      "object": "next-dynamic-ssr-false",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "PositionLotsCard": [
+    {
+      "predicate": "has",
+      "object": "supabase-realtime-subscription",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "SignalFeed": [
+    {
+      "predicate": "removed",
+      "object": "polling-fallback-interval",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "lint": [
+    {
+      "predicate": "status",
+      "object": "0-errors-0-warnings",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "type-check": [
+    {
+      "predicate": "status",
+      "object": "0-errors",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "production-build": [
+    {
+      "predicate": "status",
+      "object": "success",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "DashboardLoadingSkeleton": [
+    {
+      "predicate": "extracted-from",
+      "object": "UnifiedTradingDashboard",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "DashboardBotStatusView": [
+    {
+      "predicate": "extracted-from",
+      "object": "UnifiedTradingDashboard",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "KpiCardsSection": [
+    {
+      "predicate": "extracted-from",
+      "object": "TradingResultsDashboard",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "useDashboardData": [
+    {
+      "predicate": "extracted-from",
+      "object": "UnifiedTradingDashboard",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "useDashboardMetrics": [
+    {
+      "predicate": "optimized",
+      "object": "initialData-passthrough-server-to-client",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "next.config.mjs": [
+    {
+      "predicate": "has",
+      "object": "optimizePackageImports-recharts-framer-motion-lucide",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "Testimonials": [
+    {
+      "predicate": "fixed",
+      "object": "next-image-instead-of-img",
+      "validFrom": "2026-05-04"
+    }
+  ],
+  "pravatar.cc": [
+    {
+      "predicate": "added-to",
+      "object": "images-remotePatterns",
+      "validFrom": "2026-05-04"
+    }
   ]
 }

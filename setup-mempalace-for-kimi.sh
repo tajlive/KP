@@ -1,83 +1,124 @@
 #!/bin/bash
-# Auto-setup MemPalace for KIMI - Run once
+# Auto-setup MemPalace MCP v3.2.0 for KIMI CLI — Run once
 set -e
 
-echo "🏛️  MemPalace + KIMI Auto-Setup"
-echo "================================"
+echo "🏛️  MemPalace MCP v3.2.0 + KIMI Auto-Setup"
+echo "==========================================="
 
-# 1. Installer MemPalace hvis ikke allerede installert
-if ! command -v mempalace &> /dev/null; then
-    echo "📦 Installerer MemPalace..."
-    pip install mempalace
-else
-    echo "✅ MemPalace allerede installert"
+ROOT="$HOME/klarpakke"
+MCP_CONFIG="$HOME/.kimi/mcp.json"
+
+# 1. Verifiser at MemPalace MCP-server finnes
+if [ ! -f "$ROOT/scripts/run-mempalace-mcp-v2.mjs" ]; then
+    echo "❌ MemPalace MCP server ikke funnet på $ROOT/scripts/run-mempalace-mcp-v2.mjs"
+    exit 1
 fi
+echo "✅ MemPalace MCP server funnet (v3.2.0)"
 
-# 2. Initialiser MemPalace for klarpakke (hvis ikke gjort)
-if [ ! -f "$HOME/klarpakke/mempalace.yaml" ]; then
-    echo "🏗️  Initialiserer MemPalace for klarpakke..."
-    cd "$HOME/klarpakke"
-    # Auto-accept med printf
-    printf "\n\n\n" | mempalace init . || true
-else
-    echo "✅ MemPalace allerede initialisert"
-fi
-
-# 3. Mine klarpakke-prosjektet (hvis ikke allerede minet)
-if [ ! -d "$HOME/.mempalace/palace/klarpakke" ]; then
-    echo "⛏️  Mining klarpakke-prosjektet..."
-    cd "$HOME/klarpakke"
-    mempalace mine . --mode projects --limit 500 || true
-else
-    echo "✅ Allerede minet"
-fi
-
-# 4. Legg til MemPalace som MCP server i KIMI
-echo "🔌 Kobler MemPalace til KIMI via MCP..."
-kimi mcp list 2>/dev/null | grep -q "mempalace" || {
-    kimi mcp add --transport stdio mempalace python -m mempalace.mcp_server
+# 2. Verifiser at ~/.kimi/mcp.json finnes
+if [ ! -f "$MCP_CONFIG" ]; then
+    echo "⚠️  $MCP_CONFIG finnes ikke. Oppretter minimal config..."
+    mkdir -p "$HOME/.kimi"
+    cat > "$MCP_CONFIG" << 'EOF'
+{
+  "_meta": {
+    "version": "2.6-minimal",
+    "description": "Minimal MCP-konfigurasjon — generert av setup-mempalace-for-kimi.sh"
+  },
+  "mcpServers": {}
 }
-
-# 5. Opprett KIMI konfigurasjon for auto-hukommelse
-KIMI_CONFIG_DIR="${HOME}/.config/kimi"
-mkdir -p "$KIMI_CONFIG_DIR"
-
-cat > "$KIMI_CONFIG_DIR/config.yaml" << 'EOF'
-# KIMI + MemPalace Auto-Memory Configuration
-mcp:
-  enabled: true
-  servers:
-    - name: mempalace
-      transport: stdio
-      command: python
-      args: ["-m", "mempalace.mcp_server"]
-      
-# Auto-mining settings
-memory:
-  auto_mine_on_start: true
-  auto_save_on_exit: true
-  wake_up_context: true
-  
-# Session management
-session:
-  persist_context: true
-  compress_on_threshold: 80
-  
-# Default oppførsel
-behavior:
-  search_memory_before_answer: true
-  store_decisions_automatically: true
-  recall_project_context: true
 EOF
+fi
+
+# 3. Sjekk at mempalace allerede er i mcp.json
+if grep -q '"mempalace"' "$MCP_CONFIG"; then
+    echo "✅ MemPalace allerede konfigurert i ~/.kimi/mcp.json"
+else
+    echo "🔌 Legger til MemPalace i ~/.kimi/mcp.json..."
+    # Backup
+    cp "$MCP_CONFIG" "$MCP_CONFIG.bak.$(date +%Y%m%d%H%M%S)"
+    
+    # Bruk node for å injisere mempalace inn i JSON
+    node -e "
+const fs = require('fs');
+const path = '$MCP_CONFIG';
+const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+config.mcpServers = config.mcpServers || {};
+config.mcpServers.mempalace = {
+  description: 'MemPalace MCP v3.2.0 — prosjektkunnskap, KG, diary, resources, prompts (zero-dep, inverted-index)',
+  command: 'node',
+  args: ['/Users/taj/klarpakke/scripts/run-mempalace-mcp-v2.mjs']
+};
+fs.writeFileSync(path, JSON.stringify(config, null, 2));
+console.log('✅ MemPalace lagt til i MCP-config');
+"
+fi
+
+# 4. Verifiser at nødvendige mapper finnes
+for dir in .knowledge .mempalace/handoffs .mempalace/plans docs memory .kimi; do
+    mkdir -p "$ROOT/$dir"
+done
+echo "✅ Nødvendige mapper sikret"
+
+# 5. Initialiser KG hvis ikke finnes
+if [ ! -f "$ROOT/.mempalace/kg.json" ]; then
+    echo '{"klarpakke-project": [{"predicate":"uses","object":"mempalace-v3.2.0","validFrom":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}]}' > "$ROOT/.mempalace/kg.json"
+    echo "✅ Initial KG opprettet"
+fi
+
+# 6. Opprett diary hvis ikke finnes
+if [ ! -f "$ROOT/.kimi/diary.jsonl" ]; then
+    echo '{"ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","type":"AUTO","task":"MemPalace v3.2.0 initialisert","agent":"kimi","status":"GO","rating":5,"files":0,"tags":["mempalace","setup"]}' > "$ROOT/.kimi/diary.jsonl"
+    echo "✅ Initial diary opprettet"
+fi
+
+# 7. Kjør rask test
+echo ""
+echo "🧪 Rask verifisering..."
+node -e "
+const { spawn } = require('child_process');
+const child = spawn('node', ['$ROOT/scripts/run-mempalace-mcp-v2.mjs'], { cwd: '$ROOT' });
+let out = '';
+child.stdout.on('data', d => out += d);
+child.stderr.on('data', () => {});
+child.on('spawn', () => {
+  child.stdin.write(JSON.stringify({jsonrpc:'2.0',id:1,method:'initialize',params:{}}) + '\n');
+  setTimeout(() => {
+    child.stdin.write(JSON.stringify({jsonrpc:'2.0',id:2,method:'tools/call',params:{name:'get_status',arguments:{}}}) + '\n');
+    setTimeout(() => child.kill('SIGTERM'), 300);
+  }, 300);
+});
+child.on('close', () => {
+  const lines = out.split('\n').filter(Boolean);
+  const statusLine = lines.find(l => l.includes('get_status') || l.includes('documents'));
+  if (statusLine) {
+    console.log('✅ MemPalace MCP server responderer korrekt');
+  } else {
+    console.log('⚠️  Kunne ikke verifisere respons — sjekk manuelt med: node scripts/run-mempalace-mcp-v2.mjs');
+  }
+});
+"
 
 echo ""
-echo "✅ MemPalace + KIMI oppsett fullført!"
+echo "🎉 MemPalace + KIMI oppsett fullført!"
 echo ""
-echo "🎯 Nå vil KIMI automatisk:"
-echo "   • Huske alle tidligere samtaler"
-echo "   • Søke i minnet før den svarer"
-echo "   • Lagre viktige beslutninger"
-echo "   • Hente kontekst fra klarpakke-prosjektet"
+echo "📋 Oppsummering:"
+echo "   • MemPalace MCP v3.2.0 — zero-dep, inverted index"
+echo "   • Resources: mempalace://document/{path}, mempalace://kg/{entity}"
+echo "   • Prompts: pre_task, post_task, agent_auth, agent_architect"
+echo "   • KG: incremental append + auto-compact"
 echo ""
-echo "💡 Start KIMI med: kimi"
-echo "💡 Test med: 'Hva jobbet vi med sist?'"
+echo "🚀 Start KIMI:"
+echo "   cd $ROOT && kimi"
+echo ""
+echo "🧪 Test i KIMI:"
+echo '   > "sjekk mempalace status"'
+echo '   > "søk etter auth pattern"'
+echo ""
+echo "📁 Viktige filer:"
+echo "   MCP-config:     $MCP_CONFIG"
+echo "   MCP-server:     $ROOT/scripts/run-mempalace-mcp-v2.mjs"
+echo "   KG:             $ROOT/.mempalace/kg.json"
+echo "   Diary:          $ROOT/.kimi/diary.jsonl"
+echo "   Handoffs:       $ROOT/.mempalace/handoffs/"
+echo ""

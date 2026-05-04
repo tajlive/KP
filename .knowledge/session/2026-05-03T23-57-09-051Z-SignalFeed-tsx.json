@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-05-03T23:57:09.051Z",
+  "file": "src/features/trading/SignalFeed.tsx",
+  "type": "security",
+  "lines": 462,
+  "swarm_status": "blocked",
+  "agents": [
+    {
+      "agent": "security",
+      "approval": "warn"
+    },
+    {
+      "agent": "analyzer",
+      "approval": "block"
+    },
+    {
+      "agent": "tester",
+      "approval": "add_tests"
+    }
+  ]
+}

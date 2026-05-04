@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-04T00:33:00.671Z",
+  "file": "src/features/trading/components/RecentTradesSection.tsx",
+  "type": "review",
+  "lines": 92,
+  "swarm_status": "blocked",
+  "agents": [
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "architect",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "add_tests"
+    },
+    {
+      "agent": "security",
+      "approval": "block"
+    }
+  ]
+}

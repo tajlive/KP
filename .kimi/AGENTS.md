@@ -232,14 +232,20 @@ Bytt med: `kimi-mcp [minimal|medium|full|auto]` (script i `~/.kimi/bin/`)
 1. **npx → lokale installasjoner**: `playwright`, `chrome-devtools`, `resend` installert i `node_modules`. Sparer 7+ sekunder oppstart.
 2. **SyntaxError i 12 wrapper-scripts**: `gracefulExit(...); return;` på modulnivå er ugyldig JS. Fikset til `gracefulExit(...);` (uten `return`).
 3. **Broken initialize-respons**: `cloudflare`, `openai`, `binance`, `sanity` returnerte ugyldig MCP-protokoll (manglet `protocolVersion` + `capabilities`). Fikset.
+4. **Sanity MCP protocol compliance** (2026-05-03): `run-sanity-mcp-v2.mjs` returnerte `name`/`version` på feil nivå i `InitializeResult` — manglet nøstet `serverInfo`-felt. Fikset. Alle 7 MCP-servere passerer `kimi mcp test`.
 4. **klarpakke MCP fjernet**: Remote Edge Function var treg/ustabil. Bruk `supabase-db` istedenfor.
 5. **Perplexity lagt til minimal**: Research-flyt mellom KIMI og Perplexity Desktop krever `perplexity` MCP i aktiv config.
 
-### MemPalace v3.1.1 — KIMI CLI v1.40.0-kompatibel
+### MemPalace v3.2.0 — KIMI CLI v1.40.0-kompatibel
 - **Ping/heartbeat-støtte**: Svarer på MCP `ping`-forespørsler
 - **Graceful shutdown**: Fanger SIGTERM/SIGINT, flusher KG til disk
 - **Robust transport**: Forbedret JSON-parse feilhåndtering
 - **Zero-dep**: Ingen eksterne avhengigheter — <1s oppstart
+- **Inverted index**: O(1) token-lookup (tidligere O(n) lineær scan)
+- **MCP Resources**: `mempalace://document/{path}` og `mempalace://kg/{entity}`
+- **MCP Prompts**: `pre_task`, `post_task`, `agent_auth`, `agent_architect`
+- **Incremental KG**: Append-only writes med auto-compact ved 50KB
+- **Ekte semantic search**: KG-basert synonym-ekspansjon
 
 ### Perplexity Desktop ↔ KIMI dataflyt
 ```
@@ -271,9 +277,9 @@ kimi
 > Sjekk at "perplexity" vises grønt i MCP-statuslinjen
 ```
 
-## MemPalace — Prosjektminne v3.1.1 (KIMI CLI v1.40.0 + k2.6)
+## MemPalace — Prosjektminne v3.2.0 (KIMI CLI v1.40.0 + k2.6)
 
-> Oppdatert: 2026-04-28 | MemPalace MCP v3.1.1 | Zero-dep in-memory FTS | 20 entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.40.0-optimalisert
+> Oppdatert: 2026-05-04 | MemPalace MCP v3.2.0 | Zero-dep in-memory FTS med inverted index | 58+ entities, 98+ facts | Alle agenter integrert | KIMI CLI v1.40.0-optimalisert
 
 ### Rask verifisering
 ```bash
@@ -289,20 +295,26 @@ kimi --agent-file .kimi/agents/mempalace-agent.yaml
 # eller: kimi mempalace  (hvis alias konfigurert)
 ```
 
-### MemPalace MCP v3.1.1 — Endringer fra v3.1
+### MemPalace MCP v3.2.0 — Endringer fra v3.1.1
 - **KIMI CLI v1.40.0-kompatibel**: Støtter MCP `ping`-heartbeat, graceful shutdown
 - **Robust transport**: Forbedret JSON-parse feilhåndtering — logger ikke kræsj
 - **Graceful shutdown**: SIGTERM/SIGINT fanger og flusher KG til disk
 - **FIX: MCP protocol compliance** — Tool results wrappes i `content: [{type: "text", text: ...}]` array
 - **FIX: Diary newline-håndtering** — Sikrer korrekt JSONL-format ved append
+- **OPT: Inverted index** — O(1) token lookup via `Map<token, Set<docId>>`. 662 docs indeksert på ~200ms
+- **OPT: Incremental KG** — Append-only `kg-append.jsonl` med auto-compact ved 50KB threshold
+- **OPT: Auto-reindex** — Sjekker mtime, reindexerer kun endrede filer
 - **OPT: KG deduplisering** — `kgAdd()` og `kgBatch()` sjekker for duplikater før lagring
-- **OPT: Batch-write** — `kgBatch()` skriver KG én gang per batch
+- **OPT: Semantic search** — KG-basert synonym-ekspansjon (auth→oauth/session/login/rls)
 - **OPT: Cache invalidation** — `writeDiary()` trigger `cache.clear()` for fresh indeks
+- **NEW: MCP Resources** — `mempalace://document/{path}` og `mempalace://kg/{entity}`
+- **NEW: MCP Prompts** — `pre_task`, `post_task`, `agent_auth`, `agent_architect`
+- **NEW: MCP Logging** — `logging` capability, stderr-basert
 - **Zero-dependency**: Ingen ChromaDB, ingen M1-timeout — <1s oppstart
-- **In-memory FTS**: Bygger indeks ved startup (async, ikke-blokkerende)
-- **LRU-cache**: 100 entries for raskt gjentatt søk
+- **In-memory FTS**: Bygger inverted indeks ved startup (async, ikke-blokkerende)
+- **LRU-cache**: 200 entries (økt fra 100)
 - **12 verktøy**: `search`, `semantic_search`, `recent_context`, `kg_query`, `kg_add`, `kg_batch`, `kg_find_path`, `read_diary`, `write_diary`, `get_status`, `get_room_info`, `auto_tag`
-- **k2.6-optimalisert**: Batch-operasjoner, 1200 chars snippets, 262k kontekst-utnyttelse
+- **k2.6-optimalisert**: Batch-operasjoner, 1500 chars snippets, 262k kontekst-utnyttelse
 
 ### Agent: `mempalace`
 YAML: `.kimi/agents/mempalace-agent.yaml`  
@@ -356,9 +368,9 @@ kimi --agent-file .kimi/agents/verify-agent.yaml
 
 **Notat:** `.mempalace/diary.jsonl` er konsolidert inn i `.kimi/diary.jsonl` (en kilde til sannhet).
 
-### Agenter med MemPalace-integrasjon (v3.1)
+### Agenter med MemPalace-integrasjon (v3.2)
 
-Alle agenter er oppdatert til å bruke MemPalace MCP v3.1-verktøy med korrekte verktøynavn.
+Alle agenter er oppdatert til å bruke MemPalace MCP v3.2-verktøy med korrekte verktøynavn.
 
 | Agent | YAML | Fokus | KG-entiteter |
 |---|---|---|---|
@@ -379,7 +391,7 @@ kimi auth        # Auth-ekspert
 kimi sanity      # Sanity-ekspert
 kimi mempalace   # Memory-arkitekt
 kimi mobile      # Mobil-sjekk
-kimi super-editor # Super-redaktør (CMS + kode)
+kimi editor       # Super-redaktør (CMS + kode)
 kimi verify      # Post-change verifisering
 ```
 
@@ -408,7 +420,7 @@ kimi verify      # Post-change verifisering
 | `pwa-mobile` | 2 | Bottom tabs, Lighthouse audits |
 | `mifid-compliance` | 2 | Auto CSV export, pg_cron scheduled |
 | `deploy-pipeline` | 3 | Lint→typecheck→test→build, auto GitHub Actions |
-| `mempalace` | 5 | v3.1.0, in-memory FTS, LRU cache, 20 entities |
+| `mempalace` | 5 | v3.2.0, inverted index, resources/prompts, 58+ entities |
 | `deployment` | 2 | www.klarpakke.no, 679 tests passed |
 
 **Totalt:** 20 entities, 98+ facts (voksende)

@@ -82,9 +82,12 @@ function handleError(e, action) {
 const serverInfo = {
   name: "sanity-mcp-v2",
   version: "2.0.0",
-  description: "Sanity CMS read + write via @sanity/client",
+};
+
+const initResult = {
   protocolVersion: "2024-11-05",
   capabilities: { tools: {} },
+  serverInfo,
 };
 
 const tools = [
@@ -309,13 +312,17 @@ function handleMessage(msg) {
   const { id, method, params } = msg;
 
   if (method === "initialize") {
-    send({ jsonrpc: "2.0", id, result: serverInfo });
+    send({ jsonrpc: "2.0", id, result: initResult });
     return;
   }
 
   if (method === "tools/list") {
     send({ jsonrpc: "2.0", id, result: { tools } });
     return;
+  }
+
+  if (method === "notifications/initialized") {
+    return; // notification — no response
   }
 
   if (method === "tools/call") {

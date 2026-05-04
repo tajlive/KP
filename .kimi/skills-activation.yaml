@@ -1,4 +1,9 @@
 # KIMI Skills Auto-Activation — v2.2 (2026-04-22)
+# ⚠️ DOKUMENTASJON/HINT — KIMI CLI laster IKKE denne filen automatisk.
+# Ingen skills er installert i ~/.kimi/skills/. Filen fungerer som
+# prosjektreferanse: les den manuelt for å velge relevante skills.
+# KIMI CLI skills-flagg: --skills-dir (krever eksplisitt SKILL.md-filer).
+#
 # Aktiverer relevante skills basert på filtype og kontekst
 
 version: "2.2"

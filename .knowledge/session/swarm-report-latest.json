@@ -1,26 +1,30 @@
 {
   "workflow": "review",
   "files": [
-    ".perplexity/mac-mcp-config.json",
-    ".perplexity/mcp_config.json"
+    "src/features/trading/UnifiedTradingDashboard.tsx",
+    "src/features/dashboard/TradingResultsDashboard.tsx",
+    "src/features/trading/SignalFeed.tsx",
+    "src/app/[locale]/layout.tsx"
   ],
-  "timestamp": "2026-05-01T12:48:13.746Z",
+  "timestamp": "2026-05-04T00:49:27.503Z",
   "summary": {
-    "passes": 10,
-    "warns": 0,
-    "blocks": 0
+    "passes": 11,
+    "warns": 7,
+    "blocks": 2
   },
   "results": [
     {
-      "file": ".perplexity/mac-mcp-config.json",
+      "file": "src/features/trading/UnifiedTradingDashboard.tsx",
       "agents": [
         {
           "agent": "analyzer",
-          "complexity_score": 2,
-          "lines": 75,
-          "risks": [],
+          "complexity_score": 9,
+          "lines": 374,
+          "risks": [
+            "High complexity score (9/10)"
+          ],
           "suggestions": [],
-          "approval": "proceed"
+          "approval": "warn"
         },
         {
           "agent": "architect",
@@ -33,17 +37,28 @@
         },
         {
           "agent": "tester",
-          "test_level": "P2",
+          "test_level": "P0",
           "scenarios": [
-            "Basic functionality"
+            "Happy path",
+            "Error handling",
+            "Edge cases",
+            "Security",
+            "MISSING: Add unit/integration test file"
           ],
-          "coverage_target": 80,
+          "coverage_target": 90,
           "has_test_file": false,
-          "approval": "proceed"
+          "approval": "add_tests"
         },
         {
           "agent": "security",
-          "findings": [],
+          "findings": [
+            {
+              "severity": "medium",
+              "file": "src/features/trading/UnifiedTradingDashboard.tsx",
+              "issue": "Live trading logic without feature flag check",
+              "mitigation": "Verify live_trading_enabled flag is checked"
+            }
+          ],
           "checked": [
             "auth",
             "api",
@@ -51,12 +66,12 @@
             "trading",
             "secrets"
           ],
-          "approval": "proceed"
+          "approval": "warn"
         },
         {
           "agent": "knowledge",
           "files_created": [
-            "session/2026-05-01T12-48-13-744Z-mac-mcp-config-json.json"
+            "session/2026-05-04T00-49-27-499Z-UnifiedTradingDashboard-tsx.json"
           ],
           "patterns_identified": [],
           "mem_palace_synced": false,
@@ -66,12 +81,12 @@
       ]
     },
     {
-      "file": ".perplexity/mcp_config.json",
+      "file": "src/features/dashboard/TradingResultsDashboard.tsx",
       "agents": [
         {
           "agent": "analyzer",
-          "complexity_score": 2,
-          "lines": 47,
+          "complexity_score": 7,
+          "lines": 363,
           "risks": [],
           "suggestions": [],
           "approval": "proceed"
@@ -97,7 +112,14 @@
         },
         {
           "agent": "security",
-          "findings": [],
+          "findings": [
+            {
+              "severity": "high",
+              "file": "src/features/dashboard/TradingResultsDashboard.tsx",
+              "issue": "Possible hardcoded secret/token",
+              "mitigation": "Move to environment variables or Vault"
+            }
+          ],
           "checked": [
             "auth",
             "api",
@@ -105,12 +127,151 @@
             "trading",
             "secrets"
           ],
-          "approval": "proceed"
+          "approval": "block"
         },
         {
           "agent": "knowledge",
           "files_created": [
-            "session/2026-05-01T12-48-13-746Z-mcp_config-json.json"
+            "session/2026-05-04T00-49-27-501Z-TradingResultsDashboard-tsx.json"
+          ],
+          "patterns_identified": [],
+          "mem_palace_synced": false,
+          "wake_up_updated": false,
+          "approval": "proceed"
+        }
+      ]
+    },
+    {
+      "file": "src/features/trading/SignalFeed.tsx",
+      "agents": [
+        {
+          "agent": "analyzer",
+          "complexity_score": 9,
+          "lines": 410,
+          "risks": [
+            "High complexity score (9/10)"
+          ],
+          "suggestions": [
+            "Consider extracting sub-modules"
+          ],
+          "approval": "warn"
+        },
+        {
+          "agent": "architect",
+          "adr_compliance": [
+            "KLA-91"
+          ],
+          "violations": [],
+          "boundary_check": "pass",
+          "approval": "proceed"
+        },
+        {
+          "agent": "tester",
+          "test_level": "P0",
+          "scenarios": [
+            "Happy path",
+            "Error handling",
+            "Edge cases",
+            "Security",
+            "MISSING: Add unit/integration test file"
+          ],
+          "coverage_target": 90,
+          "has_test_file": false,
+          "approval": "add_tests"
+        },
+        {
+          "agent": "security",
+          "findings": [
+            {
+              "severity": "medium",
+              "file": "src/features/trading/SignalFeed.tsx",
+              "issue": "Console logging in auth/trading code",
+              "mitigation": "Use structured logging or remove before production"
+            },
+            {
+              "severity": "medium",
+              "file": "src/features/trading/SignalFeed.tsx",
+              "issue": "Live trading logic without feature flag check",
+              "mitigation": "Verify live_trading_enabled flag is checked"
+            }
+          ],
+          "checked": [
+            "auth",
+            "api",
+            "db",
+            "trading",
+            "secrets"
+          ],
+          "approval": "warn"
+        },
+        {
+          "agent": "knowledge",
+          "files_created": [
+            "session/2026-05-04T00-49-27-502Z-SignalFeed-tsx.json"
+          ],
+          "patterns_identified": [],
+          "mem_palace_synced": false,
+          "wake_up_updated": false,
+          "approval": "proceed"
+        }
+      ]
+    },
+    {
+      "file": "src/app/[locale]/layout.tsx",
+      "agents": [
+        {
+          "agent": "analyzer",
+          "complexity_score": 9,
+          "lines": 290,
+          "risks": [
+            "High complexity score (9/10)",
+            "High branch count (31) — consider splitting"
+          ],
+          "suggestions": [],
+          "approval": "warn"
+        },
+        {
+          "agent": "architect",
+          "adr_compliance": [
+            "KLA-91"
+          ],
+          "violations": [],
+          "boundary_check": "pass",
+          "approval": "proceed"
+        },
+        {
+          "agent": "tester",
+          "test_level": "P2",
+          "scenarios": [
+            "Basic functionality"
+          ],
+          "coverage_target": 80,
+          "has_test_file": false,
+          "approval": "proceed"
+        },
+        {
+          "agent": "security",
+          "findings": [
+            {
+              "severity": "high",
+              "file": "src/app/[locale]/layout.tsx",
+              "issue": "Possible hardcoded secret/token",
+              "mitigation": "Move to environment variables or Vault"
+            }
+          ],
+          "checked": [
+            "auth",
+            "api",
+            "db",
+            "trading",
+            "secrets"
+          ],
+          "approval": "block"
+        },
+        {
+          "agent": "knowledge",
+          "files_created": [
+            "session/2026-05-04T00-49-27-503Z-layout-tsx.json"
           ],
           "patterns_identified": [],
           "mem_palace_synced": false,

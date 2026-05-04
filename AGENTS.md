@@ -194,7 +194,7 @@ Når KIMI-økten avsluttes:
 
 ## 🛠️ MemPalace (Minne-System)
 
-> **Status:** Raw Mode (ChromaDB workaround for M1 Mac)
+> **Status:** v3.2.0 — Inverted index, MCP Resources/Prompts, Incremental KG
 
 ### Kommandoer
 ```bash
@@ -373,7 +373,7 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 ---
 
 **Sist oppdatert:** 2026-04-28  
-**Versjon:** 2.2 (+KIMI CLI v1.40.0 + MemPalace v3.1.1)
+**Versjon:** 2.2 (+KIMI CLI v1.40.0 + MemPalace v3.2.0)
 
 ---
 

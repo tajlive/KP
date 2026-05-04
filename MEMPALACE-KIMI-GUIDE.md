@@ -164,6 +164,20 @@ grep "TODO" .knowledge/current-todos.md
 
 ---
 
-**Sist oppdatert:** 2026-04-08  
+**Sist oppdatert:** 2026-05-03  
 **Platform:** Apple Silicon (M1/M2/M3) + iTerm2  
-**Versjon:** MemPalace 3.0.0 + Knowledge Miner
+**Versjon:** MemPalace MCP 3.1.1 + Knowledge Miner
+
+---
+
+## ⚠️ M1 Mac Kompabilitet (viktig!)
+
+> **Oppdatert:** 2026-05-03
+
+| Versjon | Status | Merknad |
+|---------|--------|---------|
+| **3.0.0** | ✅ Stabil | Nåværende installert versjon |
+| 3.1.0–3.3.4 | ❌ Segfault | Kræsjer på M1 Mac (Python 3.13 + ChromaDB 1.5.8) |
+
+**Anbefaling:** Hold deg på PyPI `mempalace==3.0.0` på M1 Mac.
+Vår Node.js MCP-server (`run-mempalace-mcp-v2.mjs`) er uavhengig og kjører v3.1.1 uten problemer.

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 /**
+ * ⚠️  DEPRECATED (2026-05-03): Bruk run-kimi-mcp-simple.mjs istedenfor.
+ * Denne filen beholdes for bakoverkompatibilitet.
+
  * Kimi CLI MCP Server v2.1 - Korrekt CLI-mapping
  * 
  * Denne serveren eksponerer Kimi CLI-kommandoer som MCP-verktøy via stdio.

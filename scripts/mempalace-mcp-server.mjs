@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 /**
+ * ⚠️  DEPRECATED — Bruk scripts/run-mempalace-mcp-v2.mjs (MemPalace MCP v3.2.0)
+ * Denne filen beholdes for historikk. Den bruker HTTP-transport (port 3456)
+ * som ikke er kompatibel med KIMI CLI sin stdio-baserte MCP.
+ *
  * 🏛️ Mempalace MCP Server
- * 
+ *
  * Kontekst-server for KIMI som gir supermenneskelig prosjektforståelse.
  * Kjører som MCP (Model Context Protocol) server.
  */

@@ -23,6 +23,8 @@ import { getTradingFeedState } from "@/lib/trading/data-source-state";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ConfidenceBadge } from "./components/ConfidenceBadge";
+import { PriceCell } from "./components/PriceCell";
 
 interface TradingSignal {
   id: string;
@@ -39,8 +41,6 @@ interface TradingSignal {
   reasoning: string | null;
   created_at: string | null;
 }
-
-const REFRESH_INTERVAL_MS = 15_000;
 
 type SignalSide = "buy" | "sell" | "hold";
 
@@ -66,7 +66,6 @@ export function SignalFeed() {
   const [fetchError, setFetchError] = useState(false);
   const [liveIndicator, setLiveIndicator] = useState(false);
   const { hasAccess, loading: subLoading } = useSubscription();
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prevCountRef = useRef(0);
 
   const canSeeFullDetails = hasAccess("master");
@@ -87,7 +86,7 @@ export function SignalFeed() {
 
         if (error) {
           setFetchError(true);
-          console.error("Failed to fetch trading signals:", error);
+          // TODO: structured logging instead of console.error
           return;
         }
         const next = (data as TradingSignal[]) ?? [];
@@ -130,10 +129,6 @@ export function SignalFeed() {
 
   useEffect(() => {
     fetchSignals();
-    intervalRef.current = setInterval(() => fetchSignals(), REFRESH_INTERVAL_MS);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
   }, [fetchSignals]);
 
   // Realtime: JWT must be synced with Realtime for RLS postgres_changes to work
@@ -408,54 +403,5 @@ export function SignalFeed() {
   );
 }
 
-function ConfidenceBadge({ value }: { value: number }) {
-  const t = useTranslations("trading.signalFeed");
-  let colorClass = "text-kp-text-muted";
-  if (value >= 80) colorClass = "text-kp-success";
-  else if (value >= 60) colorClass = "text-kp-warning";
-  else if (value >= 40) colorClass = "text-kp-warning";
-  else colorClass = "text-kp-danger";
-
-  return (
-    <div
-      className={cn(
-        "text-xs font-bold tabular-nums tracking-tight",
-        colorClass,
-      )}
-    >
-      {value.toFixed(0)}%
-    </div>
-  );
-}
-
-function PriceCell({
-  label,
-  value,
-  visible,
-  lockedLabel,
-}: {
-  label: string;
-  value: number | null;
-  visible: boolean;
-  lockedLabel: string;
-}) {
-  return (
-    <div className="bg-kp-bg-secondary rounded-md px-2.5 py-1.5 border border-kp-border">
-      <p className="text-[9px] uppercase text-kp-text-muted font-bold tracking-wider">
-        {label}
-      </p>
-      {visible ? (
-        <p className="text-xs font-mono font-semibold text-kp-text-primary truncate">
-          {value != null ? `$${value.toLocaleString("en-US")}` : "—"}
-        </p>
-      ) : (
-        <div className="flex items-center gap-1 text-kp-text-muted">
-          <Lock className="w-3 h-3" />
-          <span className="text-[10px] font-medium">{lockedLabel}</span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default SignalFeed;
