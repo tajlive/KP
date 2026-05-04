@@ -18,10 +18,16 @@ interface UseDashboardMetricsReturn {
   refetch: () => void;
 }
 
+interface UseDashboardMetricsOptions {
+  enabled?: boolean;
+}
+
 export function useDashboardMetrics(
   mode: DashboardMode = "paper",
-  sessionScope: SessionScope = "active_and_completed",
+  sessionScope: SessionScope = "active",
+  options: UseDashboardMetricsOptions = {},
 ): UseDashboardMetricsReturn {
+  const { enabled = true } = options;
   const [data, setData] = useState<DashboardMetricsSuccessResponse["data"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -69,8 +75,10 @@ export function useDashboardMetrics(
   }, [mode, sessionScope]);
 
   useEffect(() => {
-    fetchMetrics();
-  }, [fetchMetrics]);
+    if (enabled) {
+      fetchMetrics();
+    }
+  }, [fetchMetrics, enabled]);
 
   // ── Real-time sync ─────────────────────────────────────────────────
   // Re-fetch metrics whenever a new trade is inserted for this user.

@@ -82,7 +82,7 @@ function sessionStatusesForScope(scope: SessionScope): string[] {
 export async function getUserDashboardMetrics(
   input: DashboardMetricsInput,
 ): Promise<DashboardMetrics> {
-  const { supabaseClient, userId, mode, sessionScope = "active_and_completed" } = input;
+  const { supabaseClient, userId, mode, sessionScope = "active" } = input;
 
   // ------------------------------------------------------------------
   // 1. Attempt PostgreSQL RPC (enterprise path)
@@ -214,7 +214,7 @@ async function fallbackMetrics(
 async function tsAggregationFallback(
   input: DashboardMetricsInput,
 ): Promise<DashboardMetrics> {
-  const { supabaseClient, userId, mode, sessionScope = "active_and_completed" } = input;
+  const { supabaseClient, userId, mode, sessionScope = "active" } = input;
 
   const statuses = sessionStatusesForScope(sessionScope);
 

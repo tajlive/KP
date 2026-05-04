@@ -8,6 +8,7 @@ import { AlertCircle } from "lucide-react";
 import { BRAND } from "@/lib/design/tokens";
 import { client } from "@/lib/sanity/client";
 import { dashboardContentQuery } from "@/lib/sanity/queries";
+import { getUserDashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
 export const dynamic = "force-dynamic";
 
@@ -92,6 +93,14 @@ export default async function DashboardPage({
       // Sanity ikke konfigurert — bruk defaults i komponentene
     }
 
+    // Hent metrics server-side for å unngå client-side API-kall
+    const metrics = await getUserDashboardMetrics({
+      supabaseClient: supabase,
+      userId: user.id,
+      mode: preferredTradingMode,
+      sessionScope: "active",
+    });
+
     return (
       <div data-testid="dashboard-page">
         <DashboardContent
@@ -100,6 +109,7 @@ export default async function DashboardPage({
           onboardingCompleted={profile?.onboarding_completed ?? false}
           userName={profile?.display_name ?? ""}
           cmsData={cmsData}
+          metrics={metrics}
         />
       </div>
     );

@@ -6,6 +6,7 @@ import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
 import { computeUserState } from "@/hooks/useUserState";
 import { AdaptiveDashboard } from "./AdaptiveDashboard";
 import type { DashboardMode } from "@/hooks/useDashboardMetrics";
+import type { DashboardMetrics } from "@/server/dashboard/getUserDashboardMetrics";
 
 export interface DashboardCmsData {
   heroCtaText?: string;
@@ -33,6 +34,8 @@ export interface DashboardContentProps {
   onboardingCompleted?: boolean;
   userName?: string;
   cmsData?: DashboardCmsData | null;
+  /** Server-side fetched metrics — when provided, skips client-side fetch */
+  metrics?: DashboardMetrics | null;
 }
 
 export function DashboardContent({
@@ -41,11 +44,22 @@ export function DashboardContent({
   onboardingCompleted = false,
   userName,
   cmsData,
+  metrics: serverMetrics,
 }: DashboardContentProps) {
-  const { data, isLoading, isError, error, refetch } = useDashboardMetrics(
-    preferredTradingMode,
-    "active_and_completed",
-  );
+  const {
+    data: clientData,
+    isLoading: clientLoading,
+    isError: clientError,
+    error: clientErrorObj,
+    refetch,
+  } = useDashboardMetrics(preferredTradingMode, "active", {
+    enabled: !serverMetrics,
+  });
+
+  const data = serverMetrics ?? clientData;
+  const isLoading = serverMetrics ? false : clientLoading;
+  const isError = serverMetrics ? false : clientError;
+  const error = serverMetrics ? null : clientErrorObj;
 
   const userState = computeUserState({
     tradesCount: data?.totalTrades ?? 0,
