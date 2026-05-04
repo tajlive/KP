@@ -306,11 +306,16 @@ export const DEFAULT_RISK_CONFIGS: Record<OptRiskLevel, RiskConfig> = {
 
 export function createRiskManager(riskLevel: string): RiskManager {
   // Map our UI risk strings to the OptimizedProfile keys
+  // Supports: safe/balanced/offensive/aggressive/dynamic + low/medium/high + conservative/moderate
   let optLevel: OptRiskLevel = "moderate";
-  if (riskLevel === "safe" || riskLevel === "conservative")
+  if (riskLevel === "safe" || riskLevel === "conservative" || riskLevel === "low")
     optLevel = "conservative";
-  if (riskLevel === "offensive" || riskLevel === "aggressive")
+  else if (riskLevel === "balanced" || riskLevel === "moderate" || riskLevel === "medium")
+    optLevel = "moderate";
+  else if (riskLevel === "offensive" || riskLevel === "aggressive" || riskLevel === "high")
     optLevel = "aggressive";
+  else if (riskLevel === "dynamic")
+    optLevel = "dynamic";
 
   const config =
     DEFAULT_RISK_CONFIGS[optLevel] || DEFAULT_RISK_CONFIGS.moderate;

@@ -295,7 +295,19 @@ async function processSession(
     maxDrawdownPercent: 15,
     maxLeverage: 1,
   };
-  const riskConfig: RiskConfig = userRiskConfig || (stratCfg.risk_config as RiskConfig) || DEFAULTS;
+  let riskConfig: RiskConfig = userRiskConfig || (stratCfg.risk_config as RiskConfig) || DEFAULTS;
+
+  // Grid strategy needs more trades per day — apply multiplier based on grid levels
+  if (engineKey === "grid") {
+    const gridCfg = (stratCfg.grid_config as Record<string, number> | undefined);
+    const gridLevels = gridCfg?.levels ?? 10;
+    // Grid needs at least 2 trades per level (buy + sell) per day
+    const gridMinTrades = gridLevels * 2;
+    if (riskConfig.maxDailyTrades < gridMinTrades) {
+      console.warn(`[Grid] Session ${session.id}: maxDailyTrades (${riskConfig.maxDailyTrades}) < gridMinTrades (${gridMinTrades}). Raising limit.`);
+      riskConfig = { ...riskConfig, maxDailyTrades: gridMinTrades };
+    }
+  }
 
   if (engineKey === "grid" && signal.positionSize) {
     const maxGridPos = riskConfig.maxPositionSizePercent / 100;
@@ -663,18 +675,20 @@ export async function GET(req: NextRequest) {
     const userIds = [...new Set(sessions.map((s) => s.user_id))];
     const { data: autoSettings } = await db
       .from("auto_trade_settings")
-      .select("user_id, risk_profile, max_position_percent")
+      .select("user_id, risk_profile, max_position_percent, daily_loss_limit_percent, daily_trade_limit")
       .in("user_id", userIds);
 
     const riskConfigMap = new Map<string, RiskConfig>();
     for (const setting of autoSettings || []) {
       const maxPos = (setting.max_position_percent as number) ?? 10;
+      const dailyLoss = (setting.daily_loss_limit_percent as number) ?? 5;
+      const dailyTrades = (setting.daily_trade_limit as number) ?? 10;
       riskConfigMap.set(setting.user_id as string, {
         maxPositionSizePercent: maxPos,
         stopLossPercent: 1,
         trailingStopLossPercent: 1.5,
-        maxDailyLossPercent: 5,
-        maxDailyTrades: 10,
+        maxDailyLossPercent: dailyLoss,
+        maxDailyTrades: dailyTrades,
         maxDrawdownPercent: 15,
         maxLeverage: 1,
       });

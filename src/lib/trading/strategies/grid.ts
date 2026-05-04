@@ -26,6 +26,8 @@ export class GridBotStrategy implements StrategyEngine {
   evaluate(input: StrategyInput): StrategySignal {
     const { candles, session, config } = input;
     const cfg: GridConfig = config as GridConfig;
+    const stratCfg = (session.strategy_config as Record<string, unknown> | undefined);
+    const storedGrid = stratCfg?.grid_config as Record<string, number> | undefined;
 
     const currentPrice = candles[candles.length - 1].close;
 
@@ -43,11 +45,17 @@ export class GridBotStrategy implements StrategyEngine {
       };
     }
 
-    // Volatility-adjusted range
-    let upper =
-      cfg.upper_price ?? cfg.upperPrice ?? currentPrice * 1.1;
-    let lower =
-      cfg.lower_price ?? cfg.lowerPrice ?? currentPrice * 0.9;
+    // Use stored grid boundaries if available (set at bot creation), otherwise fall back to config
+    // This prevents the grid from "chasing" the price every tick
+    let upper = cfg.upper_price ?? cfg.upperPrice ?? storedGrid?.upper_price;
+    let lower = cfg.lower_price ?? cfg.lowerPrice ?? storedGrid?.lower_price;
+
+    // If no fixed boundaries exist yet, calculate from current price and store for next tick
+    if (!upper || !lower) {
+      const gridRangePct = 20; // Default ±10%
+      upper = currentPrice * (1 + gridRangePct / 100 / 2);
+      lower = currentPrice * (1 - gridRangePct / 100 / 2);
+    }
 
     if (cfg.volatility_adjust !== false && candles.length >= 14) {
       const atrValue = atr(highs, lows, closes, 14);
@@ -60,7 +68,7 @@ export class GridBotStrategy implements StrategyEngine {
       lower = mid - halfRange;
     }
 
-    const levels = cfg.grid_levels ?? cfg.levels ?? 10;
+    const levels = cfg.grid_levels ?? cfg.levels ?? storedGrid?.levels ?? 10;
     const gridSize = (upper - lower) / levels;
 
     if (currentPrice > upper || currentPrice < lower) {
