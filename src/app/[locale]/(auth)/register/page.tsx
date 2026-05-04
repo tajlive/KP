@@ -9,7 +9,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { signUpWithEmail, signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/new/auth-actions";
+import { signUpWithEmail } from "@/lib/auth/new/auth-actions";
+import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
 
 export default function RegisterPage() {
   const locale = useLocale();
@@ -35,20 +36,24 @@ export default function RegisterPage() {
 
   async function handleGoogleSignup() {
     setLoading(true);
-    const result = await signInWithGoogle();
-    
-    if (result?.error) {
-      setError(result.error);
+    setError("");
+    try {
+      await signInWithGoogle();
+      // Redirect happens inside signInWithGoogle — no need to handle success
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google-innlogging feilet");
       setLoading(false);
     }
   }
 
   async function handleMicrosoftSignup() {
     setLoading(true);
-    const result = await signInWithMicrosoft();
-    
-    if (result?.error) {
-      setError(result.error);
+    setError("");
+    try {
+      await signInWithMicrosoft();
+      // Redirect happens inside signInWithMicrosoft — no need to handle success
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Microsoft-innlogging feilet");
       setLoading(false);
     }
   }

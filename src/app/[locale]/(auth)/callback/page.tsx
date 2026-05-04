@@ -11,7 +11,7 @@
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, resetInvalidTokenGuard } from "@/lib/supabase/client";
 
 // Module-level guard — survives React Strict Mode double-mounting
 const handledCodes = new Set<string>();
@@ -67,7 +67,11 @@ export default function AuthCallbackPage() {
         }
       }
 
-      // 3. Verifiser at session faktisk eksisterer etter exchange
+      // 3. Reset stale invalid-token guard so getSession() doesn't return null
+      // after a fresh successful login.
+      resetInvalidTokenGuard();
+
+      // 4. Verifiser at session faktisk eksisterer etter exchange
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
       if (sessionError || !session) {
@@ -78,7 +82,7 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      // 4. Suksess → redirect til dashboard
+      // 5. Suksess → redirect til dashboard
       router.replace(`/${locale}/dashboard`);
     };
 
