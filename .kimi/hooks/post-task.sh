@@ -25,6 +25,12 @@ DIARY_ENTRY="{\"ts\":\"$TIMESTAMP\",\"type\":\"$TASK_TYPE\",\"task\":\"$TASK_DES
 echo "$DIARY_ENTRY" >> .kimi/diary.jsonl
 echo "💾 Saved to .kimi/diary.jsonl"
 
+# 2. Kjør Auto-Optimizer i bakgrunn (ikke blokker)
+if command -v node &> /dev/null; then
+  node scripts/auto-optimizer-run.mjs --quick > /dev/null 2>&1 &
+  echo "🤖 Auto-Optimizer kjører i bakgrunn (rapport: .kimi/session-summaries/)"
+fi
+
 echo ""
 echo "✅ Post-task hook complete"
 echo "   For full session-analyse: ~/.kimi/hooks/mempalace-smart-exit.sh"
