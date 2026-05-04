@@ -39,6 +39,16 @@
       "predicate": "rls",
       "object": "user_id-policies",
       "validFrom": "2026-04-22T01:47:04.573810Z"
+    },
+    {
+      "predicate": "fixed",
+      "object": "google-oauth-pkce-cookie-server-action-nextjs15",
+      "validFrom": "2026-05-04T09:38:00.000Z"
+    },
+    {
+      "predicate": "pattern",
+      "object": "client-side-oauth-for-pkce",
+      "validFrom": "2026-05-04T10:13:38.018Z"
     }
   ],
   "trading-engine": [
@@ -2112,6 +2122,27 @@
       "predicate": "added-to",
       "object": "images-remotePatterns",
       "validFrom": "2026-05-04"
+    }
+  ],
+  "nextjs15": [
+    {
+      "predicate": "breaks",
+      "object": "server-action-cookie-set-pkce",
+      "validFrom": "2026-05-04T09:38:00.000Z"
+    }
+  ],
+  "google-oauth": [
+    {
+      "predicate": "uses",
+      "object": "client-supabase-client",
+      "validFrom": "2026-05-04T10:13:38.018Z"
+    }
+  ],
+  "microsoft-oauth": [
+    {
+      "predicate": "uses",
+      "object": "client-supabase-client",
+      "validFrom": "2026-05-04T10:13:38.018Z"
     }
   ]
 }
