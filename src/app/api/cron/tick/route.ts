@@ -457,6 +457,7 @@ async function processSession(
       idempotency_key: idempotencyKey,
       mode: session.mode,
       trading_pair: session.trading_pair,
+      symbol: pair.replace("/", ""),
       side: signal.action as TradeSide,
       order_type: "market",
       quantity,
