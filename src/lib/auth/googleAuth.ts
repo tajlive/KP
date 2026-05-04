@@ -8,58 +8,74 @@ function supabase() {
   return getSupabaseClient()
 }
 
-export async function signInWithGoogle() {
-  const _origin = getAppUrl().trim().replace(/[\r\n]/g, '') // kept for Sentry logging
+async function performOAuthSignIn(
+  provider: 'google' | 'azure',
+  scopes: string,
+  queryParams?: Record<string, string>
+) {
+  const _origin = getAppUrl().trim().replace(/[\r\n]/g, '')
   const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'no' : 'no'
-  
-  logAuthEvent(AuthEvent.LOGIN_STARTED, { 
-    provider: 'google', 
+
+  logAuthEvent(AuthEvent.LOGIN_STARTED, {
+    provider,
     locale,
     method: 'oauth',
-  });
-  
+  })
+
   try {
-    const { data, error } = await (supabase() as { auth: { signInWithOAuth: (o: unknown) => Promise<{ data: unknown; error: unknown }> } }).auth.signInWithOAuth({
-      provider: 'google',
+    const { data, error } = await (supabase() as {
+      auth: {
+        signInWithOAuth: (o: unknown) => Promise<{ data: { url: string }; error: Error | null }>
+      }
+    }).auth.signInWithOAuth({
+      provider,
       options: {
-        redirectTo: getCallbackUrl(locale), // Uses canonical URL from config (consistent with Supabase + Google Console)
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-        // Eksplisitt bare basic profile - ingen sensitive scopes
-        scopes: 'openid email profile',
+        redirectTo: getCallbackUrl(locale),
+        queryParams,
+        scopes,
       },
     })
 
     if (error) {
-      // Check for specific error types
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      
+      const errorMessage = error instanceof Error ? error.message : String(error)
       if (errorMessage.includes('popup') || errorMessage.includes('blocked')) {
-        logAuthError(AuthErrorCode.GOOGLE_OAUTH_POPUP_BLOCKED, error, { locale });
+        logAuthError(AuthErrorCode.GOOGLE_OAUTH_POPUP_BLOCKED, error, { locale })
       } else {
-        logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, error, { locale, origin: _origin });
+        logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, error, { locale, origin: _origin })
       }
-      
-      throw error;
+      throw error
     }
 
-    return data;
-    
+    if (data?.url) {
+      window.location.href = data.url
+    }
+
+    return data
   } catch (catchError) {
-    // Log if not already logged above
-    if (catchError instanceof Error && 
-        !catchError.message.includes('popup') && 
-        !catchError.message.includes('blocked')) {
-      logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, catchError, { 
-        locale, 
+    if (
+      catchError instanceof Error &&
+      !catchError.message.includes('popup') &&
+      !catchError.message.includes('blocked')
+    ) {
+      logAuthError(AuthErrorCode.GOOGLE_OAUTH_FAILED, catchError, {
+        locale,
         origin: _origin,
         userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',
-      });
+      })
     }
-    throw catchError;
+    throw catchError
   }
+}
+
+export async function signInWithGoogle() {
+  return performOAuthSignIn('google', 'openid email profile', {
+    access_type: 'offline',
+    prompt: 'consent',
+  })
+}
+
+export async function signInWithMicrosoft() {
+  return performOAuthSignIn('azure', 'email profile openid')
 }
 
 export async function signOut() {

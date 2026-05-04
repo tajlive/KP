@@ -11,7 +11,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { signInWithEmail, signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/new/auth-actions";
+import { signInWithEmail } from "@/lib/auth/new/auth-actions";
+import { signInWithGoogle, signInWithMicrosoft } from "@/lib/auth/googleAuth";
 
 export default function LoginPage() {
   const locale = useLocale();
@@ -34,20 +35,24 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     setLoading(true);
-    const result = await signInWithGoogle();
-    
-    if (result?.error) {
-      setError(result.error);
+    setError("");
+    try {
+      await signInWithGoogle();
+      // Redirect happens inside signInWithGoogle — no need to handle success
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google-innlogging feilet");
       setLoading(false);
     }
   }
 
   async function handleMicrosoftLogin() {
     setLoading(true);
-    const result = await signInWithMicrosoft();
-    
-    if (result?.error) {
-      setError(result.error);
+    setError("");
+    try {
+      await signInWithMicrosoft();
+      // Redirect happens inside signInWithMicrosoft — no need to handle success
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Microsoft-innlogging feilet");
       setLoading(false);
     }
   }

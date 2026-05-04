@@ -66,6 +66,11 @@ export async function signOut() {
 // ============================================
 // OAUTH AUTH
 // ============================================
+// ⚠️ WARNING: These OAuth server actions CANNOT set PKCE cookies in
+// Next.js 15+ because cookieStore.set() is read-only in RSC/Server Actions.
+// Use client-side functions from @/lib/auth/googleAuth instead.
+// See: Google login fix 2026-05-04
+// ============================================
 
 export async function signInWithGoogle() {
   const supabase = await createServerClient();
