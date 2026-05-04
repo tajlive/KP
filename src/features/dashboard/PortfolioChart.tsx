@@ -94,8 +94,7 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
           .eq("user_id", userId)
           .eq("mode", mode)
           .eq("status", "active")
-          .order("updated_at", { ascending: false })
-          .limit(1);
+          .order("updated_at", { ascending: false });
       }
 
       const { data: sessions, error: sessionError } = await sessionQuery;
@@ -106,27 +105,50 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
         return;
       }
 
-      const session = sessions[0];
-      setStartingValue(Number(session.starting_capital_nok) || 100000);
-      setCurrentValue(Number(session.current_capital_nok) || 100000);
+      // Aggregate capital across ALL active sessions (matches getUserDashboardMetrics)
+      const totalStarting = sessions.reduce(
+        (sum, s) => sum + (Number(s.starting_capital_nok) || 0),
+        0
+      );
+      const totalCurrent = sessions.reduce(
+        (sum, s) => sum + (Number(s.current_capital_nok) || 0),
+        0
+      );
+      setStartingValue(totalStarting || 100000);
+      setCurrentValue(totalCurrent || 100000);
 
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysBack);
 
-      const { data: trades, error: tradesError } = await supabase
-        .from("trades")
-        .select("created_at, realized_pnl, side, total_value")
-        .eq("session_id", session.id)
-        .gte("created_at", startDate.toISOString())
-        .order("created_at", { ascending: true });
+      // Fetch trades from ALL active sessions (not just the most recent one)
+      const sessionIds = sessions.map((s) => s.id);
+      const CHUNK_SIZE = 500;
+      let allTrades: Array<{
+        created_at: string;
+        realized_pnl: number | null;
+        side: string;
+        total_value: number;
+      }> = [];
 
-      if (tradesError) {
-        setHasData(false);
-        setLoading(false);
-        return;
+      for (let i = 0; i < sessionIds.length; i += CHUNK_SIZE) {
+        const chunk = sessionIds.slice(i, i + CHUNK_SIZE);
+        const { data: trades, error: tradesError } = await supabase
+          .from("trades")
+          .select("created_at, realized_pnl, side, total_value")
+          .in("session_id", chunk)
+          .gte("created_at", startDate.toISOString())
+          .order("created_at", { ascending: true });
+
+        if (tradesError) {
+          console.error("PortfolioChart trades error:", tradesError);
+          continue;
+        }
+        if (trades) {
+          allTrades = allTrades.concat(trades);
+        }
       }
 
-      if (!trades || trades.length === 0) {
+      if (allTrades.length === 0) {
         setHasData(false);
         setLoading(false);
         return;
@@ -135,8 +157,8 @@ export function PortfolioChart({ userId, sessionId, mode = "paper" }: PortfolioC
       setHasData(true);
 
       const chartData = buildPortfolioData(
-        trades || [],
-        Number(session.starting_capital_nok) || 100000,
+        allTrades,
+        totalStarting || 100000,
         daysBack
       );
 
