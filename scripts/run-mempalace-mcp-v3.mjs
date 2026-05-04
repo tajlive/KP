@@ -32,6 +32,7 @@ import {
 } from 'fs';
 import { resolve, join, dirname, relative, basename } from 'path';
 import { fileURLToPath } from 'url';
+import { gzipSync, gunzipSync } from 'zlib';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -407,7 +408,7 @@ function extractEntities(text) {
 
 // ─── INDEX CACHE (Persistens) ─── NY
 function saveIndexCache() {
-  const cachePath = resolve(root, CONFIG.indexCachePath);
+  const cachePath = resolve(root, CONFIG.indexCachePath) + '.gz';
   const dir = dirname(cachePath);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
@@ -437,28 +438,49 @@ function saveIndexCache() {
       metadata: d.metadata
     }))
   };
-  writeFileSync(cachePath, JSON.stringify(cacheData), 'utf8');
-  log('info', `Index cache saved: ${cachePath} (${(JSON.stringify(cacheData).length / 1024).toFixed(1)}KB)`);
+  const json = JSON.stringify(cacheData);
+  const compressed = gzipSync(json, { level: 6 });
+  writeFileSync(cachePath, compressed);
+  log('info', `Index cache saved: ${cachePath} (${(json.length / 1024).toFixed(1)}KB → ${(compressed.length / 1024).toFixed(1)}KB gzipped)`);
 }
 
 function loadIndexCache() {
-  const cachePath = resolve(root, CONFIG.indexCachePath);
-  if (!existsSync(cachePath)) return null;
+  const cachePath = resolve(root, CONFIG.indexCachePath) + '.gz';
+  const legacyPath = resolve(root, CONFIG.indexCachePath);
+  if (!existsSync(cachePath)) {
+    // Try legacy uncompressed cache
+    if (existsSync(legacyPath)) {
+      try {
+        const data = JSON.parse(readFileSync(legacyPath, 'utf8'));
+        if (data.version === CONFIG.version) return data;
+      } catch { /* ignore */ }
+    }
+    return null;
+  }
   try {
-    const data = JSON.parse(readFileSync(cachePath, 'utf8'));
+    const compressed = readFileSync(cachePath);
+    const json = gunzipSync(compressed).toString('utf8');
+    const data = JSON.parse(json);
     if (data.version !== CONFIG.version) {
       log('info', `Index cache version mismatch (${data.version} != ${CONFIG.version}), rebuilding`);
       return null;
     }
-    // Verify mtimes haven't changed
+    // Check which files changed — don't throw away entire cache for one changed file
+    const changedFiles = [];
     for (const [relPath, mtime] of Object.entries(data.fileMtimes || {})) {
       const fullPath = resolve(root, relPath);
-      if (!existsSync(fullPath)) return null;
+      if (!existsSync(fullPath)) {
+        changedFiles.push(relPath);
+        continue;
+      }
       const currentStat = statSync(fullPath);
       if (Math.abs(currentStat.mtimeMs - mtime) > 1000) {
-        log('info', `File changed since cache: ${relPath}, rebuilding`);
-        return null;
+        changedFiles.push(relPath);
       }
+    }
+    if (changedFiles.length > 0) {
+      log('info', `Incremental reindex needed for ${changedFiles.length} changed file(s): ${changedFiles.join(', ')}`);
+      data._changedFiles = changedFiles;
     }
     return data;
   } catch {
@@ -529,6 +551,128 @@ function setupFileWatchers() {
     } catch (e) {
       log('warn', `Could not watch ${basePath}: ${e.message}`);
     }
+  }
+}
+
+function reindexSingleFile(relPath) {
+  // Find which index path this file belongs to
+  let target = null;
+  for (const t of CONFIG.indexPaths) {
+    if (relPath.startsWith(t.path)) {
+      target = t;
+      break;
+    }
+  }
+  if (!target) {
+    log('warn', `Cannot reindex unknown file: ${relPath}`);
+    return;
+  }
+
+  const fullPath = resolve(root, relPath);
+  if (!existsSync(fullPath)) {
+    // File was deleted — remove from index
+    const oldDoc = docById.get(relPath);
+    if (oldDoc) {
+      const oldTokens = tokenize(oldDoc.content);
+      for (const token of oldTokens) {
+        invertedIndex.get(token)?.delete(relPath);
+        tokenDocFreq.set(token, (tokenDocFreq.get(token) || 1) - 1);
+      }
+      const oldBigrams = getBigrams(oldTokens);
+      for (const bigram of oldBigrams) {
+        bigramIndex.get(bigram)?.delete(relPath);
+      }
+      const idx = indexedDocs.findIndex(d => d.id === relPath);
+      if (idx >= 0) indexedDocs.splice(idx, 1);
+      docById.delete(relPath);
+    }
+    fileMtimes.delete(relPath);
+    return;
+  }
+
+  try {
+    const content = readFileSync(fullPath, 'utf8');
+    const stat = statSync(fullPath);
+    fileMtimes.set(relPath, stat.mtimeMs);
+
+    // Remove old entries
+    const oldDoc = docById.get(relPath);
+    if (oldDoc) {
+      const oldTokens = tokenize(oldDoc.content);
+      for (const token of oldTokens) {
+        invertedIndex.get(token)?.delete(relPath);
+        tokenDocFreq.set(token, (tokenDocFreq.get(token) || 1) - 1);
+      }
+      const oldBigrams = getBigrams(oldTokens);
+      for (const bigram of oldBigrams) {
+        bigramIndex.get(bigram)?.delete(relPath);
+      }
+      const idx = indexedDocs.findIndex(d => d.id === relPath);
+      if (idx >= 0) indexedDocs.splice(idx, 1);
+      docById.delete(relPath);
+    }
+
+    // Also remove any diary sub-docs from this file
+    const diaryDocs = indexedDocs.filter(d => d.path === relPath);
+    for (const d of diaryDocs) {
+      const oldTokens = tokenize(d.content);
+      for (const token of oldTokens) {
+        invertedIndex.get(token)?.delete(d.id);
+        tokenDocFreq.set(token, (tokenDocFreq.get(token) || 1) - 1);
+      }
+      const oldBigrams = getBigrams(oldTokens);
+      for (const bigram of oldBigrams) {
+        bigramIndex.get(bigram)?.delete(d.id);
+      }
+      const idx = indexedDocs.findIndex(doc => doc.id === d.id);
+      if (idx >= 0) indexedDocs.splice(idx, 1);
+      docById.delete(d.id);
+    }
+
+    const isRecent = (Date.now() - stat.mtimeMs) < 7 * 24 * 60 * 60 * 1000;
+    const isCritical = CONFIG.criticalRooms.some(r => relPath.includes(r));
+
+    if (relPath.endsWith('.jsonl')) {
+      const lines = content.split('\n').filter(l => l.trim());
+      lines.forEach((line, idx) => {
+        try {
+          const entry = JSON.parse(line);
+          const doc = {
+            id: `${relPath}#${idx}`,
+            path: relPath,
+            label: target.label,
+            content: `${entry.type || ''} ${entry.task || ''} ${entry.agent || ''}`,
+            raw: line,
+            type: 'diary',
+            isRecent,
+            isCritical: false,
+            date: entry.ts || new Date(stat.mtime).toISOString(),
+            metadata: entry
+          };
+          indexedDocs.push(doc);
+          docById.set(doc.id, doc);
+          addToInvertedIndex(doc);
+        } catch { /* skip */ }
+      });
+    } else {
+      const doc = {
+        id: relPath,
+        path: relPath,
+        label: target.label,
+        content: content,
+        raw: content.slice(0, 2000),
+        type: 'document',
+        isRecent,
+        isCritical,
+        date: new Date(stat.mtime).toISOString(),
+        entities: extractEntities(content)
+      };
+      indexedDocs.push(doc);
+      docById.set(doc.id, doc);
+      addToInvertedIndex(doc);
+    }
+  } catch (e) {
+    log('warn', `Failed to reindex ${relPath}: ${e.message}`);
   }
 }
 
@@ -619,6 +763,17 @@ function buildIndex(force = false) {
       restoreIndexFromCache(cached);
       const duration = Date.now() - startTime;
       log('info', `Index restored from cache: ${indexedDocs.length} docs, ${invertedIndex.size} tokens, ${bigramIndex.size} bigrams (${duration}ms)`);
+
+      // Incremental reindex for changed files only
+      if (cached._changedFiles && cached._changedFiles.length > 0) {
+        const incStart = Date.now();
+        for (const relPath of cached._changedFiles) {
+          reindexSingleFile(relPath);
+        }
+        cache.clear();
+        log('info', `Incremental reindex complete for ${cached._changedFiles.length} file(s) (+${Date.now() - incStart}ms)`);
+      }
+
       kgData = loadKGWithAppend();
       setupFileWatchers();
       return;
@@ -1618,7 +1773,7 @@ console.error(`   Wing: ${CONFIG.wing}`);
 console.error(`   Backend: in-memory FTS med inverted + bigram index (zero-dep)`);
 console.error(`   Scoring: TF-IDF + Bigram-boost + Kontekst-snippets`);
 console.error(`   Cache: LRU/${CONFIG.cacheSize}`);
-console.error(`   Persistens: ${CONFIG.indexCachePath}`);
+console.error(`   Persistens: ${CONFIG.indexCachePath}.gz (${(existsSync(resolve(root, CONFIG.indexCachePath + '.gz')) ? (statSync(resolve(root, CONFIG.indexCachePath + '.gz')).size / 1024 / 1024).toFixed(1) : '?')}MB)`);
 console.error(`   Cross-lingual: norsk↔engelsk (${Object.keys(CONFIG.crossLingual).length} mappings)`);
 console.error(`   File watcher: ${CONFIG.enableFileWatcher ? 'aktiv' : 'av'}`);
 console.error(`   Resources: mempalace://document/{path}, mempalace://kg/{entity}`);
