@@ -124,6 +124,19 @@ export function buildTradeReason(
 
   // === KJØP-REASONS ===
   if (side === "buy") {
+    // Dark Fleet ensemble buy
+    if (getBool('darkFleet') === true) {
+      const ensembleScore = getNum('ensembleScore');
+      const regime = get('regime') as string | undefined;
+      return {
+        reasonCode: "DARK_FLEET_ENSEMBLE_BUY",
+        reasonParams: {
+          ...baseParams,
+          confidence: ensembleScore !== undefined ? Math.round(ensembleScore * 100) / 100 : undefined,
+        },
+      };
+    }
+
     // Grid strategy
     const gridLevel = getNum('grid_level');
     if (strategyKey === "grid" || gridLevel !== undefined) {
@@ -215,6 +228,19 @@ export function buildTradeReason(
 
   // === SALG-REASONS ===
   if (side === "sell") {
+    // Dark Fleet ensemble sell
+    if (getBool('darkFleet') === true) {
+      const ensembleScore = getNum('ensembleScore');
+      const regime = get('regime') as string | undefined;
+      return {
+        reasonCode: "DARK_FLEET_ENSEMBLE_SELL",
+        reasonParams: {
+          ...baseParams,
+          confidence: ensembleScore !== undefined ? Math.round(Math.abs(ensembleScore) * 100) / 100 : undefined,
+        },
+      };
+    }
+
     const trailingStop = getBool('trailing_stop');
     const dropFromPeak = getNum('drop_from_peak');
     const target = getNum('target');
@@ -490,6 +516,38 @@ const EXPLANATIONS: Record<TradeReasonCode, (params: TradeReasonParams) => Trade
     description: "Du solgte posisjonen manuelt. Boten respekterer alltid dine manuelle beslutninger.",
     confidence: 3,
     emoji: "👤",
+  }),
+
+  DARK_FLEET_ENSEMBLE_BUY: (p) => ({
+    title: "AI Ensemble — Kjøp",
+    description: `Dark Fleet AI ga kjøpssignal med ensemble score ${p.confidence ?? '?'}. Kombinasjonen av regime-deteksjon, teknisk analyse og konfluent signaler indikerer en høy-sannsynlighets oppgang.`,
+    confidence: p.confidence && (p.confidence as number) >= 0.5 ? 3 : 2,
+    emoji: "🤖",
+    tip: "Dark Fleet bruker flere AI-modeller samtidig. Høyere ensemble score = sterkere signal.",
+  }),
+
+  DARK_FLEET_ENSEMBLE_SELL: (p) => ({
+    title: "AI Ensemble — Salg",
+    description: `Dark Fleet AI ga salgssignal med ensemble score ${p.confidence ?? '?'}. Kombinasjonen av regime-deteksjon, teknisk analyse og konfluent signaler indikerer en høy-sannsynlighets nedgang.`,
+    confidence: p.confidence && (p.confidence as number) >= 0.5 ? 3 : 2,
+    emoji: "🤖",
+    tip: "Dark Fleet bruker flere AI-modeller samtidig. Høyere ensemble score = sterkere signal.",
+  }),
+
+  DARK_FLEET_REGIME_HOLD: () => ({
+    title: "AI Hold — Uskikket regime",
+    description: "Dark Fleet vurderte markedet som usikkert (høy volatilitet eller ukjent regime). Boten valgte å ikke handle for å beskytte kapitalen.",
+    confidence: 2,
+    emoji: "🛡️",
+    tip: "Å ikke handle er også en beslutning. Dark Fleet unngår trading i usikre markeder.",
+  }),
+
+  DARK_FLEET_ML_RISK_BLOCKED: (p) => ({
+    title: "AI Risiko-blokkering",
+    description: `Dark Fleet ML-modellen vurderte risikoen som for høy (${p.drawdownPct ?? '?'}%). Trade ble blokkert for å beskytte kapitalen.`,
+    confidence: 3,
+    emoji: "🚫",
+    tip: "ML risk assessment justerer position size dynamisk basert på markedsvolatilitet og historisk performance.",
   }),
 
   UNKNOWN: () => ({

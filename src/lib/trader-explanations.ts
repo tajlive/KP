@@ -264,6 +264,54 @@ const EXPLANATION_TEMPLATES: Record<TradeReasonCode, ExplanationTemplate> = {
     mood: "warning"
   },
 
+  DARK_FLEET_ENSEMBLE_BUY: {
+    no: {
+      title: "AI Ensemble kjøpte",
+      body: "Dark Fleet AI ga et kjøpssignal med ensemble score {{confidence}}. Kombinasjonen av regime-deteksjon, teknisk analyse og konfluent signaler indikerer en høy-sannsynlighets oppgang."
+    },
+    en: {
+      title: "AI Ensemble bought",
+      body: "Dark Fleet AI gave a buy signal with ensemble score {{confidence}}. The combination of regime detection, technical analysis, and confluent signals indicates a high-probability uptrend."
+    },
+    mood: "positive"
+  },
+
+  DARK_FLEET_ENSEMBLE_SELL: {
+    no: {
+      title: "AI Ensemble solgte",
+      body: "Dark Fleet AI ga et salgssignal med ensemble score {{confidence}}. Kombinasjonen av regime-deteksjon, teknisk analyse og konfluent signaler indikerer en høy-sannsynlighets nedgang."
+    },
+    en: {
+      title: "AI Ensemble sold",
+      body: "Dark Fleet AI gave a sell signal with ensemble score {{confidence}}. The combination of regime detection, technical analysis, and confluent signals indicates a high-probability downtrend."
+    },
+    mood: "negative"
+  },
+
+  DARK_FLEET_REGIME_HOLD: {
+    no: {
+      title: "AI Hold — usikkert marked",
+      body: "Dark Fleet vurderte markedet som usikkert og valgte å ikke handle. Dette beskytter kapitalen din i uforutsigbare markedsforhold."
+    },
+    en: {
+      title: "AI Hold — uncertain market",
+      body: "Dark Fleet assessed the market as uncertain and chose not to trade. This protects your capital in unpredictable market conditions."
+    },
+    mood: "neutral"
+  },
+
+  DARK_FLEET_ML_RISK_BLOCKED: {
+    no: {
+      title: "AI risiko-blokkering",
+      body: "Dark Fleet ML-modellen vurderte risikoen som for høy ({{drawdownPct}}%). Trade ble blokkert for å beskytte kapitalen din."
+    },
+    en: {
+      title: "AI risk blocked",
+      body: "Dark Fleet ML model assessed the risk as too high ({{drawdownPct}}%). Trade was blocked to protect your capital."
+    },
+    mood: "warning"
+  },
+
   UNKNOWN: {
     no: {
       title: "Trade utført",
