@@ -5,7 +5,7 @@
  * Query params:
  *   mode          - "paper" | "live"            (default: "paper")
  *   sessionScope  - "all" | "active" | "active_and_completed"
- *                                              (default: "active_and_completed")
+ *                                              (default: "active")
  *
  * Response shape:
  *   { ok: true, data: DashboardMetrics }
@@ -34,7 +34,7 @@ const querySchema = z.object({
   mode: z.enum(["paper", "live"]).default("paper"),
   sessionScope: z
     .enum(["all", "active", "active_and_completed"])
-    .default("active_and_completed"),
+    .default("active"),
 });
 
 export interface DashboardMetricsSuccessResponse {
