@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getOptimizedRiskProfile } from "@/lib/config/optimized-risk-profiles";
 import type { Tables } from "@/types/database.types";
 
 export interface AutoTradingConfig {
@@ -127,19 +128,22 @@ export async function upsertAutoTradingConfig(
       updated_at: data.updated_at ?? "",
     };
   } else {
-    // Create
+    // Create — derive defaults from optimized risk profile
+    const profileKey =
+      riskLevelToProfile[(config.risk_level as "low" | "medium" | "high") || "medium"];
+    const profile = getOptimizedRiskProfile(profileKey as "conservative" | "moderate" | "aggressive" | "dynamic");
+
     const { data, error } = await supabase
       .from("auto_trade_settings")
       .insert({
         user_id: userId,
         auto_trading_enabled: config.enabled ?? false,
-        risk_profile:
-          riskLevelToProfile[(config.risk_level as "low" | "medium" | "high") || "medium"],
+        risk_profile: profileKey,
         max_position_percent: config.max_trade_size_nok
           ? config.max_trade_size_nok / 1000
-          : 10,
-        daily_loss_limit_percent: 5,
-        daily_trade_limit: 10,
+          : profile.maxPositionSizePercent,
+        daily_loss_limit_percent: profile.maxDailyLossPercent,
+        daily_trade_limit: profile.maxTradesPerDay,
       })
       .select()
       .single();

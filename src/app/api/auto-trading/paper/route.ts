@@ -1,6 +1,8 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { maxActiveTradingSessions } from "@/lib/trading/session-limits";
 import type { TierSlug } from "@/lib/pricing/tiers";
+import { mapRiskLevelToConfig, RISK_LEVELS } from "@/lib/auto-trading/risk-levels";
+import { getOptimizedRiskProfile } from "@/lib/config/optimized-risk-profiles";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -114,6 +116,46 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString();
 
+    // Map wizard risk level (low/medium/high) to internal risk level keys
+    const wizardToInternalRisk: Record<string, keyof typeof RISK_LEVELS> = {
+      low: "safe",
+      medium: "balanced",
+      high: "offensive",
+    };
+    const internalRiskLevel = wizardToInternalRisk[risk_level] || "balanced";
+
+    // Build full risk config from optimized profiles
+    const riskConfig = mapRiskLevelToConfig(internalRiskLevel);
+    const optimizedProfile = getOptimizedRiskProfile(
+      internalRiskLevel === "safe"
+        ? "conservative"
+        : internalRiskLevel === "balanced"
+          ? "moderate"
+          : internalRiskLevel === "offensive"
+            ? "aggressive"
+            : "dynamic"
+    );
+
+    // Build strategy config with full risk_config and strategy-specific settings
+    const strategyConfig: Record<string, unknown> = {
+      risk_level: internalRiskLevel,
+      pairs,
+      risk_config: riskConfig,
+    };
+
+    // For grid strategy, store fixed grid boundaries so they don't drift every tick
+    if (strategy === "grid") {
+      const currentPrice = startingCapital; // Approximation — actual price fetched on first tick
+      const gridLevels = 10; // Default balanced grid
+      const gridRangePct = 20; // ±10%
+      strategyConfig.grid_config = {
+        levels: gridLevels,
+        upper_price: currentPrice * (1 + gridRangePct / 100 / 2),
+        lower_price: currentPrice * (1 - gridRangePct / 100 / 2),
+        volatility_adjust: true,
+      };
+    }
+
     const { data, error } = await supabase
       .from("trading_sessions")
       .insert({
@@ -121,7 +163,7 @@ export async function POST(request: NextRequest) {
         mode: "paper",
         status: "active",
         strategy_id: strategy,
-        strategy_config: { risk_level, pairs },
+        strategy_config: strategyConfig as Record<string, unknown> as never,
         starting_capital_nok: startingCapital,
         current_capital_nok: startingCapital,
         trading_pair: pairs[0] || "BTCUSDT",
@@ -165,6 +207,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Ensure auto_trade_settings exists so the cron job picks up this user
+    // Use actual optimized profile values instead of hardcoded defaults
     const { error: settingsErr } = await supabase
       .from("auto_trade_settings")
       .upsert(
@@ -172,9 +215,9 @@ export async function POST(request: NextRequest) {
           user_id: user.id,
           auto_trading_enabled: true,
           risk_profile: riskProfileMap[risk_level] || "moderate",
-          max_position_percent: 10,
-          daily_loss_limit_percent: 5,
-          daily_trade_limit: 10,
+          max_position_percent: optimizedProfile.maxPositionSizePercent,
+          daily_loss_limit_percent: optimizedProfile.maxDailyLossPercent,
+          daily_trade_limit: optimizedProfile.maxTradesPerDay,
           updated_at: now,
         },
         { onConflict: "user_id" }
