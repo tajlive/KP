@@ -575,7 +575,7 @@ async function processSession(
         : createLedger("long");
 
     // For live trades, use actual Binance executed price as cost basis
-    const entryPriceForLot = liveResult ? liveResult.executedPrice : currentPrice;
+    const entryPriceForLot = liveResult ? liveResult.executedPrice : executedPrice;
     const updatedLedger = addLot(ledger, quantity, entryPriceForLot);
     const legacyPos = toLegacyPosition(updatedLedger);
 
