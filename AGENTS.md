@@ -68,10 +68,38 @@ kimi auth            # Ekvivalent: kimi --agent-file .kimi/agents/auth-agent.yam
 
 ---
 
-## 🧠 KIMI Smart Orchestrator (NYTT — 2026-05-04)
+## 🧠 KIMI Smart Orchestrator v2.0 (NYTT — 2026-05-04)
 
-> Pre-start kontekst-optimizer: klassifiserer intensjon, velger agent/MCP-profil,
-> henter MemPalace-kontekst, og genererer paste-ready brief.
+> Komplett session-orkestrering: pre-session kontekst, auto-agent/MCP-valg,
+> master system prompt injection, self-correction, og post-session analyse.
+
+### Arkitektur
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         KIMI SESSION LIFECYCLE                       │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  PRE-SESSION (kimi-smart-launch)                                    │
+│    ├── MemPalace: search + recent_context + kg_query                │
+│    ├── Git: branch, commits, modified files                         │
+│    ├── Klassifiser: 10 domener → riktig agent                       │
+│    ├── Velg: MCP-profil (minimal/medium/full)                       │
+│    └── Generer: paste-ready brief + session context                 │
+│                                                                      │
+│  DURING SESSION (KIMI-MASTER-SYSTEM.md injected)                    │
+│    ├── MANDATORY: MemPalace search før hver oppgave                 │
+│    ├── MANDATORY: Self-correction etter >30 linjer                  │
+│    ├── MANDATORY: Swarm review etter >5 filer                       │
+│    └── MANDATORY: Memory sync (kg_batch + write_diary)              │
+│                                                                      │
+│  POST-SESSION (SessionEnd hook v2.0)                                │
+│    ├── MemPalace flush                                              │
+│    ├── Self-improve analyse (diary, GO-rate, patterns)              │
+│    ├── Git-diff → verify-anbefalinger                               │
+│    └── Session-summary til .kimi/session-summaries/                 │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### Installasjon (én gang)
 ```bash
@@ -81,71 +109,96 @@ source ~/.zshrc
 Installerer:
 - `~/.kimi/bin/kimi-smart` — interaktiv orchestrator
 - `~/.kimi/bin/kimi-smart-brief` — genererer markdown-brief
+- `~/.kimi/bin/kimi-smart-launch` — **komplett session wrapper**
 - `~/.kimi/bin/kimi-self-improve` — post-økt analyse
-- Aliaser: `kimis`, `kimib`, `kimi-self`
+- Aliaser: `kimis`, `kimib`, `kimil`, `kimi-self`, `kimi-super`
+
+### `kimi-smart-launch` — Komplett Session Wrapper ⭐
+```bash
+# Generer brief + kontekst (manuell paste inn i KIMI)
+kimil "fiks auth login session timeout"
+
+# Auto-detect fra git + start KIMI med riktig agent
+kimil --launch
+
+# Force super-agent (master system prompt)
+kimil --super --launch
+```
+
+**Output:**
+- Domain detection (confidence score)
+- Anbefalt agent + MCP-profil
+- Git-kontekst (branch, commits, modified files)
+- MemPalace brief med kontekst
+- Session context lagret til `.kimi/session-summaries/current-session-context.md`
+
+### `kimi-super` — Super-Agent Direkte
+```bash
+# Start KIMI med super-agent (master system prompt injisert)
+kimi-super
+# Ekvivalent: kimi --agent-file .kimi/agents/klarpakke-super-agent.yaml
+```
+
+Super-agenten laster **KIMI-MASTER-SYSTEM.md** som inneholder:
+- **MANDATORY pre-task protocol:** MemPalace search + recent_context + kg_query
+- **MANDATORY self-correction:** Pause og verifiser etter >30 linjer
+- **MANDATORY memory sync:** kg_batch + write_diary + auto_tag etter hver oppgave
+- **MANDATORY status block:** GO/NO-GO/WIP med filer, validering, neste steg
+- **MCP profile auto-selection:** Anbefaler riktig profil for oppgaven
+- **Agent classification reference:** 10 domener med nøkkelord
 
 ### `kimi-smart-brief` — Pre-start Brief
 ```bash
-# Generer paste-ready brief for din oppgave
-kimib "fiks auth login session timeout"
+# Generer paste-ready brief
+kimib "implementer mean reversion strategy"
 
-# Output: markdown med agent, MCP-profil, git-kontekst, smarte kommandoer
 # Lim inn i KIMI for optimal kontekst
 ```
 
 **Klassifiserer 10 domener:**
-| Agent | Domene-nøkkelord |
-|---|---|
-| 🔐 Auth & Security | auth, login, oauth, session, jwt, permission |
-| 📈 Trading Engine | trading, strategy, bot, order, position, pnl |
-| 🗄️ Database | migration, sql, supabase, postgres, trigger, rls |
-| 🎨 Frontend | ui, component, react, tailwind, dashboard |
-| 🔌 API | endpoint, route, handler, middleware, webhook |
-| 🚀 Deploy | vercel, ci, build, env, secret, domain |
-| 🧪 Testing | test, e2e, vitest, playwright, coverage |
-| 📝 Sanity CMS | sanity, schema, groq, studio, content |
-| 📱 Mobile | pwa, responsive, lighthouse, viewport |
-| 🤖 General | refactor, fix, bug, optimize, improve |
-
-### `kimi-smart` — Interaktiv Orchestrator
-```bash
-kimis                          # Auto-detect fra git + interaktiv valg
-kimis "deploy med nye env vars" # One-shot modus
-```
+| Agent | Domene-nøkkelord | MCP |
+|---|---|---|
+| 🔐 Auth & Security | auth, login, oauth, session, jwt, permission | medium |
+| 📈 Trading Engine | trading, strategy, bot, order, position, pnl | full |
+| 🗄️ Database | migration, sql, supabase, postgres, trigger, rls | full |
+| 🎨 Frontend | ui, component, react, tailwind, dashboard | minimal |
+| 🔌 API | endpoint, route, handler, middleware, webhook | medium |
+| 🚀 Deploy | vercel, ci, build, env, secret, domain | medium |
+| 🧪 Testing | test, e2e, vitest, playwright, coverage | medium |
+| 📝 Sanity CMS | sanity, schema, groq, studio, content | medium |
+| 📱 Mobile | pwa, responsive, lighthouse, viewport | medium |
+| 🤖 General (Super) | refactor, fix, bug, optimize, improve | auto |
 
 ### `kimi-self-improve` — Post-økt Analyse
 ```bash
 kimi-self  # Analyserer diary.jsonl, gir anbefalinger
 ```
 Analyserer:
-- NO-GO mønstre → lagrer i MemPalace error_patterns
+- NO-GO mønstre → identifiserer gjentakende feil
 - Gjentatte oppgaver → foreslår automatisering
 - Agent-effektivitet → GO-rate og gjennomsnittsrating
 - Lavt ratede økter → foreslår oppgave-brytning
 
-### Arbeidsflyt med Orchestrator
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  Bruker skriver │────▶│  kimi-smart-brief │────▶│  Paste i KIMI   │
-│  oppgave        │     │  (klassifiserer)  │     │  (optimal ctx)  │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-                                                        │
-                              ┌─────────────────────────┘
-                              ▼
-                       ┌──────────────────┐
-                       │  KIMI kjører med │
-                       │  riktig agent    │
-                       └──────────────────┘
-                              │
-                              ▼
-                       ┌──────────────────┐
-                       │  kimi-self       │
-                       │  (analyse)       │
-                       └──────────────────┘
+### SessionEnd Hook v2.0
+Konfigurert i `~/.kimi/config.toml`:
+```toml
+[[hooks]]
+event = "SessionEnd"
+command = "/Users/taj/.kimi/hooks/mempalace-smart-exit.sh"
 ```
 
-**Merk:** KIMI CLI er interaktiv — kan ikke ta prompt som CLI-arg.
-Workflow: generer brief → lim inn → KIMI velger agent automatisk via `--agent-file`.
+Hooken kjører automatisk ved SessionEnd:
+1. MemPalace flush
+2. Self-improve analyse
+3. Git-diff → verify-anbefalinger
+4. Session-summary
+
+### Alle agenter er oppgradert
+Hver agent `.md` fil har nå en **MASTER SYSTEM header** som påminner om:
+- Pre-task MemPalace-protokoll
+- Self-correction etter >30 linjer
+- Memory sync etter hver oppgave
+- Status block på slutten
 
 ### Pre-loaded Context
 ```bash
@@ -153,7 +206,7 @@ Workflow: generer brief → lim inn → KIMI velger agent automatisk via `--agen
 cat .kimi/PROJECT_CONTEXT.md
 
 # Lim inn i KIMI ved session-start, eller referer:
-# @.kimi/PROJECT_CONTEXT.md
+# @.kimi/session-summaries/current-session-context.md
 ```
 
 ---
@@ -401,7 +454,7 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 ---
 
 **Sist oppdatert:** 2026-05-04  
-**Versjon:** 2.4 (+KIMI Smart Orchestrator + KIMI CLI v1.40.0 + MemPalace v3.3.0 SUPERKIMI)
+**Versjon:** 2.5 (+KIMI Smart Orchestrator v2.0 med Master System Prompt + KIMI CLI v1.40.0 + MemPalace v3.3.0 SUPERKIMI)
 
 ---
 
