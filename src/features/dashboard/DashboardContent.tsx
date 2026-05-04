@@ -52,7 +52,7 @@ export function DashboardContent({
     isError: clientError,
     error: clientErrorObj,
     refetch,
-  } = useDashboardMetrics(preferredTradingMode, "active", {
+  } = useDashboardMetrics(preferredTradingMode, "active_and_completed", {
     enabled: !serverMetrics,
   });
 

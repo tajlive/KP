@@ -98,7 +98,7 @@ export default async function DashboardPage({
       supabaseClient: supabase,
       userId: user.id,
       mode: preferredTradingMode,
-      sessionScope: "active",
+      sessionScope: "active_and_completed",
     });
 
     return (
