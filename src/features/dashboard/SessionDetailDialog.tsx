@@ -117,6 +117,115 @@ function simpleExplanation(session: SessionData, trades: TradeData[]): string {
   return summary;
 }
 
+interface OpenPositionProps {
+  position: Record<string, unknown>;
+  pair: string;
+  locale: string;
+}
+
+function OpenPositionCard({ position, pair, locale }: OpenPositionProps) {
+  const entryPrice = Number(position.entry_price ?? 0);
+  const quantity = Number(position.quantity ?? 0);
+  const side = String(position.side ?? "long").toUpperCase();
+  const entryTime = String(position.entry_time ?? "");
+  const highestPrice = Number(position.highest_price ?? entryPrice);
+  const lots = Array.isArray(position.lots) ? position.lots : [];
+
+  // Beregn nøkkeltall
+  const invested = entryPrice * quantity;
+  const stopLossPrice = entryPrice * 0.985; // ca. 1.5% under entry
+  const takeProfitPrice = entryPrice * 1.035; // ca. 3.5% over entry
+
+  // Formater dato
+  const entryDate = entryTime
+    ? new Date(entryTime).toLocaleDateString(locale === "no" ? "nb-NO" : "en-US", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "Ukjent";
+
+  return (
+    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-xl p-4">
+      <div className="flex items-start gap-3">
+        <Activity className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="w-full">
+          <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-3">
+            Åpen posisjon
+          </h4>
+
+          {/* Hva ble kjøpt */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-amber-100 dark:border-amber-800/30">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kjøpt</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white">
+                {quantity.toFixed(4)} {pair.replace("USDT", "")}
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-amber-100 dark:border-amber-800/30">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kjøpskurs</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white">
+                ${entryPrice.toLocaleString("no-NO", { maximumFractionDigits: 0 })}
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-amber-100 dark:border-amber-800/30">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Investert</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white">
+                ~{Math.round(invested).toLocaleString("no-NO")} kr
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-amber-100 dark:border-amber-800/30">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kjøpt kl.</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white">{entryDate}</p>
+            </div>
+          </div>
+
+          {/* Stop-loss / Take-profit */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/30">
+              <TrendingDown className="w-3 h-3" />
+              Stop-loss: ${Math.round(stopLossPrice).toLocaleString("no-NO")}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800/30">
+              <TrendingUp className="w-3 h-3" />
+              Take-profit: ${Math.round(takeProfitPrice).toLocaleString("no-NO")}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/30">
+              Høyeste siden kjøp: ${Math.round(highestPrice).toLocaleString("no-NO")}
+            </span>
+          </div>
+
+          {/* FIFO-lots forklaring */}
+          {lots.length > 0 && (
+            <div className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-amber-100 dark:border-amber-800/30">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                {lots.length === 1 ? "1 lot" : `${lots.length} lots`} (FIFO — First In, First Out)
+              </p>
+              <div className="space-y-1.5">
+                {lots.map((lot: Record<string, unknown>, i: number) => (
+                  <div key={i} className="flex items-center justify-between text-sm">
+                    <span className="text-slate-600 dark:text-slate-300">
+                      Lot #{i + 1}: {Number(lot.quantity ?? 0).toFixed(4)} til ${Number(lot.entryPrice ?? 0).toLocaleString("no-NO", { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Enkel forklaring */}
+          <p className="text-xs text-amber-700/80 dark:text-amber-200/60 mt-3 leading-relaxed">
+            {side === "LONG"
+              ? "Du har kjøpt og eier nå denne kryptoen. Boten vil automatisk selge når prisen når take-profit (gevinst) eller stop-loss (tapsgrense)."
+              : "Du har solgt på kreditt (short). Boten vil kjøpe tilbake når prisen faller."}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SessionDetailDialog({
   session,
   locale,
@@ -261,17 +370,7 @@ export function SessionDetailDialog({
 
         {/* Open position */}
         {session.open_position && (
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-xl p-4">
-            <div className="flex items-start gap-3">
-              <Activity className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-1">Åpen posisjon</h4>
-                <p className="text-sm text-amber-700 dark:text-amber-200/80">
-                  {JSON.stringify(session.open_position)}
-                </p>
-              </div>
-            </div>
-          </div>
+          <OpenPositionCard position={session.open_position} pair={session.trading_pair} locale={locale} />
         )}
 
         {/* PnL Chart */}
