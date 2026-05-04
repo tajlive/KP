@@ -24,6 +24,8 @@ import {
 import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
 import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/regime/tick-adapter";
 import { getFlagsAsync } from "@/lib/flags";
+import { shouldUseChallenger, type TradeVersion } from "@/lib/trading/rollout/tick-rollout";
+import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from "@/lib/trading/beta/tick-guardrails";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -127,7 +129,7 @@ async function processSession(
   session: TradingSession,
   userRiskConfig?: RiskConfig,
   preFetchedCandles?: Candle[],
-  darkFleetConfig?: DarkFleetConfig,
+  darkFleetBaseConfig?: DarkFleetConfig,
 ): Promise<TickResult> {
   const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
   const pair = session.trading_pair || "BTCUSDT";
@@ -138,7 +140,17 @@ async function processSession(
   let signal: StrategySignal;
 
   // ── PATH C: Dark Fleet (regime-aware ensemble) ──────────────────────────
-  const useDarkFleet = darkFleetConfig?.enabled && engineKey !== null && engineKey !== "ensemble_ai";
+  // Per-user rollout: only challenger users get Dark Fleet
+  let darkFleetConfig: DarkFleetConfig | undefined;
+  let tradeVersion: TradeVersion = "champion";
+  if (darkFleetBaseConfig?.enabled && engineKey !== null && engineKey !== "ensemble_ai") {
+    const decision = shouldUseChallenger(session.user_id);
+    tradeVersion = decision.version;
+    if (decision.version === "challenger") {
+      darkFleetConfig = darkFleetBaseConfig;
+    }
+  }
+  const useDarkFleet = !!darkFleetConfig;
   if (useDarkFleet) {
     try {
       signal = evaluateDarkFleetSignal(
@@ -410,6 +422,37 @@ async function processSession(
     };
   }
 
+  // ─── BETA GUARDRAILS ─────────────────────────────────────────────────
+  const isBetaUser = process.env.BETA_USER_IDS?.split(",").includes(session.user_id) || false;
+  if (isBetaUser) {
+    const guardrails = await evaluateGuardrails(
+      db,
+      session.user_id,
+      session.current_capital,
+      session.initial_capital,
+      DEFAULT_GUARDRAIL_CONFIG,
+    );
+
+    if (!guardrails.allowed) {
+      console.warn(`[Guardrails] User ${session.user_id} blocked: ${guardrails.reason}`);
+
+      if (guardrails.action === "pause" || guardrails.action === "kill") {
+        await pauseUserSessions(db, session.user_id, guardrails.reason || "Guardrail triggered");
+      }
+
+      return {
+        session_id: session.id,
+        action: "risk_blocked",
+        risk_reason: guardrails.reason,
+      };
+    }
+
+    if (guardrails.action === "warn") {
+      console.warn(`[Guardrails] Warning for ${session.user_id}: ${guardrails.reason}`);
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────
+
   // Calculate stop loss
   const stopLossPrice = riskManager.calculateStopLoss({
     entryPrice: currentPrice,
@@ -563,6 +606,26 @@ async function processSession(
       .eq("id", session.id);
   }
 
+  // Log rollout version for metric aggregation
+  if (darkFleetBaseConfig?.enabled && (signal.action === "buy" || signal.action === "sell")) {
+    try {
+      await db.from("trading_logs").insert({
+        session_id: session.id,
+        user_id: session.user_id,
+        action: "trade_version",
+        details: {
+          version: tradeVersion,
+          trade_id: trade?.id,
+          regime: signal.indicators?.regime,
+          ensemble_score: signal.indicators?.ensembleScore,
+          dark_fleet: useDarkFleet,
+        } as never,
+      } as never);
+    } catch {
+      // Non-critical: don't fail the tick if logging fails
+    }
+  }
+
   // Log successful trade
   return {
     session_id: session.id,
@@ -661,7 +724,7 @@ export async function GET(req: NextRequest) {
 
   // Dark Fleet feature flags (hetes en gang per cron-run)
   const flags = await getFlagsAsync().catch(() => ({ darkFleetPhase1: false, darkFleetKillSwitch: false }));
-  const darkFleetConfig: DarkFleetConfig | undefined = flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
+  const darkFleetBaseConfig: DarkFleetConfig | undefined = flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
     ? {
         enabled: true,
         technicalWeight: parseFloat(process.env.DARK_FLEET_TECH_WEIGHT || "0.5"),
@@ -782,7 +845,7 @@ export async function GET(req: NextRequest) {
           session,
           riskConfigMap.get(session.user_id),
           uniqueSymbols.get(symbolKey),
-          darkFleetConfig,
+          darkFleetBaseConfig,
         );
         results.push(result);
 
