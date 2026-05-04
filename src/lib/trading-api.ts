@@ -137,37 +137,56 @@ export async function getPortfolio(
   mode: TradingMode,
 ): Promise<Portfolio | null> {
   const user = await getUser();
-  const { data } = await supabase
+  const { data: sessions } = await supabase
     .from("trading_sessions")
     .select(
-      "id, current_capital, initial_capital, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades",
+      "id, current_capital, initial_capital, current_capital_nok, starting_capital_nok, total_pnl, total_trades, winning_trades, open_position",
     )
     .eq("user_id", user.id)
     .eq("mode", mode)
     .eq("status", "active")
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .eq("archived", false)
+    .order("updated_at", { ascending: false });
 
-  if (!data) return null;
+  if (!sessions || sessions.length === 0) return null;
 
-  /** Papir/live bruker primært *_nok; legacy current_capital kan være desynket. */
-  const cash = Number(data.current_capital_nok ?? data.current_capital ?? 0);
-  const initial = Number(
-    data.starting_capital_nok ?? data.initial_capital ?? cash,
-  );
-  const investedValue = Math.max(0, initial - cash);
-  const totalValue = cash;
-  const winRate =
-    data.total_trades > 0 ? (data.winning_trades / data.total_trades) * 100 : 0;
+  /** Summer alle aktive sessions for riktig portefølje-aggregering */
+  let totalCash = 0;
+  let totalInitial = 0;
+  let totalPnl = 0;
+  let totalTrades = 0;
+  let totalWins = 0;
+  let investedValue = 0;
+
+  for (const s of sessions) {
+    const cash = Number(s.current_capital_nok ?? s.current_capital ?? 0);
+    const initial = Number(s.starting_capital_nok ?? s.initial_capital ?? cash);
+    totalCash += cash;
+    totalInitial += initial;
+    totalPnl += Number(s.total_pnl ?? 0);
+    totalTrades += Number(s.total_trades ?? 0);
+    totalWins += Number(s.winning_trades ?? 0);
+
+    // Beregn invested_value fra åpne posisjoner (FIFO lots)
+    const openPos = s.open_position as Record<string, unknown> | null;
+    if (openPos) {
+      const entryPrice = Number(openPos.entry_price ?? 0);
+      const quantity = Number(openPos.quantity ?? 0);
+      if (entryPrice > 0 && quantity > 0) {
+        investedValue += entryPrice * quantity;
+      }
+    }
+  }
+
+  const winRate = totalTrades > 0 ? (totalWins / totalTrades) * 100 : 0;
 
   return {
-    session_id: data.id,
-    total_value: totalValue,
-    cash_balance: cash,
+    session_id: sessions[0].id,
+    total_value: totalCash,
+    cash_balance: totalCash,
     invested_value: investedValue,
-    total_pnl: data.total_pnl,
-    total_trades: data.total_trades,
+    total_pnl: totalPnl,
+    total_trades: totalTrades,
     win_rate: winRate,
   };
 }
