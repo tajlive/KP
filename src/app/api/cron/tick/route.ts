@@ -22,6 +22,8 @@ import {
   type LedgerState,
 } from "@/lib/trading/position-ledger";
 import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
+import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/regime/tick-adapter";
+import { getFlagsAsync } from "@/lib/flags";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -125,6 +127,7 @@ async function processSession(
   session: TradingSession,
   userRiskConfig?: RiskConfig,
   preFetchedCandles?: Candle[],
+  darkFleetConfig?: DarkFleetConfig,
 ): Promise<TickResult> {
   const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
   const pair = session.trading_pair || "BTCUSDT";
@@ -134,7 +137,38 @@ async function processSession(
 
   let signal: StrategySignal;
 
-  if (engineKey === "ensemble_ai") {
+  // ── PATH C: Dark Fleet (regime-aware ensemble) ──────────────────────────
+  const useDarkFleet = darkFleetConfig?.enabled && engineKey !== null && engineKey !== "ensemble_ai";
+  if (useDarkFleet) {
+    try {
+      signal = evaluateDarkFleetSignal(
+        {
+          candles,
+          session,
+          config: { ...session.strategy_config, engineKey } as Record<string, unknown>,
+        },
+        darkFleetConfig,
+      );
+    } catch (err) {
+      console.error(`[DarkFleet] Error for session ${session.id}:`, (err as Error).message);
+      // Fallback to V2
+      const fallbackStrategy = engineKey ? resolveStrategy(engineKey) : undefined;
+      if (fallbackStrategy) {
+        signal = fallbackStrategy.evaluate({
+          candles,
+          session,
+          config: session.strategy_config as Record<string, unknown>,
+        });
+      } else {
+        return {
+          session_id: session.id,
+          action: "error",
+          error: `Dark Fleet fallback failed for strategy: ${session.strategy_id}`,
+        };
+      }
+    }
+  } else if (engineKey === "ensemble_ai") {
+    // === PATH A: Eksisterende ensemble_ai (uendret) ===
     // Normalize symbol to match ai-engine storage (e.g. BTC/USDT -> BTCUSDT)
     const symbol = pair.replace("/", "");
     // Prefer master consensus row; fallback to any ensemble_ai signal (legacy compatibility)
@@ -177,6 +211,7 @@ async function processSession(
       signal = { action: "hold", reason: "No recent ensemble AI signal" };
     }
   } else {
+    // === PATH B: Eksisterende V2 strategies (uendret) ===
     const strategy = engineKey ? resolveStrategy(engineKey) : undefined;
     if (!strategy) {
       return {
@@ -624,6 +659,19 @@ export async function GET(req: NextRequest) {
   const startTime = Date.now();
   const db = (await createClient()) as SupabaseClient<Database>;
 
+  // Dark Fleet feature flags (hetes en gang per cron-run)
+  const flags = await getFlagsAsync().catch(() => ({ darkFleetPhase1: false, darkFleetKillSwitch: false }));
+  const darkFleetConfig: DarkFleetConfig | undefined = flags.darkFleetPhase1 && !flags.darkFleetKillSwitch
+    ? {
+        enabled: true,
+        technicalWeight: parseFloat(process.env.DARK_FLEET_TECH_WEIGHT || "0.5"),
+        narrativeWeight: parseFloat(process.env.DARK_FLEET_NARRATIVE_WEIGHT || "0.25"),
+        regimeWeight: parseFloat(process.env.DARK_FLEET_REGIME_WEIGHT || "0.25"),
+        threshold: parseFloat(process.env.DARK_FLEET_THRESHOLD || "0.3"),
+        maxPositionSize: parseFloat(process.env.DARK_FLEET_MAX_POSITION || "0.12"),
+      }
+    : undefined;
+
   try {
     // Fetch ALL active sessions (paper, live, and copy trading)
     const { data: sessions, error } = await db
@@ -734,6 +782,7 @@ export async function GET(req: NextRequest) {
           session,
           riskConfigMap.get(session.user_id),
           uniqueSymbols.get(symbolKey),
+          darkFleetConfig,
         );
         results.push(result);
 

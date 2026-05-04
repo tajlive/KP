@@ -40,6 +40,11 @@ export type TradeReasonCode =
   | "EDGE_FILTER_SKIP"      // For lav forventet edge -> skip
   | "GLOBAL_RISK_LIMIT_HIT" // Global risiko-limit nådd -> blokker
   | "MANUAL_SELL"           // Bruker solgte manuelt
+  // Dark Fleet AI/ML reasons
+  | "DARK_FLEET_ENSEMBLE_BUY"   // AI ensemble ga kjøpssignal
+  | "DARK_FLEET_ENSEMBLE_SELL"  // AI ensemble ga salgssignal
+  | "DARK_FLEET_REGIME_HOLD"    // Regime usikkert -> hold
+  | "DARK_FLEET_ML_RISK_BLOCKED" // ML risk for høy -> blokker
   | "UNKNOWN";              // Ukjent årsak (fallback)
 
 export interface TradeReasonParams {

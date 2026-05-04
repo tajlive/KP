@@ -26,6 +26,10 @@ export interface FeatureFlags {
   sonarUi: boolean;
   /** AI Insight — prediktiv innsikt i dashboard */
   aiInsight: boolean;
+  /** Dark Fleet Fase 1 — avansert AI/ML trading */
+  darkFleetPhase1: boolean;
+  /** Dark Fleet nødstopp — umiddelbar rollback til V2 */
+  darkFleetKillSwitch: boolean;
 }
 
 const DEFAULT_FLAGS: FeatureFlags = {
@@ -38,6 +42,8 @@ const DEFAULT_FLAGS: FeatureFlags = {
   signalEngineKillSwitch: false,
   sonarUi: process.env.NEXT_PUBLIC_SONAR_UI_ENABLED === 'true',
   aiInsight: process.env.NEXT_PUBLIC_AI_INSIGHT_ENABLED !== 'false', // default ON
+  darkFleetPhase1: process.env.ENABLE_DARK_FLEET === 'true',
+  darkFleetKillSwitch: false,
 };
 
 /** Sync variant - brukes på klienten */
