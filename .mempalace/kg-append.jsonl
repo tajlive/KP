@@ -23,3 +23,11 @@
 {"subject":"nextjs15","predicate":"breaks","object":"server-action-cookie-set-pkce","validFrom":"2026-05-04T09:38:00.000Z"}
 {"subject":"google-oauth","predicate":"uses","object":"client-supabase-client","validFrom":"2026-05-04T10:13:38.018Z"}
 {"subject":"microsoft-oauth","predicate":"uses","object":"client-supabase-client","validFrom":"2026-05-04T10:13:38.018Z"}
+{"subject":"dark-fleet","predicate":"integrated-into","object":"tick-engine-via-path-c","validFrom":"2026-05-05T01:22:00Z"}
+{"subject":"tick-adapter","predicate":"provides","object":"regime-aware-ensemble-signal","validFrom":"2026-05-05T01:22:00Z"}
+{"subject":"tick-features","predicate":"extracts","object":"RegimeFeatures-from-Candle-array","validFrom":"2026-05-05T01:22:00Z"}
+{"subject":"dark-fleet","predicate":"uses","object":"feature-flags-darkFleetPhase1-darkFleetKillSwitch","validFrom":"2026-05-05T01:22:00Z"}
+{"subject":"dark-fleet","predicate":"has","object":"fallback-to-V2-strategy-on-error","validFrom":"2026-05-05T01:22:00Z"}
+{"subject":"dark-fleet","predicate":"position-size-capped-at","object":"12-percent-with-high-vol-halving","validFrom":"2026-05-05T01:22:00Z"}
+{"subject":"dark-fleet","predicate":"trade-reason-codes","object":"DARK_FLEET_ENSEMBLE_BUY-SELL-HOLD-BLOCKED","validFrom":"2026-05-05T01:22:00Z"}
+{"subject":"dark-fleet-phase1","predicate":"tests-passing","object":"73-tests-including-8-safety-tests","validFrom":"2026-05-05T01:22:00Z"}
