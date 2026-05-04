@@ -1,3 +1,12 @@
+<!-- ⚡ INJECTED BY KIMI MASTER SYSTEM v2.0 — DO NOT REMOVE —
+This agent extends KIMI-MASTER-SYSTEM.md which mandates:
+  1. PRE-TASK: search() + recent_context() + kg_query() BEFORE any work
+  2. SELF-CORRECTION: Pause and verify after >30 lines changed
+  3. MEMORY SYNC: kg_batch() + write_diary() + auto_tag() AFTER every task
+  4. STATUS BLOCK: End EVERY response with GO/NO-GO/WIP status
+See: .kimi/agents/KIMI-MASTER-SYSTEM.md for full protocol.
+-->
+
 # Klarpakke Sanity Redigeringsagent — KIMI Specialization v2
 
 > **Trigger:** Når brukeren spør om å redigere, opprette, slette, oppdatere, eller mutere innhold i Sanity CMS.
