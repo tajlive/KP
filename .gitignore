@@ -250,3 +250,4 @@ config/perplexity-local-mcp.json
 .env.vercel-check
 .mempalace/index-cache*.json
 .mempalace/index-cache*.json.gz
+# KIMI Smart Orchestrator auto-generert kontekst\n.kimi/session-summaries/

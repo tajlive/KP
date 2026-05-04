@@ -68,41 +68,84 @@ kimi auth            # Ekvivalent: kimi --agent-file .kimi/agents/auth-agent.yam
 
 ---
 
-## 🧠 Smart Verktøy (NYTT — 2026-05-01)
+## 🧠 KIMI Smart Orchestrator (NYTT — 2026-05-04)
 
-> Kontekst-bevisst oppstart, auto-agent-valg, og smart exit.
+> Pre-start kontekst-optimizer: klassifiserer intensjon, velger agent/MCP-profil,
+> henter MemPalace-kontekst, og genererer paste-ready brief.
 
-### `kimi-smart-start` — Kontekst-brief ved oppstart
+### Installasjon (én gang)
 ```bash
-# Generer brief basert på git status + MemPalace + tid
-kimi-smart-start
-
-# Kompakt modus — kun 3 linjer (branch, agent, verify)
-kimi-smart-start --fast
-
-# Kopier til clipboard (lim inn i KIMI)
-kimi-smart-start | pbcopy
+node scripts/install-kimi-orchestrator.mjs
+source ~/.zshrc
 ```
-Inkluderer: branch, siste commits, endrede filer, domene-gjetting, anbefalt agent, MCP-profil, og nylig diary.
+Installerer:
+- `~/.kimi/bin/kimi-smart` — interaktiv orchestrator
+- `~/.kimi/bin/kimi-smart-brief` — genererer markdown-brief
+- `~/.kimi/bin/kimi-self-improve` — post-økt analyse
+- Aliaser: `kimis`, `kimib`, `kimi-self`
 
-### `kimi-suggest-agent` — Auto-agent basert på git-diff
+### `kimi-smart-brief` — Pre-start Brief
 ```bash
-# Foreslår riktig agent + verifisering + swarm-review
-kimi-suggest-agent
+# Generer paste-ready brief for din oppgave
+kimib "fiks auth login session timeout"
 
-# Kompakt modus — kun agent + verify/swarm-anbefaling
-kimi-suggest-agent --fast
+# Output: markdown med agent, MCP-profil, git-kontekst, smarte kommandoer
+# Lim inn i KIMI for optimal kontekst
 ```
-Analyserer endrede filer mot skills-activation.yaml og foreslår:
-- Riktig agent (auth, trading, architect, sanity, etc.)
-- MCP-profil (minimal/medium/full)
-- Verifisering (hvis >3 filer / >50 linjer)
-- Swarm review (hvis >5 filer / >100 linjer)
 
-**Global kompakt modus:** Sett `KIMI_COMPACT=1` før `kimi` for å kjøre begge i `--fast` modus automatisk:
+**Klassifiserer 10 domener:**
+| Agent | Domene-nøkkelord |
+|---|---|
+| 🔐 Auth & Security | auth, login, oauth, session, jwt, permission |
+| 📈 Trading Engine | trading, strategy, bot, order, position, pnl |
+| 🗄️ Database | migration, sql, supabase, postgres, trigger, rls |
+| 🎨 Frontend | ui, component, react, tailwind, dashboard |
+| 🔌 API | endpoint, route, handler, middleware, webhook |
+| 🚀 Deploy | vercel, ci, build, env, secret, domain |
+| 🧪 Testing | test, e2e, vitest, playwright, coverage |
+| 📝 Sanity CMS | sanity, schema, groq, studio, content |
+| 📱 Mobile | pwa, responsive, lighthouse, viewport |
+| 🤖 General | refactor, fix, bug, optimize, improve |
+
+### `kimi-smart` — Interaktiv Orchestrator
 ```bash
-KIMI_COMPACT=1 kimi
+kimis                          # Auto-detect fra git + interaktiv valg
+kimis "deploy med nye env vars" # One-shot modus
 ```
+
+### `kimi-self-improve` — Post-økt Analyse
+```bash
+kimi-self  # Analyserer diary.jsonl, gir anbefalinger
+```
+Analyserer:
+- NO-GO mønstre → lagrer i MemPalace error_patterns
+- Gjentatte oppgaver → foreslår automatisering
+- Agent-effektivitet → GO-rate og gjennomsnittsrating
+- Lavt ratede økter → foreslår oppgave-brytning
+
+### Arbeidsflyt med Orchestrator
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Bruker skriver │────▶│  kimi-smart-brief │────▶│  Paste i KIMI   │
+│  oppgave        │     │  (klassifiserer)  │     │  (optimal ctx)  │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+                                                        │
+                              ┌─────────────────────────┘
+                              ▼
+                       ┌──────────────────┐
+                       │  KIMI kjører med │
+                       │  riktig agent    │
+                       └──────────────────┘
+                              │
+                              ▼
+                       ┌──────────────────┐
+                       │  kimi-self       │
+                       │  (analyse)       │
+                       └──────────────────┘
+```
+
+**Merk:** KIMI CLI er interaktiv — kan ikke ta prompt som CLI-arg.
+Workflow: generer brief → lim inn → KIMI velger agent automatisk via `--agent-file`.
 
 ### Pre-loaded Context
 ```bash
@@ -112,21 +155,6 @@ cat .kimi/PROJECT_CONTEXT.md
 # Lim inn i KIMI ved session-start, eller referer:
 # @.kimi/PROJECT_CONTEXT.md
 ```
-
-### Smart SessionEnd Hook
-Når KIMI-økten avsluttes:
-1. MemPalace flush (eksisterende)
-2. Git-diff-analyse → anbefaler verify/swarm
-3. Session-summary skrives til `.kimi/session-summaries/`
-
-```bash
-# Hvis >3 filer endret:
-#   → Anbefalt: node scripts/verify/verify-claims.mjs
-# Hvis >5 filer endret:
-#   → Anbefalt: npm run swarm:review
-```
-
-**Merk:** KIMI CLI har ikke domene-basert auto-aktivering av agenter. Auth-reglene injiseres automatisk i default-agenten via `AGENTS.md`, men for full auth-spesialisering må du eksplisitt laste `.kimi/agents/auth-agent.yaml`.
 
 ---
 
@@ -373,7 +401,7 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 ---
 
 **Sist oppdatert:** 2026-05-04  
-**Versjon:** 2.3 (+KIMI CLI v1.40.0 + MemPalace v3.3.0 SUPERKIMI)
+**Versjon:** 2.4 (+KIMI Smart Orchestrator + KIMI CLI v1.40.0 + MemPalace v3.3.0 SUPERKIMI)
 
 ---
 
