@@ -80,6 +80,21 @@ describe("POST /api/auto-trading/paper", () => {
       })),
     };
 
+    // Query 3: existing session check (none found)
+    const existingQuery = {
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+              })),
+            })),
+          })),
+        })),
+      })),
+    };
+
     const single = vi.fn().mockResolvedValue({
       data: { id: "session-abc" },
       error: null,
@@ -95,6 +110,7 @@ describe("POST /api/auto-trading/paper", () => {
     mockFrom
       .mockReturnValueOnce(profileQuery)
       .mockReturnValueOnce(countQuery)
+      .mockReturnValueOnce(existingQuery)
       .mockReturnValueOnce(insertQuery)
       .mockReturnValueOnce(upsertQuery)
       .mockReturnValueOnce(upsertQuery);
@@ -122,10 +138,10 @@ describe("POST /api/auto-trading/paper", () => {
         user_id: "user-123",
         mode: "paper",
         strategy_id: "trend",
-        strategy_config: {
-          risk_level: "medium",
+        strategy_config: expect.objectContaining({
+          risk_level: "balanced",
           pairs: ["ETHUSDT", "BTCUSDT"],
-        },
+        }),
         starting_capital_nok: 250000,
         current_capital_nok: 250000,
         trading_pair: "ETHUSDT",
@@ -163,7 +179,25 @@ describe("POST /api/auto-trading/paper", () => {
       })),
     };
 
-    mockFrom.mockReturnValueOnce(profileQuery).mockReturnValueOnce(countQuery);
+    // Query 3: existing session check (none found — limit already reached)
+    const existingQuery = {
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+              })),
+            })),
+          })),
+        })),
+      })),
+    };
+
+    mockFrom
+      .mockReturnValueOnce(profileQuery)
+      .mockReturnValueOnce(countQuery)
+      .mockReturnValueOnce(existingQuery);
 
     const response = await POST(
       createJsonRequest({
