@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { useTranslations, useLocale } from "next-intl";
 import type { Trade, TradingMode } from "@/lib/trading-api";
+import { TradeReasonChip } from "./TradeReasonChip";
 
 interface RecentTradesTableProps {
   trades: Trade[];
@@ -183,11 +184,14 @@ export function RecentTradesTable({
                       </div>
                     </div>
 
-                    {/* Strategy */}
+                    {/* Strategy + Reason Chip */}
                     <div className="col-span-2">
-                      <span className="text-kp-text-muted text-sm truncate block">
-                        {getStrategyName(trade)}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-kp-text-muted text-sm truncate block">
+                          {getStrategyName(trade)}
+                        </span>
+                        <TradeReasonChip trade={trade} onClick={() => onSelectTrade?.(trade.id)} />
+                      </div>
                     </div>
 
                     {/* Size */}
@@ -278,8 +282,8 @@ export function RecentTradesTable({
                     })}
                   </span>
                 </div>
-                <div className="text-kp-text-muted text-xs truncate mt-1">
-                  {getStrategyName(trade)}
+                <div className="flex items-center gap-2 mt-1">
+                  <TradeReasonChip trade={trade} onClick={() => onSelectTrade?.(trade.id)} />
                 </div>
               </motion.div>
             );
