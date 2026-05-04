@@ -248,3 +248,4 @@ config/perplexity-local-mcp.json
 
 # Vercel CLI env files
 .env.vercel-check
+.mempalace/index-cache*.json

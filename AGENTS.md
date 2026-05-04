@@ -194,7 +194,7 @@ Når KIMI-økten avsluttes:
 
 ## 🛠️ MemPalace (Minne-System)
 
-> **Status:** v3.2.0 — Inverted index, MCP Resources/Prompts, Incremental KG
+> **Status:** v3.3.0 — SUPERKIMI: TF-IDF + Bigram + Cross-lingual + File watcher + Index persistens
 
 ### Kommandoer
 ```bash
@@ -372,8 +372,8 @@ Gemini/Antigravity (Plan) → MemPalace (Hub) → KIMI (Execute) → Swarm (QA)
 
 ---
 
-**Sist oppdatert:** 2026-04-28  
-**Versjon:** 2.2 (+KIMI CLI v1.40.0 + MemPalace v3.2.0)
+**Sist oppdatert:** 2026-05-04  
+**Versjon:** 2.3 (+KIMI CLI v1.40.0 + MemPalace v3.3.0 SUPERKIMI)
 
 ---
 
@@ -397,6 +397,16 @@ merge_all_available_skills = true     # auto-aktiver skills
 > eller når iterasjonsgrensen nås. Tilsvarende Claude Code's `/ultrareview`.
 >
 > **Merk:** Øker latency med ~20-40%, men forbedrer kvaliteten på komplekse oppgaver betydelig.
+
+### MemPalace v3.3.0 — SUPERKIMI Optimalisert
+- **TF-IDF scoring:** Sjeldne tokens vektes høyere enn vanlige
+- **Bigram index:** "KIMI CLI" scorer høyere enn "KIMI" + "CLI" separat
+- **Cross-lingual:** 115 norsk↔engelsk mappings (søk på "optimalisering" finner "optimize")
+- **Stemming:** enkle norske/engelske regler (optimalisering → optimal)
+- **Index persistens:** <100ms oppstart fra `.mempalace/index-cache-v3.json`
+- **File watcher:** fs.watch for inkrementell reindex ved runtime-endringer
+- **Forbedret auto_tag:** semantiske tags fra KG + expansions, ikke bare filnavn
+- **SUPERKIMI prompt:** `superkimi_boost` — aktiverer maksimal kontekst + tenke-disiplin
 
 ### MemPalace v3.1.1 — Aktiv bruk
 - **FØR oppgave:** `search()` + `recent_context(hours=48)` + `kg_query(entity=..., depth=2)`
