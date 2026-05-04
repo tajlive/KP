@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-03T23:57:20.492Z",
+  "file": "src/app/[locale]/(user)/dashboard/page.tsx",
+  "type": "review",
+  "lines": 111,
+  "swarm_status": "approved",
+  "agents": [
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "architect",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "proceed"
+    },
+    {
+      "agent": "security",
+      "approval": "proceed"
+    }
+  ]
+}

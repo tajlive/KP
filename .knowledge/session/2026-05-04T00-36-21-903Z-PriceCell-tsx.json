@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-04T00:36:21.903Z",
+  "file": "src/features/trading/components/PriceCell.tsx",
+  "type": "review",
+  "lines": 31,
+  "swarm_status": "warned",
+  "agents": [
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "architect",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "add_tests"
+    },
+    {
+      "agent": "security",
+      "approval": "proceed"
+    }
+  ]
+}

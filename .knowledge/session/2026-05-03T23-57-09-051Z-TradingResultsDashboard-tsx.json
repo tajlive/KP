@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-05-03T23:57:09.051Z",
+  "file": "src/features/dashboard/TradingResultsDashboard.tsx",
+  "type": "security",
+  "lines": 692,
+  "swarm_status": "blocked",
+  "agents": [
+    {
+      "agent": "security",
+      "approval": "block"
+    },
+    {
+      "agent": "analyzer",
+      "approval": "block"
+    },
+    {
+      "agent": "tester",
+      "approval": "proceed"
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 /**
+ * ⚠️  DEPRECATED (2026-05-03): mcp:smoke bruker nå scripts/mcp-smoke-test.mjs.
+ * Denne filen beholdes for bakoverkompatibilitet.
+
  * KIMI MCP Server v3.0 - Optimized for Perplexity Desktop
  * 
  * Basert på MCP best practices 2025/2026:

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-04T00:33:00.674Z",
+  "file": "src/features/trading/components/ConfidenceBadge.tsx",
+  "type": "review",
+  "lines": 29,
+  "swarm_status": "warned",
+  "agents": [
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "architect",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "add_tests"
+    },
+    {
+      "agent": "security",
+      "approval": "proceed"
+    }
+  ]
+}

@@ -17,7 +17,7 @@ Perplexity Desktop
        │
        │ MCP (stdio)
        ▼
-run-kimi-mcp.mjs  ←  Denne filen starter MCP-serveren
+run-kimi-mcp-simple.mjs  ←  Denne filen starter MCP-serveren
        │
        │ Kaller
        ▼
@@ -64,7 +64,7 @@ Scriptet vil:
     "kimi": {
       "description": "Kimi CLI - direkte tilgang til Kimi Code CLI",
       "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp.mjs"]
+      "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-simple.mjs"]
     }
   }
 }
@@ -109,15 +109,15 @@ pip install kimi-cli
 ```
 
 ### Perplexity finner ikke MCP-serveren
-1. Sjekk at stien til `run-kimi-mcp.mjs` er korrekt (absolutt sti)
-2. Sjekk at filen er kjørbar: `chmod +x scripts/run-kimi-mcp.mjs`
+1. Sjekk at stien til `run-kimi-mcp-simple.mjs` er korrekt (absolutt sti)
+2. Sjekk at filen er kjørbar: `chmod +x scripts/run-kimi-mcp-simple.mjs`
 3. Restart Perplexity Desktop
 
 ### MCP-server vises men ingenting skjer
 1. Sjekk Perplexity Console/Logs (hvis tilgjengelig)
 2. Kjør manuelt for debugging:
    ```bash
-   echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | node scripts/run-kimi-mcp.mjs
+   echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | node scripts/run-kimi-mcp-simple.mjs
    ```
 
 ### Langsom respons
@@ -133,7 +133,7 @@ Dette er normalt - Kimi CLI kan ta 10-30 sekunder på komplekse oppgaver. Perple
 ## Avansert konfigurasjon
 
 ### Begrens tilgang
-For å begrense hvilke verktøy som er tilgjengelige, rediger `run-kimi-mcp.mjs`:
+For å begrense hvilke verktøy som er tilgjengelige, rediger `run-kimi-mcp-simple.mjs`:
 
 ```javascript
 // Fjern verktøy du ikke vil skal være tilgjengelige
@@ -151,11 +151,11 @@ Du kan legge til flere Kimi-instaner for ulike prosjekter:
   "mcpServers": {
     "kimi-klarpakke": {
       "command": "node",
-      "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp.mjs"]
+      "args": ["/Users/taj/klarpakke/scripts/run-kimi-mcp-simple.mjs"]
     },
     "kimi-annet-prosjekt": {
       "command": "node", 
-      "args": ["/Users/taj/annet-prosjekt/scripts/run-kimi-mcp.mjs"]
+      "args": ["/Users/taj/annet-prosjekt/scripts/run-kimi-mcp-simple.mjs"]
     }
   }
 }
@@ -168,10 +168,10 @@ For å teste MCP-serveren manuelt:
 ```bash
 # Start serveren
 cd /Users/taj/klarpakke
-node scripts/run-kimi-mcp.mjs
+node scripts/run-kimi-mcp-simple.mjs
 
 # I en annen terminal, send en test-forespørsel:
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | node scripts/run-kimi-mcp.mjs
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | node scripts/run-kimi-mcp-simple.mjs
 ```
 
 ## Se også

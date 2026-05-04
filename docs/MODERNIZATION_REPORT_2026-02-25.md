@@ -50,7 +50,7 @@
 - [x] Eksisterende MCP server verifisert (`mcp-server/`)
 - [x] 170+ verktøy tilgjengelig
 - [x] Vercel, Supabase, GitHub, Stripe integrasjon
-- [x] MCP config verifisert (`.kimi/mcp.json`)
+- [x] MCP config verifisert (`~/.kimi/mcp.json`)
 
 ### FASE 8: Dokumentasjonsoppdatering
 - [x] **WORKFLOW_RULES.md** - fullstendig omskrevet med Vercel-fokus

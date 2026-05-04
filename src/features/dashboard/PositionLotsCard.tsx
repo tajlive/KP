@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react";
 import { formatRelativeTimeShort } from "@/lib/format/relative-time-short";
 import { cn } from "@/lib/utils";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 interface Lot {
   id: string;
@@ -35,57 +36,70 @@ export function PositionLotsCard({ locale }: PositionLotsCardProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+  const fetchPosition = useCallback(async (attempt = 1) => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    async function fetchPosition(attempt = 1) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const res = await fetch("/api/trading/position", {
+        credentials: "include",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
 
-        const res = await fetch("/api/trading/position", {
-          credentials: "include",
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          const body = await res.text().catch(() => "");
-          console.error(`[PositionLotsCard] HTTP ${res.status}:`, body);
-          throw new Error(`HTTP ${res.status}`);
-        }
-        const json = (await res.json()) as PositionData;
-        if (!cancelled) {
-          setData(json);
-          setError(null);
-        }
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "Unknown error";
-        console.error(`[PositionLotsCard] fetch failed (attempt ${attempt}):`, msg);
-
-        if (!cancelled) {
-          if (attempt < 2) {
-            // Retry once after 2 seconds
-            retryTimer = setTimeout(() => fetchPosition(attempt + 1), 2000);
-            return;
-          }
-          setError(msg);
-        }
-      } finally {
-        if (!cancelled && (!retryTimer || attempt >= 2)) {
-          setLoading(false);
-        }
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const json = (await res.json()) as PositionData;
+      setData(json);
+      setError(null);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      if (attempt < 2) {
+        setTimeout(() => fetchPosition(attempt + 1), 2000);
+        return;
+      }
+      setError(msg);
+    } finally {
+      if (attempt >= 2) {
+        setLoading(false);
       }
     }
+  }, []);
 
+  useEffect(() => {
     fetchPosition();
+  }, [fetchPosition]);
+
+  // Realtime: re-fetch position when new trades occur
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    const setup = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      await supabase.realtime.setAuth(session?.access_token ?? null);
+
+      channel = supabase
+        .channel("position-lots-realtime")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "trades" },
+          () => {
+            fetchPosition();
+          },
+        )
+        .subscribe();
+    };
+
+    setup();
 
     return () => {
-      cancelled = true;
-      if (retryTimer) clearTimeout(retryTimer);
+      if (channel) void supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchPosition]);
 
   if (loading) {
     return (

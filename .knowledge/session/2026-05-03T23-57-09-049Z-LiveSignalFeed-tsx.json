@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-05-03T23:57:09.049Z",
+  "file": "src/features/landing/LiveSignalFeed.tsx",
+  "type": "security",
+  "lines": 147,
+  "swarm_status": "approved",
+  "agents": [
+    {
+      "agent": "security",
+      "approval": "proceed"
+    },
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "proceed"
+    }
+  ]
+}

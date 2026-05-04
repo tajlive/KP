@@ -95,10 +95,12 @@ export function Testimonials({ language = "no", items }: TestimonialsProps) {
                 </p>
 
                 <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                  <img
+                  <Image
                     src={`https://i.pravatar.cc/40?u=${encodeURIComponent(item.name)}`}
                     alt={item.name}
-                    className="rounded-full w-10 h-10 object-cover"
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover"
                   />
                   <div>
                     <p className="font-bold text-white tracking-tight flex items-center gap-2">

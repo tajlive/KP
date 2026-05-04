@@ -388,7 +388,7 @@ function runBacktestWithSharedStrategies(
   let maxDrawdown = 0;
 
   // Simulated session state
-  let simulatedSession: MinimalSession = {
+  const simulatedSession: MinimalSession = {
     open_position: null,
     last_tick_at: null,
     strategy_config: strategyConfig,

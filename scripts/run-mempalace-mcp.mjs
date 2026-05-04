@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 /**
+ * ⚠️  DEPRECATED — Bruk scripts/run-mempalace-mcp-v2.mjs (MemPalace MCP v3.2.0)
+ * Denne filen beholdes for historikk. Den bruker mempalace Python CLI (FTS5)
+ * som er erstattet av zero-dep Node.js in-memory inverted index.
+ *
  * 🏛️ Mempalace MCP Server — FTS5-optimized
  *
  * Integrerer Mempalace minnesystem med MCP for:

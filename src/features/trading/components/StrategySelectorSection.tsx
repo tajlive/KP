@@ -1,0 +1,211 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { BRAND } from "@/lib/design/tokens";
+import {
+  Lightbulb,
+  Star,
+  ChevronUp,
+  ChevronDown,
+  Play,
+  Square,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import type { ReactNode } from "react";
+import type { StrategyType, UserStrategy, TradingMode } from "@/lib/trading-api";
+import { StrategyConfig } from "./StrategyConfig";
+
+const RISK_COLORS: Record<number, string> = {
+  1: "text-green-400",
+  2: "text-blue-400",
+  3: "text-yellow-400",
+  4: "text-orange-400",
+  5: "text-red-400",
+};
+
+export function StrategySelectorSection({
+  strategies,
+  activeStrategies,
+  expandedStrategy,
+  setExpandedStrategy,
+  strategyConfigs,
+  setStrategyConfigs,
+  onStart,
+  onStop,
+  mode,
+  isStarting,
+}: {
+  strategies: {
+    type: StrategyType;
+    icon: ReactNode;
+    risk: number;
+    name: string;
+    description: string;
+  }[];
+  activeStrategies: UserStrategy[];
+  expandedStrategy: StrategyType | null;
+  setExpandedStrategy: (t: StrategyType | null) => void;
+  strategyConfigs: Record<StrategyType, Record<string, unknown>>;
+  setStrategyConfigs: React.Dispatch<
+    React.SetStateAction<Record<StrategyType, Record<string, unknown>>>
+  >;
+  onStart: (t: StrategyType) => void;
+  onStop: (t: StrategyType) => void;
+  mode: TradingMode;
+  isStarting: StrategyType | null;
+}) {
+  const isActive = (type: StrategyType) =>
+    activeStrategies.some((s) => s.strategy_id === type);
+
+  const t = useTranslations("trading.strategyPicker");
+
+  return (
+    <div className="bg-slate-800 rounded-xl p-6">
+      <h2 className="text-lg font-semibold text-white mb-4">{t("title")}</h2>
+
+      {mode === "paper" && (
+        <p className={`mb-4 flex items-center gap-2 text-sm ${BRAND.link}`}>
+          <Lightbulb className="h-4 w-4 shrink-0" aria-hidden />
+          <span>{t("paperHint")}</span>
+        </p>
+      )}
+
+      <div className="space-y-3">
+        {strategies.map((strategy) => {
+          const active = isActive(strategy.type);
+          const expanded = expandedStrategy === strategy.type;
+
+          return (
+            <div
+              key={strategy.type}
+              className="bg-slate-700 rounded-lg overflow-hidden"
+            >
+              <div
+                role="button"
+                tabIndex={0}
+                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-slate-600 transition gap-3"
+                onClick={() =>
+                  setExpandedStrategy(expanded ? null : strategy.type)
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setExpandedStrategy(expanded ? null : strategy.type);
+                  }
+                }}
+                aria-expanded={expanded}
+                aria-label={
+                  expanded
+                    ? t("ariaClose")
+                    : t("ariaSelect", { name: strategy.name })
+                }
+              >
+                <div className="flex items-center gap-3 text-slate-300">
+                  {strategy.icon}
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium text-white">
+                        {strategy.name}
+                      </span>
+                      <div className="flex" aria-hidden>
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-3.5 w-3.5 ${
+                              i < strategy.risk
+                                ? RISK_COLORS[strategy.risk]
+                                : "text-slate-600"
+                            }`}
+                            fill={i < strategy.risk ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-slate-300 text-sm truncate">
+                      {strategy.description}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between sm:justify-end gap-3">
+                  {active ? (
+                    <span className="flex items-center gap-1 text-green-400 text-sm">
+                      <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                      {t("statusActive")}
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 text-sm">
+                      {t("statusIdle")}
+                    </span>
+                  )}
+                  {expanded ? (
+                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                  )}
+                </div>
+              </div>
+
+              <AnimatePresence>
+                {expanded && (
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: "auto" }}
+                    exit={{ height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 pt-0 border-t border-slate-600">
+                      <StrategyConfig
+                        type={strategy.type}
+                        config={strategyConfigs[strategy.type]}
+                        onChange={(newConfig) =>
+                          setStrategyConfigs((prev) => ({
+                            ...prev,
+                            [strategy.type]: newConfig,
+                          }))
+                        }
+                      />
+                      <div className="flex gap-3 mt-4">
+                        {active ? (
+                          <button
+                            type="button"
+                            onClick={() => onStop(strategy.type)}
+                            className="h-full flex-1 py-3 min-h-[44px] rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition flex items-center justify-center gap-2 font-semibold border border-red-500/25"
+                          >
+                            <Square className="w-4 h-4" aria-hidden />
+                            {t("stopStrategy")}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onStart(strategy.type)}
+                            disabled={isStarting === strategy.type}
+                            className="flex-1 py-3 min-h-[44px] bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition flex items-center justify-center gap-2 disabled:opacity-50 font-medium"
+                          >
+                            {isStarting === strategy.type ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
+                                {t("starting")}
+                              </>
+                            ) : (
+                              <>
+                                <Play className="w-4 h-4" aria-hidden />
+                                {t("startStrategy")}
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+

@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-05-03T23:56:14.158Z",
+  "file": "src/app/[locale]/paper-trading/page.tsx",
+  "type": "review",
+  "lines": 64,
+  "swarm_status": "approved",
+  "agents": [
+    {
+      "agent": "analyzer",
+      "approval": "proceed"
+    },
+    {
+      "agent": "architect",
+      "approval": "proceed"
+    },
+    {
+      "agent": "tester",
+      "approval": "proceed"
+    },
+    {
+      "agent": "security",
+      "approval": "proceed"
+    }
+  ]
+}

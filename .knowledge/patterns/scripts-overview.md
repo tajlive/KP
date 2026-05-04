@@ -1,4 +1,4 @@
-# Scripts Oversikt - 2026-05-01
+# Scripts Oversikt - 2026-05-03
 
 | Script | Beskrivelse |
 |--------|-------------|
@@ -6,6 +6,7 @@
 | MAX_AUTOMATION.sh | MAX AUTOMATION for Klarpakke |
 | add-edge-runtime.sh | Find all page.tsx files |
 | agent-bridge.mjs | 🌉 Agent Bridge v1.0 |
+| analyze-client-components.mjs | Analyze "use client" files to find TRUE candidates for Server Component conversi... |
 | analyze-oauth.ts | 🔍 Playwright OAuth Analysis Script |
 | apply-kla130.mjs | KLA-130: Apply KLT 500 bonus fix via Supabase REST API |
 | audit-pages.ts | ${category} (${pages.length} pages)`); |
@@ -25,8 +26,6 @@
 | check-deploy-status.sh | ===================================================== |
 | check-links.sh | ============================================================================= |
 | check-missing-modules.mjs | Klarpakke Missing Modules Checker |
-| check-oauth-config.mjs | OAuth Configuration Diagnostic Script |
-| check-secrets-staged.sh | Sjekker at ingen hemmeligheter er i staged filer. Kjører ved pre-commit. |
 
 ## Kategorier
 - **Deploy:** *deploy*, *vercel*, *prod*

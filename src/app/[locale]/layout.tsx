@@ -1,36 +1,25 @@
 import { Metadata } from "next";
 import { preconnect, prefetchDNS } from "react-dom";
 import { headers } from "next/headers";
-import { getMessages, setRequestLocale } from "next-intl/server";
-import { NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
 import { shouldShowVippsForRequest } from "@/lib/geo/vipps-region";
-import { VippsMarketProvider } from "@/shared/providers/VippsMarketProvider";
-import { AuthProvider } from "@/lib/auth/new/AuthContext";
-import { AuthHashHandler } from "@/lib/auth/new/AuthHashHandler";
+import { resolveLocale } from "@/lib/i18n/resolve-locale";
+import { loadMessagesWithFallback } from "@/lib/i18n/load-messages";
+import { loadNavigation } from "@/lib/sanity/load-navigation";
 import { getSanityTokensCSS, DEFAULT_TOKENS_CSS } from "@/lib/sanity/tokens";
-import { client } from "@/lib/sanity/client";
-import { navigationQuery } from "@/lib/sanity/queries";
-import type { NavigationData } from "@/shared/layout/NavigationServer";
 // import { SessionCleanup } from "@/features/auth/SessionCleanup";
-import { LocaleMarketingShell } from "@/shared/layout/LocaleMarketingShell";
-import { ErrorBoundary } from "@/shared/error/ErrorBoundary";
 import { OrganizationJsonLd } from "@/shared/seo/JsonLd";
 import {
   getEarlyMetaDescription,
   isEarlyMetaDescriptionPath,
 } from "@/lib/seo/earlyMetaDescription";
-import { MarketingProviders } from "@/shared/providers/MarketingProviders";
-import { ThemeProvider } from "@/shared/theme";
 import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SanityLive } from "@/sanity/lib/live";
-import { FeatureFlagProvider } from "@/lib/feature-flags";
-import { getFlagsAsync } from "@/lib/flags";
 import Script from "next/script";
+import { RootProviders } from "@/app/providers/RootProviders";
 import { Outfit, Geist } from "next/font/google";
-import { SURFACE } from "@/lib/design/tokens";
-import { CdsProvider } from "@/app/providers/CdsProvider";
 import "../globals.css";
 
 /**
@@ -148,13 +137,7 @@ export async function generateMetadata({
   };
 }
 
-const VALID_LOCALES = ["no", "en", "th", "zh"] as const;
-type ValidLocale = (typeof VALID_LOCALES)[number];
 
-function resolveLocale(raw: string | undefined): ValidLocale {
-  if (raw === "no" || raw === "en" || raw === "th" || raw === "zh") return raw;
-  return "no";
-}
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -168,20 +151,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   // Enable static rendering for locale - required by next-intl v4
   setRequestLocale(locale);
 
-  let messages;
-  try {
-    messages = await getMessages();
-  } catch {
-    // Fallback: last kritiske namespaces for å unngå blank side
-    // Bruker Promise.all for å laste parallelt og redusere TTFB ved feil
-    // Oppdatert etter i18n konsolidering (base+navigation → common)
-    const [common, landing, auth] = await Promise.all([
-      import('../../../messages/en/common.json').then((m) => m.default).catch(() => ({})),
-      import('../../../messages/en/landing.json').then((m) => m.default).catch(() => ({})),
-      import('../../../messages/en/auth.json').then((m) => m.default).catch(() => ({})),
-    ]);
-    messages = { common, landing, auth };
-  }
+  const messages = await loadMessagesWithFallback();
 
   const hdrs = await headers();
   const strippedPath = hdrs.get("x-kp-stripped-path") ?? "/";
@@ -199,38 +169,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   // Fetch design tokens server-side to eliminate FOUC
   const tokensCss = await getSanityTokensCSS().catch(() => DEFAULT_TOKENS_CSS);
 
-  // Fetch navigation from Sanity (with fallback)
-  let navData: NavigationData = {
-    loggedOutLinks: [
-      { label: 'Lær', path: '/kurs', order: 0 },
-      { label: 'Trade', path: '/paper-trading', order: 1 },
-      { label: 'Bots', path: '/auto-trading', order: 2 },
-      { label: 'Priser', path: '/priser', order: 3 },
-    ],
-    loggedInLinks: [
-      { label: 'Dashboard', path: '/dashboard', order: 0 },
-      { label: 'Portefølje', path: '/dashboard/portfolio', order: 1 },
-      { label: 'Trade', path: '/dashboard/trade', order: 2 },
-      { label: 'Bots', path: '/dashboard/auto-trade', order: 3 },
-      { label: 'Lær', path: '/kurs', order: 4 },
-      { label: 'Priser', path: '/priser', order: 5 },
-    ],
-  };
-  try {
-    const result = await client.fetch(
-      navigationQuery,
-      {},
-      { next: { tags: ['sanity:navigation'] } }
-    );
-    if (result) {
-      navData = {
-        loggedOutLinks: result.loggedOutLinks || navData.loggedOutLinks,
-        loggedInLinks: result.loggedInLinks || navData.loggedInLinks,
-      };
-    }
-  } catch {
-    // Bruk fallback
-  }
+  const navData = await loadNavigation();
 
   // Resource hints for external APIs (Task 5)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -330,30 +269,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         className={`${outfit.className} font-sans antialiased bg-kp-bg-primary text-kp-text-primary min-h-screen`}
         suppressHydrationWarning
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
+        <RootProviders
+          locale={locale}
+          messages={messages}
+          showVippsMarket={showVippsMarket}
+          navData={navData}
         >
-        {/* <SessionCleanup /> */}
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <CdsProvider>
-            <VippsMarketProvider showVippsMarket={showVippsMarket}>
-              <MarketingProviders>
-                <ErrorBoundary>
-                  <AuthProvider>
-                    <AuthHashHandler />
-                    <AsyncFeatureFlagProvider>
-                      <LocaleMarketingShell navData={navData}>{children}</LocaleMarketingShell>
-                    </AsyncFeatureFlagProvider>
-                  </AuthProvider>
-                </ErrorBoundary>
-              </MarketingProviders>
-            </VippsMarketProvider>
-          </CdsProvider>
-        </NextIntlClientProvider>
-        </ThemeProvider>
+          {children}
+        </RootProviders>
         <PlausibleScript />
         <Analytics />
         <SpeedInsights />
@@ -363,11 +286,4 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   );
 }
 
-async function AsyncFeatureFlagProvider({ children }: { children: React.ReactNode }) {
-  const flags = await getFlagsAsync();
-  return (
-    <FeatureFlagProvider initialFlags={flags}>
-      {children}
-    </FeatureFlagProvider>
-  );
-}
+

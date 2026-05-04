@@ -18,9 +18,13 @@ echo ""
 
 # 2. Hent siste diary entries
 echo "📖 Recent Activity:"
-if [ -f ".kimi/diary.log" ]; then
-    tail -3 .kimi/diary.log | while read line; do
-        echo "  $line"
+if [ -f ".kimi/diary.jsonl" ]; then
+    tail -3 .kimi/diary.jsonl | while read line; do
+        # Parse JSONL: extract type, task, status
+        TYPE=$(echo "$line" | grep -o '"type":"[^"]*"' | cut -d'"' -f4)
+        TASK=$(echo "$line" | grep -o '"task":"[^"]*"' | cut -d'"' -f4)
+        STATUS=$(echo "$line" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+        echo "  [$TYPE] $TASK — $STATUS"
     done
 else
     echo "  No diary entries"
