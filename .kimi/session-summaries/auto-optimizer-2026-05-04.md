@@ -1,9 +1,9 @@
-# Auto-Optimizer Rapport — 2026-05-04 17:21:41
+# Auto-Optimizer Rapport — 2026-05-04 17:41:00
 
 ## Oppsummering
 
 - Kritiske funn: 0
-- Advarsler: 7
+- Advarsler: 0
 - Auto-fixes: 0
 
 ## Diary
@@ -15,32 +15,31 @@
 
 ## Config
 
-🟡 .kimi/AGENTS.md har utdatert reserved_context_size=45000
+✅ All config synkronisert ✅
 
 ## Repo
 
-🟡 Potensielt orphaned: src/middleware/oauth.ts (0 imports)
-🟡 Potensielt orphaned: src/middleware/exports.ts (0 imports)
-🟡 Potensielt orphaned: src/types/supabase-merged.ts (0 imports)
 ✅ Stor fil: src/types/database.types.ts (9268 linjer)
-🟡 Potensielt orphaned: src/types/jest-dom.d.ts (0 imports)
-🟡 Potensielt orphaned: src/app/robots.ts (0 imports)
 ✅ Stor fil: src/app/[locale]/admin/marketing/ctas/CtaAnalyticsDashboard.tsx (512 linjer)
+✅ Potensielt orphaned: src/app/[locale]/(marketing)/priser/ClientPricingPage.tsx (0 imports)
+✅ Potensielt orphaned: src/app/[locale]/(onboarding)/onboarding/ClientOnboarding.tsx (0 imports)
+✅ Potensielt orphaned: src/app/[locale]/(user)/konto/LommebokDashboard.tsx (0 imports)
 ✅ Stor fil: src/app/[locale]/(user)/konto/LommebokDashboard.tsx (601 linjer)
-🟡 Totalt 22 potensielt orphaned filer
+✅ Potensielt orphaned: src/app/[locale]/(user)/profile/ClientProfile.tsx (0 imports)
+✅ Potensielt orphaned: src/app/[locale]/(academy)/kurs/ClientKurs.tsx (0 imports)
+✅ Totalt 8 potensielt orphaned filer (alle er info-nivå)
 ✅ Totalt 5 filer >500 linjer — vurder refactoring
 
 ## Build
 
-✅ Siste build: 0.8 timer siden
+✅ Siste build: 1.1 timer siden
 
 ## MemPalace
 
-✅ Cache: 2.0MB, 0.1t gammel
+✅ Cache: 2.0MB, 0.4t gammel
 ✅ KG: 78 entities
 
 ## Anbefalinger
 
-2. **Gå gjennom advarsler** — potensielle forbedringer
 3. Kjør `node scripts/verify/run-all.mjs` for full verifisering
 4. Vurder `kimi --agent-file .kimi/agents/auto-optimizer-agent.yaml` for dypere analyse

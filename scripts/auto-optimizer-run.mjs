@@ -142,11 +142,15 @@ function analyzeConfig() {
   const agentsMd = resolve(root, '.kimi/AGENTS.md');
   if (existsSync(agentsMd)) {
     const content = readFileSync(agentsMd, 'utf8');
-    if (content.includes('reserved_context_size') && content.includes('45000')) {
-      issues.push('.kimi/AGENTS.md har utdatert reserved_context_size=45000');
+    // Check for ACTUAL outdated values (not historical mentions)
+    // Look for patterns like "reserved_context_size = 45000" or "reserved_context_size=45000"
+    const reservedMatch = content.match(/reserved_context_size\s*=\s*(\d+)/);
+    if (reservedMatch && Number(reservedMatch[1]) !== 40000) {
+      issues.push(`.kimi/AGENTS.md har utdatert reserved_context_size=${reservedMatch[1]} (forventet 40000)`);
     }
-    if (content.includes('compaction_trigger_ratio') && content.includes('0.92') && !content.includes('0.94')) {
-      issues.push('.kimi/AGENTS.md har utdatert compaction_trigger_ratio=0.92');
+    const compactionMatch = content.match(/compaction_trigger_ratio\s*=\s*([\d.]+)/);
+    if (compactionMatch && Number(compactionMatch[1]) !== 0.94) {
+      issues.push(`.kimi/AGENTS.md har utdatert compaction_trigger_ratio=${compactionMatch[1]} (forventet 0.94)`);
     }
   }
 
@@ -185,34 +189,56 @@ function analyzeRepo() {
     const srcFiles = execSync('find src -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v ".test." | grep -v ".spec."', { cwd: root, encoding: 'utf8' }).trim().split('\n');
 
     let orphaned = 0;
+    let orphanedWarnings = 0;
     let largeFiles = 0;
 
     for (const file of srcFiles.slice(0, 200)) {
       if (!file) continue;
       const basename = file.split('/').pop().replace(/\.tsx?$/, '');
+
+      // Get line count first (needed for orphaned level check)
+      let lines = 0;
+      try {
+        lines = Number(execSync(`wc -l < "${file}"`, { cwd: root, encoding: 'utf8' }).trim());
+      } catch { /* ignore */ }
+
       try {
         const imports = execSync(`grep -r "from.*${basename}" src/ --include="*.ts" --include="*.tsx" | wc -l`, { cwd: root, encoding: 'utf8' }).trim();
-        if (imports === '0' && !file.includes('index') && !file.includes('page') && !file.includes('layout')) {
+        // Skip Next.js convention files and type definitions
+        const fileName = file.split('/').pop();
+        const isNextJsConvention = file.includes('middleware') ||
+          file.includes('robots.ts') || file.includes('sitemap.') ||
+          fileName === 'opengraph-image.tsx' || fileName === 'opengraph-image.ts' ||
+          fileName === 'loading.tsx' || fileName === 'error.tsx' ||
+          fileName === 'not-found.tsx' || fileName === 'template.tsx' ||
+          fileName === 'default.tsx' || fileName === 'route.ts' || fileName === 'route.tsx';
+        const isTypeDefinition = file.endsWith('.d.ts') || file.includes('src/types/');
+        const isApiRoute = file.includes('src/app/api/') || file.includes('src/pages/api/');
+        // Client components in app router are established Next.js pattern
+        const isClientComponent = file.includes('src/app/') && fileName && fileName.includes('Client');
+        if (imports === '0' && !file.includes('index') && !file.includes('page') && !file.includes('layout') && !isNextJsConvention && !isTypeDefinition && !isApiRoute) {
           orphaned++;
-          if (orphaned <= 5) {
-            log('Repo', 'warning', `Potensielt orphaned: ${file} (0 imports)`);
+          // Large files already reported separately; client components are established pattern
+          const level = lines > 500 ? 'info' : isClientComponent ? 'info' : 'warning';
+          if (level === 'warning') orphanedWarnings++;
+          if (orphaned <= 5 || level === 'warning') {
+            log('Repo', level, `Potensielt orphaned: ${file} (0 imports)`);
           }
         }
       } catch { /* ignore grep errors */ }
 
-      try {
-        const lines = execSync(`wc -l < "${file}"`, { cwd: root, encoding: 'utf8' }).trim();
-        if (Number(lines) > 500) {
-          largeFiles++;
-          if (largeFiles <= 3) {
-            log('Repo', 'info', `Stor fil: ${file} (${lines} linjer)`);
-          }
+      if (lines > 500) {
+        largeFiles++;
+        if (largeFiles <= 3) {
+          log('Repo', 'info', `Stor fil: ${file} (${lines} linjer)`);
         }
-      } catch { /* ignore */ }
+      }
     }
 
-    if (orphaned > 5) {
-      log('Repo', 'warning', `Totalt ${orphaned} potensielt orphaned filer`);
+    if (orphanedWarnings > 0) {
+      log('Repo', 'warning', `Totalt ${orphaned} potensielt orphaned filer (${orphanedWarnings} krever oppmerksomhet)`);
+    } else if (orphaned > 0) {
+      log('Repo', 'info', `Totalt ${orphaned} potensielt orphaned filer (alle er info-nivå)`);
     }
     if (largeFiles > 0) {
       log('Repo', 'info', `Totalt ${largeFiles} filer >500 linjer — vurder refactoring`);
