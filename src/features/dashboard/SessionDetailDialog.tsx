@@ -19,7 +19,7 @@ import {
   Wallet,
   BarChart3,
 } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line, AreaChart, Area } from "recharts";
 import { ChartWrapper } from "@/shared/ui/chart-wrapper";
 
 interface SessionData {
@@ -82,6 +82,122 @@ function formatDate(dateStr: string, locale: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function calculateTradeStats(trades: TradeData[]) {
+  const completed = trades.filter((t) => t.realized_pnl != null);
+  if (completed.length === 0) return null;
+
+  const wins = completed.filter((t) => t.realized_pnl! > 0);
+  const losses = completed.filter((t) => t.realized_pnl! < 0);
+  const winPnLs = wins.map((t) => t.realized_pnl!);
+  const lossPnLs = losses.map((t) => t.realized_pnl!);
+
+  const avgWin = wins.length > 0 ? winPnLs.reduce((a, b) => a + b, 0) / wins.length : 0;
+  const avgLoss = losses.length > 0 ? lossPnLs.reduce((a, b) => a + b, 0) / losses.length : 0;
+  const bestTrade = completed.length > 0 ? Math.max(...completed.map((t) => t.realized_pnl!)) : 0;
+  const worstTrade = completed.length > 0 ? Math.min(...completed.map((t) => t.realized_pnl!)) : 0;
+  const totalWin = winPnLs.reduce((a, b) => a + b, 0);
+  const totalLoss = Math.abs(lossPnLs.reduce((a, b) => a + b, 0));
+  const profitFactor = totalLoss > 0 ? totalWin / totalLoss : totalWin > 0 ? Infinity : 0;
+
+  // Calculate streaks
+  let currentStreak = 0;
+  let bestStreak = 0;
+  let worstStreak = 0;
+  for (const t of completed) {
+    if (t.realized_pnl! > 0) {
+      currentStreak = currentStreak > 0 ? currentStreak + 1 : 1;
+      bestStreak = Math.max(bestStreak, currentStreak);
+    } else if (t.realized_pnl! < 0) {
+      currentStreak = currentStreak < 0 ? currentStreak - 1 : -1;
+      worstStreak = Math.min(worstStreak, currentStreak);
+    }
+  }
+
+  return {
+    winRate: completed.length > 0 ? Math.round((wins.length / completed.length) * 100) : 0,
+    avgWin,
+    avgLoss,
+    bestTrade,
+    worstTrade,
+    profitFactor: profitFactor === Infinity ? "∞" : profitFactor.toFixed(2),
+    bestStreak,
+    worstStreak: Math.abs(worstStreak),
+    totalWins: wins.length,
+    totalLosses: losses.length,
+  };
+}
+
+function TradeStatsCard({ trades }: { trades: TradeData[] }) {
+  const stats = calculateTradeStats(trades);
+  if (!stats) return null;
+
+  const items = [
+    { label: "Win Rate", value: `${stats.winRate}%`, color: stats.winRate >= 50 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400", sub: `${stats.totalWins}V / ${stats.totalLosses}T` },
+    { label: "Snitt gevinst", value: `+${stats.avgWin.toLocaleString("no-NO", { maximumFractionDigits: 0 })} kr`, color: "text-green-600 dark:text-green-400", sub: "per vinnende trade" },
+    { label: "Snitt tap", value: `${stats.avgLoss.toLocaleString("no-NO", { maximumFractionDigits: 0 })} kr`, color: "text-red-600 dark:text-red-400", sub: "per tapende trade" },
+    { label: "Profit Factor", value: String(stats.profitFactor), color: Number(stats.profitFactor) >= 1.5 ? "text-green-600 dark:text-green-400" : Number(stats.profitFactor) >= 1 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400", sub: ">1.5 = god" },
+    { label: "Beste trade", value: `+${stats.bestTrade.toLocaleString("no-NO", { maximumFractionDigits: 0 })} kr`, color: "text-green-600 dark:text-green-400", sub: "største gevinst" },
+    { label: "Verste trade", value: `${stats.worstTrade.toLocaleString("no-NO", { maximumFractionDigits: 0 })} kr`, color: "text-red-600 dark:text-red-400", sub: "største tap" },
+    { label: "Lengste streak", value: `${stats.bestStreak}V`, color: "text-green-600 dark:text-green-400", sub: "vinnere på rad" },
+    { label: "Verste streak", value: `${stats.worstStreak}T`, color: "text-red-600 dark:text-red-400", sub: "tapere på rad" },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {items.map((item) => (
+        <div key={item.label} className="bg-white dark:bg-slate-900 rounded-xl p-3 border border-slate-200 dark:border-slate-800">
+          <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">{item.label}</p>
+          <p className={`text-lg font-bold ${item.color}`}>{item.value}</p>
+          <p className="text-[10px] text-slate-400 dark:text-slate-500">{item.sub}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CumulativePnLChart({ trades, locale }: { trades: TradeData[]; locale: string }) {
+  const data = trades
+    .slice()
+    .reverse()
+    .reduce<{ name: string; cumPnL: number; tradePnL: number }[]>((acc, t, i) => {
+      const prev = acc[i - 1]?.cumPnL ?? 0;
+      const pnl = Number(t.realized_pnl ?? 0);
+      acc.push({
+        name: `#${i + 1}`,
+        cumPnL: prev + pnl,
+        tradePnL: pnl,
+      });
+      return acc;
+    }, []);
+
+  if (data.length === 0) return null;
+
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+        <TrendingUp className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+        Akkumulert P&L over tid
+      </h3>
+      <ChartWrapper height={200} minHeight={150}>
+        <AreaChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 12 }} />
+          <YAxis tick={{ fill: "#64748b", fontSize: 12 }} tickFormatter={(v: number) => `${v.toLocaleString("no-NO")}`} />
+          <Tooltip
+            contentStyle={{ backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#0f172a" }}
+            formatter={((value: number, name: string) => {
+              const num = Number(value);
+              if (name === "cumPnL") return [`${num > 0 ? "+" : ""}${num.toLocaleString("no-NO")} kr`, "Akkumulert P&L"];
+              return [`${num > 0 ? "+" : ""}${num.toLocaleString("no-NO")} kr`, "Trade P&L"];
+            }) as never}
+          />
+          <Area type="monotone" dataKey="cumPnL" stroke="#0052FF" fill="#0052FF" fillOpacity={0.1} strokeWidth={2} />
+        </AreaChart>
+      </ChartWrapper>
+    </div>
+  );
 }
 
 function simpleExplanation(session: SessionData, trades: TradeData[]): string {
@@ -372,6 +488,20 @@ export function SessionDetailDialog({
         {session.open_position && (
           <OpenPositionCard position={session.open_position} pair={session.trading_pair} locale={locale} />
         )}
+
+        {/* Trade Stats */}
+        {trades.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+              Handelsstatistikk
+            </h3>
+            <TradeStatsCard trades={trades} />
+          </div>
+        )}
+
+        {/* Cumulative PnL Chart */}
+        {trades.length > 0 && <CumulativePnLChart trades={trades} locale={locale} />}
 
         {/* PnL Chart */}
         {trades.length > 0 && (
