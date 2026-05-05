@@ -2,7 +2,7 @@
 
 import { useState, forwardRef, useImperativeHandle } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { localizedPathname } from '@/middleware/locale-path';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
@@ -43,6 +43,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
   function LandingBacktestTeaser(_, ref) {
     const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('landing.backtestTeaser');
     const [riskProfile, setRiskProfile] = useState<UIRiskProfile>('balansert');
     const [amount, setAmount] = useState<number>(50000);
     const [months, setMonths] = useState<number>(12);
@@ -73,7 +74,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
 
     // Bygg chart data for Recharts
     const chartData = equityCurve.map(point => ({
-      month: `Måned ${point.month}`,
+      month: `${t('monthLabel')} ${point.month}`,
       pessimistic: point.pessimistic,
       expected: point.expected,
       optimistic: point.optimistic,
@@ -91,17 +92,16 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-kp-brand/10 text-kp-brand text-sm font-medium mb-4">
               <BarChart3 className="w-4 h-4" />
-              <span>Historisk test (simulert)</span>
+              <span>{t('badge')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-kp-text-primary mb-4">
-              Se historisk simulert ytelse{' '}
+              {t('title')}{' '}
               <span className="bg-gradient-to-r from-kp-brand to-kp-brand-light bg-clip-text text-transparent">
-                basert på backtest
+                {t('titleAccent')}
               </span>
             </h2>
             <p className="text-kp-text-secondary max-w-xl mx-auto">
-              Estimater fra simulert backtesting 2019–2025. Se hvordan strategien kan ha prestert
-              i ulike markedssykluser. Resultater er ikke garantert.
+              {t('subtitle')}
             </p>
           </motion.div>
 
@@ -117,7 +117,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
               <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 {/* Risk Profile */}
                 <div className="flex items-center gap-2 min-w-0">
-                  <label className="text-sm text-kp-text-secondary shrink-0">Strategi (simulert):</label>
+                  <label className="text-sm text-kp-text-secondary shrink-0">{t('strategyLabel')}</label>
                   <div className="flex gap-1 flex-wrap">
                     {(Object.keys(UI_TO_PRESET_MAP) as UIRiskProfile[]).map((profile) => (
                       <button
@@ -137,7 +137,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
 
                 {/* Amount */}
                 <div className="flex items-center gap-2 min-w-0">
-                  <label className="text-sm text-kp-text-secondary shrink-0">Startbeløp:</label>
+                  <label className="text-sm text-kp-text-secondary shrink-0">{t('amountLabel')}</label>
                   <select
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
@@ -152,7 +152,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
 
                 {/* Months */}
                 <div className="flex items-center gap-2 min-w-0">
-                  <label className="text-sm text-kp-text-secondary shrink-0">Simuleringsperiode:</label>
+                  <label className="text-sm text-kp-text-secondary shrink-0">{t('periodLabel')}</label>
                   <select
                     value={months}
                     onChange={(e) => setMonths(Number(e.target.value))}
@@ -172,7 +172,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                   icon={<Play className="w-4 h-4" />}
                   className="ml-auto"
                 >
-                  Kjør simulering
+                  {t('runButton')}
                 </ButtonPremium>
               </div>
             </GlassCard>
@@ -192,14 +192,14 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                     <div className="flex flex-wrap items-center justify-between gap-4">
                       <div>
                         <h3 className="text-lg font-semibold text-kp-text-primary">
-                          <BarChart3 className="w-5 h-5 inline mr-1" /> Simulert estimat — {months} måneder
+                          <BarChart3 className="w-5 h-5 inline mr-1" /> {t('simulatedEstimate', { months })}
                         </h3>
                         <p className="text-sm text-kp-text-secondary">
-                          Profil: {PRESET_TO_UI_LABEL[presetProfile]} • {estimate.preset.strategyLabel} • {estimate.preset.asset}
+                          {t('profileLabel')} {PRESET_TO_UI_LABEL[presetProfile]} • {estimate.preset.strategyLabel} • {estimate.preset.asset}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-kp-text-tertiary">Volatilitet</p>
+                        <p className="text-sm text-kp-text-tertiary">{t('volatilityLabel')}</p>
                         <p className="text-lg font-bold text-kp-text-primary">
                           {estimate.formatted.volatility}
                         </p>
@@ -211,7 +211,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 border-b border-kp-border">
                     {/* Pessimistisk */}
                     <div className="text-center p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                      <p className="text-sm text-amber-400 mb-1">Pessimistisk</p>
+                      <p className="text-sm text-amber-400 mb-1">{t('pessimistic')}</p>
                       <p className="text-2xl font-bold text-amber-300">
                         {estimate.formatted.pessimisticReturn}
                       </p>
@@ -222,7 +222,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
 
                     {/* Forventet */}
                     <div className="text-center p-4 rounded-xl bg-kp-brand/10 border border-kp-brand/30 ring-2 ring-kp-brand/20">
-                      <p className="text-sm text-kp-brand mb-1">Forventet</p>
+                      <p className="text-sm text-kp-brand mb-1">{t('expected')}</p>
                       <p className="text-3xl font-bold text-kp-brand-light">
                         {estimate.formatted.expectedReturn}
                       </p>
@@ -233,7 +233,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
 
                     {/* Optimistisk */}
                     <div className="text-center p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-                      <p className="text-sm text-green-400 mb-1">Optimistisk</p>
+                      <p className="text-sm text-green-400 mb-1">{t('optimistic')}</p>
                       <p className="text-2xl font-bold text-green-300">
                         {estimate.formatted.optimisticReturn}
                       </p>
@@ -256,7 +256,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                               border: '1px solid rgba(255,255,255,0.1)',
                               borderRadius: '8px',
                             }}
-                            formatter={(value) => [formatNOK(Number(value)), 'Verdi']}
+                            formatter={(value) => [formatNOK(Number(value)), t('tooltipValue')]}
                             labelFormatter={() => ''}
                           />
                           <Line
@@ -265,7 +265,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                             stroke="#f59e0b"
                             strokeWidth={2}
                             dot={false}
-                            name="Pessimistisk"
+                            name={t('pessimistic')}
                           />
                           <Line
                             type="monotone"
@@ -273,7 +273,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                             stroke="#0052FF"
                             strokeWidth={3}
                             dot={false}
-                            name="Forventet"
+                            name={t('expected')}
                           />
                           <Line
                             type="monotone"
@@ -281,7 +281,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                             stroke="#22c55e"
                             strokeWidth={2}
                             dot={false}
-                            name="Optimistisk"
+                            name={t('optimistic')}
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -291,12 +291,12 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                   {/* Metrics */}
                   <div className="grid grid-cols-2 gap-4 p-6 border-b border-kp-border">
                     <MetricCard
-                      label="Startbeløp (simulert)"
+                      label={`${t('startAmount')} (${t('tooltipValue')})`}
                       value={estimate.formatted.invested}
                       icon={<TrendingUp className="w-4 h-4" />}
                     />
                     <MetricCard
-                      label="Max Drawdown (simulert)"
+                      label={`${t('maxDrawdown')} (${t('tooltipValue')})`}
                       value={estimate.formatted.maxDrawdown}
                       negative
                       icon={<TrendingDown className="w-4 h-4" />}
@@ -309,12 +309,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                       <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <div className="space-y-1">
                         <p>
-                          * Historisk avkastning er ingen garanti for fremtidig avkastning.
-                          Backtesting inkluderer ikke skatter, slippage eller fremtidige markedsendringer.
-                          Krypto innebærer risiko for tap av kapital.
-                        </p>
-                        <p>
-                          Estimater fra simulert backtesting 2019–2025 med {estimate.preset.strategyLabel}.
+                          {t('disclaimer', { strategy: estimate.preset.strategyLabel })}
                         </p>
                       </div>
                     </div>
@@ -329,7 +324,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                       glow
                       className="w-full"
                     >
-                      Prøv selv med dine egne innstillinger — gratis
+                      {t('cta')}
                     </ButtonPremium>
                   </div>
                 </GlassCard>
@@ -346,10 +341,10 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
             >
               <BarChart3 className="w-16 h-16 text-kp-text-tertiary mx-auto mb-4" />
               <p className="text-kp-text-secondary text-lg">
-                Klikk "Kjør simulering" for å se estimert ytelse
+                {t('emptyStateTitle')}
               </p>
               <p className="text-sm text-kp-text-tertiary mt-2">
-                Basert på simulert backtesting 2019–2025 • Ingen registrering nødvendig
+                {t('emptyStateSubtitle')}
               </p>
             </motion.div>
           )}

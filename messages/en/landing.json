@@ -459,9 +459,21 @@
     "maxDrawdown": "Max Drawdown",
     "cta": "Try it yourself with your own settings — free",
     "emptyStateTitle": "Click \"Run test\" to see estimated performance",
-    "emptyStateSubtitle": "Based on simulated backtesting 2019–2025 • No registration required"
+    "emptyStateSubtitle": "Based on simulated backtesting 2019–2025 • No registration required",
+    "disclaimer": "Historical returns are no guarantee of future returns. Backtesting does not include taxes, slippage or future market changes. Crypto involves risk of capital loss. Estimates from simulated backtesting 2019–2025 with {strategy}.",
+    "tooltipValue": "Value",
+    "monthLabel": "Month",
+    "simulatedEstimate": "Simulated estimate — {months} months"
   },
   "stickyCTA": {
     "label": "Start for free"
+  },
+  "roiSimulator": {
+    "badge": "Start your journey",
+    "title": "Ready to ",
+    "titleAccent": "get started?",
+    "description": "Start with paper trading to test strategies risk-free. When you're ready, easily switch to live trading.",
+    "ctaPrimary": "Create free account",
+    "ctaSecondary": "See pricing"
   }
 }
