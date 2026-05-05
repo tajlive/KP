@@ -8,7 +8,7 @@ import { SimplifiedHero } from "./SimplifiedHero";
 import { StatsGrid } from "./StatsGrid";
 import { AITip } from "./AITip";
 import { SmartActions } from "./SmartActions";
-import { DemoChart } from "./DemoChart";
+
 import { DashboardPro } from "./DashboardPro";
 import type { DashboardCmsData } from "./DashboardContent";
 
@@ -101,7 +101,7 @@ function NewUserHero({ userName, preferredTradingMode }: { userName?: string | n
 
       <SmartActions userState="NyBruker" compact />
 
-      <DemoChart />
+      {/* DemoChart fjernet — viste fake generert kurve, ikke ekte data */}
     </motion.div>
   );
 }
@@ -247,7 +247,7 @@ function PowerUserView(props: Omit<AdaptiveDashboardProps, "userState" | "userNa
             </p>
           </div>
           <a
-            href={`/${locale}/dashboard/leaderboard`}
+            href={`/${locale}/leaderboard`}
             className="shrink-0 rounded-lg bg-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/30 transition-colors"
           >
             {isNo ? "Se rangering →" : "View ranking →"}
