@@ -1,3 +1,4 @@
+import { formatNOK, formatPercent } from "@/lib/format/currency";
 /**
  * Forklaringslag for AI/strategi-data
  * Gjør teknisk trading-informasjon forståelig for norske småsparere
@@ -145,17 +146,7 @@ function getExitReason(trade: TradeForExplanation): ExitReason {
   return "signal";
 }
 
-function formatNOK(value: number | null | undefined, locale: Locale): string {
-  if (value === null || value === undefined) return "-";
-  const abs = Math.abs(value);
-  const prefix = value < 0 ? "−" : "+";
-  return `${prefix}${abs.toLocaleString(locale === "no" ? "nb-NO" : "en-US", { maximumFractionDigits: 0 })} kr`;
-}
 
-function formatPercent(value: number | null | undefined, locale: Locale): string {
-  if (value === null || value === undefined) return "-";
-  return `${value.toLocaleString(locale === "no" ? "nb-NO" : "en-US", { maximumFractionDigits: 1 })}%`;
-}
 
 function getIndicatorContext(signal: Record<string, unknown> | null | undefined, locale: Locale): string {
   if (!signal) return "";

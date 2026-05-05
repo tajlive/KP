@@ -16,7 +16,7 @@ import {
 import { PlausibleScript } from "@/shared/analytics/PlausibleScript";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { SanityLive } from "@/sanity/lib/live";
+import { SanityLiveWrapper } from "@/components/sanity/SanityLiveWrapper";
 import Script from "next/script";
 import { RootProviders } from "@/app/providers/RootProviders";
 import { Outfit, Geist } from "next/font/google";
@@ -280,7 +280,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <PlausibleScript />
         <Analytics />
         <SpeedInsights />
-        <SanityLive />
+        <SanityLiveWrapper />
       </body>
     </html>
   );

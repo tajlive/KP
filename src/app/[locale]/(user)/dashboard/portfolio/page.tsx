@@ -6,6 +6,7 @@ import { Wallet, ArrowRight, AlertCircle } from "lucide-react";
 import { PositionLotsCard } from "@/features/dashboard/PositionLotsCard";
 import { SessionCards } from "@/features/dashboard/SessionCards";
 import type { SessionCardData } from "@/features/dashboard/SessionCards";
+import { RestartTradingButton } from "@/features/dashboard/RestartTradingButton";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -117,7 +118,7 @@ export default async function PortfolioPage({ params }: PageProps) {
         )
         .eq("user_id", user.id)
         .is("archived", false)
-        .in("status", ["active", "stopped"])
+        .in("status", ["active", "stopped", "crashed"])
         .order("started_at", { ascending: false });
       if (error) {
         errorLog.push(`Sessions query error: ${error.message} (${error.code})`);
@@ -176,6 +177,11 @@ export default async function PortfolioPage({ params }: PageProps) {
     const totalReturn = totalStarting > 0
       ? ((totalCapital - totalStarting) / totalStarting) * 100
       : 0;
+
+    // Session breakdown for restart button
+    const activeSessions = (sessions ?? []).filter((s) => s.status === "active");
+    const stoppedSessions = (sessions ?? []).filter((s) => s.status === "stopped");
+    const crashedSessions = (sessions ?? []).filter((s) => s.status === "crashed");
 
     // Derive display assets.
     // PRIMARY: Total capital from all trading sessions (matches /dashboard)
@@ -297,6 +303,15 @@ export default async function PortfolioPage({ params }: PageProps) {
             </div>
           )}
         </div>
+
+        {/* Restart button if all sessions are stopped/crashed */}
+        {stoppedSessions.length + crashedSessions.length > 0 && activeSessions.length === 0 && (
+          <RestartTradingButton
+            locale={locale}
+            stoppedCount={stoppedSessions.length}
+            crashedCount={crashedSessions.length}
+          />
+        )}
 
         {sessions && sessions.length > 0 && (
           <SessionCards sessions={sessions} locale={locale} />

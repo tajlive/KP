@@ -1,5 +1,7 @@
 "use client";
 
+import { formatNOK } from "@/lib/format/currency";
+
 /**
  * CreatorDashboard — analytics & management for strategy creators.
  * Shows subscriber count, revenue, publishing controls.
@@ -43,13 +45,6 @@ interface CreatorDashboardProps {
   onPublishVersion: (strategyId: string) => void;
 }
 
-function formatNOK(n: number) {
-  return new Intl.NumberFormat("no-NO", {
-    style: "currency",
-    currency: "NOK",
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 const STATUS_STYLES: Record<
   string,

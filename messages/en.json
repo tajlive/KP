@@ -1082,13 +1082,9 @@
       }
     },
     "quickStats": {
-      "title": "Quick Overview",
-      "balance": "Balance",
-      "equity": "Equity",
-      "margin": "Margin",
-      "freeMargin": "Free Margin",
-      "marginLevel": "Margin Level",
-      "drawdown": "Drawdown"
+      "totalValue": "Total Value",
+      "totalReturn": "Total Return",
+      "positions": "positions"
     },
     "notifications": {
       "title": "Notifications",
@@ -1233,7 +1229,199 @@
       }
     },
     "cash": "Cash",
-    "pnl": "P&L"
+    "pnl": "P&L",
+    "positionSizing": {
+      "title": "Position Sizing Calculator",
+      "accountBalance": "Account Balance",
+      "riskPerTrade": "Risk per trade",
+      "stopLossPercent": "Stop-loss %",
+      "entryPrice": "Entry price (NOK)",
+      "riskAmount": "Risk amount",
+      "positionSize": "Position size",
+      "units": "Units",
+      "effectiveLeverage": "Effective leverage",
+      "formula": "Formula:",
+      "riskTooHighWarning": "Over 2% is not recommended for conservative trading.",
+      "leverageTooHighWarning": "Leverage above 5x is extremely risky. Consider a smaller position.",
+      "infoDescription": "Calculate optimal position size based on your risk tolerance and stop-loss. The rule is: Never risk more than 1-2% of your account per trade."
+    },
+    "advancedAnalytics": {
+      "title": "Advanced Analytics",
+      "loadError": "Could not load analytics data.",
+      "loadErrorRetry": "Could not load analytics data. Please try again.",
+      "tryAgain": "Try again",
+      "riskMetrics": "Risk Metrics",
+      "maxLossStreak": "Max loss streak",
+      "riskMetricsTitle": "Risk Metrics",
+      "maxLossStreakLabel": "Max loss streak"
+    },
+    "winLossHeatmap": {
+      "noData": "Not enough data for heatmap",
+      "title": "Daily P&L Heatmap",
+      "loss": "Loss",
+      "win": "Win",
+      "dayLabels": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
+      "subtitle": "{winningDays} green · {losingDays} red · {winRate}% win rate",
+      "infoTooltip": "Each color represents your P&L for one day. Dark green = big win, dark red = big loss. Use this to identify patterns (e.g., losses on Mondays)."
+    },
+    "demoChart": {
+      "week1": "Week 1",
+      "week2": "Week 2",
+      "week3": "Week 3",
+      "week4": "Week 4",
+      "demoLabel": "DEMO — Your results will look like this"
+    },
+    "assetAllocation": {
+      "noData": "No pair data available",
+      "title": "Asset Allocation",
+      "other": "Other",
+      "trades": "trades",
+      "infoTooltip": "Distribution of your P&L by trading pair. Helps you see which markets you perform best in, and whether your portfolio is diversified enough."
+    },
+    "equityCurve": {
+      "noData": "Not enough data for equity curve",
+      "title": "Equity Curve",
+      "ariaLabel": "What is equity curve?",
+      "max": "Max",
+      "min": "Min",
+      "infoTooltip": "Equity curve shows your cumulative P&L over time. A rising curve indicates profitable trading. Watch for dips (drawdowns) to assess risk management."
+    },
+    "greeting": {
+      "morning": "Good morning",
+      "day": "Good afternoon",
+      "evening": "Good evening",
+      "night": "Good night",
+      "pnlLabel": "P&L",
+      "winRateLabel": "Win Rate",
+      "performance": {
+        "strong": "You're on 🔥 — strong performance!",
+        "tough": "Tough stretch — consider adjusting your strategy.",
+        "steady": "Steady trading — keep it up.",
+        "uneven": "Profitable but uneven — focus on consistency."
+      }
+    },
+    "aiInsight": {
+      "title": "AI Insight",
+      "subtitle": "Professor Kimi analyzes your trades",
+      "tabs": {
+        "performance": "Performance",
+        "risk": "Risk",
+        "strategy": "Strategy"
+      },
+      "error": "Could not fetch insight",
+      "retry": "Retry",
+      "confidence": {
+        "high": "High confidence",
+        "medium": "Medium confidence",
+        "low": "Low confidence"
+      },
+      "cached": "(cached)",
+      "metrics": {
+        "winRate": "Win rate",
+        "drawdown": "Drawdown",
+        "streak": "Streak"
+      },
+      "disclaimer": "This is education, not financial advice."
+    },
+    "smartActions": {
+      "newUser": {
+        "title": "Start Paper Trading",
+        "description": "Practice risk-free with 100,000 NOK in virtual capital.",
+        "cta": "Get Started"
+      },
+      "noSession": {
+        "title": "Activate a Strategy",
+        "description": "Let our AI trade for you while you sleep.",
+        "cta": "Explore Strategies"
+      },
+      "paperMode": {
+        "title": "Go Live",
+        "description": "Ready for real trading? Upgrade to live mode.",
+        "cta": "Activate Live"
+      },
+      "liveMode": {
+        "title": "Optimize Strategy",
+        "description": "Review results and tune your strategy for better returns.",
+        "cta": "View Results"
+      }
+    },
+    "aiTip": {
+      "default": {
+        "message": "Start your first paper trade to see AI insights here."
+      },
+      "winRateLow": {
+        "message": "Win rate of {winRate}% is below industry average (55%). Review losing trades to find patterns.",
+        "action": "Go to trade history"
+      },
+      "drawdownHigh": {
+        "message": "Max drawdown of {maxDrawdown}% is high. Consider reducing position size.",
+        "action": "View risk settings"
+      },
+      "pnlFlat": {
+        "message": "P&L is flat after several trades. Try copy-trading to see how experienced traders operate.",
+        "action": "Explore copy-trading"
+      },
+      "doingGreat": {
+        "message": "Strong! {winRate}% win rate and positive returns. Consider increasing capital gradually."
+      },
+      "tryCopy": {
+        "message": "New trades registered. Check out top traders for inspiration.",
+        "action": "View leaderboards"
+      }
+    },
+    "dashboardPro": {
+      "errorTitle": "Could not load dashboard metrics",
+      "errorFallback": "Please try again or contact support if the issue persists.",
+      "retry": "Try again",
+      "emptyState": "No trades yet for the selected mode. Start a new session to see statistics.",
+      "stats": {
+        "totalReturn": "Total Return",
+        "totalReturnSub": "Accumulated profit",
+        "winRate": "Win rate",
+        "winRateSub": "{totalTrades} trades total",
+        "balance": "Account Balance",
+        "balanceSub": "Available capital"
+      },
+      "scopeLabel": "Based on active and completed {mode} sessions"
+    },
+    "nlqChat": {
+      "openChat": "Open chat",
+      "title": "Trading Assistant",
+      "subtitle": "Ask about your numbers",
+      "close": "Close",
+      "welcome": "Hi! I can help you understand your trading data.",
+      "notUnderstood": "Sorry, I didn't understand that.",
+      "error": "Sorry, something went wrong. Please try again later.",
+      "waiting": "Waiting for response...",
+      "placeholder": "Ask about your numbers...",
+      "send": "Send",
+      "quickQuestions": [
+        {
+          "label": "Win rate?",
+          "query": "What's my win rate?"
+        },
+        {
+          "label": "P&L last week",
+          "query": "How did I do last week?"
+        },
+        {
+          "label": "Risk",
+          "query": "What's my max drawdown?"
+        },
+        {
+          "label": "Balance",
+          "query": "What's my account balance?"
+        }
+      ]
+    }
   },
   "footer": {
     "product": "Product",
@@ -3245,6 +3433,23 @@
       "close": "Close",
       "errorGeneric": "Something went wrong. Try again.",
       "disclaimer": "Copy trading involves risk. Past performance is not indicative of future returns."
+    },
+    "externalFollow": {
+      "title": "Copy Binance Trader",
+      "subtitle": "Configure copying of {name}",
+      "sheetAriaLabel": "Copy {name}",
+      "scaleFactorLabel": "Scale factor",
+      "scaleFactorHint": "1.0x = same size as trader. Higher = larger positions.",
+      "allocationLabel": "Capital allocation",
+      "allocationHint": "Percentage of your paper capital used per trade.",
+      "maxAmountLabel": "Max amount per trade",
+      "maxAmountPlaceholder": "No limit",
+      "maxAmountHint": "Optional. Minimum {min} NOK.",
+      "cta": "Start copying",
+      "following": "Starting copy…",
+      "close": "Close",
+      "errorGeneric": "Something went wrong. Please try again.",
+      "disclaimer": "Copying traders involves risk. Past performance is not indicative of future returns."
     },
     "topTraders": "👑 Top Traders",
     "thisMonthBest": "This month's best",

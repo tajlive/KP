@@ -596,6 +596,13 @@ export type Database = {
             foreignKeyName: "archived_trade_summaries_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "archived_trade_summaries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -1261,6 +1268,13 @@ export type Database = {
             foreignKeyName: "auto_trading_sessions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "auto_trading_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -1892,6 +1906,107 @@ export type Database = {
         }
         Relationships: []
       }
+      binance_trader_positions: {
+        Row: {
+          encrypted_uid: string
+          entry_price: number | null
+          id: string
+          leverage: number | null
+          mark_price: number | null
+          pnl: number | null
+          quantity: number | null
+          roe: number | null
+          side: string
+          symbol: string
+          synced_at: string | null
+        }
+        Insert: {
+          encrypted_uid: string
+          entry_price?: number | null
+          id?: string
+          leverage?: number | null
+          mark_price?: number | null
+          pnl?: number | null
+          quantity?: number | null
+          roe?: number | null
+          side: string
+          symbol: string
+          synced_at?: string | null
+        }
+        Update: {
+          encrypted_uid?: string
+          entry_price?: number | null
+          id?: string
+          leverage?: number | null
+          mark_price?: number | null
+          pnl?: number | null
+          quantity?: number | null
+          roe?: number | null
+          side?: string
+          symbol?: string
+          synced_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "binance_trader_positions_encrypted_uid_fkey"
+            columns: ["encrypted_uid"]
+            isOneToOne: false
+            referencedRelation: "binance_traders"
+            referencedColumns: ["encrypted_uid"]
+          },
+        ]
+      }
+      binance_traders: {
+        Row: {
+          avatar: string | null
+          days_since_created: number | null
+          encrypted_uid: string
+          follower_count: number | null
+          max_drawdown: number | null
+          nick_name: string
+          rank: number | null
+          risk_level: string | null
+          risk_score: number | null
+          sharpe_ratio: number | null
+          synced_at: string | null
+          total_return: number | null
+          trade_count: number | null
+          win_rate: number | null
+        }
+        Insert: {
+          avatar?: string | null
+          days_since_created?: number | null
+          encrypted_uid: string
+          follower_count?: number | null
+          max_drawdown?: number | null
+          nick_name?: string
+          rank?: number | null
+          risk_level?: string | null
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          synced_at?: string | null
+          total_return?: number | null
+          trade_count?: number | null
+          win_rate?: number | null
+        }
+        Update: {
+          avatar?: string | null
+          days_since_created?: number | null
+          encrypted_uid?: string
+          follower_count?: number | null
+          max_drawdown?: number | null
+          nick_name?: string
+          rank?: number | null
+          risk_level?: string | null
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          synced_at?: string | null
+          total_return?: number | null
+          trade_count?: number | null
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
       bot_alert_configs: {
         Row: {
           created_at: string | null
@@ -2333,6 +2448,13 @@ export type Database = {
             foreignKeyName: "copy_trade_queue_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "copy_trade_queue_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -2340,8 +2462,62 @@ export type Database = {
             foreignKeyName: "copy_trade_queue_leader_id_fkey"
             columns: ["leader_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "copy_trade_queue_leader_id_fkey"
+            columns: ["leader_id"]
+            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      copy_trading_external_follows: {
+        Row: {
+          allocation_percent: number
+          created_at: string
+          external_leader_id: string
+          follower_id: string
+          id: string
+          is_active: boolean
+          leader_source: string
+          max_trade_amount: number | null
+          scale_factor: number
+          updated_at: string
+        }
+        Insert: {
+          allocation_percent?: number
+          created_at?: string
+          external_leader_id: string
+          follower_id: string
+          id?: string
+          is_active?: boolean
+          leader_source?: string
+          max_trade_amount?: number | null
+          scale_factor?: number
+          updated_at?: string
+        }
+        Update: {
+          allocation_percent?: number
+          created_at?: string
+          external_leader_id?: string
+          follower_id?: string
+          id?: string
+          is_active?: boolean
+          leader_source?: string
+          max_trade_amount?: number | null
+          scale_factor?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_trading_external_follows_external_leader_id_fkey"
+            columns: ["external_leader_id"]
+            isOneToOne: false
+            referencedRelation: "binance_traders"
+            referencedColumns: ["encrypted_uid"]
           },
         ]
       }
@@ -2381,6 +2557,13 @@ export type Database = {
             foreignKeyName: "copy_trading_follows_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "copy_trading_follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -2388,7 +2571,81 @@ export type Database = {
             foreignKeyName: "copy_trading_follows_leader_id_fkey"
             columns: ["leader_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "copy_trading_follows_leader_id_fkey"
+            columns: ["leader_id"]
+            isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copy_trading_mirror_trades: {
+        Row: {
+          copied_price: number
+          copied_quantity: number
+          copied_side: string
+          created_at: string
+          error_message: string | null
+          follow_id: string
+          id: string
+          original_side: string
+          original_symbol: string
+          scale_factor: number
+          session_id: string | null
+          status: string
+        }
+        Insert: {
+          copied_price?: number
+          copied_quantity?: number
+          copied_side: string
+          created_at?: string
+          error_message?: string | null
+          follow_id: string
+          id?: string
+          original_side: string
+          original_symbol: string
+          scale_factor?: number
+          session_id?: string | null
+          status?: string
+        }
+        Update: {
+          copied_price?: number
+          copied_quantity?: number
+          copied_side?: string
+          created_at?: string
+          error_message?: string | null
+          follow_id?: string
+          id?: string
+          original_side?: string
+          original_symbol?: string
+          scale_factor?: number
+          session_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_trading_mirror_trades_follow_id_fkey"
+            columns: ["follow_id"]
+            isOneToOne: false
+            referencedRelation: "copy_trading_external_follows"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copy_trading_mirror_trades_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "trading_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copy_trading_mirror_trades_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "unified_trading_sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -3947,6 +4204,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "notification_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "notification_queue_user_id_fkey"
             columns: ["user_id"]
@@ -5575,6 +5839,13 @@ export type Database = {
             foreignKeyName: "strategy_reviews_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "strategy_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -6252,6 +6523,7 @@ export type Database = {
           idempotency_key: string
           indicator_snapshot: Json | null
           is_copy: boolean
+          is_mock: boolean
           leader_trade_id: string | null
           mode: string
           order_type: string
@@ -6279,6 +6551,7 @@ export type Database = {
           idempotency_key: string
           indicator_snapshot?: Json | null
           is_copy?: boolean
+          is_mock?: boolean
           leader_trade_id?: string | null
           mode: string
           order_type?: string
@@ -6306,6 +6579,7 @@ export type Database = {
           idempotency_key?: string
           indicator_snapshot?: Json | null
           is_copy?: boolean
+          is_mock?: boolean
           leader_trade_id?: string | null
           mode?: string
           order_type?: string
@@ -6428,6 +6702,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "trading_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "trading_logs_user_id_fkey"
             columns: ["user_id"]
@@ -6570,6 +6851,7 @@ export type Database = {
         Row: {
           archived: boolean | null
           archived_at: string | null
+          backtest_expected_pnl: number | null
           copied_from_listing_id: string | null
           copy_source_session_id: string | null
           crash_count: number
@@ -6578,6 +6860,7 @@ export type Database = {
           current_capital_nok: number | null
           id: string
           initial_capital: number
+          is_leaderboard_visible: boolean
           last_analysis_details: Json | null
           last_heartbeat: string
           last_status_message: string | null
@@ -6606,6 +6889,7 @@ export type Database = {
         Insert: {
           archived?: boolean | null
           archived_at?: string | null
+          backtest_expected_pnl?: number | null
           copied_from_listing_id?: string | null
           copy_source_session_id?: string | null
           crash_count?: number
@@ -6614,6 +6898,7 @@ export type Database = {
           current_capital_nok?: number | null
           id?: string
           initial_capital?: number
+          is_leaderboard_visible?: boolean
           last_analysis_details?: Json | null
           last_heartbeat?: string
           last_status_message?: string | null
@@ -6642,6 +6927,7 @@ export type Database = {
         Update: {
           archived?: boolean | null
           archived_at?: string | null
+          backtest_expected_pnl?: number | null
           copied_from_listing_id?: string | null
           copy_source_session_id?: string | null
           crash_count?: number
@@ -6650,6 +6936,7 @@ export type Database = {
           current_capital_nok?: number | null
           id?: string
           initial_capital?: number
+          is_leaderboard_visible?: boolean
           last_analysis_details?: Json | null
           last_heartbeat?: string
           last_status_message?: string | null
@@ -7600,6 +7887,7 @@ export type Database = {
           full_name: string | null
           google_id: string | null
           id: string
+          live_phase: string
           locale: string | null
           microsoft_id: string | null
           onboarding_completed: boolean | null
@@ -7611,6 +7899,7 @@ export type Database = {
           preferred_trading_mode: string | null
           provider: string | null
           real_balance: number | null
+          risk_accepted_at: string | null
           risk_tolerance: string | null
           role: string | null
           setup_completed_at: string | null
@@ -7638,6 +7927,7 @@ export type Database = {
           full_name?: string | null
           google_id?: string | null
           id?: string
+          live_phase?: string
           locale?: string | null
           microsoft_id?: string | null
           onboarding_completed?: boolean | null
@@ -7649,6 +7939,7 @@ export type Database = {
           preferred_trading_mode?: string | null
           provider?: string | null
           real_balance?: number | null
+          risk_accepted_at?: string | null
           risk_tolerance?: string | null
           role?: string | null
           setup_completed_at?: string | null
@@ -7676,6 +7967,7 @@ export type Database = {
           full_name?: string | null
           google_id?: string | null
           id?: string
+          live_phase?: string
           locale?: string | null
           microsoft_id?: string | null
           onboarding_completed?: boolean | null
@@ -7687,6 +7979,7 @@ export type Database = {
           preferred_trading_mode?: string | null
           provider?: string | null
           real_balance?: number | null
+          risk_accepted_at?: string | null
           risk_tolerance?: string | null
           role?: string | null
           setup_completed_at?: string | null
@@ -8208,6 +8501,20 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard: {
+        Row: {
+          created_at: string | null
+          current_capital: number | null
+          display_name: string | null
+          roi_percent: number | null
+          starting_capital: number | null
+          tier: Database["public"]["Enums"]["subscription_tier"] | null
+          total_pnl: number | null
+          trade_count: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       signup_funnel_stats: {
         Row: {
           conversion_rate: number | null
@@ -8454,7 +8761,7 @@ export type Database = {
         Returns: number
       }
       calculate_daily_loss: {
-        Args: { p_strategy_id?: string; p_user_id: string }
+        Args: { p_date?: string; p_user_id: string }
         Returns: number
       }
       calculate_level: { Args: { xp: number }; Returns: number }
@@ -8566,7 +8873,7 @@ export type Database = {
         }[]
       }
       detect_crashed_sessions: { Args: never; Returns: undefined }
-      exec_sql: { Args: { query_text: string }; Returns: Json }
+      exec_sql: { Args: { query: string }; Returns: Json }
       generate_trade_idempotency_key: {
         Args: {
           p_session_id: string
@@ -8621,14 +8928,14 @@ export type Database = {
       get_dashboard_metrics: {
         Args: { p_mode: string; p_statuses: string[]; p_user_id: string }
         Returns: {
+          avg_session_capital: number
           losing_trades: number
+          session_count: number
           starting_capital: number
           total_deployed_capital: number
           total_pnl: number
           total_trades: number
           winning_trades: number
-          session_count: number
-          avg_session_capital: number
         }[]
       }
       get_emergency_status: {

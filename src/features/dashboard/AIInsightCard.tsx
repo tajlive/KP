@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Shield, TrendingUp, Target, RefreshCw, AlertTriangle, ChevronDown } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type InsightType = "risk_assessment" | "performance_summary" | "strategy_tip";
 
@@ -27,15 +27,15 @@ interface InsightData {
   generatedAt: string;
 }
 
-const TABS: { key: InsightType; labelNo: string; labelEn: string; icon: typeof Shield }[] = [
-  { key: "performance_summary", labelNo: "Ytelse", labelEn: "Performance", icon: TrendingUp },
-  { key: "risk_assessment", labelNo: "Risk", labelEn: "Risk", icon: Shield },
-  { key: "strategy_tip", labelNo: "Strategi", labelEn: "Strategy", icon: Target },
+const TABS: { key: InsightType; labelKey: string; icon: typeof Shield }[] = [
+  { key: "performance_summary", labelKey: "tabs.performance", icon: TrendingUp },
+  { key: "risk_assessment", labelKey: "tabs.risk", icon: Shield },
+  { key: "strategy_tip", labelKey: "tabs.strategy", icon: Target },
 ];
 
 export function AIInsightCard() {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.aiInsight");
 
   const [activeTab, setActiveTab] = useState<InsightType>("performance_summary");
   const [data, setData] = useState<Partial<Record<InsightType, InsightData>>>({});
@@ -108,12 +108,10 @@ export function AIInsightCard() {
           </div>
           <div>
             <h3 className="font-bold text-gray-900 dark:text-white text-base">
-              {isNo ? "AI-innsikt" : "AI Insight"}
+              {t("title")}
             </h3>
             <p className="text-xs text-gray-500 dark:text-slate-400">
-              {isNo
-                ? "Professor Kimi analyserer dine handler"
-                : "Professor Kimi analyzes your trades"}
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -147,7 +145,7 @@ export function AIInsightCard() {
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
-                    {isNo ? tab.labelNo : tab.labelEn}
+                    {t(tab.labelKey)}
                   </button>
                 );
               })}
@@ -166,14 +164,14 @@ export function AIInsightCard() {
                   <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-red-300">
-                      {isNo ? "Kunne ikke hente innsikt" : "Could not fetch insight"}
+                      {t("error")}
                     </p>
                     <p className="text-xs text-red-400/70 mt-0.5">{error}</p>
                   </div>
                   <button
                     onClick={() => fetchInsight(activeTab)}
                     className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 transition-colors"
-                    aria-label={isNo ? "Prøv igjen" : "Retry"}
+                    aria-label={t("retry")}
                   >
                     <RefreshCw className="w-4 h-4 text-red-400" />
                   </button>
@@ -193,21 +191,11 @@ export function AIInsightCard() {
                             : "bg-gray-300/10 text-gray-500 dark:text-slate-400 border border-gray-300/20 dark:border-slate-500/20"
                         }`}
                       >
-                        {current.confidence === "high"
-                          ? isNo
-                            ? "Høy tillit"
-                            : "High confidence"
-                          : current.confidence === "medium"
-                          ? isNo
-                            ? "Middels tillit"
-                            : "Medium confidence"
-                          : isNo
-                          ? "Lav tillit"
-                          : "Low confidence"}
+                        {t(`confidence.${current.confidence}`)}
                       </span>
                       {current.cached && (
                         <span className="text-xs text-gray-400 dark:text-slate-500">
-                          {isNo ? "(cachet)" : "(cached)"}
+                          {t("cached")}
                         </span>
                       )}
                     </div>
@@ -216,17 +204,17 @@ export function AIInsightCard() {
                   {/* Metrics mini-grid */}
                   <div className="grid grid-cols-3 gap-2">
                     <MetricBox
-                      label={isNo ? "Win rate" : "Win rate"}
+                      label={t("metrics.winRate")}
                       value={`${current.metrics.winRate}%`}
                       trend={current.metrics.winRate >= 55 ? "up" : "down"}
                     />
                     <MetricBox
-                      label={isNo ? "Drawdown" : "Drawdown"}
+                      label={t("metrics.drawdown")}
                       value={`${current.metrics.maxDrawdownPct}%`}
                       trend={current.metrics.maxDrawdownPct > 20 ? "down" : "neutral"}
                     />
                     <MetricBox
-                      label={isNo ? "Streak" : "Streak"}
+                      label={t("metrics.streak")}
                       value={
                         current.metrics.currentStreak > 0
                           ? `+${current.metrics.currentStreak}`
@@ -237,9 +225,7 @@ export function AIInsightCard() {
                   </div>
 
                   <p className="text-xs text-gray-400 dark:text-slate-500 text-center">
-                    {isNo
-                      ? "Dette er utdanning, ikke finansiell rådgivning."
-                      : "This is education, not financial advice."}
+                    {t("disclaimer")}
                   </p>
                 </div>
               ) : null}

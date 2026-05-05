@@ -41,6 +41,18 @@ const LEGACY_ALIASES: Record<string, TickStrategyEngineKey> = {
   multi: "multi_signal",
   trend: "trend_follow",
   "ai-copy": "multi_signal",
+  // UUID aliases fra strategies-tabellen
+  "9fab4471-a0d4-4870-9611-44bd69403775": "dca",           // DCA Trygg Alpha
+  "9febe734-d40e-4a78-b65d-2b346899ca17": "trend_follow",  // Trend Balansert Beta
+  "a21f535d-e0f0-4ad5-a1b9-c08a49be12f0": "multi_signal",  // MultiSignal Aktiv Gamma
+  "3caad63a-a043-48fa-82f8-c54b3065130a": "grid",          // Grid Bot Delta
+  "071a6106-ae28-49f2-93e5-cec281e33fc5": "multi_signal",  // AI Copy Epsilon
+  "39cae21a-7449-43aa-b202-727227d30168": "multi_signal",  // Dark Fleet Champion
+  "c49a9302-65bd-48ec-b5d6-51dff32e4b0e": "multi_signal",  // Dark Fleet Challenger
+  "55903760-304a-4824-920b-f5bfc5530c45": "multi_signal",  // Hybrid Arbitrage Eta
+  "d238229f-b837-4816-a846-9655b3f77e28": "multi_signal",  // Beta Guardrail Test
+  // Copy-trading mirror sessions
+  mirror_binance: "multi_signal",
 };
 
 export function resolveTickStrategyEngineKey(

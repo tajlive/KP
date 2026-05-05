@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Info, Wallet } from "lucide-react";
 
 interface TopPair {
@@ -34,13 +34,11 @@ function Skeleton() {
   );
 }
 
-function EmptyState() {
-  const locale = useLocale();
-  const isNo = locale === "no";
+function EmptyState({ noDataText }: { noDataText: string }) {
   return (
     <div className="h-[280px] w-full bg-slate-900 rounded-2xl border border-slate-700 flex items-center justify-center">
       <p className="text-slate-400 dark:text-slate-500 text-sm">
-        {isNo ? "Ingen pair-data tilgjengelig" : "No pair data available"}
+        {noDataText}
       </p>
     </div>
   );
@@ -48,12 +46,12 @@ function EmptyState() {
 
 export function AssetAllocationChart({ data, loading }: AssetAllocationChartProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.assetAllocation");
   const [showInfo, setShowInfo] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   if (loading) return <Skeleton />;
-  if (!data || data.length === 0) return <EmptyState />;
+  if (!data || data.length === 0) return <EmptyState noDataText={t("noData")} />;
 
   // Sort by absolute PnL contribution and take top 6, group rest as "Other"
   const sorted = [...data].sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl));
@@ -70,7 +68,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
     ...(rest.length > 0
       ? [
           {
-            name: isNo ? "Annet" : "Other",
+            name: t("other"),
             value: rest.reduce((sum, r) => sum + Math.abs(r.pnl), 0),
             pnl: rest.reduce((sum, r) => sum + r.pnl, 0),
             trades: rest.reduce((sum, r) => sum + r.trades, 0),
@@ -104,7 +102,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
             {item.pnl.toLocaleString()} NOK
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            {item.trades} {isNo ? "handler" : "trades"}
+            {item.trades} {t("trades")}
           </p>
         </div>
       );
@@ -122,7 +120,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-            {isNo ? "Aktivaallokering" : "Asset Allocation"}
+            {t("title")}
           </h3>
           <button
             onClick={() => setShowInfo(!showInfo)}
@@ -150,9 +148,7 @@ export function AssetAllocationChart({ data, loading }: AssetAllocationChartProp
           animate={{ opacity: 1, height: "auto" }}
           className="mb-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs text-blue-200"
         >
-          {isNo
-            ? "Fordeling av din P&L etter trading pair. Hjelper deg å se hvilke markeder du presterer best i, og om porteføljen din er diversifisert nok."
-            : "Distribution of your P&L by trading pair. Helps you see which markets you perform best in, and whether your portfolio is diversified enough."}
+          {t("infoTooltip")}
         </motion.div>
       )}
 

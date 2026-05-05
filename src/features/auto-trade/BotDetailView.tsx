@@ -1,5 +1,7 @@
 "use client";
 
+import { formatNOK } from "@/lib/format/currency";
+
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState, useCallback } from "react";
@@ -116,13 +118,6 @@ interface BotDetailViewProps {
   locale: string;
 }
 
-function formatNOK(n: number) {
-  return new Intl.NumberFormat("no-NO", {
-    style: "currency",
-    currency: "NOK",
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 function formatDuration(startDate: string) {
   const ms = Date.now() - new Date(startDate).getTime();

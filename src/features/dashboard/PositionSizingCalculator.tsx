@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Calculator, ArrowRight, Info, AlertTriangle } from "lucide-react";
 
 interface PositionSizingCalculatorProps {
@@ -11,7 +11,7 @@ interface PositionSizingCalculatorProps {
 
 export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSizingCalculatorProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.positionSizing");
   const [riskPercent, setRiskPercent] = useState(1);
   const [stopLossPercent, setStopLossPercent] = useState(2);
   const [entryPrice, setEntryPrice] = useState(50000);
@@ -37,7 +37,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         <div className="flex items-center gap-2">
           <Calculator className="w-4 h-4 text-blue-400" />
           <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-            {isNo ? "Posisjonskalkulator" : "Position Sizing Calculator"}
+            {t("title")}
           </h3>
         </div>
         <button
@@ -54,16 +54,14 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
           animate={{ opacity: 1, height: "auto" }}
           className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs text-blue-200"
         >
-          {isNo
-            ? "Beregn optimal posisjonsstørrelse basert på din risiko-toleranse og stop-loss. Regelen er: Risiker aldri mer enn 1-2% av kontoen per trade."
-            : "Calculate optimal position size based on your risk tolerance and stop-loss. The rule is: Never risk more than 1-2% of your account per trade."}
+          {t("infoDescription")}
         </motion.div>
       )}
 
       <div className="space-y-4">
         {/* Account Balance (read-only or editable) */}
         <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
-          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Kontobalanse" : "Account Balance"}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("accountBalance")}</span>
           <span className="text-sm font-bold text-slate-900 dark:text-white">
             {accountBalance.toLocaleString()} NOK
           </span>
@@ -73,7 +71,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label htmlFor="risk-per-trade" className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              {isNo ? "Risiko per trade" : "Risk per trade"}
+              {t("riskPerTrade")}
             </label>
             <span
               className={`text-xs font-bold ${
@@ -100,9 +98,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
           {isRiskTooHigh && (
             <p className="flex items-center gap-1 text-[10px] text-red-400 mt-1">
               <AlertTriangle className="w-3 h-3" />
-              {isNo
-                ? "Over 2% anbefales ikke for konservativ trading."
-                : "Over 2% is not recommended for conservative trading."}
+              {t("riskTooHighWarning")}
             </p>
           )}
         </div>
@@ -111,7 +107,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label htmlFor="stop-loss-percent" className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              {isNo ? "Stop-loss %" : "Stop-loss %"}
+              {t("stopLossPercent")}
             </label>
             <span className="text-xs font-bold text-slate-900 dark:text-white">{stopLossPercent}%</span>
           </div>
@@ -130,7 +126,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         {/* Entry Price */}
         <div>
           <label htmlFor="entry-price" className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block mb-1.5">
-            {isNo ? "Inngangspris (NOK)" : "Entry price (NOK)"}
+            {t("entryPrice")}
           </label>
           <input
             id="entry-price"
@@ -145,19 +141,19 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
       {/* Results */}
       <div className="mt-5 p-4 bg-slate-800 rounded-xl space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Risiko-beløp" : "Risk amount"}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("riskAmount")}</span>
           <span className="text-sm font-bold text-slate-900 dark:text-white">{riskAmount.toLocaleString()} NOK</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Posisjonsstørrelse" : "Position size"}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("positionSize")}</span>
           <span className="text-sm font-bold text-slate-900 dark:text-white">{positionSize.toLocaleString()} NOK</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Enheter" : "Units"}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("units")}</span>
           <span className="text-sm font-bold text-slate-900 dark:text-white">{units.toFixed(4)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{isNo ? "Effektiv gearing" : "Effective leverage"}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">{t("effectiveLeverage")}</span>
           <span
             className={`text-sm font-bold ${
               isOverLeveraged ? "text-red-400" : "text-emerald-400"
@@ -170,9 +166,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
         {isOverLeveraged && (
           <p className="flex items-center gap-1 text-[10px] text-red-400">
             <AlertTriangle className="w-3 h-3" />
-            {isNo
-              ? "Gearing over 5x er svært riskabelt. Vurder lavere posisjonsstørrelse."
-              : "Leverage above 5x is extremely risky. Consider a smaller position."}
+            {t("leverageTooHighWarning")}
           </p>
         )}
       </div>
@@ -180,7 +174,7 @@ export function PositionSizingCalculator({ accountBalance = 100000 }: PositionSi
       {/* Formula hint */}
       <div className="mt-3 text-center">
         <p className="text-[10px] text-slate-600">
-          {isNo ? "Formel:" : "Formula:"}{" "}
+          {t("formula")}{" "}
           <span className="font-mono text-slate-400 dark:text-slate-500">
             Pos = (Bal × Risk%) / Stop%
           </span>

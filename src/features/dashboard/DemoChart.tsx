@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface DemoChartProps {
   height?: number;
@@ -48,7 +48,7 @@ function generateCurve(width: number, height: number, seed: number): string {
 
 export function DemoChart({ height = 180 }: DemoChartProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.demoChart");
   const w = 400;
   const h = height;
 
@@ -59,12 +59,7 @@ export function DemoChart({ height = 180 }: DemoChartProps) {
     return `${base} L ${w},${h} L 0,${h} Z`;
   }, []);
 
-  const labels = [
-    isNo ? "Uke 1" : "Week 1",
-    isNo ? "Uke 2" : "Week 2",
-    isNo ? "Uke 3" : "Week 3",
-    isNo ? "Uke 4" : "Week 4",
-  ];
+  const labels = [t("week1"), t("week2"), t("week3"), t("week4")];
 
   return (
     <motion.div
@@ -76,7 +71,7 @@ export function DemoChart({ height = 180 }: DemoChartProps) {
     >
       <div className="absolute top-3 left-4">
         <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">
-          {isNo ? "DEMO — Slik vil dine resultater se ut" : "DEMO — Your results will look like this"}
+          {t("demoLabel")}
         </span>
       </div>
 

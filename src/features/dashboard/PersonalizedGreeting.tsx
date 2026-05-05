@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Sunrise, Sun, Sunset, Moon, TrendingUp, TrendingDown } from "lucide-react";
 
 interface MarketContext {
@@ -24,17 +24,8 @@ function getTimeOfDay(): "morning" | "day" | "evening" | "night" {
   return "night";
 }
 
-function getGreeting(timeOfDay: string, isNo: boolean): string {
-  switch (timeOfDay) {
-    case "morning":
-      return isNo ? "God morgen" : "Good morning";
-    case "day":
-      return isNo ? "God dag" : "Good afternoon";
-    case "evening":
-      return isNo ? "God kveld" : "Good evening";
-    default:
-      return isNo ? "God natt" : "Good night";
-  }
+function getGreeting(timeOfDay: string, t: (key: string) => string): string {
+  return t(`greeting.${timeOfDay}`);
 }
 
 function getTimeIcon(timeOfDay: string) {
@@ -80,40 +71,32 @@ function useMarketContext(): MarketContext | null {
 function getPerformanceMessage(
   totalPnl: number | undefined,
   winRate: number | undefined,
-  isNo: boolean
+  t: (key: string) => string
 ): string | null {
   if (totalPnl === undefined || winRate === undefined) return null;
 
   if (totalPnl > 10000 && winRate >= 55) {
-    return isNo
-      ? "Du er på 🔥 — sterkt resultat!"
-      : "You're on 🔥 — strong performance!";
+    return t("performance.strong");
   }
   if (totalPnl < 0 && winRate < 45) {
-    return isNo
-      ? "Tøff periode — vurder å justere strategi."
-      : "Tough stretch — consider adjusting your strategy.";
+    return t("performance.tough");
   }
   if (winRate >= 50 && totalPnl >= 0) {
-    return isNo
-      ? "Stødig trading — fortsett slik."
-      : "Steady trading — keep it up.";
+    return t("performance.steady");
   }
   if (totalPnl > 0 && winRate < 50) {
-    return isNo
-      ? "Profittabel men ujevn — fokuser på konsistens."
-      : "Profitable but uneven — focus on consistency.";
+    return t("performance.uneven");
   }
   return null;
 }
 
 export function PersonalizedGreeting({ userName, totalPnl, winRate }: PersonalizedGreetingProps) {
   const locale = useLocale();
-  const isNo = locale === "no";
+  const t = useTranslations("dashboard.greeting");
   const [mounted, setMounted] = useState(false);
   const timeOfDay = getTimeOfDay();
   const market = useMarketContext();
-  const performanceMsg = getPerformanceMessage(totalPnl, winRate, isNo);
+  const performanceMsg = getPerformanceMessage(totalPnl, winRate, t);
 
   useEffect(() => {
     setMounted(true);
@@ -135,7 +118,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
           <div className="flex items-center gap-2">
             {getTimeIcon(timeOfDay)}
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              {getGreeting(timeOfDay, isNo)}
+              {getGreeting(timeOfDay, t)}
               {userName ? `, ${userName}` : ""}
             </h2>
           </div>
@@ -172,7 +155,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
             {totalPnl !== undefined && (
               <div className="text-right">
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                  {isNo ? "P&L" : "P&L"}
+                  {t("pnlLabel")}
                 </p>
                 <p
                   className={`text-sm font-bold ${
@@ -187,7 +170,7 @@ export function PersonalizedGreeting({ userName, totalPnl, winRate }: Personaliz
             {winRate !== undefined && (
               <div className="text-right">
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                  {isNo ? "Win Rate" : "Win Rate"}
+                  {t("winRateLabel")}
                 </p>
                 <p
                   className={`text-sm font-bold ${

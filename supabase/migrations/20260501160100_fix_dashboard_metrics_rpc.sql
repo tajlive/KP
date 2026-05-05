@@ -1,12 +1,12 @@
 -- ============================================================================
--- Fix: get_dashboard_metrics double-counting + add session breakdown
--- Date: 2026-05-01
--- Context: total_capital SUMmed across all sessions, which confused users.
--- Users with 5 bots × 100K saw 500K. Now returns per-session breakdown
--- plus a clear "total_deployed_capital" label.
+-- Fix: get_dashboard_metrics — include ALL trades for the user+mode
+-- Date: 2026-05-05
+-- Context: Previously filtered trades by session status, hiding trades from
+-- crashed/stopped sessions. Now aggregates ALL non-cancelled trades for the
+-- user+mode, while session capital still respects the scope filter.
 -- ============================================================================
 
--- Must drop first because we changed the return type (added columns, renamed total_capital)
+-- Must drop first because we changed the logic
 DROP FUNCTION IF EXISTS get_dashboard_metrics(UUID, TEXT, TEXT[]);
 
 CREATE OR REPLACE FUNCTION get_dashboard_metrics(
@@ -52,6 +52,7 @@ BEGIN
       END AS avg_session_capital
     FROM matched_sessions ms
   ),
+  -- Include ALL user trades for this mode, not just trades from scoped sessions
   trade_agg AS (
     SELECT
       COALESCE(SUM(t.realized_pnl), 0) AS total_pnl,
@@ -59,8 +60,7 @@ BEGIN
       COUNT(*) FILTER (WHERE t.realized_pnl > 0) AS winning_trades,
       COUNT(*) FILTER (WHERE t.realized_pnl < 0) AS losing_trades
     FROM trades t
-    WHERE t.session_id IN (SELECT id FROM matched_sessions)
-      AND t.user_id = p_user_id
+    WHERE t.user_id = p_user_id
       AND t.mode::text = p_mode
       AND t.status::text NOT IN ('cancelled', 'failed')
   )

@@ -1,5 +1,7 @@
 "use client";
 
+import { formatNOK } from "@/lib/format/currency";
+
 import { useState } from "react";
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
@@ -68,14 +70,6 @@ function getMoodColor(mood: TimelineTrade["explanation"]["mood"]) {
   }
 }
 
-function formatNOK(value: number): string {
-  return new Intl.NumberFormat("nb-NO", {
-    style: "currency",
-    currency: "NOK",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 function formatDateTime(isoString: string): string {
   const date = new Date(isoString);

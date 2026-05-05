@@ -1130,13 +1130,9 @@
       }
     },
     "quickStats": {
-      "title": "Rask Oversikt",
-      "balance": "Saldo",
-      "equity": "Egenkapital",
-      "margin": "Sikkerhetsmargin",
-      "freeMargin": "Fri sikkerhetsmargin",
-      "marginLevel": "Margin-nivå",
-      "drawdown": "Nedgang"
+      "totalValue": "Total Verdi",
+      "totalReturn": "Total Avkastning",
+      "positions": "posisjoner"
     },
     "notifications": {
       "title": "Varsler",
@@ -1233,7 +1229,199 @@
       }
     },
     "cash": "Cash",
-    "pnl": "P&L"
+    "pnl": "P&L",
+    "positionSizing": {
+      "title": "Posisjonskalkulator",
+      "accountBalance": "Kontobalanse",
+      "riskPerTrade": "Risiko per trade",
+      "stopLossPercent": "Stop-loss %",
+      "entryPrice": "Inngangspris (NOK)",
+      "riskAmount": "Risiko-beløp",
+      "positionSize": "Posisjonsstørrelse",
+      "units": "Enheter",
+      "effectiveLeverage": "Effektiv gearing",
+      "formula": "Formel:",
+      "riskTooHighWarning": "Over 2% anbefales ikke for konservativ trading.",
+      "leverageTooHighWarning": "Gearing over 5x er svært riskabelt. Vurder lavere posisjonsstørrelse.",
+      "infoDescription": "Beregn optimal posisjonsstørrelse basert på din risiko-toleranse og stop-loss. Regelen er: Risiker aldri mer enn 1-2% av kontoen per trade."
+    },
+    "advancedAnalytics": {
+      "title": "Avansert analyse",
+      "loadError": "Kunne ikke laste analyse-data.",
+      "loadErrorRetry": "Kunne ikke laste analyse-data. Prøv igjen.",
+      "tryAgain": "Prøv igjen",
+      "riskMetrics": "Risk Metrics",
+      "maxLossStreak": "Max tap streak",
+      "riskMetricsTitle": "Risk Metrics",
+      "maxLossStreakLabel": "Max tap streak"
+    },
+    "winLossHeatmap": {
+      "noData": "Ikke nok data for heatmap",
+      "title": "Daglig P&L Heatmap",
+      "loss": "Tap",
+      "win": "Gevinst",
+      "dayLabels": [
+        "Man",
+        "Tir",
+        "Ons",
+        "Tor",
+        "Fre",
+        "Lør",
+        "Søn"
+      ],
+      "subtitle": "{winningDays} grønne · {losingDays} røde · {winRate}% vinnrate",
+      "infoTooltip": "Hver farge representerer din P&L for en dag. Mørk grønn = stor gevinst, mørk rød = stort tap. Bruk dette til å identifisere mønstre (f.eks. tap på mandager)."
+    },
+    "demoChart": {
+      "week1": "Uke 1",
+      "week2": "Uke 2",
+      "week3": "Uke 3",
+      "week4": "Uke 4",
+      "demoLabel": "DEMO — Slik vil dine resultater se ut"
+    },
+    "assetAllocation": {
+      "noData": "Ingen pair-data tilgjengelig",
+      "title": "Aktivaallokering",
+      "other": "Annet",
+      "trades": "handler",
+      "infoTooltip": "Fordeling av din P&L etter trading pair. Hjelper deg å se hvilke markeder du presterer best i, og om porteføljen din er diversifisert nok."
+    },
+    "equityCurve": {
+      "noData": "Ikke nok data for equity curve",
+      "title": "Egenkapitalkurve",
+      "ariaLabel": "Hva er equity curve?",
+      "max": "Max",
+      "min": "Min",
+      "infoTooltip": "Equity curve viser din kumulative P&L over tid. En stigende kurve indikerer profitabel trading. Se etter dyppe (drawdowns) for å vurdere risk management."
+    },
+    "greeting": {
+      "morning": "God morgen",
+      "day": "God dag",
+      "evening": "God kveld",
+      "night": "God natt",
+      "pnlLabel": "P&L",
+      "winRateLabel": "Win Rate",
+      "performance": {
+        "strong": "Du er på 🔥 — sterkt resultat!",
+        "tough": "Tøff periode — vurder å justere strategi.",
+        "steady": "Stødig trading — fortsett slik.",
+        "uneven": "Profittabel men ujevn — fokuser på konsistens."
+      }
+    },
+    "aiInsight": {
+      "title": "AI-innsikt",
+      "subtitle": "Professor Kimi analyserer dine handler",
+      "tabs": {
+        "performance": "Ytelse",
+        "risk": "Risk",
+        "strategy": "Strategi"
+      },
+      "error": "Kunne ikke hente innsikt",
+      "retry": "Prøv igjen",
+      "confidence": {
+        "high": "Høy tillit",
+        "medium": "Middels tillit",
+        "low": "Lav tillit"
+      },
+      "cached": "(cachet)",
+      "metrics": {
+        "winRate": "Win rate",
+        "drawdown": "Drawdown",
+        "streak": "Streak"
+      },
+      "disclaimer": "Dette er utdanning, ikke finansiell rådgivning."
+    },
+    "smartActions": {
+      "newUser": {
+        "title": "Start Paper Trading",
+        "description": "Øv deg risikofritt med 100 000 kr i virtuell kapital.",
+        "cta": "Kom i gang"
+      },
+      "noSession": {
+        "title": "Aktiver en strategi",
+        "description": "La vår KI handle for deg mens du sover.",
+        "cta": "Utforsk strategier"
+      },
+      "paperMode": {
+        "title": "Gå Live",
+        "description": "Klar for ekte trading? Oppgrader til live-modus.",
+        "cta": "Aktiver Live"
+      },
+      "liveMode": {
+        "title": "Optimaliser strategien",
+        "description": "Se resultater og juster strategien for bedre avkastning.",
+        "cta": "Se resultater"
+      }
+    },
+    "aiTip": {
+      "default": {
+        "message": "Start din første paper-trade for å se AI-innsikt her."
+      },
+      "winRateLow": {
+        "message": "Win rate på {winRate}% er under bransjesnittet (55%). Gjennomgå tapende trades for å finne mønstre.",
+        "action": "Gå til trade-historikk"
+      },
+      "drawdownHigh": {
+        "message": "Maks drawdown på {maxDrawdown}% er høy. Vurder å redusere posisjonsstørrelse.",
+        "action": "Se risiko-innstillinger"
+      },
+      "pnlFlat": {
+        "message": "P&L er flat etter flere trades. Prøv copy-trading for å se hvordan erfarne tradere opererer.",
+        "action": "Utforsk copy-trading"
+      },
+      "doingGreat": {
+        "message": "Sterkt! {winRate}% win rate og positiv avkastning. Vurder å øke kapitalen gradvis."
+      },
+      "tryCopy": {
+        "message": "Nye trades registrert. Se på topp-tradere for inspirasjon.",
+        "action": "Se leaderboards"
+      }
+    },
+    "dashboardPro": {
+      "errorTitle": "Kunne ikke laste dashboard-tall",
+      "errorFallback": "Prøv igjen, eller kontakt support hvis problemet vedvarer.",
+      "retry": "Prøv igjen",
+      "emptyState": "Ingen handler ennå for valgt modus. Start en ny session for å se statistikk.",
+      "stats": {
+        "totalReturn": "Total avkastning",
+        "totalReturnSub": "Akkumulert profitt",
+        "winRate": "Vinnrate",
+        "winRateSub": "{totalTrades} handler totalt",
+        "balance": "Kontobalanse",
+        "balanceSub": "Tilgjengelig kapital"
+      },
+      "scopeLabel": "Basert på aktive og fullførte {mode}-sessions"
+    },
+    "nlqChat": {
+      "openChat": "Åpne chat",
+      "title": "Trading Assistent",
+      "subtitle": "Spør om dine tall",
+      "close": "Lukk",
+      "welcome": "Hei! Jeg kan hjelpe deg å forstå trading-dataen din.",
+      "notUnderstood": "Beklager, jeg forstod ikke det.",
+      "error": "Beklager, noe gikk galt. Prøv igjen senere.",
+      "waiting": "Venter på svar...",
+      "placeholder": "Spør om dine tall...",
+      "send": "Send",
+      "quickQuestions": [
+        {
+          "label": "Win rate?",
+          "query": "Hva er min win rate?"
+        },
+        {
+          "label": "P&L siste uke",
+          "query": "Hvordan gikk det forrige uke?"
+        },
+        {
+          "label": "Risk",
+          "query": "Hva er min max drawdown?"
+        },
+        {
+          "label": "Balance",
+          "query": "Hva er min kontobalanse?"
+        }
+      ]
+    }
   },
   "footer": {
     "product": "Produkt",
@@ -3240,6 +3428,23 @@
       "sizingPropHint": "Skalerer med traderen",
       "sizingFixedTitle": "Fast beløp",
       "sizingFixedHint": "Samme størrelse alltid",
+      "cta": "Start kopiering",
+      "following": "Starter kopiering…",
+      "close": "Lukk",
+      "errorGeneric": "Noe gikk galt. Prøv igjen.",
+      "disclaimer": "Kopiering av tradere innebærer risiko. Tidligere ytelse er ikke en indikasjon på fremtidig avkastning."
+    },
+    "externalFollow": {
+      "title": "Kopier Binance-trader",
+      "subtitle": "Konfigurer kopiering av {name}",
+      "sheetAriaLabel": "Kopier {name}",
+      "scaleFactorLabel": "Skaleringsfaktor",
+      "scaleFactorHint": "1.0x = samme størrelse som traderen. Høyere = større posisjoner.",
+      "allocationLabel": "Kapital-allokering",
+      "allocationHint": "Prosent av din paper-kapital som brukes per trade.",
+      "maxAmountLabel": "Maks beløp per trade",
+      "maxAmountPlaceholder": "Ingen grense",
+      "maxAmountHint": "Valgfri. Minimum {min} NOK.",
       "cta": "Start kopiering",
       "following": "Starter kopiering…",
       "close": "Lukk",

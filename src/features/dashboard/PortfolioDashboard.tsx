@@ -1,4 +1,5 @@
 "use client";
+import { formatNOK } from "@/lib/format/currency";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -158,13 +159,6 @@ function apiTradeToDashboardTrade(t: ApiTrade): Trade {
   };
 }
 
-function formatNOK(locale: string, n: number) {
-  return new Intl.NumberFormat(locale === "no" ? "no-NO" : "en-GB", {
-    style: "currency",
-    currency: "NOK",
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 type PnlPeriod = "24h" | "7d" | "30d" | "all";
 
@@ -279,9 +273,7 @@ export default function PortfolioDashboard({
   const periodFlowPnl = useMemo(
     () =>
       periodTrades.reduce((sum: number, t: Trade) => {
-        const tradeAmount = normalizeTradeAmount(t);
-        const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
-        return sum + val;
+        return sum + (t.realized_pnl ?? 0);
       }, 0),
     [periodTrades],
   );
@@ -303,17 +295,13 @@ export default function PortfolioDashboard({
     activeSession != null
       ? displayTrades.filter((t) => t.session_id === activeSession.id)
       : [];
-  const cashFlowFromScoped = sessionScopedTrades.reduce(
-    (sum: number, t: Trade) => {
-      const tradeAmount = normalizeTradeAmount(t);
-      const val = isBuyTrade(t) ? -tradeAmount : tradeAmount;
-      return sum + val;
-    },
+  const sessionRealizedPnl = sessionScopedTrades.reduce(
+    (sum: number, t: Trade) => sum + (t.realized_pnl ?? 0),
     0,
   );
   const derivedSessionBalance =
     activeSession != null && sessionScopedTrades.length > 0
-      ? sessionStarting + cashFlowFromScoped
+      ? sessionStarting + sessionRealizedPnl
       : null;
 
   const displayBalance =
@@ -492,7 +480,7 @@ export default function PortfolioDashboard({
             letterSpacing: "-0.02em",
           }}
         >
-          {formatNOK(locale, displayBalance)}
+          {formatNOK(displayBalance)}
         </p>
         <div className="mt-3">
           <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-1.5">
@@ -531,7 +519,7 @@ export default function PortfolioDashboard({
             }
           >
             {periodFlowPnl >= 0 ? "+" : ""}
-            {formatNOK(locale, periodFlowPnl)} ({periodPnlPercent.toFixed(1)}%)
+            {formatNOK(periodFlowPnl)} ({periodPnlPercent.toFixed(1)}%)
           </span>
           <span className="text-white/50 text-sm">
             {t("portfolioHero.pnlHint")}
@@ -602,7 +590,7 @@ export default function PortfolioDashboard({
                     className="text-base font-semibold text-[#1A1D26]"
                     style={{ fontVariantNumeric: "tabular-nums" }}
                   >
-                    {formatNOK(locale, coin.price * usdtNokRate)}
+                    {formatNOK(coin.price * usdtNokRate)}
                   </p>
                   <span
                     className={`text-sm font-medium tabular-nums ${coin.change24h >= 0 ? "text-[#16A34A]" : "text-[#DC2626]"}`}
@@ -872,7 +860,7 @@ export default function PortfolioDashboard({
                         </p>
                         <p className="text-xs text-slate-500 tabular-nums">
                           {normalizeTradeQty(trade).toFixed(4)} ·{" "}
-                          {formatNOK(locale, normalizeTradeAmount(trade))}
+                          {formatNOK(normalizeTradeAmount(trade))}
                           {trade.realized_pnl != null &&
                             Number.isFinite(Number(trade.realized_pnl)) && (
                               <span
@@ -884,7 +872,7 @@ export default function PortfolioDashboard({
                               >
                                 {" "}
                                 ·{" "}
-                                {formatNOK(locale, Number(trade.realized_pnl))}
+                                {formatNOK(Number(trade.realized_pnl))}
                               </span>
                             )}
                         </p>
@@ -1003,8 +991,8 @@ export default function PortfolioDashboard({
               <div className="text-right">
                 <p className="text-sm font-semibold text-[#1A1D26] tabular-nums">
                   {formatNOK(
-                    locale,
                     activeSession.total_pnl ?? activeSession.pnl ?? 0,
+                    locale,
                   )}
                 </p>
                 <p className="text-xs text-[#8E95A9]">

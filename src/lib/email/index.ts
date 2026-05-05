@@ -48,7 +48,8 @@ export type EmailType =
   | "weekly_digest"
   | "password_reset"
   | "email_verification"
-  | "marketing";
+  | "marketing"
+  | "circuit_breaker";
 
 // Email preferences mapping
 interface EmailPreferences {
@@ -75,6 +76,7 @@ async function shouldSendEmail(
     "email_verification",
     "payment_failed",
     "subscription_expiring",
+    "circuit_breaker",
   ];
 
   if (transactionalTypes.includes(type)) {
@@ -102,6 +104,7 @@ async function shouldSendEmail(
       case "leaderboard_climb":
         return prefs.gamification_emails ?? false;
       case "trade_executed":
+      case "circuit_breaker":
         return prefs.trading_alerts ?? false;
       case "daily_digest":
         return prefs.digest_emails === "daily";
@@ -511,6 +514,46 @@ const templates = {
     ),
   }),
 
+  circuitBreaker: (
+    name: string,
+    drawdown: string,
+    sessionsStopped: number,
+    portfolioValue: string,
+    restartUrl: string,
+  ) => ({
+    subject: "⚠️ Trading stoppet: Portfolio drawdown",
+    html: wrapEmail(
+      `
+      <div class="badge badge-warning">Circuit Breaker</div>
+      <h2>Hei ${name}!</h2>
+      <p>Alle dine trading-sessions er midlertidig stoppet av sikkerhetssystemet.</p>
+      <div class="stats">
+        <div class="stat-row">
+          <span>Portfolio drawdown:</span>
+          <span style="font-weight: 600; color: #f87171;">${drawdown}</span>
+        </div>
+        <div class="stat-row">
+          <span>Sessioner stoppet:</span>
+          <span style="font-weight: 600;">${sessionsStopped}</span>
+        </div>
+        <div class="stat-row">
+          <span>Portfolio verdi:</span>
+          <span style="font-weight: 600;">${portfolioValue}</span>
+        </div>
+      </div>
+      <p style="margin-top: 20px; color: #94a3b8;">
+        Dette er en sikkerhetsmekanisme som stopper trading når porteføljen din har falt betydelig.
+        Du kan restarte trading når som helst ved å trykke på knappen nedenfor.
+      </p>
+      <a href="${restartUrl}" class="button">Restart Trading</a>
+      <p style="font-size: 14px; color: #94a3b8; margin-top: 24px;">
+        Har du spørsmål? Kontakt support@klarpakke.no
+      </p>
+    `,
+      `Trading stoppet: Portfolio drawdown ${drawdown}`,
+    ),
+  }),
+
   dailyDigest: (name: string, trades: number, pnl: string, winRate: string) => {
     const isPositive = !pnl.startsWith("-");
     return {
@@ -669,6 +712,15 @@ export async function sendTemplatedEmail(
           data.amount as string,
           data.price as string,
           data.pnl as string,
+        );
+        break;
+      case "circuit_breaker":
+        email = templates.circuitBreaker(
+          (data.name as string) || user.name,
+          data.drawdown as string,
+          data.sessionsStopped as number,
+          data.portfolioValue as string,
+          data.restartUrl as string,
         );
         break;
       case "daily_digest":

@@ -30,6 +30,7 @@ interface CopiedPosition {
   latencyMs: number;
   status: "active" | "closed";
   openedAt: string;
+  source: "internal" | "external";
 }
 
 interface CopyConfig {
@@ -349,34 +350,89 @@ export const useCopyStore = create<CopyStore>()((set, get) => ({
 
   fetchActiveCopies: async () => {
     const supabase = createClient();
-    const { data } = await supabase
+
+    // Internal copies
+    const { data: internalData } = await supabase
       .from("copy_trade_queue")
       .select("*")
       .eq("status", "executed")
       .order("created_at", { ascending: false })
       .limit(50);
 
-    if (data) {
-      const copies: CopiedPosition[] = data.map(
-        (log: Record<string, unknown>) => ({
-          id: log.id as string,
-          leaderId: (log.config_id as string) || "",
-          originalTradeId: (log.original_trade_id as string) || "",
-          symbol: (log.symbol as string) || "",
-          side: "LONG" as const,
-          entryPrice: (log.copy_price as number) || 0,
-          currentPrice: (log.copy_price as number) || 0,
-          quantity: 0,
-          pnlNok: 0,
-          pnlPct: 0,
-          latencyMs: (log.latency_ms as number) || 0,
-          status: "active" as const,
-          openedAt: log.created_at as string,
-        }),
-      );
+    const internalCopies: CopiedPosition[] = (internalData || []).map(
+      (log: Record<string, unknown>) => ({
+        id: log.id as string,
+        leaderId: (log.config_id as string) || "",
+        originalTradeId: (log.original_trade_id as string) || "",
+        symbol: (log.symbol as string) || "",
+        side: "LONG" as const,
+        entryPrice: (log.copy_price as number) || 0,
+        currentPrice: (log.copy_price as number) || 0,
+        quantity: 0,
+        pnlNok: 0,
+        pnlPct: 0,
+        latencyMs: (log.latency_ms as number) || 0,
+        status: "active" as const,
+        openedAt: log.created_at as string,
+        source: "internal" as const,
+      }),
+    );
 
-      set({ activeCopies: copies });
+    // External (Binance) mirror trades
+    let externalCopies: CopiedPosition[] = [];
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user?.id) {
+        const { data: follows } = await supabase
+          .from("copy_trading_external_follows")
+          .select("id, external_leader_id")
+          .eq("follower_id", user.id)
+          .eq("is_active", true);
+
+        const followIds = follows?.map((f) => f.id) ?? [];
+
+        if (followIds.length > 0) {
+          const { data: mirrorData } = await supabase
+            .from("copy_trading_mirror_trades")
+            .select("*")
+            .in("follow_id", followIds)
+            .order("created_at", { ascending: false })
+            .limit(20);
+
+          externalCopies = (mirrorData || []).map(
+            (log: Record<string, unknown>) => ({
+              id: log.id as string,
+              leaderId: (log.follow_id as string) || "",
+              originalTradeId: (log.follow_id as string) || "",
+              symbol: (log.original_symbol as string) || "",
+              side: (log.original_side as "LONG" | "SHORT") || "LONG",
+              entryPrice: (log.copied_price as number) || 0,
+              currentPrice: (log.copied_price as number) || 0,
+              quantity: (log.copied_quantity as number) || 0,
+              pnlNok: 0,
+              pnlPct: 0,
+              latencyMs: 0,
+              status:
+                (log.status as string) === "filled" ? "active" : "closed",
+              openedAt: log.created_at as string,
+              source: "external" as const,
+            }),
+          );
+        }
+      }
+    } catch (err) {
+      console.error("[fetchActiveCopies] mirror trades:", err);
     }
+
+    const combined = [...externalCopies, ...internalCopies].sort(
+      (a, b) =>
+        new Date(b.openedAt).getTime() - new Date(a.openedAt).getTime(),
+    );
+
+    set({ activeCopies: combined.slice(0, 50) });
   },
 }));
 

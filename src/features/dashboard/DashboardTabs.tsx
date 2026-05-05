@@ -90,9 +90,9 @@ export function QuickStats({
   activePositions: number;
   locale?: string;
 }) {
-  const isNorwegian = locale === "no";
+  const t = useTranslations("dashboard.quickStats");
   const formatNOK = (n: number) =>
-    new Intl.NumberFormat(isNorwegian ? "no-NO" : "en-US", {
+    new Intl.NumberFormat(locale === "no" ? "no-NO" : "en-US", {
       style: "currency",
       currency: "NOK",
       maximumFractionDigits: 0,
@@ -100,13 +100,13 @@ export function QuickStats({
 
   const stats = [
     {
-      label: isNorwegian ? "Total Verdi" : "Total Value",
+      label: t("totalValue"),
       value: formatNOK(totalValue),
-      subtext: `${activePositions} ${isNorwegian ? "posisjoner" : "positions"}`,
+      subtext: `${activePositions} ${t("positions")}`,
       color: "text-white",
     },
     {
-      label: isNorwegian ? "Total Avkastning" : "Total Return",
+      label: t("totalReturn"),
       value: formatNOK(totalProfit),
       subtext: `${profitPercent >= 0 ? "+" : ""}${profitPercent.toFixed(1)}%`,
       color: profitPercent >= 0 ? "text-green-400" : "text-red-400",

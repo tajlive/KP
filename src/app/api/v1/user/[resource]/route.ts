@@ -45,7 +45,7 @@ export async function GET(
       }
       case "trading-diagnostics": {
         const { GET: diagnosticsHandler } = await import("@/app/api/user/trading-diagnostics/route");
-        return diagnosticsHandler();
+        return diagnosticsHandler(request);
       }
       case "trading-analytics": {
         const { GET: analyticsHandler } = await import("@/app/api/user/trading-analytics/route");

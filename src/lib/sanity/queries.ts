@@ -190,35 +190,6 @@ export const activeTestimonialsQuery = groq`
 `;
 
 // =============================================================================
-// DYNAMIC PAGE QUERY (for catch-all routes)
-// =============================================================================
-
-export const dynamicPageQuery = groq`
-  *[_type == "page" && slug.current == $slug][0] {
-    _id,
-    title,
-    slug,
-    metaTitle,
-    metaDescription,
-    language,
-    content[] {
-      ...,
-      _type == "image" => {
-        "url": asset->url,
-        "lqip": asset->metadata.lqip,
-        "dimensions": asset->metadata.dimensions,
-        alt
-      },
-      _type == "cta" => {
-        text,
-        link,
-        style
-      }
-    }
-  }
-`;
-
-// =============================================================================
 // NAVIGATION QUERY
 // =============================================================================
 

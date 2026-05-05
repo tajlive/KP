@@ -12,7 +12,7 @@ import {
   BookOpen,
   type LucideIcon,
 } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { DashboardCmsData } from "./DashboardContent";
 import type { UserState } from "@/hooks/useUserState";
 
@@ -86,11 +86,12 @@ interface SmartActionsProps {
 
 export function SmartActions({ userState, cmsData, compact = false }: SmartActionsProps) {
   const locale = useLocale();
+  const t = useTranslations("dashboard.smartActions");
   const canonical = canonicalUserState(userState);
 
   const actions =
     cmsData?.smartActions?.filter((a) => a.condition === canonical) ??
-    getDefaultActions(canonical, locale);
+    getDefaultActions(canonical, t);
 
   if (actions.length === 0) return null;
 
@@ -225,7 +226,7 @@ function CompactActionCard({
 
 function getDefaultActions(
   userState: string,
-  locale: string
+  t: (key: string) => string
 ): Array<{
   condition: string;
   title: string;
@@ -235,18 +236,14 @@ function getDefaultActions(
   icon: string;
   color: string;
 }> {
-  const isNo = locale === "no";
-
   switch (userState) {
     case "newUser":
       return [
         {
           condition: "newUser",
-          title: isNo ? "Start Paper Trading" : "Start Paper Trading",
-          description: isNo
-            ? "Øv deg risikofritt med 100 000 kr i virtuell kapital."
-            : "Practice risk-free with 100,000 NOK in virtual capital.",
-          ctaText: isNo ? "Kom i gang" : "Get Started",
+          title: t("newUser.title"),
+          description: t("newUser.description"),
+          ctaText: t("newUser.cta"),
           ctaLink: "/dashboard/trade?mode=paper",
           icon: "TrendingUp",
           color: "blue",
@@ -256,11 +253,9 @@ function getDefaultActions(
       return [
         {
           condition: "noSession",
-          title: isNo ? "Aktiver en strategi" : "Activate a Strategy",
-          description: isNo
-            ? "La vår KI handle for deg mens du sover."
-            : "Let our AI trade for you while you sleep.",
-          ctaText: isNo ? "Utforsk strategier" : "Explore Strategies",
+          title: t("noSession.title"),
+          description: t("noSession.description"),
+          ctaText: t("noSession.cta"),
           ctaLink: "/dashboard/auto-trade",
           icon: "Bot",
           color: "purple",
@@ -270,11 +265,9 @@ function getDefaultActions(
       return [
         {
           condition: "paperMode",
-          title: isNo ? "Gå Live" : "Go Live",
-          description: isNo
-            ? "Klar for ekte trading? Oppgrader til live-modus."
-            : "Ready for real trading? Upgrade to live mode.",
-          ctaText: isNo ? "Aktiver Live" : "Activate Live",
+          title: t("paperMode.title"),
+          description: t("paperMode.description"),
+          ctaText: t("paperMode.cta"),
           ctaLink: "/dashboard/trade?mode=live",
           icon: "Shield",
           color: "green",
@@ -284,11 +277,9 @@ function getDefaultActions(
       return [
         {
           condition: "liveMode",
-          title: isNo ? "Optimaliser strategien" : "Optimize Strategy",
-          description: isNo
-            ? "Se resultater og juster strategien for bedre avkastning."
-            : "Review results and tune your strategy for better returns.",
-          ctaText: isNo ? "Se resultater" : "View Results",
+          title: t("liveMode.title"),
+          description: t("liveMode.description"),
+          ctaText: t("liveMode.cta"),
           ctaLink: "/dashboard/resultater",
           icon: "TrendingUp",
           color: "blue",

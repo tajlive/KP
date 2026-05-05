@@ -1,3 +1,4 @@
+import { formatNOK } from "@/lib/format/currency";
 /**
  * useBacktestEstimate — Hook for å hente preaggregerte backtest-estimater
  * 
@@ -44,13 +45,6 @@ export interface BacktestEstimate {
   };
 }
 
-function formatNOK(value: number): string {
-  return new Intl.NumberFormat('no-NO', {
-    style: 'currency',
-    currency: 'NOK',
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 function formatPercent(value: number): string {
   const pct = value * 100;
