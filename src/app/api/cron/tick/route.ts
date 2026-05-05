@@ -24,7 +24,8 @@ import {
 import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
 import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/regime/tick-adapter";
 import { getFlagsAsync } from "@/lib/flags";
-import { shouldUseChallenger, type TradeVersion } from "@/lib/trading/rollout/tick-rollout";
+// Rollout framework available for future A/B testing:
+// import { shouldUseChallenger, type TradeVersion } from "@/lib/trading/rollout/tick-rollout";
 import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from "@/lib/trading/beta/tick-guardrails";
 import { queueEmail } from "@/lib/email";
 
@@ -152,18 +153,13 @@ async function processSession(
   let signal: StrategySignal;
 
   // ── PATH C: Dark Fleet (regime-aware ensemble) ──────────────────────────
-  // Per-strategy Dark Fleet config (from strategy-configs.ts) overrides global
+  // V2: Dark Fleet is always enabled in production. Per-strategy config overrides global.
   const perStrategyDF = getDarkFleetConfig(session.strategy_id);
-  let darkFleetConfig: DarkFleetConfig | undefined;
-  let tradeVersion: TradeVersion = "champion";
-  const dfEnabled = perStrategyDF?.enabled ?? (darkFleetBaseConfig?.enabled && shouldUseDarkFleet(session.strategy_id));
+  const dfEnabled = perStrategyDF?.enabled ?? darkFleetBaseConfig?.enabled ?? true;
 
+  let darkFleetConfig: DarkFleetConfig | undefined;
   if (dfEnabled && resolvedEngine !== "ensemble_ai") {
-    const decision = shouldUseChallenger(session.user_id);
-    tradeVersion = decision.version;
-    if (decision.version === "challenger") {
-      darkFleetConfig = { ...darkFleetBaseConfig, ...perStrategyDF } as DarkFleetConfig;
-    }
+    darkFleetConfig = { ...darkFleetBaseConfig, ...perStrategyDF } as DarkFleetConfig;
   }
   const useDarkFleet = !!darkFleetConfig;
   if (useDarkFleet) {
@@ -620,19 +616,20 @@ async function processSession(
       .eq("id", session.id);
   }
 
-  // Log rollout version for metric aggregation
-  if (darkFleetBaseConfig?.enabled && (signal.action === "buy" || signal.action === "sell")) {
+  // Log Dark Fleet / regime metadata for every trade
+  if (signal.action === "buy" || signal.action === "sell") {
     try {
       await db.from("trading_logs").insert({
         session_id: session.id,
         user_id: session.user_id,
-        action: "trade_version",
+        action: "regime_signal",
         details: {
-          version: tradeVersion,
           trade_id: trade?.id,
-          regime: signal.indicators?.regime,
-          ensemble_score: signal.indicators?.ensembleScore,
+          regime: signal.indicators?.regime ?? "unknown",
+          ensemble_score: signal.indicators?.ensembleScore ?? null,
           dark_fleet: useDarkFleet,
+          engine: resolvedEngine,
+          strategy_id: session.strategy_id,
         } as never,
       } as never);
     } catch {

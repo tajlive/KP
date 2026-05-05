@@ -48,7 +48,7 @@ export interface DarkFleetConfig {
 }
 
 export const DEFAULT_DARK_FLEET_CONFIG: DarkFleetConfig = {
-  enabled: false,
+  enabled: true, // V2: Always enabled for production
   technicalWeight: 0.5,
   narrativeWeight: 0.25,
   regimeWeight: 0.25,
