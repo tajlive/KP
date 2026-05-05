@@ -397,6 +397,8 @@ async function processSession(
 
   // ── V2: Dynamic Position Sizing (Kelly + ATR + Regime + Drawdown) ──────
   let positionSize = signal.positionSize ?? 0.1;
+  let positionSizeReason = "static fallback";
+  let kellyFraction: number | undefined;
   const regime = (signal.indicators?.regime as string) ?? "unknown";
 
   if (signal.action === "buy" || signal.action === "sell") {
@@ -414,6 +416,8 @@ async function processSession(
         riskProfile: "balanced",
       });
       positionSize = dynamicSize.positionSize;
+      positionSizeReason = dynamicSize.reason;
+      kellyFraction = dynamicSize.kellyFraction;
       console.log(`[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`);
     } catch (err) {
       console.warn(`[PositionSize] Failed for session ${session.id}, using fallback:`, (err as Error).message);
@@ -602,7 +606,13 @@ async function processSession(
       status: "filled",
       realized_pnl: realizedPnl,
       binance_order_id: liveResult?.binanceOrderId ?? null,
-      strategy_signal: { ...signal.indicators, stop_loss: stopLossPrice },
+      strategy_signal: {
+        ...signal.indicators,
+        stop_loss: stopLossPrice,
+        position_size: Math.round(positionSize * 10000) / 10000,
+        position_size_reason: positionSizeReason,
+        kelly_fraction: kellyFraction ?? null,
+      },
       // Explanation data
       reason_code: reasonCode,
       reason_params: reasonParams as unknown as Json,
