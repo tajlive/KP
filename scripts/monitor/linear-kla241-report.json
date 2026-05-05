@@ -1,0 +1,3 @@
+{
+  "query": "mutation CommentCreate { commentCreate(input: { issueId: \"KLA-241\", body: \"## 📊 48h Observation Report\\n\\n**Period:** {{PERIOD}}\\n**Timestamp:** {{TIMESTAMP}}\\n\\n### Metrics\\n| Metric | Value | Threshold | Status |\\n|--------|-------|-----------|--------|\\n| Win Rate | {{WIN_RATE}} | >55% | {{WIN_STATUS}} |\\n| Max DD | {{MAX_DD}} | <6% | {{DD_STATUS}} |\\n| Sharpe | {{SHARPE}} | >1.5 | {{SHARPE_STATUS}} |\\n| MTF Block | {{MTF_BLOCK}} | 25-40% | {{MTF_STATUS}} |\\n| Avg Position | {{AVG_POS}} | <2.5% | {{POS_STATUS}} |\\n| P0 Errors | {{P0_ERRORS}} | =0 | {{ERROR_STATUS}} |\\n\\n### Decision: {{DECISION}}\\n\\n{{DETAILS}}\" }) { success } }"
+}

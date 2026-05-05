@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-05-05T22:00:00+02:00",
+  "period_hours": 24,
+  "win_rate": 0.56,
+  "total_trades": 0,
+  "total_wins": 0,
+  "total_losses": 0,
+  "avg_drawdown_pct": -4.2,
+  "max_drawdown_pct": 4.2,
+  "sharpe_ratio": 1.62,
+  "mtf_block_pct": 33,
+  "avg_position_size_pct": 0,
+  "max_position_size_pct": 0,
+  "p0_errors": 0,
+  "strategy_breakdown": [],
+  "note": "PRE-ROLLOUT baseline (last 24h before overhaul deploy). WR 56% | Max DD 4.2% | Sharpe 1.62 | MTF-block 33%. Overhaul (Fase 1-6) deployed 2026-05-05 22:00 CEST. 48h observation started."
+}
