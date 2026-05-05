@@ -12,51 +12,48 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function AutoTradeDemo() {
+  const t = useTranslations("landing.autoTradeDemo");
   const [step, setStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
 
   const steps = [
     {
-      title: "Scanner Markedet",
+      title: t("step1Title"),
       icon: <Search className="h-5 w-5" />,
-      text: "Analyserer BTC/USDT live priser...",
-      rationale:
-        "Vi overvåker markedet hvert sekund for å finne de beste mulighetene.",
+      text: t("step1Text"),
+      rationale: t("step1Rationale"),
       color: "blue",
     },
     {
-      title: "Teknisk Analyse",
+      title: t("step2Title"),
       icon: <TrendingUp className="h-5 w-5" />,
-      text: "MA12 krysset MA26. RSI er 42.",
-      rationale:
-        "Krysset (Golden Cross) indikerer at trenden snur opp. RSI på 42 betyr at det ikke er overkjøpt ennå.",
+      text: t("step2Text"),
+      rationale: t("step2Rationale"),
       color: "indigo",
     },
     {
-      title: "Risiko-Sjekk",
+      title: t("step3Title"),
       icon: <ShieldCheck className="h-5 w-5" />,
-      text: "Setter Stop-Loss på -2.5%.",
-      rationale:
-        "Vi beskytter kapitalen din ved å låse inn et maksimalt tap før vi i det hele tatt kjøper.",
+      text: t("step3Text"),
+      rationale: t("step3Rationale"),
       color: "green",
     },
     {
-      title: "Utfører Kjøp",
+      title: t("step4Title"),
       icon: <Zap className="h-5 w-5" />,
-      text: "Ordre sendt: Kjøp BTC @ $42,500",
-      rationale:
-        "Handelen skjer lynraskt via din egen Binance-konto uten menneskelige feil.",
+      text: t("step4Text"),
+      rationale: t("step4Rationale"),
       color: "amber",
     },
     {
-      title: "Overvåker Exit",
+      title: t("step5Title"),
       icon: <CheckCircle2 className="h-5 w-5" />,
-      text: "Trailing Stop aktivert på +1.5%.",
-      rationale:
-        "Vi 'låser inn' profit mens kursen stiger, og selger automatisk hvis trenden snur ned igjen.",
+      text: t("step5Text"),
+      rationale: t("step5Rationale"),
       color: "green",
     },
   ];
@@ -87,11 +84,14 @@ export function AutoTradeDemo() {
             </div>
             <div>
               <h3 className="text-xl font-bold text-white">
-                Auto-Trade Simulator
+                {t("title")}
               </h3>
               <p className="text-xs text-slate-400">
-                Test teknologien på 30 sekunder
+                {t("subtitle")}
               </p>
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30 mt-1">
+                {t("badge")}
+              </span>
             </div>
           </div>
           {!isPlaying && (
@@ -99,7 +99,7 @@ export function AutoTradeDemo() {
               onClick={runDemo}
               className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-6 transition-all transform hover:scale-105"
             >
-              <Play className="mr-2 h-4 w-4 fill-slate-900" /> Start Demo
+              <Play className="mr-2 h-4 w-4 fill-slate-900" /> {t("start")}
             </Button>
           )}
         </div>
@@ -173,7 +173,7 @@ export function AutoTradeDemo() {
               <AnimatePresence>
                 {logs.length === 0 && (
                   <div className="text-slate-500 italic">
-                    Venter på start...
+                    {t("waiting")}
                   </div>
                 )}
                 {logs.map((log, i) => (
@@ -195,7 +195,7 @@ export function AutoTradeDemo() {
                     animate={{ opacity: 1 }}
                     className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-center font-bold"
                   >
-                    Simulering Fullført! Klar for ekte vare?
+                    {t("completed")}
                   </motion.div>
                 )}
               </AnimatePresence>

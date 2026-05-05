@@ -20,23 +20,29 @@ const PODIUM_STYLES = {
     border: "border-yellow-500/30",
     glow: "shadow-yellow-500/20",
     icon: "text-yellow-400",
-    label: "Gull",
   },
   2: {
     rank: "bg-gradient-to-br from-slate-300 to-slate-400",
     border: "border-slate-400/30",
     glow: "shadow-slate-400/20",
     icon: "text-slate-400",
-    label: "Sølv",
   },
   3: {
     rank: "bg-gradient-to-br from-amber-600 to-amber-700",
     border: "border-amber-600/30",
     glow: "shadow-amber-600/20",
     icon: "text-amber-600",
-    label: "Bronse",
   },
 } as const;
+
+function getRankLabel(rank: number, t: (key: string) => string): string {
+  switch (rank) {
+    case 1: return t("gold");
+    case 2: return t("silver");
+    case 3: return t("bronze");
+    default: return `#${rank}`;
+  }
+}
 
 function PodiumCard({
   entry,
@@ -45,6 +51,7 @@ function PodiumCard({
   entry: LeaderboardEntry;
   index: number;
 }) {
+  const t = useTranslations("landing.leaderboard");
   const styles = PODIUM_STYLES[entry.rank as keyof typeof PODIUM_STYLES];
   const isFirst = entry.rank === 1;
 
@@ -102,7 +109,7 @@ function PodiumCard({
 
         {/* Username */}
         <h3 className="text-xl font-bold text-white mb-1">{entry.username}</h3>
-        <p className="text-sm text-kp-text-muted mb-6">{styles.label}</p>
+        <p className="text-sm text-kp-text-muted mb-6">{getRankLabel(entry.rank, t)}</p>
 
         {/* Stats */}
         <div className="space-y-3">
@@ -114,7 +121,7 @@ function PodiumCard({
             </span>
           </div>
           <p className="text-xs text-kp-text-muted uppercase tracking-wider">
-            Avkastning
+            {t("returnLabel")}
           </p>
 
           {/* Divider */}
@@ -128,7 +135,7 @@ function PodiumCard({
             </span>
           </div>
           <p className="text-xs text-kp-text-muted uppercase tracking-wider">
-            KLT
+            {t("kltLabel")}
           </p>
         </div>
       </div>
@@ -193,9 +200,7 @@ export function LeaderboardPreview({ entries }: LeaderboardPreviewProps) {
           ) : (
             <div className="col-span-full text-center py-12">
               <p className="text-kp-text-muted text-lg">
-                {locale === "no"
-                  ? "Leaderboard er tomt. Bli den første til å delta!"
-                  : "Leaderboard is empty. Be the first to join!"}
+                {t("empty")}
               </p>
             </div>
           )}

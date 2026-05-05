@@ -4,6 +4,7 @@ import { Button } from "@/shared/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Trophy, UserCheck, Users, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface LeaderboardData {
   username?: string;
@@ -22,6 +23,7 @@ interface Trader {
 }
 
 export function CopyTradingSection() {
+  const t = useTranslations("landing.copyTradingSection");
   const [topTraders, setTopTraders] = useState<Trader[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -64,16 +66,14 @@ export function CopyTradingSection() {
       <div className="flex flex-col md:flex-row gap-12 items-center">
         <div className="flex-1 space-y-6">
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-bold">
-            <Users className="h-4 w-4" /> SOCIAL TRADING
+            <Users className="h-4 w-4" /> {t("badge")}
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 leading-tight">
-            Kopier de Beste. <br />
-            <span className="text-blue-600">Med ett klikk.</span>
+            {t("headline")} <br />
+            <span className="text-blue-600">{t("headlineAccent")}</span>
           </h2>
           <p className="text-lg text-slate-600">
-            Ikke kast bort tid på å lære alt selv. Velg en av de mest
-            suksessfulle tradere i vårt community og la roboten din speile deres
-            handler automatisk.
+            {t("description")}
           </p>
 
           <ul className="space-y-4">
@@ -82,8 +82,8 @@ export function CopyTradingSection() {
                 <UserCheck className="h-4 w-4 text-green-600" />
               </div>
               <div>
-                <span className="font-bold text-slate-900">Full kontroll.</span>{" "}
-                Du ser nøyaktig hva som skjer og kan stoppe når som helst.
+                <span className="font-bold text-slate-900">{t("feature1Title")}</span>{" "}
+                {t("feature1Desc")}
               </div>
             </li>
             <li className="flex items-start gap-3">
@@ -91,8 +91,8 @@ export function CopyTradingSection() {
                 <Zap className="h-4 w-4 text-blue-600" />
               </div>
               <div>
-                <span className="font-bold text-slate-900">Ett klikk.</span>{" "}
-                Ingen kompliserte instillinger. Trykk "Kopier" og du er i gang.
+                <span className="font-bold text-slate-900">{t("feature2Title")}</span>{" "}
+                {t("feature2Desc")}
               </div>
             </li>
           </ul>
@@ -101,14 +101,14 @@ export function CopyTradingSection() {
             size="lg"
             className="bg-slate-900 text-white hover:bg-slate-800 h-14 px-8 rounded-2xl text-lg font-bold shadow-xl"
           >
-            Finn din Master Trader <ArrowRight className="ml-2 h-5 w-5" />
+            {t("cta")} <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
 
         <div className="flex-1 w-full max-w-md space-y-4">
           <div className="text-center mb-6">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Topp Tradere denne uken
+              {t("topTradersLabel")}
             </span>
           </div>
 
@@ -133,10 +133,10 @@ export function CopyTradingSection() {
           ) : topTraders.length === 0 ? (
             <div className="bg-slate-50 border border-slate-100 p-8 rounded-2xl text-center">
               <p className="text-sm text-slate-500">
-                Ingen tradere tilgjengelig for øyeblikket.
+                {t("emptyTitle")}
               </p>
               <p className="text-xs text-slate-400 mt-1">
-                Sjekk tilbake senere for oppdatert leaderboard.
+                {t("emptyBody")}
               </p>
             </div>
           ) : (
@@ -169,7 +169,7 @@ export function CopyTradingSection() {
                   variant="ghost"
                   className="h-7 px-3 text-[10px] uppercase font-bold text-blue-600 group-hover:bg-blue-600 group-hover:text-white rounded-full transition-all"
                 >
-                  KOPIER
+                  {t("copyButton")}
                 </Button>
               </div>
             </motion.div>
@@ -177,7 +177,7 @@ export function CopyTradingSection() {
 
           <div className="bg-blue-600/5 p-4 rounded-2xl border border-blue-600/10 text-center">
             <p className="text-xs text-blue-600 font-medium">
-              Resultater fra papirhandel. Ingen garanti for fremtidig avkastning.
+              {t("disclaimer")}
             </p>
           </div>
         </div>

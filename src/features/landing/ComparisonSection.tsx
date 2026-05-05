@@ -1,18 +1,20 @@
 'use client';
 
 import { Check, X, Sparkles, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function ComparisonSection() {
+  const t = useTranslations("landing.comparison");
   const features = [
-    { name: 'Norsk språk', klarpakke: true, tradingskolen: true, nordic: false },
-    { name: 'Paper trading med ekte data', klarpakke: true, tradingskolen: 'Begrenset', nordic: false },
-    { name: 'Læringsassistent', klarpakke: 'Ubegrenset', tradingskolen: 'Ikke tilgjengelig', nordic: false },
-    { name: 'Strukturerte videokurs', klarpakke: true, tradingskolen: 'Kun live webinar', nordic: true },
-    { name: 'Lær i ditt eget tempo', klarpakke: true, tradingskolen: false, nordic: true },
-    { name: 'Sertifikat ved fullføring', klarpakke: true, tradingskolen: false, nordic: 'Delvis' },
-    { name: 'Ingen broker-tvang', klarpakke: true, tradingskolen: false, nordic: true },
-    { name: 'Copy-trading (kommer)', klarpakke: 'Snart', tradingskolen: false, nordic: false },
-    { name: 'Månedlig pris', klarpakke: '249–1 999 kr', tradingskolen: 'Gratis*', nordic: '21 200 kr' },
+    { name: t("featureNorsk"), klarpakke: true, tradingskolen: true, nordic: false },
+    { name: t("featurePaper"), klarpakke: true, tradingskolen: t("limited"), nordic: false },
+    { name: t("featureAI"), klarpakke: t("yes"), tradingskolen: t("unavailable"), nordic: false },
+    { name: t("featureVideo"), klarpakke: true, tradingskolen: t("onlyLive"), nordic: true },
+    { name: t("featurePace"), klarpakke: true, tradingskolen: false, nordic: true },
+    { name: t("featureCert"), klarpakke: true, tradingskolen: false, nordic: t("partial") },
+    { name: t("featureBroker"), klarpakke: true, tradingskolen: false, nordic: true },
+    { name: t("featureCopy"), klarpakke: t("comingSoon"), tradingskolen: false, nordic: false },
+    { name: t("featurePrice"), klarpakke: '249–1 999 kr', tradingskolen: t("free"), nordic: '21 200 kr' },
   ];
 
   const renderCell = (value: boolean | string, isKlarpakke = false) => {
@@ -60,13 +62,13 @@ export default function ComparisonSection() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold mb-6">
             <Zap className="w-4 h-4" />
-            Sammenligning
+            {t("badge")}
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-            Hvorfor Klarpakke?
+            {t("title")}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Samme kvalitet som dyre kurs. På norsk. 97% billigere enn konkurrentene.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -76,7 +78,7 @@ export default function ComparisonSection() {
           <div className="absolute -top-4 left-1/2 -translate-x-1/2 md:left-[42%] z-10">
             <div className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
-              Beste valg
+              {t("bestChoice")}
             </div>
           </div>
 
@@ -86,26 +88,26 @@ export default function ComparisonSection() {
                 <thead>
                   <tr className="bg-linear-to-r from-slate-50 via-blue-50 to-slate-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-gray-800">
                     <th className="px-6 py-5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                      Funksjoner
+                      {t("featuresLabel")}
                     </th>
                     <th className="px-6 py-5 text-center bg-linear-to-b from-blue-600 to-indigo-600 text-white relative">
                       {/* Highlight glow */}
                       <div className="absolute inset-0 bg-linear-to-b from-blue-500/20 to-transparent pointer-events-none" />
                       <div className="relative">
                         <div className="text-xl font-black mb-1 flex items-center justify-center gap-2">
-                          Klarpakke
+                          {t("colKlarpakke")}
                           <Sparkles className="w-5 h-5" />
                         </div>
                         <div className="text-xs font-medium opacity-90">
-                          Du er her
+                          {t("youAreHere")}
                         </div>
                       </div>
                     </th>
                     <th className="px-6 py-5 text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Tradingskolen
+                      {t("colTradingskolen")}
                     </th>
                     <th className="px-6 py-5 text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Nordic Markets
+                      {t("colNordic")}
                     </th>
                   </tr>
                 </thead>
@@ -138,11 +140,11 @@ export default function ComparisonSection() {
               <div className="flex flex-col sm:flex-row gap-3 text-xs text-gray-600 dark:text-gray-400">
                 <div className="flex items-start gap-2">
                   <span className="text-blue-600 dark:text-blue-400 font-bold">*</span>
-                  <span>Tradingskolen er gratis, men krever bruk av deres broker (skjulte kostnader i spreads/fees)</span>
+                  <span>{t("footerNote1")}</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-blue-600 dark:text-blue-400 font-bold">•</span>
-                  <span>Nordic Markets pris er for 3-måneders program</span>
+                  <span>{t("footerNote2")}</span>
                 </div>
               </div>
             </div>
@@ -152,7 +154,7 @@ export default function ComparisonSection() {
         {/* Bottom CTA */}
         <div className="mt-12 text-center">
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-            Alt du trenger for å lære trading. <span className="font-bold text-gray-900 dark:text-white">På norsk.</span> <span className="font-bold text-blue-600">Til en brukdel av prisen.</span>
+            {t("ctaLine")}<span className="font-bold text-gray-900 dark:text-white">{t("ctaEmphasis1")}</span> <span className="font-bold text-blue-600">{t("ctaEmphasis2")}</span>
           </p>
         </div>
       </div>

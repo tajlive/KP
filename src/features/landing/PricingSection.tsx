@@ -183,8 +183,8 @@ export default function PricingSection({ title, subtitle }: PricingSectionProps)
             className={`text-sm font-medium text-amber-600 dark:text-amber-400 max-w-2xl mx-auto flex items-center justify-center gap-2 flex-wrap`}
           >
             <Trophy className="w-4 h-4 shrink-0" aria-hidden />
-            50 000 KLT til månedens vinner – konkurrer på leaderboardet med
-            paper trading og læring.
+            Konkurrer på leaderboardet med paper trading og læring –
+            premiene annonseres månedlig.
           </p>
         </div>
 

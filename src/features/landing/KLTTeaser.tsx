@@ -21,7 +21,7 @@ export function KLTTeaser({
 }: KLTTeaserProps) {
   const coursePath = ctaLink ?? `/${locale}/kurs`;
   const displayTitle = title ?? 'Tjen KLT gjennom kurs og konkurranser';
-  const displayCta = ctaText ?? '50 000 KLT til månedens vinner';
+  const displayCta = ctaText ?? 'Delta i månedlige konkurranser';
 
   return (
     <section className="w-full border-t border-kp-border/50 bg-kp-bg-primary">

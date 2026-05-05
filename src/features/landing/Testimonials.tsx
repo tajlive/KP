@@ -105,7 +105,7 @@ export function Testimonials({ language = "no", items }: TestimonialsProps) {
                   <div>
                     <p className="font-bold text-white tracking-tight flex items-center gap-2">
                       {item.name}
-                      <span className="text-xs text-green-600 font-medium">✓ Verifisert</span>
+                      <span className="text-xs text-green-600 font-medium">✓ {tLanding("verified")}</span>
                     </p>
                     <p className="text-sm text-slate-500 font-medium">
                       {item.role}

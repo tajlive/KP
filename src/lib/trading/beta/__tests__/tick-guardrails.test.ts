@@ -9,7 +9,7 @@ describe("tick-guardrails", () => {
           eq: vi.fn(() => ({
             gte: vi.fn(() => ({
               order: vi.fn(() => ({
-                then: (cb: Function) => cb({ data: trades, error: null }),
+                then: (cb: (result: { data: unknown; error: null }) => void) => cb({ data: trades, error: null }),
               })),
             })),
           })),

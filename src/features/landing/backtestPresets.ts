@@ -1,8 +1,8 @@
 /**
- * Preaggregerte backtest-data basert på rullerende vinduer BTC/ETH 2019–2026
+ * Preaggregerte backtest-data basert på rullerende vinduer BTC/ETH 2019–2025
  * 
  * Datakilde: Binance historiske klines (1d intervall)
- * Backtest-metodikk: SMA Crossover strategi med 0.2% trading fee
+ * Backtest-metodikk: SMA Crossover strategi med 0.2% trading fee (simulert)
  * 
  * Konservativ: ETH + DCA (SMA 30/100)
  * Balansert: BTC + SMA 20/50

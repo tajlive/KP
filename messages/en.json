@@ -655,7 +655,7 @@
     "monthly": "Monthly",
     "allTime": "All time",
     "weeklyPrize": "Weekly winner gets 1 month free subscription",
-    "monthlyPrize": "Monthly winner gets 1000 kr gift card",
+    "monthlyPrize": "Monthly paper trading competition",
     "yourPosition": "Your position",
     "topPercent": "Top {percent}%",
     "return": "Return",
@@ -3280,15 +3280,47 @@
     "fallbacks": {
       "f1": {
         "q": "Do I need prior knowledge of trading?",
-        "a": "No, you don't need any prior knowledge. Our courses start from basic concepts and build up gradually. Everything is explained clearly with practical examples."
+        "a": "No, you don't need any prior knowledge. Our courses start from basic concepts and build up gradually. Everything is explained clearly with practical examples. You learn step-by-step, from the most fundamental principles to advanced strategies."
       },
       "f2": {
-        "q": "What are paper funds?",
-        "a": "Paper funds mean you trade with simulated capital (100,000 kr) in a safe environment. You get to practice buying and selling crypto, setting stop-losses, and testing strategies without risking real money."
+        "q": "What is paper trading?",
+        "a": "Paper trading means you trade with simulated capital (100,000 NOK) in a safe environment. You get to practice buying and selling crypto, setting stop-losses, and testing strategies without risking real money. It's like a flight simulator for trading — you learn without consequences."
       },
       "f3": {
         "q": "Can I get a refund if I'm not satisfied?",
-        "a": "Yes, we offer a 14-day full refund. If you're not satisfied for any reason, we'll send your money back, no questions asked."
+        "a": "Yes, we offer a 14-day full refund. If you're not satisfied for any reason, we'll send your money back, no questions asked. That's our personal guarantee to you."
+      },
+      "f4": {
+        "q": "How long does it take to learn?",
+        "a": "Most people complete the basic course in 1-2 weeks by spending 30-60 minutes per day. You set your own pace. The course is available 24/7, so you can learn whenever it suits you best. Some take longer, others shorter — the important thing is that you learn thoroughly."
+      },
+      "f5": {
+        "q": "Is this a shortcut to quick money?",
+        "a": "No, trading is a skill that requires learning, practice, and discipline. Our goal is to give you solid knowledge that makes you an informed and responsible trader. We focus on long-term learning, not unrealistic promises of quick money."
+      },
+      "f6_vipps": {
+        "q": "What payment methods do you accept?",
+        "a": "We offer Vipps (Norway, Sweden, Denmark, and Finland), and payment via Stripe including Visa, Mastercard, and PayPal (as well as Apple Pay and Google Pay where Stripe supports it). Payments are encrypted; we do not store your card information."
+      },
+      "f6_stripe": {
+        "q": "What payment methods do you accept?",
+        "a": "Payment is processed via Stripe including Visa, Mastercard, and PayPal (as well as Apple Pay and Google Pay where Stripe supports it). Payments are encrypted; we do not store your card information."
+      },
+      "f7": {
+        "q": "Does this work on mobile?",
+        "a": "Yes, the entire platform is mobile-optimized. You can take courses, do paper trades, and chat with the learning assistant from your phone. Learn anywhere, anytime."
+      },
+      "f8": {
+        "q": "What if I have questions along the way?",
+        "a": "Our learning assistant is available anytime and answers in Norwegian. In addition, you have access to a community where you can ask questions and share experiences with other students. We also reply to emails within 24 hours."
+      },
+      "f9": {
+        "q": "Do I have to use a specific broker?",
+        "a": "No, Klarpakke is completely independent. You choose which broker to use when you're ready to trade with real money. We give you the knowledge — you decide where to trade."
+      },
+      "f10": {
+        "q": "What happens after I complete the course?",
+        "a": "You get a digital certificate confirming you completed the course. You keep access to all content forever, including future updates. You can also upgrade to higher plans for more advanced features when you're ready."
       }
     }
   },

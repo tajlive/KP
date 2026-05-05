@@ -193,9 +193,9 @@ function MiniChartWithMarkers({
   t: (key: string, values?: Record<string, string | number | Date>) => string;
   className?: string;
 }) {
-  // Generate mock price data for visualization
+  // Simulated price background for visual context only — NOT real market data
   const chartData = useRef<number[]>([]);
-  
+
   if (chartData.current.length === 0) {
     let price = 850000;
     for (let i = 0; i < 50; i++) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import {
   GraduationCap,
   Wallet,
@@ -113,47 +114,48 @@ function LargeFeatureCard({
 }
 
 export function FeaturesBentoGrid() {
+  const t = useTranslations("landing.bentoGrid");
   const features = [
     {
       icon: <GraduationCap className="w-6 h-6" />,
-      title: "Gå fra nybegynner til trader på 4 uker",
-      description: "Strukturerte kurs med videoer, quiz og praktiske øvelser. Du lærer i ditt eget tempo.",
+      title: t("feature1Title"),
+      description: t("feature1Desc"),
       gradient: "from-blue-500/20 to-blue-500/5",
     },
     {
       icon: <Wallet className="w-6 h-6" />,
-      title: "Øv uten å tape penger",
-      description: "Start med 100 000 kr virtuelle penger. Få erfaring med ekte markedsdata før du bruker egne sparepenger.",
+      title: t("feature2Title"),
+      description: t("feature2Desc"),
       gradient: "from-green-500/20 to-green-500/5",
     },
     {
       icon: <Bot className="w-6 h-6" />,
-      title: "AI forteller deg når å kjøpe og selge",
-      description: "Få tydelige signaler basert på teknisk analyse. AI-en overvåker markedet 24/7 for deg.",
+      title: t("feature3Title"),
+      description: t("feature3Desc"),
       gradient: "from-purple-500/20 to-purple-500/5",
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: "Stop-loss beskytter deg automatisk",
-      description: "Sett dine egne risikogrenser. Systemet selger automatisk hvis markedet går mot deg.",
+      title: t("feature4Title"),
+      description: t("feature4Desc"),
       gradient: "from-amber-500/20 to-amber-500/5",
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: "Få signaler umiddelbart",
-      description: "Ingen forsinkelse. Data kommer direkte fra Binance — verdens største kryptobørs.",
+      title: t("feature5Title"),
+      description: t("feature5Desc"),
       gradient: "from-yellow-500/20 to-yellow-500/5",
     },
     {
       icon: <Clock className="w-6 h-6" />,
-      title: "Handelsboten handler mens du sover",
-      description: "Auto-trading følger din strategi døgnet rundt. Du slipper å stirre på grafer hele dagen.",
+      title: t("feature6Title"),
+      description: t("feature6Desc"),
       gradient: "from-cyan-500/20 to-cyan-500/5",
     },
     {
       icon: <Users className="w-6 h-6" />,
-      title: "Norsk fellesskap",
-      description: "Bli med i et voksende fellesskap av norske tradere. Støtte på norsk når du trenger det.",
+      title: t("feature7Title"),
+      description: t("feature7Desc"),
       gradient: "from-pink-500/20 to-pink-500/5",
     },
   ];
