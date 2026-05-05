@@ -1,13 +1,7 @@
 /**
  * DCA Strategy — Dollar-Cost Averaging with Volatility-Harvesting
  *
- * Kjøper fast beløp med jevne mellomrom. Kjøper MER i dip, MINDRE i FOMO.
- * Selger med trailing stop (2x ATR) + partial profit taking.
- *
- * Forbedringer fra v1:
- * - Trailing stop (2x ATR) istedenfor fast -10%
- * - Partial profit taking (33% ved +3%, 33% ved +7%, rest ved +12%)
- * - Compound positions (legger til lots, ikke bare in/out)
+ * V2: Dynamisk parametere per config. ATR-basert trailing stop.
  */
 
 import type { Candle, MinimalSession, StrategyEngine, StrategyInput, StrategySignal } from "./types";
@@ -20,6 +14,9 @@ export interface DCAConfig {
   stop_loss_pct?: number;
   use_trailing_stop?: boolean;
   partial_tp_levels?: Array<{ target_pct: number; sell_pct: number }>;
+  dip_multiplier?: number;
+  fomo_reduction?: number;
+  max_daily_buys?: number;
 }
 
 export class DCAStrategy implements StrategyEngine {
@@ -27,15 +24,24 @@ export class DCAStrategy implements StrategyEngine {
     const { session, config, candles } = input;
     const cfg: DCAConfig = config as DCAConfig;
 
-    const intervalMinutes = cfg.interval_minutes ?? 30;
-    let positionSize = cfg.position_size ?? 0.05;
+    const intervalMinutes = cfg.interval_minutes ?? 60;
+    let positionSize = cfg.position_size ?? 0.04;
+    const dipMultiplier = cfg.dip_multiplier ?? 2;
+    const fomoReduction = cfg.fomo_reduction ?? 0.5;
+    const maxDailyBuys = cfg.max_daily_buys ?? 3;
 
-    // Time-based check
     const now = input.currentTime ?? Date.now();
     const lastTick = session.last_tick_at
       ? new Date(session.last_tick_at).getTime()
       : 0;
     const minutesSinceLast = (now - lastTick) / 60_000;
+
+    // Check max daily buys
+    const today = new Date(now).toISOString().split("T")[0];
+    const sessionBuysToday = (session.strategy_config as Record<string, unknown>)?.daily_buys_today as string ?? "";
+    const dailyBuyCount = sessionBuysToday === today
+      ? ((session.strategy_config as Record<string, unknown>)?.daily_buy_count as number ?? 0)
+      : 0;
 
     if (minutesSinceLast < intervalMinutes) {
       return {
@@ -45,19 +51,27 @@ export class DCAStrategy implements StrategyEngine {
     }
 
     const closes = candles.map((c) => c.close);
+    const highs = candles.map((c) => c.high);
+    const lows = candles.map((c) => c.low);
     const currentPrice = closes[closes.length - 1];
 
     // Volatility-Harvesting: buy more in dips, less in FOMO
     if (closes.length >= 24) {
       const price24hAgo = closes[closes.length - 24];
       const change24h = ((currentPrice - price24hAgo) / price24hAgo) * 100;
-      if (change24h <= -5) positionSize *= 3;
-      else if (change24h <= -3) positionSize *= 2;
-      else if (change24h >= 5) positionSize *= 0.5;
+      if (change24h <= -5) positionSize *= dipMultiplier;
+      else if (change24h <= -3) positionSize *= Math.max(1.5, dipMultiplier * 0.7);
+      else if (change24h >= 5) positionSize *= fomoReduction;
     }
 
-    // If no position, buy
+    // If no position, buy (respecting daily limit)
     if (!session.open_position) {
+      if (dailyBuyCount >= maxDailyBuys) {
+        return {
+          action: "hold",
+          reason: `Max daily buys (${maxDailyBuys}) reached`,
+        };
+      }
       return {
         action: "buy",
         positionSize,
@@ -65,6 +79,7 @@ export class DCAStrategy implements StrategyEngine {
           strategy: "dca",
           interval: intervalMinutes,
           volatility_adjusted: true,
+          daily_buy_count: dailyBuyCount + 1,
         },
       };
     }
@@ -75,12 +90,12 @@ export class DCAStrategy implements StrategyEngine {
 
     // Partial profit taking levels
     const partialLevels = cfg.partial_tp_levels ?? [
-      { target_pct: 3, sell_pct: 33 },
-      { target_pct: 7, sell_pct: 33 },
-      { target_pct: 12, sell_pct: 34 },
+      { target_pct: 5, sell_pct: 25 },
+      { target_pct: 10, sell_pct: 25 },
+      { target_pct: 15, sell_pct: 25 },
+      { target_pct: 25, sell_pct: 25 },
     ];
 
-    // Track executed levels in position metadata
     const executedLevels = (session.open_position as unknown as Record<string, unknown>)
       ?.partial_exits_executed as number[] | undefined;
 
@@ -98,14 +113,12 @@ export class DCAStrategy implements StrategyEngine {
           target: nextLevel.target_pct,
           partial_tp: true,
         },
-        reason: `Partial TP: ${nextLevel.sell_pct}% at +${nextLevel.target_pct}% target`,
+        reason: `Partial TP: ${nextLevel.sell_pct}% at +${nextLevel.target_pct}%`,
       };
     }
 
-    // Trailing stop (2x ATR) — improved from fixed -10%
+    // Trailing stop (ATR-based)
     if (cfg.use_trailing_stop !== false && candles.length >= 14) {
-      const highs = candles.map((c) => c.high);
-      const lows = candles.map((c) => c.low);
       const atrValue = atr(highs, lows, closes, 14);
       const trailingStopPct = (2 * atrValue / entryPrice) * 100;
       const highestPrice = session.open_position.highest_price ?? entryPrice;
@@ -120,12 +133,12 @@ export class DCAStrategy implements StrategyEngine {
             drop_from_peak: Math.round(dropFromPeak * 100) / 100,
             atr_stop_pct: Math.round(trailingStopPct * 100) / 100,
           },
-          reason: `Trailing stop: price dropped ${dropFromPeak.toFixed(1)}% from peak (2x ATR = ${trailingStopPct.toFixed(1)}%)`,
+          reason: `Trailing stop: dropped ${dropFromPeak.toFixed(1)}% from peak (2x ATR)`,
         };
       }
     }
 
-    // Fallback to fixed stop loss
+    // Fallback fixed stop loss
     const stopLoss = cfg.stop_loss_pct ?? -10;
     if (pnlPct <= stopLoss) {
       return {
@@ -134,7 +147,7 @@ export class DCAStrategy implements StrategyEngine {
           pnl_pct: Math.round(pnlPct * 100) / 100,
           stop_loss: stopLoss,
         },
-        reason: `Stop loss hit: ${pnlPct.toFixed(1)}% (limit: ${stopLoss}%)`,
+        reason: `Stop loss: ${pnlPct.toFixed(1)}%`,
       };
     }
 

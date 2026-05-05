@@ -6,7 +6,7 @@
  */
 
 import { RiskConfig, RiskManager } from "@/lib/auto-trading/risk-manager";
-import { resolveTickStrategyEngineKey } from "@/lib/trading/strategy-id-aliases";
+import { resolveTickStrategyEngineKey, getStrategyConfig, shouldUseDarkFleet, getDarkFleetConfig } from "@/lib/trading/strategy-id-aliases";
 import { buildTradeReason, buildIndicatorSnapshot, resolveStrategyKey } from "@/lib/trading/build-trade-reason";
 import { div, mul } from "@/lib/decimal";
 import { createClient } from "@/lib/supabase/server";
@@ -138,17 +138,31 @@ async function processSession(
   const candles = preFetchedCandles ?? await fetchCandles(pair, "1h", 100);
   const currentPrice = candles[candles.length - 1].close;
 
+  // ── V2: Load per-strategy config (UUID-aware) ───────────────────────────
+  const strategyConfig = getStrategyConfig(session.strategy_id);
+  const resolvedEngine = strategyConfig?.engine ?? engineKey ?? "multi_signal";
+  const baseConfig = strategyConfig?.config ?? {};
+  // Merge: per-UUID config overrides session.strategy_config
+  const mergedConfig: Record<string, unknown> = {
+    ...session.strategy_config,
+    ...baseConfig,
+    engineKey: resolvedEngine,
+  };
+
   let signal: StrategySignal;
 
   // ── PATH C: Dark Fleet (regime-aware ensemble) ──────────────────────────
-  // Per-user rollout: only challenger users get Dark Fleet
+  // Per-strategy Dark Fleet config (from strategy-configs.ts) overrides global
+  const perStrategyDF = getDarkFleetConfig(session.strategy_id);
   let darkFleetConfig: DarkFleetConfig | undefined;
   let tradeVersion: TradeVersion = "champion";
-  if (darkFleetBaseConfig?.enabled && engineKey !== null && engineKey !== "ensemble_ai") {
+  const dfEnabled = perStrategyDF?.enabled ?? (darkFleetBaseConfig?.enabled && shouldUseDarkFleet(session.strategy_id));
+
+  if (dfEnabled && resolvedEngine !== "ensemble_ai") {
     const decision = shouldUseChallenger(session.user_id);
     tradeVersion = decision.version;
     if (decision.version === "challenger") {
-      darkFleetConfig = darkFleetBaseConfig;
+      darkFleetConfig = { ...darkFleetBaseConfig, ...perStrategyDF } as DarkFleetConfig;
     }
   }
   const useDarkFleet = !!darkFleetConfig;
@@ -158,19 +172,19 @@ async function processSession(
         {
           candles,
           session,
-          config: { ...session.strategy_config, engineKey } as Record<string, unknown>,
+          config: mergedConfig,
         },
         darkFleetConfig,
       );
     } catch (err) {
       console.error(`[DarkFleet] Error for session ${session.id}:`, (err as Error).message);
       // Fallback to V2
-      const fallbackStrategy = engineKey ? resolveStrategy(engineKey) : undefined;
+      const fallbackStrategy = resolvedEngine ? resolveStrategy(resolvedEngine) : undefined;
       if (fallbackStrategy) {
         signal = fallbackStrategy.evaluate({
           candles,
           session,
-          config: session.strategy_config as Record<string, unknown>,
+          config: mergedConfig,
         });
       } else {
         return {
@@ -180,11 +194,9 @@ async function processSession(
         };
       }
     }
-  } else if (engineKey === "ensemble_ai") {
+  } else if (resolvedEngine === "ensemble_ai") {
     // === PATH A: Eksisterende ensemble_ai (uendret) ===
-    // Normalize symbol to match ai-engine storage (e.g. BTC/USDT -> BTCUSDT)
     const symbol = pair.replace("/", "");
-    // Prefer master consensus row; fallback to any ensemble_ai signal (legacy compatibility)
     let aiSignal = await db
       .from("trading_signals")
       .select("*")
@@ -216,7 +228,7 @@ async function processSession(
     if (aiSignal && isRecent && (aiSignal.action === "buy" || aiSignal.action === "sell")) {
       signal = {
         action: aiSignal.action,
-        positionSize: 0.01,
+        positionSize: (mergedConfig.position_size as number) ?? 0.05,
         indicators: { source: "ensemble_ai", confidence: aiSignal.confidence },
         reason: aiSignal.reasoning || "Ensemble AI signal",
       };
@@ -224,10 +236,10 @@ async function processSession(
       signal = { action: "hold", reason: "No recent ensemble AI signal" };
     }
   } else {
-    // === PATH B: Eksisterende V2 strategies (uendret) ===
-    const strategy = engineKey ? resolveStrategy(engineKey) : undefined;
+    // === PATH B: V2 strategies with merged config ===
+    const strategy = resolvedEngine ? resolveStrategy(resolvedEngine) : undefined;
     if (!strategy) {
-      console.error(`[Tick] Unknown strategy for session ${session.id}: "${session.strategy_id}" — skipping`);
+      console.error(`[Tick] Unknown strategy for session ${session.id}: "${session.strategy_id}" (engine: ${resolvedEngine}) — skipping`);
       return {
         session_id: session.id,
         action: "error",
@@ -237,7 +249,7 @@ async function processSession(
     signal = strategy.evaluate({
       candles,
       session,
-      config: session.strategy_config as Record<string, unknown>,
+      config: mergedConfig,
     });
   }
 

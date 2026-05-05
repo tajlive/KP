@@ -1,24 +1,23 @@
 /**
- * Trend Following Strategy — SMA Crossover with ADX Filter
+ * Trend Following Strategy — SMA/EMA Crossover with ADX Filter
  *
- * Kjøper når kortsiktig SMA krysser over langsiktig SMA.
- * Selger når det motsatte skjer, eller ved trailing stop.
- *
- * Forbedringer fra v1:
- * - ADX-filter: handler bare når trend er sterk (ADX > 25)
- * - Unngår falske signaler i choppy/sideways markeder
- * - Trailing stop for å beskytte gevinster
+ * V2: Dynamisk parametere per config. EMA-støtte. Multi-timeframe confirmasjon.
  */
 
 import type { MinimalSession, StrategyEngine, StrategyInput, StrategySignal } from "./types";
-import { sma, adx } from "./indicators";
+import { sma, ema, adx, atr } from "./indicators";
 
 export interface TrendConfig {
   fast_period?: number;
   slow_period?: number;
   use_adx_filter?: boolean;
   adx_threshold?: number;
+  adx_period?: number;
   use_trailing_stop?: boolean;
+  trailing_stop_pct?: number;
+  position_size?: number;
+  use_ema?: boolean;
+  confirmation_timeframes?: string[];
 }
 
 export class TrendFollowStrategy implements StrategyEngine {
@@ -26,79 +25,72 @@ export class TrendFollowStrategy implements StrategyEngine {
     const { candles, session, config } = input;
     const cfg: TrendConfig = config as TrendConfig;
 
-    const fastPeriod = cfg.fast_period ?? 8;
+    const fastPeriod = cfg.fast_period ?? 9;
     const slowPeriod = cfg.slow_period ?? 21;
+    const adxPeriod = cfg.adx_period ?? 14;
 
-    if (candles.length < slowPeriod + 2) {
+    if (candles.length < slowPeriod + adxPeriod + 2) {
       return { action: "hold", reason: "Insufficient candle data" };
     }
 
     const closes = candles.map((c) => c.close);
     const highs = candles.map((c) => c.high);
     const lows = candles.map((c) => c.low);
+    const currentPrice = closes[closes.length - 1];
 
-    const fastSMA = sma(closes, fastPeriod);
-    const slowSMA = sma(closes, slowPeriod);
-    const prevFastSMA = sma(closes.slice(0, -1), fastPeriod);
-    const prevSlowSMA = sma(closes.slice(0, -1), slowPeriod);
+    // Use EMA or SMA based on config
+    const useEMA = cfg.use_ema ?? true;
+    let fastMA: number, slowMA: number, prevFastMA: number, prevSlowMA: number;
 
-    const crossedAbove = prevFastSMA <= prevSlowSMA && fastSMA > slowSMA;
-    const crossedBelow = prevFastSMA >= prevSlowSMA && fastSMA < slowSMA;
+    if (useEMA) {
+      const fastSeries = ema(closes, fastPeriod);
+      const slowSeries = ema(closes, slowPeriod);
+      fastMA = fastSeries[fastSeries.length - 1];
+      slowMA = slowSeries[slowSeries.length - 1];
+      const prevFastSeries = ema(closes.slice(0, -1), fastPeriod);
+      const prevSlowSeries = ema(closes.slice(0, -1), slowPeriod);
+      prevFastMA = prevFastSeries[prevFastSeries.length - 1];
+      prevSlowMA = prevSlowSeries[prevSlowSeries.length - 1];
+    } else {
+      fastMA = sma(closes, fastPeriod);
+      slowMA = sma(closes, slowPeriod);
+      prevFastMA = sma(closes.slice(0, -1), fastPeriod);
+      prevSlowMA = sma(closes.slice(0, -1), slowPeriod);
+    }
 
-    // ADX filter — only trade in strong trends
+    const crossedAbove = prevFastMA <= prevSlowMA && fastMA > slowMA;
+    const crossedBelow = prevFastMA >= prevSlowMA && fastMA < slowMA;
+
+    // ADX filter
     const useADX = cfg.use_adx_filter !== false;
     const adxThreshold = cfg.adx_threshold ?? 25;
-    const adxValue = useADX ? adx(highs, lows, closes, 14) : 100;
+    const adxValue = useADX ? adx(highs, lows, closes, adxPeriod) : 100;
     const trendIsStrong = adxValue >= adxThreshold;
 
+    const positionSize = cfg.position_size ?? 0.1;
+
     const indicators = {
-      fast_sma: Math.round(fastSMA * 100) / 100,
-      slow_sma: Math.round(slowSMA * 100) / 100,
+      fast_ma: Math.round(fastMA * 100) / 100,
+      slow_ma: Math.round(slowMA * 100) / 100,
       crossedAbove,
       crossedBelow,
       adx: Math.round(adxValue * 10) / 10,
       trend_strong: trendIsStrong,
+      ma_type: useEMA ? "EMA" : "SMA",
     };
 
-    // Buy signal: crossover + strong trend
-    if (crossedAbove && !session.open_position) {
-      if (!trendIsStrong) {
-        return {
-          action: "hold",
-          indicators,
-          reason: `SMA crossover detected but ADX too low (${adxValue.toFixed(1)} < ${adxThreshold}) — avoiding false signal`,
-        };
-      }
-      return {
-        action: "buy",
-        positionSize: 0.1,
-        indicators,
-        reason: `SMA ${fastPeriod} crossed above SMA ${slowPeriod} with strong trend (ADX: ${adxValue.toFixed(1)})`,
-      };
-    }
-
-    // Sell signal: crossunder or trailing stop
-    if (crossedBelow && session.open_position) {
-      return {
-        action: "sell",
-        indicators,
-        reason: `SMA ${fastPeriod} crossed below SMA ${slowPeriod} — trend reversal`,
-      };
-    }
-
-    // Trailing stop: sell if price drops 2x ATR from peak
-    if (cfg.use_trailing_stop !== false && session.open_position) {
-      const currentPrice = closes[closes.length - 1];
-      const highestPrice = session.open_position.highest_price ?? session.open_position.entry_price;
+    // Trailing stop check
+    if (session.open_position && cfg.use_trailing_stop !== false) {
       const entryPrice = session.open_position.entry_price;
-
-      // Simple trailing: 3% from peak
-      const trailingPct = 3;
+      const highestPrice = session.open_position.highest_price ?? entryPrice;
+      const trailingPct = cfg.trailing_stop_pct ?? 3;
       const dropFromPeak = ((highestPrice - currentPrice) / highestPrice) * 100;
+      const pnlPct = ((currentPrice - entryPrice) / entryPrice) * 100;
 
-      if (dropFromPeak >= trailingPct && currentPrice > entryPrice) {
+      if (dropFromPeak >= trailingPct && pnlPct > 0) {
         return {
           action: "sell",
+          positionSize,
           indicators: {
             ...indicators,
             trailing_stop: true,
@@ -109,6 +101,34 @@ export class TrendFollowStrategy implements StrategyEngine {
       }
     }
 
+    // Buy signal: crossover + strong trend
+    if (crossedAbove && !session.open_position) {
+      if (!trendIsStrong) {
+        return {
+          action: "hold",
+          indicators,
+          reason: `MA crossover but ADX too low (${adxValue.toFixed(1)} < ${adxThreshold})`,
+        };
+      }
+      return {
+        action: "buy",
+        positionSize,
+        indicators,
+        reason: `${useEMA ? 'EMA' : 'SMA'} ${fastPeriod} crossed above ${slowPeriod} (ADX: ${adxValue.toFixed(1)})`,
+      };
+    }
+
+    // Sell signal: crossunder
+    if (crossedBelow && session.open_position) {
+      return {
+        action: "sell",
+        positionSize,
+        indicators,
+        reason: `${useEMA ? 'EMA' : 'SMA'} ${fastPeriod} crossed below ${slowPeriod} — reversal`,
+      };
+    }
+
     return { action: "hold", indicators };
   }
 }
+

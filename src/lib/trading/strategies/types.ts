@@ -51,3 +51,6 @@ export interface StrategyInput {
 export interface StrategyEngine {
   evaluate(input: StrategyInput): StrategySignal;
 }
+
+/** Valid engine keys for the tick engine */
+export type TickStrategyEngineKey = "dca" | "trend_follow" | "multi_signal" | "grid" | "ai_copy" | "hybrid_arbitrage" | "ensemble_ai";
