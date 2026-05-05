@@ -11,11 +11,15 @@ export { DCAStrategy } from "./dca";
 export { TrendFollowStrategy } from "./trend";
 export { MultiSignalStrategy } from "./multi";
 export { GridBotStrategy } from "./grid";
+export { AICopyStrategy } from "./ai-copy";
+export { HybridArbitrageStrategy } from "./hybrid-arbitrage";
 
 import { DCAStrategy } from "./dca";
 import { TrendFollowStrategy } from "./trend";
 import { MultiSignalStrategy } from "./multi";
 import { GridBotStrategy } from "./grid";
+import { AICopyStrategy } from "./ai-copy";
+import { HybridArbitrageStrategy } from "./hybrid-arbitrage";
 import type { StrategyEngine } from "./types";
 
 export const strategyRegistry: Record<string, StrategyEngine> = {
@@ -23,6 +27,8 @@ export const strategyRegistry: Record<string, StrategyEngine> = {
   trend_follow: new TrendFollowStrategy(),
   multi_signal: new MultiSignalStrategy(),
   grid: new GridBotStrategy(),
+  ai_copy: new AICopyStrategy(),
+  hybrid_arbitrage: new HybridArbitrageStrategy(),
 };
 
 /**
@@ -42,7 +48,8 @@ export function resolveStrategy(strategyId: string): StrategyEngine | undefined 
     dca_doge: "dca",
     grid_matic: "grid",
     multi_dot: "multi_signal",
-    ai_copy: "multi_signal",
+    ai_copy: "ai_copy",
+    hybrid_arbitrage: "hybrid_arbitrage",
   };
   const mapped = aliases[strategyId];
   return mapped ? strategyRegistry[mapped] : undefined;
