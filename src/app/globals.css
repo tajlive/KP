@@ -646,14 +646,21 @@ html {
   touch-action: manipulation;
 }
 
-/* Disable text selection on body (enable on inputs) */
+/* Enable text selection everywhere by default */
 body {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Disable selection on UI chrome (buttons, nav, etc.) */
+button, [role="button"], nav, .no-select {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
 
-/* Re-enable selection on interactive text elements */
+/* Keep text selection enabled on inputs */
 input, textarea, [contenteditable="true"] {
   -webkit-user-select: text;
   user-select: text;
