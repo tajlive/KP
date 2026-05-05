@@ -30,6 +30,7 @@ import { getFlagsAsync } from "@/lib/flags";
 import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from "@/lib/trading/beta/tick-guardrails";
 import { queueEmail } from "@/lib/email";
 import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-size";
+import { applyMultiTimeframeFilter } from "@/lib/trading/multi-timeframe";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -135,6 +136,7 @@ async function processSession(
   preFetchedCandles?: Candle[],
   darkFleetBaseConfig?: DarkFleetConfig,
   preFetchedCandles4h?: Candle[],
+  preFetchedCandles15m?: Candle[],
 ): Promise<TickResult> {
   const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
   const pair = session.trading_pair || "BTCUSDT";
@@ -339,23 +341,39 @@ async function processSession(
     }
   }
 
-  // ── V2: Higher Timeframe Trend Confirmation (4h) ────────────────────────
-  // Block buy signals if 4h trend is bearish (price below SMA20)
-  // This prevents buying into a downtrend on the 1h timeframe
-  if (signal.action === "buy" && preFetchedCandles4h && preFetchedCandles4h.length >= 20) {
-    const closes4h = preFetchedCandles4h.map((c) => c.close);
-    const sma20_4h = sma(closes4h, 20);
-    const currentPrice4h = closes4h[closes4h.length - 1];
-    if (currentPrice4h < sma20_4h * 0.99) { // Allow 1% tolerance
-      console.log(`[TrendFilter] Session ${session.id}: blocked buy — 4h price ${currentPrice4h.toFixed(0)} < SMA20 ${sma20_4h.toFixed(0)}`);
+  // ── V2: Multi-Timeframe Filter (4h trend + 1h signal + 15m entry) ──────
+  if (preFetchedCandles4h && preFetchedCandles15m && signal.action !== "hold") {
+    const mtfResult = applyMultiTimeframeFilter(
+      candles,
+      preFetchedCandles4h,
+      preFetchedCandles15m,
+      signal.action,
+      signal.indicators?.confidence ? (signal.indicators.confidence as number) / 3 : 0.8,
+    );
+
+    console.log(`[MTF] Session ${session.id}: score=${mtfResult.score} trend=${mtfResult.trendDirection}(${mtfResult.trendScore}) entry=${mtfResult.entryConfirm} passed=${mtfResult.passed}`);
+
+    if (!mtfResult.passed) {
       signal = {
         action: "hold",
-        reason: `Buy blocked: 4h trend bearish (price ${currentPrice4h.toFixed(0)} < SMA20 ${sma20_4h.toFixed(0)})`,
+        reason: `MTF blocked: ${mtfResult.reason}`,
         indicators: {
           ...signal.indicators,
-          trend_filter_blocked: true,
-          sma20_4h: Math.round(sma20_4h * 100) / 100,
+          mtf_blocked: true,
+          mtf_score: mtfResult.score,
+          mtf_trend_score: mtfResult.trendScore,
+          mtf_entry_score: mtfResult.entryConfirm,
+          mtf_trend_direction: mtfResult.trendDirection,
         },
+      };
+    } else {
+      // Enrich signal with MTF context
+      signal.indicators = {
+        ...signal.indicators,
+        mtf_score: mtfResult.score,
+        mtf_trend_score: mtfResult.trendScore,
+        mtf_entry_score: mtfResult.entryConfirm,
+        mtf_trend_direction: mtfResult.trendDirection,
       };
     }
   }
@@ -919,21 +937,23 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // OPTIMIZATION 1: Pre-fetch candles for all unique symbols (1h + 4h)
-    // Reduces N separate API calls to 1 call per unique symbol per timeframe
+    // OPTIMIZATION 1: Pre-fetch candles for all unique symbols (1h + 4h + 15m)
     const uniqueSymbols = new Map<string, Candle[]>();
     const uniqueSymbols4h = new Map<string, Candle[]>();
+    const uniqueSymbols15m = new Map<string, Candle[]>();
     const symbolList = [...new Set(sessions.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))];
     
     await Promise.all(
       symbolList.map(async (symbol) => {
         try {
-          const [candles1h, candles4h] = await Promise.all([
+          const [candles1h, candles4h, candles15m] = await Promise.all([
             fetchCandles(symbol, "1h", 100),
             fetchCandles(symbol, "4h", 50),
+            fetchCandles(symbol, "15m", 100),
           ]);
           uniqueSymbols.set(symbol, candles1h);
           uniqueSymbols4h.set(symbol, candles4h);
+          uniqueSymbols15m.set(symbol, candles15m);
         } catch (err) {
           console.error(`[Tick] Failed to fetch candles for ${symbol}:`, err);
         }
@@ -965,6 +985,7 @@ export async function GET(req: NextRequest) {
           uniqueSymbols.get(symbolKey),
           darkFleetBaseConfig,
           uniqueSymbols4h.get(symbolKey),
+          uniqueSymbols15m.get(symbolKey),
         );
         results.push(result);
 
