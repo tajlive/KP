@@ -46,8 +46,7 @@ async function getCachedATR(symbol: string): Promise<number | null> {
 }
 
 export async function saveATRCache(symbol: string, atr: number) {
-  // Skip cache save for now - new table not in types
-  // TODO: Add to migration and regenerate types
+  // Deferred: requires `atr_cache` table + typegen (KLA-255-follow-up).
 }
 
 export async function calculateOptimalStop(

@@ -319,7 +319,7 @@ export function TradeEventFeed({
           sessionId: data.session_id,
           timestamp: t.executed_at as string,
           side: t.side as TradeSide,
-          symbol: "BTC/NOK", // TODO: Get from session
+          symbol: (t.trading_pair as string) || "BTC/NOK",
           price: t.price as number,
           quantity: t.quantity as number,
           totalValue: t.total_value as number,

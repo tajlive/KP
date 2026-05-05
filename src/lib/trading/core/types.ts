@@ -31,6 +31,7 @@ export interface ExecuteTradeRequest {
   mode: TradingMode;
   botId?: string;
   signalContext?: TradeSignalContext;
+  leverage?: number;
   metadata?: {
     maxSlippageBps?: number;
   };

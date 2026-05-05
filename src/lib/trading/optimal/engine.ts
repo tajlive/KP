@@ -63,8 +63,8 @@ export async function executeOptimalTrade(
     // 4. Calculate quantity
     const quantity = positionSizeUSD / params.entryPrice;
     
-    // 5. Log optimal trade (skipped - table not in generated types)
-    // TODO: Regenerate Supabase types after migration
+    // 5. Optimal trade logging requires `optimal_trades` table + typegen.
+    // Deferred: KLA-255-follow-up (needs migration + `supabase gen types`).
     return {
       success: true,
       positionSizeNOK,
@@ -147,7 +147,7 @@ export async function calculateOptimalTradePreview(
 
 // Get optimal trade history for a user
 export async function getOptimalTradeHistory(userId: string, limit = 10) {
-  // TODO: Implement after regenerating types
+  // Deferred: requires `optimal_trades` table + typegen (KLA-255-follow-up).
   return [];
 }
 

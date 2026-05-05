@@ -47,7 +47,7 @@ const CONFIG = {
   batchSize: 50,
   kgBatchSize: 100,
   indexCachePath: '.mempalace/index-cache-v3.json',
-  enableFileWatcher: true,  // NY: fs.watch for runtime-endringer
+  enableFileWatcher: false,  // Skrudd av for raskere MCP-oppstart
   indexPaths: [
     { path: '.knowledge', label: 'Knowledge', types: ['md', 'txt'] },
     { path: '.kimi', label: 'Diary', include: ['diary.jsonl'] },
@@ -229,7 +229,9 @@ let logClientReady = false;
 function log(level, message, data) {
   const entry = { ts: new Date().toISOString(), level, message, data };
   logQueue.push(entry);
-  console.error(`[MemPalace ${level}] ${message}`);
+  if (level === 'error' || process.env.MEMPALACE_VERBOSE) {
+    console.error(`[MemPalace ${level}] ${message}`);
+  }
 }
 
 function flushLogs(sendFn) {
@@ -1768,16 +1770,18 @@ process.stdin.on('data', async (chunk) => {
   }
 });
 
-console.error('\u{1F3DB}\uFE0F  MemPalace MCP Server v3.3.0 — SUPERKIMI Optimalisert');
-console.error(`   Wing: ${CONFIG.wing}`);
-console.error(`   Backend: in-memory FTS med inverted + bigram index (zero-dep)`);
-console.error(`   Scoring: TF-IDF + Bigram-boost + Kontekst-snippets`);
-console.error(`   Cache: LRU/${CONFIG.cacheSize}`);
-console.error(`   Persistens: ${CONFIG.indexCachePath}.gz (${(existsSync(resolve(root, CONFIG.indexCachePath + '.gz')) ? (statSync(resolve(root, CONFIG.indexCachePath + '.gz')).size / 1024 / 1024).toFixed(1) : '?')}MB)`);
-console.error(`   Cross-lingual: norsk↔engelsk (${Object.keys(CONFIG.crossLingual).length} mappings)`);
-console.error(`   File watcher: ${CONFIG.enableFileWatcher ? 'aktiv' : 'av'}`);
-console.error(`   Resources: mempalace://document/{path}, mempalace://kg/{entity}`);
-console.error(`   Prompts: pre_task, post_task, agent_auth, agent_architect, superkimi_boost`);
-console.error(`   KG Write: incremental append + auto-compact`);
-console.error(`   Kontekst: 262k (k2.6-optimized) | 750 steps/turn`);
-console.error(`   Shutdown: SIGTERM/SIGINT graceful (flusher KG + index cache)`);
+if (process.env.MEMPALACE_VERBOSE) {
+  console.error('\u{1F3DB}\uFE0F  MemPalace MCP Server v3.3.0 — SUPERKIMI Optimalisert');
+  console.error(`   Wing: ${CONFIG.wing}`);
+  console.error(`   Backend: in-memory FTS med inverted + bigram index (zero-dep)`);
+  console.error(`   Scoring: TF-IDF + Bigram-boost + Kontekst-snippets`);
+  console.error(`   Cache: LRU/${CONFIG.cacheSize}`);
+  console.error(`   Persistens: ${CONFIG.indexCachePath}.gz (${(existsSync(resolve(root, CONFIG.indexCachePath + '.gz')) ? (statSync(resolve(root, CONFIG.indexCachePath + '.gz')).size / 1024 / 1024).toFixed(1) : '?')}MB)`);
+  console.error(`   Cross-lingual: norsk↔engelsk (${Object.keys(CONFIG.crossLingual).length} mappings)`);
+  console.error(`   File watcher: ${CONFIG.enableFileWatcher ? 'aktiv' : 'av'}`);
+  console.error(`   Resources: mempalace://document/{path}, mempalace://kg/{entity}`);
+  console.error(`   Prompts: pre_task, post_task, agent_auth, agent_architect, superkimi_boost`);
+  console.error(`   KG Write: incremental append + auto-compact`);
+  console.error(`   Kontekst: 262k (k2.6-optimized) | 750 steps/turn`);
+  console.error(`   Shutdown: SIGTERM/SIGINT graceful (flusher KG + index cache)`);
+}

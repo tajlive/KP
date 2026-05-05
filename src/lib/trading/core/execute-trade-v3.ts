@@ -209,7 +209,7 @@ export async function executeTradeV3(
     const riskKernel = new RiskKernel(riskRecovery.limits);
     const orderValueUsdt = request.quantity * request.price;
     const notional = orderValueUsdt;
-    const leverage = 1; // TODO: Get from request/config
+    const leverage = request.leverage ?? 1;
     
     const riskCheck = riskKernel.checkTrade(
       {
