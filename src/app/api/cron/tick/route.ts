@@ -28,6 +28,7 @@ import { getFlagsAsync } from "@/lib/flags";
 // import { shouldUseChallenger, type TradeVersion } from "@/lib/trading/rollout/tick-rollout";
 import { evaluateGuardrails, pauseUserSessions, DEFAULT_GUARDRAIL_CONFIG } from "@/lib/trading/beta/tick-guardrails";
 import { queueEmail } from "@/lib/email";
+import { calculateDynamicPositionSize } from "@/lib/trading/optimal/position-size";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -371,8 +372,31 @@ async function processSession(
     signal.positionSize = Math.min(signal.positionSize, maxGridPos);
   }
 
-  // Calculate trade details
-  const positionSize = signal.positionSize ?? 0.1;
+  // ── V2: Dynamic Position Sizing (Kelly + ATR + Regime + Drawdown) ──────
+  let positionSize = signal.positionSize ?? 0.1;
+  const regime = (signal.indicators?.regime as string) ?? "unknown";
+
+  if (signal.action === "buy" || signal.action === "sell") {
+    try {
+      const dynamicSize = await calculateDynamicPositionSize(db, {
+        userId: session.user_id,
+        sessionId: session.id,
+        strategyId: session.strategy_id,
+        currentCapital: session.current_capital,
+        initialCapital: session.initial_capital,
+        candles,
+        regime,
+        signalAction: signal.action,
+        basePositionSize: positionSize,
+        riskProfile: "balanced",
+      });
+      positionSize = dynamicSize.positionSize;
+      console.log(`[PositionSize] Session ${session.id}: ${(positionSize * 100).toFixed(2)}% (${dynamicSize.reason})`);
+    } catch (err) {
+      console.warn(`[PositionSize] Failed for session ${session.id}, using fallback:`, (err as Error).message);
+    }
+  }
+
   const tradeAmount = session.current_capital * positionSize;
 
   // Minimum order value ($10) — same for paper and live
