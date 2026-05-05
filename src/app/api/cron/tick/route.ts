@@ -22,6 +22,7 @@ import {
   type LedgerState,
 } from "@/lib/trading/position-ledger";
 import { resolveStrategy, type Candle, type StrategySignal } from "@/lib/trading/strategies";
+import { sma } from "@/lib/trading/strategies/indicators";
 import { evaluateDarkFleetSignal, type DarkFleetConfig } from "@/lib/trading/regime/tick-adapter";
 import { getFlagsAsync } from "@/lib/flags";
 // Rollout framework available for future A/B testing:
@@ -133,6 +134,7 @@ async function processSession(
   userRiskConfig?: RiskConfig,
   preFetchedCandles?: Candle[],
   darkFleetBaseConfig?: DarkFleetConfig,
+  preFetchedCandles4h?: Candle[],
 ): Promise<TickResult> {
   const engineKey = resolveTickStrategyEngineKey(session.strategy_id);
   const pair = session.trading_pair || "BTCUSDT";
@@ -334,6 +336,27 @@ async function processSession(
           })
           .eq("id", session.id);
       }
+    }
+  }
+
+  // ── V2: Higher Timeframe Trend Confirmation (4h) ────────────────────────
+  // Block buy signals if 4h trend is bearish (price below SMA20)
+  // This prevents buying into a downtrend on the 1h timeframe
+  if (signal.action === "buy" && preFetchedCandles4h && preFetchedCandles4h.length >= 20) {
+    const closes4h = preFetchedCandles4h.map((c) => c.close);
+    const sma20_4h = sma(closes4h, 20);
+    const currentPrice4h = closes4h[closes4h.length - 1];
+    if (currentPrice4h < sma20_4h * 0.99) { // Allow 1% tolerance
+      console.log(`[TrendFilter] Session ${session.id}: blocked buy — 4h price ${currentPrice4h.toFixed(0)} < SMA20 ${sma20_4h.toFixed(0)}`);
+      signal = {
+        action: "hold",
+        reason: `Buy blocked: 4h trend bearish (price ${currentPrice4h.toFixed(0)} < SMA20 ${sma20_4h.toFixed(0)})`,
+        indicators: {
+          ...signal.indicators,
+          trend_filter_blocked: true,
+          sma20_4h: Math.round(sma20_4h * 100) / 100,
+        },
+      };
     }
   }
 
@@ -886,16 +909,21 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // OPTIMIZATION 1: Pre-fetch candles for all unique symbols
-    // Reduces N separate API calls to 1 call per unique symbol
+    // OPTIMIZATION 1: Pre-fetch candles for all unique symbols (1h + 4h)
+    // Reduces N separate API calls to 1 call per unique symbol per timeframe
     const uniqueSymbols = new Map<string, Candle[]>();
+    const uniqueSymbols4h = new Map<string, Candle[]>();
     const symbolList = [...new Set(sessions.map((s) => s.trading_pair?.replace("/", "") || "BTCUSDT"))];
     
     await Promise.all(
       symbolList.map(async (symbol) => {
         try {
-          const candles = await fetchCandles(symbol, "1h", 100);
-          uniqueSymbols.set(symbol, candles);
+          const [candles1h, candles4h] = await Promise.all([
+            fetchCandles(symbol, "1h", 100),
+            fetchCandles(symbol, "4h", 50),
+          ]);
+          uniqueSymbols.set(symbol, candles1h);
+          uniqueSymbols4h.set(symbol, candles4h);
         } catch (err) {
           console.error(`[Tick] Failed to fetch candles for ${symbol}:`, err);
         }
@@ -926,6 +954,7 @@ export async function GET(req: NextRequest) {
           riskConfigMap.get(session.user_id),
           uniqueSymbols.get(symbolKey),
           darkFleetBaseConfig,
+          uniqueSymbols4h.get(symbolKey),
         );
         results.push(result);
 
