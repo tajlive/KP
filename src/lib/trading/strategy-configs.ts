@@ -97,11 +97,12 @@ export type StrategyConfig =
 
 export const STRATEGY_UUID_CONFIGS: Record<
   string,
-  { engine: string; config: Record<string, unknown>; darkFleet?: Partial<DarkFleetConfig> }
+  { engine: string; config: Record<string, unknown>; darkFleet?: Partial<DarkFleetConfig>; preferredPairs?: string[] }
 > = {
   // ── MultiSignal Aktiv Gamma — Aggressive multi-signal (original) ──────────
   "a21f535d-e0f0-4ad5-a1b9-c08a49be12f0": {
     engine: "multi_signal",
+    preferredPairs: ["BTCUSDT", "ETHUSDT"],
     config: {
       rsi_buy_threshold: 40,
       rsi_sell_threshold: 60,
@@ -123,6 +124,7 @@ export const STRATEGY_UUID_CONFIGS: Record<
   // ── AI Copy Epsilon — Bollinger breakout + momentum (mean reversion) ─────
   "071a6106-ae28-49f2-93e5-cec281e33fc5": {
     engine: "ai_copy",
+    preferredPairs: ["ETHUSDT", "SOLUSDT", "BTCUSDT"],
     config: {
       use_bollinger_breakout: true,
       bb_period: 20,
@@ -137,6 +139,7 @@ export const STRATEGY_UUID_CONFIGS: Record<
   // ── Dark Fleet Champion — Conservative multi-signal (V2 baseline) ─────────
   "39cae21a-7449-43aa-b202-727227d30168": {
     engine: "multi_signal",
+    preferredPairs: ["BTCUSDT"],
     config: {
       rsi_buy_threshold: 35,
       rsi_sell_threshold: 65,
@@ -166,6 +169,7 @@ export const STRATEGY_UUID_CONFIGS: Record<
   // ── Dark Fleet Challenger — Aggressive ensemble with Dark Fleet ───────────
   "c49a9302-65bd-48ec-b5d6-51dff32e4b0e": {
     engine: "multi_signal",
+    preferredPairs: ["BTCUSDT", "ETHUSDT", "SOLUSDT"],
     config: {
       rsi_buy_threshold: 42,
       rsi_sell_threshold: 58,
@@ -195,6 +199,7 @@ export const STRATEGY_UUID_CONFIGS: Record<
   // ── Hybrid Arbitrage Eta — Grid + Trend hybrid ────────────────────────────
   "55903760-304a-4824-920b-f5bfc5530c45": {
     engine: "hybrid_arbitrage",
+    preferredPairs: ["ETHUSDT", "BTCUSDT"],
     config: {
       grid_weight: 0.6,
       trend_weight: 0.4,
@@ -209,6 +214,7 @@ export const STRATEGY_UUID_CONFIGS: Record<
   // ── Beta Guardrail Test — Minimal trading, max safety ─────────────────────
   "d238229f-b837-4816-a846-9655b3f77e28": {
     engine: "multi_signal",
+    preferredPairs: ["BTCUSDT"],
     config: {
       rsi_buy_threshold: 30,
       rsi_sell_threshold: 70,
