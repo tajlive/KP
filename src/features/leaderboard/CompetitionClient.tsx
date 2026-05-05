@@ -49,64 +49,7 @@ export default function CompetitionClient({
                 user ? getUserRank(user.id, timeframe) : null
             ])
 
-            // Fallback mock data if empty (for demo/beta)
-            if (data.length === 0) {
-                setLeaderboard([
-                    {
-                        id: '1',
-                        rank: 1,
-                        user_display_name: 'Erik T.',
-                        return_pct: 145.2,
-                        win_rate: 78,
-                        total_trades: 45,
-                        risk_level: 'high',
-                        sharpe_ratio: 2.4,
-                        period: 'weekly',
-                        user_id: 'mock1',
-                        simulation_id: 'mock1',
-                        created_at: new Date().toISOString(),
-                        is_public: true,
-                        avatar_url: null,
-                        previous_rank: 2
-                    },
-                    {
-                        id: '2',
-                        rank: 2,
-                        user_display_name: 'Sara K.',
-                        return_pct: 98.5,
-                        win_rate: 65,
-                        total_trades: 32,
-                        risk_level: 'standard',
-                        sharpe_ratio: 1.8,
-                        period: 'weekly',
-                        user_id: 'mock2',
-                        simulation_id: 'mock2',
-                        created_at: new Date().toISOString(),
-                        is_public: true,
-                        avatar_url: null,
-                        previous_rank: 1
-                    },
-                    {
-                        id: '3',
-                        rank: 3,
-                        user_display_name: 'Jonas B.',
-                        return_pct: 45.2,
-                        win_rate: 92,
-                        total_trades: 12,
-                        risk_level: 'low',
-                        sharpe_ratio: 3.1,
-                        period: 'weekly',
-                        user_id: 'mock3',
-                        simulation_id: 'mock3',
-                        created_at: new Date().toISOString(),
-                        is_public: true,
-                        avatar_url: null,
-                        previous_rank: 5
-                    }
-                ])
-            } else {
-                setLeaderboard(data)
-            }
+            setLeaderboard(data)
 
             if (rank) setUserRank(rank)
 
@@ -115,6 +58,20 @@ export default function CompetitionClient({
         } finally {
             setLoading(false)
         }
+    }
+
+    // Oversett risikonivå til norsk
+    const riskLabel = (level: string) => {
+        const map: Record<string, string> = {
+            high: 'Høy',
+            aggressive: 'Aggressiv',
+            standard: 'Moderat',
+            moderate: 'Moderat',
+            medium: 'Moderat',
+            low: 'Lav',
+            conservative: 'Konservativ',
+        }
+        return map[level.toLowerCase()] || level
     }
 
     const handleCopy = async (entry: LeaderboardEntry) => {
@@ -155,7 +112,11 @@ export default function CompetitionClient({
                                 </div>
                                 <div>
                                     <p className="text-sm text-slate-500 font-medium">{tComp('yourPosition')}</p>
-                                    <p className="text-lg font-bold text-slate-900">Topp {Math.min(100, Math.round((userRank.rank / 1000) * 100))}%</p>
+                                    <p className="text-lg font-bold text-slate-900">
+                                    {leaderboard.length > 0
+                                        ? `Topp ${Math.min(100, Math.round((userRank.rank / leaderboard.length) * 100))}%`
+                                        : tComp('notParticipating')}
+                                </p>
                                 </div>
                             </div>
                             <div className="text-right">
@@ -209,6 +170,12 @@ export default function CompetitionClient({
                     <CardContent className="p-0">
                         {loading ? (
                             <div className="p-12 text-center text-slate-500">{tComp('loading')}</div>
+                        ) : leaderboard.length === 0 ? (
+                            <div className="p-12 text-center">
+                                <Trophy className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                                <p className="text-slate-600 font-medium mb-2">{tComp('noActive')}</p>
+                                <p className="text-sm text-slate-400">Ingen tradere har resultater ennå. Start trading for å komme på lista!</p>
+                            </div>
                         ) : (
                             <div className="divide-y divide-slate-100">
                                 {leaderboard.map((entry) => (
@@ -235,14 +202,18 @@ export default function CompetitionClient({
 
                                         {/* Stats */}
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12 flex-1">
-                                            <div className="text-center sm:text-left">
+                                            <div className="text-center sm:text-left" title="Andel trades med positiv avkastning">
                                                 <p className="text-xs text-slate-400 uppercase font-bold mb-1">{tComp('winRate')}</p>
                                                 <p className="font-bold text-slate-700">{entry.win_rate}%</p>
+                                                <p className="text-[10px] text-slate-400 mt-0.5">{entry.total_trades} handler</p>
                                             </div>
-                                            <div className="text-center sm:text-left">
+                                            <div className="text-center sm:text-left" title="Total prosentvis avkastning i perioden">
                                                 <p className="text-xs text-slate-400 uppercase font-bold mb-1">{tComp('return')}</p>
                                                 <p className={`font-bold text-lg ${entry.return_pct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                                     {entry.return_pct > 0 ? '+' : ''}{entry.return_pct}%
+                                                </p>
+                                                <p className="text-[10px] text-slate-400 mt-0.5">
+                                                    {timeframe === 'weekly' ? 'Siste 7 dager' : timeframe === 'monthly' ? 'Siste 30 dager' : 'Totalt'}
                                                 </p>
                                             </div>
                                             <div className="col-span-2 sm:col-span-1 flex items-center justify-end">
