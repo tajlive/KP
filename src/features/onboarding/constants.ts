@@ -87,10 +87,6 @@ export const MOCK_LOSS_TRADE: MockTrade = {
   timestamp: new Date(),
 };
 
-export const MOCK_LEADERBOARD = [
-  { rank: 1, name: "CryptoKing", pnl: "+45.2%", trades: 24, winRate: 78 },
-  { rank: 2, name: "DiamondHands", pnl: "+31.8%", trades: 12, winRate: 85 },
-  { rank: 3, name: "MoonShot", pnl: "+18.5%", trades: 8, winRate: 62 },
-  { rank: 7, name: "Du", pnl: "+5.2%", trades: 1, winRate: 100, isUser: true },
-  { rank: 12, name: "TradeMaster", pnl: "+2.1%", trades: 15, winRate: 53 },
-];
+// REMOVED: MOCK_LEADERBOARD was displaying fake trader names as real data.
+// Use real leaderboard data from the API instead.
+export const MOCK_LEADERBOARD: Array<{ rank: number; name: string; pnl: string; trades: number; winRate: number; isUser?: boolean }> = [];

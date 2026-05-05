@@ -44,8 +44,8 @@ function Counter({
 export function SocialProof({ language = "no" }: SocialProofProps) {
   const stats = [
     {
-      label: language === "no" ? "Kurstimer med video" : "Course hours",
-      value: 25,
+      label: language === "no" ? "Kurs og moduler" : "Courses and modules",
+      value: 4,
       suffix: "+",
     },
     {
@@ -58,7 +58,7 @@ export function SocialProof({ language = "no" }: SocialProofProps) {
   return (
     <section className="py-24 bg-[#050510] border-y border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 sm:gap-16">
+        <div className="grid grid-cols-2 gap-12 sm:gap-16 max-w-2xl mx-auto">
           {stats.map((stat, i) => (
             <motion.div
               key={i}

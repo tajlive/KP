@@ -48,11 +48,7 @@ export const translations = {
     },
     testimonials: {
       title: "Hva våre brukere sier 💬",
-      items: [
-        { name: "Erik H.", role: "Nybegynner", text: "Gikk fra null til å forstå markeder på 2 uker!" },
-        { name: "Maria J.", role: "Student", text: "Endelig en norsk plattform som lærer riktig!" },
-        { name: "Thomas B.", role: "IT-konsulent", text: "Lærte mer her enn på 10 YouTube-videoer." },
-      ],
+      items: [],
     },
     trustBadges: {
       trustedBy: "Betrodd av norske tradere",
@@ -387,11 +383,7 @@ export const translations = {
     },
     testimonials: {
       title: "What our users say 💬",
-      items: [
-        { name: "Erik H.", role: "Beginner", text: "Went from zero to understanding markets in 2 weeks!" },
-        { name: "Maria J.", role: "Student", text: "Finally a Norwegian platform that teaches properly!" },
-        { name: "Thomas B.", role: "IT Consultant", text: "Learned more here than from 10 YouTube videos." },
-      ],
+      items: [],
     },
     trustBadges: {
       trustedBy: "Trusted by Norwegian traders",

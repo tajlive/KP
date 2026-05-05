@@ -24,12 +24,12 @@ export default function Features({ language = "no" }: FeaturesProps) {
       icon: BookOpen,
       title:
         language === "no"
-          ? "25+ timer strukturert kurs"
-          : "25+ hours structured course",
+          ? "Strukturerte kurs fra A til Å"
+          : "Structured courses from A to Z",
       description:
         language === "no"
-          ? "Fra grunnleggende til avansert teknisk analyse. Videoleksjoner du kan se på repeat når det passer deg."
-          : "From basics to advanced technical analysis. Video lessons you can watch whenever it suits you.",
+          ? "Fra grunnleggende til avansert teknisk analyse. Video, quiz og praktiske øvelser du gjør i ditt eget tempo."
+          : "From basics to advanced technical analysis. Videos, quizzes, and practical exercises at your own pace.",
       gradient: "from-blue-500 to-cyan-500",
     },
     {

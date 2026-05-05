@@ -9,7 +9,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 interface SocialProofSectionProps {
@@ -37,6 +37,7 @@ export default function SocialProofSection({
 }: SocialProofSectionProps) {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("landing.socialProof");
 
   // Stats removed — we don't sell with unverifiable platform numbers.
   // See AGENTS.md / trust-policy for details.
@@ -45,23 +46,20 @@ export default function SocialProofSection({
   const betaPerks = customPerks ?? [
     {
       icon: "MessageSquare",
-      title: "Direkte tilgang til grunnleggerne",
-      description:
-        "Få svar på spørsmål direkte fra teamet som bygger plattformen.",
+      title: t("perk1Title"),
+      description: t("perk1Desc"),
       color: "from-blue-500 to-indigo-600",
     },
     {
       icon: "Target",
-      title: "Påvirk utviklingen",
-      description:
-        "Dine tilbakemeldinger former fremtidige funksjoner og kurs.",
+      title: t("perk2Title"),
+      description: t("perk2Desc"),
       color: "from-emerald-500 to-pink-600",
     },
     {
       icon: "Zap",
-      title: "Tydelige priser",
-      description:
-        "Student gratis. Bachelor fra 249 kr/mnd. Ingen skjulte kostnader.",
+      title: t("perk3Title"),
+      description: t("perk3Desc"),
       color: "from-amber-500 to-orange-600",
     },
   ];
@@ -82,41 +80,42 @@ export default function SocialProofSection({
   return (
     <section className="py-20 bg-linear-to-b from-white to-slate-50 dark:from-gray-900 dark:to-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, idx) => {
-            const Icon = getIcon(stat.icon);
-            return (
-              <div key={idx} className="text-center">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex items-center justify-center border border-blue-100 dark:border-blue-800">
-                  <Icon
-                    className={`w-7 h-7 ${stat.color ?? 'text-blue-600'} dark:opacity-90`}
-                    aria-hidden="true"
-                  />
+        {/* Stats Grid — kun vises når stats er gitt (vi selger ikke med uverifiserbare tall) */}
+        {stats.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            {stats.map((stat, idx) => {
+              const Icon = getIcon(stat.icon);
+              return (
+                <div key={idx} className="text-center">
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex items-center justify-center border border-blue-100 dark:border-blue-800">
+                    <Icon
+                      className={`w-7 h-7 ${stat.color ?? 'text-blue-600'} dark:opacity-90`}
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="text-3xl font-black text-gray-900 dark:text-white mb-1">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="text-3xl font-black text-gray-900 dark:text-white mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                  {stat.label}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Main CTA Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold mb-6">
             <Sparkles className="w-4 h-4" aria-hidden="true" />
-            Vi er i beta
+            {t("betaBadge")}
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-            {headline ?? "Bli en av de første norske traderne"}
+            {headline ?? t("headline")}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            {subheadline ??
-              "Klarpakke er nettopp lansert. Registrer deg nå og få eksklusive fordeler som beta-bruker."}
+            {subheadline ?? t("subheadline")}
           </p>
         </div>
 
@@ -170,11 +169,10 @@ export default function SocialProofSection({
           <div className="relative z-10">
             <div className="text-6xl mb-4">🚀</div>
             <h3 className="text-3xl md:text-4xl font-black text-white mb-4">
-              Klar for å starte?
+              {t("ctaTitle")}
             </h3>
             <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
-              Ingen kredittkort. Ingen binding. Bare ren læring med 100 000 kr
-              lekepenger.
+              {t("ctaSubtitle")}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -183,14 +181,14 @@ export default function SocialProofSection({
                 aria-label="Start din reise med lekepenger"
                 className="px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all"
               >
-                Start lekepenger nå
+                {t("ctaPaper")}
               </button>
               <button
                 onClick={() => router.push(`/${locale}/kurs`)}
                 aria-label="Se oversikt over tilgjengelige kurs"
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-xl font-semibold text-lg hover:bg-white/20 transition-all"
               >
-                Utforsk Kurs
+                {t("ctaCourses")}
               </button>
             </div>
 
@@ -210,7 +208,7 @@ export default function SocialProofSection({
                     />
                   </svg>
                 </div>
-                <span>Gratis å prøve</span>
+                <span>{t("trustFree")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-green-400 flex items-center justify-center">
@@ -226,7 +224,7 @@ export default function SocialProofSection({
                     />
                   </svg>
                 </div>
-                <span>Ingen kredittkort</span>
+                <span>{t("trustNoCard")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-green-400 flex items-center justify-center">
@@ -242,7 +240,7 @@ export default function SocialProofSection({
                     />
                   </svg>
                 </div>
-                <span>Alt på norsk</span>
+                <span>{t("trustNorwegian")}</span>
               </div>
             </div>
           </div>

@@ -294,6 +294,7 @@ export function RiskSlider({
                           {t("expected")}
                         </span>
                         <span className="block text-green-400 font-medium">{level.returnRange}</span>
+                        <span className="text-[10px] text-gray-500">Historisk estimat — ikke garanti</span>
                       </div>
                     </div>
 

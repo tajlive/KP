@@ -91,17 +91,17 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-kp-brand/10 text-kp-brand text-sm font-medium mb-4">
               <BarChart3 className="w-4 h-4" />
-              <span>Historisk test</span>
+              <span>Historisk test (simulert)</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-kp-text-primary mb-4">
-              Se hva strategien faktisk har gjort{' '}
+              Se historisk simulert ytelse{' '}
               <span className="bg-gradient-to-r from-kp-brand to-kp-brand-light bg-clip-text text-transparent">
-                historisk
+                basert på backtest
               </span>
             </h2>
             <p className="text-kp-text-secondary max-w-xl mx-auto">
-              Estimater fra backtesting 2019–2026. Se hvordan strategien har prestert 
-              i ulike markedssykluser.
+              Estimater fra simulert backtesting 2019–2025. Se hvordan strategien kan ha prestert
+              i ulike markedssykluser. Resultater er ikke garantert.
             </p>
           </motion.div>
 
@@ -117,7 +117,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
               <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 {/* Risk Profile */}
                 <div className="flex items-center gap-2 min-w-0">
-                  <label className="text-sm text-kp-text-secondary shrink-0">Strategi:</label>
+                  <label className="text-sm text-kp-text-secondary shrink-0">Strategi (simulert):</label>
                   <div className="flex gap-1 flex-wrap">
                     {(Object.keys(UI_TO_PRESET_MAP) as UIRiskProfile[]).map((profile) => (
                       <button
@@ -137,7 +137,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
 
                 {/* Amount */}
                 <div className="flex items-center gap-2 min-w-0">
-                  <label className="text-sm text-kp-text-secondary shrink-0">Beløp:</label>
+                  <label className="text-sm text-kp-text-secondary shrink-0">Startbeløp:</label>
                   <select
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
@@ -152,7 +152,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
 
                 {/* Months */}
                 <div className="flex items-center gap-2 min-w-0">
-                  <label className="text-sm text-kp-text-secondary shrink-0">Periode:</label>
+                  <label className="text-sm text-kp-text-secondary shrink-0">Simuleringsperiode:</label>
                   <select
                     value={months}
                     onChange={(e) => setMonths(Number(e.target.value))}
@@ -172,7 +172,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                   icon={<Play className="w-4 h-4" />}
                   className="ml-auto"
                 >
-                  Kjør test
+                  Kjør simulering
                 </ButtonPremium>
               </div>
             </GlassCard>
@@ -192,7 +192,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                     <div className="flex flex-wrap items-center justify-between gap-4">
                       <div>
                         <h3 className="text-lg font-semibold text-kp-text-primary">
-                          <BarChart3 className="w-5 h-5 inline mr-1" /> Estimert avkastning — {months} måneder
+                          <BarChart3 className="w-5 h-5 inline mr-1" /> Simulert estimat — {months} måneder
                         </h3>
                         <p className="text-sm text-kp-text-secondary">
                           Profil: {PRESET_TO_UI_LABEL[presetProfile]} • {estimate.preset.strategyLabel} • {estimate.preset.asset}
@@ -291,12 +291,12 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                   {/* Metrics */}
                   <div className="grid grid-cols-2 gap-4 p-6 border-b border-kp-border">
                     <MetricCard
-                      label="Startbeløp"
+                      label="Startbeløp (simulert)"
                       value={estimate.formatted.invested}
                       icon={<TrendingUp className="w-4 h-4" />}
                     />
                     <MetricCard
-                      label="Max Drawdown"
+                      label="Max Drawdown (simulert)"
                       value={estimate.formatted.maxDrawdown}
                       negative
                       icon={<TrendingDown className="w-4 h-4" />}
@@ -314,7 +314,7 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
                           Krypto innebærer risiko for tap av kapital.
                         </p>
                         <p>
-                          Estimater fra backtesting 2019–2026 med {estimate.preset.strategyLabel}.
+                          Estimater fra simulert backtesting 2019–2025 med {estimate.preset.strategyLabel}.
                         </p>
                       </div>
                     </div>
@@ -346,10 +346,10 @@ export const LandingBacktestTeaser = forwardRef<LandingBacktestTeaserRef, {}>(
             >
               <BarChart3 className="w-16 h-16 text-kp-text-tertiary mx-auto mb-4" />
               <p className="text-kp-text-secondary text-lg">
-                Klikk "Kjør test" for å se estimert ytelse
+                Klikk "Kjør simulering" for å se estimert ytelse
               </p>
               <p className="text-sm text-kp-text-tertiary mt-2">
-                Basert på backtesting 2019–2026 • Ingen registrering nødvendig
+                Basert på simulert backtesting 2019–2025 • Ingen registrering nødvendig
               </p>
             </motion.div>
           )}
