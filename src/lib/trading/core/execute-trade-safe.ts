@@ -57,6 +57,8 @@ export interface SafeExecutionResult extends ExecuteTradeResult {
     auditPersisted: boolean;
     statePersisted: boolean;
     tradeRecorded: boolean;
+    success?: boolean;
+    error?: string;
   };
 }
 
@@ -284,7 +286,7 @@ async function executeTradeWithLock(
       quantity: request.quantity,
       price: request.price,
       notional: orderValueUsdt,
-      leverage: 1,
+      leverage: request.leverage ?? 1,
     },
     riskStateManager.getState()
   );
@@ -334,9 +336,7 @@ async function executeTradeWithLock(
     const errorMsg = `Trade Aborted: Estimated slippage (${estimatedSlippageBps.toFixed(2)} bps) exceeds limit (${maxSlippageBps} bps).`;
     console.warn(`[executeTradeSafe] ${errorMsg}`);
     
-    // @ts-expect-error - trace structure adjustment (success/error not in ExecutionTrace type)
     trace.success = false;
-    // @ts-expect-error - trace structure adjustment
     trace.error = errorMsg;
     
     return {

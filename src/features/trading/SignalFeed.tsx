@@ -86,7 +86,6 @@ export function SignalFeed() {
 
         if (error) {
           setFetchError(true);
-          // TODO: structured logging instead of console.error
           return;
         }
         const next = (data as TradingSignal[]) ?? [];

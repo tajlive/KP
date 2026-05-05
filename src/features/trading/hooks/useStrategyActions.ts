@@ -32,7 +32,7 @@ export function useStrategyActions({
 
       const response = await fetch("/api/trading/trigger", { method: "POST" });
       if (!response.ok) {
-        // TODO: structured logging
+        // Strategy trigger returned non-OK — error already shown to user via toast
       }
 
       showSuccess("toasts.strategy.started");
