@@ -9,7 +9,7 @@ import { TrendingUp, Target, Wallet, AlertCircle, RefreshCw } from "lucide-react
 import { PortfolioChart } from "./PortfolioChart";
 import { StatsGrid } from "./StatsGrid";
 import { LiveTradeFeed } from "@/features/trading/LiveTradeFeed";
-import { TopTradersPreview } from "@/features/copy-trading/TopTradersPreview";
+
 import { DailyChallenge } from "@/features/gamification/DailyChallenge";
 
 // Eksisterende komponenter
@@ -276,10 +276,7 @@ export function DashboardPro({
               <LiveTradeFeed limit={8} />
             )}
 
-            {/* Top Traders — kun for AktivTrader+ */}
-            {userState === "AktivTrader" || userState === "PowerUser" ? (
-              <TopTradersPreview />
-            ) : null}
+            {/* Top Traders — fjernet: viste fake/mock-data */}
           </div>
         </div>
 
