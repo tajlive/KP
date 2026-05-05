@@ -496,5 +496,19 @@
     "colAge": "Alder",
     "colPnl": "P&L",
     "remaining": "gjenstår"
+  },
+  "greeting": {
+    "morning": "God morgen",
+    "day": "God dag",
+    "evening": "God kveld",
+    "night": "God natt",
+    "performance": {
+      "strong": "Sterk utvikling!",
+      "tough": "Tøff periode — ikke gi opp!",
+      "steady": "Stødig utvikling",
+      "uneven": "Ujevn, men positiv utvikling"
+    },
+    "pnlLabel": "P&L",
+    "winRateLabel": "Win Rate"
   }
 }

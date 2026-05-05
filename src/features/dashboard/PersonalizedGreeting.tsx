@@ -92,7 +92,7 @@ function getPerformanceMessage(
 
 export function PersonalizedGreeting({ userName, totalPnl, winRate }: PersonalizedGreetingProps) {
   const locale = useLocale();
-  const t = useTranslations("dashboard.greeting");
+  const t = useTranslations("dashboard");
   const [mounted, setMounted] = useState(false);
   const timeOfDay = getTimeOfDay();
   const market = useMarketContext();
