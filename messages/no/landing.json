@@ -438,7 +438,11 @@
     "maxDrawdown": "Max Drawdown",
     "cta": "Prøv selv med dine egne innstillinger — gratis",
     "emptyStateTitle": "Klikk \"Kjør test\" for å se estimert ytelse",
-    "emptyStateSubtitle": "Basert på simulert backtesting 2019–2025 • Ingen registrering nødvendig"
+    "emptyStateSubtitle": "Basert på simulert backtesting 2019–2025 • Ingen registrering nødvendig",
+    "disclaimer": "Historisk avkastning er ingen garanti for fremtidig avkastning. Backtesting inkluderer ikke skatter, slippage eller fremtidige markedsendringer. Krypto innebærer risiko for tap av kapital. Estimater fra simulert backtesting 2019–2025 med {strategy}.",
+    "tooltipValue": "Verdi",
+    "monthLabel": "Måned",
+    "simulatedEstimate": "Simulert estimat — {months} måneder"
   },
   "aiTools": {
     "badge": "AI-verktøy",
@@ -463,5 +467,13 @@
   },
   "stickyCTA": {
     "label": "Start gratis nå"
+  },
+  "roiSimulator": {
+    "badge": "Start din reise",
+    "title": "Klar til å ",
+    "titleAccent": "komme i gang?",
+    "description": "Begynn med paper trading for å teste strategier risikofritt. Når du er klar, kan du enkelt bytte til live trading.",
+    "ctaPrimary": "Opprett gratis konto",
+    "ctaSecondary": "Se priser"
   }
 }
